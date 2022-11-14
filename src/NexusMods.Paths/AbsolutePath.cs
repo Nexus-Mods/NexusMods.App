@@ -14,7 +14,7 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
     private int _hashCode = 0;
 
     public readonly string[] Parts = Array.Empty<string>();
-    
+
     public Extension Extension => Extension.FromPath(Parts[^1]);
     public RelativePath FileName => new(Parts[^1..]);
 
@@ -24,7 +24,7 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
         PathFormat = format;
     }
 
-    internal static readonly char[] StringSplits = {'/', '\\'};
+    internal static readonly char[] StringSplits = { '/', '\\' };
 
     private static AbsolutePath Parse(string path)
     {
@@ -65,7 +65,7 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
 
     public int Depth => Parts?.Length ?? 0;
 
-    public IEnumerable<AbsolutePath> ThisAndAllParents() 
+    public IEnumerable<AbsolutePath> ThisAndAllParents()
     {
         var p = this;
         while (true)
@@ -104,9 +104,9 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
     {
         if (_hashCode != 0) return _hashCode;
         if (Parts == null || Parts.Length == 0) return -1;
-        
+
         var result = 0;
-        foreach (var part in Parts) 
+        foreach (var part in Parts)
             result ^= part.GetHashCode(StringComparison.CurrentCultureIgnoreCase);
         _hashCode = result;
         return _hashCode;
@@ -152,7 +152,7 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
         {
             return p switch
             {
-                string s => (RelativePath) s,
+                string s => (RelativePath)s,
                 RelativePath path => path,
                 _ => throw new PathException($"Cannot cast {p} of type {p.GetType()} to Path")
             };

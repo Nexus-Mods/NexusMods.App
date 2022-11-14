@@ -30,7 +30,7 @@ public struct RelativePath : IPath, IEquatable<RelativePath>, IComparable<Relati
     }
 
     public Extension Extension => Extension.FromPath(Parts[^1]);
-    public RelativePath FileName => Parts.Length == 1 ? this : new RelativePath(new[] {Parts[^1]});
+    public RelativePath FileName => Parts.Length == 1 ? this : new RelativePath(new[] { Parts[^1] });
 
     public RelativePath ReplaceExtension(Extension newExtension)
     {
@@ -85,7 +85,7 @@ public struct RelativePath : IPath, IEquatable<RelativePath>, IComparable<Relati
     {
         if (_hashCode != 0) return _hashCode;
         if (Parts == null || Parts.Length == 0) return -1;
-        
+
         _hashCode = Parts.Aggregate(0,
             (current, part) => current ^ part.GetHashCode(StringComparison.CurrentCultureIgnoreCase));
         return _hashCode;
@@ -128,7 +128,7 @@ public struct RelativePath : IPath, IEquatable<RelativePath>, IComparable<Relati
         {
             return p switch
             {
-                string s => (RelativePath) s,
+                string s => (RelativePath)s,
                 RelativePath path => path,
                 _ => throw new PathException($"Cannot cast {p} of type {p.GetType()} to Path")
             };
@@ -164,6 +164,7 @@ public struct RelativePath : IPath, IEquatable<RelativePath>, IComparable<Relati
             return new RelativePath(newParts);
         }
     }
+
     public RelativePath TopParent => new(Parts[..1]);
     public RelativePath FileNameWithoutExtension => Parts[^1][..^Extension.Length].ToRelativePath();
 

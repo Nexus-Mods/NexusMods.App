@@ -5,13 +5,13 @@ public class RelativePathTests
     [Fact]
     public void CanReplaceExtensions()
     {
-        Assert.Equal(new Extension(".dds"), ((RelativePath) @"foo\bar.dds").Extension);
-        Assert.Equal((RelativePath) @"foo\bar.zip",
-            ((RelativePath) @"foo\bar.dds").ReplaceExtension(new Extension(".zip")));
-        Assert.NotEqual((RelativePath) @"foo\bar\z.zip",
-            ((RelativePath) @"foo\bar.dds").ReplaceExtension(new Extension(".zip")));
-        Assert.Equal((RelativePath) @"foo\bar.zip",
-            ((RelativePath) @"foo\bar").ReplaceExtension(new Extension(".zip")));
+        Assert.Equal(new Extension(".dds"), ((RelativePath)@"foo\bar.dds").Extension);
+        Assert.Equal((RelativePath)@"foo\bar.zip",
+            ((RelativePath)@"foo\bar.dds").ReplaceExtension(new Extension(".zip")));
+        Assert.NotEqual((RelativePath)@"foo\bar\z.zip",
+            ((RelativePath)@"foo\bar.dds").ReplaceExtension(new Extension(".zip")));
+        Assert.Equal((RelativePath)@"foo\bar.zip",
+            ((RelativePath)@"foo\bar").ReplaceExtension(new Extension(".zip")));
     }
 
     [Fact]
@@ -23,21 +23,21 @@ public class RelativePathTests
     [Fact]
     public void CanCreatePathsRelativeTo()
     {
-        Assert.Equal((AbsolutePath) @"c:\foo\bar\baz.zip",
-            ((RelativePath) @"baz.zip").RelativeTo((AbsolutePath) @"c:\foo\bar"));
+        Assert.Equal((AbsolutePath)@"c:\foo\bar\baz.zip",
+            ((RelativePath)@"baz.zip").RelativeTo((AbsolutePath)@"c:\foo\bar"));
     }
 
     [Fact]
     public void ObjectMethods()
     {
-        Assert.Equal(@"foo\bar", ((RelativePath) @"foo\bar").ToString());
+        Assert.Equal(@"foo\bar", ((RelativePath)@"foo\bar").ToString());
 
-        Assert.Equal((RelativePath) @"foo\bar", (RelativePath) @"foo/bar");
-        Assert.NotEqual((RelativePath) @"foo\bar", (object) 42);
-        Assert.True((RelativePath) @"foo\bar" == (RelativePath) @"foo/bar");
-        Assert.True((RelativePath) @"foo\bar" != (RelativePath) @"foo/baz");
+        Assert.Equal((RelativePath)@"foo\bar", (RelativePath)@"foo/bar");
+        Assert.NotEqual((RelativePath)@"foo\bar", (object)42);
+        Assert.True((RelativePath)@"foo\bar" == (RelativePath)@"foo/bar");
+        Assert.True((RelativePath)@"foo\bar" != (RelativePath)@"foo/baz");
 
-        Assert.Equal(((RelativePath) @"foo\bar").GetHashCode(), ((RelativePath) @"Foo\bar").GetHashCode());
+        Assert.Equal(((RelativePath)@"foo\bar").GetHashCode(), ((RelativePath)@"Foo\bar").GetHashCode());
     }
 
 
@@ -55,13 +55,13 @@ public class RelativePathTests
     public void CaseInsensitiveEquality()
     {
         Assert.Equal(@"foo\bar.baz".ToRelativePath(), @"Foo\Bar.bAz".ToRelativePath());
-        Assert.NotEqual(@"foo\bar.baz".ToRelativePath(), (object) 42);
+        Assert.NotEqual(@"foo\bar.baz".ToRelativePath(), (object)42);
     }
 
     [Fact]
     public void CanGetFilenameFromRelativePath()
     {
-        Assert.Equal((RelativePath) "bar.dds", @"foo\bar.dds".ToRelativePath().FileName);
+        Assert.Equal((RelativePath)"bar.dds", @"foo\bar.dds".ToRelativePath().FileName);
     }
 
     [Fact]
@@ -126,19 +126,18 @@ public class RelativePathTests
         var pathA = @"foo\bar".ToRelativePath();
         var pathAA = @"foo\baR".ToRelativePath();
         var pathB = @"foo\baz".ToRelativePath();
-        
+
         Assert.Equal(pathA, pathA);
         Assert.Equal(pathA, pathAA);
         Assert.True(pathA == pathAA);
         Assert.False(pathA == pathB);
-
     }
 
     [Fact]
     public void CanCreateFilenameFromParts()
     {
         var path = @"foo\bar.zip".ToRelativePath();
-        Assert.Equal(path, RelativePath.FromParts(new[] {"foo", "bar.zip"}));
+        Assert.Equal(path, RelativePath.FromParts(new[] { "foo", "bar.zip" }));
         Assert.Equal(path, RelativePath.FromParts(path.Parts));
     }
 
@@ -157,7 +156,7 @@ public class RelativePathTests
         var pathB = @"foo\bar".ToRelativePath();
         Assert.Equal(pathA, pathB.WithExtension(Ext.Zip));
     }
-    
+
     [Fact]
     public void CanReplaceExtension()
     {
@@ -194,19 +193,19 @@ public class RelativePathTests
     {
         var data = new[]
         {
-            (RelativePath) @"a",
-            (RelativePath) @"b\c",
-            (RelativePath) @"d\e\f",
-            (RelativePath) @"b"
+            (RelativePath)@"a",
+            (RelativePath)@"b\c",
+            (RelativePath)@"d\e\f",
+            (RelativePath)@"b"
         };
         var data2 = data.OrderBy(a => a).ToArray();
 
         var data3 = new[]
         {
-            (RelativePath) @"a",
-            (RelativePath) @"b",
-            (RelativePath) @"b\c",
-            (RelativePath) @"d\e\f"
+            (RelativePath)@"a",
+            (RelativePath)@"b",
+            (RelativePath)@"b\c",
+            (RelativePath)@"d\e\f"
         };
         Assert.Equal(data3, data2);
     }

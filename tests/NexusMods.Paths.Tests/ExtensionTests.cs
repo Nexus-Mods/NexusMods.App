@@ -19,20 +19,20 @@ public class ExtensionTests
 
         Assert.NotEqual(EMPTY, DDS);
 
-        Assert.NotEqual(DDS, (object) 42);
+        Assert.NotEqual(DDS, (object)42);
     }
 
     [Fact]
     public void CanGetExtensionOfPath()
     {
-        Assert.Equal(DDS, ((AbsolutePath) @"c:\foo\bar.dds").Extension);
+        Assert.Equal(DDS, ((AbsolutePath)@"c:\foo\bar.dds").Extension);
     }
 
     [Fact]
     public void ExtensionsHaveConversionOperators()
     {
-        Assert.True(".DDS" == (string) DDS);
-        Assert.True(DDS == (Extension) ".DDs");
+        Assert.True(".DDS" == (string)DDS);
+        Assert.True(DDS == (Extension)".DDs");
     }
 
     [Fact]
