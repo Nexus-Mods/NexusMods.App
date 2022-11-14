@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Paths", "Paths", "{B93AF89E-9ED7-4FD0-B58E-688AA178AB53}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Paths", "src\NexusMods.Paths\NexusMods.Paths.csproj", "{9025900A-5342-4EB3-97C8-A9F067929879}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Paths.Tests", "tests\NexusMods.Paths.Tests\NexusMods.Paths.Tests.csproj", "{1636CC83-8738-46ED-A688-D6AC2A55FEB5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9025900A-5342-4EB3-97C8-A9F067929879}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9025900A-5342-4EB3-97C8-A9F067929879}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1636CC83-8738-46ED-A688-D6AC2A55FEB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1636CC83-8738-46ED-A688-D6AC2A55FEB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1636CC83-8738-46ED-A688-D6AC2A55FEB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1636CC83-8738-46ED-A688-D6AC2A55FEB5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9025900A-5342-4EB3-97C8-A9F067929879} = {B93AF89E-9ED7-4FD0-B58E-688AA178AB53}
+		{1636CC83-8738-46ED-A688-D6AC2A55FEB5} = {B93AF89E-9ED7-4FD0-B58E-688AA178AB53}
+	EndGlobalSection
+EndGlobal
