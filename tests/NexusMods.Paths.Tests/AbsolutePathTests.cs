@@ -45,8 +45,11 @@ public class AbsolutePathTests
     [Fact]
     public void CanGetPathHashCodes()
     {
+        var pathA = @"c:\foo\bar.zip".ToAbsolutePath();
+        Assert.Equal(pathA.GetHashCode(), pathA.GetHashCode());
         Assert.Equal(@"c:\foo\bar.baz".ToAbsolutePath().GetHashCode(),
             @"C:\Foo\Bar.bAz".ToAbsolutePath().GetHashCode());
+        Assert.Equal(-1, new AbsolutePath().GetHashCode());
     }
 
 
@@ -66,6 +69,22 @@ public class AbsolutePathTests
             ((AbsolutePath) @"/foo/bar.dds").ReplaceExtension(new Extension(".zip")));
         Assert.Equal((AbsolutePath) @"/foo\bar.zip",
             ((AbsolutePath) @"/foo\bar").ReplaceExtension(new Extension(".zip")));
+    }
+    
+    [Fact]
+    public void CanAddExtension()
+    {
+        var pathA = @"c:\foo\bar.zip".ToAbsolutePath();
+        var pathB = @"c:\foo\bar".ToAbsolutePath();
+        Assert.Equal(pathA, pathB.WithExtension(Ext.Zip));
+    }
+
+    [Fact]
+    public void CanAppendToName()
+    {
+        var pathA = @"c:\foo\bar.zip".ToAbsolutePath();
+        var pathB = @"c:\foo\barBaz.zip".ToAbsolutePath();
+        Assert.Equal(pathB, pathA.AppendToName("Baz"));
     }
 
     [Fact]
@@ -89,6 +108,18 @@ public class AbsolutePathTests
     public void CanConvertPathsToStrings()
     {
         Assert.Equal("/foo/bar", ((AbsolutePath) "/foo/bar").ToString());
+        Assert.Equal("", new AbsolutePath().ToString());
+    }
+    
+    [Fact]
+    public void CanCheckInFolder()
+    {
+        var pathA = @"c:\foo\bar\baz.zip".ToAbsolutePath();
+        var pathB = @"c:\foo\bar".ToAbsolutePath();
+        var pathC = @"c:\fOo\Bar".ToAbsolutePath();
+        Assert.True(pathA.InFolder(pathB));
+        Assert.True(pathA.InFolder(pathC));
+        Assert.False(pathB.InFolder(pathA));
     }
 
     [Fact]

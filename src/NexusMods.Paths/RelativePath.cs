@@ -16,7 +16,7 @@ public struct RelativePath : IPath, IEquatable<RelativePath>, IComparable<Relati
         return new RelativePath(parts);
     }
 
-    public static it operator RelativePath(string i)
+    public static explicit operator RelativePath(string i)
     {
         var splits = i.Split(AbsolutePath.StringSplits, StringSplitOptions.RemoveEmptyEntries);
         if (splits.Length >= 1 && splits[0].Contains(':'))

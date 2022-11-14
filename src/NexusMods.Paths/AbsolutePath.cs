@@ -13,10 +13,8 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
 
     private int _hashCode = 0;
 
-    internal readonly string[] Parts;
-
-    public string[] PathParts => Parts == default ? Array.Empty<string>() : Parts;
-
+    public readonly string[] Parts = Array.Empty<string>();
+    
     public Extension Extension => Extension.FromPath(Parts[^1]);
     public RelativePath FileName => new(Parts[^1..]);
 
@@ -105,9 +103,11 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
     public override int GetHashCode()
     {
         if (_hashCode != 0) return _hashCode;
+        if (Parts == null || Parts.Length == 0) return -1;
+        
         var result = 0;
         foreach (var part in Parts) 
-            result = result ^ part.GetHashCode(StringComparison.CurrentCultureIgnoreCase);
+            result ^= part.GetHashCode(StringComparison.CurrentCultureIgnoreCase);
         _hashCode = result;
         return _hashCode;
     }
@@ -124,10 +124,7 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
 
     public bool Equals(AbsolutePath other)
     {
-        // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-        if (other.Parts == null) return other.Parts == Parts;
-        if (Parts == null) return false;
-        if (Parts.Length != other.Parts.Length) return false;
+        if (other.Parts.Length != Parts.Length) return false;
         for (var idx = 0; idx < Parts.Length; idx++)
             if (!Parts[idx].Equals(other.Parts[idx], StringComparison.InvariantCultureIgnoreCase))
                 return false;
@@ -189,11 +186,11 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
         return !a.Equals(b);
     }
 
-    public AbsolutePath WithExtension(Extension? ext)
+    public AbsolutePath WithExtension(Extension ext)
     {
         var parts = new string[Parts.Length];
         Array.Copy(Parts, parts, Parts.Length);
-        parts[^1] = parts[^1] + ext;
+        parts[^1] += ext;
         return new AbsolutePath(parts, PathFormat);
     }
 
@@ -201,17 +198,5 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
     {
         return Parent.Combine((FileName.FileNameWithoutExtension + append).ToRelativePath()
             .WithExtension(Extension));
-    }
-
-    public static AbsolutePath ConvertNoFailure(string value)
-    {
-        try
-        {
-            return (AbsolutePath) value;
-        }
-        catch (Exception)
-        {
-            return default;
-        }
     }
 }
