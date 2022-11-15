@@ -8,7 +8,7 @@ public class GamePathTests
     {
         var pathA = new GamePath(GameFolderType.Game, @"\foo\bar.zip");
         var pathB = new GamePath(GameFolderType.Game, @"\Foo\bar.zip");
-        var pathC = new GamePath(GameFolderType.Profiles, @"\foo\bar.zip");
+        var pathC = new GamePath(GameFolderType.Preferences, @"\foo\bar.zip");
         var pathD = new GamePath(GameFolderType.Game, @"\foo\bar.pex");
         
         Assert.Equal(pathA, pathB);

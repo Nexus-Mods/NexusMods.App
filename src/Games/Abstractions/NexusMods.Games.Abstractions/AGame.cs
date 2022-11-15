@@ -9,7 +9,7 @@ public abstract class AGame : IGame
 {
     private IReadOnlyCollection<GameInstallation>? _installations;
     private readonly IEnumerable<IGameLocator> _gamelocators;
-    private readonly ILogger _logger;
+    protected readonly ILogger _logger;
     
     public AGame(ILogger logger, IEnumerable<IGameLocator> gameLocators)
     {
@@ -30,7 +30,7 @@ public abstract class AGame : IGame
                 select new GameInstallation
                 {
                     Game = this,
-                    Locations = GetLocations(locator, installation),
+                    Locations = new Dictionary<GameFolderType, AbsolutePath>(GetLocations(locator, installation)),
                     Version = installation.Version ?? GetVersion(locator, installation)
                 }).ToList();
             return _installations;
@@ -43,5 +43,5 @@ public abstract class AGame : IGame
         return Version.Parse(fvi.ProductVersion!);
     }
 
-    protected abstract IReadOnlyDictionary<GameFolderType,AbsolutePath> GetLocations(IGameLocator locator, GameLocatorResult installation);
+    protected abstract IEnumerable<KeyValuePair<GameFolderType,AbsolutePath>> GetLocations(IGameLocator locator, GameLocatorResult installation);
 }
