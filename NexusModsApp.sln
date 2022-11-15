@@ -14,6 +14,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.StandardGameLocat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.StandardGameLocators.Tests", "NexusMods.StandardGameLocators.Tests\NexusMods.StandardGameLocators.Tests.csproj", "{4FD95FB7-BD1D-4D79-90F8-9980DE5D6C28}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Games", "Games", "{B95A2142-2872-4FFD-BAB2-596373401461}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.BethesdaGameStudios", "src\Games\NexusMods.Games.BethesdaGameStudios\NexusMods.Games.BethesdaGameStudios.csproj", "{5038CF21-CE33-45F0-8C6F-D06D20D604F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.Abstractions", "src\Games\Abstractions\NexusMods.Games.Abstractions\NexusMods.Games.Abstractions.csproj", "{0C8B3DC2-4DFD-455E-AA47-2CE5B9381BA9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,11 +44,21 @@ Global
 		{4FD95FB7-BD1D-4D79-90F8-9980DE5D6C28}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4FD95FB7-BD1D-4D79-90F8-9980DE5D6C28}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4FD95FB7-BD1D-4D79-90F8-9980DE5D6C28}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5038CF21-CE33-45F0-8C6F-D06D20D604F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5038CF21-CE33-45F0-8C6F-D06D20D604F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5038CF21-CE33-45F0-8C6F-D06D20D604F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5038CF21-CE33-45F0-8C6F-D06D20D604F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C8B3DC2-4DFD-455E-AA47-2CE5B9381BA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C8B3DC2-4DFD-455E-AA47-2CE5B9381BA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C8B3DC2-4DFD-455E-AA47-2CE5B9381BA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C8B3DC2-4DFD-455E-AA47-2CE5B9381BA9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9025900A-5342-4EB3-97C8-A9F067929879} = {B93AF89E-9ED7-4FD0-B58E-688AA178AB53}
 		{1636CC83-8738-46ED-A688-D6AC2A55FEB5} = {B93AF89E-9ED7-4FD0-B58E-688AA178AB53}
 		{BB552259-24B0-4166-8A67-5649CE42BE83} = {954D1870-EE4B-4EC3-84AC-292C300461F0}
 		{4FD95FB7-BD1D-4D79-90F8-9980DE5D6C28} = {954D1870-EE4B-4EC3-84AC-292C300461F0}
+		{5038CF21-CE33-45F0-8C6F-D06D20D604F3} = {B95A2142-2872-4FFD-BAB2-596373401461}
+		{0C8B3DC2-4DFD-455E-AA47-2CE5B9381BA9} = {B95A2142-2872-4FFD-BAB2-596373401461}
 	EndGlobalSection
 EndGlobal

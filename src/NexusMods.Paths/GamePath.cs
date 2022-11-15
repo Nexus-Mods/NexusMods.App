@@ -58,4 +58,9 @@ public struct GamePath : IPath
 
     public Extension Extension => Path.Extension;
     public RelativePath FileName => Path.FileName;
+
+    public AbsolutePath RelativeTo(AbsolutePath folderPath)
+    {
+        return Path.RelativeTo(folderPath);
+    }
 }

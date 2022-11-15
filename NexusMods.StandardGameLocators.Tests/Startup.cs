@@ -53,7 +53,7 @@ public class StubbedGame : ISteamGame, IGogGame
                     {
                         { GameFolderType.Game, i.Path }
                     },
-                    Version = Version.Parse("0.0.0.1")
+                    Version = Version.Parse("0.0.1.0")
                 });
         }
     }

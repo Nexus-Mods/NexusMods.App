@@ -49,4 +49,12 @@ public class GamePathTests
         Assert.Equal(@"{Saves}\foo\ba.zip", pathB.ToString());
     }
 
+    [Fact]
+    public void CanGetPathRelativeTo()
+    {
+        var pathA = new GamePath(GameFolderType.Game, "foo/bar");
+        var pathB = @"c:\qux".ToAbsolutePath();
+        Assert.Equal(@"c:\qux\foo\bar".ToAbsolutePath(), pathA.RelativeTo(pathB));
+    }
+
 }
