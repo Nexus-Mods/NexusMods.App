@@ -158,4 +158,62 @@ public class AbsolutePathTests
 
         Assert.Equal(subPaths.OrderBy(f => f), path.ThisAndAllParents().OrderBy(f => f).ToArray());
     }
+
+    #region IO Tests
+
+    [Fact]
+    public async Task CanReadAndWriteFiles()
+    {
+        var testDir = KnownFolders.EntryFolder.Combine("testDir");
+        if (testDir.DirectoryExists())
+            testDir.DeleteDirectory();
+        testDir.CreateDirectory();
+
+        var fileOne = testDir.Combine("file1.txt");
+        var fileTwo = testDir.Combine("file2.txt");
+        var fileThree = testDir.Combine("file3.txt");
+        var fileFour = testDir.Combine(@"testFolder\inner\testfour.txt");
+        await fileOne.WriteAllTextAsync("this is a test");
+        await fileTwo.WriteAllTextAsync("test two");
+        
+        Assert.Equal("test two", await fileTwo.ReadAllTextAsync());
+
+        await fileOne.CopyToAsync(fileThree);
+        Assert.True(fileThree.FileExists);
+        
+        Assert.Equal(14, fileOne.Length);
+        Assert.True(DateTime.Now - fileOne.LastWriteTime < TimeSpan.FromSeconds(1));
+        Assert.True(DateTime.UtcNow - fileOne.LastWriteTimeUtc < TimeSpan.FromSeconds(1));
+        
+        Assert.True(DateTime.Now - fileOne.CreationTime < TimeSpan.FromSeconds(1));
+        Assert.True(DateTime.UtcNow - fileOne.CreationTimeUtc < TimeSpan.FromSeconds(1));
+
+        await Task.Delay(TimeSpan.FromSeconds(1));
+        fileTwo.Touch();
+        Assert.True(fileTwo.LastWriteTime - fileTwo.CreationTime > TimeSpan.FromSeconds(1));
+
+        var files = testDir.EnumerateFiles(Ext.Txt).ToHashSet();
+        Assert.True(files.Contains(fileOne));
+        Assert.True(files.Contains(fileTwo));
+        Assert.True(files.Contains(fileThree));
+
+        // Make sure we can delete read only files
+        fileThree.FileInfo.IsReadOnly = true;
+        fileThree.Delete();
+        Assert.False(fileThree.FileExists);
+        
+        fileFour.Parent.CreateDirectory();
+        await fileTwo.MoveToAsync(fileFour);
+        Assert.False(fileTwo.FileExists);
+        Assert.True(fileFour.FileExists);
+
+        var dirs = testDir.EnumerateDirectories().ToHashSet();
+        Assert.Equal(2, dirs.Count);
+        
+        testDir.DeleteDirectory(true);
+        Assert.True(fileOne.FileExists);
+        testDir.Delete();
+    }
+
+    #endregion
 }

@@ -39,8 +39,8 @@ public abstract class AGame : IGame
 
     private Version GetVersion(IGameLocator locator, GameLocatorResult installation)
     {
-        var fvi = PrimaryFile.RelativeTo(installation.Path).FileVersionInfo;
-        return Version.Parse(fvi.ProductVersion);
+        var fvi = PrimaryFile.RelativeTo(installation.Path).VersionInfo;
+        return Version.Parse(fvi.ProductVersion!);
     }
 
     protected abstract IReadOnlyDictionary<GameFolderType,AbsolutePath> GetLocations(IGameLocator locator, GameLocatorResult installation);

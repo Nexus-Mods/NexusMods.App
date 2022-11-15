@@ -1,4 +1,8 @@
-﻿namespace NexusMods.Paths;
+﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Text;
+
+namespace NexusMods.Paths;
 
 public enum PathFormat : byte
 {
@@ -199,4 +203,204 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
         return Parent.Combine((FileName.FileNameWithoutExtension + append).ToRelativePath()
             .WithExtension(Extension));
     }
+
+    #region IO
+
+    public const int BufferSize = 1024 * 128;
+
+    public Stream Open(FileMode mode, FileAccess access = FileAccess.Read,
+        FileShare share = FileShare.ReadWrite)
+    {
+        return File.Open(ToNativePath(), mode, access, share);
+    }
+
+    public Stream Read()
+    {
+        return Open(FileMode.Open, FileAccess.Read, FileShare.Read);
+    }
+
+    public Stream Create()
+    {
+        return Open(FileMode.Create, FileAccess.ReadWrite, FileShare.None);
+    }
+
+    public void Delete()
+    {
+        if (FileExists)
+        {
+            try
+            {
+                File.Delete(ToNativePath());
+            }
+            catch (UnauthorizedAccessException)
+            {
+                var fi = FileInfo;
+                if (fi.IsReadOnly)
+                {
+                    fi.IsReadOnly = false;
+                    File.Delete(ToNativePath());
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+        if (Directory.Exists(ToNativePath()))
+            DeleteDirectory();
+    }
+
+    private FileInfo? _info = null;
+    public FileInfo FileInfo => _info ??= new FileInfo(ToString());
+    
+    public FileVersionInfo VersionInfo => FileVersionInfo.GetVersionInfo(ToNativePath());
+    
+    public long Length => FileInfo.Length;
+
+    public DateTime LastWriteTimeUtc => FileInfo.LastWriteTimeUtc;
+    public DateTime CreationTimeUtc => FileInfo.CreationTimeUtc;
+    public DateTime LastWriteTime => FileInfo.LastWriteTime;
+    public DateTime CreationTime => FileInfo.CreationTime;
+    
+    public void Touch()
+    {
+        FileInfo.LastWriteTime = DateTime.Now;
+    }
+
+    public async Task<byte[]> ReadAllBytesAsync(CancellationToken? token = null)
+    {
+        await using var s = Read();
+        var remain = s.Length;
+        var length = remain;
+        var bytes = new byte[length];
+
+        while (remain > 0)
+        {
+            var offset = (int)Math.Min(length - remain, 1024 * 1024);
+            remain -= await s.ReadAsync(bytes, offset, (int)remain, token ?? CancellationToken.None);
+        }
+
+        return bytes;
+    }
+    
+    public async ValueTask MoveToAsync(AbsolutePath dest, bool overwrite = true,
+        CancellationToken? token = null)
+    {
+        var srcStr = ToNativePath();
+        var destStr = dest.ToString();
+        var fi = new FileInfo(srcStr);
+        if (fi.IsReadOnly)
+            fi.IsReadOnly = false;
+
+        var fid = new FileInfo(destStr);
+        if (dest.FileExists && fid.IsReadOnly)
+        {
+            fid.IsReadOnly = false;
+        }
+
+        var retries = 0;
+        while (true)
+        {
+            try
+            {
+                File.Move(srcStr, destStr, overwrite);
+                return;
+            }
+            catch (Exception)
+            {
+                if (retries > 10)
+                    throw;
+                retries++;
+                await Task.Delay(TimeSpan.FromSeconds(1), token ?? CancellationToken.None);
+            }
+        }
+    }
+
+    public async ValueTask CopyToAsync(AbsolutePath dest, CancellationToken? token = null)
+    {
+        await using var inf = Read();
+        await using var ouf = dest.Create();
+        await inf.CopyToAsync(ouf, token ?? CancellationToken.None);
+    }
+    
+    private string ToNativePath()
+    {
+        return ToString();
+    }
+
+    public void CreateDirectory()
+    {
+        if (Depth > 1 && !Parent.DirectoryExists())
+            Parent.CreateDirectory();
+        Directory.CreateDirectory(ToNativePath());
+    }
+
+    public void DeleteDirectory(bool dontDeleteIfNotEmpty = false)
+    {
+        if (!DirectoryExists()) return;
+        if (dontDeleteIfNotEmpty && (EnumerateFiles().Any() || EnumerateDirectories().Any())) return;
+      
+        foreach (var directory in Directory.GetDirectories(ToString()))
+        {
+            directory.ToAbsolutePath().DeleteDirectory(dontDeleteIfNotEmpty);
+        }
+        try
+        {
+            var di = new DirectoryInfo(ToNativePath());
+            if (di.Attributes.HasFlag(FileAttributes.ReadOnly))
+                di.Attributes &= ~FileAttributes.ReadOnly;
+            Directory.Delete(ToString(), true);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            Directory.Delete(ToString(), true);
+        }
+    }
+
+    public bool DirectoryExists()
+    {
+        return Parts.Length != 0 && Directory.Exists(ToNativePath());
+    }
+
+    public bool FileExists => Parts.Length != 0 && File.Exists(ToNativePath());
+
+    public IEnumerable<AbsolutePath> EnumerateFiles(string pattern = "*",
+        bool recursive = true)
+    {
+        return Directory.EnumerateFiles(ToNativePath(), pattern,
+                recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
+            .Select(file => file.ToAbsolutePath());
+    }
+
+
+    public IEnumerable<AbsolutePath> EnumerateFiles(Extension pattern,
+        bool recursive = true)
+    {
+        return Directory.EnumerateFiles(ToString(), "*" + pattern,
+                recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
+            .Select(file => file.ToAbsolutePath());
+    }
+
+
+    public IEnumerable<AbsolutePath> EnumerateDirectories(bool recursive = true)
+    {
+        if (!DirectoryExists()) return Array.Empty<AbsolutePath>();
+        return Directory.EnumerateDirectories(ToNativePath(), "*",
+                recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
+            .Select(p => (AbsolutePath) p);
+    }
+
+    #endregion
+
+    public async Task WriteAllTextAsync(string text, CancellationToken? token = null)
+    {
+        await using var fs = Create();
+        await fs.WriteAsync(Encoding.UTF8.GetBytes(text), token ?? CancellationToken.None);
+    }
+    
+    public async Task<string> ReadAllTextAsync(CancellationToken? token = null)
+    {
+        return Encoding.UTF8.GetString(await ReadAllBytesAsync(token));
+    }
+
 }
