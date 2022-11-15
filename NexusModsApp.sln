@@ -6,6 +6,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Paths", "src\Nexu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Paths.Tests", "tests\NexusMods.Paths.Tests\NexusMods.Paths.Tests.csproj", "{1636CC83-8738-46ED-A688-D6AC2A55FEB5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GameLocators", "GameLocators", "{954D1870-EE4B-4EC3-84AC-292C300461F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Interfaces", "src\NexusMods.Interfaces\NexusMods.Interfaces.csproj", "{0131FC55-53D2-4BE6-98DE-E55F7A133B1B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.StandardGameLocators", "src\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj", "{BB552259-24B0-4166-8A67-5649CE42BE83}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.StandardGameLocators.Tests", "NexusMods.StandardGameLocators.Tests\NexusMods.StandardGameLocators.Tests.csproj", "{4FD95FB7-BD1D-4D79-90F8-9980DE5D6C28}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,9 +26,23 @@ Global
 		{1636CC83-8738-46ED-A688-D6AC2A55FEB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1636CC83-8738-46ED-A688-D6AC2A55FEB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1636CC83-8738-46ED-A688-D6AC2A55FEB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0131FC55-53D2-4BE6-98DE-E55F7A133B1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0131FC55-53D2-4BE6-98DE-E55F7A133B1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0131FC55-53D2-4BE6-98DE-E55F7A133B1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0131FC55-53D2-4BE6-98DE-E55F7A133B1B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB552259-24B0-4166-8A67-5649CE42BE83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB552259-24B0-4166-8A67-5649CE42BE83}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB552259-24B0-4166-8A67-5649CE42BE83}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB552259-24B0-4166-8A67-5649CE42BE83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FD95FB7-BD1D-4D79-90F8-9980DE5D6C28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FD95FB7-BD1D-4D79-90F8-9980DE5D6C28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FD95FB7-BD1D-4D79-90F8-9980DE5D6C28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FD95FB7-BD1D-4D79-90F8-9980DE5D6C28}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9025900A-5342-4EB3-97C8-A9F067929879} = {B93AF89E-9ED7-4FD0-B58E-688AA178AB53}
 		{1636CC83-8738-46ED-A688-D6AC2A55FEB5} = {B93AF89E-9ED7-4FD0-B58E-688AA178AB53}
+		{BB552259-24B0-4166-8A67-5649CE42BE83} = {954D1870-EE4B-4EC3-84AC-292C300461F0}
+		{4FD95FB7-BD1D-4D79-90F8-9980DE5D6C28} = {954D1870-EE4B-4EC3-84AC-292C300461F0}
 	EndGlobalSection
 EndGlobal
