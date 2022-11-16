@@ -5,7 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
-
+    
     <ItemGroup>
       <PackageReference Include="GameFinder.StoreHandlers.EGS" Version="2.2.2" />
       <PackageReference Include="GameFinder.StoreHandlers.GOG" Version="2.2.2" />

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using FluentAssertions;
+using Microsoft.Extensions.Logging;
 
 namespace NexusMods.Games.BethesdaGameStudios.Tests;
 
@@ -17,8 +18,8 @@ public class SkyrimSpecialEditionTests
     [Fact]
     public void CanFindGames()
     {
-        Assert.Equal("Skyrim Special Edition", _game.Name);
-        Assert.Equal("skyrimspecialedition", _game.Slug);
-        Assert.Equal(2, _game.Installations.Count());
+        _game.Name.Should().Be("Skyrim Special Edition");
+        _game.Slug.Should().Be("skyrimspecialedition");
+        _game.Installations.Count().Should().Be(2);
     }
 }

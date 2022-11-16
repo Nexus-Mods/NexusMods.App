@@ -12,11 +12,12 @@ public class GameInstallation
     /// The Version installed
     /// </summary>
     public Version Version { get; init; } = new();
-    
+
     /// <summary>
     /// The location on-disk of this game and it's associated paths
     /// </summary>
-    public IReadOnlyDictionary<GameFolderType, AbsolutePath> Locations { get; init; }
+    public IReadOnlyDictionary<GameFolderType, AbsolutePath> Locations { get; init; } =
+        new Dictionary<GameFolderType, AbsolutePath>();
     
     /// <summary>
     /// The game to which this installation belongs
