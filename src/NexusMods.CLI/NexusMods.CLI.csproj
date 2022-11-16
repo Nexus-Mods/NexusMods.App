@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+      <PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Games\Abstractions\NexusMods.Games.Abstractions\NexusMods.Games.Abstractions.csproj" />
+      <ProjectReference Include="..\Games\NexusMods.Games.BethesdaGameStudios\NexusMods.Games.BethesdaGameStudios.csproj" />
+      <ProjectReference Include="..\NexusMods.Paths\NexusMods.Paths.csproj" />
+      <ProjectReference Include="..\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="VerbRegistration.tt">
+        <Generator>TextTemplatingFileGenerator</Generator>
+        <LastGenOutput>VerbRegistration.cs</LastGenOutput>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="VerbRegistration.cs">
+        <AutoGen>True</AutoGen>
+        <DesignTime>True</DesignTime>
+        <DependentUpon>VerbRegistration.tt</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+</Project>

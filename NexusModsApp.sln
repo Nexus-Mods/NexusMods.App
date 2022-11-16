@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.Abstraction
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.BethesdaGameStudios.Tests", "tests\Games\NexusMods.Games.BethesdaGameStudios.Tests\NexusMods.Games.BethesdaGameStudios.Tests.csproj", "{DC3AE1FC-8E93-4F33-B937-C51C2F7C350F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.CLI", "src\NexusMods.CLI\NexusMods.CLI.csproj", "{D66C4BA1-C129-4DC1-954E-6D9E0B9CB691}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,10 @@ Global
 		{DC3AE1FC-8E93-4F33-B937-C51C2F7C350F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC3AE1FC-8E93-4F33-B937-C51C2F7C350F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DC3AE1FC-8E93-4F33-B937-C51C2F7C350F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D66C4BA1-C129-4DC1-954E-6D9E0B9CB691}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D66C4BA1-C129-4DC1-954E-6D9E0B9CB691}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D66C4BA1-C129-4DC1-954E-6D9E0B9CB691}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D66C4BA1-C129-4DC1-954E-6D9E0B9CB691}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9025900A-5342-4EB3-97C8-A9F067929879} = {B93AF89E-9ED7-4FD0-B58E-688AA178AB53}
