@@ -24,10 +24,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\NexusMods.Interfaces\NexusMods.Interfaces.csproj" />
-      <ProjectReference Include="..\NexusMods.Paths\NexusMods.Paths.csproj" />
-      <ProjectReference Include="..\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj" />
-      <ProjectReference Include="..\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj" />
+      <ProjectReference Include="..\..\src\NexusMods.Interfaces\NexusMods.Interfaces.csproj" />
+      <ProjectReference Include="..\..\src\NexusMods.Paths\NexusMods.Paths.csproj" />
+      <ProjectReference Include="..\..\src\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj" />
+      <ProjectReference Include="..\..\src\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj" />
     </ItemGroup>
 
 </Project>
