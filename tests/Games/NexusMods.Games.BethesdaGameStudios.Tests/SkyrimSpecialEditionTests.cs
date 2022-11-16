@@ -2,7 +2,7 @@
 
 namespace NexusMods.Games.BethesdaGameStudios.Tests;
 
-[Trait("RequiresInstalls", "True")]
+[Trait("RequiresGameInstalls", "True")]
 public class SkyrimSpecialEditionTests
 {
     private readonly ILogger<SkyrimSpecialEditionTests> _logger;
