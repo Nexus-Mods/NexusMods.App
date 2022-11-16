@@ -32,7 +32,9 @@ public abstract class AGame : IGame
                     Game = this,
                     Locations = new Dictionary<GameFolderType, AbsolutePath>(GetLocations(locator, installation)),
                     Version = installation.Version ?? GetVersion(locator, installation)
-                }).ToList();
+                })
+                .DistinctBy(g => g.Locations[GameFolderType.Game])
+                .ToList();
             return _installations;
         }
     }

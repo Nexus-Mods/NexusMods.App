@@ -31,7 +31,7 @@ public static class Services
         if (!registerConcreteLocators) return services;
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) 
-            services.AddSingleton(s => new GOGHandler());
+            services.AddSingleton<AHandler<GOGGame, long>>(_ => new GOGHandler());
 
         services.AddSingleton(s => CreateSteamHandler());
         
