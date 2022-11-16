@@ -1,4 +1,4 @@
-name: Clean Environment Tests
+name: Game Environment Tests
 
 on:
   push:
@@ -21,11 +21,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
-      - name: Setup .NET Core SDK 7.0.x
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '7.0.x'
 
       - name: Tests
         run: dotnet test --filter RequiresGameInstalls=True

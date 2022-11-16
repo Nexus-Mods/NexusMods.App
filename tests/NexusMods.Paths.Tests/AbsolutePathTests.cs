@@ -187,11 +187,7 @@ public class AbsolutePathTests
         
         Assert.True(DateTime.Now - fileOne.CreationTime < TimeSpan.FromSeconds(1));
         Assert.True(DateTime.UtcNow - fileOne.CreationTimeUtc < TimeSpan.FromSeconds(1));
-
-        await Task.Delay(TimeSpan.FromSeconds(1));
-        fileTwo.Touch();
-        Assert.True(fileTwo.LastWriteTime - fileTwo.CreationTime > TimeSpan.FromSeconds(1));
-
+        
         var files = testDir.EnumerateFiles(Ext.Txt).ToHashSet();
         Assert.True(files.Contains(fileOne));
         Assert.True(files.Contains(fileTwo));

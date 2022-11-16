@@ -262,11 +262,6 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
     public DateTime LastWriteTime => FileInfo.LastWriteTime;
     public DateTime CreationTime => FileInfo.CreationTime;
     
-    public void Touch()
-    {
-        FileInfo.LastWriteTime = DateTime.Now;
-    }
-
     public async Task<byte[]> ReadAllBytesAsync(CancellationToken? token = null)
     {
         await using var s = Read();
