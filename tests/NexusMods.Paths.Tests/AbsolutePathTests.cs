@@ -199,6 +199,9 @@ public class AbsolutePathTests
         Assert.False(fileThree.FileExists);
         
         fileFour.Parent.CreateDirectory();
+        fileFour.Create().Close();
+        fileFour.FileInfo.IsReadOnly = true;
+        fileTwo.FileInfo.IsReadOnly = true;
         await fileTwo.MoveToAsync(fileFour);
         Assert.False(fileTwo.FileExists);
         Assert.True(fileFour.FileExists);
