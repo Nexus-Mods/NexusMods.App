@@ -9,6 +9,6 @@ public static class CommandLineBuilderExtensions{
 
 public static void AddCLIVerbs(this IServiceCollection services) {
 CommandLineBuilder.RegisterCommand<ListGames>(ListGames.Definition, c => ((ListGames)c).Run);
-services.AddSingleton<ListGames>();
+services.AddScoped<ListGames>();
 }
 }

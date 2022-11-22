@@ -45,5 +45,10 @@ public abstract class AGame : IGame
         return Version.Parse(fvi.ProductVersion!);
     }
 
+    public override string ToString()
+    {
+        return Name;
+    }
+
     protected abstract IEnumerable<KeyValuePair<GameFolderType,AbsolutePath>> GetLocations(IGameLocator locator, GameLocatorResult installation);
 }

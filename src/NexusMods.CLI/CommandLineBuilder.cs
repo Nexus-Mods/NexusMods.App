@@ -18,6 +18,19 @@ public class CommandLineBuilder
     public async Task<int> Run(string[] args)
     {
         var root = new RootCommand();
+        var renderOption = new Option<IRenderer>("--renderer", parseArgument:
+            x =>
+            {
+                var found = _provider.GetServices<IRenderer>()
+                    .FirstOrDefault(r => r.Name == x.Tokens.Single().Value);
+                if (found == null)
+                    throw new Exception($"Invalid renderer {x.Tokens.Single()}");
+                return found;
+            });
+        root.AddOption(renderOption);
+        
+        root.AddOption(new Option<bool>("--noBanner"));
+        
         foreach (var verb in _commands)
         {
             root.Add(MakeCommend(verb.Type, verb.Handler, verb.Definition));
@@ -85,6 +98,9 @@ public class CommandLineBuilder
         }
         public int Invoke(InvocationContext context)
         {
+            using var scope = _provider.CreateScope();
+            var configurator = _provider.GetRequiredService<Configurator>();
+            configurator.Configure(context);
             var service = _provider.GetRequiredService(_type);
             var handler = CommandHandler.Create(_delgate(service));
             return handler.Invoke(context);
@@ -92,6 +108,9 @@ public class CommandLineBuilder
 
         public Task<int> InvokeAsync(InvocationContext context)
         {
+            using var scope = _provider.CreateScope();
+            var configurator = _provider.GetRequiredService<Configurator>();
+            configurator.Configure(context);
             var service = _provider.GetRequiredService(_type);
             var handler = CommandHandler.Create(_delgate(service));
             return handler.InvokeAsync(context);

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using NexusMods.CLI.DataOutputs;
 using NexusMods.Interfaces.Components;
 using NexusMods.Paths;
 
@@ -13,12 +14,14 @@ public class ListGames
         Array.Empty<OptionDefinition>());
 
     private readonly ILogger<ListGames> _logger;
+    private readonly IRenderer _renderer;
 
-    
-    public ListGames(ILogger<ListGames> logger, IEnumerable<IGame> games)
+
+    public ListGames(ILogger<ListGames> logger, IEnumerable<IGame> games, Configurator configurator)
     {
         _logger = logger;
         _games = games;
+        _renderer = configurator.Renderer;
     }
     
 
@@ -27,11 +30,9 @@ public class ListGames
         var installs = from game in _games.OrderBy(g => g.Name)
             from install in game.Installations.OrderBy(g => g.Version)
             select install;
-        foreach (var install in installs)
-        {
-            _logger.LogInformation("{Install} at {Path}", install, install.Locations[GameFolderType.Game]);
-        }
-
+        await _renderer.Render(new Table(new[] { "Game", "Version", "Path" },
+            installs.Select(i => new object[]
+            { i.Game, i.Version, i.Locations[GameFolderType.Game]})));
         return 0;
     }
 }

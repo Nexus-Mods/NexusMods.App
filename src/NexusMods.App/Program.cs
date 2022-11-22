@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NexusMods.App;
 using NexusMods.CLI;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.StandardGameLocators;
@@ -11,14 +12,15 @@ var host = Host.CreateDefaultBuilder(Environment.GetCommandLineArgs())
     .ConfigureLogging(AddLogging)
     .ConfigureServices((_, services) =>
     {
-        services.AddSingleton<CommandLineBuilder>()
+        services.AddCLI()
             .AddBethesdaGameStudios()
             .AddStandardGameLocators()
+            .AddRenderers()
             .AddCLIVerbs();
     }).Build();
 
-var service = host.Services.GetService<CommandLineBuilder>();
-var result = await service!.Run(args);
+var service = host.Services.GetRequiredService<CommandLineBuilder>();
+var result = await service.Run(args);
 return result;
 
 

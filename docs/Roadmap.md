@@ -11,8 +11,8 @@ have at least 95% test coverage. All non-OS specific tests should be run on the 
 * Creation of the Modlist Data Model
   * Launch Management of a game
   * Add, Remove, Re-order Sort mods
-  * Basic "last write wins", no LOOT (yet)
-  * Saving lists, Undoing changes
+  * Basic "last write wins" conflict resolution, no LOOT (yet)
+  * Saving lists, loading lists, Undoing changes
 * Archive management
   * Tracking what mods used what archives
   * Tracking the source of the archives
@@ -20,8 +20,7 @@ have at least 95% test coverage. All non-OS specific tests should be run on the 
   * More-or-less clone what is in Vortex today
   * Priority system for file handlers
   * Make this system *extremely* easy to implement (wildcard matching, perhaps leverage YAML/JSON?)
-
-* Basic support for 1 BGS game (Skyrim SE) and 1 other game (Cyberpunk)
+* Basic support for 1 BGS game (Skyrim SE) and 1 other game (Cyberpunk, SDV?)
   * Should include installing the extender mods (SKSE, CET, RedScript) and simple asset-replacement mods
   * Should include launching the game and setting plugin and preference files
 * Development can fork from here into
