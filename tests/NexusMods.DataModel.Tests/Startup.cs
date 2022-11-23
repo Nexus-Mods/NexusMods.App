@@ -1,22 +1,15 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Games.BethesdaGameStudios;
-using NexusMods.Interfaces;
-using NexusMods.StandardGameLocators;
 using Xunit.DependencyInjection;
 using Xunit.DependencyInjection.Logging;
 
-namespace NexusMods.CLI.Tests;
+namespace NexusMods.DataModel.Tests;
 
 public class Startup
 {
     public void ConfigureServices(IServiceCollection container)
     {
-        container.AddStandardGameLocators();
-        container.AddBethesdaGameStudios();
-        container.AddCLI();
-        container.AddCLIVerbs();
-        container.AddAllSingleton<IRenderer, LoggingRenderer>();
+        container.AddDataModel();
         container.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug));
     }
     

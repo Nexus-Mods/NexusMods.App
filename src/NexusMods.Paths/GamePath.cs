@@ -46,7 +46,7 @@ public struct GamePath : IPath
         return Path.GetHashCode() ^ (int)Folder;
     }
 
-    public RelativePath Path { get; }
+    public RelativePath Path { get; } = RelativePath.Empty;
     public GameFolderType Folder { get; }
 
 
