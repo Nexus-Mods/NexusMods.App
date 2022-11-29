@@ -1,76 +1,23 @@
-﻿using System.Buffers.Binary;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+using NexusMods.Hashing.xxHash64;
 
-namespace NexusMods.DataModel;
+namespace NexusMods.DataModel.Abstractions;
 
-public class Id : IEquatable<Id>
+[JsonConverter(typeof(IdJsonConverter))]
+public record struct Id(Hash Hash)
 {
-    public static readonly Id Empty = new Id(Guid.Empty);
-    private Guid _guid = Guid.Empty;
+}
+
+public class IdJsonConverter : JsonConverter<Id>
+{ 
+    public override Id Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        return new Id(new Hash(reader.GetUInt64()));
+    }
     
-    public Id(Guid guid)
+    public override void Write(Utf8JsonWriter writer, Id value, JsonSerializerOptions options)
     {
-        _guid = guid;
-    }
-
-    public void Reset()
-    {
-        _guid = Guid.Empty;
-    }
-
-    public bool IsUnset => _guid == Guid.Empty;
-
-    public void Write(Span<byte> buffer)
-    {
-        _guid.TryWriteBytes(buffer);
-    }
-
-    public static Id From(ReadOnlySpan<byte> data)
-    {
-        return new Id(new Guid(data));
-    }
-
-    public static Id New()
-    {
-        return new Id(Guid.NewGuid());
-    }
-
-    public void Set(Id id)
-    {
-        _guid = id._guid;
-    }
-
-    public long GetHashCode64()
-    {
-        const ulong kMul = 0x9E3779B97F4A7C15;
-        Span<byte> span = stackalloc byte[16];
-        Write(span);
-        
-        unchecked
-        {
-            var seed = BinaryPrimitives.ReadUInt64LittleEndian(span);
-            var v = BinaryPrimitives.ReadUInt64LittleEndian(span[8..]);
-        
-            var a = (v ^ seed) * kMul;
-            a ^= (a >> 47);
-            var b = (seed ^ a) * kMul;
-            b ^= (b >> 47);
-            seed = b * kMul;
-            return (long)seed;
-        }
-    }
-
-    public bool Equals(Id other)
-    {
-        return _guid.Equals(other._guid);
-    }
-
-    public override bool Equals(object? obj)
-    {
-        return obj is Id other && Equals(other);
-    }
-
-    public override int GetHashCode()
-    {
-        return _guid.GetHashCode();
+        writer.WriteNumberValue((ulong)value.Hash);
     }
 }

@@ -1,11 +1,8 @@
-﻿using System.Text.Json;
+﻿using NexusMods.DataModel.Abstractions;
 using NexusMods.Paths;
-using PropertyChanged;
 
 namespace NexusMods.DataModel;
 
-[AddINotifyPropertyChangedInterface]
-public class ModFile : AVersionedObject
+public record ModFile(GamePath To) : Entity
 {
-    public GamePath To { get; set; }
 }

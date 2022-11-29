@@ -1,13 +1,14 @@
 ﻿using FluentAssertions;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Tests;
 
 public class ModelTests
 {
-    private readonly DataStore _datastore;
+    private readonly IDataStore _datastore;
 
-    public ModelTests(DataStore store)
+    public ModelTests(IDataStore store)
     {
         _datastore = store;
     }
@@ -15,20 +16,11 @@ public class ModelTests
     [Fact]
     public async Task CanCreateModFile()
     {
-        var file = new ModFile
-        {
-            To = new GamePath(GameFolderType.Game, "foo/bar.pez")
-        };
-        
-        _datastore.StoreRoot(file).Should().Be(file.Id);
-        file.IsDirty.Should().BeFalse();
-        await _datastore.FlushChanges();
-        
-        var newRoot = _datastore.Load<ModFile>(file.Id);
-        newRoot.IsDirty.Should().BeFalse();
-        newRoot.Id.Should().Be(file.Id);
-        
-        file.To = new GamePath(GameFolderType.Preferences, "foo/bar.pez2");
-        file.IsDirty.Should().BeTrue();
+        using var _ = IDataStore.WithCurrent(_datastore);
+        var file = new ModFile(new GamePath(GameFolderType.Game, "foo/bar.pez"));
+        file.Store.Should().NotBeNull();
+        file.Id.Should().NotBeNull();
+
+        _datastore.Get<ModFile>(file.Id).To.Should().BeEquivalentTo(file.To);
     }
 }

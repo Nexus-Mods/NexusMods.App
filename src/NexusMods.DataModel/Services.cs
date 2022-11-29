@@ -2,6 +2,7 @@
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.Paths;
 
@@ -13,7 +14,7 @@ public static class Services
     {
         coll.AddSingleton<JsonConverter, RelativePathConverter>();
         coll.AddSingleton<JsonConverter, GamePathConverter>();
-        coll.AddSingleton(s => new DataStore(KnownFolders.CurrentDirectory.Combine("DataModel"),
+        coll.AddSingleton<IDataStore>(s => new RocksDbDatastore(KnownFolders.CurrentDirectory.Combine("DataModel"),
             s.GetRequiredService<DataModelJsonContext>()));
         coll.AddSingleton(s =>
         {

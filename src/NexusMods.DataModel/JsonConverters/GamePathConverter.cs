@@ -15,6 +15,7 @@ public class GamePathConverter : JsonConverter<GamePath>
         var folder = Enum.Parse<GameFolderType>(reader.GetString()!);
         reader.Read();
         var path = reader.GetString()!.ToRelativePath();
+        reader.Read();
         return new GamePath(folder, path);
     }
 
