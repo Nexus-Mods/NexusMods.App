@@ -19,6 +19,8 @@ public class FileHashCacheTests
         await file.WriteAllTextAsync("Test data here");
 
         var hash = await _cache.HashFileAsync(file);
-        hash.Hash.Should().Be(0x444444UL);
+        hash.Hash.Should().Be(0xB08C91D1CDF11402);
+        _cache.TryGetCached(file, out var found).Should().BeTrue();
+        found.Hash.Should().Be(hash.Hash);
     }
 }

@@ -8,7 +8,8 @@ public readonly struct Size :
     IComparable<Size>, 
     IAdditionOperators<Size, Size, Size>, 
     IAdditiveIdentity<Size, Size>,
-    IDivisionOperators<Size, Size, double>
+    IDivisionOperators<Size, Size, double>,
+    IEqualityOperators<Size, Size, bool>
 {
     private readonly ulong _size = 0;
 
@@ -134,7 +135,7 @@ public readonly struct Size :
     public static Size operator +(Size left, Size right) => left._size + right._size;
     public static Size One => 1L;
     public static Size Zero => 0L;
-    public static Size AdditiveIdentity => One;
+    public static Size AdditiveIdentity => Zero;
     
     static double IDivisionOperators<Size, Size, double>.operator /(Size left, Size right)
     {

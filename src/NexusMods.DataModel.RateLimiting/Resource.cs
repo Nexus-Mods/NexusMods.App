@@ -7,7 +7,8 @@ namespace NexusMods.DataModel.RateLimiting;
 
 public class Resource<TResource, TUnit> : IResource<TResource, TUnit> 
     where TUnit : IAdditionOperators<TUnit, TUnit, TUnit>, 
-    IAdditiveIdentity<TUnit, TUnit>, IDivisionOperators<TUnit, TUnit, double>
+    IAdditiveIdentity<TUnit, TUnit>, IDivisionOperators<TUnit, TUnit, double>,
+    IEqualityOperators<TUnit, TUnit, bool>
 {
     private Channel<PendingReport> _channel;
     private SemaphoreSlim _semaphore;
@@ -114,7 +115,7 @@ public class Resource<TResource, TUnit> : IResource<TResource, TUnit>
             {
                 _totalUsed += item.Size;
             }
-            if (MaxThroughput is long.MaxValue or 0)
+            if (MaxThroughput == TUnit.AdditiveIdentity)
             {
                 item.Result.TrySetResult();
                 sw.Restart();

@@ -21,7 +21,7 @@ public class FileHashCache
         _store = store;
     }
 
-    private bool TryGetCached(AbsolutePath path, out FileHashCacheEntry entry)
+    public bool TryGetCached(AbsolutePath path, out FileHashCacheEntry entry)
     {
         var normalized = path.ToString();
         Span<byte> span = stackalloc byte[Encoding.UTF8.GetMaxByteCount(normalized.Length)];
@@ -42,10 +42,10 @@ public class FileHashCache
         Span<byte> kSpan = stackalloc byte[Encoding.UTF8.GetMaxByteCount(normalized.Length)];
         var used = Encoding.UTF8.GetBytes(normalized, kSpan);
 
-        Span<byte> vSpan = stackalloc byte[16];
+        Span<byte> vSpan = stackalloc byte[24];
         entry.ToSpan(vSpan);
 
-        _store.PutRaw(kSpan, vSpan, EntityCategory.FileHashes);
+        _store.PutRaw(kSpan[..used], vSpan, EntityCategory.FileHashes);
     }
 
     public async IAsyncEnumerable<HashedEntry> IndexFolder(AbsolutePath path, CancellationToken? token)
@@ -86,7 +86,7 @@ public class FileHashCache
         using var job = await _limiter.Begin($"Hashing {file.FileName}", info.Length, token ?? CancellationToken.None);
         var hashed = await file.XxHash64(token, job);
         PutCachedAsync(file, new FileHashCacheEntry(info.LastWriteTimeUtc, hashed, info.Length));
-        return new HashedEntry(file, found.Hash, info.LastWriteTimeUtc, info.Length);
+        return new HashedEntry(file, hashed, info.LastWriteTimeUtc, info.Length);
     }
 }
 
@@ -109,8 +109,8 @@ public readonly record struct FileHashCacheEntry(DateTime LastModified, Hash Has
 
     public void ToSpan(Span<byte> span)
     {
-        BinaryPrimitives.WriteInt64LittleEndian(span, LastModified.ToFileTimeUtc());
+        BinaryPrimitives.WriteInt64BigEndian(span, LastModified.ToFileTimeUtc());
         BinaryPrimitives.WriteUInt64BigEndian(span[8..], (ulong)Hash);
-        BinaryPrimitives.WriteInt64BigEndian(span[8..], Size);
+        BinaryPrimitives.WriteInt64BigEndian(span[16..], Size);
     }
 }
