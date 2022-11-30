@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.ModLists;
+using NexusMods.DataModel.RateLimiting;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel;
@@ -17,7 +18,9 @@ public static class Services
         coll.AddSingleton<JsonConverter, GamePathConverter>();
         coll.AddSingleton<IDataStore>(s => new RocksDbDatastore(KnownFolders.CurrentDirectory.Combine("DataModel"),
             s.GetRequiredService<DataModelJsonContext>()));
+        coll.AddSingleton<IResource<FileHashCache, Size>>(_ => new Resource<FileHashCache, Size>("File Hashing", Environment.ProcessorCount, Size.Zero));
         coll.AddSingleton<ModListManager>();
+        coll.AddSingleton<FileHashCache>();
         coll.AddSingleton(s =>
         {
             var opts = new JsonSerializerOptions();

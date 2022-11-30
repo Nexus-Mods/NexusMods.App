@@ -7,4 +7,5 @@ public static class Ext
     public static Extension Rar = new(".rar");
     public static Extension Json = new(".json");
     public static Extension Txt = new(".txt");
+    public static Extension Tmp = new(".tmp");
 }

@@ -99,7 +99,7 @@ public class RocksDbDatastore : IDataStore
         return Id.FromTaggedSpan(id.AsSpan());
     }
 
-    public byte[] GetRaw(ReadOnlySpan<byte> key, EntityCategory category)
+    public byte[]? GetRaw(ReadOnlySpan<byte> key, EntityCategory category)
     {
         return _db.Get(key, _columns[category]);
     }

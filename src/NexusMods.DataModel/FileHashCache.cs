@@ -27,7 +27,7 @@ public class FileHashCache
         Span<byte> span = stackalloc byte[Encoding.UTF8.GetMaxByteCount(normalized.Length)];
         var used = Encoding.UTF8.GetBytes(normalized, span);
         var found = _store.GetRaw(span[..used], EntityCategory.FileHashes);
-        if (found.Length != 0)
+        if (found != null && found is not { Length: 0 })
         {
             entry = FileHashCacheEntry.FromSpan(found);
             return true;
@@ -71,7 +71,23 @@ public class FileHashCache
         await foreach (var itm in result)
             yield return itm;
     }
-    
+
+    public async ValueTask<HashedEntry> HashFileAsync(AbsolutePath file, CancellationToken? token = null)
+    {
+        var info = file.FileInfo;
+        if (TryGetCached(file, out var found))
+        {
+            if (found.Size == info.Length && found.LastModified == info.LastWriteTimeUtc)
+            {
+                return new HashedEntry(file, found.Hash, info.LastWriteTimeUtc, info.Length);
+            }
+        }
+
+        using var job = await _limiter.Begin($"Hashing {file.FileName}", info.Length, token ?? CancellationToken.None);
+        var hashed = await file.XxHash64(token, job);
+        PutCachedAsync(file, new FileHashCacheEntry(info.LastWriteTimeUtc, hashed, info.Length));
+        return new HashedEntry(file, found.Hash, info.LastWriteTimeUtc, info.Length);
+    }
 }
 
 public record HashedEntry(AbsolutePath Path, Hash Hash, DateTime LastModified, Size Size) : FileEntry(Path, Size, LastModified)

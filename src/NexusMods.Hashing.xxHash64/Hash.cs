@@ -50,12 +50,20 @@ public struct Hash : IEquatable<Hash>, IComparable<Hash>
         return !(a == b);
     }
 
-    public static explicit operator ulong(Hash a)
+    public static implicit operator ulong(Hash a)
     {
         return a._code;
     }
-
-    public static explicit operator long(Hash a)
+    public static implicit operator Hash(long a)
+    {
+        return FromLong(a);
+    }
+    
+    public static implicit operator Hash(ulong a)
+    {
+        return FromULong(a);
+    }
+    public static implicit operator long(Hash a)
     {
         return BitConverter.ToInt64(BitConverter.GetBytes(a._code));
     }
