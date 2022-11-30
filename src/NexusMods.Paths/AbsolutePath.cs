@@ -366,6 +366,19 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
                 recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
             .Select(file => file.ToAbsolutePath());
     }
+    
+    public IEnumerable<FileEntry> EnumerateFileEntries(string pattern = "*",
+        bool recursive = true)
+    {
+        return Directory.EnumerateFiles(ToNativePath(), pattern,
+                recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
+            .Select(file =>
+            {
+                var path = file.ToAbsolutePath();
+                var info = path.FileInfo;
+                return new FileEntry(Path: path, Size: info.Length, LastModified:info.LastAccessTimeUtc);
+            });
+    }
 
 
     public IEnumerable<AbsolutePath> EnumerateFiles(Extension pattern,
@@ -397,5 +410,4 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
     {
         return Encoding.UTF8.GetString(await ReadAllBytesAsync(token));
     }
-
 }

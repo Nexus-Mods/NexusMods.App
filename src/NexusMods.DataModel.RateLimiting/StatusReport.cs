@@ -1,5 +1,5 @@
 namespace NexusMods.DataModel.RateLimiting;
 
-public record StatusReport(int Running, int Pending, long Transferred)
+public record StatusReport<TUnit>(int Running, int Pending, TUnit Transferred)
 {
 }

@@ -1,11 +1,12 @@
+using System.Numerics;
+using NexusMods.Paths;
+
 namespace NexusMods.DataModel.RateLimiting;
 
 public interface IResource
 {
-    StatusReport StatusReport { get; }
     string Name { get; }
-    int MaxTasks { get; set; }
-    long MaxThroughput { get; set; }
+    int MaxJobs { get; set; }
     IEnumerable<IJob> Jobs { get; }
 }
 
@@ -14,8 +15,10 @@ public interface IResource
 /// create jobs and report info about them. The methods may delay returning based on the current
 /// rate limits of the resource.
 /// </summary>
-/// <typeparam name="T"></typeparam>
-public interface IResource<T> : IResource
+/// <typeparam name="TResource">A marker for the service owning this limiter</typeparam>
+/// <typeparam name="TUnit">The unit of measurement of job size</typeparam>
+public interface IResource<TResource, TUnit> : IResource
+where TUnit : IAdditionOperators<TUnit, TUnit, TUnit>
 {
     /// <summary>
     /// Start a new job
@@ -24,8 +27,13 @@ public interface IResource<T> : IResource
     /// <param name="size">The number of items in the job</param>
     /// <param name="token">Cancellation token to exit the rate limiting early</param>
     /// <returns></returns>
-    public ValueTask<IJob<T>> Begin(string jobTitle, long size, CancellationToken token);
-    ValueTask Report(IJob<T> job, int processedSize, CancellationToken token);
-    void ReportNoWait(IJob<T> job, int processedSize);
-    void Finish(IJob<T> job);
+    public ValueTask<IJob<TResource, TUnit>> Begin(string jobTitle, TUnit size, CancellationToken token);
+
+    public void Finish(IJob<TResource, TUnit> job);
+
+    ValueTask Report(Job<TResource,TUnit> job, TUnit processedSize, CancellationToken token);
+    void ReportNoWait(Job<TResource,TUnit> job, TUnit processedSize);
+    
+    StatusReport<TUnit> StatusReport { get; }
+    TUnit MaxThroughput { get; set; }
 }

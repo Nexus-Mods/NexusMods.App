@@ -29,8 +29,22 @@ public static class StringExtensions
         }
         return new string(outputBuf);
     }
-
+    
+    public static void ToHex(this ReadOnlySpan<byte> bytes, Span<char> outputBuf)
+    {
+        for (var x = 0; x < bytes.Length; x++)
+        {
+            outputBuf[x * 2] = _hexLookup[(bytes[x] >> 4)];
+            outputBuf[(x * 2) + 1] = _hexLookup[bytes[x] & 0xF];
+        }
+    }
+    
     public static void FromHex(this string hex, Span<byte> bytes)
+    {
+        hex.AsSpan().FromHex(bytes);
+    }
+
+    public static void FromHex(this ReadOnlySpan<char> hex, Span<byte> bytes)
     {
         for (var i = 0; i < bytes.Length; i++)
         {

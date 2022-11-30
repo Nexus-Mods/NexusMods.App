@@ -4,6 +4,7 @@ using System.Text.Json.Serialization.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.JsonConverters;
+using NexusMods.DataModel.ModLists;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel;
@@ -16,6 +17,7 @@ public static class Services
         coll.AddSingleton<JsonConverter, GamePathConverter>();
         coll.AddSingleton<IDataStore>(s => new RocksDbDatastore(KnownFolders.CurrentDirectory.Combine("DataModel"),
             s.GetRequiredService<DataModelJsonContext>()));
+        coll.AddSingleton<ModListManager>();
         coll.AddSingleton(s =>
         {
             var opts = new JsonSerializerOptions();

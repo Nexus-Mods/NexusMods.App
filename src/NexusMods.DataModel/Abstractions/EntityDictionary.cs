@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using NexusMods.DataModel.ModLists;
@@ -20,26 +21,20 @@ where TV : Entity where TK : notnull
             throw new NoDataStoreException();
         _coll = ImmutableDictionary<TK, Id>.Empty;
     }
-
-    private EntityDictionary(IDataStore store, ImmutableDictionary<TK, Id> coll)
+    public EntityDictionary(IDataStore store, IEnumerable<KeyValuePair<TK, Id>> kvs)
     {
         _store = store;
-        _coll = coll;
-    }
-
-    public EntityDictionary(IEnumerable<KeyValuePair<TK, Id>> kvs)
-    {
         _coll = ImmutableDictionary.CreateRange(kvs);
     }
 
     public EntityDictionary<TK, TV> With(TK key, TV val)
     {
-        return new EntityDictionary<TK, TV>(_coll.SetItem(key, val.Id));
+        return new EntityDictionary<TK, TV>(_store, _coll.SetItem(key, val.Id));
     }
 
     public EntityDictionary<TK, TV> Without(TK key)
     {
-        return new EntityDictionary<TK, TV>(_coll.Remove(key));
+        return new EntityDictionary<TK, TV>(_store, _coll.Remove(key));
     }
 
     public bool ContainsKey(TK val)
@@ -47,12 +42,14 @@ where TV : Entity where TK : notnull
         return _coll.ContainsKey(val);
     }
 
+    public TV this[TK k] => _store.Get<TV>(_coll[k]);
+
     public IEnumerable<KeyValuePair<TK, Id>> Ids => _coll;
     public int Count => _coll.Count;
 
-    public static EntityDictionary<string,ModList> Empty()
+    public static EntityDictionary<TK,ModList> Empty()
     {
-        return new EntityDictionary<string, ModList>(IDataStore.CurrentStore.Value);
+        return new EntityDictionary<TK, ModList>(IDataStore.CurrentStore.Value);
     }
 }
 
@@ -89,7 +86,7 @@ public class EntityDictionaryConverter<TK, TV> : JsonConverter<EntityDictionary<
             lst.Add(new KeyValuePair<TK, Id>(tk, tv));
         }
         
-        return new EntityDictionary<TK, TV>(lst);
+        return new EntityDictionary<TK, TV>(IDataStore.CurrentStore.Value, lst);
     }
 
     public override void Write(Utf8JsonWriter writer, EntityDictionary<TK, TV> value, JsonSerializerOptions options)

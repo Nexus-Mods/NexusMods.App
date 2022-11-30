@@ -22,6 +22,11 @@ public record struct Id(EntityCategory Category, Hash Hash)
         return new Id(category, Hash.FromULong(id));
     }
 
+    public override string ToString()
+    {
+        return $"{Category}-{Hash.ToHex()}";
+    }
+
     public static Id Empty = new();
 }
 

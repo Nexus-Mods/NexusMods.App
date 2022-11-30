@@ -1,5 +1,6 @@
 using System.Buffers;
 using NexusMods.DataModel.RateLimiting;
+using NexusMods.Paths;
 
 namespace NexusMods.Hashing.xxHash64;
 
@@ -11,9 +12,9 @@ public static class StreamExtensions
     /// <param name="stream">Source Stream</param>
     /// <param name="token">Cancellation Token</param>
     /// <returns></returns>
-    public static async Task<Hash> Hash(this Stream stream, CancellationToken token)
+    public static async Task<Hash> Hash(this Stream stream, CancellationToken token, IJob<Size>? job = null)
     {
-        return await stream.HashingCopy(Stream.Null, token);
+        return await stream.HashingCopy(Stream.Null, token, job);
     }
 
     
@@ -26,7 +27,7 @@ public static class StreamExtensions
     /// <param name="job"></param>
     /// <returns></returns>
     public static async Task<Hash> HashingCopy(this Stream inputStream, Stream outputStream,
-        CancellationToken token, IJob? job = null)
+        CancellationToken token, IJob<Size>? job = null)
     {
         using var rented = MemoryPool<byte>.Shared.Rent(1024 * 1024);
         var buffer = rented.Memory;

@@ -18,4 +18,6 @@ public interface IDataStore
 
     bool PutRoot(RootType type, Id oldId, Id newId);
     Id? GetRoot(RootType type);
+    byte[] GetRaw(ReadOnlySpan<byte> key, EntityCategory fileHashes);
+    void PutRaw(ReadOnlySpan<byte> kSpan, ReadOnlySpan<byte> vSpan, EntityCategory fileHashes);
 }

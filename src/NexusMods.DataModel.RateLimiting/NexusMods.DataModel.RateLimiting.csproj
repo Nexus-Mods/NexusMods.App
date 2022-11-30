@@ -6,4 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\NexusMods.Paths\NexusMods.Paths.csproj" />
+    </ItemGroup>
+
 </Project>

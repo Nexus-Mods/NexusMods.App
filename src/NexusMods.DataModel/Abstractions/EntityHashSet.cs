@@ -6,10 +6,10 @@ using NexusMods.DataModel.ModLists;
 namespace NexusMods.DataModel.Abstractions;
 
 [JsonConverter(typeof(EntityHashSetConverterFactory))]
-public struct EntityHashSet<T>
+public struct EntityHashSet<T> : IEmpty<EntityHashSet<T>>
 where T : Entity
 {
-    public static readonly EntityHashSet<T> Empty = new EntityHashSet<T>();
+    public static EntityHashSet<T> Empty => new();
     private readonly ImmutableHashSet<Id> _coll;
     public EntityHashSet()
     {
@@ -63,11 +63,13 @@ public class EntityHashSetConverter<T> : JsonConverter<EntityHashSet<T>>
     {
         if (reader.TokenType != JsonTokenType.StartArray)
             throw new JsonException("Expected array start");
+        reader.Read();
 
         var lst = new List<Id>();
         while (reader.TokenType != JsonTokenType.EndArray)
         {
             lst.Add(JsonSerializer.Deserialize<Id>(ref reader, options));
+            reader.Read();
         }
         
         return new EntityHashSet<T>(lst);

@@ -5,4 +5,5 @@ public enum EntityCategory
     ModLists,
     Archives,
     Roots,
+    FileHashes
 }

@@ -1,16 +1,21 @@
 namespace NexusMods.DataModel.RateLimiting;
 
-public interface IJob
+public interface IJob : IDisposable
 {
-    public ulong ID { get; }
-    public long? Size { get; set; }
-    public long Current { get; }
+    public ulong Id { get; }
     public string Description { get; }
-    public ValueTask Report(int processedSize, CancellationToken token);
-    public void ReportNoWait(int processedSize);
+
 }
 
-public interface IJob<T>
+public interface IJob<TSize> : IJob
 {
-    public Type Type => typeof(T);
+    public TSize? Size { get; set; }
+    public TSize Current { get; }
+    public ValueTask Report(TSize processed, CancellationToken token);
+    public void ReportNoWait(TSize processed);
+}
+
+public interface IJob<TResource, TSize> : IJob<TSize>
+{
+    public Type Type => typeof(TResource);
 }
