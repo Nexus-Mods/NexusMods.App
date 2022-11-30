@@ -1,10 +1,16 @@
 ﻿using System.Diagnostics;
+using System.Text.Json;
 using System.Text.Json.Serialization;
+using NexusMods.DataModel.ModLists;
+using NexusMods.DataModel.ModLists.ModFiles;
 
 namespace NexusMods.DataModel.Abstractions;
 
-[JsonDerivedType(typeof(ModFile), "ModFile")]
-public record Entity
+[JsonDerivedType(typeof(ModList), nameof(ModList))]
+[JsonDerivedType(typeof(Mod), nameof(Mod))]
+[JsonDerivedType(typeof(FromArchive), nameof(FromArchive))]
+[JsonDerivedType(typeof(ListRegistry), nameof(ListRegistry))]
+public abstract record Entity
 {
     public Entity(Entity self)
     {
@@ -12,7 +18,10 @@ public record Entity
     }
     
     [JsonIgnore]
-    public IDataStore Store { get; init; }
+    public abstract EntityCategory Category { get; }
+    
+    [JsonIgnore]
+    public IDataStore Store { get; }
 
     private Id? _id = null;
 
@@ -27,6 +36,5 @@ public record Entity
     public Id Id
     {
         get { return _id ??= Store.Put(this); }
-        init => _id = value;
     }
 }

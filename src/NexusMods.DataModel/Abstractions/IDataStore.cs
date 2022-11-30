@@ -8,10 +8,14 @@ public interface IDataStore
 
     public static IDisposable WithCurrent(IDataStore dataStore)
     {
+        var prevVal = CurrentStore.Value;
         CurrentStore.Value = dataStore;
-        return Disposable.Create(() => CurrentStore.Value = null);
+        return Disposable.Create(() => CurrentStore.Value = prevVal);
     }
     
     public Id Put<T>(T value) where T : Entity;
     T Get<T>(Id id) where T : Entity;
+
+    bool PutRoot(RootType type, Id oldId, Id newId);
+    Id? GetRoot(RootType type);
 }

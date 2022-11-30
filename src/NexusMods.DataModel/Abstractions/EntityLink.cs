@@ -1,11 +1,14 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using NexusMods.DataModel.ModLists;
 
 namespace NexusMods.DataModel.Abstractions;
 
 [JsonConverter(typeof(EntityLinkConverterFactory))]
 public record EntityLink <T> where T : Entity
 {
+    public static readonly EntityLink<ModList> Empty = new(Id.Empty, IDataStore.CurrentStore.Value);
+
     [JsonIgnore]
     private T? _value = null;
     public Id Id { get; }

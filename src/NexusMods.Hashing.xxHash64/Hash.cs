@@ -5,6 +5,7 @@ namespace NexusMods.Hashing.xxHash64;
 
 public struct Hash : IEquatable<Hash>, IComparable<Hash>
 {
+    public static readonly Hash Zero = new Hash(0);
     private readonly ulong _code;
 
     public Hash(ulong code = 0)

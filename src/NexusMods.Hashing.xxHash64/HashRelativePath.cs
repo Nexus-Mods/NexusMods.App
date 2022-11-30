@@ -1,14 +1,17 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using NexusMods.Paths;
 
 namespace NexusMods.Hashing.xxHash64;
 
+[JsonConverter(typeof(HashRelativePathConverter))]
 public readonly struct HashRelativePath : IPath, IEquatable<HashRelativePath>, IComparable<HashRelativePath>
 {
     public readonly Hash Hash;
     public readonly RelativePath[] Parts;
 
 
-    public Extension Extension => Parts.Length > 0
+     public Extension Extension => Parts.Length > 0
         ? Parts[^1].Extension
         : throw new InvalidOperationException("No path in HashRelativePath");
 
@@ -59,5 +62,36 @@ public readonly struct HashRelativePath : IPath, IEquatable<HashRelativePath>, I
     public static bool operator !=(HashRelativePath a, HashRelativePath b)
     {
         return !a.Equals(b);
+    }
+}
+
+public class HashRelativePathConverter : JsonConverter<HashRelativePath>
+{
+    public override HashRelativePath Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType != JsonTokenType.StartArray)
+            throw new JsonException("Expected array start");
+        reader.Read();
+
+        var hash = reader.GetUInt64();
+        reader.Read();
+        
+        var lst = new List<RelativePath>();
+        while (reader.TokenType != JsonTokenType.EndArray)
+        {
+            lst.Add(reader.GetString()!.ToRelativePath());
+            reader.Read();
+        }
+
+        return new HashRelativePath(Hash.FromULong(hash), lst.ToArray());
+    }
+
+    public override void Write(Utf8JsonWriter writer, HashRelativePath value, JsonSerializerOptions options)
+    {
+        writer.WriteStartArray();
+        writer.WriteNumberValue((long)value.Hash);
+        foreach (var itm in value.Parts)
+            JsonSerializer.Serialize(writer, itm, options);
+        writer.WriteEndArray();
     }
 }
