@@ -18,7 +18,7 @@ public interface IResource
 /// <typeparam name="TResource">A marker for the service owning this limiter</typeparam>
 /// <typeparam name="TUnit">The unit of measurement of job size</typeparam>
 public interface IResource<TResource, TUnit> : IResource
-where TUnit : IAdditionOperators<TUnit, TUnit, TUnit>
+where TUnit : IAdditionOperators<TUnit, TUnit, TUnit>, IDivisionOperators<TUnit, TUnit, double>
 {
     /// <summary>
     /// Start a new job

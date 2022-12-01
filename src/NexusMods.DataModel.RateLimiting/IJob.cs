@@ -4,6 +4,8 @@ public interface IJob : IDisposable
 {
     public ulong Id { get; }
     public string Description { get; }
+    public Percent Progress { get; }
+    public bool Started { get; }
 
 }
 

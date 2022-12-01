@@ -3,10 +3,21 @@ using System.Numerics;
 namespace NexusMods.DataModel.RateLimiting;
 
 public class Job<TResource, TUnit> : IJob<TResource, TUnit>, IDisposable
-where TUnit : IAdditionOperators<TUnit, TUnit, TUnit>
+where TUnit : IAdditionOperators<TUnit, TUnit, TUnit>, IDivisionOperators<TUnit, TUnit, double>
 {
     public ulong Id { get; internal init; }
     public string Description { get; internal init; }
+    public Percent Progress
+    {
+        get
+        {
+            if (!Started)
+                return Percent.Zero;
+            if (Size == null)
+                return Percent.Zero;
+            return new Percent(Current / Size);
+        }
+    }
     public bool Started { get; internal set; }
     public IResource<TResource, TUnit> Resource { get; init; }
 

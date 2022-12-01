@@ -66,7 +66,7 @@ public class FileHashCache
             var hashed = await entry.Path.XxHash64(token, job);
             PutCachedAsync(entry.Path, new FileHashCacheEntry(entry.LastModified, hashed, entry.Size));
             return new HashedEntry(entry, hashed);
-        });
+        }, token, "Hashing Files");
 
         await foreach (var itm in result)
             yield return itm;

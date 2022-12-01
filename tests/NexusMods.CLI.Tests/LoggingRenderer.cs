@@ -14,6 +14,11 @@ public class LoggingRenderer : IRenderer
         Logged.Add("Banner");
     }
 
+    public Task<T> WithProgress<T>(CancellationToken token, Func<Task<T>> f, bool showSize = true)
+    {
+        return f();
+    }
+
     public void Reset()
     {
         Logged.Clear();

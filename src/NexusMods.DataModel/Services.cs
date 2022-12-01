@@ -6,6 +6,7 @@ using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.ModLists;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Hashing.xxHash64;
+using NexusMods.Interfaces;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel;
@@ -22,7 +23,7 @@ public static class Services
         
         coll.AddSingleton<IDataStore>(s => new RocksDbDatastore(KnownFolders.CurrentDirectory.Combine("DataModel"),
             s.GetRequiredService<DataModelJsonContext>()));
-        coll.AddSingleton<IResource<FileHashCache, Size>>(_ => new Resource<FileHashCache, Size>("File Hashing", Environment.ProcessorCount, Size.Zero));
+        coll.AddAllSingleton<IResource, IResource<FileHashCache, Size>>(_ => new Resource<FileHashCache, Size>("File Hashing", Environment.ProcessorCount, Size.Zero));
         coll.AddSingleton<ModListManager>();
         coll.AddSingleton<FileHashCache>();
         coll.AddSingleton(s =>

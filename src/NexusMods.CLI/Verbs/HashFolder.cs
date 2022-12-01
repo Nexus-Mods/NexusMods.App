@@ -25,10 +25,15 @@ public class HashFolder
     public async Task<int> Run(AbsolutePath folder, CancellationToken token)
     {
         var rows = new List<object[]>();
-        await foreach (var r in _cache.IndexFolder(folder, token))
+        await _renderer.WithProgress(token, async () =>
         {
-            rows.Add(new object[] {r.Path.RelativeTo(folder), r.Hash, r.Size, r.LastModified});
-        }
+            await foreach (var r in _cache.IndexFolder(folder, token))
+            {
+                rows.Add(new object[] { r.Path.RelativeTo(folder), r.Hash, r.Size, r.LastModified });
+            }
+
+            return rows;
+        });
 
         var results = new Table(
             Columns:new[] { "Path", "Hash", "Size", "LastModified" },
