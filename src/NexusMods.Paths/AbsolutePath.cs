@@ -370,6 +370,7 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
     public IEnumerable<FileEntry> EnumerateFileEntries(string pattern = "*",
         bool recursive = true)
     {
+        if (!DirectoryExists()) return Array.Empty<FileEntry>();
         return Directory.EnumerateFiles(ToNativePath(), pattern,
                 recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
             .Select(file =>

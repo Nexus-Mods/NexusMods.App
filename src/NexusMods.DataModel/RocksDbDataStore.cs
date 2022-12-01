@@ -65,7 +65,11 @@ public class RocksDbDatastore : IDataStore
     {
         Span<byte> keySpan = stackalloc byte[8];
         BinaryPrimitives.WriteUInt64BigEndian(keySpan, (ulong)id.Hash);
-        return _db.Get(keySpan, str => (T)JsonSerializer.Deserialize(str, _jsonOptions.Entity), _columns[id.Category])!;
+        return _db.Get(keySpan, str =>
+        {
+            using var _ = IDataStore.WithCurrent(this);
+            return (T)JsonSerializer.Deserialize(str, _jsonOptions.Entity);
+        }, _columns[id.Category])!;
     }
     public bool PutRoot(RootType type, Id oldId, Id newId)
     {

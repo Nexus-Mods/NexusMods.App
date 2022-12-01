@@ -1,7 +1,6 @@
 ﻿using NexusMods.CLI;
 using NexusMods.DataModel.RateLimiting;
 using Spectre.Console;
-using Spectre.Console.Rendering;
 
 namespace NexusMods.App.CLI.Renderers;
 

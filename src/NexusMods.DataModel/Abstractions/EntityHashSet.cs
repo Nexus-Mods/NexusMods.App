@@ -42,6 +42,7 @@ where T : Entity
     }
 
     public IEnumerable<Id> Ids => _coll;
+    public int Count => _coll.Count;
 }
 
 public class EntityHashSetConverterFactory : JsonConverterFactory

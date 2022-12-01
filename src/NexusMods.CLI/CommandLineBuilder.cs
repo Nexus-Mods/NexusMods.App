@@ -127,6 +127,11 @@ public class CommandLineBuilder
     }
 }
 
+public record OptionDefinition<T>(string ShortOption, string LongOption, string Description) 
+    : OptionDefinition(typeof(T), ShortOption, LongOption, Description)
+{
+    
+}
 public record OptionDefinition(Type Type, string ShortOption, string LongOption, string Description)
 {
     public string[] Aliases

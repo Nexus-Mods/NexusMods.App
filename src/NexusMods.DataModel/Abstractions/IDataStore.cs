@@ -4,7 +4,7 @@ namespace NexusMods.DataModel.Abstractions;
 
 public interface IDataStore
 {
-    public static readonly ThreadLocal<IDataStore?> CurrentStore = new();
+    public static readonly AsyncLocal<IDataStore?> CurrentStore = new();
 
     public static IDisposable WithCurrent(IDataStore dataStore)
     {

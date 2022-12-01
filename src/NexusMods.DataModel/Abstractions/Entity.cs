@@ -10,11 +10,14 @@ namespace NexusMods.DataModel.Abstractions;
 [JsonDerivedType(typeof(Mod), nameof(Mod))]
 [JsonDerivedType(typeof(FromArchive), nameof(FromArchive))]
 [JsonDerivedType(typeof(ListRegistry), nameof(ListRegistry))]
+[JsonDerivedType(typeof(GameFile), nameof(GameFile))]
 public abstract record Entity
 {
     public Entity(Entity self)
     {
         Store = self.Store;
+        if (Store == null)
+            throw new NoDataStoreException();
     }
     
     [JsonIgnore]

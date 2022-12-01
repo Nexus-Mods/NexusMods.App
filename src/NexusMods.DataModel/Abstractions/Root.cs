@@ -30,7 +30,11 @@ public class Root<TRoot> where TRoot : Entity, IEmpty<TRoot>
     {
         Type = type;
         Store = store ?? IDataStore.CurrentStore.Value!;
-        _root = new EntityLink<TRoot>(Id.Empty, store);
+        if (Store == null)
+            throw new NoDataStoreException();
+        
+        var initRoot = Store.GetRoot(type);
+        _root = new EntityLink<TRoot>(initRoot ?? Id.Empty, store);
     }
 
     /// <summary>

@@ -39,12 +39,12 @@ public class ModelTests
     }
 
     [Fact]
-    public void CanSeeChangesViaObservable()
+    public async Task CanSeeChangesViaObservable()
     {
         using var _2 = IDataStore.WithCurrent(_datastore);
         var list = new HashSet<string>();
         
-        var modlist = _manager.ManageGame(_install, "OldName");
+        var modlist = await _manager.ManageGame(_install, "OldName");
         modlist.Changes.Subscribe(f => list.Add(f.Name));
         modlist.Alter(m => m with {Name = "NewName"});
 

@@ -46,6 +46,14 @@ where TV : Entity where TK : notnull
 
     public IEnumerable<KeyValuePair<TK, Id>> Ids => _coll;
     public int Count => _coll.Count;
+    public IEnumerable<TV> Values
+    {
+        get
+        {
+            foreach (var id in _coll.Values)
+                yield return _store.Get<TV>(id);
+        }
+    }
 
     public static EntityDictionary<TK,ModList> Empty()
     {

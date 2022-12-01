@@ -30,6 +30,7 @@ public record EntityLink <T> where T : Entity
 
     private T Get()
     {
+        using var _ = IDataStore.WithCurrent(_store);
         _value ??= _store.Get<T>(Id);
         return _value;
     }

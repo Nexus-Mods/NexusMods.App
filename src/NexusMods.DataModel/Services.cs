@@ -20,6 +20,7 @@ public static class Services
         coll.AddSingleton<JsonConverter, DateTimeConverter>();
         coll.AddSingleton<JsonConverter, SizeConverter>();
         coll.AddSingleton<JsonConverter, HashConverter>();
+        coll.AddSingleton<JsonConverter, GameInstallationConverter>();
         
         coll.AddSingleton<IDataStore>(s => new RocksDbDatastore(KnownFolders.CurrentDirectory.Combine("DataModel"),
             s.GetRequiredService<DataModelJsonContext>()));
