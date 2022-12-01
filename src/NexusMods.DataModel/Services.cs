@@ -5,6 +5,7 @@ using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.ModLists;
 using NexusMods.DataModel.RateLimiting;
+using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel;
@@ -15,6 +16,10 @@ public static class Services
     {
         coll.AddSingleton<JsonConverter, RelativePathConverter>();
         coll.AddSingleton<JsonConverter, GamePathConverter>();
+        coll.AddSingleton<JsonConverter, DateTimeConverter>();
+        coll.AddSingleton<JsonConverter, SizeConverter>();
+        coll.AddSingleton<JsonConverter, HashConverter>();
+        
         coll.AddSingleton<IDataStore>(s => new RocksDbDatastore(KnownFolders.CurrentDirectory.Combine("DataModel"),
             s.GetRequiredService<DataModelJsonContext>()));
         coll.AddSingleton<IResource<FileHashCache, Size>>(_ => new Resource<FileHashCache, Size>("File Hashing", Environment.ProcessorCount, Size.Zero));
@@ -26,6 +31,13 @@ public static class Services
             foreach (var converter in s.GetServices<JsonConverter>())
                 opts.Converters.Add(converter);
             return new DataModelJsonContext(opts);
+        });
+        coll.AddSingleton(s =>
+        {
+            var opts = new JsonSerializerOptions();
+            foreach (var converter in s.GetServices<JsonConverter>())
+                opts.Converters.Add(converter);
+            return opts;
         });
         return coll;
     }

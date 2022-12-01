@@ -6,6 +6,12 @@ namespace NexusMods.App.CLI.Renderers;
 
 public class Json : IRenderer
 {
+    private readonly JsonSerializerOptions _options;
+
+    public Json(JsonSerializerOptions options)
+    {
+        _options = options;
+    }
     public async Task Render<T>(T o)
     {
         if (o is Table t)
@@ -28,7 +34,7 @@ public class Json : IRenderer
             foreach (var (column, cell) in table.Columns.Zip(row))
             {
                 writer.WritePropertyName(column);
-                JsonSerializer.Serialize(writer, cell.ToString(), JsonSerializerOptions.Default);
+                JsonSerializer.Serialize(writer, cell, _options);
             }
             writer.WriteEndObject();
         }
