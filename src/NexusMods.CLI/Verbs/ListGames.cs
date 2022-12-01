@@ -32,7 +32,7 @@ public class ListGames
             select install;
         await _renderer.Render(new Table(new[] { "Game", "Version", "Path" },
             installs.Select(i => new object[]
-            { i.Game, i.Version, i.Locations[GameFolderType.Game]})));
+                { i.Game, i.Version, i.Locations[GameFolderType.Game]})));
         return 0;
     }
 }

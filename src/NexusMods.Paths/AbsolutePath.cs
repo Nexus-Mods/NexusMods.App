@@ -376,7 +376,7 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
             {
                 var path = file.ToAbsolutePath();
                 var info = path.FileInfo;
-                return new FileEntry(Path: path, Size: info.Length, LastModified:info.LastAccessTimeUtc);
+                return new FileEntry(Path: path, Size: info.Length, LastModified:info.LastWriteTimeUtc);
             });
     }
 

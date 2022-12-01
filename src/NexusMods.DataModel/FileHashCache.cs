@@ -63,7 +63,7 @@ public class FileHashCache
                 }
             }
 
-            var hashed = await path.XxHash64(token, job);
+            var hashed = await entry.Path.XxHash64(token, job);
             PutCachedAsync(entry.Path, new FileHashCacheEntry(entry.LastModified, hashed, entry.Size));
             return new HashedEntry(entry, hashed);
         });
@@ -97,7 +97,7 @@ public record HashedEntry(AbsolutePath Path, Hash Hash, DateTime LastModified, S
 }
 
 
-public readonly record struct FileHashCacheEntry(DateTime LastModified, Hash Hash, long Size)
+public readonly record struct FileHashCacheEntry(DateTime LastModified, Hash Hash, Size Size)
 {
     public static FileHashCacheEntry FromSpan(ReadOnlySpan<byte> span)
     {

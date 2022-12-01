@@ -8,6 +8,8 @@ using NexusMods.CLI.Verbs;
 public static class CommandLineBuilderExtensions{ 
 
 public static void AddCLIVerbs(this IServiceCollection services) {
+CommandLineBuilder.RegisterCommand<HashFolder>(HashFolder.Definition, c => ((HashFolder)c).Run);
+services.AddScoped<HashFolder>();
 CommandLineBuilder.RegisterCommand<ListGames>(ListGames.Definition, c => ((ListGames)c).Run);
 services.AddScoped<ListGames>();
 }

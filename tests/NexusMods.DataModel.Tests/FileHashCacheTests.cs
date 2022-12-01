@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using NexusMods.DataModel.Extensions;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Tests;
@@ -22,5 +23,18 @@ public class FileHashCacheTests
         hash.Hash.Should().Be(0xB08C91D1CDF11402);
         _cache.TryGetCached(file, out var found).Should().BeTrue();
         found.Hash.Should().Be(hash.Hash);
+        file.Delete();
+    }
+
+    [Fact]
+    public async Task CanHashFolder()
+    {
+        var folder = KnownFolders.CurrentDirectory.Combine("tempData");
+        var file = folder.Combine(Guid.NewGuid().ToString()).WithExtension(Ext.Tmp);
+        file.Parent.CreateDirectory();
+        await file.WriteAllTextAsync("Test data here");
+
+        var results = await _cache.IndexFolder(folder, CancellationToken.None).ToList();
+        results.Should().ContainSingle(x => x.Path == file);
     }
 }

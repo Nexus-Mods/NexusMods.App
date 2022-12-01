@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using NexusMods.DataModel;
 
 namespace NexusMods.CLI;
 
@@ -8,6 +9,7 @@ public static class Services
     {
         services.AddScoped<Configurator>();
         services.AddSingleton<CommandLineBuilder>();
+        services.AddDataModel();
         return services;
     }
     

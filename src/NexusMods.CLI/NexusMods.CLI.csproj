@@ -14,6 +14,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Games\Abstractions\NexusMods.Games.Abstractions\NexusMods.Games.Abstractions.csproj" />
       <ProjectReference Include="..\Games\NexusMods.Games.BethesdaGameStudios\NexusMods.Games.BethesdaGameStudios.csproj" />
+      <ProjectReference Include="..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
       <ProjectReference Include="..\NexusMods.Paths\NexusMods.Paths.csproj" />
       <ProjectReference Include="..\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj" />
     </ItemGroup>
