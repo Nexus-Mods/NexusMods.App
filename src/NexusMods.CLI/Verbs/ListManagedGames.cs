@@ -21,7 +21,7 @@ public class ListManagedGames
     public async Task Run()
     {
         var rows = new List<object[]>();
-        foreach (var list in _manager.AllModLists)
+        foreach (var list in _manager.AllModLists.Select(x => x.Value))
         {
             rows.Add(new object[]{list.Name, list.Installation, list.ModListId, list.Mods.Count});
         }

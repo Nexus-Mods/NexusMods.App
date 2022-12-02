@@ -1,15 +1,16 @@
 ﻿using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.CodeGenerator;
+namespace NexusMods.DataModel.CodeGenerator;
 
-namespace Wabbajack.DTOs.ConverterGenerators;
-
-internal class Program
+public class Program
 {
-    private static void Main(string[] args)
+    public static void Main(string[] args)
     {
         var cfile = new CFile();
         new PolymorphicGenerator<Entity>().GenerateAll(cfile);
 
+        if (args.Any() && args[0] == "dryrun")
+            return;
+        
         cfile.Write(@"..\..\src\NexusMods.DataModel\JsonConverters\Generated.cs");
     }
 }

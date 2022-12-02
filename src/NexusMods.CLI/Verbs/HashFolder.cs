@@ -19,7 +19,7 @@ public class HashFolder
         "Hashes the contents of a directory, caching the results",
         new[]
         {
-            new OptionDefinition(typeof(AbsolutePath), "f", "folder", "Folder to hash")
+            new OptionDefinition<AbsolutePath>( "f", "folder", "Folder to hash")
         });
 
     public async Task<int> Run(AbsolutePath folder, CancellationToken token)

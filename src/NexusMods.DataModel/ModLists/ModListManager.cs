@@ -26,7 +26,7 @@ public class ModListManager
     }
 
     public IObservable<ListRegistry> Changes => _root.Changes.Select(r => r.New);
-    public IEnumerable<ModList> AllModLists => _root.Value.Lists.Values;
+    public IEnumerable<ModListMarker> AllModLists => _root.Value.Lists.Values.Select(m => new ModListMarker(this, m.ModListId));
 
     public async Task<ModListMarker> ManageGame(GameInstallation installation, string name = "", CancellationToken? token = null)
     {

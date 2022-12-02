@@ -9,7 +9,7 @@ public class ListMods
         "List all the mods in a given managed game",
         new[]
         {
-            new OptionDefinition(typeof(ModListMarker), "m", "managedGame", "The managed game to access")
+            new OptionDefinition<ModListMarker>("m", "managedGame", "The managed game to access")
         });
 
     public async Task Run(ModListMarker managedGame, CancellationToken token)

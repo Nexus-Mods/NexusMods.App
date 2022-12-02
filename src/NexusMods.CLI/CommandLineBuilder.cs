@@ -2,6 +2,7 @@ using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.NamingConventionBinder;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.CLI.OptionParsers;
 using NexusMods.Interfaces.Components;
 using NexusMods.Paths;
 
@@ -39,46 +40,13 @@ public class CommandLineBuilder
         return await root.InvokeAsync(args);
     }
 
-    private Dictionary<Type, Func<OptionDefinition, Option>> _optionCtors => new()
-    {
-        {
-            typeof(string),
-            d => new Option<string>(d.Aliases, description: d.Description)
-        },
-        {
-            typeof(AbsolutePath),
-            d => new Option<AbsolutePath>(d.Aliases, description: d.Description, parseArgument: d => d.Tokens.Single().Value.ToAbsolutePath())
-        },
-        {
-            typeof(Uri),
-            d => new Option<Uri>(d.Aliases, description: d.Description)
-        },
-        {
-            typeof(bool),
-            d => new Option<bool>(d.Aliases, description: d.Description)
-        },
-        {
-            typeof(IGame),
-            d => new Option<IGame>(d.Aliases, description: d.Description, parseArgument: d =>
-            {
-                var s = d.Tokens.Single().Value;
-                var games = _provider.GetRequiredService<IEnumerable<IGame>>();
-                return games.First(d => d.Slug.Equals(s, StringComparison.InvariantCultureIgnoreCase));
-            })
-        },
-        {
-            typeof(Version),
-            d => new Option<Version>(d.Aliases, description: d.Description, parseArgument: d => Version.Parse(d.Tokens.Single().Value))
-        }
-    };
-
-
     private Command MakeCommend(Type verbType, Func<object, Delegate> verbHandler, VerbDefinition definition)
     {
         var command = new Command(definition.Name, definition.Description);
+
         foreach (var option in definition.Options)
         {
-            command.Add(_optionCtors[option.Type](option));
+            command.Add(option.GetOption(_provider));
         }
         command.Handler = new HandlerDelegate(_provider, verbType, verbHandler);
         return command;
@@ -130,9 +98,17 @@ public class CommandLineBuilder
 public record OptionDefinition<T>(string ShortOption, string LongOption, string Description) 
     : OptionDefinition(typeof(T), ShortOption, LongOption, Description)
 {
-    
+    public override Option GetOption(IServiceProvider provider)
+    {
+        var converter = provider.GetService<IOptionParser<T>>();
+        if (converter == null)
+            return new Option<T>(Aliases, description: Description);
+
+        return new Option<T>(Aliases, description: Description,
+            parseArgument: x => converter.Parse(x.Tokens.Single().Value, this));
+    }
 }
-public record OptionDefinition(Type Type, string ShortOption, string LongOption, string Description)
+public abstract record OptionDefinition(Type Type, string ShortOption, string LongOption, string Description)
 {
     public string[] Aliases
     {
@@ -140,7 +116,9 @@ public record OptionDefinition(Type Type, string ShortOption, string LongOption,
         {
             return new[] { "-" + ShortOption, "--" + LongOption };
         }
-    } 
+    }
+
+    public abstract Option GetOption(IServiceProvider provider);
 }
 
 public record VerbDefinition(string Name, string Description, OptionDefinition[] Options)

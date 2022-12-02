@@ -8,7 +8,7 @@ public class TemporaryPathTests : IDisposable
 
     public TemporaryPathTests()
     {
-        _manager = new TemporaryFileManager("baseTmp".ToAbsolutePath().Combine(Guid.NewGuid()));
+        _manager = new TemporaryFileManager(KnownFolders.CurrentDirectory.Combine("baseTmp", Guid.NewGuid().ToString()));
     }
     
     [Fact]
