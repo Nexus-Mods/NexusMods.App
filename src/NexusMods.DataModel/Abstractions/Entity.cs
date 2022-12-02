@@ -20,9 +20,6 @@ public abstract record Entity
 
     protected Entity()
     {
-        Store = IDataStore.CurrentStore.Value!;
-        if (Store == null)
-            throw new Exception("Entity created outside of a IDataStore context");
     }
 
     [JsonIgnore]

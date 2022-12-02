@@ -25,7 +25,7 @@ public record ModList : Entity, IEmptyWithDataStore<ModList>
         Name = "",
         Mods = EntityHashSet<Mod>.Empty(store),
         LastModified = DateTime.UtcNow,
-        PreviousVersion = EntityLink<ModList>.Empty,
+        PreviousVersion = EntityLink<ModList>.Empty(store),
         Store = store
     };
 }

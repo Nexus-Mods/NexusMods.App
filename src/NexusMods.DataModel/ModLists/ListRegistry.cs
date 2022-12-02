@@ -11,7 +11,7 @@ public record ListRegistry: Entity, IEmptyWithDataStore<ListRegistry>
     public override EntityCategory Category => EntityCategory.ModLists;
     public static ListRegistry Empty(IDataStore store) => new()
     {
-        Lists = EntityDictionary<ModListId, ModList>.Empty(),
+        Lists = EntityDictionary<ModListId, ModList>.Empty(store),
         Store = store
     };
 }

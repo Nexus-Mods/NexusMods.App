@@ -23,6 +23,10 @@ public static class Services
         coll.AddSingleton<JsonConverter, GameInstallationConverter>();
         coll.AddSingleton<JsonConverter, EntityHashSetConverterFactory>();
         coll.AddSingleton(typeof(EntityHashSetConverter<>));
+        coll.AddSingleton<JsonConverter, EntityDictionaryConverterFactory>();
+        coll.AddSingleton(typeof(EntityDictionaryConverter<,>));
+        coll.AddSingleton<JsonConverter, EntityLinkConverterFactory>();
+        coll.AddSingleton(typeof(EntityLinkConverter<>));
         
         coll.AddSingleton<IDataStore>(s => new RocksDbDatastore(KnownFolders.CurrentDirectory.Combine("DataModel"), s));
         coll.AddAllSingleton<IResource, IResource<FileHashCache, Size>>(_ => new Resource<FileHashCache, Size>("File Hashing", Environment.ProcessorCount, Size.Zero));

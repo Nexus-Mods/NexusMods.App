@@ -26,12 +26,10 @@ public class Root<TRoot> where TRoot : Entity, IEmptyWithDataStore<TRoot>
     /// </summary>
     public IObservable<(TRoot Old, TRoot New)> Changes => _changes;
     
-    public Root(RootType type, IDataStore? store = null)
+    public Root(RootType type, IDataStore store)
     {
         Type = type;
-        Store = store ?? IDataStore.CurrentStore.Value!;
-        if (Store == null)
-            throw new NoDataStoreException();
+        Store = store;
         
         var initRoot = Store.GetRoot(type);
         _root = new EntityLink<TRoot>(initRoot ?? Id.Empty, store);
@@ -44,7 +42,6 @@ public class Root<TRoot> where TRoot : Entity, IEmptyWithDataStore<TRoot>
     /// <param name="f"></param>
     public void Alter(Func<TRoot, TRoot> f)
     {
-        using var _ = IDataStore.WithCurrent(Store);
         var oldId = Store.GetRoot(Type);
         if (oldId != null && oldId != _root.Id)
             _root = new EntityLink<TRoot>(oldId.Value, Store);

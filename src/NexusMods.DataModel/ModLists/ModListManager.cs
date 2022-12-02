@@ -31,7 +31,6 @@ public class ModListManager
     public async Task<ModListMarker> ManageGame(GameInstallation installation, string name = "", CancellationToken? token = null)
     {
         _logger.LogInformation("Indexing game files");
-        using var _ = IDataStore.WithCurrent(_store);
         var gameFiles = new HashSet<AModFile>();
 
         foreach (var (type, path) in installation.Locations)

@@ -4,15 +4,6 @@ namespace NexusMods.DataModel.Abstractions;
 
 public interface IDataStore
 {
-    public static readonly AsyncLocal<IDataStore?> CurrentStore = new();
-
-    public static IDisposable WithCurrent(IDataStore dataStore)
-    {
-        var prevVal = CurrentStore.Value;
-        CurrentStore.Value = dataStore;
-        return Disposable.Create(() => CurrentStore.Value = prevVal);
-    }
-    
     public Id Put<T>(T value) where T : Entity;
     T Get<T>(Id id) where T : Entity;
 
