@@ -1,11 +1,17 @@
 ﻿using System.Text.Json.Serialization;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.JsonConverters;
 
 namespace NexusMods.DataModel.ModLists;
 
-public record ListRegistry(EntityDictionary<ModListId, ModList> Lists) : Entity, IEmpty<ListRegistry>
+[JsonName("NexusMods.DataModel.ListRegistry")]
+public record ListRegistry: Entity, IEmptyWithDataStore<ListRegistry>
 {
-    public static ListRegistry Empty => new(EntityDictionary<ModListId, ModList>.Empty());
-    
+    public required EntityDictionary<ModListId, ModList> Lists {get; init; }
     public override EntityCategory Category => EntityCategory.ModLists;
+    public static ListRegistry Empty(IDataStore store) => new()
+    {
+        Lists = EntityDictionary<ModListId, ModList>.Empty(),
+        Store = store
+    };
 }

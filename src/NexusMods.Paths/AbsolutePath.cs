@@ -150,7 +150,7 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
         return ArrayExtensions.AreEqualIgnoreCase(parent.Parts, 0, Parts, 0, parent.Parts.Length);
     }
 
-    public AbsolutePath Combine(params object[] paths)
+    public readonly AbsolutePath Combine(params object[] paths)
     {
         var converted = paths.Select(p =>
         {
@@ -330,7 +330,7 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
         Directory.CreateDirectory(ToNativePath());
     }
 
-    public void DeleteDirectory(bool dontDeleteIfNotEmpty = false)
+    public readonly void DeleteDirectory(bool dontDeleteIfNotEmpty = false)
     {
         if (!DirectoryExists()) return;
         if (dontDeleteIfNotEmpty && (EnumerateFiles().Any() || EnumerateDirectories().Any())) return;
@@ -352,7 +352,7 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
         }
     }
 
-    public bool DirectoryExists()
+    public readonly bool DirectoryExists()
     {
         return Parts.Length != 0 && Directory.Exists(ToNativePath());
     }

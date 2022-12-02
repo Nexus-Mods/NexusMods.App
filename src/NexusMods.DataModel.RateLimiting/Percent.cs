@@ -35,22 +35,11 @@ public readonly struct Percent : IComparable, IEquatable<Percent>
     {
         return new Percent(c1.Value + c2.Value);
     }
-
-    public static Percent operator *(Percent c1, Percent c2)
-    {
-        return new Percent(c1.Value * c2.Value);
-    }
-
     public static Percent operator -(Percent c1, Percent c2)
     {
         return new Percent(c1.Value - c2.Value);
     }
-
-    public static Percent operator /(Percent c1, Percent c2)
-    {
-        return new Percent(c1.Value / c2.Value);
-    }
-
+    
     public static bool operator ==(Percent c1, Percent c2)
     {
         return c1.Value == c2.Value;

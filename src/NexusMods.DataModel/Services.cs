@@ -21,19 +21,16 @@ public static class Services
         coll.AddSingleton<JsonConverter, SizeConverter>();
         coll.AddSingleton<JsonConverter, HashConverter>();
         coll.AddSingleton<JsonConverter, GameInstallationConverter>();
+        coll.AddSingleton<JsonConverter, EntityHashSetConverterFactory>();
+        coll.AddSingleton(typeof(EntityHashSetConverter<>));
         
-        coll.AddSingleton<IDataStore>(s => new RocksDbDatastore(KnownFolders.CurrentDirectory.Combine("DataModel"),
-            s.GetRequiredService<DataModelJsonContext>()));
+        coll.AddSingleton<IDataStore>(s => new RocksDbDatastore(KnownFolders.CurrentDirectory.Combine("DataModel"), s));
         coll.AddAllSingleton<IResource, IResource<FileHashCache, Size>>(_ => new Resource<FileHashCache, Size>("File Hashing", Environment.ProcessorCount, Size.Zero));
         coll.AddSingleton<ModListManager>();
         coll.AddSingleton<FileHashCache>();
-        coll.AddSingleton(s =>
-        {
-            var opts = new JsonSerializerOptions();
-            foreach (var converter in s.GetServices<JsonConverter>())
-                opts.Converters.Add(converter);
-            return new DataModelJsonContext(opts);
-        });
+        
+        NexusMods_DataModel_Abstractions_EntityConverter.ConfigureServices(coll);
+        
         coll.AddSingleton(s =>
         {
             var opts = new JsonSerializerOptions();

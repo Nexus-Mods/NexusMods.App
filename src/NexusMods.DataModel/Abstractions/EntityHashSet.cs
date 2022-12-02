@@ -1,19 +1,21 @@
 ﻿using System.Collections.Immutable;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using NexusMods.DataModel.ModLists;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace NexusMods.DataModel.Abstractions;
 
-[JsonConverter(typeof(EntityHashSetConverterFactory))]
-public struct EntityHashSet<T> : IEmpty<EntityHashSet<T>>
+public struct EntityHashSet<T> : IEmptyWithDataStore<EntityHashSet<T>>
 where T : Entity
 {
-    public static EntityHashSet<T> Empty => new();
+    public static EntityHashSet<T> Empty(IDataStore store) => new(store);
     private readonly ImmutableHashSet<Id> _coll;
-    public EntityHashSet()
+    private readonly IDataStore _store;
+
+    public EntityHashSet(IDataStore store)
     {
         _coll = ImmutableHashSet<Id>.Empty;
+        _store = store;
     }
 
     private EntityHashSet(ImmutableHashSet<Id> coll)
@@ -47,19 +49,32 @@ where T : Entity
 
 public class EntityHashSetConverterFactory : JsonConverterFactory
 {
+    private readonly IServiceProvider _services;
+
+    public EntityHashSetConverterFactory(IServiceProvider services)
+    {
+        _services = services;
+    }
     public override bool CanConvert(Type typeToConvert) =>
         typeToConvert.GenericTypeArguments.Length == 1 &&
-        typeToConvert.GetGenericTypeDefinition() == typeof(EntityLink<>);
+        typeToConvert.GetGenericTypeDefinition() == typeof(EntityHashSet<>);
 
     public override JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options)
     {
-        return (JsonConverter)Activator.CreateInstance(typeof(EntityHashSetConverter<>).MakeGenericType(typeToConvert.GenericTypeArguments))!;
+        return (JsonConverter)_services.GetRequiredService(typeof(EntityHashSetConverter<>).MakeGenericType(typeToConvert.GetGenericArguments()));
     }
 }
 
 public class EntityHashSetConverter<T> : JsonConverter<EntityHashSet<T>>
     where T : Entity
 {
+    private Lazy<IDataStore> _store;
+    
+    public EntityHashSetConverter(IServiceProvider provider)
+    {
+        _store = new Lazy<IDataStore>(provider.GetRequiredService<IDataStore>);
+    }
+    
     public override EntityHashSet<T> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType != JsonTokenType.StartArray)

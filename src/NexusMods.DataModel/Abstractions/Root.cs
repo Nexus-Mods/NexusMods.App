@@ -2,13 +2,13 @@
 
 namespace NexusMods.DataModel.Abstractions;
 
-public class Root<TRoot> where TRoot : Entity, IEmpty<TRoot>
+public class Root<TRoot> where TRoot : Entity, IEmptyWithDataStore<TRoot>
 {
     private readonly Subject<(TRoot Old, TRoot New)> _changes = new();
 
     private EntityLink<TRoot> _root;
 
-    public TRoot Value => _root.Id == Id.Empty ? TRoot.Empty : _root.Value;
+    public TRoot Value => _root.Id == Id.Empty ? TRoot.Empty(Store) : _root.Value;
     
     /// <summary>
     /// Datastore used by this root when creating new entities
@@ -50,12 +50,12 @@ public class Root<TRoot> where TRoot : Entity, IEmpty<TRoot>
             _root = new EntityLink<TRoot>(oldId.Value, Store);
         
         restart:
-        var oldRoot = _root.Id == Id.Empty ? TRoot.Empty : _root.Value;
+        var oldRoot = _root.Id == Id.Empty ? TRoot.Empty(Store) : _root.Value;
         var newRoot = f(oldRoot);
         if (newRoot.Id == oldRoot.Id)
             return;
 
-        if (!Store.PutRoot(Type, oldRoot.Id, newRoot.Id))
+        if (!Store.PutRoot(Type, _root.Id, newRoot.Id))
         {
             var newId = Store.GetRoot(Type)!.Value;
             _root = new EntityLink<TRoot>(newId, Store);

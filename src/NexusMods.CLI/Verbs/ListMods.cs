@@ -1,4 +1,7 @@
-﻿namespace NexusMods.CLI.Verbs;
+﻿using NexusMods.DataModel.ModLists;
+using NexusMods.DataModel.ModLists.Markers;
+
+namespace NexusMods.CLI.Verbs;
 
 public class ListMods
 {
@@ -6,7 +9,11 @@ public class ListMods
         "List all the mods in a given managed game",
         new[]
         {
-            new OptionDefinition(typeof(string), "m", "managedGame", "The managed game to access")
+            new OptionDefinition(typeof(ModListMarker), "m", "managedGame", "The managed game to access")
         });
-    public Delegate Run { get; set; }
+
+    public async Task Run(ModListMarker managedGame, CancellationToken token)
+    {
+        throw new NotImplementedException();
+    }
 }

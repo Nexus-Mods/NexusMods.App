@@ -12,8 +12,7 @@ where TV : Entity where TK : notnull
 {
     private readonly ImmutableDictionary<TK, Id> _coll;
     private readonly IDataStore _store;
-
-
+    
     public EntityDictionary(IDataStore? store = null)
     {
         _store = store ?? IDataStore.CurrentStore.Value!;

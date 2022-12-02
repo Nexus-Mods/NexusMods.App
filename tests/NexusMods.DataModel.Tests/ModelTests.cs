@@ -29,9 +29,12 @@ public class ModelTests
     public void CanCreateModFile()
     {
         using var _ = IDataStore.WithCurrent(_datastore);
-        var file = new FromArchive(
-            To:new GamePath(GameFolderType.Game, "foo/bar.pez"), 
-            From: new HashRelativePath(new Hash(0), RelativePath.Empty));
+        var file = new FromArchive
+        {
+            To = new GamePath(GameFolderType.Game, "foo/bar.pez"),
+            From = new HashRelativePath(new Hash(0), RelativePath.Empty),
+            Store = _datastore
+        };
         file.Store.Should().NotBeNull();
         file.Id.Should().NotBeNull();
 
@@ -57,8 +60,12 @@ public class ModelTests
     [Fact]
     public void CannotCreateEntityOutsideOfContext()
     {
-        Action a = () => new FromArchive(To: new GamePath(GameFolderType.Game, "foo/bar.pez"),
-            From: new HashRelativePath(Hash.Zero, RelativePath.Empty));
+        Action a = () => new FromArchive
+        {
+            To = new GamePath(GameFolderType.Game, "foo/bar.pez"),
+            From = new HashRelativePath(Hash.Zero, RelativePath.Empty),
+            Store = _datastore
+        };
         
         a.Should().Throw<Exception>().WithMessage("Entity created outside of a IDataStore context");
     }

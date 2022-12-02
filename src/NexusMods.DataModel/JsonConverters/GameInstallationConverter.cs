@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using NexusMods.Games.Abstractions;
 using NexusMods.Interfaces;
 using NexusMods.Interfaces.Components;
 
@@ -25,9 +26,8 @@ public class GameInstallationConverter : JsonConverter<GameInstallation>
         var version = JsonSerializer.Deserialize<Version>(ref reader, options)!;
         reader.Read();
 
-        return _games[(slug, version)];
-
-
+        if (_games.TryGetValue((slug, version), out var found)) return found;
+        return new UnknownGame(slug, version).Installations.First();
     }
 
     public override void Write(Utf8JsonWriter writer, GameInstallation value, JsonSerializerOptions options)

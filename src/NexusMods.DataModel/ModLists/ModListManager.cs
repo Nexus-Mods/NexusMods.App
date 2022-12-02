@@ -38,12 +38,25 @@ public class ModListManager
         {
             await foreach (var result in _fileHashCache.IndexFolder(path, token))
             {
-                gameFiles.Add(new GameFile(installation, result.Hash, new GamePath(type, result.Path.RelativeTo(path)), result.Size));
+                gameFiles.Add(new GameFile
+                {
+                    To = new GamePath(type, result.Path.RelativeTo(path)),
+                    Installation = installation,
+                    Hash = result.Hash,
+                    Size = result.Size,
+                    Store = _store
+                });
             }
         }
         _logger.LogInformation("Creating Modlist {Name}", name);
-        var mod = new Mod(new EntityHashSet<AModFile>(gameFiles.Select(g => g.Id)), "Game Files");
-        var n = ModList.Create() with
+        var mod = new Mod
+        {
+            Name = "Game Files",
+            Files = new EntityHashSet<AModFile>(gameFiles.Select(g => g.Id)),
+            Store = _store
+        };
+        
+        var n = ModList.Empty(_store) with
         {
             Installation = installation,
             Name = name, 

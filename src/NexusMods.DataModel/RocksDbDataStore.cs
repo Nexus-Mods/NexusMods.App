@@ -1,6 +1,7 @@
 ﻿using System.Buffers.Binary;
 using System.Text;
 using System.Text.Json;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IO;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.Hashing.xxHash64;
@@ -14,11 +15,11 @@ public class RocksDbDatastore : IDataStore
     private readonly DbOptions _settings;
     private readonly RocksDb _db;
     private readonly RecyclableMemoryStreamManager _mmanager;
-    private readonly DataModelJsonContext _jsonOptions;
     private readonly Dictionary<EntityCategory,ColumnFamilyHandle> _columns;
     private readonly ColumnFamilies _families;
+    private readonly Lazy<JsonSerializerOptions> _jsonOptions;
 
-    public RocksDbDatastore(AbsolutePath path, DataModelJsonContext jsonOptions)
+    public RocksDbDatastore(AbsolutePath path, IServiceProvider provider)
     {
         _settings = new DbOptions();
         _settings.SetCreateIfMissing();
@@ -32,7 +33,9 @@ public class RocksDbDatastore : IDataStore
 
         _db = RocksDb.Open(_settings, path.ToString(), _families);
         _mmanager = new RecyclableMemoryStreamManager();
-        _jsonOptions = jsonOptions;
+        
+        // Make this lazy to avoid the cycle reference of store -> options -> converter -> store
+        _jsonOptions = new Lazy<JsonSerializerOptions>(provider.GetRequiredService<JsonSerializerOptions>);
 
         _columns = new Dictionary<EntityCategory, ColumnFamilyHandle>();
 
@@ -51,7 +54,7 @@ public class RocksDbDatastore : IDataStore
     public Id Put<T>(T value) where T : Entity
     {
         using var stream = new RecyclableMemoryStream(_mmanager);
-        JsonSerializer.Serialize(stream, value, _jsonOptions.Entity);
+        JsonSerializer.Serialize(stream, value, _jsonOptions.Value);
         stream.Position = 0;
         var data = (ReadOnlySpan<byte>)stream.GetSpan()[..(int)stream.Length];
         var hash = data.XxHash64();
@@ -68,7 +71,14 @@ public class RocksDbDatastore : IDataStore
         return _db.Get(keySpan, str =>
         {
             using var _ = IDataStore.WithCurrent(this);
-            return (T)JsonSerializer.Deserialize(str, _jsonOptions.Entity);
+            try
+            {
+                return JsonSerializer.Deserialize<T>(str, _jsonOptions.Value)!;
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
         }, _columns[id.Category])!;
     }
     public bool PutRoot(RootType type, Id oldId, Id newId)
