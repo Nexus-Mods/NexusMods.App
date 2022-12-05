@@ -20,11 +20,13 @@ public class ArchiveContentsCache
     private readonly IResource<ArchiveContentsCache,Size> _limiter;
     private readonly SignatureChecker _sigs;
     private readonly IDataStore _store;
+    private readonly FileHashCache _fileHashCahce;
 
     public ArchiveContentsCache(ILogger<ArchiveContentsCache> logger, 
         IResource<ArchiveContentsCache, Size> limiter,  
         FileExtractor.FileExtractor extractor, 
         TemporaryFileManager manager,
+        FileHashCache hashCache,
         IDataStore dataStore)
     {
         _logger = logger;
@@ -33,6 +35,7 @@ public class ArchiveContentsCache
         _manager = manager;
         _sigs = new SignatureChecker(Enum.GetValues<FileType>());
         _store = dataStore;
+        _fileHashCahce = hashCache;
     }
 
     public async Task<AnalyzedFile> AnalyzeFile(AbsolutePath path, CancellationToken token)
@@ -50,8 +53,15 @@ public class ArchiveContentsCache
             await using var hashStream = await sFn.GetStream();
             if (level == 0)
             {
-                using var job = await _limiter.Begin($"Hashing {sFn.Name.FileName}", sFn.Size, token);
-                hash = await hashStream.Hash(token, job);
+                if (sFn.Name is AbsolutePath ap)
+                {
+                    hash = (await _fileHashCahce.HashFileAsync(ap, token)).Hash;
+                }
+                else
+                {
+                    using var job = await _limiter.Begin($"Hashing {sFn.Name.FileName}", sFn.Size, token);
+                    hash = await hashStream.Hash(token, job);
+                }
             }
             else
             {
