@@ -32,6 +32,7 @@ public static class Services
         coll.AddAllSingleton<IResource, IResource<FileHashCache, Size>>(_ => new Resource<FileHashCache, Size>("File Hashing", Environment.ProcessorCount, Size.Zero));
         coll.AddSingleton<ModListManager>();
         coll.AddSingleton<FileHashCache>();
+        coll.AddSingleton<ArchiveContentsCache>();
         
         NexusMods_DataModel_Abstractions_EntityConverter.ConfigureServices(coll);
         

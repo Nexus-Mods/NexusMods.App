@@ -19,6 +19,15 @@ public interface IExtractor
     public Task<IDictionary<RelativePath, T>> ForEachEntry<T>(IStreamFactory sFn,
         Func<RelativePath, IStreamFactory, ValueTask<T>> func, CancellationToken token = default);
 
+    /// <summary>
+    /// Unconditionally extract all files from `sFn` to a specific folder
+    /// </summary>
+    /// <param name="sFn"></param>
+    /// <param name="destination"></param>
+    /// <param name="token"></param>
+    /// <returns></returns>
+    Task ExtractAll(IStreamFactory sFn, AbsolutePath destination, CancellationToken token);
+
 
     /// <summary>
     /// Given a FileType return the priority this extractor requests. Higher priority extractors will

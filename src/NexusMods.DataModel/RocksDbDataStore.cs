@@ -59,19 +59,31 @@ public class RocksDbDatastore : IDataStore
         var data = (ReadOnlySpan<byte>)stream.GetSpan()[..(int)stream.Length];
         var hash = data.XxHash64();
         Span<byte> keySpan = stackalloc byte[8];
-        BinaryPrimitives.WriteUInt64BigEndian(keySpan, (ulong)hash);
+        BinaryPrimitives.WriteUInt64BigEndian(keySpan, hash);
         _db.Put(keySpan, data, _columns[value.Category]);
         return new Id(value.Category, hash);
     }
 
-    public T Get<T>(Id id) where T : Entity
+    public void Put<T>(Id id, T value) where T : Entity
+    {
+        using var stream = new RecyclableMemoryStream(_mmanager);
+        JsonSerializer.Serialize(stream, value, _jsonOptions.Value);
+        stream.Position = 0;
+        var data = (ReadOnlySpan<byte>)stream.GetSpan()[..(int)stream.Length];
+        Span<byte> keySpan = stackalloc byte[8];
+        BinaryPrimitives.WriteUInt64BigEndian(keySpan, id.Hash);
+        _db.Put(keySpan, data, _columns[value.Category]);
+    }
+
+    public T? Get<T>(Id id) where T : Entity
     {
         Span<byte> keySpan = stackalloc byte[8];
         BinaryPrimitives.WriteUInt64BigEndian(keySpan, (ulong)id.Hash);
         return _db.Get(keySpan, str => 
-            JsonSerializer.Deserialize<T>(str, _jsonOptions.Value)!, 
-            _columns[id.Category])!;
+                JsonSerializer.Deserialize<T>(str, _jsonOptions.Value), 
+            _columns[id.Category]);
     }
+    
     public bool PutRoot(RootType type, Id oldId, Id newId)
     {
         var rootName = new byte[1];

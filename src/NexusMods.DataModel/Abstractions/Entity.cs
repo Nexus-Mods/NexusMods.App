@@ -22,9 +22,21 @@ public abstract record Entity
     {
     }
 
+    protected virtual Id Persist()
+    {
+        return Store.Put(this);
+    }
+    
+    
+
+    public void EnsureStored()
+    {
+        _id ??= Persist();
+    }
+
     [JsonIgnore]
     public Id Id
     {
-        get { return _id ??= Store.Put(this); }
+        get { return _id ??= Persist(); }
     }
 }

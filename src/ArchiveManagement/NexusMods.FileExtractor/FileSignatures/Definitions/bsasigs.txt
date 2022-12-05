@@ -1,4 +1,4 @@
-﻿Morrowind BSA,00 01 00 00,TES3, null, null, 0, null
+﻿Morrowind BSA,00 01 00 00, MorrowindBSA, null, null, 0, null
 TES 4-5 and FO 3 BSA,42 53 41 00,BSA
 FO4 BSA,42 54 44 58,BA2
 Relaxed RAR format,52 61 72 21,RAR
@@ -6,3 +6,11 @@ RAR5 or newer, 52 61 72 21 1A 07 01 00,RAR_NEW
 RAR4 or older, 52 61 72 21 1A 07 00,RAR_OLD
 DDS, 44 44 53 20,DDS
 Bethesda Tar, 42 54 41 52, BTAR
+GZIP archive file,1F 8B 08,GZ,Compressed archive,0,(null)
+7-Zip compressed file,37 7A BC AF 27 1C,7Z,Compressed archive,0,(null)
+Zip,50 4B 03 04,ZIP
+Zip,50 4B 05 06,ZIP
+Zip,50 4B 07 08,ZIP
+NetImmerse File Format, 4e 65 74 49 6d 6d 65 72 73 65 20 46 69 6c 65 20 46 6f 72 6d 61 74, NIF
+Gamebryo File Format, 47 61 6d 65 62 72 79 6f 20 46 69 6c 65 20 46 6f 72 6d 61 74, NIF
+Creation Engine Plugin, 54 45 53 34, CreationEnginePlugin

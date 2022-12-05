@@ -21,6 +21,7 @@ public class CFile
         Code("using NexusMods.Hashing.xxHash64;");
         Code("using NexusMods.Interfaces;");
         Code("using NexusMods.Paths;");
+        Code("using NexusMods.DataModel.ArchiveContents;");
         Code("");
     }
 

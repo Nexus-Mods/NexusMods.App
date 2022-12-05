@@ -1,4 +1,6 @@
 ﻿using NexusMods.CLI.DataOutputs;
+using NexusMods.DataModel;
+using NexusMods.DataModel.ArchiveContents;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
@@ -7,12 +9,11 @@ namespace NexusMods.CLI.Verbs;
 public class AnalyzeArchive
 {
     private readonly IRenderer _renderer;
-    private readonly FileExtractor.FileExtractor _extractor;
-    
-    public AnalyzeArchive(Configurator configurator, FileExtractor.FileExtractor extractor)
+    private readonly ArchiveContentsCache _archiveContentsCache;    
+    public AnalyzeArchive(Configurator configurator, ArchiveContentsCache archiveContentsCache)
     {
         _renderer = configurator.Renderer;
-        _extractor = extractor;
+        _archiveContentsCache = archiveContentsCache;
     }
     
     public static VerbDefinition Definition = new("analyze-archive",
@@ -25,16 +26,16 @@ public class AnalyzeArchive
 
     public async Task Run(AbsolutePath inputFile, CancellationToken token)
     {
-        var results = await _extractor.ForEachEntry(inputFile, async (path, factory) =>
+        var results = await _renderer.WithProgress(token, async () =>
         {
-            await using var stream = await factory.GetStream();
-            var hash = await stream.Hash(token);
-            return new object[]
+            var file = await _archiveContentsCache.AnalyzeFile(inputFile, token) as AnalyzedArchive;
+            if (file == null) return Array.Empty<object[]>();
+            return file.Contents.Select(kv =>
             {
-                path, factory.Size, hash
-            };
-        }, token);
+                return new object[] { kv.Key, kv.Value.Size, kv.Value.Hash, string.Join(", ", kv.Value.FileTypes.Select(t => Enum.GetName(t))) };
+            });
+        });
 
-        await _renderer.Render(new Table(new[] { "Path", "Size", "Hash" }, results.Values.OrderBy(e => (RelativePath)e[0])));
+        await _renderer.Render(new Table(new[] { "Path", "Size", "Hash", "Signatures"}, results.OrderBy(e => (RelativePath)e[0])));
     }
 }

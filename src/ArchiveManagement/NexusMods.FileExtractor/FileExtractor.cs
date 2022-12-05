@@ -40,6 +40,25 @@ public class FileExtractor
             .ToArray();
     }
 
+    public async Task ExtractAll(IStreamFactory sFn, AbsolutePath dest, CancellationToken token)
+    {
+        var extractors = await FindExtractors(sFn);
+        foreach (var extractor in extractors)
+        {
+            try
+            {
+                await extractor.ExtractAll(sFn, dest, token);
+                return;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "While extracting via {Extractor}", extractor);
+            }
+        }
+        
+        throw new FileExtractionException("No Extractors found for file");
+    }
+
     public async Task<IDictionary<RelativePath, T>> ForEachEntry<T>(IStreamFactory sFn,
         Func<RelativePath, IStreamFactory, ValueTask<T>> func, CancellationToken token = default)
     {
@@ -67,7 +86,10 @@ public class FileExtractor
         return await ForEachEntry(new NativeFileStreamFactory(file), func, token);
     }
 
-    
 
-
+    public async Task<bool> CanExtract(IStreamFactory sFn)
+    {
+        await using var stream = await sFn.GetStream();
+        return (await ArchiveSigs.MatchesAsync(stream)).Any();
+    }
 }

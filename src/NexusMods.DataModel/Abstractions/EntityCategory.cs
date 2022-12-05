@@ -3,7 +3,7 @@
 public enum EntityCategory
 {
     ModLists,
-    Archives,
+    FileAnalysis,
     Roots,
     FileHashes
 }

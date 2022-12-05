@@ -64,7 +64,7 @@ public class Resource<TResource, TUnit> : IResource<TResource, TUnit>
             Id = id,
             Description = jobTitle,
             Size = size,
-            Resource = this
+            _resource = this
         };
         _tasks.TryAdd(id, job);
         await _semaphore.WaitAsync(token);

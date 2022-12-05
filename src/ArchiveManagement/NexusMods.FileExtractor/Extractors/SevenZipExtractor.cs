@@ -32,7 +32,7 @@ public class SevenZipExtractor : IExtractor
         TemporaryPath? spoolFile = null;
         AbsolutePath source;
         
-        var job = await _limiter.Begin($"Extracting {sFn.Name}", sFn.Size, token);
+        var job = await _limiter.Begin($"Extracting {sFn.Name.FileName}", sFn.Size, token);
         try
         {
             if (sFn.Name is AbsolutePath abs)
@@ -53,18 +53,30 @@ public class SevenZipExtractor : IExtractor
             var initialPath = ExeLocation();
 
             var process = Cli.Wrap(initialPath.ToRelativePath().RelativeTo(KnownFolders.EntryFolder).ToString());
-
-            process = process.WithArguments(
-                new[]
-                {
-                    "x", "-bsp1", "-y", $"-o{dest}", source.ToString(), "-mmt=off"
-                }, true);
-
+            
             var totalSize = source.Length;
             var lastPercent = 0;
             job.Size = totalSize;
 
-            var result = await process.ExecuteAsync();
+            var result = await process.WithArguments(
+                new[]
+                {
+                    "x", "-bsp1", "-y", $"-o{dest}", source.ToString(), "-mmt=off"
+                }, true)
+                .WithStandardOutputPipe(PipeTarget.ToDelegate(line =>
+                {
+                    if (line.Length <= 4 || line[3] != '%') return;
+
+                    if (!int.TryParse(line[..3], out var percentInt)) return;
+
+                    var oldPosition = lastPercent == 0 ? 0 : totalSize / 100 * lastPercent;
+                    var newPosition = percentInt == 0 ? 0 : totalSize / 100 * percentInt;
+                    var throughput = newPosition - oldPosition;
+                    job.ReportNoWait(throughput);
+                    
+                    lastPercent = percentInt;
+                }))
+                .ExecuteAsync();
 
             if (result.ExitCode != 0)
                 throw new Exception("While executing 7zip");
@@ -84,6 +96,79 @@ public class SevenZipExtractor : IExtractor
 
 
             return results;
+        }
+        catch (CommandExecutionException ex)
+        {
+            _logger.LogError(ex, "While executing 7zip");
+            throw;
+        }
+        finally
+        {
+            _logger.LogDebug("Cleaning up after extraction");
+            
+            if (tmpFile != null) await tmpFile.Value.DisposeAsync();
+            if (spoolFile != null) await spoolFile.Value.DisposeAsync();
+            job.Dispose();
+        } 
+    }
+    
+        public async Task ExtractAll(IStreamFactory sFn, AbsolutePath destination, CancellationToken token)
+    {
+        TemporaryPath? tmpFile = null;
+        
+        TemporaryPath? spoolFile = null;
+        AbsolutePath source;
+        
+        var job = await _limiter.Begin($"Extracting {sFn.Name.FileName}", sFn.Size, token);
+        try
+        {
+            if (sFn.Name is AbsolutePath abs)
+            {
+                source = abs;
+            }
+            else
+            {
+                // File doesn't currently exist on-disk so we need to spool it to disk so we can use 7z against it
+                spoolFile = _manager.CreateFile(sFn.Name.FileName.Extension);
+                await using var s = await sFn.GetStream();
+                await spoolFile.Value.Path.CopyFromAsync(s, token);
+                source = spoolFile.Value.Path;
+            }
+
+            _logger.LogDebug("Extracting {Source}", source.FileName);
+
+            var initialPath = ExeLocation();
+
+            var process = Cli.Wrap(initialPath.ToRelativePath().RelativeTo(KnownFolders.EntryFolder).ToString());
+            
+            var totalSize = source.Length;
+            var lastPercent = 0;
+            job.Size = totalSize;
+
+            var result = await process.WithArguments(
+                new[]
+                {
+                    "x", "-bsp1", "-y", $"-o{destination}", source.ToString(), "-mmt=off"
+                }, true)
+                .WithStandardOutputPipe(PipeTarget.ToDelegate(line =>
+                {
+                    if (line.Length <= 4 || line[3] != '%') return;
+
+                    if (!int.TryParse(line[..3], out var percentInt)) return;
+
+                    var oldPosition = lastPercent == 0 ? 0 : totalSize / 100 * lastPercent;
+                    var newPosition = percentInt == 0 ? 0 : totalSize / 100 * percentInt;
+                    var throughput = newPosition - oldPosition;
+                    job.ReportNoWait(throughput);
+                    
+                    lastPercent = percentInt;
+                }))
+                .ExecuteAsync();
+
+            if (result.ExitCode != 0)
+                throw new Exception("While executing 7zip");
+
+            job.Dispose();
         }
         catch (CommandExecutionException ex)
         {

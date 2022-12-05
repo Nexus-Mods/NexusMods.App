@@ -29,6 +29,16 @@
       <None Update="Extractors\windows-x64\7z.exe">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+      <None Update="FileSignatures\Signatures.tt">
+        <Generator>TextTemplatingFileGenerator</Generator>
+        <LastGenOutput>Signatures.cs</LastGenOutput>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="FileSignatures\Signatures.cs">
+        <DependentUpon>Signatures.tt</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

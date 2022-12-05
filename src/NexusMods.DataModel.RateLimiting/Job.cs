@@ -19,7 +19,8 @@ where TUnit : IAdditionOperators<TUnit, TUnit, TUnit>, IDivisionOperators<TUnit,
         }
     }
     public bool Started { get; internal set; }
-    public IResource<TResource, TUnit> Resource { get; init; }
+    public IResource<TResource, TUnit> _resource { get; init; }
+    public IResource Resource => _resource;
 
     private bool _isFinished;
 
@@ -27,7 +28,7 @@ where TUnit : IAdditionOperators<TUnit, TUnit, TUnit>, IDivisionOperators<TUnit,
     {
         if (_isFinished) return;
         _isFinished = true;
-        Resource.Finish(this);
+        _resource.Finish(this);
     }
 
     public TUnit Current { get; internal set; }
@@ -35,12 +36,12 @@ where TUnit : IAdditionOperators<TUnit, TUnit, TUnit>, IDivisionOperators<TUnit,
 
     public async ValueTask Report(TUnit processedSize, CancellationToken token)
     {
-        await Resource.Report(this, processedSize, token);
+        await _resource.Report(this, processedSize, token);
         Current += processedSize;
     }
 
     public void ReportNoWait(TUnit processedSize)
     {
-        Resource.ReportNoWait(this, processedSize);
+        _resource.ReportNoWait(this, processedSize);
     }
 }

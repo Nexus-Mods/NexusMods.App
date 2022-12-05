@@ -55,11 +55,11 @@ public class Spectre : IRenderer
             {
                 var innerTask = Task.Run(f, token);
 
-                var tasks = new Dictionary<ulong, ProgressTask>();
+                var tasks = new Dictionary<(IResource, ulong), ProgressTask>();
 
                 while (!token.IsCancellationRequested && !innerTask.IsCompleted)
                 {
-                    var jobs = _resources.SelectMany(r => r.Jobs).ToDictionary(r => r.Id);
+                    var jobs = _resources.SelectMany(r => r.Jobs).ToDictionary(r => (r.Resource, r.Id));
                     foreach (var (id, job) in jobs)
                     {
                         if (tasks.TryGetValue(id, out var task))
@@ -86,7 +86,7 @@ public class Spectre : IRenderer
                                 newTask = ctx.AddTask(job.Description, true, 1.0d);
                                 newTask.Increment((double)job.Progress);
                             }
-                            tasks[job.Id] = newTask;
+                            tasks[(job.Resource, job.Id)] = newTask;
                         }
                     }
 
@@ -110,12 +110,7 @@ public class Spectre : IRenderer
         });
         return await tcs.Task;
     }
-
-    private async Task RunTaskChecker(ProgressContext ctx, CancellationToken token)
-    {
-
-    }
-
+    
     private Color NexusColor = new(0xda, 0x8e, 0x35);
 
     public async Task Render<T>(T o)

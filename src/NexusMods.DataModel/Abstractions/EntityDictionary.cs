@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System.Collections;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -8,7 +9,7 @@ using NexusMods.DataModel.ModLists;
 namespace NexusMods.DataModel.Abstractions;
 
 [JsonConverter(typeof(EntityDictionaryConverterFactory))]
-public struct EntityDictionary<TK, TV> : IEmptyWithDataStore<EntityDictionary<TK, TV>>
+public struct EntityDictionary<TK, TV> : IEmptyWithDataStore<EntityDictionary<TK, TV>>, IEnumerable<KeyValuePair<TK, TV>>
 where TV : Entity where TK : notnull
 {
     private readonly ImmutableDictionary<TK, Id> _coll;
@@ -53,6 +54,16 @@ where TV : Entity where TK : notnull
         }
     }
     public static EntityDictionary<TK, TV> Empty(IDataStore store) => new(store);
+    public IEnumerator<KeyValuePair<TK, TV>> GetEnumerator()
+    {
+        foreach (var (key, value) in _coll)
+            yield return KeyValuePair.Create(key, _store.Get<TV>(value));
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
 }
 
 public class EntityDictionaryConverterFactory : JsonConverterFactory

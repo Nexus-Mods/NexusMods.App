@@ -13,7 +13,7 @@
             .ToArray();
     }
 
-    var files = new[] {"bsasigs.txt", "file_sigs_RAW.txt"};
+    var files = new[] {"bsasigs.txt"};
     var digits = new HashSet<char>("0123456789".ToArray());
     var rows = files
         .SelectMany(file => File.ReadAllLines(Path.Combine("./Definitions/", file)))

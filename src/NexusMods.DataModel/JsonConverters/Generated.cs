@@ -4,11 +4,13 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.ModLists;
 using NexusMods.DataModel.ModLists.ModFiles;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Interfaces;
 using NexusMods.Paths;
+using Wabbajack.Common.FileSignatures;
 
 public class NexusMods_DataModel_Abstractions_EntityConverter : JsonConverter<NexusMods.DataModel.Abstractions.Entity> {
   public static void ConfigureServices(IServiceCollection services) {
@@ -17,6 +19,8 @@ public class NexusMods_DataModel_Abstractions_EntityConverter : JsonConverter<Ne
     services.AddSingleton<JsonConverter, NexusMods_DataModel_ModLists_ModListConverter>();
     services.AddSingleton<JsonConverter, NexusMods_DataModel_ModLists_ModFiles_FromArchiveConverter>();
     services.AddSingleton<JsonConverter, NexusMods_DataModel_ModLists_ModFiles_GameFileConverter>();
+    services.AddSingleton<JsonConverter, NexusMods_DataModel_ArchiveContents_AnalyzedFileConverter>();
+    services.AddSingleton<JsonConverter, NexusMods_DataModel_ArchiveContents_AnalyzedArchiveConverter>();
     services.AddSingleton<JsonConverter, NexusMods_DataModel_Abstractions_EntityConverter>();
   }
   public override NexusMods.DataModel.Abstractions.Entity Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
@@ -37,6 +41,10 @@ public class NexusMods_DataModel_Abstractions_EntityConverter : JsonConverter<Ne
         return JsonSerializer.Deserialize<FromArchive>(ref reader, options)!;
       case "NexusMods.DataModel.ModFiles.GameFile":
         return JsonSerializer.Deserialize<GameFile>(ref reader, options)!;
+      case "AnalyzedFile":
+        return JsonSerializer.Deserialize<AnalyzedFile>(ref reader, options)!;
+      case "AnalyzedArchive":
+        return JsonSerializer.Deserialize<AnalyzedArchive>(ref reader, options)!;
       default:
         throw new JsonException($"No Type dispatch for {type}");
     }
@@ -49,27 +57,36 @@ public class NexusMods_DataModel_Abstractions_EntityConverter : JsonConverter<Ne
       case NexusMods.DataModel.ModLists.ModFiles.GameFile v1:
         JsonSerializer.Serialize(writer, v1, options);
          return;
-      case NexusMods.DataModel.ModLists.ListRegistry v2:
+      case NexusMods.DataModel.ArchiveContents.AnalyzedArchive v2:
         JsonSerializer.Serialize(writer, v2, options);
          return;
-      case NexusMods.DataModel.ModLists.Mod v3:
+      case NexusMods.DataModel.ModLists.ListRegistry v3:
         JsonSerializer.Serialize(writer, v3, options);
          return;
-      case NexusMods.DataModel.ModLists.ModList v4:
+      case NexusMods.DataModel.ModLists.Mod v4:
         JsonSerializer.Serialize(writer, v4, options);
+         return;
+      case NexusMods.DataModel.ModLists.ModList v5:
+        JsonSerializer.Serialize(writer, v5, options);
+         return;
+      case NexusMods.DataModel.ArchiveContents.AnalyzedFile v6:
+        JsonSerializer.Serialize(writer, v6, options);
          return;
     }
   }
 }
-public class NexusMods_DataModel_ModLists_ListRegistryConverter : JsonConverter<NexusMods.DataModel.ModLists.ListRegistry> {
+public class NexusMods_DataModel_ArchiveContents_AnalyzedArchiveConverter : JsonConverter<NexusMods.DataModel.ArchiveContents.AnalyzedArchive> {
   private readonly Lazy<IDataStore> _store;
-  public NexusMods_DataModel_ModLists_ListRegistryConverter(IServiceProvider provider) {
+  public NexusMods_DataModel_ArchiveContents_AnalyzedArchiveConverter(IServiceProvider provider) {
     _store = new Lazy<IDataStore>(provider.GetRequiredService<IDataStore>);
   }
-  public override NexusMods.DataModel.ModLists.ListRegistry Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
+  public override NexusMods.DataModel.ArchiveContents.AnalyzedArchive Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
     if (reader.TokenType != JsonTokenType.StartObject)
       throw new JsonException();
-    EntityDictionary<ModListId,ModList> listsProp = default;
+    EntityDictionary<RelativePath,AnalyzedFile> contentsProp = default;
+    FileType[] filetypesProp = default;
+    Hash hashProp = default;
+    Size sizeProp = default;
     while (true) {
       reader.Read();
       if (reader.TokenType == JsonTokenType.EndObject) {
@@ -79,37 +96,56 @@ public class NexusMods_DataModel_ModLists_ListRegistryConverter : JsonConverter<
       var prop = reader.GetString();
       reader.Read();
       switch (prop) {
-        case "Lists":
-          listsProp = JsonSerializer.Deserialize<EntityDictionary<ModListId,ModList>>(ref reader, options);
+        case "Contents":
+          contentsProp = JsonSerializer.Deserialize<EntityDictionary<RelativePath,AnalyzedFile>>(ref reader, options);
+          break;
+        case "FileTypes":
+          filetypesProp = JsonSerializer.Deserialize<FileType[]>(ref reader, options);
+          break;
+        case "Hash":
+          hashProp = JsonSerializer.Deserialize<Hash>(ref reader, options);
+          break;
+        case "Size":
+          sizeProp = JsonSerializer.Deserialize<Size>(ref reader, options);
           break;
         default:
           reader.Skip();
           break;
       }
     }
-    return new NexusMods.DataModel.ModLists.ListRegistry {
-      Lists = listsProp,
+    return new NexusMods.DataModel.ArchiveContents.AnalyzedArchive {
+      Contents = contentsProp,
+      FileTypes = filetypesProp,
+      Hash = hashProp,
+      Size = sizeProp,
       Store = _store.Value
       };
     }
-    public override void Write(Utf8JsonWriter writer, NexusMods.DataModel.ModLists.ListRegistry value, JsonSerializerOptions options) {
+    public override void Write(Utf8JsonWriter writer, NexusMods.DataModel.ArchiveContents.AnalyzedArchive value, JsonSerializerOptions options) {
       writer.WriteStartObject();
-      writer.WriteString("$type", "NexusMods.DataModel.ListRegistry");
-      writer.WritePropertyName("Lists");
-      JsonSerializer.Serialize<EntityDictionary<ModListId,ModList>>(writer, value.Lists, options);
+      writer.WriteString("$type", "AnalyzedArchive");
+      writer.WritePropertyName("Contents");
+      JsonSerializer.Serialize<EntityDictionary<RelativePath,AnalyzedFile>>(writer, value.Contents, options);
+      writer.WritePropertyName("FileTypes");
+      JsonSerializer.Serialize<FileType[]>(writer, value.FileTypes, options);
+      writer.WritePropertyName("Hash");
+      JsonSerializer.Serialize<Hash>(writer, value.Hash, options);
+      writer.WritePropertyName("Size");
+      JsonSerializer.Serialize<Size>(writer, value.Size, options);
       writer.WriteEndObject();
     }
   }
-  public class NexusMods_DataModel_ModLists_ModConverter : JsonConverter<NexusMods.DataModel.ModLists.Mod> {
+  public class NexusMods_DataModel_ArchiveContents_AnalyzedFileConverter : JsonConverter<NexusMods.DataModel.ArchiveContents.AnalyzedFile> {
     private readonly Lazy<IDataStore> _store;
-    public NexusMods_DataModel_ModLists_ModConverter(IServiceProvider provider) {
+    public NexusMods_DataModel_ArchiveContents_AnalyzedFileConverter(IServiceProvider provider) {
       _store = new Lazy<IDataStore>(provider.GetRequiredService<IDataStore>);
     }
-    public override NexusMods.DataModel.ModLists.Mod Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
+    public override NexusMods.DataModel.ArchiveContents.AnalyzedFile Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
       if (reader.TokenType != JsonTokenType.StartObject)
         throw new JsonException();
-      EntityHashSet<AModFile> filesProp = default;
-      string nameProp = default;
+      FileType[] filetypesProp = default;
+      Hash hashProp = default;
+      Size sizeProp = default;
       while (true) {
         reader.Read();
         if (reader.TokenType == JsonTokenType.EndObject) {
@@ -119,43 +155,48 @@ public class NexusMods_DataModel_ModLists_ListRegistryConverter : JsonConverter<
         var prop = reader.GetString();
         reader.Read();
         switch (prop) {
-          case "Files":
-            filesProp = JsonSerializer.Deserialize<EntityHashSet<AModFile>>(ref reader, options);
+          case "FileTypes":
+            filetypesProp = JsonSerializer.Deserialize<FileType[]>(ref reader, options);
             break;
-          case "Name":
-            nameProp = JsonSerializer.Deserialize<string>(ref reader, options);
+          case "Hash":
+            hashProp = JsonSerializer.Deserialize<Hash>(ref reader, options);
+            break;
+          case "Size":
+            sizeProp = JsonSerializer.Deserialize<Size>(ref reader, options);
             break;
           default:
             reader.Skip();
             break;
         }
       }
-      return new NexusMods.DataModel.ModLists.Mod {
-        Files = filesProp,
-        Name = nameProp,
+      return new NexusMods.DataModel.ArchiveContents.AnalyzedFile {
+        FileTypes = filetypesProp,
+        Hash = hashProp,
+        Size = sizeProp,
         Store = _store.Value
         };
       }
-      public override void Write(Utf8JsonWriter writer, NexusMods.DataModel.ModLists.Mod value, JsonSerializerOptions options) {
+      public override void Write(Utf8JsonWriter writer, NexusMods.DataModel.ArchiveContents.AnalyzedFile value, JsonSerializerOptions options) {
         writer.WriteStartObject();
-        writer.WriteString("$type", "NexusMods.DataModel.ListRegistry");
-        writer.WritePropertyName("Files");
-        JsonSerializer.Serialize<EntityHashSet<AModFile>>(writer, value.Files, options);
-        writer.WritePropertyName("Name");
-        JsonSerializer.Serialize<string>(writer, value.Name, options);
+        writer.WriteString("$type", "AnalyzedFile");
+        writer.WritePropertyName("FileTypes");
+        JsonSerializer.Serialize<FileType[]>(writer, value.FileTypes, options);
+        writer.WritePropertyName("Hash");
+        JsonSerializer.Serialize<Hash>(writer, value.Hash, options);
+        writer.WritePropertyName("Size");
+        JsonSerializer.Serialize<Size>(writer, value.Size, options);
         writer.WriteEndObject();
       }
     }
-    public class NexusMods_DataModel_ModLists_ModFiles_FromArchiveConverter : JsonConverter<NexusMods.DataModel.ModLists.ModFiles.FromArchive> {
+    public class NexusMods_DataModel_ModLists_ListRegistryConverter : JsonConverter<NexusMods.DataModel.ModLists.ListRegistry> {
       private readonly Lazy<IDataStore> _store;
-      public NexusMods_DataModel_ModLists_ModFiles_FromArchiveConverter(IServiceProvider provider) {
+      public NexusMods_DataModel_ModLists_ListRegistryConverter(IServiceProvider provider) {
         _store = new Lazy<IDataStore>(provider.GetRequiredService<IDataStore>);
       }
-      public override NexusMods.DataModel.ModLists.ModFiles.FromArchive Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
+      public override NexusMods.DataModel.ModLists.ListRegistry Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
         if (reader.TokenType != JsonTokenType.StartObject)
           throw new JsonException();
-        HashRelativePath fromProp = default;
-        GamePath toProp = default;
+        EntityDictionary<ModListId,ModList> listsProp = default;
         while (true) {
           reader.Read();
           if (reader.TokenType == JsonTokenType.EndObject) {
@@ -165,45 +206,37 @@ public class NexusMods_DataModel_ModLists_ListRegistryConverter : JsonConverter<
           var prop = reader.GetString();
           reader.Read();
           switch (prop) {
-            case "From":
-              fromProp = JsonSerializer.Deserialize<HashRelativePath>(ref reader, options);
-              break;
-            case "To":
-              toProp = JsonSerializer.Deserialize<GamePath>(ref reader, options);
+            case "Lists":
+              listsProp = JsonSerializer.Deserialize<EntityDictionary<ModListId,ModList>>(ref reader, options);
               break;
             default:
               reader.Skip();
               break;
           }
         }
-        return new NexusMods.DataModel.ModLists.ModFiles.FromArchive {
-          From = fromProp,
-          To = toProp,
+        return new NexusMods.DataModel.ModLists.ListRegistry {
+          Lists = listsProp,
           Store = _store.Value
           };
         }
-        public override void Write(Utf8JsonWriter writer, NexusMods.DataModel.ModLists.ModFiles.FromArchive value, JsonSerializerOptions options) {
+        public override void Write(Utf8JsonWriter writer, NexusMods.DataModel.ModLists.ListRegistry value, JsonSerializerOptions options) {
           writer.WriteStartObject();
-          writer.WriteString("$type", "NexusMods.DataModel.GameFiles.FromArchive");
-          writer.WritePropertyName("From");
-          JsonSerializer.Serialize<HashRelativePath>(writer, value.From, options);
-          writer.WritePropertyName("To");
-          JsonSerializer.Serialize<GamePath>(writer, value.To, options);
+          writer.WriteString("$type", "NexusMods.DataModel.ListRegistry");
+          writer.WritePropertyName("Lists");
+          JsonSerializer.Serialize<EntityDictionary<ModListId,ModList>>(writer, value.Lists, options);
           writer.WriteEndObject();
         }
       }
-      public class NexusMods_DataModel_ModLists_ModFiles_GameFileConverter : JsonConverter<NexusMods.DataModel.ModLists.ModFiles.GameFile> {
+      public class NexusMods_DataModel_ModLists_ModConverter : JsonConverter<NexusMods.DataModel.ModLists.Mod> {
         private readonly Lazy<IDataStore> _store;
-        public NexusMods_DataModel_ModLists_ModFiles_GameFileConverter(IServiceProvider provider) {
+        public NexusMods_DataModel_ModLists_ModConverter(IServiceProvider provider) {
           _store = new Lazy<IDataStore>(provider.GetRequiredService<IDataStore>);
         }
-        public override NexusMods.DataModel.ModLists.ModFiles.GameFile Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
+        public override NexusMods.DataModel.ModLists.Mod Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
           if (reader.TokenType != JsonTokenType.StartObject)
             throw new JsonException();
-          Hash hashProp = default;
-          GameInstallation installationProp = default;
-          Size sizeProp = default;
-          GamePath toProp = default;
+          EntityHashSet<AModFile> filesProp = default;
+          string nameProp = default;
           while (true) {
             reader.Read();
             if (reader.TokenType == JsonTokenType.EndObject) {
@@ -213,59 +246,43 @@ public class NexusMods_DataModel_ModLists_ListRegistryConverter : JsonConverter<
             var prop = reader.GetString();
             reader.Read();
             switch (prop) {
-              case "Hash":
-                hashProp = JsonSerializer.Deserialize<Hash>(ref reader, options);
+              case "Files":
+                filesProp = JsonSerializer.Deserialize<EntityHashSet<AModFile>>(ref reader, options);
                 break;
-              case "Installation":
-                installationProp = JsonSerializer.Deserialize<GameInstallation>(ref reader, options);
-                break;
-              case "Size":
-                sizeProp = JsonSerializer.Deserialize<Size>(ref reader, options);
-                break;
-              case "To":
-                toProp = JsonSerializer.Deserialize<GamePath>(ref reader, options);
+              case "Name":
+                nameProp = JsonSerializer.Deserialize<string>(ref reader, options);
                 break;
               default:
                 reader.Skip();
                 break;
             }
           }
-          return new NexusMods.DataModel.ModLists.ModFiles.GameFile {
-            Hash = hashProp,
-            Installation = installationProp,
-            Size = sizeProp,
-            To = toProp,
+          return new NexusMods.DataModel.ModLists.Mod {
+            Files = filesProp,
+            Name = nameProp,
             Store = _store.Value
             };
           }
-          public override void Write(Utf8JsonWriter writer, NexusMods.DataModel.ModLists.ModFiles.GameFile value, JsonSerializerOptions options) {
+          public override void Write(Utf8JsonWriter writer, NexusMods.DataModel.ModLists.Mod value, JsonSerializerOptions options) {
             writer.WriteStartObject();
-            writer.WriteString("$type", "NexusMods.DataModel.ModFiles.GameFile");
-            writer.WritePropertyName("Hash");
-            JsonSerializer.Serialize<Hash>(writer, value.Hash, options);
-            writer.WritePropertyName("Installation");
-            JsonSerializer.Serialize<GameInstallation>(writer, value.Installation, options);
-            writer.WritePropertyName("Size");
-            JsonSerializer.Serialize<Size>(writer, value.Size, options);
-            writer.WritePropertyName("To");
-            JsonSerializer.Serialize<GamePath>(writer, value.To, options);
+            writer.WriteString("$type", "NexusMods.DataModel.ListRegistry");
+            writer.WritePropertyName("Files");
+            JsonSerializer.Serialize<EntityHashSet<AModFile>>(writer, value.Files, options);
+            writer.WritePropertyName("Name");
+            JsonSerializer.Serialize<string>(writer, value.Name, options);
             writer.WriteEndObject();
           }
         }
-        public class NexusMods_DataModel_ModLists_ModListConverter : JsonConverter<NexusMods.DataModel.ModLists.ModList> {
+        public class NexusMods_DataModel_ModLists_ModFiles_FromArchiveConverter : JsonConverter<NexusMods.DataModel.ModLists.ModFiles.FromArchive> {
           private readonly Lazy<IDataStore> _store;
-          public NexusMods_DataModel_ModLists_ModListConverter(IServiceProvider provider) {
+          public NexusMods_DataModel_ModLists_ModFiles_FromArchiveConverter(IServiceProvider provider) {
             _store = new Lazy<IDataStore>(provider.GetRequiredService<IDataStore>);
           }
-          public override NexusMods.DataModel.ModLists.ModList Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
+          public override NexusMods.DataModel.ModLists.ModFiles.FromArchive Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
             if (reader.TokenType != JsonTokenType.StartObject)
               throw new JsonException();
-            GameInstallation installationProp = default;
-            DateTime lastmodifiedProp = default;
-            ModListId modlistidProp = default;
-            EntityHashSet<Mod> modsProp = default;
-            string nameProp = default;
-            EntityLink<ModList> previousversionProp = default;
+            HashRelativePath fromProp = default;
+            GamePath toProp = default;
             while (true) {
               reader.Read();
               if (reader.TokenType == JsonTokenType.EndObject) {
@@ -275,54 +292,164 @@ public class NexusMods_DataModel_ModLists_ListRegistryConverter : JsonConverter<
               var prop = reader.GetString();
               reader.Read();
               switch (prop) {
-                case "Installation":
-                  installationProp = JsonSerializer.Deserialize<GameInstallation>(ref reader, options);
+                case "From":
+                  fromProp = JsonSerializer.Deserialize<HashRelativePath>(ref reader, options);
                   break;
-                case "LastModified":
-                  lastmodifiedProp = JsonSerializer.Deserialize<DateTime>(ref reader, options);
-                  break;
-                case "ModListId":
-                  modlistidProp = JsonSerializer.Deserialize<ModListId>(ref reader, options);
-                  break;
-                case "Mods":
-                  modsProp = JsonSerializer.Deserialize<EntityHashSet<Mod>>(ref reader, options);
-                  break;
-                case "Name":
-                  nameProp = JsonSerializer.Deserialize<string>(ref reader, options);
-                  break;
-                case "PreviousVersion":
-                  previousversionProp = JsonSerializer.Deserialize<EntityLink<ModList>>(ref reader, options);
+                case "To":
+                  toProp = JsonSerializer.Deserialize<GamePath>(ref reader, options);
                   break;
                 default:
                   reader.Skip();
                   break;
               }
             }
-            return new NexusMods.DataModel.ModLists.ModList {
-              Installation = installationProp,
-              LastModified = lastmodifiedProp,
-              ModListId = modlistidProp,
-              Mods = modsProp,
-              Name = nameProp,
-              PreviousVersion = previousversionProp,
+            return new NexusMods.DataModel.ModLists.ModFiles.FromArchive {
+              From = fromProp,
+              To = toProp,
               Store = _store.Value
               };
             }
-            public override void Write(Utf8JsonWriter writer, NexusMods.DataModel.ModLists.ModList value, JsonSerializerOptions options) {
+            public override void Write(Utf8JsonWriter writer, NexusMods.DataModel.ModLists.ModFiles.FromArchive value, JsonSerializerOptions options) {
               writer.WriteStartObject();
-              writer.WriteString("$type", "NexusMods.DataModel.ModList");
-              writer.WritePropertyName("Installation");
-              JsonSerializer.Serialize<GameInstallation>(writer, value.Installation, options);
-              writer.WritePropertyName("LastModified");
-              JsonSerializer.Serialize<DateTime>(writer, value.LastModified, options);
-              writer.WritePropertyName("ModListId");
-              JsonSerializer.Serialize<ModListId>(writer, value.ModListId, options);
-              writer.WritePropertyName("Mods");
-              JsonSerializer.Serialize<EntityHashSet<Mod>>(writer, value.Mods, options);
-              writer.WritePropertyName("Name");
-              JsonSerializer.Serialize<string>(writer, value.Name, options);
-              writer.WritePropertyName("PreviousVersion");
-              JsonSerializer.Serialize<EntityLink<ModList>>(writer, value.PreviousVersion, options);
+              writer.WriteString("$type", "NexusMods.DataModel.GameFiles.FromArchive");
+              writer.WritePropertyName("From");
+              JsonSerializer.Serialize<HashRelativePath>(writer, value.From, options);
+              writer.WritePropertyName("To");
+              JsonSerializer.Serialize<GamePath>(writer, value.To, options);
               writer.WriteEndObject();
             }
           }
+          public class NexusMods_DataModel_ModLists_ModFiles_GameFileConverter : JsonConverter<NexusMods.DataModel.ModLists.ModFiles.GameFile> {
+            private readonly Lazy<IDataStore> _store;
+            public NexusMods_DataModel_ModLists_ModFiles_GameFileConverter(IServiceProvider provider) {
+              _store = new Lazy<IDataStore>(provider.GetRequiredService<IDataStore>);
+            }
+            public override NexusMods.DataModel.ModLists.ModFiles.GameFile Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
+              if (reader.TokenType != JsonTokenType.StartObject)
+                throw new JsonException();
+              Hash hashProp = default;
+              GameInstallation installationProp = default;
+              Size sizeProp = default;
+              GamePath toProp = default;
+              while (true) {
+                reader.Read();
+                if (reader.TokenType == JsonTokenType.EndObject) {
+                  reader.Read();
+                  break;
+                }
+                var prop = reader.GetString();
+                reader.Read();
+                switch (prop) {
+                  case "Hash":
+                    hashProp = JsonSerializer.Deserialize<Hash>(ref reader, options);
+                    break;
+                  case "Installation":
+                    installationProp = JsonSerializer.Deserialize<GameInstallation>(ref reader, options);
+                    break;
+                  case "Size":
+                    sizeProp = JsonSerializer.Deserialize<Size>(ref reader, options);
+                    break;
+                  case "To":
+                    toProp = JsonSerializer.Deserialize<GamePath>(ref reader, options);
+                    break;
+                  default:
+                    reader.Skip();
+                    break;
+                }
+              }
+              return new NexusMods.DataModel.ModLists.ModFiles.GameFile {
+                Hash = hashProp,
+                Installation = installationProp,
+                Size = sizeProp,
+                To = toProp,
+                Store = _store.Value
+                };
+              }
+              public override void Write(Utf8JsonWriter writer, NexusMods.DataModel.ModLists.ModFiles.GameFile value, JsonSerializerOptions options) {
+                writer.WriteStartObject();
+                writer.WriteString("$type", "NexusMods.DataModel.ModFiles.GameFile");
+                writer.WritePropertyName("Hash");
+                JsonSerializer.Serialize<Hash>(writer, value.Hash, options);
+                writer.WritePropertyName("Installation");
+                JsonSerializer.Serialize<GameInstallation>(writer, value.Installation, options);
+                writer.WritePropertyName("Size");
+                JsonSerializer.Serialize<Size>(writer, value.Size, options);
+                writer.WritePropertyName("To");
+                JsonSerializer.Serialize<GamePath>(writer, value.To, options);
+                writer.WriteEndObject();
+              }
+            }
+            public class NexusMods_DataModel_ModLists_ModListConverter : JsonConverter<NexusMods.DataModel.ModLists.ModList> {
+              private readonly Lazy<IDataStore> _store;
+              public NexusMods_DataModel_ModLists_ModListConverter(IServiceProvider provider) {
+                _store = new Lazy<IDataStore>(provider.GetRequiredService<IDataStore>);
+              }
+              public override NexusMods.DataModel.ModLists.ModList Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
+                if (reader.TokenType != JsonTokenType.StartObject)
+                  throw new JsonException();
+                GameInstallation installationProp = default;
+                DateTime lastmodifiedProp = default;
+                ModListId modlistidProp = default;
+                EntityHashSet<Mod> modsProp = default;
+                string nameProp = default;
+                EntityLink<ModList> previousversionProp = default;
+                while (true) {
+                  reader.Read();
+                  if (reader.TokenType == JsonTokenType.EndObject) {
+                    reader.Read();
+                    break;
+                  }
+                  var prop = reader.GetString();
+                  reader.Read();
+                  switch (prop) {
+                    case "Installation":
+                      installationProp = JsonSerializer.Deserialize<GameInstallation>(ref reader, options);
+                      break;
+                    case "LastModified":
+                      lastmodifiedProp = JsonSerializer.Deserialize<DateTime>(ref reader, options);
+                      break;
+                    case "ModListId":
+                      modlistidProp = JsonSerializer.Deserialize<ModListId>(ref reader, options);
+                      break;
+                    case "Mods":
+                      modsProp = JsonSerializer.Deserialize<EntityHashSet<Mod>>(ref reader, options);
+                      break;
+                    case "Name":
+                      nameProp = JsonSerializer.Deserialize<string>(ref reader, options);
+                      break;
+                    case "PreviousVersion":
+                      previousversionProp = JsonSerializer.Deserialize<EntityLink<ModList>>(ref reader, options);
+                      break;
+                    default:
+                      reader.Skip();
+                      break;
+                  }
+                }
+                return new NexusMods.DataModel.ModLists.ModList {
+                  Installation = installationProp,
+                  LastModified = lastmodifiedProp,
+                  ModListId = modlistidProp,
+                  Mods = modsProp,
+                  Name = nameProp,
+                  PreviousVersion = previousversionProp,
+                  Store = _store.Value
+                  };
+                }
+                public override void Write(Utf8JsonWriter writer, NexusMods.DataModel.ModLists.ModList value, JsonSerializerOptions options) {
+                  writer.WriteStartObject();
+                  writer.WriteString("$type", "NexusMods.DataModel.ModList");
+                  writer.WritePropertyName("Installation");
+                  JsonSerializer.Serialize<GameInstallation>(writer, value.Installation, options);
+                  writer.WritePropertyName("LastModified");
+                  JsonSerializer.Serialize<DateTime>(writer, value.LastModified, options);
+                  writer.WritePropertyName("ModListId");
+                  JsonSerializer.Serialize<ModListId>(writer, value.ModListId, options);
+                  writer.WritePropertyName("Mods");
+                  JsonSerializer.Serialize<EntityHashSet<Mod>>(writer, value.Mods, options);
+                  writer.WritePropertyName("Name");
+                  JsonSerializer.Serialize<string>(writer, value.Name, options);
+                  writer.WritePropertyName("PreviousVersion");
+                  JsonSerializer.Serialize<EntityLink<ModList>>(writer, value.PreviousVersion, options);
+                  writer.WriteEndObject();
+                }
+              }

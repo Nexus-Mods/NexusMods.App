@@ -6,7 +6,7 @@ public interface IJob : IDisposable
     public string Description { get; }
     public Percent Progress { get; }
     public bool Started { get; }
-
+    IResource Resource { get; }
 }
 
 public interface IJob<TSize> : IJob
