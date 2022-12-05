@@ -51,7 +51,7 @@ public class ModListManager
         var mod = new Mod
         {
             Name = "Game Files",
-            Files = new EntityHashSet<AModFile>(gameFiles.Select(g => g.Id)),
+            Files = new EntityHashSet<AModFile>(_store, gameFiles.Select(g => g.Id)),
             Store = _store
         };
         
@@ -59,7 +59,7 @@ public class ModListManager
         {
             Installation = installation,
             Name = name, 
-            Mods = new EntityHashSet<Mod>(new [] {mod.Id})
+            Mods = new EntityHashSet<Mod>(_store, new [] {mod.Id})
         };
         _root.Alter(r => r with {Lists = r.Lists.With(n.ModListId, n)});
         

@@ -25,7 +25,7 @@ public class Resource<TResource, TUnit> : IResource<TResource, TUnit>
     public Resource(string humanName, int maxJobs, TUnit maxThroughput)
     {
         Name = humanName;
-        MaxJobs = maxJobs;
+        MaxJobs = maxJobs == 0 ? Environment.ProcessorCount : maxJobs;
         MaxThroughput = maxThroughput;
         _semaphore = new SemaphoreSlim(MaxJobs);
         _channel = Channel.CreateBounded<PendingReport>(10);

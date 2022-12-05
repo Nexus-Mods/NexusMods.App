@@ -67,9 +67,9 @@ public class TemporaryFileManager : IDisposable, IAsyncDisposable
     /// Returns a new temporary path, that is (optionally) deleted when disposed
     /// </summary>
     /// <returns></returns>
-    public TemporaryPath CreateFolder(bool deleteOnDispose = true)
+    public TemporaryPath CreateFolder(string prefix = "", bool deleteOnDispose = true)
     {
-        var path = _basePath.Combine(Guid.NewGuid().ToString());
+        var path = _basePath.Combine(prefix + Guid.NewGuid());
         path.CreateDirectory();
         return new TemporaryPath(path, deleteOnDispose);
     }

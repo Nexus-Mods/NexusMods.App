@@ -1,3 +1,7 @@
+using FluentAssertions;
+using NexusMods.CLI.DataOutputs;
+using NexusMods.Interfaces.Components;
+
 namespace NexusMods.CLI.Tests;
 
 public class CLITests
@@ -15,8 +19,13 @@ public class CLITests
     public async Task CanListGames()
     {
         _renderer.Reset();
-        Assert.Equal(0, await _builder.Run(new[] { "list-games" }));
+        Assert.Equal(0, await _builder.Run(new[] {"--noBanner", "list-games" }));
         
-        Assert.NotEmpty(_renderer.Logged);
+        Assert.Equal(1, _renderer.Logged.Count);
+
+        _renderer.Logged.First().Should().BeAssignableTo<Table>();
+        var row = _renderer.Logged.OfType<Table>().First().Rows.First();
+        row.OfType<IGame>().First().Name.Should().Be("Stubbed Game");
+
     }
 }

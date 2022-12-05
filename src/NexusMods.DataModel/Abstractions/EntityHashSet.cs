@@ -1,11 +1,12 @@
-﻿using System.Collections.Immutable;
+﻿using System.Collections;
+using System.Collections.Immutable;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace NexusMods.DataModel.Abstractions;
 
-public struct EntityHashSet<T> : IEmptyWithDataStore<EntityHashSet<T>>
+public struct EntityHashSet<T> : IEmptyWithDataStore<EntityHashSet<T>>, IEnumerable<T>
 where T : Entity
 {
     public static EntityHashSet<T> Empty(IDataStore store) => new(store);
@@ -18,24 +19,26 @@ where T : Entity
         _store = store;
     }
 
-    private EntityHashSet(ImmutableHashSet<Id> coll)
+    private EntityHashSet(IDataStore store, ImmutableHashSet<Id> coll)
     {
         _coll = coll;
+        _store = store;
     }
 
-    public EntityHashSet(IEnumerable<Id> ids)
+    public EntityHashSet(IDataStore store, IEnumerable<Id> ids)
     {
         _coll = ImmutableHashSet.CreateRange(ids);
+        _store = store;
     }
 
     public EntityHashSet<T> With(T val)
     {
-        return new EntityHashSet<T>(_coll.Add(val.Id));
+        return new EntityHashSet<T>(_store, _coll.Add(val.Id));
     }
 
     public EntityHashSet<T> Without(T val)
     {
-        return new EntityHashSet<T>(_coll.Remove(val.Id));
+        return new EntityHashSet<T>(_store, _coll.Remove(val.Id));
     }
 
     public bool Contains(T val)
@@ -45,6 +48,16 @@ where T : Entity
 
     public IEnumerable<Id> Ids => _coll;
     public int Count => _coll.Count;
+    public IEnumerator<T> GetEnumerator()
+    {
+        foreach (var itm in _coll)
+            yield return _store.Get<T>(itm);
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
 }
 
 public class EntityHashSetConverterFactory : JsonConverterFactory
@@ -88,7 +101,7 @@ public class EntityHashSetConverter<T> : JsonConverter<EntityHashSet<T>>
             reader.Read();
         }
         
-        return new EntityHashSet<T>(lst);
+        return new EntityHashSet<T>(_store.Value, lst);
     }
 
     public override void Write(Utf8JsonWriter writer, EntityHashSet<T> value, JsonSerializerOptions options)

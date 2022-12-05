@@ -31,5 +31,5 @@ public class Configurator
         if (!noBanner)
             Renderer.RenderBanner();
     }
-    
+
 }

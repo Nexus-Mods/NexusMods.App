@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NexusMods.Interfaces;
 using NexusMods.Interfaces.Components;
@@ -33,14 +34,10 @@ public class BasicTests
     [Fact]
     public void CanGetInstallLocations()
     {
-        
-        Assert.Equal(@"c:\games\steam_game\1", _steamInstall!.Locations[GameFolderType.Game].ToString());
-        Assert.Equal(Version.Parse("0.0.1.0"), _steamInstall.Version);
-
+        _steamInstall!.Locations[GameFolderType.Game].Combine("StubbedGame.exe").FileExists.Should().BeTrue();
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            Assert.Equal(@"c:\games\gog_game\1", _gogInstall!.Locations[GameFolderType.Game].ToString());
-            Assert.Equal(Version.Parse("0.0.1.0"), _gogInstall.Version);
+            _gogInstall!.Locations[GameFolderType.Game].Combine("StubbedGame.exe").FileExists.Should().BeTrue();
         }
     }
 

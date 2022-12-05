@@ -1,8 +1,13 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using GameFinder.Common;
+using GameFinder.StoreHandlers.GOG;
+using GameFinder.StoreHandlers.Steam;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Interfaces;
+using NexusMods.Interfaces.Components;
+using NexusMods.Paths;
 using NexusMods.StandardGameLocators;
+using NexusMods.StandardGameLocators.Tests;
 using Xunit.DependencyInjection;
 using Xunit.DependencyInjection.Logging;
 
@@ -12,9 +17,12 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection container)
     {
-        container.AddStandardGameLocators();
-        container.AddBethesdaGameStudios();
-        container.AddCLI();
+        container.AddStandardGameLocators(false);
+        container.AddSingleton<IGame, StubbedGame>();
+        container.AddSingleton<TemporaryFileManager>();
+
+        container.AddSingleton<AHandler<SteamGame, int>, StubbedSteamLocator>();
+        container.AddSingleton<AHandler<GOGGame, long>, StubbedGogLocator>();        container.AddCLI();
         container.AddCLIVerbs();
         container.AddAllSingleton<IRenderer, LoggingRenderer>();
         container.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug));

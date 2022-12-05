@@ -318,6 +318,12 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
         await inf.CopyToAsync(ouf, token ?? CancellationToken.None);
     }
     
+    public async ValueTask CopyFromAsync(Stream src, CancellationToken token = default)
+    {
+        await using var output = Create();
+        await src.CopyToAsync(output, token);
+    }
+    
     private string ToNativePath()
     {
         return ToString();
@@ -405,6 +411,16 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
     {
         await using var fs = Create();
         await fs.WriteAsync(Encoding.UTF8.GetBytes(text), token ?? CancellationToken.None);
+    }
+
+    public async Task WriteAllLinesAsync(IEnumerable<string> lines, CancellationToken token = default)
+    {
+        await using var fs = Create();
+        await using var sw = new StreamWriter(fs);
+        foreach (var line in lines)
+        {
+            await sw.WriteLineAsync(line.AsMemory(), token);
+        }
     }
     
     public async Task<string> ReadAllTextAsync(CancellationToken? token = null)

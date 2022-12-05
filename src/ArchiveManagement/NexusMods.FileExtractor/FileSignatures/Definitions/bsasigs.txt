@@ -1,0 +1,8 @@
+﻿Morrowind BSA,00 01 00 00,TES3, null, null, 0, null
+TES 4-5 and FO 3 BSA,42 53 41 00,BSA
+FO4 BSA,42 54 44 58,BA2
+Relaxed RAR format,52 61 72 21,RAR
+RAR5 or newer, 52 61 72 21 1A 07 01 00,RAR_NEW
+RAR4 or older, 52 61 72 21 1A 07 00,RAR_OLD
+DDS, 44 44 53 20,DDS
+Bethesda Tar, 42 54 41 52, BTAR
