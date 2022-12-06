@@ -31,4 +31,13 @@
       <ProjectReference Include="..\NexusMods.StandardGameLocators.Tests\NexusMods.StandardGameLocators.Tests.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Resources\data_7zip_lzma2.7z">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Resources\data_zip_lzma.zip">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

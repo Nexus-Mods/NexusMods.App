@@ -11,7 +11,7 @@ public class InstallMod
         _renderer = configurator.Renderer;
     }
     
-    public static VerbDefinition Definition = new VerbDefinition("install-mod", "Installs a mod into a mod list", new OptionDefinition[]
+    public static VerbDefinition Definition = new("install-mod", "Installs a mod into a mod list", new OptionDefinition[]
     {
         new OptionDefinition<ModListMarker>("m", "modList", "Mod List to add the mod to"),
         new OptionDefinition<AbsolutePath>("f", "file", "Mod file to install")

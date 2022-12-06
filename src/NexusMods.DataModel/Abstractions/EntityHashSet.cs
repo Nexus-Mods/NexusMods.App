@@ -51,7 +51,7 @@ where T : Entity
     public IEnumerator<T> GetEnumerator()
     {
         foreach (var itm in _coll)
-            yield return _store.Get<T>(itm);
+            yield return (T)_store.Get<Entity>(itm);
     }
 
     IEnumerator IEnumerable.GetEnumerator()

@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Extensions;
@@ -8,7 +7,6 @@ using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Interfaces.Streams;
 using NexusMods.Paths;
-using Wabbajack.Common.FileSignatures;
 
 namespace NexusMods.DataModel;
 

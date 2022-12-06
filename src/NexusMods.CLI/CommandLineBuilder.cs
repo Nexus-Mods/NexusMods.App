@@ -66,7 +66,6 @@ public class CommandLineBuilder
         }
         public int Invoke(InvocationContext context)
         {
-            using var scope = _provider.CreateScope();
             var configurator = _provider.GetRequiredService<Configurator>();
             configurator.Configure(context);
             var service = _provider.GetRequiredService(_type);
@@ -76,7 +75,6 @@ public class CommandLineBuilder
 
         public Task<int> InvokeAsync(InvocationContext context)
         {
-            using var scope = _provider.CreateScope();
             var configurator = _provider.GetRequiredService<Configurator>();
             configurator.Configure(context);
             var service = _provider.GetRequiredService(_type);

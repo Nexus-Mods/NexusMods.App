@@ -3,6 +3,7 @@ using GameFinder.StoreHandlers.GOG;
 using GameFinder.StoreHandlers.Steam;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.Interfaces;
 using NexusMods.Interfaces.Components;
 using NexusMods.Paths;
@@ -19,12 +20,14 @@ public class Startup
     {
         container.AddStandardGameLocators(false);
         container.AddSingleton<IGame, StubbedGame>();
+        container.AddSingleton<IModInstaller, StubbedGameInstaller>();
         container.AddSingleton<TemporaryFileManager>();
 
         container.AddSingleton<AHandler<SteamGame, int>, StubbedSteamLocator>();
-        container.AddSingleton<AHandler<GOGGame, long>, StubbedGogLocator>();        container.AddCLI();
+        container.AddSingleton<AHandler<GOGGame, long>, StubbedGogLocator>();        
+        container.AddCLI();
         container.AddCLIVerbs();
-        container.AddAllSingleton<IRenderer, LoggingRenderer>();
+        container.AddAllScoped<IRenderer, LoggingRenderer>();
         container.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug));
     }
     

@@ -11,6 +11,11 @@ public static class AsyncEnumerableExtensions
         }
         return lst;
     }
+    
+    public static async Task<T[]> ToArray<T>(this IAsyncEnumerable<T> coll)
+    {
+        return (await coll.ToList()).ToArray();
+    }
     public static async Task<HashSet<T>> ToHashSet<T>(this IAsyncEnumerable<T> coll)
     {
         var lst = new HashSet<T>();

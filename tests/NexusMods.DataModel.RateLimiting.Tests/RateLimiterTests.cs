@@ -102,4 +102,19 @@ public class RateLimiterTests
         elapsed.Should().BeGreaterThan(TimeSpan.FromSeconds(0.25));
         elapsed.Should().BeLessThan(TimeSpan.FromSeconds(1.5));
     }
+
+    [Fact]
+    public async Task CanGetJobStatus()
+    {
+        var rateLimiter = new Resource<RateLimiterTests, Size>("Test Resource");
+        var job = await rateLimiter.Begin("Test Job", 100L, CancellationToken.None);
+
+        job.Started.Should().BeTrue();
+        job.Size.Should().Be(100L);
+        job.Resource.Should().Be(rateLimiter);
+        job.Description.Should().Be("Test Job");
+        job.Progress.Should().Be(Percent.Zero);
+        job.ReportNoWait(50L);
+        job.Progress.Should().Be(Percent.FactoryPutInRange(0.50));
+    }
 }

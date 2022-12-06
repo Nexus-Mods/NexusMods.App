@@ -1,8 +1,8 @@
 ﻿using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.JsonConverters;
+using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using Wabbajack.Common.FileSignatures;
 
 namespace NexusMods.DataModel.ArchiveContents;
 

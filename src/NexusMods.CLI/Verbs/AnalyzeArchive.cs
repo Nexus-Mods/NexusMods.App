@@ -1,7 +1,6 @@
 ﻿using NexusMods.CLI.DataOutputs;
 using NexusMods.DataModel;
 using NexusMods.DataModel.ArchiveContents;
-using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
 namespace NexusMods.CLI.Verbs;

@@ -21,8 +21,8 @@ public class ExtractArchive
         });
     
 
-    public async Task Run(AbsolutePath inputFile, AbsolutePath outputFolder)
+    public async Task Run(AbsolutePath inputFile, AbsolutePath outputFolder, CancellationToken token)
     {
-        throw new NotImplementedException();
+        await _extractor.ExtractAll(inputFile, outputFolder, token);
     }
 }

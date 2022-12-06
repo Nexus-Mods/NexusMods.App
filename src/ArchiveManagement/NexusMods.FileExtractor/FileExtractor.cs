@@ -40,6 +40,11 @@ public class FileExtractor
             .ToArray();
     }
 
+    public async Task ExtractAll(AbsolutePath path, AbsolutePath dest, CancellationToken token)
+    {
+        await ExtractAll(new NativeFileStreamFactory(path), dest, token);
+    }
+
     public async Task ExtractAll(IStreamFactory sFn, AbsolutePath dest, CancellationToken token)
     {
         var extractors = await FindExtractors(sFn);
@@ -86,6 +91,10 @@ public class FileExtractor
         return await ForEachEntry(new NativeFileStreamFactory(file), func, token);
     }
 
+    public async Task<bool> CanExtract(AbsolutePath sFn)
+    {
+        return await CanExtract(new NativeFileStreamFactory(sFn));
+    }
 
     public async Task<bool> CanExtract(IStreamFactory sFn)
     {

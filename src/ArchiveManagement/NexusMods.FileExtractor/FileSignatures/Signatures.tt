@@ -25,7 +25,7 @@
             Description = row[0]
         }));
 #>
-namespace Wabbajack.Common.FileSignatures {
+namespace NexusMods.FileExtractor.FileSignatures {
 
     public enum FileType { <#
     foreach (var nrow in rows.Select(r => r.EnumName).Distinct().OrderBy(r => r))

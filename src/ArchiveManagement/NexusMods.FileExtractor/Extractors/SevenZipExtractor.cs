@@ -4,10 +4,10 @@ using CliWrap.Exceptions;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.RateLimiting;
+using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Interfaces;
 using NexusMods.Interfaces.Streams;
 using NexusMods.Paths;
-using Wabbajack.Common.FileSignatures;
 
 namespace NexusMods.FileExtractor.Extractors;
 
@@ -112,7 +112,7 @@ public class SevenZipExtractor : IExtractor
         } 
     }
     
-        public async Task ExtractAll(IStreamFactory sFn, AbsolutePath destination, CancellationToken token)
+    public async Task ExtractAll(IStreamFactory sFn, AbsolutePath destination, CancellationToken token)
     {
         TemporaryPath? tmpFile = null;
         

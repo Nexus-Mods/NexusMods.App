@@ -1,7 +1,4 @@
-﻿using NexusMods.Paths;
-using Wabbajack.Common.FileSignatures;
-
-namespace NexusMods.FileExtractor.FileSignatures;
+﻿namespace NexusMods.FileExtractor.FileSignatures;
 
 public class SignatureChecker
 {

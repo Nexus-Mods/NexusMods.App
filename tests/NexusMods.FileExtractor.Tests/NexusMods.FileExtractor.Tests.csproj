@@ -27,6 +27,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\ArchiveManagement\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj" />
+      <ProjectReference Include="..\..\src\NexusMods.DataModel\NexusMods.DataModel.csproj" />
     </ItemGroup>
 
     <ItemGroup>

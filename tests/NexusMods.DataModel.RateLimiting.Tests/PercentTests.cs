@@ -39,6 +39,17 @@ public class PercentTests
     }
 
     [Fact]
+    public void CanHashPercents()
+    {
+        var p0 = Percent.FactoryPutInRange(0.5);
+        var p1 = Percent.FactoryPutInRange(0.3);
+
+        p0.GetHashCode().Should().Be(p0.GetHashCode());
+        p1.GetHashCode().Should().Be(p1.GetHashCode());
+        p0.GetHashCode().Should().NotBe(p1.GetHashCode());
+    }
+
+    [Fact]
     public void CanPerformMathOnPercents()
     {
         var p0 = Percent.FactoryPutInRange(0.5);
@@ -60,6 +71,7 @@ public class PercentTests
         Percent.FactoryPutInRange(0.33333).ToString(3).Should().Be("33.333%");
         Percent.TryParse("3.33", out var parsed).Should().BeTrue();
         parsed.Value.Should().Be(0.0333);
+
     }
 
     [Fact]

@@ -1,7 +1,7 @@
-﻿using NexusMods.Interfaces;
+﻿using NexusMods.FileExtractor.FileSignatures;
+using NexusMods.Interfaces;
 using NexusMods.Interfaces.Streams;
 using NexusMods.Paths;
-using Wabbajack.Common.FileSignatures;
 
 namespace NexusMods.FileExtractor.Extractors;
 

@@ -1,5 +1,5 @@
 ﻿
-namespace Wabbajack.Common.FileSignatures {
+namespace NexusMods.FileExtractor.FileSignatures {
 
     public enum FileType {        BTAR,
            CreationEnginePlugin,

@@ -89,7 +89,7 @@ public class HashRelativePathConverter : JsonConverter<HashRelativePath>
     public override void Write(Utf8JsonWriter writer, HashRelativePath value, JsonSerializerOptions options)
     {
         writer.WriteStartArray();
-        writer.WriteNumberValue((long)value.Hash);
+        writer.WriteNumberValue((ulong)value.Hash);
         foreach (var itm in value.Parts)
             JsonSerializer.Serialize(writer, itm, options);
         writer.WriteEndArray();

@@ -3,10 +3,10 @@ using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.ModLists;
 using NexusMods.DataModel.ModLists.ModFiles;
+using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Interfaces;
 using NexusMods.Paths;
-using Wabbajack.Common.FileSignatures;
 
 namespace NexusMods.Games.BethesdaGameStudios.Installers;
 

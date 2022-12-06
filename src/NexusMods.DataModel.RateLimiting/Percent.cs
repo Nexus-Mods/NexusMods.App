@@ -115,27 +115,9 @@ public readonly struct Percent : IComparable, IEquatable<Percent>
         return $"{(Value * 100).ToString(format)}%";
     }
 
-    public string ToString(byte numDigits)
+    public string ToString(int numDigits)
     {
-        switch (numDigits)
-        {
-            case 0:
-                return ToString("n0");
-            case 1:
-                return ToString("n1");
-            case 2:
-                return ToString("n2");
-            case 3:
-                return ToString("n3");
-            case 4:
-                return ToString("n4");
-            case 5:
-                return ToString("n5");
-            case 6:
-                return ToString("n6");
-            default:
-                throw new NotImplementedException();
-        }
+        return ToString("n" + numDigits);
     }
 
     public int CompareTo(object? obj)
