@@ -16,13 +16,15 @@ public class ModelTests
     private readonly StubbedGame _game;
     private readonly GameInstallation _install;
     private readonly ModListManager _manager;
+    private readonly TemporaryFileManager _temporaryFileManager;
 
-    public ModelTests(IDataStore store, StubbedGame game, ModListManager manager)
+    public ModelTests(IDataStore store, StubbedGame game, ModListManager manager, TemporaryFileManager temporaryFileManager)
     {
         _game = game;
         _install = game.Installations.First();
         _manager = manager;
         _datastore = store;
+        _temporaryFileManager = temporaryFileManager;
     }
     
     [Fact]
@@ -52,6 +54,22 @@ public class ModelTests
         modlist.Value.Name.Should().Be("NewName");
         list.Count.Should().Be(1);
         list.First().Should().Be("NewName");
+    }
+    
+    [Fact]
+    public async Task CanInstallAMod()
+    {
+        var mod1 = KnownFolders.EntryFolder.Combine("Resources/data_7zip_lzma2.7z");
+        var mod2 = KnownFolders.EntryFolder.Combine("Resources/data_zip_lzma.zip");
+        
+        var name = Guid.NewGuid().ToString();
+        var modlist = await _manager.ManageGame(_install, name);
+        await modlist.Install(mod1, CancellationToken.None);
+        await modlist.Install(mod2, CancellationToken.None);
+
+        modlist.Value.Mods.Count.Should().Be(3);
+        modlist.Value.Mods.Sum(m => m.Files.Count).Should().Be(10);
+
 
     }
 }

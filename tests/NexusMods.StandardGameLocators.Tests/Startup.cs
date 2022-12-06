@@ -3,6 +3,12 @@ using GameFinder.StoreHandlers.GOG;
 using GameFinder.StoreHandlers.Steam;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.ModInstallers;
+using NexusMods.DataModel.ModLists;
+using NexusMods.DataModel.ModLists.ModFiles;
+using NexusMods.Hashing.xxHash64;
 using NexusMods.Interfaces;
 using NexusMods.Interfaces.Components;
 using NexusMods.Interfaces.StoreLocatorTags;
@@ -22,6 +28,7 @@ public class Startup
 
         container.AddSingleton<AHandler<SteamGame, int>, StubbedSteamLocator>();
         container.AddSingleton<AHandler<GOGGame, long>, StubbedGogLocator>();
+        container.AddAllSingleton<IModInstaller, StubbedGameInstaller>();
         container.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug));
     }
     
@@ -47,14 +54,14 @@ public class StubbedGame : ISteamGame, IGogGame
         get {
             _logger.LogInformation("Looking for {Game} in {Count} locators", this, _locators.Count());
             return _locators.SelectMany(l => l.Find(this))
-                .Select(i => new GameInstallation()
+                .Select((i, idx) => new GameInstallation()
                 {
                     Game = this,
                     Locations = new Dictionary<GameFolderType, AbsolutePath>()
                     {
                         { GameFolderType.Game, EnsureFiles(i.Path) }
                     },
-                    Version = Version.Parse("0.0.1.0")
+                    Version = Version.Parse($"0.0.{idx}.0")
                 });
         }
     }
@@ -121,5 +128,32 @@ public class StubbedGogLocator : AHandler<GOGGame, long>
     {
         errors = Array.Empty<string>();
         return FindAllGames().ToDictionary(g => g.Game!.Id, v => v.Game)!;
+    }
+}
+
+public class StubbedGameInstaller : IModInstaller
+{
+    private readonly IDataStore _store;
+
+    public StubbedGameInstaller(IDataStore store)
+    {
+        _store = store;
+    }
+    public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
+    {
+        return installation.Game is StubbedGame ? Interfaces.Priority.Normal : Interfaces.Priority.None;
+    }
+
+    public IEnumerable<AModFile> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
+    {
+        foreach (var (key, value) in files)
+        {
+            yield return new FromArchive
+            {
+                From = new HashRelativePath(srcArchive, key),
+                To = new GamePath(GameFolderType.Game, key),
+                Store = _store
+            };
+        }
     }
 }
