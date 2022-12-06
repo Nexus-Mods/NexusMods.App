@@ -95,7 +95,7 @@ public static class StreamExtensions
     /// <param name="token">Cancellation Token</param>
     /// <returns></returns>
     public static async Task<Hash> HashingCopyWithFn(this Stream inputStream, Func<Memory<byte>, Task> fn,
-        CancellationToken token)
+        CancellationToken token = default)
     {
         using var rented = MemoryPool<byte>.Shared.Rent(1024 * 1024);
         var buffer = rented.Memory;
