@@ -16,11 +16,6 @@ public readonly struct Percent : IComparable, IEquatable<Percent>
             throw new ArgumentException("Element out of range: " + d);
     }
 
-    public Percent(long max, long current)
-        : this((double) current / max)
-    {
-    }
-
     public Percent(double d)
         : this(d, true)
     {
@@ -28,7 +23,7 @@ public readonly struct Percent : IComparable, IEquatable<Percent>
 
     public static bool InRange(double d)
     {
-        return d is >= 0 or <= 1;
+        return d is >= 0 and <= 1;
     }
 
     public static Percent operator +(Percent c1, Percent c2)
@@ -93,21 +88,7 @@ public readonly struct Percent : IComparable, IEquatable<Percent>
     {
         return FactoryPutInRange(1.0d * cur / max);
     }
-
-    public static Percent AverageFromPercents(params Percent[] ps)
-    {
-        double percent = 0;
-        foreach (var p in ps) percent += p.Value;
-        return new Percent(percent / ps.Length, false);
-    }
-
-    public static Percent MultFromPercents(params Percent[] ps)
-    {
-        double percent = 1;
-        foreach (var p in ps) percent *= p.Value;
-        return new Percent(percent, false);
-    }
-
+    
     public override bool Equals(object? obj)
     {
         if (!(obj is Percent rhs)) return false;
@@ -166,11 +147,15 @@ public readonly struct Percent : IComparable, IEquatable<Percent>
     public static bool TryParse(string str, out Percent p)
     {
         if (double.TryParse(str, out var d))
+        {
+            d /= 100;
             if (InRange(d))
             {
                 p = new Percent(d);
                 return true;
             }
+        }
+
 
         p = default;
         return false;
