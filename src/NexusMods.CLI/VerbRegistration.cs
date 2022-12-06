@@ -14,6 +14,8 @@ CommandLineBuilder.RegisterCommand<ExtractArchive>(ExtractArchive.Definition, c 
 services.AddScoped<ExtractArchive>();
 CommandLineBuilder.RegisterCommand<HashFolder>(HashFolder.Definition, c => ((HashFolder)c).Run);
 services.AddScoped<HashFolder>();
+CommandLineBuilder.RegisterCommand<InstallMod>(InstallMod.Definition, c => ((InstallMod)c).Run);
+services.AddScoped<InstallMod>();
 CommandLineBuilder.RegisterCommand<ListGames>(ListGames.Definition, c => ((ListGames)c).Run);
 services.AddScoped<ListGames>();
 CommandLineBuilder.RegisterCommand<ListManagedGames>(ListManagedGames.Definition, c => ((ListManagedGames)c).Run);

@@ -3,6 +3,8 @@ using System.Collections.Immutable;
 using System.Reactive.Linq;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.ModLists.Markers;
 using NexusMods.DataModel.ModLists.ModFiles;
 using NexusMods.Interfaces;
@@ -16,13 +18,17 @@ public class ModListManager
     private readonly IDataStore _store;
     private readonly Root<ListRegistry> _root;
     private readonly FileHashCache _fileHashCache;
+    private readonly IModInstaller[] _installers;
+    private readonly ArchiveContentsCache _analyzer;
 
-    public ModListManager(ILogger<ModListManager> logger, IDataStore store, FileHashCache fileHashCache)
+    public ModListManager(ILogger<ModListManager> logger, IDataStore store, FileHashCache fileHashCache, IEnumerable<IModInstaller> installers, ArchiveContentsCache analyzer)
     {
         _logger = logger;
         _store = store;
         _root = new Root<ListRegistry>(RootType.ModLists, store);
         _fileHashCache = fileHashCache;
+        _installers = installers.ToArray();
+        _analyzer = analyzer;
     }
 
     public IObservable<ListRegistry> Changes => _root.Changes.Select(r => r.New);
@@ -65,6 +71,37 @@ public class ModListManager
         
         _logger.LogInformation("Modlist {Name} {Id} created", name, n.ModListId);
         return new ModListMarker(this, n.ModListId);
+    }
+
+    public async Task<ModListMarker> InstallMod(ModListId modListId, AbsolutePath path, CancellationToken token = default)
+    {
+        var modList = GetModList(modListId);
+        
+        var analyzed = (await _analyzer.AnalyzeFile(path, token) as AnalyzedArchive);
+
+        var installer = _installers
+            .Select(i => (Installer: i, Priority: i.Priority(modList.Value.Installation, analyzed.Contents)))
+            .Where(p => p.Priority != Priority.None)
+            .OrderBy(p => p.Priority)
+            .FirstOrDefault();
+        if (installer == default)
+            throw new Exception($"No Installer found for {path}");
+
+        var contents = installer.Installer.Install(modList.Value.Installation, analyzed.Hash, analyzed.Contents);
+
+        var newMod = new Mod()
+        {
+            Name = path.FileName.ToString(),
+            Files = new EntityHashSet<AModFile>(_store, contents.Select(c => c.Id)),
+            Store = _store
+        };
+        modList.Add(newMod);
+        return modList;
+    }
+
+    private ModListMarker GetModList(ModListId modListId)
+    {
+        return new ModListMarker(this, modListId);
     }
 
     public void Alter(ModListId id, Func<ModList, ModList> func)

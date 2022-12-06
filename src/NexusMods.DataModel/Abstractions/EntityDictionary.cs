@@ -53,6 +53,9 @@ where TV : Entity where TK : notnull
                 yield return _store.Get<TV>(id);
         }
     }
+
+    public IEnumerable<TK> Keys => _coll.Keys;
+
     public static EntityDictionary<TK, TV> Empty(IDataStore store) => new(store);
     public IEnumerator<KeyValuePair<TK, TV>> GetEnumerator()
     {
