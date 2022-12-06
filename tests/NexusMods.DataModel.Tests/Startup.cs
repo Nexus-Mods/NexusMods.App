@@ -3,6 +3,10 @@ using GameFinder.StoreHandlers.GOG;
 using GameFinder.StoreHandlers.Steam;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.DataModel.RateLimiting;
+using NexusMods.FileExtractor;
+using NexusMods.FileExtractor.Extractors;
+using NexusMods.Interfaces;
 using NexusMods.Interfaces.Components;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators;
@@ -21,9 +25,15 @@ public class Startup
         container.AddStandardGameLocators(false);
         container.AddSingleton<StubbedGame>();
         container.AddSingleton<TemporaryFileManager>();
+        container.AddFileExtractors();
 
         container.AddSingleton<AHandler<SteamGame, int>, StubbedSteamLocator>();
         container.AddSingleton<AHandler<GOGGame, long>, StubbedGogLocator>();
+
+        container.AddAllSingleton<IResource, IResource<ArchiveContentsCache, Size>>(s =>
+            new Resource<ArchiveContentsCache, Size>("File Analysis"));
+        container.AddAllSingleton<IResource, IResource<IExtractor, Size>>(s =>
+            new Resource<IExtractor, Size>("File Extraction"));
     }
     
     public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>
