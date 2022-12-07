@@ -24,7 +24,9 @@ public abstract class AVerbTest
         var logger = scope.ServiceProvider.GetRequiredService<LoggingRenderer>();
         LoggingRenderer.Logs.Value = new List<object>();
         var builder = scope.ServiceProvider.GetRequiredService<CommandLineBuilder>();
-        await builder.Run(new[] {"--noBanner"}.Concat(args).ToArray());
+        var id = await builder.Run(new[] {"--noBanner"}.Concat(args).ToArray());
+        if (id != 0)
+            throw new Exception($"Bad Run Result: {id}");
         LastLog = LoggingRenderer.Logs.Value!;
     }
 

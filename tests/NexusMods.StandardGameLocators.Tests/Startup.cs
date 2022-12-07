@@ -68,12 +68,22 @@ public class StubbedGame : ISteamGame, IGogGame
 
     private AbsolutePath EnsureFiles(AbsolutePath path)
     {
-        path.Combine("StubbedGame.exe").WriteAllTextAsync("StubbedGame.exe").Wait();
-        path.Combine("config.ini").WriteAllTextAsync("config.ini").Wait();
-        path.Combine("Data").CreateDirectory();
-        path.Combine("Data", "image.dds").WriteAllTextAsync("image.dds").Wait();
-        path.Combine("Data", "model.3ds").WriteAllTextAsync("model.eds").Wait();
-        return path;
+        lock (this)
+        {
+            EnsureFile(path.Combine("StubbedGame.exe"));
+            EnsureFile(path.Combine("config.ini"));
+            path.Combine("Data").CreateDirectory();
+            EnsureFile(path.Combine("Data", "image.dds"));
+            EnsureFile(path.Combine("Data", "model.3ds"));
+            return path;
+        }
+    }
+
+    private void EnsureFile(AbsolutePath path)
+    {
+        if (path.FileExists) return;
+        path.WriteAllTextAsync(path.FileName.ToString()).Wait();
+
     }
 
     public IEnumerable<int> SteamIds => new [] {1};

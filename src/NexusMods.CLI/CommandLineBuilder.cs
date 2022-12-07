@@ -2,6 +2,7 @@ using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.NamingConventionBinder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.CLI.OptionParsers;
 using NexusMods.Interfaces.Components;
 using NexusMods.Paths;
@@ -11,8 +12,11 @@ namespace NexusMods.CLI;
 public class CommandLineBuilder
 {
     private static IServiceProvider _provider = null!;
-    public CommandLineBuilder(IServiceProvider provider)
+    private readonly ILogger<CommandLineBuilder> _logger;
+
+    public CommandLineBuilder(ILogger<CommandLineBuilder> logger, IServiceProvider provider)
     {
+        _logger = logger;
         _provider = provider;
     }
     
@@ -37,7 +41,15 @@ public class CommandLineBuilder
             root.Add(MakeCommend(verb.Type, verb.Handler, verb.Definition));
         }
 
-        return await root.InvokeAsync(args);
+        try
+        {
+            return await root.InvokeAsync(args);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogCritical(ex, "While executing command");
+            throw;
+        }
     }
 
     private Command MakeCommend(Type verbType, Func<object, Delegate> verbHandler, VerbDefinition definition)

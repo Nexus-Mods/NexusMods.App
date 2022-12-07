@@ -1,4 +1,5 @@
-﻿using NexusMods.CLI.DataOutputs;
+﻿using Microsoft.Extensions.Logging;
+using NexusMods.CLI.DataOutputs;
 using NexusMods.DataModel;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.Paths;
@@ -9,8 +10,9 @@ public class AnalyzeArchive
 {
     private readonly IRenderer _renderer;
     private readonly ArchiveContentsCache _archiveContentsCache;    
-    public AnalyzeArchive(Configurator configurator, ArchiveContentsCache archiveContentsCache)
+    public AnalyzeArchive(Configurator configurator, ArchiveContentsCache archiveContentsCache, ILogger<AnalyzeArchive> logger)
     {
+        _logger = logger;
         _renderer = configurator.Renderer;
         _archiveContentsCache = archiveContentsCache;
     }
@@ -21,20 +23,34 @@ public class AnalyzeArchive
             new OptionDefinition<AbsolutePath>("i", "inputFile", "File to Analyze")
         });
 
+    private readonly ILogger<AnalyzeArchive> _logger;
 
 
     public async Task Run(AbsolutePath inputFile, CancellationToken token)
     {
-        var results = await _renderer.WithProgress(token, async () =>
+        try
         {
-            var file = await _archiveContentsCache.AnalyzeFile(inputFile, token) as AnalyzedArchive;
-            if (file == null) return Array.Empty<object[]>();
-            return file.Contents.Select(kv =>
+            var results = await _renderer.WithProgress(token, async () =>
             {
-                return new object[] { kv.Key, kv.Value.Size, kv.Value.Hash, string.Join(", ", kv.Value.FileTypes.Select(t => Enum.GetName(t))) };
+                var file = await _archiveContentsCache.AnalyzeFile(inputFile, token) as AnalyzedArchive;
+                if (file == null) return Array.Empty<object[]>();
+                return file.Contents.Select(kv =>
+                {
+                    return new object[]
+                    {
+                        kv.Key, kv.Value.Size, kv.Value.Hash,
+                        string.Join(", ", kv.Value.FileTypes.Select(t => Enum.GetName(t)))
+                    };
+                });
             });
-        });
 
-        await _renderer.Render(new Table(new[] { "Path", "Size", "Hash", "Signatures"}, results.OrderBy(e => (RelativePath)e[0])));
+            await _renderer.Render(new Table(new[] { "Path", "Size", "Hash", "Signatures" },
+                results.OrderBy(e => (RelativePath)e[0])));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogCritical(ex, "While running");
+            throw;
+        }
     }
 }
