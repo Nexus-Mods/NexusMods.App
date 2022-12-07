@@ -54,6 +54,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.FileExtractor.Tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.DataModel.RateLimiting.Tests", "tests\NexusMods.DataModel.RateLimiting.Tests\NexusMods.DataModel.RateLimiting.Tests.csproj", "{1E5939B0-0C91-4074-94F6-A70F522B99B7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.DarkestDungeon", "src\Games\NexusMods.Games.DarkestDungeon\NexusMods.Games.DarkestDungeon.csproj", "{EDDDDE44-9059-4F05-83F4-D0C5D0AE2CC3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -150,6 +152,10 @@ Global
 		{1E5939B0-0C91-4074-94F6-A70F522B99B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E5939B0-0C91-4074-94F6-A70F522B99B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E5939B0-0C91-4074-94F6-A70F522B99B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDDDDE44-9059-4F05-83F4-D0C5D0AE2CC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDDDDE44-9059-4F05-83F4-D0C5D0AE2CC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDDDDE44-9059-4F05-83F4-D0C5D0AE2CC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDDDDE44-9059-4F05-83F4-D0C5D0AE2CC3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9025900A-5342-4EB3-97C8-A9F067929879} = {B93AF89E-9ED7-4FD0-B58E-688AA178AB53}
@@ -169,5 +175,6 @@ Global
 		{0D787AA6-2431-40D3-AB64-20B81DC137DB} = {35108C59-903B-4DE2-8EB7-38797FB43716}
 		{AB2AD95A-17AA-473B-8E1C-02ACED2F8520} = {35108C59-903B-4DE2-8EB7-38797FB43716}
 		{1E5939B0-0C91-4074-94F6-A70F522B99B7} = {0D0CB8DD-34FE-42C0-9B53-4E27330F63D1}
+		{EDDDDE44-9059-4F05-83F4-D0C5D0AE2CC3} = {954D1870-EE4B-4EC3-84AC-292C300461F0}
 	EndGlobalSection
 EndGlobal

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.App;
 using NexusMods.CLI;
 using NexusMods.Games.BethesdaGameStudios;
+using NexusMods.Games.DarkestDungeon;
 using NexusMods.StandardGameLocators;
 using NLog.Extensions.Logging;
 using NLog.Targets;
@@ -14,6 +15,7 @@ var host = Host.CreateDefaultBuilder(Environment.GetCommandLineArgs())
     {
         services.AddCLI()
             .AddBethesdaGameStudios()
+            .AddDarkestDungeon()
             .AddStandardGameLocators()
             .AddRenderers()
             .AddCLIVerbs();
