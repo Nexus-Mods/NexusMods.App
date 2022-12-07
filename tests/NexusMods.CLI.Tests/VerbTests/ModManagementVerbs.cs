@@ -14,12 +14,11 @@ public class ModManagementVerbs : AVerbTest
     {
         var listName = Guid.NewGuid().ToString();
 
-        await RunNoBanner("manage-game", "-g", "stubbed-game", "-v", "0.0.1.0", "-n", listName);
+        await RunNoBanner("manage-game", "-g", "stubbed-game", "-v", "0.0.0.0", "-n", listName);
 
         await RunNoBanner("list-managed-games");
 
         LastTable.Columns.Should().BeEquivalentTo("Name", "Game", "Id", "Mod Count");
-
         LastTable.Rows.FirstOrDefault(r => r.First().Equals(listName)).Should().NotBeNull();
 
         await RunNoBanner("list-mods", "-m", listName);
