@@ -82,8 +82,7 @@ public class StubbedGame : ISteamGame, IGogGame
     private void EnsureFile(AbsolutePath path)
     {
         if (path.FileExists) return;
-        path.WriteAllTextAsync(path.FileName.ToString()).Wait();
-
+        File.WriteAllText(path.ToString(), path.FileName.ToString());
     }
 
     public IEnumerable<int> SteamIds => new [] {1};
