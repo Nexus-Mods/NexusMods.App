@@ -19,7 +19,6 @@ public class ModManagementVerbs : AVerbTest
         await RunNoBanner("list-managed-games");
 
         LastTable.Columns.Should().BeEquivalentTo("Name", "Game", "Id", "Mod Count");
-
         LastTable.Rows.FirstOrDefault(r => r.First().Equals(listName)).Should().NotBeNull();
 
         await RunNoBanner("list-mods", "-m", listName);
