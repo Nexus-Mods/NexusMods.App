@@ -100,7 +100,7 @@ public class RateLimiterTests
         await WhenAll(tasks.ToArray());
         var elapsed = sw.Elapsed;
         elapsed.Should().BeGreaterThan(TimeSpan.FromSeconds(0.25));
-        elapsed.Should().BeLessThan(TimeSpan.FromSeconds(1.5));
+        elapsed.Should().BeLessThan(TimeSpan.FromSeconds(5.5));
     }
 
     [Fact]
