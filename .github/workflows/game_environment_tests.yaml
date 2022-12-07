@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [ main ]
 
-env:
-  VERSION: 3.0.1.8
-
 jobs:
   build:
     
