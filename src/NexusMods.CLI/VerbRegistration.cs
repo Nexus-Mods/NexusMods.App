@@ -8,7 +8,23 @@ using NexusMods.CLI.Verbs;
 public static class CommandLineBuilderExtensions{ 
 
 public static void AddCLIVerbs(this IServiceCollection services) {
+CommandLineBuilder.RegisterCommand<AnalyzeArchive>(AnalyzeArchive.Definition, c => ((AnalyzeArchive)c).Run);
+services.AddScoped<AnalyzeArchive>();
+CommandLineBuilder.RegisterCommand<ExtractArchive>(ExtractArchive.Definition, c => ((ExtractArchive)c).Run);
+services.AddScoped<ExtractArchive>();
+CommandLineBuilder.RegisterCommand<HashFolder>(HashFolder.Definition, c => ((HashFolder)c).Run);
+services.AddScoped<HashFolder>();
+CommandLineBuilder.RegisterCommand<InstallMod>(InstallMod.Definition, c => ((InstallMod)c).Run);
+services.AddScoped<InstallMod>();
 CommandLineBuilder.RegisterCommand<ListGames>(ListGames.Definition, c => ((ListGames)c).Run);
 services.AddScoped<ListGames>();
+CommandLineBuilder.RegisterCommand<ListManagedGames>(ListManagedGames.Definition, c => ((ListManagedGames)c).Run);
+services.AddScoped<ListManagedGames>();
+CommandLineBuilder.RegisterCommand<ListModContents>(ListModContents.Definition, c => ((ListModContents)c).Run);
+services.AddScoped<ListModContents>();
+CommandLineBuilder.RegisterCommand<ListMods>(ListMods.Definition, c => ((ListMods)c).Run);
+services.AddScoped<ListMods>();
+CommandLineBuilder.RegisterCommand<ManageGame>(ManageGame.Definition, c => ((ManageGame)c).Run);
+services.AddScoped<ManageGame>();
 }
 }

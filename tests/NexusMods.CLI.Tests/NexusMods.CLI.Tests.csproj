@@ -9,6 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="FluentAssertions" Version="6.8.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
         <PackageReference Include="xunit" Version="2.4.2" />
@@ -28,6 +29,15 @@
       <ProjectReference Include="..\..\src\NexusMods.CLI\NexusMods.CLI.csproj" />
       <ProjectReference Include="..\..\src\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj" />
       <ProjectReference Include="..\NexusMods.StandardGameLocators.Tests\NexusMods.StandardGameLocators.Tests.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Resources\data_7zip_lzma2.7z">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Resources\data_zip_lzma.zip">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

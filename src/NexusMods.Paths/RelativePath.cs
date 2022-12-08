@@ -2,7 +2,7 @@ namespace NexusMods.Paths;
 
 public struct RelativePath : IPath, IEquatable<RelativePath>, IComparable<RelativePath>
 {
-    public readonly string[] Parts = Array.Empty<string>();
+    public readonly string[]? Parts = Array.Empty<string>();
 
     private int _hashCode = 0;
 
@@ -93,9 +93,9 @@ public struct RelativePath : IPath, IEquatable<RelativePath>, IComparable<Relati
 
     public bool Equals(RelativePath other)
     {
-        if (other.Parts.Length != Parts.Length) return false;
-        for (var idx = 0; idx < Parts.Length; idx++)
-            if (!Parts[idx].Equals(other.Parts[idx], StringComparison.InvariantCultureIgnoreCase))
+        if (other.Parts?.Length != Parts?.Length) return false;
+        for (var idx = 0; idx < Parts?.Length; idx++)
+            if (!Parts[idx].Equals(other.Parts?[idx], StringComparison.InvariantCultureIgnoreCase))
                 return false;
         return true;
     }
@@ -167,6 +167,7 @@ public struct RelativePath : IPath, IEquatable<RelativePath>, IComparable<Relati
 
     public RelativePath TopParent => new(Parts[..1]);
     public RelativePath FileNameWithoutExtension => Parts[^1][..^Extension.Length].ToRelativePath();
+    public static RelativePath Empty => new(Array.Empty<string>());
 
     public readonly bool FileNameEndsWith(string postfix)
     {

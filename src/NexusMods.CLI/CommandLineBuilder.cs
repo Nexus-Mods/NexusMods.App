@@ -2,6 +2,8 @@ using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.NamingConventionBinder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using NexusMods.CLI.OptionParsers;
 using NexusMods.Interfaces.Components;
 using NexusMods.Paths;
 
@@ -10,8 +12,11 @@ namespace NexusMods.CLI;
 public class CommandLineBuilder
 {
     private static IServiceProvider _provider = null!;
-    public CommandLineBuilder(IServiceProvider provider)
+    private readonly ILogger<CommandLineBuilder> _logger;
+
+    public CommandLineBuilder(ILogger<CommandLineBuilder> logger, IServiceProvider provider)
     {
+        _logger = logger;
         _provider = provider;
     }
     
@@ -36,49 +41,24 @@ public class CommandLineBuilder
             root.Add(MakeCommend(verb.Type, verb.Handler, verb.Definition));
         }
 
-        return await root.InvokeAsync(args);
-    }
-
-    private Dictionary<Type, Func<OptionDefinition, Option>> _optionCtors => new()
-    {
+        try
         {
-            typeof(string),
-            d => new Option<string>(d.Aliases, description: d.Description)
-        },
-        {
-            typeof(AbsolutePath),
-            d => new Option<AbsolutePath>(d.Aliases, description: d.Description, parseArgument: d => d.Tokens.Single().Value.ToAbsolutePath())
-        },
-        {
-            typeof(Uri),
-            d => new Option<Uri>(d.Aliases, description: d.Description)
-        },
-        {
-            typeof(bool),
-            d => new Option<bool>(d.Aliases, description: d.Description)
-        },
-        {
-            typeof(IGame),
-            d => new Option<IGame>(d.Aliases, description: d.Description, parseArgument: d =>
-            {
-                var s = d.Tokens.Single().Value;
-                var games = _provider.GetRequiredService<IEnumerable<IGame>>();
-                return games.First(d => d.Slug.Equals(s, StringComparison.InvariantCultureIgnoreCase));
-            })
-        },
-        {
-            typeof(Version),
-            d => new Option<Version>(d.Aliases, description: d.Description, parseArgument: d => Version.Parse(d.Tokens.Single().Value))
+            return await root.InvokeAsync(args);
         }
-    };
-
+        catch (Exception ex)
+        {
+            _logger.LogCritical(ex, "While executing command");
+            throw;
+        }
+    }
 
     private Command MakeCommend(Type verbType, Func<object, Delegate> verbHandler, VerbDefinition definition)
     {
         var command = new Command(definition.Name, definition.Description);
+
         foreach (var option in definition.Options)
         {
-            command.Add(_optionCtors[option.Type](option));
+            command.Add(option.GetOption(_provider));
         }
         command.Handler = new HandlerDelegate(_provider, verbType, verbHandler);
         return command;
@@ -98,7 +78,6 @@ public class CommandLineBuilder
         }
         public int Invoke(InvocationContext context)
         {
-            using var scope = _provider.CreateScope();
             var configurator = _provider.GetRequiredService<Configurator>();
             configurator.Configure(context);
             var service = _provider.GetRequiredService(_type);
@@ -108,7 +87,6 @@ public class CommandLineBuilder
 
         public Task<int> InvokeAsync(InvocationContext context)
         {
-            using var scope = _provider.CreateScope();
             var configurator = _provider.GetRequiredService<Configurator>();
             configurator.Configure(context);
             var service = _provider.GetRequiredService(_type);
@@ -127,7 +105,20 @@ public class CommandLineBuilder
     }
 }
 
-public record OptionDefinition(Type Type, string ShortOption, string LongOption, string Description)
+public record OptionDefinition<T>(string ShortOption, string LongOption, string Description) 
+    : OptionDefinition(typeof(T), ShortOption, LongOption, Description)
+{
+    public override Option GetOption(IServiceProvider provider)
+    {
+        var converter = provider.GetService<IOptionParser<T>>();
+        if (converter == null)
+            return new Option<T>(Aliases, description: Description);
+
+        return new Option<T>(Aliases, description: Description,
+            parseArgument: x => converter.Parse(x.Tokens.Single().Value, this));
+    }
+}
+public abstract record OptionDefinition(Type Type, string ShortOption, string LongOption, string Description)
 {
     public string[] Aliases
     {
@@ -135,7 +126,9 @@ public record OptionDefinition(Type Type, string ShortOption, string LongOption,
         {
             return new[] { "-" + ShortOption, "--" + LongOption };
         }
-    } 
+    }
+
+    public abstract Option GetOption(IServiceProvider provider);
 }
 
 public record VerbDefinition(string Name, string Description, OptionDefinition[] Options)

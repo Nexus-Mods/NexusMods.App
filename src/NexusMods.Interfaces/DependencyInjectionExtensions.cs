@@ -4,6 +4,20 @@ namespace NexusMods.Interfaces;
 
 public static class DependencyInjectionExtensions
 {
+    public static IServiceCollection AddAllScoped<T1, TBase>(this IServiceCollection services,
+        Func<IServiceProvider, TBase>? ctor = null)
+        where TBase : class, T1
+        where T1 : class
+    {
+        if (ctor == null)
+            services.AddScoped<TBase>();
+        else
+            services.AddScoped(ctor);
+
+        services.AddScoped<T1, TBase>(s => s.GetService<TBase>()!);
+        return services;
+    }
+
     public static IServiceCollection AddAllSingleton<T1, TBase>(this IServiceCollection services,
         Func<IServiceProvider, TBase>? ctor = null)
         where TBase : class, T1

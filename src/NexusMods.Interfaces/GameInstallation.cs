@@ -24,7 +24,9 @@ public class GameInstallation
     /// </summary>
     public IGame Game { get; init; } = null!;
 
-    
+    public static GameInstallation Empty => new();
+
+
     public override string ToString()
     {
         return $"{Game.Name} v{Version}";

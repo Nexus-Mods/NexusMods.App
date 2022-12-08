@@ -26,6 +26,10 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '7.0.x'
+          
+      - name: Set Permissions
+        if: runner.os != 'Windows'
+        run: chmod -R +x src/ArchiveManagement/NexusMods.FileExtractor/Extractors
 
       - name: Tests
         run: dotnet test --filter RequiresGameInstalls!=True

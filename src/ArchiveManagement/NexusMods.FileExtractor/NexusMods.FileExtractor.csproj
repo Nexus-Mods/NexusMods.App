@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\NexusMods.Common\NexusMods.Common.csproj" />
+      <ProjectReference Include="..\..\NexusMods.DataModel.RateLimiting\NexusMods.DataModel.RateLimiting.csproj" />
+      <ProjectReference Include="..\..\NexusMods.Hashing.xxHash64\NexusMods.Hashing.xxHash64.csproj" />
+      <ProjectReference Include="..\..\NexusMods.Interfaces\NexusMods.Interfaces.csproj" />
+      <ProjectReference Include="..\..\NexusMods.Paths\NexusMods.Paths.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="CliWrap" Version="3.5.0" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Extractors\linux-x64\7zz">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Extractors\mac\7zz">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Extractors\windows-x64\7z.exe">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="FileSignatures\Signatures.tt">
+        <Generator>TextTemplatingFileGenerator</Generator>
+        <LastGenOutput>Signatures.cs</LastGenOutput>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="FileSignatures\Signatures.cs">
+        <DependentUpon>Signatures.tt</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+</Project>

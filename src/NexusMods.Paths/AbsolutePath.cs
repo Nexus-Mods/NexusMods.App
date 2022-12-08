@@ -150,7 +150,7 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
         return ArrayExtensions.AreEqualIgnoreCase(parent.Parts, 0, Parts, 0, parent.Parts.Length);
     }
 
-    public AbsolutePath Combine(params object[] paths)
+    public readonly AbsolutePath Combine(params object[] paths)
     {
         var converted = paths.Select(p =>
         {
@@ -318,6 +318,12 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
         await inf.CopyToAsync(ouf, token ?? CancellationToken.None);
     }
     
+    public async ValueTask CopyFromAsync(Stream src, CancellationToken token = default)
+    {
+        await using var output = Create();
+        await src.CopyToAsync(output, token);
+    }
+    
     private string ToNativePath()
     {
         return ToString();
@@ -330,7 +336,7 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
         Directory.CreateDirectory(ToNativePath());
     }
 
-    public void DeleteDirectory(bool dontDeleteIfNotEmpty = false)
+    public readonly void DeleteDirectory(bool dontDeleteIfNotEmpty = false)
     {
         if (!DirectoryExists()) return;
         if (dontDeleteIfNotEmpty && (EnumerateFiles().Any() || EnumerateDirectories().Any())) return;
@@ -352,7 +358,7 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
         }
     }
 
-    public bool DirectoryExists()
+    public readonly bool DirectoryExists()
     {
         return Parts.Length != 0 && Directory.Exists(ToNativePath());
     }
@@ -365,6 +371,20 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
         return Directory.EnumerateFiles(ToNativePath(), pattern,
                 recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
             .Select(file => file.ToAbsolutePath());
+    }
+    
+    public IEnumerable<FileEntry> EnumerateFileEntries(string pattern = "*",
+        bool recursive = true)
+    {
+        if (!DirectoryExists()) return Array.Empty<FileEntry>();
+        return Directory.EnumerateFiles(ToNativePath(), pattern,
+                recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
+            .Select(file =>
+            {
+                var path = file.ToAbsolutePath();
+                var info = path.FileInfo;
+                return new FileEntry(Path: path, Size: info.Length, LastModified:info.LastWriteTimeUtc);
+            });
     }
 
 
@@ -392,10 +412,19 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
         await using var fs = Create();
         await fs.WriteAsync(Encoding.UTF8.GetBytes(text), token ?? CancellationToken.None);
     }
+
+    public async Task WriteAllLinesAsync(IEnumerable<string> lines, CancellationToken token = default)
+    {
+        await using var fs = Create();
+        await using var sw = new StreamWriter(fs);
+        foreach (var line in lines)
+        {
+            await sw.WriteLineAsync(line.AsMemory(), token);
+        }
+    }
     
     public async Task<string> ReadAllTextAsync(CancellationToken? token = null)
     {
         return Encoding.UTF8.GetString(await ReadAllBytesAsync(token));
     }
-
 }
