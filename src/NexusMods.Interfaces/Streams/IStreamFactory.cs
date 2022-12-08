@@ -15,5 +15,4 @@ public interface IStreamFactory
     Size Size { get; }
     
     ValueTask<Stream> GetStream();
-    
 }

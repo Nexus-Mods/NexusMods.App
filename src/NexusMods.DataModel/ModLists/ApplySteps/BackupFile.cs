@@ -3,7 +3,7 @@ using NexusMods.Paths;
 
 namespace NexusMods.DataModel.ModLists.ApplySteps;
 
-public record BackupFile : IApplyStep
+public record BackupFile : IApplyStep, IStaticFileStep
 {
     public required AbsolutePath To { get; init; }
     public required Hash Hash { get; init; }

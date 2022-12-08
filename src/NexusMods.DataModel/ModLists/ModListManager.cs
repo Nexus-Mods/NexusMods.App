@@ -1,11 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Immutable;
-using System.Reactive.Linq;
+﻿using System.Reactive.Linq;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.ModInstallers;
-using NexusMods.DataModel.ModLists.ApplySteps;
 using NexusMods.DataModel.ModLists.Markers;
 using NexusMods.DataModel.ModLists.ModFiles;
 using NexusMods.DataModel.RateLimiting;
@@ -20,19 +17,26 @@ public class ModListManager
     private readonly IDataStore _store;
     private readonly Root<ListRegistry> _root;
     public readonly FileHashCache FileHashCache;
+    public readonly ArchiveManager ArchiveManager;
     private readonly IModInstaller[] _installers;
     private readonly ArchiveContentsCache _analyzer;
 
     public ModListManager(ILogger<ModListManager> logger,
+        IResource<ModListManager, Size> limiter,
+        ArchiveManager archiveManager, 
         IDataStore store, FileHashCache fileHashCache, IEnumerable<IModInstaller> installers, ArchiveContentsCache analyzer)
     {
         _logger = logger;
+        Limiter = limiter;
+        ArchiveManager = archiveManager;
         _store = store;
         _root = new Root<ListRegistry>(RootType.ModLists, store);
         FileHashCache = fileHashCache;
         _installers = installers.ToArray();
         _analyzer = analyzer;
     }
+
+    public IResource<ModListManager,Size> Limiter { get; set; }
 
     public IObservable<ListRegistry> Changes => _root.Changes.Select(r => r.New);
     public IEnumerable<ModListMarker> AllModLists => _root.Value.Lists.Values.Select(m => new ModListMarker(this, m.ModListId));
