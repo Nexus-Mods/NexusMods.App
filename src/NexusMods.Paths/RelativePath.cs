@@ -136,7 +136,7 @@ public struct RelativePath : IPath, IEquatable<RelativePath>, IComparable<Relati
         return Join(converted);
     }
 
-    public RelativePath Join(params RelativePath[] paths)
+    public readonly RelativePath Join(params RelativePath[] paths)
     {
         var newLen = Parts.Length + paths.Sum(p => p.Parts.Length);
         var newParts = new string[newLen];

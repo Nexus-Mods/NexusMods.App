@@ -11,16 +11,25 @@ public static class ResourceExtensions
             yield return coll[idx];
         }
     }
+
+    public static IAsyncEnumerable<TItem> ForEachFile<TResource, TItem>(this IResource<TResource, Size> resource,
+        AbsolutePath root, Func<IJob<Size>, FileEntry,
+            ValueTask<TItem>> fn,
+        CancellationToken? token = null,
+        string jobName = "Processing Files")
+    {
+        return ForEachFile(resource, new[] { root }, fn, token, jobName);
+    }
     
     public static async IAsyncEnumerable<TItem> ForEachFile<TResource, TItem>(this IResource<TResource, Size> resource, 
-        AbsolutePath root, Func<IJob<Size>, FileEntry, 
-        ValueTask<TItem>> fn,
+        IEnumerable<AbsolutePath> roots, Func<IJob<Size>, FileEntry, 
+            ValueTask<TItem>> fn,
         CancellationToken? token = null, 
         string jobName = "Processing Files")
     {
         token ??= CancellationToken.None;
         
-        var asList = root.EnumerateFileEntries().OrderBy(x => x.Size).ToList();
+        var asList = roots.SelectMany(f => f.EnumerateFileEntries()).OrderBy(x => x.Size).ToList();
 
         var tasks = new List<Task<List<TItem>>>();
         
@@ -49,8 +58,6 @@ public static class ResourceExtensions
                 yield return itm;
             }
         }
-        
-
     }
     
 }

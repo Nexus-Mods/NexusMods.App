@@ -10,8 +10,12 @@ public static class CommandLineBuilderExtensions{
 public static void AddCLIVerbs(this IServiceCollection services) {
 CommandLineBuilder.RegisterCommand<AnalyzeArchive>(AnalyzeArchive.Definition, c => ((AnalyzeArchive)c).Run);
 services.AddScoped<AnalyzeArchive>();
+CommandLineBuilder.RegisterCommand<Apply>(Apply.Definition, c => ((Apply)c).Run);
+services.AddScoped<Apply>();
 CommandLineBuilder.RegisterCommand<ExtractArchive>(ExtractArchive.Definition, c => ((ExtractArchive)c).Run);
 services.AddScoped<ExtractArchive>();
+CommandLineBuilder.RegisterCommand<FlattenList>(FlattenList.Definition, c => ((FlattenList)c).Run);
+services.AddScoped<FlattenList>();
 CommandLineBuilder.RegisterCommand<HashFolder>(HashFolder.Definition, c => ((HashFolder)c).Run);
 services.AddScoped<HashFolder>();
 CommandLineBuilder.RegisterCommand<InstallMod>(InstallMod.Definition, c => ((InstallMod)c).Run);

@@ -9,4 +9,10 @@ public static class ByteArrayExtensions
         var algo = new xxHashAlgorithm(0);
         return new Hash(algo.HashBytes(data));
     }
+    
+    public static Hash XxHash64(this Memory<byte> data)
+    {
+        var algo = new xxHashAlgorithm(0);
+        return new Hash(algo.HashBytes(data.Span));
+    }
 }

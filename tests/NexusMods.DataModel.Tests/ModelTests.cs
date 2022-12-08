@@ -34,6 +34,8 @@ public class ModelTests
         {
             To = new GamePath(GameFolderType.Game, "foo/bar.pez"),
             From = new HashRelativePath(new Hash(0), RelativePath.Empty),
+            Hash = (Hash)0x42L,
+            Size = 44L,
             Store = _datastore
         };
         file.Store.Should().NotBeNull();
@@ -64,8 +66,8 @@ public class ModelTests
         
         var name = Guid.NewGuid().ToString();
         var modlist = await _manager.ManageGame(_install, name);
-        await modlist.Install(mod1, CancellationToken.None);
-        await modlist.Install(mod2, CancellationToken.None);
+        await modlist.Install(mod1, "Mod1", CancellationToken.None);
+        await modlist.Install(mod2, "", CancellationToken.None);
 
         modlist.Value.Mods.Count.Should().Be(3);
         modlist.Value.Mods.Sum(m => m.Files.Count).Should().Be(10);

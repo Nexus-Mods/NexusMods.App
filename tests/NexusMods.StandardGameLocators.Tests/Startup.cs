@@ -161,6 +161,8 @@ public class StubbedGameInstaller : IModInstaller
             {
                 From = new HashRelativePath(srcArchive, key),
                 To = new GamePath(GameFolderType.Game, key),
+                Hash = value.Hash,
+                Size = value.Size,
                 Store = _store
             };
         }
