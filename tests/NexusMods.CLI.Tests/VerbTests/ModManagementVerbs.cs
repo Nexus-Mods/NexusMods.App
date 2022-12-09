@@ -36,6 +36,5 @@ public class ModManagementVerbs : AVerbTest
         LastTable.Rows.Count().Should().Be(7);
         
         await RunNoBanner("apply", "-m", listName, "-r", "false");
-        LastTable.Rows.Count().Should().Be(3);
     }
 }
