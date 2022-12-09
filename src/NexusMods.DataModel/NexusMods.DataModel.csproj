@@ -13,6 +13,10 @@
         </PropertyChangedAnalyzerConfiguration>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <DocumentationFile>bin\Release\NexusMods.DataModel.xml</DocumentationFile>
+    </PropertyGroup>
+
     <ItemGroup>
       <ProjectReference Include="..\ArchiveManagement\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj" />
       <ProjectReference Include="..\Games\Abstractions\NexusMods.Games.Abstractions\NexusMods.Games.Abstractions.csproj" />
