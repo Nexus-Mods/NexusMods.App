@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.ModLists;
@@ -28,8 +29,13 @@ public static class Services
         coll.AddSingleton<JsonConverter, EntityLinkConverterFactory>();
         coll.AddSingleton(typeof(EntityLinkConverter<>));
         
-        coll.AddSingleton<IDataStore>(s => new RocksDbDatastore(KnownFolders.CurrentDirectory.Combine("DataModel"), s));
+        coll.AddSingleton<IDataStore>(s => new RocksDbDatastore(KnownFolders.EntryFolder.Combine("DataModel"), s));
+        coll.AddSingleton(s => new ArchiveManager(s.GetRequiredService<ILogger<ArchiveManager>>(),
+            new []{KnownFolders.EntryFolder.Combine("Archives")},
+            s.GetRequiredService<IDataStore>(),
+            s.GetRequiredService<FileExtractor.FileExtractor>()));
         coll.AddAllSingleton<IResource, IResource<FileHashCache, Size>>(_ => new Resource<FileHashCache, Size>("File Hashing", Environment.ProcessorCount, Size.Zero));
+        coll.AddAllSingleton<IResource, IResource<ModListManager, Size>>(_ => new Resource<ModListManager, Size>("Load Order Management", Environment.ProcessorCount, Size.Zero));
         coll.AddSingleton<ModListManager>();
         coll.AddSingleton<FileHashCache>();
         coll.AddSingleton<ArchiveContentsCache>();

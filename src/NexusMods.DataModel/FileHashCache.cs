@@ -48,11 +48,15 @@ public class FileHashCache
         _store.PutRaw(kSpan[..used], vSpan, EntityCategory.FileHashes);
     }
 
-    public async IAsyncEnumerable<HashedEntry> IndexFolder(AbsolutePath path, CancellationToken? token)
+    public IAsyncEnumerable<HashedEntry> IndexFolder(AbsolutePath path, CancellationToken? token)
+    {
+        return IndexFolders(new[] { path }, token);
+    }
+    public async IAsyncEnumerable<HashedEntry> IndexFolders(IEnumerable<AbsolutePath> paths, CancellationToken? token)
     {
         token ??= CancellationToken.None;
         
-        var result = _limiter.ForEachFile(path, async (job, entry) =>
+        var result = _limiter.ForEachFile(paths, async (job, entry) =>
         {
             if (TryGetCached(entry.Path, out var found))
             {

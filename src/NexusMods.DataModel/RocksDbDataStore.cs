@@ -56,11 +56,27 @@ public class RocksDbDatastore : IDataStore
         using var stream = new RecyclableMemoryStream(_mmanager);
         JsonSerializer.Serialize(stream, value, _jsonOptions.Value);
         stream.Position = 0;
-        var data = (ReadOnlySpan<byte>)stream.GetSpan()[..(int)stream.Length];
-        var hash = data.XxHash64();
-        Span<byte> keySpan = stackalloc byte[8];
-        BinaryPrimitives.WriteUInt64BigEndian(keySpan, hash);
-        _db.Put(keySpan, data, _columns[value.Category]);
+        var span = (ReadOnlySpan<byte>)stream.GetSpan();
+
+        Hash hash;
+        
+        // Span returned may be smaller then the entire size if the buffer had to be resized
+        if (span.Length >= stream.Length)
+        {
+            hash = span.XxHash64();
+            Span<byte> keySpan = stackalloc byte[8];
+            BinaryPrimitives.WriteUInt64BigEndian(keySpan, hash);
+            _db.Put(keySpan, span[..(int)stream.Length], _columns[value.Category]);
+        }
+        else
+        {
+            var data = stream.GetBuffer();
+            hash = ((ReadOnlySpan<byte>)data.AsSpan())[..(int)stream.Length].XxHash64();
+            Span<byte> keySpan = stackalloc byte[8];
+            BinaryPrimitives.WriteUInt64BigEndian(keySpan, hash);
+            _db.Put(keySpan, data.AsSpan()[..(int)stream.Length], _columns[value.Category]);
+        }
+        
         return new Id(value.Category, hash);
     }
 
@@ -69,10 +85,20 @@ public class RocksDbDatastore : IDataStore
         using var stream = new RecyclableMemoryStream(_mmanager);
         JsonSerializer.Serialize(stream, value, _jsonOptions.Value);
         stream.Position = 0;
-        var data = (ReadOnlySpan<byte>)stream.GetSpan()[..(int)stream.Length];
+        var span = (ReadOnlySpan<byte>)stream.GetSpan();
         Span<byte> keySpan = stackalloc byte[8];
         BinaryPrimitives.WriteUInt64BigEndian(keySpan, id.Hash);
-        _db.Put(keySpan, data, _columns[value.Category]);
+        
+        // Span returned may be smaller then the entire size if the buffer had to be resized
+        if (span.Length >= stream.Length)
+        {
+            _db.Put(keySpan, span[..(int)stream.Length], _columns[value.Category]);
+        }
+        else
+        {
+            _db.Put(keySpan, stream.GetBuffer().ToArray(), _columns[value.Category]);
+        }
+
     }
 
     public T? Get<T>(Id id) where T : Entity

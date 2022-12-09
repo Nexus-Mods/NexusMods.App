@@ -5,7 +5,7 @@ using NexusMods.Paths;
 namespace NexusMods.DataModel.ModLists.ModFiles;
 
 [JsonName("NexusMods.DataModel.GameFiles.FromArchive")]
-public record FromArchive: AModFile
+public record FromArchive: AStaticModFile
 {
     public required HashRelativePath From { get; init; }
 }

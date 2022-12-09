@@ -41,12 +41,12 @@ public class LooseFileInstaller : IModInstaller
             : Interfaces.Priority.None;
     }
 
-    private IEnumerable<RelativePath> FilterFiles(EntityDictionary<RelativePath, AnalyzedFile> files)
+    private IEnumerable<(RelativePath Path, AnalyzedFile Entry)> FilterFiles(EntityDictionary<RelativePath, AnalyzedFile> files)
     {
-        return from file in files.Keys
+        return from kv in files
             from prefix in _prefixes
-            where file.InFolder(prefix.Prefix)
-            select file;
+            where kv.Key.InFolder(prefix.Prefix)
+            select (kv.Key, kv.Value);
     }
 
     public IEnumerable<AModFile> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
@@ -54,14 +54,16 @@ public class LooseFileInstaller : IModInstaller
         return FilterFiles(files)
             .Select(file =>
             {
-                var outFile = file;
-                if (!file.InFolder(_dataFolder))
-                    outFile = _dataFolder.Join(file);
+                var outFile = file.Path;
+                if (!file.Path.InFolder(_dataFolder))
+                    outFile = _dataFolder.Join(file.Path);
                 
                 return new FromArchive
                 {
-                    From = new HashRelativePath(srcArchive, file),
+                    From = new HashRelativePath(srcArchive, file.Path),
                     To = new GamePath(GameFolderType.Game, outFile),
+                    Hash = file.Entry.Hash,
+                    Size = file.Entry.Size,
                     Store = _store
                 };
             });

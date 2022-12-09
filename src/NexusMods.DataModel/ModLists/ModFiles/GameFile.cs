@@ -6,9 +6,7 @@ using NexusMods.Paths;
 namespace NexusMods.DataModel.ModLists.ModFiles;
 
 [JsonName("NexusMods.DataModel.ModFiles.GameFile")]
-public record GameFile : AModFile
+public record GameFile : AStaticModFile
 {
     public required GameInstallation Installation { get; init; }
-    public required Hash Hash { get; init; }
-    public required Size Size { get; init; }
 }

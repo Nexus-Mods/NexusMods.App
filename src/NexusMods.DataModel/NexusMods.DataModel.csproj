@@ -13,6 +13,10 @@
         </PropertyChangedAnalyzerConfiguration>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <DocumentationFile>bin\Release\NexusMods.DataModel.xml</DocumentationFile>
+    </PropertyGroup>
+
     <ItemGroup>
       <ProjectReference Include="..\ArchiveManagement\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj" />
       <ProjectReference Include="..\Games\Abstractions\NexusMods.Games.Abstractions\NexusMods.Games.Abstractions.csproj" />
@@ -27,10 +31,6 @@
       <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.2.1" />
       <PackageReference Include="RocksDB" Version="7.7.3.33461" />
       <PackageReference Include="System.Reactive" Version="5.0.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="ModLists\ModListManager" />
     </ItemGroup>
 
 </Project>

@@ -1,12 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Immutable;
-using System.Reactive.Linq;
+﻿using System.Reactive.Linq;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.ModLists.Markers;
 using NexusMods.DataModel.ModLists.ModFiles;
+using NexusMods.DataModel.RateLimiting;
 using NexusMods.Interfaces;
 using NexusMods.Paths;
 
@@ -17,19 +16,27 @@ public class ModListManager
     private readonly ILogger<ModListManager> _logger;
     private readonly IDataStore _store;
     private readonly Root<ListRegistry> _root;
-    private readonly FileHashCache _fileHashCache;
+    public readonly FileHashCache FileHashCache;
+    public readonly ArchiveManager ArchiveManager;
     private readonly IModInstaller[] _installers;
     private readonly ArchiveContentsCache _analyzer;
 
-    public ModListManager(ILogger<ModListManager> logger, IDataStore store, FileHashCache fileHashCache, IEnumerable<IModInstaller> installers, ArchiveContentsCache analyzer)
+    public ModListManager(ILogger<ModListManager> logger,
+        IResource<ModListManager, Size> limiter,
+        ArchiveManager archiveManager, 
+        IDataStore store, FileHashCache fileHashCache, IEnumerable<IModInstaller> installers, ArchiveContentsCache analyzer)
     {
         _logger = logger;
+        Limiter = limiter;
+        ArchiveManager = archiveManager;
         _store = store;
         _root = new Root<ListRegistry>(RootType.ModLists, store);
-        _fileHashCache = fileHashCache;
+        FileHashCache = fileHashCache;
         _installers = installers.ToArray();
         _analyzer = analyzer;
     }
+
+    public IResource<ModListManager,Size> Limiter { get; set; }
 
     public IObservable<ListRegistry> Changes => _root.Changes.Select(r => r.New);
     public IEnumerable<ModListMarker> AllModLists => _root.Value.Lists.Values.Select(m => new ModListMarker(this, m.ModListId));
@@ -41,7 +48,7 @@ public class ModListManager
 
         foreach (var (type, path) in installation.Locations)
         {
-            await foreach (var result in _fileHashCache.IndexFolder(path, token))
+            await foreach (var result in FileHashCache.IndexFolder(path, token))
             {
                 gameFiles.Add(new GameFile
                 {
@@ -73,7 +80,7 @@ public class ModListManager
         return new ModListMarker(this, n.ModListId);
     }
 
-    public async Task<ModListMarker> InstallMod(ModListId modListId, AbsolutePath path, CancellationToken token = default)
+    public async Task<ModListMarker> InstallMod(ModListId modListId, AbsolutePath path, string name, CancellationToken token = default)
     {
         var modList = GetModList(modListId);
         
@@ -89,9 +96,11 @@ public class ModListManager
 
         var contents = installer.Installer.Install(modList.Value.Installation, analyzed.Hash, analyzed.Contents);
 
+        name = string.IsNullOrWhiteSpace(name) ? path.FileName.ToString() : name;
+
         var newMod = new Mod()
         {
-            Name = path.FileName.ToString(),
+            Name = name,
             Files = new EntityHashSet<AModFile>(_store, contents.Select(c => c.Id)),
             Store = _store
         };
@@ -103,6 +112,7 @@ public class ModListManager
     {
         return new ModListMarker(this, modListId);
     }
+
 
     public void Alter(ModListId id, Func<ModList, ModList> func)
     {
