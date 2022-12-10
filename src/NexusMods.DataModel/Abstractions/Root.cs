@@ -8,7 +8,7 @@ public class Root<TRoot> where TRoot : Entity, IEmptyWithDataStore<TRoot>
 
     private EntityLink<TRoot> _root;
 
-    public TRoot Value => _root.Id == Id.Empty ? TRoot.Empty(Store) : _root.Value;
+    public TRoot Value => _root.Id == IdEmpty.Empty ? TRoot.Empty(Store) : _root.Value;
     
     /// <summary>
     /// Datastore used by this root when creating new entities
@@ -32,7 +32,7 @@ public class Root<TRoot> where TRoot : Entity, IEmptyWithDataStore<TRoot>
         Store = store;
         
         var initRoot = Store.GetRoot(type);
-        _root = new EntityLink<TRoot>(initRoot ?? Id.Empty, store);
+        _root = new EntityLink<TRoot>(initRoot ?? IdEmpty.Empty, store);
     }
 
     /// <summary>
@@ -44,17 +44,18 @@ public class Root<TRoot> where TRoot : Entity, IEmptyWithDataStore<TRoot>
     {
         var oldId = Store.GetRoot(Type);
         if (oldId != null && oldId != _root.Id)
-            _root = new EntityLink<TRoot>(oldId.Value, Store);
+            _root = new EntityLink<TRoot>(oldId, Store);
         
         restart:
-        var oldRoot = _root.Id == Id.Empty ? TRoot.Empty(Store) : _root.Value;
+        var oldRoot = _root.Id == IdEmpty.Empty ? TRoot.Empty(Store) : _root.Value;
+
         var newRoot = f(oldRoot);
         if (newRoot.Id == oldRoot.Id)
             return;
 
         if (!Store.PutRoot(Type, _root.Id, newRoot.Id))
         {
-            var newId = Store.GetRoot(Type)!.Value;
+            var newId = Store.GetRoot(Type)!;
             _root = new EntityLink<TRoot>(newId, Store);
             goto restart;
         }

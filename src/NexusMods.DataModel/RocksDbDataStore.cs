@@ -77,7 +77,7 @@ public class RocksDbDatastore : IDataStore
             _db.Put(keySpan, data.AsSpan()[..(int)stream.Length], _columns[value.Category]);
         }
         
-        return new Id(value.Category, hash);
+        return new Id64(value.Category, hash);
     }
 
     public void Put<T>(Id id, T value) where T : Entity
@@ -86,8 +86,8 @@ public class RocksDbDatastore : IDataStore
         JsonSerializer.Serialize(stream, value, _jsonOptions.Value);
         stream.Position = 0;
         var span = (ReadOnlySpan<byte>)stream.GetSpan();
-        Span<byte> keySpan = stackalloc byte[8];
-        BinaryPrimitives.WriteUInt64BigEndian(keySpan, id.Hash);
+        Span<byte> keySpan = stackalloc byte[id.SpanSize];
+        id.ToSpan(keySpan);
         
         // Span returned may be smaller then the entire size if the buffer had to be resized
         if (span.Length >= stream.Length)
@@ -103,8 +103,8 @@ public class RocksDbDatastore : IDataStore
 
     public T? Get<T>(Id id) where T : Entity
     {
-        Span<byte> keySpan = stackalloc byte[8];
-        BinaryPrimitives.WriteUInt64BigEndian(keySpan, (ulong)id.Hash);
+        Span<byte> keySpan = stackalloc byte[id.SpanSize];
+        id.ToSpan(keySpan);
         return _db.Get(keySpan, str => 
                 JsonSerializer.Deserialize<T>(str, _jsonOptions.Value), 
             _columns[id.Category]);
@@ -114,20 +114,20 @@ public class RocksDbDatastore : IDataStore
     {
         var rootName = new byte[1];
         rootName[0] = (byte)type;
-        
-        Span<byte> oldIdSpan = stackalloc byte[9];
-        oldId.ToTaggedSpan(oldIdSpan);
             
-        Span<byte> newIdSpan = stackalloc byte[9];
+        Span<byte> newIdSpan = stackalloc byte[newId.SpanSize + 1];
         newId.ToTaggedSpan(newIdSpan);
         
         lock (_db)
         {
-            var existingId = _db.Get(rootName);
-            
-            if (existingId != null && !existingId.AsSpan().SequenceEqual(oldIdSpan))
-                return false;
-            
+            var existingBytes = _db.Get(rootName);
+            if (existingBytes != null)
+            {
+                var existingId = Id.FromTaggedSpan(existingBytes);
+
+                if (!existingId.Equals(oldId))
+                    return false;
+            }
             _db.Put(rootName, newIdSpan);
         }
         return true;

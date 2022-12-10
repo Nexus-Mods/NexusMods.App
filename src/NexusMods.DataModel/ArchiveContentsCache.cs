@@ -66,7 +66,7 @@ public class ArchiveContentsCache
                 hash = await hashStream.Hash(token);
             }
 
-            var found = _store.Get<Entity>(new Id(EntityCategory.FileAnalysis, hash));
+            var found = _store.Get<Entity>(new Id64(EntityCategory.FileAnalysis, hash));
             if (found is AnalyzedFile af) return af;
             
             hashStream.Position = 0;
