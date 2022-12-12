@@ -79,6 +79,30 @@ public abstract class AId : Id
     }
 }
 
+public class RootId : AId
+{
+    private readonly RootType _type;
+    public RootId(RootType type)
+    {
+        _type = type;
+    }
+    
+    public override bool Equals(Id? other)
+    {
+        if (other is RootId id)
+            return id._type == _type;
+        return false;
+    }
+
+    public override int SpanSize => 1;
+    public override void ToSpan(Span<byte> span)
+    {
+        span[0] = (byte)_type;
+    }
+
+    public override EntityCategory Category => EntityCategory.Roots;
+}
+
 public class IdEmpty : Id
 {
     public EntityCategory Category => 0;
