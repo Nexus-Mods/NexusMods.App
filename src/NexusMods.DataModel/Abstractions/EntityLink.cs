@@ -34,7 +34,7 @@ public record EntityLink <T> : IEmptyWithDataStore<EntityLink<T>> where T : Enti
         return _value;
     }
 
-    public static EntityLink<T> Empty(IDataStore store) => new(Id.Empty, store);
+    public static EntityLink<T> Empty(IDataStore store) => new(IdEmpty.Empty, store);
 }
 
 public class EntityLinkConverterFactory : JsonConverterFactory
