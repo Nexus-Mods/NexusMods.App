@@ -13,12 +13,15 @@ public class ArchiveManager
     private readonly ILogger<ArchiveManager> _logger;
     private readonly HashSet<AbsolutePath> _locations;
     private readonly FileExtractor.FileExtractor _fileExtractor;
+    private readonly ArchiveContentsCache _contentsCache;
 
-    public ArchiveManager(ILogger<ArchiveManager> logger, IEnumerable<AbsolutePath> locations, IDataStore store, FileExtractor.FileExtractor fileExtractor)
+    public ArchiveManager(ILogger<ArchiveManager> logger, IEnumerable<AbsolutePath> locations, IDataStore store, 
+        FileExtractor.FileExtractor fileExtractor, ArchiveContentsCache contentsCache)
     {
         _logger = logger;
         _locations = locations.ToHashSet();
         _store = store;
+        _contentsCache = contentsCache;
         _fileExtractor = fileExtractor;
         foreach (var folder in _locations)
             folder.CreateDirectory();
@@ -61,6 +64,18 @@ public class ArchiveManager
     {
         var rel = NameForHash(hash);
         return _locations.Any(r => r.Combine(rel).FileExists);
+    }
+
+    /// <summary>
+    /// Returns true if the given hash is managed, or any archive that contains this file is managed
+    /// </summary>
+    /// <param name="hash"></param>
+    /// <returns></returns>
+    public bool HaveFile(Hash hash)
+    {
+        if (HaveArchive(hash)) return true;
+
+        return _contentsCache.ArchivesThatContain(hash).Any(containedIn => HaveFile(containedIn.Parent));
     }
 
     private AbsolutePath SelectLocation(AbsolutePath path)

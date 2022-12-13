@@ -62,7 +62,6 @@ public class ModListMarker : IMarker<ModList>
             .ToDictionary(x => x.Path);
 
         var flattenedList = FlattenList().ToDictionary(d => d.File.To.RelativeTo(gameFolders[d.File.To.Folder]));
-        var archivedHashes = _manager.ArchiveManager.AllArchives();
         var srcFiles = await srcFilesTask;
 
         foreach (var (path, (file, mod)) in flattenedList)
@@ -73,7 +72,7 @@ public class ModListMarker : IMarker<ModList>
                 {
                     if (foundEntry.Hash == smf.Hash && foundEntry.Size == smf.Size)
                     {
-                        if (!archivedHashes.Contains(smf.Hash))
+                        if (!_manager.ArchiveManager.HaveFile(smf.Hash))
                         {
                             yield return new BackupFile
                             {
@@ -85,7 +84,7 @@ public class ModListMarker : IMarker<ModList>
                         continue;
                     }
 
-                    if (!archivedHashes.Contains(foundEntry.Hash))
+                    if (!_manager.ArchiveManager.HaveFile(foundEntry.Hash))
                     {
                         yield return new BackupFile
                         {
@@ -109,7 +108,7 @@ public class ModListMarker : IMarker<ModList>
             if (flattenedList.TryGetValue(path, out _)) 
                 continue;
 
-            if (!archivedHashes.Contains(entry.Hash))
+            if (!_manager.ArchiveManager.HaveFile(entry.Hash))
             {
                 yield return new BackupFile
                 {

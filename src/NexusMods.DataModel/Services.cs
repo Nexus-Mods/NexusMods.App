@@ -33,7 +33,8 @@ public static class Services
         coll.AddSingleton(s => new ArchiveManager(s.GetRequiredService<ILogger<ArchiveManager>>(),
             new []{KnownFolders.EntryFolder.Combine("Archives")},
             s.GetRequiredService<IDataStore>(),
-            s.GetRequiredService<FileExtractor.FileExtractor>()));
+            s.GetRequiredService<FileExtractor.FileExtractor>(),
+            s.GetRequiredService<ArchiveContentsCache>()));
         coll.AddAllSingleton<IResource, IResource<FileHashCache, Size>>(_ => new Resource<FileHashCache, Size>("File Hashing", Environment.ProcessorCount, Size.Zero));
         coll.AddAllSingleton<IResource, IResource<ModListManager, Size>>(_ => new Resource<ModListManager, Size>("Load Order Management", Environment.ProcessorCount, Size.Zero));
         coll.AddSingleton<ModListManager>();
