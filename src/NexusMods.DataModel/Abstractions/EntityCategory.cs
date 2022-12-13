@@ -5,5 +5,6 @@ public enum EntityCategory
     ModLists,
     FileAnalysis,
     Roots,
-    FileHashes
+    FileHashes,
+    FileContainedIn,
 }

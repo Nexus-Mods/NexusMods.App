@@ -4,6 +4,7 @@ using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IO;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.ArchiveContents;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using RocksDbSharp;
@@ -127,5 +128,39 @@ public class RocksDbDatastore : IDataStore
     public void PutRaw(ReadOnlySpan<byte> key, ReadOnlySpan<byte> value, EntityCategory category)
     {
         _db.Put(key, value);
+    }
+
+    public IEnumerable<T> GetByPrefix<T>(Id prefix) where T : Entity
+    {
+        Span<byte> key = stackalloc byte[prefix.SpanSize + 1];
+        prefix.ToTaggedSpan(key);
+
+        var ro = new ReadOptions();
+        ro.SetTotalOrderSeek(true);
+
+        using var iterator = _db.NewIterator(readOptions:ro);
+        iterator.Seek(key);
+
+
+        while (iterator.Valid())
+        {
+            var seekKey = Id.FromTaggedSpan(iterator.GetKeySpan());
+            if (seekKey.IsPrefixedBy(prefix))
+            {
+                var valSpan = iterator.GetValueSpan();
+                var value = JsonSerializer.Deserialize<Entity>(valSpan, _jsonOptions.Value);
+                if (value is T tc)
+                {
+                    yield return tc;
+                }
+            }
+            else
+            {
+                break;
+            }
+
+            iterator.Next();
+        }
+        
     }
 }
