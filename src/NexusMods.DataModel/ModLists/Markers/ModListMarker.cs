@@ -31,7 +31,7 @@ public class ModListMarker : IMarker<ModList>
 
     public void Add(Mod newMod)
     {
-        _manager.Alter(_id, list => list with {Mods = list.Mods.With(newMod)});
+        _manager.Alter(_id, list => list with {Mods = list.Mods.With(newMod)}, $"Added mod {newMod.Name}");
     }
 
     public async Task Install(AbsolutePath file, string name, CancellationToken token)
@@ -51,6 +51,19 @@ public class ModListMarker : IMarker<ModList>
             }
         }
         return projected.Values;
+    }
+
+    public IEnumerable<ModList> History()
+    {
+        var list = Value;
+        while (true)
+        {
+            yield return list;
+            
+            if (list.PreviousVersion.Id.Equals(IdEmpty.Empty))
+                break;
+            list = list.PreviousVersion.Value;
+        }
     }
 
     public async IAsyncEnumerable<IApplyStep> MakeApplyPlan(CancellationToken token = default)

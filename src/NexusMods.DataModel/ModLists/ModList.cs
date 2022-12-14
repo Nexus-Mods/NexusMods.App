@@ -18,6 +18,7 @@ public record ModList : Entity, IEmptyWithDataStore<ModList>
     public required EntityLink<ModList> PreviousVersion { get; init; }
     
     public override EntityCategory Category => EntityCategory.ModLists;
+    public required string ChangeMessage { get; init; } = "";
 
     public static ModList Empty(IDataStore store) => new()
     {
@@ -27,6 +28,7 @@ public record ModList : Entity, IEmptyWithDataStore<ModList>
         Mods = EntityHashSet<Mod>.Empty(store),
         LastModified = DateTime.UtcNow,
         PreviousVersion = EntityLink<ModList>.Empty(store),
+        ChangeMessage = "",
         Store = store
     };
 }

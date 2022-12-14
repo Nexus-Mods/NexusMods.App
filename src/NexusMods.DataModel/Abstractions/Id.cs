@@ -13,6 +13,15 @@ public interface Id : IEquatable<Id>
     public void ToSpan(Span<byte> span);
     
     public EntityCategory Category { get; }
+    public string SpanHex 
+    {
+        get
+        {
+            Span<byte> span = stackalloc byte[SpanSize];
+            ToSpan(span);
+            return Convert.ToHexString(span);
+        }
+    }
 
     public static Id FromTaggedSpan(ReadOnlySpan<byte> span)
     {

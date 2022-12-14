@@ -114,11 +114,18 @@ public class ModListManager
     }
 
 
-    public void Alter(ModListId id, Func<ModList, ModList> func)
+    public void Alter(ModListId id, Func<ModList, ModList> func, string changeMessage = "")
     {
         _root.Alter(r =>
         {
-            var newList = func(r.Lists[id]);
+            var previousList = r.Lists[id];
+            var newList = func(previousList)
+                with
+                {
+                    LastModified = DateTime.UtcNow,
+                    ChangeMessage = changeMessage,
+                    PreviousVersion = previousList
+                };
             return r with { Lists = r.Lists.With(newList.ModListId, newList) };
         });
     }

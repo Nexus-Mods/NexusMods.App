@@ -460,6 +460,7 @@ public class NexusMods_DataModel_ArchiveContents_AnalyzedArchiveConverter : Json
                 public override NexusMods.DataModel.ModLists.ModList Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
                   if (reader.TokenType != JsonTokenType.StartObject)
                     throw new JsonException();
+                  string changemessageProp = default;
                   GameInstallation installationProp = default;
                   DateTime lastmodifiedProp = default;
                   ModListId modlistidProp = default;
@@ -475,6 +476,9 @@ public class NexusMods_DataModel_ArchiveContents_AnalyzedArchiveConverter : Json
                     var prop = reader.GetString();
                     reader.Read();
                     switch (prop) {
+                      case "ChangeMessage":
+                        changemessageProp = JsonSerializer.Deserialize<string>(ref reader, options);
+                        break;
                       case "Installation":
                         installationProp = JsonSerializer.Deserialize<GameInstallation>(ref reader, options);
                         break;
@@ -499,6 +503,7 @@ public class NexusMods_DataModel_ArchiveContents_AnalyzedArchiveConverter : Json
                     }
                   }
                   return new NexusMods.DataModel.ModLists.ModList {
+                    ChangeMessage = changemessageProp,
                     Installation = installationProp,
                     LastModified = lastmodifiedProp,
                     ModListId = modlistidProp,
@@ -511,6 +516,8 @@ public class NexusMods_DataModel_ArchiveContents_AnalyzedArchiveConverter : Json
                   public override void Write(Utf8JsonWriter writer, NexusMods.DataModel.ModLists.ModList value, JsonSerializerOptions options) {
                     writer.WriteStartObject();
                     writer.WriteString("$type", "NexusMods.DataModel.ModList");
+                    writer.WritePropertyName("ChangeMessage");
+                    JsonSerializer.Serialize<string>(writer, value.ChangeMessage, options);
                     writer.WritePropertyName("Installation");
                     JsonSerializer.Serialize<GameInstallation>(writer, value.Installation, options);
                     writer.WritePropertyName("LastModified");

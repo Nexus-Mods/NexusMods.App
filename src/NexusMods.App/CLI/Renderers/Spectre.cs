@@ -14,7 +14,7 @@ public class Spectre : IRenderer
     public string Name => "console";
     public void RenderBanner()
     {
-        AnsiConsole.Write(new FigletText("NexusMods.App") {Color = NexusColor});
+        //AnsiConsole.Write(new FigletText("NexusMods.App") {Color = NexusColor});
     }
 
     public async Task<T> WithProgress<T>(CancellationToken token, Func<Task<T>> f, bool showSize = true)
