@@ -161,10 +161,10 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
                 _ => throw new PathException($"Cannot cast {p} of type {p.GetType()} to Path")
             };
         }).ToArray();
-        return Combine(converted);
+        return Join(converted);
     }
 
-    public AbsolutePath Combine(params RelativePath[] paths)
+    public AbsolutePath Join(params RelativePath[] paths)
     {
         var newLen = Parts.Length + paths.Sum(p => p.Parts.Length);
         var newParts = new string[newLen];
@@ -200,7 +200,7 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
 
     public AbsolutePath AppendToName(string append)
     {
-        return Parent.Combine((FileName.FileNameWithoutExtension + append).ToRelativePath()
+        return Parent.Join((FileName.FileNameWithoutExtension + append).ToRelativePath()
             .WithExtension(Extension));
     }
 

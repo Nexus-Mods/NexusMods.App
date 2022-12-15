@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ModLists;
+using NexusMods.Hashing.xxHash64;
 using NexusMods.Interfaces;
 using NexusMods.Interfaces.Components;
 using NexusMods.Paths;
@@ -14,7 +15,19 @@ namespace NexusMods.DataModel.Tests.Harness;
 public abstract class ADataModelTest<T> : IDisposable
 {
     public static readonly AbsolutePath DATA_ZIP_LZMA = KnownFolders.EntryFolder.Combine(@"Resources\data_zip_lzma.zip");
-    
+    public static readonly AbsolutePath DATA_7Z_LZMA2 = KnownFolders.EntryFolder.Combine(@"Resources\data_7zip_lzma2.7z");
+
+    public static readonly RelativePath[] DATA_NAMES = new[]
+    {
+        "rootFile.txt",
+        "folder1/folder1file.txt",
+        "deepFolder/deepFolder2/deepFolder3/deepFolder4/deepFile.txt"
+    }.Select(t => t.ToRelativePath()).ToArray();
+
+    public static readonly Dictionary<RelativePath, (Hash Hash, Size Size)> DATA_CONTENTS = DATA_NAMES
+        .ToDictionary(d => d, 
+            d => (d.FileName.ToString().XxHash64(), (Size)d.FileName.ToString().Length));
+
     private readonly IServiceProvider _provider;
     protected readonly TemporaryFileManager TemporaryFileManager;
     protected readonly ArchiveContentsCache ArchiveContentsCache;

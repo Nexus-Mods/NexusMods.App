@@ -31,13 +31,13 @@ public class ArchiveManager
     {
         Hash hash;
         var folder = SelectLocation(path);
-        var tmpName = folder.Combine(Guid.NewGuid().ToString().ToRelativePath().WithExtension(Ext.Tmp));
+        var tmpName = folder.Join(Guid.NewGuid().ToString().ToRelativePath().WithExtension(Ext.Tmp));
         {
             await using var tmpFile = tmpName.Create();
             await using var src = path.Read();
             hash = await src.HashingCopy(tmpFile, token, job);
         }
-        var finalName = folder.Combine(NameForHash(hash));
+        var finalName = folder.Join(NameForHash(hash));
         if (!finalName.FileExists) 
             await tmpName.MoveToAsync(finalName);
         return hash;
@@ -56,14 +56,14 @@ public class ArchiveManager
     private AbsolutePath PathFor(Hash hash)
     {
         var rel = NameForHash(hash);
-        return _locations.Select(r => r.Combine(rel))
+        return _locations.Select(r => r.Join(rel))
             .First(r => r.FileExists);
     }
 
     public bool HaveArchive(Hash hash)
     {
         var rel = NameForHash(hash);
-        return _locations.Any(r => r.Combine(rel).FileExists);
+        return _locations.Any(r => r.Join(rel).FileExists);
     }
 
     /// <summary>
