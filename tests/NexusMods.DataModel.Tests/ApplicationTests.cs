@@ -3,6 +3,7 @@ using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.ModLists;
 using NexusMods.DataModel.ModLists.ApplySteps;
 using NexusMods.DataModel.ModLists.Markers;
+using NexusMods.DataModel.ModLists.ModFiles;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -83,7 +84,21 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
             }
         });
 
+
+        mainList.FlattenList().Count().Should().Be(7, "because no changes are applied yet");
+        
         await mainList.ApplyIngest(ingestPlan, Token);
+
+
+        var flattened = mainList.FlattenList().ToDictionary(f => f.File.To);
+        flattened.Count.Should().Be(6, "Because we've deleted one file");
+        
+        mainList.Value.Mods.SelectMany(m => m.Files)
+            .OfType<AStaticModFile>()
+            .Where(f => f.Hash == modifiedHash)
+            .Should()
+            .NotBeEmpty("Because we've updated a file");
+        
 
 
         await BaseList.Apply(Token);
