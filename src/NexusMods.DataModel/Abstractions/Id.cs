@@ -13,14 +13,27 @@ public interface Id : IEquatable<Id>
     public void ToSpan(Span<byte> span);
     
     public EntityCategory Category { get; }
+    public string SpanHex 
+    {
+        get
+        {
+            Span<byte> span = stackalloc byte[SpanSize];
+            ToSpan(span);
+            return Convert.ToHexString(span);
+        }
+    }
 
     public static Id FromTaggedSpan(ReadOnlySpan<byte> span)
     {
         var tag = (EntityCategory)span[0];
         
-        if (span.Length == 9)
+        switch (span.Length)
         {
-            return new Id64(tag, BinaryPrimitives.ReadUInt64BigEndian(span[1..]));
+            case 9:
+                return new Id64(tag, BinaryPrimitives.ReadUInt64BigEndian(span[1..]));
+            case 17:
+                return new TwoId64(tag, BinaryPrimitives.ReadUInt64BigEndian(span[1..]),
+                    BinaryPrimitives.ReadUInt64BigEndian(span[9..]));
         }
 
         var mem = new Memory<byte>(new byte[span.Length - 1]);
@@ -32,7 +45,11 @@ public interface Id : IEquatable<Id>
     {
         if (span.Length == 8)
         {
-            return new Id64(category, BinaryPrimitives.ReadUInt32BigEndian(span));
+            return new Id64(category, BinaryPrimitives.ReadUInt64BigEndian(span));
+        }
+        if (span.Length == 16)
+        {
+            return new TwoId64(category, BinaryPrimitives.ReadUInt64BigEndian(span), BinaryPrimitives.ReadUInt64BigEndian(span[8..]));
         }
 
         var mem = new Memory<byte>(new byte[span.Length - 1]);
@@ -44,6 +61,17 @@ public interface Id : IEquatable<Id>
     {
         span[0] = (byte)Category;
         ToSpan(span[1..]);
+    }
+
+    bool IsPrefixedBy(Id prefix)
+    {
+        if (prefix.SpanSize > SpanSize) 
+            return false;
+        Span<byte> ourSpan = stackalloc byte[SpanSize + 1];
+        ToTaggedSpan(ourSpan);
+        Span<byte> prefixSpan = stackalloc byte[prefix.SpanSize + 1];
+        prefix.ToTaggedSpan(prefixSpan);
+        return ourSpan.StartsWith(prefixSpan);
     }
 }
 
@@ -77,6 +105,60 @@ public abstract class AId : Id
             return Equals(id);
         return false;
     }
+}
+
+public class RootId : AId
+{
+    private readonly RootType _type;
+    public RootId(RootType type)
+    {
+        _type = type;
+    }
+    
+    public override bool Equals(Id? other)
+    {
+        if (other is RootId id)
+            return id._type == _type;
+        return false;
+    }
+
+    public override int SpanSize => 1;
+    public override void ToSpan(Span<byte> span)
+    {
+        span[0] = (byte)_type;
+    }
+
+    public override EntityCategory Category => EntityCategory.Roots;
+}
+
+public class TwoId64 : AId
+{
+    private readonly EntityCategory _type;
+    private readonly ulong _a;
+    private readonly ulong _b;
+
+    public TwoId64(EntityCategory type, ulong a, ulong b)
+    {
+        _type = type;
+        _a = a;
+        _b = b;
+    }
+    
+    public override bool Equals(Id? other)
+    {
+        if (other is TwoId64 id)
+            return id._a == _a && id._b == _b && id._type == _type;
+        return false;
+    }
+
+    public override int SpanSize => 16;
+    public override void ToSpan(Span<byte> span)
+    {
+        BinaryPrimitives.WriteUInt64BigEndian(span, _a);
+        BinaryPrimitives.WriteUInt64BigEndian(span[8..], _b);
+    }
+
+    public override EntityCategory Category => _type;
 }
 
 public class IdEmpty : Id

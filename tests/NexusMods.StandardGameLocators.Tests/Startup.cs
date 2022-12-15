@@ -42,6 +42,18 @@ public class StubbedGame : ISteamGame, IGogGame
     private readonly IEnumerable<IGameLocator> _locators;
     public string Name => "Stubbed Game";
     public string Slug => "stubbed-game";
+    
+    public static readonly RelativePath[] DATA_NAMES = new[]
+    {
+        "StubbedGame.exe",
+        "config.ini",
+        "Data/image.dds",
+        "Models/model.3ds"
+    }.Select(t => t.ToRelativePath()).ToArray();
+
+    public static readonly Dictionary<RelativePath, (Hash Hash, Size Size)> DATA_CONTENTS = DATA_NAMES
+        .ToDictionary(d => d, 
+            d => (d.FileName.ToString().XxHash64(), (Size)d.FileName.ToString().Length));
 
     public StubbedGame(ILogger<StubbedGame> logger, IEnumerable<IGameLocator> locators)
     {
@@ -70,17 +82,17 @@ public class StubbedGame : ISteamGame, IGogGame
     {
         lock (this)
         {
-            EnsureFile(path.Combine("StubbedGame.exe"));
-            EnsureFile(path.Combine("config.ini"));
-            path.Combine("Data").CreateDirectory();
-            EnsureFile(path.Combine("Data", "image.dds"));
-            EnsureFile(path.Combine("Data", "model.3ds"));
+            foreach (var file in DATA_NAMES)
+            {
+                EnsureFile(path.Join(file));
+            }
             return path;
         }
     }
 
     private void EnsureFile(AbsolutePath path)
     {
+        path.Parent.CreateDirectory();
         if (path.FileExists) return;
         File.WriteAllText(path.ToString(), path.FileName.ToString());
     }

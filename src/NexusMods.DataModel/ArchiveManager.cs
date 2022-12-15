@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Interfaces.Streams;
@@ -13,12 +14,15 @@ public class ArchiveManager
     private readonly ILogger<ArchiveManager> _logger;
     private readonly HashSet<AbsolutePath> _locations;
     private readonly FileExtractor.FileExtractor _fileExtractor;
+    private readonly ArchiveContentsCache _contentsCache;
 
-    public ArchiveManager(ILogger<ArchiveManager> logger, IEnumerable<AbsolutePath> locations, IDataStore store, FileExtractor.FileExtractor fileExtractor)
+    public ArchiveManager(ILogger<ArchiveManager> logger, IEnumerable<AbsolutePath> locations, IDataStore store, 
+        FileExtractor.FileExtractor fileExtractor, ArchiveContentsCache contentsCache)
     {
         _logger = logger;
         _locations = locations.ToHashSet();
         _store = store;
+        _contentsCache = contentsCache;
         _fileExtractor = fileExtractor;
         foreach (var folder in _locations)
             folder.CreateDirectory();
@@ -28,13 +32,13 @@ public class ArchiveManager
     {
         Hash hash;
         var folder = SelectLocation(path);
-        var tmpName = folder.Combine(Guid.NewGuid().ToString().ToRelativePath().WithExtension(Ext.Tmp));
+        var tmpName = folder.Join(Guid.NewGuid().ToString().ToRelativePath().WithExtension(Ext.Tmp));
         {
             await using var tmpFile = tmpName.Create();
             await using var src = path.Read();
             hash = await src.HashingCopy(tmpFile, token, job);
         }
-        var finalName = folder.Combine(NameForHash(hash));
+        var finalName = folder.Join(NameForHash(hash));
         if (!finalName.FileExists) 
             await tmpName.MoveToAsync(finalName);
         return hash;
@@ -53,14 +57,37 @@ public class ArchiveManager
     private AbsolutePath PathFor(Hash hash)
     {
         var rel = NameForHash(hash);
-        return _locations.Select(r => r.Combine(rel))
+        return _locations.Select(r => r.Join(rel))
             .First(r => r.FileExists);
     }
 
     public bool HaveArchive(Hash hash)
     {
         var rel = NameForHash(hash);
-        return _locations.Any(r => r.Combine(rel).FileExists);
+        return _locations.Any(r => r.Join(rel).FileExists);
+    }
+
+    /// <summary>
+    /// Returns true if the given hash is managed, or any archive that contains this file is managed
+    /// </summary>
+    /// <param name="hash"></param>
+    /// <returns></returns>
+    public bool HaveFile(Hash hash)
+    {
+        if (HaveArchive(hash)) return true;
+
+        return _contentsCache.ArchivesThatContain(hash).Any(containedIn => HaveFile(containedIn.Parent));
+    }
+    
+    /// <summary>
+    /// Returns true if the given hash is managed, or any archive that contains this file is managed
+    /// </summary>
+    /// <param name="hash"></param>
+    /// <returns></returns>
+    public IEnumerable<HashRelativePath> ArchivesThatContain(Hash hash)
+    {
+        if (HaveArchive(hash)) return new[]{ new HashRelativePath(hash, Array.Empty<RelativePath>())};
+        return _contentsCache.ArchivesThatContain(hash).Select(r => new HashRelativePath(r.Parent, r.Path));
     }
 
     private AbsolutePath SelectLocation(AbsolutePath path)

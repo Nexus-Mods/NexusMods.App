@@ -40,6 +40,34 @@ where T : Entity
     {
         return new EntityHashSet<T>(_store, _coll.Remove(val.Id));
     }
+    
+    public EntityHashSet<T> Without(IEnumerable<T> vals)
+    {
+        var newColl = vals.Aggregate(_coll, (acc, itm) => acc.Remove(itm.Id));
+        return new EntityHashSet<T>(_store, newColl);
+    }
+
+    /// <summary>
+    /// Transforms this hashset returning a new hashset. If `func` returns null for a given
+    /// value, the item is removed from the set
+    /// </summary>
+    /// <param name="func"></param>
+    /// <returns></returns>
+    public EntityHashSet<T> Keep(Func<T, T?> func)
+    {
+        var coll = _coll;
+        foreach (var id in _coll)
+        {
+            var result = func((T)_store.Get<Entity>(id)!);
+            if (result == null)
+            {
+                coll = coll.Remove(id);
+            }
+            else if (!result.Id.Equals(id))
+                coll = coll.Remove(id).Add(result.Id);
+        }
+        return ReferenceEquals(coll, _coll) ? this : new EntityHashSet<T>(_store, coll);
+    }
 
     public bool Contains(T val)
     {

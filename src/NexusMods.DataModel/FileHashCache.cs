@@ -24,9 +24,10 @@ public class FileHashCache
     public bool TryGetCached(AbsolutePath path, out FileHashCacheEntry entry)
     {
         var normalized = path.ToString();
-        Span<byte> span = stackalloc byte[Encoding.UTF8.GetMaxByteCount(normalized.Length)];
-        var used = Encoding.UTF8.GetBytes(normalized, span);
-        var found = _store.GetRaw(span[..used], EntityCategory.FileHashes);
+        Span<byte> span = stackalloc byte[Encoding.UTF8.GetByteCount(normalized) + 1];
+        span[0] = (byte)EntityCategory.FileHashes;
+        var used = Encoding.UTF8.GetBytes(normalized, span[1..]);
+        var found = _store.GetRaw(span, EntityCategory.FileHashes);
         if (found != null && found is not { Length: 0 })
         {
             entry = FileHashCacheEntry.FromSpan(found);
@@ -39,13 +40,14 @@ public class FileHashCache
     private void PutCachedAsync(AbsolutePath path, FileHashCacheEntry entry)
     {
         var normalized = path.ToString();
-        Span<byte> kSpan = stackalloc byte[Encoding.UTF8.GetMaxByteCount(normalized.Length)];
-        var used = Encoding.UTF8.GetBytes(normalized, kSpan);
+        Span<byte> kSpan = stackalloc byte[Encoding.UTF8.GetByteCount(normalized) + 1];
+        kSpan[0] = (byte)EntityCategory.FileHashes;
+        var used = Encoding.UTF8.GetBytes(normalized, kSpan[1..]);
 
         Span<byte> vSpan = stackalloc byte[24];
         entry.ToSpan(vSpan);
 
-        _store.PutRaw(kSpan[..used], vSpan, EntityCategory.FileHashes);
+        _store.PutRaw(kSpan, vSpan, EntityCategory.FileHashes);
     }
 
     public IAsyncEnumerable<HashedEntry> IndexFolder(AbsolutePath path, CancellationToken? token)

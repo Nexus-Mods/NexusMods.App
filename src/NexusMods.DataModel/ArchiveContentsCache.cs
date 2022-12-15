@@ -36,14 +36,14 @@ public class ArchiveContentsCache
         _fileHashCahce = hashCache;
     }
 
-    public async Task<AnalyzedFile> AnalyzeFile(AbsolutePath path, CancellationToken token)
+    public async Task<AnalyzedFile> AnalyzeFile(AbsolutePath path, CancellationToken token = default)
     {
         var result = await AnalyzeFileInner(new NativeFileStreamFactory(path), token);
         result.EnsureStored();
         return result;
     }
 
-    public async Task<AnalyzedFile> AnalyzeFileInner(IStreamFactory sFn, CancellationToken token = default, int level = 0)
+    public async Task<AnalyzedFile> AnalyzeFileInner(IStreamFactory sFn, CancellationToken token = default, int level = 0, Hash parent = default, RelativePath parentPath = default)
     {
         Hash hash = default;
         var sigs = Array.Empty<FileType>();
@@ -72,17 +72,28 @@ public class ArchiveContentsCache
             hashStream.Position = 0;
             sigs = (await _sigs.MatchesAsync(hashStream)).ToArray();
         }
+
+        AnalyzedFile file;
+        
         if (await _extractor.CanExtract(sFn))
         {
             await using var tmpFolder = _manager.CreateFolder();
             List<KeyValuePair<RelativePath, Id>> children;
             {
                 await _extractor.ExtractAll(sFn, tmpFolder, token);
-                children = await _limiter.ForEachFile(tmpFolder, async (job, entry) => (entry.Path, Results: await AnalyzeFileInner(new NativeFileStreamFactory(entry.Path), token, level + 1)), token, "Analyzing Files")
+                children = await _limiter.ForEachFile(tmpFolder, 
+                        async (job, entry) =>
+                        {
+                            var relPath = entry.Path.RelativeTo(tmpFolder.Path);
+                            return (entry.Path,
+                                Results: await AnalyzeFileInner(new NativeFileStreamFactory(entry.Path), token,
+                                    level + 1, hash, relPath));
+                        },
+                        token, "Analyzing Files")
                     .Select(a => KeyValuePair.Create(a.Path.RelativeTo(tmpFolder.Path), a.Results.Id))
                     .ToList();
             }
-            return new AnalyzedArchive
+            file = new AnalyzedArchive
             {
                 Hash = hash,
                 Size = sFn.Size,
@@ -91,14 +102,38 @@ public class ArchiveContentsCache
                 Store = _store
             };
         }
-
-        return new AnalyzedFile
+        else
         {
-            Hash = hash,
-            Size = sFn.Size,
-            FileTypes = sigs,
+            file = new AnalyzedFile
+            {
+                Hash = hash,
+                Size = sFn.Size,
+                FileTypes = sigs,
+                Store = _store
+            };
+        }
+
+        if (parent != default) 
+            EnsureReverseIndex(hash, parent, parentPath);
+            
+        return file;
+    }
+
+    private void EnsureReverseIndex(Hash hash, Hash parent, RelativePath parentPath)
+    {
+        var entity = new FileContainedIn
+        {
+            File = hash,
+            Parent = parent,
+            Path = parentPath,
             Store = _store
         };
+        entity.EnsureStored();
+    }
 
+    public IEnumerable<FileContainedIn> ArchivesThatContain(Hash hash)
+    {
+        var prefix = new Id64(EntityCategory.FileContainedIn, hash);
+        return _store.GetByPrefix<FileContainedIn>(prefix);
     }
 }
