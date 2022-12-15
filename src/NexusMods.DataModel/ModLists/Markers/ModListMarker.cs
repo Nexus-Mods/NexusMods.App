@@ -181,8 +181,8 @@ public class ModListMarker : IMarker<ModList>
             });
     }
 
-    /*
-    public async IAsyncEnumerable<IApplyStep> MakeIngestionPlan(Func<HashedEntry, Mod> modMapper)
+    
+    public async IAsyncEnumerable<IApplyStep> MakeIngestionPlan(Func<HashedEntry, Mod> modMapper, CancellationToken token)
     {
         var list = _manager.Get(_id);
         var gameFolders = list.Installation.Locations;
@@ -201,7 +201,7 @@ public class ModListMarker : IMarker<ModList>
                 {
                     if (found.Hash != sFile.Hash || found.Size != sFile.Size)
                     {
-                        if (!_manager.ArchiveManager.HaveFile(entry.Hash))
+                        if (!_manager.ArchiveManager.HaveFile(found.Hash))
                         {
                             yield return new BackupFile
                             {
@@ -238,6 +238,17 @@ public class ModListMarker : IMarker<ModList>
         foreach (var (absolutePath, entry) in srcFiles)
         {
             if (flattenedList.ContainsKey(absolutePath)) continue;
+            
+            if (!_manager.ArchiveManager.HaveFile(entry.Hash))
+            {
+                yield return new BackupFile
+                {
+                    Hash = entry.Hash,
+                    Size = entry.Size,
+                    To = absolutePath
+                };
+            }
+            
             yield return new AddToLoadout
             {
                 To = absolutePath,
@@ -246,6 +257,57 @@ public class ModListMarker : IMarker<ModList>
             };
 
         }
+    }
+
+    public async Task Apply(CancellationToken token)
+    {
+        await ApplyPlan(await MakeApplyPlan(token).ToList(), token);
+    }
+
+    public async Task ApplyIngest(HashSet<IApplyStep> steps, CancellationToken token)
+    {
+        await _manager.Limiter.ForEach(steps.OfType<BackupFile>().GroupBy(b => b.Hash),
+            i => i.First().Size,
+            async (j, itm) =>
+            {
+                var hash = await _manager.ArchiveManager.ArchiveFile(itm.First().To, token, j);
+                if (hash != itm.Key)
+                    throw new Exception("Archived file did not match expected hash");
+            }, token);
         
-    }*/
+        
+        ModList Apply(ModList modlist)
+        {
+            foreach (var step in steps.Where(s => s is not BackupFile))
+            {
+                var gamePath = modlist.Installation.ToGamePath(step.To);
+                switch (step)
+                {
+                    case RemoveFromLoadout remove:
+                        modlist = modlist.RemoveFileFromAllMods(x => x.To == gamePath);
+                        break;
+                    case IntegrateFile t:
+                        var sourceArchive = _manager.ArchiveManager.ArchivesThatContain(t.Hash).First();
+                        modlist = modlist.KeepMod(t.Mod, m => m with
+                        {
+                            Files = m.Files.With(new FromArchive
+                            {
+                                From = sourceArchive,
+                                Hash = t.Hash,
+                                Size = t.Size,
+                                Store = m.Store,
+                                To = gamePath
+                            })
+                        });
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+
+            return modlist;
+        }
+
+        _manager.Alter(_id, Apply);
+    }
 }

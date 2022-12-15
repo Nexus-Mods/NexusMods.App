@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ModLists;
+using NexusMods.DataModel.ModLists.Markers;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Interfaces;
 using NexusMods.Interfaces.Components;
@@ -12,7 +13,7 @@ using Xunit.DependencyInjection;
 
 namespace NexusMods.DataModel.Tests.Harness;
 
-public abstract class ADataModelTest<T> : IDisposable
+public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 {
     public static readonly AbsolutePath DATA_ZIP_LZMA = KnownFolders.EntryFolder.Combine(@"Resources\data_zip_lzma.zip");
     public static readonly AbsolutePath DATA_7Z_LZMA2 = KnownFolders.EntryFolder.Combine(@"Resources\data_7zip_lzma2.7z");
@@ -31,14 +32,18 @@ public abstract class ADataModelTest<T> : IDisposable
     private readonly IServiceProvider _provider;
     protected readonly TemporaryFileManager TemporaryFileManager;
     protected readonly ArchiveContentsCache ArchiveContentsCache;
+    protected readonly ArchiveManager ArchiveManager;
     protected readonly ModListManager ModListManager;
     protected readonly FileHashCache FileHashCache;
     protected readonly IDataStore DataStore;
 
     protected readonly IGame Game;
     protected readonly GameInstallation Install;
+    protected ModListMarker BaseList;
     protected readonly ILogger<T> _logger;
     private readonly IHost _host;
+    
+    protected CancellationToken Token = CancellationToken.None;
 
     protected ADataModelTest(IServiceProvider provider)
     {
@@ -48,6 +53,7 @@ public abstract class ADataModelTest<T> : IDisposable
             .Build();
         _provider = _host.Services;
         ArchiveContentsCache = _provider.GetRequiredService<ArchiveContentsCache>();
+        ArchiveManager = _provider.GetRequiredService<ArchiveManager>();
         ModListManager = _provider.GetRequiredService<ModListManager>();
         FileHashCache = _provider.GetRequiredService<FileHashCache>();
         DataStore = _provider.GetRequiredService<IDataStore>();
@@ -56,6 +62,7 @@ public abstract class ADataModelTest<T> : IDisposable
         
         Game = _provider.GetRequiredService<StubbedGame>();
         Install = Game.Installations.First();
+
         startup.Configure(_provider.GetRequiredService<ILoggerFactory>(), provider.GetRequiredService<ITestOutputHelperAccessor>());
 
     }
@@ -64,5 +71,22 @@ public abstract class ADataModelTest<T> : IDisposable
     public void Dispose()
     {
         _host.Dispose();
+    }
+
+    public async Task InitializeAsync()
+    {
+        await ArchiveContentsCache.AnalyzeFile(DATA_ZIP_LZMA, Token);
+        await ArchiveContentsCache.AnalyzeFile(DATA_7Z_LZMA2, Token);
+        await ArchiveManager.ArchiveFile(DATA_ZIP_LZMA, Token);
+        await ArchiveManager.ArchiveFile(DATA_7Z_LZMA2, Token);
+        
+        BaseList = await ModListManager.ManageGame(Install, "BaseList", CancellationToken.None);
+    }
+
+
+
+    public Task DisposeAsync()
+    {
+        return Task.CompletedTask;
     }
 }

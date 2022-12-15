@@ -36,7 +36,7 @@ public class ArchiveContentsCache
         _fileHashCahce = hashCache;
     }
 
-    public async Task<AnalyzedFile> AnalyzeFile(AbsolutePath path, CancellationToken token)
+    public async Task<AnalyzedFile> AnalyzeFile(AbsolutePath path, CancellationToken token = default)
     {
         var result = await AnalyzeFileInner(new NativeFileStreamFactory(path), token);
         result.EnsureStored();

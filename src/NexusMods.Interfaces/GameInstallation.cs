@@ -31,4 +31,11 @@ public class GameInstallation
     {
         return $"{Game.Name} v{Version}";
     }
+
+    public GamePath ToGamePath(AbsolutePath path)
+    {
+        return Locations.Where(l => path.InFolder(l.Value))
+            .Select(l => new GamePath(l.Key, path.RelativeTo(l.Value)))
+            .MinBy(x => x.Path.Depth);
+    }
 }

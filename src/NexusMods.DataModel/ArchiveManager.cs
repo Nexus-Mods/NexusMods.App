@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Interfaces.Streams;
@@ -76,6 +77,17 @@ public class ArchiveManager
         if (HaveArchive(hash)) return true;
 
         return _contentsCache.ArchivesThatContain(hash).Any(containedIn => HaveFile(containedIn.Parent));
+    }
+    
+    /// <summary>
+    /// Returns true if the given hash is managed, or any archive that contains this file is managed
+    /// </summary>
+    /// <param name="hash"></param>
+    /// <returns></returns>
+    public IEnumerable<HashRelativePath> ArchivesThatContain(Hash hash)
+    {
+        if (HaveArchive(hash)) return new[]{ new HashRelativePath(hash, Array.Empty<RelativePath>())};
+        return _contentsCache.ArchivesThatContain(hash).Select(r => new HashRelativePath(r.Parent, r.Path));
     }
 
     private AbsolutePath SelectLocation(AbsolutePath path)
