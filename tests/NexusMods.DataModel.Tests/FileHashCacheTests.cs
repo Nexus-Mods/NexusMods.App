@@ -1,16 +1,14 @@
 ﻿using FluentAssertions;
 using NexusMods.DataModel.Extensions;
+using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Tests;
 
-public class FileHashCacheTests
+public class FileHashCacheTests : ADataModelTest<FileHashCacheTests>
 {
-    private readonly FileHashCache _cache;
-
-    public FileHashCacheTests(FileHashCache cache)
+    public FileHashCacheTests(IServiceProvider provider) : base(provider)
     {
-        _cache = cache;
     }
     
     [Fact]
@@ -19,9 +17,9 @@ public class FileHashCacheTests
         var file = KnownFolders.CurrentDirectory.Combine(Guid.NewGuid().ToString()).WithExtension(Ext.Tmp);
         await file.WriteAllTextAsync("Test data here");
 
-        var hash = await _cache.HashFileAsync(file);
+        var hash = await FileHashCache.HashFileAsync(file);
         hash.Hash.Should().Be(0xB08C91D1CDF11402);
-        _cache.TryGetCached(file, out var found).Should().BeTrue();
+        FileHashCache.TryGetCached(file, out var found).Should().BeTrue();
         found.Hash.Should().Be(hash.Hash);
         file.Delete();
     }
@@ -34,7 +32,9 @@ public class FileHashCacheTests
         file.Parent.CreateDirectory();
         await file.WriteAllTextAsync("Test data here");
 
-        var results = await _cache.IndexFolder(folder, CancellationToken.None).ToList();
+        var results = await FileHashCache.IndexFolder(folder, CancellationToken.None).ToList();
         results.Should().ContainSingle(x => x.Path == file);
     }
+
+
 }

@@ -3,6 +3,7 @@ using FluentAssertions;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ModLists;
 using NexusMods.DataModel.ModLists.ModFiles;
+using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Interfaces;
 using NexusMods.Paths;
@@ -10,21 +11,11 @@ using NexusMods.StandardGameLocators.Tests;
 
 namespace NexusMods.DataModel.Tests;
 
-public class ModelTests
+public class ModelTests : ADataModelTest<ModelTests>
 {
-    private readonly IDataStore _datastore;
-    private readonly StubbedGame _game;
-    private readonly GameInstallation _install;
-    private readonly ModListManager _manager;
-    private readonly TemporaryFileManager _temporaryFileManager;
-
-    public ModelTests(IDataStore store, StubbedGame game, ModListManager manager, TemporaryFileManager temporaryFileManager)
+    
+    public ModelTests(IServiceProvider provider) : base(provider)
     {
-        _game = game;
-        _install = game.Installations.First();
-        _manager = manager;
-        _datastore = store;
-        _temporaryFileManager = temporaryFileManager;
     }
     
     [Fact]
@@ -36,12 +27,12 @@ public class ModelTests
             From = new HashRelativePath(new Hash(0), RelativePath.Empty),
             Hash = (Hash)0x42L,
             Size = 44L,
-            Store = _datastore
+            Store = DataStore
         };
         file.Store.Should().NotBeNull();
         file.Id.Should().NotBeNull();
 
-        _datastore.Get<FromArchive>(file.Id).To.Should().BeEquivalentTo(file.To);
+        DataStore.Get<FromArchive>(file.Id)!.To.Should().BeEquivalentTo(file.To);
     }
 
     [Fact]
@@ -49,7 +40,7 @@ public class ModelTests
     {
         var list = new HashSet<string>();
         
-        var modlist = await _manager.ManageGame(_install, "OldName");
+        var modlist = await ModListManager.ManageGame(Install, "OldName");
         modlist.Changes.Subscribe(f => list.Add(f.Name));
         modlist.Alter(m => m with {Name = "NewName"});
 
@@ -65,13 +56,13 @@ public class ModelTests
         var mod2 = KnownFolders.EntryFolder.Combine("Resources/data_zip_lzma.zip");
         
         var name = Guid.NewGuid().ToString();
-        var modlist = await _manager.ManageGame(_install, name);
+        var modlist = await ModListManager.ManageGame(Install, name);
         await modlist.Install(mod1, "Mod1", CancellationToken.None);
         await modlist.Install(mod2, "", CancellationToken.None);
 
         modlist.Value.Mods.Count.Should().Be(3);
         modlist.Value.Mods.Sum(m => m.Files.Count).Should().Be(10);
-
-
+        
     }
+
 }

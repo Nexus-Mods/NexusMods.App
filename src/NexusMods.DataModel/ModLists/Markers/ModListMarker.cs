@@ -179,7 +179,73 @@ public class ModListMarker : IMarker<ModList>
                         }
                     }, token);
             });
-
-
     }
+
+    /*
+    public async IAsyncEnumerable<IApplyStep> MakeIngestionPlan(Func<HashedEntry, Mod> modMapper)
+    {
+        var list = _manager.Get(_id);
+        var gameFolders = list.Installation.Locations;
+        var srcFilesTask = _manager.FileHashCache
+            .IndexFolders(list.Installation.Locations.Values, token)
+            .ToDictionary(x => x.Path);
+        
+        var flattenedList = FlattenList().ToDictionary(d => d.File.To.RelativeTo(gameFolders[d.File.To.Folder]));
+        var srcFiles = await srcFilesTask;
+
+        foreach (var (absPath, (file, mod)) in flattenedList)
+        {
+            if (srcFiles.TryGetValue(absPath, out var found))
+            {
+                if (file is AStaticModFile sFile)
+                {
+                    if (found.Hash != sFile.Hash || found.Size != sFile.Size)
+                    {
+                        if (!_manager.ArchiveManager.HaveFile(entry.Hash))
+                        {
+                            yield return new BackupFile
+                            {
+                                Hash = found.Hash,
+                                Size = found.Size,
+                                To = absPath
+                            };
+                        }
+
+                        yield return new IntegrateFile
+                        {
+                            Mod = mod,
+                            To = absPath,
+                            Size = found.Size,
+                            Hash = found.Hash,
+                        };
+                    }
+
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
+            }
+            else
+            {
+                yield return new RemoveFromLoadout
+                {
+                    To = absPath
+                };
+            }
+        }
+
+        foreach (var (absolutePath, entry) in srcFiles)
+        {
+            if (flattenedList.ContainsKey(absolutePath)) continue;
+            yield return new AddToLoadout
+            {
+                To = absolutePath,
+                Hash = entry.Hash,
+                Size = entry.Size
+            };
+
+        }
+        
+    }*/
 }

@@ -14,8 +14,11 @@ namespace NexusMods.DataModel;
 
 public static class Services
 {
-    public static IServiceCollection AddDataModel(this IServiceCollection coll)
+    public static IServiceCollection AddDataModel(this IServiceCollection coll, AbsolutePath? baseFolder = null)
     {
+        baseFolder ??= KnownFolders.EntryFolder;
+        baseFolder.Value.CreateDirectory();
+        
         coll.AddSingleton<JsonConverter, RelativePathConverter>();
         coll.AddSingleton<JsonConverter, GamePathConverter>();
         coll.AddSingleton<JsonConverter, DateTimeConverter>();
@@ -29,9 +32,9 @@ public static class Services
         coll.AddSingleton<JsonConverter, EntityLinkConverterFactory>();
         coll.AddSingleton(typeof(EntityLinkConverter<>));
         
-        coll.AddSingleton<IDataStore>(s => new RocksDbDatastore(KnownFolders.EntryFolder.Combine("DataModel"), s));
+        coll.AddSingleton<IDataStore>(s => new RocksDbDatastore(baseFolder.Value.Combine("DataModel"), s));
         coll.AddSingleton(s => new ArchiveManager(s.GetRequiredService<ILogger<ArchiveManager>>(),
-            new []{KnownFolders.EntryFolder.Combine("Archives")},
+            new []{baseFolder.Value.Combine("Archives")},
             s.GetRequiredService<IDataStore>(),
             s.GetRequiredService<FileExtractor.FileExtractor>(),
             s.GetRequiredService<ArchiveContentsCache>()));
