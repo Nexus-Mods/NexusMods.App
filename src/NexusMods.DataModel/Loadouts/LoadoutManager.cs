@@ -30,7 +30,7 @@ public class LoadoutManager
         Limiter = limiter;
         ArchiveManager = archiveManager;
         _store = store;
-        _root = new Root<LoadoutRegistry>(RootType.ModLists, store);
+        _root = new Root<LoadoutRegistry>(RootType.Loadouts, store);
         FileHashCache = fileHashCache;
         _installers = installers.ToArray();
         _analyzer = analyzer;
@@ -39,7 +39,7 @@ public class LoadoutManager
     public IResource<LoadoutManager,Size> Limiter { get; set; }
 
     public IObservable<LoadoutRegistry> Changes => _root.Changes.Select(r => r.New);
-    public IEnumerable<LoadoutMarker> AllModLists => _root.Value.Lists.Values.Select(m => new LoadoutMarker(this, m.LoadoutId));
+    public IEnumerable<LoadoutMarker> AllLoadouts => _root.Value.Lists.Values.Select(m => new LoadoutMarker(this, m.LoadoutId));
 
     public async Task<LoadoutMarker> ManageGame(GameInstallation installation, string name = "", CancellationToken? token = null)
     {
@@ -60,7 +60,7 @@ public class LoadoutManager
                 });
             }
         }
-        _logger.LogInformation("Creating Modlist {Name}", name);
+        _logger.LogInformation("Creating Loadout {Name}", name);
         var mod = new Mod
         {
             Name = "Game Files",
@@ -76,25 +76,25 @@ public class LoadoutManager
         };
         _root.Alter(r => r with {Lists = r.Lists.With(n.LoadoutId, n)});
         
-        _logger.LogInformation("Modlist {Name} {Id} created", name, n.LoadoutId);
+        _logger.LogInformation("Loadout {Name} {Id} created", name, n.LoadoutId);
         return new LoadoutMarker(this, n.LoadoutId);
     }
 
     public async Task<LoadoutMarker> InstallMod(LoadoutId loadoutId, AbsolutePath path, string name, CancellationToken token = default)
     {
-        var modList = GetModList(loadoutId);
+        var loadout = GetLoadout(loadoutId);
         
         var analyzed = (await _analyzer.AnalyzeFile(path, token) as AnalyzedArchive);
 
         var installer = _installers
-            .Select(i => (Installer: i, Priority: i.Priority(modList.Value.Installation, analyzed.Contents)))
+            .Select(i => (Installer: i, Priority: i.Priority(loadout.Value.Installation, analyzed.Contents)))
             .Where(p => p.Priority != Priority.None)
             .OrderBy(p => p.Priority)
             .FirstOrDefault();
         if (installer == default)
             throw new Exception($"No Installer found for {path}");
 
-        var contents = installer.Installer.Install(modList.Value.Installation, analyzed.Hash, analyzed.Contents);
+        var contents = installer.Installer.Install(loadout.Value.Installation, analyzed.Hash, analyzed.Contents);
 
         name = string.IsNullOrWhiteSpace(name) ? path.FileName.ToString() : name;
 
@@ -104,11 +104,11 @@ public class LoadoutManager
             Files = new EntityHashSet<AModFile>(_store, contents.Select(c => c.Id)),
             Store = _store
         };
-        modList.Add(newMod);
-        return modList;
+        loadout.Add(newMod);
+        return loadout;
     }
 
-    private LoadoutMarker GetModList(LoadoutId loadoutId)
+    private LoadoutMarker GetLoadout(LoadoutId loadoutId)
     {
         return new LoadoutMarker(this, loadoutId);
     }

@@ -18,7 +18,7 @@ public class ManageGame
         {
             new OptionDefinition<IGame>("g", "game", "Game to manage"),
             new OptionDefinition<Version>("v", "version", "Version of the game to manage"),
-            new OptionDefinition<string>("n", "name", "Name of the new modlist")
+            new OptionDefinition<string>("n", "name", "Name of the new loadout")
         });
     
     public async Task Run(IGame game, Version version, string name, CancellationToken token)

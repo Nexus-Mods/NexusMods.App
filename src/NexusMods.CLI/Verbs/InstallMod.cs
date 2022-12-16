@@ -11,9 +11,9 @@ public class InstallMod
         _renderer = configurator.Renderer;
     }
 
-    public static VerbDefinition Definition = new("install-mod", "Installs a mod into a mod list", new OptionDefinition[]
+    public static VerbDefinition Definition = new("install-mod", "Installs a mod into a loadout", new OptionDefinition[]
     {
-        new OptionDefinition<LoadoutMarker>("m", "loadout", "Mod List to add the mod to"),
+        new OptionDefinition<LoadoutMarker>("l", "loadout", "Loadout to add the mod to"),
         new OptionDefinition<AbsolutePath>("f", "file", "Mod file to install"),
         new OptionDefinition<string>("n", "name", "Name of the mod after installing")
     });

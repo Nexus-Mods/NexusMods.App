@@ -36,11 +36,11 @@ public class ModelTests : ADataModelTest<ModelTests>
     {
         var list = new HashSet<string>();
         
-        var modlist = await LoadoutManager.ManageGame(Install, "OldName");
-        modlist.Changes.Subscribe(f => list.Add(f.Name));
-        modlist.Alter(m => m with {Name = "NewName"});
+        var loadout = await LoadoutManager.ManageGame(Install, "OldName");
+        loadout.Changes.Subscribe(f => list.Add(f.Name));
+        loadout.Alter(m => m with {Name = "NewName"});
 
-        modlist.Value.Name.Should().Be("NewName");
+        loadout.Value.Name.Should().Be("NewName");
         list.Count.Should().Be(1);
         list.First().Should().Be("NewName");
     }
@@ -49,12 +49,12 @@ public class ModelTests : ADataModelTest<ModelTests>
     public async Task CanInstallAMod()
     {
         var name = Guid.NewGuid().ToString();
-        var modlist = await LoadoutManager.ManageGame(Install, name);
-        await modlist.Install(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
-        await modlist.Install(DATA_ZIP_LZMA, "", CancellationToken.None);
+        var loadout = await LoadoutManager.ManageGame(Install, name);
+        await loadout.Install(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
+        await loadout.Install(DATA_ZIP_LZMA, "", CancellationToken.None);
 
-        modlist.Value.Mods.Count.Should().Be(3);
-        modlist.Value.Mods.Sum(m => m.Files.Count).Should().Be(DATA_NAMES.Length * 2 + StubbedGame.DATA_NAMES.Length);
+        loadout.Value.Mods.Count.Should().Be(3);
+        loadout.Value.Mods.Sum(m => m.Files.Count).Should().Be(DATA_NAMES.Length * 2 + StubbedGame.DATA_NAMES.Length);
         
     }
 

@@ -16,7 +16,7 @@ public record Loadout : Entity, IEmptyWithDataStore<Loadout>
     public required DateTime LastModified { get; init; }
     public required EntityLink<Loadout> PreviousVersion { get; init; }
     
-    public override EntityCategory Category => EntityCategory.ModLists;
+    public override EntityCategory Category => EntityCategory.Loadouts;
     public required string ChangeMessage { get; init; } = "";
 
     public static Loadout Empty(IDataStore store) => new()

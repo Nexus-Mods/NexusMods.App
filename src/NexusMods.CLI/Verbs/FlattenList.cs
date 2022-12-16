@@ -13,9 +13,9 @@ public class FlattenList
 
     
     public static VerbDefinition Definition = new VerbDefinition("flatten-list",
-        "Flatten a mod list into the projected filesystem", new[]
+        "Flatten a loadout into the projected filesystem", new[]
         {
-            new OptionDefinition<LoadoutMarker>("m", "loadout", "Mod List to target")
+            new OptionDefinition<LoadoutMarker>("l", "loadout", "Loadout to target")
         });
     
     public async Task Run(LoadoutMarker loadout, CancellationToken token)

@@ -20,7 +20,7 @@ public static class Services
         services.AddScoped<CommandLineBuilder>();
         services.AddSingleton<IOptionParser<AbsolutePath>, AbsolutePathParser>();
         services.AddSingleton<IOptionParser<IGame>, GameParser>();
-        services.AddSingleton<IOptionParser<LoadoutMarker>, ModListMarkerParser>();
+        services.AddSingleton<IOptionParser<LoadoutMarker>, LoadoutMarkerParser>();
         services.AddSingleton<IOptionParser<Version>, VersionParser>();
         services.AddSingleton<IOptionParser<Loadout>, LoadoutParser>();
         services.AddSingleton<TemporaryFileManager>();

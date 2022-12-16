@@ -15,9 +15,9 @@ public class LoadoutParser : IOptionParser<Loadout>
     public Loadout Parse(string input, OptionDefinition<Loadout> definition)
     {
         var bytes = Convert.FromHexString(input);
-        var found = _store.GetByPrefix<Loadout>(new IdVariableLength(EntityCategory.ModLists, bytes)).ToArray();
+        var found = _store.GetByPrefix<Loadout>(new IdVariableLength(EntityCategory.Loadouts, bytes)).ToArray();
         if (found.Length > 1)
-            throw new Exception("More than one modlist with that id prefix found");
+            throw new Exception("More than one loadout with that id prefix found");
         return found.First();
     }
 }

@@ -14,9 +14,9 @@ public class Apply
         _renderer = configurator.Renderer;
     }
 
-    public static VerbDefinition Definition => new VerbDefinition("apply", "Apply a modlist to a game folder", new OptionDefinition[]
+    public static VerbDefinition Definition => new VerbDefinition("apply", "Apply a loadout to a game folder", new OptionDefinition[]
     {
-        new OptionDefinition<LoadoutMarker>("m", "loadout", "Mod List to apply"),
+        new OptionDefinition<LoadoutMarker>("l", "loadout", "Loadout to apply"),
         new OptionDefinition<bool>("r", "run", "Run the application? (defaults to just printing the steps)"),
         new OptionDefinition<bool>("s", "summary", "Print the summary, not the detailed step list")
     });

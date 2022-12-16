@@ -7,11 +7,11 @@ namespace NexusMods.DataModel.Loadouts;
 
 /// <summary>
 /// A Id that uniquely identifies a specific list. Names can collide and are often
-/// used by users as short-hand for their modlists. Hence we give each modlist a unique
+/// used by users as short-hand for their loadouts. Hence we give each loadout a unique
 /// Id. Essentially this is just a Guid, but we wrap this guid so that we can easily
 /// distinguish it from other parts of the code that may use Guids for other object types
 /// </summary>
-[JsonConverter(typeof(ModListIdConverter))]
+[JsonConverter(typeof(LoadoutIdConverter))]
 public readonly struct LoadoutId : IEquatable<LoadoutId>, ICreatable<LoadoutId>
 {
     private readonly Guid _id = Guid.Empty;
@@ -73,7 +73,7 @@ public readonly struct LoadoutId : IEquatable<LoadoutId>, ICreatable<LoadoutId>
     }
 }
 
-public class ModListIdConverter : JsonConverter<LoadoutId>
+public class LoadoutIdConverter : JsonConverter<LoadoutId>
 {
     public override LoadoutId Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

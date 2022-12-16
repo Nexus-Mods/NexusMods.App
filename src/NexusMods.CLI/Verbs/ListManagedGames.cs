@@ -14,14 +14,14 @@ public class ListManagedGames
         _renderer = configurator.Renderer;
     }
     public static VerbDefinition Definition = new VerbDefinition("list-managed-games",
-        "List all the managed game instances (modlists) in the app",
+        "List all the managed game instances (loadouts) in the app",
         Array.Empty<OptionDefinition>());
 
 
     public async Task Run()
     {
         var rows = new List<object[]>();
-        foreach (var list in _manager.AllModLists.Select(x => x.Value))
+        foreach (var list in _manager.AllLoadouts.Select(x => x.Value))
         {
             rows.Add(new object[]{list.Name, list.Installation, list.LoadoutId, list.Mods.Count});
         }

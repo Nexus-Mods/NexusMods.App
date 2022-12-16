@@ -16,7 +16,7 @@ public class ListHistory
     public static VerbDefinition Definition => new("list-history", "Lists the history of a loadout",
         new OptionDefinition[]
         {
-            new OptionDefinition<LoadoutMarker>("m", "loadout", "Loadout to load")
+            new OptionDefinition<LoadoutMarker>("l", "loadout", "Loadout to load")
         });
 
     public async Task Run(LoadoutMarker loadout)

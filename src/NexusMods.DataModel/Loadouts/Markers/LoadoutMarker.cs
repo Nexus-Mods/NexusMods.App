@@ -276,19 +276,19 @@ public class LoadoutMarker : IMarker<Loadout>
             }, token);
         
         
-        Loadout Apply(Loadout modlist)
+        Loadout Apply(Loadout loadout)
         {
             foreach (var step in steps.Where(s => s is not BackupFile))
             {
-                var gamePath = modlist.Installation.ToGamePath(step.To);
+                var gamePath = loadout.Installation.ToGamePath(step.To);
                 switch (step)
                 {
                     case RemoveFromLoadout remove:
-                        modlist = modlist.RemoveFileFromAllMods(x => x.To == gamePath);
+                        loadout = loadout.RemoveFileFromAllMods(x => x.To == gamePath);
                         break;
                     case IntegrateFile t:
                         var sourceArchive = _manager.ArchiveManager.ArchivesThatContain(t.Hash).First();
-                        modlist = modlist.KeepMod(t.Mod, m => m with
+                        loadout = loadout.KeepMod(t.Mod, m => m with
                         {
                             Files = m.Files.With(new FromArchive
                             {
@@ -305,7 +305,7 @@ public class LoadoutMarker : IMarker<Loadout>
                 }
             }
 
-            return modlist;
+            return loadout;
         }
 
         _manager.Alter(_id, Apply);

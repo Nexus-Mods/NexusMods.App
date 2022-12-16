@@ -31,7 +31,7 @@ public class RocksDBDataStoreTests : ADataModelTest<RocksDBDataStoreTests>
     [Fact]
     public void CanPutAndGetRoots()
     {
-        var id = new Id64(EntityCategory.ModLists, 42L);
+        var id = new Id64(EntityCategory.Loadouts, 42L);
         DataStore.GetRoot(RootType.Tests).Should().BeNull();
 
         DataStore.PutRoot(RootType.Tests, IdEmpty.Empty, id).Should().BeTrue();
