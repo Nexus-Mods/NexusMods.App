@@ -1,11 +1,7 @@
-﻿using System.Reactive.Linq;
-using FluentAssertions;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ModLists;
-using NexusMods.DataModel.ModLists.ModFiles;
+﻿using FluentAssertions;
+using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.Interfaces;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.Tests;
 
@@ -40,7 +36,7 @@ public class ModelTests : ADataModelTest<ModelTests>
     {
         var list = new HashSet<string>();
         
-        var modlist = await ModListManager.ManageGame(Install, "OldName");
+        var modlist = await LoadoutManager.ManageGame(Install, "OldName");
         modlist.Changes.Subscribe(f => list.Add(f.Name));
         modlist.Alter(m => m with {Name = "NewName"});
 
@@ -53,7 +49,7 @@ public class ModelTests : ADataModelTest<ModelTests>
     public async Task CanInstallAMod()
     {
         var name = Guid.NewGuid().ToString();
-        var modlist = await ModListManager.ManageGame(Install, name);
+        var modlist = await LoadoutManager.ManageGame(Install, name);
         await modlist.Install(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
         await modlist.Install(DATA_ZIP_LZMA, "", CancellationToken.None);
 

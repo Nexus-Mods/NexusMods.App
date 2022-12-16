@@ -1,9 +1,7 @@
 ﻿using FluentAssertions;
 using NexusMods.DataModel.Extensions;
-using NexusMods.DataModel.ModLists;
-using NexusMods.DataModel.ModLists.ApplySteps;
-using NexusMods.DataModel.ModLists.Markers;
-using NexusMods.DataModel.ModLists.ModFiles;
+using NexusMods.DataModel.Loadouts.ApplySteps;
+using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -21,7 +19,7 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
     [Fact]
     public async Task CanApplyGame()
     {
-        var mainList = await ModListManager.ManageGame(Install, "MainList", CancellationToken.None);
+        var mainList = await LoadoutManager.ManageGame(Install, "MainList", CancellationToken.None);
         await mainList.Install(DATA_ZIP_LZMA, "First Mod", CancellationToken.None);
 
         var plan = await mainList.MakeApplyPlan().ToList();
@@ -38,7 +36,7 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
     [Fact]
     public async Task CanIntegrateChanges()
     {
-        var mainList = await ModListManager.ManageGame(Install, "MainList", Token);
+        var mainList = await LoadoutManager.ManageGame(Install, "MainList", Token);
         await mainList.Install(DATA_ZIP_LZMA, "First Mod", Token);
         await mainList.Install(DATA_7Z_LZMA2, "Second Mod", Token);
 

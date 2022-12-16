@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ModLists.ModFiles;
+using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;

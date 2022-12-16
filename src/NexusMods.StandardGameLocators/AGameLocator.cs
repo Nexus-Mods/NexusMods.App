@@ -30,7 +30,7 @@ where TGame : IGame
             if (errors.Any() || found == null)
             {
                 foreach (var error in errors) 
-                    _logger.LogError("While looking for {Game}: {Error}", game, error);
+                    _logger.LogTrace("While looking for {Game}: {Error}", game, error);
             }
             else
             {

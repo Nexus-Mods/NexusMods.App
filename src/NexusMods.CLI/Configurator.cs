@@ -9,7 +9,8 @@ public class Configurator
     public IRenderer Renderer { get; private set; }
     public Configurator(IEnumerable<IRenderer> renderers)
     {
-        _renderers = renderers;
+        _renderers = renderers.ToList();
+        Renderer = _renderers.First();
     }
 
     public void Configure(InvocationContext context)

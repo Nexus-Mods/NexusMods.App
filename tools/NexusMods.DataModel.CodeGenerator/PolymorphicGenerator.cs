@@ -3,7 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.JsonConverters;
-using NexusMods.DataModel.ModLists;
+using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.DataModel.CodeGenerator;
 
@@ -158,8 +158,8 @@ public class PolymorphicGenerator<T>
     {
         if (type == typeof(string))
             return "string";
-        if (type == typeof(ModListId))
-            return nameof(ModListId);
+        if (type == typeof(LoadoutId))
+            return nameof(LoadoutId);
         if (type.IsGenericType)
         {
             // Generic names are in the format of Name`3 for Name<a, b, c>

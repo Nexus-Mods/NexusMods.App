@@ -1,7 +1,7 @@
 ﻿using NexusMods.DataModel.Abstractions;
 using NexusMods.Paths;
 
-namespace NexusMods.DataModel.ModLists;
+namespace NexusMods.DataModel.Loadouts;
 
 public abstract record AModFile : Entity
 {

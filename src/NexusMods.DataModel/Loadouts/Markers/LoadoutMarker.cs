@@ -2,32 +2,32 @@
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Extensions;
-using NexusMods.DataModel.ModLists.ApplySteps;
-using NexusMods.DataModel.ModLists.ModFiles;
+using NexusMods.DataModel.Loadouts.ApplySteps;
+using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
-namespace NexusMods.DataModel.ModLists.Markers;
+namespace NexusMods.DataModel.Loadouts.Markers;
 
-public class ModListMarker : IMarker<ModList>
+public class LoadoutMarker : IMarker<Loadout>
 {
-    private readonly ModListManager _manager;
-    private readonly ModListId _id;
+    private readonly LoadoutManager _manager;
+    private readonly LoadoutId _id;
 
-    public ModListMarker(ModListManager manager, ModListId id)
+    public LoadoutMarker(LoadoutManager manager, LoadoutId id)
     {
         _manager = manager;
         _id = id;
     }
 
-    public void Alter(Func<ModList, ModList> f)
+    public void Alter(Func<Loadout, Loadout> f)
     {
         _manager.Alter(_id, f);
     }
 
-    public ModList Value => _manager.Get(_id); 
-    public IObservable<ModList> Changes => _manager.Changes.Select(c => c.Lists[_id]);
+    public Loadout Value => _manager.Get(_id); 
+    public IObservable<Loadout> Changes => _manager.Changes.Select(c => c.Lists[_id]);
 
     public void Add(Mod newMod)
     {
@@ -53,7 +53,7 @@ public class ModListMarker : IMarker<ModList>
         return projected.Values;
     }
 
-    public IEnumerable<ModList> History()
+    public IEnumerable<Loadout> History()
     {
         var list = Value;
         while (true)
@@ -276,7 +276,7 @@ public class ModListMarker : IMarker<ModList>
             }, token);
         
         
-        ModList Apply(ModList modlist)
+        Loadout Apply(Loadout modlist)
         {
             foreach (var step in steps.Where(s => s is not BackupFile))
             {

@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using NexusMods.CLI.OptionParsers;
 using NexusMods.DataModel;
-using NexusMods.DataModel.ModLists;
-using NexusMods.DataModel.ModLists.Markers;
+using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.FileExtractor;
 using NexusMods.FileExtractor.Extractors;
@@ -20,9 +20,9 @@ public static class Services
         services.AddScoped<CommandLineBuilder>();
         services.AddSingleton<IOptionParser<AbsolutePath>, AbsolutePathParser>();
         services.AddSingleton<IOptionParser<IGame>, GameParser>();
-        services.AddSingleton<IOptionParser<ModListMarker>, ModListMarkerParser>();
+        services.AddSingleton<IOptionParser<LoadoutMarker>, ModListMarkerParser>();
         services.AddSingleton<IOptionParser<Version>, VersionParser>();
-        services.AddSingleton<IOptionParser<ModList>, ModListParser>();
+        services.AddSingleton<IOptionParser<Loadout>, LoadoutParser>();
         services.AddSingleton<TemporaryFileManager>();
         
         services.AddAllSingleton<IResource, IResource<IExtractor, Size>>(s => new Resource<IExtractor, Size>("File Extraction"));

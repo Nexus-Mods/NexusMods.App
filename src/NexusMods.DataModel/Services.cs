@@ -4,9 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.JsonConverters;
-using NexusMods.DataModel.ModLists;
+using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.RateLimiting;
-using NexusMods.Hashing.xxHash64;
 using NexusMods.Interfaces;
 using NexusMods.Paths;
 
@@ -39,8 +38,8 @@ public static class Services
             s.GetRequiredService<FileExtractor.FileExtractor>(),
             s.GetRequiredService<ArchiveContentsCache>()));
         coll.AddAllSingleton<IResource, IResource<FileHashCache, Size>>(_ => new Resource<FileHashCache, Size>("File Hashing", Environment.ProcessorCount, Size.Zero));
-        coll.AddAllSingleton<IResource, IResource<ModListManager, Size>>(_ => new Resource<ModListManager, Size>("Load Order Management", Environment.ProcessorCount, Size.Zero));
-        coll.AddSingleton<ModListManager>();
+        coll.AddAllSingleton<IResource, IResource<LoadoutManager, Size>>(_ => new Resource<LoadoutManager, Size>("Load Order Management", Environment.ProcessorCount, Size.Zero));
+        coll.AddSingleton<LoadoutManager>();
         coll.AddSingleton<FileHashCache>();
         coll.AddSingleton<ArchiveContentsCache>();
         

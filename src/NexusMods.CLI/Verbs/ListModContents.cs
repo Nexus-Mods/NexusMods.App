@@ -1,6 +1,6 @@
 ﻿using NexusMods.CLI.DataOutputs;
-using NexusMods.DataModel.ModLists.Markers;
-using NexusMods.DataModel.ModLists.ModFiles;
+using NexusMods.DataModel.Loadouts.Markers;
+using NexusMods.DataModel.Loadouts.ModFiles;
 
 namespace NexusMods.CLI.Verbs;
 
@@ -15,12 +15,12 @@ public class ListModContents
     public static VerbDefinition Definition = new("list-mod-contents", "Lists all the files in a mod",
         new OptionDefinition[]
         {
-            new OptionDefinition<ModListMarker>( "m", "managedGame", "The managed game instance that contains the mod"),
+            new OptionDefinition<LoadoutMarker>( "m", "managedGame", "The managed game instance that contains the mod"),
             new OptionDefinition<string>("n", "modName", "The name of the mod to list")
         });
 
 
-    public async Task Run(ModListMarker managedGame, string modName)
+    public async Task Run(LoadoutMarker managedGame, string modName)
     {
         var rows = new List<object[]>();
         var mod = managedGame.Value.Mods.First(m => m.Name == modName);

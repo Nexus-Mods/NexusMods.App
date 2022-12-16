@@ -2,8 +2,8 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ModLists;
-using NexusMods.DataModel.ModLists.Markers;
+using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Interfaces;
 using NexusMods.Interfaces.Components;
@@ -33,13 +33,13 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected readonly TemporaryFileManager TemporaryFileManager;
     protected readonly ArchiveContentsCache ArchiveContentsCache;
     protected readonly ArchiveManager ArchiveManager;
-    protected readonly ModListManager ModListManager;
+    protected readonly LoadoutManager LoadoutManager;
     protected readonly FileHashCache FileHashCache;
     protected readonly IDataStore DataStore;
 
     protected readonly IGame Game;
     protected readonly GameInstallation Install;
-    protected ModListMarker BaseList;
+    protected LoadoutMarker BaseList;
     protected readonly ILogger<T> _logger;
     private readonly IHost _host;
     
@@ -54,7 +54,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         _provider = _host.Services;
         ArchiveContentsCache = _provider.GetRequiredService<ArchiveContentsCache>();
         ArchiveManager = _provider.GetRequiredService<ArchiveManager>();
-        ModListManager = _provider.GetRequiredService<ModListManager>();
+        LoadoutManager = _provider.GetRequiredService<LoadoutManager>();
         FileHashCache = _provider.GetRequiredService<FileHashCache>();
         DataStore = _provider.GetRequiredService<IDataStore>();
         _logger = _provider.GetRequiredService<ILogger<T>>();
@@ -80,7 +80,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         await ArchiveManager.ArchiveFile(DATA_ZIP_LZMA, Token);
         await ArchiveManager.ArchiveFile(DATA_7Z_LZMA2, Token);
         
-        BaseList = await ModListManager.ManageGame(Install, "BaseList", CancellationToken.None);
+        BaseList = await LoadoutManager.ManageGame(Install, "BaseList", CancellationToken.None);
     }
 
 

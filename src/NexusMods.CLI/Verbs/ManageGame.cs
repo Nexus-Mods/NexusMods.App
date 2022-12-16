@@ -1,14 +1,14 @@
-﻿using NexusMods.DataModel.ModLists;
+﻿using NexusMods.DataModel.Loadouts;
 using NexusMods.Interfaces.Components;
 
 namespace NexusMods.CLI.Verbs;
 
 public class ManageGame
 {
-    private readonly ModListManager _manager;
+    private readonly LoadoutManager _manager;
     private readonly IRenderer _renderer;
 
-    public ManageGame(ModListManager manager, Configurator configurator)
+    public ManageGame(LoadoutManager manager, Configurator configurator)
     {
         _manager = manager;
         _renderer = configurator.Renderer;
