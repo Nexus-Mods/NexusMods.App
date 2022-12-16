@@ -41,16 +41,25 @@ Further Reading: [Comparison of File Management Systems](/docs/ComparisonOfFileM
 ## FAQ
 
 **Q:** What is this? A replacement for Vortex?
+
 **A:** Eventually, yes. But not for quite some time, at the moment this software should be considered "pre-alpha". Do not ask for support for these tools until official annoucements and a product launch is made. Feel free to direct any questions to halgari in the meantime. 
 
+
 **Q:** Why is this being done, why a new platform, design, etc.?
+
 **A:** Vortex was designed primarily for develoment by a team of one person (Tannin), as at the time Nexus wasn't ready to take on the financial and leadership burden of a larger development team. However, times change and we're now in the position of being able to have a more well structured team and development schedule. As such we are increasing the size of our mod management team. On the technical side of things we're taking time to lay a solid CI foundation, setup a well rounded datamodel (using lessons we've learned over the years of developing Vortex), and build this project to be more of a company product and less of a community project. 
 
+
 **Q:** Company product? Is this going closed source?
+
 **A:** Absolutely not, modding tools should be free, and the Nexus Mods App will always be open source (GPL3). But we also want to use this app as a way to get tools into the hands of modders and users. Instead of publishing only a download API, we want to give users a download CLI tool. Once file uploading is rewroked on the site, this repo will contain the code and CLI tools required for authenticating with the Nexus and uploading files via a CLI (and eventually a UI). In short, this is us getting serious about supporting (and leading) the desktop side of modding, not just the file hosting side. 
 
+
 **Q:** I see tests run on Linux, Windows and OSX, are you targeting all those platforms?
+
 **A:** Yes, the CLI runs on these platforms and we run our CI on each of these OSes. What games are supported on these platforms (e.g. do we support Skyrim through Wine on Linux?) is yet to be determined. 
 
+
 **Q:** I want to help, how do I start coding?
+
 **A:** This project is still in the pretty early phases, but check back in a month or so and we may have opportunities for 3rd party devs to add support for additional games, mod formats, and tools. 
