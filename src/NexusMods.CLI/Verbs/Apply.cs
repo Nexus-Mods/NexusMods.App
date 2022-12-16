@@ -1,8 +1,8 @@
 ﻿using NexusMods.CLI.DataOutputs;
 using NexusMods.DataModel.Extensions;
-using NexusMods.DataModel.ModLists.ApplySteps;
-using NexusMods.DataModel.ModLists.Markers;
-using NexusMods.DataModel.ModLists.ModFiles;
+using NexusMods.DataModel.Loadouts.ApplySteps;
+using NexusMods.DataModel.Loadouts.Markers;
+using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Paths;
 
 namespace NexusMods.CLI.Verbs;
@@ -15,17 +15,17 @@ public class Apply
         _renderer = configurator.Renderer;
     }
 
-    public static VerbDefinition Definition => new VerbDefinition("apply", "Apply a modlist to a game folder", new OptionDefinition[]
+    public static VerbDefinition Definition => new VerbDefinition("apply", "Apply a Loadout to a game folder", new OptionDefinition[]
     {
-        new OptionDefinition<ModListMarker>("m", "modList", "Mod List to apply"),
+        new OptionDefinition<LoadoutMarker>("l", "loadout", "Loadout to apply"),
         new OptionDefinition<bool>("r", "run", "Run the application? (defaults to just printing the steps)"),
         new OptionDefinition<bool>("s", "summary", "Print the summary, not the detailed step list")
     });
     
-    public async Task Run(ModListMarker modList, bool run, bool summary, CancellationToken token)
+    public async Task Run(LoadoutMarker Loadout, bool run, bool summary, CancellationToken token)
     {
 
-        var steps = await modList.MakeApplyPlan(token).ToList();
+        var steps = await Loadout.MakeApplyPlan(token).ToList();
 
         if (summary)
         {
@@ -58,7 +58,7 @@ public class Apply
         if (run) {
             await _renderer.WithProgress(token, async () =>
             {
-                await modList.ApplyPlan(steps, token);
+                await Loadout.ApplyPlan(steps, token);
                 return steps;
             });
         }

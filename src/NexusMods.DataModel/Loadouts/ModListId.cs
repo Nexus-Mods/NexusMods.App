@@ -3,29 +3,29 @@ using System.Text.Json.Serialization;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.Hashing.xxHash64;
 
-namespace NexusMods.DataModel.ModLists;
+namespace NexusMods.DataModel.Loadouts;
 
 /// <summary>
 /// A Id that uniquely identifies a specific list. Names can collide and are often
-/// used by users as short-hand for their modlists. Hence we give each modlist a unique
+/// used by users as short-hand for their Loadouts. Hence we give each Loadout a unique
 /// Id. Essentially this is just a Guid, but we wrap this guid so that we can easily
 /// distinguish it from other parts of the code that may use Guids for other object types
 /// </summary>
-[JsonConverter(typeof(ModListIdConverter))]
-public readonly struct ModListId : IEquatable<ModListId>, ICreatable<ModListId>
+[JsonConverter(typeof(LoadoutIdConverter))]
+public readonly struct LoadoutId : IEquatable<LoadoutId>, ICreatable<LoadoutId>
 {
     private readonly Guid _id = Guid.Empty;
 
-    private ModListId(Guid id)
+    private LoadoutId(Guid id)
     {
         _id = id;
     }
 
-    public static ModListId FromHex(ReadOnlySpan<char> hex)
+    public static LoadoutId FromHex(ReadOnlySpan<char> hex)
     {
         Span<byte> span = stackalloc byte[16];
         hex.FromHex(span);
-        return new ModListId(new Guid(span));
+        return new LoadoutId(new Guid(span));
     }
 
     public void ToHex(Span<char> span)
@@ -42,29 +42,29 @@ public readonly struct ModListId : IEquatable<ModListId>, ICreatable<ModListId>
         return ((ReadOnlySpan<byte>)span).ToHex();
     }
 
-    public static bool operator ==(ModListId self, ModListId other)
+    public static bool operator ==(LoadoutId self, LoadoutId other)
     {
         return self.Equals(other);
     }
 
-    public static bool operator !=(ModListId self, ModListId other)
+    public static bool operator !=(LoadoutId self, LoadoutId other)
     {
         return !(self == other);
     }
 
-    public bool Equals(ModListId other)
+    public bool Equals(LoadoutId other)
     {
         return _id.Equals(other._id);
     }
 
-    public static ModListId Create()
+    public static LoadoutId Create()
     {
-        return new ModListId(Guid.NewGuid());
+        return new LoadoutId(Guid.NewGuid());
     }
 
     public override bool Equals(object? obj)
     {
-        return obj is ModListId other && Equals(other);
+        return obj is LoadoutId other && Equals(other);
     }
 
     public override int GetHashCode()
@@ -73,15 +73,15 @@ public readonly struct ModListId : IEquatable<ModListId>, ICreatable<ModListId>
     }
 }
 
-public class ModListIdConverter : JsonConverter<ModListId>
+public class LoadoutIdConverter : JsonConverter<LoadoutId>
 {
-    public override ModListId Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override LoadoutId Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         var str = reader.GetString();
-        return ModListId.FromHex(str);
+        return LoadoutId.FromHex(str);
     }
 
-    public override void Write(Utf8JsonWriter writer, ModListId value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, LoadoutId value, JsonSerializerOptions options)
     {
         Span<char> span = stackalloc char[32];
         value.ToHex(span);

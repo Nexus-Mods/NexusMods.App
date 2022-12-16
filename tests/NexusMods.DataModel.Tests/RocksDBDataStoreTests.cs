@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ModLists.ModFiles;
+using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -31,7 +31,7 @@ public class RocksDBDataStoreTests : ADataModelTest<RocksDBDataStoreTests>
     [Fact]
     public void CanPutAndGetRoots()
     {
-        var id = new Id64(EntityCategory.ModLists, 42L);
+        var id = new Id64(EntityCategory.Loadouts, 42L);
         DataStore.GetRoot(RootType.Tests).Should().BeNull();
 
         DataStore.PutRoot(RootType.Tests, IdEmpty.Empty, id).Should().BeTrue();

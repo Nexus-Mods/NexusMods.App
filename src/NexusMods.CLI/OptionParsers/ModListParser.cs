@@ -1,23 +1,23 @@
 ﻿using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ModLists;
+using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.CLI.OptionParsers;
 
-public class ModListParser : IOptionParser<ModList>
+public class LoadoutParser : IOptionParser<Loadout>
 {
     private readonly IDataStore _store;
 
-    public ModListParser(IDataStore store)
+    public LoadoutParser(IDataStore store)
     {
         _store = store;
     }
     
-    public ModList Parse(string input, OptionDefinition<ModList> definition)
+    public Loadout Parse(string input, OptionDefinition<Loadout> definition)
     {
         var bytes = Convert.FromHexString(input);
-        var found = _store.GetByPrefix<ModList>(new IdVariableLength(EntityCategory.ModLists, bytes)).ToArray();
+        var found = _store.GetByPrefix<Loadout>(new IdVariableLength(EntityCategory.Loadouts, bytes)).ToArray();
         if (found.Length > 1)
-            throw new Exception("More than one modlist with that id prefix found");
+            throw new Exception("More than one Loadout with that id prefix found");
         return found.First();
     }
 }

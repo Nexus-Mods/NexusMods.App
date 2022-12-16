@@ -16,8 +16,8 @@ public class CFile
         Code("using System.Text.Json.Serialization;");
         Code("using Microsoft.Extensions.DependencyInjection;");
         Code("using NexusMods.DataModel.Abstractions;");
-        Code("using NexusMods.DataModel.ModLists;");
-        Code("using NexusMods.DataModel.ModLists.ModFiles;");
+        Code("using NexusMods.DataModel.Loadouts;");
+        Code("using NexusMods.DataModel.Loadouts.ModFiles;");
         Code("using NexusMods.Hashing.xxHash64;");
         Code("using NexusMods.Interfaces;");
         Code("using NexusMods.Paths;");

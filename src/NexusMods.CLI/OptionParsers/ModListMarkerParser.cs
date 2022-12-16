@@ -1,20 +1,20 @@
-﻿using NexusMods.DataModel.ModLists;
-using NexusMods.DataModel.ModLists.Markers;
+﻿using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.Markers;
 
 namespace NexusMods.CLI.OptionParsers;
 
-public class ModListMarkerParser : IOptionParser<ModListMarker>
+public class LoadoutMarkerParser : IOptionParser<LoadoutMarker>
 {
-    private readonly ModListManager _manager;
+    private readonly LoadoutManager _manager;
 
-    public ModListMarkerParser(ModListManager manager)
+    public LoadoutMarkerParser(LoadoutManager manager)
     {
         _manager = manager;
     }
 
-    public ModListMarker Parse(string input, OptionDefinition<ModListMarker> definition)
+    public LoadoutMarker Parse(string input, OptionDefinition<LoadoutMarker> definition)
     {
-        return _manager.AllModLists.First(m =>
+        return _manager.AllLoadouts.First(m =>
             m.Value.Name.Equals(input, StringComparison.InvariantCultureIgnoreCase));
     }
 }

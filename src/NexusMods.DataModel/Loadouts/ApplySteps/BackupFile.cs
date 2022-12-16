@@ -1,7 +1,7 @@
 ﻿using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
-namespace NexusMods.DataModel.ModLists.ApplySteps;
+namespace NexusMods.DataModel.Loadouts.ApplySteps;
 
 public record BackupFile : IApplyStep, IStaticFileStep
 {

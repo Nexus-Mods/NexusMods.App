@@ -1,25 +1,25 @@
 ﻿using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ModLists;
+using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.CLI.Verbs;
 
 public class Rename
 {
-    private readonly ModListManager _manager;
+    private readonly LoadoutManager _manager;
 
-    public Rename(ModListManager manager)
+    public Rename(LoadoutManager manager)
     {
         _manager = manager;
     }
     public static VerbDefinition Definition = new VerbDefinition("rename",
         "Rename a loadout id to a specific registry name", new OptionDefinition[]
         {
-            new OptionDefinition<ModList>("l", "loadOut", "Loadout to assign a name"),
+            new OptionDefinition<Loadout>("l", "loadOut", "Loadout to assign a name"),
             new OptionDefinition<string>("n", "name", "Name to assign the loadout")
         });
     
-    public async Task Run(ModList loadOut, string name)
+    public async Task Run(Loadout loadOut, string name)
     {
-        _manager.Alter(loadOut.ModListId, _ => loadOut, $"Renamed {loadOut.Id} to {name}");
+        _manager.Alter(loadOut.LoadoutId, _ => loadOut, $"Renamed {loadOut.Id} to {name}");
     }
 }

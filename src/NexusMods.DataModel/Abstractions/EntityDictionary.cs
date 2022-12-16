@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.DataModel.ModLists;
+using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.DataModel.Abstractions;
 
