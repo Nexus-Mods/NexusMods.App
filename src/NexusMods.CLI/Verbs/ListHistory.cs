@@ -1,6 +1,6 @@
 ﻿using NexusMods.CLI.DataOutputs;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ModLists.Markers;
+using NexusMods.DataModel.Loadouts.Markers;
 
 namespace NexusMods.CLI.Verbs;
 
@@ -16,12 +16,12 @@ public class ListHistory
     public static VerbDefinition Definition => new("list-history", "Lists the history of a loadout",
         new OptionDefinition[]
         {
-            new OptionDefinition<ModListMarker>("m", "modList", "Loadout to load")
+            new OptionDefinition<LoadoutMarker>("l", "loadout", "Loadout to load")
         });
 
-    public async Task Run(ModListMarker modList)
+    public async Task Run(LoadoutMarker loadout)
     {
-        var rows = modList.History()
+        var rows = loadout.History()
             .Select(list => new object[] { list.LastModified, list.ChangeMessage, list.Mods.Count, list.Id })
             .ToList();
         

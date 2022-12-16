@@ -1,6 +1,6 @@
 ﻿using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
-using NexusMods.DataModel.ModLists;
+using NexusMods.DataModel.Loadouts;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Interfaces;
 using NexusMods.Paths;

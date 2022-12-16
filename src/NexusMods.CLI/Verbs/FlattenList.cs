@@ -1,5 +1,5 @@
 ﻿using NexusMods.CLI.DataOutputs;
-using NexusMods.DataModel.ModLists.Markers;
+using NexusMods.DataModel.Loadouts.Markers;
 
 namespace NexusMods.CLI.Verbs;
 
@@ -13,15 +13,15 @@ public class FlattenList
 
     
     public static VerbDefinition Definition = new VerbDefinition("flatten-list",
-        "Flatten a mod list into the projected filesystem", new[]
+        "Flatten a loadout into the projected filesystem", new[]
         {
-            new OptionDefinition<ModListMarker>("m", "modList", "Mod List to target")
+            new OptionDefinition<LoadoutMarker>("l", "loadout", "loadout to target")
         });
     
-    public async Task Run(ModListMarker modList, CancellationToken token)
+    public async Task Run(LoadoutMarker loadout, CancellationToken token)
     {
         var rows = new List<object[]>();
-        foreach (var (file, mod) in modList.FlattenList())
+        foreach (var (file, mod) in loadout.FlattenList())
         {
             rows.Add(new object[]{mod.Name, file.To});
         }

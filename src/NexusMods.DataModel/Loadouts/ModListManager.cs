@@ -3,17 +3,17 @@ using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.ModInstallers;
-using NexusMods.DataModel.ModLists.Markers;
-using NexusMods.DataModel.ModLists.ModFiles;
+using NexusMods.DataModel.Loadouts.Markers;
+using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Interfaces;
 using NexusMods.Paths;
 
-namespace NexusMods.DataModel.ModLists;
+namespace NexusMods.DataModel.Loadouts;
 
-public class ModListManager
+public class LoadoutManager
 {
-    private readonly ILogger<ModListManager> _logger;
+    private readonly ILogger<LoadoutManager> _logger;
     private readonly IDataStore _store;
     private readonly Root<ListRegistry> _root;
     public readonly FileHashCache FileHashCache;
@@ -21,8 +21,8 @@ public class ModListManager
     private readonly IModInstaller[] _installers;
     private readonly ArchiveContentsCache _analyzer;
 
-    public ModListManager(ILogger<ModListManager> logger,
-        IResource<ModListManager, Size> limiter,
+    public LoadoutManager(ILogger<LoadoutManager> logger,
+        IResource<LoadoutManager, Size> limiter,
         ArchiveManager archiveManager, 
         IDataStore store, FileHashCache fileHashCache, IEnumerable<IModInstaller> installers, ArchiveContentsCache analyzer)
     {
@@ -30,18 +30,18 @@ public class ModListManager
         Limiter = limiter;
         ArchiveManager = archiveManager;
         _store = store;
-        _root = new Root<ListRegistry>(RootType.ModLists, store);
+        _root = new Root<ListRegistry>(RootType.Loadouts, store);
         FileHashCache = fileHashCache;
         _installers = installers.ToArray();
         _analyzer = analyzer;
     }
 
-    public IResource<ModListManager,Size> Limiter { get; set; }
+    public IResource<LoadoutManager,Size> Limiter { get; set; }
 
     public IObservable<ListRegistry> Changes => _root.Changes.Select(r => r.New);
-    public IEnumerable<ModListMarker> AllModLists => _root.Value.Lists.Values.Select(m => new ModListMarker(this, m.ModListId));
+    public IEnumerable<LoadoutMarker> AllLoadouts => _root.Value.Lists.Values.Select(m => new LoadoutMarker(this, m.LoadoutId));
 
-    public async Task<ModListMarker> ManageGame(GameInstallation installation, string name = "", CancellationToken? token = null)
+    public async Task<LoadoutMarker> ManageGame(GameInstallation installation, string name = "", CancellationToken? token = null)
     {
         _logger.LogInformation("Indexing game files");
         var gameFiles = new HashSet<AModFile>();
@@ -60,7 +60,7 @@ public class ModListManager
                 });
             }
         }
-        _logger.LogInformation("Creating Modlist {Name}", name);
+        _logger.LogInformation("Creating Loadout {Name}", name);
         var mod = new Mod
         {
             Name = "Game Files",
@@ -68,33 +68,33 @@ public class ModListManager
             Store = _store
         };
         
-        var n = ModList.Empty(_store) with
+        var n = Loadout.Empty(_store) with
         {
             Installation = installation,
             Name = name, 
             Mods = new EntityHashSet<Mod>(_store, new [] {mod.Id})
         };
-        _root.Alter(r => r with {Lists = r.Lists.With(n.ModListId, n)});
+        _root.Alter(r => r with {Lists = r.Lists.With(n.LoadoutId, n)});
         
-        _logger.LogInformation("Modlist {Name} {Id} created", name, n.ModListId);
-        return new ModListMarker(this, n.ModListId);
+        _logger.LogInformation("Loadout {Name} {Id} created", name, n.LoadoutId);
+        return new LoadoutMarker(this, n.LoadoutId);
     }
 
-    public async Task<ModListMarker> InstallMod(ModListId modListId, AbsolutePath path, string name, CancellationToken token = default)
+    public async Task<LoadoutMarker> InstallMod(LoadoutId LoadoutId, AbsolutePath path, string name, CancellationToken token = default)
     {
-        var modList = GetModList(modListId);
+        var Loadout = GetLoadout(LoadoutId);
         
         var analyzed = (await _analyzer.AnalyzeFile(path, token) as AnalyzedArchive);
 
         var installer = _installers
-            .Select(i => (Installer: i, Priority: i.Priority(modList.Value.Installation, analyzed.Contents)))
+            .Select(i => (Installer: i, Priority: i.Priority(Loadout.Value.Installation, analyzed.Contents)))
             .Where(p => p.Priority != Priority.None)
             .OrderBy(p => p.Priority)
             .FirstOrDefault();
         if (installer == default)
             throw new Exception($"No Installer found for {path}");
 
-        var contents = installer.Installer.Install(modList.Value.Installation, analyzed.Hash, analyzed.Contents);
+        var contents = installer.Installer.Install(Loadout.Value.Installation, analyzed.Hash, analyzed.Contents);
 
         name = string.IsNullOrWhiteSpace(name) ? path.FileName.ToString() : name;
 
@@ -104,17 +104,17 @@ public class ModListManager
             Files = new EntityHashSet<AModFile>(_store, contents.Select(c => c.Id)),
             Store = _store
         };
-        modList.Add(newMod);
-        return modList;
+        Loadout.Add(newMod);
+        return Loadout;
     }
 
-    private ModListMarker GetModList(ModListId modListId)
+    private LoadoutMarker GetLoadout(LoadoutId LoadoutId)
     {
-        return new ModListMarker(this, modListId);
+        return new LoadoutMarker(this, LoadoutId);
     }
 
 
-    public void Alter(ModListId id, Func<ModList, ModList> func, string changeMessage = "")
+    public void Alter(LoadoutId id, Func<Loadout, Loadout> func, string changeMessage = "")
     {
         _root.Alter(r =>
         {
@@ -126,11 +126,11 @@ public class ModListManager
                     ChangeMessage = changeMessage,
                     PreviousVersion = previousList
                 };
-            return r with { Lists = r.Lists.With(newList.ModListId, newList) };
+            return r with { Lists = r.Lists.With(newList.LoadoutId, newList) };
         });
     }
 
-    public ModList Get(ModListId id)
+    public Loadout Get(LoadoutId id)
     {
         return _root.Value.Lists[id];
     }

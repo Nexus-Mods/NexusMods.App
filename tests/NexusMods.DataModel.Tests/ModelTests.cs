@@ -1,8 +1,8 @@
 ﻿using System.Reactive.Linq;
 using FluentAssertions;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ModLists;
-using NexusMods.DataModel.ModLists.ModFiles;
+using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Interfaces;
@@ -40,11 +40,11 @@ public class ModelTests : ADataModelTest<ModelTests>
     {
         var list = new HashSet<string>();
         
-        var modlist = await ModListManager.ManageGame(Install, "OldName");
-        modlist.Changes.Subscribe(f => list.Add(f.Name));
-        modlist.Alter(m => m with {Name = "NewName"});
+        var Loadout = await LoadoutManager.ManageGame(Install, "OldName");
+        Loadout.Changes.Subscribe(f => list.Add(f.Name));
+        Loadout.Alter(m => m with {Name = "NewName"});
 
-        modlist.Value.Name.Should().Be("NewName");
+        Loadout.Value.Name.Should().Be("NewName");
         list.Count.Should().Be(1);
         list.First().Should().Be("NewName");
     }
@@ -53,12 +53,12 @@ public class ModelTests : ADataModelTest<ModelTests>
     public async Task CanInstallAMod()
     {
         var name = Guid.NewGuid().ToString();
-        var modlist = await ModListManager.ManageGame(Install, name);
-        await modlist.Install(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
-        await modlist.Install(DATA_ZIP_LZMA, "", CancellationToken.None);
+        var Loadout = await LoadoutManager.ManageGame(Install, name);
+        await Loadout.Install(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
+        await Loadout.Install(DATA_ZIP_LZMA, "", CancellationToken.None);
 
-        modlist.Value.Mods.Count.Should().Be(3);
-        modlist.Value.Mods.Sum(m => m.Files.Count).Should().Be(DATA_NAMES.Length * 2 + StubbedGame.DATA_NAMES.Length);
+        Loadout.Value.Mods.Count.Should().Be(3);
+        Loadout.Value.Mods.Sum(m => m.Files.Count).Should().Be(DATA_NAMES.Length * 2 + StubbedGame.DATA_NAMES.Length);
         
     }
 

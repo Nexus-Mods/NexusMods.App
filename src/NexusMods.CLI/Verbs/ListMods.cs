@@ -1,6 +1,6 @@
 ﻿using NexusMods.CLI.DataOutputs;
-using NexusMods.DataModel.ModLists;
-using NexusMods.DataModel.ModLists.Markers;
+using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.Markers;
 
 namespace NexusMods.CLI.Verbs;
 
@@ -16,14 +16,14 @@ public class ListMods
         "List all the mods in a given managed game",
         new[]
         {
-            new OptionDefinition<ModListMarker>("m", "managedGame", "The managed game to access")
+            new OptionDefinition<LoadoutMarker>("l", "loadout", "The managed game to access")
         });
 
 
-    public async Task Run(ModListMarker managedGame, CancellationToken token)
+    public async Task Run(LoadoutMarker loadout, CancellationToken token)
     {
         var rows = new List<object[]>();
-        foreach (var mod in managedGame.Value.Mods)
+        foreach (var mod in loadout.Value.Mods)
         {
             rows.Add(new object[]{mod.Name, mod.Files.Count});
         }

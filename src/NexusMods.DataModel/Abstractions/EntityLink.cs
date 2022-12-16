@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
-using NexusMods.DataModel.ModLists;
+using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.DataModel.Abstractions;
 
