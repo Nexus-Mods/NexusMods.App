@@ -19,9 +19,9 @@ public class ListHistory
             new OptionDefinition<LoadoutMarker>("l", "loadout", "Loadout to load")
         });
 
-    public async Task Run(LoadoutMarker Loadout)
+    public async Task Run(LoadoutMarker loadout)
     {
-        var rows = Loadout.History()
+        var rows = loadout.History()
             .Select(list => new object[] { list.LastModified, list.ChangeMessage, list.Mods.Count, list.Id })
             .ToList();
         

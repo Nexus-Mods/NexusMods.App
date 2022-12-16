@@ -19,11 +19,11 @@ public class InstallMod
     });
 
 
-    public async Task Run(LoadoutMarker Loadout, AbsolutePath file, string name, CancellationToken token)
+    public async Task Run(LoadoutMarker loadout, AbsolutePath file, string name, CancellationToken token)
     {
         await _renderer.WithProgress(token, async () =>
         {
-            await Loadout.Install(file, name, token);
+            await loadout.Install(file, name, token);
             return file;
         });
     }

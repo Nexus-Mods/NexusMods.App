@@ -16,14 +16,14 @@ public class ListMods
         "List all the mods in a given managed game",
         new[]
         {
-            new OptionDefinition<LoadoutMarker>("m", "managedGame", "The managed game to access")
+            new OptionDefinition<LoadoutMarker>("l", "loadout", "The managed game to access")
         });
 
 
-    public async Task Run(LoadoutMarker managedGame, CancellationToken token)
+    public async Task Run(LoadoutMarker loadout, CancellationToken token)
     {
         var rows = new List<object[]>();
-        foreach (var mod in managedGame.Value.Mods)
+        foreach (var mod in loadout.Value.Mods)
         {
             rows.Add(new object[]{mod.Name, mod.Files.Count});
         }

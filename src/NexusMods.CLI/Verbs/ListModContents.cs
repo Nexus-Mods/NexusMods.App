@@ -15,15 +15,15 @@ public class ListModContents
     public static VerbDefinition Definition = new("list-mod-contents", "Lists all the files in a mod",
         new OptionDefinition[]
         {
-            new OptionDefinition<LoadoutMarker>( "m", "managedGame", "The managed game instance that contains the mod"),
+            new OptionDefinition<LoadoutMarker>( "l", "loadout", "The loadout instance that contains the mod"),
             new OptionDefinition<string>("n", "modName", "The name of the mod to list")
         });
 
 
-    public async Task Run(LoadoutMarker managedGame, string modName)
+    public async Task Run(LoadoutMarker loadout, string modName)
     {
         var rows = new List<object[]>();
-        var mod = managedGame.Value.Mods.First(m => m.Name == modName);
+        var mod = loadout.Value.Mods.First(m => m.Name == modName);
         foreach (var file in mod.Files)
         {
             if (file is FromArchive fa) 

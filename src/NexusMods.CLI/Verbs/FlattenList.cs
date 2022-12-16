@@ -18,10 +18,10 @@ public class FlattenList
             new OptionDefinition<LoadoutMarker>("l", "loadout", "loadout to target")
         });
     
-    public async Task Run(LoadoutMarker Loadout, CancellationToken token)
+    public async Task Run(LoadoutMarker loadout, CancellationToken token)
     {
         var rows = new List<object[]>();
-        foreach (var (file, mod) in Loadout.FlattenList())
+        foreach (var (file, mod) in loadout.FlattenList())
         {
             rows.Add(new object[]{mod.Name, file.To});
         }

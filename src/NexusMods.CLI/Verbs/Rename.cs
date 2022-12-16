@@ -14,12 +14,12 @@ public class Rename
     public static VerbDefinition Definition = new VerbDefinition("rename",
         "Rename a loadout id to a specific registry name", new OptionDefinition[]
         {
-            new OptionDefinition<Loadout>("l", "loadOut", "Loadout to assign a name"),
+            new OptionDefinition<Loadout>("l", "loadout", "Loadout to assign a name"),
             new OptionDefinition<string>("n", "name", "Name to assign the loadout")
         });
     
-    public async Task Run(Loadout loadOut, string name)
+    public async Task Run(Loadout loadout, string name)
     {
-        _manager.Alter(loadOut.LoadoutId, _ => loadOut, $"Renamed {loadOut.Id} to {name}");
+        _manager.Alter(loadout.LoadoutId, _ => loadout, $"Renamed {loadout.Id} to {name}");
     }
 }

@@ -21,20 +21,20 @@ public class ModManagementVerbs : AVerbTest
         LastTable.Columns.Should().BeEquivalentTo("Name", "Game", "Id", "Mod Count");
         LastTable.Rows.FirstOrDefault(r => r.First().Equals(listName)).Should().NotBeNull();
 
-        await RunNoBanner("list-mods", "-m", listName);
+        await RunNoBanner("list-mods", "-l", listName);
         LastTable.Rows.Count().Should().Be(1);
 
-        await RunNoBanner("install-mod", "-m", listName, "-f", Data7ZipLZMA2.ToString());
+        await RunNoBanner("install-mod", "-l", listName, "-f", Data7ZipLZMA2.ToString());
         
-        await RunNoBanner("list-mods", "-m", listName);
+        await RunNoBanner("list-mods", "-l", listName);
         LastTable.Rows.Count().Should().Be(2);
 
-        await RunNoBanner("list-mod-contents", "-m", listName, "-n", Data7ZipLZMA2.FileName.ToString());
+        await RunNoBanner("list-mod-contents", "-l", listName, "-n", Data7ZipLZMA2.FileName.ToString());
         LastTable.Rows.Count().Should().Be(3);
         
-        await RunNoBanner("flatten-list", "-m", listName);
+        await RunNoBanner("flatten-list", "-l", listName);
         LastTable.Rows.Count().Should().Be(7);
         
-        await RunNoBanner("apply", "-m", listName, "-r", "false");
+        await RunNoBanner("apply", "-l", listName, "-r", "false");
     }
 }

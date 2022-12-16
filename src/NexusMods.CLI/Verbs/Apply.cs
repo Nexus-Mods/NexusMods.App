@@ -22,10 +22,10 @@ public class Apply
         new OptionDefinition<bool>("s", "summary", "Print the summary, not the detailed step list")
     });
     
-    public async Task Run(LoadoutMarker Loadout, bool run, bool summary, CancellationToken token)
+    public async Task Run(LoadoutMarker loadout, bool run, bool summary, CancellationToken token)
     {
 
-        var steps = await Loadout.MakeApplyPlan(token).ToList();
+        var steps = await loadout.MakeApplyPlan(token).ToList();
 
         if (summary)
         {
@@ -58,7 +58,7 @@ public class Apply
         if (run) {
             await _renderer.WithProgress(token, async () =>
             {
-                await Loadout.ApplyPlan(steps, token);
+                await loadout.ApplyPlan(steps, token);
                 return steps;
             });
         }
