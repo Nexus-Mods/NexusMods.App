@@ -7,10 +7,10 @@
     </PropertyGroup>
     
     <ItemGroup>
-      <PackageReference Include="GameFinder.StoreHandlers.EGS" Version="2.2.2" />
-      <PackageReference Include="GameFinder.StoreHandlers.GOG" Version="2.2.2" />
-      <PackageReference Include="GameFinder.StoreHandlers.Origin" Version="2.2.2" />
-      <PackageReference Include="GameFinder.StoreHandlers.Steam" Version="2.2.2" />
+      <PackageReference Include="GameFinder.StoreHandlers.EGS" Version="2.3.0" />
+      <PackageReference Include="GameFinder.StoreHandlers.GOG" Version="2.3.0" />
+      <PackageReference Include="GameFinder.StoreHandlers.Origin" Version="2.3.0" />
+      <PackageReference Include="GameFinder.StoreHandlers.Steam" Version="2.3.0" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
       <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
     </ItemGroup>

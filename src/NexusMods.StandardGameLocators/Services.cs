@@ -1,10 +1,12 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.IO.Abstractions;
+using System.Runtime.InteropServices;
 using GameFinder.Common;
 using GameFinder.RegistryUtils;
 using GameFinder.StoreHandlers.GOG;
 using GameFinder.StoreHandlers.Steam;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Interfaces.Components;
+using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators;
 
@@ -40,8 +42,17 @@ public static class Services
 
     private static AHandler<SteamGame, int> CreateSteamHandler()
     {
-        return RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-            ? new SteamHandler(new WindowsRegistry())
-            : new SteamHandler(null);
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            return new SteamHandler(new WindowsRegistry());
+
+        var searchPaths = new[]
+        {
+            KnownFolders.HomeFolder.Join(".steam/debian-installation/".ToRelativePath())
+        };
+
+
+        var steamPath = searchPaths.First(p => p.Join("steam.sh".ToRelativePath()).FileExists);
+
+        return new SteamHandler(steamPath.ToString(), new FileSystem(), null);
     }
 }

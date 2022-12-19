@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Runtime.InteropServices;
+using Microsoft.Extensions.Logging;
 using NexusMods.Games.Abstractions;
 using NexusMods.Interfaces;
 using NexusMods.Interfaces.Components;
@@ -18,7 +19,18 @@ public class DarkestDungeon : AGame,  ISteamGame, IGogGame
 
     public override string Name => "Darkest Dungeon";
     public override string Slug => "darkestdungeon";
-    public override GamePath PrimaryFile => new(GameFolderType.Game, @"_windowsnosteam\Darkest.exe");
+    public override GamePath PrimaryFile
+    {
+        get
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                return new(GameFolderType.Game, @"_linuxnosteam\darkest.bin.x86_64");
+            }
+            return new(GameFolderType.Game, @"_windowsnosteam\Darkest.exe");
+        }
+    }
+
     protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(IGameLocator locator, GameLocatorResult installation)
     {
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);

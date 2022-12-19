@@ -11,4 +11,5 @@ public static class KnownFolders
         Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).ToAbsolutePath();
 
     public static AbsolutePath MyGames => Documents.Combine("My Games");
+    public static AbsolutePath HomeFolder => Environment.GetFolderPath(Environment.SpecialFolder.UserProfile).ToAbsolutePath();
 }
