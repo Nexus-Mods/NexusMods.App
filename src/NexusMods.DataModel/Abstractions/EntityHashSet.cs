@@ -3,10 +3,11 @@ using System.Collections.Immutable;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.DataModel.Loadouts.ModFiles;
 
 namespace NexusMods.DataModel.Abstractions;
 
-public struct EntityHashSet<T> : IEmptyWithDataStore<EntityHashSet<T>>, IEnumerable<T>
+public struct EntityHashSet<T> : IEmptyWithDataStore<EntityHashSet<T>>, IEnumerable<T>, IEquatable<EntityHashSet<T>>
 where T : Entity
 {
     public static EntityHashSet<T> Empty(IDataStore store) => new(store);
@@ -85,6 +86,36 @@ where T : Entity
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
+    }
+
+    public EntityHashSet<T> With(IEnumerable<T> items)
+    {
+        var builder = _coll.ToBuilder();
+        foreach (var item in items)
+        {
+            builder.Add(item.Id);
+        }
+
+        return new EntityHashSet<T>(_store, builder.ToImmutable());
+    }
+
+    public bool Equals(EntityHashSet<T> other)
+    {
+        if (other.Count != Count) return false;
+        foreach (var itm in other._coll)
+            if (!_coll.Contains(itm))
+                return false;
+        return true;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is EntityHashSet<T> other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_coll, _store);
     }
 }
 
