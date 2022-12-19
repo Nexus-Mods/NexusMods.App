@@ -20,6 +20,6 @@ public class SkyrimSpecialEditionTests
     {
         _game.Name.Should().Be("Skyrim Special Edition");
         _game.Slug.Should().Be("skyrimspecialedition");
-        _game.Installations.Count().Should().Be(2);
+        _game.Installations.Count().Should().BeGreaterThan(0);
     }
 }

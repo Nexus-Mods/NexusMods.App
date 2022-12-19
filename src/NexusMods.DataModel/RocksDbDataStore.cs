@@ -13,16 +13,30 @@ namespace NexusMods.DataModel;
 
 public class RocksDbDatastore : IDataStore
 {
-    private readonly RocksDb _db;
+    private readonly Task<RocksDb> _db;
     private readonly RecyclableMemoryStreamManager _mmanager;
     private readonly Lazy<JsonSerializerOptions> _jsonOptions;
+    private readonly TaskCompletionSource<RocksDb> _tsc;
 
     public RocksDbDatastore(AbsolutePath path, IServiceProvider provider)
     {
         var settings = new DbOptions();
         settings.SetCreateIfMissing();
+
+        _tsc = new TaskCompletionSource<RocksDb>();
+        new Thread(() =>
+        {
+            try
+            {
+                _tsc.TrySetResult(RocksDb.Open(settings, path.ToString()));
+            }
+            catch (Exception ex)
+            {
+                _tsc.SetException(ex);
+            }
+        }).Start();
+        _db = _tsc.Task;
         
-        _db = RocksDb.Open(settings, path.ToString());
         _mmanager = new RecyclableMemoryStreamManager();
         
         // Make this lazy to avoid the cycle reference of store -> options -> converter -> store
@@ -45,7 +59,7 @@ public class RocksDbDatastore : IDataStore
             id = new Id64(value.Category, hash);
             Span<byte> keySpan = stackalloc byte[id.SpanSize + 1];
             id.ToTaggedSpan(keySpan);
-            _db.Put(keySpan, span[..(int)stream.Length]);
+            _db.Result.Put(keySpan, span[..(int)stream.Length]);
         }
         else
         {
@@ -54,7 +68,7 @@ public class RocksDbDatastore : IDataStore
             id = new Id64(value.Category, hash);
             Span<byte> keySpan = stackalloc byte[id.SpanSize + 1];
             id.ToTaggedSpan(keySpan);
-            _db.Put(keySpan, data.AsSpan()[..(int)stream.Length]);
+            _db.Result.Put(keySpan, data.AsSpan()[..(int)stream.Length]);
         }
         
         return id;
@@ -72,11 +86,11 @@ public class RocksDbDatastore : IDataStore
         // Span returned may be smaller then the entire size if the buffer had to be resized
         if (span.Length >= stream.Length)
         {
-            _db.Put(keySpan, span[..(int)stream.Length]);
+            _db.Result.Put(keySpan, span[..(int)stream.Length]);
         }
         else
         {
-            _db.Put(keySpan, stream.GetBuffer().ToArray());
+            _db.Result.Put(keySpan, stream.GetBuffer().ToArray());
         }
 
     }
@@ -85,7 +99,7 @@ public class RocksDbDatastore : IDataStore
     {
         Span<byte> keySpan = stackalloc byte[id.SpanSize + 1];
         id.ToTaggedSpan(keySpan);
-        return _db.Get(keySpan, str => 
+        return _db.Result.Get(keySpan, str => 
                 JsonSerializer.Deserialize<T>(str, _jsonOptions.Value));
     }
     
@@ -105,7 +119,7 @@ public class RocksDbDatastore : IDataStore
             Id rootId = new RootId(type);
             Span<byte> rootIdSpan = stackalloc byte[rootId.SpanSize + 1];
             rootId.ToTaggedSpan(rootIdSpan);
-            _db.Put(rootIdSpan, newIdSpan);
+            _db.Result.Put(rootIdSpan, newIdSpan);
         }
         return true;
     }
@@ -115,19 +129,19 @@ public class RocksDbDatastore : IDataStore
         Id rootId = new RootId(type);
         Span<byte> idSpan = stackalloc byte[rootId.SpanSize + 1];
         rootId.ToTaggedSpan(idSpan);
-        var id = _db.Get(idSpan);
+        var id = _db.Result.Get(idSpan);
         if (id == null) return null;
         return Id.FromTaggedSpan(id.AsSpan());
     }
 
     public byte[]? GetRaw(ReadOnlySpan<byte> key, EntityCategory category)
     {
-        return _db.Get(key);
+        return _db.Result.Get(key);
     }
 
     public void PutRaw(ReadOnlySpan<byte> key, ReadOnlySpan<byte> value, EntityCategory category)
     {
-        _db.Put(key, value);
+        _db.Result.Put(key, value);
     }
 
     public IEnumerable<T> GetByPrefix<T>(Id prefix) where T : Entity
@@ -138,7 +152,7 @@ public class RocksDbDatastore : IDataStore
         var ro = new ReadOptions();
         ro.SetTotalOrderSeek(true);
 
-        using var iterator = _db.NewIterator(readOptions:ro);
+        using var iterator = _db.Result.NewIterator(readOptions:ro);
         iterator.Seek(key);
 
 

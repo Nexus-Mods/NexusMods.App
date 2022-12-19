@@ -9,18 +9,18 @@ using NexusMods.Paths;
 
 namespace NexusMods.CLI;
 
-public class CommandLineBuilder
+public class CommandlineConfigurator
 {
     private static IServiceProvider _provider = null!;
-    private readonly ILogger<CommandLineBuilder> _logger;
+    private readonly ILogger<CommandlineConfigurator> _logger;
 
-    public CommandLineBuilder(ILogger<CommandLineBuilder> logger, IServiceProvider provider)
+    public CommandlineConfigurator(ILogger<CommandlineConfigurator> logger, IServiceProvider provider)
     {
         _logger = logger;
         _provider = provider;
     }
     
-    public async Task<int> Run(string[] args)
+    public RootCommand MakeRoot()
     {
         var root = new RootCommand();
         var renderOption = new Option<IRenderer>("--renderer", parseArgument:
@@ -41,15 +41,7 @@ public class CommandLineBuilder
             root.Add(MakeCommend(verb.Type, verb.Handler, verb.Definition));
         }
 
-        try
-        {
-            return await root.InvokeAsync(args);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogCritical(ex, "While executing command");
-            throw;
-        }
+        return root;
     }
 
     private Command MakeCommend(Type verbType, Func<object, Delegate> verbHandler, VerbDefinition definition)
@@ -111,11 +103,16 @@ public record OptionDefinition<T>(string ShortOption, string LongOption, string 
     public override Option GetOption(IServiceProvider provider)
     {
         var converter = provider.GetService<IOptionParser<T>>();
+        
         if (converter == null)
+        {
             return new Option<T>(Aliases, description: Description);
+        }
 
-        return new Option<T>(Aliases, description: Description,
+        var opt = new Option<T>(Aliases, description: Description,
             parseArgument: x => converter.Parse(x.Tokens.Single().Value, this));
+        opt.AddCompletions(x => converter.GetOptions(x.WordToComplete));
+        return opt;
     }
 }
 public abstract record OptionDefinition(Type Type, string ShortOption, string LongOption, string Description)

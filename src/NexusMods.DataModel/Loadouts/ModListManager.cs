@@ -82,19 +82,19 @@ public class LoadoutManager
 
     public async Task<LoadoutMarker> InstallMod(LoadoutId LoadoutId, AbsolutePath path, string name, CancellationToken token = default)
     {
-        var Loadout = GetLoadout(LoadoutId);
+        var loadout = GetLoadout(LoadoutId);
         
         var analyzed = (await _analyzer.AnalyzeFile(path, token) as AnalyzedArchive);
 
         var installer = _installers
-            .Select(i => (Installer: i, Priority: i.Priority(Loadout.Value.Installation, analyzed.Contents)))
+            .Select(i => (Installer: i, Priority: i.Priority(loadout.Value.Installation, analyzed.Contents)))
             .Where(p => p.Priority != Priority.None)
             .OrderBy(p => p.Priority)
             .FirstOrDefault();
         if (installer == default)
             throw new Exception($"No Installer found for {path}");
 
-        var contents = installer.Installer.Install(Loadout.Value.Installation, analyzed.Hash, analyzed.Contents);
+        var contents = installer.Installer.Install(loadout.Value.Installation, analyzed.Hash, analyzed.Contents);
 
         name = string.IsNullOrWhiteSpace(name) ? path.FileName.ToString() : name;
 
@@ -104,8 +104,8 @@ public class LoadoutManager
             Files = new EntityHashSet<AModFile>(_store, contents.Select(c => c.Id)),
             Store = _store
         };
-        Loadout.Add(newMod);
-        return Loadout;
+        loadout.Add(newMod);
+        return loadout;
     }
 
     private LoadoutMarker GetLoadout(LoadoutId LoadoutId)

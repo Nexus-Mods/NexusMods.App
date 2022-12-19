@@ -1,0 +1,40 @@
+﻿name: Configured Environment Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  VERSION: 3.0.1.8
+
+jobs:
+  build:
+    
+    name: Test ${{ matrix.project }} (${{ matrix.os }})
+    runs-on: self-hosted
+    
+    strategy:
+      matrix:
+        os: [Windows]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET Core SDK 7.0.x
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.0.x'
+
+      - name: Set Permissions
+        if: runner.os != 'Windows'
+        run: chmod -R +x src/ArchiveManagement/NexusMods.FileExtractor/Extractors
+
+      - name: Tests
+        run: dotnet test --filter RequiresGameInstalls=True /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+
+      - uses: codecov/codecov-action@v3
+        with:
+          flags: configured_environment_tests, ${{runner.os}}
+          verbose: true 

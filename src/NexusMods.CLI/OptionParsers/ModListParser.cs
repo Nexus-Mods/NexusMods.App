@@ -20,4 +20,9 @@ public class LoadoutParser : IOptionParser<Loadout>
             throw new Exception("More than one Loadout with that id prefix found");
         return found.First();
     }
+
+    public IEnumerable<string> GetOptions(string input)
+    {
+        return Array.Empty<string>();
+    }
 }

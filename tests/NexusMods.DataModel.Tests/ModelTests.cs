@@ -40,11 +40,11 @@ public class ModelTests : ADataModelTest<ModelTests>
     {
         var list = new HashSet<string>();
         
-        var Loadout = await LoadoutManager.ManageGame(Install, "OldName");
-        Loadout.Changes.Subscribe(f => list.Add(f.Name));
-        Loadout.Alter(m => m with {Name = "NewName"});
+        var loadout = await LoadoutManager.ManageGame(Install, "OldName");
+        loadout.Changes.Subscribe(f => list.Add(f.Name));
+        loadout.Alter(m => m with {Name = "NewName"});
 
-        Loadout.Value.Name.Should().Be("NewName");
+        loadout.Value.Name.Should().Be("NewName");
         list.Count.Should().Be(1);
         list.First().Should().Be("NewName");
     }
@@ -53,13 +53,31 @@ public class ModelTests : ADataModelTest<ModelTests>
     public async Task CanInstallAMod()
     {
         var name = Guid.NewGuid().ToString();
-        var Loadout = await LoadoutManager.ManageGame(Install, name);
-        await Loadout.Install(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
-        await Loadout.Install(DATA_ZIP_LZMA, "", CancellationToken.None);
+        var loadout = await LoadoutManager.ManageGame(Install, name);
+        await loadout.Install(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
+        await loadout.Install(DATA_ZIP_LZMA, "", CancellationToken.None);
 
-        Loadout.Value.Mods.Count.Should().Be(3);
-        Loadout.Value.Mods.Sum(m => m.Files.Count).Should().Be(DATA_NAMES.Length * 2 + StubbedGame.DATA_NAMES.Length);
+        loadout.Value.Mods.Count.Should().Be(3);
+        loadout.Value.Mods.Sum(m => m.Files.Count).Should().Be(DATA_NAMES.Length * 2 + StubbedGame.DATA_NAMES.Length);
         
+    }
+
+    [Fact]
+    public async Task RenamingAListDoesntChangeOldIds()
+    {
+        var loadout = await LoadoutManager.ManageGame(Install, Guid.NewGuid().ToString());
+        await loadout.Install(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
+        await loadout.Install(DATA_ZIP_LZMA, "Mod2", CancellationToken.None);
+
+        var history = loadout.History().Select(h => h.Id).ToArray();
+        history.Length.Should().Be(3);
+        
+        LoadoutManager.Alter(loadout.Value.LoadoutId, l => l.PreviousVersion.Value);
+
+        var newHistory = loadout.History().Select(h => h.Id).ToArray();
+
+        newHistory.Skip(1).Should().BeEquivalentTo(history);
+
     }
 
 }

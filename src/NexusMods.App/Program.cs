@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.CommandLine.Builder;
+using System.CommandLine.Parsing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.App;
@@ -21,9 +23,14 @@ var host = Host.CreateDefaultBuilder(Environment.GetCommandLineArgs())
             .AddCLIVerbs();
     }).Build();
 
-var service = host.Services.GetRequiredService<CommandLineBuilder>();
-var result = await service.Run(args);
-return result;
+var service = host.Services.GetRequiredService<CommandlineConfigurator>();
+var root = service.MakeRoot();
+
+var builder = new CommandLineBuilder(root)
+    .UseDefaults()
+    .Build();
+
+return await builder.InvokeAsync(args);
 
 
 void AddLogging(ILoggingBuilder loggingBuilder)

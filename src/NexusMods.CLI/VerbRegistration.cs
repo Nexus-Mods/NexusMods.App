@@ -8,31 +8,31 @@ using NexusMods.CLI.Verbs;
 public static class CommandLineBuilderExtensions{ 
 
 public static void AddCLIVerbs(this IServiceCollection services) {
-CommandLineBuilder.RegisterCommand<AnalyzeArchive>(AnalyzeArchive.Definition, c => ((AnalyzeArchive)c).Run);
+CommandlineConfigurator.RegisterCommand<AnalyzeArchive>(AnalyzeArchive.Definition, c => ((AnalyzeArchive)c).Run);
 services.AddScoped<AnalyzeArchive>();
-CommandLineBuilder.RegisterCommand<Apply>(Apply.Definition, c => ((Apply)c).Run);
+CommandlineConfigurator.RegisterCommand<Apply>(Apply.Definition, c => ((Apply)c).Run);
 services.AddScoped<Apply>();
-CommandLineBuilder.RegisterCommand<ExtractArchive>(ExtractArchive.Definition, c => ((ExtractArchive)c).Run);
+CommandlineConfigurator.RegisterCommand<ExtractArchive>(ExtractArchive.Definition, c => ((ExtractArchive)c).Run);
 services.AddScoped<ExtractArchive>();
-CommandLineBuilder.RegisterCommand<FlattenList>(FlattenList.Definition, c => ((FlattenList)c).Run);
+CommandlineConfigurator.RegisterCommand<FlattenList>(FlattenList.Definition, c => ((FlattenList)c).Run);
 services.AddScoped<FlattenList>();
-CommandLineBuilder.RegisterCommand<HashFolder>(HashFolder.Definition, c => ((HashFolder)c).Run);
+CommandlineConfigurator.RegisterCommand<HashFolder>(HashFolder.Definition, c => ((HashFolder)c).Run);
 services.AddScoped<HashFolder>();
-CommandLineBuilder.RegisterCommand<InstallMod>(InstallMod.Definition, c => ((InstallMod)c).Run);
+CommandlineConfigurator.RegisterCommand<InstallMod>(InstallMod.Definition, c => ((InstallMod)c).Run);
 services.AddScoped<InstallMod>();
-CommandLineBuilder.RegisterCommand<ListGames>(ListGames.Definition, c => ((ListGames)c).Run);
+CommandlineConfigurator.RegisterCommand<ListGames>(ListGames.Definition, c => ((ListGames)c).Run);
 services.AddScoped<ListGames>();
-CommandLineBuilder.RegisterCommand<ListHistory>(ListHistory.Definition, c => ((ListHistory)c).Run);
+CommandlineConfigurator.RegisterCommand<ListHistory>(ListHistory.Definition, c => ((ListHistory)c).Run);
 services.AddScoped<ListHistory>();
-CommandLineBuilder.RegisterCommand<ListManagedGames>(ListManagedGames.Definition, c => ((ListManagedGames)c).Run);
+CommandlineConfigurator.RegisterCommand<ListManagedGames>(ListManagedGames.Definition, c => ((ListManagedGames)c).Run);
 services.AddScoped<ListManagedGames>();
-CommandLineBuilder.RegisterCommand<ListModContents>(ListModContents.Definition, c => ((ListModContents)c).Run);
+CommandlineConfigurator.RegisterCommand<ListModContents>(ListModContents.Definition, c => ((ListModContents)c).Run);
 services.AddScoped<ListModContents>();
-CommandLineBuilder.RegisterCommand<ListMods>(ListMods.Definition, c => ((ListMods)c).Run);
+CommandlineConfigurator.RegisterCommand<ListMods>(ListMods.Definition, c => ((ListMods)c).Run);
 services.AddScoped<ListMods>();
-CommandLineBuilder.RegisterCommand<ManageGame>(ManageGame.Definition, c => ((ManageGame)c).Run);
+CommandlineConfigurator.RegisterCommand<ManageGame>(ManageGame.Definition, c => ((ManageGame)c).Run);
 services.AddScoped<ManageGame>();
-CommandLineBuilder.RegisterCommand<Rename>(Rename.Definition, c => ((Rename)c).Run);
+CommandlineConfigurator.RegisterCommand<Rename>(Rename.Definition, c => ((Rename)c).Run);
 services.AddScoped<Rename>();
 }
 }

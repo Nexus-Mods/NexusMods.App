@@ -8,4 +8,9 @@ public class AbsolutePathParser : IOptionParser<AbsolutePath>
     {
         return input.ToAbsolutePath();
     }
+
+    public IEnumerable<string> GetOptions(string input)
+    {
+        return Array.Empty<string>();
+    }
 }
