@@ -6,4 +6,9 @@ public class VersionParser : IOptionParser<Version>
     {
         return Version.Parse(input);
     }
+
+    public IEnumerable<string> GetOptions(string input)
+    {
+        return Array.Empty<string>();
+    }
 }

@@ -111,11 +111,16 @@ public record OptionDefinition<T>(string ShortOption, string LongOption, string 
     public override Option GetOption(IServiceProvider provider)
     {
         var converter = provider.GetService<IOptionParser<T>>();
+        
         if (converter == null)
+        {
             return new Option<T>(Aliases, description: Description);
+        }
 
-        return new Option<T>(Aliases, description: Description,
+        var opt = new Option<T>(Aliases, description: Description,
             parseArgument: x => converter.Parse(x.Tokens.Single().Value, this));
+        opt.AddCompletions(x => converter.GetOptions(x.WordToComplete));
+        return opt;
     }
 }
 public abstract record OptionDefinition(Type Type, string ShortOption, string LongOption, string Description)

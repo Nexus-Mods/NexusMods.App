@@ -16,4 +16,14 @@ public class GameParser : IOptionParser<IGame>
         return _games.FirstOrDefault(g => g.Slug == input) ??
                _games.FirstOrDefault(g => g.Name.Equals(input, StringComparison.CurrentCultureIgnoreCase))!;
     }
+
+    public IEnumerable<string> GetOptions(string input)
+    {
+        var byName = _games.Where(g => g.Name.Contains(input, StringComparison.InvariantCultureIgnoreCase));
+        var bySlug = _games.Where(g =>
+            g.Slug.Replace("-", "").Contains(input, StringComparison.CurrentCultureIgnoreCase));
+
+        var found = byName.Concat(bySlug).Select(s => s.Slug).Distinct();
+        return !found.Any() ? _games.Select(g => g.Slug) : found;
+    }
 }

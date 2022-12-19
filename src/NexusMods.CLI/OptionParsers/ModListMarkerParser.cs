@@ -17,4 +17,9 @@ public class LoadoutMarkerParser : IOptionParser<LoadoutMarker>
         return _manager.AllLoadouts.First(m =>
             m.Value.Name.Equals(input, StringComparison.InvariantCultureIgnoreCase));
     }
+
+    public IEnumerable<string> GetOptions(string input)
+    {
+        return Array.Empty<string>();
+    }
 }
