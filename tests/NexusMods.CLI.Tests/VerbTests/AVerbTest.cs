@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.CommandLine;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.CLI.DataOutputs;
 using NexusMods.Paths;
 
@@ -23,8 +24,8 @@ public abstract class AVerbTest
         using var scope = _provider.CreateScope();
         var logger = scope.ServiceProvider.GetRequiredService<LoggingRenderer>();
         LoggingRenderer.Logs.Value = new List<object>();
-        var builder = scope.ServiceProvider.GetRequiredService<CommandLineBuilder>();
-        var id = await builder.Run(new[] {"--noBanner"}.Concat(args).ToArray());
+        var builder = scope.ServiceProvider.GetRequiredService<CommandlineConfigurator>();
+        var id = await builder.MakeRoot().InvokeAsync(new[] { "--noBanner" }.Concat(args).ToArray());
         if (id != 0)
             throw new Exception($"Bad Run Result: {id}");
         LastLog = LoggingRenderer.Logs.Value!;

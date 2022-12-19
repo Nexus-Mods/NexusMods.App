@@ -17,7 +17,7 @@ public static class Services
     public static IServiceCollection AddCLI(this IServiceCollection services)
     {
         services.AddScoped<Configurator>();
-        services.AddScoped<CommandLineBuilder>();
+        services.AddScoped<CommandlineConfigurator>();
         services.AddSingleton<IOptionParser<AbsolutePath>, AbsolutePathParser>();
         services.AddSingleton<IOptionParser<IGame>, GameParser>();
         services.AddSingleton<IOptionParser<LoadoutMarker>, LoadoutMarkerParser>();

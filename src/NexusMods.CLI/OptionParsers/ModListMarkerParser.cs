@@ -20,6 +20,8 @@ public class LoadoutMarkerParser : IOptionParser<LoadoutMarker>
 
     public IEnumerable<string> GetOptions(string input)
     {
-        return Array.Empty<string>();
+        var byName = _manager.AllLoadouts
+            .Where(l => l.Value.Name.Contains(input, StringComparison.InvariantCultureIgnoreCase));
+        return byName.Select(t => t.Value.Name);
     }
 }

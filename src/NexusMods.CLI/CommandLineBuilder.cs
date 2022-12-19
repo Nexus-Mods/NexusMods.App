@@ -9,18 +9,18 @@ using NexusMods.Paths;
 
 namespace NexusMods.CLI;
 
-public class CommandLineBuilder
+public class CommandlineConfigurator
 {
     private static IServiceProvider _provider = null!;
-    private readonly ILogger<CommandLineBuilder> _logger;
+    private readonly ILogger<CommandlineConfigurator> _logger;
 
-    public CommandLineBuilder(ILogger<CommandLineBuilder> logger, IServiceProvider provider)
+    public CommandlineConfigurator(ILogger<CommandlineConfigurator> logger, IServiceProvider provider)
     {
         _logger = logger;
         _provider = provider;
     }
     
-    public async Task<int> Run(string[] args)
+    public RootCommand MakeRoot()
     {
         var root = new RootCommand();
         var renderOption = new Option<IRenderer>("--renderer", parseArgument:
@@ -41,15 +41,7 @@ public class CommandLineBuilder
             root.Add(MakeCommend(verb.Type, verb.Handler, verb.Definition));
         }
 
-        try
-        {
-            return await root.InvokeAsync(args);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogCritical(ex, "While executing command");
-            throw;
-        }
+        return root;
     }
 
     private Command MakeCommend(Type verbType, Func<object, Delegate> verbHandler, VerbDefinition definition)
