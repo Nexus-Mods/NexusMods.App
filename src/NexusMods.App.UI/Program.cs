@@ -1,21 +1,17 @@
 ﻿using Avalonia;
 using Avalonia.ReactiveUI;
 using System;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace NexusMods.App.UI;
 
-public class Program
+public class Startup
 {
-    // Initialization code. Don't use any Avalonia, third-party APIs or any
-    // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
-    // yet and stuff might break.
-    [STAThread]
-    public static void Main(string[] args) => BuildAvaloniaApp()
+    public static void Main(IServiceProvider provider, string[] args) => BuildAvaloniaApp(provider)
         .StartWithClassicDesktopLifetime(args);
-
-    // Avalonia configuration, don't remove; also used by visual designer.
-    public static AppBuilder BuildAvaloniaApp()
-        => AppBuilder.Configure<App>()
+    
+    public static AppBuilder BuildAvaloniaApp(IServiceProvider serviceProvider)
+        => AppBuilder.Configure<App>(serviceProvider.GetRequiredService<App>)
             .UsePlatformDetect()
             .LogToTrace()
             .UseReactiveUI();

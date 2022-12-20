@@ -11,6 +11,7 @@ public static class Services
     {
         c.AddTransient<MainWindow>();
         c.AddTransient<MainWindowViewModel>();
+        c.AddSingleton<App>();
         return c;
     }
     

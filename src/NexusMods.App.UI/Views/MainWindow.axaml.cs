@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using NexusMods.App.UI.ViewModels;
 
 namespace NexusMods.App.UI.Views;
 

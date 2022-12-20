@@ -11,6 +11,7 @@ using NexusMods.Games.DarkestDungeon;
 using NexusMods.StandardGameLocators;
 using NLog.Extensions.Logging;
 using NLog.Targets;
+using static NexusMods.App.UI.Startup;
 
 var host = Host.CreateDefaultBuilder(Environment.GetCommandLineArgs())
     .ConfigureLogging(AddLogging)
@@ -38,8 +39,7 @@ if (args.Length > 0)
 }
 else
 {
-    NexusMods.App.UI.Program.Main(args);
-
+    Main(host.Services, args);
     return 0;
 }
 
