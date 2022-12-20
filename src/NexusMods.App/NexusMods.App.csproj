@@ -9,6 +9,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Games\NexusMods.Games.DarkestDungeon\NexusMods.Games.DarkestDungeon.csproj" />
+      <ProjectReference Include="..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
       <ProjectReference Include="..\NexusMods.CLI\NexusMods.CLI.csproj" />
     </ItemGroup>
 
