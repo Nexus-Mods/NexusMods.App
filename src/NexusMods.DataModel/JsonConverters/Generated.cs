@@ -13,7 +13,7 @@ using NexusMods.DataModel.ArchiveContents;
 using NexusMods.FileExtractor.FileSignatures;
 
 public class NexusMods_DataModel_Abstractions_EntityConverter : JsonConverter<NexusMods.DataModel.Abstractions.Entity> {
-  public static void ConfigureServices(IServiceCollection services) {
+  public static IServiceCollection ConfigureServices(IServiceCollection services) {
     services.AddSingleton<JsonConverter, NexusMods_DataModel_Loadouts_ListRegistryConverter>();
     services.AddSingleton<JsonConverter, NexusMods_DataModel_Loadouts_ModConverter>();
     services.AddSingleton<JsonConverter, NexusMods_DataModel_Loadouts_LoadoutConverter>();
@@ -23,6 +23,7 @@ public class NexusMods_DataModel_Abstractions_EntityConverter : JsonConverter<Ne
     services.AddSingleton<JsonConverter, NexusMods_DataModel_ArchiveContents_AnalyzedArchiveConverter>();
     services.AddSingleton<JsonConverter, NexusMods_DataModel_ArchiveContents_FileContainedInConverter>();
     services.AddSingleton<JsonConverter, NexusMods_DataModel_Abstractions_EntityConverter>();
+    return services;
   }
   public override NexusMods.DataModel.Abstractions.Entity Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
     var cReader = reader;

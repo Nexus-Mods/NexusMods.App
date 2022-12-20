@@ -211,12 +211,13 @@ public class PolymorphicGenerator<T>
 
         c.Code($"public class {mungedName}Converter : JsonConverter<{type.FullName}> {{");
 
-        c.Code("public static void ConfigureServices(IServiceCollection services) {");
+        c.Code("public static IServiceCollection ConfigureServices(IServiceCollection services) {");
 
         foreach (var tp in ReverseRegistry.Keys)
             c.Code($"services.AddSingleton<JsonConverter, {tp.FullName!.Replace(".", "_")}Converter>();");
         c.Code($"services.AddSingleton<JsonConverter, {mungedName}Converter>();");
 
+        c.Code("return services;");
         c.Code("}");
 
         c.Code(

@@ -14,4 +14,5 @@ public interface IDataStore
     byte[]? GetRaw(ReadOnlySpan<byte> key, EntityCategory fileHashes);
     void PutRaw(ReadOnlySpan<byte> kSpan, ReadOnlySpan<byte> vSpan, EntityCategory fileHashes);
     IEnumerable<T> GetByPrefix<T>(Id prefix) where T : Entity;
+    IObservable<(Id Id, Entity Entity)> Changes { get; }
 }

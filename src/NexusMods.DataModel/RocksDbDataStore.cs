@@ -1,4 +1,6 @@
 ﻿using System.Buffers.Binary;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +19,9 @@ public class RocksDbDatastore : IDataStore
     private readonly RecyclableMemoryStreamManager _mmanager;
     private readonly Lazy<JsonSerializerOptions> _jsonOptions;
     private readonly TaskCompletionSource<RocksDb> _tsc;
+
+    private Subject<(Id Id, Entity Entity)> _changes = new();
+    public IObservable<(Id Id, Entity Entity)> Changes => _changes;
 
     public RocksDbDatastore(AbsolutePath path, IServiceProvider provider)
     {
@@ -70,7 +75,8 @@ public class RocksDbDatastore : IDataStore
             id.ToTaggedSpan(keySpan);
             _db.Result.Put(keySpan, data.AsSpan()[..(int)stream.Length]);
         }
-        
+
+        _changes.OnNext((id, value));
         return id;
     }
 
@@ -92,7 +98,7 @@ public class RocksDbDatastore : IDataStore
         {
             _db.Result.Put(keySpan, stream.GetBuffer().ToArray());
         }
-
+        _changes.OnNext((id, value));
     }
 
     public T? Get<T>(Id id) where T : Entity
