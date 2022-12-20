@@ -4,18 +4,21 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.App;
+using NexusMods.App.UI;
 using NexusMods.CLI;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.DarkestDungeon;
 using NexusMods.StandardGameLocators;
 using NLog.Extensions.Logging;
 using NLog.Targets;
+using static NexusMods.App.UI.Startup;
 
 var host = Host.CreateDefaultBuilder(Environment.GetCommandLineArgs())
     .ConfigureLogging(AddLogging)
     .ConfigureServices((_, services) =>
     {
         services.AddCLI()
+            .AddUI()
             .AddBethesdaGameStudios()
             .AddDarkestDungeon()
             .AddStandardGameLocators()
@@ -23,14 +26,22 @@ var host = Host.CreateDefaultBuilder(Environment.GetCommandLineArgs())
             .AddCLIVerbs();
     }).Build();
 
-var service = host.Services.GetRequiredService<CommandlineConfigurator>();
-var root = service.MakeRoot();
+if (args.Length > 0)
+{
+    var service = host.Services.GetRequiredService<CommandlineConfigurator>();
+    var root = service.MakeRoot();
 
-var builder = new CommandLineBuilder(root)
-    .UseDefaults()
-    .Build();
+    var builder = new CommandLineBuilder(root)
+        .UseDefaults()
+        .Build();
 
-return await builder.InvokeAsync(args);
+    return await builder.InvokeAsync(args);
+}
+else
+{
+    Main(host.Services, args);
+    return 0;
+}
 
 
 void AddLogging(ILoggingBuilder loggingBuilder)
