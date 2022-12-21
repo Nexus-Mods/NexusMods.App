@@ -32,7 +32,7 @@ public static class Services
         coll.AddSingleton<JsonConverter, EntityLinkConverterFactory>();
         coll.AddSingleton(typeof(EntityLinkConverter<>));
         
-        coll.AddSingleton<IDataStore>(s => new RocksDbDatastore(baseFolder.Value.Combine("DataModel"), s));
+        coll.AddSingleton<IDataStore>(s => new LMDBDataStore(baseFolder.Value.Combine("DataModel_LMDB"), s));
         coll.AddSingleton(s => new ArchiveManager(s.GetRequiredService<ILogger<ArchiveManager>>(),
             new []{baseFolder.Value.Combine("Archives")},
             s.GetRequiredService<IDataStore>(),
