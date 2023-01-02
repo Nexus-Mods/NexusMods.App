@@ -3,7 +3,7 @@
     Title="NexusMods.App - UI Sandbox"
     Width="800"
     d:DesignHeight="450"
-    d:DesignWidth="900"
+    d:DesignWidth="1200"
     mc:Ignorable="d"
     x:Class="NexusMods.UI.Theme.SampleApp.MainWindow"
     xmlns="https://github.com/avaloniaui"
@@ -11,22 +11,10 @@
     xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition MaxWidth="130" />
-            <ColumnDefinition MaxWidth="130" />
-            <ColumnDefinition MaxWidth="130" />
-            <ColumnDefinition MaxWidth="130" />
-            <ColumnDefinition MaxWidth="130" />
-            <ColumnDefinition MaxWidth="130" />
-            <ColumnDefinition MaxWidth="130" />
-        </Grid.ColumnDefinitions>
+    <Grid
+        ColumnDefinitions="160, 130, 3, 130, 3, 130, 3, 130, 3, 130, 3, 130, 3, 130"
+        Margin="10"
+        RowDefinitions="Auto, 3, Auto, 3, Auto, 3, Auto">
         <!--  Buttons  -->
         <TextBlock
             Classes="Small"
@@ -36,33 +24,33 @@
         </TextBlock>
         <TextBlock
             Classes="Small"
-            Grid.Column="2"
+            Grid.Column="3"
             Grid.Row="0">
             PRIMARY
         </TextBlock>
 
         <TextBlock
             Classes="Small"
-            Grid.Column="3"
+            Grid.Column="5"
             Grid.Row="0">
             PRIMARY OUTLINE + ICON
         </TextBlock>
         <TextBlock
             Classes="Small"
-            Grid.Column="4"
+            Grid.Column="7"
             Grid.Row="0">
             PRIMARY OUTLINE
         </TextBlock>
 
         <TextBlock
             Classes="Small"
-            Grid.Column="5"
+            Grid.Column="9"
             Grid.Row="0">
             SECONDARY OUTLINE + ICON
         </TextBlock>
         <TextBlock
             Classes="Small"
-            Grid.Column="6"
+            Grid.Column="11"
             Grid.Row="0">
             SECONDARY OUTLINE
         </TextBlock>
@@ -70,13 +58,13 @@
         <TextBlock
             Classes="Small"
             Grid.Column="0"
-            Grid.Row="1">
+            Grid.Row="2">
             DEFAULT
         </TextBlock>
         <TextBlock
             Classes="Small"
             Grid.Column="0"
-            Grid.Row="2">
+            Grid.Row="4">
             DISABLED
         </TextBlock>
 
@@ -84,7 +72,7 @@
         <Button
             Classes="Primary Icon"
             Grid.Column="1"
-            Grid.Row="1">
+            Grid.Row="2">
             <StackPanel Orientation="Horizontal">
                 <icons:Icon FontSize="20" Value="mdi-content-save" />
                 <TextBlock>BUTTON</TextBlock>
@@ -93,7 +81,7 @@
         <Button
             Classes="Primary Icon"
             Grid.Column="1"
-            Grid.Row="2"
+            Grid.Row="4"
             IsEnabled="False">
             <StackPanel Orientation="Horizontal">
                 <icons:Icon FontSize="20" Value="mdi-content-save" />
@@ -103,15 +91,15 @@
 
         <Button
             Classes="Primary"
-            Grid.Column="2"
-            Grid.Row="1">
+            Grid.Column="3"
+            Grid.Row="2">
             <TextBlock>BUTTON</TextBlock>
         </Button>
 
         <Button
             Classes="Primary"
-            Grid.Column="2"
-            Grid.Row="2"
+            Grid.Column="3"
+            Grid.Row="4"
             IsEnabled="False">
             <TextBlock>BUTTON</TextBlock>
         </Button>
@@ -119,8 +107,8 @@
 
         <Button
             Classes="PrimaryOutline"
-            Grid.Column="3"
-            Grid.Row="1">
+            Grid.Column="5"
+            Grid.Row="2">
             <StackPanel Orientation="Horizontal">
                 <icons:Icon FontSize="20" Value="mdi-content-save" />
                 <TextBlock>BUTTON</TextBlock>
@@ -128,8 +116,8 @@
         </Button>
         <Button
             Classes="PrimaryOutline"
-            Grid.Column="3"
-            Grid.Row="2"
+            Grid.Column="5"
+            Grid.Row="4"
             IsEnabled="False">
             <StackPanel Orientation="Horizontal">
                 <icons:Icon FontSize="20" Value="mdi-content-save" />
@@ -139,22 +127,22 @@
 
         <Button
             Classes="PrimaryOutline"
-            Grid.Column="4"
-            Grid.Row="1">
+            Grid.Column="7"
+            Grid.Row="2">
             <TextBlock>BUTTON</TextBlock>
         </Button>
         <Button
             Classes="PrimaryOutline"
-            Grid.Column="4"
-            Grid.Row="2"
+            Grid.Column="7"
+            Grid.Row="4"
             IsEnabled="False">
             <TextBlock>BUTTON</TextBlock>
         </Button>
 
         <Button
             Classes="Secondary"
-            Grid.Column="5"
-            Grid.Row="1">
+            Grid.Column="9"
+            Grid.Row="2">
             <StackPanel Orientation="Horizontal">
                 <icons:Icon FontSize="20" Value="mdi-content-save" />
                 <TextBlock>BUTTON</TextBlock>
@@ -162,8 +150,8 @@
         </Button>
         <Button
             Classes="Secondary"
-            Grid.Column="5"
-            Grid.Row="2"
+            Grid.Column="9"
+            Grid.Row="4"
             IsEnabled="False">
             <StackPanel Orientation="Horizontal">
                 <icons:Icon FontSize="20" Value="mdi-content-save" />
