@@ -4,9 +4,6 @@
     xmlns:material="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-
-
-
     <Style Selector="Button">
         <Setter Property="Height" Value="36" />
         <Setter Property="BorderThickness" Value="0" />
@@ -29,11 +26,11 @@
         <Setter Property="Background" Value="{DynamicResource BrandPrimaryBrush}" />
     </Style>
 
-    <Style Selector="Button.Primary:pointerover">
+    <Style Selector="Button.Primary:pointerover /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource BrandPrimaryLighterBrush}" />
     </Style>
 
-    <Style Selector="Button.Primary:pressed">
+    <Style Selector="Button.Primary:pressed /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource BrandPrimaryDarkerBrush}" />
     </Style>
 
@@ -53,13 +50,14 @@
         <Setter Property="Background" Value="{DynamicResource BrandPrimaryBrush}" />
     </Style>
 
-    <Style Selector="Button.PrimaryWithIcon:pointerover">
+    <Style Selector="Button.PrimaryWithIcon:pointerover /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource BrandPrimaryLighterBrush}" />
     </Style>
 
-    <Style Selector="Button.PrimaryWithIcon:pressed">
+    <Style Selector="Button.PrimaryWithIcon:pressed   /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource BrandPrimaryDarkerBrush}" />
     </Style>
+
 
     <Style Selector="Button.PrimaryOutline">
         <Setter Property="Background" Value="{DynamicResource BrandSecondary}" />
@@ -67,8 +65,13 @@
         <Setter Property="BorderBrush" Value="{DynamicResource BrandPrimaryBrush}" />
     </Style>
 
-    <Style Selector="Button.PrimaryOutline:pointerover">
+    <Style Selector="Button.PrimaryOutline:pointerover  /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource BrandSecondaryLighter}" />
         <Setter Property="BorderBrush" Value="{DynamicResource BrandPrimaryLighterBrush}" />
+    </Style>
+
+    <Style Selector="Button.PrimaryOutline:pointerover  /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BrandSecondaryDarker}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BrandPrimaryDarkerBrush}" />
     </Style>
 </Styles>

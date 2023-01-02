@@ -1,5 +1,8 @@
 <Window
-    Title="NexusMods.UI.Theme.SampleApp"
+    ExtendClientAreaToDecorationsHint="True"
+    Height="450"
+    Title="NexusMods.App - UI Sandbox"
+    Width="800"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d"
@@ -29,7 +32,7 @@
         <Label Grid.Column="2" Grid.Row="0">PRIMARY</Label>
 
         <Label Grid.Column="3" Grid.Row="0">PRIMARY OUTLINE + ICON</Label>
-        <Label Grid.Column="4" Grid.Row="0">PRIMARY</Label>
+        <Label Grid.Column="4" Grid.Row="0">PRIMARY OUTLINE</Label>
 
         <Label Grid.Column="0" Grid.Row="1">DEFAULT</Label>
         <Label Grid.Column="0" Grid.Row="2">DISABLED</Label>
@@ -46,35 +49,28 @@
         </Button>
         <Button
             Classes="PrimaryWithIcon"
-            Grid.Column="2"
+            Grid.Column="1"
             Grid.Row="2"
             IsEnabled="False">
             <StackPanel Orientation="Horizontal">
-                <!--<avalonia:MaterialIcon FontSize="60" Kind="ContentSave" />-->
                 <icons:Icon FontSize="20" Value="mdi-content-save" />
                 <TextBlock>BUTTON</TextBlock>
             </StackPanel>
         </Button>
 
         <Button
-            Classes="PrimaryWithIcon"
+            Classes="Primary"
             Grid.Column="2"
             Grid.Row="1">
-            <StackPanel Orientation="Horizontal">
-                <icons:Icon FontSize="20" Value="mdi-content-save" />
-                <TextBlock>BUTTON</TextBlock>
-            </StackPanel>
+            <TextBlock>BUTTON</TextBlock>
         </Button>
+
         <Button
-            Classes="PrimaryWithIcon"
+            Classes="Primary"
             Grid.Column="2"
             Grid.Row="2"
             IsEnabled="False">
-            <StackPanel Orientation="Horizontal">
-                <!--<avalonia:MaterialIcon FontSize="60" Kind="ContentSave" />-->
-                <icons:Icon FontSize="20" Value="mdi-content-save" />
-                <TextBlock>BUTTON</TextBlock>
-            </StackPanel>
+            <TextBlock>BUTTON</TextBlock>
         </Button>
 
 
@@ -93,7 +89,6 @@
             Grid.Row="2"
             IsEnabled="False">
             <StackPanel Orientation="Horizontal">
-                <!--<avalonia:MaterialIcon FontSize="60" Kind="ContentSave" />-->
                 <icons:Icon FontSize="20" Value="mdi-content-save" />
                 <TextBlock>BUTTON</TextBlock>
             </StackPanel>
