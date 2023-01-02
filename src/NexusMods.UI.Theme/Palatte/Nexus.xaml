@@ -19,8 +19,17 @@
         <SolidColorBrush Color="{DynamicResource BrandPrimaryLighter}" x:Key="BrandSecondaryLighterBrush" />
         <SolidColorBrush Color="{DynamicResource BrandPrimaryDarker}" x:Key="BrandSecondaryDarkerBrush" />
 
+        <Color x:Key="BrandTertiary">#DDDDDD</Color>
+        <Color x:Key="BrandTertiaryLighter">#F1F1F1</Color>
+        <Color x:Key="BrandTertiaryDarker">#C9C9C9</Color>
+
+        <SolidColorBrush Color="{DynamicResource BrandTertiary}" x:Key="BrandTertiaryBrush" />
+        <SolidColorBrush Color="{DynamicResource BrandTertiaryLighter}" x:Key="BrandTertiaryLighterBrush" />
+        <SolidColorBrush Color="{DynamicResource BrandTertiaryDarker}" x:Key="BrandTertiaryDarkerBrush" />
+
 
         <Color x:Key="BrandWhite">#FFFFFF</Color>
+        <Color x:Key="FontLightPrimary">#303030</Color>
 
 
         <Color x:Key="ThemeBackgroundColor">#2b2d2f</Color>

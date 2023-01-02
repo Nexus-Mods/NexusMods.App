@@ -5,21 +5,25 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Style Selector="Button">
-        <Setter Property="Height" Value="36" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Padding" Value="16, 2, 16, 2" />
         <Setter Property="Margin" Value="0 0" />
+        <Setter Property="Padding" Value="16, 5" />
         <Setter Property="CornerRadius" Value="4" />
+    </Style>
+
+    <!--  Disable the scaling found in Fluent buttons  -->
+    <Style Selector="Button:pressed">
+        <Setter Property="RenderTransform" Value="scale(1.0)" />
     </Style>
 
     <Style Selector="Button TextBlock">
         <Setter Property="FontFamily" Value="{DynamicResource FontPrimary}" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
         <Setter Property="FontWeight" Value="600" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="HorizontalAlignment" Value="Center" />
-        <Setter Property="Margin" Value="0, 2, 0, 2 " />
-        <Setter Property="FontSize" Value="11" />
+        <Setter Property="LineHeight" Value="14" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="LetterSpacing" Value="0.7" />
+        <Setter Property="Margin" Value="5" />
     </Style>
 
     <Style Selector="Button.Primary">
@@ -32,37 +36,21 @@
 
     <Style Selector="Button.Primary:pressed /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource BrandPrimaryDarkerBrush}" />
+
     </Style>
 
 
-    <Style Selector="Button.PrimaryWithIcon">
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
-        <Setter Property="CornerRadius" Value="4" />
-    </Style>
 
-    <Style Selector="Button.PrimaryWithIcon icons|Icon">
+    <Style Selector="Button icons|Icon">
         <Setter Property="FontSize" Value="16" />
         <Setter Property="Margin" Value="0, 0, 6, 0" />
     </Style>
-
-    <Style Selector="Button.PrimaryWithIcon">
-        <Setter Property="Background" Value="{DynamicResource BrandPrimaryBrush}" />
-    </Style>
-
-    <Style Selector="Button.PrimaryWithIcon:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource BrandPrimaryLighterBrush}" />
-    </Style>
-
-    <Style Selector="Button.PrimaryWithIcon:pressed   /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource BrandPrimaryDarkerBrush}" />
-    </Style>
-
 
     <Style Selector="Button.PrimaryOutline">
         <Setter Property="Background" Value="{DynamicResource BrandSecondary}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="BorderBrush" Value="{DynamicResource BrandPrimaryBrush}" />
+        <Setter Property="Padding" Value="16, 4" />
     </Style>
 
     <Style Selector="Button.PrimaryOutline:pointerover  /template/ ContentPresenter#PART_ContentPresenter">
@@ -70,8 +58,28 @@
         <Setter Property="BorderBrush" Value="{DynamicResource BrandPrimaryLighterBrush}" />
     </Style>
 
-    <Style Selector="Button.PrimaryOutline:pointerover  /template/ ContentPresenter#PART_ContentPresenter">
+    <Style Selector="Button.PrimaryOutline:pressed  /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource BrandSecondaryDarker}" />
         <Setter Property="BorderBrush" Value="{DynamicResource BrandPrimaryDarkerBrush}" />
+    </Style>
+
+    <Style Selector="Button.Secondary">
+        <Setter Property="Background" Value="{DynamicResource BrandTertiaryBrush}" />
+    </Style>
+
+    <Style Selector="Button.Secondary TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource FontLightPrimary}" />
+    </Style>
+
+    <Style Selector="Button.Secondary icons|Icon">
+        <Setter Property="Foreground" Value="{DynamicResource FontLightPrimary}" />
+    </Style>
+
+    <Style Selector="Button.Secondary:pointerover  /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BrandTertiaryLighter}" />
+    </Style>
+
+    <Style Selector="Button.Secondary:pressed  /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BrandTertiaryDarker}" />
     </Style>
 </Styles>
