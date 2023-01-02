@@ -1,0 +1,118 @@
+<Window
+    Title="NexusMods.UI.Theme.SampleApp"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d"
+    x:Class="NexusMods.UI.Theme.SampleApp.MainWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <!--  Buttons  -->
+        <Label Grid.Column="1" Grid.Row="0">PRIMARY + ICON</Label>
+        <Label Grid.Column="2" Grid.Row="0">PRIMARY</Label>
+
+        <Label Grid.Column="3" Grid.Row="0">PRIMARY OUTLINE + ICON</Label>
+        <Label Grid.Column="4" Grid.Row="0">PRIMARY</Label>
+
+        <Label Grid.Column="0" Grid.Row="1">DEFAULT</Label>
+        <Label Grid.Column="0" Grid.Row="2">DISABLED</Label>
+
+
+        <Button
+            Classes="PrimaryWithIcon"
+            Grid.Column="1"
+            Grid.Row="1">
+            <StackPanel Orientation="Horizontal">
+                <icons:Icon FontSize="20" Value="mdi-content-save" />
+                <TextBlock>BUTTON</TextBlock>
+            </StackPanel>
+        </Button>
+        <Button
+            Classes="PrimaryWithIcon"
+            Grid.Column="2"
+            Grid.Row="2"
+            IsEnabled="False">
+            <StackPanel Orientation="Horizontal">
+                <!--<avalonia:MaterialIcon FontSize="60" Kind="ContentSave" />-->
+                <icons:Icon FontSize="20" Value="mdi-content-save" />
+                <TextBlock>BUTTON</TextBlock>
+            </StackPanel>
+        </Button>
+
+        <Button
+            Classes="PrimaryWithIcon"
+            Grid.Column="2"
+            Grid.Row="1">
+            <StackPanel Orientation="Horizontal">
+                <icons:Icon FontSize="20" Value="mdi-content-save" />
+                <TextBlock>BUTTON</TextBlock>
+            </StackPanel>
+        </Button>
+        <Button
+            Classes="PrimaryWithIcon"
+            Grid.Column="2"
+            Grid.Row="2"
+            IsEnabled="False">
+            <StackPanel Orientation="Horizontal">
+                <!--<avalonia:MaterialIcon FontSize="60" Kind="ContentSave" />-->
+                <icons:Icon FontSize="20" Value="mdi-content-save" />
+                <TextBlock>BUTTON</TextBlock>
+            </StackPanel>
+        </Button>
+
+
+        <Button
+            Classes="PrimaryOutlineineWithIcon"
+            Grid.Column="3"
+            Grid.Row="1">
+            <StackPanel Orientation="Horizontal">
+                <icons:Icon FontSize="20" Value="mdi-content-save" />
+                <TextBlock>BUTTON</TextBlock>
+            </StackPanel>
+        </Button>
+        <Button
+            Classes="PrimaryOutlineWithIcon"
+            Grid.Column="3"
+            Grid.Row="2"
+            IsEnabled="False">
+            <StackPanel Orientation="Horizontal">
+                <!--<avalonia:MaterialIcon FontSize="60" Kind="ContentSave" />-->
+                <icons:Icon FontSize="20" Value="mdi-content-save" />
+                <TextBlock>BUTTON</TextBlock>
+            </StackPanel>
+        </Button>
+
+        <Button
+            Classes="PrimaryOutline"
+            Grid.Column="4"
+            Grid.Row="1">
+            <TextBlock>BUTTON</TextBlock>
+        </Button>
+        <Button
+            Classes="PrimaryOutline"
+            Grid.Column="4"
+            Grid.Row="2"
+            IsEnabled="False">
+            <TextBlock>BUTTON</TextBlock>
+        </Button>
+
+
+    </Grid>
+</Window>

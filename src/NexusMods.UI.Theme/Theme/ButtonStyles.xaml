@@ -1,0 +1,74 @@
+﻿<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:material="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+
+
+
+    <Style Selector="Button">
+        <Setter Property="Height" Value="36" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="16, 2, 16, 2" />
+        <Setter Property="Margin" Value="0 0" />
+        <Setter Property="CornerRadius" Value="4" />
+    </Style>
+
+    <Style Selector="Button TextBlock">
+        <Setter Property="FontFamily" Value="{DynamicResource FontPrimary}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+        <Setter Property="FontWeight" Value="600" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="Margin" Value="0, 2, 0, 2 " />
+        <Setter Property="FontSize" Value="11" />
+    </Style>
+
+    <Style Selector="Button.Primary">
+        <Setter Property="Background" Value="{DynamicResource BrandPrimaryBrush}" />
+    </Style>
+
+    <Style Selector="Button.Primary:pointerover">
+        <Setter Property="Background" Value="{DynamicResource BrandPrimaryLighterBrush}" />
+    </Style>
+
+    <Style Selector="Button.Primary:pressed">
+        <Setter Property="Background" Value="{DynamicResource BrandPrimaryDarkerBrush}" />
+    </Style>
+
+
+    <Style Selector="Button.PrimaryWithIcon">
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+        <Setter Property="CornerRadius" Value="4" />
+    </Style>
+
+    <Style Selector="Button.PrimaryWithIcon icons|Icon">
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="Margin" Value="0, 0, 6, 0" />
+    </Style>
+
+    <Style Selector="Button.PrimaryWithIcon">
+        <Setter Property="Background" Value="{DynamicResource BrandPrimaryBrush}" />
+    </Style>
+
+    <Style Selector="Button.PrimaryWithIcon:pointerover">
+        <Setter Property="Background" Value="{DynamicResource BrandPrimaryLighterBrush}" />
+    </Style>
+
+    <Style Selector="Button.PrimaryWithIcon:pressed">
+        <Setter Property="Background" Value="{DynamicResource BrandPrimaryDarkerBrush}" />
+    </Style>
+
+    <Style Selector="Button.PrimaryOutline">
+        <Setter Property="Background" Value="{DynamicResource BrandSecondary}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BrandPrimaryBrush}" />
+    </Style>
+
+    <Style Selector="Button.PrimaryOutline:pointerover">
+        <Setter Property="Background" Value="{DynamicResource BrandSecondaryLighter}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BrandPrimaryLighterBrush}" />
+    </Style>
+</Styles>
