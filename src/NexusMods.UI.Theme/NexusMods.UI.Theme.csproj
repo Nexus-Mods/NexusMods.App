@@ -15,7 +15,9 @@
 
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.0.0-preview4" />
+    <PackageReference Include="Avalonia.Controls.TreeDataGrid" Version="11.0.0-preview1" />
     <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0-preview4" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview4" />
     <PackageReference Include="Avalonia.Themes.Simple" Version="11.0.0-preview4" />
     <PackageReference Include="Material.Avalonia" Version="3.0.0-avalonia11-preview2.137-nightly" />
     <PackageReference Include="Material.Icons.Avalonia" Version="1.2.0" />

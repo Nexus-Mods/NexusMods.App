@@ -1,4 +1,5 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <StyleInclude Source="avares://NexusMods.UI.Theme/Theme/ButtonStyles.xaml" />
     <StyleInclude Source="avares://NexusMods.UI.Theme/Theme/LabelStyles.xaml" />
+    <StyleInclude Source="avares://NexusMods.UI.Theme/Theme/TextBlockStyles.xaml" />
 </Styles>
