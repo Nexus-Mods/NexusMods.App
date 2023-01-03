@@ -379,5 +379,11 @@
                 <!--#endregion-->
             </StackPanel>
         </StackPanel>
+
+        <StackPanel HorizontalAlignment="Left" Width="400">
+            <TextBlock Classes="H1">Input</TextBlock>
+            <TextBox>Input Text Here</TextBox>
+        </StackPanel>
+
     </StackPanel>
 </Window>

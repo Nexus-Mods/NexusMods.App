@@ -11,6 +11,8 @@
     <None Remove="Fonts\Montserrat\Montserrat-VariableFont_wght.ttf" />
     <AvaloniaResource Include="Fonts\Montserrat\Montserrat-VariableFont_wght.ttf" />
     <None Remove="Icons\save.svg" />
+    <None Remove="Fonts\Roboto\Roboto-Regular.ttf" />
+    <AvaloniaResource Include="Fonts\Roboto\Roboto-Regular.ttf" />
   </ItemGroup>
 
   <ItemGroup>
