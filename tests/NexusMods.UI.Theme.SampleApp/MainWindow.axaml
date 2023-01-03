@@ -2,8 +2,8 @@
     Height="450"
     Title="NexusMods.App - UI Sandbox"
     Width="800"
-    d:DesignHeight="450"
-    d:DesignWidth="1200"
+    d:DesignHeight="1600"
+    d:DesignWidth="1600"
     mc:Ignorable="d"
     x:Class="NexusMods.UI.Theme.SampleApp.MainWindow"
     xmlns="https://github.com/avaloniaui"
@@ -12,7 +12,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Grid
-        ColumnDefinitions="160, 130, 3, 130, 3, 130, 3, 130, 3, 130, 3, 130, 3, 130"
+        ColumnDefinitions="160, 130, 3, 130, 3, 130, 3, 130, 3, 130, 3, 130, 3, 130, 3, 130, 3, 130, 3, 130, 3, 130, 3, 130, 3, 130"
         Margin="10"
         RowDefinitions="Auto, 3, Auto, 3, Auto, 3, Auto">
         <!--  Buttons  -->
@@ -46,13 +46,52 @@
             Classes="Small"
             Grid.Column="9"
             Grid.Row="0">
-            SECONDARY OUTLINE + ICON
+            SECONDARY + ICON
         </TextBlock>
         <TextBlock
             Classes="Small"
             Grid.Column="11"
             Grid.Row="0">
+            SECONDARY
+        </TextBlock>
+
+        <TextBlock
+            Classes="Small"
+            Grid.Column="13"
+            Grid.Row="0">
+            SECONDARY OUTLINE + ICON
+        </TextBlock>
+        <TextBlock
+            Classes="Small"
+            Grid.Column="15"
+            Grid.Row="0">
             SECONDARY OUTLINE
+        </TextBlock>
+
+        <TextBlock
+            Classes="Small"
+            Grid.Column="17"
+            Grid.Row="0">
+            TERTIARY + ICON
+        </TextBlock>
+        <TextBlock
+            Classes="Small"
+            Grid.Column="19"
+            Grid.Row="0">
+            TERTIARY
+        </TextBlock>
+
+        <TextBlock
+            Classes="Small"
+            Grid.Column="21"
+            Grid.Row="0">
+            SUCCESS + ICON
+        </TextBlock>
+        <TextBlock
+            Classes="Small"
+            Grid.Column="23"
+            Grid.Row="0">
+            SUCCESS
         </TextBlock>
 
         <TextBlock
@@ -158,5 +197,124 @@
                 <TextBlock>BUTTON</TextBlock>
             </StackPanel>
         </Button>
+
+        <Button
+            Classes="Secondary"
+            Grid.Column="11"
+            Grid.Row="2">
+            <TextBlock>BUTTON</TextBlock>
+        </Button>
+        <Button
+            Classes="Secondary"
+            Grid.Column="11"
+            Grid.Row="4"
+            IsEnabled="False">
+            <TextBlock>BUTTON</TextBlock>
+        </Button>
+
+        <Button
+            Classes="SecondaryOutlined"
+            Grid.Column="13"
+            Grid.Row="2">
+            <StackPanel Orientation="Horizontal">
+                <icons:Icon FontSize="20" Value="mdi-content-save" />
+                <TextBlock>BUTTON</TextBlock>
+            </StackPanel>
+        </Button>
+        <Button
+            Classes="SecondaryOutlined"
+            Grid.Column="13"
+            Grid.Row="4"
+            IsEnabled="False">
+            <StackPanel Orientation="Horizontal">
+                <icons:Icon FontSize="20" Value="mdi-content-save" />
+                <TextBlock>BUTTON</TextBlock>
+            </StackPanel>
+        </Button>
+
+        <Button
+            Classes="SecondaryOutlined"
+            Grid.Column="15"
+            Grid.Row="2">
+            <TextBlock>BUTTON</TextBlock>
+        </Button>
+        <Button
+            Classes="SecondaryOutlined"
+            Grid.Column="15"
+            Grid.Row="4"
+            IsEnabled="False">
+            <TextBlock>BUTTON</TextBlock>
+        </Button>
+
+
+        <Button
+            Classes="Tertiary"
+            Grid.Column="17"
+            Grid.Row="2">
+            <StackPanel Orientation="Horizontal">
+                <icons:Icon FontSize="20" Value="mdi-content-save" />
+                <TextBlock>BUTTON</TextBlock>
+            </StackPanel>
+        </Button>
+        <Button
+            Classes="Tertiary"
+            Grid.Column="17"
+            Grid.Row="4"
+            IsEnabled="False">
+            <StackPanel Orientation="Horizontal">
+                <icons:Icon FontSize="20" Value="mdi-content-save" />
+                <TextBlock>BUTTON</TextBlock>
+            </StackPanel>
+        </Button>
+
+        <Button
+            Classes="Tertiary"
+            Grid.Column="19"
+            Grid.Row="2">
+            <TextBlock>BUTTON</TextBlock>
+        </Button>
+        <Button
+            Classes="Tertiary"
+            Grid.Column="19"
+            Grid.Row="4"
+            IsEnabled="False">
+            <TextBlock>BUTTON</TextBlock>
+        </Button>
+
+        <Button
+            Classes="Success"
+            Grid.Column="21"
+            Grid.Row="2">
+            <StackPanel Orientation="Horizontal">
+                <icons:Icon FontSize="20" Value="mdi-content-save" />
+                <TextBlock>BUTTON</TextBlock>
+            </StackPanel>
+        </Button>
+        <Button
+            Classes="Success"
+            Grid.Column="21"
+            Grid.Row="4"
+            IsEnabled="False">
+            <StackPanel Orientation="Horizontal">
+                <icons:Icon FontSize="20" Value="mdi-content-save" />
+                <TextBlock>BUTTON</TextBlock>
+            </StackPanel>
+        </Button>
+
+        <Button
+            Classes="Success"
+            Grid.Column="23"
+            Grid.Row="2">
+            <TextBlock>BUTTON</TextBlock>
+        </Button>
+        <Button
+            Classes="Success"
+            Grid.Column="23"
+            Grid.Row="4"
+            IsEnabled="False">
+            <TextBlock>BUTTON</TextBlock>
+        </Button>
+
+
     </Grid>
 </Window>

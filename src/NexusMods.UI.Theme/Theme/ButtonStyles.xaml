@@ -85,4 +85,90 @@
     <Style Selector="Button.Secondary:pressed  /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource BrandTertiaryDarker}" />
     </Style>
+
+    <Style Selector="Button.Secondary:disabled /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BrandTertiaryLighter}" />
+        <Setter Property="Opacity" Value="40" />
+    </Style>
+
+    <Style Selector="Button.SecondaryOutlined">
+        <Setter Property="Background" Value="{DynamicResource BrandSecondaryDarker}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="Button.SecondaryOutlined TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="Button.SecondaryOutlined icons|Icon">
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="Button.SecondaryOutlined:pointerover  /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BrandSecondaryLighter}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="Button.SecondaryOutlined:pressed  /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BrandSecondaryLighter}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="Button.SecondaryOutlined:disabled /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BrandSecondaryDarker}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BrandWhite}" />
+        <Setter Property="Opacity" Value="40" />
+    </Style>
+
+    <Style Selector="Button.Tertiary">
+        <Setter Property="Background" Value="{DynamicResource BrandSecondaryDarker}" />
+    </Style>
+
+    <Style Selector="Button.Tertiary TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="Button.Tertiary icons|Icon">
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="Button.Tertiary:pointerover  /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BrandSecondaryLighter}" />
+    </Style>
+
+    <Style Selector="Button.Tertiary:pressed  /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BrandSecondaryLighter}" />
+    </Style>
+
+    <Style Selector="Button.Tertiary:disabled /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BrandSecondaryDarker}" />
+        <Setter Property="Opacity" Value="40" />
+    </Style>
+
+    <Style Selector="Button.Success">
+        <Setter Property="Background" Value="{DynamicResource StatusSuccess}" />
+    </Style>
+
+    <Style Selector="Button.Success TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="Button.Success icons|Icon">
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="Button.Success:pointerover  /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource StatusSuccessLighter}" />
+    </Style>
+
+    <Style Selector="Button.Success:pressed  /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource StatusSuccessDarker}" />
+    </Style>
+
+    <Style Selector="Button.Success:disabled /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource StatusSuccess}" />
+        <Setter Property="Opacity" Value="40" />
+    </Style>
+
 </Styles>
