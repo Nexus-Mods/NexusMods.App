@@ -1,42 +1,34 @@
-﻿using System.Buffers.Binary;
-using System.Text;
+﻿using System.Reactive.Subjects;
 using System.Text.Json;
-using Microsoft.Extensions.DependencyInjection;
+using LightningDB;
 using Microsoft.IO;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveContents;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using RocksDbSharp;
 
 namespace NexusMods.DataModel;
 
-public class RocksDbDatastore : IDataStore
+public class LMDBDataStore : IDataStore
 {
-    private readonly Task<RocksDb> _db;
+    private readonly LightningEnvironment _db;
     private readonly RecyclableMemoryStreamManager _mmanager;
     private readonly Lazy<JsonSerializerOptions> _jsonOptions;
-    private readonly TaskCompletionSource<RocksDb> _tsc;
 
-    public RocksDbDatastore(AbsolutePath path, IServiceProvider provider)
+    private Subject<(Id Id, Entity Entity)> _changes = new();
+    public IObservable<(Id Id, Entity Entity)> Changes => _changes;
+
+    public LMDBDataStore(AbsolutePath path, IServiceProvider provider)
     {
         var settings = new DbOptions();
         settings.SetCreateIfMissing();
 
-        _tsc = new TaskCompletionSource<RocksDb>();
-        new Thread(() =>
-        {
-            try
-            {
-                _tsc.TrySetResult(RocksDb.Open(settings, path.ToString()));
-            }
-            catch (Exception ex)
-            {
-                _tsc.SetException(ex);
-            }
-        }).Start();
-        _db = _tsc.Task;
+        _db = new LightningEnvironment(path.ToString());
+        _db.Open();
         
+        
+
         _mmanager = new RecyclableMemoryStreamManager();
         
         // Make this lazy to avoid the cycle reference of store -> options -> converter -> store
@@ -59,7 +51,11 @@ public class RocksDbDatastore : IDataStore
             id = new Id64(value.Category, hash);
             Span<byte> keySpan = stackalloc byte[id.SpanSize + 1];
             id.ToTaggedSpan(keySpan);
-            _db.Result.Put(keySpan, span[..(int)stream.Length]);
+
+            using var tx = _db.BeginTransaction();
+            using var db = tx.OpenDatabase();
+            tx.Put(db, keySpan, span[..(int)stream.Length]);
+            tx.Commit();
         }
         else
         {
@@ -68,9 +64,14 @@ public class RocksDbDatastore : IDataStore
             id = new Id64(value.Category, hash);
             Span<byte> keySpan = stackalloc byte[id.SpanSize + 1];
             id.ToTaggedSpan(keySpan);
-            _db.Result.Put(keySpan, data.AsSpan()[..(int)stream.Length]);
+            
+            using var tx = _db.BeginTransaction();
+            using var db = tx.OpenDatabase();
+            tx.Put(db, keySpan, data.AsSpan()[..(int)stream.Length]);
+            tx.Commit();
         }
-        
+
+        _changes.OnNext((id, value));
         return id;
     }
 
@@ -82,29 +83,39 @@ public class RocksDbDatastore : IDataStore
         var span = (ReadOnlySpan<byte>)stream.GetSpan();
         Span<byte> keySpan = stackalloc byte[id.SpanSize + 1];
         id.ToTaggedSpan(keySpan);
+        using var tx = _db.BeginTransaction();
+        using var db = tx.OpenDatabase();
         
         // Span returned may be smaller then the entire size if the buffer had to be resized
         if (span.Length >= stream.Length)
         {
-            _db.Result.Put(keySpan, span[..(int)stream.Length]);
+            tx.Put(db, keySpan, span[..(int)stream.Length]);
         }
         else
         {
-            _db.Result.Put(keySpan, stream.GetBuffer().ToArray());
+            tx.Put(db, keySpan, stream.GetBuffer().ToArray());
         }
-
+        tx.Commit();
+        _changes.OnNext((id, value));
     }
 
     public T? Get<T>(Id id) where T : Entity
     {
         Span<byte> keySpan = stackalloc byte[id.SpanSize + 1];
         id.ToTaggedSpan(keySpan);
-        return _db.Result.Get(keySpan, str => 
-                JsonSerializer.Deserialize<T>(str, _jsonOptions.Value));
+        
+        using var tx = _db.BeginTransaction();
+        using var db = tx.OpenDatabase();
+        var (resultCode, key, value) = tx.Get(db, keySpan);
+        if (resultCode != MDBResultCode.Success)
+            return null;
+        return JsonSerializer.Deserialize<T>(value.AsSpan(), _jsonOptions.Value);
+        
     }
     
     public bool PutRoot(RootType type, Id oldId, Id newId)
     {
+        
         Span<byte> newIdSpan = stackalloc byte[newId.SpanSize + 1];
         newId.ToTaggedSpan(newIdSpan);
         
@@ -119,7 +130,10 @@ public class RocksDbDatastore : IDataStore
             Id rootId = new RootId(type);
             Span<byte> rootIdSpan = stackalloc byte[rootId.SpanSize + 1];
             rootId.ToTaggedSpan(rootIdSpan);
-            _db.Result.Put(rootIdSpan, newIdSpan);
+            using var tx = _db.BeginTransaction();
+            using var db = tx.OpenDatabase();
+            tx.Put(db, rootIdSpan, newIdSpan);
+            tx.Commit();
         }
         return true;
     }
@@ -129,40 +143,51 @@ public class RocksDbDatastore : IDataStore
         Id rootId = new RootId(type);
         Span<byte> idSpan = stackalloc byte[rootId.SpanSize + 1];
         rootId.ToTaggedSpan(idSpan);
-        var id = _db.Result.Get(idSpan);
-        if (id == null) return null;
-        return Id.FromTaggedSpan(id.AsSpan());
+        using var tx = _db.BeginTransaction();
+        using var db = tx.OpenDatabase();
+        var (resultCode, key, value) = tx.Get(db, idSpan);
+        if (resultCode != MDBResultCode.Success)
+            return null;
+        return Id.FromTaggedSpan(value.AsSpan());
     }
 
     public byte[]? GetRaw(ReadOnlySpan<byte> key, EntityCategory category)
     {
-        return _db.Result.Get(key);
+        using var tx = _db.BeginTransaction();
+        using var db = tx.OpenDatabase();
+        var (resultCode, _, value) = tx.Get(db, key);
+        if (resultCode != MDBResultCode.Success)
+            return null;
+        return value.CopyToNewArray();
     }
 
     public void PutRaw(ReadOnlySpan<byte> key, ReadOnlySpan<byte> value, EntityCategory category)
     {
-        _db.Result.Put(key, value);
+        using var tx = _db.BeginTransaction();
+        using var db = tx.OpenDatabase();
+        tx.Put(db, key, value);
+        tx.Commit();
     }
 
     public IEnumerable<T> GetByPrefix<T>(Id prefix) where T : Entity
     {
+        using var tx = _db.BeginTransaction(TransactionBeginFlags.ReadOnly);
+        using var db = tx.OpenDatabase();
+        var cursor = tx.CreateCursor(db);
+        
         Span<byte> key = stackalloc byte[prefix.SpanSize + 1];
         prefix.ToTaggedSpan(key);
 
-        var ro = new ReadOptions();
-        ro.SetTotalOrderSeek(true);
-
-        using var iterator = _db.Result.NewIterator(readOptions:ro);
-        iterator.Seek(key);
-
-
-        while (iterator.Valid())
+        var result = cursor.SetRange(key);
+        
+        while (result == MDBResultCode.Success)
         {
-            var seekKey = Id.FromTaggedSpan(iterator.GetKeySpan());
+            var (_, keySpan, valueSpan) = cursor.GetCurrent();
+            
+            var seekKey = Id.FromTaggedSpan(keySpan.AsSpan());
             if (seekKey.IsPrefixedBy(prefix))
             {
-                var valSpan = iterator.GetValueSpan();
-                var value = JsonSerializer.Deserialize<Entity>(valSpan, _jsonOptions.Value);
+                var value = JsonSerializer.Deserialize<Entity>(valueSpan.AsSpan(), _jsonOptions.Value);
                 if (value is T tc)
                 {
                     yield return tc;
@@ -173,8 +198,7 @@ public class RocksDbDatastore : IDataStore
                 break;
             }
 
-            iterator.Next();
+            result = cursor.Next();
         }
-        
     }
 }

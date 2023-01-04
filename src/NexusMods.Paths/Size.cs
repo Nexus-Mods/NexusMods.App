@@ -122,12 +122,8 @@ public readonly struct Size :
 
     public static bool operator <=(Size left, Size right) => left._size <= right._size;
 
-    public static Size operator --(Size value) => value._size - 1;
-
     public static Size operator /(Size left, Size right) => left._size / right._size;
-
-    public static Size operator ++(Size value) => value._size + 1;
-
+    
     public static Size MultiplicativeIdentity => One;
     public static Size operator *(Size left, Size right) => left._size * right._size;
 

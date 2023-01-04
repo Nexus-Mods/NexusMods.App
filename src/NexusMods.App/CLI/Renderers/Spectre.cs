@@ -125,7 +125,7 @@ public class Spectre : IRenderer
         }
     }
 
-    private async Task RenderTable(NexusMods.CLI.DataOutputs.Table table)
+    private Task RenderTable(NexusMods.CLI.DataOutputs.Table table)
     {
 
         var ot = new Table();
@@ -137,5 +137,6 @@ public class Spectre : IRenderer
             ot.AddRow(row.Select(r => r.ToString()).ToArray()!);
         }
         AnsiConsole.Write(ot);
+        return Task.CompletedTask;
     }
 }

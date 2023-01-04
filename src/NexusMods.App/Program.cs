@@ -28,7 +28,7 @@ var host = Host.CreateDefaultBuilder(Environment.GetCommandLineArgs())
 
 if (args.Length > 0)
 {
-    var service = host.Services.GetRequiredService<CommandlineConfigurator>();
+    var service = host.Services.GetRequiredService<CommandLineConfigurator>();
     var root = service.MakeRoot();
 
     var builder = new CommandLineBuilder(root)

@@ -19,7 +19,7 @@ foreach (var verb in Directory.EnumerateFiles("Verbs"))
 {
     var klass = verb.Split('\\').Last().Split('.').First();
     #>
-CommandLineBuilder.RegisterCommand<<#=klass#>>(<#=klass#>.Definition, c => ((<#=klass#>)c).Run);
+CommandLineConfigurator.RegisterCommand<<#=klass#>>(<#=klass#>.Definition, c => ((<#=klass#>)c).Run);
 services.AddScoped<<#=klass#>>();
 <#
 }

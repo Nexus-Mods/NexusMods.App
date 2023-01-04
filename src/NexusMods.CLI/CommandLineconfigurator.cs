@@ -9,12 +9,12 @@ using NexusMods.Paths;
 
 namespace NexusMods.CLI;
 
-public class CommandlineConfigurator
+public class CommandLineConfigurator
 {
     private static IServiceProvider _provider = null!;
-    private readonly ILogger<CommandlineConfigurator> _logger;
+    private readonly ILogger<CommandLineConfigurator> _logger;
 
-    public CommandlineConfigurator(ILogger<CommandlineConfigurator> logger, IServiceProvider provider)
+    public CommandLineConfigurator(ILogger<CommandLineConfigurator> logger, IServiceProvider provider)
     {
         _logger = logger;
         _provider = provider;
