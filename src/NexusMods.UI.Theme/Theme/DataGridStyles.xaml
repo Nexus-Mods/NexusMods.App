@@ -17,6 +17,10 @@
         <Setter Property="Fill" Value="{DynamicResource BrandPrimaryBrush}" />
     </Style>
 
+    <Style Selector="DataGridCell">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Margin" Value="0" />
+    </Style>
     <Style Selector="DataGridCell:selected">
         <Setter Property="BorderThickness" Value="1" />
     </Style>

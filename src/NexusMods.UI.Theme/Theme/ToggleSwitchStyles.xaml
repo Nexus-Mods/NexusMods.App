@@ -1,0 +1,5 @@
+﻿<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style Selector="ToggleSwitch Border">
+        <Setter Property="CornerRadius" Value="0" />
+    </Style>
+</Styles>

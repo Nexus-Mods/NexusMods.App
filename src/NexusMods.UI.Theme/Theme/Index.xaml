@@ -3,4 +3,6 @@
     <StyleInclude Source="avares://NexusMods.UI.Theme/Theme/DataGridStyles.xaml" />
     <StyleInclude Source="avares://NexusMods.UI.Theme/Theme/LabelStyles.xaml" />
     <StyleInclude Source="avares://NexusMods.UI.Theme/Theme/TextBlockStyles.xaml" />
+    <StyleInclude Source="avares://NexusMods.UI.Theme/Theme/ToggleSwitchStyles.xaml" />
+
 </Styles>

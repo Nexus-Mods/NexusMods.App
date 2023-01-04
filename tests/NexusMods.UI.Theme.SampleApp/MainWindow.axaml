@@ -325,7 +325,31 @@
         </Grid>
         <!--#endregion-->
 
-        <StackPanel Orientation="Horizontal">
+        <TextBlock Classes="H1">CheckBox</TextBlock>
+        <StackPanel Margin="0,10,10,0" Orientation="Horizontal">
+            <CheckBox>Label</CheckBox>
+        </StackPanel>
+        <TextBlock Classes="H1" Margin="0,10,0,0">ToggleSwitch</TextBlock>
+        <ToggleSwitch x:Name="ToggleSwitch">
+            <ToggleSwitch.Styles>
+                <Style Selector="ToggleSwitch Grid Grid /template/ ContentPresenter Border">
+                    <Setter Property="Width" Value="20" />
+                </Style>
+                <Style Selector="ToggleSwitch">
+                    <Setter Property="Background" Value="Red" />
+                </Style>
+            </ToggleSwitch.Styles>
+            <ToggleSwitch.OnContent>
+                <TextBlock>Enabled</TextBlock>
+            </ToggleSwitch.OnContent>
+            <ToggleSwitch.OffContent>
+                <TextBlock>Disabled</TextBlock>
+            </ToggleSwitch.OffContent>
+        </ToggleSwitch>
+
+        <Button Click="Button_OnClick">Debug</Button>
+
+        <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
             <StackPanel
                 Margin="0,10,10,0"
                 Orientation="Vertical"
@@ -347,9 +371,26 @@
                 <!--#region DataTable-->
                 <DataGrid Height="400" Items="{Binding TableData}">
                     <DataGrid.Columns>
+                        <DataGridTemplateColumn IsReadOnly="True">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                         <DataGridTextColumn Binding="{Binding Name}" Header="Name" />
                         <DataGridTextColumn Binding="{Binding Size}" Header="Size" />
                         <DataGridTextColumn Binding="{Binding LastModified}" Header="Last Modified" />
+                        <DataGridTemplateColumn IsReadOnly="True">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button>
+                                        <icons:Icon Value="mdi-delete" />
+                                    </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
                     </DataGrid.Columns>
                 </DataGrid>
                 <!--#endregion-->
