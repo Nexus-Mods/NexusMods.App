@@ -99,9 +99,9 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
     public override string ToString()
     {
         if (Parts == default) return "";
-        if (PathFormat == PathFormat.Windows)
-            return string.Join('\\', Parts);
-        return '/' + string.Join('/', Parts);
+        if (PathFormat != PathFormat.Windows) 
+            return "/" + string.Join('/', Parts);
+        return Parts.Length == 1 ? $"{Parts[0]}\\" : string.Join('\\', Parts);
     }
 
     public override int GetHashCode()
@@ -128,7 +128,7 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
 
     public bool Equals(AbsolutePath other)
     {
-        if (other.Parts.Length != Parts.Length) return false;
+        if (other.Depth != Depth) return false;
         for (var idx = 0; idx < Parts.Length; idx++)
             if (!Parts[idx].Equals(other.Parts[idx], StringComparison.InvariantCultureIgnoreCase))
                 return false;
@@ -364,6 +364,9 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
     }
 
     public bool FileExists => Parts.Length != 0 && File.Exists(ToNativePath());
+    public AbsolutePath TopParent => PathFormat == PathFormat.Windows ? 
+        new(Parts[..1], PathFormat) : 
+        new AbsolutePath(Array.Empty<string>(), PathFormat);
 
     public IEnumerable<AbsolutePath> EnumerateFiles(string pattern = "*",
         bool recursive = true)

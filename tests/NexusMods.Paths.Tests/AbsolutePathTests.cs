@@ -97,7 +97,7 @@ public class AbsolutePathTests
     }
 
     [Fact]
-    public void CanCombinePaths()
+    public void CanJoinPaths()
     {
         Assert.Equal("/foo/bar/baz/qux",
             ((AbsolutePath)"/").Combine("foo", (RelativePath)"bar", "baz/qux").ToString());

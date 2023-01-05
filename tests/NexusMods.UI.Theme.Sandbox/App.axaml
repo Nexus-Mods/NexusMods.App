@@ -1,0 +1,11 @@
+<Application
+    x:Class="NexusMods.UI.Theme.Sandbox.App"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:themes="clr-namespace:Material.Styles.Themes;assembly=Material.Styles"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Application.Styles>
+
+        <StyleInclude Source="avares://NexusMods.UI.Theme/Nexus.xaml" />
+        <!--    -->
+    </Application.Styles>
+</Application>

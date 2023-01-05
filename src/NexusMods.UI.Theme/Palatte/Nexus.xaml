@@ -1,0 +1,72 @@
+﻿<Style
+    xmlns="https://github.com/avaloniaui"
+    xmlns:sys="clr-namespace:System;assembly=netstandard"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style.Resources>
+        <Color x:Key="BrandPrimary">#D98F40</Color>
+        <Color x:Key="BrandPrimaryLighter">#E0A362</Color>
+        <Color x:Key="BrandPrimaryDarker">#C87B28</Color>
+
+        <SolidColorBrush Color="{DynamicResource BrandPrimary}" x:Key="BrandPrimaryBrush" />
+        <SolidColorBrush Color="{DynamicResource BrandPrimaryLighter}" x:Key="BrandPrimaryLighterBrush" />
+        <SolidColorBrush Color="{DynamicResource BrandPrimaryDarker}" x:Key="BrandPrimaryDarkerBrush" />
+
+        <Color x:Key="BrandSecondary">#2A2C2B</Color>
+        <Color x:Key="BrandSecondaryLighter">#3E413F</Color>
+        <Color x:Key="BrandSecondaryDarker">#181818</Color>
+
+        <SolidColorBrush Color="{DynamicResource BrandSecondary}" x:Key="BrandSecondaryBrush" />
+        <SolidColorBrush Color="{DynamicResource BrandSecondaryLighter}" x:Key="BrandSecondaryLighterBrush" />
+        <SolidColorBrush Color="{DynamicResource BrandSecondaryDarker}" x:Key="BrandSecondaryDarkerBrush" />
+
+        <Color x:Key="BrandTertiary">#DDDDDD</Color>
+        <Color x:Key="BrandTertiaryLighter">#F1F1F1</Color>
+        <Color x:Key="BrandTertiaryDarker">#C9C9C9</Color>
+
+        <SolidColorBrush Color="{DynamicResource BrandTertiary}" x:Key="BrandTertiaryBrush" />
+        <SolidColorBrush Color="{DynamicResource BrandTertiaryLighter}" x:Key="BrandTertiaryLighterBrush" />
+        <SolidColorBrush Color="{DynamicResource BrandTertiaryDarker}" x:Key="BrandTertiaryDarkerBrush" />
+
+        <Color x:Key="StatusSuccess">#1C8930</Color>
+        <Color x:Key="StatusSuccessLighter">#23AB3C</Color>
+        <Color x:Key="StatusSuccessDarker">#156724</Color>
+
+        <SolidColorBrush Color="{DynamicResource StatusSuccess}" x:Key="StatusSuccessBrush" />
+        <SolidColorBrush Color="{DynamicResource StatusSuccessLighter}" x:Key="StatusSuccessLighterBrush" />
+        <SolidColorBrush Color="{DynamicResource StatusSuccessDarker}" x:Key="StatusSuccessDarkerBrush" />
+
+
+
+        <Color x:Key="BrandWhite">#FFFFFF</Color>
+        <Color x:Key="FontLightPrimary">#303030</Color>
+        <Color x:Key="FontLightSecondary">#666666</Color>
+
+
+        <Color x:Key="ThemeBackgroundColor">#2b2d2f</Color>
+        <SolidColorBrush Color="{DynamicResource BrandSecondary}" x:Key="ThemeBackgroundBrush" />
+
+
+        <FontFamily x:Key="FontPrimary">avares://NexusMods.UI.Theme/Fonts/Montserrat/Montserrat-VariableFont_wght.ttf#Montserrat</FontFamily>
+        <FontFamily x:Key="FontSecondary">avares://NexusMods.UI.Theme/Fonts/Roboto/Roboto-Regular.ttf#Roboto</FontFamily>
+
+
+        <SolidColorBrush Color="{DynamicResource BrandSecondaryLighter}" x:Key="DataGridCellFocusVisualPrimaryBrush" />
+        <SolidColorBrush Color="{DynamicResource BrandSecondaryLighter}" x:Key="DataGridCellFocusVisualSecondaryBrush" />
+
+        <SolidColorBrush Color="{DynamicResource BrandSecondaryLighter}" x:Key="TextControlSelectionHighlightColor" />
+        <SolidColorBrush Color="{DynamicResource BrandPrimary}" x:Key="TextControlBorderBrushFocused" />
+        <SolidColorBrush Color="{DynamicResource BrandSecondary}" x:Key="SystemControlBackgroundAltHighBrush" />
+        <SolidColorBrush Color="{DynamicResource BrandPrimary}" x:Key="CheckBoxCheckBackgroundFillChecked" />
+        <SolidColorBrush Color="{DynamicResource BrandPrimaryLighter}" x:Key="CheckBoxCheckBackgroundFillCheckedPointerOver" />
+        <SolidColorBrush Color="{DynamicResource BrandPrimaryDarker}" x:Key="ToggleSwitchFillOn" />
+        <SolidColorBrush Color="{DynamicResource BrandPrimary}" x:Key="ToggleSwitchKnobFillOn" />
+        <SolidColorBrush Color="{DynamicResource BrandPrimaryLighter}" x:Key="ToggleSwitchKnobFillOnPointerOver" />
+        <SolidColorBrush Color="{DynamicResource BrandPrimary}" x:Key="ToggleSwitchFillOnPointerOver" />
+        <SolidColorBrush Color="{DynamicResource BrandPrimaryDarker}" x:Key="ToggleSwitchFillOnPressed" />
+        <SolidColorBrush Color="{DynamicResource BrandPrimaryDarker}" x:Key="ToggleSwitchFillOffPressed" />
+        <SolidColorBrush Color="{DynamicResource FontLightSecondary}" x:Key="ToggleSwitchFillOff" />
+        <SolidColorBrush Color="{DynamicResource BrandTertiaryDarker}" x:Key="ToggleSwitchKnobFillOff" />
+        <SolidColorBrush Color="{DynamicResource BrandTertiaryDarker}" x:Key="ToggleSwitchKnobFillOffPointerOver" />
+        <SolidColorBrush Color="{DynamicResource FontLightSecondary}" x:Key="ToggleSwitchFillOffPointerOver" />
+    </Style.Resources>
+</Style>

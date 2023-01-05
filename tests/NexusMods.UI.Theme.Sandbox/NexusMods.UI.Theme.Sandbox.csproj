@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <RootNamespace>NexusMods.UI.Theme.Sandbox</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove=".gitignore" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TrimmerRootDescriptor Include="Roots.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.0.0-preview4" />
+    <PackageReference Include="Avalonia.Controls.TreeDataGrid" Version="11.0.0-preview1" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.0.0-preview4" />
+    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.0-preview4" />
+    <PackageReference Include="Material.Icons.Avalonia" Version="1.2.0" />
+    <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="6.3.0-preview4" />
+    <PackageReference Include="XamlNameReferenceGenerator" Version="1.5.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\NexusMods.Paths\NexusMods.Paths.csproj" />
+    <ProjectReference Include="..\..\src\NexusMods.UI.Theme\NexusMods.UI.Theme.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Avalonia.Themes.Fluent">
+      <HintPath>..\..\..\..\Users\tbald\.nuget\packages\avalonia.themes.fluent\11.0.0-preview4\lib\net6.0\Avalonia.Themes.Fluent.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

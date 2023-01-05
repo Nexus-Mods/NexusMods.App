@@ -58,6 +58,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.DarkestDung
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.App.UI", "src\NexusMods.App.UI\NexusMods.App.UI.csproj", "{4767144A-0130-47F2-9940-5D68CCBEE241}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.UI.Theme", "src\NexusMods.UI.Theme\NexusMods.UI.Theme.csproj", "{43EE15F1-9C24-4F5D-A6FF-FC10C6183139}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.UI.Theme.Sandbox", "tests\NexusMods.UI.Theme.Sandbox\NexusMods.UI.Theme.Sandbox.csproj", "{6C3853FB-E904-418C-BA7B-4DC3100DB9F6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -162,6 +166,14 @@ Global
 		{4767144A-0130-47F2-9940-5D68CCBEE241}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4767144A-0130-47F2-9940-5D68CCBEE241}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4767144A-0130-47F2-9940-5D68CCBEE241}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43EE15F1-9C24-4F5D-A6FF-FC10C6183139}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43EE15F1-9C24-4F5D-A6FF-FC10C6183139}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43EE15F1-9C24-4F5D-A6FF-FC10C6183139}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43EE15F1-9C24-4F5D-A6FF-FC10C6183139}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C3853FB-E904-418C-BA7B-4DC3100DB9F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C3853FB-E904-418C-BA7B-4DC3100DB9F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C3853FB-E904-418C-BA7B-4DC3100DB9F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C3853FB-E904-418C-BA7B-4DC3100DB9F6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9025900A-5342-4EB3-97C8-A9F067929879} = {B93AF89E-9ED7-4FD0-B58E-688AA178AB53}
