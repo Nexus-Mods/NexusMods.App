@@ -1,5 +1,5 @@
 ﻿<linker>
   <!-- Can be removed if CompiledBinding and no reflection are used -->
-  <assembly fullname="NexusMods.UI.Theme.SampleApp" preserve="All" />
+  <assembly fullname="NexusMods.UI.Theme.Sandbox" preserve="All" />
   <assembly fullname="Avalonia.Themes.Fluent" preserve="All" />
 </linker>
