@@ -4,7 +4,7 @@ using Avalonia.Svg.Skia;
 using Projektanker.Icons.Avalonia;
 using Projektanker.Icons.Avalonia.MaterialDesign;
 
-namespace NexusMods.UI.Theme.SampleApp;
+namespace NexusMods.UI.Theme.Sandbox;
 
 class Program
 {

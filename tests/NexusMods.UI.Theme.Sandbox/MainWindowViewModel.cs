@@ -7,7 +7,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using NexusMods.Paths;
 
-namespace NexusMods.UI.Theme.SampleApp;
+namespace NexusMods.UI.Theme.Sandbox;
 
 public class MainWindowViewModel
 {

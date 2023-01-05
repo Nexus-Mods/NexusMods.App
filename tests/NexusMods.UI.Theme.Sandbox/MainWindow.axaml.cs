@@ -2,7 +2,7 @@ using System.Diagnostics;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 
-namespace NexusMods.UI.Theme.SampleApp;
+namespace NexusMods.UI.Theme.Sandbox;
 
 public partial class MainWindow : Window
 {
