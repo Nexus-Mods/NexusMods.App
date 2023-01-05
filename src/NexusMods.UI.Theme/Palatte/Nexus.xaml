@@ -39,6 +39,7 @@
 
         <Color x:Key="BrandWhite">#FFFFFF</Color>
         <Color x:Key="FontLightPrimary">#303030</Color>
+        <Color x:Key="FontLightSecondary">#666666</Color>
 
 
         <Color x:Key="ThemeBackgroundColor">#2b2d2f</Color>
@@ -57,9 +58,15 @@
         <SolidColorBrush Color="{DynamicResource BrandSecondary}" x:Key="SystemControlBackgroundAltHighBrush" />
         <SolidColorBrush Color="{DynamicResource BrandPrimary}" x:Key="CheckBoxCheckBackgroundFillChecked" />
         <SolidColorBrush Color="{DynamicResource BrandPrimaryLighter}" x:Key="CheckBoxCheckBackgroundFillCheckedPointerOver" />
-        <SolidColorBrush Color="{DynamicResource BrandPrimary}" x:Key="ToggleSwitchFillOn" />
-        <SolidColorBrush Color="{DynamicResource BrandPrimaryLighter}" x:Key="ToggleSwitchFillOnPointerOver" />
+        <SolidColorBrush Color="{DynamicResource BrandPrimaryDarker}" x:Key="ToggleSwitchFillOn" />
+        <SolidColorBrush Color="{DynamicResource BrandPrimary}" x:Key="ToggleSwitchKnobFillOn" />
+        <SolidColorBrush Color="{DynamicResource BrandPrimaryLighter}" x:Key="ToggleSwitchKnobFillOnPointerOver" />
+        <SolidColorBrush Color="{DynamicResource BrandPrimary}" x:Key="ToggleSwitchFillOnPointerOver" />
         <SolidColorBrush Color="{DynamicResource BrandPrimaryDarker}" x:Key="ToggleSwitchFillOnPressed" />
         <SolidColorBrush Color="{DynamicResource BrandPrimaryDarker}" x:Key="ToggleSwitchFillOffPressed" />
+        <SolidColorBrush Color="{DynamicResource FontLightSecondary}" x:Key="ToggleSwitchFillOff" />
+        <SolidColorBrush Color="{DynamicResource BrandTertiaryDarker}" x:Key="ToggleSwitchKnobFillOff" />
+        <SolidColorBrush Color="{DynamicResource BrandTertiaryDarker}" x:Key="ToggleSwitchKnobFillOffPointerOver" />
+        <SolidColorBrush Color="{DynamicResource FontLightSecondary}" x:Key="ToggleSwitchFillOffPointerOver" />
     </Style.Resources>
 </Style>

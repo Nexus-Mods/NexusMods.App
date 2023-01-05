@@ -330,25 +330,42 @@
             <CheckBox>Label</CheckBox>
         </StackPanel>
         <TextBlock Classes="H1" Margin="0,10,0,0">ToggleSwitch</TextBlock>
-        <ToggleSwitch x:Name="ToggleSwitch">
-            <ToggleSwitch.Styles>
-                <Style Selector="ToggleSwitch Grid Grid /template/ ContentPresenter Border">
-                    <Setter Property="Width" Value="20" />
-                </Style>
-                <Style Selector="ToggleSwitch">
-                    <Setter Property="Background" Value="Red" />
-                </Style>
-            </ToggleSwitch.Styles>
-            <ToggleSwitch.OnContent>
-                <TextBlock>Enabled</TextBlock>
-            </ToggleSwitch.OnContent>
-            <ToggleSwitch.OffContent>
-                <TextBlock>Disabled</TextBlock>
-            </ToggleSwitch.OffContent>
-        </ToggleSwitch>
+        <StackPanel Orientation="Horizontal">
+            <ToggleSwitch Margin="4" x:Name="ToggleSwitch">
+                <ToggleSwitch.OnContent>
+                    <TextBlock>Enabled</TextBlock>
+                </ToggleSwitch.OnContent>
+                <ToggleSwitch.OffContent>
+                    <TextBlock>Disabled</TextBlock>
+                </ToggleSwitch.OffContent>
+            </ToggleSwitch>
+            <ToggleSwitch
+                IsChecked="True"
+                IsEnabled="False"
+                Margin="4"
+                x:Name="ToggleSwitch2">
+                <ToggleSwitch.OnContent>
+                    <TextBlock>Enabled</TextBlock>
+                </ToggleSwitch.OnContent>
+                <ToggleSwitch.OffContent>
+                    <TextBlock>Disabled</TextBlock>
+                </ToggleSwitch.OffContent>
+            </ToggleSwitch>
 
-        <Button Click="Button_OnClick">Debug</Button>
+            <ToggleSwitch
+                IsChecked="False"
+                IsEnabled="False"
+                Margin="4"
+                x:Name="ToggleSwitch3">
+                <ToggleSwitch.OnContent>
+                    <TextBlock>Enabled</TextBlock>
+                </ToggleSwitch.OnContent>
+                <ToggleSwitch.OffContent>
+                    <TextBlock>Disabled</TextBlock>
+                </ToggleSwitch.OffContent>
+            </ToggleSwitch>
 
+        </StackPanel>
         <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
             <StackPanel
                 Margin="0,10,10,0"
