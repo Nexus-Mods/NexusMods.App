@@ -100,7 +100,7 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
     {
         if (Parts == default) return "";
         if (PathFormat != PathFormat.Windows) 
-            return string.Join('\\', Parts);
+            return "/" + string.Join('/', Parts);
         return Parts.Length == 1 ? $"{Parts[0]}\\" : string.Join('\\', Parts);
     }
 
