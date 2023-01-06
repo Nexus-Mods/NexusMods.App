@@ -28,11 +28,9 @@ public class PercentTests
         
         (p0 == p2).Should().BeFalse();
         (p0 != p2).Should().BeTrue();
-
-        (p0 <= p0).Should().BeTrue();
+        
         (p0 <= p1).Should().BeTrue();
 
-        (p0 >= p0).Should().BeTrue();
         (p1 >= p0).Should().BeTrue();
         
         new[] { p1, p0, p2 }.Order().Should().BeEquivalentTo(new[] { p0, p1, p2 });

@@ -34,10 +34,10 @@ public class BasicTests
     [Fact]
     public void CanGetInstallLocations()
     {
-        _steamInstall!.Locations[GameFolderType.Game].Combine("StubbedGame.exe").FileExists.Should().BeTrue();
+        _steamInstall!.Locations[GameFolderType.Game].Join("StubbedGame.exe").FileExists.Should().BeTrue();
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            _gogInstall!.Locations[GameFolderType.Game].Combine("StubbedGame.exe").FileExists.Should().BeTrue();
+            _gogInstall!.Locations[GameFolderType.Game].Join("StubbedGame.exe").FileExists.Should().BeTrue();
         }
     }
 

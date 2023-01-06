@@ -49,7 +49,7 @@ public class ArchiveManager
         return hash.ToHex().ToRelativePath().WithExtension(Ext.Ra);
     }
 
-    public async Task<Stream> Open(Hash hash)
+    public Stream Open(Hash hash)
     {
         return PathFor(hash).Open(FileMode.Open, FileAccess.Read, FileShare.Read);
     }

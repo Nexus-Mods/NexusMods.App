@@ -4,6 +4,9 @@ using NexusMods.CLI.DataOutputs;
 
 namespace NexusMods.App.CLI.Renderers;
 
+/// <summary>
+/// IRenderer that swallows progress messages and renders the final result as JSON
+/// </summary>
 public class Json : IRenderer
 {
     private readonly JsonSerializerOptions _options;

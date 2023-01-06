@@ -18,8 +18,9 @@ public class Rename
             new OptionDefinition<string>("n", "name", "Name to assign the loadout")
         });
     
-    public async Task Run(Loadout loadout, string name)
+    public Task Run(Loadout loadout, string name)
     {
         _manager.Alter(loadout.LoadoutId, _ => loadout, $"Renamed {loadout.Id} to {name}");
+        return Task.CompletedTask;
     }
 }

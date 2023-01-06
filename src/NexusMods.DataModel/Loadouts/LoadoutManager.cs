@@ -84,7 +84,7 @@ public class LoadoutManager
     {
         var loadout = GetLoadout(LoadoutId);
         
-        var analyzed = (await _analyzer.AnalyzeFile(path, token) as AnalyzedArchive);
+        var analyzed = (await _analyzer.AnalyzeFile(path, token) as AnalyzedArchive)!;
 
         var installer = _installers
             .Select(i => (Installer: i, Priority: i.Priority(loadout.Value.Installation, analyzed.Contents)))

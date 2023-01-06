@@ -24,12 +24,12 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame
         yield return new (GameFolderType.Game, installation.Path);
         var profile = locator switch
         {
-            SteamLocator => KnownFolders.MyGames.Combine("Skyrim Special Edition"),
-            GogLocator => KnownFolders.MyGames.Combine("Skyrim Special Edition GOG"),
+            SteamLocator => KnownFolders.MyGames.Join("Skyrim Special Edition"),
+            GogLocator => KnownFolders.MyGames.Join("Skyrim Special Edition GOG"),
             _ => throw new NotImplementedException($"No override for {locator}")
         };
         yield return new(GameFolderType.Preferences, profile);
-        yield return new(GameFolderType.Saves, profile.Combine("Saves"));
+        yield return new(GameFolderType.Saves, profile.Join("Saves"));
     }
 
     public IEnumerable<int> SteamIds => new[] { 489830 };

@@ -2,7 +2,7 @@ namespace NexusMods.Paths;
 
 public struct RelativePath : IPath, IEquatable<RelativePath>, IComparable<RelativePath>
 {
-    public readonly string[]? Parts = Array.Empty<string>();
+    public readonly string[] Parts = Array.Empty<string>();
 
     private int _hashCode = 0;
 

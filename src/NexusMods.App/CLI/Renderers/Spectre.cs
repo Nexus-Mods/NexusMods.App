@@ -4,6 +4,9 @@ using Spectre.Console;
 
 namespace NexusMods.App.CLI.Renderers;
 
+/// <summary>
+/// IRenderer that renders verb output to the console.
+/// </summary>
 public class Spectre : IRenderer
 {
     private readonly IResource[] _resources;

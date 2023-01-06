@@ -100,8 +100,8 @@ public class AbsolutePathTests
     public void CanJoinPaths()
     {
         Assert.Equal("/foo/bar/baz/qux",
-            ((AbsolutePath)"/").Combine("foo", (RelativePath)"bar", "baz/qux").ToString());
-        Assert.Throws<PathException>(() => ((AbsolutePath)"/").Combine(42));
+            ((AbsolutePath)"/").Join("foo", (RelativePath)"bar", "baz/qux").ToString());
+        Assert.Throws<PathException>(() => ((AbsolutePath)"/").Join(42));
     }
 
     [Fact]
@@ -164,15 +164,15 @@ public class AbsolutePathTests
     [Fact]
     public async Task CanReadAndWriteFiles()
     {
-        var testDir = KnownFolders.EntryFolder.Combine("testDir");
+        var testDir = KnownFolders.EntryFolder.Join("testDir");
         if (testDir.DirectoryExists())
             testDir.DeleteDirectory();
         testDir.CreateDirectory();
 
-        var fileOne = testDir.Combine("file1.txt");
-        var fileTwo = testDir.Combine("file2.txt");
-        var fileThree = testDir.Combine("file3.txt");
-        var fileFour = testDir.Combine(@"testFolder\inner\testfour.txt");
+        var fileOne = testDir.Join("file1.txt");
+        var fileTwo = testDir.Join("file2.txt");
+        var fileThree = testDir.Join("file3.txt");
+        var fileFour = testDir.Join(@"testFolder\inner\testfour.txt");
         await fileOne.WriteAllTextAsync("this is a test");
         await fileTwo.WriteAllTextAsync("test two");
         
@@ -189,9 +189,9 @@ public class AbsolutePathTests
         Assert.True(DateTime.UtcNow - fileOne.CreationTimeUtc < TimeSpan.FromSeconds(1));
         
         var files = testDir.EnumerateFiles(Ext.Txt).ToHashSet();
-        Assert.True(files.Contains(fileOne));
-        Assert.True(files.Contains(fileTwo));
-        Assert.True(files.Contains(fileThree));
+        Assert.Contains(fileOne, files);
+        Assert.Contains(fileTwo, files);
+        Assert.Contains(fileThree, files);
 
         // Make sure we can delete read only files
         fileThree.FileInfo.IsReadOnly = true;

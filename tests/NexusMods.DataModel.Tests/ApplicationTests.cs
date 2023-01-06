@@ -32,7 +32,7 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
         var newPlan = await mainList.MakeApplyPlan().ToList();
         newPlan.Count.Should().Be(0);
 
-        await BaseList.ApplyPlan(await BaseList.MakeApplyPlan().ToList());
+        await BaseList?.ApplyPlan(await BaseList.MakeApplyPlan().ToList())!;
     }
     
     [Fact]
@@ -101,6 +101,6 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
         
 
 
-        await BaseList.Apply(Token);
+        await BaseList?.Apply(Token)!;
     }
 }

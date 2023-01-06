@@ -15,8 +15,8 @@ namespace NexusMods.DataModel.Tests.Harness;
 
 public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 {
-    public static readonly AbsolutePath DATA_ZIP_LZMA = KnownFolders.EntryFolder.Combine(@"Resources\data_zip_lzma.zip");
-    public static readonly AbsolutePath DATA_7Z_LZMA2 = KnownFolders.EntryFolder.Combine(@"Resources\data_7zip_lzma2.7z");
+    public static readonly AbsolutePath DATA_ZIP_LZMA = KnownFolders.EntryFolder.Join(@"Resources\data_zip_lzma.zip");
+    public static readonly AbsolutePath DATA_7Z_LZMA2 = KnownFolders.EntryFolder.Join(@"Resources\data_7zip_lzma2.7z");
 
     public static readonly RelativePath[] DATA_NAMES = new[]
     {
@@ -39,7 +39,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
     protected readonly IGame Game;
     protected readonly GameInstallation Install;
-    protected LoadoutMarker BaseList;
+    protected LoadoutMarker? BaseList;
     protected readonly ILogger<T> _logger;
     private readonly IHost _host;
     

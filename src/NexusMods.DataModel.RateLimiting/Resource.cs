@@ -15,6 +15,7 @@ public class Resource<TResource, TUnit> : IResource<TResource, TUnit>
     private readonly ConcurrentDictionary<ulong, Job<TResource, TUnit>> _tasks;
     private ulong _nextId;
     private TUnit _totalUsed;
+    private readonly ValueTask _starterTask;
     public IEnumerable<IJob> Jobs => _tasks.Values;
 
     public Resource(string humanName) : this(humanName, 0, TUnit.AdditiveIdentity)
@@ -31,25 +32,7 @@ public class Resource<TResource, TUnit> : IResource<TResource, TUnit>
         _channel = Channel.CreateBounded<PendingReport>(10);
         _tasks = new ConcurrentDictionary<ulong, Job<TResource, TUnit>>();
         _totalUsed = TUnit.AdditiveIdentity;
-        
-        var tsk = StartTask(CancellationToken.None);
-    }
-
-    public Resource(string humanName, Func<Task<(int MaxTasks, TUnit MaxThroughput)>> settingGetter)
-    {
-        Name = humanName;
-        _tasks = new ConcurrentDictionary<ulong, Job<TResource, TUnit>>();
-        
-        Task.Run(async () =>
-        {
-            var (maxJobs, maxThroughput) = await settingGetter();
-            MaxJobs = maxJobs;
-            MaxThroughput = maxThroughput;
-            _semaphore = new SemaphoreSlim(MaxJobs);
-            _channel = Channel.CreateBounded<PendingReport>(10);
-            
-            await StartTask(CancellationToken.None);
-        });
+        _starterTask = StartTask(CancellationToken.None);
     }
 
     public int MaxJobs { get; set; }
@@ -64,7 +47,8 @@ public class Resource<TResource, TUnit> : IResource<TResource, TUnit>
             Id = id,
             Description = jobTitle,
             Size = size,
-            _resource = this
+            Current = TUnit.AdditiveIdentity,
+            TypedResource = this
         };
         _tasks.TryAdd(id, job);
         await _semaphore.WaitAsync(token);

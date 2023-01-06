@@ -9,6 +9,9 @@ using NexusMods.Paths;
 
 namespace NexusMods.CLI;
 
+/// <summary>
+/// Generates the command line parsing structures, and connects them to verbs
+/// </summary>
 public class CommandLineConfigurator
 {
     private static IServiceProvider _provider = null!;

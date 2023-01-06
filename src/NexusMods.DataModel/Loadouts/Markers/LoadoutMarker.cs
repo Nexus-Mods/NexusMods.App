@@ -1,4 +1,5 @@
 ﻿using System.Reactive.Linq;
+using System.Runtime.CompilerServices;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Extensions;
@@ -66,7 +67,7 @@ public class LoadoutMarker : IMarker<Loadout>
         }
     }
 
-    public async IAsyncEnumerable<IApplyStep> MakeApplyPlan(CancellationToken token = default)
+    public async IAsyncEnumerable<IApplyStep> MakeApplyPlan([EnumeratorCancellation] CancellationToken token = default)
     {
         var list = _manager.Get(_id);
         var gameFolders = list.Installation.Locations;
@@ -152,7 +153,9 @@ public class LoadoutMarker : IMarker<Loadout>
             }, token);
 
         await _manager.Limiter.ForEach(steps.OfType<DeleteFile>(), file => file.Size,
+#pragma warning disable CS1998
             async (j, f) =>
+#pragma warning restore CS1998
             {
                 f.To.Delete();
             });
@@ -164,7 +167,7 @@ public class LoadoutMarker : IMarker<Loadout>
         await _manager.Limiter.ForEach(fromArchive, x => x.Sum(s => s.Step.Size),
             async (job, group) =>
             {
-                var byPath = group.ToLookup(x => x.From.From.Parts.First());
+                var byPath = group.ToLookup(x => x.From!.From.Parts.First());
                 await _manager.ArchiveManager.Extract(group.Key, byPath.Select(e => e.Key),
                     async (path, sFn) =>
                     {
@@ -182,7 +185,7 @@ public class LoadoutMarker : IMarker<Loadout>
     }
 
     
-    public async IAsyncEnumerable<IApplyStep> MakeIngestionPlan(Func<HashedEntry, Mod> modMapper, CancellationToken token)
+    public async IAsyncEnumerable<IApplyStep> MakeIngestionPlan(Func<HashedEntry, Mod> modMapper, [EnumeratorCancellation] CancellationToken token)
     {
         var list = _manager.Get(_id);
         var gameFolders = list.Installation.Locations;

@@ -80,7 +80,7 @@ where T : Entity
     public IEnumerator<T> GetEnumerator()
     {
         foreach (var itm in _coll)
-            yield return (T)_store.Get<Entity>(itm);
+            yield return (T)_store.Get<Entity>(itm)!;
     }
 
     IEnumerator IEnumerable.GetEnumerator()
@@ -156,7 +156,7 @@ public class EntityHashSetConverter<T> : JsonConverter<EntityHashSet<T>>
         var lst = new List<Id>();
         while (reader.TokenType != JsonTokenType.EndArray)
         {
-            lst.Add(JsonSerializer.Deserialize<Id>(ref reader, options));
+            lst.Add(JsonSerializer.Deserialize<Id>(ref reader, options)!);
             reader.Read();
         }
         

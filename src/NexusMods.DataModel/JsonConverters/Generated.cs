@@ -11,6 +11,8 @@ using NexusMods.Interfaces;
 using NexusMods.Paths;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.FileExtractor.FileSignatures;
+#pragma warning disable CS8601
+#pragma warning disable CS8600
 
 public class NexusMods_DataModel_Abstractions_EntityConverter : JsonConverter<NexusMods.DataModel.Abstractions.Entity> {
   public static IServiceCollection ConfigureServices(IServiceCollection services) {

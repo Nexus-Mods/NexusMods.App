@@ -48,7 +48,7 @@ public class Apply
                 }
                 else
                 {
-                    rows.Add(new object[]{step, step.To, null, default});
+                    rows.Add(new object[]{step, step.To, "", ""});
                 }
             
             }
