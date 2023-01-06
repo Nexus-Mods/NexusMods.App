@@ -65,6 +65,6 @@ public class GenericExtractionTests
         (await _extractor.CanExtract(path)).Should().BeTrue();
     }
 
-    public static IEnumerable<object[]> Archives => KnownFolders.CurrentDirectory.Combine("Resources").EnumerateFiles()
+    public static IEnumerable<object[]> Archives => KnownFolders.CurrentDirectory.Join("Resources").EnumerateFiles()
         .Select(file => new object[] { file });
 }

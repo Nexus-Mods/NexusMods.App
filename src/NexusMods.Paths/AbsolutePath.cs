@@ -4,12 +4,18 @@ using System.Text;
 
 namespace NexusMods.Paths;
 
+/// <summary>
+/// Flags if the path should use Unix or Windows path separators.
+/// </summary>
 public enum PathFormat : byte
 {
     Windows = 0,
     Unix
 }
 
+/// <summary>
+/// A path that represents a full path to a file or directory.
+/// </summary>
 public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<AbsolutePath>
 {
     public static readonly AbsolutePath Empty = "".ToAbsolutePath();
@@ -69,6 +75,10 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
 
     public int Depth => Parts?.Length ?? 0;
 
+    /// <summary>
+    /// Returns a IEnumerable of this path and all 
+    /// </summary>
+    /// <returns></returns>
     public IEnumerable<AbsolutePath> ThisAndAllParents()
     {
         var p = this;
@@ -81,7 +91,12 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
         }
     }
 
-    public AbsolutePath ReplaceExtension(Extension newExtension)
+    /// <summary>
+    /// Returns a new path that is this path with the extension changed.
+    /// </summary>
+    /// <param name="newExtension"></param>
+    /// <returns></returns>
+    public readonly AbsolutePath ReplaceExtension(Extension newExtension)
     {
         var paths = new string[Parts.Length];
         Array.Copy(Parts, paths, paths.Length);
@@ -145,12 +160,23 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
         return new RelativePath(newParts);
     }
 
+    /// <summary>
+    /// Returns true if this path is a child of the given path.
+    /// </summary>
+    /// <param name="parent"></param>
+    /// <returns></returns>
     public bool InFolder(AbsolutePath parent)
     {
         return ArrayExtensions.AreEqualIgnoreCase(parent.Parts, 0, Parts, 0, parent.Parts.Length);
     }
 
-    public readonly AbsolutePath Combine(params object[] paths)
+    /// <summary>
+    /// Combines this path with the given relative path(s).
+    /// </summary>
+    /// <param name="paths"></param>
+    /// <returns></returns>
+    /// <exception cref="PathException"></exception>
+    public readonly AbsolutePath Join(params object[] paths)
     {
         var converted = paths.Select(p =>
         {
@@ -164,6 +190,11 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
         return Join(converted);
     }
 
+    /// <summary>
+    /// Combines 
+    /// </summary>
+    /// <param name="paths"></param>
+    /// <returns></returns>
     public readonly AbsolutePath Join(params RelativePath[] paths)
     {
         var newLen = Parts.Length + paths.Sum(p => p.Parts.Length);

@@ -7,8 +7,8 @@ namespace NexusMods.CLI.Tests.VerbTests;
 
 public abstract class AVerbTest
 {
-    public static AbsolutePath Data7ZipLZMA2 => KnownFolders.EntryFolder.Combine(@"Resources\data_7zip_lzma2.7z");
-    public static AbsolutePath DataZipLZMA => KnownFolders.EntryFolder.Combine(@"Resources\data_zip_lzma.zip");
+    public static AbsolutePath Data7ZipLZMA2 => KnownFolders.EntryFolder.Join(@"Resources\data_7zip_lzma2.7z");
+    public static AbsolutePath DataZipLZMA => KnownFolders.EntryFolder.Join(@"Resources\data_zip_lzma.zip");
 
     protected readonly TemporaryFileManager TemporaryFileManager;
     private readonly IServiceProvider _provider;

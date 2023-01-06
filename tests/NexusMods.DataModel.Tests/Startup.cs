@@ -21,13 +21,13 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection container)
     {
-        var prefix = Guid.NewGuid().ToString().ToRelativePath().RelativeTo(KnownFolders.EntryFolder.Combine("tempTestData"));
+        var prefix = Guid.NewGuid().ToString().ToRelativePath().RelativeTo(KnownFolders.EntryFolder.Join("tempTestData"));
         
         container.AddDataModel(prefix);
         container.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug));
         container.AddStandardGameLocators(false);
         container.AddAllSingleton<IGame, StubbedGame>();
-        container.AddSingleton<TemporaryFileManager>(s => new TemporaryFileManager(prefix.Combine("tempFiles")));
+        container.AddSingleton<TemporaryFileManager>(s => new TemporaryFileManager(prefix.Join("tempFiles")));
         container.AddFileExtractors();
 
         container.AddAllSingleton<AHandler<SteamGame, int>, StubbedSteamLocator>();

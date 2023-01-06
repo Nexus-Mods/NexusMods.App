@@ -5,7 +5,7 @@ public class TemporaryFileManager : IDisposable, IAsyncDisposable
     private readonly AbsolutePath _basePath;
     private readonly bool _deleteOnDispose;
 
-    public TemporaryFileManager() : this(KnownFolders.EntryFolder.Combine("temp"))
+    public TemporaryFileManager() : this(KnownFolders.EntryFolder.Join("temp"))
     {
     }
 
@@ -57,7 +57,7 @@ public class TemporaryFileManager : IDisposable, IAsyncDisposable
 
     public TemporaryPath CreateFile(Extension? ext = default, bool deleteOnDispose = true)
     {
-        var path = _basePath.Combine(Guid.NewGuid().ToString());
+        var path = _basePath.Join(Guid.NewGuid().ToString());
         if (path.Extension != default)
             path = path.WithExtension(ext ?? Ext.Tmp);
         return new TemporaryPath(path, deleteOnDispose);
@@ -69,7 +69,7 @@ public class TemporaryFileManager : IDisposable, IAsyncDisposable
     /// <returns></returns>
     public TemporaryPath CreateFolder(string prefix = "", bool deleteOnDispose = true)
     {
-        var path = _basePath.Combine(prefix + Guid.NewGuid());
+        var path = _basePath.Join(prefix + Guid.NewGuid());
         path.CreateDirectory();
         return new TemporaryPath(path, deleteOnDispose);
     }

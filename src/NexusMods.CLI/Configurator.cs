@@ -3,6 +3,10 @@ using System.CommandLine.Parsing;
 
 namespace NexusMods.CLI;
 
+/// <summary>
+/// Due to some circular references between renderers, commandline builders and verbs, this class allows
+/// for late-binding of renderers
+/// </summary>
 public class Configurator
 {
     private readonly IEnumerable<IRenderer> _renderers;
@@ -13,6 +17,11 @@ public class Configurator
         Renderer = _renderers.First();
     }
 
+    
+    /// <summary>
+    /// Configures the renderer output based on the commandline arguments
+    /// </summary>
+    /// <param name="context"></param>
     public void Configure(InvocationContext context)
     {
         var renderer = context.BindingContext.ParseResult.RootCommandResult.Children.OfType<OptionResult>()

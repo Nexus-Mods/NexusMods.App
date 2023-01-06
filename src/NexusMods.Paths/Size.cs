@@ -3,6 +3,10 @@ using System.Numerics;
 
 namespace NexusMods.Paths;
 
+/// <summary>
+/// There are many cases where a value in the app should be a positive number attached to the size of some data,
+/// instead of leaving this data unmarked, we wrap it in a readonly value struct to make it explicit.
+/// </summary>
 public readonly struct Size : 
     IEquatable<Size>, 
     IComparable<Size>, 
