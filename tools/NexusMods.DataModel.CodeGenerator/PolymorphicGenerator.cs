@@ -47,7 +47,7 @@ public class PolymorphicGenerator<T>
                 .Select(p =>
                 {
                     var name = p.CustomAttributes.Where(c => c.AttributeType == typeof(JsonPropertyNameAttribute))
-                        .Select(a => (string) a.ConstructorArguments.FirstOrDefault().Value)
+                        .Select(a => (string) a.ConstructorArguments.FirstOrDefault().Value!)
                         .FirstOrDefault() ?? p.Name;
 
                     return new

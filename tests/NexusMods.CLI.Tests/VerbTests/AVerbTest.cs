@@ -31,7 +31,7 @@ public abstract class AVerbTest
         LastLog = LoggingRenderer.Logs.Value!;
     }
 
-    public List<object> LastLog { get; set; }
+    public List<object> LastLog { get; set; } = new();
 
     protected int LogSize => LastLog.Count;
     protected Table LastTable => LastLog.OfType<Table>().First();

@@ -23,6 +23,7 @@ public class CFile
         Code("using NexusMods.Paths;");
         Code("using NexusMods.DataModel.ArchiveContents;");
         Code("using NexusMods.FileExtractor.FileSignatures;");
+        Code("#pragma warning disable CS8604");
         Code("");
     }
 

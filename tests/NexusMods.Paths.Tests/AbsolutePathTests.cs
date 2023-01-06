@@ -189,9 +189,9 @@ public class AbsolutePathTests
         Assert.True(DateTime.UtcNow - fileOne.CreationTimeUtc < TimeSpan.FromSeconds(1));
         
         var files = testDir.EnumerateFiles(Ext.Txt).ToHashSet();
-        Assert.True(files.Contains(fileOne));
-        Assert.True(files.Contains(fileTwo));
-        Assert.True(files.Contains(fileThree));
+        Assert.Contains(fileOne, files);
+        Assert.Contains(fileTwo, files);
+        Assert.Contains(fileThree, files);
 
         // Make sure we can delete read only files
         fileThree.FileInfo.IsReadOnly = true;

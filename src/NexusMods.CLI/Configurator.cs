@@ -10,6 +10,7 @@ public class Configurator
     public Configurator(IEnumerable<IRenderer> renderers)
     {
         _renderers = renderers;
+        Renderer = _renderers.First();
     }
 
     public void Configure(InvocationContext context)

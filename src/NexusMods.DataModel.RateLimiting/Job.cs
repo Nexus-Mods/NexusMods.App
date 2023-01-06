@@ -5,8 +5,8 @@ namespace NexusMods.DataModel.RateLimiting;
 public class Job<TResource, TUnit> : IJob<TResource, TUnit>, IDisposable
 where TUnit : IAdditionOperators<TUnit, TUnit, TUnit>, IDivisionOperators<TUnit, TUnit, double>
 {
-    public ulong Id { get; internal init; }
-    public string Description { get; internal init; }
+    public required ulong Id { get; init; }
+    public required string Description { get; init; }
     public Percent Progress
     {
         get
@@ -19,8 +19,8 @@ where TUnit : IAdditionOperators<TUnit, TUnit, TUnit>, IDivisionOperators<TUnit,
         }
     }
     public bool Started { get; internal set; }
-    public IResource<TResource, TUnit> _resource { get; init; }
-    public IResource Resource => _resource;
+    public required IResource<TResource, TUnit> TypedResource { get; init; }
+    public IResource Resource => TypedResource;
 
     private bool _isFinished;
 
@@ -28,20 +28,20 @@ where TUnit : IAdditionOperators<TUnit, TUnit, TUnit>, IDivisionOperators<TUnit,
     {
         if (_isFinished) return;
         _isFinished = true;
-        _resource.Finish(this);
+        TypedResource.Finish(this);
     }
 
-    public TUnit Current { get; internal set; }
+    public required TUnit Current { get; set; }
     public TUnit? Size { get; set; }
 
     public async ValueTask Report(TUnit processedSize, CancellationToken token)
     {
-        await _resource.Report(this, processedSize, token);
+        await TypedResource.Report(this, processedSize, token);
         Current += processedSize;
     }
 
     public void ReportNoWait(TUnit processedSize)
     {
-        _resource.ReportNoWait(this, processedSize);
+        TypedResource.ReportNoWait(this, processedSize);
     }
 }

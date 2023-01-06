@@ -5,9 +5,10 @@ namespace NexusMods.CLI.Tests;
 public class LoggingRenderer : IRenderer
 {
     public static AsyncLocal<List<Object>> Logs = new();
-    public async Task Render<T>(T o)
-    { 
-        Logs.Value!.Add(o);
+    public Task Render<T>(T o)
+    {
+        Logs.Value!.Add(o!);
+        return Task.CompletedTask;
     }
 
     public string Name => "logging";

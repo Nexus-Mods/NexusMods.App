@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.DataModel.Loadouts;
+#pragma warning disable CS8604
 
 namespace NexusMods.DataModel.Abstractions;
 
@@ -41,7 +42,7 @@ where TV : Entity where TK : notnull
         return _coll.ContainsKey(val);
     }
 
-    public TV this[TK k] => _store.Get<TV>(_coll[k]);
+    public TV this[TK k] => _store.Get<TV>(_coll[k])!;
 
     public IEnumerable<KeyValuePair<TK, Id>> Ids => _coll;
     public int Count => _coll.Count;
@@ -50,7 +51,7 @@ where TV : Entity where TK : notnull
         get
         {
             foreach (var id in _coll.Values)
-                yield return _store.Get<TV>(id);
+                yield return _store.Get<TV>(id)!;
         }
     }
 
@@ -60,7 +61,7 @@ where TV : Entity where TK : notnull
     public IEnumerator<KeyValuePair<TK, TV>> GetEnumerator()
     {
         foreach (var (key, value) in _coll)
-            yield return KeyValuePair.Create(key, _store.Get<TV>(value));
+            yield return KeyValuePair.Create(key, _store.Get<TV>(value)!);
     }
 
     IEnumerator IEnumerable.GetEnumerator()

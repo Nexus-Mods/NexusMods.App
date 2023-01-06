@@ -39,7 +39,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
     protected readonly IGame Game;
     protected readonly GameInstallation Install;
-    protected LoadoutMarker BaseList;
+    protected LoadoutMarker? BaseList;
     protected readonly ILogger<T> _logger;
     private readonly IHost _host;
     

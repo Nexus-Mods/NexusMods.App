@@ -50,6 +50,11 @@ public readonly struct Size :
         return _size == other._size;
     }
 
+    public override int GetHashCode()
+    {
+        return _size.GetHashCode();
+    }
+
     public override bool Equals(object? obj)
     {
         if (obj is Size s) return _size == s._size;

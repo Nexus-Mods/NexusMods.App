@@ -32,8 +32,10 @@ public static class Services
 
         if (!registerConcreteLocators) return services;
 
+#pragma warning disable CA1416
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) 
             services.AddSingleton<AHandler<GOGGame, long>>(_ => new GOGHandler());
+#pragma warning restore CA1416
 
         services.AddSingleton(s => CreateSteamHandler());
         

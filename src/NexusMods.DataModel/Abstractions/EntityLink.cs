@@ -31,7 +31,7 @@ public record EntityLink <T> : IEmptyWithDataStore<EntityLink<T>> where T : Enti
     private T Get()
     {
         _value ??= _store.Get<T>(Id);
-        return _value;
+        return _value!;
     }
 
     public static EntityLink<T> Empty(IDataStore store) => new(IdEmpty.Empty, store);
@@ -66,7 +66,7 @@ public class EntityLinkConverter<T> : JsonConverter<EntityLink<T>>
     }
     public override EntityLink<T>? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        var id = JsonSerializer.Deserialize<Id>(ref reader, options);
+        var id = JsonSerializer.Deserialize<Id>(ref reader, options)!;
         return new EntityLink<T>(id, _store);
     }
 

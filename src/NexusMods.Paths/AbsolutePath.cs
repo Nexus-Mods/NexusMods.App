@@ -96,7 +96,7 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
         return Parse(input);
     }
 
-    public override string ToString()
+    public readonly override string ToString()
     {
         if (Parts == default) return "";
         if (PathFormat != PathFormat.Windows) 
@@ -164,7 +164,7 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
         return Join(converted);
     }
 
-    public AbsolutePath Join(params RelativePath[] paths)
+    public readonly AbsolutePath Join(params RelativePath[] paths)
     {
         var newLen = Parts.Length + paths.Sum(p => p.Parts.Length);
         var newParts = new string[newLen];
@@ -324,7 +324,7 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
         await src.CopyToAsync(output, token);
     }
     
-    private string ToNativePath()
+    private readonly string ToNativePath()
     {
         return ToString();
     }
@@ -368,7 +368,7 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
         new(Parts[..1], PathFormat) : 
         new AbsolutePath(Array.Empty<string>(), PathFormat);
 
-    public IEnumerable<AbsolutePath> EnumerateFiles(string pattern = "*",
+    public readonly IEnumerable<AbsolutePath> EnumerateFiles(string pattern = "*",
         bool recursive = true)
     {
         return Directory.EnumerateFiles(ToNativePath(), pattern,
@@ -400,7 +400,7 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
     }
 
 
-    public IEnumerable<AbsolutePath> EnumerateDirectories(bool recursive = true)
+    public readonly IEnumerable<AbsolutePath> EnumerateDirectories(bool recursive = true)
     {
         if (!DirectoryExists()) return Array.Empty<AbsolutePath>();
         return Directory.EnumerateDirectories(ToNativePath(), "*",
