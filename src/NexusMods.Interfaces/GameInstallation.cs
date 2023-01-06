@@ -4,7 +4,7 @@ using NexusMods.Paths;
 namespace NexusMods.Interfaces;
 
 /// <summary>
-/// Descriptor object for a single game
+/// Description of a given installation of a given name
 /// </summary>
 public class GameInstallation
 {
@@ -24,14 +24,26 @@ public class GameInstallation
     /// </summary>
     public IGame Game { get; init; } = null!;
 
+    /// <summary>
+    /// Empty game installation, used for testing and some cases where a property must be set
+    /// </summary>
     public static GameInstallation Empty => new();
 
 
+    /// <summary>
+    /// Returns the game name and version as 
+    /// </summary>
+    /// <returns></returns>
     public override string ToString()
     {
         return $"{Game.Name} v{Version}";
     }
 
+    /// <summary>
+    /// Converts a Absolute path to a relative path assuming the path exists under a game path. 
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
     public GamePath ToGamePath(AbsolutePath path)
     {
         return Locations.Where(l => path.InFolder(l.Value))
