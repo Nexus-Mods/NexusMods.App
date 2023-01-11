@@ -23,6 +23,8 @@ public class CFile
         Code("using NexusMods.Paths;");
         Code("using NexusMods.DataModel.ArchiveContents;");
         Code("using NexusMods.FileExtractor.FileSignatures;");
+        Code("using System.Collections.Immutable;");
+        Code("using NexusMods.DataModel.Sorting;");
         Code("#pragma warning disable CS8604");
         Code("");
     }

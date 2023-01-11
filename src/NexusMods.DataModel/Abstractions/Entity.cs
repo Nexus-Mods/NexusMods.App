@@ -35,7 +35,7 @@ public abstract record Entity
     }
 
     [JsonIgnore]
-    public Id Id
+    public Id DataStoreId
     {
         get { return _id ??= Persist(); }
     }

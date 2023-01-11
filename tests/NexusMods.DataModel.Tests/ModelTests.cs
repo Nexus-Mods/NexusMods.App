@@ -30,9 +30,9 @@ public class ModelTests : ADataModelTest<ModelTests>
             Store = DataStore
         };
         file.Store.Should().NotBeNull();
-        file.Id.Should().NotBeNull();
+        file.DataStoreId.Should().NotBeNull();
 
-        DataStore.Get<FromArchive>(file.Id)!.To.Should().BeEquivalentTo(file.To);
+        DataStore.Get<FromArchive>(file.DataStoreId)!.To.Should().BeEquivalentTo(file.To);
     }
 
     [Fact]
@@ -66,18 +66,25 @@ public class ModelTests : ADataModelTest<ModelTests>
     public async Task RenamingAListDoesntChangeOldIds()
     {
         var loadout = await LoadoutManager.ManageGame(Install, Guid.NewGuid().ToString());
-        await loadout.Install(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
-        await loadout.Install(DATA_ZIP_LZMA, "Mod2", CancellationToken.None);
+        var id1 = await loadout.Install(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
+        var id2 = await loadout.Install(DATA_ZIP_LZMA, "Mod2", CancellationToken.None);
 
-        var history = loadout.History().Select(h => h.Id).ToArray();
+        id1.Should().NotBeEquivalentTo(id2);
+        id1.Should().BeEquivalentTo(id1);
+        id2.Should().BeEquivalentTo(id2);
+
+        loadout.Value.Mods.Count(m => m.Id == id1).Should().Be(1);
+        loadout.Value.Mods.Count(m => m.Id == id2).Should().Be(1);
+        
+        var history = loadout.History().Select(h => h.DataStoreId).ToArray();
         history.Length.Should().Be(3);
         
         LoadoutManager.Alter(loadout.Value.LoadoutId, l => l.PreviousVersion.Value);
 
-        var newHistory = loadout.History().Select(h => h.Id).ToArray();
+        var newHistory = loadout.History().Select(h => h.DataStoreId).ToArray();
 
         newHistory.Skip(1).Should().BeEquivalentTo(history);
-
+        
     }
 
 }

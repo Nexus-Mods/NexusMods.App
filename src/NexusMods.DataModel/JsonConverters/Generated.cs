@@ -11,14 +11,15 @@ using NexusMods.Interfaces;
 using NexusMods.Paths;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.FileExtractor.FileSignatures;
-#pragma warning disable CS8601
-#pragma warning disable CS8600
+using System.Collections.Immutable;
+using NexusMods.DataModel.Sorting;
+#pragma warning disable CS8604
 
 public class NexusMods_DataModel_Abstractions_EntityConverter : JsonConverter<NexusMods.DataModel.Abstractions.Entity> {
   public static IServiceCollection ConfigureServices(IServiceCollection services) {
     services.AddSingleton<JsonConverter, NexusMods_DataModel_Loadouts_ListRegistryConverter>();
-    services.AddSingleton<JsonConverter, NexusMods_DataModel_Loadouts_ModConverter>();
     services.AddSingleton<JsonConverter, NexusMods_DataModel_Loadouts_LoadoutConverter>();
+    services.AddSingleton<JsonConverter, NexusMods_DataModel_Loadouts_ModConverter>();
     services.AddSingleton<JsonConverter, NexusMods_DataModel_Loadouts_ModFiles_FromArchiveConverter>();
     services.AddSingleton<JsonConverter, NexusMods_DataModel_Loadouts_ModFiles_GameFileConverter>();
     services.AddSingleton<JsonConverter, NexusMods_DataModel_ArchiveContents_AnalyzedFileConverter>();
@@ -69,10 +70,10 @@ public class NexusMods_DataModel_Abstractions_EntityConverter : JsonConverter<Ne
       case NexusMods.DataModel.Loadouts.ListRegistry v3:
         JsonSerializer.Serialize(writer, v3, options);
          return;
-      case NexusMods.DataModel.Loadouts.Mod v4:
+      case NexusMods.DataModel.Loadouts.Loadout v4:
         JsonSerializer.Serialize(writer, v4, options);
          return;
-      case NexusMods.DataModel.Loadouts.Loadout v5:
+      case NexusMods.DataModel.Loadouts.Mod v5:
         JsonSerializer.Serialize(writer, v5, options);
          return;
       case NexusMods.DataModel.ArchiveContents.AnalyzedFile v6:
@@ -379,7 +380,9 @@ public class NexusMods_DataModel_ArchiveContents_AnalyzedArchiveConverter : Json
               if (reader.TokenType != JsonTokenType.StartObject)
                 throw new JsonException();
               EntityHashSet<AModFile> filesProp = default;
+              ModId idProp = default;
               string nameProp = default;
+              ImmutableHashSet<ISortRule<Mod,ModId>> sortrulesProp = default;
               while (true) {
                 reader.Read();
                 if (reader.TokenType == JsonTokenType.EndObject) {
@@ -392,8 +395,14 @@ public class NexusMods_DataModel_ArchiveContents_AnalyzedArchiveConverter : Json
                   case "Files":
                     filesProp = JsonSerializer.Deserialize<EntityHashSet<AModFile>>(ref reader, options);
                     break;
+                  case "Id":
+                    idProp = JsonSerializer.Deserialize<ModId>(ref reader, options);
+                    break;
                   case "Name":
                     nameProp = JsonSerializer.Deserialize<string>(ref reader, options);
+                    break;
+                  case "SortRules":
+                    sortrulesProp = JsonSerializer.Deserialize<ImmutableHashSet<ISortRule<Mod,ModId>>>(ref reader, options);
                     break;
                   default:
                     reader.Skip();
@@ -402,7 +411,9 @@ public class NexusMods_DataModel_ArchiveContents_AnalyzedArchiveConverter : Json
               }
               return new NexusMods.DataModel.Loadouts.Mod {
                 Files = filesProp,
+                Id = idProp,
                 Name = nameProp,
+                SortRules = sortrulesProp,
                 Store = _store.Value
                 };
               }
@@ -411,8 +422,12 @@ public class NexusMods_DataModel_ArchiveContents_AnalyzedArchiveConverter : Json
                 writer.WriteString("$type", "NexusMods.DataModel.ListRegistry");
                 writer.WritePropertyName("Files");
                 JsonSerializer.Serialize<EntityHashSet<AModFile>>(writer, value.Files, options);
+                writer.WritePropertyName("Id");
+                JsonSerializer.Serialize<ModId>(writer, value.Id, options);
                 writer.WritePropertyName("Name");
                 JsonSerializer.Serialize<string>(writer, value.Name, options);
+                writer.WritePropertyName("SortRules");
+                JsonSerializer.Serialize<ImmutableHashSet<ISortRule<Mod,ModId>>>(writer, value.SortRules, options);
                 writer.WriteEndObject();
               }
             }

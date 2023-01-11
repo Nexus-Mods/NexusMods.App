@@ -20,7 +20,7 @@ public class Rename
     
     public Task Run(Loadout loadout, string name)
     {
-        _manager.Alter(loadout.LoadoutId, _ => loadout, $"Renamed {loadout.Id} to {name}");
+        _manager.Alter(loadout.LoadoutId, _ => loadout, $"Renamed {loadout.DataStoreId} to {name}");
         return Task.CompletedTask;
     }
 }

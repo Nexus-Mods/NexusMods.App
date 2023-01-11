@@ -50,17 +50,17 @@ public class Root<TRoot> where TRoot : Entity, IEmptyWithDataStore<TRoot>
         var oldRoot = _root.Id == IdEmpty.Empty ? TRoot.Empty(Store) : _root.Value;
 
         var newRoot = f(oldRoot);
-        if (newRoot.Id == oldRoot.Id)
+        if (newRoot.DataStoreId == oldRoot.DataStoreId)
             return;
 
-        if (!Store.PutRoot(Type, _root.Id, newRoot.Id))
+        if (!Store.PutRoot(Type, _root.Id, newRoot.DataStoreId))
         {
             var newId = Store.GetRoot(Type)!;
             _root = new EntityLink<TRoot>(newId, Store);
             goto restart;
         }
 
-        _root = new EntityLink<TRoot>(newRoot.Id, Store);
+        _root = new EntityLink<TRoot>(newRoot.DataStoreId, Store);
 
         _changes.OnNext((oldRoot, newRoot));
     }

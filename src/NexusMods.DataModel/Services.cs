@@ -6,6 +6,7 @@ using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.RateLimiting;
+using NexusMods.DataModel.Sorting;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Interfaces;
 using NexusMods.Paths;
@@ -31,6 +32,9 @@ public static class Services
         coll.AddSingleton(typeof(EntityDictionaryConverter<,>));
         coll.AddSingleton<JsonConverter, EntityLinkConverterFactory>();
         coll.AddSingleton(typeof(EntityLinkConverter<>));
+
+        coll.AddSingleton<JsonConverter, ISortRuleConverterFactory>();
+        coll.AddSingleton(typeof(ISortRuleConverter<,>));
         
         coll.AddSingleton<IDataStore>(s => new LMDBDataStore(baseFolder.Value.Join("DataModel_LMDB"), s));
         coll.AddSingleton(s => new ArchiveManager(s.GetRequiredService<ILogger<ArchiveManager>>(),

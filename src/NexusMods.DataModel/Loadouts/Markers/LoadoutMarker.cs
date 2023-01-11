@@ -35,10 +35,10 @@ public class LoadoutMarker : IMarker<Loadout>
         _manager.Alter(_id, list => list with {Mods = list.Mods.With(newMod)}, $"Added mod {newMod.Name}");
     }
 
-    public async Task Install(AbsolutePath file, string name, CancellationToken token)
+    public async Task<ModId> Install(AbsolutePath file, string name, CancellationToken token)
     {
         await _manager.ArchiveManager.ArchiveFile(file, token);
-        await _manager.InstallMod(_id, file, name, token);
+        return (await _manager.InstallMod(_id, file, name, token)).ModId;
     }
     public IEnumerable<(AModFile File, Mod Mod)> FlattenList()
     {

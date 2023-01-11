@@ -7,13 +7,21 @@ using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.DataModel.CodeGenerator;
 
-public class PolymorphicGenerator<T>
+public class PolymorphicGenerator
 {
-    public PolymorphicGenerator()
+    private readonly Type _t;
+    private readonly bool _isGeneric;
+    private readonly int _genericArity;
+
+    public PolymorphicGenerator(Type t)
     {
-        var types = typeof(T).Assembly.GetTypes()
+        _t = t;
+        _isGeneric = _t.IsGenericTypeDefinition;
+        _genericArity = _t.GetGenericArguments().Count();
+        
+        var types = _t.Assembly.GetTypes()
             .Where(t => !t.IsAbstract && !t.IsInterface)
-            .Where(t => t.IsAssignableTo(typeof(T)));
+            .Where(t => t.IsAssignableTo(_t));
 
         foreach (var type in types)
         {
@@ -22,7 +30,7 @@ public class PolymorphicGenerator<T>
                 .FirstOrDefault();
 
             if (nameAttr == default)
-                throw new JsonException($"Type {type} of interface {typeof(T)} does not have a JsonNameAttribute");
+                throw new JsonException($"Type {type} of interface {_t} does not have a JsonNameAttribute");
             Registry[nameAttr] = type;
             ReverseRegistry[type] = nameAttr;
 
@@ -60,7 +68,11 @@ public class PolymorphicGenerator<T>
                 .ToArray();
 
             var mungedName = type.FullName!.Replace(".", "_");
-            c.Code($"public class {mungedName}Converter : JsonConverter<{type.FullName}> {{");
+            string genericPostfix = "";
+            if (_isGeneric)
+                genericPostfix = "<" + string.Join(", ", type.GetGenericArguments().Select(t => t.Name)) + ">";
+            
+            c.Code($"public class {mungedName}Converter{genericPostfix} : JsonConverter<{type.FullName}{genericPostfix}> {{");
 
             if (type.IsAssignableTo(typeof(Entity)))
             {
@@ -206,8 +218,8 @@ public class PolymorphicGenerator<T>
     
     public void GenerateGeneric(CFile c)
     {
-        var type = typeof(T);
-        var mungedName = typeof(T).FullName!.Replace(".", "_");
+        var type = _t;
+        var mungedName = _t.FullName!.Replace(".", "_");
 
         c.Code($"public class {mungedName}Converter : JsonConverter<{type.FullName}> {{");
 
