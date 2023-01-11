@@ -19,9 +19,9 @@ public class SerializerTests
     public void CanSerializeASimpleType()
     {
         var opts = new JsonSerializerOptions();
-        opts.Converters.Add(new ExpressionGeneratorConverter<BasicClass>(_provider));
+        opts.Converters.Add(new ConcreteConverterGenerator<BasicClass>(_provider));
         
-        var json = JsonSerializer.Serialize(new BasicClass { SomeString = "One", SomeOtherString = "Two" }, opts);
+        var json = JsonSerializer.Serialize(new BasicClass { SomeString = "One", SomeOtherString = "Two", BaseString = "Base"}, opts);
         
         json.Should().Contain("\"$type\":\"BasicClass\"", "data is serialized with a type hint");
         
@@ -35,13 +35,15 @@ public class SerializerTests
     public void CanSerializeAnAdvancedType()
     {
         var opts = new JsonSerializerOptions();
-        opts.Converters.Add(new ExpressionGeneratorConverter<BasicClass>(_provider));
-        opts.Converters.Add(new ExpressionGeneratorConverter<AdvancedClass>(_provider));
+        opts.Converters.Add(new ConcreteConverterGenerator<BasicClass>(_provider));
+        opts.Converters.Add(new ConcreteConverterGenerator<AdvancedClass>(_provider));
         
         var originalData = new AdvancedClass()
         {
-            SubClass = new BasicClass { SomeString = "Some", SomeOtherString = "String" },
-            ListOfInts = new List<int> { 4, 2 }, SomeInt = 42
+            SubClass = new BasicClass { SomeString = "Some", SomeOtherString = "String", BaseString = "Base2"},
+            ListOfInts = new List<int> { 4, 2 }, 
+            SomeInt = 42,
+            BaseString = "Base"
         };
         
         var json = JsonSerializer.Serialize(originalData, opts);
@@ -55,9 +57,37 @@ public class SerializerTests
         data.Should().BeEquivalentTo(originalData);
     }
 
+    [Fact]
+    public void CanSerializeViaInterfaceTypes()
+    {
+        var opts = new JsonSerializerOptions();
+        opts.Converters.Add(new ConcreteConverterGenerator<BasicClass>(_provider));
+        opts.Converters.Add(new ConcreteConverterGenerator<AdvancedClass>(_provider));
+        opts.Converters.Add(new AbstractClassConverterGenerator<IInterface>(_provider));
+        
+        var json = JsonSerializer.Serialize<IInterface>(new BasicClass { SomeString = "One", SomeOtherString = "Two", BaseString = "Base"}, opts);
+        
+        json.Should().Contain("\"$type\":\"BasicClass\"", "data is serialized with a type hint");
+        
+        var data = (BasicClass)JsonSerializer.Deserialize<IInterface>(json, opts);
+        
+        data.SomeString.Should().Be("One", "SomeString should be deserialized");
+        data.SomeOtherString.Should().Be(null, "SomeOtherString has a JsonIgnore attribute");
+        
+    }
+    
+    public interface IInterface
+    {
+        public string BaseString { get; init; }
+    }
+
+    public abstract class ABase : IInterface
+    {
+        public required string BaseString { get; init; }
+    }
 
     [JsonName("BasicClass")]
-    public class BasicClass
+    public class BasicClass : ABase
     {
         public string SomeString { get; set; }
         
@@ -66,7 +96,7 @@ public class SerializerTests
     }
     
     [JsonName("ClassWithInts")]
-    public class AdvancedClass
+    public class AdvancedClass : ABase
     {
         public int SomeInt { get; set; }
         public List<int> ListOfInts { get; set; }
