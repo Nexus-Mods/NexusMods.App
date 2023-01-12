@@ -58,7 +58,8 @@ public abstract class AExpressionConverterGenerator<T> : JsonConverter<T>
                     PropName = name.ToLower() + "Prop",
                     Property = p,
                     Type = p.PropertyType,
-                    RealName = p.Name
+                    RealName = p.Name,
+                    IsInjected = p.CustomAttributes.Any(c => c.AttributeType == typeof(JsonInjectedAttribute))
                 };
             })
             .OrderBy(p => p.Name)
@@ -84,6 +85,7 @@ public abstract class AExpressionConverterGenerator<T> : JsonConverter<T>
         public required PropertyInfo Property { get; init; }
         public required Type Type { get; init; }
         public required string RealName { get; init; }
+        public bool IsInjected { get; set; }
     }
 
 }

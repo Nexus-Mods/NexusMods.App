@@ -15,7 +15,6 @@ namespace NexusMods.DataModel.JsonConverters;
 /// </summary>
 public class ConcreteConverterGenerator<T> : AExpressionConverterGenerator<T>
 {
-    private readonly IServiceProvider _provider;
     private readonly Type _type;
 
     public ConcreteConverterGenerator(IServiceProvider provider) : base(provider)
@@ -39,7 +38,7 @@ public class ConcreteConverterGenerator<T> : AExpressionConverterGenerator<T>
         var exprs = new List<Expression>();
 
         exprs.Add(Expression.IfThen(Expression.NotEqual(Expression.Property(readerParam, "TokenType"),
-            Expression.Constant(JsonTokenType.StartObject)),
+                Expression.Constant(JsonTokenType.StartObject)),
             Expression.Throw(Expression.New(typeof(JsonException).GetConstructor(new[] { typeof(string) })!,
                 Expression.Constant("Expected StartObject")))));
 
@@ -61,12 +60,16 @@ public class ConcreteConverterGenerator<T> : AExpressionConverterGenerator<T>
 
         var clauses = members.Select(m =>
         {
+            if (m.IsInjected)
+            {
+                return null;
+            }
             if (MethodMappings.TryGetValue(m.Type, out var mapping))
             {
                 return Expression.SwitchCase(Expression.Block(
-                    readNext,
-                    Expression.Assign(vars[m.RealName], Expression.Call(readerParam, mapping.Reader, null)),
-                    Expression.Break(endOfSwitch)),
+                        readNext,
+                        Expression.Assign(vars[m.RealName], Expression.Call(readerParam, mapping.Reader, null)),
+                        Expression.Break(endOfSwitch)),
                     Expression.Constant(m.RealName));
             }
             else
@@ -78,26 +81,27 @@ public class ConcreteConverterGenerator<T> : AExpressionConverterGenerator<T>
                     Expression.Break(endOfSwitch)),
                     Expression.Constant(m.RealName));
             }
-        });
+        })
+            .Where(c => c != null)
+            .Select(c => c!);
         
         loopExprs.Add(Expression.Switch(Expression.Call(readerParam, "GetString", null), null, clauses.ToArray()));
         loopExprs.Add(Expression.Label(endOfSwitch));
         exprs.Add(Expression.Loop(Expression.Block(loopExprs)));
         exprs.Add(Expression.Label(loopExit));
         exprs.Add(Expression.MemberInit(Expression.New(_type), 
-            members.Select(m => (MemberBinding)Expression.Bind(m.Property, vars[m.RealName]))));
+            members.Select(m =>
+            {
+                if (m.IsInjected)
+                    return (MemberBinding)Expression.Bind(m.Property, Expression.Constant(provider.GetService(m.Type)));
+                return (MemberBinding)Expression.Bind(m.Property, vars[m.RealName]);
+            })));
 
         var block = Expression.Block(vars.Values, exprs);
         
         var d = Expression.Lambda<ReadDelegate>(block, false, readerParam, typeToConvertParam, optionsParam);
         return d.Compile();
 
-    }
-    
-    private IEnumerable<Type> GetSubClasses()
-    {
-        var finders = _provider.GetRequiredService<IEnumerable<ITypeFinder>>();
-        return finders.SelectMany(f => f.DescendentsOf(_type)).Distinct();
     }
 
     private WriteDelegate GenerateWriter()
@@ -118,6 +122,10 @@ public class ConcreteConverterGenerator<T> : AExpressionConverterGenerator<T>
 
         foreach (var member in members)
         {
+            if (member.IsInjected)
+            {
+                continue;
+            }
             if (MethodMappings.TryGetValue(member.Type, out var mapping))
             {
                 exprs.Add(Expression.Call(writerParam, mapping.Writer, null,

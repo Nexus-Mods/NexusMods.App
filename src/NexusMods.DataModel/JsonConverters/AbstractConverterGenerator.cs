@@ -1,22 +1,51 @@
 ﻿using System.Linq.Expressions;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 
 namespace NexusMods.DataModel.JsonConverters;
 
-public class AbstractClassConverterGenerator<T> : AExpressionConverterGenerator<T>
+public class AbstractClassConverterFactory<T> : JsonConverterFactory
 {
-    public AbstractClassConverterGenerator(IServiceProvider provider) : base(provider)
+    private readonly Type _type;
+    private readonly IServiceProvider _provider;
+
+    public AbstractClassConverterFactory(IServiceProvider provider)
     {
-        _readerFunction = new Lazy<ReadDelegate>(() => GenerateReaderFunction(Provider));
-        _writerFunction = new Lazy<WriteDelegate>(GenerateWriter);
+        _provider = provider;
+        _type = typeof(T);
+    }
+    
+    public override bool CanConvert(Type typeToConvert)
+    {
+        return typeToConvert.IsAssignableTo(_type);
     }
 
-    private WriteDelegate GenerateWriter()
+    public override JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options)
     {
-        var registry = new Dictionary<string, Type>();
-        var reverseRegistry = new Dictionary<Type, string>();
+        if (typeToConvert.IsAbstract || typeToConvert.IsInterface)
+        {
+            return (JsonConverter?)Activator.CreateInstance(typeof(AbstractClassConverterGenerator<>)
+                .MakeGenericType(typeToConvert), _provider);
+        }
+        return (JsonConverter?)Activator.CreateInstance(typeof(ConcreteConverterGenerator<>)
+            .MakeGenericType(typeToConvert), _provider);
+    }
+}
+
+public class AbstractClassConverterGenerator<T> : JsonConverter<T>
+{
+    private readonly IServiceProvider _provider;
+    private readonly Type _type;
+    private readonly Dictionary<string,Type> _registry;
+
+    public AbstractClassConverterGenerator(IServiceProvider provider)
+    {
+        _provider = provider;
+        _type = typeof(T);
+
+        _registry = new Dictionary<string, Type>();
 
         foreach (var type in GetSubClasses())
         {
@@ -25,58 +54,52 @@ public class AbstractClassConverterGenerator<T> : AExpressionConverterGenerator<
                 .FirstOrDefault();
 
             if (nameAttr == default)
-                throw new JsonException($"Type {type} of interface {Type} does not have a JsonNameAttribute");
-            registry[nameAttr] = type;
-            reverseRegistry[type] = nameAttr;
+                throw new JsonException($"Type {type} of interface {_type} does not have a JsonNameAttribute");
+            _registry[nameAttr] = type;
 
             var aliases = type.CustomAttributes.Where(t => t.AttributeType == typeof(JsonAliasAttribute))
                 .Select(t => t.ConstructorArguments.First());
+            
+            
 
             foreach (var alias in aliases) 
-                registry[(string) alias.Value!] = type;
+                _registry[(string) alias.Value!] = type;
+            
+            
         }
         
-        var writerParam = Expression.Parameter(typeof(Utf8JsonWriter), "writer");
-        var valueParam = Expression.Parameter(typeof(T), "value");
-        var optionsParam = Expression.Parameter(typeof(JsonSerializerOptions), "options");
 
-        var exprs = new List<Expression>();
-
-        var switches = new List<SwitchCase>();
-        
-        var endOfSwitch = Expression.Label("endOfSwitch");
-
-        foreach (var (name, type) in registry)
-        {
-            switches.Add(Expression.SwitchCase(
-                Expression.Block(Expression.Call(typeof(JsonSerializer), "Serialize", new []{type},
-                writerParam, Expression.TypeAs(valueParam, type), optionsParam),
-                    Expression.Break(endOfSwitch)),
-            Expression.Constant(type)));
-        }
-
-        
-        exprs.Add(Expression.Switch(Expression.Call(Expression.TypeAs(valueParam, typeof(object)), "GetType", null), 
-            Expression.Throw(Expression.New(typeof(JsonException).GetConstructor(new[] { typeof(string) })!,
-                Expression.Constant("Unregistered subclass in serialization"))),
-            switches.ToArray()));
-        exprs.Add(Expression.Label(endOfSwitch));
-        var block = Expression.Block(exprs);
-
-        var lambda = Expression.Lambda<WriteDelegate>(block, writerParam, valueParam, optionsParam);
-        return lambda.Compile();
     }
 
-    private ReadDelegate GenerateReaderFunction(IServiceProvider provider)
-    {
-        throw new NotImplementedException();
-    }
-    
+
+
     private IEnumerable<Type> GetSubClasses()
     {
-        var finders = Provider.GetRequiredService<IEnumerable<ITypeFinder>>();
-        return finders.SelectMany(f => f.DescendentsOf(Type))
+        var finders = _provider.GetRequiredService<IEnumerable<ITypeFinder>>();
+        return finders.SelectMany(f => f.DescendentsOf(_type))
             .Where(d => !d.IsAbstract && !d.IsInterface)
             .Distinct();
+    }
+
+    public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        var readAhead = reader;
+        if (readAhead.TokenType != JsonTokenType.StartObject)
+            throw new JsonException("Expected StartObject token");
+        readAhead.Read();
+        if (readAhead.GetString() != "$type")
+            throw new JsonException("Expected $type as first property on object");
+        readAhead.Read();
+        var typeName = readAhead.GetString()!;
+        if (_registry.TryGetValue(typeName, out var type))
+        {
+            return (T?)JsonSerializer.Deserialize(ref reader, type, options);
+        }
+        throw new JsonException("Unknown type " + typeName);
+    }
+
+    public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
+    {
+        JsonSerializer.Serialize(writer, value, value!.GetType(), options);
     }
 }
