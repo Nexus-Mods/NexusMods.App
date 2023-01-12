@@ -6,6 +6,7 @@ using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Loadouts.ApplySteps;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.RateLimiting;
+using NexusMods.DataModel.Sorting;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
@@ -44,7 +45,8 @@ public class LoadoutMarker : IMarker<Loadout>
     {
         var list = _manager.Get(_id);
         var projected = new Dictionary<GamePath, (AModFile File, Mod Mod)>();
-        foreach (var mod in list.Mods)
+        var mods = Sorter.Sort<Mod, ModId>(list.Mods, m => m.SortRules);
+        foreach (var mod in mods)
         {
             foreach (var file in mod.Files)
             {

@@ -8,6 +8,7 @@ using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.Sorting;
+using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.Interfaces;
 using NexusMods.Paths;
 

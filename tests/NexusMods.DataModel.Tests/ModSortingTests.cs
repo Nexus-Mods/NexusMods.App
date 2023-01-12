@@ -2,6 +2,7 @@
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Sorting;
+using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.DataModel.Tests.Harness;
 
 namespace NexusMods.DataModel.Tests;

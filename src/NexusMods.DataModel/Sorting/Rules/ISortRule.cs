@@ -1,9 +1,6 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
-using Microsoft.Extensions.DependencyInjection;
-using NexusMods.DataModel.Abstractions;
+﻿using NexusMods.DataModel.Abstractions;
 
-namespace NexusMods.DataModel.Sorting;
+namespace NexusMods.DataModel.Sorting.Rules;
 
 /// <summary>
 /// A marker interface for rules used in sorting

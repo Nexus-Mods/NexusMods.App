@@ -2,6 +2,7 @@
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Sorting;
+using NexusMods.DataModel.Sorting.Rules;
 
 namespace NexusMods.DataModel.Loadouts;
 
