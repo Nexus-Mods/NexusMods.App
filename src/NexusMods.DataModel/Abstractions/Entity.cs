@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using NexusMods.DataModel.JsonConverters;
 
 namespace NexusMods.DataModel.Abstractions;
 public abstract record Entity
@@ -13,7 +14,7 @@ public abstract record Entity
     [JsonIgnore]
     public abstract EntityCategory Category { get; }
     
-    [JsonIgnore]
+    [JsonInjected]
     public required IDataStore Store { get; init; }
 
     private Id? _id = null;

@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Collections.Immutable;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using FluentAssertions;
 using NexusMods.DataModel.JsonConverters;
@@ -104,6 +105,39 @@ public class SerializerTests
             data.Should().BeEquivalentTo(row);
         }
     }
+    
+    [Fact]
+    public void CanNestGenericInterfaces()
+    {
+        var opts = new JsonSerializerOptions();
+        opts.Converters.Add(new AbstractClassConverterFactory<IGeneric<int, string>>(_provider));
+        opts.Converters.Add(new ConcreteConverterGenerator<NestedGeneric>(_provider));
+        
+        IGeneric<int, string> data1 = new Specific<int, string>()
+        {
+            T1Val = 42,
+            T2Val = "forty-two"
+        };
+        IGeneric<int, string> data2 = new Specific2<int, string>()
+        {
+            T1Val = 42,
+            T2Val = "forty-three",
+            T3Val = 43
+        };
+
+        var row = new NestedGeneric()
+        {
+            SomeInt = 4,
+            SomeSet = ImmutableHashSet<IGeneric<int, string>>.Empty.Add(data1).Add(data2)
+        };
+
+        var json = JsonSerializer.Serialize(row, opts);
+        json.Should().Contain("$type", "because the value supports polymorphism");
+            
+        var data = JsonSerializer.Deserialize<NestedGeneric>(json, opts);
+        
+        data.Should().BeEquivalentTo(row);
+    }
 
     [Fact]
     public void CanInjectProperties()
@@ -156,6 +190,13 @@ public class SerializerTests
         public int SomeInt { get; set; }
         public List<int> ListOfInts { get; set; }
         public BasicClass SubClass { get; set; }
+    }
+
+    [JsonName("NestedGeneric")]
+    public class NestedGeneric
+    {
+        public int SomeInt { get; set; }
+        public ImmutableHashSet<IGeneric<int, string>> SomeSet { get; set; }
     }
     
     public interface IGeneric<T1, T2>
