@@ -22,7 +22,7 @@ public class ListHistory
     public async Task Run(LoadoutMarker loadout)
     {
         var rows = loadout.History()
-            .Select(list => new object[] { list.LastModified, list.ChangeMessage, list.Mods.Count, list.Id })
+            .Select(list => new object[] { list.LastModified, list.ChangeMessage, list.Mods.Count, list.DataStoreId })
             .ToList();
         
         await _renderer.Render(new Table(new string[] { "Date", "Change Message", "Mod Count", "Id" }, rows));

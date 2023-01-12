@@ -6,6 +6,7 @@ using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Loadouts.ApplySteps;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.RateLimiting;
+using NexusMods.DataModel.Sorting;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
@@ -35,16 +36,17 @@ public class LoadoutMarker : IMarker<Loadout>
         _manager.Alter(_id, list => list with {Mods = list.Mods.With(newMod)}, $"Added mod {newMod.Name}");
     }
 
-    public async Task Install(AbsolutePath file, string name, CancellationToken token)
+    public async Task<ModId> Install(AbsolutePath file, string name, CancellationToken token)
     {
         await _manager.ArchiveManager.ArchiveFile(file, token);
-        await _manager.InstallMod(_id, file, name, token);
+        return (await _manager.InstallMod(_id, file, name, token)).ModId;
     }
     public IEnumerable<(AModFile File, Mod Mod)> FlattenList()
     {
         var list = _manager.Get(_id);
         var projected = new Dictionary<GamePath, (AModFile File, Mod Mod)>();
-        foreach (var mod in list.Mods)
+        var mods = Sorter.Sort<Mod, ModId>(list.Mods, m => m.SortRules);
+        foreach (var mod in mods)
         {
             foreach (var file in mod.Files)
             {

@@ -3,6 +3,7 @@ using GameFinder.StoreHandlers.GOG;
 using GameFinder.StoreHandlers.Steam;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.FileExtractor;
@@ -38,6 +39,8 @@ public class Startup
             new Resource<ArchiveContentsCache, Size>("File Analysis"));
         container.AddAllSingleton<IResource, IResource<IExtractor, Size>>(s =>
             new Resource<IExtractor, Size>("File Extraction"));
+        
+        container.AddSingleton<ITypeFinder>(s => new AssemblyTypeFinder(typeof(Startup).Assembly));
     }
     
     public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>

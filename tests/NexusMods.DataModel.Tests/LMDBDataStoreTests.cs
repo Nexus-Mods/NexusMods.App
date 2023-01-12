@@ -8,9 +8,9 @@ using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Tests;
 
-public class RocksDBDataStoreTests : ADataModelTest<RocksDBDataStoreTests>
+public class LMDBDataStoreTests : ADataModelTest<LMDBDataStoreTests>
 {
-    public RocksDBDataStoreTests(IServiceProvider provider) : base(provider)
+    public LMDBDataStoreTests(IServiceProvider provider) : base(provider)
     {
     }
 
@@ -25,8 +25,8 @@ public class RocksDBDataStoreTests : ADataModelTest<RocksDBDataStoreTests>
             Size = (Size)42L,
             To = new GamePath(GameFolderType.Game, "test.foo")
         };
-        foo.Id.ToString().Should().NotBeEmpty();
-        DataStore.Get<FromArchive>(foo.Id).Should().NotBeNull();
+        foo.DataStoreId.ToString().Should().NotBeEmpty();
+        DataStore.Get<FromArchive>(foo.DataStoreId).Should().NotBeNull();
     }
 
     [Fact]
@@ -51,17 +51,18 @@ public class RocksDBDataStoreTests : ADataModelTest<RocksDBDataStoreTests>
             To = new GamePath(GameFolderType.Game, $"{idx}.file"),
         }).ToList();
         
-        var set = new EntityHashSet<AModFile>(DataStore, files.Select(m => m.Id));
+        var set = new EntityHashSet<AModFile>(DataStore, files.Select(m => m.DataStoreId));
         
         var mod = new Mod
         {
+            Id = ModId.New(),
             Name = "Large Entity",
             Files = EntityHashSet<AModFile>.Empty(DataStore),
             Store = DataStore,
         };
         mod = mod with { Files = mod.Files.With(files)};
         mod.EnsureStored();
-        var modLoaded = DataStore.Get<Mod>(mod.Id);
+        var modLoaded = DataStore.Get<Mod>(mod.DataStoreId);
         modLoaded!.Files.Should().BeEquivalentTo(set);
     }
 }

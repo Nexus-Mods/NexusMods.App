@@ -34,17 +34,17 @@ where T : Entity
 
     public EntityHashSet<T> With(T val)
     {
-        return new EntityHashSet<T>(_store, _coll.Add(val.Id));
+        return new EntityHashSet<T>(_store, _coll.Add(val.DataStoreId));
     }
 
     public EntityHashSet<T> Without(T val)
     {
-        return new EntityHashSet<T>(_store, _coll.Remove(val.Id));
+        return new EntityHashSet<T>(_store, _coll.Remove(val.DataStoreId));
     }
     
     public EntityHashSet<T> Without(IEnumerable<T> vals)
     {
-        var newColl = vals.Aggregate(_coll, (acc, itm) => acc.Remove(itm.Id));
+        var newColl = vals.Aggregate(_coll, (acc, itm) => acc.Remove(itm.DataStoreId));
         return new EntityHashSet<T>(_store, newColl);
     }
 
@@ -64,15 +64,15 @@ where T : Entity
             {
                 coll = coll.Remove(id);
             }
-            else if (!result.Id.Equals(id))
-                coll = coll.Remove(id).Add(result.Id);
+            else if (!result.DataStoreId.Equals(id))
+                coll = coll.Remove(id).Add(result.DataStoreId);
         }
         return ReferenceEquals(coll, _coll) ? this : new EntityHashSet<T>(_store, coll);
     }
 
     public bool Contains(T val)
     {
-        return _coll.Contains(val.Id);
+        return _coll.Contains(val.DataStoreId);
     }
 
     public IEnumerable<Id> Ids => _coll;
@@ -93,7 +93,7 @@ where T : Entity
         var builder = _coll.ToBuilder();
         foreach (var item in items)
         {
-            builder.Add(item.Id);
+            builder.Add(item.DataStoreId);
         }
 
         return new EntityHashSet<T>(_store, builder.ToImmutable());
