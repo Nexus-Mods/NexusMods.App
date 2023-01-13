@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Tests.Harness;
+using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Tests;
@@ -18,7 +19,7 @@ public class FileHashCacheTests : ADataModelTest<FileHashCacheTests>
         await file.WriteAllTextAsync("Test data here");
 
         var hash = await FileHashCache.HashFileAsync(file);
-        hash.Hash.Should().Be(0xB08C91D1CDF11402);
+        hash.Hash.Should().Be((Hash)0xB08C91D1CDF11402);
         FileHashCache.TryGetCached(file, out var found).Should().BeTrue();
         found.Hash.Should().Be(hash.Hash);
         file.Delete();

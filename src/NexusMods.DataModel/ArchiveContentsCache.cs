@@ -43,7 +43,12 @@ public class ArchiveContentsCache
         return result;
     }
 
-    public async Task<AnalyzedFile> AnalyzeFileInner(IStreamFactory sFn, CancellationToken token = default, int level = 0, Hash parent = default, RelativePath parentPath = default)
+    private Task<AnalyzedFile> AnalyzeFileInner(IStreamFactory sFn, CancellationToken token = default)
+    {
+        return AnalyzeFileInner(sFn, token, 0, Hash.Zero, default);
+    }
+
+    private async Task<AnalyzedFile> AnalyzeFileInner(IStreamFactory sFn, CancellationToken token, int level, Hash parent, RelativePath parentPath)
     {
         Hash hash = default;
         var sigs = Array.Empty<FileType>();
@@ -66,7 +71,7 @@ public class ArchiveContentsCache
                 hash = await hashStream.Hash(token);
             }
 
-            var found = _store.Get<Entity>(new Id64(EntityCategory.FileAnalysis, hash));
+            var found = _store.Get<Entity>(new Id64(EntityCategory.FileAnalysis, (ulong)hash));
             if (found is AnalyzedFile af) return af;
             
             hashStream.Position = 0;
@@ -113,7 +118,7 @@ public class ArchiveContentsCache
             };
         }
 
-        if (parent != default) 
+        if (parent != Hash.Zero) 
             EnsureReverseIndex(hash, parent, parentPath);
             
         return file;
@@ -133,7 +138,7 @@ public class ArchiveContentsCache
 
     public IEnumerable<FileContainedIn> ArchivesThatContain(Hash hash)
     {
-        var prefix = new Id64(EntityCategory.FileContainedIn, hash);
+        var prefix = new Id64(EntityCategory.FileContainedIn, (ulong)hash);
         return _store.GetByPrefix<FileContainedIn>(prefix);
     }
 }

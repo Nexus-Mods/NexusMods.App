@@ -16,7 +16,7 @@ public record AnalyzedFile : Entity
 
     protected override Id Persist()
     { 
-        var newId = new Id64(Category, Hash);
+        var newId = new Id64(Category, (ulong)Hash);
         Store.Put<Entity>(newId, this);
         return newId;
     }

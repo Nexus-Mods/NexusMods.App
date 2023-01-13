@@ -7,12 +7,12 @@ public static class ByteArrayExtensions
     public static Hash XxHash64(this ReadOnlySpan<byte> data)
     {
         var algo = new xxHashAlgorithm(0);
-        return new Hash(algo.HashBytes(data));
+        return Hash.From(algo.HashBytes(data));
     }
     
     public static Hash XxHash64(this Memory<byte> data)
     {
         var algo = new xxHashAlgorithm(0);
-        return new Hash(algo.HashBytes(data.Span));
+        return Hash.From(algo.HashBytes(data.Span));
     }
 }

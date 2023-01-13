@@ -44,8 +44,8 @@ public class LMDBDataStoreTests : ADataModelTest<LMDBDataStoreTests>
     {
         var files = Enumerable.Range(0, 1024).Select(idx => new FromArchive
         {
-            From = new HashRelativePath(idx, $"{idx}.file".ToRelativePath()),
-            Hash = idx,
+            From = new HashRelativePath((Hash)(ulong)idx, $"{idx}.file".ToRelativePath()),
+            Hash = (Hash)(ulong)idx,
             Size = idx,
             Store = DataStore,
             To = new GamePath(GameFolderType.Game, $"{idx}.file"),

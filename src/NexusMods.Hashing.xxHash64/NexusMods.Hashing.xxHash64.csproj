@@ -11,4 +11,8 @@
       <ProjectReference Include="..\NexusMods.Paths\NexusMods.Paths.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Vogen" Version="3.0.9" />
+    </ItemGroup>
+
 </Project>

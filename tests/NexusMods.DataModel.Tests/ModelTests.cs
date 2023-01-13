@@ -24,7 +24,7 @@ public class ModelTests : ADataModelTest<ModelTests>
         var file = new FromArchive
         {
             To = new GamePath(GameFolderType.Game, "foo/bar.pez"),
-            From = new HashRelativePath(new Hash(0), RelativePath.Empty),
+            From = new HashRelativePath(Hash.Zero, RelativePath.Empty),
             Hash = (Hash)0x42L,
             Size = 44L,
             Store = DataStore
@@ -69,7 +69,7 @@ public class ModelTests : ADataModelTest<ModelTests>
         var id1 = await loadout.Install(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
         var id2 = await loadout.Install(DATA_ZIP_LZMA, "Mod2", CancellationToken.None);
 
-        id1.Should().NotBeEquivalentTo(id2);
+        id1.Should().NotBe(id2);
         id1.Should().BeEquivalentTo(id1);
         id2.Should().BeEquivalentTo(id2);
 

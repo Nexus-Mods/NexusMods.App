@@ -14,7 +14,7 @@ public record FileContainedIn : Entity
 
     protected override Id Persist()
     {
-        var id = new TwoId64(Category, File, Parent);
+        var id = new TwoId64(Category, (ulong)File, (ulong)Parent);
         Store.Put(id, this);
         return id;
     }

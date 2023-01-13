@@ -83,7 +83,7 @@ public static class StreamExtensions
 
         await outputStream.FlushAsync(token);
 
-        return new Hash(finalHash);
+        return xxHash64.Hash.From(finalHash);
     }
     
     /// <summary>
@@ -144,6 +144,6 @@ public static class StreamExtensions
             }
         }
         
-        return new Hash(finalHash);
+        return xxHash64.Hash.From(finalHash);
     }
 }

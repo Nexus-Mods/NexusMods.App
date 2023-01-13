@@ -2,6 +2,7 @@
 using System.Text.Json.Serialization;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.Hashing.xxHash64;
+using Vogen;
 
 namespace NexusMods.DataModel.Loadouts;
 
@@ -11,65 +12,34 @@ namespace NexusMods.DataModel.Loadouts;
 /// Id. Essentially this is just a Guid, but we wrap this guid so that we can easily
 /// distinguish it from other parts of the code that may use Guids for other object types
 /// </summary>
+[ValueObject<Guid>(conversions: Conversions.None)]
 [JsonConverter(typeof(LoadoutIdConverter))]
-public readonly struct LoadoutId : IEquatable<LoadoutId>, ICreatable<LoadoutId>
+public readonly partial struct LoadoutId : ICreatable<LoadoutId>
 {
-    private readonly Guid _id = Guid.Empty;
-
-    private LoadoutId(Guid id)
-    {
-        _id = id;
-    }
-
     public static LoadoutId FromHex(ReadOnlySpan<char> hex)
     {
         Span<byte> span = stackalloc byte[16];
         hex.FromHex(span);
-        return new LoadoutId(new Guid(span));
+        return From(new Guid(span));
     }
 
     public void ToHex(Span<char> span)
     {
         Span<byte> bytes = stackalloc byte[16];
-        _id.TryWriteBytes(bytes);
+        _value.TryWriteBytes(bytes);
         ((ReadOnlySpan<byte>)bytes).ToHex(span);
     }
 
     public override string ToString()
     {
         Span<byte> span = stackalloc byte[16];
-        _id.TryWriteBytes(span);
+        _value.TryWriteBytes(span);
         return ((ReadOnlySpan<byte>)span).ToHex();
-    }
-
-    public static bool operator ==(LoadoutId self, LoadoutId other)
-    {
-        return self.Equals(other);
-    }
-
-    public static bool operator !=(LoadoutId self, LoadoutId other)
-    {
-        return !(self == other);
-    }
-
-    public bool Equals(LoadoutId other)
-    {
-        return _id.Equals(other._id);
     }
 
     public static LoadoutId Create()
     {
-        return new LoadoutId(Guid.NewGuid());
-    }
-
-    public override bool Equals(object? obj)
-    {
-        return obj is LoadoutId other && Equals(other);
-    }
-
-    public override int GetHashCode()
-    {
-        return _id.GetHashCode();
+        return From(Guid.NewGuid());
     }
 }
 

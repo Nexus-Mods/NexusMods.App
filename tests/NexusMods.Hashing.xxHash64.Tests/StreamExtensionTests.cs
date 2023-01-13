@@ -43,6 +43,6 @@ public class StreamExtensionTests
     private Hash MSHash(byte[] data)
     {
         var bytes = System.IO.Hashing.XxHash64.Hash(data);
-        return new Hash(BinaryPrimitives.ReadUInt64BigEndian(bytes));
+        return Hash.From(BinaryPrimitives.ReadUInt64BigEndian(bytes));
     }
 }

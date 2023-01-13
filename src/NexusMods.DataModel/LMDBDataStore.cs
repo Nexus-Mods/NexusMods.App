@@ -48,7 +48,7 @@ public class LMDBDataStore : IDataStore
         if (span.Length >= stream.Length)
         {
             var hash = span.XxHash64();
-            id = new Id64(value.Category, hash);
+            id = new Id64(value.Category, (ulong)hash);
             Span<byte> keySpan = stackalloc byte[id.SpanSize + 1];
             id.ToTaggedSpan(keySpan);
 
@@ -61,7 +61,7 @@ public class LMDBDataStore : IDataStore
         {
             var data = stream.GetBuffer();
             var hash = ((ReadOnlySpan<byte>)data.AsSpan())[..(int)stream.Length].XxHash64();
-            id = new Id64(value.Category, hash);
+            id = new Id64(value.Category, (ulong)hash);
             Span<byte> keySpan = stackalloc byte[id.SpanSize + 1];
             id.ToTaggedSpan(keySpan);
             
