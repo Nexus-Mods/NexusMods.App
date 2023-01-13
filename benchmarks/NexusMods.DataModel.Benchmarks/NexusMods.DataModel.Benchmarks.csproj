@@ -8,6 +8,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="BenchmarkDotNet" Version="0.13.3" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\..\src\NexusMods.DataModel\NexusMods.DataModel.csproj" />
     </ItemGroup>
 

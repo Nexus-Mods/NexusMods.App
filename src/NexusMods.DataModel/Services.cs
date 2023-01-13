@@ -4,8 +4,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.JsonConverters;
+using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.RateLimiting;
+using NexusMods.DataModel.Sorting;
+using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Interfaces;
 using NexusMods.Paths;
@@ -31,7 +34,7 @@ public static class Services
         coll.AddSingleton(typeof(EntityDictionaryConverter<,>));
         coll.AddSingleton<JsonConverter, EntityLinkConverterFactory>();
         coll.AddSingleton(typeof(EntityLinkConverter<>));
-        
+
         coll.AddSingleton<IDataStore>(s => new LMDBDataStore(baseFolder.Value.Join("DataModel_LMDB"), s));
         coll.AddSingleton(s => new ArchiveManager(s.GetRequiredService<ILogger<ArchiveManager>>(),
             new []{baseFolder.Value.Join("Archives")},
@@ -43,8 +46,10 @@ public static class Services
         coll.AddSingleton<LoadoutManager>();
         coll.AddSingleton<FileHashCache>();
         coll.AddSingleton<ArchiveContentsCache>();
-        
-        NexusMods_DataModel_Abstractions_EntityConverter.ConfigureServices(coll);
+
+        coll.AddSingleton<ITypeFinder>(s => new AssemblyTypeFinder(typeof(Services).Assembly));
+        coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<Entity>>();
+        coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<ISortRule<Mod, ModId>>>();
         
         coll.AddSingleton(s =>
         {

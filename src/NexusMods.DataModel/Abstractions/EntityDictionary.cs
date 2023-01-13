@@ -29,7 +29,7 @@ where TV : Entity where TK : notnull
 
     public EntityDictionary<TK, TV> With(TK key, TV val)
     {
-        return new EntityDictionary<TK, TV>(_store, _coll.SetItem(key, val.Id));
+        return new EntityDictionary<TK, TV>(_store, _coll.SetItem(key, val.DataStoreId));
     }
 
     public EntityDictionary<TK, TV> Without(TK key)

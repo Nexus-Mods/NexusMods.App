@@ -1,4 +1,5 @@
-﻿using System.Reactive.Linq;
+﻿using System.Collections.Immutable;
+using System.Reactive.Linq;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
@@ -6,6 +7,8 @@ using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.RateLimiting;
+using NexusMods.DataModel.Sorting;
+using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.Interfaces;
 using NexusMods.Paths;
 
@@ -63,8 +66,10 @@ public class LoadoutManager
         _logger.LogInformation("Creating Loadout {Name}", name);
         var mod = new Mod
         {
+            Id = ModId.New(),
             Name = "Game Files",
-            Files = new EntityHashSet<AModFile>(_store, gameFiles.Select(g => g.Id)),
+            Files = new EntityHashSet<AModFile>(_store, gameFiles.Select(g => g.DataStoreId)),
+            SortRules = ImmutableHashSet<ISortRule<Mod, ModId>>.Empty.Add(new First<Mod, ModId>()),
             Store = _store
         };
         
@@ -72,7 +77,7 @@ public class LoadoutManager
         {
             Installation = installation,
             Name = name, 
-            Mods = new EntityHashSet<Mod>(_store, new [] {mod.Id})
+            Mods = new EntityHashSet<Mod>(_store, new [] {mod.DataStoreId})
         };
         _root.Alter(r => r with {Lists = r.Lists.With(n.LoadoutId, n)});
         
@@ -80,7 +85,7 @@ public class LoadoutManager
         return new LoadoutMarker(this, n.LoadoutId);
     }
 
-    public async Task<LoadoutMarker> InstallMod(LoadoutId LoadoutId, AbsolutePath path, string name, CancellationToken token = default)
+    public async Task<(LoadoutMarker Loadout, ModId ModId)> InstallMod(LoadoutId LoadoutId, AbsolutePath path, string name, CancellationToken token = default)
     {
         var loadout = GetLoadout(LoadoutId);
         
@@ -100,12 +105,13 @@ public class LoadoutManager
 
         var newMod = new Mod()
         {
+            Id = ModId.New(),
             Name = name,
-            Files = new EntityHashSet<AModFile>(_store, contents.Select(c => c.Id)),
+            Files = new EntityHashSet<AModFile>(_store, contents.Select(c => c.DataStoreId)),
             Store = _store
         };
         loadout.Add(newMod);
-        return loadout;
+        return (loadout, newMod.Id);
     }
 
     private LoadoutMarker GetLoadout(LoadoutId LoadoutId)

@@ -90,7 +90,7 @@ public class ArchiveContentsCache
                                     level + 1, hash, relPath));
                         },
                         token, "Analyzing Files")
-                    .Select(a => KeyValuePair.Create(a.Path.RelativeTo(tmpFolder.Path), a.Results.Id))
+                    .Select(a => KeyValuePair.Create(a.Path.RelativeTo(tmpFolder.Path), a.Results.DataStoreId))
                     .ToList();
             }
             file = new AnalyzedArchive
