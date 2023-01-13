@@ -11,7 +11,7 @@ public class ModSortingTests : ADataModelTest<ModSortingTests>
 {
     public ModSortingTests(IServiceProvider provider) : base(provider)
     {
-        
+
     }
 
     [Fact]

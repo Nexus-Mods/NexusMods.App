@@ -10,7 +10,10 @@ public class Sorter
         where TItem : IHasEntityId<TId> 
         where TId : IEquatable<TId>
     {
-        var indexed = items.ToDictionary(i => i.Id, i => (After: RefineRules(i, ruleFn, items), Item: i));
+        var indexed = items
+            .AsParallel()
+            .Select(i => (After: RefineRules(i, ruleFn, items), Item: i))
+            .ToDictionary(i => i.Item.Id, i => i);
 
         var sorted = new List<TItem>();
         var used = new HashSet<TId>();
@@ -59,9 +62,12 @@ public class Sorter
                     break;
             }
         }
-
-        foreach (var itm in items.Where(itm => !itm.Id.Equals(thisItem.Id)))
+        
+        foreach (var itm in items)
         {
+            if (itm.Id.Equals(thisItem.Id))
+                continue;
+            
             foreach (var rule in ruleFn(itm))
             {
                 switch (rule)
