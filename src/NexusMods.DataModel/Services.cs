@@ -26,7 +26,6 @@ public static class Services
         coll.AddSingleton<JsonConverter, GamePathConverter>();
         coll.AddSingleton<JsonConverter, DateTimeConverter>();
         coll.AddSingleton<JsonConverter, SizeConverter>();
-        coll.AddSingleton<JsonConverter, HashConverter>();
         coll.AddSingleton<JsonConverter, GameInstallationConverter>();
         coll.AddSingleton<JsonConverter, EntityHashSetConverterFactory>();
         coll.AddSingleton(typeof(EntityHashSetConverter<>));
