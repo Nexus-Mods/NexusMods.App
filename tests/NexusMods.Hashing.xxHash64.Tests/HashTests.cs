@@ -57,4 +57,19 @@ public class HashTests
         await file.WriteAllTextAsync(_knownString);
         (await file.XxHash64()).Should().Be(_knownHash);
     }
+
+    [Fact]
+    public async Task CanHashLargeFile()
+    {
+        var file = $"tempFile{Guid.NewGuid()}"
+            .ToRelativePath().RelativeTo(KnownFolders.CurrentDirectory);
+        var emptyArray = new byte[1024 * 1024 * 10];
+        for (var x = 0; x < emptyArray.Length; x++)
+        {
+            emptyArray[x] = (byte)(x % 256);
+        }
+        await file.WriteAllBytesAsync(emptyArray);
+        (await file.XxHash64()).Should().NotBe(Hash.FromULong(0xf4c92be058f432d0));
+        file.Delete();
+    }
 }

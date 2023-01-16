@@ -461,4 +461,10 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
     {
         return Encoding.UTF8.GetString(await ReadAllBytesAsync(token));
     }
+
+    public async Task WriteAllBytesAsync(byte[] emptyArray)
+    {
+        await using var fs = Create();
+        await fs.WriteAsync(emptyArray, CancellationToken.None);
+    }
 }
