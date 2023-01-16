@@ -87,8 +87,10 @@ public class LoadoutManager
                     Size = result.Size,
                     Store = _store
                 };
+                /*
                 var metaData = await GetMetadata(n, mod, file).ToHashSet();
                 gameFiles.Add(file with {Metadata = metaData.ToImmutableHashSet()});
+                */
             }
         }
         
@@ -98,8 +100,10 @@ public class LoadoutManager
         return marker;
     }
 
+    /*
     private async IAsyncEnumerable<IModFileMetadata> GetMetadata(Loadout loadout, Mod mod, GameFile file)
     {
+        throw new NotImplementedException();
         foreach (var source in _metadataSources)
         {
             if (!source.Games.Contains(loadout.Installation.Game))
@@ -112,7 +116,8 @@ public class LoadoutManager
                 yield return metadata;
             }
         }
-    }
+
+    }*/
 
     public async Task<(LoadoutMarker Loadout, ModId ModId)> InstallMod(LoadoutId LoadoutId, AbsolutePath path, string name, CancellationToken token = default)
     {

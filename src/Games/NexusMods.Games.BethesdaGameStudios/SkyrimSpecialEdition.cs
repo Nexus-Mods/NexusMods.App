@@ -10,8 +10,9 @@ namespace NexusMods.Games.BethesdaGameStudios;
 
 public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame
 {
+    public static string StaticSlug => "skyrimspecialedition";
     public override string Name => "Skyrim Special Edition";
-    public override string Slug => "skyrimspecialedition";
+    public override string Slug => StaticSlug;
     public override GamePath PrimaryFile => new(GameFolderType.Game, "SkyrimSE.exe");
 
 

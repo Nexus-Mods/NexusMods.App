@@ -5,6 +5,7 @@ namespace NexusMods.FileExtractor.FileSignatures {
            CreationEnginePlugin,
            MorrowindBSA,
            NIF,
+           TES4,
           _7Z,
           BA2,
           BSA,
@@ -67,6 +68,9 @@ namespace NexusMods.FileExtractor.FileSignatures {
 
                 // Creation Engine Plugin
         (FileType. CreationEnginePlugin, new byte[] {0x54, 0x45, 0x53, 0x34}),
+
+                // TES4 Plugin
+        (FileType. TES4, new byte[] {0x54, 0x45, 0x53, 0x34}),
 
         
     };}}

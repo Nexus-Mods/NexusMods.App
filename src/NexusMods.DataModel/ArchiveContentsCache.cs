@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Collections.Immutable;
+using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Extensions;
@@ -19,12 +20,14 @@ public class ArchiveContentsCache
     private readonly SignatureChecker _sigs;
     private readonly IDataStore _store;
     private readonly FileHashCache _fileHashCahce;
+    private readonly ILookup<FileType, IFileAnalyzer> _analyzers;
 
     public ArchiveContentsCache(ILogger<ArchiveContentsCache> logger, 
         IResource<ArchiveContentsCache, Size> limiter,  
         FileExtractor.FileExtractor extractor, 
         TemporaryFileManager manager,
         FileHashCache hashCache,
+        IEnumerable<IFileAnalyzer> analyzers,
         IDataStore dataStore)
     {
         _logger = logger;
@@ -32,6 +35,8 @@ public class ArchiveContentsCache
         _extractor = extractor;
         _manager = manager;
         _sigs = new SignatureChecker(Enum.GetValues<FileType>());
+        _analyzers = analyzers.SelectMany(a => a.FileTypes.Select(t => (Type:t, Analyzer:a)))
+            .ToLookup(k => k.Type, v => v.Analyzer);
         _store = dataStore;
         _fileHashCahce = hashCache;
     }
@@ -52,6 +57,7 @@ public class ArchiveContentsCache
     {
         Hash hash = default;
         var sigs = Array.Empty<FileType>();
+        var analysisData = new List<IFileAnalysisData>();
         {
             await using var hashStream = await sFn.GetStream();
             if (level == 0)
@@ -71,12 +77,25 @@ public class ArchiveContentsCache
                 hash = await hashStream.Hash(token);
             }
 
+
             var found = _store.Get<Entity>(new Id64(EntityCategory.FileAnalysis, (ulong)hash));
             if (found is AnalyzedFile af) return af;
             
             hashStream.Position = 0;
             sigs = (await _sigs.MatchesAsync(hashStream)).ToArray();
+
+
+            foreach (var sig in sigs)
+            {
+                foreach (var analyzer in _analyzers[sig])
+                {
+                    hashStream.Position = 0;
+                    await foreach (var data in analyzer.AnalyzeAsync(hashStream, token)) 
+                        analysisData.Add(data);
+                }
+            }
         }
+        
 
         AnalyzedFile file;
         
@@ -103,6 +122,7 @@ public class ArchiveContentsCache
                 Hash = hash,
                 Size = sFn.Size,
                 FileTypes = sigs,
+                AnalysisData = analysisData.ToImmutableList(),
                 Contents = new EntityDictionary<RelativePath, AnalyzedFile>(_store, children),
                 Store = _store
             };
@@ -114,6 +134,7 @@ public class ArchiveContentsCache
                 Hash = hash,
                 Size = sFn.Size,
                 FileTypes = sigs,
+                AnalysisData = analysisData.ToImmutableList(),
                 Store = _store
             };
         }

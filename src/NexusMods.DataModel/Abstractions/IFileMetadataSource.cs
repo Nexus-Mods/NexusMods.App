@@ -24,7 +24,7 @@ public interface IFileMetadataSource
     /// <summary>
     /// Apply this source to the given games
     /// </summary>
-    public IEnumerable<IGame> Games { get; }
+    public IEnumerable<string> Games { get; }
     
     /// <summary>
     /// Return metadata for the given file. If metadata for this source already exists on the file

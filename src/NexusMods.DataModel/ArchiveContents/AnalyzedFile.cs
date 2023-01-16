@@ -1,4 +1,5 @@
-﻿using NexusMods.DataModel.Abstractions;
+﻿using System.Collections.Immutable;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Hashing.xxHash64;
@@ -12,6 +13,8 @@ public record AnalyzedFile : Entity
     public required Size Size { get; init; }
     public required Hash Hash { get; init; }
     public required FileType[] FileTypes { get; init; }
+    public ImmutableList<IFileAnalysisData> AnalysisData { get; init; } = ImmutableList<IFileAnalysisData>.Empty;
+
     public override EntityCategory Category => EntityCategory.FileAnalysis;
 
     protected override Id Persist()
