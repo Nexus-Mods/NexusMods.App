@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using static System.Numerics.BitOperations;
 
 namespace NexusMods.Hashing.xxHash64;
 
@@ -24,15 +25,11 @@ namespace NexusMods.Hashing.xxHash64;
 /// </summary>
 public struct xxHashAlgorithm
 {
-    private static readonly IReadOnlyList<ulong> Primes64 =
-        new[]
-        {
-            11400714785074694791UL,
-            14029467366897019727UL,
-            1609587929392839161UL,
-            9650029242287828579UL,
-            2870177450012600261UL
-        };
+    private const ulong Primes64_0 = 11400714785074694791UL;
+    private const ulong Primes64_1 = 14029467366897019727UL;
+    private const ulong Primes64_2 = 1609587929392839161UL;
+    private const ulong Primes64_3 = 9650029242287828579UL;
+    private const ulong Primes64_4 = 2870177450012600261UL;
 
 
     private readonly ulong _seed;
@@ -48,10 +45,10 @@ public struct xxHashAlgorithm
     public xxHashAlgorithm(ulong seed)
     {
         _seed = seed;
-        _a = _seed + Primes64[0] + Primes64[1];
-        _b = _seed + Primes64[1];
+        _a = _seed + Primes64_0 + Primes64_1;
+        _b = _seed + Primes64_1;
         _c = _seed;
-        _d = _seed - Primes64[0];
+        _d = _seed - Primes64_0;
         _bytesProcessed = 0;
         _finished = false;
     }
@@ -64,38 +61,49 @@ public struct xxHashAlgorithm
 
         return FinalizeHashValueInternal(data[initialSize..]);
     }
-
+    
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TransformByteGroupsInternal(ReadOnlySpan<byte> data)
     {
+#if DEBUG
         if (_finished || data.Length % 32 > 0)
             throw new Exception("Hash is finished, or input is not a multiple of 32");
+#endif
+        
         var tempA = _a;
         var tempB = _b;
         var tempC = _c;
         var tempD = _d;
-
-        var tempPrime0 = Primes64[0];
-        var tempPrime1 = Primes64[1];
-
-        for (var currentIndex = 0; currentIndex < data.Length; currentIndex += 32)
+        
+        unsafe
         {
-            tempA += BitConverter.ToUInt64(data[currentIndex..]) * tempPrime1;
-            tempA = RotateLeft(tempA, 31);
-            tempA *= tempPrime0;
+            fixed (byte* ptr = data)
+            {
+                var len = data.Length / 8;
+                ulong* dataPtr = (ulong*)ptr;
+                
+                for (var currentIndex = 0; currentIndex < len; currentIndex += 4)
+                {
+                    tempA += dataPtr[currentIndex] * Primes64_1;
+                    tempA = RotateLeft(tempA, 31);
+                    tempA *= Primes64_0;
 
-            tempB += BitConverter.ToUInt64(data[(currentIndex + 8)..]) * tempPrime1;
-            tempB = RotateLeft(tempB, 31);
-            tempB *= tempPrime0;
+                    tempB += dataPtr[currentIndex + 1] * Primes64_1;
+                    tempB = RotateLeft(tempB, 31);
+                    tempB *= Primes64_0;
 
-            tempC += BitConverter.ToUInt64(data[(currentIndex + 16)..]) * tempPrime1;
-            tempC = RotateLeft(tempC, 31);
-            tempC *= tempPrime0;
+                    tempC += dataPtr[currentIndex + 2] * Primes64_1;
+                    tempC = RotateLeft(tempC, 31);
+                    tempC *= Primes64_0;
 
-            tempD += BitConverter.ToUInt64(data[(currentIndex + 24)..]) * tempPrime1;
-            tempD = RotateLeft(tempD, 31);
-            tempD *= tempPrime0;
+                    tempD += dataPtr[currentIndex + 3] * Primes64_1;
+                    tempD = RotateLeft(tempD, 31);
+                    tempD *= Primes64_0;
+                }
+            }
         }
+
+
 
         _a = tempA;
         _b = tempB;
@@ -105,7 +113,7 @@ public struct xxHashAlgorithm
         _bytesProcessed += (ulong) data.Length;
     }
 
-
+    
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ulong FinalizeHashValueInternal(ReadOnlySpan<byte> data)
     {
@@ -122,40 +130,40 @@ public struct xxHashAlgorithm
                 hashValue = RotateLeft(_a, 1) + RotateLeft(_b, 7) + RotateLeft(_c, 12) + RotateLeft(_d, 18);
 
                 // A
-                tempA *= Primes64[1];
+                tempA *= Primes64_1;
                 tempA = RotateLeft(tempA, 31);
-                tempA *= Primes64[0];
+                tempA *= Primes64_0;
 
                 hashValue ^= tempA;
-                hashValue = hashValue * Primes64[0] + Primes64[3];
+                hashValue = hashValue * Primes64_0 + Primes64_3;
 
                 // B
-                tempB *= Primes64[1];
+                tempB *= Primes64_1;
                 tempB = RotateLeft(tempB, 31);
-                tempB *= Primes64[0];
+                tempB *= Primes64_0;
 
                 hashValue ^= tempB;
-                hashValue = hashValue * Primes64[0] + Primes64[3];
+                hashValue = hashValue * Primes64_0 + Primes64_3;
 
                 // C
-                tempC *= Primes64[1];
+                tempC *= Primes64_1;
                 tempC = RotateLeft(tempC, 31);
-                tempC *= Primes64[0];
+                tempC *= Primes64_0;
 
                 hashValue ^= tempC;
-                hashValue = hashValue * Primes64[0] + Primes64[3];
+                hashValue = hashValue * Primes64_0 + Primes64_3;
 
                 // D
-                tempD *= Primes64[1];
+                tempD *= Primes64_1;
                 tempD = RotateLeft(tempD, 31);
-                tempD *= Primes64[0];
+                tempD *= Primes64_0;
 
                 hashValue ^= tempD;
-                hashValue = hashValue * Primes64[0] + Primes64[3];
+                hashValue = hashValue * Primes64_0 + Primes64_3;
             }
             else
             {
-                hashValue = _seed + Primes64[4];
+                hashValue = _seed + Primes64_4;
             }
         }
 
@@ -168,8 +176,8 @@ public struct xxHashAlgorithm
             // In 8-byte chunks, process all full chunks
             for (var x = 0; x < data.Length / 8; ++x)
             {
-                hashValue ^= RotateLeft(BitConverter.ToUInt64(data[(x * 8)..]) * Primes64[1], 31) * Primes64[0];
-                hashValue = RotateLeft(hashValue, 27) * Primes64[0] + Primes64[3];
+                hashValue ^= RotateLeft(BitConverter.ToUInt64(data[(x * 8)..]) * Primes64_1, 31) * Primes64_0;
+                hashValue = RotateLeft(hashValue, 27) * Primes64_0 + Primes64_3;
             }
 
             // Process a 4-byte chunk if it exists
@@ -177,8 +185,8 @@ public struct xxHashAlgorithm
             {
                 var startOffset = remainderLength - remainderLength % 8;
 
-                hashValue ^= BitConverter.ToUInt32(data[startOffset..]) * Primes64[0];
-                hashValue = RotateLeft(hashValue, 23) * Primes64[1] + Primes64[2];
+                hashValue ^= BitConverter.ToUInt32(data[startOffset..]) * Primes64_0;
+                hashValue = RotateLeft(hashValue, 23) * Primes64_1 + Primes64_2;
             }
 
             // Process last 4 bytes in 1-byte chunks (only runs if data.Length % 4 != 0)
@@ -188,29 +196,18 @@ public struct xxHashAlgorithm
 
                 for (var currentOffset = startOffset; currentOffset < endOffset; currentOffset += 1)
                 {
-                    hashValue ^= data[currentOffset] * Primes64[4];
-                    hashValue = RotateLeft(hashValue, 11) * Primes64[0];
+                    hashValue ^= data[currentOffset] * Primes64_4;
+                    hashValue = RotateLeft(hashValue, 11) * Primes64_0;
                 }
             }
         }
 
         hashValue ^= hashValue >> 33;
-        hashValue *= Primes64[1];
+        hashValue *= Primes64_1;
         hashValue ^= hashValue >> 29;
-        hashValue *= Primes64[2];
+        hashValue *= Primes64_2;
         hashValue ^= hashValue >> 32;
 
         return hashValue;
-    }
-
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ulong RotateLeft(ulong operand, int shiftCount)
-    {
-        shiftCount &= 0x3f;
-
-        return
-            (operand << shiftCount) |
-            (operand >> (64 - shiftCount));
     }
 }
