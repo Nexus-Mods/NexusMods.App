@@ -77,7 +77,7 @@ public class ModelTests : ADataModelTest<ModelTests>
         loadout.Value.Mods.Count(m => m.Id == id2).Should().Be(1);
         
         var history = loadout.History().Select(h => h.DataStoreId).ToArray();
-        history.Length.Should().Be(3);
+        history.Length.Should().Be(4);
         
         LoadoutManager.Alter(loadout.Value.LoadoutId, l => l.PreviousVersion.Value);
 

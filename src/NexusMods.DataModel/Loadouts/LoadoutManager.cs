@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -10,6 +11,7 @@ using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.Interfaces;
+using NexusMods.Interfaces.Components;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Loadouts;
@@ -23,10 +25,12 @@ public class LoadoutManager
     public readonly ArchiveManager ArchiveManager;
     private readonly IModInstaller[] _installers;
     private readonly ArchiveContentsCache _analyzer;
+    private readonly IEnumerable<IFileMetadataSource> _metadataSources;
 
     public LoadoutManager(ILogger<LoadoutManager> logger,
         IResource<LoadoutManager, Size> limiter,
-        ArchiveManager archiveManager, 
+        ArchiveManager archiveManager,
+        IEnumerable<IFileMetadataSource> metadataSources,
         IDataStore store, FileHashCache fileHashCache, IEnumerable<IModInstaller> installers, ArchiveContentsCache analyzer)
     {
         _logger = logger;
@@ -35,6 +39,7 @@ public class LoadoutManager
         _store = store;
         _root = new Root<ListRegistry>(RootType.Loadouts, store);
         FileHashCache = fileHashCache;
+        _metadataSources = metadataSources;
         _installers = installers.ToArray();
         _analyzer = analyzer;
     }
@@ -49,21 +54,6 @@ public class LoadoutManager
         _logger.LogInformation("Indexing game files");
         var gameFiles = new HashSet<AModFile>();
 
-        foreach (var (type, path) in installation.Locations)
-        {
-            await foreach (var result in FileHashCache.IndexFolder(path, token))
-            {
-                gameFiles.Add(new GameFile
-                {
-                    To = new GamePath(type, result.Path.RelativeTo(path)),
-                    Installation = installation,
-                    Hash = result.Hash,
-                    Size = result.Size,
-                    Store = _store
-                });
-            }
-        }
-        _logger.LogInformation("Creating Loadout {Name}", name);
         var mod = new Mod
         {
             Id = ModId.New(),
@@ -79,10 +69,49 @@ public class LoadoutManager
             Name = name, 
             Mods = new EntityHashSet<Mod>(_store, new [] {mod.DataStoreId})
         };
-        _root.Alter(r => r with {Lists = r.Lists.With(n.LoadoutId, n)});
         
+        _root.Alter(r => r with {Lists = r.Lists.With(n.LoadoutId, n)});
+                
         _logger.LogInformation("Loadout {Name} {Id} created", name, n.LoadoutId);
-        return new LoadoutMarker(this, n.LoadoutId);
+        _logger.LogInformation("Adding game files");
+        
+        foreach (var (type, path) in installation.Locations)
+        {
+            await foreach (var result in FileHashCache.IndexFolder(path, token))
+            {
+                var file = new GameFile
+                {
+                    To = new GamePath(type, result.Path.RelativeTo(path)),
+                    Installation = installation,
+                    Hash = result.Hash,
+                    Size = result.Size,
+                    Store = _store
+                };
+                var metaData = await GetMetadata(n, mod, file).ToHashSet();
+                gameFiles.Add(file with {Metadata = metaData.ToImmutableHashSet()});
+            }
+        }
+        
+        var marker = new LoadoutMarker(this, n.LoadoutId);
+        marker.AlterMod(mod.Id, m => m with {Files = m.Files.With(gameFiles)});
+
+        return marker;
+    }
+
+    private async IAsyncEnumerable<IModFileMetadata> GetMetadata(Loadout loadout, Mod mod, GameFile file)
+    {
+        foreach (var source in _metadataSources)
+        {
+            if (!source.Games.Contains(loadout.Installation.Game))
+                continue;
+            if (!source.Extensions.Contains(file.To.Extension))
+                continue;
+
+            await foreach (var metadata in source.GetMetadata(loadout, mod, file))
+            {
+                yield return metadata;
+            }
+        }
     }
 
     public async Task<(LoadoutMarker Loadout, ModId ModId)> InstallMod(LoadoutId LoadoutId, AbsolutePath path, string name, CancellationToken token = default)

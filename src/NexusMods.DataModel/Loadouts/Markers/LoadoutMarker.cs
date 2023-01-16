@@ -315,4 +315,12 @@ public class LoadoutMarker : IMarker<Loadout>
 
         _manager.Alter(_id, Apply);
     }
+
+    public void AlterMod(ModId modId, Func<Mod, Mod> func)
+    {
+        Alter(loadout => loadout with
+        {
+            Mods = loadout.Mods.Keep(mod => mod.Id == modId ? func(mod) : mod)
+        });
+    }
 }
