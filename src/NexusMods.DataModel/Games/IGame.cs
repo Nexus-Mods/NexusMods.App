@@ -1,4 +1,5 @@
-﻿using NexusMods.DataModel.Loadouts;
+﻿using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.DataModel.Games;
 
@@ -22,4 +23,12 @@ public interface IGame
     /// IEnumerable of all valid installations of this game on this machine
     /// </summary>
     public IEnumerable<GameInstallation> Installations { get; }
+    
+    /// <summary>
+    /// Returns any files that should be placed in the "Game Files" that are generated or maintained
+    /// by this IGame instance.
+    /// </summary>
+    /// <param name="installation"></param>
+    /// <returns></returns>
+    public IEnumerable<AModFile> GetGameFiles(GameInstallation installation, IDataStore store);
 }

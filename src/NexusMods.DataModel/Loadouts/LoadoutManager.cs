@@ -93,7 +93,7 @@ public class LoadoutManager
                 gameFiles.Add(file with {Metadata = metaData.ToImmutableHashSet()});
             }
         }
-        
+        gameFiles.AddRange(installation.Game.GetGameFiles(installation, _store));
         var marker = new LoadoutMarker(this, n.LoadoutId);
         marker.AlterMod(mod.Id, m => m with {Files = m.Files.With(gameFiles)});
 

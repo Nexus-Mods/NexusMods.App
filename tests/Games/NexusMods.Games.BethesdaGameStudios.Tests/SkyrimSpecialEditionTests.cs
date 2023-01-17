@@ -40,6 +40,8 @@ public class SkyrimSpecialEditionTests
         var dragonborn = gameFiles.Files.First(f => f.To == new GamePath(GameFolderType.Game, "Data/Dragonborn.esm"));
         dragonborn.Metadata.Should().ContainItemsAssignableTo<AnalysisSortData>();
 
+        gameFiles.Files.OfType<PluginFile>().Should().ContainSingle();
+
 
     }
 }

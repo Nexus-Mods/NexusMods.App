@@ -12,6 +12,7 @@ using NexusMods.FileExtractor;
 using NexusMods.FileExtractor.Extractors;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators;
+using NexusMods.StandardGameLocators.TestHelpers;
 using NexusMods.StandardGameLocators.Tests;
 using Xunit.DependencyInjection;
 using Xunit.DependencyInjection.Logging;

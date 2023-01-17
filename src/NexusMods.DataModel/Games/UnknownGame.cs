@@ -1,4 +1,6 @@
-﻿using NexusMods.Paths;
+﻿using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Loadouts;
+using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Games;
 
@@ -25,4 +27,9 @@ public class UnknownGame : IGame
             Version = _version
         }
     };
+
+    public IEnumerable<AModFile> GetGameFiles(GameInstallation installation, IDataStore store)
+    {
+        return Array.Empty<AModFile>();
+    }
 }

@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Loadouts;
 using NexusMods.Games.Abstractions;
 using NexusMods.Interfaces;
 using NexusMods.Paths;
@@ -22,14 +24,22 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame
     protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(IGameLocator locator, GameLocatorResult installation)
     {
         yield return new (GameFolderType.Game, installation.Path);
-        var profile = locator switch
+        var appData = locator switch
         {
             SteamLocator => KnownFolders.MyGames.Join("Skyrim Special Edition"),
             GogLocator => KnownFolders.MyGames.Join("Skyrim Special Edition GOG"),
             _ => throw new NotImplementedException($"No override for {locator}")
         };
-        yield return new(GameFolderType.Preferences, profile);
-        yield return new(GameFolderType.Saves, profile.Join("Saves"));
+        yield return new(GameFolderType.AppData, appData);
+    }
+
+    public IEnumerable<AModFile> GetGameFiles(GameInstallation installation, IDataStore store)
+    {
+        yield return new PluginFile
+        {
+            To = new GamePath(GameFolderType.AppData, "plugins.txt"),
+            Store = store
+        };
     }
 
     public IEnumerable<int> SteamIds => new[] { 489830 };

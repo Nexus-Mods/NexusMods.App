@@ -12,5 +12,7 @@ public class TypeFinder : ITypeFinder
     private IEnumerable<Type> AllTypes => new[]
     {
         typeof(PluginAnalysisData),
+        typeof(PluginFile),
+        typeof(AnalysisSortData)
     };
 }

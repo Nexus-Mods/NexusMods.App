@@ -7,7 +7,8 @@ public enum GameFolderType : byte
 {
     Game = 0,
     Saves,
-    Preferences
+    Preferences,
+    AppData
 }
 
 public struct GamePath : IPath

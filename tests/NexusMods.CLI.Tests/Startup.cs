@@ -7,7 +7,7 @@ using NexusMods.Common;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.StandardGameLocators;
-using NexusMods.StandardGameLocators.Tests;
+using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.DependencyInjection;
 using Xunit.DependencyInjection.Logging;
 

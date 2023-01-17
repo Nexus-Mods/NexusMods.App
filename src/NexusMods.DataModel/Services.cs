@@ -50,6 +50,7 @@ public static class Services
         coll.AddSingleton<ITypeFinder>(s => new AssemblyTypeFinder(typeof(Services).Assembly));
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<Entity>>();
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<ISortRule<Mod, ModId>>>();
+        coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<IModFileMetadata>>();
         
         coll.AddSingleton(s =>
         {
