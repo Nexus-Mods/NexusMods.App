@@ -159,7 +159,8 @@ public class SevenZipExtractor : IExtractor
                     var oldPosition = lastPercent == 0 ? 0 : totalSize / 100 * lastPercent;
                     var newPosition = percentInt == 0 ? 0 : totalSize / 100 * percentInt;
                     var throughput = newPosition - oldPosition;
-                    job.ReportNoWait(throughput);
+                    if (throughput > 0)
+                        job.ReportNoWait(throughput);
                     
                     lastPercent = percentInt;
                 }))

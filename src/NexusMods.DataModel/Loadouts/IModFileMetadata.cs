@@ -4,5 +4,4 @@ namespace NexusMods.DataModel.Loadouts;
 
 public interface IModFileMetadata
 {
-    public IFileMetadataSource Source { get; }
 }

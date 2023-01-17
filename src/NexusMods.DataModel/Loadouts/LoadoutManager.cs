@@ -49,7 +49,7 @@ public class LoadoutManager
     public IObservable<ListRegistry> Changes => _root.Changes.Select(r => r.New);
     public IEnumerable<LoadoutMarker> AllLoadouts => _root.Value.Lists.Values.Select(m => new LoadoutMarker(this, m.LoadoutId));
 
-    public async Task<LoadoutMarker> ManageGame(GameInstallation installation, string name = "", CancellationToken? token = null)
+    public async Task<LoadoutMarker> ManageGame(GameInstallation installation, string name = "", CancellationToken token = default)
     {
         _logger.LogInformation("Indexing game files");
         var gameFiles = new HashSet<AModFile>();
@@ -77,8 +77,9 @@ public class LoadoutManager
         
         foreach (var (type, path) in installation.Locations)
         {
-            await foreach (var result in FileHashCache.IndexFolder(path, token))
+            await foreach (var result in FileHashCache.IndexFolder(path, token).WithCancellation(token))
             {
+                var analysis = await _analyzer.AnalyzeFile(result.Path, token);
                 var file = new GameFile
                 {
                     To = new GamePath(type, result.Path.RelativeTo(path)),
@@ -87,10 +88,9 @@ public class LoadoutManager
                     Size = result.Size,
                     Store = _store
                 };
-                /*
-                var metaData = await GetMetadata(n, mod, file).ToHashSet();
+                
+                var metaData = await GetMetadata(n, mod, file, analysis).ToHashSet();
                 gameFiles.Add(file with {Metadata = metaData.ToImmutableHashSet()});
-                */
             }
         }
         
@@ -100,24 +100,24 @@ public class LoadoutManager
         return marker;
     }
 
-    /*
-    private async IAsyncEnumerable<IModFileMetadata> GetMetadata(Loadout loadout, Mod mod, GameFile file)
+    
+    private async IAsyncEnumerable<IModFileMetadata> GetMetadata(Loadout loadout, Mod mod, GameFile file,
+        AnalyzedFile analyzed)
     {
-        throw new NotImplementedException();
         foreach (var source in _metadataSources)
         {
-            if (!source.Games.Contains(loadout.Installation.Game))
+            if (!source.Games.Contains(loadout.Installation.Game.Slug))
                 continue;
             if (!source.Extensions.Contains(file.To.Extension))
                 continue;
 
-            await foreach (var metadata in source.GetMetadata(loadout, mod, file))
+            await foreach (var metadata in source.GetMetadata(loadout, mod, file, analyzed))
             {
                 yield return metadata;
             }
         }
 
-    }*/
+    }
 
     public async Task<(LoadoutMarker Loadout, ModId ModId)> InstallMod(LoadoutId LoadoutId, AbsolutePath path, string name, CancellationToken token = default)
     {

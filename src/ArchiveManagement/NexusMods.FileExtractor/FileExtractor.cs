@@ -61,7 +61,7 @@ public class FileExtractor
             }
         }
         
-        throw new FileExtractionException("No Extractors found for file");
+        throw new FileExtractionException($"No Extractors found for file {sFn.Name}");
     }
 
     public async Task<IDictionary<RelativePath, T>> ForEachEntry<T>(IStreamFactory sFn,

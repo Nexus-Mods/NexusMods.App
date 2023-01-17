@@ -1,4 +1,5 @@
-﻿using NexusMods.DataModel.Loadouts;
+﻿using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.Loadouts;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Interfaces.Components;
 using NexusMods.Paths;
@@ -25,7 +26,7 @@ public interface IFileMetadataSource
     /// Apply this source to the given games
     /// </summary>
     public IEnumerable<string> Games { get; }
-    
+
     /// <summary>
     /// Return metadata for the given file. If metadata for this source already exists on the file
     /// it will be removed before the new metadata is added, so this method should always return
@@ -34,6 +35,8 @@ public interface IFileMetadataSource
     /// <param name="filLoadout"></param>
     /// <param name="mod"></param>
     /// <param name="file"></param>
+    /// <param name="analyzedFile"></param>
     /// <returns></returns>
-    public IAsyncEnumerable<IModFileMetadata> GetMetadata(Loadout filLoadout, Mod mod, AModFile file);
+    public IAsyncEnumerable<IModFileMetadata> GetMetadata(Loadout filLoadout, Mod mod, AModFile file,
+        AnalyzedFile analyzedFile);
 }

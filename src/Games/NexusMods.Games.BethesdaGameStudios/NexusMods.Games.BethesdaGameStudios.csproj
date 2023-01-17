@@ -19,8 +19,4 @@
       <PackageReference Include="Mutagen.Bethesda.Skyrim" Version="0.41.0-pr001" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="MetadataSources" />
-    </ItemGroup>
-
 </Project>
