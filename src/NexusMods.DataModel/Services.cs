@@ -39,12 +39,12 @@ public static class Services
             new []{baseFolder.Value.Join("Archives")},
             s.GetRequiredService<IDataStore>(),
             s.GetRequiredService<FileExtractor.FileExtractor>(),
-            s.GetRequiredService<ArchiveContentsCache>()));
+            s.GetRequiredService<FileContentsCache>()));
         coll.AddAllSingleton<IResource, IResource<FileHashCache, Size>>(_ => new Resource<FileHashCache, Size>("File Hashing", Environment.ProcessorCount, Size.Zero));
         coll.AddAllSingleton<IResource, IResource<LoadoutManager, Size>>(_ => new Resource<LoadoutManager, Size>("Load Order Management", Environment.ProcessorCount, Size.Zero));
         coll.AddSingleton<LoadoutManager>();
         coll.AddSingleton<FileHashCache>();
-        coll.AddSingleton<ArchiveContentsCache>();
+        coll.AddSingleton<FileContentsCache>();
 
         coll.AddSingleton<ITypeFinder>(s => new AssemblyTypeFinder(typeof(Services).Assembly));
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<Entity>>();

@@ -21,8 +21,8 @@ public class Startup
         
         container.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug));
         container.AddDataModel(KnownFolders.EntryFolder.Join("DataModel", Guid.NewGuid().ToString()));
-        container.AddAllSingleton<IResource, IResource<ArchiveContentsCache, Size>>(s =>
-            new Resource<ArchiveContentsCache, Size>("File Analysis"));
+        container.AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(s =>
+            new Resource<FileContentsCache, Size>("File Analysis"));
         container.AddAllSingleton<IResource, IResource<IExtractor, Size>>(s =>
             new Resource<IExtractor, Size>("File Extraction"));
         container.AddFileExtractors();

@@ -35,8 +35,8 @@ public class Startup
         container.AddAllSingleton<AHandler<GOGGame, long>, StubbedGogLocator>();
         container.AddAllSingleton<IModInstaller, StubbedGameInstaller>();
 
-        container.AddAllSingleton<IResource, IResource<ArchiveContentsCache, Size>>(s =>
-            new Resource<ArchiveContentsCache, Size>("File Analysis"));
+        container.AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(s =>
+            new Resource<FileContentsCache, Size>("File Analysis"));
         container.AddAllSingleton<IResource, IResource<IExtractor, Size>>(s =>
             new Resource<IExtractor, Size>("File Extraction"));
         

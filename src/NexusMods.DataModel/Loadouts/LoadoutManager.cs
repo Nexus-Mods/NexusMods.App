@@ -24,14 +24,14 @@ public class LoadoutManager
     public readonly FileHashCache FileHashCache;
     public readonly ArchiveManager ArchiveManager;
     private readonly IModInstaller[] _installers;
-    private readonly ArchiveContentsCache _analyzer;
+    private readonly FileContentsCache _analyzer;
     private readonly IEnumerable<IFileMetadataSource> _metadataSources;
 
     public LoadoutManager(ILogger<LoadoutManager> logger,
         IResource<LoadoutManager, Size> limiter,
         ArchiveManager archiveManager,
         IEnumerable<IFileMetadataSource> metadataSources,
-        IDataStore store, FileHashCache fileHashCache, IEnumerable<IModInstaller> installers, ArchiveContentsCache analyzer)
+        IDataStore store, FileHashCache fileHashCache, IEnumerable<IModInstaller> installers, FileContentsCache analyzer)
     {
         _logger = logger;
         Limiter = limiter;

@@ -26,7 +26,7 @@ public static class Services
         services.AddSingleton<TemporaryFileManager>();
         
         services.AddAllSingleton<IResource, IResource<IExtractor, Size>>(s => new Resource<IExtractor, Size>("File Extraction"));
-        services.AddAllSingleton<IResource, IResource<ArchiveContentsCache, Size>>(s => new Resource<ArchiveContentsCache, Size>("File Analysis"));
+        services.AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(s => new Resource<FileContentsCache, Size>("File Analysis"));
         services.AddFileExtractors();
         services.AddDataModel();
         return services;

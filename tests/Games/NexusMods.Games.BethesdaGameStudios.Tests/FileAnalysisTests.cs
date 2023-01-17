@@ -6,11 +6,11 @@ namespace NexusMods.Games.BethesdaGameStudios.Tests;
 
 public class FileAnalysisTests
 {
-    private readonly ArchiveContentsCache _cache;
+    private readonly FileContentsCache _cache;
     private readonly AbsolutePath _plugin1;
     private readonly AbsolutePath _plugin2;
 
-    public FileAnalysisTests(ArchiveContentsCache cache)
+    public FileAnalysisTests(FileContentsCache cache)
     {
         _cache = cache;
         _plugin1 = KnownFolders.EntryFolder.Join("Resources", "testfile1.esp");
