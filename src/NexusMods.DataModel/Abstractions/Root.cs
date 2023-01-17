@@ -59,7 +59,7 @@ public class Root<TRoot> where TRoot : Entity, IEmptyWithDataStore<TRoot>
             _root = new EntityLink<TRoot>(newId, Store);
             goto restart;
         }
-
+        
         _root = new EntityLink<TRoot>(newRoot.DataStoreId, Store);
 
         _changes.OnNext((oldRoot, newRoot));

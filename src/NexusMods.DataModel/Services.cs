@@ -53,6 +53,7 @@ public static class Services
         coll.AddSingleton(s =>
         {
             var opts = new JsonSerializerOptions();
+            opts.Converters.Add(new JsonStringEnumConverter());
             foreach (var converter in s.GetServices<JsonConverter>())
                 opts.Converters.Add(converter);
             return opts;

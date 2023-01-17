@@ -154,6 +154,39 @@ public class SerializerTests
 
     }
 
+    [Fact]
+    public void CanSerializeEnums()
+    {
+        var opts = new JsonSerializerOptions();
+        opts.Converters.Add(new ConcreteConverterGenerator<EnumClass>(_provider));
+
+        var data = new EnumClass()
+        {
+            SomeString = "Data",
+            SomeEnum = new[] { MyEnum.One, MyEnum.Two }
+        };
+        
+        var json = JsonSerializer.Serialize(data, opts);
+        json.Should().Contain("$type", "because the value supports polymorphism");
+        
+        var data2 = JsonSerializer.Deserialize<EnumClass>(json, opts)!;
+
+        data2.Should().BeEquivalentTo(data);
+    }
+
+    [JsonName("EnumClass")]
+    public class EnumClass
+    {
+        public string SomeString { get; set; } = null!;
+        public MyEnum[] SomeEnum { get; set; }
+    }
+    public enum MyEnum
+    {
+        One,
+        Two,
+        Three
+    }
+
     [JsonName("InjectableClass")]
     public class InjectableClass
     {

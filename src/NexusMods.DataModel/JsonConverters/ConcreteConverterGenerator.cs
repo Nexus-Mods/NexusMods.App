@@ -15,18 +15,13 @@ namespace NexusMods.DataModel.JsonConverters;
 /// </summary>
 public class ConcreteConverterGenerator<T> : AExpressionConverterGenerator<T>
 {
-    private readonly Type _type;
-
     public ConcreteConverterGenerator(IServiceProvider provider) : base(provider)
     {
-        _type = typeof(T);
         
         _readerFunction = new Lazy<ReadDelegate>(() => GenerateReaderFunction(provider));
         _writerFunction = new Lazy<WriteDelegate>(GenerateWriter);
     }
-
-
-
+    
     private ReadDelegate GenerateReaderFunction(IServiceProvider provider)
     {
         var members = GetMembers();
@@ -83,13 +78,22 @@ public class ConcreteConverterGenerator<T> : AExpressionConverterGenerator<T>
             }
         })
             .Where(c => c != null)
-            .Select(c => c!);
+            .Select(c => c!)
+            .Append(Expression.SwitchCase(
+                Expression.Block(readNext, Expression.Break(endOfSwitch)),
+                Expression.Constant("$type")));
         
-        loopExprs.Add(Expression.Switch(Expression.Call(readerParam, "GetString", null), null, clauses.ToArray()));
+        loopExprs.Add(Expression.Switch(Expression.Call(readerParam, "GetString", null), 
+            Expression.Throw(Expression.New(typeof(NotImplementedException).GetConstructor(new []{typeof(string)}), 
+                Expression.Add( 
+                    Expression.Constant($"Unknown property on {Type.Name}: "), 
+                    Expression.Call(readerParam, "GetString", null),
+                    typeof(string).GetMethod("Concat", new[] {typeof(string), typeof(string)})))),
+            clauses.ToArray()));
         loopExprs.Add(Expression.Label(endOfSwitch));
         exprs.Add(Expression.Loop(Expression.Block(loopExprs)));
         exprs.Add(Expression.Label(loopExit));
-        exprs.Add(Expression.MemberInit(Expression.New(_type), 
+        exprs.Add(Expression.MemberInit(Expression.New(Type), 
             members.Select(m =>
             {
                 if (m.IsInjected)

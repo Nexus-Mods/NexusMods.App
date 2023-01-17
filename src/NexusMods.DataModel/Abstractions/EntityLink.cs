@@ -18,7 +18,7 @@ public record EntityLink <T> : IEmptyWithDataStore<EntityLink<T>> where T : Enti
 
     public static implicit operator T(EntityLink<T> t) => t.Value;
     public static implicit operator EntityLink<T>(T t) => new(t.DataStoreId, t.Store);
-
+    
     [JsonIgnore]
     private readonly IDataStore _store;
 

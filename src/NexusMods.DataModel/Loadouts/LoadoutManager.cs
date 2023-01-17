@@ -20,7 +20,7 @@ public class LoadoutManager
 {
     private readonly ILogger<LoadoutManager> _logger;
     private readonly IDataStore _store;
-    private readonly Root<ListRegistry> _root;
+    private readonly Root<LoadoutRegistry> _root;
     public readonly FileHashCache FileHashCache;
     public readonly ArchiveManager ArchiveManager;
     private readonly IModInstaller[] _installers;
@@ -37,7 +37,7 @@ public class LoadoutManager
         Limiter = limiter;
         ArchiveManager = archiveManager;
         _store = store;
-        _root = new Root<ListRegistry>(RootType.Loadouts, store);
+        _root = new Root<LoadoutRegistry>(RootType.Loadouts, store);
         FileHashCache = fileHashCache;
         _metadataSources = metadataSources;
         _installers = installers.ToArray();
@@ -46,7 +46,7 @@ public class LoadoutManager
 
     public IResource<LoadoutManager,Size> Limiter { get; set; }
 
-    public IObservable<ListRegistry> Changes => _root.Changes.Select(r => r.New);
+    public IObservable<LoadoutRegistry> Changes => _root.Changes.Select(r => r.New);
     public IEnumerable<LoadoutMarker> AllLoadouts => _root.Value.Lists.Values.Select(m => new LoadoutMarker(this, m.LoadoutId));
 
     public async Task<LoadoutMarker> ManageGame(GameInstallation installation, string name = "", CancellationToken token = default)
