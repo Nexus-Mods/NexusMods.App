@@ -2,11 +2,11 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Interfaces;
-using NexusMods.Interfaces.Components;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.Tests;
 using Xunit.DependencyInjection;

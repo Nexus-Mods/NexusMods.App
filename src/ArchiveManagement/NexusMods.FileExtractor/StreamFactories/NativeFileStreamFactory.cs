@@ -1,4 +1,4 @@
-using NexusMods.Interfaces.Streams;
+using NexusMods.Common;
 
 namespace NexusMods.Paths;
 

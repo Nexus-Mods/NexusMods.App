@@ -1,4 +1,6 @@
-﻿namespace NexusMods.Interfaces.Components;
+﻿using NexusMods.DataModel.Loadouts;
+
+namespace NexusMods.DataModel.Games;
 
 /// <summary>
 /// Interface for a specific game recognized by the app. A single game can have

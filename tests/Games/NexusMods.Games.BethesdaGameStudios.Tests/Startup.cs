@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.FileExtractor;
 using NexusMods.FileExtractor.Extractors;
-using NexusMods.Interfaces;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators;
 using Xunit.DependencyInjection;

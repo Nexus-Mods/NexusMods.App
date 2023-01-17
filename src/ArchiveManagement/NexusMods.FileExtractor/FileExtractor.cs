@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Logging;
+using NexusMods.Common;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.FileExtractor.Extractors;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Interfaces;
-using NexusMods.Interfaces.Streams;
 using NexusMods.Paths;
 
 namespace NexusMods.FileExtractor;

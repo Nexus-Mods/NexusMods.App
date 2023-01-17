@@ -5,7 +5,7 @@ using GameFinder.RegistryUtils;
 using GameFinder.StoreHandlers.GOG;
 using GameFinder.StoreHandlers.Steam;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Interfaces.Components;
+using NexusMods.DataModel.Games;
 using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators;

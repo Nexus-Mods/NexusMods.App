@@ -1,8 +1,8 @@
 ﻿using System.Runtime.InteropServices;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
+using NexusMods.DataModel.Games;
 using NexusMods.Interfaces;
-using NexusMods.Interfaces.Components;
 using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators.Tests;

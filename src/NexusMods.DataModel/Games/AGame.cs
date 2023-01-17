@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using NexusMods.Interfaces;
-using NexusMods.Interfaces.Components;
+using NexusMods.DataModel.Games;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.Abstractions;

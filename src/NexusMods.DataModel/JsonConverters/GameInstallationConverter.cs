@@ -1,8 +1,6 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
-using NexusMods.Games.Abstractions;
-using NexusMods.Interfaces;
-using NexusMods.Interfaces.Components;
+using NexusMods.DataModel.Games;
 
 namespace NexusMods.DataModel.JsonConverters;
 

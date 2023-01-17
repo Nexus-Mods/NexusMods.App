@@ -1,7 +1,7 @@
 ﻿using GameFinder.Common;
 using GameFinder.StoreHandlers.Steam;
 using Microsoft.Extensions.Logging;
-using NexusMods.Interfaces.StoreLocatorTags;
+using NexusMods.DataModel.Games;
 using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators;

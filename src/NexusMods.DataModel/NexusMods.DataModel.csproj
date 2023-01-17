@@ -19,9 +19,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\ArchiveManagement\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj" />
-      <ProjectReference Include="..\Games\Abstractions\NexusMods.Games.Abstractions\NexusMods.Games.Abstractions.csproj" />
       <ProjectReference Include="..\NexusMods.Hashing.xxHash64\NexusMods.Hashing.xxHash64.csproj" />
-      <ProjectReference Include="..\NexusMods.Interfaces\NexusMods.Interfaces.csproj" />
       <ProjectReference Include="..\NexusMods.Paths\NexusMods.Paths.csproj" />
     </ItemGroup>
 

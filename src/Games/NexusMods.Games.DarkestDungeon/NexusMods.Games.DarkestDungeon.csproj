@@ -8,8 +8,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
-      <ProjectReference Include="..\..\NexusMods.Interfaces\NexusMods.Interfaces.csproj" />
-      <ProjectReference Include="..\Abstractions\NexusMods.Games.Abstractions\NexusMods.Games.Abstractions.csproj" />
     </ItemGroup>
 
 </Project>

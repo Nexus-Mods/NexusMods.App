@@ -2,6 +2,7 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;

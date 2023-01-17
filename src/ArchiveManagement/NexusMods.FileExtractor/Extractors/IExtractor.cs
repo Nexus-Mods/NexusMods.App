@@ -1,6 +1,6 @@
-﻿using NexusMods.FileExtractor.FileSignatures;
+﻿using NexusMods.Common;
+using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Interfaces;
-using NexusMods.Interfaces.Streams;
 using NexusMods.Paths;
 
 namespace NexusMods.FileExtractor.Extractors;

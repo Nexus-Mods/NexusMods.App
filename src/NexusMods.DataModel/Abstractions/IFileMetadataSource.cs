@@ -1,7 +1,6 @@
 ﻿using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.FileExtractor.FileSignatures;
-using NexusMods.Interfaces.Components;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Abstractions;

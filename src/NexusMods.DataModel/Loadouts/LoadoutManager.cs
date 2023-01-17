@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Extensions;
+using NexusMods.DataModel.Games;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -11,7 +12,6 @@ using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.Interfaces;
-using NexusMods.Interfaces.Components;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Loadouts;

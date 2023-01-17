@@ -1,8 +1,6 @@
-﻿using NexusMods.Interfaces;
-using NexusMods.Interfaces.Components;
-using NexusMods.Paths;
+﻿using NexusMods.Paths;
 
-namespace NexusMods.Games.Abstractions;
+namespace NexusMods.DataModel.Games;
 
 public class UnknownGame : IGame
 {

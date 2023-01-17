@@ -14,9 +14,10 @@
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
       <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
     </ItemGroup>
-
+    
     <ItemGroup>
-      <ProjectReference Include="..\NexusMods.Interfaces\NexusMods.Interfaces.csproj" />
+      <ProjectReference Include="..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+      <ProjectReference Include="..\NexusMods.Paths\NexusMods.Paths.csproj" />
     </ItemGroup>
 
 </Project>

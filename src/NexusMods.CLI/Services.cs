@@ -1,13 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using NexusMods.CLI.OptionParsers;
+using NexusMods.Common;
 using NexusMods.DataModel;
+using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.FileExtractor;
 using NexusMods.FileExtractor.Extractors;
-using NexusMods.Interfaces;
-using NexusMods.Interfaces.Components;
 using NexusMods.Paths;
 
 namespace NexusMods.CLI;
