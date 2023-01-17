@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="GameFinder.Common" Version="2.5.0" />
+      <PackageReference Include="GameFinder.StoreHandlers.GOG" Version="2.5.0" />
+      <PackageReference Include="GameFinder.StoreHandlers.Steam" Version="2.5.0" />
+    </ItemGroup>
+
+</Project>
