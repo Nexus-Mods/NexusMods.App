@@ -168,6 +168,15 @@ public struct RelativePath : IPath, IEquatable<RelativePath>, IComparable<Relati
     public RelativePath TopParent => new(Parts[..1]);
     public RelativePath FileNameWithoutExtension => Parts[^1][..^Extension.Length].ToRelativePath();
     public static RelativePath Empty => new(Array.Empty<string>());
+    public static IComparer<RelativePath> Comparer => new RelativePathComparer();
+
+    private class RelativePathComparer : IComparer<RelativePath>
+    { 
+        public int Compare(RelativePath x, RelativePath y)
+        {
+            return x.CompareTo(y);
+        }
+    }
 
     public readonly bool FileNameEndsWith(string postfix)
     {

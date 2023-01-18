@@ -45,7 +45,7 @@ public class LoadoutMarker : IMarker<Loadout>
     {
         var list = _manager.Get(_id);
         var projected = new Dictionary<GamePath, (AModFile File, Mod Mod)>();
-        var mods = Sorter.Sort<Mod, ModId>(list.Mods, m => m.SortRules);
+        var mods = Sorter.Sort<Mod, ModId>(list.Mods, i => i.Id, m => m.SortRules);
         foreach (var mod in mods)
         {
             foreach (var file in mod.Files)
@@ -66,6 +66,23 @@ public class LoadoutMarker : IMarker<Loadout>
             if (list.PreviousVersion.Id.Equals(IdEmpty.Empty))
                 break;
             list = list.PreviousVersion.Value;
+        }
+    }
+
+    public async IAsyncEnumerable<(AModFile File, Mod Mod)> GenerateFiles(IReadOnlyCollection<(AModFile File, Mod Mod)> flattenedList, CancellationToken token = default)
+    {
+        var loadout = _manager.Get(_id);
+        foreach (var (file, mod) in flattenedList)
+        {
+            if (file is AGeneratedFile gen && gen.CachedHash == Hash.Zero)
+            {
+                var metaData = await gen.GetMetaData(loadout, flattenedList, token);
+                yield return (gen with {CachedHash = metaData.Hash, CachedSize = metaData.Size}, mod);
+            }
+            else
+            {
+                yield return (file, mod);
+            }
         }
     }
 

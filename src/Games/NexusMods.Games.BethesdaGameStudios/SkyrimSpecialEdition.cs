@@ -3,6 +3,7 @@ using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Games.Abstractions;
+using NexusMods.Hashing.xxHash64;
 using NexusMods.Interfaces;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators;
@@ -11,6 +12,11 @@ namespace NexusMods.Games.BethesdaGameStudios;
 
 public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame
 {
+    public static Extension ESL = new(".esl");
+    public static Extension ESM = new(".esm");
+    public static Extension ESP = new(".esp");
+    
+    public static HashSet<Extension> PluginExtensions = new() { ESL, ESM, ESP };
     public static string StaticSlug => "skyrimspecialedition";
     public override string Name => "Skyrim Special Edition";
     public override string Slug => StaticSlug;
@@ -38,6 +44,8 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame
         yield return new PluginFile
         {
             To = new GamePath(GameFolderType.AppData, "plugins.txt"),
+            CachedSize = Size.Zero,
+            CachedHash = Hash.Zero,
             Store = store
         };
     }
