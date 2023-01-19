@@ -154,4 +154,11 @@ public class SkyrimSpecialEditionTests
                 "ccvsvsse004-beafarmer.esl"
             }, opt => opt.WithStrictOrdering());
     }
+
+    [Fact]
+    public async Task CanDeployLoadout()
+    {
+        var loadout = await _manager.ManageGame(_game.Installations.First(), Guid.NewGuid().ToString());
+        await loadout.Apply();
+    }
 }

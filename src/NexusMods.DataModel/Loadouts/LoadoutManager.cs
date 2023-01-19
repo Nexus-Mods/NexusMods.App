@@ -174,4 +174,22 @@ public class LoadoutManager
     {
         return _root.Value.Lists[id];
     }
+
+    public void ReplaceFiles(LoadoutId id, List<(AModFile File, Mod Mod)> generated, string message)
+    {
+        var byMod = generated.GroupBy(x => x.Mod, x => x.File)
+            .ToDictionary(x => x.Key);
+        Alter(id, l =>
+        {
+            return l with
+            {
+                Mods = l.Mods.Keep(m =>
+                {
+                    if (!byMod.TryGetValue(m, out var files)) return m;
+                    var indexed = files.ToDictionary(f => f.To);
+                    return m with { Files = m.Files.Keep(f => indexed.GetValueOrDefault(f.To, f)) };
+                })
+            };
+        }, message);
+    }
 }

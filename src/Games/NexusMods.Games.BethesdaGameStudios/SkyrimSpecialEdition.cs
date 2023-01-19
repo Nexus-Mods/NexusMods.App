@@ -44,8 +44,8 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame
         yield return new PluginFile
         {
             To = new GamePath(GameFolderType.AppData, "plugins.txt"),
-            CachedSize = Size.Zero,
-            CachedHash = Hash.Zero,
+            Size = Size.Zero,
+            Hash = Hash.Zero,
             Store = store
         };
     }

@@ -24,15 +24,15 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
         var mainList = await LoadoutManager.ManageGame(Install, "MainList", CancellationToken.None);
         await mainList.Install(DATA_ZIP_LZMA, "First Mod", CancellationToken.None);
 
-        var plan = await mainList.MakeApplyPlan().ToList();
-        plan.OfType<CopyFile>().Count().Should().Be(3);
+        var plan = await mainList.MakeApplyPlan();
+        plan.Steps.OfType<CopyFile>().Count().Should().Be(3);
 
-        await mainList.ApplyPlan(plan, CancellationToken.None);
+        await mainList.Apply(plan, CancellationToken.None);
 
-        var newPlan = await mainList.MakeApplyPlan().ToList();
-        newPlan.Count.Should().Be(0);
+        var newPlan = await mainList.MakeApplyPlan();
+        newPlan.Steps.Count.Should().Be(0);
 
-        await BaseList?.ApplyPlan(await BaseList.MakeApplyPlan().ToList())!;
+        await BaseList?.Apply()!;
     }
     
     [Fact]
@@ -42,10 +42,11 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
         await mainList.Install(DATA_ZIP_LZMA, "First Mod", Token);
         await mainList.Install(DATA_7Z_LZMA2, "Second Mod", Token);
 
-        var originalPlan = await mainList.MakeApplyPlan().ToList();
-        originalPlan.OfType<CopyFile>().Count().Should().Be(3, "Files override each other");
+        var list = mainList.FlattenList().ToList();
+        var originalPlan = await mainList.MakeApplyPlan();
+        originalPlan.Steps.OfType<CopyFile>().Count().Should().Be(3, "Files override each other");
 
-        await mainList.ApplyPlan(originalPlan, CancellationToken.None);
+        await mainList.Apply(originalPlan, CancellationToken.None);
 
         var gameFolder = Install.Locations[GameFolderType.Game];
         foreach (var file in DATA_NAMES)

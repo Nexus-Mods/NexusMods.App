@@ -8,6 +8,5 @@ public abstract record AModFile : Entity
 {
     public override EntityCategory Category => EntityCategory.Loadouts;
     public required GamePath To { get; init; }
-    
     public ImmutableHashSet<IModFileMetadata> Metadata { get; init; } = ImmutableHashSet<IModFileMetadata>.Empty;
 }

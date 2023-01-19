@@ -25,11 +25,11 @@ public class Apply
     public async Task Run(LoadoutMarker loadout, bool run, bool summary, CancellationToken token)
     {
 
-        var steps = await loadout.MakeApplyPlan(token).ToList();
+        var plan = await loadout.MakeApplyPlan(token);
 
         if (summary)
         {
-            var rows = steps.GroupBy(s => s.GetType())
+            var rows = plan.Steps.GroupBy(s => s.GetType())
                 .Select(g =>
                     new object[]
                     {
@@ -40,7 +40,7 @@ public class Apply
         else
         {
             var rows = new List<object[]>();
-            foreach (var step in steps)
+            foreach (var step in plan.Steps)
             {
                 if (step is IStaticFileStep smf)
                 {
@@ -58,8 +58,8 @@ public class Apply
         if (run) {
             await _renderer.WithProgress(token, async () =>
             {
-                await loadout.ApplyPlan(steps, token);
-                return steps;
+                await loadout.Apply(plan, token);
+                return plan.Steps;
             });
         }
 
