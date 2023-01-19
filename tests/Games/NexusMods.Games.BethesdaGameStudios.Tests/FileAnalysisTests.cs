@@ -4,6 +4,7 @@ using NexusMods.Paths;
 
 namespace NexusMods.Games.BethesdaGameStudios.Tests;
 
+[Trait("RequiresGameInstalls", "True")] // Technically this doesn't require the game, but the DI system does for the other tests
 public class FileAnalysisTests
 {
     private readonly FileContentsCache _cache;
