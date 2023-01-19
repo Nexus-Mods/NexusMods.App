@@ -51,6 +51,7 @@ public static class Services
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<Entity>>();
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<ISortRule<Mod, ModId>>>();
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<IModFileMetadata>>();
+        coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<IFileAnalysisData>>();
         
         coll.AddSingleton(s =>
         {

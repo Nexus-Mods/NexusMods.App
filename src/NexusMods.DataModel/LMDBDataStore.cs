@@ -99,7 +99,7 @@ public class LMDBDataStore : IDataStore
         }
         else
         {
-            tx.Put(db, keySpan, stream.GetBuffer().ToArray());
+            tx.Put(db, keySpan, stream.GetBuffer().AsSpan()[..(int)stream.Length]);
         }
         var result = tx.Commit();
         if (result != MDBResultCode.Success)
