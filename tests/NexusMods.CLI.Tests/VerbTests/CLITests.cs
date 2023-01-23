@@ -1,7 +1,7 @@
 using FluentAssertions;
 using NexusMods.CLI.DataOutputs;
 using NexusMods.CLI.Tests.VerbTests;
-using NexusMods.Interfaces.Components;
+using NexusMods.DataModel.Games;
 using NexusMods.Paths;
 
 namespace NexusMods.CLI.Tests;

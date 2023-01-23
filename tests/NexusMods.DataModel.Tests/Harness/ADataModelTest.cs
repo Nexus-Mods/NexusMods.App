@@ -2,12 +2,13 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Interfaces;
-using NexusMods.Interfaces.Components;
 using NexusMods.Paths;
+using NexusMods.StandardGameLocators.TestHelpers;
 using NexusMods.StandardGameLocators.Tests;
 using Xunit.DependencyInjection;
 
@@ -31,7 +32,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
     private readonly IServiceProvider _provider;
     protected readonly TemporaryFileManager TemporaryFileManager;
-    protected readonly ArchiveContentsCache ArchiveContentsCache;
+    protected readonly FileContentsCache ArchiveContentsCache;
     protected readonly ArchiveManager ArchiveManager;
     protected readonly LoadoutManager LoadoutManager;
     protected readonly FileHashCache FileHashCache;
@@ -52,7 +53,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
             .ConfigureServices((host, service) => startup.ConfigureServices(service))
             .Build();
         _provider = _host.Services;
-        ArchiveContentsCache = _provider.GetRequiredService<ArchiveContentsCache>();
+        ArchiveContentsCache = _provider.GetRequiredService<FileContentsCache>();
         ArchiveManager = _provider.GetRequiredService<ArchiveManager>();
         LoadoutManager = _provider.GetRequiredService<LoadoutManager>();
         FileHashCache = _provider.GetRequiredService<FileHashCache>();

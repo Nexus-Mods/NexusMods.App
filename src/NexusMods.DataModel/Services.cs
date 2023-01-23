@@ -2,6 +2,7 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
@@ -39,20 +40,23 @@ public static class Services
             new []{baseFolder.Value.Join("Archives")},
             s.GetRequiredService<IDataStore>(),
             s.GetRequiredService<FileExtractor.FileExtractor>(),
-            s.GetRequiredService<ArchiveContentsCache>()));
+            s.GetRequiredService<FileContentsCache>()));
         coll.AddAllSingleton<IResource, IResource<FileHashCache, Size>>(_ => new Resource<FileHashCache, Size>("File Hashing", Environment.ProcessorCount, Size.Zero));
         coll.AddAllSingleton<IResource, IResource<LoadoutManager, Size>>(_ => new Resource<LoadoutManager, Size>("Load Order Management", Environment.ProcessorCount, Size.Zero));
         coll.AddSingleton<LoadoutManager>();
         coll.AddSingleton<FileHashCache>();
-        coll.AddSingleton<ArchiveContentsCache>();
+        coll.AddSingleton<FileContentsCache>();
 
         coll.AddSingleton<ITypeFinder>(s => new AssemblyTypeFinder(typeof(Services).Assembly));
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<Entity>>();
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<ISortRule<Mod, ModId>>>();
+        coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<IModFileMetadata>>();
+        coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<IFileAnalysisData>>();
         
         coll.AddSingleton(s =>
         {
             var opts = new JsonSerializerOptions();
+            opts.Converters.Add(new JsonStringEnumConverter());
             foreach (var converter in s.GetServices<JsonConverter>())
                 opts.Converters.Add(converter);
             return opts;

@@ -55,7 +55,7 @@ public class Sorting
     [Benchmark]
     public void Sort()
     {
-        Sorter.Sort<Item, string>(_rules, x => x.Rules).ToArray();
+        Sorter.Sort<Item, string>(_rules, x => x.Id, x => x.Rules).ToArray();
     }
 
     private IEnumerable<Item> Shuffle(List<Item> rules)

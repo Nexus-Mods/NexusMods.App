@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Logging;
+using NexusMods.Common;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.FileExtractor.Extractors;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Interfaces;
-using NexusMods.Interfaces.Streams;
 using NexusMods.Paths;
 
 namespace NexusMods.FileExtractor;
@@ -61,7 +61,7 @@ public class FileExtractor
             }
         }
         
-        throw new FileExtractionException("No Extractors found for file");
+        throw new FileExtractionException($"No Extractors found for file {sFn.Name}");
     }
 
     public async Task<IDictionary<RelativePath, T>> ForEachEntry<T>(IStreamFactory sFn,

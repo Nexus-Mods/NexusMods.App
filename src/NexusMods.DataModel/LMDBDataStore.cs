@@ -25,6 +25,7 @@ public class LMDBDataStore : IDataStore
         settings.SetCreateIfMissing();
 
         _db = new LightningEnvironment(path.ToString());
+        _db.MapSize = 1L * 100 * 1024 * 1024;
         _db.Open();
         
         
@@ -55,7 +56,9 @@ public class LMDBDataStore : IDataStore
             using var tx = _db.BeginTransaction();
             using var db = tx.OpenDatabase();
             tx.Put(db, keySpan, span[..(int)stream.Length]);
-            tx.Commit();
+            var result = tx.Commit();
+            if (result != MDBResultCode.Success)
+                throw new Exception($"LMDB error {result}");
         }
         else
         {
@@ -68,7 +71,10 @@ public class LMDBDataStore : IDataStore
             using var tx = _db.BeginTransaction();
             using var db = tx.OpenDatabase();
             tx.Put(db, keySpan, data.AsSpan()[..(int)stream.Length]);
-            tx.Commit();
+            var result = tx.Commit();
+            if (result != MDBResultCode.Success)
+                throw new Exception($"LMDB error {result}");
+
         }
 
         _changes.OnNext((id, value));
@@ -93,9 +99,11 @@ public class LMDBDataStore : IDataStore
         }
         else
         {
-            tx.Put(db, keySpan, stream.GetBuffer().ToArray());
+            tx.Put(db, keySpan, stream.GetBuffer().AsSpan()[..(int)stream.Length]);
         }
-        tx.Commit();
+        var result = tx.Commit();
+        if (result != MDBResultCode.Success)
+            throw new Exception($"LMDB error {result}");
         _changes.OnNext((id, value));
     }
 
@@ -109,8 +117,11 @@ public class LMDBDataStore : IDataStore
         var (resultCode, key, value) = tx.Get(db, keySpan);
         if (resultCode != MDBResultCode.Success)
             return null;
-        return JsonSerializer.Deserialize<T>(value.AsSpan(), _jsonOptions.Value);
-        
+        var returnVal = JsonSerializer.Deserialize<Entity>(value.AsSpan(), _jsonOptions.Value);
+        if (returnVal == null)
+            throw new NullReferenceException("Deserialized value is null");
+        return (T)returnVal!;
+
     }
     
     public bool PutRoot(RootType type, Id oldId, Id newId)
@@ -133,7 +144,9 @@ public class LMDBDataStore : IDataStore
             using var tx = _db.BeginTransaction();
             using var db = tx.OpenDatabase();
             tx.Put(db, rootIdSpan, newIdSpan);
-            tx.Commit();
+            var result = tx.Commit();
+            if (result != MDBResultCode.Success)
+                throw new Exception($"LMDB error {result}");
         }
         return true;
     }
@@ -151,7 +164,7 @@ public class LMDBDataStore : IDataStore
         return Id.FromTaggedSpan(value.AsSpan());
     }
 
-    public byte[]? GetRaw(ReadOnlySpan<byte> key, EntityCategory category)
+    public byte[]? GetRaw(ReadOnlySpan<byte> key)
     {
         using var tx = _db.BeginTransaction();
         using var db = tx.OpenDatabase();
@@ -161,12 +174,21 @@ public class LMDBDataStore : IDataStore
         return value.CopyToNewArray();
     }
 
+    public byte[]? GetRaw(Id id)
+    {
+        Span<byte> bytes = stackalloc byte[id.SpanSize + 1];
+        id.ToTaggedSpan(bytes);
+        return GetRaw(bytes);
+    }
+
     public void PutRaw(ReadOnlySpan<byte> key, ReadOnlySpan<byte> value, EntityCategory category)
     {
         using var tx = _db.BeginTransaction();
         using var db = tx.OpenDatabase();
         tx.Put(db, key, value);
-        tx.Commit();
+        var result = tx.Commit();
+        if (result != MDBResultCode.Success)
+            throw new Exception($"LMDB error {result}");
     }
 
     public IEnumerable<T> GetByPrefix<T>(Id prefix) where T : Entity

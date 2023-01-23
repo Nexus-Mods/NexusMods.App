@@ -16,8 +16,8 @@
     <ItemGroup>
       <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
       <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
-      <PackageReference Include="NLog.Extensions.Logging" Version="5.2.0" />
-      <PackageReference Include="Spectre.Console" Version="0.45.1-preview.0.47" />
+      <PackageReference Include="NLog.Extensions.Logging" Version="5.2.1" />
+      <PackageReference Include="Spectre.Console" Version="0.46.1-preview.0.2" />
     </ItemGroup>
 
 </Project>

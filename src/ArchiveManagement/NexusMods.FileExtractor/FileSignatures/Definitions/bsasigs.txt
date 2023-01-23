@@ -14,3 +14,4 @@ Zip,50 4B 07 08,ZIP
 NetImmerse File Format, 4e 65 74 49 6d 6d 65 72 73 65 20 46 69 6c 65 20 46 6f 72 6d 61 74, NIF
 Gamebryo File Format, 47 61 6d 65 62 72 79 6f 20 46 69 6c 65 20 46 6f 72 6d 61 74, NIF
 Creation Engine Plugin, 54 45 53 34, CreationEnginePlugin
+TES4 Plugin, 54 45 53 34, TES4

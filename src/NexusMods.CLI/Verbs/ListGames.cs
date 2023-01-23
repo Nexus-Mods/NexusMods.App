@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using NexusMods.CLI.DataOutputs;
-using NexusMods.Interfaces.Components;
+using NexusMods.DataModel.Games;
 using NexusMods.Paths;
 
 namespace NexusMods.CLI.Verbs;

@@ -6,7 +6,8 @@ namespace NexusMods.CLI.Tests.VerbTests;
 
 public class HashFolderTests : AVerbTest
 {
-    public HashFolderTests(TemporaryFileManager temporaryFileManager, IServiceProvider provider) : base(temporaryFileManager, provider)
+    public HashFolderTests(TemporaryFileManager temporaryFileManager, IServiceProvider provider) 
+        : base(temporaryFileManager, provider)
     {
     }
     

@@ -12,7 +12,7 @@ public static class StreamExtensions
     /// <param name="stream">Source Stream</param>
     /// <param name="token">Cancellation Token</param>
     /// <returns></returns>
-    public static async Task<Hash> Hash(this Stream stream, CancellationToken token, IJob<Size>? job = null)
+    public static async Task<Hash> Hash(this Stream stream, CancellationToken token = default, IJob<Size>? job = null)
     {
         return await stream.HashingCopy(Stream.Null, token, job);
     }

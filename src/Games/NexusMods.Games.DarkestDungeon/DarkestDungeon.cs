@@ -1,9 +1,8 @@
 ﻿using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
+using NexusMods.DataModel.Games;
 using NexusMods.Games.Abstractions;
 using NexusMods.Interfaces;
-using NexusMods.Interfaces.Components;
-using NexusMods.Interfaces.StoreLocatorTags;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.DarkestDungeon;

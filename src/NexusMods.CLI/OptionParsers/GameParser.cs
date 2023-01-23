@@ -1,4 +1,4 @@
-﻿using NexusMods.Interfaces.Components;
+﻿using NexusMods.DataModel.Games;
 
 namespace NexusMods.CLI.OptionParsers;
 

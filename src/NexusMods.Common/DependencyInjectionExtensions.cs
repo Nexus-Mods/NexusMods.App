@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace NexusMods.Interfaces;
+namespace NexusMods.Common;
 
 public static class DependencyInjectionExtensions
 {

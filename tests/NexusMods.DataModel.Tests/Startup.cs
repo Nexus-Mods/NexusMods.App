@@ -3,15 +3,16 @@ using GameFinder.StoreHandlers.GOG;
 using GameFinder.StoreHandlers.Steam;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Common;
+using NexusMods.DataModel.Games;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.FileExtractor;
 using NexusMods.FileExtractor.Extractors;
-using NexusMods.Interfaces;
-using NexusMods.Interfaces.Components;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators;
+using NexusMods.StandardGameLocators.TestHelpers;
 using NexusMods.StandardGameLocators.Tests;
 using Xunit.DependencyInjection;
 using Xunit.DependencyInjection.Logging;
@@ -35,8 +36,8 @@ public class Startup
         container.AddAllSingleton<AHandler<GOGGame, long>, StubbedGogLocator>();
         container.AddAllSingleton<IModInstaller, StubbedGameInstaller>();
 
-        container.AddAllSingleton<IResource, IResource<ArchiveContentsCache, Size>>(s =>
-            new Resource<ArchiveContentsCache, Size>("File Analysis"));
+        container.AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(s =>
+            new Resource<FileContentsCache, Size>("File Analysis"));
         container.AddAllSingleton<IResource, IResource<IExtractor, Size>>(s =>
             new Resource<IExtractor, Size>("File Extraction"));
         

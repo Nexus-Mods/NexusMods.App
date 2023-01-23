@@ -6,14 +6,15 @@ namespace NexusMods.DataModel.Sorting;
 public class Sorter
 {
     public static IEnumerable<TItem> Sort<TItem, TId>(IEnumerable<TItem> items,
-        Func<TItem, IEnumerable<ISortRule<TItem, TId>>> ruleFn) 
-        where TItem : IHasEntityId<TId> 
+        Func<TItem, TId> idSelector,
+        Func<TItem, IEnumerable<ISortRule<TItem, TId>>> ruleFn,
+        IComparer<TId>? comparer = null) 
         where TId : IEquatable<TId>
     {
         var indexed = items
             .AsParallel()
-            .Select(i => (After: RefineRules(i, ruleFn, items), Item: i))
-            .ToDictionary(i => i.Item.Id, i => i);
+            .Select(i => (After: RefineRules(i, idSelector, ruleFn, items), Item: i))
+            .ToDictionary(i => idSelector(i.Item), i => i);
 
         var sorted = new List<TItem>();
         var used = new HashSet<TId>();
@@ -21,14 +22,17 @@ public class Sorter
         while (indexed.Count > 0)
         {
             var fit = indexed.Values.Where(v => used.IsSupersetOf(v.After));
+            if (comparer != null)
+                fit = fit.OrderBy(x => idSelector(x.Item), comparer);
             var found = false;
 
             foreach (var (_, item) in fit)
             {
+                var id = idSelector(item);
                 found = true;
                 sorted.Add(item);
-                used.Add(item.Id);
-                indexed.Remove(item.Id);
+                used.Add(id);
+                indexed.Remove(id);
             }
 
             if (!found)
@@ -39,8 +43,9 @@ public class Sorter
     }
 
     private static HashSet<TId> RefineRules<TItem, TId>(TItem thisItem, 
+        Func<TItem, TId> idSelector,
         Func<TItem, IEnumerable<ISortRule<TItem, TId>>> ruleFn, 
-        IEnumerable<TItem> items) where TItem : IHasEntityId<TId>
+        IEnumerable<TItem> items)
     where TId : IEquatable<TId>
     {
         var rules = ruleFn(thisItem).ToList();
@@ -65,7 +70,7 @@ public class Sorter
         
         foreach (var itm in items)
         {
-            if (itm.Id.Equals(thisItem.Id))
+            if (idSelector(itm).Equals(idSelector(thisItem)))
                 continue;
             
             foreach (var rule in ruleFn(itm))
@@ -74,14 +79,14 @@ public class Sorter
                 {
                     case First<TItem, TId>:
                         if (!haveFirst) 
-                            ids.Add(itm.Id);
+                            ids.Add(idSelector(itm));
                         break;
                     case After<TItem, TId> after:
                         // Handled above
                         break;
                     case Before<TItem, TId> b:
-                        if (b.Other.Equals(thisItem.Id))
-                            ids.Add(itm.Id);
+                        if (b.Other.Equals(idSelector(thisItem)))
+                            ids.Add(idSelector(itm));
                         break;
                 }
             }

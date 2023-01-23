@@ -1,7 +1,6 @@
-﻿using NexusMods.Interfaces.Components;
-using NexusMods.Paths;
+﻿using NexusMods.Paths;
 
-namespace NexusMods.Interfaces;
+namespace NexusMods.DataModel.Games;
 
 /// <summary>
 /// Description of a given installation of a given name

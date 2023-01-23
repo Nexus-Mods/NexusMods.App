@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
+using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.Interfaces.Streams;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel;
@@ -14,10 +14,10 @@ public class ArchiveManager
     private readonly ILogger<ArchiveManager> _logger;
     private readonly HashSet<AbsolutePath> _locations;
     private readonly FileExtractor.FileExtractor _fileExtractor;
-    private readonly ArchiveContentsCache _contentsCache;
+    private readonly FileContentsCache _contentsCache;
 
     public ArchiveManager(ILogger<ArchiveManager> logger, IEnumerable<AbsolutePath> locations, IDataStore store, 
-        FileExtractor.FileExtractor fileExtractor, ArchiveContentsCache contentsCache)
+        FileExtractor.FileExtractor fileExtractor, FileContentsCache contentsCache)
     {
         _logger = logger;
         _locations = locations.ToHashSet();

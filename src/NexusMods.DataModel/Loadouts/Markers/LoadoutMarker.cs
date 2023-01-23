@@ -45,7 +45,7 @@ public class LoadoutMarker : IMarker<Loadout>
     {
         var list = _manager.Get(_id);
         var projected = new Dictionary<GamePath, (AModFile File, Mod Mod)>();
-        var mods = Sorter.Sort<Mod, ModId>(list.Mods, m => m.SortRules);
+        var mods = Sorter.Sort<Mod, ModId>(list.Mods, i => i.Id, m => m.SortRules);
         foreach (var mod in mods)
         {
             foreach (var file in mod.Files)
@@ -69,15 +69,49 @@ public class LoadoutMarker : IMarker<Loadout>
         }
     }
 
-    public async IAsyncEnumerable<IApplyStep> MakeApplyPlan([EnumeratorCancellation] CancellationToken token = default)
+    public async Task<IEnumerable<(AModFile File, Mod Mod)>> GenerateFiles(IReadOnlyCollection<(AModFile File, Mod Mod)> flattenedList, CancellationToken token = default)
     {
+        var loadout = _manager.Get(_id);
+        var generated = new List<(AModFile, Mod)>();
+        var response = new List<(AModFile, Mod)>();
+        foreach (var (file, mod) in flattenedList)
+        {
+            if (file is AGeneratedFile gen && gen.Hash == Hash.Zero)
+            {
+                var metaData = await gen.GetMetaData(loadout, flattenedList, token);
+                var newFile = (gen with {Hash = metaData.Hash, Size = metaData.Size}, mod);
+                generated.Add(newFile);
+                response.Add(newFile);
+            }
+            else
+            {
+                response.Add((file, mod));
+            }
+        }
+        _manager.ReplaceFiles(_id, generated, $"Generated {generated.Count} files");
+        return response;
+    }
+
+    public record ApplyPlan
+    {
+        public required IReadOnlyList<(AModFile File, Mod mod)> Files { get; init; }
+        public required IReadOnlyList<IApplyStep> Steps { get; init; }
+    }
+
+    public async Task<ApplyPlan> MakeApplyPlan([EnumeratorCancellation] CancellationToken token = default)
+    {
+        var steps = new List<IApplyStep>();
+
         var list = _manager.Get(_id);
         var gameFolders = list.Installation.Locations;
         var srcFilesTask = _manager.FileHashCache
             .IndexFolders(list.Installation.Locations.Values, token)
             .ToDictionary(x => x.Path);
 
-        var flattenedList = FlattenList().ToDictionary(d => d.File.To.RelativeTo(gameFolders[d.File.To.Folder]));
+        var files = FlattenList().ToList();
+        files = (await GenerateFiles(files, token)).ToList();
+        var flattenedList = files.ToDictionary(d => d.File.To.RelativeTo(gameFolders[d.File.To.Folder]));
+        
         var srcFiles = await srcFilesTask;
 
         foreach (var (path, (file, mod)) in flattenedList)
@@ -90,32 +124,32 @@ public class LoadoutMarker : IMarker<Loadout>
                     {
                         if (!_manager.ArchiveManager.HaveFile(smf.Hash))
                         {
-                            yield return new BackupFile
+                            steps.Add(new BackupFile
                             {
                                 To = path,
                                 Hash = smf.Hash,
                                 Size = smf.Size
-                            };
+                            });
                         }
                         continue;
                     }
 
                     if (!_manager.ArchiveManager.HaveFile(foundEntry.Hash))
                     {
-                        yield return new BackupFile
+                        steps.Add(new BackupFile
                         {
                             To = path,
                             Hash = foundEntry.Hash,
                             Size = foundEntry.Size
-                        };
+                        });
                     }
                 }
                 
-                yield return new CopyFile
+                steps.Add(new CopyFile
                 {
                     To = path,
                     From = smf
-                };
+                });
             }
         }
 
@@ -126,26 +160,34 @@ public class LoadoutMarker : IMarker<Loadout>
 
             if (!_manager.ArchiveManager.HaveFile(entry.Hash))
             {
-                yield return new BackupFile
+                steps.Add(new BackupFile
                 {
                     To = path,
                     Hash = entry.Hash,
                     Size = entry.Size
-                };
+                });
             }
 
-            yield return new DeleteFile
+            steps.Add(new DeleteFile
             {
                 To = path,
                 Hash = entry.Hash,
                 Size = entry.Size
-            };
+            });
         }
+
+        return new ApplyPlan
+        {
+            Files = files,
+            Steps = steps
+        };
     }
 
-    public async Task ApplyPlan(IEnumerable<IApplyStep> steps, CancellationToken token = default)
+    public async Task Apply(ApplyPlan plan, CancellationToken token = default)
     {
-        await _manager.Limiter.ForEach(steps.OfType<BackupFile>().GroupBy(b => b.Hash),
+        var loadout = _manager.Get(_id);
+        
+        await _manager.Limiter.ForEach(plan.Steps.OfType<BackupFile>().GroupBy(b => b.Hash),
             i => i.First().Size,
             async (j, itm) =>
             {
@@ -154,7 +196,7 @@ public class LoadoutMarker : IMarker<Loadout>
                     throw new Exception("Archived file did not match expected hash");
             }, token);
 
-        await _manager.Limiter.ForEach(steps.OfType<DeleteFile>(), file => file.Size,
+        await _manager.Limiter.ForEach(plan.Steps.OfType<DeleteFile>(), file => file.Size,
 #pragma warning disable CS1998
             async (j, f) =>
 #pragma warning restore CS1998
@@ -162,7 +204,7 @@ public class LoadoutMarker : IMarker<Loadout>
                 f.To.Delete();
             });
 
-        var fromArchive = steps.OfType<CopyFile>().Select(f => (Step: f, From: f.From as FromArchive))
+        var fromArchive = plan.Steps.OfType<CopyFile>().Select(f => (Step: f, From: f.From as FromArchive))
             .Where(f => f.From is not null)
             .GroupBy(f => f.From!.From.Hash);
 
@@ -184,6 +226,15 @@ public class LoadoutMarker : IMarker<Loadout>
                         }
                     }, token);
             });
+        
+        var generated = plan.Steps.OfType<CopyFile>().Select(f => (Step: f, From: f.From as AGeneratedFile))
+            .Where(f => f.From is not null);
+
+        foreach (var (step, from) in generated)
+        {
+            await using var stream = step.To.Create();
+            await from.GenerateAsync(stream, loadout, plan.Files, token);
+        }
     }
 
     
@@ -264,9 +315,9 @@ public class LoadoutMarker : IMarker<Loadout>
         }
     }
 
-    public async Task Apply(CancellationToken token)
+    public async Task Apply(CancellationToken token = default)
     {
-        await ApplyPlan(await MakeApplyPlan(token).ToList(), token);
+        await Apply(await MakeApplyPlan(token), token);
     }
 
     public async Task ApplyIngest(HashSet<IApplyStep> steps, CancellationToken token)
@@ -314,5 +365,13 @@ public class LoadoutMarker : IMarker<Loadout>
         }
 
         _manager.Alter(_id, Apply);
+    }
+
+    public void AlterMod(ModId modId, Func<Mod, Mod> func)
+    {
+        Alter(loadout => loadout with
+        {
+            Mods = loadout.Mods.Keep(mod => mod.Id == modId ? func(mod) : mod)
+        });
     }
 }

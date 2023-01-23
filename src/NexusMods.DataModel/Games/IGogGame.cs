@@ -1,6 +1,4 @@
-﻿using NexusMods.Interfaces.Components;
-
-namespace NexusMods.Interfaces.StoreLocatorTags;
+﻿namespace NexusMods.DataModel.Games;
 
 /// <summary>
 /// Marker interface for the Gog store locator

@@ -9,10 +9,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="FluentAssertions" Version="6.8.0" />
+        <PackageReference Include="FluentAssertions" Version="6.9.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0-preview-20221003-04" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0-preview-20221221-03" />
         <PackageReference Include="xunit" Version="2.4.2" />
+
+        <PackageReference Include="Xunit.DependencyInjection" Version="8.7.0" />
         <PackageReference Include="Xunit.DependencyInjection.Logging" Version="8.0.1" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -32,7 +34,7 @@
       <ProjectReference Include="..\..\src\Games\NexusMods.Games.BethesdaGameStudios\NexusMods.Games.BethesdaGameStudios.csproj" />
       <ProjectReference Include="..\..\src\NexusMods.CLI\NexusMods.CLI.csproj" />
       <ProjectReference Include="..\..\src\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj" />
-      <ProjectReference Include="..\NexusMods.StandardGameLocators.Tests\NexusMods.StandardGameLocators.Tests.csproj" />
+      <ProjectReference Include="..\NexusMods.StandardGameLocators.TestHelpers\NexusMods.StandardGameLocators.TestHelpers.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -3,12 +3,11 @@ using GameFinder.StoreHandlers.GOG;
 using GameFinder.StoreHandlers.Steam;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Common;
+using NexusMods.DataModel.Games;
 using NexusMods.DataModel.ModInstallers;
-using NexusMods.Interfaces;
-using NexusMods.Interfaces.Components;
-using NexusMods.Paths;
 using NexusMods.StandardGameLocators;
-using NexusMods.StandardGameLocators.Tests;
+using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.DependencyInjection;
 using Xunit.DependencyInjection.Logging;
 

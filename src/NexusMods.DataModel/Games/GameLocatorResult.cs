@@ -1,6 +1,6 @@
 ﻿using NexusMods.Paths;
 
-namespace NexusMods.Interfaces;
+namespace NexusMods.DataModel.Games;
 
 /// <summary>
 /// Record returned by a AGameLocator when a game is found. If the locator knows the game's version it should return

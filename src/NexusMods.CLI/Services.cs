@@ -1,13 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using NexusMods.CLI.OptionParsers;
+using NexusMods.Common;
 using NexusMods.DataModel;
+using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.FileExtractor;
 using NexusMods.FileExtractor.Extractors;
-using NexusMods.Interfaces;
-using NexusMods.Interfaces.Components;
 using NexusMods.Paths;
 
 namespace NexusMods.CLI;
@@ -26,7 +26,7 @@ public static class Services
         services.AddSingleton<TemporaryFileManager>();
         
         services.AddAllSingleton<IResource, IResource<IExtractor, Size>>(s => new Resource<IExtractor, Size>("File Extraction"));
-        services.AddAllSingleton<IResource, IResource<ArchiveContentsCache, Size>>(s => new Resource<ArchiveContentsCache, Size>("File Analysis"));
+        services.AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(s => new Resource<FileContentsCache, Size>("File Analysis"));
         services.AddFileExtractors();
         services.AddDataModel();
         return services;

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using NexusMods.Interfaces;
-using NexusMods.Interfaces.Components;
+using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Loadouts;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.Abstractions;
@@ -37,6 +38,11 @@ public abstract class AGame : IGame
                 .ToList();
             return _installations;
         }
+    }
+
+    public IEnumerable<AModFile> GetGameFiles(GameInstallation installation, IDataStore store)
+    {
+        return Array.Empty<AModFile>();
     }
 
     private Version GetVersion(IGameLocator locator, GameLocatorResult installation)

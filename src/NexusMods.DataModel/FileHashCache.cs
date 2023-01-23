@@ -27,7 +27,7 @@ public class FileHashCache
         Span<byte> span = stackalloc byte[Encoding.UTF8.GetByteCount(normalized) + 1];
         span[0] = (byte)EntityCategory.FileHashes;
         var used = Encoding.UTF8.GetBytes(normalized, span[1..]);
-        var found = _store.GetRaw(span, EntityCategory.FileHashes);
+        var found = _store.GetRaw(span);
         if (found != null && found is not { Length: 0 })
         {
             entry = FileHashCacheEntry.FromSpan(found);

@@ -8,7 +8,6 @@ namespace NexusMods.DataModel.Sorting.Rules;
 /// <typeparam name="TType"></typeparam>
 /// <typeparam name="TId"></typeparam>
 public interface ISortRule<TType, TId> 
-where TType : IHasEntityId<TId>
 {
     
 }

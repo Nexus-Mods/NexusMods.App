@@ -22,7 +22,7 @@
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview4" />
     <PackageReference Include="Avalonia.Themes.Simple" Version="11.0.0-preview4" />
     <PackageReference Include="Material.Avalonia" Version="3.0.0-avalonia11-preview2.137-nightly" />
-    <PackageReference Include="Material.Icons.Avalonia" Version="1.2.0" />
+    <PackageReference Include="Material.Icons.Avalonia" Version="1.2.2" />
   </ItemGroup>
 
   <ItemGroup>

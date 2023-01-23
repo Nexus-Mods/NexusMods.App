@@ -19,9 +19,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\ArchiveManagement\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj" />
-      <ProjectReference Include="..\Games\Abstractions\NexusMods.Games.Abstractions\NexusMods.Games.Abstractions.csproj" />
       <ProjectReference Include="..\NexusMods.Hashing.xxHash64\NexusMods.Hashing.xxHash64.csproj" />
-      <ProjectReference Include="..\NexusMods.Interfaces\NexusMods.Interfaces.csproj" />
       <ProjectReference Include="..\NexusMods.Paths\NexusMods.Paths.csproj" />
     </ItemGroup>
 
@@ -33,7 +31,7 @@
       <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.2.1" />
       <PackageReference Include="RocksDB" Version="7.7.3.33461" />
       <PackageReference Include="System.Reactive" Version="5.0.0" />
-      <PackageReference Include="Vogen" Version="3.0.9" />
+      <PackageReference Include="Vogen" Version="3.0.10" />
     </ItemGroup>
 
 </Project>
