@@ -95,7 +95,7 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
         flattened.Count.Should().Be(6, "Because we've deleted one file");
         
         mainList.Value.Mods.Values
-            .SelectMany(m => m.Files)
+            .SelectMany(m => m.Files.Values)
             .OfType<AStaticModFile>()
             .Where(f => f.Hash == modifiedHash)
             .Should()
