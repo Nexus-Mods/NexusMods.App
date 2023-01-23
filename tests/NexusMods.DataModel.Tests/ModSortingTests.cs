@@ -21,7 +21,7 @@ public class ModSortingTests : ADataModelTest<ModSortingTests>
         var id1 = await loadout.Install(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
         var id2 = await loadout.Install(DATA_ZIP_LZMA, "Mod2", CancellationToken.None);
 
-        loadout.Value.Mods.Values.First(m => m.Files.OfType<GameFile>().Any())
+        loadout.Value.Mods.Values.First(m => m.Files.Values.OfType<GameFile>().Any())
             .SortRules.Should().Contain(new First<Mod, ModId>(), "game files are loaded first");
     }
 }

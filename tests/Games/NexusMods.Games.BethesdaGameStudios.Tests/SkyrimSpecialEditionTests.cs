@@ -43,7 +43,7 @@ public class SkyrimSpecialEditionTests
         var dragonborn = gameFiles.Files.Values.First(f => f.To == new GamePath(GameFolderType.Game, "Data/Dragonborn.esm"));
         dragonborn.Metadata.Should().ContainItemsAssignableTo<AnalysisSortData>();
 
-        gameFiles.Files.OfType<PluginFile>().Should().ContainSingle();
+        gameFiles.Files.Values.OfType<PluginFile>().Should().ContainSingle();
     }
 
     [Fact]
@@ -54,7 +54,7 @@ public class SkyrimSpecialEditionTests
         var gameFiles = loadout.Value.Mods.Values.First(m => m.Name == "Game Files");
         gameFiles.Files.Count.Should().BeGreaterThan(0);
 
-        var pluginFile = gameFiles.Files.OfType<PluginFile>().First();
+        var pluginFile = gameFiles.Files.Values.OfType<PluginFile>().First();
 
         var flattenedList = loadout.FlattenList().ToArray();
 
