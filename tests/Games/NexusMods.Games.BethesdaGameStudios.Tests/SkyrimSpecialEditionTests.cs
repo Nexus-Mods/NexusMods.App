@@ -36,11 +36,11 @@ public class SkyrimSpecialEditionTests
     public async Task CanCreateLoadout()
     {
         var loadout = await _manager.ManageGame(_game.Installations.First(), Guid.NewGuid().ToString());
-        loadout.Value.Mods.Select(m => m.Name).Should().Contain("Game Files");
-        var gameFiles = loadout.Value.Mods.First(m => m.Name == "Game Files");
+        loadout.Value.Mods.Values.Select(m => m.Name).Should().Contain("Game Files");
+        var gameFiles = loadout.Value.Mods.Values.First(m => m.Name == "Game Files");
         gameFiles.Files.Count.Should().BeGreaterThan(0);
 
-        var dragonborn = gameFiles.Files.First(f => f.To == new GamePath(GameFolderType.Game, "Data/Dragonborn.esm"));
+        var dragonborn = gameFiles.Files.Values.First(f => f.To == new GamePath(GameFolderType.Game, "Data/Dragonborn.esm"));
         dragonborn.Metadata.Should().ContainItemsAssignableTo<AnalysisSortData>();
 
         gameFiles.Files.OfType<PluginFile>().Should().ContainSingle();
@@ -50,8 +50,8 @@ public class SkyrimSpecialEditionTests
     public async Task CanGeneratePluginsFile()
     {
         var loadout = await _manager.ManageGame(_game.Installations.First(), Guid.NewGuid().ToString());
-        loadout.Value.Mods.Select(m => m.Name).Should().Contain("Game Files");
-        var gameFiles = loadout.Value.Mods.First(m => m.Name == "Game Files");
+        loadout.Value.Mods.Values.Select(m => m.Name).Should().Contain("Game Files");
+        var gameFiles = loadout.Value.Mods.Values.First(m => m.Name == "Game Files");
         gameFiles.Files.Count.Should().BeGreaterThan(0);
 
         var pluginFile = gameFiles.Files.OfType<PluginFile>().First();

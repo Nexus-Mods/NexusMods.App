@@ -10,7 +10,7 @@ namespace NexusMods.DataModel.Loadouts;
 public record Mod : Entity, IHasEntityId<ModId>
 {
     public required ModId Id { get; init; }
-    public required EntityHashSet<AModFile> Files { get; init; }
+    public required EntityDictionary<ModFileId, AModFile> Files { get; init; }
     public required string Name { get; init; }
     public override EntityCategory Category => EntityCategory.Loadouts;
     

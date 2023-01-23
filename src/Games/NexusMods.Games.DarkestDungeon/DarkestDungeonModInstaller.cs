@@ -36,6 +36,7 @@ public class DarkestDungeonModInstaller : IModInstaller
         return files.Where(f => f.Key.InFolder(modFolder))
             .Select(f =>
             new FromArchive{
+                Id = ModFileId.New(),
                 To = new GamePath(GameFolderType.Game, ModFolder.Join(f.Key)),
                 From = new HashRelativePath(srcArchive, f.Key),
                 Hash = f.Value.Hash,

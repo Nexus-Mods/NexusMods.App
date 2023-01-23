@@ -23,8 +23,8 @@ public class ListModContents
     public async Task Run(LoadoutMarker loadout, string modName)
     {
         var rows = new List<object[]>();
-        var mod = loadout.Value.Mods.First(m => m.Name == modName);
-        foreach (var file in mod.Files)
+        var mod = loadout.Value.Mods.Values.First(m => m.Name == modName);
+        foreach (var file in mod.Files.Values)
         {
             if (file is FromArchive fa) 
                 rows.Add(new object[]{fa.To, fa.From});

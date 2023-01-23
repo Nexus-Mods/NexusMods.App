@@ -58,7 +58,7 @@ public class LoadoutManager
         {
             Id = ModId.New(),
             Name = "Game Files",
-            Files = new EntityHashSet<AModFile>(_store, gameFiles.Select(g => g.DataStoreId)),
+            Files = new EntityDictionary<ModFileId, AModFile>(_store, gameFiles.Select(g => new KeyValuePair<ModFileId, Id>(g.Id, g.DataStoreId))),
             SortRules = ImmutableHashSet<ISortRule<Mod, ModId>>.Empty.Add(new First<Mod, ModId>()),
             Store = _store
         };
@@ -67,7 +67,7 @@ public class LoadoutManager
         {
             Installation = installation,
             Name = name, 
-            Mods = new EntityHashSet<Mod>(_store, new [] {mod.DataStoreId})
+            Mods = new EntityDictionary<ModId, Mod>(_store, new [] {new KeyValuePair<ModId,Id>(mod.Id, mod.DataStoreId)})
         };
         
         _root.Alter(r => r with {Lists = r.Lists.With(n.LoadoutId, n)});
@@ -82,6 +82,7 @@ public class LoadoutManager
                 var analysis = await _analyzer.AnalyzeFile(result.Path, token);
                 var file = new GameFile
                 {
+                    Id = ModFileId.New(),
                     To = new GamePath(type, result.Path.RelativeTo(path)),
                     Installation = installation,
                     Hash = result.Hash,
@@ -95,7 +96,7 @@ public class LoadoutManager
         }
         gameFiles.AddRange(installation.Game.GetGameFiles(installation, _store));
         var marker = new LoadoutMarker(this, n.LoadoutId);
-        marker.AlterMod(mod.Id, m => m with {Files = m.Files.With(gameFiles)});
+        marker.Alter(mod.Id, m => m with {Files = m.Files.With(gameFiles, f => f.Id)});
 
         return marker;
     }
@@ -137,11 +138,11 @@ public class LoadoutManager
 
         name = string.IsNullOrWhiteSpace(name) ? path.FileName.ToString() : name;
 
-        var newMod = new Mod()
+        var newMod = new Mod
         {
             Id = ModId.New(),
             Name = name,
-            Files = new EntityHashSet<AModFile>(_store, contents.Select(c => c.DataStoreId)),
+            Files = new EntityDictionary<ModFileId, AModFile>(_store, contents.Select(c => new KeyValuePair<ModFileId, Id>(c.Id, c.DataStoreId))),
             Store = _store
         };
         loadout.Add(newMod);

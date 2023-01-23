@@ -24,6 +24,7 @@ public class ModelTests : ADataModelTest<ModelTests>
     {
         var file = new FromArchive
         {
+            Id = ModFileId.New(),
             To = new GamePath(GameFolderType.Game, "foo/bar.pez"),
             From = new HashRelativePath(Hash.Zero, RelativePath.Empty),
             Hash = (Hash)0x42L,
@@ -59,7 +60,7 @@ public class ModelTests : ADataModelTest<ModelTests>
         await loadout.Install(DATA_ZIP_LZMA, "", CancellationToken.None);
 
         loadout.Value.Mods.Count.Should().Be(3);
-        loadout.Value.Mods.Sum(m => m.Files.Count).Should().Be(DATA_NAMES.Length * 2 + StubbedGame.DATA_NAMES.Length);
+        loadout.Value.Mods.Values.Sum(m => m.Files.Count).Should().Be(DATA_NAMES.Length * 2 + StubbedGame.DATA_NAMES.Length);
         
     }
 
@@ -74,8 +75,8 @@ public class ModelTests : ADataModelTest<ModelTests>
         id1.Should().BeEquivalentTo(id1);
         id2.Should().BeEquivalentTo(id2);
 
-        loadout.Value.Mods.Count(m => m.Id == id1).Should().Be(1);
-        loadout.Value.Mods.Count(m => m.Id == id2).Should().Be(1);
+        loadout.Value.Mods.Values.Count(m => m.Id == id1).Should().Be(1);
+        loadout.Value.Mods.Values.Count(m => m.Id == id2).Should().Be(1);
         
         var history = loadout.History().Select(h => h.DataStoreId).ToArray();
         history.Length.Should().Be(4);

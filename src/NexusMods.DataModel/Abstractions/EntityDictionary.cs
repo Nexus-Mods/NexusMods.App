@@ -31,6 +31,28 @@ where TV : Entity where TK : notnull
     {
         return new EntityDictionary<TK, TV>(_store, _coll.SetItem(key, val.DataStoreId));
     }
+    
+    
+    /// <summary>
+    /// Adds val to the collection using keyFn(val) as the key
+    /// </summary>
+    /// <param name="val"></param>
+    /// <param name="keyFn"></param>
+    /// <returns></returns>
+    public EntityDictionary<TK, TV> With(TV val, Func<TV, TK> keyFn)
+    {
+        return new EntityDictionary<TK, TV>(_store, _coll.SetItem(keyFn(val), val.DataStoreId));
+    }
+    
+    public EntityDictionary<TK, TV> With(IEnumerable<TV> val, Func<TV, TK> keyFn)
+    {
+        var builder = _coll.ToBuilder();
+        foreach (var v in val)
+        {
+            builder[keyFn(v)] = v.DataStoreId;
+        }
+        return new EntityDictionary<TK, TV>(_store, builder.ToImmutable());
+    }
 
     public EntityDictionary<TK, TV> Without(TK key)
     {
@@ -67,6 +89,52 @@ where TV : Entity where TK : notnull
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
+    }
+
+
+    /// <summary>
+    /// Transforms a value found at at given id with a given function.
+    /// If the function returns null, the value is removed from the dictionary.
+    /// </summary>
+    /// <param name="???"></param>
+    /// <param name="func"></param>
+    /// <returns></returns>
+    public EntityDictionary<TK, TV> Keep(TK key, Func<TV?, TV?> func)
+    {
+        var id = _coll[key];
+        var val = _store.Get<TV>(id);
+        var newVal = func(val);
+        if (ReferenceEquals(newVal, val))
+            return this;
+        return newVal is null ? Without(key) : With(key, newVal);
+    }
+    
+    /// <summary>
+    /// Transforms all values in the dictionary with a given function.
+    /// </summary>
+    /// <param name="???"></param>
+    /// <param name="func"></param>
+    /// <returns></returns>
+    public EntityDictionary<TK, TV> Keep(Func<TV?, TV?> func)
+    {
+        var modified = false;
+        var builder = ImmutableDictionary.CreateBuilder<TK, Id>();
+        foreach (var (key, id) in _coll)
+        {
+            var val = _store.Get<TV>(id);
+            var newVal = func(val);
+            if (ReferenceEquals(newVal, val))
+            {
+                builder.Add(key, id);
+                continue;
+            }
+
+            if (newVal is not null)
+                builder.Add(key, newVal.DataStoreId);
+
+            modified = true;
+        }
+        return modified ? new EntityDictionary<TK, TV>(_store, builder) : this;
     }
 }
 

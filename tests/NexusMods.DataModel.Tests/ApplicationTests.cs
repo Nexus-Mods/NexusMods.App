@@ -61,7 +61,7 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
         await gameFolder.Join(fileToModify).WriteAllTextAsync("modified");
         var modifiedHash = "modified".XxHash64();
 
-        var firstMod = mainList.Value.Mods.First();
+        var firstMod = mainList.Value.Mods.Values.First();
         var ingestPlan = await mainList.MakeIngestionPlan(x => firstMod, Token).ToHashSet();
 
         ingestPlan.Should().BeEquivalentTo(new IApplyStep[]
@@ -94,7 +94,8 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
         var flattened = mainList.FlattenList().ToDictionary(f => f.File.To);
         flattened.Count.Should().Be(6, "Because we've deleted one file");
         
-        mainList.Value.Mods.SelectMany(m => m.Files)
+        mainList.Value.Mods.Values
+            .SelectMany(m => m.Files)
             .OfType<AStaticModFile>()
             .Where(f => f.Hash == modifiedHash)
             .Should()
