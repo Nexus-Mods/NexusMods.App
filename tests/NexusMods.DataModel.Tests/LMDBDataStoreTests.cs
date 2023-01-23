@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Collections.Immutable;
+using FluentAssertions;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -19,6 +20,7 @@ public class LMDBDataStoreTests : ADataModelTest<LMDBDataStoreTests>
     {
         var foo = new FromArchive
         {
+            Id = ModFileId.New(),
             Store = DataStore,
             Hash = Hash.Zero,
             From = new HashRelativePath((Hash)42L, Array.Empty<RelativePath>()),
@@ -44,6 +46,7 @@ public class LMDBDataStoreTests : ADataModelTest<LMDBDataStoreTests>
     {
         var files = Enumerable.Range(0, 1024).Select(idx => new FromArchive
         {
+            Id = ModFileId.New(),
             From = new HashRelativePath((Hash)(ulong)idx, $"{idx}.file".ToRelativePath()),
             Hash = (Hash)(ulong)idx,
             Size = idx,
@@ -57,12 +60,16 @@ public class LMDBDataStoreTests : ADataModelTest<LMDBDataStoreTests>
         {
             Id = ModId.New(),
             Name = "Large Entity",
-            Files = EntityHashSet<AModFile>.Empty(DataStore),
+            Files = EntityDictionary<ModFileId, AModFile>.Empty(DataStore),
             Store = DataStore,
         };
-        mod = mod with { Files = mod.Files.With(files)};
+        mod = mod with { Files = mod.Files.With(files, x => x.Id)};
         mod.EnsureStored();
         var modLoaded = DataStore.Get<Mod>(mod.DataStoreId);
-        modLoaded!.Files.Should().BeEquivalentTo(set);
+
+        foreach (var itm in set)
+        {
+            modLoaded!.Files[itm.Id].Should().Be(itm);
+        }
     }
 }

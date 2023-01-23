@@ -31,11 +31,6 @@ public class LoadoutMarker : IMarker<Loadout>
     public Loadout Value => _manager.Get(_id); 
     public IObservable<Loadout> Changes => _manager.Changes.Select(c => c.Lists[_id]);
 
-    public void Add(Mod newMod)
-    {
-        _manager.Alter(_id, list => list with {Mods = list.Mods.With(newMod)}, $"Added mod {newMod.Name}");
-    }
-
     public async Task<ModId> Install(AbsolutePath file, string name, CancellationToken token)
     {
         await _manager.ArchiveManager.ArchiveFile(file, token);
@@ -45,10 +40,10 @@ public class LoadoutMarker : IMarker<Loadout>
     {
         var list = _manager.Get(_id);
         var projected = new Dictionary<GamePath, (AModFile File, Mod Mod)>();
-        var mods = Sorter.Sort<Mod, ModId>(list.Mods, i => i.Id, m => m.SortRules);
+        var mods = Sorter.Sort<Mod, ModId>(list.Mods.Values, i => i.Id, m => m.SortRules);
         foreach (var mod in mods)
         {
-            foreach (var file in mod.Files)
+            foreach (var file in mod.Files.Values)
             {
                 projected[file.To] = (file, mod);
             }
@@ -340,20 +335,21 @@ public class LoadoutMarker : IMarker<Loadout>
                 switch (step)
                 {
                     case RemoveFromLoadout remove:
-                        Loadout = Loadout.RemoveFileFromAllMods(x => x.To == gamePath);
+                        Loadout = Loadout.AlterFiles(x => x.To == gamePath ? null : x);
                         break;
                     case IntegrateFile t:
                         var sourceArchive = _manager.ArchiveManager.ArchivesThatContain(t.Hash).First();
-                        Loadout = Loadout.KeepMod(t.Mod, m => m with
+                        Loadout = Loadout.Alter(t.Mod.Id, m => m with
                         {
                             Files = m.Files.With(new FromArchive
                             {
+                                Id = ModFileId.New(),
                                 From = sourceArchive,
                                 Hash = t.Hash,
                                 Size = t.Size,
                                 Store = m.Store,
                                 To = gamePath
-                            })
+                            }, x => x.Id)
                         });
                         break;
                     default:
@@ -367,11 +363,13 @@ public class LoadoutMarker : IMarker<Loadout>
         _manager.Alter(_id, Apply);
     }
 
-    public void AlterMod(ModId modId, Func<Mod, Mod> func)
+    public void Alter(ModId mod, Func<Mod?, Mod?> fn)
     {
-        Alter(loadout => loadout with
-        {
-            Mods = loadout.Mods.Keep(mod => mod.Id == modId ? func(mod) : mod)
-        });
+        _manager.Alter(_id, l => l.Alter(mod, fn));
+    }
+
+    public void Add(Mod newMod)
+    {
+        _manager.Alter(_id, l => l.Add(newMod));
     }
 }

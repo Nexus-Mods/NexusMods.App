@@ -23,7 +23,7 @@ public class ListMods
     public async Task Run(LoadoutMarker loadout, CancellationToken token)
     {
         var rows = new List<object[]>();
-        foreach (var mod in loadout.Value.Mods)
+        foreach (var mod in loadout.Value.Mods.Values)
         {
             rows.Add(new object[]{mod.Name, mod.Files.Count});
         }

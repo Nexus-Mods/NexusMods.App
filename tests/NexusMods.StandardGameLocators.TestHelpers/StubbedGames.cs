@@ -155,6 +155,7 @@ public class StubbedGameInstaller : IModInstaller
         {
             yield return new FromArchive
             {
+                Id = ModFileId.New(),
                 From = new HashRelativePath(srcArchive, key),
                 To = new GamePath(GameFolderType.Game, key),
                 Hash = value.Hash,

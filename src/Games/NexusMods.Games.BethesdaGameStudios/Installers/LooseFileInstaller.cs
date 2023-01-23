@@ -61,6 +61,7 @@ public class LooseFileInstaller : IModInstaller
                 
                 return new FromArchive
                 {
+                    Id = ModFileId.New(),
                     From = new HashRelativePath(srcArchive, file.Path),
                     To = new GamePath(GameFolderType.Game, outFile),
                     Hash = file.Entry.Hash,
