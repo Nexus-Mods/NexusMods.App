@@ -24,7 +24,6 @@ public class Startup
         container.AddSingleton<AHandler<SteamGame, int>, StubbedSteamLocator>();
         container.AddSingleton<AHandler<GOGGame, long>, StubbedGogLocator>();        
         container.AddCLI();
-        container.AddCLIVerbs();
         container.AddAllScoped<IRenderer, LoggingRenderer>();
         container.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug));
     }
