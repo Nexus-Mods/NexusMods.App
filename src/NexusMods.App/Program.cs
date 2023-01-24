@@ -22,8 +22,7 @@ var host = Host.CreateDefaultBuilder(Environment.GetCommandLineArgs())
             .AddBethesdaGameStudios()
             .AddDarkestDungeon()
             .AddStandardGameLocators()
-            .AddRenderers()
-            .AddCLIVerbs();
+            .AddRenderers();
     }).Build();
 
 if (args.Length > 0)
