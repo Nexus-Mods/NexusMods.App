@@ -8,7 +8,8 @@ using NexusMods.CLI.Verbs;
 public static class CommandLineBuilderExtensions{ 
 
 public static void AddCLIVerbs(this IServiceCollection services) {
-CommandLineConfigurator.RegisterCommand<AnalyzeArchive>(AnalyzeArchive.Definition, c => ((AnalyzeArchive)c).Run);
+/*
+    CommandLineConfigurator.RegisterCommand<AnalyzeArchive>(AnalyzeArchive.Definition, c => ((AnalyzeArchive)c).Run);
 services.AddScoped<AnalyzeArchive>();
 CommandLineConfigurator.RegisterCommand<Apply>(Apply.Definition, c => ((Apply)c).Run);
 services.AddScoped<Apply>();
@@ -36,5 +37,6 @@ CommandLineConfigurator.RegisterCommand<ManageGame>(ManageGame.Definition, c => 
 services.AddScoped<ManageGame>();
 CommandLineConfigurator.RegisterCommand<Rename>(Rename.Definition, c => ((Rename)c).Run);
 services.AddScoped<Rename>();
+*/
 }
 }

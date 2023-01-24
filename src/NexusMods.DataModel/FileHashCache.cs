@@ -47,7 +47,7 @@ public class FileHashCache
         Span<byte> vSpan = stackalloc byte[24];
         entry.ToSpan(vSpan);
 
-        _store.PutRaw(kSpan, vSpan, EntityCategory.FileHashes);
+        _store.PutRaw(kSpan, vSpan);
     }
 
     public IAsyncEnumerable<HashedEntry> IndexFolder(AbsolutePath path, CancellationToken? token)

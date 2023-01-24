@@ -15,11 +15,13 @@ public class CommandLineConfigurator
 {
     private static IServiceProvider _provider = null!;
     private readonly ILogger<CommandLineConfigurator> _logger;
+    private readonly IEnumerable<Verb> _verbs;
 
-    public CommandLineConfigurator(ILogger<CommandLineConfigurator> logger, IServiceProvider provider)
+    public CommandLineConfigurator(ILogger<CommandLineConfigurator> logger, IEnumerable<Verb> verbs, IServiceProvider provider)
     {
         _logger = logger;
         _provider = provider;
+        _verbs = verbs.ToArray();
     }
     
     public RootCommand MakeRoot()
@@ -38,9 +40,9 @@ public class CommandLineConfigurator
         
         root.AddOption(new Option<bool>("--noBanner"));
         
-        foreach (var verb in _commands)
+        foreach (var verb in _verbs)
         {
-            root.Add(MakeCommend(verb.Type, verb.Handler, verb.Definition));
+            root.Add(MakeCommend(verb.Type, verb.Run, verb.Definition));
         }
 
         return root;
@@ -87,15 +89,6 @@ public class CommandLineConfigurator
             var handler = CommandHandler.Create(_delgate(service));
             return handler.InvokeAsync(context);
         }
-    }
-
-    private static List<(Type Type, VerbDefinition Definition, Func<object, Delegate> Handler)> _commands { get; set; } = new();
-    public static IEnumerable<Type> Verbs => _commands.Select(c => c.Type);
-
-    public static void RegisterCommand<T>(VerbDefinition definition, Func<object, Delegate> handler)
-    {
-        _commands.Add((typeof(T), definition, handler));
-        
     }
 }
 

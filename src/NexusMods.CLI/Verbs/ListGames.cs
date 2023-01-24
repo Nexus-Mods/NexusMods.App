@@ -5,14 +5,14 @@ using NexusMods.Paths;
 
 namespace NexusMods.CLI.Verbs;
 
-public class ListGames
+public class ListGames : AVerb
 {
     private readonly IEnumerable<IGame> _games;
 
-    public static readonly VerbDefinition Definition = new("list-games",
+    public static VerbDefinition Definition => new("list-games",
         "Lists all the installed games",
         Array.Empty<OptionDefinition>());
-
+    
     private readonly ILogger<ListGames> _logger;
     private readonly IRenderer _renderer;
 
@@ -25,7 +25,7 @@ public class ListGames
     }
     
 
-    public async Task<int> Run()
+    protected override async Task<int> Run(CancellationToken token)
     {
         var installs = from game in _games.OrderBy(g => g.Name)
             from install in game.Installations.OrderBy(g => g.Version)

@@ -6,7 +6,7 @@ using NexusMods.Paths;
 
 namespace NexusMods.CLI.Verbs;
 
-public class AnalyzeArchive
+public class AnalyzeArchive : AVerb<AbsolutePath>
 {
     private readonly IRenderer _renderer;
     private readonly FileContentsCache _archiveContentsCache;    
@@ -17,7 +17,7 @@ public class AnalyzeArchive
         _archiveContentsCache = archiveContentsCache;
     }
     
-    public static VerbDefinition Definition = new("analyze-archive",
+    public static readonly VerbDefinition Definition = new("analyze-archive",
         "Analyzes the contents of an archive caches them, and outputs them", new[]
         {
             new OptionDefinition<AbsolutePath>("i", "inputFile", "File to Analyze")
@@ -26,7 +26,7 @@ public class AnalyzeArchive
     private readonly ILogger<AnalyzeArchive> _logger;
 
 
-    public async Task Run(AbsolutePath inputFile, CancellationToken token)
+    protected override async Task<int> Run(AbsolutePath inputFile, CancellationToken token)
     {
         try
         {
@@ -52,5 +52,7 @@ public class AnalyzeArchive
             _logger.LogCritical(ex, "While running");
             throw;
         }
+
+        return 0;
     }
 }
