@@ -81,18 +81,19 @@ public class FileHashCache
     public async ValueTask<HashedEntry> HashFileAsync(AbsolutePath file, CancellationToken? token = null)
     {
         var info = file.FileInfo;
+        var size = Size.From(info.Length);
         if (TryGetCached(file, out var found))
         {
-            if (found.Size == info.Length && found.LastModified == info.LastWriteTimeUtc)
+            if (found.Size == size && found.LastModified == info.LastWriteTimeUtc)
             {
-                return new HashedEntry(file, found.Hash, info.LastWriteTimeUtc, info.Length);
+                return new HashedEntry(file, found.Hash, info.LastWriteTimeUtc, size);
             }
         }
 
-        using var job = await _limiter.Begin($"Hashing {file.FileName}", info.Length, token ?? CancellationToken.None);
+        using var job = await _limiter.Begin($"Hashing {file.FileName}", size, token ?? CancellationToken.None);
         var hashed = await file.XxHash64(token, job);
-        PutCachedAsync(file, new FileHashCacheEntry(info.LastWriteTimeUtc, hashed, info.Length));
-        return new HashedEntry(file, hashed, info.LastWriteTimeUtc, info.Length);
+        PutCachedAsync(file, new FileHashCacheEntry(info.LastWriteTimeUtc, hashed, size));
+        return new HashedEntry(file, hashed, info.LastWriteTimeUtc, size);
     }
 }
 
@@ -110,13 +111,13 @@ public readonly record struct FileHashCacheEntry(DateTime LastModified, Hash Has
         var date = BinaryPrimitives.ReadInt64BigEndian(span);
         var hash = BinaryPrimitives.ReadUInt64BigEndian(span[8..]);
         var size = BinaryPrimitives.ReadInt64BigEndian(span[16..]);
-        return new FileHashCacheEntry(DateTime.FromFileTimeUtc(date), Hash.FromULong(hash), size);
+        return new FileHashCacheEntry(DateTime.FromFileTimeUtc(date), Hash.FromULong(hash), Size.From(size));
     }
 
     public void ToSpan(Span<byte> span)
     {
         BinaryPrimitives.WriteInt64BigEndian(span, LastModified.ToFileTimeUtc());
         BinaryPrimitives.WriteUInt64BigEndian(span[8..], (ulong)Hash);
-        BinaryPrimitives.WriteInt64BigEndian(span[16..], Size);
+        BinaryPrimitives.WriteUInt64BigEndian(span[16..], Size.Value);
     }
 }

@@ -203,7 +203,7 @@ public class LoadoutMarker : IMarker<Loadout>
             .Where(f => f.From is not null)
             .GroupBy(f => f.From!.From.Hash);
 
-        await _manager.Limiter.ForEach(fromArchive, x => x.Sum(s => s.Step.Size),
+        await _manager.Limiter.ForEach(fromArchive, x => x.Aggregate(Size.Zero, (acc, f) => acc + f.Step.Size),
             async (job, group) =>
             {
                 var byPath = group.ToLookup(x => x.From!.From.Parts.First());

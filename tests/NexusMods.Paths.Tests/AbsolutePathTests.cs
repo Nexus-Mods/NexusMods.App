@@ -181,7 +181,7 @@ public class AbsolutePathTests
         await fileOne.CopyToAsync(fileThree);
         Assert.True(fileThree.FileExists);
         
-        Assert.Equal(14, fileOne.Length);
+        Assert.Equal(Size.From(14), fileOne.Length);
         Assert.True(DateTime.Now - fileOne.LastWriteTime < TimeSpan.FromSeconds(1));
         Assert.True(DateTime.UtcNow - fileOne.LastWriteTimeUtc < TimeSpan.FromSeconds(1));
         

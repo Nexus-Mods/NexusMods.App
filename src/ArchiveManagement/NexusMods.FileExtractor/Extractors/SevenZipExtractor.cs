@@ -68,8 +68,8 @@ public class SevenZipExtractor : IExtractor
 
                     if (!int.TryParse(line[..3], out var percentInt)) return;
 
-                    var oldPosition = lastPercent == 0 ? 0 : totalSize / 100 * lastPercent;
-                    var newPosition = percentInt == 0 ? 0 : totalSize / 100 * percentInt;
+                    var oldPosition = lastPercent == 0 ? Size.Zero : totalSize / 100 * lastPercent;
+                    var newPosition = percentInt == 0 ? Size.Zero: totalSize / 100 * percentInt;
                     var throughput = newPosition - oldPosition;
                     job.ReportNoWait(throughput);
                     
@@ -155,10 +155,10 @@ public class SevenZipExtractor : IExtractor
 
                     if (!int.TryParse(line[..3], out var percentInt)) return;
 
-                    var oldPosition = lastPercent == 0 ? 0 : totalSize / 100 * lastPercent;
-                    var newPosition = percentInt == 0 ? 0 : totalSize / 100 * percentInt;
+                    var oldPosition = lastPercent == 0 ? Size.Zero : totalSize / 100 * lastPercent;
+                    var newPosition = percentInt == 0 ? Size.Zero : totalSize / 100 * percentInt;
                     var throughput = newPosition - oldPosition;
-                    if (throughput > 0)
+                    if (throughput > Size.Zero)
                         job.ReportNoWait(throughput);
                     
                     lastPercent = percentInt;

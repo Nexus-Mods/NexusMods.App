@@ -69,7 +69,7 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
             new BackupFile()
             {
                 To = fileToModify.RelativeTo(gameFolder),
-                Size = "modified".Length,
+                Size = Size.From("modified".Length),
                 Hash = modifiedHash
             },
             new RemoveFromLoadout
@@ -79,7 +79,7 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
             new IntegrateFile
             {
                 To = fileToModify.RelativeTo(gameFolder),
-                Size = "modified".Length,
+                Size = Size.From("modified".Length),
                 Hash = modifiedHash,
                 Mod = firstMod
             }

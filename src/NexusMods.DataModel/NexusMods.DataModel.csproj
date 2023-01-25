@@ -6,13 +6,6 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
-    <PropertyGroup>
-        <PropertyChangedAnalyzerConfiguration>
-            <IsCodeGeneratorDisabled>false</IsCodeGeneratorDisabled>
-            <EventInvokerName>OnPropertyChanged</EventInvokerName>
-        </PropertyChangedAnalyzerConfiguration>
-    </PropertyGroup>
-
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
       <DocumentationFile>bin\Release\NexusMods.DataModel.xml</DocumentationFile>
     </PropertyGroup>
@@ -22,7 +15,7 @@
       <ProjectReference Include="..\NexusMods.Hashing.xxHash64\NexusMods.Hashing.xxHash64.csproj" />
       <ProjectReference Include="..\NexusMods.Paths\NexusMods.Paths.csproj" />
     </ItemGroup>
-
+    
     <ItemGroup>
       <PackageReference Include="Cloudtoid.Interprocess" Version="2.0.0-alpha176" />
       <PackageReference Include="LightningDB" Version="0.14.1" />
@@ -31,7 +24,7 @@
       <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.2.1" />
       <PackageReference Include="RocksDB" Version="7.7.3.33461" />
       <PackageReference Include="System.Reactive" Version="5.0.0" />
-      <PackageReference Include="Vogen" Version="3.0.10" />
+      <PackageReference Include="Vogen" Version="3.0.11" />
     </ItemGroup>
 
 </Project>

@@ -28,7 +28,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
     public static readonly Dictionary<RelativePath, (Hash Hash, Size Size)> DATA_CONTENTS = DATA_NAMES
         .ToDictionary(d => d, 
-            d => (d.FileName.ToString().XxHash64(), (Size)d.FileName.ToString().Length));
+            d => (d.FileName.ToString().XxHash64(), Size.From(d.FileName.ToString().Length)));
 
     private readonly IServiceProvider _provider;
     protected readonly TemporaryFileManager TemporaryFileManager;

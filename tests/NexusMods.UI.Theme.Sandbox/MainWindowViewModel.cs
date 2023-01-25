@@ -17,7 +17,7 @@ public class MainWindowViewModel
         HierarchicalData.Columns.AddRange(FileWrapper.Columns);
 
         TableData = KnownFolders.EntryFolder.TopParent.EnumerateFiles(recursive: false)
-            .Select(f => new DataRow(f.FileName.ToString(), f.Length, f.LastWriteTime))
+            .Select(f => new DataRow(f.FileName.ToString(), (long)f.Length.Value, f.LastWriteTime))
             .ToArray();
     }
     
@@ -35,7 +35,7 @@ public class MainWindowViewModel
                     .Concat(x.Path.EnumerateDirectories(recursive:false)
                         .Select(y => new FileWrapper(y, false))),
                 x => !x.IsFile),
-            new TextColumn<FileWrapper,long?>("Size", x => x.IsFile ? x.Path.Length : null),
+            new TextColumn<FileWrapper,Size?>("Size", x => x.IsFile ? x.Path.Length : null),
             new TextColumn<FileWrapper,DateTime>("Last Modified", x => x.Path.LastWriteTime)
         }; 
     }

@@ -53,7 +53,7 @@ public static class StreamExtensions
                 }
 
                 if (job != null)
-                    await job.Report(read, token);
+                    await job.Report(Size.From(read), token);
 
                 totalRead += read;
             }

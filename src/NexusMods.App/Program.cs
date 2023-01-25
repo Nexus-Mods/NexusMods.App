@@ -8,6 +8,8 @@ using NexusMods.App.UI;
 using NexusMods.CLI;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.DarkestDungeon;
+using NexusMods.Networking.HttpDownloader;
+using NexusMods.Networking.NexusWebApi;
 using NexusMods.StandardGameLocators;
 using NLog.Extensions.Logging;
 using NLog.Targets;
@@ -22,7 +24,11 @@ var host = Host.CreateDefaultBuilder(Environment.GetCommandLineArgs())
             .AddBethesdaGameStudios()
             .AddDarkestDungeon()
             .AddStandardGameLocators()
+            .AddNexusWebApi()
+            .AddHttpDownloader()
             .AddRenderers();
+
+        services.AddSingleton<HttpClient>();
     }).Build();
 
 if (args.Length > 0)

@@ -6,9 +6,4 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\..\NexusMods.CLI\NexusMods.CLI.csproj" />
-      <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
-    </ItemGroup>
-
 </Project>

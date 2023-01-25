@@ -92,6 +92,6 @@ public record PluginFile : AGeneratedFile
         var ms = new MemoryStream();
         await GenerateAsync(ms, loadout, flattenedList, ct);
         ms.Position = 0;
-        return (ms.Length, await ms.Hash(token: ct));
+        return (Size.From(ms.Length), await ms.Hash(token: ct));
     }
 }
