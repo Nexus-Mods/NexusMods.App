@@ -33,25 +33,7 @@ public record Loadout : Entity, IEmptyWithDataStore<Loadout>
         ChangeMessage = "",
         Store = store
     };
-    
 
-    public Loadout RemoveFileFromAllMods(Func<AModFile, bool> filter)
-    {
-        var newMods = Mods.Keep(mod => mod with { Files = mod.Files.Keep(f => filter(f) ? null : f)});
-        return this with
-        {
-            Mods = newMods
-        };
-    }
-
-    public Loadout KeepMod(Mod tMod, Func<Mod, Mod?> func)
-    {
-        return this with
-        {
-            Mods = Mods.Keep(m => m.Name == tMod.Name ? func(m) : m)
-        };
-    }
-    
     public Loadout Alter(ModId modId, Func<Mod?, Mod?> func)
     {
         return this with
