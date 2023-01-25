@@ -36,7 +36,7 @@ jobs:
         if: runner.os != 'Windows'
         run: chmod -R +x src/ArchiveManagement/NexusMods.FileExtractor/Extractors
 
-      - name: Tests
+      - name: Clean
         run: dotnet clean
       
       - name: Tests

@@ -1,9 +1,6 @@
-﻿using System.Collections;
-using NexusMods.DataModel.Abstractions;
+﻿using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.JsonConverters;
-using NexusMods.Interfaces;
-using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Loadouts;
 
