@@ -17,7 +17,7 @@ public class DownloadUri : AVerb<Uri, AbsolutePath>
         _renderer = configurator.Renderer;
     }
     
-    public static readonly VerbDefinition Definition = new VerbDefinition("download-uri",
+    public static readonly VerbDefinition Definition = new("download-uri",
         "Downloads a file from a given URI",
         new OptionDefinition[]
         {
@@ -33,7 +33,7 @@ public class DownloadUri : AVerb<Uri, AbsolutePath>
         {
 
             return await _httpDownloader.Download(new[] { new HttpRequestMessage(HttpMethod.Get, uri) }, 
-                output, token);
+                output, null, token);
 
         }, true);
 

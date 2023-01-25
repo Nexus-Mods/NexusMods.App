@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using NexusMods.DataModel.Games;
 using NexusMods.Networking.NexusWebApi.Types;
 
 namespace NexusMods.Networking.NexusWebApi.DTOs;

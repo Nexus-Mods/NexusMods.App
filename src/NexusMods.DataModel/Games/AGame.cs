@@ -18,7 +18,7 @@ public abstract class AGame : IGame
         _gamelocators = gameLocators;
     }
     public abstract string Name { get; }
-    public abstract string Slug { get; }
+    public abstract GameDomain Domain { get; }
     public abstract GamePath PrimaryFile { get; }
     
     public IEnumerable<GameInstallation> Installations 

@@ -24,6 +24,7 @@ var host = Host.CreateDefaultBuilder(Environment.GetCommandLineArgs())
             .AddBethesdaGameStudios()
             .AddDarkestDungeon()
             .AddStandardGameLocators()
+            .AddRenderers()
             .AddNexusWebApi()
             .AddHttpDownloader()
             .AddRenderers();
