@@ -41,37 +41,7 @@ public record Loadout : Entity, IEmptyWithDataStore<Loadout>
             Mods = Mods.Keep(modId, func)
         };
     }
-
-    public Loadout Alter(ModId modId, ModFileId fileId, Func<AModFile?, AModFile?> func)
-    {
-        return this with
-        {
-            Mods = Mods.Keep(modId, m => m with
-            {
-                Files = m.Files.Keep(fileId, func)
-            })
-        };
-    }
-
-    public Loadout Remove(ModId modId)
-    {
-        return this with
-        {
-            Mods = Mods.Keep(modId, _ => null)
-        };
-    }
-
-    public Loadout Remove(ModId modId, ModFileId fileId)
-    {
-        return this with
-        {
-            Mods = Mods.Keep(modId, m => m with
-            {
-                Files = m.Files.Keep(fileId, _ => null)
-            })
-        };
-    }
-
+    
     public Loadout Add(Mod mod)
     {
         return this with
@@ -79,17 +49,7 @@ public record Loadout : Entity, IEmptyWithDataStore<Loadout>
             Mods = Mods.With(mod.Id, mod)
         };
     }
-    
-    public Loadout Add(ModId modId, AModFile file)
-    {
-        return this with
-        {
-            Mods = Mods.Keep(modId, m => m with
-            {
-                Files = m.Files.With(file.Id, file)
-            })
-        };
-    }
+
 
     public Loadout AlterFiles(Func<AModFile, AModFile?> func)
     {
