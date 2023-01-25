@@ -32,6 +32,9 @@ jobs:
         run: chmod -R +x src/ArchiveManagement/NexusMods.FileExtractor/Extractors
 
       - name: Tests
+        run: dotnet clean
+
+      - name: Tests
         run: dotnet test --filter RequiresGameInstalls=True /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 
       - uses: codecov/codecov-action@v3
