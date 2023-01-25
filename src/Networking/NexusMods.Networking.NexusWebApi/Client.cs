@@ -24,7 +24,7 @@ public class Client
         return await SendAsync<ValidateInfo>(msg, token);
     }
     
-    public async Task<Response<GameInfo[]>> Games(CancellationToken token)
+    public async Task<Response<GameInfo[]>> Games(CancellationToken token = default)
     {
         var msg = await _factory.Create(HttpMethod.Get, new Uri("https://api.nexusmods.com/v1/games.json"));
         return await SendAsync<GameInfo[]>(msg, token);

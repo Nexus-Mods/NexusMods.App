@@ -24,12 +24,23 @@ public class ApiKeyMessageFactory : IHttpMessageFactory
         return ValueTask.FromResult(msg);
     }
     
-    private string ApiKey => Encoding.UTF8.GetString(_store.GetRaw(ApiKeyId) ?? Array.Empty<byte>());
-
-    public ValueTask<bool> IsAuthenticated()
+    private string ApiKey
     {
-        return ValueTask.FromResult(_store.GetRaw(ApiKeyId) != null);
+        get
+        {
+            var value = Encoding.UTF8.GetString(_store.GetRaw(ApiKeyId) ?? Array.Empty<byte>());
+            if (!string.IsNullOrWhiteSpace(value)) return value;
+               return EnvironmentApiKey ?? throw new Exception("No API key set");
+        }
     }
+
+    public async ValueTask<bool> IsAuthenticated()
+    { 
+        var dataStoreResult = await ValueTask.FromResult(_store.GetRaw(ApiKeyId) != null);
+        return dataStoreResult || EnvironmentApiKey != null;
+    }
+
+    private string? EnvironmentApiKey => Environment.GetEnvironmentVariable("NEXUS_API_KEY");
     
     public ValueTask SetApiKey(string apiKey)
     {
