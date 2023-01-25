@@ -1,5 +1,6 @@
 ﻿using NexusMods.CLI;
 using NexusMods.CLI.DataOutputs;
+using NexusMods.DataModel.Games;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Networking.NexusWebApi.Types;
 

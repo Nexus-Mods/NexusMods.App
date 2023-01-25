@@ -2,6 +2,7 @@
 using NexusMods.CLI;
 using NexusMods.CLI.OptionParsers;
 using NexusMods.Common;
+using NexusMods.DataModel.Games;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Networking.NexusWebApi.Verbs;
 

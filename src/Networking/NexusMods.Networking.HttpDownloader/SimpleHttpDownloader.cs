@@ -19,13 +19,13 @@ public class SimpleHttpDownloader : IHttpDownloader
         _limiter = limiter;
     }
 
-    public async Task<Hash> Download(IReadOnlyList<HttpRequestMessage> sources, AbsolutePath destination, CancellationToken token)
+    public async Task<Hash> Download(IReadOnlyList<HttpRequestMessage> sources, AbsolutePath destination, Size? size, CancellationToken token)
     {
         foreach (var source in sources)
         {
             //_logger.LogDebug("Downloading {Source} to {Destination}", source.RequestUri, destination);
 
-            var job = await _limiter.Begin($"Downloading {destination.FileName}", Size.One, token);
+            var job = await _limiter.Begin($"Downloading {destination.FileName}", size ?? Size.One, token);
             var response = await _client.SendAsync(source, HttpCompletionOption.ResponseHeadersRead, token);
             
             if (!response.IsSuccessStatusCode)
@@ -34,7 +34,7 @@ public class SimpleHttpDownloader : IHttpDownloader
                 continue;
             }
             
-            job.Size = Size.From(response.Content.Headers.ContentLength ?? 1);
+            job.Size = size ?? Size.From(response.Content.Headers.ContentLength ?? 1);
             
             await using var stream = await response.Content.ReadAsStreamAsync(token);
             await using var file = destination.Create();

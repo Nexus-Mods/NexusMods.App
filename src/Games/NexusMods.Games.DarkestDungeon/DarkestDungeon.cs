@@ -17,7 +17,7 @@ public class DarkestDungeon : AGame,  ISteamGame, IGogGame
     }
 
     public override string Name => "Darkest Dungeon";
-    public override string Slug => "darkestdungeon";
+    public override GameDomain Domain => GameDomain.From("darkestdungeon");
     public override GamePath PrimaryFile
     {
         get

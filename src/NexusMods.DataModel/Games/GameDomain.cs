@@ -1,6 +1,6 @@
 ﻿using Vogen;
 
-namespace NexusMods.Networking.NexusWebApi.Types;
+namespace NexusMods.DataModel.Games;
 
 [ValueObject<string>]
 public partial class GameDomain

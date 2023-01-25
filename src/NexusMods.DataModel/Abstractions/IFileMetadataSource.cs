@@ -1,4 +1,5 @@
 ﻿using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Paths;
@@ -24,7 +25,7 @@ public interface IFileMetadataSource
     /// <summary>
     /// Apply this source to the given games
     /// </summary>
-    public IEnumerable<string> Games { get; }
+    public IEnumerable<GameDomain> Games { get; }
 
     /// <summary>
     /// Return metadata for the given file. If metadata for this source already exists on the file

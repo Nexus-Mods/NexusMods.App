@@ -107,7 +107,7 @@ public class LoadoutManager
     {
         foreach (var source in _metadataSources)
         {
-            if (!source.Games.Contains(loadout.Installation.Game.Slug))
+            if (!source.Games.Contains(loadout.Installation.Game.Domain))
                 continue;
             if (!source.Extensions.Contains(file.To.Extension))
                 continue;

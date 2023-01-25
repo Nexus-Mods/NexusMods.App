@@ -17,7 +17,7 @@ public interface IGame
     /// Machine friendly name for the game, should be devoid of special characters
     /// that may conflict with URLs or file paths.
     /// </summary>
-    public string Slug { get; }
+    public GameDomain Domain { get; }
     
     /// <summary>
     /// IEnumerable of all valid installations of this game on this machine

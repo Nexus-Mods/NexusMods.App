@@ -20,7 +20,7 @@ public class StubbedGame : ISteamGame, IGogGame
     private readonly ILogger<StubbedGame> _logger;
     private readonly IEnumerable<IGameLocator> _locators;
     public string Name => "Stubbed Game";
-    public string Slug => "stubbed-game";
+    public GameDomain Domain => GameDomain.From("stubbed-game");
     
     public static readonly RelativePath[] DATA_NAMES = new[]
     {

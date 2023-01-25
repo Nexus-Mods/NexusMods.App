@@ -17,5 +17,5 @@ public interface IHttpDownloader
     /// <param name="destination"></param>
     /// <param name="token"></param>
     /// <returns></returns>
-    public Task<Hash> Download(IReadOnlyList<HttpRequestMessage> sources, AbsolutePath destination, CancellationToken token = default);
+    public Task<Hash> Download(IReadOnlyList<HttpRequestMessage> sources, AbsolutePath destination, Size? size = null, CancellationToken token = default);
 }

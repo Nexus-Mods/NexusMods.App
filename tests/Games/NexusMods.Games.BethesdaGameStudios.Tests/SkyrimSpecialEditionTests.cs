@@ -28,7 +28,7 @@ public class SkyrimSpecialEditionTests
     public void CanFindGames()
     {
         _game.Name.Should().Be("Skyrim Special Edition");
-        _game.Slug.Should().Be("skyrimspecialedition");
+        _game.Domain.Should().Be(SkyrimSpecialEdition.StaticDomain);
         _game.Installations.Count().Should().BeGreaterThan(0);
     }
 
