@@ -93,7 +93,7 @@ public class LoadoutMarker : IMarker<Loadout>
         public required IReadOnlyList<IApplyStep> Steps { get; init; }
     }
 
-    public async Task<ApplyPlan> MakeApplyPlan([EnumeratorCancellation] CancellationToken token = default)
+    public async Task<ApplyPlan> MakeApplyPlan(CancellationToken token = default)
     {
         var steps = new List<IApplyStep>();
 

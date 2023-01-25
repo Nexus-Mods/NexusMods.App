@@ -13,9 +13,11 @@ public class FileCache
     {
         _logger = logger;
         _cachePath = cachePath;
+        if (!cachePath.DirectoryExists())
+            cachePath.CreateDirectory();
     }
 
-    public async Task<CacheEntry> Create()
+    public async ValueTask<CacheEntry> Create()
     {
         var guid = Guid.NewGuid();
         var path = _cachePath.Join(guid.ToString());
