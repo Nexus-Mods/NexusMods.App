@@ -8,7 +8,7 @@ public class SizeConverter : JsonConverter<Size>
 {
     public override Size Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        return reader.GetUInt64();
+        return Size.From(reader.GetUInt64());
     }
 
     public override void Write(Utf8JsonWriter writer, Size value, JsonSerializerOptions options)

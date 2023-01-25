@@ -3,7 +3,7 @@ using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.CLI.Verbs;
 
-public class ListManagedGames
+public class ListManagedGames : AVerb
 {
     private readonly LoadoutManager _manager;
     private readonly IRenderer _renderer;
@@ -18,7 +18,7 @@ public class ListManagedGames
         Array.Empty<OptionDefinition>());
 
 
-    public async Task Run()
+    protected override async Task<int> Run(CancellationToken token)
     {
         var rows = new List<object[]>();
         foreach (var list in _manager.AllLoadouts.Select(x => x.Value))
@@ -27,5 +27,7 @@ public class ListManagedGames
         }
 
         await _renderer.Render(new Table(new[] { "Name", "Game", "Id", "Mod Count" }, rows));
+
+        return 0;
     }
 }

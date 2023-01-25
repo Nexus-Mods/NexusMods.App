@@ -2,7 +2,7 @@
 
 namespace NexusMods.CLI.Verbs;
 
-public class ExtractArchive
+public class ExtractArchive : AVerb<AbsolutePath, AbsolutePath>
 {
     private readonly IRenderer _renderer;
     private readonly FileExtractor.FileExtractor _extractor;
@@ -13,7 +13,7 @@ public class ExtractArchive
         _extractor = extractor;
     }
     
-    public static VerbDefinition Definition = new("extract-archive",
+    public static readonly VerbDefinition Definition = new("extract-archive",
         "Extracts an archive to a folder on-disk", new[]
         {
             new OptionDefinition<AbsolutePath>("i", "inputFile", "Input archive to extract"),
@@ -21,8 +21,9 @@ public class ExtractArchive
         });
     
 
-    public async Task Run(AbsolutePath inputFile, AbsolutePath outputFolder, CancellationToken token)
+    protected override async Task<int> Run(AbsolutePath inputFile, AbsolutePath outputFolder, CancellationToken token)
     {
         await _extractor.ExtractAll(inputFile, outputFolder, token);
+        return 0;
     }
 }

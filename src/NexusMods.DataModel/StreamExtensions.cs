@@ -16,4 +16,10 @@ public static class StreamExtensions
             await writer.WriteLineAsync(line.AsMemory(), token);
         }
     }
+    
+    public static async Task<string> ReadAllTextAsync(this Stream stream, CancellationToken token = default)
+    {
+        using var reader = new StreamReader(stream, leaveOpen: true);
+        return await reader.ReadToEndAsync(token);
+    }
 }

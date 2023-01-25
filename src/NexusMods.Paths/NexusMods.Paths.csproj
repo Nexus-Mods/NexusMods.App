@@ -15,5 +15,8 @@
     <PropertyGroup Condition="'$(IsLinux)'=='true'">
         <DefineConstants>Linux</DefineConstants>
     </PropertyGroup>
+    <ItemGroup>
+      <PackageReference Include="Vogen" Version="3.0.11" />
+    </ItemGroup>
 
 </Project>

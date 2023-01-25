@@ -8,7 +8,7 @@ public class SizeTests
     public void MathAndSize()
     {
         var a = (Size)10L;
-        Size b = 20L;
+        var b = Size.From(20L);
 
         a.Should().BeLessThan(b);
         b.Should().BeGreaterThan(a);
@@ -17,7 +17,7 @@ public class SizeTests
         (a != b).Should().BeTrue();
 
         (b / a).Should().Be(2L);
-        (b * a).Should().Be(200L);
+        (b * 20).Should().Be(Size.From(400));
 
         (b > a).Should().BeTrue();
         (a < b).Should().BeTrue();
@@ -25,8 +25,8 @@ public class SizeTests
         (a >= b).Should().BeFalse();
         (b - a).Should().Be(a);
 
-        Size.Zero.Should().Be(0L);
-        Size.MultiplicativeIdentity.Should().Be(1L);
+        Size.Zero.Should().Be(Size.Zero);
+        Size.MultiplicativeIdentity.Should().Be(Size.One);
 
         a.ToString().Should().Be("10 B");
 
@@ -37,10 +37,6 @@ public class SizeTests
         ((Size)1024L * 1024L * 1024L * 1024L).Readable().Should().Be("1 TB");
         ((Size)1024L * 1024L * 1024L * 1024L * 1024L).Readable().Should().Be("1 PB");
         ((Size)1024L * 1024L * 1024L * 1024L * 1024L * 1024L).Readable().Should().Be("1 EB");
-
-        long lsize = 10;
-        Size ssize = lsize;
-        lsize.Should().Be(ssize);
 
     }
 }

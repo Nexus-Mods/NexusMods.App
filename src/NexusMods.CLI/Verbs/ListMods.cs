@@ -4,7 +4,7 @@ using NexusMods.DataModel.Loadouts.Markers;
 
 namespace NexusMods.CLI.Verbs;
 
-public class ListMods
+public class ListMods : AVerb<LoadoutMarker>
 {
     private readonly IRenderer _renderer;
     public ListMods(Configurator configurator)
@@ -20,7 +20,7 @@ public class ListMods
         });
 
 
-    public async Task Run(LoadoutMarker loadout, CancellationToken token)
+    protected override async Task<int> Run(LoadoutMarker loadout, CancellationToken token)
     {
         var rows = new List<object[]>();
         foreach (var mod in loadout.Value.Mods.Values)
@@ -29,5 +29,6 @@ public class ListMods
         }
 
         await _renderer.Render(new Table(new[] { "Name", "File Count"}, rows));
+        return 0;
     }
 }

@@ -4,7 +4,7 @@ using NexusMods.Paths;
 
 namespace NexusMods.CLI.Verbs;
 
-public class HashFolder
+public class HashFolder : AVerb<AbsolutePath>
 {
     private readonly FileHashCache _cache;
     private readonly IRenderer _renderer;
@@ -22,7 +22,7 @@ public class HashFolder
             new OptionDefinition<AbsolutePath>( "f", "folder", "Folder to hash")
         });
 
-    public async Task<int> Run(AbsolutePath folder, CancellationToken token)
+    protected override async Task<int> Run(AbsolutePath folder, CancellationToken token)
     {
         var rows = new List<object[]>();
         await _renderer.WithProgress(token, async () =>

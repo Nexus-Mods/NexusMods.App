@@ -19,19 +19,4 @@
       <ProjectReference Include="..\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <None Update="VerbRegistration.tt">
-        <Generator>TextTemplatingFileGenerator</Generator>
-        <LastGenOutput>VerbRegistration.cs</LastGenOutput>
-      </None>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Update="VerbRegistration.cs">
-        <AutoGen>True</AutoGen>
-        <DesignTime>True</DesignTime>
-        <DependentUpon>VerbRegistration.tt</DependentUpon>
-      </Compile>
-    </ItemGroup>
-
 </Project>

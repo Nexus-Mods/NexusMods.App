@@ -3,7 +3,7 @@ using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.CLI.Verbs;
 
-public class ManageGame
+public class ManageGame : AVerb<IGame, Version, string>
 {
     private readonly LoadoutManager _manager;
     private readonly IRenderer _renderer;
@@ -21,7 +21,7 @@ public class ManageGame
             new OptionDefinition<string>("n", "name", "Name of the new Loadout")
         });
     
-    public async Task Run(IGame game, Version version, string name, CancellationToken token)
+    protected override async Task<int> Run(IGame game, Version version, string name, CancellationToken token)
     {
         var installation = game.Installations.FirstOrDefault(i => i.Version == version);
         if (installation == null)
@@ -32,5 +32,6 @@ public class ManageGame
             await _manager.ManageGame(installation, name, token);
             return 0;
         });
+        return 0;
     }
 }

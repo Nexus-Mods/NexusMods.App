@@ -15,6 +15,11 @@ jobs:
     name: Test ${{ matrix.project }} (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     
+    environment: test
+    
+    env:
+      NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+    
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
@@ -31,9 +36,12 @@ jobs:
         if: runner.os != 'Windows'
         run: chmod -R +x src/ArchiveManagement/NexusMods.FileExtractor/Extractors
 
+      - name: Clean
+        run: dotnet clean
+      
       - name: Tests
         run: dotnet test --filter RequiresGameInstalls!=True /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
-        
+      
       - uses: codecov/codecov-action@v3
         with:
           flags: clean_environment_tests, ${{runner.os}}

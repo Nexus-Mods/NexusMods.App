@@ -4,7 +4,7 @@ using NexusMods.DataModel.Loadouts.ModFiles;
 
 namespace NexusMods.CLI.Verbs;
 
-public class ListModContents
+public class ListModContents : AVerb<LoadoutMarker, string>
 {
     private readonly IRenderer _renderer;
     public ListModContents(Configurator configurator)
@@ -12,7 +12,7 @@ public class ListModContents
         _renderer = configurator.Renderer;
     }
     
-    public static VerbDefinition Definition = new("list-mod-contents", "Lists all the files in a mod",
+    public static readonly VerbDefinition Definition = new("list-mod-contents", "Lists all the files in a mod",
         new OptionDefinition[]
         {
             new OptionDefinition<LoadoutMarker>( "l", "loadout", "The loadout instance that contains the mod"),
@@ -20,7 +20,7 @@ public class ListModContents
         });
 
 
-    public async Task Run(LoadoutMarker loadout, string modName)
+    protected override async Task<int> Run(LoadoutMarker loadout, string modName, CancellationToken token)
     {
         var rows = new List<object[]>();
         var mod = loadout.Value.Mods.Values.First(m => m.Name == modName);
@@ -34,5 +34,6 @@ public class ListModContents
         }
 
         await _renderer.Render(new Table(new[] { "Name", "Source"}, rows));
+        return 0;
     }
 }

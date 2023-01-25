@@ -49,7 +49,7 @@ public class LMDBDataStoreTests : ADataModelTest<LMDBDataStoreTests>
             Id = ModFileId.New(),
             From = new HashRelativePath((Hash)(ulong)idx, $"{idx}.file".ToRelativePath()),
             Hash = (Hash)(ulong)idx,
-            Size = idx,
+            Size = Size.From(idx),
             Store = DataStore,
             To = new GamePath(GameFolderType.Game, $"{idx}.file"),
         }).ToList();

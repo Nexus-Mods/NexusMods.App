@@ -181,7 +181,19 @@ public class LMDBDataStore : IDataStore
         return GetRaw(bytes);
     }
 
-    public void PutRaw(ReadOnlySpan<byte> key, ReadOnlySpan<byte> value, EntityCategory category)
+    public void PutRaw(Id key, ReadOnlySpan<byte> value)
+    {
+        using var tx = _db.BeginTransaction();
+        using var db = tx.OpenDatabase();
+        Span<byte> span = stackalloc byte[key.SpanSize + 1];
+        key.ToTaggedSpan(span);
+        tx.Put(db, span, value);
+        var result = tx.Commit();
+        if (result != MDBResultCode.Success)
+            throw new Exception($"LMDB error {result}");
+    }
+    
+    public void PutRaw(ReadOnlySpan<byte> key, ReadOnlySpan<byte> value)
     {
         using var tx = _db.BeginTransaction();
         using var db = tx.OpenDatabase();

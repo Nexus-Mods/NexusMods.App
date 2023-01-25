@@ -7,4 +7,5 @@ public enum EntityCategory
     Roots,
     FileHashes,
     FileContainedIn,
+    AuthData
 }

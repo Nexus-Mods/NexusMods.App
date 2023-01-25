@@ -13,7 +13,8 @@ public interface IDataStore
     Id? GetRoot(RootType type);
     byte[]? GetRaw(ReadOnlySpan<byte> key);
     byte[]? GetRaw(Id id);
-    void PutRaw(ReadOnlySpan<byte> kSpan, ReadOnlySpan<byte> vSpan, EntityCategory fileHashes);
+    void PutRaw(Id key, ReadOnlySpan<byte> val);
+    void PutRaw(ReadOnlySpan<byte> key, ReadOnlySpan<byte> val);
     IEnumerable<T> GetByPrefix<T>(Id prefix) where T : Entity;
     IObservable<(Id Id, Entity Entity)> Changes { get; }
 }

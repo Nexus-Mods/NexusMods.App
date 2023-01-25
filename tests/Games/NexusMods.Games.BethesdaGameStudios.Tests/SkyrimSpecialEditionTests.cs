@@ -65,7 +65,7 @@ public class SkyrimSpecialEditionTests
 
         var (size, hash) = await pluginFile.GetMetaData(loadout.Value, flattenedList);
 
-        size.Should().Be(ms.Length);
+        size.Should().Be(Size.From(ms.Length));
         (await ms.Hash()).Should().Be(hash);
 
         var results = Encoding.UTF8.GetString(ms.ToArray())

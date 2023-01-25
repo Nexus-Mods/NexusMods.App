@@ -286,7 +286,7 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
     
     public FileVersionInfo VersionInfo => FileVersionInfo.GetVersionInfo(ToNativePath());
     
-    public long Length => FileInfo.Length;
+    public Size Length => Size.From(FileInfo.Length);
 
     public DateTime LastWriteTimeUtc => FileInfo.LastWriteTimeUtc;
     public DateTime CreationTimeUtc => FileInfo.CreationTimeUtc;
@@ -417,7 +417,7 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
             {
                 var path = file.ToAbsolutePath();
                 var info = path.FileInfo;
-                return new FileEntry(Path: path, Size: info.Length, LastModified:info.LastWriteTimeUtc);
+                return new FileEntry(Path: path, Size: Size.From(info.Length), LastModified:info.LastWriteTimeUtc);
             });
     }
 

@@ -31,6 +31,8 @@ public class Startup
         container.AddAllSingleton<IGame, StubbedGame>();
         container.AddSingleton<TemporaryFileManager>(s => new TemporaryFileManager(prefix.Join("tempFiles")));
         container.AddFileExtractors();
+        container.AddSingleton(s => new FileCache(s.GetRequiredService<ILogger<FileCache>>(), KnownFolders.EntryFolder.Join("cache")));
+        
 
         container.AddAllSingleton<AHandler<SteamGame, int>, StubbedSteamLocator>();
         container.AddAllSingleton<AHandler<GOGGame, long>, StubbedGogLocator>();

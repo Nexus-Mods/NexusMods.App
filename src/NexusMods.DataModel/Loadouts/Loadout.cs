@@ -1,9 +1,6 @@
-﻿using System.Collections;
-using NexusMods.DataModel.Abstractions;
+﻿using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.JsonConverters;
-using NexusMods.Interfaces;
-using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Loadouts;
 
@@ -33,25 +30,7 @@ public record Loadout : Entity, IEmptyWithDataStore<Loadout>
         ChangeMessage = "",
         Store = store
     };
-    
 
-    public Loadout RemoveFileFromAllMods(Func<AModFile, bool> filter)
-    {
-        var newMods = Mods.Keep(mod => mod with { Files = mod.Files.Keep(f => filter(f) ? null : f)});
-        return this with
-        {
-            Mods = newMods
-        };
-    }
-
-    public Loadout KeepMod(Mod tMod, Func<Mod, Mod?> func)
-    {
-        return this with
-        {
-            Mods = Mods.Keep(m => m.Name == tMod.Name ? func(m) : m)
-        };
-    }
-    
     public Loadout Alter(ModId modId, Func<Mod?, Mod?> func)
     {
         return this with
@@ -59,37 +38,7 @@ public record Loadout : Entity, IEmptyWithDataStore<Loadout>
             Mods = Mods.Keep(modId, func)
         };
     }
-
-    public Loadout Alter(ModId modId, ModFileId fileId, Func<AModFile?, AModFile?> func)
-    {
-        return this with
-        {
-            Mods = Mods.Keep(modId, m => m with
-            {
-                Files = m.Files.Keep(fileId, func)
-            })
-        };
-    }
-
-    public Loadout Remove(ModId modId)
-    {
-        return this with
-        {
-            Mods = Mods.Keep(modId, _ => null)
-        };
-    }
-
-    public Loadout Remove(ModId modId, ModFileId fileId)
-    {
-        return this with
-        {
-            Mods = Mods.Keep(modId, m => m with
-            {
-                Files = m.Files.Keep(fileId, _ => null)
-            })
-        };
-    }
-
+    
     public Loadout Add(Mod mod)
     {
         return this with
@@ -97,17 +46,7 @@ public record Loadout : Entity, IEmptyWithDataStore<Loadout>
             Mods = Mods.With(mod.Id, mod)
         };
     }
-    
-    public Loadout Add(ModId modId, AModFile file)
-    {
-        return this with
-        {
-            Mods = Mods.Keep(modId, m => m with
-            {
-                Files = m.Files.With(file.Id, file)
-            })
-        };
-    }
+
 
     public Loadout AlterFiles(Func<AModFile, AModFile?> func)
     {
