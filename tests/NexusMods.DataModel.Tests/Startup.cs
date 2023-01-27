@@ -1,7 +1,4 @@
-﻿using GameFinder.Common;
-using GameFinder.StoreHandlers.GOG;
-using GameFinder.StoreHandlers.Steam;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Games;
@@ -13,7 +10,6 @@ using NexusMods.FileExtractor.Extractors;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
-using NexusMods.StandardGameLocators.Tests;
 using Xunit.DependencyInjection;
 using Xunit.DependencyInjection.Logging;
 
@@ -28,15 +24,11 @@ public class Startup
         container.AddDataModel(prefix);
         container.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug));
         container.AddStandardGameLocators(false);
-        container.AddAllSingleton<IGame, StubbedGame>();
         container.AddSingleton<TemporaryFileManager>(s => new TemporaryFileManager(prefix.Join("tempFiles")));
         container.AddFileExtractors();
         container.AddSingleton(s => new FileCache(s.GetRequiredService<ILogger<FileCache>>(), KnownFolders.EntryFolder.Join("cache")));
         
-
-        container.AddAllSingleton<AHandler<SteamGame, int>, StubbedSteamLocator>();
-        container.AddAllSingleton<AHandler<GOGGame, long>, StubbedGogLocator>();
-        container.AddAllSingleton<IModInstaller, StubbedGameInstaller>();
+        container.AddStubbedGameLocators();
 
         container.AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(s =>
             new Resource<FileContentsCache, Size>("File Analysis"));

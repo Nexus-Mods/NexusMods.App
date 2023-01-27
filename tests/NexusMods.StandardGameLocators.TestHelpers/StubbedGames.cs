@@ -1,4 +1,6 @@
 ﻿using GameFinder.Common;
+using GameFinder.StoreHandlers.EADesktop;
+using GameFinder.StoreHandlers.EGS;
 using GameFinder.StoreHandlers.GOG;
 using GameFinder.StoreHandlers.Steam;
 using Microsoft.Extensions.Logging;
@@ -15,7 +17,7 @@ using NexusMods.Paths;
 namespace NexusMods.StandardGameLocators.TestHelpers;
 
 
-public class StubbedGame : ISteamGame, IGogGame
+public class StubbedGame : IEADesktopGame, IEpicGame, IOriginGame, ISteamGame, IGogGame
 {
     private readonly ILogger<StubbedGame> _logger;
     private readonly IEnumerable<IGameLocator> _locators;
@@ -81,58 +83,42 @@ public class StubbedGame : ISteamGame, IGogGame
         File.WriteAllText(path.ToString(), path.FileName.ToString());
     }
 
-    public IEnumerable<int> SteamIds => new [] {1};
-    public IEnumerable<long> GogIds => new[] { (long)1 };
+    public IEnumerable<int> SteamIds => new [] {42};
+    public IEnumerable<long> GogIds => new[] { (long)42 };
+    public IEnumerable<string> EADesktopSoftwareIDs => new[] { "ea-game-id" };
+    public IEnumerable<string> EpicCatalogItemId => new []{ "epic-game-id" };
+    public IEnumerable<string> OriginGameIds => new []{ "origin-game-id" };
 }
 
-
-public class StubbedSteamLocator : AHandler<SteamGame, int>
+public class StubbedGameLocator<TGame, TId> : AHandler<TGame, TId> 
+    where TGame : class where TId : notnull
 {
     private readonly TemporaryFileManager _manager;
     private readonly TemporaryPath _folder;
+    private readonly Func<TemporaryFileManager,TGame> _factory;
+    private readonly Func<TGame,TId> _idSelector;
+    private readonly TGame _game;
 
-    public StubbedSteamLocator(TemporaryFileManager manager)
-    {
-        _manager = manager;
-        _folder = _manager.CreateFolder("steam_game");
-    }
-    public override IEnumerable<Result<SteamGame>> FindAllGames()
-    {
-        return new[]
-        {
-            Result.FromGame(new SteamGame(1, "Stubbed Game", _folder.Path.ToString()))
-        };
-    }
-
-    public override Dictionary<int, SteamGame> FindAllGamesById(out string[] errors)
-    {
-        errors = Array.Empty<string>();
-        return FindAllGames().ToDictionary(g => g.Game!.AppId, v => v.Game)!;
-    }
-}
-
-public class StubbedGogLocator : AHandler<GOGGame, long>
-{
-    private readonly TemporaryFileManager _manager;
-    private readonly TemporaryPath _folder;
-
-    public StubbedGogLocator(TemporaryFileManager manager)
+    public StubbedGameLocator(TemporaryFileManager manager, Func<TemporaryFileManager, TGame> factory, Func<TGame, TId> idSelector)
     {
         _manager = manager;
         _folder = _manager.CreateFolder("gog_game");
+        _factory = factory;
+        _idSelector = idSelector;
+        _game = _factory(_manager);
     }
-    public override IEnumerable<Result<GOGGame>> FindAllGames()
+    public override IEnumerable<Result<TGame>> FindAllGames()
     {
         return new[]
         {
-            Result.FromGame(new GOGGame(1, "Stubbed Game", _folder.Path.ToString()))
+            Result.FromGame(_game)
         };
     }
 
-    public override Dictionary<long, GOGGame> FindAllGamesById(out string[] errors)
+    public override Dictionary<TId, TGame> FindAllGamesById(out string[] errors)
     {
         errors = Array.Empty<string>();
-        return FindAllGames().ToDictionary(g => g.Game!.Id, v => v.Game)!;
+        return FindAllGames().ToDictionary(g => _idSelector(g.Game!), v => v.Game)!;
     }
 }
 
