@@ -2,7 +2,10 @@
 using System.Runtime.InteropServices;
 using GameFinder.Common;
 using GameFinder.RegistryUtils;
+using GameFinder.StoreHandlers.EADesktop;
+using GameFinder.StoreHandlers.EGS;
 using GameFinder.StoreHandlers.GOG;
+using GameFinder.StoreHandlers.Origin;
 using GameFinder.StoreHandlers.Steam;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.DataModel.Games;
@@ -12,7 +15,7 @@ namespace NexusMods.StandardGameLocators;
 
 public static class Services
 {
-    
+
     /// <summary>
     /// Registers all the services for the standard store locators
     /// </summary>
@@ -24,17 +27,25 @@ public static class Services
         bool registerConcreteLocators = true)
     {
         services.AddSingleton<IGameLocator, SteamLocator>();
-        
+
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
+            services.AddSingleton<IGameLocator, EALocator>();
+            services.AddSingleton<IGameLocator, EpicLocator>();
             services.AddSingleton<IGameLocator, GogLocator>();
+            services.AddSingleton<IGameLocator, OriginLocator>();
         }
 
         if (!registerConcreteLocators) return services;
 
 #pragma warning disable CA1416
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) 
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            services.AddSingleton<AHandler<EADesktopGame, string>>(_ => new EADesktopHandler());
+            services.AddSingleton<AHandler<EGSGame, string>>(_ => new EGSHandler());
             services.AddSingleton<AHandler<GOGGame, long>>(_ => new GOGHandler());
+            services.AddSingleton<AHandler<OriginGame, string>>(_ => new OriginHandler());
+        }
 #pragma warning restore CA1416
 
         services.AddSingleton(s => CreateSteamHandler());

@@ -18,11 +18,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection container)
     {
         container.AddStandardGameLocators(false);
-        container.AddSingleton<IGame, StubbedGame>();
-        container.AddSingleton<IModInstaller, StubbedGameInstaller>();
-
-        container.AddSingleton<AHandler<SteamGame, int>, StubbedSteamLocator>();
-        container.AddSingleton<AHandler<GOGGame, long>, StubbedGogLocator>();        
+        container.AddStubbedGameLocators();
         container.AddCLI();
         container.AddAllScoped<IRenderer, LoggingRenderer>();
         container.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug));

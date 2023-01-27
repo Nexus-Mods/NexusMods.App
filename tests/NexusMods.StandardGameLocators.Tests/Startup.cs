@@ -1,4 +1,5 @@
 ﻿using GameFinder.Common;
+using GameFinder.StoreHandlers.EADesktop;
 using GameFinder.StoreHandlers.GOG;
 using GameFinder.StoreHandlers.Steam;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,10 +26,7 @@ public class Startup
     {
         container.AddStandardGameLocators(false);
         container.AddSingleton<TemporaryFileManager>();
-        container.AddSingleton<StubbedGame>();
-
-        container.AddSingleton<AHandler<SteamGame, int>, StubbedSteamLocator>();
-        container.AddSingleton<AHandler<GOGGame, long>, StubbedGogLocator>();
+        container.AddStubbedGameLocators();
         container.AddAllSingleton<IModInstaller, StubbedGameInstaller>();
         container.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug));
     }
