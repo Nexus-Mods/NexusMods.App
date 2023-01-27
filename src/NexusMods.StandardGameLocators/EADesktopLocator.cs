@@ -6,12 +6,12 @@ using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators;
 
-public class EALocator : AGameLocator<EADesktopHandler, EADesktopGame, string, IEAGame>
+public class EADesktopLocator : AGameLocator<EADesktopHandler, EADesktopGame, string, IEADesktopGame>
 {
-    public EALocator(ILogger<EALocator> logger, AHandler<EADesktopGame, string> handler) : base(logger, handler)
+    public EADesktopLocator(ILogger<EADesktopLocator> logger, AHandler<EADesktopGame, string> handler) : base(logger, handler)
     {
     }
 
-    protected override IEnumerable<string> Ids(IEAGame game) => game.EASoftwareIDs;
+    protected override IEnumerable<string> Ids(IEADesktopGame game) => game.EADesktopSoftwareIDs;
     protected override AbsolutePath Path(EADesktopGame record) => record.BaseInstallPath.ToAbsolutePath();
 }

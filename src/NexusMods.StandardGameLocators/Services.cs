@@ -30,7 +30,7 @@ public static class Services
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            services.AddSingleton<IGameLocator, EALocator>();
+            services.AddSingleton<IGameLocator, EADesktopLocator>();
             services.AddSingleton<IGameLocator, EpicLocator>();
             services.AddSingleton<IGameLocator, GogLocator>();
             services.AddSingleton<IGameLocator, OriginLocator>();
