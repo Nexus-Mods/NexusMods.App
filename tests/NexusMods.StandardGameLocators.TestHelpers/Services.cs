@@ -7,6 +7,7 @@ using GameFinder.StoreHandlers.Steam;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
 using NexusMods.DataModel.Games;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators.TestHelpers;
@@ -17,6 +18,7 @@ public static class Services
     {
         
         coll.AddAllSingleton<IGame, StubbedGame>();
+        coll.AddAllSingleton<IModInstaller, StubbedGameInstaller>();
         coll.AddSingleton<AHandler<EADesktopGame, string>>(s => 
             new StubbedGameLocator<EADesktopGame, string>(s.GetRequiredService<TemporaryFileManager>(),
                 tfm => new EADesktopGame("ea-game-id", "Stubbed Game", tfm.CreateFolder("ea_game").Path.ToString()),

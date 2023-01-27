@@ -29,7 +29,6 @@ public class Startup
         container.AddSingleton(s => new FileCache(s.GetRequiredService<ILogger<FileCache>>(), KnownFolders.EntryFolder.Join("cache")));
         
         container.AddStubbedGameLocators();
-        container.AddAllSingleton<IModInstaller, StubbedGameInstaller>();
 
         container.AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(s =>
             new Resource<FileContentsCache, Size>("File Analysis"));

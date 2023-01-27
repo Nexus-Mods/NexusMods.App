@@ -27,7 +27,6 @@ public class Startup
         container.AddStandardGameLocators(false);
         container.AddSingleton<TemporaryFileManager>();
         container.AddStubbedGameLocators();
-        container.AddAllSingleton<IModInstaller, StubbedGameInstaller>();
         container.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug));
     }
     

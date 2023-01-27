@@ -1,12 +1,16 @@
 ﻿using FluentAssertions;
 using NexusMods.Paths;
+using NexusMods.StandardGameLocators.TestHelpers;
 
 namespace NexusMods.CLI.Tests.VerbTests;
 
 public class ModManagementVerbs : AVerbTest
 {
-    public ModManagementVerbs(TemporaryFileManager temporaryFileManager, IServiceProvider provider) : base(temporaryFileManager, provider)
+    private readonly StubbedGame _stubbedGame;
+
+    public ModManagementVerbs(TemporaryFileManager temporaryFileManager, StubbedGame stubbedGame, IServiceProvider provider) : base(temporaryFileManager, provider)
     {
+        _stubbedGame = stubbedGame;
     }
 
     [Fact]
@@ -14,7 +18,7 @@ public class ModManagementVerbs : AVerbTest
     {
         var listName = Guid.NewGuid().ToString();
 
-        await RunNoBanner("manage-game", "-g", "stubbed-game", "-v", "0.0.0.0", "-n", listName);
+        await RunNoBanner("manage-game", "-g", "stubbed-game", "-v", _stubbedGame.Installations.First().Version.ToString(), "-n", listName);
 
         await RunNoBanner("list-managed-games");
 
