@@ -13,6 +13,7 @@ using ModId = NexusMods.Networking.NexusWebApi.Types.ModId;
 
 namespace NexusMods.Games.RedEngine.Tests;
 
+[Trait("RequiresGameInstalls", "True")]
 public class ModInstallerTests
 {
     private readonly LoadoutManager _manager;
@@ -63,5 +64,6 @@ public class ModInstallerTests
         new object[] {"Redscript", ModId.From(1511), FileId.From(36622), Hash.From(0x8BEF15CA909D8543), 3},
         new object[] {"cybercmd", ModId.From(5176), FileId.From(34566), Hash.From(0xEE78A096C8565B99), 1},
         new object[] {"Archive-XL", ModId.From(4198), FileId.From(36969), Hash.From(0x1D30861A46BA7B8E), 2},
+        new object[] {"Tweak-XL", ModId.From(4197), FileId.From(36048), Hash.From(0x22A45B59423201E1), 2},
     };
 }
