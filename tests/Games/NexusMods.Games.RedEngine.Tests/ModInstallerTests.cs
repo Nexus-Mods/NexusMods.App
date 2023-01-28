@@ -61,5 +61,7 @@ public class ModInstallerTests
     {
         new object[] {"Cyber Engine Tweaks", ModId.From(107), FileId.From(33156), Hash.From(0x8BCFFD83A0F5FC71), 17},
         new object[] {"Redscript", ModId.From(1511), FileId.From(36622), Hash.From(0x8BEF15CA909D8543), 3},
+        new object[] {"cybercmd", ModId.From(5176), FileId.From(34566), Hash.From(0xEE78A096C8565B99), 1},
+        new object[] {"Archive-XL", ModId.From(4198), FileId.From(36969), Hash.From(0x1D30861A46BA7B8E), 2},
     };
 }

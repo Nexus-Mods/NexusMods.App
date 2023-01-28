@@ -17,6 +17,7 @@ public class SimpleOverlyModInstaller : IModInstaller
         "bin/x64",
         "engine",
         "r6",
+        "red4ext"
     }.Select(x => x.ToRelativePath()).ToArray();
     
     public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
