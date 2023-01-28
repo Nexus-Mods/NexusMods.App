@@ -75,5 +75,7 @@ public class ModInstallerTests
         new object[] {"cybercmd", ModId.From(5176), FileId.From(34566), Hash.From(0xEE78A096C8565B99), 1},
         new object[] {"Archive-XL", ModId.From(4198), FileId.From(36969), Hash.From(0x1D30861A46BA7B8E), 2},
         new object[] {"Tweak-XL", ModId.From(4197), FileId.From(36048), Hash.From(0x22A45B59423201E1), 2},
+        new object[] {"Panam Romanced Enhanced", ModId.From(4626), FileId.From(38117), Hash.From(0xDD0E1C3AEA20E6C1), 3},
+        new object[] {"Panam Romanced Enhanced REDmod", ModId.From(4626), FileId.From(38118), Hash.From(0x46F5AD6A75172F76), 5},
     };
 }
