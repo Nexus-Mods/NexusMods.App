@@ -59,6 +59,6 @@ public class ModInstallerTests
 
     public static IEnumerable<object[]> TestFiles => new[]
     {
-        new object[] {"Cyber Engine Tweaks", ModId.From(107), FileId.From(33156), Hash.From(0x8BCFFD83A0F5FC71), 4},
+        new object[] {"Cyber Engine Tweaks", ModId.From(107), FileId.From(33156), Hash.From(0x8BCFFD83A0F5FC71), 17},
     };
 }
