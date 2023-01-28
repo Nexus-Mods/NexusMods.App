@@ -31,7 +31,7 @@ public class LoadoutMarker : IMarker<Loadout>
     public Loadout Value => _manager.Get(_id); 
     public IObservable<Loadout> Changes => _manager.Changes.Select(c => c.Lists[_id]);
 
-    public async Task<ModId> Install(AbsolutePath file, string name, CancellationToken token)
+    public async Task<ModId> Install(AbsolutePath file, string name, CancellationToken token = default)
     {
         await _manager.ArchiveManager.ArchiveFile(file, token);
         return (await _manager.InstallMod(_id, file, name, token)).ModId;

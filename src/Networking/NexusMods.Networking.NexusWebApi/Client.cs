@@ -31,7 +31,7 @@ public class Client
         return await SendAsync<GameInfo[]>(msg, token);
     }
 
-    public async Task<Response<DownloadLink[]>> DownloadLinks(GameDomain domain, ModId modId, FileId fileId, CancellationToken token)
+    public async Task<Response<DownloadLink[]>> DownloadLinks(GameDomain domain, ModId modId, FileId fileId, CancellationToken token = default)
     {
         var msg = await _factory.Create(HttpMethod.Get, new Uri(
             $"https://api.nexusmods.com/v1/games/{domain}/mods/{modId}/files/{fileId}/download_link.json"));
