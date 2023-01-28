@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
+using NexusMods.DataModel;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.ModInstallers;
@@ -21,12 +22,17 @@ public class ModInstallerTests
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly Client _nexusClient;
     private readonly IHttpDownloader _httpDownloader;
+    private readonly ArchiveManager _archiveManager;
+    private readonly ILogger<ModInstallerTests> _logger;
 
     public ModInstallerTests(ILogger<ModInstallerTests> logger, LoadoutManager manager, 
         Cyberpunk2077 game, TemporaryFileManager temporaryFileManager,
-        Client nexusClient, IHttpDownloader httpDownloader)
+        Client nexusClient, IHttpDownloader httpDownloader,
+        ArchiveManager archiveManager)
     {
+        _logger = logger;
         _installation = game.Installations.First();
+        _archiveManager = archiveManager;
         _manager = manager;
         _temporaryFileManager = temporaryFileManager;
         _nexusClient = nexusClient;
@@ -50,6 +56,10 @@ public class ModInstallerTests
 
     private async Task<AbsolutePath> Download(ModId modId, FileId fileId, Hash hash)
     {
+        if (_archiveManager.HaveArchive(hash))
+            return _archiveManager.PathFor(hash);
+            
+        _logger.LogInformation("Downloading {ModId} {FileId} {Hash}", modId, fileId, hash);
         var uris = await _nexusClient.DownloadLinks(GameDomain.Cyberpunk2077, modId, fileId);
         
         var file = _temporaryFileManager.CreateFile();
