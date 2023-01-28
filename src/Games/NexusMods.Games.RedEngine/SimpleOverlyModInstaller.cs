@@ -14,7 +14,9 @@ public class SimpleOverlyModInstaller : IModInstaller
 {
     private static RelativePath[] _rootPaths = new[]
     {
-        "bin/x64"
+        "bin/x64",
+        "engine",
+        "r6",
     }.Select(x => x.ToRelativePath()).ToArray();
     
     public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
