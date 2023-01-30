@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Extensions;
+using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts.ApplySteps;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.RateLimiting;
@@ -29,6 +30,7 @@ public class LoadoutMarker : IMarker<Loadout>
     }
 
     public Loadout Value => _manager.Get(_id); 
+    public IEnumerable<ITool> Tools => _manager.Tools(Value.Installation.Game.Domain);
     public IObservable<Loadout> Changes => _manager.Changes.Select(c => c.Lists[_id]);
 
     public async Task<ModId> Install(AbsolutePath file, string name, CancellationToken token = default)
@@ -303,6 +305,7 @@ public class LoadoutMarker : IMarker<Loadout>
             yield return new AddToLoadout
             {
                 To = absolutePath,
+                Mod = modMapper(entry).Id,
                 Hash = entry.Hash,
                 Size = entry.Size
             };
@@ -313,6 +316,11 @@ public class LoadoutMarker : IMarker<Loadout>
     public async Task Apply(CancellationToken token = default)
     {
         await Apply(await MakeApplyPlan(token), token);
+    }
+
+    public async Task ApplyIngest(Func<HashedEntry, Mod> modMapper, CancellationToken token)
+    {
+        await ApplyIngest(await MakeIngestionPlan(modMapper, token).ToHashSet(), token);
     }
 
     public async Task ApplyIngest(HashSet<IApplyStep> steps, CancellationToken token)
@@ -334,6 +342,21 @@ public class LoadoutMarker : IMarker<Loadout>
                 var gamePath = Loadout.Installation.ToGamePath(step.To);
                 switch (step)
                 {
+                    case AddToLoadout add:
+                        Loadout = Loadout.Alter(add.Mod, m => m with
+                        {
+                            Files = m.Files.With(new FromArchive
+                            {
+                                Id = ModFileId.New(),
+                                From = new HashRelativePath(add.Hash),
+                                Hash = add.Hash,
+                                Size = add.Size,
+                                Store = m.Store,
+                                To = gamePath
+                            }, x => x.Id)
+                        });
+                        break;
+                        
                     case RemoveFromLoadout remove:
                         Loadout = Loadout.AlterFiles(x => x.To == gamePath ? null : x);
                         break;
@@ -371,5 +394,29 @@ public class LoadoutMarker : IMarker<Loadout>
     public void Add(Mod newMod)
     {
         _manager.Alter(_id, l => l.Add(newMod));
+    }
+
+    /// <summary>
+    /// Runs the given tool, integrating the results into the loadout
+    /// </summary>
+    /// <param name="tool"></param>
+    /// <param name="none"></param>
+    /// <param name="token"></param>
+    /// <exception cref="NotImplementedException"></exception>
+    public async Task Run(ITool tool, CancellationToken token = default)
+    {
+        await Apply(token);
+        await tool.Execute(Value);
+        var modName = $"{tool.Name} Generated Files";
+        var mod = Value.Mods.Values.FirstOrDefault(m => m.Name == modName) ??
+                  new Mod
+                  {
+                      Name = modName,
+                      Id = ModId.New(),
+                      Store = Value.Store,
+                      Files = EntityDictionary<ModFileId, AModFile>.Empty(Value.Store)
+                  };
+        Add(mod);
+        await ApplyIngest(_ => mod, token);
     }
 }

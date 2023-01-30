@@ -19,6 +19,7 @@ public static class Services
         
         coll.AddAllSingleton<IGame, StubbedGame>();
         coll.AddAllSingleton<IModInstaller, StubbedGameInstaller>();
+        coll.AddAllSingleton<ITool, ListFilesTool>();
         coll.AddSingleton<AHandler<EADesktopGame, string>>(s => 
             new StubbedGameLocator<EADesktopGame, string>(s.GetRequiredService<TemporaryFileManager>(),
                 tfm => new EADesktopGame("ea-game-id", "Stubbed Game", tfm.CreateFolder("ea_game").Path.ToString()),
