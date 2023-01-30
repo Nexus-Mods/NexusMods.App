@@ -11,6 +11,8 @@ public static class Services
     {
         services.AddAllSingleton<IGame, Cyberpunk2077>();
         services.AddSingleton<IModInstaller, SimpleOverlyModInstaller>();
+        services.AddSingleton<ITool, RunGameTool<Cyberpunk2077>>();
+        services.AddSingleton<ITool, RedModDeployTool>();
         return services;
     }
 }

@@ -13,9 +13,6 @@ public class ListFilesTool : ITool
 
     public async Task Execute(Loadout loadout)
     {
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) 
-            throw new NotImplementedException();
-
         var listPath = loadout.Installation.Locations[GameFolderType.Game];
         var outPath = GeneratedFilePath.RelativeTo(listPath);
 

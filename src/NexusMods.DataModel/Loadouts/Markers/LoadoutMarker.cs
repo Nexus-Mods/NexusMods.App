@@ -405,6 +405,9 @@ public class LoadoutMarker : IMarker<Loadout>
     /// <exception cref="NotImplementedException"></exception>
     public async Task Run(ITool tool, CancellationToken token = default)
     {
+        if (!tool.Domains.Contains(Value.Installation.Game.Domain))
+            throw new Exception("Tool does not support this game");
+        
         await Apply(token);
         await tool.Execute(Value);
         var modName = $"{tool.Name} Generated Files";

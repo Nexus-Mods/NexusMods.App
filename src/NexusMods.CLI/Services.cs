@@ -24,6 +24,7 @@ public static class Services
         services.AddSingleton<IOptionParser<LoadoutMarker>, LoadoutMarkerParser>();
         services.AddSingleton<IOptionParser<Version>, VersionParser>();
         services.AddSingleton<IOptionParser<Loadout>, LoadoutParser>();
+        services.AddSingleton<IOptionParser<ITool>, ToolParser>();
         services.AddSingleton<TemporaryFileManager>();
 
         services.AddVerb<AnalyzeArchive>(AnalyzeArchive.Definition)
@@ -38,8 +39,10 @@ public static class Services
             .AddVerb<ListManagedGames>(ListManagedGames.Definition)
             .AddVerb<ListModContents>(ListModContents.Definition)
             .AddVerb<ListMods>(ListMods.Definition)
+            .AddVerb<ListTools>(ListTools.Definition)
             .AddVerb<ManageGame>(ManageGame.Definition)
-            .AddVerb<Rename>(Rename.Definition);
+            .AddVerb<Rename>(Rename.Definition)
+            .AddVerb<RunTool>(RunTool.Definition);
         
         services.AddAllSingleton<IResource, IResource<IExtractor, Size>>(s => new Resource<IExtractor, Size>("File Extraction"));
         services.AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(s => new Resource<FileContentsCache, Size>("File Analysis"));

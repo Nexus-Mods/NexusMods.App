@@ -7,12 +7,14 @@ namespace NexusMods.Games.RedEngine;
 
 public class Cyberpunk2077 : AGame, ISteamGame, IGogGame, IEpicGame
 {
+    public static readonly GameDomain StaticDomain = GameDomain.From("cyberpunk2077");
+
     public Cyberpunk2077(ILogger<Cyberpunk2077> logger, IEnumerable<IGameLocator> gameLocators) : base(logger, gameLocators)
     {
     }
 
     public override string Name => "Cyberpunk 2077";
-    public override GameDomain Domain => GameDomain.From("cyberpunk2077");
+    public override GameDomain Domain => StaticDomain;
     public override GamePath PrimaryFile => new(GameFolderType.Game, @"bin\x64\Cyberpunk2077.exe");
     protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(IGameLocator locator, GameLocatorResult installation)
     {
