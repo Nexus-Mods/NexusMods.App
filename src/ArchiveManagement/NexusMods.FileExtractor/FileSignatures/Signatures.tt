@@ -3,8 +3,10 @@
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="System.IO" #>
 <#@ import namespace="System.Linq" #>
-
+using NexusMods.Paths;
 <#
+
+
     byte[] StringToByteArray(string hex)
     {
         return Enumerable.Range(0, hex.Length)
@@ -13,9 +15,9 @@
             .ToArray();
     }
 
-    var files = new[] {"bsasigs.txt"};
+    var magicFiles = new[] {"magic_sigs.txt"};
     var digits = new HashSet<char>("0123456789".ToArray());
-    var rows = files
+    var magicRows = magicFiles
         .SelectMany(file => File.ReadAllLines(Path.Combine("./Definitions/", file)))
         .Select(row => row.Split(','))
         .SelectMany(row => row[2].Split('|').Select(e => new
@@ -24,11 +26,24 @@
             Sig = row[1].Trim().Split(' ').Select(b => "0x" + b),
             Description = row[0]
         }));
+    
+    var extraFiles = new [] {"mundane_sigs.txt"};
+    var mundaneRows = extraFiles
+        .SelectMany(file => File.ReadAllLines(Path.Combine("./Definitions/", file)))
+        .Select(row => row.Split(','))
+        .Select(row => new
+        {
+            EnumName = row[1],
+            Description = row[0],
+            Extension = row[2]
+        });
 #>
 namespace NexusMods.FileExtractor.FileSignatures {
 
     public enum FileType { <#
-    foreach (var nrow in rows.Select(r => r.EnumName).Distinct().OrderBy(r => r))
+    foreach (var nrow in magicRows.Select(r => r.EnumName)
+                 .Concat(mundaneRows.Select(m => m.EnumName))
+                 .Distinct().OrderBy(r => r))
     {
 #>
       <#= nrow #>,
@@ -42,7 +57,7 @@ namespace NexusMods.FileExtractor.FileSignatures {
 
     public static (FileType, byte[])[] Signatures = {
     <#
-    foreach (var row in rows)
+    foreach (var row in magicRows)
     {
 #>
         // <#= row.Description #>
@@ -52,4 +67,20 @@ namespace NexusMods.FileExtractor.FileSignatures {
     }
 #>
 
-    };}}
+    };
+
+    public static (FileType, Extension)[] Extensions = {
+        <#
+    foreach (var row in mundaneRows)
+    {
+#>
+        // <#= row.Description #>
+        (FileType.<#= row.EnumName.Trim() #>, new Extension("<#= row.Extension.Trim() #>")),
+
+        <#
+    }
+#>
+
+    };
+
+}}

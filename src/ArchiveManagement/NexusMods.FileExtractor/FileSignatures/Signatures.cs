@@ -1,11 +1,13 @@
-﻿
+﻿using NexusMods.Paths;
 namespace NexusMods.FileExtractor.FileSignatures {
 
     public enum FileType {        BTAR,
            CreationEnginePlugin,
+           INI,
            MorrowindBSA,
            NIF,
            TES4,
+           TXT,
           _7Z,
           BA2,
           BSA,
@@ -81,4 +83,16 @@ namespace NexusMods.FileExtractor.FileSignatures {
         (FileType.FDF, new byte[] {0x25, 0x50, 0x44, 0x46}),
 
         
-    };}}
+    };
+
+    public static (FileType, Extension)[] Extensions = {
+                // Ini Configuration File
+        (FileType.INI, new Extension(".ini")),
+
+                // Text File
+        (FileType.TXT, new Extension(".txt")),
+
+        
+    };
+
+}}

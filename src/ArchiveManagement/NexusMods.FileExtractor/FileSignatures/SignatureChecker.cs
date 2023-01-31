@@ -1,9 +1,14 @@
-﻿namespace NexusMods.FileExtractor.FileSignatures;
+﻿using NexusMods.Paths;
+
+namespace NexusMods.FileExtractor.FileSignatures;
 
 public class SignatureChecker
 {
     private readonly int _maxLength;
     private readonly (FileType, byte[])[] _signatures;
+
+    private static Dictionary<Extension, FileType> _extensions =
+        Definitions.Extensions.ToDictionary(x => x.Item2, x => x.Item1);
 
     public SignatureChecker(params FileType[] types)
     {
@@ -30,5 +35,10 @@ public class SignatureChecker
     private static bool AreEqual(IReadOnlyList<byte> a, IEnumerable<byte> b)
     {
         return !b.Where((t, i) => a[i] != t).Any();
+    }
+    
+    public bool TryGetFileType(Extension extension, out FileType fileType)
+    {
+        return _extensions.TryGetValue(extension, out fileType);
     }
 }

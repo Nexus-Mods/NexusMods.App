@@ -60,7 +60,7 @@ public class FileContentsCache
     private async Task<AnalyzedFile> AnalyzeFileInner(IStreamFactory sFn, CancellationToken token, int level, Hash parent, RelativePath parentPath)
     {
         Hash hash = default;
-        var sigs = Array.Empty<FileType>();
+        var sigs = new List<FileType>();
         var analysisData = new List<IFileAnalysisData>();
         {
             await using var hashStream = await sFn.GetStream();
@@ -86,9 +86,11 @@ public class FileContentsCache
             if (found is AnalyzedFile af) return af;
             
             hashStream.Position = 0;
-            sigs = (await _sigs.MatchesAsync(hashStream)).ToArray();
-
-
+            sigs = (await _sigs.MatchesAsync(hashStream)).ToList();
+            
+            if (parentPath != default && _sigs.TryGetFileType(parentPath.Extension, out var type))
+                sigs.Add(type);
+            
             foreach (var sig in sigs)
             {
                 foreach (var analyzer in _analyzers[sig])
@@ -125,7 +127,7 @@ public class FileContentsCache
             {
                 Hash = hash,
                 Size = sFn.Size,
-                FileTypes = sigs,
+                FileTypes = sigs.ToArray(),
                 AnalysisData = analysisData.ToImmutableList(),
                 Contents = new EntityDictionary<RelativePath, AnalyzedFile>(_store, children),
                 Store = _store
@@ -137,7 +139,7 @@ public class FileContentsCache
             {
                 Hash = hash,
                 Size = sFn.Size,
-                FileTypes = sigs,
+                FileTypes = sigs.ToArray(),
                 AnalysisData = analysisData.ToImmutableList(),
                 Store = _store
             };

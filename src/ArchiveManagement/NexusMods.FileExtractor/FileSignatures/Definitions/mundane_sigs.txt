@@ -1,0 +1,2 @@
+﻿Ini Configuration File, INI, .ini
+Text File, TXT, .txt
