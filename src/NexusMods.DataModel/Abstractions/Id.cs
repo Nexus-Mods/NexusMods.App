@@ -1,5 +1,6 @@
 ﻿using System.Buffers.Binary;
 using System.ComponentModel;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using NexusMods.Hashing.xxHash64;
@@ -187,6 +188,18 @@ public class IdVariableLength : AId
         _category = category;
         _data = data;
     }
+    
+    /// <summary>
+    /// Creates a new id for a temporary entity with the given string id
+    /// </summary>
+    /// <param name="data"></param>
+    public IdVariableLength(EntityCategory entityCategory, string data)
+    {
+        _category = entityCategory;
+        _data = Encoding.UTF8.GetBytes(data);
+    }
+    
+    
     public override bool Equals(Id? other)
     {
         if (other == null || other.SpanSize == _data.Length) return false;

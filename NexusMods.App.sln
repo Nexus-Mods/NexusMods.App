@@ -78,6 +78,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.RedEngine",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.RedEngine.Tests", "tests\Games\NexusMods.Games.RedEngine.Tests\NexusMods.Games.RedEngine.Tests.csproj", "{B8BA0738-FE06-4CC7-B46D-DF283871F192}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.TestHarness", "src\Games\NexusMods.Games.TestHarness\NexusMods.Games.TestHarness.csproj", "{060613B7-92CA-418B-99CC-CA30C0D977DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -212,6 +214,10 @@ Global
 		{B8BA0738-FE06-4CC7-B46D-DF283871F192}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8BA0738-FE06-4CC7-B46D-DF283871F192}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8BA0738-FE06-4CC7-B46D-DF283871F192}.Release|Any CPU.Build.0 = Release|Any CPU
+		{060613B7-92CA-418B-99CC-CA30C0D977DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{060613B7-92CA-418B-99CC-CA30C0D977DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{060613B7-92CA-418B-99CC-CA30C0D977DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{060613B7-92CA-418B-99CC-CA30C0D977DB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9025900A-5342-4EB3-97C8-A9F067929879} = {B93AF89E-9ED7-4FD0-B58E-688AA178AB53}
@@ -239,5 +245,6 @@ Global
 		{1D2258DF-12C5-454D-9E30-6B2ECABD9E56} = {CE2EFB0A-22CA-4F3F-B6AB-9E264FD4C4E7}
 		{A9C1152E-6253-41FB-99C6-506F1C755032} = {B95A2142-2872-4FFD-BAB2-596373401461}
 		{B8BA0738-FE06-4CC7-B46D-DF283871F192} = {B95A2142-2872-4FFD-BAB2-596373401461}
+		{060613B7-92CA-418B-99CC-CA30C0D977DB} = {B95A2142-2872-4FFD-BAB2-596373401461}
 	EndGlobalSection
 EndGlobal

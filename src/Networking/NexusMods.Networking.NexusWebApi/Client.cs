@@ -38,6 +38,39 @@ public class Client
         return await SendAsync<DownloadLink[]>(msg, token);
     }
 
+    public enum PastTime
+    {
+        Day,
+        Week,
+        Month,
+    }
+    
+    public async Task<Response<ModUpdate[]>> ModUpdates(GameDomain domain, PastTime time, CancellationToken token = default)
+    {
+        var timeString = time switch
+        {
+            PastTime.Day => "1d",
+            PastTime.Week => "1w",
+            PastTime.Month => "1m",
+            _ => throw new ArgumentOutOfRangeException(nameof(time), time, null)
+        };
+        
+        var msg = await _factory.Create(HttpMethod.Get, new Uri(
+            $"https://api.nexusmods.com/v1/games/{domain}/mods/updated.json?period={timeString}"));
+
+        return await SendAsync<ModUpdate[]>(msg, token: token);
+
+    }
+    
+    
+
+    public async Task<Response<ModFiles>> ModFiles(GameDomain staticDomain, ModId modModId, CancellationToken token = default)
+    {
+        var msg = await _factory.Create(HttpMethod.Get, new Uri(
+            $"https://api.nexusmods.com/v1/games/{staticDomain}/mods/{modModId}/files.json"));
+        return await SendAsync<ModFiles>(msg, token);
+    }
+
     private async Task<Response<T>> SendAsync<T>(HttpRequestMessage message,
         CancellationToken token = default)
     {

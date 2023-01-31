@@ -10,7 +10,9 @@ namespace NexusMods.FileExtractor.FileSignatures {
           BA2,
           BSA,
           DDS,
+          FDF,
           GZ,
+          PDF,
           RAR,
           RAR_NEW,
           RAR_OLD,
@@ -71,6 +73,12 @@ namespace NexusMods.FileExtractor.FileSignatures {
 
                 // TES4 Plugin
         (FileType. TES4, new byte[] {0x54, 0x45, 0x53, 0x34}),
+
+                // PDF file
+        (FileType.PDF, new byte[] {0x25, 0x50, 0x44, 0x46}),
+
+                // PDF file
+        (FileType.FDF, new byte[] {0x25, 0x50, 0x44, 0x46}),
 
         
     };}}
