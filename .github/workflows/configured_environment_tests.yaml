@@ -15,6 +15,11 @@ jobs:
     name: Test ${{ matrix.project }} (${{ matrix.os }})
     runs-on: self-hosted
     
+    environment: test
+    
+    env:
+      NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+    
     strategy:
       matrix:
         os: [Windows]

@@ -41,7 +41,7 @@ public struct RelativePath : IPath, IEquatable<RelativePath>, IComparable<Relati
         paths[^1] = newName;
         return new RelativePath(paths);
     }
-
+    
     internal static string ReplaceExtension(string oldName, Extension newExtension)
     {
         var oldExtLength = oldName.LastIndexOf(".", StringComparison.CurrentCultureIgnoreCase);

@@ -26,12 +26,17 @@ public class LoadoutManager
     private readonly IModInstaller[] _installers;
     private readonly FileContentsCache _analyzer;
     private readonly IEnumerable<IFileMetadataSource> _metadataSources;
+    private readonly ILookup<GameDomain,ITool> _tools;
 
     public LoadoutManager(ILogger<LoadoutManager> logger,
         IResource<LoadoutManager, Size> limiter,
         ArchiveManager archiveManager,
         IEnumerable<IFileMetadataSource> metadataSources,
-        IDataStore store, FileHashCache fileHashCache, IEnumerable<IModInstaller> installers, FileContentsCache analyzer)
+        IDataStore store, 
+        FileHashCache fileHashCache, 
+        IEnumerable<IModInstaller> installers, 
+        FileContentsCache analyzer,
+        IEnumerable<ITool> tools)
     {
         _logger = logger;
         Limiter = limiter;
@@ -42,6 +47,8 @@ public class LoadoutManager
         _metadataSources = metadataSources;
         _installers = installers.ToArray();
         _analyzer = analyzer;
+        _tools = tools.SelectMany(t => t.Domains.Select(d => (Tool: t, Domain: d)))
+            .ToLookup(t => t.Domain, t => t.Tool);
     }
 
     public IResource<LoadoutManager,Size> Limiter { get; set; }
@@ -174,6 +181,11 @@ public class LoadoutManager
     public Loadout Get(LoadoutId id)
     {
         return _root.Value.Lists[id];
+    }
+
+    public IEnumerable<ITool> Tools(GameDomain game)
+    {
+        return _tools[game];
     }
 
     public void ReplaceFiles(LoadoutId id, List<(AModFile File, Mod Mod)> generated, string message)

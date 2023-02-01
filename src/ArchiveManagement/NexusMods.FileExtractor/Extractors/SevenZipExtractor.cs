@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using System.Text;
 using CliWrap;
 using CliWrap.Exceptions;
 using Microsoft.Extensions.Logging;
@@ -57,29 +58,40 @@ public class SevenZipExtractor : IExtractor
             var lastPercent = 0;
             job.Size = totalSize;
 
-            var result = await process.WithArguments(
-                new[]
-                {
-                    "x", "-bsp1", "-y", $"-o{dest}", source.ToString(), "-mmt=off"
-                }, true)
-                .WithStandardOutputPipe(PipeTarget.ToDelegate(line =>
-                {
-                    if (line.Length <= 4 || line[3] != '%') return;
+            var errors = new StringBuilder();
+            try
+            {
 
-                    if (!int.TryParse(line[..3], out var percentInt)) return;
+                var result = await process.WithArguments(
+                        new[]
+                        {
+                            "x", "-bsp1", "-y", $"-o{dest}", source.ToString(), "-mmt=off"
+                        }, true)
+                    .WithStandardOutputPipe(PipeTarget.ToDelegate(line =>
+                    {
+                        if (line.Length <= 4 || line[3] != '%') return;
 
-                    var oldPosition = lastPercent == 0 ? Size.Zero : totalSize / 100 * lastPercent;
-                    var newPosition = percentInt == 0 ? Size.Zero: totalSize / 100 * percentInt;
-                    var throughput = newPosition - oldPosition;
-                    job.ReportNoWait(throughput);
-                    
-                    lastPercent = percentInt;
-                }))
-                .ExecuteAsync();
+                        if (!int.TryParse(line[..3], out var percentInt)) return;
 
-            if (result.ExitCode != 0)
-                throw new Exception("While executing 7zip");
+                        var oldPosition = lastPercent == 0 ? Size.Zero : totalSize / 100 * lastPercent;
+                        var newPosition = percentInt == 0 ? Size.Zero : totalSize / 100 * percentInt;
+                        var throughput = newPosition - oldPosition;
+                        job.ReportNoWait(throughput);
 
+                        lastPercent = percentInt;
+                    }))
+                    .WithStandardErrorPipe(PipeTarget.ToStringBuilder(errors))
+                    .ExecuteAsync();
+                
+                if (result.ExitCode != 0)
+                    throw new Exception("While executing 7zip");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "While executing 7zip: {Errors}", errors);
+                throw;
+            }
+            
             job.Dispose();
             var results = await dest.Path.EnumerateFiles()
                 .SelectAsync(async f =>

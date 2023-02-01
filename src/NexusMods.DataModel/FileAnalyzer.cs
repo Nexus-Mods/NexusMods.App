@@ -60,7 +60,7 @@ public class FileContentsCache
     private async Task<AnalyzedFile> AnalyzeFileInner(IStreamFactory sFn, CancellationToken token, int level, Hash parent, RelativePath parentPath)
     {
         Hash hash = default;
-        var sigs = Array.Empty<FileType>();
+        var sigs = new List<FileType>();
         var analysisData = new List<IFileAnalysisData>();
         {
             await using var hashStream = await sFn.GetStream();
@@ -86,9 +86,11 @@ public class FileContentsCache
             if (found is AnalyzedFile af) return af;
             
             hashStream.Position = 0;
-            sigs = (await _sigs.MatchesAsync(hashStream)).ToArray();
-
-
+            sigs = (await _sigs.MatchesAsync(hashStream)).ToList();
+            
+            if (parentPath != default && _sigs.TryGetFileType(parentPath.Extension, out var type))
+                sigs.Add(type);
+            
             foreach (var sig in sigs)
             {
                 foreach (var analyzer in _analyzers[sig])
@@ -101,15 +103,40 @@ public class FileContentsCache
         }
         
 
-        AnalyzedFile file;
-        
+        AnalyzedFile? file = null;
+
         if (await _extractor.CanExtract(sFn))
         {
+            file = await AnalyzeArchiveInner(sFn, level, hash, sigs, analysisData, token) ?? default;
+        }
+
+        file ??= new AnalyzedFile
+        {
+            Hash = hash,
+            Size = sFn.Size,
+            FileTypes = sigs.ToArray(),
+            AnalysisData = analysisData.ToImmutableList(),
+            Store = _store
+        };
+
+        if (parent != Hash.Zero) 
+            EnsureReverseIndex(hash, parent, parentPath);
+
+            
+        return file;
+    }
+
+    private async Task<AnalyzedFile?> AnalyzeArchiveInner(IStreamFactory sFn, int level, Hash hash, List<FileType> sigs,
+        List<IFileAnalysisData> analysisData, CancellationToken token)
+    {
+        try
+        {
+            AnalyzedFile file;
             await using var tmpFolder = _manager.CreateFolder();
             List<KeyValuePair<RelativePath, Id>> children;
             {
                 await _extractor.ExtractAll(sFn, tmpFolder, token);
-                children = await _limiter.ForEachFile(tmpFolder, 
+                children = await _limiter.ForEachFile(tmpFolder,
                         async (job, entry) =>
                         {
                             var relPath = entry.Path.RelativeTo(tmpFolder.Path);
@@ -125,28 +152,18 @@ public class FileContentsCache
             {
                 Hash = hash,
                 Size = sFn.Size,
-                FileTypes = sigs,
+                FileTypes = sigs.ToArray(),
                 AnalysisData = analysisData.ToImmutableList(),
                 Contents = new EntityDictionary<RelativePath, AnalyzedFile>(_store, children),
                 Store = _store
             };
+            return file;
         }
-        else
+        catch (Exception ex)
         {
-            file = new AnalyzedFile
-            {
-                Hash = hash,
-                Size = sFn.Size,
-                FileTypes = sigs,
-                AnalysisData = analysisData.ToImmutableList(),
-                Store = _store
-            };
+            _logger.LogError(ex, "Error extracting archive {Path}, skipping analyis", sFn.Name);
+            return null;
         }
-
-        if (parent != Hash.Zero) 
-            EnsureReverseIndex(hash, parent, parentPath);
-            
-        return file;
     }
 
     private void EnsureReverseIndex(Hash hash, Hash parent, RelativePath parentPath)

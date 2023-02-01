@@ -54,7 +54,7 @@ public class ArchiveManager
         return PathFor(hash).Open(FileMode.Open, FileAccess.Read, FileShare.Read);
     }
 
-    private AbsolutePath PathFor(Hash hash)
+    public AbsolutePath PathFor(Hash hash)
     {
         var rel = NameForHash(hash);
         return _locations.Select(r => r.Join(rel))
