@@ -24,6 +24,7 @@ public class Sorter
             var fit = indexed.Values.Where(v => used.IsSupersetOf(v.After));
             if (comparer != null)
                 fit = fit.OrderBy(x => idSelector(x.Item), comparer);
+            
             var found = false;
 
             foreach (var (_, item) in fit)
