@@ -103,15 +103,40 @@ public class FileContentsCache
         }
         
 
-        AnalyzedFile file;
-        
+        AnalyzedFile? file = null;
+
         if (await _extractor.CanExtract(sFn))
         {
+            file = await AnalyzeArchiveInner(sFn, level, hash, sigs, analysisData, token) ?? default;
+        }
+
+        file ??= new AnalyzedFile
+        {
+            Hash = hash,
+            Size = sFn.Size,
+            FileTypes = sigs.ToArray(),
+            AnalysisData = analysisData.ToImmutableList(),
+            Store = _store
+        };
+
+        if (parent != Hash.Zero) 
+            EnsureReverseIndex(hash, parent, parentPath);
+
+            
+        return file;
+    }
+
+    private async Task<AnalyzedFile?> AnalyzeArchiveInner(IStreamFactory sFn, int level, Hash hash, List<FileType> sigs,
+        List<IFileAnalysisData> analysisData, CancellationToken token)
+    {
+        try
+        {
+            AnalyzedFile file;
             await using var tmpFolder = _manager.CreateFolder();
             List<KeyValuePair<RelativePath, Id>> children;
             {
                 await _extractor.ExtractAll(sFn, tmpFolder, token);
-                children = await _limiter.ForEachFile(tmpFolder, 
+                children = await _limiter.ForEachFile(tmpFolder,
                         async (job, entry) =>
                         {
                             var relPath = entry.Path.RelativeTo(tmpFolder.Path);
@@ -132,23 +157,13 @@ public class FileContentsCache
                 Contents = new EntityDictionary<RelativePath, AnalyzedFile>(_store, children),
                 Store = _store
             };
+            return file;
         }
-        else
+        catch (Exception ex)
         {
-            file = new AnalyzedFile
-            {
-                Hash = hash,
-                Size = sFn.Size,
-                FileTypes = sigs.ToArray(),
-                AnalysisData = analysisData.ToImmutableList(),
-                Store = _store
-            };
+            _logger.LogError(ex, "Error extracting archive {Path}, skipping analyis", sFn.Name);
+            return null;
         }
-
-        if (parent != Hash.Zero) 
-            EnsureReverseIndex(hash, parent, parentPath);
-            
-        return file;
     }
 
     private void EnsureReverseIndex(Hash hash, Hash parent, RelativePath parentPath)
