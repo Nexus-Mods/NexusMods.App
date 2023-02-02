@@ -44,13 +44,14 @@ public struct RelativePath : IPath, IEquatable<RelativePath>, IComparable<Relati
     
     internal static string ReplaceExtension(string oldName, Extension newExtension)
     {
-        var oldExtLength = oldName.LastIndexOf(".", StringComparison.CurrentCultureIgnoreCase);
-        if (oldExtLength < 0)
-            oldExtLength = 0;
-        else
-            oldExtLength++;
+        var nameLength = oldName.LastIndexOf(".", StringComparison.CurrentCultureIgnoreCase);
+        if (nameLength < 0)
+        {
+            // no file extension
+            nameLength = oldName.Length;
+        }
 
-        var newName = oldName[..^oldExtLength] + newExtension;
+        var newName = oldName.Substring(0, nameLength) + newExtension;
         return newName;
     }
 
