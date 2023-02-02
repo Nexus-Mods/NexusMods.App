@@ -101,7 +101,6 @@ public class Sorter
         var sorted = new List<TItem>(dict.Count);
         var used = new HashSet<TId>(dict.Count);
         
-        // Note: Dictionary does not expose this API publicly so a cast here is needed.
         var values = GC.AllocateUninitializedArray<(TId[] After, TItem Item)>(dict.Count);
         var parallelOptions = new ParallelOptions();
         var parallelState = new ParallelIsSuperset<TId, TItem>()
