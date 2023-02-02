@@ -40,7 +40,7 @@ public class LoadoutMarker : IMarker<Loadout>
     {
         var list = _manager.Get(_id);
         var projected = new Dictionary<GamePath, (AModFile File, Mod Mod)>();
-        var mods = Sorter.Sort<Mod, ModId>(list.Mods.Values, i => i.Id, m => m.SortRules);
+        var mods = Sorter.SortWithEnumerable<Mod, ModId>(list.Mods.Values, i => i.Id, m => m.SortRules);
         foreach (var mod in mods)
         {
             foreach (var file in mod.Files.Values)

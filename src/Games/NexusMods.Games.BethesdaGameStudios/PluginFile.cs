@@ -29,8 +29,8 @@ public record PluginFile : AGeneratedFile
             .Select(f => f.File)
             .Where(f => SkyrimSpecialEdition.PluginExtensions.Contains(f.To.Extension))
             .ToArray();
-        var results = Sorter.Sort(pluginFiles, 
-            i => i.To.FileName, 
+        var results = Sorter.Sort<AModFile, RelativePath, AModFile[]>(pluginFiles, 
+            i => i.To.FileName,
             i => GenerateRules(pluginFiles, i),
             RelativePath.Comparer);
 

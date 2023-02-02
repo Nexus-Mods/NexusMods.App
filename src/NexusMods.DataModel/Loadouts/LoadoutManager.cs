@@ -59,9 +59,9 @@ public class LoadoutManager
             Id = ModId.New(),
             Name = "Game Files",
             Files = new EntityDictionary<ModFileId, AModFile>(_store, gameFiles.Select(g => new KeyValuePair<ModFileId, Id>(g.Id, g.DataStoreId))),
-            SortRules = ImmutableHashSet<ISortRule<Mod, ModId>>.Empty.Add(new First<Mod, ModId>()),
             Store = _store
         };
+        mod.SortRules.Add(new First<Mod, ModId>());
         
         var n = Loadout.Empty(_store) with
         {

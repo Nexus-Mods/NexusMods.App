@@ -21,7 +21,7 @@ public class SortTests
             }},
         };
         
-        Sorter.Sort(data, x => x.Id, x => x.Rules)
+        Sorter.Sort<Item, string>(data, x => x.Id, x => x.Rules)
             .Select(i => i.Id)
             .Should().BeEquivalentTo("A", "B");
     }
@@ -42,7 +42,7 @@ public class SortTests
             }}
         };
         
-        Sorter.Sort(data, x => x.Id, x => x.Rules)
+        Sorter.Sort<Item, string>(data, x => x.Id, x => x.Rules)
             .Select(i => i.Id)
             .Should().BeEquivalentTo("A", "B", "C");
     }
@@ -90,7 +90,7 @@ public class SortTests
 
         rules = Shuffle(rules).ToList();
         
-        Sorter.Sort(rules, x => x.Id, x => x.Rules)
+        Sorter.Sort<Item, string>(rules, x => x.Id, x => x.Rules)
             .Select(i => i.Id)
             .Should().BeEquivalentTo(letters.Concat(numbers));
     }

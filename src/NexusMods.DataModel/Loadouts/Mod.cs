@@ -13,7 +13,5 @@ public record Mod : Entity, IHasEntityId<ModId>
     public required EntityDictionary<ModFileId, AModFile> Files { get; init; }
     public required string Name { get; init; }
     public override EntityCategory Category => EntityCategory.Loadouts;
-    
-    public ImmutableHashSet<ISortRule<Mod, ModId>> SortRules { get; init; } = ImmutableHashSet<ISortRule<Mod, ModId>>.Empty;
-    
+    public ImmutableList<ISortRule<Mod, ModId>> SortRules { get; init; } = ImmutableList<ISortRule<Mod, ModId>>.Empty;
 }
