@@ -69,6 +69,9 @@ public class AbsolutePathTests
             ((AbsolutePath)@"/foo/bar.dds").ReplaceExtension(new Extension(".zip")));
         Assert.Equal((AbsolutePath)@"/foo\bar.zip",
             ((AbsolutePath)@"/foo\bar").ReplaceExtension(new Extension(".zip")));
+        Assert.Equal(
+            (AbsolutePath)@"E:\\foo\\bar\\more-than-three-letters.foo",
+            ((AbsolutePath)@"E:\\foo\\bar\\more-than-three-letters.bar").ReplaceExtension(new Extension(".foo")));
     }
 
     [Fact]

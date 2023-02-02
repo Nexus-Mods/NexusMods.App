@@ -160,8 +160,8 @@ public class RelativePathTests
     [Fact]
     public void CanReplaceExtension()
     {
-        var pathA = @"foo\bar.zip".ToRelativePath();
-        var pathB = @"foo\bar.json".ToRelativePath();
+        var pathA = @"foo\dont_always_use_three_letter_names.zip".ToRelativePath();
+        var pathB = @"foo\dont_always_use_three_letter_names.json".ToRelativePath();
         Assert.Equal(pathB, pathA.ReplaceExtension(Ext.Json));
     }
 
