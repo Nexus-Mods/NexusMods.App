@@ -32,7 +32,7 @@ jobs:
         run: dotnet clean
       
       - name: Tests
-        run: dotnet test --filter RequiresGameInstalls!=True&RequiresNetworking!=True /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+        run: dotnet test --filter RequiresGameInstalls!=True\&RequiresNetworking!=True /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
       
       - uses: codecov/codecov-action@v3
         with:
