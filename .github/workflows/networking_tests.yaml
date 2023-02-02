@@ -1,4 +1,4 @@
-﻿name: Clean Environment Tests
+﻿name: Networking Tests
 
 on:
   schedule:
