@@ -81,7 +81,7 @@ public class Sorter
         
         Parallel.ForEach(partitioner, tuple =>
         {
-            var idBuffer  = new HashSet<TId>(tuple.Item2 - tuple.Item1);
+            var idBuffer = new HashSet<TId>(tuple.Item2 - tuple.Item1);
             
             // Work on our slice.
             for (int x = tuple.Item1; x < tuple.Item2; x++)
@@ -89,8 +89,6 @@ public class Sorter
                 var item = items[x];
                 var rules = RefineRules(item, idSelector, ruleFn, items, idBuffer);
                 indexed[idSelector(item)] = (rules, item);
-                
-                idBuffer.Clear(); // prepare for reuse
             }
         });
 
@@ -102,19 +100,38 @@ public class Sorter
         
         // Note: Dictionary does not expose this API publicly so a cast here is needed.
         var values = GC.AllocateUninitializedArray<(TId[] After, TItem Item)>(dict.Count);
+        var parallelOptions = new ParallelOptions();
+        var parallelState = new ParallelIsSuperset<TId, TItem>()
+        {
+            values = values,
+            used = used
+        };
+        
+        var doWork = parallelState.DoWork;
+        const int MultiThreadCutoff = 2000; // Based on benching with 5900X.
+        const int MinOperationsPerThread = 666;
         
         while (dict.Count > 0)
         {
             // Copy to values (no alloc), then filter them in-place
             // Note: For Span<T>, foreach is lowered to for; there is no enumerator allocation.
             dict.Values.CopyTo(values, 0);
-            var valuesSlice = values.AsSpan(0, dict.Count);
-            
             int superSetSize = 0;
-            foreach (var value in valuesSlice)
+            var valuesSlice = values.AsSpan(0, dict.Count);
+            if (dict.Count > MultiThreadCutoff)
             {
-                if (IsSupersetOf(used, value.After))
-                    values[superSetSize++] = value;
+                parallelOptions.MaxDegreeOfParallelism = Math.Max(dict.Count / MinOperationsPerThread, 1);
+                parallelState.superSetSize = 0;
+                Parallel.ForEach(Partitioner.Create(0, valuesSlice.Length), parallelOptions, doWork);
+                superSetSize = parallelState.superSetSize;
+            }
+            else
+            {
+                foreach (var value in valuesSlice)
+                {
+                    if (IsSupersetOf(used, value.After))
+                        values[superSetSize++] = value;
+                }
             }
 
             // Slice to our superset.
@@ -154,6 +171,7 @@ public class Sorter
         HashSet<TId> idsBuffer)
     where TId : IEquatable<TId>
     {
+        idsBuffer.Clear();
         bool haveFirst = false;
         var rulesForThisItem = ruleFn(thisItem);
         
@@ -213,18 +231,41 @@ public class Sorter
         return idsBuffer.ToArray();
     }
 
+    /// <summary>
+    /// Holds state for the delegate invoked for parallel computation of IsSupersetOf.
+    /// To allow multiple calls to Parallel.For without expensive captures.
+    /// </summary>
+    private class ParallelIsSuperset<TId, TItem>
+    {
+        internal HashSet<TId> used;
+        internal (TId[] After, TItem Item)[] values;
+        internal int superSetSize;
+
+        internal void DoWork(Tuple<int, int> tuple)
+        {
+            // Work on our slice.
+            var val = values;
+            var used = this.used;
+            for (int x = tuple.Item1; x < tuple.Item2; x++)
+            {
+                var value = val[x];
+                if (!IsSupersetOf(used, value.After))
+                    continue;
+
+                lock (this)
+                    val[superSetSize++] = value;
+            }
+        }
+    }
+
     #region Modified Runtime Code for No Alloc
     /// <summary>Determines whether a <see cref="HashSet{T}"/> object is a proper superset of the specified collection.</summary>
     /// <param name="other">The collection to compare to the current <see cref="HashSet{T}"/> object.</param>
     /// <returns>true if the <see cref="HashSet{T}"/> object is a superset of <paramref name="other"/>; otherwise, false.</returns>
     public static bool IsSupersetOf<T>(HashSet<T> set, T[] other)
     {
-        // Try to fall out early based on counts.
-        if (other is not ICollection<T> otherAsCollection) 
-            return ContainsAllElements(set, other);
-        
         // If other is the empty set then this is a superset.
-        if (otherAsCollection.Count == 0)
+        if (other.Length == 0)
             return true;
 
         return ContainsAllElements(set, other);
