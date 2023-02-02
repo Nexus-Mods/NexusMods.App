@@ -1,16 +1,19 @@
-name: Clean Environment Tests
+﻿name: Clean Environment Tests
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  schedule:
+    - cron: '0 12 * * *'
 
 jobs:
   build:
     
     name: Test ${{ matrix.project }} (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    
+    environment: test
+    
+    env:
+      NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
     
     strategy:
       matrix:
@@ -23,18 +26,18 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '7.0.x'
-          
+
       - name: Set Permissions
         if: runner.os != 'Windows'
         run: chmod -R +x src/ArchiveManagement/NexusMods.FileExtractor/Extractors
 
-      - name: Clean
-        run: dotnet clean
-      
       - name: Tests
-        run: dotnet test --filter "RequiresGameInstalls!=True\&RequiresNetworking!=True" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
-      
+        run: dotnet clean
+
+      - name: Tests
+        run: dotnet test --filter RequiresNetworking=True /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+
       - uses: codecov/codecov-action@v3
         with:
-          flags: clean_environment_tests, ${{runner.os}}
+          flags: networking_tests, ${{runner.os}}
           verbose: true 

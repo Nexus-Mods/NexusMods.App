@@ -4,6 +4,7 @@ using NexusMods.Paths;
 
 namespace NexusMods.Networking.HttpDownloader.Tests;
 
+
 public class HttpDownloaderTests
 {
     private readonly IHttpDownloader _httpDownloader;
@@ -18,6 +19,7 @@ public class HttpDownloaderTests
     }
     
     [Fact]
+    [Trait("RequiresNetworking", "True")]
     public async Task CanDownloadFromExternalSource()
     {
         await using var path = _temporaryFileManager.CreateFile();

@@ -3,6 +3,7 @@ using FluentAssertions;
 
 namespace NexusMods.Networking.NexusWebApi.Tests;
 
+[Trait("RequiresNetworking", "True")]
 public class ClientTests
 {
     private readonly Client _client;
