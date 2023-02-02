@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using NexusMods.DataModel.Sorting.Rules;
 
@@ -95,6 +96,8 @@ public class Sorter
         // This copy is necessary because ConcurrentDictionary does not have required APIs
         // for fast value access, and that bottlenecks us. No better option without custom dict.
         var dict = new Dictionary<TId, (TId[] After, TItem Item)>(indexed);
+        int currentPrimeIndex = GetRuntimePrimeIndex(dict.Count);
+        int prevPrime = RuntimePrimes[--currentPrimeIndex];
         var sorted = new List<TItem>(dict.Count);
         var used = new HashSet<TId>(dict.Count);
         
@@ -114,8 +117,7 @@ public class Sorter
         while (dict.Count > 0)
         {
             // Copy to values (no alloc), then filter them in-place
-            // Note: For Span<T>, foreach is lowered to for; there is no enumerator allocation.
-            dict.Values.CopyTo(values, 0);
+            dict.Values.CopyTo(values, 0); // <= Bottleneck. 
             int superSetSize = 0;
             var valuesSlice = values.AsSpan(0, dict.Count);
             if (dict.Count > MultiThreadCutoff)
@@ -127,6 +129,7 @@ public class Sorter
             }
             else
             {
+                // Note: For Span<T>, foreach is lowered to for; there is no enumerator allocation.
                 foreach (var value in valuesSlice)
                 {
                     if (IsSupersetOf(used, value.After))
@@ -155,6 +158,14 @@ public class Sorter
                 sorted.Add(value.Item);
                 used.Add(id);
                 dict.Remove(id, out _);
+            }
+            
+            // This is pretty stupid, but it's fastest way to work around the huge bottleneck pulling values.
+            // It'd be nice if the runtime had that one loop unrolled. :), maybe I'll PR it.
+            if (dict.Count < prevPrime)
+            {
+                dict = new Dictionary<TId, (TId[] After, TItem Item)>(dict);
+                prevPrime = RuntimePrimes[--currentPrimeIndex];
             }
 
             if (!found)
@@ -287,4 +298,27 @@ public class Sorter
         return true;
     }
     #endregion
+
+    // List of primes preferred by the runtime as dictionary sizes.
+    // These haven't changed in at least ~15 years.
+    private static int GetRuntimePrimeIndex(int value)
+    {
+        for (int x = 0; x < RuntimePrimes.Length; x++)
+        {
+            var prime = RuntimePrimes[x];
+            if (prime >= value)
+                return x;
+        }
+
+        return RuntimePrimes.Length - 1;
+    }
+    
+    private static readonly int[] RuntimePrimes =
+    {
+        -1, 107, 131, 163, 197, 239, 293, 353, 431, 521, 631, 761, 919, 1103, 1327, 1597, 1931, 2333, 2801, 
+        3371, 4049, 4861, 5839, 7013, 8419, 10103, 12143, 14591, 17519, 21023, 25229, 30293, 36353, 
+        43627, 52361, 62851, 75431, 90523, 108631, 130363, 156437, 187751, 225307, 270371, 324449, 
+        389357, 467237, 560689, 672827, 807403, 968897, 1162687, 1395263, 1674319, 2009191, 2411033, 
+        2893249, 3471899, 4166287, 4999559, 5999471, 7199369
+    };
 }
