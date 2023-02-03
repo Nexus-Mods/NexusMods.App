@@ -1,6 +1,6 @@
 ---
 name: Epic
-about: An epic is used to keep track of related issues.
+about: An epic is used to keep track of related issues
 title: ''
 labels: epic
 assignees: ''
