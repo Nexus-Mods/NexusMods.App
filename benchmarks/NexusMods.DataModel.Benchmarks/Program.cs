@@ -5,5 +5,3 @@ using NexusMods.DataModel.Benchmarks;
 using NexusMods.DataModel.Sorting;
 
 BenchmarkRunner.Run<Sorting>();
-
-//new Sorting().Sort();
