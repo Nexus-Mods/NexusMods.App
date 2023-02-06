@@ -1,12 +1,14 @@
 ﻿using BenchmarkDotNet.Attributes;
+using NexusMods.Benchmarks.Interfaces;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Sorting.Rules;
 
-namespace NexusMods.DataModel.Benchmarks;
+namespace NexusMods.Benchmarks.Benchmarks;
 
+[BenchmarkInfo("Sorting", "Tests how quickly it usually takes to sort the load order of X mods.")]
 [MemoryDiagnoser]
-public class Sorting
+public class Sorting : IBenchmark
 {
     private List<Item> _rules;
     
