@@ -27,7 +27,8 @@ We need a database of some sort to store key-value pairs in the application.
 For this benchmark we tested the put, get, and "havekey" routines for databases that meet the criteria of being multi-process.
 Tests were performed for other transaction modes besides "WAL" for Sqlite, but WAL was by far the fastest of all the options. 
 "SqlLiteScalar" is a variant of the SqlLite tests that uses tables with multiple columns instead of treating the database purely
-as a key value store.
+as a key value store. Keys in this example were 9 bytes long (common for our usecase) and values were 128 bytes long. There was 
+no significant performance differences using 9 bytes or 1028 byte values
 
 
 |  Method |          Type |           Mean |        Error |       StdDev |    Gen0 |    Gen1 |    Gen2 | Allocated |
