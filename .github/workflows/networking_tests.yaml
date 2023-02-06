@@ -1,4 +1,4 @@
-﻿name: Networking Tests
+name: Networking Tests
 
 on:
   schedule:

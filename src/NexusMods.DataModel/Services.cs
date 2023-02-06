@@ -35,7 +35,7 @@ public static class Services
         coll.AddSingleton<JsonConverter, EntityLinkConverterFactory>();
         coll.AddSingleton(typeof(EntityLinkConverter<>));
 
-        coll.AddSingleton<IDataStore>(s => new LMDBDataStore(baseFolder.Value.Join("DataModel_LMDB"), s));
+        coll.AddSingleton<IDataStore>(s => new SqliteDataStore(baseFolder.Value.Join("DataModel.sqlite"), s));
         coll.AddSingleton(s => new ArchiveManager(s.GetRequiredService<ILogger<ArchiveManager>>(),
             new []{baseFolder.Value.Join("Archives")},
             s.GetRequiredService<IDataStore>(),

@@ -53,7 +53,7 @@ public interface Id : IEquatable<Id>
             return new TwoId64(category, BinaryPrimitives.ReadUInt64BigEndian(span), BinaryPrimitives.ReadUInt64BigEndian(span[8..]));
         }
 
-        var mem = new Memory<byte>(new byte[span.Length - 1]);
+        var mem = new Memory<byte>(new byte[span.Length]);
         span.CopyTo(mem.Span);
         return new IdVariableLength(category, mem);
     }
@@ -73,6 +73,24 @@ public interface Id : IEquatable<Id>
         Span<byte> prefixSpan = stackalloc byte[prefix.SpanSize + 1];
         prefix.ToTaggedSpan(prefixSpan);
         return ourSpan.StartsWith(prefixSpan);
+    }
+
+    static Id? FromSpan(RootType category, byte[] bytes)
+    {
+        return category switch
+        {
+            RootType.Loadouts => FromSpan(EntityCategory.Loadouts, bytes),
+            RootType.Tests => FromSpan(EntityCategory.TestData, bytes),
+            _ => throw new ArgumentOutOfRangeException(nameof(category), category, null)
+        };
+    }
+
+    static Id CreateUnique(EntityCategory category)
+    {
+        var guid = Guid.NewGuid();
+        Span<byte> span = stackalloc byte[16];
+        guid.TryWriteBytes(span);
+        return new IdVariableLength(category, span.ToArray());
     }
 }
 

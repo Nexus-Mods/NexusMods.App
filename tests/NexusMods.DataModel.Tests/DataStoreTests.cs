@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -9,11 +10,14 @@ using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Tests;
 
-public class LMDBDataStoreTests : ADataModelTest<LMDBDataStoreTests>
+public class DataStoreTests
 {
-    public LMDBDataStoreTests(IServiceProvider provider) : base(provider)
+    public DataStoreTests(IDataStore store)
     {
+        DataStore = store;
     }
+
+    public IDataStore DataStore { get; set; }
 
     [Fact]
     public void CanGetAndSetHashedValues()
