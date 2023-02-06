@@ -11,10 +11,8 @@ public interface IDataStore
 
     bool PutRoot(RootType type, Id oldId, Id newId);
     Id? GetRoot(RootType type);
-    byte[]? GetRaw(ReadOnlySpan<byte> key);
     byte[]? GetRaw(Id id);
     void PutRaw(Id key, ReadOnlySpan<byte> val);
-    void PutRaw(ReadOnlySpan<byte> key, ReadOnlySpan<byte> val);
     IEnumerable<T> GetByPrefix<T>(Id prefix) where T : Entity;
     IObservable<(Id Id, Entity Entity)> Changes { get; }
 }
