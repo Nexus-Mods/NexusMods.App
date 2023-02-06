@@ -1,8 +1,9 @@
-﻿name: Clean Environment Tests
+name: Networking Tests
 
 on:
   schedule:
     - cron: '0 12 * * *'
+  workflow_dispatch:
 
 jobs:
   build:

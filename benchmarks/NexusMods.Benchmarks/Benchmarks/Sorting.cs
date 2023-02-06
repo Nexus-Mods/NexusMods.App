@@ -1,18 +1,25 @@
 ﻿using BenchmarkDotNet.Attributes;
+using NexusMods.Benchmarks.Interfaces;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Sorting.Rules;
 
-namespace NexusMods.DataModel.Benchmarks;
+namespace NexusMods.Benchmarks.Benchmarks;
 
-public class Sorting
+[BenchmarkInfo("Sorting", "Tests how quickly it usually takes to sort the load order of X mods.")]
+[MemoryDiagnoser]
+public class Sorting : IBenchmark
 {
-    private readonly List<Item> _rules;
+    private List<Item> _rules;
+    
+    [Params(100, 1000, 2000, 5000, 10000)]
+    public int NumItems { get; set; }
 
-    public Sorting()
+    [GlobalSetup]
+    public void Setup()
     {
         var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".Select(e => e.ToString());
-        var numbers = Enumerable.Range(0, 10000).Select(e => e.ToString());
+        var numbers = Enumerable.Range(0, NumItems).Select(e => e.ToString());
 
         var rules = new List<Item>();
         foreach (var (n, idx) in letters.Select((n, idx) => (n, idx)))
