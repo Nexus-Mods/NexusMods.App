@@ -19,7 +19,7 @@
       <None Update="Extractors\mac\7zz">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
-      <None Update="Extractors\windows-x64\7z.exe">
+      <None Update="Extractors\windows-x64\**">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
       <None Update="FileSignatures\Signatures.tt">
