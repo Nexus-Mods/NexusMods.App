@@ -67,15 +67,15 @@ public class AdvancedHttpDownloaderTests
         await path.Path.ReplaceExtension(new Extension(".downloading")).WriteAllTextAsync(existingContent);
         await path.Path.ReplaceExtension(new Extension(".progress")).WriteAllTextAsync(JsonSerializer.Serialize(new
         {
-            totalSize = existingContent.Length + missingContent.Length,
-            chunks = new object[]
+            TotalSize = existingContent.Length + missingContent.Length,
+            Chunks = new object[]
             {
                 new
                 {
-                    offset = 0,
-                    size = existingContent.Length + missingContent.Length,
-                    completed = existingContent.Length,
-                    initChunk = true,
+                    Offset = 0,
+                    Size = existingContent.Length + missingContent.Length,
+                    Completed = existingContent.Length,
+                    InitChunk = true,
                 }
             }
         }));
