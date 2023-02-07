@@ -25,10 +25,4 @@
     <Folder Include="Fonts\Montserrat" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="Projektanker.Icons.Avalonia">
-      <HintPath>..\..\..\..\Users\tbald\.nuget\packages\projektanker.icons.avalonia\6.3.0-preview4\lib\netstandard2.0\Projektanker.Icons.Avalonia.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>
