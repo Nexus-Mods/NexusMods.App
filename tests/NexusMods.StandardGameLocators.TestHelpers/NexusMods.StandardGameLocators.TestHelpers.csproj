@@ -2,16 +2,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+      <ProjectReference Include="..\..\src\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="CliWrap" Version="3.6.0" />
-      <PackageReference Include="GameFinder.Common" Version="2.5.0" />
-      <PackageReference Include="GameFinder.StoreHandlers.EADesktop" Version="2.5.0" />
-      <PackageReference Include="GameFinder.StoreHandlers.EGS" Version="2.5.0" />
-      <PackageReference Include="GameFinder.StoreHandlers.GOG" Version="2.5.0" />
-      <PackageReference Include="GameFinder.StoreHandlers.Origin" Version="2.5.0" />
-      <PackageReference Include="GameFinder.StoreHandlers.Steam" Version="2.5.0" />
-    </ItemGroup>
-
+    
 </Project>
