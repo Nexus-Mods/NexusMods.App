@@ -1,0 +1,13 @@
+<Project>
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <!-- 
+            This will be useful if we decide to ship delta updates with our application in the future.  
+            And for general validation reasons.  
+        -->
+        <Deterministic>true</Deterministic>
+    </PropertyGroup>
+</Project>
