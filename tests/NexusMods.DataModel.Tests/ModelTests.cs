@@ -132,6 +132,14 @@ public class ModelTests : ADataModelTest<ModelTests>
                 root.ReadAllTextAsync(CancellationToken.None).Result.Should()
                     .Be(loadout.Value.DataStoreId.TaggedSpanHex);
             }
+        }
+
+        {
+            var store = new SqliteDataStore(TemporaryFileManager.CreateFile(), ServiceProvider);
+            var manager = LoadoutManager.Rebase(store);
+            var marker = await manager.ImportFrom(tempFile.Path);
+
+            marker.Value.LoadoutId.Should().Be(loadout.Value.LoadoutId);
 
         }
     }

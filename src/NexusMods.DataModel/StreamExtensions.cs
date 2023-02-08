@@ -1,4 +1,6 @@
-﻿namespace NexusMods.DataModel;
+﻿using System.Buffers;
+
+namespace NexusMods.DataModel;
 
 public static class StreamExtensions
 {

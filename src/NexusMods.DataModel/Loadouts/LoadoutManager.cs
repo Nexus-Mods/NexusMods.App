@@ -54,6 +54,12 @@ public class LoadoutManager
         _tools = tools.SelectMany(t => t.Domains.Select(d => (Tool: t, Domain: d)))
             .ToLookup(t => t.Domain, t => t.Tool);
     }
+    
+    public LoadoutManager Rebase(SqliteDataStore store)
+    {
+        return new LoadoutManager(_logger, Limiter, ArchiveManager, _metadataSources, store, FileHashCache, _installers,
+            _analyzer, _tools.SelectMany(f => f));
+    }
 
     public IResource<LoadoutManager,Size> Limiter { get; set; }
 
@@ -258,5 +264,26 @@ public class LoadoutManager
 
         await using var rootEntry = zip.CreateEntry("root", CompressionLevel.Optimal).Open();
         await rootEntry.WriteAsync(Encoding.UTF8.GetBytes(loadout.DataStoreId.TaggedSpanHex), token);
+    }
+
+    public async Task<LoadoutMarker> ImportFrom(AbsolutePath path, CancellationToken token = default)
+    {
+        using var zip = ZipFile.Open(path.ToString(), ZipArchiveMode.Read);
+        var entityFolder = "entities".ToRelativePath();
+        foreach (var entry in zip.Entries.Where(p => p.FullName.ToRelativePath().InFolder(entityFolder)))
+        {
+            await using var es = entry.Open();
+            using var ms = new MemoryStream();
+            await es.CopyToAsync(ms, token);
+            var id = Id.FromTaggedSpan(Convert.FromHexString(entry.Name));
+            _store.PutRaw(id, ms.ToArray());
+        }
+
+        await using var root = zip.GetEntry("root")!.Open();
+        var rootId = Id.FromTaggedSpan(Convert.FromHexString(await root.ReadAllTextAsync(token)));
+
+        var loadout = _store.Get<Loadout>(rootId);
+        _root.Alter(r => r with { Lists = r.Lists.With(loadout.LoadoutId, loadout)});
+        return new LoadoutMarker(this, loadout.LoadoutId);
     }
 }
