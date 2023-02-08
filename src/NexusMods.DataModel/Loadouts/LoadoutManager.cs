@@ -218,6 +218,7 @@ public class LoadoutManager
 
         var ids = loadout.Walk((state, itm) =>
         {
+            _logger.LogInformation(itm.GetType().ToString());
             state.Add(itm.DataStoreId);
 
             void AddFile(Hash hash, ISet<Id> hashes)
@@ -226,11 +227,10 @@ public class LoadoutManager
                 foreach (var foundIn in _store.GetByPrefix<FileContainedIn>(new Id64(EntityCategory.FileContainedIn,
                              (ulong)hash)))
                 {
-                    state.Add(foundIn.DataStoreId);
+                    hashes.Add(foundIn.DataStoreId);
                 }
             }
-
-            Hash? fromHash = null;
+            
             if (itm is AStaticModFile file)
             {
                 AddFile(file.Hash, state);
@@ -242,6 +242,8 @@ public class LoadoutManager
 
             return state;
         }, new HashSet<Id>());
+        
+        _logger.LogInformation("Found {Count} entities to export", ids.Count);
 
         foreach (var entityId in ids)
         {

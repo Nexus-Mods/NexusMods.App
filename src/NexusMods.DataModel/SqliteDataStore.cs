@@ -91,7 +91,10 @@ public class SqliteDataStore : IDataStore
             return null;
 
         var blob = reader.GetStream(0);
-        return (T?)JsonSerializer.Deserialize<Entity>(blob, _jsonOptions.Value);
+        var value = (T?)JsonSerializer.Deserialize<Entity>(blob, _jsonOptions.Value);
+        if (value == null) return null;
+        value.DataStoreId = id;
+        return value;
     }
 
     public bool PutRoot(RootType type, Id oldId, Id newId)
@@ -171,6 +174,7 @@ public class SqliteDataStore : IDataStore
             var value = JsonSerializer.Deserialize<Entity>(blob, _jsonOptions.Value);
             if (value is T tc)
             {
+                value.DataStoreId = id;
                 yield return tc;
             }
         }

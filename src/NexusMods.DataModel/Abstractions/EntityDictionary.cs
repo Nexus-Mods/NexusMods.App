@@ -142,7 +142,11 @@ public struct EntityDictionary<TK, TV> :
 
     public TState Walk<TState>(Func<TState, Entity, TState> visitor, TState initial)
     {
-        return Values.Aggregate(initial, visitor);
+        return Values.Aggregate(initial, (state, itm) =>
+        {
+            state = visitor(state, itm);
+            return itm.Walk(visitor, state);
+        });
     }
 }
 

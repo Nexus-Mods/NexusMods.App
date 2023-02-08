@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Diagnostics;
+using System.Text.Json.Serialization;
 using NexusMods.DataModel.JsonConverters;
 
 namespace NexusMods.DataModel.Abstractions;
@@ -37,6 +38,7 @@ public abstract record Entity : IWalkable<Entity>
     public Id DataStoreId
     {
         get { return _id ??= Persist(); }
+        set => _id = value;
     }
     
     public TState Walk<TState>(Func<TState, Entity, TState> visitor, TState initial)
