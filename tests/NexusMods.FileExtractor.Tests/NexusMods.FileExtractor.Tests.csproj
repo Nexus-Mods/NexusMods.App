@@ -1,4 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <XunitStartupAssembly>NexusMods.FileExtractor.Tests</XunitStartupAssembly>
+    </PropertyGroup>
     
     <ItemGroup>
       <ProjectReference Include="..\..\src\ArchiveManagement\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj" />
