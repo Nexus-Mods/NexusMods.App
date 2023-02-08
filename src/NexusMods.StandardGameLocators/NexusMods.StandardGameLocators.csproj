@@ -1,5 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+    <!-- NuGet Package Shared Details -->
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+    
     <ItemGroup>
       <PackageReference Include="GameFinder.StoreHandlers.EADesktop" Version="2.5.0" />
       <PackageReference Include="GameFinder.StoreHandlers.EGS" Version="2.5.0" />
