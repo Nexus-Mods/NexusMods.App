@@ -4,7 +4,6 @@ using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Games.Abstractions;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.Interfaces;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators;
 

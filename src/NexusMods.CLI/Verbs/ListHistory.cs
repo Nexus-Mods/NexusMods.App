@@ -1,5 +1,4 @@
 ﻿using NexusMods.CLI.DataOutputs;
-using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts.Markers;
 
 namespace NexusMods.CLI.Verbs;

@@ -1,5 +1,4 @@
 using System.Numerics;
-using NexusMods.Paths;
 
 namespace NexusMods.DataModel.RateLimiting;
 

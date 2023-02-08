@@ -6,10 +6,8 @@ using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.Interfaces;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers;
-using NexusMods.StandardGameLocators.Tests;
 using Xunit.DependencyInjection;
 
 namespace NexusMods.DataModel.Tests.Harness;

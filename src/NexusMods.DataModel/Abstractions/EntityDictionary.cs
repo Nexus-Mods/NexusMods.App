@@ -1,10 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.DataModel.Loadouts;
+
 #pragma warning disable CS8604
 
 namespace NexusMods.DataModel.Abstractions;

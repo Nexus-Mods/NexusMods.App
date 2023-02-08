@@ -1,5 +1,4 @@
 using FluentAssertions;
-using NexusMods.CLI.DataOutputs;
 using NexusMods.CLI.Tests.VerbTests;
 using NexusMods.DataModel.Games;
 using NexusMods.Paths;

@@ -1,9 +1,7 @@
 ﻿using System.Buffers.Binary;
-using System.ComponentModel;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using NexusMods.Hashing.xxHash64;
 
 namespace NexusMods.DataModel.Abstractions;
 

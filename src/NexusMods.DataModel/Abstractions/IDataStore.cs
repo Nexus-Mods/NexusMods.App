@@ -1,7 +1,4 @@
-﻿using System.Reactive.Disposables;
-using NexusMods.DataModel.ArchiveContents;
-
-namespace NexusMods.DataModel.Abstractions;
+﻿namespace NexusMods.DataModel.Abstractions;
 
 public interface IDataStore
 {

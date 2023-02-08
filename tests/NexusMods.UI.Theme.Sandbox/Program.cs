@@ -1,6 +1,4 @@
 ﻿using Avalonia;
-using System;
-using Avalonia.Svg.Skia;
 using Projektanker.Icons.Avalonia;
 using Projektanker.Icons.Avalonia.MaterialDesign;
 

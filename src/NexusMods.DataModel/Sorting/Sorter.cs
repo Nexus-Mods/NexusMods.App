@@ -1,6 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
 using NexusMods.DataModel.Sorting.Rules;
 
 namespace NexusMods.DataModel.Sorting;

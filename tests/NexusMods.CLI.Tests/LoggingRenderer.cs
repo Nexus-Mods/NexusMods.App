@@ -1,6 +1,4 @@
-﻿using System.Collections.Concurrent;
-
-namespace NexusMods.CLI.Tests;
+﻿namespace NexusMods.CLI.Tests;
 
 public class LoggingRenderer : IRenderer
 {

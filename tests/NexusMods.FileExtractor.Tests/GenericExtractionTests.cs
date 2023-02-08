@@ -3,7 +3,6 @@ using NexusMods.Common;
 using NexusMods.DataModel.Extensions;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using Xunit;
 
 namespace NexusMods.FileExtractor;
 

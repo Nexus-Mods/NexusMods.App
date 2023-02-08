@@ -1,5 +1,3 @@
-using NexusMods.DataModel.RateLimiting;
-
 namespace NexusMods.Hashing.xxHash64;
 
 public static class ByteArrayExtensions

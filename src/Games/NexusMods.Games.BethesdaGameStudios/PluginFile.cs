@@ -3,7 +3,6 @@ using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Sorting.Rules;
-using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using Noggog;
