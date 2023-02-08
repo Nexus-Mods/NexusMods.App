@@ -16,15 +16,31 @@
     </ItemGroup>
 
     <ItemGroup>
-      <!-- For NuGet: Set up in such a way we can avoid extracting for other OSes when we publish -->
-      <None Include="Extractors\NexusMods.FileExtractor.targets" Pack="true" PackagePath="build" />
-      <None Include="Extractors\linux-x64\7zz" Pack="true" PackagePath="build/linux-x64"/>
-      <None Include="Extractors\osx-x64\7zz" Pack="true" PackagePath="build/osx-x64"/>
-      <None Include="Extractors\win-x64\**" Pack="true" PackagePath="build/win-x64"/>
+
+      <!-- Using .nupkg convention for auto extract. -->
+      <None Update="runtimes\win-x64\**">
+          <Pack>true</Pack>
+          <PackagePath>runtimes/win-x64</PackagePath>
+      </None>
+
+      <None Update="runtimes\osx-x64\**">
+          <Pack>true</Pack>
+          <PackagePath>runtimes/osx-x64</PackagePath>
+      </None>
+
+      <None Update="runtimes\linux-x64\**">
+          <Pack>true</Pack>
+          <PackagePath>runtimes/linux-x64</PackagePath>
+      </None>
         
       <None Update="FileSignatures\Signatures.tt">
         <Generator>TextTemplatingFileGenerator</Generator>
         <LastGenOutput>Signatures.cs</LastGenOutput>
+      </None>
+        
+      <None Update="build\NexusMods.FileExtractor.targets">
+        <Pack>true</Pack>
+        <PackagePath>build</PackagePath>
       </None>
     </ItemGroup>
 
@@ -34,6 +50,6 @@
       </Compile>
     </ItemGroup>
 
-    <!-- After Build -->
-    <Import Project="Extractors\NexusMods.FileExtractor.targets"/>
+    <!-- Non-NuGet Only -->
+    <Import Project="build\NexusMods.FileExtractor.targets" />
 </Project>

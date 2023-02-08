@@ -204,11 +204,11 @@ public class SevenZipExtractor : IExtractor
             throw new NotSupportedException($"{nameof(NexusMods.FileExtractor)}'s {nameof(SevenZipExtractor)} only supports x64 processors.");
         
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            initialPath = @"Extractors\win-x64\7z.exe";
+            initialPath = @"runtimes\win-x64\native\7z.exe";
         else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            initialPath = @"Extractors\linux-x64\7zz";
+            initialPath = @"runtimes\linux-x64\native\7zz";
         else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            initialPath = @"Extractors\osx-x64\7zz";
+            initialPath = @"runtimes\osx-x64\native\7zz";
         return initialPath;
     }
 

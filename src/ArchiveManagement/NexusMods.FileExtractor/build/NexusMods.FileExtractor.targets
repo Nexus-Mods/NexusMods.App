@@ -14,8 +14,16 @@
     <_NativeRuntime Condition=" '$(_NativeRuntime)' == '' And '$(_IsWindows)' == 'true' And ('$(Prefer32Bit)' == 'false' Or '$(PlatformTarget)' == 'x64')">win-x64</_NativeRuntime>
   </PropertyGroup>
   <ItemGroup>
-    <None Condition="'$(_NativeRuntime)' != ''" Include="$(MSBuildThisFileDirectory)$(_NativeRuntime)/**">
-      <Link>Extractors\$(_NativeRuntime)\%(Filename)%(Extension)</Link>
+    <!-- Copy all if platform not specified -->
+    <None Condition="'$(PlatformTarget)' == 'AnyCPU' Or '$(PlatformTarget)' == ''" Include="$(MSBuildThisFileDirectory)../runtimes/**" Exclude="$(MSBuildThisFileDirectory)*.targets">
+      <Link>runtimes\%(RecursiveDir)\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </None>
+
+    <!-- Otherwise unpack for specific platform -->
+    <None Condition="'$(_NativeRuntime)' != '' And '$(PlatformTarget)' != 'AnyCPU' And '$(PlatformTarget)' != ''" Include="$(MSBuildThisFileDirectory)../runtimes/$(_NativeRuntime)/**" Exclude="$(MSBuildThisFileDirectory)*.targets">
+      <Link>runtimes\$(_NativeRuntime)\native\%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Visible>False</Visible>
     </None>
