@@ -225,14 +225,14 @@ public class Sorter
                 {
                     case First<TItem, TId>:
                         if (!haveFirst)
-                            idsBuffer.Add(idSelector(itm));
+                            idsBuffer.Add(otherId);
                         break;
                     case After<TItem, TId> after:
                         // Handled above
                         break;
                     case Before<TItem, TId> b:
-                        if (b.Other.Equals(idSelector(thisItem)))
-                            idsBuffer.Add(idSelector(itm));
+                        if (b.Other.Equals(idForThisItem))
+                            idsBuffer.Add(otherId);
                         break;
                 }
             }
