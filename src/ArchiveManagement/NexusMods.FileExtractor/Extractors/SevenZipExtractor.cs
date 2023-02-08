@@ -200,12 +200,15 @@ public class SevenZipExtractor : IExtractor
     private static string ExeLocation()
     {
         var initialPath = "";
+        if (RuntimeInformation.ProcessArchitecture != Architecture.X64)
+            throw new NotSupportedException($"{nameof(NexusMods.FileExtractor)}'s {nameof(SevenZipExtractor)} only supports x64 processors.");
+        
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            initialPath = @"Extractors\windows-x64\7z.exe";
+            initialPath = @"Extractors\win-x64\7z.exe";
         else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             initialPath = @"Extractors\linux-x64\7zz";
         else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            initialPath = @"Extractors\mac\7zz";
+            initialPath = @"Extractors\osx-x64\7zz";
         return initialPath;
     }
 

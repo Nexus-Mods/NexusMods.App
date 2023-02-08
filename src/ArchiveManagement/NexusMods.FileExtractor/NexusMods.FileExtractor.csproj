@@ -16,15 +16,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="Extractors\linux-x64\7zz">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="Extractors\mac\7zz">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="Extractors\windows-x64\**">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+      <!-- For NuGet: Set up in such a way we can avoid extracting for other OSes when we publish -->
+      <None Include="Extractors\NexusMods.FileExtractor.targets" Pack="true" PackagePath="build" />
+      <None Include="Extractors\linux-x64\7zz" Pack="true" PackagePath="build/linux-x64"/>
+      <None Include="Extractors\osx-x64\7zz" Pack="true" PackagePath="build/osx-x64"/>
+      <None Include="Extractors\win-x64\**" Pack="true" PackagePath="build/win-x64"/>
+        
       <None Update="FileSignatures\Signatures.tt">
         <Generator>TextTemplatingFileGenerator</Generator>
         <LastGenOutput>Signatures.cs</LastGenOutput>
@@ -37,4 +34,6 @@
       </Compile>
     </ItemGroup>
 
+    <!-- After Build -->
+    <Import Project="Extractors\NexusMods.FileExtractor.targets"/>
 </Project>
