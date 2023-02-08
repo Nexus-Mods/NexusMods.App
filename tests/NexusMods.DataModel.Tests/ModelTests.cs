@@ -132,16 +132,16 @@ public class ModelTests : ADataModelTest<ModelTests>
                 root.ReadAllTextAsync(CancellationToken.None).Result.Should()
                     .Be(loadout.Value.DataStoreId.TaggedSpanHex);
             }
+            
+            
         }
-
-        {
-            var store = new SqliteDataStore(TemporaryFileManager.CreateFile(), ServiceProvider);
-            var manager = LoadoutManager.Rebase(store);
-            var marker = await manager.ImportFrom(tempFile.Path);
-
-            marker.Value.LoadoutId.Should().Be(loadout.Value.LoadoutId);
-
-        }
+        
+        loadout.Alter(l => l with {Mods = new EntityDictionary<ModId, Mod>(l.Store)});
+        loadout.Value.Mods.Should().BeEmpty("All mods are removed");
+        
+        await LoadoutManager.ImportFrom(tempFile, CancellationToken.None);
+        loadout.Value.Mods.Should().NotBeEmpty("The loadout is restored");
+        
     }
 
 }
