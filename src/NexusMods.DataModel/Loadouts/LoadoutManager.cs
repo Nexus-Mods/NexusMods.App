@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.IO.Compression;
 using System.Reactive.Linq;
+using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
@@ -213,12 +214,13 @@ public class LoadoutManager
     {
         var loadout = Get(id);
         
+        if (output.FileExists)
+            output.Delete();
         using var zip = ZipFile.Open(output.ToString(), ZipArchiveMode.Create);
 
 
         var ids = loadout.Walk((state, itm) =>
         {
-            _logger.LogInformation(itm.GetType().ToString());
             state.Add(itm.DataStoreId);
 
             void AddFile(Hash hash, ISet<Id> hashes)
@@ -243,7 +245,7 @@ public class LoadoutManager
             return state;
         }, new HashSet<Id>());
         
-        _logger.LogInformation("Found {Count} entities to export", ids.Count);
+        _logger.LogDebug("Found {Count} entities to export", ids.Count);
 
         foreach (var entityId in ids)
         {
@@ -253,5 +255,8 @@ public class LoadoutManager
             await using var entry = zip.CreateEntry("entities\\"+entityId.TaggedSpanHex, CompressionLevel.Optimal).Open();
             await entry.WriteAsync(data, token);
         }
+
+        await using var rootEntry = zip.CreateEntry("root", CompressionLevel.Optimal).Open();
+        await rootEntry.WriteAsync(Encoding.UTF8.GetBytes(loadout.DataStoreId.TaggedSpanHex), token);
     }
 }

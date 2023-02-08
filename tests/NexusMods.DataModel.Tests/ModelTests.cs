@@ -104,7 +104,9 @@ public class ModelTests : ADataModelTest<ModelTests>
         {
             await using var of = tempFile.Path.Read();
             using var zip = new ZipArchive(of, ZipArchiveMode.Read);
-            var entries = zip.Entries.Select(e => e.Name.ToRelativePath().FileName)
+            var entries = zip.Entries.Select(e => e.FullName.ToRelativePath())
+                .Where(p => p.InFolder("entities".ToRelativePath()))
+                .Select(f => f.FileName)
                 .Select(h => Id.FromTaggedSpan(Convert.FromHexString(h.ToString())))
                 .ToHashSet();
 
@@ -121,6 +123,14 @@ public class ModelTests : ADataModelTest<ModelTests>
                 entries.Should().Contain(mod.DataStoreId, "The mod is stored");
                 foreach (var file in mod.Files.Values)
                     entries.Should().Contain(file.DataStoreId, "The file is stored (file: {0})", file.To);
+            }
+
+            zip.Entries.Select(e => e.FullName).Should().Contain("root");
+
+            {
+                await using var root = zip.Entries.First(e => e.FullName == "root").Open();
+                root.ReadAllTextAsync(CancellationToken.None).Result.Should()
+                    .Be(loadout.Value.DataStoreId.TaggedSpanHex);
             }
 
         }
