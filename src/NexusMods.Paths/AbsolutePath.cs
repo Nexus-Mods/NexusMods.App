@@ -143,6 +143,7 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
 
     public bool Equals(AbsolutePath other)
     {
+        if (Parts == null && other.Parts == null) return true;
         if (other.Depth != Depth) return false;
         for (var idx = 0; idx < Parts.Length; idx++)
             if (!Parts[idx].Equals(other.Parts[idx], StringComparison.InvariantCultureIgnoreCase))

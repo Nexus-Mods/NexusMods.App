@@ -2,7 +2,7 @@
 using NexusMods.DataModel.JsonConverters;
 
 namespace NexusMods.DataModel.Abstractions;
-public abstract record Entity
+public abstract record Entity : IWalkable<Entity>
 {
     public Entity(Entity self)
     {
@@ -28,8 +28,6 @@ public abstract record Entity
         return Store.Put(this);
     }
     
-    
-
     public void EnsureStored()
     {
         _id ??= Persist();
@@ -39,5 +37,24 @@ public abstract record Entity
     public Id DataStoreId
     {
         get { return _id ??= Persist(); }
+    }
+    
+    public TState Walk<TState>(Func<TState, Entity, TState> visitor, TState initial)
+    {
+        // TODO: cache this as a Linq.Expression compiled lambda, for now just use reflection
+        var state = visitor(initial, this);
+        foreach (var property in GetType().GetProperties())
+        {
+            if (!property.PropertyType.IsAssignableTo(typeof(IWalkable<Entity>)))
+                continue;
+            
+            var value = property.GetValue(this);
+            if (value is IWalkable<Entity> walkable)
+            {
+                state = walkable.Walk(visitor, state);
+            }
+        }
+
+        return state;
     }
 }

@@ -1,5 +1,7 @@
-﻿using System.Reactive.Linq;
+﻿using System.IO.Compression;
+using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Extensions;
@@ -421,5 +423,10 @@ public class LoadoutMarker : IMarker<Loadout>
                   };
         Add(mod);
         await ApplyIngest(_ => mod, token);
+    }
+
+    public async Task ExportTo(AbsolutePath output, CancellationToken token)
+    {
+        await _manager.ExportTo(_id, output, token);
     }
 }

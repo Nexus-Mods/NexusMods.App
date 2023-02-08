@@ -1,5 +1,7 @@
 ﻿using System.Collections.Immutable;
+using System.IO.Compression;
 using System.Reactive.Linq;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
@@ -11,6 +13,7 @@ using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Sorting.Rules;
+using NexusMods.Hashing.xxHash64;
 using NexusMods.Interfaces;
 using NexusMods.Paths;
 
@@ -204,5 +207,49 @@ public class LoadoutManager
                 })
             };
         }, message);
+    }
+
+    public async Task ExportTo(LoadoutId id, AbsolutePath output, CancellationToken token)
+    {
+        var loadout = Get(id);
+        
+        using var zip = ZipFile.Open(output.ToString(), ZipArchiveMode.Create);
+
+
+        var ids = loadout.Walk((state, itm) =>
+        {
+            state.Add(itm.DataStoreId);
+
+            void AddFile(Hash hash, ISet<Id> hashes)
+            {
+                hashes.Add(new Id64(EntityCategory.FileAnalysis, (ulong)hash));
+                foreach (var foundIn in _store.GetByPrefix<FileContainedIn>(new Id64(EntityCategory.FileContainedIn,
+                             (ulong)hash)))
+                {
+                    state.Add(foundIn.DataStoreId);
+                }
+            }
+
+            Hash? fromHash = null;
+            if (itm is AStaticModFile file)
+            {
+                AddFile(file.Hash, state);
+            }
+            if (itm is FromArchive archive)
+            {
+                AddFile(archive.From.Hash, state);
+            }
+
+            return state;
+        }, new HashSet<Id>());
+
+        foreach (var entityId in ids)
+        {
+            var data = _store.GetRaw(entityId);
+            if (data == null) continue;
+            
+            await using var entry = zip.CreateEntry("entities\\"+entityId.TaggedSpanHex, CompressionLevel.Optimal).Open();
+            await entry.WriteAsync(data, token);
+        }
     }
 }

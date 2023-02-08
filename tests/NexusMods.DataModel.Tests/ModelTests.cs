@@ -1,4 +1,6 @@
-﻿using System.Reactive.Linq;
+﻿using System.Collections.Immutable;
+using System.IO.Compression;
+using System.Reactive.Linq;
 using FluentAssertions;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
@@ -87,6 +89,41 @@ public class ModelTests : ADataModelTest<ModelTests>
 
         newHistory.Skip(1).Should().BeEquivalentTo(history);
         
+    }
+
+    [Fact]
+    public async Task CanExportAndImportLoadouts()
+    {
+        var loadout = await LoadoutManager.ManageGame(Install, Guid.NewGuid().ToString());
+        var id1 = await loadout.Install(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
+        var id2 = await loadout.Install(DATA_ZIP_LZMA, "Mod2", CancellationToken.None);
+        
+        var tempFile = TemporaryFileManager.CreateFile(Ext.Zip);
+        await loadout.ExportTo(tempFile, CancellationToken.None);
+
+        {
+            await using var of = tempFile.Path.Read();
+            using var zip = new ZipArchive(of, ZipArchiveMode.Read);
+            var entries = zip.Entries.Select(e => e.Name.ToRelativePath().FileName)
+                .Select(h => Id.FromTaggedSpan(Convert.FromHexString(h.ToString())))
+                .ToHashSet();
+
+            var ids = loadout.Value.Walk((set, itm) => set.Add(itm.DataStoreId),
+                ImmutableHashSet<Id>.Empty);
+            
+            foreach (var id in ids)
+                entries.Should().Contain(id);
+            
+            entries.Should().Contain(loadout.Value.DataStoreId, "The loadout is stored");
+
+            foreach (var mod in loadout.Value.Mods.Values)
+            {
+                entries.Should().Contain(mod.DataStoreId, "The mod is stored");
+                foreach (var file in mod.Files.Values)
+                    entries.Should().Contain(file.DataStoreId, "The file is stored (file: {0})", file.To);
+            }
+
+        }
     }
 
 }
