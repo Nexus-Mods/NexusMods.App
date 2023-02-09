@@ -1,25 +1,21 @@
 using FluentAssertions;
-using NexusMods.CLI.Tests.VerbTests;
 using NexusMods.DataModel.Games;
 using NexusMods.Paths;
 
-namespace NexusMods.CLI.Tests;
+namespace NexusMods.CLI.Tests.VerbTests;
 
 public class ListGames : AVerbTest 
 { 
     public ListGames(TemporaryFileManager temporaryFileManager, IServiceProvider provider) : base(temporaryFileManager, provider)
     {
     }
-
     
     [Fact]
     public async Task CanListGames()
     {
-        await RunNoBanner(new[] { "--noBanner", "list-games" });
+        await RunNoBanner("--noBanner", "list-games");
 
         LogSize.Should().Be(1);
         LastTable.Rows.First().OfType<IGame>().First().Name.Should().Be("Stubbed Game");
-
     }
-
 }
