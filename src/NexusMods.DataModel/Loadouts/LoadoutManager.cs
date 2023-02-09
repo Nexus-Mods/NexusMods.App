@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
+using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Extensions;
@@ -268,21 +269,30 @@ public class LoadoutManager
 
     public async Task<LoadoutMarker> ImportFrom(AbsolutePath path, CancellationToken token = default)
     {
-        using var zip = ZipFile.Open(path.ToString(), ZipArchiveMode.Read);
-        var entityFolder = "entities".ToRelativePath();
-        foreach (var entry in zip.Entries.Where(p => p.FullName.ToRelativePath().InFolder(entityFolder)))
+        async ValueTask<(Id, byte[])> ProcessEntry(ZipArchiveEntry entry)
         {
             await using var es = entry.Open();
             using var ms = new MemoryStream();
             await es.CopyToAsync(ms, token);
             var id = Id.FromTaggedSpan(Convert.FromHexString(entry.Name));
-            _store.PutRaw(id, ms.ToArray());
+            return (id, ms.ToArray());
         }
 
+        using var zip = ZipFile.Open(path.ToString(), ZipArchiveMode.Read);
+        var entityFolder = "entities".ToRelativePath();
+        
+        var entries = zip.Entries.Where(p => p.FullName.ToRelativePath().InFolder(entityFolder))
+            .SelectAsync(ProcessEntry); 
+        
+        var loaded = await _store.PutRaw(entries, token);
+        _logger.LogDebug("Loaded {Count} entities", loaded);
+        
         await using var root = zip.GetEntry("root")!.Open();
         var rootId = Id.FromTaggedSpan(Convert.FromHexString(await root.ReadAllTextAsync(token)));
 
         var loadout = _store.Get<Loadout>(rootId);
+        if (loadout == null)
+            throw new Exception("Loadout not found after loading data store, the loadout may be corrupt");
         _root.Alter(r => r with { Lists = r.Lists.With(loadout.LoadoutId, loadout)});
         return new LoadoutMarker(this, loadout.LoadoutId);
     }

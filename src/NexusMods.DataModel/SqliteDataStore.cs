@@ -152,6 +152,51 @@ public class SqliteDataStore : IDataStore
         cmd.Parameters.AddWithValue("@id", idBytes);
         cmd.Parameters.AddWithValue("@data", val.ToArray());
         cmd.ExecuteNonQuery();
+    }
+
+    public async Task<long> PutRaw(IAsyncEnumerable<(Id Key, byte[] Value)> kvs, CancellationToken token = default)
+    {
+        var iterator = kvs.GetAsyncEnumerator(token);
+        var processed = 0;
+        var totalLoaded = 0L;
+        var done = false;
+
+        while (true)
+        {
+            {
+                await using var tx = await _conn.BeginTransactionAsync(token);
+
+                while (processed < 100)
+                {
+                    if (!await iterator.MoveNextAsync())
+                    {
+                        done = true;
+                        break;
+                    }
+
+                    var (id, val) = iterator.Current;
+                    await using var cmd = new SQLiteCommand(_putStatements[id.Category], _conn);
+                    var idBytes = new byte[id.SpanSize];
+                    id.ToSpan(idBytes.AsSpan());
+                    cmd.Parameters.AddWithValue("@id", idBytes);
+                    cmd.Parameters.AddWithValue("@data", val);
+                    await cmd.ExecuteNonQueryAsync(token);
+                    processed++;
+                }
+
+                if (processed > 0)
+                {
+                    await tx.CommitAsync(token);
+                    totalLoaded += processed;
+                }
+
+                if (done)
+                    break;
+                processed = 0;
+            }
+        }
+
+        return totalLoaded;
 
     }
 
