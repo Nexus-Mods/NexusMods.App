@@ -4,8 +4,9 @@ using NexusMods.DataModel.Extensions;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+// ReSharper disable AccessToDisposedClosure
 
-namespace NexusMods.FileExtractor;
+namespace NexusMods.FileExtractor.Tests;
 
 public class GenericExtractionTests
 {
@@ -22,7 +23,7 @@ public class GenericExtractionTests
     [MemberData(nameof(Archives))]
     public async Task CanForEachOverFiles(AbsolutePath path)
     {
-        var results = await _extractor.ForEachEntry(new NativeFileStreamFactory(path), async (path, e) =>
+        var results = await _extractor.ForEachEntry(new NativeFileStreamFactory(path), async (_, e) =>
         {
             await using var fs = await e.GetStream();
             return await fs.Hash(CancellationToken.None);
@@ -32,7 +33,7 @@ public class GenericExtractionTests
         results.OrderBy(r => r.Key)
             .Select(kv => (Path: kv.Key, Hash: kv.Value))
             .Should()
-            .BeEquivalentTo(new (RelativePath, Hash)[]
+            .BeEquivalentTo(new[]
             {
                 (@"deepFolder\deepFolder2\deepFolder3\deepFolder4\deepFile.txt".ToRelativePath(), (Hash)0xE405A7CFA6ABBDE3),
                 (@"folder1\folder1file.txt".ToRelativePath(), (Hash)0xC9E47B1523162066),
@@ -50,7 +51,7 @@ public class GenericExtractionTests
             .SelectAsync(async f => (f.RelativeTo(tempFolder.Path), await f.XxHash64()))
             .ToArray())
             .Should()
-            .BeEquivalentTo(new (RelativePath, Hash)[]
+            .BeEquivalentTo(new[]
             {
                 (@"deepFolder\deepFolder2\deepFolder3\deepFolder4\deepFile.txt".ToRelativePath(), (Hash)0xE405A7CFA6ABBDE3),
                 (@"folder1\folder1file.txt".ToRelativePath(), (Hash)0xC9E47B1523162066),
