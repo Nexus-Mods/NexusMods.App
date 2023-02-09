@@ -8,7 +8,6 @@ using NexusMods.Paths;
 
 namespace NexusMods.Games.BethesdaGameStudios.Tests;
 
-[Trait("RequiresGameInstalls", "True")]
 public class SkyrimSpecialEditionTests
 {
     private readonly ILogger<SkyrimSpecialEditionTests> _logger;

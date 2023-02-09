@@ -14,7 +14,7 @@ using ModId = NexusMods.Networking.NexusWebApi.Types.ModId;
 
 namespace NexusMods.Games.RedEngine.Tests;
 
-[Trait("RequiresGameInstalls", "True")]
+[Trait("RequiresNetworking", "True")]
 public class ModInstallerTests
 {
     private readonly LoadoutManager _manager;
