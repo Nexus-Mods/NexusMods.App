@@ -57,7 +57,7 @@ public class SevenZipExtractor : IExtractor
         TemporaryPath? spoolFile = null;
         AbsolutePath source;
         
-        var job = await _limiter.Begin($"Extracting {sFn.Name.FileName}", sFn.Size, token);
+        var job = await _limiter.Begin($"[${nameof(ForEachEntryAsync)}] Extracting {sFn.Name.FileName}", sFn.Size, token);
         try
         {
             if (sFn.Name is AbsolutePath abs)
@@ -156,7 +156,7 @@ public class SevenZipExtractor : IExtractor
         TemporaryPath? spoolFile = null;
         AbsolutePath source;
         
-        var job = await _limiter.Begin($"Extracting {sFn.Name.FileName}", sFn.Size, token);
+        var job = await _limiter.Begin($"[${nameof(ExtractAllAsync)}] Extracting {sFn.Name.FileName}", sFn.Size, token);
         try
         {
             if (sFn.Name is AbsolutePath abs)
