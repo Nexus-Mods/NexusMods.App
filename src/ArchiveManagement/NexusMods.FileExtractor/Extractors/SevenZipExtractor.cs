@@ -126,8 +126,7 @@ public class SevenZipExtractor : IExtractor
                 .WithStandardOutputPipe(PipeTarget.ToDelegate(line =>
                 {
                     if (line.Length <= 4 || line[3] != '%') return;
-
-                    if (!int.TryParse(line[..3], out var percentInt)) return;
+                    if (!int.TryParse(line.AsSpan()[..3], out var percentInt)) return;
 
                     var oldPosition = lastPercent == 0 ? Size.Zero : totalSize / 100 * lastPercent;
                     var newPosition = percentInt == 0 ? Size.Zero : totalSize / 100 * percentInt;
