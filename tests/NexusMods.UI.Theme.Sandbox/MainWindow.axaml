@@ -7,13 +7,13 @@
     mc:Ignorable="d"
     x:Class="NexusMods.UI.Theme.Sandbox.MainWindow"
     xmlns="https://github.com/avaloniaui"
-    xmlns:Sandbox="clr-namespace:NexusMods.UI.Theme.Sandbox"
+    xmlns:sandbox="clr-namespace:NexusMods.UI.Theme.Sandbox"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.DataContext>
-        <Sandbox:MainWindowViewModel />
+        <sandbox:MainWindowViewModel />
     </Design.DataContext>
 
 
@@ -395,9 +395,12 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
+                        <!-- Bug in Rider? -->
+                        <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
                         <DataGridTextColumn Binding="{Binding Name}" Header="Name" />
                         <DataGridTextColumn Binding="{Binding Size}" Header="Size" />
                         <DataGridTextColumn Binding="{Binding LastModified}" Header="Last Modified" />
+                        <!-- ReSharper restore Xaml.BindingWithContextNotResolved -->
                         <DataGridTemplateColumn IsReadOnly="True">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
@@ -424,7 +427,7 @@
                         <DataTemplate>
                             <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto">
                                 <TextBlock Grid.ColumnSpan="2" Text="{Binding Name}" />
-                                <TextBlock Grid.Row="1" Text="{Binding Size}" />
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Size}" />
                                 <TextBlock
                                     Grid.Column="1"
                                     Grid.Row="1"

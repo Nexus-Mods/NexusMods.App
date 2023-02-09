@@ -35,7 +35,5 @@ public class MainWindowViewModel
         }; 
     }
 
-    public record DataRow(string Name, long? Size, DateTime LastModified)
-    {
-    }
+    public record DataRow(string Name, long? Size, DateTime LastModified);
 }
