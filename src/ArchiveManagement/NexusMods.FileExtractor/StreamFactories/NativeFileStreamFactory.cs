@@ -1,6 +1,7 @@
 using NexusMods.Common;
+using NexusMods.Paths;
 
-namespace NexusMods.Paths;
+namespace NexusMods.FileExtractor.StreamFactories;
 
 public class NativeFileStreamFactory : IStreamFactory
 {

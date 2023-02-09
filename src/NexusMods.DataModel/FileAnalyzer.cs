@@ -6,6 +6,7 @@ using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.FileExtractor.FileSignatures;
+using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
