@@ -88,7 +88,7 @@ public class FileContentsCache
             hashStream.Position = 0;
             sigs = (await _sigs.MatchesAsync(hashStream)).ToList();
             
-            if (parentPath != default && _sigs.TryGetFileType(parentPath.Extension, out var type))
+            if (parentPath != default && SignatureChecker.TryGetFileType(parentPath.Extension, out var type))
                 sigs.Add(type);
             
             foreach (var sig in sigs)
