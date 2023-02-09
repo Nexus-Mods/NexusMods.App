@@ -1,5 +1,5 @@
-﻿namespace NexusMods.Interfaces;
-
+﻿#pragma warning disable CS1591
+namespace NexusMods.Interfaces;
 
 /// <summary>
 /// Generic enum for expressing the priority of a given operation. Most operations will be Normal priority, but
