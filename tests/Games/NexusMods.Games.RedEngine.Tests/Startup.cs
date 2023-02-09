@@ -9,6 +9,7 @@ using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators;
+using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.DependencyInjection;
 using Xunit.DependencyInjection.Logging;
 
@@ -18,7 +19,7 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection container)
     {
-        container.AddStandardGameLocators();
+        container.AddUniversalGameLocator<Cyberpunk2077>(new Version("1.61"));
         container.AddRedEngineGames();
         container.AddNexusWebApi();
         container.AddHttpDownloader();
