@@ -26,12 +26,15 @@ public class SevenZipExtractor : IExtractor
     private readonly ILogger<SevenZipExtractor> _logger;
     private readonly IResource<IExtractor,Size> _limiter;
 
+    private static readonly FileType[] _supportedTypes = { FileType._7Z, FileType.RAR_NEW, FileType.RAR_OLD, FileType.ZIP };
+    private static readonly Extension[] _supportedExtensions = { Ext._7z, Ext.Rar, Ext.Zip, Ext._7zip };
+
     /// <inheritdoc />
-    public IEnumerable<FileType> SupportedSignatures => new[] { FileType._7Z, FileType.RAR_NEW, FileType.RAR_OLD, FileType.ZIP };
-    
+    public FileType[] SupportedSignatures => _supportedTypes;
+
     /// <inheritdoc />
-    public IEnumerable<Extension> SupportedExtensions => new[] { Ext._7z, Ext.Rar, Ext.Zip, Ext._7zip };
-    
+    public Extension[] SupportedExtensions => _supportedExtensions;
+
     /// <summary>
     /// Creates a 7-zip based extractor.
     /// </summary>

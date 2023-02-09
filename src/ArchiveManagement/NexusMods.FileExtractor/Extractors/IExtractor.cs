@@ -14,12 +14,12 @@ public interface IExtractor
     /// <summary>
     /// A list of all the file type signatures supported by this extractor.
     /// </summary>
-    public IEnumerable<FileType> SupportedSignatures { get; }
+    public FileType[] SupportedSignatures { get; }
     
     /// <summary>
     /// Returns a list of extensions supported by this extractor.
     /// </summary>
-    public IEnumerable<Extension> SupportedExtensions { get; }
+    public Extension[] SupportedExtensions { get; }
     
     /// <summary>
     /// Extracts maps `func` over every entry in an archive.
