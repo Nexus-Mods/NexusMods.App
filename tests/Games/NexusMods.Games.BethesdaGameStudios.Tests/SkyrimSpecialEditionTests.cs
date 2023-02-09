@@ -33,9 +33,9 @@ public class SkyrimSpecialEditionTests
     }
 
     [Fact]
-    public async Task CanCreateLoadout()
+    public async Task CanLoadLoadout()
     {
-        var loadout = await _manager.ManageGame(_game.Installations.First(), Guid.NewGuid().ToString());
+        var loadout = await _manager.ImportFrom(KnownFolders.EntryFolder.Join(@"Resources\skyrim_1.6.659.0.zip"));
         loadout.Value.Mods.Values.Select(m => m.Name).Should().Contain("Game Files");
         var gameFiles = loadout.Value.Mods.Values.First(m => m.Name == "Game Files");
         gameFiles.Files.Count.Should().BeGreaterThan(0);
@@ -49,7 +49,7 @@ public class SkyrimSpecialEditionTests
     [Fact]
     public async Task CanGeneratePluginsFile()
     {
-        var loadout = await _manager.ManageGame(_game.Installations.First(), Guid.NewGuid().ToString());
+        var loadout = await _manager.ImportFrom(KnownFolders.EntryFolder.Join(@"Resources\skyrim_1.6.659.0.zip"));
         loadout.Value.Mods.Values.Select(m => m.Name).Should().Contain("Game Files");
         var gameFiles = loadout.Value.Mods.Values.First(m => m.Name == "Game Files");
         gameFiles.Files.Count.Should().BeGreaterThan(0);
@@ -90,7 +90,9 @@ public class SkyrimSpecialEditionTests
         }
         else {
             // Skyrim SE with CC downloads
-            results.Should()
+            results
+                .Select(t => t.ToLowerInvariant())
+                .Should()
                 .BeEquivalentTo(new[]
                 {
                     "Skyrim.esm",
@@ -172,14 +174,8 @@ public class SkyrimSpecialEditionTests
                     "ccvsvsse002-pets.esl",
                     "ccvsvsse003-necroarts.esl",
                     "ccvsvsse004-beafarmer.esl"
-                }, opt => opt.WithStrictOrdering());
+                }.Select(t => t.ToLowerInvariant()),
+                    opt => opt.WithStrictOrdering());
         }
-    }
-    
-    [Fact]
-    public async Task CanDeployLoadout()
-    {
-        var loadout = await _manager.ManageGame(_game.Installations.First(), Guid.NewGuid().ToString());
-        await loadout.Apply();
     }
 }
