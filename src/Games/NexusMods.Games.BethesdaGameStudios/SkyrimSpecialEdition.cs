@@ -32,9 +32,8 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame
         yield return new (GameFolderType.Game, installation.Path);
         var appData = locator switch
         {
-            SteamLocator => KnownFolders.MyGames.Join("Skyrim Special Edition"),
             GogLocator => KnownFolders.MyGames.Join("Skyrim Special Edition GOG"),
-            _ => throw new NotImplementedException($"No override for {locator}")
+            _ => KnownFolders.MyGames.Join("Skyrim Special Edition"),
         };
         yield return new(GameFolderType.AppData, appData);
     }

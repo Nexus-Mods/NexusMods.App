@@ -6,7 +6,7 @@ using NexusMods.DataModel.Sorting.Rules;
 
 namespace NexusMods.DataModel.Loadouts;
 
-[JsonName("NexusMods.DataModel.ListRegistry")]
+[JsonName("NexusMods.DataModel.Mod")]
 public record Mod : Entity, IHasEntityId<ModId>
 {
     public required ModId Id { get; init; }

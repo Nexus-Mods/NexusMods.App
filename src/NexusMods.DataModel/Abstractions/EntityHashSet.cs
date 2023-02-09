@@ -7,8 +7,11 @@ using NexusMods.DataModel.Loadouts.ModFiles;
 
 namespace NexusMods.DataModel.Abstractions;
 
-public struct EntityHashSet<T> : IEmptyWithDataStore<EntityHashSet<T>>, IEnumerable<T>, IEquatable<EntityHashSet<T>>
-where T : Entity
+public struct EntityHashSet<T> : IEmptyWithDataStore<EntityHashSet<T>>, 
+    IEnumerable<T>, 
+    IEquatable<EntityHashSet<T>>,
+    IWalkable<Entity>
+    where T : Entity
 {
     public static EntityHashSet<T> Empty(IDataStore store) => new(store);
     private readonly ImmutableHashSet<Id> _coll;
@@ -106,6 +109,11 @@ where T : Entity
             if (!_coll.Contains(itm))
                 return false;
         return true;
+    }
+
+    public TState Walk<TState>(Func<TState, Entity, TState> visitor, TState initial)
+    {
+        return this.Aggregate(initial, visitor);
     }
 
     public override bool Equals(object? obj)

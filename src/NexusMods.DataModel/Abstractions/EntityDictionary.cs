@@ -10,8 +10,11 @@ using NexusMods.DataModel.Loadouts;
 namespace NexusMods.DataModel.Abstractions;
 
 [JsonConverter(typeof(EntityDictionaryConverterFactory))]
-public struct EntityDictionary<TK, TV> : IEmptyWithDataStore<EntityDictionary<TK, TV>>, IEnumerable<KeyValuePair<TK, TV>>
-where TV : Entity where TK : notnull
+public struct EntityDictionary<TK, TV> : 
+    IEmptyWithDataStore<EntityDictionary<TK, TV>>, 
+    IEnumerable<KeyValuePair<TK, TV>>,
+    IWalkable<Entity>
+    where TV : Entity where TK : notnull
 {
     private readonly ImmutableDictionary<TK, Id> _coll;
     private readonly IDataStore _store;
@@ -135,6 +138,15 @@ where TV : Entity where TK : notnull
             modified = true;
         }
         return modified ? new EntityDictionary<TK, TV>(_store, builder) : this;
+    }
+
+    public TState Walk<TState>(Func<TState, Entity, TState> visitor, TState initial)
+    {
+        return Values.Aggregate(initial, (state, itm) =>
+        {
+            state = visitor(state, itm);
+            return itm.Walk(visitor, state);
+        });
     }
 }
 
