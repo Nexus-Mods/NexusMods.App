@@ -25,15 +25,15 @@ public class SevenZipExtractor : IExtractor
     private readonly ILogger<SevenZipExtractor> _logger;
     private readonly IResource<IExtractor,Size> _limiter;
 
-    private static readonly FileType[] _supportedTypes = { FileType._7Z, FileType.RAR_NEW, FileType.RAR_OLD, FileType.ZIP };
-    private static readonly Extension[] _supportedExtensions = { Ext._7z, Ext.Rar, Ext.Zip, Ext._7zip };
-    private static readonly string _exePath = GetExeLocation().ToRelativePath().RelativeTo(KnownFolders.EntryFolder).ToString();
+    private static readonly FileType[] SupportedTypesCached = { FileType._7Z, FileType.RAR_NEW, FileType.RAR_OLD, FileType.ZIP };
+    private static readonly Extension[] SupportedExtensionsCached = { Ext._7z, Ext.Rar, Ext.Zip, Ext._7zip };
+    private static readonly string ExePath = GetExeLocation().ToRelativePath().RelativeTo(KnownFolders.EntryFolder).ToString();
 
     /// <inheritdoc />
-    public FileType[] SupportedSignatures => _supportedTypes;
+    public FileType[] SupportedSignatures => SupportedTypesCached;
 
     /// <inheritdoc />
-    public Extension[] SupportedExtensions => _supportedExtensions;
+    public Extension[] SupportedExtensions => SupportedExtensionsCached;
 
     /// <summary>
     /// Creates a 7-zip based extractor.
@@ -65,6 +65,7 @@ public class SevenZipExtractor : IExtractor
         var results = await dest.Path.EnumerateFiles()
             .SelectAsync(async f =>
             {
+                // ReSharper disable once AccessToDisposedClosure
                 var path = f.RelativeTo(dest.Path);
                 var file = new NativeFileStreamFactory(f);
                 var mapResult = await func(path, file);
@@ -112,7 +113,7 @@ public class SevenZipExtractor : IExtractor
             }
 
             _logger.LogDebug("Extracting {Source}", source.FileName);
-            var process = Cli.Wrap(_exePath);
+            var process = Cli.Wrap(ExePath);
 
             var totalSize = source.Length;
             var lastPercent = 0;
