@@ -45,7 +45,7 @@ public class GenericExtractionTests
     public async Task CanExtractAll(AbsolutePath path)
     {
         await using var tempFolder = _temporaryFileManager.CreateFolder();
-        await _extractor.ExtractAll(path, tempFolder, CancellationToken.None);
+        await _extractor.ExtractAllAsync(path, tempFolder, CancellationToken.None);
         (await tempFolder.Path.EnumerateFiles()
             .SelectAsync(async f => (f.RelativeTo(tempFolder.Path), await f.XxHash64()))
             .ToArray())

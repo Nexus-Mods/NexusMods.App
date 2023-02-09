@@ -136,7 +136,7 @@ public class FileContentsCache
             await using var tmpFolder = _manager.CreateFolder();
             List<KeyValuePair<RelativePath, Id>> children;
             {
-                await _extractor.ExtractAll(sFn, tmpFolder, token);
+                await _extractor.ExtractAllAsync(sFn, tmpFolder, token);
                 children = await _limiter.ForEachFile(tmpFolder,
                         async (job, entry) =>
                         {
