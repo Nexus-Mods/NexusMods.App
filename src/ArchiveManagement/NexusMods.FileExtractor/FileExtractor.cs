@@ -51,7 +51,7 @@ public class FileExtractor
         {
             try
             {
-                await extractor.ExtractAll(sFn, dest, token);
+                await extractor.ExtractAllAsync(sFn, dest, token);
                 return;
             }
             catch (Exception ex)
@@ -73,7 +73,7 @@ public class FileExtractor
         {
             try
             {
-                return await extractor.ForEachEntry(sFn, func, token);
+                return await extractor.ForEachEntryAsync(sFn, func, token);
             }
             catch (Exception ex)
             {

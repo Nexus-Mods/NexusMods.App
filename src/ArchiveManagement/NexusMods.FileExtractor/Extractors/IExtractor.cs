@@ -30,17 +30,17 @@ public interface IExtractor
     /// <param name="token">Cancellation token for the process</param>
     /// <typeparam name="T">Return type</typeparam>
     /// <returns>A Dictionary of RelativePath -> Return value from `func`</returns>
-    public Task<IDictionary<RelativePath, T>> ForEachEntry<T>(IStreamFactory source,
+    public Task<IDictionary<RelativePath, T>> ForEachEntryAsync<T>(IStreamFactory source,
         Func<RelativePath, IStreamFactory, ValueTask<T>> func, CancellationToken token = default);
 
     /// <summary>
     /// Unconditionally extract all files from `sFn` to a specific folder.  
     /// </summary>
-    /// <param name="sFn"></param>
-    /// <param name="destination"></param>
-    /// <param name="token"></param>
-    /// <returns></returns>
-    Task ExtractAll(IStreamFactory sFn, AbsolutePath destination, CancellationToken token);
+    /// <param name="source">The source of the incoming stream</param>
+    /// <param name="destination">Where the files are to be extracted</param>
+    /// <param name="token">Token used for cancellation of the task</param>
+    /// <returns>Task signalling completion.</returns>
+    Task ExtractAllAsync(IStreamFactory source, AbsolutePath destination, CancellationToken token = default);
     
     /// <summary>
     /// Given a FileType return the priority this extractor requests.

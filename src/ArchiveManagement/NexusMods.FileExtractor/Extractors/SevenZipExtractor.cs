@@ -3,6 +3,7 @@ using System.Text;
 using CliWrap;
 using CliWrap.Exceptions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using NexusMods.Common;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.FileExtractor.FileSignatures;
@@ -11,20 +12,41 @@ using NexusMods.Paths;
 
 namespace NexusMods.FileExtractor.Extractors;
 
+/// <summary>
+/// Abstracts the 7-zip archive extractor.
+/// </summary>
+/// <remarks>
+///     Uses the 7z binary for each native platform under the hood.  
+///     We chose this tradeoff due to a lack of decent cross platform option and
+///     reportedly possible AVs on invalid archives.
+/// </remarks>
 public class SevenZipExtractor : IExtractor
 {
     private readonly TemporaryFileManager _manager;
     private readonly ILogger<SevenZipExtractor> _logger;
     private readonly IResource<IExtractor,Size> _limiter;
 
+    /// <inheritdoc />
+    public IEnumerable<FileType> SupportedSignatures => new[] { FileType._7Z, FileType.RAR_NEW, FileType.RAR_OLD, FileType.ZIP };
+    
+    /// <inheritdoc />
+    public IEnumerable<Extension> SupportedExtensions => new[] { Ext._7z, Ext.Rar, Ext.Zip, Ext._7zip };
+    
+    /// <summary>
+    /// Creates a 7-zip based extractor.
+    /// </summary>
+    /// <param name="logger">Provides logger support. Use <see cref="NullLogger.Instance"/> if you don't want logging.</param>
+    /// <param name="fileManager">Manager that can be used to create temporary folders.</param>
+    /// <param name="limiter">Limits CPU core usage depending on our use case.</param>
     public SevenZipExtractor(ILogger<SevenZipExtractor> logger, TemporaryFileManager fileManager, IResource<IExtractor, Size> limiter)
     {
         _logger = logger;
         _manager = fileManager;
         _limiter = limiter;
     }
-    
-    public async Task<IDictionary<RelativePath, T>> ForEachEntry<T>(IStreamFactory sFn, Func<RelativePath, IStreamFactory, ValueTask<T>> func, CancellationToken token)
+
+    /// <inheritdoc />
+    public async Task<IDictionary<RelativePath, T>> ForEachEntryAsync<T>(IStreamFactory sFn, Func<RelativePath, IStreamFactory, ValueTask<T>> func, CancellationToken token)
     {
         TemporaryPath? tmpFile = null;
         await using var dest = _manager.CreateFolder();
@@ -122,8 +144,9 @@ public class SevenZipExtractor : IExtractor
             job.Dispose();
         } 
     }
-    
-    public async Task ExtractAll(IStreamFactory sFn, AbsolutePath destination, CancellationToken token)
+
+    /// <inheritdoc />
+    public async Task ExtractAllAsync(IStreamFactory sFn, AbsolutePath destination, CancellationToken token)
     {
         TemporaryPath? tmpFile = null;
         
@@ -225,7 +248,4 @@ public class SevenZipExtractor : IExtractor
 
         return Priority.None;
     }
-
-    public IEnumerable<FileType> SupportedSignatures => new[] { FileType._7Z, FileType.RAR_NEW, FileType.RAR_OLD, FileType.ZIP };
-    public IEnumerable<Extension> SupportedExtensions => new[] { Ext._7z, Ext.Rar, Ext.Zip, Ext._7zip };
 }
