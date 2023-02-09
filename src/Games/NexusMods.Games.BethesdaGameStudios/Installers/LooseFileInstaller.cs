@@ -1,4 +1,5 @@
-﻿using NexusMods.DataModel.Abstractions;
+﻿using NexusMods.Common;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.ModInstallers;
@@ -6,7 +7,6 @@ using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.Interfaces;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.BethesdaGameStudios.Installers;
@@ -35,11 +35,11 @@ public class LooseFileInstaller : IModInstaller
     public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
         if (installation.Game is not SkyrimSpecialEdition)
-            return Interfaces.Priority.None;
+            return Common.Priority.None;
 
         return FilterFiles(files).Any()
-            ? Interfaces.Priority.Normal
-            : Interfaces.Priority.None;
+            ? Common.Priority.Normal
+            : Common.Priority.None;
     }
 
     private IEnumerable<(RelativePath Path, AnalyzedFile Entry)> FilterFiles(EntityDictionary<RelativePath, AnalyzedFile> files)

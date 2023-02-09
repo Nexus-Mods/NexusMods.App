@@ -3,7 +3,6 @@ using NexusMods.Common;
 using NexusMods.FileExtractor.Extractors;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.FileExtractor.StreamFactories;
-using NexusMods.Interfaces;
 using NexusMods.Paths;
 
 namespace NexusMods.FileExtractor;

@@ -1,11 +1,11 @@
-﻿using NexusMods.DataModel.Abstractions;
+﻿using NexusMods.Common;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.Interfaces;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.RedEngine;
@@ -26,10 +26,10 @@ public class SimpleOverlyModInstaller : IModInstaller
     {
         if (files.Keys.All(path => _rootPaths.Any(path.InFolder)))
         {
-            return Interfaces.Priority.Normal;
+            return Common.Priority.Normal;
         }
 
-        return Interfaces.Priority.None;
+        return Common.Priority.None;
     }
 
     public IEnumerable<AModFile> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)

@@ -7,7 +7,6 @@ using NexusMods.Common;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.FileExtractor.StreamFactories;
-using NexusMods.Interfaces;
 using NexusMods.Paths;
 
 namespace NexusMods.FileExtractor.Extractors;
