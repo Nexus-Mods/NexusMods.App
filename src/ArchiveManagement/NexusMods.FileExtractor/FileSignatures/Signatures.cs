@@ -1,25 +1,82 @@
 ﻿using NexusMods.Paths;
+#pragma warning disable CS1591 // missing XML documentation
+// ReSharper disable All
 namespace NexusMods.FileExtractor.FileSignatures {
 
-    public enum FileType {        BTAR,
-           CreationEnginePlugin,
-           INI,
-           MorrowindBSA,
-           NIF,
-           TES4,
-           TXT,
-          _7Z,
-          BA2,
-          BSA,
-          DDS,
-          FDF,
-          GZ,
-          PDF,
-          RAR,
-          RAR_NEW,
-          RAR_OLD,
-          ZIP,
-        }
+    public enum FileType 
+    {                /// <summary>
+                /// Bethesda Tar
+                /// </summary>
+                 BTAR,
+                            /// <summary>
+                /// Creation Engine Plugin
+                /// </summary>
+                 CreationEnginePlugin,
+                        /// <summary>
+            /// Ini Configuration File
+            /// </summary>
+             INI,
+                /// <summary>
+                /// Morrowind BSA
+                /// </summary>
+                 MorrowindBSA,
+                            /// <summary>
+                /// NetImmerse File Format
+                /// </summary>
+                 NIF,
+                            /// <summary>
+                /// TES4 Plugin
+                /// </summary>
+                 TES4,
+                        /// <summary>
+            /// Text File
+            /// </summary>
+             TXT,
+                /// <summary>
+                /// 7-Zip compressed file
+                /// </summary>
+                _7Z,
+                            /// <summary>
+                /// FO4 BSA
+                /// </summary>
+                BA2,
+                            /// <summary>
+                /// TES 4-5 and FO 3 BSA
+                /// </summary>
+                BSA,
+                            /// <summary>
+                /// DDS
+                /// </summary>
+                DDS,
+                            /// <summary>
+                /// PDF file
+                /// </summary>
+                FDF,
+                            /// <summary>
+                /// GZIP archive file
+                /// </summary>
+                GZ,
+                            /// <summary>
+                /// PDF file
+                /// </summary>
+                PDF,
+                            /// <summary>
+                /// Relaxed RAR format
+                /// </summary>
+                RAR,
+                            /// <summary>
+                /// RAR5 or newer
+                /// </summary>
+                RAR_NEW,
+                            /// <summary>
+                /// RAR4 or older
+                /// </summary>
+                RAR_OLD,
+                            /// <summary>
+                /// Zip
+                /// </summary>
+                ZIP,
+                }
 
     public static class Definitions {
 
