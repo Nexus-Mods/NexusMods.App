@@ -83,6 +83,7 @@ public class SevenZipExtractor : IExtractor
     public Priority DeterminePriority(IEnumerable<FileType> signatures)
     {
         // Yes this is O(n*m) but the search space (should) be very small. 
+        // 'signatures' should usually be only 1 element :)
         if ((from supported in SupportedSignatures 
                 from sig in signatures 
                 where supported == sig 
