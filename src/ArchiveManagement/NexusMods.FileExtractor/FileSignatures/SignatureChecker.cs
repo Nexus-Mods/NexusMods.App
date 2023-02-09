@@ -38,20 +38,12 @@ public class SignatureChecker
 
         var lst = new List<FileType>();
         foreach (var (fileType, signature) in _signatures)
-            if (AreEqual(_buffer, signature))
+            if (_buffer.AsSpan().StartsWith(signature))
                 lst.Add(fileType);
         
         return lst;
     }
 
-    private static bool AreEqual(Span<byte> buffer, Span<byte> candidate)
-    {
-        if (candidate.Length > buffer.Length)
-            return false;
-        
-        return buffer[..candidate.Length].SequenceEqual(candidate);
-    }
-    
     /// <summary>
     /// Performs a lookup of the extension against the known extensions 
     /// </summary>
