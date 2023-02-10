@@ -83,8 +83,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.Reshade", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.Generic", "src\Games\NexusMods.Games.Generic\NexusMods.Games.Generic.csproj", "{7CDE7572-9471-4966-B3B3-70DF7D2D9269}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Networking.AdvancedHttpDownloader.Tests", "tests\Networking\NexusMods.Networking.AdvancedHttpDownloader.Tests\NexusMods.Networking.AdvancedHttpDownloader.Tests.csproj", "{DD6EEDED-4CB2-42CE-B647-A2CC59C69769}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Benchmarks", "benchmarks\NexusMods.Benchmarks\NexusMods.Benchmarks.csproj", "{CB61A764-B3BB-42C0-8CDB-DBE57FB80DF5}"
 EndProject
 Global
@@ -225,10 +223,6 @@ Global
 		{7CDE7572-9471-4966-B3B3-70DF7D2D9269}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7CDE7572-9471-4966-B3B3-70DF7D2D9269}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7CDE7572-9471-4966-B3B3-70DF7D2D9269}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DD6EEDED-4CB2-42CE-B647-A2CC59C69769}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DD6EEDED-4CB2-42CE-B647-A2CC59C69769}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DD6EEDED-4CB2-42CE-B647-A2CC59C69769}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DD6EEDED-4CB2-42CE-B647-A2CC59C69769}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CB61A764-B3BB-42C0-8CDB-DBE57FB80DF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CB61A764-B3BB-42C0-8CDB-DBE57FB80DF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CB61A764-B3BB-42C0-8CDB-DBE57FB80DF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -264,7 +258,6 @@ Global
 		{060613B7-92CA-418B-99CC-CA30C0D977DB} = {B95A2142-2872-4FFD-BAB2-596373401461}
 		{B9CDD38F-31FD-47BE-91EB-E2BFABC3860B} = {B95A2142-2872-4FFD-BAB2-596373401461}
 		{7CDE7572-9471-4966-B3B3-70DF7D2D9269} = {B95A2142-2872-4FFD-BAB2-596373401461}
-		{DD6EEDED-4CB2-42CE-B647-A2CC59C69769} = {CE2EFB0A-22CA-4F3F-B6AB-9E264FD4C4E7}
 		{CB61A764-B3BB-42C0-8CDB-DBE57FB80DF5} = {98448149-E44A-42E5-852D-B12C9D8AAABD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

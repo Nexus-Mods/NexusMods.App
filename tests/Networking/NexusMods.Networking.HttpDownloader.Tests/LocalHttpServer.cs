@@ -47,6 +47,21 @@ public class LocalHttpServer : IDisposable
                         ros.Write("Hello World!"u8);
                         break;
                     }
+                    case "/resume":
+                    {
+                        resp.StatusCode = (int)HttpStatusCode.PartialContent;
+                        resp.StatusDescription = "Partial Content";
+                        resp.ProtocolVersion = HttpVersion.Version11;
+                        resp.Headers.Add(HttpResponseHeader.ContentType, "text/plain");
+                        // resp.Headers.Add(HttpResponseHeader.ContentType, "application/octet-stream");
+                        resp.Headers.Add(HttpResponseHeader.AcceptRanges, "bytes");
+                        resp.Headers.Add(HttpResponseHeader.ContentRange, $"bytes 15-20/21");
+                        resp.Headers.Add(HttpResponseHeader.KeepAlive, "true");
+
+                        await using var ros = resp.OutputStream;
+                        ros.Write("World!"u8);
+                        break;
+                    }
                     default:
                     {
                         resp.StatusCode = 404;
