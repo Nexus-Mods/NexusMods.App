@@ -1,4 +1,7 @@
-﻿using FluentAssertions;
+﻿using System.Collections.Immutable;
+using System.IO.Compression;
+using FluentAssertions;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Tests.Harness;
