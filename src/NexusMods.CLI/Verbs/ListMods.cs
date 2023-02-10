@@ -11,15 +11,14 @@ public class ListMods : AVerb<LoadoutMarker>
         _renderer = configurator.Renderer;
     }
 
-    public static VerbDefinition Definition = new("list-mods",
+    public static VerbDefinition Definition => new("list-mods",
         "List all the mods in a given managed game",
         new[]
         {
             new OptionDefinition<LoadoutMarker>("l", "loadout", "The managed game to access")
         });
-
-
-    protected override async Task<int> Run(LoadoutMarker loadout, CancellationToken token)
+    
+    public async Task<int> Run(LoadoutMarker loadout, CancellationToken token)
     {
         var rows = new List<object[]>();
         foreach (var mod in loadout.Value.Mods.Values)

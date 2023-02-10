@@ -11,7 +11,7 @@ public class ExportLoadout : AVerb<LoadoutMarker, AbsolutePath>
         _renderer = configurator.Renderer;
     }
     
-    public static VerbDefinition Definition = new("export-loadout", "Export a loadout to a file",
+    public static VerbDefinition Definition => new("export-loadout", "Export a loadout to a file",
         new OptionDefinition[]
         {
             new OptionDefinition<LoadoutMarker>("l", "loadout", "The loadout to export"),
@@ -20,7 +20,7 @@ public class ExportLoadout : AVerb<LoadoutMarker, AbsolutePath>
 
     private readonly IRenderer _renderer;
 
-    protected override async Task<int> Run(LoadoutMarker loadout, AbsolutePath output, CancellationToken token)
+    public async Task<int> Run(LoadoutMarker loadout, AbsolutePath output, CancellationToken token)
     {
         await loadout.ExportTo(output, token);
         return 0;

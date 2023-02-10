@@ -23,7 +23,7 @@ public class StressTest : AVerb<IGame>
         _logger = logger;
     }
     
-    public static VerbDefinition Definition = 
+    public static VerbDefinition Definition => 
         new VerbDefinition("stress-test", "Stress test the application by installing all recent mods for a given game", 
             new OptionDefinition[]
             {
@@ -39,7 +39,7 @@ public class StressTest : AVerb<IGame>
         FileType.PDF
     };
 
-    protected override async Task<int> Run(IGame game, CancellationToken token)
+    public async Task<int> Run(IGame game, CancellationToken token)
     {
         var tests = RecentModsTest.Create(_provider, game);
         await _renderer.WithProgress(token, async () =>

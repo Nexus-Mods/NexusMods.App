@@ -8,7 +8,7 @@ public class ListTools : AVerb
     private readonly IRenderer _renderer;
     private readonly IEnumerable<ITool> _tools;
     
-    public static VerbDefinition Definition = new("list-tools",
+    public static VerbDefinition Definition => new("list-tools",
         "List all tools", Array.Empty<OptionDefinition>());
 
 
@@ -18,7 +18,7 @@ public class ListTools : AVerb
         _tools = tools;
     }
     
-    protected override async Task<int> Run(CancellationToken token)
+    public async Task<int> Run(CancellationToken token)
     {
         await _renderer.Render(new Table(new[] { "Name", "Games" },
             _tools.Select(t => new object[] { t.Name, string.Join(", ", t.Domains) })));

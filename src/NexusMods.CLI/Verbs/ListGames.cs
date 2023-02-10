@@ -24,8 +24,7 @@ public class ListGames : AVerb
         _renderer = configurator.Renderer;
     }
     
-
-    protected override async Task<int> Run(CancellationToken token)
+    public async Task<int> Run(CancellationToken token)
     {
         var installs = from game in _games.OrderBy(g => g.Name)
             from install in game.Installations.OrderBy(g => g.Version)

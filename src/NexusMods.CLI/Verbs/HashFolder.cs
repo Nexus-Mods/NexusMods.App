@@ -15,14 +15,14 @@ public class HashFolder : AVerb<AbsolutePath>
         _renderer = configurator.Renderer;
     }
     
-    public static VerbDefinition Definition = new VerbDefinition("hash-folder",
+    public static VerbDefinition Definition => new VerbDefinition("hash-folder",
         "Hashes the contents of a directory, caching the results",
         new[]
         {
             new OptionDefinition<AbsolutePath>( "f", "folder", "Folder to hash")
         });
 
-    protected override async Task<int> Run(AbsolutePath folder, CancellationToken token)
+    public async Task<int> Run(AbsolutePath folder, CancellationToken token)
     {
         var rows = new List<object[]>();
         await _renderer.WithProgress(token, async () =>

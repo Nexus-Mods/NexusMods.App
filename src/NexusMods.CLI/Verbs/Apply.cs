@@ -13,14 +13,14 @@ public class Apply : AVerb<LoadoutMarker, bool, bool>
         _renderer = configurator.Renderer;
     }
 
-    public static readonly VerbDefinition Definition = new("apply", "Apply a Loadout to a game folder", new OptionDefinition[]
+    public static VerbDefinition Definition => new("apply", "Apply a Loadout to a game folder", new OptionDefinition[]
     {
         new OptionDefinition<LoadoutMarker>("l", "loadout", "Loadout to apply"),
         new OptionDefinition<bool>("r", "run", "Run the application? (defaults to just printing the steps)"),
         new OptionDefinition<bool>("s", "summary", "Print the summary, not the detailed step list")
     });
     
-    protected override async Task<int> Run(LoadoutMarker loadout, bool run, bool summary, CancellationToken token)
+    public async Task<int> Run(LoadoutMarker loadout, bool run, bool summary, CancellationToken token)
     {
 
         var plan = await loadout.MakeApplyPlan(token);

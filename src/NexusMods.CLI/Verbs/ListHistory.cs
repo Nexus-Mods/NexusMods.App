@@ -18,7 +18,7 @@ public class ListHistory : AVerb<LoadoutMarker>
             new OptionDefinition<LoadoutMarker>("l", "loadout", "Loadout to load")
         });
 
-    protected override async Task<int> Run(LoadoutMarker loadout, CancellationToken token)
+    public async Task<int> Run(LoadoutMarker loadout, CancellationToken token)
     {
         var rows = loadout.History()
             .Select(list => new object[] { list.LastModified, list.ChangeMessage, list.Mods.Count, list.DataStoreId })

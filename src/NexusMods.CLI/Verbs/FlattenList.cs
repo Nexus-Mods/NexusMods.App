@@ -12,13 +12,13 @@ public class FlattenList : AVerb<LoadoutMarker>
     }
 
     
-    public static VerbDefinition Definition = new VerbDefinition("flatten-list",
+    public static VerbDefinition Definition => new VerbDefinition("flatten-list",
         "Flatten a loadout into the projected filesystem", new[]
         {
             new OptionDefinition<LoadoutMarker>("l", "loadout", "loadout to target")
         });
     
-    protected override async Task<int> Run(LoadoutMarker loadout, CancellationToken token)
+    public async Task<int> Run(LoadoutMarker loadout, CancellationToken token)
     {
         var rows = new List<object[]>();
         foreach (var (file, mod) in loadout.FlattenList())

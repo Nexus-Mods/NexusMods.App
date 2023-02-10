@@ -1,50 +1,70 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+// ReSharper disable InconsistentNaming
 
 namespace NexusMods.CLI;
+
+/// <summary>
+/// Represents an individual action, e.g. 'Analyze Game'
+/// </summary>
+public class Verb
+{
+    /// <summary>
+    /// Describes the verb; its name, description and options.
+    /// </summary>
+    public required VerbDefinition Definition { get; init; }
+    
+    /// <summary>
+    /// The function that is ran to execute it.
+    /// </summary>
+    public required Func<object, Delegate> Run { get; init; }
+
+    /// <summary>
+    /// Generic type of the class used.
+    /// </summary>
+    public required Type Type { get; init; }
+}
 
 public interface IVerb
 {
     public Delegate Delegate { get; }
+    static abstract VerbDefinition Definition { get; }
 }
 
-public abstract class AVerb : IVerb
+public interface AVerb : IVerb
 {
-    public Delegate Delegate => Run;
-    protected abstract Task<int> Run(CancellationToken token);
+    Delegate IVerb.Delegate => Run;
+    public Task<int> Run(CancellationToken token);
 }
 
-public abstract class AVerb<T> : IVerb
+public interface AVerb<in T> : IVerb
 {
-    public Delegate Delegate => Run;
-    protected abstract Task<int> Run(T a, CancellationToken token);
+    Delegate IVerb.Delegate => Run;
+    public Task<int> Run(T a, CancellationToken token);
 }
 
-public abstract class AVerb<T1, T2> : IVerb
+public interface AVerb<in T1, in T2> : IVerb
 {
-    public Delegate Delegate => Run;
-    protected abstract Task<int> Run(T1 a, T2 b, CancellationToken token);
+    Delegate IVerb.Delegate => Run;
+    public Task<int> Run(T1 a, T2 b, CancellationToken token);
 }
 
-
-public abstract class AVerb<T1, T2, T3> : IVerb
+public interface AVerb<in T1, in T2, in T3> : IVerb
 {
-    public Delegate Delegate => Run;
-    protected abstract Task<int> Run(T1 a, T2 b, T3 c, CancellationToken token);
-}
-
-public class Verb
-{
-    public required VerbDefinition Definition { get; init; }
-    public required Func<object, Delegate> Run { get; init; }
-    
-    public required Type Type { get; init; }
+    Delegate IVerb.Delegate => Run;
+    public Task<int> Run(T1 a, T2 b, T3 c, CancellationToken token);
 }
 
 public static class ServiceExtensions
 {
-    public static IServiceCollection AddVerb<T>(this IServiceCollection services, VerbDefinition definition) where T : IVerb
+    public static IServiceCollection AddVerb<T>(this IServiceCollection services) where T : IVerb
     {
-        services.AddSingleton(new Verb { Definition = definition, Run = o => ((T)o).Delegate, Type = typeof(T)});
+        services.AddSingleton(new Verb
+        {
+            Definition = T.Definition, 
+            Run = o => ((T)o).Delegate, 
+            Type = typeof(T)
+        });
+        
         services.AddSingleton(typeof(T));
         return services;
     }

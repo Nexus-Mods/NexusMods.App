@@ -12,15 +12,14 @@ public class RunTool : AVerb<ITool, LoadoutMarker>
         _renderer = configurator.Renderer;
     }
     
-    public static VerbDefinition Definition = new("run",
+    public static VerbDefinition Definition => new("run",
         "Run a tool with a loadout", new OptionDefinition[]
         {
             new OptionDefinition<ITool>("t", "tool", "Tool to run"),
             new OptionDefinition<LoadoutMarker>("l", "loadout", "Loadout to run the tool with")
         });
-
-
-    protected override async Task<int> Run(ITool tool, LoadoutMarker loadout, CancellationToken token)
+    
+    public async Task<int> Run(ITool tool, LoadoutMarker loadout, CancellationToken token)
     {
         await _renderer.WithProgress(token, async () =>
         {

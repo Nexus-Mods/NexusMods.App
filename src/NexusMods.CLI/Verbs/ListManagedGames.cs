@@ -13,12 +13,11 @@ public class ListManagedGames : AVerb
         _manager = manager;
         _renderer = configurator.Renderer;
     }
-    public static VerbDefinition Definition = new VerbDefinition("list-managed-games",
+    public static VerbDefinition Definition => new VerbDefinition("list-managed-games",
         "List all the managed game instances (Loadouts) in the app",
         Array.Empty<OptionDefinition>());
-
-
-    protected override async Task<int> Run(CancellationToken token)
+    
+    public async Task<int> Run(CancellationToken token)
     {
         var rows = new List<object[]>();
         foreach (var list in _manager.AllLoadouts.Select(x => x.Value))

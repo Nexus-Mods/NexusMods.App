@@ -13,7 +13,7 @@ public class ExtractArchive : AVerb<AbsolutePath, AbsolutePath>
         _extractor = extractor;
     }
     
-    public static readonly VerbDefinition Definition = new("extract-archive",
+    public static VerbDefinition Definition => new("extract-archive",
         "Extracts an archive to a folder on-disk", new[]
         {
             new OptionDefinition<AbsolutePath>("i", "inputFile", "Input archive to extract"),
@@ -21,7 +21,7 @@ public class ExtractArchive : AVerb<AbsolutePath, AbsolutePath>
         });
     
 
-    protected override async Task<int> Run(AbsolutePath inputFile, AbsolutePath outputFolder, CancellationToken token)
+    public async Task<int> Run(AbsolutePath inputFile, AbsolutePath outputFolder, CancellationToken token)
     {
         await _extractor.ExtractAllAsync(inputFile, outputFolder, token);
         return 0;

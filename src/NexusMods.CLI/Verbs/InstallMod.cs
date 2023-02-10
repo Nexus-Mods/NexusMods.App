@@ -11,7 +11,7 @@ public class InstallMod : AVerb<LoadoutMarker, AbsolutePath, string>
         _renderer = configurator.Renderer;
     }
 
-    public static readonly VerbDefinition Definition = new("install-mod", "Installs a mod into a loadout", new OptionDefinition[]
+    public static VerbDefinition Definition => new("install-mod", "Installs a mod into a loadout", new OptionDefinition[]
     {
         new OptionDefinition<LoadoutMarker>("l", "loadout", "loadout to add the mod to"),
         new OptionDefinition<AbsolutePath>("f", "file", "Mod file to install"),
@@ -19,7 +19,7 @@ public class InstallMod : AVerb<LoadoutMarker, AbsolutePath, string>
     });
 
 
-    protected override async Task<int> Run(LoadoutMarker loadout, AbsolutePath file, string name, CancellationToken token)
+    public async Task<int> Run(LoadoutMarker loadout, AbsolutePath file, string name, CancellationToken token)
     {
         await _renderer.WithProgress(token, async () =>
         {

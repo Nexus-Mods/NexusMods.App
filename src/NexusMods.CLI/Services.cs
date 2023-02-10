@@ -27,23 +27,23 @@ public static class Services
         services.AddSingleton<IOptionParser<ITool>, ToolParser>();
         services.AddSingleton<TemporaryFileManager>();
 
-        services.AddVerb<AnalyzeArchive>(AnalyzeArchive.Definition)
-            .AddVerb<Apply>(Apply.Definition)
-            .AddVerb<ChangeTracking>(ChangeTracking.Definition)
-            .AddVerb<ExtractArchive>(ExtractArchive.Definition)
-            .AddVerb<ExportLoadout>(ExportLoadout.Definition)
-            .AddVerb<FlattenList>(FlattenList.Definition)
-            .AddVerb<HashFolder>(HashFolder.Definition)
-            .AddVerb<InstallMod>(InstallMod.Definition)
-            .AddVerb<ListGames>(ListGames.Definition)
-            .AddVerb<ListHistory>(ListHistory.Definition)
-            .AddVerb<ListManagedGames>(ListManagedGames.Definition)
-            .AddVerb<ListModContents>(ListModContents.Definition)
-            .AddVerb<ListMods>(ListMods.Definition)
-            .AddVerb<ListTools>(ListTools.Definition)
-            .AddVerb<ManageGame>(ManageGame.Definition)
-            .AddVerb<Rename>(Rename.Definition)
-            .AddVerb<RunTool>(RunTool.Definition);
+        services.AddVerb<AnalyzeArchive>()
+            .AddVerb<Apply>()
+            .AddVerb<ChangeTracking>()
+            .AddVerb<ExtractArchive>()
+            .AddVerb<ExportLoadout>()
+            .AddVerb<FlattenList>()
+            .AddVerb<HashFolder>()
+            .AddVerb<InstallMod>()
+            .AddVerb<ListGames>()
+            .AddVerb<ListHistory>()
+            .AddVerb<ListManagedGames>()
+            .AddVerb<ListModContents>()
+            .AddVerb<ListMods>()
+            .AddVerb<ListTools>()
+            .AddVerb<ManageGame>()
+            .AddVerb<Rename>()
+            .AddVerb<RunTool>();
         
         services.AddAllSingleton<IResource, IResource<IExtractor, Size>>(s => new Resource<IExtractor, Size>("File Extraction"));
         services.AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(s => new Resource<FileContentsCache, Size>("File Analysis"));

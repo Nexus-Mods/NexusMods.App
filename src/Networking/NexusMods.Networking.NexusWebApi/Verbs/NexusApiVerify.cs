@@ -12,14 +12,14 @@ public class NexusApiVerify : AVerb
 
     }
 
-    public static readonly VerbDefinition Definition = new("nexus-api-verify",
+    public static VerbDefinition Definition => new("nexus-api-verify",
         "Verifies the logged in account via the Nexus API",
         Array.Empty<OptionDefinition>());
 
     private readonly Client _client;
     private readonly IRenderer _renderer;
 
-    protected override async Task<int> Run(CancellationToken token)
+    public async Task<int> Run(CancellationToken token)
     {
         var result = await _client.Validate(token);
         await _renderer.Render(new Table(new[] { "Name", "Premium", "Daily Remaining", "Hourly Remaining" },
