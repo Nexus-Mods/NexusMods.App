@@ -138,3 +138,12 @@ public partial struct Size :
         return Bandwidth.From((ulong)(left._value / right.TotalSeconds));
     }
 }
+
+public static class SizeExtensions
+{
+    public static Size Sum<T>(this IEnumerable<T> coll, Func<T, Size> selector)
+    {
+        return coll.Aggregate(Size.Zero, (s, itm) => selector(itm) + s);
+    }
+
+}

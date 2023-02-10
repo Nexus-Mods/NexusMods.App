@@ -1,8 +1,8 @@
-name: Networking Tests
+﻿name: Mod Install Tests
 
 on:
   schedule:
-    - cron: '0 12 * * *'
+    - cron: '0 6 * * *'
   workflow_dispatch:
   push:
     branches:
@@ -11,7 +11,7 @@ on:
 jobs:
   build:
     
-    name: Test ${{ matrix.project }} (${{ matrix.os }})
+    name: Test ${{matrix.game.domain}} - ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     
     environment: test
@@ -23,6 +23,9 @@ jobs:
       matrix:
         #os: [ubuntu-latest, windows-latest, macos-latest]
         os: [Windows]
+        game:
+          - domain: cyberpunk2077
+            file: .\tests\Games\NexusMods.Games.RedEngine.Tests\Resources\cyberpunk2077.1.61.zip
 
     steps:
       - uses: actions/checkout@v3
@@ -39,8 +42,8 @@ jobs:
       - name: Clean Tests
         run: dotnet clean
 
-      - name: Tests
-        run: dotnet test --filter RequiresNetworking=True /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+      - name: Stress Test
+        run: dotnet run --project .\src\NexusMods.App\NexusMods.App.csproj -- stress-test -g ${{matrix.game.domain}} -l ${{matrix.game.file}}
 
       - uses: codecov/codecov-action@v3
         with:

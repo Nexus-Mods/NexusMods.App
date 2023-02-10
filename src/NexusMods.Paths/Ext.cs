@@ -9,5 +9,7 @@ public static class Ext
     public static Extension Json = new(".json");
     public static Extension Txt = new(".txt");
     public static Extension Tmp = new(".tmp");
+    public static Extension Md = new(".md");
+    public static Extension Pdf = new(".pdf");
     public static Extension Ra = new(".ra");
 }
