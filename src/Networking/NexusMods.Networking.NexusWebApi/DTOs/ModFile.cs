@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using NexusMods.Networking.NexusWebApi.Types;
+using NexusMods.Paths;
 
 namespace NexusMods.Networking.NexusWebApi.DTOs;
 
@@ -54,7 +55,7 @@ public class ModFile
     public int SizeKb { get; set; }
 
     [JsonPropertyName("size_in_bytes")]
-    public long SizeInBytes { get; set; }
+    public Size? SizeInBytes { get; set; }
 
     [JsonPropertyName("changelog_html")]
     public string ChangelogHtml { get; set; }
