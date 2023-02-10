@@ -38,7 +38,6 @@ var host = Host.CreateDefaultBuilder(Environment.GetCommandLineArgs())
             .AddRenderers()
             .AddNexusWebApi()
             .AddHttpDownloader()
-            .AddRenderers()
             .AddTestHarness();
 
         services.AddSingleton<HttpClient>();
