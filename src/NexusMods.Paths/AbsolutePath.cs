@@ -125,7 +125,8 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
 
         var result = 0;
         foreach (var part in Parts)
-            result ^= part.GetHashCode(StringComparison.CurrentCultureIgnoreCase);
+            result ^= part.GetHashCode(StringComparison.InvariantCultureIgnoreCase);
+        
         _hashCode = result;
         return _hashCode;
     }

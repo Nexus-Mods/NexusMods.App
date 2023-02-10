@@ -30,13 +30,13 @@ public class SizeTests
 
         a.ToString().Should().Be("10 B");
 
-        ((Size)1L).Readable().Should().Be("1 B");
-        ((Size)1024L).Readable().Should().Be("1 KB");
-        ((Size)1024L * 1024L).Readable().Should().Be("1 MB");
-        ((Size)1024L * 1024L * 1024L).Readable().Should().Be("1 GB");
-        ((Size)1024L * 1024L * 1024L * 1024L).Readable().Should().Be("1 TB");
-        ((Size)1024L * 1024L * 1024L * 1024L * 1024L).Readable().Should().Be("1 PB");
-        ((Size)1024L * 1024L * 1024L * 1024L * 1024L * 1024L).Readable().Should().Be("1 EB");
+        ((Size)1L).ToString().Should().Be("1 B");
+        ((Size)1024L).ToString().Should().Be("1 KB");
+        ((Size)1024L * 1024L).ToString().Should().Be("1 MB");
+        ((Size)1024L * 1024L * 1024L).ToString().Should().Be("1 GB");
+        ((Size)1024L * 1024L * 1024L * 1024L).ToString().Should().Be("1 TB");
+        ((Size)1024L * 1024L * 1024L * 1024L * 1024L).ToString().Should().Be("1 PB");
+        ((Size)1024L * 1024L * 1024L * 1024L * 1024L * 1024L).ToString().Should().Be("1 EB");
 
     }
 }

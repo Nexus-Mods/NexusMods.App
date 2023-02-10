@@ -51,7 +51,7 @@ public static class ArrayExtensions
             if (idx == a.Length && idx < b.Length) return -1;
             if (idx == b.Length && idx < a.Length) return 1;
 
-            var comp = string.Compare(a[idx], b[idx], StringComparison.CurrentCultureIgnoreCase);
+            var comp = string.Compare(a[idx], b[idx], StringComparison.InvariantCultureIgnoreCase);
             if (comp != 0) return comp;
             idx++;
         }

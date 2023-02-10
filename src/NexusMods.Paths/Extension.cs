@@ -55,7 +55,7 @@ public readonly struct Extension
 
     public static bool operator ==(Extension a, Extension b)
     {
-        return string.Equals(a._extension, b._extension, StringComparison.CurrentCultureIgnoreCase);
+        return string.Equals(a._extension, b._extension, StringComparison.InvariantCultureIgnoreCase);
     }
 
     public static bool operator !=(Extension a, Extension b)
