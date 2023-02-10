@@ -25,7 +25,7 @@ jobs:
         os: [Windows]
         game:
           - domain: cyberpunk2077
-            file: .\tests\Games\NexusMods.Games.RedEngine.Tests\Resources\cyberpunk2077.1.61.zip
+            file: tests\Games\NexusMods.Games.RedEngine.Tests\Resources\cyberpunk2077.1.61.zip
 
     steps:
       - uses: actions/checkout@v3
