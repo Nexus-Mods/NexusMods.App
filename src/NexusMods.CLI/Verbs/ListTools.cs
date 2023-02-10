@@ -3,6 +3,7 @@ using NexusMods.DataModel.Games;
 
 namespace NexusMods.CLI.Verbs;
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public class ListTools : AVerb
 {
     private readonly IRenderer _renderer;
@@ -10,8 +11,7 @@ public class ListTools : AVerb
     
     public static VerbDefinition Definition => new("list-tools",
         "List all tools", Array.Empty<OptionDefinition>());
-
-
+    
     public ListTools(Configurator configurator, IEnumerable<ITool> tools)
     {
         _renderer = configurator.Renderer;

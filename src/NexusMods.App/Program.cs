@@ -54,12 +54,9 @@ if (args.Length > 0)
 
     return await builder.InvokeAsync(args);
 }
-else
-{
-    Main(host.Services, args);
-    return 0;
-}
 
+Main(host.Services, args);
+return 0;
 
 void AddLogging(ILoggingBuilder loggingBuilder)
 {
@@ -79,7 +76,6 @@ void AddLogging(ILoggingBuilder loggingBuilder)
     {
         Layout = "${processtime} [${level:uppercase=true}] ${message:withexception=true}",
     };
-        
 
     config.AddRuleForAllLevels(fileTarget);
     config.AddRuleForAllLevels(consoleTarget);

@@ -18,6 +18,7 @@ public class LoadoutParser : IOptionParser<Loadout>
         var found = _store.GetByPrefix<Loadout>(new IdVariableLength(EntityCategory.Loadouts, bytes)).ToArray();
         if (found.Length > 1)
             throw new Exception("More than one Loadout with that id prefix found");
+        
         return found.First();
     }
 

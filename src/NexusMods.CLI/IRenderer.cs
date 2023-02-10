@@ -36,7 +36,7 @@ public interface IRenderer
     /// <param name="showSize">Whether the size of the operation should be shown.</param>
     /// <typeparam name="T">Type of return value returned from the function passed.</typeparam>
     /// <remarks>
-    ///     Progress is determined from the <see cref="IResource"/>(s) that were passed to the Renderer.
+    ///     Progress is determined from the 'IResource'(s) that were passed to the Renderer.
     /// </remarks>
     public Task<T> WithProgress<T>(CancellationToken token, Func<Task<T>> f, bool showSize = true);
 }

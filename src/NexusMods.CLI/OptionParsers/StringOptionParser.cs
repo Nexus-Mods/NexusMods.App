@@ -11,18 +11,9 @@ public class StringOptionParser<T> : IOptionParser<T>
 {
     private readonly TypeConverter _definition;
 
-    public StringOptionParser()
-    {
-        _definition = TypeDescriptor.GetConverter(typeof(T));
+    public StringOptionParser() => _definition = TypeDescriptor.GetConverter(typeof(T));
 
-    }
-    public T Parse(string input, OptionDefinition<T> definition)
-    {
-        return (T)_definition.ConvertFrom(input)!;
-    }
+    public T Parse(string input, OptionDefinition<T> definition) => (T)_definition.ConvertFrom(input)!;
 
-    public IEnumerable<string> GetOptions(string input)
-    {
-        return Array.Empty<string>();
-    }
+    public IEnumerable<string> GetOptions(string input) => Array.Empty<string>();
 }

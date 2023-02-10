@@ -5,9 +5,11 @@ using NexusMods.Paths;
 
 namespace NexusMods.CLI.Verbs;
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public class Apply : AVerb<LoadoutMarker, bool, bool>
 {
     private readonly IRenderer _renderer;
+    
     public Apply(Configurator configurator)
     {
         _renderer = configurator.Renderer;

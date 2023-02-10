@@ -7,10 +7,7 @@ public class LoadoutMarkerParser : IOptionParser<LoadoutMarker>
 {
     private readonly LoadoutManager _manager;
 
-    public LoadoutMarkerParser(LoadoutManager manager)
-    {
-        _manager = manager;
-    }
+    public LoadoutMarkerParser(LoadoutManager manager) => _manager = manager;
 
     public LoadoutMarker Parse(string input, OptionDefinition<LoadoutMarker> definition)
     {

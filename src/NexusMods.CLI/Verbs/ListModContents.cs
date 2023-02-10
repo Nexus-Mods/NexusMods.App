@@ -4,14 +4,12 @@ using NexusMods.DataModel.Loadouts.ModFiles;
 
 namespace NexusMods.CLI.Verbs;
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public class ListModContents : AVerb<LoadoutMarker, string>
 {
     private readonly IRenderer _renderer;
-    public ListModContents(Configurator configurator)
-    {
-        _renderer = configurator.Renderer;
-    }
-    
+    public ListModContents(Configurator configurator) => _renderer = configurator.Renderer;
+
     public static VerbDefinition Definition => new("list-mod-contents", "Lists all the files in a mod",
         new OptionDefinition[]
         {
@@ -29,7 +27,6 @@ public class ListModContents : AVerb<LoadoutMarker, string>
                 rows.Add(new object[]{fa.To, fa.From});
             else if (file is GameFile gf)
                 rows.Add(new object[]{gf.To, gf.Installation});
-                
         }
 
         await _renderer.Render(new Table(new[] { "Name", "Source"}, rows));

@@ -4,13 +4,7 @@ namespace NexusMods.CLI.OptionParsers;
 
 public class AbsolutePathParser : IOptionParser<AbsolutePath>
 {
-    public AbsolutePath Parse(string input, OptionDefinition<AbsolutePath> definition)
-    {
-        return input.ToAbsolutePath();
-    }
+    public AbsolutePath Parse(string input, OptionDefinition<AbsolutePath> definition) => input.ToAbsolutePath();
 
-    public IEnumerable<string> GetOptions(string input)
-    {
-        return Array.Empty<string>();
-    }
+    public IEnumerable<string> GetOptions(string input) => Array.Empty<string>();
 }

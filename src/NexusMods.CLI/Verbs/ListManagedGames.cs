@@ -3,6 +3,7 @@ using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.CLI.Verbs;
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public class ListManagedGames : AVerb
 {
     private readonly LoadoutManager _manager;
@@ -13,7 +14,7 @@ public class ListManagedGames : AVerb
         _manager = manager;
         _renderer = configurator.Renderer;
     }
-    public static VerbDefinition Definition => new VerbDefinition("list-managed-games",
+    public static VerbDefinition Definition => new("list-managed-games",
         "List all the managed game instances (Loadouts) in the app",
         Array.Empty<OptionDefinition>());
     
@@ -21,9 +22,7 @@ public class ListManagedGames : AVerb
     {
         var rows = new List<object[]>();
         foreach (var list in _manager.AllLoadouts.Select(x => x.Value))
-        {
             rows.Add(new object[]{list.Name, list.Installation, list.LoadoutId, list.Mods.Count});
-        }
 
         await _renderer.Render(new Table(new[] { "Name", "Game", "Id", "Mod Count" }, rows));
 

@@ -3,15 +3,13 @@ using NexusMods.DataModel.Loadouts.Markers;
 
 namespace NexusMods.CLI.Verbs;
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public class RunTool : AVerb<ITool, LoadoutMarker>
 {
     private readonly IRenderer _renderer;
 
-    public RunTool(Configurator configurator)
-    {
-        _renderer = configurator.Renderer;
-    }
-    
+    public RunTool(Configurator configurator) => _renderer = configurator.Renderer;
+
     public static VerbDefinition Definition => new("run",
         "Run a tool with a loadout", new OptionDefinition[]
         {

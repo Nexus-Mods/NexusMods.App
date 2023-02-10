@@ -3,13 +3,11 @@ using NexusMods.Paths;
 
 namespace NexusMods.CLI.Verbs;
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public class InstallMod : AVerb<LoadoutMarker, AbsolutePath, string>
 {
     private readonly IRenderer _renderer;
-    public InstallMod(Configurator configurator)
-    {
-        _renderer = configurator.Renderer;
-    }
+    public InstallMod(Configurator configurator) => _renderer = configurator.Renderer;
 
     public static VerbDefinition Definition => new("install-mod", "Installs a mod into a loadout", new OptionDefinition[]
     {
@@ -17,7 +15,6 @@ public class InstallMod : AVerb<LoadoutMarker, AbsolutePath, string>
         new OptionDefinition<AbsolutePath>("f", "file", "Mod file to install"),
         new OptionDefinition<string>("n", "name", "Name of the mod after installing")
     });
-
 
     public async Task<int> Run(LoadoutMarker loadout, AbsolutePath file, string name, CancellationToken token)
     {
