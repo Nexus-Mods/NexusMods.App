@@ -1,11 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
-
+  
+  <!-- NuGet Package Shared Details -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+  
   <ItemGroup>
     <AvaloniaResource Include="**\*.xaml" />
     <None Remove="Fonts\Montserrat\Montserrat-VariableFont_wght.ttf" />
@@ -23,16 +20,12 @@
     <PackageReference Include="Avalonia.Themes.Simple" Version="11.0.0-preview4" />
     <PackageReference Include="Material.Avalonia" Version="3.0.0-avalonia11-preview2.137-nightly" />
     <PackageReference Include="Material.Icons.Avalonia" Version="1.2.2" />
+    <PackageReference Include="XamlNameReferenceGenerator" Version="1.5.1" />
+    <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="6.3.0-preview4" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Fonts\Montserrat" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Projektanker.Icons.Avalonia">
-      <HintPath>..\..\..\..\Users\tbald\.nuget\packages\projektanker.icons.avalonia\6.3.0-preview4\lib\netstandard2.0\Projektanker.Icons.Avalonia.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

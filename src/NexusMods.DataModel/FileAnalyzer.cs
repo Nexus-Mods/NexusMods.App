@@ -6,6 +6,7 @@ using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.FileExtractor.FileSignatures;
+using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
@@ -51,6 +52,11 @@ public class FileContentsCache
         result.EnsureStored();
         return result;
     }
+    
+    public AnalyzedFile? GetAnalysisData(Hash hash)
+    {
+        return _store.Get<AnalyzedFile>(new Id64(EntityCategory.FileAnalysis, (ulong)hash));
+    }
 
     private Task<AnalyzedFile> AnalyzeFileInner(IStreamFactory sFn, CancellationToken token = default)
     {
@@ -88,7 +94,7 @@ public class FileContentsCache
             hashStream.Position = 0;
             sigs = (await _sigs.MatchesAsync(hashStream)).ToList();
             
-            if (parentPath != default && _sigs.TryGetFileType(parentPath.Extension, out var type))
+            if (parentPath != default && SignatureChecker.TryGetFileType(parentPath.Extension, out var type))
                 sigs.Add(type);
             
             foreach (var sig in sigs)
@@ -135,7 +141,7 @@ public class FileContentsCache
             await using var tmpFolder = _manager.CreateFolder();
             List<KeyValuePair<RelativePath, Id>> children;
             {
-                await _extractor.ExtractAll(sFn, tmpFolder, token);
+                await _extractor.ExtractAllAsync(sFn, tmpFolder, token);
                 children = await _limiter.ForEachFile(tmpFolder,
                         async (job, entry) =>
                         {

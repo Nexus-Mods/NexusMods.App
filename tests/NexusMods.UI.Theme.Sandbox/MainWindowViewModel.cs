@@ -1,9 +1,4 @@
-﻿
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using NexusMods.Paths;
 
@@ -40,7 +35,5 @@ public class MainWindowViewModel
         }; 
     }
 
-    public record DataRow(string Name, long? Size, DateTime LastModified)
-    {
-    }
+    public record DataRow(string Name, long? Size, DateTime LastModified);
 }

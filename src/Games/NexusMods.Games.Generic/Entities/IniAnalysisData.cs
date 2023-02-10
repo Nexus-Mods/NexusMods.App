@@ -1,6 +1,5 @@
 ﻿using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.JsonConverters;
-using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.Games.Generic.Entities;
 

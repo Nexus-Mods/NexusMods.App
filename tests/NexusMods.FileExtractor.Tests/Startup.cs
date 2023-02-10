@@ -13,8 +13,6 @@ public class Startup
     public void ConfigureServices(IServiceCollection container)
     {
         container.AddFileExtractors();
-        container.AddSingleton<TemporaryFileManager>();
-        container.AddSingleton<IResource<IExtractor, Size>>(s => new Resource<IExtractor, Size>("File Extraction"));
     }
     
     public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>

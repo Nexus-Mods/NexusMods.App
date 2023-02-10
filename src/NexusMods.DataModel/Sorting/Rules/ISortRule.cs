@@ -1,6 +1,4 @@
-﻿using NexusMods.DataModel.Abstractions;
-
-namespace NexusMods.DataModel.Sorting.Rules;
+﻿namespace NexusMods.DataModel.Sorting.Rules;
 
 /// <summary>
 /// A marker interface for rules used in sorting

@@ -1,6 +1,5 @@
 ﻿using Avalonia;
 using Avalonia.ReactiveUI;
-using System;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace NexusMods.App.UI;

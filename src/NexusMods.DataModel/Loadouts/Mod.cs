@@ -1,12 +1,11 @@
 ﻿using System.Collections.Immutable;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.JsonConverters;
-using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Sorting.Rules;
 
 namespace NexusMods.DataModel.Loadouts;
 
-[JsonName("NexusMods.DataModel.ListRegistry")]
+[JsonName("NexusMods.DataModel.Mod")]
 public record Mod : Entity, IHasEntityId<ModId>
 {
     public required ModId Id { get; init; }

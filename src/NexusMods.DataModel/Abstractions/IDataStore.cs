@@ -1,7 +1,4 @@
-﻿using System.Reactive.Disposables;
-using NexusMods.DataModel.ArchiveContents;
-
-namespace NexusMods.DataModel.Abstractions;
+﻿namespace NexusMods.DataModel.Abstractions;
 
 public interface IDataStore
 {
@@ -13,6 +10,7 @@ public interface IDataStore
     Id? GetRoot(RootType type);
     byte[]? GetRaw(Id id);
     void PutRaw(Id key, ReadOnlySpan<byte> val);
+    Task<long> PutRaw(IAsyncEnumerable<(Id Key, byte[] Value)> kvs, CancellationToken token = default);
     IEnumerable<T> GetByPrefix<T>(Id prefix) where T : Entity;
     IObservable<(Id Id, Entity Entity)> Changes { get; }
 }

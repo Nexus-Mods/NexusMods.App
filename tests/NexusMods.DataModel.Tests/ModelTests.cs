@@ -1,14 +1,13 @@
-﻿using System.Reactive.Linq;
+﻿using System.Collections.Immutable;
+using System.IO.Compression;
 using FluentAssertions;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.Interfaces;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers;
-using NexusMods.StandardGameLocators.Tests;
 
 namespace NexusMods.DataModel.Tests;
 
@@ -86,6 +85,59 @@ public class ModelTests : ADataModelTest<ModelTests>
         var newHistory = loadout.History().Select(h => h.DataStoreId).ToArray();
 
         newHistory.Skip(1).Should().BeEquivalentTo(history);
+        
+    }
+
+    [Fact]
+    public async Task CanExportAndImportLoadouts()
+    {
+        var loadout = await LoadoutManager.ManageGame(Install, Guid.NewGuid().ToString());
+        var id1 = await loadout.Install(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
+        var id2 = await loadout.Install(DATA_ZIP_LZMA, "Mod2", CancellationToken.None);
+        
+        var tempFile = TemporaryFileManager.CreateFile(Ext.Zip);
+        await loadout.ExportTo(tempFile, CancellationToken.None);
+
+        {
+            await using var of = tempFile.Path.Read();
+            using var zip = new ZipArchive(of, ZipArchiveMode.Read);
+            var entries = zip.Entries.Select(e => e.FullName.ToRelativePath())
+                .Where(p => p.InFolder("entities".ToRelativePath()))
+                .Select(f => f.FileName)
+                .Select(h => Id.FromTaggedSpan(Convert.FromHexString(h.ToString())))
+                .ToHashSet();
+
+            var ids = loadout.Value.Walk((set, itm) => set.Add(itm.DataStoreId),
+                ImmutableHashSet<Id>.Empty);
+            
+            foreach (var id in ids)
+                entries.Should().Contain(id);
+            
+            entries.Should().Contain(loadout.Value.DataStoreId, "The loadout is stored");
+
+            foreach (var mod in loadout.Value.Mods.Values)
+            {
+                entries.Should().Contain(mod.DataStoreId, "The mod is stored");
+                foreach (var file in mod.Files.Values)
+                    entries.Should().Contain(file.DataStoreId, "The file is stored (file: {0})", file.To);
+            }
+
+            zip.Entries.Select(e => e.FullName).Should().Contain("root");
+
+            {
+                await using var root = zip.Entries.First(e => e.FullName == "root").Open();
+                root.ReadAllTextAsync(CancellationToken.None).Result.Should()
+                    .Be(loadout.Value.DataStoreId.TaggedSpanHex);
+            }
+            
+            
+        }
+        
+        loadout.Alter(l => l with {Mods = new EntityDictionary<ModId, Mod>(l.Store)});
+        loadout.Value.Mods.Should().BeEmpty("All mods are removed");
+        
+        await LoadoutManager.ImportFrom(tempFile, CancellationToken.None);
+        loadout.Value.Mods.Should().NotBeEmpty("The loadout is restored");
         
     }
 

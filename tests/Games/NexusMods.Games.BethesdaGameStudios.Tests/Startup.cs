@@ -7,6 +7,7 @@ using NexusMods.FileExtractor;
 using NexusMods.FileExtractor.Extractors;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators;
+using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.DependencyInjection;
 using Xunit.DependencyInjection.Logging;
 
@@ -16,7 +17,7 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection container)
     {
-        container.AddStandardGameLocators();
+        container.AddUniversalGameLocator<SkyrimSpecialEdition>(new Version("1.6.659.0"));
         container.AddBethesdaGameStudios();
         
         container.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug));

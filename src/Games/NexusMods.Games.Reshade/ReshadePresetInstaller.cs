@@ -1,4 +1,5 @@
-﻿using NexusMods.DataModel.Abstractions;
+﻿using NexusMods.Common;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
@@ -8,7 +9,6 @@ using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Games.Abstractions;
 using NexusMods.Games.Generic.Entities;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.Interfaces;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.Reshade;
@@ -30,11 +30,11 @@ public class ReshadePresetInstaller : IModInstaller
         
         // We have to be able to find the game's executable
         if (installation.Game is not AGame)
-            return Interfaces.Priority.None;
+            return Common.Priority.None;
         
         // We only support ini files for now
         if (!filtered.All(f => f.Value.FileTypes.Contains(FileType.INI)))
-            return Interfaces.Priority.None;
+            return Common.Priority.None;
 
         // Get all the ini data
         var iniData = filtered.Select(f => f.Value.AnalysisData.OfType<IniAnalysisData>()
@@ -43,13 +43,13 @@ public class ReshadePresetInstaller : IModInstaller
 
         // All the files must have ini data
         if (iniData.Count != filtered.Count)
-            return Interfaces.Priority.None;
+            return Common.Priority.None;
 
         // All the files must have a section that ends with .fx marking them as likely a reshade preset
         if (!iniData.All(f => f.Sections.All(x => x.EndsWith(".fx", StringComparison.CurrentCultureIgnoreCase))))
-            return Interfaces.Priority.None;
+            return Common.Priority.None;
 
-        return Interfaces.Priority.Low;
+        return Common.Priority.Low;
     }
 
     public IEnumerable<AModFile> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)

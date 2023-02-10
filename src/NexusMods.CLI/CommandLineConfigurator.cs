@@ -4,7 +4,6 @@ using System.CommandLine.NamingConventionBinder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.CLI.OptionParsers;
-using NexusMods.Paths;
 
 namespace NexusMods.CLI;
 

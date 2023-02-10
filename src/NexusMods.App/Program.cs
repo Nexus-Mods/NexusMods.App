@@ -6,6 +6,8 @@ using Microsoft.Extensions.Logging;
 using NexusMods.App;
 using NexusMods.App.UI;
 using NexusMods.CLI;
+using NexusMods.DataModel;
+using NexusMods.FileExtractor;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.DarkestDungeon;
 using NexusMods.Games.Generic;
@@ -25,6 +27,8 @@ var host = Host.CreateDefaultBuilder(Environment.GetCommandLineArgs())
     {
         services.AddCLI()
             .AddUI()
+            .AddFileExtractors()
+            .AddDataModel()
             .AddBethesdaGameStudios()
             .AddRedEngineGames()
             .AddGenericGameSupport()

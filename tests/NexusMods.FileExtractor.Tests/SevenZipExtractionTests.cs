@@ -1,4 +1,5 @@
 using FluentAssertions;
+using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
@@ -6,7 +7,7 @@ namespace NexusMods.FileExtractor.Tests;
 
 public class SevenZipExtractionTests
 {
-    private FileExtractor _extractor;
+    private readonly FileExtractor _extractor;
 
     public SevenZipExtractionTests(FileExtractor extractor)
     {
@@ -17,7 +18,7 @@ public class SevenZipExtractionTests
     public async Task CanForeachOverFiles()
     {
         var file = KnownFolders.CurrentDirectory.Join("Resources/data_7zip_lzma2.7z");
-        var results = await _extractor.ForEachEntry(new NativeFileStreamFactory(file), async (path, e) =>
+        var results = await _extractor.ForEachEntry(new NativeFileStreamFactory(file), async (_, e) =>
         {
             await using var fs = await e.GetStream();
             return await fs.Hash(CancellationToken.None);
@@ -27,7 +28,7 @@ public class SevenZipExtractionTests
         results.OrderBy(r => r.Key)
             .Select(kv => (Path: kv.Key, Hash: kv.Value))
             .Should()
-            .BeEquivalentTo(new (RelativePath, Hash)[]
+            .BeEquivalentTo(new[]
             {
                 (@"deepFolder\deepFolder2\deepFolder3\deepFolder4\deepFile.txt".ToRelativePath(), (Hash)0xE405A7CFA6ABBDE3),
                 (@"folder1\folder1file.txt".ToRelativePath(), (Hash)0xC9E47B1523162066),

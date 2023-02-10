@@ -3,18 +3,16 @@ using Microsoft.Extensions.Logging;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.ModInstallers;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
-using Noggog;
 using ModId = NexusMods.Networking.NexusWebApi.Types.ModId;
 
 namespace NexusMods.Games.RedEngine.Tests;
 
-[Trait("RequiresGameInstalls", "True")]
+[Trait("RequiresNetworking", "True")]
 public class ModInstallerTests
 {
     private readonly LoadoutManager _manager;
@@ -43,7 +41,7 @@ public class ModInstallerTests
     [MemberData(nameof(TestFiles))]
     public async Task CanCreateLoadout(string name, ModId modId, FileId fileId, Hash hash, int fileCount)
     {
-        var loadout = await _manager.ManageGame(_installation, Guid.NewGuid().ToString());
+        var loadout = await _manager.ImportFrom(KnownFolders.EntryFolder.Join(@"Resources\cyberpunk2077.1.61.zip"));
         loadout.Value.Mods.Values.Select(m => m.Name).Should().Contain("Game Files");
         var gameFiles = loadout.Value.Mods.Values.First(m => m.Name == "Game Files");
         gameFiles.Files.Count.Should().BeGreaterThan(0);

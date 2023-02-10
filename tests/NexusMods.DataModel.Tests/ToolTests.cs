@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers;

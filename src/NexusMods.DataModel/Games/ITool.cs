@@ -1,5 +1,4 @@
 ﻿using NexusMods.DataModel.Loadouts;
-using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Games;
 

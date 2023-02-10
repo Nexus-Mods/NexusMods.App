@@ -1,6 +1,5 @@
 ﻿<Style
     xmlns="https://github.com/avaloniaui"
-    xmlns:sys="clr-namespace:System;assembly=netstandard"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Style.Resources>
         <Color x:Key="BrandPrimary">#D98F40</Color>

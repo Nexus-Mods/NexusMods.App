@@ -1,10 +1,7 @@
-﻿using System.Collections.Immutable;
-using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
+﻿using FluentAssertions;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
-using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
