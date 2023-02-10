@@ -7,7 +7,6 @@ using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.RateLimiting;
-using NexusMods.FileExtractor;
 using NexusMods.FileExtractor.Extractors;
 using NexusMods.Paths;
 
@@ -15,6 +14,7 @@ namespace NexusMods.CLI;
 
 public static class Services
 {
+    // ReSharper disable once InconsistentNaming
     public static IServiceCollection AddCLI(this IServiceCollection services)
     {
         services.AddScoped<Configurator>();
@@ -45,8 +45,8 @@ public static class Services
             .AddVerb<Rename>()
             .AddVerb<RunTool>();
         
-        services.AddAllSingleton<IResource, IResource<IExtractor, Size>>(s => new Resource<IExtractor, Size>("File Extraction"));
-        services.AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(s => new Resource<FileContentsCache, Size>("File Analysis"));
+        services.AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ => new Resource<IExtractor, Size>("File Extraction"));
+        services.AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(_ => new Resource<FileContentsCache, Size>("File Analysis"));
         return services;
     }
     
