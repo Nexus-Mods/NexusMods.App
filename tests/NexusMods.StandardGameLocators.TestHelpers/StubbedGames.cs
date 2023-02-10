@@ -90,15 +90,16 @@ public class StubbedGameLocator<TGame, TId> : AHandler<TGame, TId>
     where TGame : class where TId : notnull
 {
     private readonly TemporaryFileManager _manager;
-    private readonly TemporaryPath _folder;
     private readonly Func<TemporaryFileManager,TGame> _factory;
     private readonly Func<TGame,TId> _idSelector;
     private readonly TGame _game;
 
-    public StubbedGameLocator(TemporaryFileManager manager, Func<TemporaryFileManager, TGame> factory, Func<TGame, TId> idSelector)
+    public StubbedGameLocator(TemporaryFileManager manager, 
+        Func<TemporaryFileManager, TGame> factory, 
+        Func<TGame, TId> idSelector,
+        Version? version = null)
     {
         _manager = manager;
-        _folder = _manager.CreateFolder("gog_game");
         _factory = factory;
         _idSelector = idSelector;
         _game = _factory(_manager);

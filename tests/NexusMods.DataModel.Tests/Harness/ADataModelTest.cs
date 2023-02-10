@@ -30,6 +30,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
     private readonly IServiceProvider _provider;
     protected readonly TemporaryFileManager TemporaryFileManager;
+    protected readonly IServiceProvider ServiceProvider;
     protected readonly FileContentsCache ArchiveContentsCache;
     protected readonly ArchiveManager ArchiveManager;
     protected readonly LoadoutManager LoadoutManager;
@@ -58,6 +59,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         DataStore = _provider.GetRequiredService<IDataStore>();
         _logger = _provider.GetRequiredService<ILogger<T>>();
         TemporaryFileManager = _provider.GetRequiredService<TemporaryFileManager>();
+        ServiceProvider = provider;
         
         Game = _provider.GetRequiredService<StubbedGame>();
         Install = Game.Installations.First();

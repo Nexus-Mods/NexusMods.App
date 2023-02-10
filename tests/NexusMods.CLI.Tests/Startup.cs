@@ -10,11 +10,13 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection container)
     {
-        container.AddStandardGameLocators(false);
-        container.AddStubbedGameLocators();
-        container.AddCLI();
-        container.AddAllScoped<IRenderer, LoggingRenderer>();
-        container.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug));
+        container.AddStandardGameLocators(false)
+            .AddStubbedGameLocators()
+            .AddDataModel()
+            .AddFileExtractors()
+            .AddCLI()
+            .AddAllScoped<IRenderer, LoggingRenderer>()
+            .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug));
     }
 }
 

@@ -52,6 +52,11 @@ public class FileContentsCache
         result.EnsureStored();
         return result;
     }
+    
+    public AnalyzedFile? GetAnalysisData(Hash hash)
+    {
+        return _store.Get<AnalyzedFile>(new Id64(EntityCategory.FileAnalysis, (ulong)hash));
+    }
 
     private Task<AnalyzedFile> AnalyzeFileInner(IStreamFactory sFn, CancellationToken token = default)
     {

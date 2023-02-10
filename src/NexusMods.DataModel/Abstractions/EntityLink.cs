@@ -4,7 +4,9 @@ using System.Text.Json.Serialization;
 namespace NexusMods.DataModel.Abstractions;
 
 [JsonConverter(typeof(EntityLinkConverterFactory))]
-public record EntityLink <T> : IEmptyWithDataStore<EntityLink<T>> where T : Entity
+public record EntityLink <T> : IEmptyWithDataStore<EntityLink<T>>,
+    IWalkable<Entity>
+    where T : Entity
 {
 
 
@@ -34,6 +36,10 @@ public record EntityLink <T> : IEmptyWithDataStore<EntityLink<T>> where T : Enti
     }
 
     public static EntityLink<T> Empty(IDataStore store) => new(IdEmpty.Empty, store);
+    public TState Walk<TState>(Func<TState, Entity, TState> visitor, TState initial)
+    {
+        return Id is IdEmpty ? initial : visitor(initial, Value);
+    }
 }
 
 public class EntityLinkConverterFactory : JsonConverterFactory

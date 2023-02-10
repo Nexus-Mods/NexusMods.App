@@ -21,6 +21,16 @@ public interface Id : IEquatable<Id>
             return Convert.ToHexString(span);
         }
     }
+    
+    public string TaggedSpanHex 
+    {
+        get
+        {
+            Span<byte> span = stackalloc byte[SpanSize + 1];
+            ToTaggedSpan(span);
+            return Convert.ToHexString(span);
+        }
+    }
 
     public static Id FromTaggedSpan(ReadOnlySpan<byte> span)
     {

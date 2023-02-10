@@ -1,5 +1,8 @@
 ﻿using System.Collections.Immutable;
+using System.IO.Compression;
 using System.Reactive.Linq;
+using System.Text;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
@@ -48,6 +51,12 @@ public class LoadoutManager
         _analyzer = analyzer;
         _tools = tools.SelectMany(t => t.Domains.Select(d => (Tool: t, Domain: d)))
             .ToLookup(t => t.Domain, t => t.Tool);
+    }
+    
+    public LoadoutManager Rebase(SqliteDataStore store)
+    {
+        return new LoadoutManager(_logger, Limiter, ArchiveManager, _metadataSources, store, FileHashCache, _installers,
+            _analyzer, _tools.SelectMany(f => f));
     }
 
     public IResource<LoadoutManager,Size> Limiter { get; set; }
@@ -203,5 +212,85 @@ public class LoadoutManager
                 })
             };
         }, message);
+    }
+
+    public async Task ExportTo(LoadoutId id, AbsolutePath output, CancellationToken token)
+    {
+        var loadout = Get(id);
+        
+        if (output.FileExists)
+            output.Delete();
+        using var zip = ZipFile.Open(output.ToString(), ZipArchiveMode.Create);
+
+
+        var ids = loadout.Walk((state, itm) =>
+        {
+            state.Add(itm.DataStoreId);
+
+            void AddFile(Hash hash, ISet<Id> hashes)
+            {
+                hashes.Add(new Id64(EntityCategory.FileAnalysis, (ulong)hash));
+                foreach (var foundIn in _store.GetByPrefix<FileContainedIn>(new Id64(EntityCategory.FileContainedIn,
+                             (ulong)hash)))
+                {
+                    hashes.Add(foundIn.DataStoreId);
+                }
+            }
+            
+            if (itm is AStaticModFile file)
+            {
+                AddFile(file.Hash, state);
+            }
+            if (itm is FromArchive archive)
+            {
+                AddFile(archive.From.Hash, state);
+            }
+
+            return state;
+        }, new HashSet<Id>());
+        
+        _logger.LogDebug("Found {Count} entities to export", ids.Count);
+
+        foreach (var entityId in ids)
+        {
+            var data = _store.GetRaw(entityId);
+            if (data == null) continue;
+            
+            await using var entry = zip.CreateEntry("entities\\"+entityId.TaggedSpanHex, CompressionLevel.Optimal).Open();
+            await entry.WriteAsync(data, token);
+        }
+
+        await using var rootEntry = zip.CreateEntry("root", CompressionLevel.Optimal).Open();
+        await rootEntry.WriteAsync(Encoding.UTF8.GetBytes(loadout.DataStoreId.TaggedSpanHex), token);
+    }
+
+    public async Task<LoadoutMarker> ImportFrom(AbsolutePath path, CancellationToken token = default)
+    {
+        async ValueTask<(Id, byte[])> ProcessEntry(ZipArchiveEntry entry)
+        {
+            await using var es = entry.Open();
+            using var ms = new MemoryStream();
+            await es.CopyToAsync(ms, token);
+            var id = Id.FromTaggedSpan(Convert.FromHexString(entry.Name));
+            return (id, ms.ToArray());
+        }
+
+        using var zip = ZipFile.Open(path.ToString(), ZipArchiveMode.Read);
+        var entityFolder = "entities".ToRelativePath();
+        
+        var entries = zip.Entries.Where(p => p.FullName.ToRelativePath().InFolder(entityFolder))
+            .SelectAsync(ProcessEntry); 
+        
+        var loaded = await _store.PutRaw(entries, token);
+        _logger.LogDebug("Loaded {Count} entities", loaded);
+        
+        await using var root = zip.GetEntry("root")!.Open();
+        var rootId = Id.FromTaggedSpan(Convert.FromHexString(await root.ReadAllTextAsync(token)));
+
+        var loadout = _store.Get<Loadout>(rootId);
+        if (loadout == null)
+            throw new Exception("Loadout not found after loading data store, the loadout may be corrupt");
+        _root.Alter(r => r with { Lists = r.Lists.With(loadout.LoadoutId, loadout)});
+        return new LoadoutMarker(this, loadout.LoadoutId);
     }
 }
