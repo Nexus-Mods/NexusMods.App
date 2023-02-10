@@ -1,16 +1,13 @@
 ﻿using System.Collections.Immutable;
 using System.IO.Compression;
-using System.Reactive.Linq;
 using FluentAssertions;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.Interfaces;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers;
-using NexusMods.StandardGameLocators.Tests;
 
 namespace NexusMods.DataModel.Tests;
 

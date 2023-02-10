@@ -1,7 +1,6 @@
 ﻿using IniParser;
 using IniParser.Parser;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.JsonConverters;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Games.Generic.Entities;
 

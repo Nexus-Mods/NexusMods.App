@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using NexusMods.DataModel.JsonConverters;
 using NexusMods.Networking.NexusWebApi.Types;
 
 namespace NexusMods.Networking.NexusWebApi.DTOs;

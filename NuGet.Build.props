@@ -1,0 +1,23 @@
+<Project>
+    <PropertyGroup>
+        <Authors>Nexus Mods</Authors>
+        <PackageProjectUrl>https://github.com/Nexus-Mods/NexusMods.App</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/Nexus-Mods/NexusMods.App</RepositoryUrl>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageIcon>Nexus-Icon.png</PackageIcon>
+        <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="$(MSBuildThisFileDirectory)LICENSE.md">
+            <Pack>True</Pack>
+            <PackagePath>/</PackagePath>
+        </None>
+        <None Include="$(MSBuildThisFileDirectory)Nexus-Icon.png">
+            <Pack>True</Pack>
+            <PackagePath>/</PackagePath>
+        </None>
+    </ItemGroup>
+</Project>

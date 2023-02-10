@@ -3,13 +3,11 @@ using Microsoft.Extensions.Logging;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.ModInstallers;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
-using Noggog;
 using ModId = NexusMods.Networking.NexusWebApi.Types.ModId;
 
 namespace NexusMods.Games.RedEngine.Tests;

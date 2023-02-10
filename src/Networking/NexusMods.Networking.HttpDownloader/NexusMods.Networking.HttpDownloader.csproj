@@ -1,5 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+    <!-- NuGet Package Shared Details -->
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+    
     <ItemGroup>
       <ProjectReference Include="..\..\NexusMods.CLI\NexusMods.CLI.csproj" />
       <ProjectReference Include="..\..\NexusMods.Hashing.xxHash64\NexusMods.Hashing.xxHash64.csproj" />

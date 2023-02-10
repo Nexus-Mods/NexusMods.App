@@ -12,5 +12,11 @@
     <ItemGroup>
       <PackageReference Include="BenchmarkDotNet" Version="0.13.4" />
     </ItemGroup>
+    
+    <ItemGroup>
+      <None Update="Assets/**">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
 
 </Project>

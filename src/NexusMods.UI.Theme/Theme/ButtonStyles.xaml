@@ -1,7 +1,6 @@
 ﻿<Styles
     xmlns="https://github.com/avaloniaui"
     xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
-    xmlns:material="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Style Selector="Button">

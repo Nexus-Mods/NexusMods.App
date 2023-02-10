@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace NexusMods.Paths;
@@ -400,8 +399,7 @@ public struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<Absolu
         new(Parts[..1], PathFormat) : 
         new AbsolutePath(Array.Empty<string>(), PathFormat);
 
-    public readonly IEnumerable<AbsolutePath> EnumerateFiles(string pattern = "*",
-        bool recursive = true)
+    public readonly IEnumerable<AbsolutePath> EnumerateFiles(string pattern = "*", bool recursive = true)
     {
         return Directory.EnumerateFiles(ToNativePath(), pattern,
                 recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)

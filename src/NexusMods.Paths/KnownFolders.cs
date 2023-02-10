@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace NexusMods.Paths;
+﻿namespace NexusMods.Paths;
 
 public static class KnownFolders
 {

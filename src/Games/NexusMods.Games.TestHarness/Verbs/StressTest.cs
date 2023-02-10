@@ -1,12 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using NexusMods.CLI;
 using NexusMods.DataModel;
-using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.FileExtractor.FileSignatures;
-using NexusMods.Paths;
 
 namespace NexusMods.Games.TestHarness.Verbs;
 

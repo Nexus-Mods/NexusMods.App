@@ -1,9 +1,6 @@
 ﻿using GameFinder.Common;
-using GameFinder.StoreHandlers.EADesktop;
-using GameFinder.StoreHandlers.EGS;
-using GameFinder.StoreHandlers.GOG;
-using GameFinder.StoreHandlers.Steam;
 using Microsoft.Extensions.Logging;
+using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Games;
@@ -11,7 +8,6 @@ using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.Interfaces;
 using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators.TestHelpers;
@@ -133,7 +129,7 @@ public class StubbedGameInstaller : IModInstaller
     }
     public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
-        return installation.Game is StubbedGame ? Interfaces.Priority.Normal : Interfaces.Priority.None;
+        return installation.Game is StubbedGame ? Common.Priority.Normal : Common.Priority.None;
     }
 
     public IEnumerable<AModFile> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)

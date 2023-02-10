@@ -1,9 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
-using NexusMods.DataModel.Games;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
-using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.FileExtractor;
 using NexusMods.FileExtractor.Extractors;

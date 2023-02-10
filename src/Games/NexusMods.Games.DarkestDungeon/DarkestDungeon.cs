@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
 using NexusMods.Games.Abstractions;
-using NexusMods.Interfaces;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.DarkestDungeon;

@@ -23,7 +23,7 @@ public class ExtractArchive : AVerb<AbsolutePath, AbsolutePath>
 
     protected override async Task<int> Run(AbsolutePath inputFile, AbsolutePath outputFolder, CancellationToken token)
     {
-        await _extractor.ExtractAll(inputFile, outputFolder, token);
+        await _extractor.ExtractAllAsync(inputFile, outputFolder, token);
         return 0;
     }
 }

@@ -1,8 +1,6 @@
 ﻿using FluentAssertions;
 using NexusMods.DataModel.Extensions;
-using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ApplySteps;
-using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Hashing.xxHash64;
