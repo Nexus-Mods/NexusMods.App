@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Common;
 using NexusMods.Paths;
 using Xunit.DependencyInjection;
 using Xunit.DependencyInjection.Logging;
@@ -10,7 +11,9 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection container)
     {
-        container.AddHttpDownloader();
+        container.AddAdvancedHttpDownloader();
+        container.AddSingleton<SimpleHttpDownloader>();
+        container.AddSingleton<AdvancedHttpDownloader>();
         container.AddSingleton<TemporaryFileManager>();
         container.AddSingleton<HttpClient>();
         container.AddSingleton<LocalHttpServer>();

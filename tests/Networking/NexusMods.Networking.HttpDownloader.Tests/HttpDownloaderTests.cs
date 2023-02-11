@@ -11,7 +11,7 @@ public class HttpDownloaderTests
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly LocalHttpServer _localHttpServer;
 
-    public HttpDownloaderTests(IHttpDownloader httpDownloader, TemporaryFileManager temporaryFileManager, LocalHttpServer localHttpServer)
+    public HttpDownloaderTests(SimpleHttpDownloader httpDownloader, TemporaryFileManager temporaryFileManager, LocalHttpServer localHttpServer)
     {
         _httpDownloader = httpDownloader;
         _temporaryFileManager = temporaryFileManager;

@@ -1,84 +1,87 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33122.133
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Paths", "Paths", "{B93AF89E-9ED7-4FD0-B58E-688AA178AB53}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Paths", "src\NexusMods.Paths\NexusMods.Paths.csproj", "{9025900A-5342-4EB3-97C8-A9F067929879}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Paths", "src\NexusMods.Paths\NexusMods.Paths.csproj", "{9025900A-5342-4EB3-97C8-A9F067929879}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Paths.Tests", "tests\NexusMods.Paths.Tests\NexusMods.Paths.Tests.csproj", "{1636CC83-8738-46ED-A688-D6AC2A55FEB5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Paths.Tests", "tests\NexusMods.Paths.Tests\NexusMods.Paths.Tests.csproj", "{1636CC83-8738-46ED-A688-D6AC2A55FEB5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Game Locators", "Game Locators", "{954D1870-EE4B-4EC3-84AC-292C300461F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.StandardGameLocators", "src\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj", "{BB552259-24B0-4166-8A67-5649CE42BE83}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.StandardGameLocators", "src\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj", "{BB552259-24B0-4166-8A67-5649CE42BE83}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.StandardGameLocators.Tests", "tests\NexusMods.StandardGameLocators.Tests\NexusMods.StandardGameLocators.Tests.csproj", "{4FD95FB7-BD1D-4D79-90F8-9980DE5D6C28}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.StandardGameLocators.Tests", "tests\NexusMods.StandardGameLocators.Tests\NexusMods.StandardGameLocators.Tests.csproj", "{4FD95FB7-BD1D-4D79-90F8-9980DE5D6C28}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Games", "Games", "{B95A2142-2872-4FFD-BAB2-596373401461}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.BethesdaGameStudios", "src\Games\NexusMods.Games.BethesdaGameStudios\NexusMods.Games.BethesdaGameStudios.csproj", "{5038CF21-CE33-45F0-8C6F-D06D20D604F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.BethesdaGameStudios", "src\Games\NexusMods.Games.BethesdaGameStudios\NexusMods.Games.BethesdaGameStudios.csproj", "{5038CF21-CE33-45F0-8C6F-D06D20D604F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.BethesdaGameStudios.Tests", "tests\Games\NexusMods.Games.BethesdaGameStudios.Tests\NexusMods.Games.BethesdaGameStudios.Tests.csproj", "{DC3AE1FC-8E93-4F33-B937-C51C2F7C350F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.BethesdaGameStudios.Tests", "tests\Games\NexusMods.Games.BethesdaGameStudios.Tests\NexusMods.Games.BethesdaGameStudios.Tests.csproj", "{DC3AE1FC-8E93-4F33-B937-C51C2F7C350F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.CLI", "src\NexusMods.CLI\NexusMods.CLI.csproj", "{D66C4BA1-C129-4DC1-954E-6D9E0B9CB691}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.CLI", "src\NexusMods.CLI\NexusMods.CLI.csproj", "{D66C4BA1-C129-4DC1-954E-6D9E0B9CB691}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.App", "src\NexusMods.App\NexusMods.App.csproj", "{60CAA464-4106-4A29-81ED-3C72AFB1B0B2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.App", "src\NexusMods.App\NexusMods.App.csproj", "{60CAA464-4106-4A29-81ED-3C72AFB1B0B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.CLI.Tests", "tests\NexusMods.CLI.Tests\NexusMods.CLI.Tests.csproj", "{A4B8AD2F-BCF9-4139-8F0C-36B528FDBF66}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.CLI.Tests", "tests\NexusMods.CLI.Tests\NexusMods.CLI.Tests.csproj", "{A4B8AD2F-BCF9-4139-8F0C-36B528FDBF66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Hashing.xxHash64", "src\NexusMods.Hashing.xxHash64\NexusMods.Hashing.xxHash64.csproj", "{5515C2D5-B9DD-4A58-BB53-0BD34259347D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Hashing.xxHash64", "src\NexusMods.Hashing.xxHash64\NexusMods.Hashing.xxHash64.csproj", "{5515C2D5-B9DD-4A58-BB53-0BD34259347D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.DataModel.RateLimiting", "src\NexusMods.DataModel.RateLimiting\NexusMods.DataModel.RateLimiting.csproj", "{B4CA4927-6FFA-422B-8E54-413ECFCD6C39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.DataModel.RateLimiting", "src\NexusMods.DataModel.RateLimiting\NexusMods.DataModel.RateLimiting.csproj", "{B4CA4927-6FFA-422B-8E54-413ECFCD6C39}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Hashing.xxHash64.Tests", "tests\NexusMods.Hashing.xxHash64.Tests\NexusMods.Hashing.xxHash64.Tests.csproj", "{8C495B2A-E2D5-49C1-BE93-B2B0A8F7BB0D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Hashing.xxHash64.Tests", "tests\NexusMods.Hashing.xxHash64.Tests\NexusMods.Hashing.xxHash64.Tests.csproj", "{8C495B2A-E2D5-49C1-BE93-B2B0A8F7BB0D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.DataModel", "src\NexusMods.DataModel\NexusMods.DataModel.csproj", "{3D21A286-CADC-40CF-AF29-790DAAD4363A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.DataModel", "src\NexusMods.DataModel\NexusMods.DataModel.csproj", "{3D21A286-CADC-40CF-AF29-790DAAD4363A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.DataModel.Tests", "tests\NexusMods.DataModel.Tests\NexusMods.DataModel.Tests.csproj", "{9F803B18-7365-418E-9873-414383CD820B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.DataModel.Tests", "tests\NexusMods.DataModel.Tests\NexusMods.DataModel.Tests.csproj", "{9F803B18-7365-418E-9873-414383CD820B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data Model", "Data Model", "{0D0CB8DD-34FE-42C0-9B53-4E27330F63D1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Archive Management", "Archive Management", "{35108C59-903B-4DE2-8EB7-38797FB43716}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.FileExtractor", "src\ArchiveManagement\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj", "{83B2A024-0218-4F65-B75B-0102DAF38443}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.FileExtractor", "src\ArchiveManagement\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj", "{83B2A024-0218-4F65-B75B-0102DAF38443}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Common", "src\NexusMods.Common\NexusMods.Common.csproj", "{78B79659-4A68-4E92-8765-E6570916792F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Common", "src\NexusMods.Common\NexusMods.Common.csproj", "{78B79659-4A68-4E92-8765-E6570916792F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.FileExtractor.Tests", "tests\NexusMods.FileExtractor.Tests\NexusMods.FileExtractor.Tests.csproj", "{AB2AD95A-17AA-473B-8E1C-02ACED2F8520}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.FileExtractor.Tests", "tests\NexusMods.FileExtractor.Tests\NexusMods.FileExtractor.Tests.csproj", "{AB2AD95A-17AA-473B-8E1C-02ACED2F8520}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.DataModel.RateLimiting.Tests", "tests\NexusMods.DataModel.RateLimiting.Tests\NexusMods.DataModel.RateLimiting.Tests.csproj", "{1E5939B0-0C91-4074-94F6-A70F522B99B7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.DataModel.RateLimiting.Tests", "tests\NexusMods.DataModel.RateLimiting.Tests\NexusMods.DataModel.RateLimiting.Tests.csproj", "{1E5939B0-0C91-4074-94F6-A70F522B99B7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.DarkestDungeon", "src\Games\NexusMods.Games.DarkestDungeon\NexusMods.Games.DarkestDungeon.csproj", "{EDDDDE44-9059-4F05-83F4-D0C5D0AE2CC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.DarkestDungeon", "src\Games\NexusMods.Games.DarkestDungeon\NexusMods.Games.DarkestDungeon.csproj", "{EDDDDE44-9059-4F05-83F4-D0C5D0AE2CC3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.App.UI", "src\NexusMods.App.UI\NexusMods.App.UI.csproj", "{4767144A-0130-47F2-9940-5D68CCBEE241}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.App.UI", "src\NexusMods.App.UI\NexusMods.App.UI.csproj", "{4767144A-0130-47F2-9940-5D68CCBEE241}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.UI.Theme", "src\NexusMods.UI.Theme\NexusMods.UI.Theme.csproj", "{43EE15F1-9C24-4F5D-A6FF-FC10C6183139}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.UI.Theme", "src\NexusMods.UI.Theme\NexusMods.UI.Theme.csproj", "{43EE15F1-9C24-4F5D-A6FF-FC10C6183139}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.UI.Theme.Sandbox", "tests\NexusMods.UI.Theme.Sandbox\NexusMods.UI.Theme.Sandbox.csproj", "{6C3853FB-E904-418C-BA7B-4DC3100DB9F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.UI.Theme.Sandbox", "tests\NexusMods.UI.Theme.Sandbox\NexusMods.UI.Theme.Sandbox.csproj", "{6C3853FB-E904-418C-BA7B-4DC3100DB9F6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Benchmarks", "Benchmarks", "{98448149-E44A-42E5-852D-B12C9D8AAABD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.StandardGameLocators.TestHelpers", "tests\NexusMods.StandardGameLocators.TestHelpers\NexusMods.StandardGameLocators.TestHelpers.csproj", "{846232AE-BDEA-4673-918E-A2079D4E78E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.StandardGameLocators.TestHelpers", "tests\NexusMods.StandardGameLocators.TestHelpers\NexusMods.StandardGameLocators.TestHelpers.csproj", "{846232AE-BDEA-4673-918E-A2079D4E78E0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Networking", "Networking", "{CE2EFB0A-22CA-4F3F-B6AB-9E264FD4C4E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Networking.NexusWebApi", "src\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj", "{31ABE512-38F8-410E-A5A4-364C995413F7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Networking.NexusWebApi", "src\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj", "{31ABE512-38F8-410E-A5A4-364C995413F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Networking.HttpDownloader", "src\Networking\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj", "{41A7AD76-4800-4B43-B314-5DD1A767CB19}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Networking.HttpDownloader", "src\Networking\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj", "{41A7AD76-4800-4B43-B314-5DD1A767CB19}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Networking.HttpDownloader.Tests", "tests\Networking\NexusMods.Networking.HttpDownloader.Tests\NexusMods.Networking.HttpDownloader.Tests.csproj", "{64F63ED1-DC6D-483A-BBAA-24A0BE340043}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Networking.HttpDownloader.Tests", "tests\Networking\NexusMods.Networking.HttpDownloader.Tests\NexusMods.Networking.HttpDownloader.Tests.csproj", "{64F63ED1-DC6D-483A-BBAA-24A0BE340043}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Networking.NexusWebApi.Tests", "tests\Networking\NexusMods.Networking.NexusWebApi.Tests\NexusMods.Networking.NexusWebApi.Tests.csproj", "{1D2258DF-12C5-454D-9E30-6B2ECABD9E56}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Networking.NexusWebApi.Tests", "tests\Networking\NexusMods.Networking.NexusWebApi.Tests\NexusMods.Networking.NexusWebApi.Tests.csproj", "{1D2258DF-12C5-454D-9E30-6B2ECABD9E56}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.RedEngine", "src\Games\NexusMods.Games.RedEngine\NexusMods.Games.RedEngine.csproj", "{A9C1152E-6253-41FB-99C6-506F1C755032}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.RedEngine", "src\Games\NexusMods.Games.RedEngine\NexusMods.Games.RedEngine.csproj", "{A9C1152E-6253-41FB-99C6-506F1C755032}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.RedEngine.Tests", "tests\Games\NexusMods.Games.RedEngine.Tests\NexusMods.Games.RedEngine.Tests.csproj", "{B8BA0738-FE06-4CC7-B46D-DF283871F192}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.RedEngine.Tests", "tests\Games\NexusMods.Games.RedEngine.Tests\NexusMods.Games.RedEngine.Tests.csproj", "{B8BA0738-FE06-4CC7-B46D-DF283871F192}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.TestHarness", "src\Games\NexusMods.Games.TestHarness\NexusMods.Games.TestHarness.csproj", "{060613B7-92CA-418B-99CC-CA30C0D977DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.TestHarness", "src\Games\NexusMods.Games.TestHarness\NexusMods.Games.TestHarness.csproj", "{060613B7-92CA-418B-99CC-CA30C0D977DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.Reshade", "src\Games\NexusMods.Games.Reshade\NexusMods.Games.Reshade.csproj", "{B9CDD38F-31FD-47BE-91EB-E2BFABC3860B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.Reshade", "src\Games\NexusMods.Games.Reshade\NexusMods.Games.Reshade.csproj", "{B9CDD38F-31FD-47BE-91EB-E2BFABC3860B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.Generic", "src\Games\NexusMods.Games.Generic\NexusMods.Games.Generic.csproj", "{7CDE7572-9471-4966-B3B3-70DF7D2D9269}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.Generic", "src\Games\NexusMods.Games.Generic\NexusMods.Games.Generic.csproj", "{7CDE7572-9471-4966-B3B3-70DF7D2D9269}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Benchmarks", "benchmarks\NexusMods.Benchmarks\NexusMods.Benchmarks.csproj", "{CB61A764-B3BB-42C0-8CDB-DBE57FB80DF5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Benchmarks", "benchmarks\NexusMods.Benchmarks\NexusMods.Benchmarks.csproj", "{CB61A764-B3BB-42C0-8CDB-DBE57FB80DF5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -219,6 +222,9 @@ Global
 		{CB61A764-B3BB-42C0-8CDB-DBE57FB80DF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CB61A764-B3BB-42C0-8CDB-DBE57FB80DF5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9025900A-5342-4EB3-97C8-A9F067929879} = {B93AF89E-9ED7-4FD0-B58E-688AA178AB53}
 		{1636CC83-8738-46ED-A688-D6AC2A55FEB5} = {B93AF89E-9ED7-4FD0-B58E-688AA178AB53}
@@ -226,11 +232,11 @@ Global
 		{4FD95FB7-BD1D-4D79-90F8-9980DE5D6C28} = {954D1870-EE4B-4EC3-84AC-292C300461F0}
 		{5038CF21-CE33-45F0-8C6F-D06D20D604F3} = {B95A2142-2872-4FFD-BAB2-596373401461}
 		{DC3AE1FC-8E93-4F33-B937-C51C2F7C350F} = {B95A2142-2872-4FFD-BAB2-596373401461}
-		{3D21A286-CADC-40CF-AF29-790DAAD4363A} = {0D0CB8DD-34FE-42C0-9B53-4E27330F63D1}
-		{B4CA4927-6FFA-422B-8E54-413ECFCD6C39} = {0D0CB8DD-34FE-42C0-9B53-4E27330F63D1}
-		{9F803B18-7365-418E-9873-414383CD820B} = {0D0CB8DD-34FE-42C0-9B53-4E27330F63D1}
 		{5515C2D5-B9DD-4A58-BB53-0BD34259347D} = {0D0CB8DD-34FE-42C0-9B53-4E27330F63D1}
+		{B4CA4927-6FFA-422B-8E54-413ECFCD6C39} = {0D0CB8DD-34FE-42C0-9B53-4E27330F63D1}
 		{8C495B2A-E2D5-49C1-BE93-B2B0A8F7BB0D} = {0D0CB8DD-34FE-42C0-9B53-4E27330F63D1}
+		{3D21A286-CADC-40CF-AF29-790DAAD4363A} = {0D0CB8DD-34FE-42C0-9B53-4E27330F63D1}
+		{9F803B18-7365-418E-9873-414383CD820B} = {0D0CB8DD-34FE-42C0-9B53-4E27330F63D1}
 		{83B2A024-0218-4F65-B75B-0102DAF38443} = {35108C59-903B-4DE2-8EB7-38797FB43716}
 		{AB2AD95A-17AA-473B-8E1C-02ACED2F8520} = {35108C59-903B-4DE2-8EB7-38797FB43716}
 		{1E5939B0-0C91-4074-94F6-A70F522B99B7} = {0D0CB8DD-34FE-42C0-9B53-4E27330F63D1}
@@ -246,5 +252,8 @@ Global
 		{B9CDD38F-31FD-47BE-91EB-E2BFABC3860B} = {B95A2142-2872-4FFD-BAB2-596373401461}
 		{7CDE7572-9471-4966-B3B3-70DF7D2D9269} = {B95A2142-2872-4FFD-BAB2-596373401461}
 		{CB61A764-B3BB-42C0-8CDB-DBE57FB80DF5} = {98448149-E44A-42E5-852D-B12C9D8AAABD}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9F9F8352-34DD-42C0-8564-EE9AF34A3501}
 	EndGlobalSection
 EndGlobal
