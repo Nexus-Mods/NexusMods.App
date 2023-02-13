@@ -10,7 +10,7 @@ public class ExtractArchive : AVerb<AbsolutePath, AbsolutePath>
     public ExtractArchive(FileExtractor.FileExtractor extractor) => _extractor = extractor;
 
     public static VerbDefinition Definition => new("extract-archive",
-        "Extracts an archive to a folder on-disk", new[]
+        "Extracts an archive to a folder on-disk", new OptionDefinition[]
         {
             new OptionDefinition<AbsolutePath>("i", "inputFile", "Input archive to extract"),
             new OptionDefinition<AbsolutePath>("o", "outputFolder", "Output location for files")

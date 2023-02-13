@@ -54,7 +54,7 @@ public interface AVerb<in T1, in T2, in T3> : IVerb
     public Task<int> Run(T1 a, T2 b, T3 c, CancellationToken token);
 }
 
-public record VerbDefinition(string Name, string Description, OptionDefinition[] Options) { }
+public record VerbDefinition(string Name, string Description, OptionDefinition[] Options);
 
 public static class ServiceExtensions
 {
