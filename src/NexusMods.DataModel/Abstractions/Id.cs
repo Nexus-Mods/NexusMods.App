@@ -1,9 +1,7 @@
 ﻿using System.Buffers.Binary;
-using System.ComponentModel;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using NexusMods.Hashing.xxHash64;
 
 namespace NexusMods.DataModel.Abstractions;
 
@@ -20,6 +18,16 @@ public interface Id : IEquatable<Id>
         {
             Span<byte> span = stackalloc byte[SpanSize];
             ToSpan(span);
+            return Convert.ToHexString(span);
+        }
+    }
+    
+    public string TaggedSpanHex 
+    {
+        get
+        {
+            Span<byte> span = stackalloc byte[SpanSize + 1];
+            ToTaggedSpan(span);
             return Convert.ToHexString(span);
         }
     }

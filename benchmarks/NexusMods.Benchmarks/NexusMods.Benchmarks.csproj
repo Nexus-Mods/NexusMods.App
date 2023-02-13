@@ -2,9 +2,6 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net7.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
     </PropertyGroup>
     
     <ItemGroup>
@@ -14,6 +11,12 @@
     
     <ItemGroup>
       <PackageReference Include="BenchmarkDotNet" Version="0.13.4" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <None Update="Assets/**">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

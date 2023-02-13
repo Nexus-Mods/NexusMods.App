@@ -31,6 +31,7 @@ public static class Services
             .AddVerb<Apply>(Apply.Definition)
             .AddVerb<ChangeTracking>(ChangeTracking.Definition)
             .AddVerb<ExtractArchive>(ExtractArchive.Definition)
+            .AddVerb<ExportLoadout>(ExportLoadout.Definition)
             .AddVerb<FlattenList>(FlattenList.Definition)
             .AddVerb<HashFolder>(HashFolder.Definition)
             .AddVerb<InstallMod>(InstallMod.Definition)
@@ -46,8 +47,6 @@ public static class Services
         
         services.AddAllSingleton<IResource, IResource<IExtractor, Size>>(s => new Resource<IExtractor, Size>("File Extraction"));
         services.AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(s => new Resource<FileContentsCache, Size>("File Analysis"));
-        services.AddFileExtractors();
-        services.AddDataModel();
         return services;
     }
     

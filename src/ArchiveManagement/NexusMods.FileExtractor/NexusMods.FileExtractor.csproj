@@ -1,11 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
-
+    
+    <!-- NuGet Package Shared Details -->
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+    
     <ItemGroup>
       <ProjectReference Include="..\..\NexusMods.Common\NexusMods.Common.csproj" />
       <ProjectReference Include="..\..\NexusMods.DataModel.RateLimiting\NexusMods.DataModel.RateLimiting.csproj" />
@@ -19,25 +16,42 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="Extractors\linux-x64\7zz">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+
+      <!-- Using .nupkg convention for auto extract. -->
+      <None Update="runtimes\win-x64\**">
+          <Pack>true</Pack>
+          <PackagePath>runtimes/win-x64</PackagePath>
       </None>
-      <None Update="Extractors\mac\7zz">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+
+      <None Update="runtimes\osx-x64\**">
+          <Pack>true</Pack>
+          <PackagePath>runtimes/osx-x64</PackagePath>
       </None>
-      <None Update="Extractors\windows-x64\7z.exe">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+
+      <None Update="runtimes\linux-x64\**">
+          <Pack>true</Pack>
+          <PackagePath>runtimes/linux-x64</PackagePath>
       </None>
+        
       <None Update="FileSignatures\Signatures.tt">
         <Generator>TextTemplatingFileGenerator</Generator>
         <LastGenOutput>Signatures.cs</LastGenOutput>
+      </None>
+        
+      <None Update="build\NexusMods.FileExtractor.targets">
+        <Pack>true</Pack>
+        <PackagePath>build</PackagePath>
       </None>
     </ItemGroup>
 
     <ItemGroup>
       <Compile Update="FileSignatures\Signatures.cs">
+        <AutoGen>True</AutoGen>
+        <DesignTime>True</DesignTime>
         <DependentUpon>Signatures.tt</DependentUpon>
       </Compile>
     </ItemGroup>
 
+    <!-- Non-NuGet Only -->
+    <Import Project="build\NexusMods.FileExtractor.targets" />
 </Project>

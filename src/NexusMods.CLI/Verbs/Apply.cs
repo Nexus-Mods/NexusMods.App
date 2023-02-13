@@ -1,8 +1,6 @@
 ﻿using NexusMods.CLI.DataOutputs;
-using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Loadouts.ApplySteps;
 using NexusMods.DataModel.Loadouts.Markers;
-using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Paths;
 
 namespace NexusMods.CLI.Verbs;

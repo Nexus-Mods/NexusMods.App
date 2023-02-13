@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using NexusMods.DataModel.Abstractions;
+﻿using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.JsonConverters;
 
 namespace NexusMods.DataModel.Loadouts;

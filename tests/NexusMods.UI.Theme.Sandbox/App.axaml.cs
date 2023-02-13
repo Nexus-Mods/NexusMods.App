@@ -4,7 +4,7 @@ using Avalonia.Markup.Xaml;
 
 namespace NexusMods.UI.Theme.Sandbox;
 
-public partial class App : Application
+public class App : Application
 {
     public override void Initialize()
     {

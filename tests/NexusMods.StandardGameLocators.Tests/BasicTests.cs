@@ -2,7 +2,6 @@
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
-using NexusMods.Interfaces;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers;
 

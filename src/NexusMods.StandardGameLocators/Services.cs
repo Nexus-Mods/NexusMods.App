@@ -53,6 +53,15 @@ public static class Services
         return services;
     }
 
+    public static IServiceCollection AddSteamGameLocator(this IServiceCollection services,
+        bool registerConcreteLocator = true)
+    {
+        services.AddSingleton<IGameLocator, SteamLocator>();
+        if (registerConcreteLocator)
+            services.AddSingleton(s => CreateSteamHandler());
+        return services;
+    }
+
     private static AHandler<SteamGame, int> CreateSteamHandler()
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))

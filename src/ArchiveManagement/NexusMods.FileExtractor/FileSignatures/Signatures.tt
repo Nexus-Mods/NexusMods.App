@@ -5,16 +5,6 @@
 <#@ import namespace="System.Linq" #>
 using NexusMods.Paths;
 <#
-
-
-    byte[] StringToByteArray(string hex)
-    {
-        return Enumerable.Range(0, hex.Length)
-            .Where(x => x % 2 == 0)
-            .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
-            .ToArray();
-    }
-
     var magicFiles = new[] {"magic_sigs.txt"};
     var digits = new HashSet<char>("0123456789".ToArray());
     var magicRows = magicFiles
@@ -25,7 +15,7 @@ using NexusMods.Paths;
             EnumName = (digits.Contains(e.First()) ? "_" + e : e).Replace(".", ""),
             Sig = row[1].Trim().Split(' ').Select(b => "0x" + b),
             Description = row[0]
-        }));
+        })).ToArray();
     
     var extraFiles = new [] {"mundane_sigs.txt"};
     var mundaneRows = extraFiles
@@ -36,19 +26,40 @@ using NexusMods.Paths;
             EnumName = row[1],
             Description = row[0],
             Extension = row[2]
-        });
+        }).ToArray();
 #>
+#pragma warning disable CS1591 // missing XML documentation
+// ReSharper disable All
 namespace NexusMods.FileExtractor.FileSignatures {
 
-    public enum FileType { <#
-    foreach (var nrow in magicRows.Select(r => r.EnumName)
-                 .Concat(mundaneRows.Select(m => m.EnumName))
-                 .Distinct().OrderBy(r => r))
-    {
-#>
-      <#= nrow #>,
-    <#
-    }
+    public enum FileType 
+    {<#
+        var names = magicRows.Select(r => r.EnumName)
+            .Concat(mundaneRows.Select(m => m.EnumName))
+            .Distinct().OrderBy(r => r).ToArray();
+
+        // This is slow; but just template :)
+        foreach (var name in names)
+        {
+            var magicName = magicRows.FirstOrDefault(x => x.EnumName == name);
+            if (magicName != null)
+            {#>
+                /// <summary>
+                /// <#=magicName.Description#>
+                /// </summary>
+                <#= magicName.EnumName #>,
+            <#           
+                continue; 
+            }
+
+            var mundane = mundaneRows.First(x => x.EnumName == name);
+            #>
+            /// <summary>
+            /// <#=mundane.Description#>
+            /// </summary>
+            <#= mundane.EnumName #>,
+<#
+        }
 #>
     }
 

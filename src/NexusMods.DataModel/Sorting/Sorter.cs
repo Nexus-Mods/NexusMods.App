@@ -1,6 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
 using NexusMods.DataModel.Sorting.Rules;
 
 namespace NexusMods.DataModel.Sorting;
@@ -225,14 +223,14 @@ public class Sorter
                 {
                     case First<TItem, TId>:
                         if (!haveFirst)
-                            idsBuffer.Add(idSelector(itm));
+                            idsBuffer.Add(otherId);
                         break;
                     case After<TItem, TId> after:
                         // Handled above
                         break;
                     case Before<TItem, TId> b:
-                        if (b.Other.Equals(idSelector(thisItem)))
-                            idsBuffer.Add(idSelector(itm));
+                        if (b.Other.Equals(idForThisItem))
+                            idsBuffer.Add(otherId);
                         break;
                 }
             }

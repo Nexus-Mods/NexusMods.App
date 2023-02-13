@@ -1,16 +1,20 @@
-﻿namespace NexusMods.Paths;
+﻿using Microsoft.Extensions.DependencyInjection;
+
+namespace NexusMods.Paths;
 
 public class TemporaryFileManager : IDisposable, IAsyncDisposable
 {
     private readonly AbsolutePath _basePath;
     private readonly bool _deleteOnDispose;
-
+    
     public TemporaryFileManager() : this(KnownFolders.EntryFolder.Join("temp"))
     {
     }
-
-    public TemporaryFileManager(AbsolutePath basePath, bool deleteOnDispose = true)
+    
+    public TemporaryFileManager(AbsolutePath basePath = default, bool deleteOnDispose = true)
     {
+        if (basePath == default)
+            basePath = KnownFolders.EntryFolder.Join("temp");
         _deleteOnDispose = deleteOnDispose;
         _basePath = basePath;
         _basePath.CreateDirectory();

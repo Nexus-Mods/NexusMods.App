@@ -4,7 +4,6 @@ using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Games.Abstractions;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.Interfaces;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators;
 
@@ -32,9 +31,8 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame
         yield return new (GameFolderType.Game, installation.Path);
         var appData = locator switch
         {
-            SteamLocator => KnownFolders.MyGames.Join("Skyrim Special Edition"),
             GogLocator => KnownFolders.MyGames.Join("Skyrim Special Edition GOG"),
-            _ => throw new NotImplementedException($"No override for {locator}")
+            _ => KnownFolders.MyGames.Join("Skyrim Special Edition"),
         };
         yield return new(GameFolderType.AppData, appData);
     }

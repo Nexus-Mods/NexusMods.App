@@ -8,10 +8,7 @@ using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.RateLimiting;
-using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Sorting.Rules;
-using NexusMods.Hashing.xxHash64;
-using NexusMods.Interfaces;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel;
