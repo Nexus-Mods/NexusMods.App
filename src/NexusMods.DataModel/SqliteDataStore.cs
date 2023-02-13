@@ -1,6 +1,7 @@
 ﻿using System.Buffers.Binary;
 using System.Data.SQLite;
 using System.Text.Json;
+using BitFaster.Caching.Lru;
 using NexusMods.DataModel.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Hashing.xxHash64;
@@ -19,6 +20,7 @@ public class SqliteDataStore : IDataStore
     private readonly Dictionary<EntityCategory,string> _casStatements;
     private readonly Lazy<JsonSerializerOptions> _jsonOptions;
     private readonly Dictionary<EntityCategory,string> _prefixStatements;
+    private readonly ConcurrentLru<Id,Entity> _cache;
 
     public SqliteDataStore(AbsolutePath path, IServiceProvider provider)
     {
@@ -34,6 +36,7 @@ public class SqliteDataStore : IDataStore
         EnsureTables();
         
         _jsonOptions = new Lazy<JsonSerializerOptions>(provider.GetRequiredService<JsonSerializerOptions>);
+        _cache = new ConcurrentLru<Id, Entity>(1000);
     }
 
     private void EnsureTables()
@@ -80,8 +83,11 @@ public class SqliteDataStore : IDataStore
         cmd.ExecuteNonQuery();
     }
 
-    public T? Get<T>(Id id) where T : Entity
+    public T? Get<T>(Id id, bool canCache) where T : Entity
     {
+        if (canCache && _cache.TryGet(id, out var cached))
+            return (T)cached;
+
         using var cmd = new SQLiteCommand(_getStatements[id.Category], _conn);
         var idBytes = new byte[id.SpanSize];
         id.ToSpan(idBytes.AsSpan());
@@ -94,6 +100,10 @@ public class SqliteDataStore : IDataStore
         var value = (T?)JsonSerializer.Deserialize<Entity>(blob, _jsonOptions.Value);
         if (value == null) return null;
         value.DataStoreId = id;
+        
+        if (canCache)
+            _cache.AddOrUpdate(id, value);
+        
         return value;
     }
 
