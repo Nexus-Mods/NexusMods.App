@@ -76,5 +76,8 @@ public class ModInstallerTests
         new object[] {"Tweak-XL", ModId.From(4197), FileId.From(36048), Hash.From(0x22A45B59423201E1), 2},
         new object[] {"Panam Romanced Enhanced", ModId.From(4626), FileId.From(38117), Hash.From(0xDD0E1C3AEA20E6C1), 3},
         new object[] {"Panam Romanced Enhanced REDmod", ModId.From(4626), FileId.From(38118), Hash.From(0x46F5AD6A75172F76), 5},
+        new object[] {"Tarnished Pack", ModId.From(6072), FileId.From(31953), Hash.From(0x0AAFB35F889500BD), 6},
+        new object[] {"Spicy Valentina", ModId.From(7404), FileId.From(39175), Hash.From(0xB354E2BE032A947F), 2},
+        new object[] {"OVE3RCHROME - Alternative LUT", ModId.From(6579), FileId.From(39289), Hash.From(0xC9CF6070A596BFDA), 2}
     };
 }

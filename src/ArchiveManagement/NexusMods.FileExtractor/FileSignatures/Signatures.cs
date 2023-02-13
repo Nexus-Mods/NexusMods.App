@@ -12,10 +12,18 @@ namespace NexusMods.FileExtractor.FileSignatures {
                 /// Creation Engine Plugin
                 /// </summary>
                  CreationEnginePlugin,
+                            /// <summary>
+                /// Cyberpunk Appearance Preset
+                /// </summary>
+                 Cyberpunk2077AppearancePreset,
                         /// <summary>
             /// Ini Configuration File
             /// </summary>
              INI,
+            /// <summary>
+            /// JSON File
+            /// </summary>
+             JSON,
                 /// <summary>
                 /// Morrowind BSA
                 /// </summary>
@@ -139,6 +147,9 @@ namespace NexusMods.FileExtractor.FileSignatures {
                 // PDF file
         (FileType.FDF, new byte[] {0x25, 0x50, 0x44, 0x46}),
 
+                // Cyberpunk Appearance Preset
+        (FileType. Cyberpunk2077AppearancePreset, new byte[] {0x4c, 0x6f, 0x63, 0x4b, 0x65, 0x79, 0x23}),
+
         
     };
 
@@ -148,6 +159,9 @@ namespace NexusMods.FileExtractor.FileSignatures {
 
                 // Text File
         (FileType.TXT, new Extension(".txt")),
+
+                // JSON File
+        (FileType.JSON, new Extension(".json")),
 
         
     };

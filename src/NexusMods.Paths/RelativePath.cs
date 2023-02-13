@@ -88,6 +88,13 @@ public struct RelativePath : IPath, IEquatable<RelativePath>, IComparable<Relati
         Array.Copy(Parts, 0, newArray, basePath.Parts.Length, Parts.Length);
         return new AbsolutePath(newArray, basePath.PathFormat);
     }
+    
+    public RelativePath RelativeTo(RelativePath basePath)
+    {
+        if (!InFolder(basePath))
+            throw new Exception("Can't create path relative to paths that aren't in the same folder");
+        return new RelativePath(Parts[basePath.Parts.Length..]);
+    }
 
     /// <summary>
     /// Returns true if this path is a child of the given path.

@@ -6,6 +6,7 @@ using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.FileExtractor.FileSignatures;
+using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.DTOs;
@@ -57,7 +58,7 @@ public class StressTest : AVerb<IGame, AbsolutePath>
     public async Task<int> Run(IGame game, AbsolutePath loadout, CancellationToken token)
     {
         var mods = await _client.ModUpdates(game.Domain, Client.PastTime.Day, token);
-        var results = new List<(string FileName, ModId ModId, FileId FileId, bool Passed, Exception? exception)>();
+        var results = new List<(string FileName, ModId ModId, FileId FileId, Hash Hash, bool Passed, Exception? exception)>();
 
         foreach (var mod in mods.Data)
         {
@@ -74,6 +75,7 @@ public class StressTest : AVerb<IGame, AbsolutePath>
                 continue;
             }
 
+            var hash = Hash.Zero;
             foreach (var file in files.Data.Files)
             {
                 try
@@ -88,7 +90,7 @@ public class StressTest : AVerb<IGame, AbsolutePath>
                     var cts = new CancellationTokenSource();
                     cts.CancelAfter(TimeSpan.FromMinutes(2));
                     
-                    await _downloader.Download(urls.Data.Select(d => d.Uri), tmpPath, token: cts.Token);
+                    hash = await _downloader.Download(urls.Data.Select(d => d.Uri), tmpPath, token: cts.Token);
 
                     _logger.LogInformation("Installing {ModId} {FileId} {FileName} - {Size}", mod.ModId, file.FileId,
                         file.FileName, file.SizeInBytes);
@@ -96,7 +98,7 @@ public class StressTest : AVerb<IGame, AbsolutePath>
                     var list = await _loadoutManager.ImportFrom(loadout, token);
                     await list.Install(tmpPath, "Stress Test Mod", token);
                     
-                    results.Add((file.FileName, mod.ModId, file.FileId, true, null));
+                    results.Add((file.FileName, mod.ModId, file.FileId, hash, true, null));
                     _logger.LogInformation("Installed {ModId} {FileId} {FileName} - {Size}", mod.ModId, file.FileId,
                         file.FileName, file.SizeInBytes);
                 }
@@ -104,16 +106,16 @@ public class StressTest : AVerb<IGame, AbsolutePath>
                 {
                     _logger.LogError(ex, "Failed to install {ModId} {FileId} {FileName}", mod.ModId, file.FileId,
                         file.FileName);
-                    results.Add((file.FileName, mod.ModId, file.FileId, false, ex));
+                    results.Add((file.FileName, mod.ModId, file.FileId, hash, false, ex));
                 }
 
             }
         }
 
-        await _renderer.Render(new Table(new[] { "Name", "ModId", "FileId", "Passed", "Exception" },
-            results.Select(r => new[]
+        await _renderer.Render(new Table(new[] { "Name", "ModId", "FileId", "Hash", "Passed", "Exception" },
+            results.Select(r => new object[]
             {
-                r.FileName, r.ModId.ToString(), r.FileId.ToString(), r.Passed.ToString(), r.exception?.Message ?? ""
+                r.FileName, r.ModId.ToString(), r.FileId.ToString(), r.Hash, r.Passed.ToString(), r.exception?.Message ?? ""
             })));
         
         return results.Count(f => !f.Passed);
