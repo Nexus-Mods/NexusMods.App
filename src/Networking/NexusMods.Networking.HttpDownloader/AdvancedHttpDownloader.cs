@@ -285,7 +285,7 @@ namespace NexusMods.Networking.HttpDownloader
                 // don't cancel downloads that were only just started
                 return false;
             }
-            if ((chunk.Read / chunk.Size) > 0.8)
+            if (((float)chunk.Read / chunk.Size) > 0.8f)
             {
                 // don't cancel downloads that are almost done
                 return false;
