@@ -4,6 +4,8 @@ using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
+using NexusMods.Paths.Utilities;
 
 namespace NexusMods.DataModel;
 
@@ -31,7 +33,7 @@ public class ArchiveManager
     {
         Hash hash;
         var folder = SelectLocation(path);
-        var tmpName = folder.Join(Guid.NewGuid().ToString().ToRelativePath().WithExtension(Ext.Tmp));
+        var tmpName = folder.Join(Guid.NewGuid().ToString().ToRelativePath().WithExtension(KnownExtensions.Tmp));
         {
             await using var tmpFile = tmpName.Create();
             await using var src = path.Read();
@@ -45,7 +47,7 @@ public class ArchiveManager
 
     private static RelativePath NameForHash(Hash hash)
     {
-        return hash.ToHex().ToRelativePath().WithExtension(Ext.Ra);
+        return hash.ToHex().ToRelativePath().WithExtension(KnownExtensions.Ra);
     }
 
     public Stream Open(Hash hash)
@@ -96,7 +98,7 @@ public class ArchiveManager
 
     public HashSet<Hash> AllArchives()
     {
-        return _locations.SelectMany(e => e.EnumerateFiles(Ext.Ra))
+        return _locations.SelectMany(e => e.EnumerateFiles(KnownExtensions.Ra))
             .Select(a => Hash.FromHex(a.FileName.FileNameWithoutExtension.ToString()))
             .ToHashSet();
     }

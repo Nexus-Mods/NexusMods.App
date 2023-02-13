@@ -14,10 +14,10 @@ public static class Services
     {
         return collection.AddAllSingleton<IHttpMessageFactory, ApiKeyMessageFactory>()
             .AddSingleton<Client>()
-            .AddVerb<SetNexusAPIKey>(SetNexusAPIKey.Definition)
-            .AddVerb<NexusApiVerify>(NexusApiVerify.Definition)
-            .AddVerb<NexusGames>(NexusGames.Definition)
-            .AddVerb<DownloadLinks>(DownloadLinks.Definition)
+            .AddVerb<SetNexusAPIKey>()
+            .AddVerb<NexusApiVerify>()
+            .AddVerb<NexusGames>()
+            .AddVerb<DownloadLinks>()
             
             .AddSingleton<IOptionParser<CDNName>, StringOptionParser<CDNName>>()
             .AddSingleton<IOptionParser<ModId>, ULongOptionParser<ModId>>()

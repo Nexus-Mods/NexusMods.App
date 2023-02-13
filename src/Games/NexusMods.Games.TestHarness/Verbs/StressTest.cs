@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using NexusMods.CLI;
 using NexusMods.CLI.DataOutputs;
 using NexusMods.DataModel;
@@ -37,8 +37,8 @@ public class StressTest : AVerb<IGame, AbsolutePath>
         _temporaryFileManager = temporaryFileManager;
     }
     
-    public static VerbDefinition Definition = 
-        new("stress-test", "Stress test the application by installing all recent mods for a given game", 
+    public static VerbDefinition Definition => 
+        new VerbDefinition("stress-test", "Stress test the application by installing all recent mods for a given game", 
             new OptionDefinition[]
             {
                 new OptionDefinition<IGame>("g", "game", "The game to install mods for"),
@@ -54,16 +54,10 @@ public class StressTest : AVerb<IGame, AbsolutePath>
         FileType.PDF
     };
 
-
-
-    protected override async Task<int> Run(IGame game, AbsolutePath loadout, CancellationToken token)
+    public async Task<int> Run(IGame game, AbsolutePath loadout, CancellationToken token)
     {
-        
         var mods = await _client.ModUpdates(game.Domain, Client.PastTime.Day, token);
-
         var results = new List<(string FileName, ModId ModId, FileId FileId, bool Passed, Exception? exception)>();
-        
-        
 
         foreach (var mod in mods.Data)
         {

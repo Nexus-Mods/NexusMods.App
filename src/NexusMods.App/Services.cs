@@ -12,5 +12,4 @@ public static class Services
         services.AddScoped<IRenderer, Json>();
         return services;
     }
-    
 }

@@ -7,6 +7,8 @@ using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
+using NexusMods.Paths.Utilities;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.DependencyInjection;
 

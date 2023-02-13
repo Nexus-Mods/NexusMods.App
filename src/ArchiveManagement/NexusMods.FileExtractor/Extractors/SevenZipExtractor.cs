@@ -8,6 +8,8 @@ using NexusMods.DataModel.RateLimiting;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
+using NexusMods.Paths.Utilities;
 
 namespace NexusMods.FileExtractor.Extractors;
 
@@ -26,8 +28,8 @@ public class SevenZipExtractor : IExtractor
     private readonly IResource<IExtractor,Size> _limiter;
 
     private static readonly FileType[] SupportedTypesCached = { FileType._7Z, FileType.RAR_NEW, FileType.RAR_OLD, FileType.ZIP };
-    private static readonly Extension[] SupportedExtensionsCached = { Ext._7z, Ext.Rar, Ext.Zip, Ext._7zip };
-    private static readonly string ExePath = GetExeLocation().ToRelativePath().RelativeTo(KnownFolders.EntryFolder).ToString();
+    private static readonly Extension[] SupportedExtensionsCached = { KnownExtensions._7z, KnownExtensions.Rar, KnownExtensions.Zip, KnownExtensions._7zip };
+    private static readonly string ExePath = GetExeLocation().ToRelativePath().Combine(KnownFolders.EntryFolder).ToString();
 
     /// <inheritdoc />
     public FileType[] SupportedSignatures => SupportedTypesCached;

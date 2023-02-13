@@ -2,6 +2,7 @@
 
 namespace NexusMods.CLI.Verbs;
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public class ChangeTracking : AVerb
 {
     private readonly IRenderer _renderer;
@@ -13,24 +14,20 @@ public class ChangeTracking : AVerb
     }
     
     private readonly IDataStore _store;
-
     
-    public static VerbDefinition Definition = new("change-tracking",
+    public static VerbDefinition Definition => new("change-tracking",
         "Display changes to the datastore waiting for each new change",
         Array.Empty<OptionDefinition>());
     
-    protected override async Task<int> Run(CancellationToken token)
+    public async Task<int> Run(CancellationToken token)
     {
         _store.Changes.Subscribe(s =>
-        HandleEvent(s.Id, s.Entity));
+        HandleEvent(s.Entity));
         
         while (!token.IsCancellationRequested)
             await Task.Delay(1000, token);
         return 0;
     }
 
-    public void HandleEvent(Id id, Entity entity)
-    {
-        _renderer.Render(entity);
-    }
+    private void HandleEvent(Entity entity) => _renderer.Render(entity);
 }

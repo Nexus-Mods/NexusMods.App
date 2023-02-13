@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
 
 namespace NexusMods.Hashing.xxHash64.Tests;
 

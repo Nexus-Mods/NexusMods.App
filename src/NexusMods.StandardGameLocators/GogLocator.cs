@@ -3,6 +3,7 @@ using GameFinder.StoreHandlers.GOG;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
 
 namespace NexusMods.StandardGameLocators;
 

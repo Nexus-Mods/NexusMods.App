@@ -7,6 +7,6 @@ public static class GamePathExtensions
 {
     public static AbsolutePath RelativeTo(this GamePath path, GameInstallation installation)
     {
-        return path.RelativeTo(installation.Locations[path.Folder]);
+        return path.RelativeTo(installation.Locations[path.Type]);
     }
 }

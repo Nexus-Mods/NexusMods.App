@@ -1,6 +1,8 @@
 ﻿using BenchmarkDotNet.Attributes;
 using NexusMods.Benchmarks.Interfaces;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
+using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Benchmarks.Benchmarks;
 
@@ -54,7 +56,7 @@ public class Paths : IBenchmark
     [Benchmark]
     public void NexusChangeExtension()
     {
-        CurrentPath.AbsolutePath.ReplaceExtension(Ext.Zip);
+        CurrentPath.AbsolutePath.ReplaceExtension(KnownExtensions.Zip);
     }
 
     [Benchmark]

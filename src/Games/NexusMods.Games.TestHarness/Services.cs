@@ -9,7 +9,7 @@ public static class Services
 {
     public static IServiceCollection AddTestHarness(this IServiceCollection services)
     {
-        services.AddVerb<StressTest>(StressTest.Definition);
+        services.AddVerb<StressTest>();
         services.AddSingleton<ITypeFinder, TypeFinder>();
         return services;
     }

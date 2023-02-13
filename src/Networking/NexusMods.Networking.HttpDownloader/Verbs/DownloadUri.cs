@@ -16,7 +16,7 @@ public class DownloadUri : AVerb<Uri, AbsolutePath>
         _renderer = configurator.Renderer;
     }
     
-    public static readonly VerbDefinition Definition = new("download-uri",
+    public static VerbDefinition Definition => new("download-uri",
         "Downloads a file from a given URI",
         new OptionDefinition[]
         {
@@ -25,7 +25,7 @@ public class DownloadUri : AVerb<Uri, AbsolutePath>
         });
 
 
-    protected override async Task<int> Run(Uri uri, AbsolutePath output, CancellationToken token)
+    public async Task<int> Run(Uri uri, AbsolutePath output, CancellationToken token)
     {
         var sw = Stopwatch.StartNew();
         var hash = await _renderer.WithProgress(token, async () =>

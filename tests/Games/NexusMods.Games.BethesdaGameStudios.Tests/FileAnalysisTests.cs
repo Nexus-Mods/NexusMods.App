@@ -1,6 +1,8 @@
 ﻿using FluentAssertions;
 using NexusMods.DataModel;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
+using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Games.BethesdaGameStudios.Tests;
 

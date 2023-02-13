@@ -1,3 +1,6 @@
+using NexusMods.Paths.Extensions;
+using NexusMods.Paths.Utilities;
+
 namespace NexusMods.Paths.Tests;
 
 public class AbsolutePathTests
@@ -79,7 +82,7 @@ public class AbsolutePathTests
     {
         var pathA = @"c:\foo\bar.zip".ToAbsolutePath();
         var pathB = @"c:\foo\bar".ToAbsolutePath();
-        Assert.Equal(pathA, pathB.WithExtension(Ext.Zip));
+        Assert.Equal(pathA, pathB.WithExtension(KnownExtensions.Zip));
     }
 
     [Fact]
@@ -191,7 +194,7 @@ public class AbsolutePathTests
         Assert.True(DateTime.Now - fileOne.CreationTime < TimeSpan.FromSeconds(1));
         Assert.True(DateTime.UtcNow - fileOne.CreationTimeUtc < TimeSpan.FromSeconds(1));
         
-        var files = testDir.EnumerateFiles(Ext.Txt).ToHashSet();
+        var files = testDir.EnumerateFiles(KnownExtensions.Txt).ToHashSet();
         Assert.Contains(fileOne, files);
         Assert.Contains(fileTwo, files);
         Assert.Contains(fileThree, files);

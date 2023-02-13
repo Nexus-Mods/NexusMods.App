@@ -7,6 +7,8 @@ using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
+using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Games.RedEngine;
 
@@ -23,9 +25,9 @@ public class SimpleOverlyModInstaller : IModInstaller
     }.Select(x => x.ToRelativePath()).ToArray();
 
     private static Extension[] _ignoreExtensions = {
-        Ext.Txt,
-        Ext.Md,
-        Ext.Pdf
+        KnownExtensions.Txt,
+        KnownExtensions.Md,
+        KnownExtensions.Pdf
     };
     
     public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)

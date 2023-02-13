@@ -10,6 +10,8 @@ using GameFinder.StoreHandlers.Steam;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.DataModel.Games;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
+using NexusMods.Paths.Utilities;
 
 namespace NexusMods.StandardGameLocators;
 
