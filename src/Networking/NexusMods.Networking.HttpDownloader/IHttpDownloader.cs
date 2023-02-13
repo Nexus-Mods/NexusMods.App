@@ -18,4 +18,8 @@ public interface IHttpDownloader
     /// <param name="token"></param>
     /// <returns></returns>
     public Task<Hash> Download(IReadOnlyList<HttpRequestMessage> sources, AbsolutePath destination, Size? size = null, CancellationToken token = default);
+
+    public Task<Hash> Download(IEnumerable<Uri> sources, AbsolutePath destination, Size? size = null,
+        CancellationToken token = default) =>
+        Download(sources.Select(u => new HttpRequestMessage(HttpMethod.Get, u)).ToArray(), destination, size, token);
 }

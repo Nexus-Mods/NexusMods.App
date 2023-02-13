@@ -26,6 +26,15 @@ public static class KnownExtensions
     /// <summary>.tmp</summary>
     public static Extension Tmp = new(".tmp");
     
+    /// <summary>.sqlite</summary>
+    public static Extension Sqlite = new(".sqlite");
+    
+    /// <summary>.md</summary>
+    public static Extension Md = new(".md");
+    
+    /// <summary>.pdf</summary>
+    public static Extension Pdf = new(".pdf");
+        
     /// <summary>.ra</summary>
     public static Extension Ra = new(".ra");
 }

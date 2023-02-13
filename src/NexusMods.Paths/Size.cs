@@ -1,4 +1,4 @@
-﻿using System.Numerics;
+using System.Numerics;
 using NexusMods.Paths.Extensions;
 using Vogen;
 // ReSharper disable InconsistentNaming
@@ -100,4 +100,13 @@ public readonly partial struct Size :
 
     /// <inheritdoc />
     public static bool operator <=(Size left, Size right) => left._value <= right._value;
+}
+
+public static class SizeExtensions
+{
+    public static Size Sum<T>(this IEnumerable<T> coll, Func<T, Size> selector)
+    {
+        return coll.Aggregate(Size.Zero, (s, itm) => selector(itm) + s);
+    }
+
 }

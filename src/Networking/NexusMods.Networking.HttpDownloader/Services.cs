@@ -15,4 +15,11 @@ public static class Services
             .AddVerb<DownloadUri>()
             .AddAllSingleton<IResource, IResource<IHttpDownloader, Size>>(s => new Resource<IHttpDownloader, Size>("Downloads"));
     }
+
+    public static IServiceCollection AddAdvancedHttpDownloader(this IServiceCollection services)
+    {
+        return services.AddSingleton<IHttpDownloader, AdvancedHttpDownloader>()
+            .AddVerb<DownloadUri>()
+            .AddAllSingleton<IResource, IResource<IHttpDownloader, Size>>(s => new Resource<IHttpDownloader, Size>("Downloads"));
+    }
 }

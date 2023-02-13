@@ -8,6 +8,7 @@ using NexusMods.DataModel.ModInstallers;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
+using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Games.RedEngine;
 
@@ -22,10 +23,19 @@ public class SimpleOverlyModInstaller : IModInstaller
         "archive/pc/mod",
         "mods"
     }.Select(x => x.ToRelativePath()).ToArray();
+
+    private static Extension[] _ignoreExtensions = {
+        KnownExtensions.Txt,
+        KnownExtensions.Md,
+        KnownExtensions.Pdf
+    };
     
     public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
-        if (files.Keys.All(path => _rootPaths.Any(path.InFolder)))
+        var filtered = files.Where(f => f.Key.Depth > 1 || !_ignoreExtensions.Contains(f.Key.Extension))
+            .Select(f => f.Key);
+        
+        if (filtered.All(path => _rootPaths.Any(path.InFolder)))
         {
             return Common.Priority.Normal;
         }
@@ -35,7 +45,9 @@ public class SimpleOverlyModInstaller : IModInstaller
 
     public IEnumerable<AModFile> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
-        foreach (var (path, file) in files)
+        var filtered = files.Where(f => f.Key.Depth > 1 || !_ignoreExtensions.Contains(f.Key.Extension));
+        
+        foreach (var (path, file) in filtered)
         {
             yield return new FromArchive()
             {
