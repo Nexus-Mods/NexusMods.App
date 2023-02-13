@@ -8,6 +8,8 @@ using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
+using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Games.RedEngine.ModInstallers;
 
@@ -19,7 +21,7 @@ public class AppearancePreset : IModInstaller
         
         if (files.All(f => Helpers.IgnoreExtensions.Contains(f.Key.Extension) || 
                            (f.Value.FileTypes.Contains(FileType.Cyberpunk2077AppearancePreset) &&
-                            f.Key.Extension == Ext.Preset)))
+                            f.Key.Extension == KnownExtensions.Preset)))
             return Common.Priority.Normal;
 
         return Common.Priority.None;
@@ -32,7 +34,7 @@ public class AppearancePreset : IModInstaller
     
     public IEnumerable<AModFile> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
-        foreach (var (path, file) in files.Where(f => f.Key.Extension == Ext.Preset))
+        foreach (var (path, file) in files.Where(f => f.Key.Extension == KnownExtensions.Preset))
         {
             foreach (var relPath in _paths)
             {

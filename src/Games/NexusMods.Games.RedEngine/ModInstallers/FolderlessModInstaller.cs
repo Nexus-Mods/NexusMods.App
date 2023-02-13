@@ -7,6 +7,8 @@ using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
+using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Games.RedEngine.ModInstallers;
 
@@ -18,7 +20,7 @@ public class FolderlessModInstaller : IModInstaller
     
     private static Extension[] _supportedExtensions =
     {
-        Ext.Archive
+        KnownExtensions.Archive
     };
     
     public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)

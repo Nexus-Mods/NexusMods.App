@@ -8,6 +8,7 @@ using NexusMods.DataModel.ModInstallers;
 using NexusMods.Games.RedEngine.FileAnalyzers;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
 
 namespace NexusMods.Games.RedEngine.ModInstallers;
 
