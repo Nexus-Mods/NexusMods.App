@@ -37,7 +37,7 @@ var host = Host.CreateDefaultBuilder(Environment.GetCommandLineArgs())
             .AddStandardGameLocators()
             .AddRenderers()
             .AddNexusWebApi()
-            .AddAdvancedHttpDownloader()
+            .AddHttpDownloader()
             .AddRenderers()
             .AddTestHarness();
 
