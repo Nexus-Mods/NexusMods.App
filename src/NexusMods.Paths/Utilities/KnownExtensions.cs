@@ -5,6 +5,12 @@
 /// </summary>
 public static class KnownExtensions
 {
+    /// <summary>.archive</summary>
+    public static Extension Archive = new(".archive");
+    
+    /// <summary>.preset</summary>
+    public static Extension Preset = new(".preset");
+    
     /// <summary>.zip</summary>
     public static Extension Zip = new(".zip");
     
@@ -34,6 +40,9 @@ public static class KnownExtensions
     
     /// <summary>.pdf</summary>
     public static Extension Pdf = new(".pdf");
+    
+    /// <summary>.png</summary>
+    public static Extension Png = new(".png");
         
     /// <summary>.ra</summary>
     public static Extension Ra = new(".ra");
