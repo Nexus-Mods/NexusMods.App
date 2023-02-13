@@ -102,8 +102,18 @@ public readonly partial struct Size :
     public static bool operator <=(Size left, Size right) => left._value <= right._value;
 }
 
+/// <summary>
+/// Extensions related to <see cref="Size"/> class.
+/// </summary>
 public static class SizeExtensions
 {
+    /// <summary>
+    /// Returns a sum of all of the sizes in the collection.
+    /// </summary>
+    /// <param name="coll">The collection to pull the sizes from.</param>
+    /// <param name="selector">Selects the size from Type <typeparamref name="T"/></param>
+    /// <typeparam name="T">Item to extract size from.</typeparam>
+    /// <returns>The total sum.</returns>
     public static Size Sum<T>(this IEnumerable<T> coll, Func<T, Size> selector)
     {
         return coll.Aggregate(Size.Zero, (s, itm) => selector(itm) + s);
