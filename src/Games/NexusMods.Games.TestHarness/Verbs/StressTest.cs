@@ -93,10 +93,8 @@ public class StressTest : AVerb<IGame, AbsolutePath>
 
                     var cts = new CancellationTokenSource();
                     cts.CancelAfter(TimeSpan.FromMinutes(2));
-                    await _renderer.WithProgress(cts.Token, async () =>
-                    {
-                        return await _downloader.Download(urls.Data.Select(d => d.Uri), tmpPath, token: cts.Token);
-                    });
+                    
+                    await _downloader.Download(urls.Data.Select(d => d.Uri), tmpPath, token: cts.Token);
 
                     _logger.LogInformation("Installing {ModId} {FileId} {FileName} - {Size}", mod.ModId, file.FileId,
                         file.FileName, file.SizeInBytes);
