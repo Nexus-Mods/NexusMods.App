@@ -6,6 +6,8 @@ using NexusMods.DataModel.RateLimiting;
 using NexusMods.FileExtractor;
 using NexusMods.FileExtractor.Extractors;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
+using NexusMods.Paths.Utilities;
 using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.DependencyInjection;
@@ -17,7 +19,7 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection container)
     {
-        var prefix = Guid.NewGuid().ToString().ToRelativePath().RelativeTo(KnownFolders.EntryFolder.Join("tempTestData"));
+        var prefix = Guid.NewGuid().ToString().ToRelativePath().Combine(KnownFolders.EntryFolder.Join("tempTestData"));
         
         container.AddDataModel(prefix);
         container.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug));

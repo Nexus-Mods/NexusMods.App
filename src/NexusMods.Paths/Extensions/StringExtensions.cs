@@ -1,4 +1,4 @@
-namespace NexusMods.Paths;
+namespace NexusMods.Paths.Extensions;
 
 /// <summary>
 /// Path related extensions tied to strings.

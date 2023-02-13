@@ -1,3 +1,6 @@
+using NexusMods.Paths.Extensions;
+using NexusMods.Paths.Utilities;
+
 namespace NexusMods.Paths;
 
 /// <summary>
@@ -6,9 +9,35 @@ namespace NexusMods.Paths;
 public struct RelativePath : IPath, IEquatable<RelativePath>, IComparable<RelativePath>
 {
     /// <summary>
+    /// Represents an empty path.
+    /// </summary>
+    public static RelativePath Empty => new(Array.Empty<string>());
+    
+    /// <summary>
+    /// Used to compare relative paths for sorting purposes.
+    /// </summary>
+    public static IComparer<RelativePath> Comparer => new RelativePathComparer();
+    
+    /// <summary>
     /// Individual components of the path. 
     /// </summary>
     public readonly string[] Parts = Array.Empty<string>();
+    
+    /// <inheritdoc />
+    public Extension Extension => Extension.FromPath(Parts[^1]);
+
+    /// <inheritdoc />
+    public RelativePath FileName => Parts.Length == 1 ? this : new RelativePath(new[] { Parts[^1] });
+    
+    /// <summary>
+    /// Returns just the file name in this path, without extension.
+    /// </summary>
+    public RelativePath FileNameWithoutExtension => Parts[^1][..^Extension.Length].ToRelativePath();
+    
+    /// <summary>
+    /// Returns the first part of the relative path, i.e. first folder/file in the path.
+    /// </summary>
+    public RelativePath TopParent => new(Parts[..1]);
     
     /// <summary>
     /// Amount of files + folders constituting the total path combined.
@@ -28,107 +57,60 @@ public struct RelativePath : IPath, IEquatable<RelativePath>, IComparable<Relati
     /// </param>
     public static RelativePath FromParts(string[] parts) => new(parts);
 
+    /// <summary>
+    /// Returns the parent path to the current path.
+    /// i.e. The path '1 directory up'. (This is equivalent to <see cref="Path.GetDirectoryName(System.ReadOnlySpan{char})"/>)
+    /// </summary>
+    public RelativePath Parent => new(Parts.GetPathParent());
 
-    public Extension Extension => Extension.FromPath(Parts[^1]);
-    
-    public RelativePath FileName => Parts.Length == 1 ? this : new RelativePath(new[] { Parts[^1] });
-    
-    public RelativePath TopParent => new(Parts[..1]);
-    
-    public RelativePath FileNameWithoutExtension => Parts[^1][..^Extension.Length].ToRelativePath();
-    
-    public static RelativePath Empty => new(Array.Empty<string>());
-    
-    public static IComparer<RelativePath> Comparer => new RelativePathComparer();
-    
-    public RelativePath Parent
+    /// <summary>
+    /// Returns a new path that is this path with the extension changed.
+    /// </summary>
+    /// <param name="newExtension">The extension to replace the old extension.</param>
+    public RelativePath ReplaceExtension(Extension newExtension) => new(Parts.ReplaceExtension(newExtension));
+
+    /// <summary>
+    /// Creates a new relative path from the current one, appending an extension.
+    /// </summary>
+    /// <param name="ext">The extension to append to the absolute path.</param>
+    /// <returns></returns>
+    public RelativePath WithExtension(Extension ext) => new(Parts.WithExtension(ext));
+
+    /// <summary>
+    /// Joins this relative path to an existing absolute path, forming a complete absolute path.
+    /// </summary>
+    /// <param name="basePath">The path to combine with.</param>
+    /// <returns>The combined path.</returns>
+    public AbsolutePath Combine(AbsolutePath basePath)
     {
-        get
-        {
-            if (Parts.Length <= 1)
-                throw new PathException("Can't get parent of a top level path");
-
-            var newParts = new string[Parts.Length - 1];
-            Array.Copy(Parts, newParts, Parts.Length - 1);
-            return new RelativePath(newParts);
-        }
-    }
-
-
-    public RelativePath ReplaceExtension(Extension newExtension)
-    {
-        var paths = new string[Parts.Length];
-        Array.Copy(Parts, paths, paths.Length);
-        var oldName = paths[^1];
-        var newName = ReplaceExtension(oldName, newExtension);
-        paths[^1] = newName;
-        return new RelativePath(paths);
-    }
-    
-    internal static string ReplaceExtension(string oldName, Extension newExtension)
-    {
-        var nameLength = oldName.LastIndexOf(".", StringComparison.Ordinal);
-        if (nameLength < 0)
-        {
-            // no file extension
-            nameLength = oldName.Length;
-        }
-
-        var newName = oldName.Substring(0, nameLength) + newExtension;
-        return newName;
-    }
-
-    public RelativePath WithExtension(Extension ext)
-    {
-        var parts = new string[Parts.Length];
-        Array.Copy(Parts, parts, Parts.Length);
-        parts[^1] += ext;
-        return new RelativePath(parts);
-    }
-
-    public AbsolutePath RelativeTo(AbsolutePath basePath)
-    {
-        var newArray = new string[basePath.Parts.Length + Parts.Length];
+        var newArray = GC.AllocateUninitializedArray<string>(basePath.Parts.Length + Parts.Length);
         Array.Copy(basePath.Parts, 0, newArray, 0, basePath.Parts.Length);
         Array.Copy(Parts, 0, newArray, basePath.Parts.Length, Parts.Length);
         return new AbsolutePath(newArray, basePath.PathFormat);
     }
 
+    /// <summary>
+    /// Returns true if this path is a child of the given path.
+    /// </summary>
+    /// <param name="parent">The path to verify.</param>
+    /// <returns>True if this is a child path of the parent path; else false.</returns>
     public readonly bool InFolder(RelativePath parent)
     {
         return ArrayExtensions.AreEqualIgnoreCase(parent.Parts, 0, Parts, 0, parent.Parts.Length);
     }
     
-    public RelativePath Join(params object[] paths)
-    {
-        var converted = paths.Select(p =>
-        {
-            return p switch
-            {
-                string s => (RelativePath)s,
-                RelativePath path => path,
-                _ => throw new PathException($"Cannot cast {p} of type {p.GetType()} to Path")
-            };
-        }).ToArray();
-        return Join(converted);
-    }
+    /// <summary>
+    /// Combines this path with the given relative path(s).
+    /// </summary>
+    /// <param name="paths">Paths; can be either of type <see cref="string"/> or <see cref="RelativePath"/>.</param>
+    public RelativePath Join(params object[] paths) => Join(paths.JoinRelativePathsWithUnknownTypes());
 
-    public readonly RelativePath Join(params RelativePath[] paths)
-    {
-        var newLen = Parts.Length + paths.Sum(p => p.Parts.Length);
-        var newParts = new string[newLen];
-        Array.Copy(Parts, newParts, Parts.Length);
+    /// <summary>
+    /// Combines this absolute path with a series of relative paths.
+    /// </summary>
+    /// <param name="paths">The array of relative paths to combine with the current path.</param>
+    public readonly RelativePath Join(params RelativePath[] paths) => new(paths.AppendRelativePaths(Parts));
 
-        var toIdx = Parts.Length;
-        foreach (var p in paths)
-        {
-            Array.Copy(p.Parts, 0, newParts, toIdx, p.Parts.Length);
-            toIdx += p.Parts.Length;
-        }
-
-        return new RelativePath(newParts);
-    }
-    
     /// <summary>
     /// Determines whether the file name in this path ends with a specific string.
     /// </summary>
@@ -181,6 +163,8 @@ public struct RelativePath : IPath, IEquatable<RelativePath>, IComparable<Relati
     /// <inheritdoc />
     public bool Equals(RelativePath other)
     {
+        // See: AbsolutePath.Equals for the explanation as to why I'm ignoring this.
+        // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
         if (other.Parts?.Length != Parts?.Length)
             return false;
         
@@ -202,14 +186,6 @@ public struct RelativePath : IPath, IEquatable<RelativePath>, IComparable<Relati
 
     /// <summary/>
     public static bool operator !=(RelativePath a, RelativePath b) => !a.Equals(b);
-    
-    private class RelativePathComparer : IComparer<RelativePath>
-    { 
-        public int Compare(RelativePath x, RelativePath y)
-        {
-            return x.CompareTo(y);
-        }
-    }
 
     /// <summary>
     /// Converts a string with an existing path into a relative path.
@@ -227,4 +203,9 @@ public struct RelativePath : IPath, IEquatable<RelativePath>, IComparable<Relati
     /// Converts a relative path back to a string.
     /// </summary>
     public static explicit operator string(RelativePath i) => i.ToString();
+    
+    private class RelativePathComparer : IComparer<RelativePath>
+    { 
+        public int Compare(RelativePath x, RelativePath y) => x.CompareTo(y);
+    }
 }

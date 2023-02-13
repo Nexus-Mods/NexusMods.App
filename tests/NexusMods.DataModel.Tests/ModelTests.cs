@@ -7,6 +7,8 @@ using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
+using NexusMods.Paths.Utilities;
 using NexusMods.StandardGameLocators.TestHelpers;
 
 namespace NexusMods.DataModel.Tests;
@@ -95,7 +97,7 @@ public class ModelTests : ADataModelTest<ModelTests>
         var id1 = await loadout.Install(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
         var id2 = await loadout.Install(DATA_ZIP_LZMA, "Mod2", CancellationToken.None);
         
-        var tempFile = TemporaryFileManager.CreateFile(Ext.Zip);
+        var tempFile = TemporaryFileManager.CreateFile(KnownExtensions.Zip);
         await loadout.ExportTo(tempFile, CancellationToken.None);
 
         {

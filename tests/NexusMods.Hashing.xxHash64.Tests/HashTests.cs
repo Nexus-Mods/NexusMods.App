@@ -1,5 +1,7 @@
 using FluentAssertions;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
+using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Hashing.xxHash64.Tests;
 
@@ -53,7 +55,7 @@ public class HashTests
     public async Task CanHashFile()
     {
         var file = $"tempFile{Guid.NewGuid()}"
-            .ToRelativePath().RelativeTo(KnownFolders.CurrentDirectory);
+            .ToRelativePath().Combine(KnownFolders.CurrentDirectory);
         await file.WriteAllTextAsync(_knownString);
         (await file.XxHash64()).Should().Be(_knownHash);
     }
@@ -62,7 +64,7 @@ public class HashTests
     public async Task CanHashLargeFile()
     {
         var file = $"tempFile{Guid.NewGuid()}"
-            .ToRelativePath().RelativeTo(KnownFolders.CurrentDirectory);
+            .ToRelativePath().Combine(KnownFolders.CurrentDirectory);
         var emptyArray = new byte[1024 * 1024 * 10];
         for (var x = 0; x < emptyArray.Length; x++)
         {

@@ -8,6 +8,7 @@ using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
+using NexusMods.Paths.Utilities;
 using ModId = NexusMods.Networking.NexusWebApi.Types.ModId;
 
 namespace NexusMods.Games.RedEngine.Tests;

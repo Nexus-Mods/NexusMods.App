@@ -4,6 +4,9 @@ using NexusMods.DataModel.Extensions;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
+using NexusMods.Paths.Utilities;
+
 // ReSharper disable AccessToDisposedClosure
 
 namespace NexusMods.FileExtractor.Tests;

@@ -1,4 +1,4 @@
-namespace NexusMods.Paths;
+namespace NexusMods.Paths.Extensions;
 
 /// <summary>
 /// Various extension methods tied to numbers.

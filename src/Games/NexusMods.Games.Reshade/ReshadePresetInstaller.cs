@@ -10,6 +10,7 @@ using NexusMods.Games.Abstractions;
 using NexusMods.Games.Generic.Entities;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
 
 namespace NexusMods.Games.Reshade;
 

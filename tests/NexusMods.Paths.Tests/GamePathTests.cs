@@ -1,4 +1,7 @@
-﻿namespace NexusMods.Paths.Tests;
+﻿using NexusMods.Paths.Extensions;
+using NexusMods.Paths.Utilities;
+
+namespace NexusMods.Paths.Tests;
 
 public class GamePathTests
 {
@@ -26,7 +29,7 @@ public class GamePathTests
         var pathA = new GamePath(GameFolderType.Game, @"foo\bar.zip");
         var ipath = (IPath)pathA;
         
-        Assert.Equal(Ext.Zip, ipath.Extension);
+        Assert.Equal(KnownExtensions.Zip, ipath.Extension);
         Assert.Equal(@"bar.zip".ToRelativePath(), ipath.FileName);
     }
 

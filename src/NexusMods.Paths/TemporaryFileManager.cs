@@ -1,4 +1,6 @@
-﻿namespace NexusMods.Paths;
+﻿using NexusMods.Paths.Utilities;
+
+namespace NexusMods.Paths;
 
 /// <summary>
 /// Utility for creating temporary folder and files to be later disposed.<br/>
@@ -75,7 +77,7 @@ public class TemporaryFileManager : IDisposable, IAsyncDisposable
     {
         var path = _basePath.Join(Guid.NewGuid().ToString());
         if (path.Extension != default)
-            path = path.WithExtension(ext ?? Ext.Tmp);
+            path = path.WithExtension(ext ?? KnownExtensions.Tmp);
         
         return new TemporaryPath(path, deleteOnDispose);
     }

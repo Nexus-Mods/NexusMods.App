@@ -2,6 +2,7 @@
 using NexusMods.DataModel.Games;
 using NexusMods.Games.Abstractions;
 using NexusMods.Paths;
+using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Games.RedEngine;
 

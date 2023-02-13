@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using NexusMods.Paths.Extensions;
 using Vogen;
 // ReSharper disable InconsistentNaming
 

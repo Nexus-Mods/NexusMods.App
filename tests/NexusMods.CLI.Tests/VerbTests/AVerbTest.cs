@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.CLI.DataOutputs;
 using NexusMods.Paths;
+using NexusMods.Paths.Utilities;
 
 namespace NexusMods.CLI.Tests.VerbTests;
 
