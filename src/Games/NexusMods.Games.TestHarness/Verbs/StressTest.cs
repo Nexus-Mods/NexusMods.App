@@ -16,7 +16,7 @@ using ModId = NexusMods.Networking.NexusWebApi.Types.ModId;
 
 namespace NexusMods.Games.TestHarness.Verbs;
 
-public class StressTest : AVerb<IGame, AbsolutePath>
+public class StressTest : AVerb<IGame, AbsolutePath, AbsolutePath>
 {
     private readonly IRenderer _renderer;
     private readonly IServiceProvider _provider;
@@ -43,7 +43,8 @@ public class StressTest : AVerb<IGame, AbsolutePath>
             new OptionDefinition[]
             {
                 new OptionDefinition<IGame>("g", "game", "The game to install mods for"),
-                new OptionDefinition<AbsolutePath>("l", "loadout", "An exported loadout file to use when priming tests")
+                new OptionDefinition<AbsolutePath>("l", "loadout", "An exported loadout file to use when priming tests"),
+                new OptionDefinition<AbsolutePath>("o", "output", "The output file to write the markdown report to")
             });
 
     private readonly LoadoutManager _loadoutManager;
@@ -55,7 +56,7 @@ public class StressTest : AVerb<IGame, AbsolutePath>
         FileType.PDF
     };
 
-    public async Task<int> Run(IGame game, AbsolutePath loadout, CancellationToken token)
+    public async Task<int> Run(IGame game, AbsolutePath loadout, AbsolutePath output, CancellationToken token)
     {
         var mods = await _client.ModUpdates(game.Domain, Client.PastTime.Day, token);
         var results = new List<(string FileName, ModId ModId, FileId FileId, Hash Hash, bool Passed, Exception? exception)>();
@@ -112,11 +113,29 @@ public class StressTest : AVerb<IGame, AbsolutePath>
             }
         }
 
-        await _renderer.Render(new Table(new[] { "Name", "ModId", "FileId", "Hash", "Passed", "Exception" },
+        var table = new Table(new[] { "Name", "ModId", "FileId", "Hash", "Passed", "Exception" },
             results.Select(r => new object[]
             {
-                r.FileName, r.ModId.ToString(), r.FileId.ToString(), r.Hash, r.Passed.ToString(), r.exception?.Message ?? ""
-            })));
+                r.FileName, r.ModId.ToString(), r.FileId.ToString(), r.Hash, r.Passed.ToString(),
+                r.exception?.Message ?? ""
+            }));
+        await _renderer.Render(table);
+
+        var lines = new List<string>
+        {
+            $"# {game.Domain} Test Results - {results.Count} files",
+            "",
+            "| Status | Name | ModId | FileId | Hash | Exception |",
+            "| ---- | ----- | ------ | ---- | ------ | --------- |"
+        };
+        foreach (var result in results)
+        {
+            var status = result.Passed ? ":white_check_mark:" : ":x:";
+            lines.Add($"| {status} | {result.FileName} | {result.ModId} | {result.FileId} | {result.Hash} | {result.exception?.Message} |");
+        }
+
+        if (output != default)
+            await output.WriteAllLinesAsync(lines, token);
         
         return results.Count(f => !f.Passed);
     }
