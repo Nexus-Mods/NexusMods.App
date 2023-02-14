@@ -20,34 +20,62 @@ public class SimpleOverlayModInstaller : IModInstaller
         "engine",
         "r6",
         "red4ext",
-        "archive/pc/mod",
-        "mods"
+        "archive/pc/mod"
     }.Select(x => x.ToRelativePath()).ToArray();
 
-    private static Extension[] _ignoreExtensions = {
-        KnownExtensions.Txt,
-        KnownExtensions.Md,
-        KnownExtensions.Pdf
-    };
-    
     public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
         if (!installation.Is<Cyberpunk2077>()) return Common.Priority.None;
-        
-        var filtered = files.Where(f => f.Key.Depth > 1 || !Helpers.IgnoreExtensions.Contains(f.Key.Extension))
-            .Select(f => f.Key);
-        
-        if (filtered.All(path => _rootPaths.Any(path.InFolder)))
-        {
-            return Common.Priority.Normal;
-        }
 
-        return Common.Priority.None;
+        var sets = RootFolder(files);
+        return sets.Count != 1 ? Common.Priority.None : Common.Priority.Normal;
+    }
+
+    private HashSet<int> RootFolder(EntityDictionary<RelativePath, AnalyzedFile> files)
+    {
+        var filtered = files.Where(f => !Helpers.IgnoreExtensions.Contains(f.Key.Extension));
+
+        var sets = filtered.Select(f => _rootPaths.SelectMany(root => GetOffsets(f.Key, root)).ToHashSet())
+            .Aggregate((set, x) =>
+            {
+                set.IntersectWith(x);
+                return set;
+            });
+        return sets;
+    }
+
+    /// <summary>
+    /// Returns the offsets of which subSection is a subfolder of basePath.
+    /// </summary>
+    /// <param name="basePath"></param>
+    /// <param name="subSection"></param>
+    /// <returns></returns>
+    private IEnumerable<int> GetOffsets(RelativePath basePath, RelativePath subSection)
+    {
+        var depth = 0;
+        while (true)
+        {
+            if (basePath.Depth == 1) // root
+                yield break;
+            
+            if (basePath.Depth < subSection.Depth)
+                yield break;
+
+            if (basePath == subSection)
+                yield return depth;
+
+            if (basePath.StartsWith(subSection))
+                yield return depth;
+
+            basePath = basePath.DropFirst();
+            depth++;
+        }
     }
 
     public IEnumerable<AModFile> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
-        var filtered = files.Where(f => f.Key.Depth > 1 || !Helpers.IgnoreExtensions.Contains(f.Key.Extension));
+        var root = RootFolder(files).First();
+        var filtered = files.Where(f => !Helpers.IgnoreExtensions.Contains(f.Key.Extension));
         
         foreach (var (path, file) in filtered)
         {
@@ -55,7 +83,7 @@ public class SimpleOverlayModInstaller : IModInstaller
             {
                 Id = ModFileId.New(),
                 From = new HashRelativePath(srcArchive, path),
-                To = new GamePath(GameFolderType.Game, path),
+                To = new GamePath(GameFolderType.Game, path.DropFirst(root)),
                 Hash = file.Hash,
                 Size = file.Size,
                 Store = file.Store

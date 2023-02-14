@@ -102,8 +102,15 @@ public class FileContentsCache
                 foreach (var analyzer in _analyzers[sig])
                 {
                     hashStream.Position = 0;
-                    await foreach (var data in analyzer.AnalyzeAsync(hashStream, token)) 
-                        analysisData.Add(data);
+                    try
+                    {
+                        await foreach (var data in analyzer.AnalyzeAsync(hashStream, token))
+                            analysisData.Add(data);
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogError(e, "Error analyzing {Path} with {Analyzer}", sFn.Name, analyzer.GetType().Name);
+                    }
                 }
             }
         }

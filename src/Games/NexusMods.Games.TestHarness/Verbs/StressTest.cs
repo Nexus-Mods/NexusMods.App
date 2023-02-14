@@ -89,7 +89,7 @@ public class StressTest : AVerb<IGame, AbsolutePath, AbsolutePath>
                     var tmpPath = _temporaryFileManager.CreateFile();
 
                     var cts = new CancellationTokenSource();
-                    cts.CancelAfter(TimeSpan.FromMinutes(2));
+                    cts.CancelAfter(TimeSpan.FromMinutes(20));
                     
                     hash = await _downloader.Download(urls.Data.Select(d => d.Uri), tmpPath, token: cts.Token);
 
