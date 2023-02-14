@@ -215,4 +215,33 @@ public struct RelativePath : IPath, IEquatable<RelativePath>, IComparable<Relati
     { 
         public int Compare(RelativePath x, RelativePath y) => x.CompareTo(y);
     }
+
+    /// <summary>
+    /// Returns true if this path starts with the given path.
+    /// </summary>
+    /// <param name="subSection"></param>
+    /// <returns></returns>
+    public bool StartsWith(RelativePath subSection)
+    {
+        if (subSection.Parts.Length > Parts.Length)
+            return false;
+        
+        for (var idx = 0; idx < subSection.Parts.Length; idx++)
+            if (!subSection.Parts[idx].Equals(Parts[idx], StringComparison.InvariantCultureIgnoreCase))
+                return false;
+        return true;
+    }
+
+    /// <summary>
+    /// Drops the first i parts of the path.
+    /// </summary>
+    /// <param name="count"></param>
+    /// <returns></returns>
+    /// <exception cref="NotImplementedException"></exception>
+    public RelativePath DropFirst(int count = 1)
+    {
+        if (count >= Parts.Length)
+            throw new ArgumentOutOfRangeException(nameof(count), count, "Can't drop more parts than there are in the path");
+        return new RelativePath(Parts[count..]);
+    }
 }

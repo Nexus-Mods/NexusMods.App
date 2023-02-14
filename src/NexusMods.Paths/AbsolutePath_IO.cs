@@ -214,8 +214,21 @@ public partial struct AbsolutePath
             var di = new DirectoryInfo(ToNativePath());
             if (di.Attributes.HasFlag(FileAttributes.ReadOnly))
                 di.Attributes &= ~FileAttributes.ReadOnly;
+
+            var attempts = 0;
+            TopParent:
             
-            Directory.Delete(ToString(), true);
+            try
+            {
+                Directory.Delete(ToString(), true);
+            }
+            catch (System.IO.IOException ex)
+            {
+                if (attempts > 10) throw;
+                Thread.Sleep(100);
+                attempts++;
+                goto TopParent;
+            }
         }
         catch (UnauthorizedAccessException)
         {

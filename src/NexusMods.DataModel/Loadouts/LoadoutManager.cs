@@ -140,18 +140,23 @@ public class LoadoutManager
     public async Task<(LoadoutMarker Loadout, ModId ModId)> InstallMod(LoadoutId LoadoutId, AbsolutePath path, string name, CancellationToken token = default)
     {
         var loadout = GetLoadout(LoadoutId);
-        
-        var analyzed = (await _analyzer.AnalyzeFile(path, token) as AnalyzedArchive)!;
+
+        var analyzed = await _analyzer.AnalyzeFile(path, token);
+        if (analyzed is not AnalyzedArchive archive)
+        {
+            var types = string.Join(", ", analyzed.FileTypes);
+            throw new Exception($"Only archives are supported at the moment. {path} is not an archive. Types: {types}");
+        }
 
         var installer = _installers
-            .Select(i => (Installer: i, Priority: i.Priority(loadout.Value.Installation, analyzed.Contents)))
+            .Select(i => (Installer: i, Priority: i.Priority(loadout.Value.Installation, archive.Contents)))
             .Where(p => p.Priority != Priority.None)
             .OrderBy(p => p.Priority)
             .FirstOrDefault();
         if (installer == default)
             throw new Exception($"No Installer found for {path}");
 
-        var contents = installer.Installer.Install(loadout.Value.Installation, analyzed.Hash, analyzed.Contents);
+        var contents = installer.Installer.Install(loadout.Value.Installation, analyzed.Hash, archive.Contents);
 
         name = string.IsNullOrWhiteSpace(name) ? path.FileName.ToString() : name;
 

@@ -18,36 +18,16 @@ namespace NexusMods.Games.RedEngine.ModInstallers;
 public class FolderlessModInstaller : IModInstaller
 {
     
-    private static Extension[] _supportedExtensions =
-    {
-        KnownExtensions.Archive
-    };
-    
     public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
         if (!installation.Is<Cyberpunk2077>())
             return Common.Priority.None;
         
-        // Make sure we don't have any files that are not supported
-        if (!files.All(f => 
-                           _supportedExtensions.Contains(f.Key.Extension) || Helpers.IgnoreExtensions.Contains(f.Key.Extension)))
-            return Common.Priority.None;
-
-        // If all the files are in the base folder, then we can install them
-        if (files.All(f => f.Key.Depth == 1))
-            return Common.Priority.Normal;
+        if (!installation.Is<Cyberpunk2077>()) return Common.Priority.None;
         
-        // If all the files are in the same subfolder, then we can install them
-        var firstFile = files.First().Key;
-        if (firstFile.Depth > 1)
-        {
-            var parentFolder = firstFile.Parent;
-            if (files.All(f => f.Key.Depth == firstFile.Depth &&
-                               f.Key.InFolder(parentFolder)))
-                return Common.Priority.Normal;
-        }
-
-        // Otherwise, we can't install them
+        if (files.All(f => Helpers.IgnoreExtensions.Contains(f.Key.Extension) ||
+                           f.Key.Extension == KnownExtensions.Archive))
+            return Common.Priority.Low;
         return Common.Priority.None;
     }
 

@@ -12,8 +12,17 @@ public class RedModInfoAnalyzer : IFileAnalyzer
     public IEnumerable<FileType> FileTypes => new[] { FileType.JSON };
     public async IAsyncEnumerable<IFileAnalysisData> AnalyzeAsync(Stream stream, CancellationToken ct = default)
     {
-        var info = await JsonSerializer.DeserializeAsync<InfoJson>(stream, cancellationToken: ct);
-        yield return new RedModInfo { Name = info.Name };
+        InfoJson? info;
+        try
+        {
+            info = await JsonSerializer.DeserializeAsync<InfoJson>(stream, cancellationToken: ct);
+        }
+        catch (JsonException)
+        {
+            yield break;
+        }
+        if (info != null)
+            yield return new RedModInfo { Name = info.Name };
     }
 }
 
