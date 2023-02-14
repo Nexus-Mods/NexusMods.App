@@ -28,7 +28,7 @@ public class LocalHttpServer : IDisposable
                 _logger.LogInformation("Got connection");
                 using var resp = context.Response;
 
-                switch (context.Request.Url.PathAndQuery)
+                switch (context.Request.Url?.PathAndQuery)
                 {
                     case "/hello":
                     {
