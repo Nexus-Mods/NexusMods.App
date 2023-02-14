@@ -11,7 +11,7 @@ public class SetNexusAPIKey : AVerb<string>
         _factory = apiKeyMessageFactory;
     }
 
-    public static readonly VerbDefinition Definition = new("set-nexus-api-key",
+    public static VerbDefinition Definition => new("set-nexus-api-key",
         "Sets the key used in Nexus API calls",
         new[]
         {
@@ -19,7 +19,7 @@ public class SetNexusAPIKey : AVerb<string>
         });
 
 
-    protected override async Task<int> Run(string key, CancellationToken token)
+    public async Task<int> Run(string key, CancellationToken token)
     {
         await _factory.SetApiKey(key);
         return 0;

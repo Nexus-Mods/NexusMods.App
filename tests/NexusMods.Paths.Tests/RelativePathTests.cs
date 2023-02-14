@@ -1,3 +1,6 @@
+using NexusMods.Paths.Extensions;
+using NexusMods.Paths.Utilities;
+
 namespace NexusMods.Paths.Tests;
 
 public class RelativePathTests
@@ -24,7 +27,7 @@ public class RelativePathTests
     public void CanCreatePathsRelativeTo()
     {
         Assert.Equal((AbsolutePath)@"c:\foo\bar\baz.zip",
-            ((RelativePath)@"baz.zip").RelativeTo((AbsolutePath)@"c:\foo\bar"));
+            ((RelativePath)@"baz.zip").Combine((AbsolutePath)@"c:\foo\bar"));
     }
 
     [Fact]
@@ -124,12 +127,12 @@ public class RelativePathTests
     public void PathsAreEquaitable()
     {
         var pathA = @"foo\bar".ToRelativePath();
-        var pathAA = @"foo\baR".ToRelativePath();
+        var pathAa = @"foo\baR".ToRelativePath();
         var pathB = @"foo\baz".ToRelativePath();
 
         Assert.Equal(pathA, pathA);
-        Assert.Equal(pathA, pathAA);
-        Assert.True(pathA == pathAA);
+        Assert.Equal(pathA, pathAa);
+        Assert.True(pathA == pathAa);
         Assert.False(pathA == pathB);
     }
 
@@ -154,7 +157,7 @@ public class RelativePathTests
     {
         var pathA = @"foo\bar.zip".ToRelativePath();
         var pathB = @"foo\bar".ToRelativePath();
-        Assert.Equal(pathA, pathB.WithExtension(Ext.Zip));
+        Assert.Equal(pathA, pathB.WithExtension(KnownExtensions.Zip));
     }
 
     [Fact]
@@ -162,7 +165,7 @@ public class RelativePathTests
     {
         var pathA = @"foo\dont_always_use_three_letter_names.zip".ToRelativePath();
         var pathB = @"foo\dont_always_use_three_letter_names.json".ToRelativePath();
-        Assert.Equal(pathB, pathA.ReplaceExtension(Ext.Json));
+        Assert.Equal(pathB, pathA.ReplaceExtension(KnownExtensions.Json));
     }
 
     [Fact]

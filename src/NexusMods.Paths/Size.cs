@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+using System.Numerics;
+using NexusMods.Paths.Extensions;
 using Vogen;
 // ReSharper disable InconsistentNaming
 
@@ -12,7 +13,7 @@ namespace NexusMods.Paths;
 /// 1MB * 1MB is technically 1MB^2, but we don't want to allow that because it's not a valid size.
 /// </summary>
 [ValueObject<ulong>]
-public partial struct Size : 
+public readonly partial struct Size : 
     IAdditionOperators<Size, Size, Size>, 
     ISubtractionOperators<Size, Size, Size>,
     IDivisionOperators<Size, Size, double>,
@@ -23,124 +24,96 @@ public partial struct Size :
     IMultiplicativeIdentity<Size, Size>,
     IAdditiveIdentity<Size, Size>
 {
+    /// <summary>
+    /// A size that represents 'zero'.
+    /// </summary>
     public static readonly Size Zero = From(0);
+    
+    /// <summary>
+    /// A size that represents 'one'.
+    /// </summary>
     public static readonly Size One = From(1);
-    
-    public static Size From(long value) => From((ulong)value);
 
-    
-    public static Size operator +(Size left, Size right)
-    {
-        return From(left._value + right._value);
-    }
-    public static Size operator -(Size left, Size right)
-    {
-        return From(left._value - right._value);
-    }
-
-    public static double operator /(Size left, Size right)
-    {
-        return (double)left._value / right._value;
-    }
-
-    public static bool operator >(Size left, Size right)
-    {
-        return left._value > right._value;
-    }
-
-    public static bool operator >=(Size left, Size right)
-    {
-        return left._value >= right._value;
-    }
-
-    public static bool operator <(Size left, Size right)
-    {
-        return left._value < right._value;
-    }
-    
-    public static bool operator <=(Size left, Size right)
-    {
-        return left._value <= right._value;
-    }
-
+    /// <inheritdoc />
     public static Size MultiplicativeIdentity => One;
+
+    /// <inheritdoc />
     public static Size AdditiveIdentity => Zero;
     
-    public static Size KB => From(1024);
-    public static Size MB => From(1024 * 1024);
-    public static Size GB => From(1024 * 1024 * 1024);
-    public static Size TB => From(1024L * 1024 * 1024 * 1024);
-    public static Size operator /(Size left, double right)
-    {
-        return From((ulong)(left._value / right));
-    }
-
-    public static Size operator *(Size left, double right)
-    {
-        return From((ulong)(left._value * right));
-    }
+    /// <summary>
+    /// Converts a long to a Size object.
+    /// </summary>
+    public static Size From(long value) => From((ulong)value);
     
-    // From : https://www.somacon.com/p576.php
-    // Returns the human-readable file size for an arbitrary, 64-bit file size 
-    // The default format is "0.### XB", e.g. "4.2 KB" or "1.434 GB"
-    public string Readable()
-    {
-        // Determine the suffix and readable value
-        string suffix;
-        double readable;
-        switch (_value)
-        {
-            // Exabyte
-            case >= 0x1000000000000000:
-                suffix = "EB";
-                readable = _value >> 50;
-                break;
-            // Petabyte
-            case >= 0x4000000000000:
-                suffix = "PB";
-                readable = _value >> 40;
-                break;
-            // Terabyte
-            case >= 0x10000000000:
-                suffix = "TB";
-                readable = _value >> 30;
-                break;
-            // Gigabyte
-            case >= 0x40000000:
-                suffix = "GB";
-                readable = _value >> 20;
-                break;
-            // Megabyte
-            case >= 0x100000:
-                suffix = "MB";
-                readable = _value >> 10;
-                break;
-            // Kilobyte
-            case >= 0x400:
-                suffix = "KB";
-                readable = _value;
-                break;
-            default:
-                return _value.ToString("0 B"); // Byte
-        }
-        // Divide by 1024 to get fractional value
-        readable /= 1024;
-        // Return formatted number with suffix
-        return readable.ToString("0.### ") + suffix;
-    }
-    public override string ToString()
-    {
-        return Readable();
-    }
+    /// <summary>
+    /// Represents a size of 1 KiB. (1024 bytes)
+    /// </summary>
+    public static Size KB => From(1024);
+    
+    /// <summary>
+    /// Represents a size of 1 MiB. (1024^2 bytes)
+    /// </summary>
+    public static Size MB => From(1024 * 1024);
+    
+    /// <summary>
+    /// Represents a size of 1 GiB. (1024^3 bytes)
+    /// </summary>
+    public static Size GB => From(1024 * 1024 * 1024);
+    
+    /// <summary>
+    /// Represents a size of 1 TiB. (1024^4 bytes)
+    /// </summary>
+    public static Size TB => From(1024L * 1024 * 1024 * 1024);
 
+    /// <inheritdoc />
+    public static Size operator /(Size left, double right) => From((ulong)(left._value / right));
+
+    /// <inheritdoc />
+    public static Size operator *(Size left, double right) => From((ulong)(left._value * right));
+
+    /// <inheritdoc />
+    public override string ToString() => _value.ToFileSizeString();
+
+    /// <inheritdoc />
     public static Bandwidth operator /(Size left, TimeSpan right)
     {
         return Bandwidth.From((ulong)(left._value / right.TotalSeconds));
     }
+    
+    /// <inheritdoc />
+    public static Size operator +(Size left, Size right) => From(left._value + right._value);
+
+    /// <inheritdoc />
+    public static Size operator -(Size left, Size right) => From(left._value - right._value);
+
+    /// <inheritdoc />
+    public static double operator /(Size left, Size right) => (double)left._value / right._value;
+
+    /// <inheritdoc />
+    public static bool operator >(Size left, Size right) => left._value > right._value;
+
+    /// <inheritdoc />
+    public static bool operator >=(Size left, Size right) => left._value >= right._value;
+
+    /// <inheritdoc />
+    public static bool operator <(Size left, Size right) => left._value < right._value;
+
+    /// <inheritdoc />
+    public static bool operator <=(Size left, Size right) => left._value <= right._value;
 }
 
+/// <summary>
+/// Extensions related to <see cref="Size"/> class.
+/// </summary>
 public static class SizeExtensions
 {
+    /// <summary>
+    /// Returns a sum of all of the sizes in the collection.
+    /// </summary>
+    /// <param name="coll">The collection to pull the sizes from.</param>
+    /// <param name="selector">Selects the size from Type <typeparamref name="T"/></param>
+    /// <typeparam name="T">Item to extract size from.</typeparam>
+    /// <returns>The total sum.</returns>
     public static Size Sum<T>(this IEnumerable<T> coll, Func<T, Size> selector)
     {
         return coll.Aggregate(Size.Zero, (s, itm) => selector(itm) + s);

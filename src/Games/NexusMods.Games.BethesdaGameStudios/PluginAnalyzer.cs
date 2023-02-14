@@ -3,6 +3,7 @@ using Mutagen.Bethesda.Skyrim;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
 
 namespace NexusMods.Games.BethesdaGameStudios;
 

@@ -43,7 +43,7 @@ jobs:
         run: dotnet clean
 
       - name: Stress Test
-        run: dotnet run --project .\src\NexusMods.App\NexusMods.App.csproj -- stress-test -g ${{matrix.game.domain}} -l ${GITHUB_WORKSPACE}/${{matrix.game.file}}
+        run: dotnet run --project .\src\NexusMods.App\NexusMods.App.csproj -- stress-test -g ${{matrix.game.domain}} -l ${{ github.workspace }}/${{matrix.game.file}} -o ${{ github.step_summary }}
 
       - uses: codecov/codecov-action@v3
         with:

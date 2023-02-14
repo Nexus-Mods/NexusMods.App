@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
 
 namespace NexusMods.DataModel.JsonConverters;
 
@@ -22,7 +23,7 @@ public class GamePathConverter : JsonConverter<GamePath>
     public override void Write(Utf8JsonWriter writer, GamePath value, JsonSerializerOptions options)
     {
         writer.WriteStartArray();
-        writer.WriteStringValue(Enum.GetName(value.Folder));
+        writer.WriteStringValue(Enum.GetName(value.Type));
         writer.WriteStringValue(value.Path.ToString());
         writer.WriteEndArray();
     }

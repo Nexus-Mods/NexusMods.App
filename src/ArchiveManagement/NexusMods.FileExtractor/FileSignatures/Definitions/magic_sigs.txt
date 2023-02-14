@@ -16,3 +16,4 @@ Gamebryo File Format, 47 61 6d 65 62 72 79 6f 20 46 69 6c 65 20 46 6f 72 6d 61 7
 Creation Engine Plugin, 54 45 53 34, CreationEnginePlugin
 TES4 Plugin, 54 45 53 34, TES4
 PDF file,25 50 44 46,PDF|FDF,Word processing suite,0,25 25 45 4F 46
+Cyberpunk Appearance Preset, 4c 6f 63 4b 65 79 23, Cyberpunk2077AppearancePreset

@@ -46,9 +46,7 @@ public class Json : IRenderer
     }
 
     public string Name => "json";
-    public void RenderBanner()
-    {
-    }
+    public void RenderBanner() { }
 
     public Task<T> WithProgress<T>(CancellationToken token, Func<Task<T>> f, bool showSize = true)
     {

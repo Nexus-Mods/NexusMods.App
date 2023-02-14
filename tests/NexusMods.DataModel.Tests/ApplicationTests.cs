@@ -66,17 +66,17 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
         {
             new BackupFile()
             {
-                To = fileToModify.RelativeTo(gameFolder),
+                To = fileToModify.Combine(gameFolder),
                 Size = Size.From("modified".Length),
                 Hash = modifiedHash
             },
             new RemoveFromLoadout
             {
-                To = fileToDelete.RelativeTo(gameFolder),
+                To = fileToDelete.Combine(gameFolder),
             },
             new IntegrateFile
             {
-                To = fileToModify.RelativeTo(gameFolder),
+                To = fileToModify.Combine(gameFolder),
                 Size = Size.From("modified".Length),
                 Hash = modifiedHash,
                 Mod = firstMod

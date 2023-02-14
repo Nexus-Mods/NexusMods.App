@@ -7,6 +7,7 @@ namespace NexusMods.App.UI;
 
 public static class Services
 {
+    // ReSharper disable once InconsistentNaming
     public static IServiceCollection AddUI(this IServiceCollection c)
     {
         c.AddTransient<MainWindow>();

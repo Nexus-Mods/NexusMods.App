@@ -12,13 +12,13 @@ public class NexusGames : AVerb
         _client = client;
         _renderer = configurator.Renderer;
     }
-    public static readonly VerbDefinition Definition = new VerbDefinition("nexus-games", "Lists all games available on Nexus Mods", 
+    public static VerbDefinition Definition => new VerbDefinition("nexus-games", "Lists all games available on Nexus Mods", 
         Array.Empty<OptionDefinition>());
 
     private readonly IRenderer _renderer;
 
 
-    protected override async Task<int> Run(CancellationToken token)
+    public async Task<int> Run(CancellationToken token)
     {
         var results = await _client.Games(token);
 

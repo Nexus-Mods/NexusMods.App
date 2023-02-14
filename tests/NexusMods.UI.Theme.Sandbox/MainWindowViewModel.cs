@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using NexusMods.Paths;
+using NexusMods.Paths.Utilities;
 
 namespace NexusMods.UI.Theme.Sandbox;
 

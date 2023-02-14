@@ -3,6 +3,7 @@ using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.CLI.Verbs;
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public class ManageGame : AVerb<IGame, Version, string>
 {
     private readonly LoadoutManager _manager;
@@ -13,7 +14,8 @@ public class ManageGame : AVerb<IGame, Version, string>
         _manager = manager;
         _renderer = configurator.Renderer;
     }
-    public static VerbDefinition Definition = new("manage-game", "Manage a game",
+    
+    public static VerbDefinition Definition => new("manage-game", "Manage a game",
         new OptionDefinition[]
         {
             new OptionDefinition<IGame>("g", "game", "Game to manage"),
@@ -21,7 +23,7 @@ public class ManageGame : AVerb<IGame, Version, string>
             new OptionDefinition<string>("n", "name", "Name of the new Loadout")
         });
     
-    protected override async Task<int> Run(IGame game, Version version, string name, CancellationToken token)
+    public async Task<int> Run(IGame game, Version version, string name, CancellationToken token)
     {
         var installation = game.Installations.FirstOrDefault(i => i.Version == version);
         if (installation == null)

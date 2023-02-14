@@ -1,12 +1,16 @@
+using NexusMods.Paths.Utilities;
+
 namespace NexusMods.Paths.Tests;
 
 public class ExtensionTests
 {
+    // ReSharper disable InconsistentNaming
     public static Extension DDS = new(".DDS");
     public static Extension Dds = new(".Dds");
     public static Extension DDS2 = new(".DDS");
     public static Extension EMPTY = new("");
-
+    // ReSharper restore InconsistentNaming
+    
     [Fact]
     public void ExtensionsAreEqual()
     {

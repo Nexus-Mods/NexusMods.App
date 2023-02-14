@@ -49,4 +49,6 @@ public class GameInstallation
             .Select(l => new GamePath(l.Key, path.RelativeTo(l.Value)))
             .MinBy(x => x.Path.Depth);
     }
+    
+    public bool Is<T>() where T : IGame => Game is T;
 }

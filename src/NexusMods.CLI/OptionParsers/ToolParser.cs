@@ -6,14 +6,9 @@ public class ToolParser : IOptionParser<ITool>
 {
     private readonly ITool[] _tools;
 
-    public ToolParser(IEnumerable<ITool> tools)
-    {
-        _tools = tools.ToArray();
-    }
-    public ITool Parse(string input, OptionDefinition<ITool> definition)
-    {
-        return _tools.First(g => g.Name == input);
-    }
+    public ToolParser(IEnumerable<ITool> tools) => _tools = tools.ToArray();
+
+    public ITool Parse(string input, OptionDefinition<ITool> definition) => _tools.First(g => g.Name == input);
 
     public IEnumerable<string> GetOptions(string input)
     {

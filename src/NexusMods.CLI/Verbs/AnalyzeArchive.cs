@@ -6,6 +6,7 @@ using NexusMods.Paths;
 
 namespace NexusMods.CLI.Verbs;
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public class AnalyzeArchive : AVerb<AbsolutePath>
 {
     private readonly IRenderer _renderer;
@@ -17,8 +18,8 @@ public class AnalyzeArchive : AVerb<AbsolutePath>
         _archiveContentsCache = archiveContentsCache;
     }
     
-    public static readonly VerbDefinition Definition = new("analyze-archive",
-        "Analyzes the contents of an archive caches them, and outputs them", new[]
+    public static VerbDefinition Definition => new("analyze-archive",
+        "Analyzes the contents of an archive caches them, and outputs them", new OptionDefinition[]
         {
             new OptionDefinition<AbsolutePath>("i", "inputFile", "File to Analyze")
         });
@@ -26,7 +27,7 @@ public class AnalyzeArchive : AVerb<AbsolutePath>
     private readonly ILogger<AnalyzeArchive> _logger;
 
 
-    protected override async Task<int> Run(AbsolutePath inputFile, CancellationToken token)
+    public async Task<int> Run(AbsolutePath inputFile, CancellationToken token)
     {
         try
         {
@@ -39,7 +40,7 @@ public class AnalyzeArchive : AVerb<AbsolutePath>
                     return new object[]
                     {
                         kv.Key, kv.Value.Size, kv.Value.Hash,
-                        string.Join(", ", kv.Value.FileTypes.Select(t => Enum.GetName(t)))
+                        string.Join(", ", kv.Value.FileTypes.Select(Enum.GetName))
                     };
                 });
             });
@@ -55,4 +56,5 @@ public class AnalyzeArchive : AVerb<AbsolutePath>
 
         return 0;
     }
+
 }

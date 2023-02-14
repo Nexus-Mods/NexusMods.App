@@ -7,7 +7,7 @@ using NexusMods.App.UI.Views;
 
 namespace NexusMods.App.UI;
 
-public partial class App : Application
+public class App : Application
 {
     private readonly IServiceProvider _provider;
 

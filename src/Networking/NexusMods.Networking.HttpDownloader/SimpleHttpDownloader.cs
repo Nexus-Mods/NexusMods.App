@@ -25,7 +25,7 @@ public class SimpleHttpDownloader : IHttpDownloader
         {
             //_logger.LogDebug("Downloading {Source} to {Destination}", source.RequestUri, destination);
 
-            var job = await _limiter.Begin($"Downloading {destination.FileName}", size ?? Size.One, token);
+            using var job = await _limiter.Begin($"Downloading {destination.FileName}", size ?? Size.One, token);
             var response = await _client.SendAsync(source, HttpCompletionOption.ResponseHeadersRead, token);
             
             if (!response.IsSuccessStatusCode)

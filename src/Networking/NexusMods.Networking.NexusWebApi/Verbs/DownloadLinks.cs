@@ -16,7 +16,7 @@ public class DownloadLinks : AVerb<GameDomain, ModId, FileId>
         _renderer = configurator.Renderer;
     }
     
-    public static readonly VerbDefinition Definition = new VerbDefinition("nexus-download-links",
+    public static VerbDefinition Definition => new VerbDefinition("nexus-download-links",
         "Generates download links for a given file",
         new OptionDefinition[]
         {
@@ -25,7 +25,7 @@ public class DownloadLinks : AVerb<GameDomain, ModId, FileId>
             new OptionDefinition<FileId>("f", "fileId", "File ID"),
         });
     
-    protected override async Task<int> Run(GameDomain gameDomain, ModId modId, FileId fileId, CancellationToken token)
+    public async Task<int> Run(GameDomain gameDomain, ModId modId, FileId fileId, CancellationToken token)
     {
         var links = await _client.DownloadLinks(gameDomain, modId, fileId, token);
 

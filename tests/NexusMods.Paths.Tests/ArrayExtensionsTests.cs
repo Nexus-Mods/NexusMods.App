@@ -1,3 +1,5 @@
+using NexusMods.Paths.Extensions;
+
 namespace NexusMods.Paths.Tests;
 
 public class ArrayExtensionsTests

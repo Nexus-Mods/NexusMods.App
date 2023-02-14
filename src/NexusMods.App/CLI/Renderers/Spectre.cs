@@ -9,6 +9,8 @@ namespace NexusMods.App.CLI.Renderers;
 /// </summary>
 public class Spectre : IRenderer
 {
+    private static readonly Color NexusColor = new(0xda, 0x8e, 0x35);
+    
     private readonly IResource[] _resources;
     public Spectre(IEnumerable<IResource> resources)
     {
@@ -113,8 +115,6 @@ public class Spectre : IRenderer
         });
         return await tcs.Task;
     }
-    
-    private Color NexusColor = new(0xda, 0x8e, 0x35);
 
     public async Task Render<T>(T o)
     {
