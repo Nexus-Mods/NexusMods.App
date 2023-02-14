@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -718,6 +718,7 @@ namespace NexusMods.Networking.HttpDownloader
             }
         }
 
+        [JsonIgnore()]
         public int KBytesPerSecond
         {
             get
