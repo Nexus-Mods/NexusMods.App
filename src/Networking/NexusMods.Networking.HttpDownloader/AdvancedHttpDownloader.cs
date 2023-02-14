@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -174,11 +174,6 @@ namespace NexusMods.Networking.HttpDownloader
             }
         }
 
-        private bool HasIncompleteChunk(DownloadState state)
-        {
-            return state.Chunks.Any(chunk => chunk.Completed < chunk.Size);
-        }
-
         private async Task DoWriteOrder(Stream file, WriteOrder order)
         {
             file.Position = order.Offset;
@@ -215,11 +210,6 @@ namespace NexusMods.Networking.HttpDownloader
         #endregion
 
         #region Downloading
-
-        private IEnumerable<ChunkState> UnfinishedChunks(DownloadState state)
-        {
-            return state.Chunks.Where(chunk => (chunk.Read < chunk.Size));
-        }
 
         private async Task DownloaderTask(DownloadState state, ChannelWriter<WriteOrder> writes, CancellationToken cancel)
         {
@@ -374,7 +364,9 @@ namespace NexusMods.Networking.HttpDownloader
                 chunk.Source = TakeSource(download);
 
                 response = await SendRangeRequest(download, chunk, cancel);
-                sourceValid = chunk.InitChunk || response?.Content?.Headers?.ContentRange?.HasRange == true;
+                sourceValid = (response != null)
+                            && (chunk.InitChunk
+                                || (response?.Content?.Headers?.ContentRange?.HasRange == true));
                 if (!sourceValid)
                 {
                     chunk.Source.Priority = int.MaxValue;
@@ -525,6 +517,13 @@ namespace NexusMods.Networking.HttpDownloader
             {
                 download.TotalSize = response.Content.Headers.ContentLength ?? -1;
             }
+            foreach (var chunk in download.Chunks)
+            {
+                if (chunk.Offset + chunk.Size > download.TotalSize)
+                {
+                    chunk.Size = download.TotalSize - chunk.Offset;
+                }
+            }
         }
 
         #endregion // Header Handling
@@ -606,6 +605,29 @@ namespace NexusMods.Networking.HttpDownloader
         #endregion // Download State Persistance
 
         #region Utility Functions
+
+        private IEnumerable<ChunkState> UnfinishedChunks(DownloadState state)
+        {
+            if (state.TotalSize < 0)
+            {
+                return state.Chunks.Where(chunk => chunk.Read < chunk.Size);
+            }
+            else
+            {
+                return state.Chunks.Where(chunk => (chunk.Read < chunk.Size) && ((chunk.Offset + chunk.Read) < state.TotalSize));
+            }
+        }
+        private bool HasIncompleteChunk(DownloadState state)
+        {
+            if (state.TotalSize < 0)
+            {
+                return state.Chunks.Any(chunk => chunk.Completed < chunk.Size);
+            }
+            else
+            {
+                return state.Chunks.Any(chunk => (chunk.Completed < chunk.Size) && ((chunk.Offset + chunk.Completed) < state.TotalSize));
+            }
+        }
 
         private AbsolutePath StateFilePath(AbsolutePath input)
         {
