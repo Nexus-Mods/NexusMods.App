@@ -128,7 +128,9 @@ public class StressTest : AVerb<IGame, AbsolutePath, AbsolutePath>
             "| Status | Name | ModId | FileId | Hash | Exception |",
             "| ---- | ----- | ------ | ---- | ------ | --------- |"
         };
-        foreach (var result in results)
+        foreach (var result in results.OrderByDescending(x => x.Passed)
+                     .ThenBy(x => x.ModId)
+                     .ThenBy(x => x.FileId))
         {
             var status = result.Passed ? ":white_check_mark:" : ":x:";
             lines.Add($"| {status} | {result.FileName} | {result.ModId} | {result.FileId} | {result.Hash} | {result.exception?.Message} |");
