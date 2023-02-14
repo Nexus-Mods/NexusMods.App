@@ -128,6 +128,7 @@ public class StressTest : AVerb<IGame, AbsolutePath, AbsolutePath>
             "| Status | Name | ModId | FileId | Hash | Exception |",
             "| ---- | ----- | ------ | ---- | ------ | --------- |"
         };
+
         foreach (var result in results.OrderByDescending(x => x.Passed)
                      .ThenBy(x => x.ModId)
                      .ThenBy(x => x.FileId))
