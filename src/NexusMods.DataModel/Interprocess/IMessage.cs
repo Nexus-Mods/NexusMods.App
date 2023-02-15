@@ -3,7 +3,8 @@
 public interface IMessage
 {
     /// <summary>
-    /// Maximum size of the message. Internally enough buffer space will be allocated to hold 16 messages.
+    /// Maximum size of the message. Must be greater than 16 bytes. Internally enough buffer space
+    /// will be allocated to hold 16 messages.
     /// </summary>
     public static abstract int MaxSize { get; }
     

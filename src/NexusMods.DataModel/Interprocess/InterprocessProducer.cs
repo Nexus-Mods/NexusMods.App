@@ -38,7 +38,7 @@ public class InterprocessProducer<T> : IMessageProducer<T>, IDisposable where T 
     /// <exception cref="TaskCanceledException"></exception>
     public async ValueTask Write(T message, CancellationToken token)
     {
-        _logger.LogTrace("Writing message {Message} to queue {Queue}", message, _queueName);
+        _logger.LogDebug("Writing message {Message} to queue {Queue}", message, _queueName);
 
         while (!token.IsCancellationRequested)
         {
@@ -47,7 +47,7 @@ public class InterprocessProducer<T> : IMessageProducer<T>, IDisposable where T 
                 return;
             }
 
-            _logger.LogDebug("Failed to write {Message} to queue {Queue}, retrying", message, _queueName);
+            _logger.LogTrace("Failed to write {Message} to queue {Queue}, retrying", message, _queueName);
             await Task.Delay(100, token);
         }
 
