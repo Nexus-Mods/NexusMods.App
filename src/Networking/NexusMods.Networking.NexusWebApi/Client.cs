@@ -6,12 +6,24 @@ using NexusMods.Networking.NexusWebApi.Types;
 
 namespace NexusMods.Networking.NexusWebApi;
 
+/// <summary>
+/// Provides an easy to use access point for the Nexus API; start your journey here.
+/// </summary>
 public class Client
 {
     private readonly ILogger<Client> _logger;
     private readonly IHttpMessageFactory _factory;
     private readonly HttpClient _httpClient;
 
+    /// <summary>
+    /// Creates a <see cref="Client"/> responsible for providing easy access to the Nexus API.
+    /// </summary>
+    /// <param name="logger">Logs actions performed by the client.</param>
+    /// <param name="factory">Injects API key into the messages.</param>
+    /// <param name="httpClient">Client used to issue HTTP requests.</param>
+    /// <remarks>
+    ///    This class is usually instantiated using the Microsoft DI Container.
+    /// </remarks>
     public Client(ILogger<Client> logger, IHttpMessageFactory factory, HttpClient httpClient)
     {
         _logger = logger;
@@ -19,18 +31,44 @@ public class Client
         _httpClient = httpClient;
     }
 
-    public async Task<Response<ValidateInfo>> Validate(CancellationToken token)
+    /// <summary>
+    /// Retrieves the current user information.
+    /// </summary>
+    /// <param name="token">Can be used to cancel this task.</param>
+    public async Task<Response<ValidateInfo>> Validate(CancellationToken token = default)
     {
         var msg = await _factory.Create(HttpMethod.Get, new Uri("https://api.nexusmods.com/v1/users/validate.json"));
         return await SendAsync<ValidateInfo>(msg, token);
     }
     
+    /// <summary>
+    /// Returns a list of games supported by Nexus.
+    /// </summary>
+    /// <param name="token">Can be used to cancel this task.</param>
     public async Task<Response<GameInfo[]>> Games(CancellationToken token = default)
     {
         var msg = await _factory.Create(HttpMethod.Get, new Uri("https://api.nexusmods.com/v1/games.json"));
         return await SendAsync<GameInfo[]>(msg, token);
     }
 
+    /// <summary>
+    /// Generates download links for a given game.
+    /// </summary>
+    /// <param name="domain">
+    ///     Unique, human friendly name for the game used in URLs. e.g. 'skyrim'  
+    ///     You can find this in <see cref="GameInfo.DomainName"/>.       
+    /// </param>
+    /// <param name="modId">
+    ///    An individual identifier for the mod. Unique per game.
+    /// </param>
+    /// <param name="fileId">
+    ///    Unique ID for a game file hosted on a mod page; unique per game.
+    /// </param>
+    /// <param name="token">Token used to cancel the task.</param>
+    /// <returns> List of available download links. </returns>
+    /// <remarks>
+    ///    Currently available for Premium users only; with some minor exceptions [nxm links].
+    /// </remarks>
     public async Task<Response<DownloadLink[]>> DownloadLinks(GameDomain domain, ModId modId, FileId fileId, CancellationToken token = default)
     {
         var msg = await _factory.Create(HttpMethod.Get, new Uri(
@@ -38,13 +76,16 @@ public class Client
         return await SendAsync<DownloadLink[]>(msg, token);
     }
 
-    public enum PastTime
-    {
-        Day,
-        Week,
-        Month,
-    }
-    
+    /// <summary>
+    /// Retrieves a list of all recently updated mods within a specified time period.
+    /// </summary>
+    /// <param name="domain">
+    ///     Unique, human friendly name for the game used in URLs. e.g. 'skyrim'  
+    ///     You can find this in <see cref="GameInfo.DomainName"/>.       
+    /// </param>
+    /// <param name="time">Time-frame within which to search for updates.</param>
+    /// <param name="token">Token used to cancel the task.</param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
     public async Task<Response<ModUpdate[]>> ModUpdates(GameDomain domain, PastTime time, CancellationToken token = default)
     {
         var timeString = time switch
@@ -59,15 +100,24 @@ public class Client
             $"https://api.nexusmods.com/v1/games/{domain}/mods/updated.json?period={timeString}"));
 
         return await SendAsync<ModUpdate[]>(msg, token: token);
-
     }
     
-    
-
-    public async Task<Response<ModFiles>> ModFiles(GameDomain staticDomain, ModId modModId, CancellationToken token = default)
+    /// <summary>
+    /// Returns all of the downloadable files associated with a mod.
+    /// </summary>
+    /// <param name="domain">
+    ///     Unique, human friendly name for the game used in URLs. e.g. 'skyrim'  
+    ///     You can find this in <see cref="GameInfo.DomainName"/>.       
+    /// </param>
+    /// <param name="modId">
+    ///    An individual identifier for the mod. Unique per game.
+    /// </param>
+    /// <param name="token">Token used to cancel the task.</param>
+    /// <returns></returns>
+    public async Task<Response<ModFiles>> ModFiles(GameDomain domain, ModId modId, CancellationToken token = default)
     {
         var msg = await _factory.Create(HttpMethod.Get, new Uri(
-            $"https://api.nexusmods.com/v1/games/{staticDomain}/mods/{modModId}/files.json"));
+            $"https://api.nexusmods.com/v1/games/{domain}/mods/{modId}/files.json"));
         return await SendAsync<ModFiles>(msg, token);
     }
 
@@ -81,62 +131,40 @@ public class Client
         var data = await response.Content.ReadFromJsonAsync<T>(cancellationToken: token);
         return new Response<T>
         {
-            Data = data,
+            Data = data!,
             Metadata = ParseHeaders(response),
             StatusCode = response.StatusCode
         };
     }
     
-    protected virtual ResponseMetadata ParseHeaders(HttpResponseMessage result)
+    private ResponseMetadata ParseHeaders(HttpResponseMessage result)
     {
-        var metaData = new ResponseMetadata();
-
-        {
-            if (result.Headers.TryGetValues("x-rl-daily-limit", out var limits))
-                if (int.TryParse(limits.First(), out var limit))
-                    metaData.DailyLimit = limit;
-        }
-
-        {
-            if (result.Headers.TryGetValues("x-rl-daily-remaining", out var limits))
-                if (int.TryParse(limits.First(), out var limit))
-                    metaData.DailyRemaining = limit;
-        }
-
-        {
-            if (result.Headers.TryGetValues("x-rl-daily-reset", out var resets))
-                if (DateTime.TryParse(resets.First(), out var reset))
-                    metaData.DailyReset = reset;
-        }
-
-        {
-            if (result.Headers.TryGetValues("x-rl-hourly-limit", out var limits))
-                if (int.TryParse(limits.First(), out var limit))
-                    metaData.HourlyLimit = limit;
-        }
-
-        {
-            if (result.Headers.TryGetValues("x-rl-hourly-remaining", out var limits))
-                if (int.TryParse(limits.First(), out var limit))
-                    metaData.HourlyRemaining = limit;
-        }
-
-        {
-            if (result.Headers.TryGetValues("x-rl-hourly-reset", out var resets))
-                if (DateTime.TryParse(resets.First(), out var reset))
-                    metaData.HourlyReset = reset;
-        }
-
-
-        {
-            if (result.Headers.TryGetValues("x-runtime", out var runtimes))
-                if (double.TryParse(runtimes.First(), out var reset))
-                    metaData.Runtime = reset;
-        }
-
+        var metaData = ResponseMetadata.FromHttpHeaders(result);
+        
         _logger.LogInformation("Nexus API call finished: {Runtime} - Remaining Limit: {RemainingLimit}",
             metaData.Runtime, Math.Max(metaData.DailyRemaining, metaData.HourlyRemaining));
 
         return metaData;
+    }
+    
+    /// <summary>
+    /// Specifies the time period used to search for items.
+    /// </summary>
+    public enum PastTime
+    {
+        /// <summary>
+        /// Searches the past 24 hours.
+        /// </summary>
+        Day,
+        
+        /// <summary>
+        /// Searches the past 7 days. 
+        /// </summary>
+        Week,
+        
+        /// <summary>
+        /// Searches the past month.
+        /// </summary>
+        Month,
     }
 }
