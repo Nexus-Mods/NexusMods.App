@@ -44,7 +44,7 @@ public class ModelTests : ADataModelTest<ModelTests>
         var list = new HashSet<string>();
         
         var loadout = await LoadoutManager.ManageGame(Install, "OldName");
-        loadout.Changes.Subscribe(f => list.Add(f.Name));
+        using var _ = loadout.Changes.Subscribe(f => list.Add(f.Name));
         loadout.Alter(m => m with {Name = "NewName"});
 
         loadout.Value.Name.Should().Be("NewName");
