@@ -9,10 +9,10 @@ public interface IHttpMessageFactory
     /// <summary>
     /// Creates a new <see cref="HttpRequestMessage"/> for the given <paramref name="method"/> and <paramref name="uri"/>
     /// </summary>
-    /// <param name="method"></param>
-    /// <param name="uri"></param>
-    /// <returns></returns>
     public ValueTask<HttpRequestMessage> Create(HttpMethod method, Uri uri);
     
+    /// <summary>
+    /// Returns true if the user is authenticated [has a saved or set API key]; else false.
+    /// </summary>
     public ValueTask<bool> IsAuthenticated();
 }

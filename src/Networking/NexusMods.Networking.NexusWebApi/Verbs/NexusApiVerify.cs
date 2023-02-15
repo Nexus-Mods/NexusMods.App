@@ -1,6 +1,7 @@
 ﻿using NexusMods.CLI;
 using NexusMods.CLI.DataOutputs;
-
+// Temporary until moved to CLI project.
+#pragma warning disable CS1591
 namespace NexusMods.Networking.NexusWebApi.Verbs;
 
 public class NexusApiVerify : AVerb

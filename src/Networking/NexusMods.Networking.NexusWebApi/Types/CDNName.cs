@@ -2,8 +2,12 @@
 
 namespace NexusMods.Networking.NexusWebApi.Types;
 
+/// <summary>
+/// Name of the CDN server that handles your download request.
+/// </summary>
 [ValueObject<string>]
-public partial class CDNName
+// ReSharper disable once InconsistentNaming
+public partial struct CDNName
 {
     
 }

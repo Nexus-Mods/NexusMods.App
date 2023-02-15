@@ -2,6 +2,8 @@
 using NexusMods.CLI.DataOutputs;
 using NexusMods.DataModel.Games;
 using NexusMods.Networking.NexusWebApi.Types;
+// Temporary until moved to CLI project.
+#pragma warning disable CS1591
 
 namespace NexusMods.Networking.NexusWebApi.Verbs;
 
