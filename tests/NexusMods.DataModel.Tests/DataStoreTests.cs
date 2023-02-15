@@ -74,4 +74,28 @@ public class DataStoreTests
             modLoaded!.Files[itm.Id].Should().Be(itm);
         }
     }
+
+    [Fact]
+    public async Task CanGetRootUpdates()
+    {
+        var src = new List<Id>();
+        var dest = new List<Id>();
+
+        DataStore.Changes.Subscribe(c => dest.Add(c.To));
+
+        var oldId = DataStore.GetRoot(RootType.Tests) ?? IdEmpty.Empty;
+
+        foreach (var itm in Enumerable.Range(0, 128))
+        {
+            var newId = new Id64(EntityCategory.TestData, (ulong)itm);
+            DataStore.PutRoot(RootType.Tests, oldId, newId).Should().BeTrue();
+            src.Add(newId);
+            oldId = newId;
+        }
+
+        await Task.Delay(1000);
+
+        dest.Count.Should().Be(src.Count);
+        dest.Should().BeEquivalentTo(src, opt => opt.WithStrictOrdering());
+    }
 }

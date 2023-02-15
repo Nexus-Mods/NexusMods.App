@@ -1,4 +1,5 @@
-﻿using NexusMods.DataModel.Abstractions;
+﻿using NexusMods.CLI.DataOutputs;
+using NexusMods.DataModel.Abstractions;
 
 namespace NexusMods.CLI.Verbs;
 
@@ -22,12 +23,15 @@ public class ChangeTracking : AVerb
     public async Task<int> Run(CancellationToken token)
     {
         _store.Changes.Subscribe(s =>
-        HandleEvent(s.Entity));
+        HandleEvent(new Table(new [] {"Type", "From", "To"}, new[]
+        {
+            new object[] {s.Type, s.From, s.To},
+        })));
         
         while (!token.IsCancellationRequested)
             await Task.Delay(1000, token);
         return 0;
     }
 
-    private void HandleEvent(Entity entity) => _renderer.Render(entity);
+    private void HandleEvent(Table entity) => _renderer.Render(entity);
 }

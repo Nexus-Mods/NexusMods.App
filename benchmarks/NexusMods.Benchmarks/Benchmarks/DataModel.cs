@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using NexusMods.Benchmarks.Interfaces;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Interprocess;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Hashing.xxHash64;
@@ -38,7 +39,9 @@ public class DataStoreBenchmark : IBenchmark, IDisposable
             }).Build();
 
         var provider = host.Services.GetRequiredService<IServiceProvider>();
-        _dataStore = new SqliteDataStore(_temporaryFileManager.CreateFile(KnownExtensions.Sqlite).Path, provider);
+        _dataStore = new SqliteDataStore(_temporaryFileManager.CreateFile(KnownExtensions.Sqlite).Path, provider, 
+            provider.GetRequiredService<IMessageProducer<RootChange>>(),
+            provider.GetRequiredService<IMessageConsumer<RootChange>>());
         
         _rawData = new byte[1024];
         Random.Shared.NextBytes(_rawData);
