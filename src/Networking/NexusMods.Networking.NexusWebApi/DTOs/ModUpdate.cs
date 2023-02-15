@@ -29,7 +29,12 @@ public class ModUpdate
     ///    Expressed as a Unix timestamp.
     /// </remarks>
     [JsonPropertyName("LatestFileUpdated")]
-    public DateTime LatestFileUpdated { get; set; }
+    public long LatestFileUpdated { get; set; }
+    
+    /// <summary>
+    /// The last time a file on the mod page was updated.
+    /// </summary>
+    public DateTime LatestFileUpdatedUtc => DateTimeOffset.FromUnixTimeSeconds(LatestFileUpdated).UtcDateTime;
     
     /// <summary>
     /// The last time any change was made to the mod page.
@@ -38,5 +43,10 @@ public class ModUpdate
     ///    Expressed as a Unix timestamp.
     /// </remarks>
     [JsonPropertyName("LatestModActivity")]
-    public DateTime LatestModActivity { get; set; }
+    public long LatestModActivity { get; set; }
+    
+    /// <summary>
+    /// The last time any change was made to the mod page.
+    /// </summary>
+    public DateTime LatestModActivityUtc => DateTimeOffset.FromUnixTimeSeconds(LatestModActivity).UtcDateTime;
 }
