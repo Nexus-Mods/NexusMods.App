@@ -1,16 +1,19 @@
 ﻿using System.Buffers.Binary;
+using System.Collections.Concurrent;
 using System.Data.SQLite;
+using System.Reactive.Subjects;
 using System.Text.Json;
 using BitFaster.Caching.Lru;
 using NexusMods.DataModel.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.DataModel.Interprocess;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
 
 namespace NexusMods.DataModel;
 
-public class SqliteDataStore : IDataStore
+public class SqliteDataStore : IDataStore, IDisposable
 {
     private readonly AbsolutePath _path;
     private readonly string _connectionString;
@@ -21,8 +24,14 @@ public class SqliteDataStore : IDataStore
     private readonly Lazy<JsonSerializerOptions> _jsonOptions;
     private readonly Dictionary<EntityCategory,string> _prefixStatements;
     private readonly ConcurrentLru<Id,Entity> _cache;
+    
+    private readonly IMessageProducer<RootChange> _rootChangeProducer;
+    private readonly IMessageConsumer<RootChange> _rootChangeConsumer;
+    private readonly ConcurrentQueue<RootChange> _pendingChanges = new();
+    private readonly CancellationTokenSource _enqueuerTcs;
+    private readonly Task _enqueuerTask;
 
-    public SqliteDataStore(AbsolutePath path, IServiceProvider provider)
+    public SqliteDataStore(AbsolutePath path, IServiceProvider provider, IMessageProducer<RootChange> rootChangeProducer, IMessageConsumer<RootChange> rootChangeConsumer)
     {
         _path = path;
         _connectionString = string.Intern($"Data Source={path}");
@@ -37,6 +46,27 @@ public class SqliteDataStore : IDataStore
         
         _jsonOptions = new Lazy<JsonSerializerOptions>(provider.GetRequiredService<JsonSerializerOptions>);
         _cache = new ConcurrentLru<Id, Entity>(1000);
+        
+        _rootChangeProducer = rootChangeProducer;
+        _rootChangeConsumer = rootChangeConsumer;
+
+        _enqueuerTcs = new CancellationTokenSource();
+        _enqueuerTask = Task.Run(EnqueuerLoop);
+    }
+
+    private async Task EnqueuerLoop()
+    {
+
+        while (!_enqueuerTcs.Token.IsCancellationRequested)
+        {
+            if (_pendingChanges.TryDequeue(out var change))
+            {
+                await _rootChangeProducer.Write(change, _enqueuerTcs.Token);
+                continue;
+            }
+            
+            Task.Delay(100).Wait();
+        }
     }
 
     private void EnsureTables()
@@ -116,6 +146,9 @@ public class SqliteDataStore : IDataStore
         cmd.Parameters.AddWithValue("@data", newData);
 
         cmd.ExecuteNonQuery();
+        
+        _pendingChanges.Enqueue(new RootChange {Type = type, From = oldId, To = newId});
+        
         return true;
     }
 
@@ -235,7 +268,13 @@ public class SqliteDataStore : IDataStore
         }
     }
 
-    public IObservable<(Id Id, Entity Entity)> Changes { get; }
+    public IObservable<RootChange> Changes => _rootChangeConsumer.Messages;
+
+    public void Dispose()
+    {
+        _conn.Dispose();
+        _enqueuerTcs.Dispose();
+    }
 }
 
 

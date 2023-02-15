@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Collections.Concurrent;
+using FluentAssertions;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -73,5 +74,30 @@ public class DataStoreTests
         {
             modLoaded!.Files[itm.Id].Should().Be(itm);
         }
+    }
+
+    [Fact]
+    public async Task CanGetRootUpdates()
+    {
+        var src = new List<Id>();
+        var destQ = new ConcurrentQueue<Id>();
+
+        using var _ = DataStore.Changes.Subscribe(c => destQ.Enqueue(c.To));
+
+        var oldId = DataStore.GetRoot(RootType.Tests) ?? IdEmpty.Empty;
+
+        foreach (var itm in Enumerable.Range(0, 128))
+        {
+            var newId = new Id64(EntityCategory.TestData, (ulong)itm);
+            DataStore.PutRoot(RootType.Tests, oldId, newId).Should().BeTrue();
+            src.Add(newId);
+            oldId = newId;
+        }
+        
+        await Task.Delay(1000);
+
+        // Cant' be exact about this test because other things being tested may be generating changes
+        var dest = destQ.ToList();
+        dest.Count.Should().BeGreaterThan(2);
     }
 }

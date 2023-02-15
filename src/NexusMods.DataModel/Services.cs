@@ -1,9 +1,11 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using Cloudtoid.Interprocess;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Interprocess;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.DataModel.Loadouts;
@@ -33,7 +35,9 @@ public static class Services
         coll.AddSingleton<JsonConverter, EntityLinkConverterFactory>();
         coll.AddSingleton(typeof(EntityLinkConverter<>));
 
-        coll.AddSingleton<IDataStore>(s => new SqliteDataStore(baseFolder.Value.Join("DataModel.sqlite"), s));
+        coll.AddSingleton<IDataStore>(s => new SqliteDataStore(baseFolder.Value.Join("DataModel.sqlite"), s, 
+            s.GetRequiredService<IMessageProducer<RootChange>>(), 
+            s.GetRequiredService<IMessageConsumer<RootChange>>()));
         coll.AddSingleton(s => new ArchiveManager(s.GetRequiredService<ILogger<ArchiveManager>>(),
             new []{baseFolder.Value.Join("Archives")},
             s.GetRequiredService<IDataStore>(),
@@ -44,6 +48,10 @@ public static class Services
         coll.AddSingleton<LoadoutManager>();
         coll.AddSingleton<FileHashCache>();
         coll.AddSingleton<FileContentsCache>();
+
+        coll.AddInterprocessQueue();
+        coll.AddSingleton(typeof(IMessageConsumer<>), typeof(InterprocessConsumer<>));
+        coll.AddSingleton(typeof(IMessageProducer<>), typeof(InterprocessProducer<>));
 
         coll.AddSingleton<ITypeFinder>(s => new AssemblyTypeFinder(typeof(Services).Assembly));
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<Entity>>();
