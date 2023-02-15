@@ -1,7 +1,9 @@
 ﻿using System.Net.Http.Json;
+using System.Text.Json.Serialization.Metadata;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
 using NexusMods.Networking.NexusWebApi.DTOs;
+using NexusMods.Networking.NexusWebApi.DTOs.Interfaces;
 using NexusMods.Networking.NexusWebApi.Types;
 
 namespace NexusMods.Networking.NexusWebApi;
@@ -48,7 +50,7 @@ public class Client
     public async Task<Response<GameInfo[]>> Games(CancellationToken token = default)
     {
         var msg = await _factory.Create(HttpMethod.Get, new Uri("https://api.nexusmods.com/v1/games.json"));
-        return await SendAsync<GameInfo[]>(msg, token);
+        return await SendAsyncArray<GameInfo>(msg, token);
     }
 
     /// <summary>
@@ -73,7 +75,7 @@ public class Client
     {
         var msg = await _factory.Create(HttpMethod.Get, new Uri(
             $"https://api.nexusmods.com/v1/games/{domain}/mods/{modId}/files/{fileId}/download_link.json"));
-        return await SendAsync<DownloadLink[]>(msg, token);
+        return await SendAsyncArray<DownloadLink>(msg, token);
     }
 
     /// <summary>
@@ -99,7 +101,7 @@ public class Client
         var msg = await _factory.Create(HttpMethod.Get, new Uri(
             $"https://api.nexusmods.com/v1/games/{domain}/mods/updated.json?period={timeString}"));
 
-        return await SendAsync<ModUpdate[]>(msg, token: token);
+        return await SendAsyncArray<ModUpdate>(msg, token: token);
     }
     
     /// <summary>
@@ -120,15 +122,27 @@ public class Client
             $"https://api.nexusmods.com/v1/games/{domain}/mods/{modId}/files.json"));
         return await SendAsync<ModFiles>(msg, token);
     }
-
+    
     private async Task<Response<T>> SendAsync<T>(HttpRequestMessage message,
+        CancellationToken token = default) where T : IJsonSerializable<T>
+    {
+        return await SendAsync(message, T.GetTypeInfo(), token);
+    }
+    
+    private async Task<Response<T[]>> SendAsyncArray<T>(HttpRequestMessage message,
+        CancellationToken token = default) where T : IJsonArraySerializable<T>
+    {
+        return await SendAsync(message, T.GetArrayTypeInfo(), token);
+    }
+    
+    private async Task<Response<T>> SendAsync<T>(HttpRequestMessage message, JsonTypeInfo<T> typeInfo,
         CancellationToken token = default)
     {
         using var response = await _httpClient.SendAsync(message, token);
         if (!response.IsSuccessStatusCode)
             throw new HttpRequestException(response.ReasonPhrase, null, response.StatusCode);
         
-        var data = await response.Content.ReadFromJsonAsync<T>(cancellationToken: token);
+        var data = await response.Content.ReadFromJsonAsync(typeInfo, token);
         return new Response<T>
         {
             Data = data!,

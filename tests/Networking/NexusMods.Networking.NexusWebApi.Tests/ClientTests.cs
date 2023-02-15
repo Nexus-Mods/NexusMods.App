@@ -17,7 +17,7 @@ public class ClientTests
     public async Task CanGetGames()
     {
         var games = await _client.Games();
-        
+
         games.StatusCode.Should().Be(HttpStatusCode.OK);
         games.Data.Should().NotBeEmpty();
         games.Data.Select(g => g.Name).Should().Contain("Skyrim Special Edition");

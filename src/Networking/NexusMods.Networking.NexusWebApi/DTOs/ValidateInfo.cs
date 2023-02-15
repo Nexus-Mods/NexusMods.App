@@ -1,4 +1,6 @@
 ﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
+using NexusMods.Networking.NexusWebApi.DTOs.Interfaces;
 using NexusMods.Networking.NexusWebApi.Types;
 // ReSharper disable InconsistentNaming
 
@@ -8,13 +10,18 @@ namespace NexusMods.Networking.NexusWebApi.DTOs;
 /// Contains the current user's details.
 /// Returned from an API call used to validate API key.  
 /// </summary>
-public class ValidateInfo
+public class ValidateInfo : IJsonSerializable<ValidateInfo>
 {
+    /// <summary>
+    /// For deserialization only; please use <see cref="UserId"/>.
+    /// </summary>
+    [JsonPropertyName("user_id")] 
+    public ulong _UserId { get; set; }
+    
     /// <summary>
     /// Unique identifier for the current user.
     /// </summary>
-    [JsonPropertyName("user_id")] 
-    public UserId UserId { get; set; }
+    public UserId UserId => UserId.From(_UserId);
 
     /// <summary>
     /// The API key associated with this request.
@@ -68,4 +75,12 @@ public class ValidateInfo
     /// </summary>
     [JsonPropertyName("is_premium")] 
     public bool IsPremium { get; set; }
+
+    /// <inheritdoc />
+    public static JsonTypeInfo<ValidateInfo> GetTypeInfo() => ValidateInfoContext.Default.ValidateInfo;
 }
+
+/// <summary/>
+[JsonSourceGenerationOptions(GenerationMode = JsonSourceGenerationMode.Metadata)]
+[JsonSerializable(typeof(ValidateInfo))]
+public partial class ValidateInfoContext : JsonSerializerContext { }

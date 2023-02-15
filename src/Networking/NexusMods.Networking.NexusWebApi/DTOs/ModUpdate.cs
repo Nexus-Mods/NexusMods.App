@@ -1,4 +1,6 @@
 ﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
+using NexusMods.Networking.NexusWebApi.DTOs.Interfaces;
 using NexusMods.Networking.NexusWebApi.Types;
 
 
@@ -12,13 +14,18 @@ namespace NexusMods.Networking.NexusWebApi.DTOs;
 /// Represents an individual item from a list of mods that have been updated in a
 /// given period, with timestamps of their last update. Cached for 5 minutes.
 /// </summary>
-public class ModUpdate
+public class ModUpdate : IJsonArraySerializable<ModUpdate>
 {
+    /// <summary>
+    /// For deserialization only, please use <see cref="ModId"/>.
+    /// </summary>
+    [JsonPropertyName("mod_id")]
+    public ulong _ModId { get; set; }
+    
     /// <summary>
     /// An individual mod ID that is unique for this game.
     /// </summary>
-    [JsonPropertyName("mod_id")]
-    public ModId ModId { get; set; }
+    public ModId ModId => ModId.From(_ModId);
 
     // TODO: This is only referenced from test harness (right now). I think this might be incorrectly defined; since API returns timestamps; which shouldn't deserialize here.
 
@@ -49,4 +56,12 @@ public class ModUpdate
     /// The last time any change was made to the mod page.
     /// </summary>
     public DateTime LatestModActivityUtc => DateTimeOffset.FromUnixTimeSeconds(LatestModActivity).UtcDateTime;
+
+    /// <inheritdoc />
+    public static JsonTypeInfo<ModUpdate[]> GetArrayTypeInfo() => ModUpdateArrayContext.Default.ModUpdateArray;
 }
+
+/// <summary/>
+[JsonSourceGenerationOptions(GenerationMode = JsonSourceGenerationMode.Metadata)]
+[JsonSerializable(typeof(ModUpdate[]))]
+public partial class ModUpdateArrayContext : JsonSerializerContext { }
