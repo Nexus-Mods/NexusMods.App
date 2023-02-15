@@ -12,7 +12,7 @@ public class InterprocessTests
     public class Message : IMessage
     {
         public int Value { get; init; }
-        public static int MaxSize => 128;
+        public static int MaxSize => 4;
         public int Write(Span<byte> buffer)
         {
             BinaryPrimitives.WriteInt32BigEndian(buffer, Value);
@@ -35,7 +35,7 @@ public class InterprocessTests
     [Fact]
     public async Task CanSendAndReceiveMessages()
     {
-        var src = Enumerable.Range(0, 32).ToList();
+        var src = Enumerable.Range(0, 128).ToList();
         var dest = new List<int>();
         using var _ = _consumer.Messages.Subscribe(x => dest.Add(x.Value));
         
