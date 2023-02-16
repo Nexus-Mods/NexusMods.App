@@ -1,4 +1,6 @@
 ﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
+using NexusMods.Networking.NexusWebApi.DTOs.Interfaces;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 namespace NexusMods.Networking.NexusWebApi.DTOs;
@@ -10,7 +12,7 @@ namespace NexusMods.Networking.NexusWebApi.DTOs;
 /// Mod categories. Unique per game.
 /// i.e. Each game has its own set of categories.
 /// </summary>
-public class Category
+public class Category : IJsonSerializable<Category>
 {
     /// <summary>
     /// Unique identifier for the category.
@@ -36,4 +38,14 @@ public class Category
     /// </remarks>
     [JsonPropertyName("parent_category")]
     public object ParentCategory { get; set; }
+
+    /// <inheritdoc />
+    public static JsonTypeInfo<Category> GetTypeInfo() => CategoryContext.Default.Category;
 }
+
+// Note for future readers: JsonSourceGenerationMode.Serialization is for Serialization only;
+// this code will be redundant for us as we deserialize only; hence we don't generate it.
+/// <summary/>
+[JsonSourceGenerationOptions(GenerationMode = JsonSourceGenerationMode.Metadata)]
+[JsonSerializable(typeof(Category))]
+public partial class CategoryContext : JsonSerializerContext { }

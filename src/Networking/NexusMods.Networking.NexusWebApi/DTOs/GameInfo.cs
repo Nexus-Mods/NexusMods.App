@@ -1,7 +1,9 @@
 ﻿using System.Text.Json.Serialization;
-using NexusMods.DataModel.Games;
+using System.Text.Json.Serialization.Metadata;
+using NexusMods.Networking.NexusWebApi.DTOs.Interfaces;
 using NexusMods.Networking.NexusWebApi.Types;
 // ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable InconsistentNaming
 
 // 👇 Suppress uninitialised variables. Currently Nexus has mostly read-only API and we expect server to return the data.
 #pragma warning disable CS8618 
@@ -14,14 +16,23 @@ namespace NexusMods.Networking.NexusWebApi.DTOs;
 /// <remarks>
 ///    Usually returned in batch from a single API call.
 /// </remarks>
-public class GameInfo
+public class GameInfo : IJsonArraySerializable<GameInfo>
 {
     /// <summary>
     /// Unique identifier for the game.
     /// </summary>
+    /// <remarks>
+    ///    Consider using <see cref="Id"/> instead.
+    ///    This field is for deserialization only.
+    /// </remarks>
     [JsonPropertyName("id")]
-    public GameId Id { get; set; }
+    public int _Id { get; set; }
 
+    /// <summary>
+    /// Returns the ID as typed ValueObject <see cref="GameId"/>.
+    /// </summary>
+    public GameId Id => GameId.From(_Id);
+    
     /// <summary>
     /// Name of the game.
     /// </summary>
@@ -66,7 +77,7 @@ public class GameInfo
     ///    This value is often used in API requests.
     /// </remarks>
     [JsonPropertyName("domain_name")]
-    public GameDomain DomainName { get; set; }
+    public string DomainName { get; set; }
 
     /// <summary>
     /// Unix timestamp of when the game was approved by the site staff.
@@ -108,5 +119,12 @@ public class GameInfo
     /// </summary>
     [JsonPropertyName("categories")]
     public List<Category> Categories { get; set; }
+
+    /// <inheritdoc />
+    public static JsonTypeInfo<GameInfo[]> GetArrayTypeInfo() => GameInfoArrayContext.Default.GameInfoArray;
 }
 
+/// <summary/>
+[JsonSourceGenerationOptions(GenerationMode = JsonSourceGenerationMode.Metadata)]
+[JsonSerializable(typeof(GameInfo[]))]
+public partial class GameInfoArrayContext : JsonSerializerContext { }

@@ -65,7 +65,7 @@ public class RecentModsTest
                 continue;
             }
         }
-        _logger.LogInformation("Found {Count} files totaling {Size}", files.Count, files.Sum(f => f.File.SizeInBytes ?? Size.Zero));
+        _logger.LogInformation("Found {Count} files totaling {Size}", files.Count, files.Sum(f => f.File.SizeInBytes));
         
         foreach (var file in files)
         {

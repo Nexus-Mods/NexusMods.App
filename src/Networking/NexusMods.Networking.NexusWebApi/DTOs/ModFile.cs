@@ -1,4 +1,6 @@
 ﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
+using NexusMods.Networking.NexusWebApi.DTOs.Interfaces;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
 
@@ -11,7 +13,7 @@ namespace NexusMods.Networking.NexusWebApi.DTOs;
 /// <summary>
 /// Abstracts away an individual downloadable file available on a mod page.
 /// </summary>
-public class ModFile
+public class ModFile : IJsonSerializable<ModFile>
 {
     /// <summary>
     ///    Listing of unique identifiers for this file.
@@ -32,11 +34,20 @@ public class ModFile
     /// Unique ID for this file. 
     /// </summary>
     /// <remarks>
+    ///    This field is for (de)serialization only. Please use <see cref="FileId"/>.
+    /// </remarks>
+    [JsonPropertyName("file_id")]
+    // ReSharper disable once InconsistentNaming
+    public ulong _FileId { get; set; }
+
+    /// <summary>
+    /// Unique ID for this file. 
+    /// </summary>
+    /// <remarks>
     ///    This ID is unique within the context of the game.
     ///    i.e. This ID might be used for another mod if you search for mods for another game.
     /// </remarks>
-    [JsonPropertyName("file_id")]
-    public FileId FileId { get; set; }
+    public FileId FileId => FileId.From(_FileId);
 
     /// <summary>
     /// Name (title) of the mod file as seen on the `Files` section of the mod page.
@@ -134,7 +145,8 @@ public class ModFile
     /// Full size of the file expressed as bytes.
     /// </summary>
     [JsonPropertyName("size_in_bytes")]
-    public Size? SizeInBytes { get; set; }
+    // ReSharper disable once InconsistentNaming
+    public long SizeInBytes { get; set; }
 
     /// <summary>
     /// The changelog for this item, expressed as raw HTML.
@@ -147,4 +159,12 @@ public class ModFile
     /// </summary>
     [JsonPropertyName("content_preview_link")]
     public string ContentPreviewLink { get; set; }
+
+    /// <inheritdoc />
+    public static JsonTypeInfo<ModFile> GetTypeInfo() => ModFileContext.Default.ModFile;
 }
+
+/// <summary/>
+[JsonSourceGenerationOptions(GenerationMode = JsonSourceGenerationMode.Metadata)]
+[JsonSerializable(typeof(ModFile))]
+public partial class ModFileContext : JsonSerializerContext { }
