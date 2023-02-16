@@ -24,4 +24,8 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
     <PackageReference Include="XamlNameReferenceGenerator" Version="1.5.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NexusMods.UI.Theme\NexusMods.UI.Theme.csproj" />
+  </ItemGroup>
 </Project>

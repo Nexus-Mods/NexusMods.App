@@ -1,22 +1,84 @@
 <reactiveUi:ReactiveWindow
+    ExtendClientAreaChromeHints="NoChrome"
+    ExtendClientAreaTitleBarHeightHint="0"
+    ExtendClientAreaToDecorationsHint="True"
+    Icon="/Assets/nexus-logo.ico"
+    Title="NexusMods.App.UI"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d"
+    x:Class="NexusMods.App.UI.Views.MainWindow"
     x:TypeArguments="vm:MainWindowViewModel"
     xmlns="https://github.com/avaloniaui"
-   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-   xmlns:vm="using:NexusMods.App.UI.ViewModels"
-   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-   xmlns:reactiveUi="http://reactiveui.net"
-   mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-   x:Class="NexusMods.App.UI.Views.MainWindow"
-   Icon="/Assets/avalonia-logo.ico"
-   Title="NexusMods.App.UI">
+    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:svg="clr-namespace:Avalonia.Svg;assembly=Avalonia.Svg"
+    xmlns:vm="using:NexusMods.App.UI.ViewModels"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainWindowViewModel/>
+        <!--
+            This only sets the DataContext for the previewer in an IDE,
+            to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs)
+        -->
+        <vm:MainWindowViewModel />
     </Design.DataContext>
 
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    <Grid ColumnDefinitions="72, 216, *" RowDefinitions="62, *">
+        <Svg
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Grid.Row="0"
+            Height="30"
+            HorizontalAlignment="Left"
+            Margin="12,16"
+            Path="avares://NexusMods.App.UI/Assets/nexus-logo-with-text.svg"
+            VerticalAlignment="Center"
+            Width="127" />
+
+        <Border
+            BorderBrush="{DynamicResource StructuralBorderBrush}"
+            BorderThickness="1,0"
+            Grid.Column="1"
+            Grid.Row="1" />
+        <Border
+            BorderBrush="{DynamicResource StructuralBorderBrush}"
+            BorderThickness="0,0,0,1"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            Grid.Row="0" />
+        <Border
+            BorderBrush="{DynamicResource StructuralBorderBrush}"
+            BorderThickness="0,0,1,0"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Grid.Row="0" />
+
+        <TextBlock
+            Classes="TopTitle"
+            Grid.Column="2"
+            Grid.Row="0"
+            Margin="24,22.5"
+            Text="HOME" />
+
+        <StackPanel
+            Grid.Column="0"
+            Grid.Row="1"
+            Margin="0,20">
+            <Button Classes="Spine">
+                <Svg
+                    Height="20"
+                    HorizontalAlignment="Center"
+                    Path="avares://NexusMods.App.UI/Assets/home-icon.svg"
+                    VerticalAlignment="Center"
+                    Width="17" />
+            </Button>
+        </StackPanel>
+    </Grid>
+
+
+
 
 </reactiveUi:ReactiveWindow>
