@@ -5,16 +5,16 @@
     d:DesignHeight="1600"
     d:DesignWidth="1600"
     mc:Ignorable="d"
-    x:Class="NexusMods.UI.Theme.Sandbox.MainWindow"
+    x:Class="NexusMods.UI.Theme.MainWindow"
     xmlns="https://github.com/avaloniaui"
     xmlns:controls="clr-namespace:NexusMods.UI.Theme.Controls;assembly=NexusMods.UI.Theme"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:sandbox="clr-namespace:NexusMods.UI.Theme.Sandbox"
+    xmlns:theme="clr-namespace:NexusMods.UI.Theme"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.DataContext>
-        <sandbox:MainWindowViewModel />
+        <theme:MainWindowViewModel />
     </Design.DataContext>
 
 

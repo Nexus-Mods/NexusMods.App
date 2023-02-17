@@ -1,0 +1,34 @@
+﻿<UserControl
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d"
+    x:Class="NexusMods.UI.Theme.Controls.SpineHome"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Styles>
+        <!--  Spine Button Styles  -->
+        <Style Selector="Button.Spine">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="CornerRadius" Value="45" />
+            <Setter Property="Background" Value="{DynamicResource TransparentBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ContentSecondaryBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+
+        <Style Selector="Button.Spine avalonia|Icon">
+            <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryBrush}" />
+        </Style>
+
+    </UserControl.Styles>
+    <Button
+        Classes="Spine"
+        Height="48"
+        Width="48">
+        <avalonia:Icon FontSize="20" Value="mdi-home" />
+    </Button>
+</UserControl>

@@ -33,6 +33,8 @@
         <SolidColorBrush Color="{DynamicResource StatusSuccessDarker}" x:Key="StatusSuccessDarkerBrush" />
 
 
+        <Color x:Key="ContentSecondary">#2b2d2f</Color>
+        <SolidColorBrush Color="{DynamicResource ContentSecondary}" x:Key="ContentSecondaryBrush" />
 
         <Color x:Key="BrandWhite">#FFFFFF</Color>
         <Color x:Key="FontLightPrimary">#303030</Color>
@@ -41,6 +43,9 @@
 
         <Color x:Key="ThemeBackgroundColor">#101010</Color>
         <SolidColorBrush Color="{DynamicResource ThemeBackgroundColor}" x:Key="ThemeBackgroundBrush" />
+
+        <Color x:Key="TransparentColor">#00FFFFFF</Color>
+        <SolidColorBrush Color="{DynamicResource TransparentColor}" x:Key="TransparentBrush" />
 
         <Color x:Key="BackgroundTertiaryColor">#222222</Color>
         <SolidColorBrush Color="{DynamicResource BackgroundTertiaryColor}" x:Key="BackgroundTertiaryBrush" />
@@ -51,6 +56,9 @@
 
         <FontFamily x:Key="FontPrimary">avares://NexusMods.UI.Theme/Fonts/Montserrat/Montserrat-VariableFont_wght.ttf#Montserrat</FontFamily>
         <FontFamily x:Key="FontSecondary">avares://NexusMods.UI.Theme/Fonts/Roboto/Roboto-Regular.ttf#Roboto</FontFamily>
+
+        <Color x:Key="FontDarkSecondaryColor">#AAAAAA</Color>
+        <SolidColorBrush Color="{DynamicResource FontDarkSecondaryColor}" x:Key="FontDarkSecondaryBrush" />
 
 
         <SolidColorBrush Color="{DynamicResource BrandSecondaryLighter}" x:Key="DataGridCellFocusVisualPrimaryBrush" />

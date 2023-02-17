@@ -75,7 +75,36 @@
                     VerticalAlignment="Center"
                     Width="17" />
             </Button>
+            <Border />
         </StackPanel>
+
+        <StackPanel
+            Grid.Column="1"
+            Grid.Row="1"
+            Margin="12,24">
+            <Button Classes="Menu Selected">
+                <Grid ColumnDefinitions="38, *">
+                    <Svg Grid.Column="0" Path="avares://NexusMods.App.UI/Assets/Icons/newspaper-variant-outline-1.svg" />
+                    <TextBlock Grid.Column="1" Text="Newsfeed" />
+                </Grid>
+            </Button>
+
+            <Button Classes="Menu">
+                <Grid ColumnDefinitions="38, *">
+                    <Svg Grid.Column="0" Path="avares://NexusMods.App.UI/Assets/Icons/bookmarks_24px.svg" />
+                    <TextBlock Grid.Column="1" Text="My Games" />
+                </Grid>
+            </Button>
+
+            <Button Classes="Menu">
+                <Grid ColumnDefinitions="38, *">
+                    <Svg Grid.Column="0" Path="avares://NexusMods.App.UI/Assets/Icons/videogame_asset_24px.svg" />
+                    <TextBlock Grid.Column="1" Text="Browse Games" />
+                </Grid>
+            </Button>
+
+        </StackPanel>
+
     </Grid>
 
 

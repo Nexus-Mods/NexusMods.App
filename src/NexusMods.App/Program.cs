@@ -1,5 +1,7 @@
 ﻿using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
+using Avalonia;
+using Avalonia.ReactiveUI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

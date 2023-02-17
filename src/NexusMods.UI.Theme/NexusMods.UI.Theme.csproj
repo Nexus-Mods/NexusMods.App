@@ -2,10 +2,19 @@
   
   <!-- NuGet Package Shared Details -->
   <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <RootNamespace>NexusMods.UI.Theme</RootNamespace>
+    <StartupObject>NexusMods.UI.Theme.Program</StartupObject>
+  </PropertyGroup>
   
   <ItemGroup>
     <AvaloniaResource Include="**\*.xaml" />
     <None Remove="Fonts\Montserrat\Montserrat-VariableFont_wght.ttf" />
+    <AvaloniaResource Include="Assets\Icons\home-icon.svg" />
     <AvaloniaResource Include="Fonts\Montserrat\Montserrat-VariableFont_wght.ttf" />
     <None Remove="Icons\save.svg" />
     <None Remove="Fonts\Roboto\Roboto-Regular.ttf" />
@@ -18,6 +27,9 @@
     <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0-preview4" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview4" />
     <PackageReference Include="Avalonia.Themes.Simple" Version="11.0.0-preview4" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.0.0-preview4" />
+    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.0-preview4" />
     <PackageReference Include="Material.Avalonia" Version="3.0.0-avalonia11-preview2.137-nightly" />
     <PackageReference Include="Material.Icons.Avalonia" Version="1.2.2" />
     <PackageReference Include="XamlNameReferenceGenerator" Version="1.5.1" />
@@ -26,6 +38,21 @@
 
   <ItemGroup>
     <Folder Include="Fonts\Montserrat" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="App.axaml.cs">
+      <DependentUpon>App.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="MainWindow.axaml.cs">
+      <DependentUpon>MainWindow.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NexusMods.Paths\NexusMods.Paths.csproj" />
   </ItemGroup>
 
 </Project>
