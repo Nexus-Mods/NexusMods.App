@@ -40,7 +40,7 @@ public abstract class AGame : IGame
         }
     }
 
-    public IEnumerable<AModFile> GetGameFiles(GameInstallation installation, IDataStore store)
+    public virtual IEnumerable<AModFile> GetGameFiles(GameInstallation installation, IDataStore store)
     {
         return Array.Empty<AModFile>();
     }
