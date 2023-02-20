@@ -69,7 +69,8 @@
                 <controls:SpineGame
                     Grid.Column="2"
                     Grid.Row="2"
-                    Source="avares://NexusMods.UI.Theme/Assets/DesignTime/fantasy_game.png" />
+                    IsChecked="True"
+                    Source="avares://NexusMods.UI.Theme/Assets/DesignTime/cyberpunk_game.png" />
                 <controls:SpineGame
                     Grid.Column="2"
                     Grid.Row="3"
