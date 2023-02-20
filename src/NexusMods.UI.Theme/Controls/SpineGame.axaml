@@ -19,11 +19,7 @@
             <Setter Property="RenderTransform" Value="scale(0.9)" />
         </Style>
 
-        <Style Selector="ToggleButton.Spine /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="CornerRadius" Value="45" />
-        </Style>
-
-        <Style Selector="ToggleButton.Spine Border">
+        <Style Selector="ToggleButton.Spine:unchecked Border">
             <Setter Property="BorderBrush" Value="#28FFFFFF" />
             <Setter Property="BorderThickness" Value="1" />
 
@@ -37,7 +33,7 @@
             </Setter>
         </Style>
 
-        <Style Selector="ToggleButton.Spine:pointerover Border">
+        <Style Selector="ToggleButton.Spine:unchecked:pointerover Border">
             <Setter Property="Background" Value="#4CFFFFFF" />
             <Setter Property="BorderBrush" Value="#80FFFFFF" />
             <Setter Property="BorderThickness" Value="1" />
@@ -47,8 +43,13 @@
             <Setter Property="Background" Value="#00FFFFFF" />
             <Setter Property="BorderBrush" Value="#FFFFFF" />
             <Setter Property="BorderThickness" Value="2" />
-
             <Setter Property="BoxShadow" Value="0 0 10 0 #66FFFFFF" />
+        </Style>
+
+        <Style Selector="ToggleButton.Spine:checked:pointerover Border">
+            <Setter Property="Background" Value="#80FFFFFF" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BrandPrimary}" />
+            <Setter Property="BorderThickness" Value="2" />
         </Style>
     </UserControl.Styles>
 
