@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- NuGet Package Shared Details -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Bannerlord.LauncherManager" Version="1.0.38" />
+  </ItemGroup>
+
+</Project>
