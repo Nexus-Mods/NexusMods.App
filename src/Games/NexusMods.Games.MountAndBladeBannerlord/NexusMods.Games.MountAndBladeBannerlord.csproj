@@ -3,12 +3,17 @@
   <!-- NuGet Package Shared Details -->
   <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
+  <PropertyGroup>
+    <!-- Game mod is a end-level project,  -->
+    <NoWarn>$(NoWarn);CS1591;</NoWarn>
+  </PropertyGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Bannerlord.LauncherManager" Version="1.0.38" />
+    <PackageReference Include="Bannerlord.LauncherManager" Version="1.0.46" />
   </ItemGroup>
 
 </Project>

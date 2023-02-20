@@ -6,12 +6,13 @@ namespace NexusMods.Games.MountAndBladeBannerlord;
 
 public static class Services 
 {
-    public static IServiceCollection AddMountAndBladeBannerlord(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddMountAndBladeBannerlord(this IServiceCollection services)
     {
-        serviceCollection.AddSingleton<IGame, MountAndBladeBannerlord>();
-        serviceCollection.AddSingleton<IModInstaller, MountAndBladeBannerlordModInstaller>();
-        serviceCollection.AddSingleton<NexusModsBannerlordLauncherManagerFactory>();
-        return serviceCollection;
+        services.AddSingleton<IGame, MountAndBladeBannerlord>();
+        services.AddSingleton<IModInstaller, MountAndBladeBannerlordModInstaller>();
+        services.AddSingleton<LauncherManagerFactory>();
+        services.AddSingleton<ITool, RunBannerlordTool>();
+        services.AddSingleton<ITool, RunLauncherTool>();
+        return services;
     }
-    
 }

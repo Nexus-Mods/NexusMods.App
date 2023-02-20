@@ -21,7 +21,7 @@ public abstract class AGame : IGame
     public abstract GameDomain Domain { get; }
     public abstract GamePath PrimaryFile { get; }
     
-    public IEnumerable<GameInstallation> Installations 
+    public virtual IEnumerable<GameInstallation> Installations 
     {
         get
         {
