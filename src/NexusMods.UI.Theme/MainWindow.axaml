@@ -62,12 +62,19 @@
                     IsEnabled="False" />
 
 
-                <controls:SplineGame Grid.Column="2" Grid.Row="1" />
-                <controls:SplineGame Grid.Column="2" Grid.Row="2" />
-                <controls:SplineGame
+                <controls:SpineGame
+                    Grid.Column="2"
+                    Grid.Row="1"
+                    Source="avares://NexusMods.UI.Theme/Assets/DesignTime/cyberpunk_game.png" />
+                <controls:SpineGame
+                    Grid.Column="2"
+                    Grid.Row="2"
+                    Source="avares://NexusMods.UI.Theme/Assets/DesignTime/fantasy_game.png" />
+                <controls:SpineGame
                     Grid.Column="2"
                     Grid.Row="3"
-                    IsEnabled="False" />
+                    IsEnabled="False"
+                    Source="avares://NexusMods.UI.Theme/Assets/DesignTime/fantasy_game.png" />
 
             </Grid>
         </TabItem>

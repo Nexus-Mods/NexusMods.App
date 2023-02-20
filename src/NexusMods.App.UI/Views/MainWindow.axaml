@@ -75,7 +75,7 @@
                 Margin="0,16"
                 Width="48" />
             <controls:SpineAdd />
-            <controls:SplineGame />
+            <controls:SpineGame />
         </StackPanel>
 
         <StackPanel

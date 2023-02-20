@@ -23,6 +23,8 @@
     <None Remove="Assets\DesignTime\cp77_game_image.jpg" />
     <None Remove="Assets\DesignTime\fantasy_game.png" />
     <AvaloniaResource Include="Assets\DesignTime\fantasy_game.png" />
+    <None Remove="Assets\DesignTime\cyberpunk_game.png" />
+    <AvaloniaResource Include="Assets\DesignTime\cyberpunk_game.png" />
   </ItemGroup>
 
   <ItemGroup>

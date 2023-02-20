@@ -2,9 +2,10 @@
     d:DesignHeight="90"
     d:DesignWidth="90"
     mc:Ignorable="d"
-    x:Class="NexusMods.UI.Theme.Controls.SplineGame"
+    x:Class="NexusMods.UI.Theme.Controls.SpineGame"
     xmlns="https://github.com/avaloniaui"
     xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:controls="clr-namespace:NexusMods.UI.Theme.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
@@ -14,6 +15,9 @@
             <Setter Property="HorizontalAlignment" Value="Center" />
 
         </Style>
+        <Style Selector="ToggleButton.Spine:pressed">
+            <Setter Property="RenderTransform" Value="scale(0.9)" />
+        </Style>
 
         <Style Selector="ToggleButton.Spine /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="CornerRadius" Value="45" />
@@ -22,6 +26,15 @@
         <Style Selector="ToggleButton.Spine Border">
             <Setter Property="BorderBrush" Value="#28FFFFFF" />
             <Setter Property="BorderThickness" Value="1" />
+
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Duration="0:0:0.2" Property="Background" />
+                    <BrushTransition Duration="0:0:0.2" Property="BorderBrush" />
+                    <ThicknessTransition Duration="0:0:0.2" Property="BorderThickness" />
+                    <BoxShadowsTransition Duration="0:0:0.2" Property="BoxShadow" />
+                </Transitions>
+            </Setter>
         </Style>
 
         <Style Selector="ToggleButton.Spine:pointerover Border">
@@ -37,8 +50,6 @@
 
             <Setter Property="BoxShadow" Value="0 0 10 0 #66FFFFFF" />
         </Style>
-
-
     </UserControl.Styles>
 
     <ToggleButton
@@ -50,9 +61,9 @@
                 <Grid>
                     <Image
                         Height="48"
-                        OpacityMask=""
-                        Source="avares://NexusMods.UI.Theme/Assets/DesignTime/fantasy_game.png"
-                        Width="48">
+                        Source="{Binding $parent[controls:SpineGame].Source, Mode=OneWay}"
+                        Width="48"
+                        x:Name="GameImage">
                         <Image.Clip>
                             <EllipseGeometry Rect="0, 0, 48, 48" />
                         </Image.Clip>
@@ -61,9 +72,7 @@
                         Background="{DynamicResource TransparentBackground}"
                         CornerRadius="48"
                         Height="48"
-                        Opacity="1"
-                        Width="48"
-                        ZIndex="2" />
+                        Width="48" />
                 </Grid>
             </ControlTemplate>
         </ToggleButton.Template>
