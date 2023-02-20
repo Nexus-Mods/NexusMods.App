@@ -1,0 +1,47 @@
+﻿<UserControl
+    d:DesignHeight="90"
+    d:DesignWidth="90"
+    mc:Ignorable="d"
+    x:Class="NexusMods.UI.Theme.Controls.SplineGame"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Styles>
+        <Style Selector="ToggleButton.Spine">
+            <Setter Property="CornerRadius" Value="45" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="ToggleButton.Spine /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="CornerRadius" Value="45" />
+        </Style>
+    </UserControl.Styles>
+
+    <ToggleButton
+        Classes="Spine"
+        Height="48"
+        Width="48">
+        <Grid>
+            <Image
+                Height="48"
+                OpacityMask=""
+                Source="avares://NexusMods.UI.Theme/Assets/DesignTime/fantasy_game.png"
+                Width="48">
+                <Image.Clip>
+                    <EllipseGeometry Rect="0, 0, 48, 48" />
+                </Image.Clip>
+            </Image>
+            <Border
+                Background="{DynamicResource TransparentBackground}"
+                BorderBrush="#80FFFFFF"
+                BorderThickness="2"
+                CornerRadius="48"
+                Height="48"
+                Opacity="1"
+                Width="48"
+                ZIndex="2" />
+        </Grid>
+    </ToggleButton>
+</UserControl>

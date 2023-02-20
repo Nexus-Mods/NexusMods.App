@@ -48,6 +48,19 @@
                     Text="Disabled" />
 
                 <controls:SpineHome Grid.Column="1" Grid.Row="1" />
+                <controls:SpineHome Grid.Column="1" Grid.Row="2" />
+                <controls:SpineHome
+                    Grid.Column="1"
+                    Grid.Row="3"
+                    IsEnabled="False" />
+
+                <controls:SpineAdd Grid.Column="3" Grid.Row="1" />
+                <controls:SpineAdd Grid.Column="3" Grid.Row="2" />
+                <controls:SpineAdd
+                    Grid.Column="3"
+                    Grid.Row="3"
+                    IsEnabled="False" />
+
             </Grid>
         </TabItem>
         <TabItem Header="Game Controls">

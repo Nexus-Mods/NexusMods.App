@@ -35,6 +35,7 @@
 
         <Color x:Key="ContentSecondary">#2b2d2f</Color>
         <SolidColorBrush Color="{DynamicResource ContentSecondary}" x:Key="ContentSecondaryBrush" />
+        <SolidColorBrush Color="{DynamicResource ContentSecondary}" x:Key="ContentSecondaryBrushDashed" />
 
         <Color x:Key="BrandWhite">#FFFFFF</Color>
         <Color x:Key="FontLightPrimary">#303030</Color>

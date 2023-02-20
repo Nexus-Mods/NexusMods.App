@@ -1,6 +1,8 @@
 ﻿using Avalonia;
 using Avalonia.ReactiveUI;
 using Microsoft.Extensions.DependencyInjection;
+using Projektanker.Icons.Avalonia;
+using Projektanker.Icons.Avalonia.MaterialDesign;
 
 namespace NexusMods.App.UI;
 
@@ -14,5 +16,6 @@ public class Startup
         => AppBuilder.Configure(serviceProvider.GetRequiredService<App>)
             .UsePlatformDetect()
             .LogToTrace()
-            .UseReactiveUI();
+            .UseReactiveUI()
+            .WithIcons(c => c.Register<MaterialDesignIconProvider>());
 }

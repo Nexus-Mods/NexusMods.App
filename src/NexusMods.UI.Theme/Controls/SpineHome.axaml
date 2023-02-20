@@ -1,6 +1,6 @@
 ﻿<UserControl
-    d:DesignHeight="450"
-    d:DesignWidth="800"
+    d:DesignHeight="65"
+    d:DesignWidth="65"
     mc:Ignorable="d"
     x:Class="NexusMods.UI.Theme.Controls.SpineHome"
     xmlns="https://github.com/avaloniaui"
@@ -10,25 +10,68 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <UserControl.Styles>
         <!--  Spine Button Styles  -->
-        <Style Selector="Button.Spine">
+        <Style Selector="ToggleButton.Spine">
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="Margin" Value="0" />
             <Setter Property="Padding" Value="0" />
-            <Setter Property="CornerRadius" Value="45" />
             <Setter Property="Background" Value="{DynamicResource TransparentBrush}" />
             <Setter Property="BorderBrush" Value="{DynamicResource ContentSecondaryBrush}" />
             <Setter Property="BorderThickness" Value="1" />
+
+
         </Style>
 
-        <Style Selector="Button.Spine avalonia|Icon">
+        <Style Selector="ToggleButton.Spine /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Width" Value="48" />
+            <Setter Property="Height" Value="48" />
+
+            <Setter Property="CornerRadius" Value="2" />
+
+        </Style>
+
+        <Style Selector="ToggleButton.Spine avalonia|Icon">
             <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryBrush}" />
         </Style>
 
+        <Style Selector="ToggleButton.Spine:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#767676" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BrandWhite}" />
+        </Style>
+
+        <Style Selector="ToggleButton.Spine:pointerover" />
+
+        <Style Selector="ToggleButton.Spine:pointerover avalonia|Icon">
+            <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+        </Style>
+
+        <Style Selector="ToggleButton.Spine:checked avalonia|Icon">
+            <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+        </Style>
+        <!--  Disable the scaling found in Fluent buttons  -->
+        <Style Selector="ToggleButton:pressed">
+            <Setter Property="RenderTransform" Value="scale(1.0)" />
+        </Style>
+
+        <Style Selector="ToggleButton:checked">
+            <Setter Property="RenderTransform" Value="scale(1.0)" />
+        </Style>
+
+        <Style Selector="ToggleButton.Spine:checked /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="CornerRadius" Value="45" />
+
+            <Setter Property="Background" Value="#1E1E1E" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BrandWhite}" />
+            <Setter Property="BoxShadow" Value="0 0 20 1 #66FFFFFF" />
+
+
+        </Style>
+
     </UserControl.Styles>
-    <Button
+    <ToggleButton
         Classes="Spine"
-        Height="48"
-        Width="48">
+        Height="72"
+        Width="72">
         <avalonia:Icon FontSize="20" Value="mdi-home" />
-    </Button>
+    </ToggleButton>
 </UserControl>
