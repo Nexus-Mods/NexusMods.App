@@ -61,6 +61,14 @@
                     Grid.Row="3"
                     IsEnabled="False" />
 
+
+                <controls:SplineGame Grid.Column="2" Grid.Row="1" />
+                <controls:SplineGame Grid.Column="2" Grid.Row="2" />
+                <controls:SplineGame
+                    Grid.Column="2"
+                    Grid.Row="3"
+                    IsEnabled="False" />
+
             </Grid>
         </TabItem>
         <TabItem Header="Game Controls">

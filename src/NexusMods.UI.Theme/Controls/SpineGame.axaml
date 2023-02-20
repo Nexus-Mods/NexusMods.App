@@ -1,0 +1,71 @@
+﻿<UserControl
+    d:DesignHeight="90"
+    d:DesignWidth="90"
+    mc:Ignorable="d"
+    x:Class="NexusMods.UI.Theme.Controls.SplineGame"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Styles>
+        <Style Selector="ToggleButton.Spine">
+            <Setter Property="CornerRadius" Value="45" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+
+        </Style>
+
+        <Style Selector="ToggleButton.Spine /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="CornerRadius" Value="45" />
+        </Style>
+
+        <Style Selector="ToggleButton.Spine Border">
+            <Setter Property="BorderBrush" Value="#28FFFFFF" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+
+        <Style Selector="ToggleButton.Spine:pointerover Border">
+            <Setter Property="Background" Value="#4CFFFFFF" />
+            <Setter Property="BorderBrush" Value="#80FFFFFF" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+
+        <Style Selector="ToggleButton.Spine:checked Border">
+            <Setter Property="Background" Value="#00FFFFFF" />
+            <Setter Property="BorderBrush" Value="#FFFFFF" />
+            <Setter Property="BorderThickness" Value="2" />
+
+            <Setter Property="BoxShadow" Value="0 0 10 0 #66FFFFFF" />
+        </Style>
+
+
+    </UserControl.Styles>
+
+    <ToggleButton
+        Classes="Spine"
+        Height="58"
+        Width="58">
+        <ToggleButton.Template>
+            <ControlTemplate>
+                <Grid>
+                    <Image
+                        Height="48"
+                        OpacityMask=""
+                        Source="avares://NexusMods.UI.Theme/Assets/DesignTime/fantasy_game.png"
+                        Width="48">
+                        <Image.Clip>
+                            <EllipseGeometry Rect="0, 0, 48, 48" />
+                        </Image.Clip>
+                    </Image>
+                    <Border
+                        Background="{DynamicResource TransparentBackground}"
+                        CornerRadius="48"
+                        Height="48"
+                        Opacity="1"
+                        Width="48"
+                        ZIndex="2" />
+                </Grid>
+            </ControlTemplate>
+        </ToggleButton.Template>
+    </ToggleButton>
+</UserControl>
