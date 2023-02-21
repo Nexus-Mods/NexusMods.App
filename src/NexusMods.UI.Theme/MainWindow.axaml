@@ -58,7 +58,10 @@
                     IsEnabled="False" />
 
                 <controls:SpineAdd Grid.Column="3" Grid.Row="1" />
-                <controls:SpineAdd Grid.Column="3" Grid.Row="2" />
+                <controls:SpineAdd
+                    Grid.Column="3"
+                    Grid.Row="2"
+                    IsChecked="True" />
                 <controls:SpineAdd
                     Grid.Column="3"
                     Grid.Row="3"
