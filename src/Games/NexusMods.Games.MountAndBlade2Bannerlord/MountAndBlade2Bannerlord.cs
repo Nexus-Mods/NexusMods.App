@@ -51,7 +51,7 @@ public sealed class MountAndBlade2Bannerlord : AGame,  ISteamGame, IGogGame, IEp
                     {
                         Game = this,
                         Locations = new Dictionary<GameFolderType, AbsolutePath>(GetLocations(locator, installation)),
-                        Version = Version.TryParse(launcherManagerHandler.GetGameVersion(), out var val) ? val : new Version()
+                        Version = Version.TryParse(launcherManagerHandler.GetGameVersion(), out var val) ? val : new Version(),
                     };
                 })
                 .DistinctBy(g => g.Locations[GameFolderType.Game])

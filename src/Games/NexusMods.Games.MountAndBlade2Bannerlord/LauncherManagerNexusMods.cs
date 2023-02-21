@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
-internal sealed class LauncherManagerNexusMods : LauncherManagerHandler
+internal sealed partial class LauncherManagerNexusMods : LauncherManagerHandler
 {
     private readonly ILogger _logger;
     private readonly string _installationPath;
