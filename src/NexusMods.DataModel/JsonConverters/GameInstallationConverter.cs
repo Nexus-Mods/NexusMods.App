@@ -6,12 +6,12 @@ namespace NexusMods.DataModel.JsonConverters;
 
 public class GameInstallationConverter : JsonConverter<GameInstallation>
 {
-    private readonly Dictionary<(GameDomain Slug, Version Version), GameInstallation> _games;
+    private readonly Dictionary<(GameDomain Slug, Version Version, GameStore Store), GameInstallation> _games;
 
     public GameInstallationConverter(IEnumerable<IGame> games)
     {
         _games = games.SelectMany(g => g.Installations.Select(i => (Slug: g.Domain, Install: i)))
-            .ToDictionary(r => (r.Slug, r.Install.Version), r => r.Install);
+            .ToDictionary(r => (r.Slug, r.Install.Version, r.Install.Store), r => r.Install);
     }
     
     public override GameInstallation? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -24,7 +24,11 @@ public class GameInstallationConverter : JsonConverter<GameInstallation>
         var version = JsonSerializer.Deserialize<Version>(ref reader, options)!;
         reader.Read();
 
-        if (_games.TryGetValue((slug, version), out var found)) return found;
+        foreach (var pair in _games)
+        {
+            if (slug == pair.Key.Slug && version == pair.Key.Version)
+                return pair.Value;
+        }
         return new UnknownGame(slug, version).Installations.First();
     }
 

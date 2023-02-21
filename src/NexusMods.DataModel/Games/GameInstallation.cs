@@ -28,6 +28,11 @@ public class GameInstallation
     /// </summary>
     public static GameInstallation Empty => new();
 
+    /// <summary>
+    /// The Store that provides the game
+    /// </summary>
+    public GameStore Store { get; init; } = GameStore.Unknown;
+
 
     /// <summary>
     /// Returns the game name and version as 

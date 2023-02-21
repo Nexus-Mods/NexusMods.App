@@ -24,7 +24,8 @@ public class UnknownGame : IGame
         {
             Game = this,
             Locations = new Dictionary<GameFolderType, AbsolutePath>(),
-            Version = _version
+            Version = _version,
+            Store = GameStore.Unknown,
         }
     };
 

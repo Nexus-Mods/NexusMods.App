@@ -9,7 +9,7 @@ namespace NexusMods.StandardGameLocators;
 
 public class EpicLocator : AGameLocator<EGSHandler, EGSGame, string, IEpicGame>
 {
-    public EpicLocator(ILogger<EpicLocator> logger, AHandler<EGSGame, string> handler) : base(logger, handler)
+    public EpicLocator(ILogger<EpicLocator> logger, AHandler<EGSGame, string> handler) : base(logger, GameStore.Epic, handler)
     {
     }
 

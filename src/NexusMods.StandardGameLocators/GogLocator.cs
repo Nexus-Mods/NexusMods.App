@@ -9,7 +9,7 @@ namespace NexusMods.StandardGameLocators;
 
 public class GogLocator : AGameLocator<GOGHandler, GOGGame, long, IGogGame>
 {
-    public GogLocator(ILogger<GogLocator> logger, AHandler<GOGGame, long> handler) : base(logger, handler)
+    public GogLocator(ILogger<GogLocator> logger, AHandler<GOGGame, long> handler) : base(logger, GameStore.Gog, handler)
     {
     }
 

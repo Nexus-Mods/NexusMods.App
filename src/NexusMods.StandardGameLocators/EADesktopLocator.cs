@@ -9,7 +9,7 @@ namespace NexusMods.StandardGameLocators;
 
 public class EADesktopLocator : AGameLocator<EADesktopHandler, EADesktopGame, string, IEADesktopGame>
 {
-    public EADesktopLocator(ILogger<EADesktopLocator> logger, AHandler<EADesktopGame, string> handler) : base(logger, handler)
+    public EADesktopLocator(ILogger<EADesktopLocator> logger, AHandler<EADesktopGame, string> handler) : base(logger, GameStore.EADesktop, handler)
     {
     }
 

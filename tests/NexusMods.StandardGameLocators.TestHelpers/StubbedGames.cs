@@ -51,7 +51,8 @@ public class StubbedGame : IEADesktopGame, IEpicGame, IOriginGame, ISteamGame, I
                     {
                         { GameFolderType.Game, EnsureFiles(i.Path) }
                     },
-                    Version = Version.Parse($"0.0.{idx}.0")
+                    Version = Version.Parse($"0.0.{idx}.0"),
+                    Store = GameStore.Unknown,
                 });
         }
     }

@@ -9,7 +9,7 @@ namespace NexusMods.StandardGameLocators;
 
 public class SteamLocator : AGameLocator<SteamHandler, SteamGame, int, ISteamGame>
 {
-    public SteamLocator(ILogger<SteamLocator> logger, AHandler<SteamGame, int> handler) : base(logger, handler)
+    public SteamLocator(ILogger<SteamLocator> logger, AHandler<SteamGame, int> handler) : base(logger, GameStore.Steam, handler)
     {
     }
 

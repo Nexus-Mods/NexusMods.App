@@ -21,6 +21,6 @@ public class UniversalStubbedGameLocator<TGame> : IGameLocator
         if (game is not TGame tg)
             yield break;
         
-        yield return new GameLocatorResult(_path, _version ?? new Version(1, 0, 0, 0));
+        yield return new GameLocatorResult(_path, GameStore.Unknown, _version ?? new Version(1, 0, 0, 0));
     }
 }

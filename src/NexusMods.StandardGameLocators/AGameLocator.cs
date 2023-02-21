@@ -11,11 +11,13 @@ where TRecord : class
 where TGame : IGame
 {
     private readonly ILogger _logger;
+    private readonly GameStore _gameStore;
     private readonly AHandler<TRecord,TId> _handler;
 
-    protected AGameLocator(ILogger logger, AHandler<TRecord, TId> handler)
+    protected AGameLocator(ILogger logger, GameStore gameStore, AHandler<TRecord, TId> handler)
     {
         _logger = logger;
+        _gameStore = gameStore;
         _handler = handler;
     }
 
@@ -33,7 +35,7 @@ where TGame : IGame
             }
             else
             {
-                yield return new GameLocatorResult(Path(found));
+                yield return new GameLocatorResult(Path(found), _gameStore);
             }
         }
     }

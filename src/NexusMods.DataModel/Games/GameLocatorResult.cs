@@ -7,5 +7,6 @@ namespace NexusMods.DataModel.Games;
 /// which will stop the rest of the system from trying to find the version by other means (such as file analysis).
 /// </summary>
 /// <param name="Path"></param>
+/// <param name="Store"></param>
 /// <param name="Version"></param>
-public record GameLocatorResult(AbsolutePath Path, Version? Version = null);
+public record GameLocatorResult(AbsolutePath Path, GameStore Store, Version? Version = null);

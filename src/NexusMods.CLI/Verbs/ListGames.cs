@@ -27,8 +27,8 @@ public class ListGames : AVerb
             from install in game.Installations.OrderBy(g => g.Version)
             select install;
         
-        await _renderer.Render(new Table(new[] { "Game", "Version", "Path" },
-            installs.Select(i => new object[] { i.Game, i.Version, i.Locations[GameFolderType.Game]})));
+        await _renderer.Render(new Table(new[] { "Game", "Version", "Path", "Store" },
+            installs.Select(i => new object[] { i.Game, i.Version, i.Locations[GameFolderType.Game], i.Store })));
         
         return 0;
     }
