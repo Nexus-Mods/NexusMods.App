@@ -11,7 +11,7 @@ using NexusMods.FileExtractor;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.DarkestDungeon;
 using NexusMods.Games.Generic;
-using NexusMods.Games.MountAndBladeBannerlord;
+using NexusMods.Games.MountAndBlade2Bannerlord;
 using NexusMods.Games.RedEngine;
 using NexusMods.Games.Reshade;
 using NexusMods.Games.TestHarness;

@@ -7,15 +7,15 @@ using NexusMods.Paths;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
-public class RunBannerlordTool: ITool
+public class RunStandaloneTool: ITool
 {
     private readonly ILogger _logger;
     private readonly LauncherManagerFactory _launcherManagerFactory;
 
-    public string Name => "Run Mount & Blade II: Bannerlord";
+    public string Name => $"Run {MountAndBlade2Bannerlord.DisplayName}";
     public IEnumerable<GameDomain> Domains => new[] { GameDomain.MountAndBlade2Bannerlord };
     
-    public RunBannerlordTool(ILogger<RunBannerlordTool> logger, LauncherManagerFactory launcherManagerFactory)
+    public RunStandaloneTool(ILogger<RunStandaloneTool> logger, LauncherManagerFactory launcherManagerFactory)
     {
         _logger = logger;
         _launcherManagerFactory = launcherManagerFactory;

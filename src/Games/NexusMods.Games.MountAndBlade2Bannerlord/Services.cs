@@ -11,7 +11,7 @@ public static class Services
         services.AddSingleton<IGame, MountAndBlade2Bannerlord>();
         services.AddSingleton<IModInstaller, MountAndBlade2BannerlordModInstaller>();
         services.AddSingleton<LauncherManagerFactory>();
-        services.AddSingleton<ITool, RunBannerlordTool>();
+        services.AddSingleton<ITool, RunStandaloneTool>();
         services.AddSingleton<ITool, RunLauncherTool>();
         return services;
     }

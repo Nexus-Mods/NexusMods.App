@@ -12,6 +12,8 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord;
 /// </summary>
 public sealed class MountAndBlade2Bannerlord : AGame,  ISteamGame, IGogGame, IEpicGame
 {
+    public static string DisplayName => "Mount & Blade II: Bannerlord";
+    
     private readonly IEnumerable<IGameLocator> _gameLocators;
     private readonly LauncherManagerFactory _launcherManagerFactory;
     private IReadOnlyCollection<GameInstallation>? _installations;
@@ -27,7 +29,7 @@ public sealed class MountAndBlade2Bannerlord : AGame,  ISteamGame, IGogGame, IEp
         _launcherManagerFactory = launcherManagerFactory;
     }
 
-    public override string Name => "Mount & Blade II: Bannerlord";
+    public override string Name => DisplayName;
     public override GameDomain Domain => GameDomain.MountAndBlade2Bannerlord;
     public override GamePath PrimaryFile => new(GameFolderType.Game, @"bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.Launcher.exe");
     public GamePath PrimaryStandaloneFile => new(GameFolderType.Game, @"bin\Win64_Shipping_Client\Bannerlord.exe");

@@ -11,7 +11,7 @@ public class RunLauncherTool: ITool
 {
     private readonly ILogger _logger;
 
-    public string Name => "Run Launcher for Mount & Blade II: Bannerlord";
+    public string Name => $"Run Launcher for {MountAndBlade2Bannerlord.DisplayName}";
     public IEnumerable<GameDomain> Domains => new[] { GameDomain.MountAndBlade2Bannerlord };
 
     public RunLauncherTool(ILogger<RunLauncherTool> logger)
