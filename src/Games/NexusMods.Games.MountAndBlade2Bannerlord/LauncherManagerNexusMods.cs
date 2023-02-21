@@ -1,7 +1,7 @@
 ﻿using Bannerlord.LauncherManager;
 using Microsoft.Extensions.Logging;
 
-namespace NexusMods.Games.MountAndBladeBannerlord;
+namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
 internal sealed class LauncherManagerNexusMods : LauncherManagerHandler
 {

@@ -1,10 +1,9 @@
 ﻿using System.Collections.Concurrent;
-using Bannerlord.LauncherManager;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
 using NexusMods.Paths;
 
-namespace NexusMods.Games.MountAndBladeBannerlord;
+namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
 public sealed class LauncherManagerFactory
 {

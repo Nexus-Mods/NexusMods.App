@@ -8,16 +8,16 @@ using NexusMods.DataModel.Games;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
-using NexusMods.Games.MountAndBladeBannerlord.Loadouts;
+using NexusMods.Games.MountAndBlade2Bannerlord.Loadouts;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 
-namespace NexusMods.Games.MountAndBladeBannerlord;
+namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
-internal sealed class MountAndBladeBannerlordModInstaller : IModInstaller
+internal sealed class MountAndBlade2BannerlordModInstaller : IModInstaller
 {
-    public MountAndBladeBannerlordModInstaller(LauncherManagerFactory launcherManagerFactory, IDataStore store)
+    public MountAndBlade2BannerlordModInstaller(LauncherManagerFactory launcherManagerFactory, IDataStore store)
     {
         _launcherManagerFactory = launcherManagerFactory;
         _store = store;
@@ -31,7 +31,7 @@ internal sealed class MountAndBladeBannerlordModInstaller : IModInstaller
     // TODO: We had in mind creating optional mod types (Framework, Gameplay, Assets, etc) that we potentially could map to priorities
     public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
-        if (!installation.Is<MountAndBladeBannerlord>()) return Common.Priority.None;
+        if (!installation.Is<MountAndBlade2Bannerlord>()) return Common.Priority.None;
 
         var launcherManager = _launcherManagerFactory.Get(installation);
         var result = launcherManager.TestModuleContent(files.Select(x => x.Key.ToString()).ToArray());
@@ -43,7 +43,7 @@ internal sealed class MountAndBladeBannerlordModInstaller : IModInstaller
 
     public IEnumerable<AModFile> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
-        if (!installation.Is<MountAndBladeBannerlord>()) return Enumerable.Empty<AModFile>();
+        if (!installation.Is<MountAndBlade2Bannerlord>()) return Enumerable.Empty<AModFile>();
         
         var modFolder = files.Keys.First(m => m.FileName == SubModuleFile).Parent;
         

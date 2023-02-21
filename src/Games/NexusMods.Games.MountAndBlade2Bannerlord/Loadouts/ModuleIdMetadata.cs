@@ -1,7 +1,7 @@
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
 
-namespace NexusMods.Games.MountAndBladeBannerlord.Loadouts;
+namespace NexusMods.Games.MountAndBlade2Bannerlord.Loadouts;
 
 [JsonName("MountAndBladeBannerlord.Loadouts.ModuleIdMetadata")]
 public class ModuleIdMetadata : IModFileMetadata

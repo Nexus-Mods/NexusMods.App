@@ -1,7 +1,7 @@
 ﻿using NexusMods.DataModel.Loadouts;
-using NexusMods.Games.MountAndBladeBannerlord.Loadouts;
+using NexusMods.Games.MountAndBlade2Bannerlord.Loadouts;
 
-namespace NexusMods.Games.MountAndBladeBannerlord.Extensions;
+namespace NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
 
 public static class LoadoutExtensions
 {

@@ -2,14 +2,14 @@
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.ModInstallers;
 
-namespace NexusMods.Games.MountAndBladeBannerlord;
+namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
 public static class Services 
 {
     public static IServiceCollection AddMountAndBladeBannerlord(this IServiceCollection services)
     {
-        services.AddSingleton<IGame, MountAndBladeBannerlord>();
-        services.AddSingleton<IModInstaller, MountAndBladeBannerlordModInstaller>();
+        services.AddSingleton<IGame, MountAndBlade2Bannerlord>();
+        services.AddSingleton<IModInstaller, MountAndBlade2BannerlordModInstaller>();
         services.AddSingleton<LauncherManagerFactory>();
         services.AddSingleton<ITool, RunBannerlordTool>();
         services.AddSingleton<ITool, RunLauncherTool>();

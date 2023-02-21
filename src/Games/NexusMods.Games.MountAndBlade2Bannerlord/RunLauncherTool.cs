@@ -2,17 +2,17 @@
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.Games.MountAndBladeBannerlord.Extensions;
+using NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
 using NexusMods.Paths;
 
-namespace NexusMods.Games.MountAndBladeBannerlord;
+namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
 public class RunLauncherTool: ITool
 {
     private readonly ILogger _logger;
 
     public string Name => "Run Launcher for Mount & Blade II: Bannerlord";
-    public IEnumerable<GameDomain> Domains => new[] { GameDomain.MBBannerlord };
+    public IEnumerable<GameDomain> Domains => new[] { GameDomain.MountAndBlade2Bannerlord };
 
     public RunLauncherTool(ILogger<RunLauncherTool> logger)
     {
@@ -21,7 +21,7 @@ public class RunLauncherTool: ITool
 
     public async Task Execute(Loadout loadout)
     {
-        if (loadout.Installation.Game is not MountAndBladeBannerlord mountAndBladeBannerlord) return;
+        if (loadout.Installation.Game is not MountAndBlade2Bannerlord mountAndBladeBannerlord) return;
         
         var hasBLSE = loadout.HasModuleId("Bannerlord.BLSE");
         var hasBUTRLoader = loadout.HasModuleId("Bannerlord.BUTRLoader");

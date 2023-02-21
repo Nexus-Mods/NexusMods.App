@@ -4,13 +4,13 @@ using NexusMods.Games.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 
-namespace NexusMods.Games.MountAndBladeBannerlord;
+namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
 /// <summary>
 /// Maintained by the BUTR Team
 /// https://github.com/BUTR
 /// </summary>
-public sealed class MountAndBladeBannerlord : AGame,  ISteamGame, IGogGame, IEpicGame
+public sealed class MountAndBlade2Bannerlord : AGame,  ISteamGame, IGogGame, IEpicGame
 {
     private readonly IEnumerable<IGameLocator> _gameLocators;
     private readonly LauncherManagerFactory _launcherManagerFactory;
@@ -20,7 +20,7 @@ public sealed class MountAndBladeBannerlord : AGame,  ISteamGame, IGogGame, IEpi
     public IEnumerable<long> GogIds => new long[] { 1802539526, 1564781494 };
     public IEnumerable<string> EpicCatalogItemId => new[] { "Chickadee" };
 
-    public MountAndBladeBannerlord(ILogger<MountAndBladeBannerlord> logger, IEnumerable<IGameLocator> gameLocators, LauncherManagerFactory launcherManagerFactory)
+    public MountAndBlade2Bannerlord(ILogger<MountAndBlade2Bannerlord> logger, IEnumerable<IGameLocator> gameLocators, LauncherManagerFactory launcherManagerFactory)
         : base(logger, gameLocators)
     {
         _gameLocators = gameLocators;
@@ -28,7 +28,7 @@ public sealed class MountAndBladeBannerlord : AGame,  ISteamGame, IGogGame, IEpi
     }
 
     public override string Name => "Mount & Blade II: Bannerlord";
-    public override GameDomain Domain => GameDomain.MBBannerlord;
+    public override GameDomain Domain => GameDomain.MountAndBlade2Bannerlord;
     public override GamePath PrimaryFile => new(GameFolderType.Game, @"bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.Launcher.exe");
     public GamePath PrimaryStandaloneFile => new(GameFolderType.Game, @"bin\Win64_Shipping_Client\Bannerlord.exe");
 

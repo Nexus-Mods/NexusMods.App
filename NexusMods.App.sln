@@ -83,7 +83,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.Generic", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Benchmarks", "benchmarks\NexusMods.Benchmarks\NexusMods.Benchmarks.csproj", "{CB61A764-B3BB-42C0-8CDB-DBE57FB80DF5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.MountAndBladeBannerlord", "src\Games\NexusMods.Games.MountAndBladeBannerlord\NexusMods.Games.MountAndBladeBannerlord.csproj", "{D8F96987-B284-414D-A1D3-B89C86C3DD67}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.MountAndBlade2Bannerlord", "src\Games\NexusMods.Games.MountAndBlade2Bannerlord\NexusMods.Games.MountAndBlade2Bannerlord.csproj", "{D8F96987-B284-414D-A1D3-B89C86C3DD67}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
