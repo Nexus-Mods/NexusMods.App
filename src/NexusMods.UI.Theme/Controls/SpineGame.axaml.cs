@@ -30,6 +30,7 @@ public partial class SpineGame : UserControl
     
     public SpineGame()
     {
+        AffectsRender<SpineHome>(IsCheckedProperty, SourceProperty);
         InitializeComponent();
         _toggle = this.Find<ToggleButton>("ToggleButton");
     }

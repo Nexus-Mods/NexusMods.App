@@ -9,69 +9,78 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <UserControl.Styles>
-        <!--  Spine Button Styles  -->
         <Style Selector="ToggleButton.Spine">
+            <Setter Property="CornerRadius" Value="45" />
             <Setter Property="HorizontalAlignment" Value="Center" />
-            <Setter Property="Margin" Value="0" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Background" Value="{DynamicResource TransparentBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ContentSecondaryBrush}" />
+        </Style>
+        <Style Selector="ToggleButton.Spine:pressed">
+            <Setter Property="RenderTransform" Value="scale(0.9)" />
+        </Style>
+
+        <Style Selector="ToggleButton.Spine:unchecked Border">
+            <Setter Property="BorderBrush" Value="{DynamicResource ContentSecondary}" />
+            <Setter Property="Background" Value="#01FFFFFF" />
             <Setter Property="BorderThickness" Value="1" />
 
-
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Duration="0:0:0.2" Property="Background" />
+                    <BrushTransition Duration="0:0:0.2" Property="BorderBrush" />
+                    <ThicknessTransition Duration="0:0:0.2" Property="BorderThickness" />
+                    <BoxShadowsTransition Duration="0:0:0.2" Property="BoxShadow" />
+                </Transitions>
+            </Setter>
         </Style>
 
-        <Style Selector="ToggleButton.Spine /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Width" Value="48" />
-            <Setter Property="Height" Value="48" />
-
-            <Setter Property="CornerRadius" Value="2" />
-
+        <Style Selector="ToggleButton.Spine:unchecked:pointerover Border">
+            <Setter Property="Background" Value="#4CFFFFFF" />
+            <Setter Property="BorderBrush" Value="#FFFFFF" />
+            <Setter Property="BorderThickness" Value="1" />
         </Style>
 
-        <Style Selector="ToggleButton.Spine avalonia|Icon">
+        <Style Selector="ToggleButton.Spine:checked Border">
+            <Setter Property="Background" Value="#00FFFFFF" />
+            <Setter Property="BorderBrush" Value="#FFFFFF" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="BoxShadow" Value="0 0 10 0 #66FFFFFF" />
+        </Style>
+
+        <Style Selector="ToggleButton.Spine:checked:pointerover Border">
+            <Setter Property="Background" Value="#80FFFFFF" />
+            <Setter Property="BorderBrush" Value="#FFFFFF" />
+            <Setter Property="BorderThickness" Value="2" />
+        </Style>
+
+        <Style Selector="ToggleButton.Spine:unchecked avalonia|Icon">
             <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryBrush}" />
-        </Style>
-
-        <Style Selector="ToggleButton.Spine:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="#767676" />
-            <Setter Property="BorderBrush" Value="{DynamicResource BrandWhite}" />
-        </Style>
-
-        <Style Selector="ToggleButton.Spine:pointerover" />
-
-        <Style Selector="ToggleButton.Spine:pointerover avalonia|Icon">
-            <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
         </Style>
 
         <Style Selector="ToggleButton.Spine:checked avalonia|Icon">
             <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
         </Style>
-        <!--  Disable the scaling found in Fluent buttons  -->
-        <Style Selector="ToggleButton:pressed">
-            <Setter Property="RenderTransform" Value="scale(1.0)" />
-        </Style>
-
-        <Style Selector="ToggleButton:checked">
-            <Setter Property="RenderTransform" Value="scale(1.0)" />
-        </Style>
-
-        <Style Selector="ToggleButton.Spine:checked /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="CornerRadius" Value="45" />
-
-            <Setter Property="Background" Value="#1E1E1E" />
-            <Setter Property="BorderThickness" Value="2" />
-            <Setter Property="BorderBrush" Value="{DynamicResource BrandWhite}" />
-            <Setter Property="BoxShadow" Value="0 0 20 1 #66FFFFFF" />
-
-
-        </Style>
-
     </UserControl.Styles>
+
     <ToggleButton
         Classes="Spine"
-        Height="72"
-        Width="72">
-        <avalonia:Icon FontSize="20" Value="mdi-home" />
+        Height="64"
+        Width="64"
+        x:Name="ToggleButton">
+        <ToggleButton.Template>
+            <ControlTemplate>
+                <Grid>
+                    <avalonia:Icon
+                        FontSize="20"
+                        HorizontalAlignment="Center"
+                        Margin="0"
+                        Padding="0"
+                        Value="mdi-home"
+                        VerticalAlignment="Center" />
+                    <Border
+                        CornerRadius="48"
+                        Height="48"
+                        Width="48" />
+                </Grid>
+            </ControlTemplate>
+        </ToggleButton.Template>
     </ToggleButton>
 </UserControl>

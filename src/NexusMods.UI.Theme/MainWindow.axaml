@@ -48,7 +48,10 @@
                     Text="Disabled" />
 
                 <controls:SpineHome Grid.Column="1" Grid.Row="1" />
-                <controls:SpineHome Grid.Column="1" Grid.Row="2" />
+                <controls:SpineHome
+                    Grid.Column="1"
+                    Grid.Row="2"
+                    IsChecked="True" />
                 <controls:SpineHome
                     Grid.Column="1"
                     Grid.Row="3"
