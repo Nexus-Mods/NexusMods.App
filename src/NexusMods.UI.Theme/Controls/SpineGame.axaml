@@ -55,8 +55,8 @@
 
     <ToggleButton
         Classes="Spine"
-        Height="58"
-        Width="58"
+        Height="64"
+        Width="64"
         x:Name="ToggleButton">
         <ToggleButton.Template>
             <ControlTemplate>
