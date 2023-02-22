@@ -1,5 +1,4 @@
 ﻿using Avalonia;
-using Material.Icons.Avalonia;
 using Projektanker.Icons.Avalonia;
 using Projektanker.Icons.Avalonia.MaterialDesign;
 
