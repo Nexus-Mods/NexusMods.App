@@ -17,7 +17,7 @@ public class Startup
         container.AddSingleton<TemporaryFileManager>();
         container.AddSingleton<HttpClient>();
         container.AddSingleton<LocalHttpServer>();
-        container.AddNexusWebApi();
+        container.AddNexusWebApi(true);
         container.AddDataModel();
     }
     
