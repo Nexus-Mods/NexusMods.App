@@ -7,6 +7,7 @@
     mc:Ignorable="d"
     x:Class="NexusMods.UI.Theme.Sandbox.MainWindow"
     xmlns="https://github.com/avaloniaui"
+    xmlns:buttons="clr-namespace:NexusMods.UI.Theme.Controls.Spine.Buttons;assembly=NexusMods.UI.Theme"
     xmlns:controls="clr-namespace:NexusMods.UI.Theme.Controls;assembly=NexusMods.UI.Theme"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
@@ -47,7 +48,7 @@
                     Grid.Row="3"
                     Text="Disabled" />
 
-                <controls:SpineHome Grid.Column="1" Grid.Row="1" />
+                <buttons:Home Grid.Column="1" Grid.Row="1" />
             </Grid>
         </TabItem>
         <TabItem Header="Game Controls">

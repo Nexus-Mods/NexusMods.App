@@ -2,9 +2,9 @@
     d:DesignHeight="90"
     d:DesignWidth="90"
     mc:Ignorable="d"
-    x:Class="NexusMods.UI.Theme.Controls.SpineGame"
+    x:Class="NexusMods.UI.Theme.Controls.Spine.Buttons.Game"
     xmlns="https://github.com/avaloniaui"
-    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:buttons="clr-namespace:NexusMods.UI.Theme.Controls.Spine.Buttons"
     xmlns:controls="clr-namespace:NexusMods.UI.Theme.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -63,7 +63,7 @@
                 <Grid>
                     <Image
                         Height="48"
-                        Source="{Binding $parent[controls:SpineGame].Source, Mode=OneWay}"
+                        Source="{Binding $parent[buttons:Game].Source, Mode=OneWay}"
                         Width="48"
                         x:Name="GameImage">
                         <Image.Clip>

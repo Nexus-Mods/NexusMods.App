@@ -11,6 +11,7 @@
     x:TypeArguments="vm:MainWindowViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:buttons="clr-namespace:NexusMods.UI.Theme.Controls.Spine.Buttons;assembly=NexusMods.UI.Theme"
     xmlns:controls="clr-namespace:NexusMods.UI.Theme.Controls;assembly=NexusMods.UI.Theme"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -68,14 +69,14 @@
             Grid.Column="0"
             Grid.Row="1"
             Margin="0,20">
-            <controls:SpineHome />
+            <buttons:Home />
             <Border
                 BorderBrush="{DynamicResource StructuralBorderBrush}"
                 BorderThickness="0,2,0,0"
                 Margin="0,16"
                 Width="48" />
-            <controls:SpineAdd />
-            <controls:SpineGame />
+            <buttons:Add />
+            <buttons:Game />
         </StackPanel>
 
         <StackPanel

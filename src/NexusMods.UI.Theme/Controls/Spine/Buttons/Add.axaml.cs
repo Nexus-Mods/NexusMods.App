@@ -3,24 +3,15 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Data;
 using Avalonia.Markup.Xaml;
-using Avalonia.Media;
 
-namespace NexusMods.UI.Theme.Controls;
+namespace NexusMods.UI.Theme.Controls.Spine.Buttons;
 
-public partial class SpineGame : UserControl
+public partial class Add : UserControl
 {
-    public static readonly StyledProperty<IImage> SourceProperty = AvaloniaProperty.Register<SpineGame, IImage>(nameof(Source));
-    
-    public static readonly DirectProperty<SpineGame, bool?> IsCheckedProperty = AvaloniaProperty.RegisterDirect<SpineGame, bool?>(nameof(IsChecked),
+    public static readonly DirectProperty<Add, bool?> IsCheckedProperty = AvaloniaProperty.RegisterDirect<Add, bool?>(nameof(IsChecked),
         x => x._toggle?.IsChecked, (x, v) => x._toggle!.IsChecked = v, unsetValue: false, defaultBindingMode: BindingMode.TwoWay);
 
     private readonly ToggleButton? _toggle;
-
-    public IImage Source
-    {
-        get => GetValue(SourceProperty);
-        set => SetValue(SourceProperty, value);
-    }
 
     public bool? IsChecked
     {
@@ -28,9 +19,8 @@ public partial class SpineGame : UserControl
         set => SetValue(IsCheckedProperty, value);
     }
     
-    public SpineGame()
-    {
-        AffectsRender<SpineHome>(IsCheckedProperty, SourceProperty);
+    public Add()    {
+        AffectsRender<Add>(IsCheckedProperty);
         InitializeComponent();
         _toggle = this.Find<ToggleButton>("ToggleButton");
     }

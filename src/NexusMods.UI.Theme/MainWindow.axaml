@@ -7,6 +7,7 @@
     mc:Ignorable="d"
     x:Class="NexusMods.UI.Theme.MainWindow"
     xmlns="https://github.com/avaloniaui"
+    xmlns:buttons="clr-namespace:NexusMods.UI.Theme.Controls.Spine.Buttons"
     xmlns:controls="clr-namespace:NexusMods.UI.Theme.Controls;assembly=NexusMods.UI.Theme"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
@@ -47,37 +48,37 @@
                     Grid.Row="3"
                     Text="Disabled" />
 
-                <controls:SpineHome Grid.Column="1" Grid.Row="1" />
-                <controls:SpineHome
+                <buttons:Home Grid.Column="1" Grid.Row="1" />
+                <buttons:Home
                     Grid.Column="1"
                     Grid.Row="2"
                     IsChecked="True" />
-                <controls:SpineHome
+                <buttons:Home
                     Grid.Column="1"
                     Grid.Row="3"
                     IsEnabled="False" />
 
-                <controls:SpineAdd Grid.Column="3" Grid.Row="1" />
-                <controls:SpineAdd
+                <buttons:Add Grid.Column="3" Grid.Row="1" />
+                <buttons:Add
                     Grid.Column="3"
                     Grid.Row="2"
                     IsChecked="True" />
-                <controls:SpineAdd
+                <buttons:Add
                     Grid.Column="3"
                     Grid.Row="3"
                     IsEnabled="False" />
 
 
-                <controls:SpineGame
+                <buttons:Game
                     Grid.Column="2"
                     Grid.Row="1"
                     Source="avares://NexusMods.UI.Theme/Assets/DesignTime/cyberpunk_game.png" />
-                <controls:SpineGame
+                <buttons:Game
                     Grid.Column="2"
                     Grid.Row="2"
                     IsChecked="True"
                     Source="avares://NexusMods.UI.Theme/Assets/DesignTime/cyberpunk_game.png" />
-                <controls:SpineGame
+                <buttons:Game
                     Grid.Column="2"
                     Grid.Row="3"
                     IsEnabled="False"

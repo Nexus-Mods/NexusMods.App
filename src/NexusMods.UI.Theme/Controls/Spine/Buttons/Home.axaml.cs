@@ -3,13 +3,12 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Data;
 using Avalonia.Markup.Xaml;
-using Avalonia.Media;
 
-namespace NexusMods.UI.Theme.Controls;
+namespace NexusMods.UI.Theme.Controls.Spine.Buttons;
 
-public partial class SpineHome : UserControl
+public partial class Home : UserControl
 {
-    public static readonly DirectProperty<SpineHome, bool?> IsCheckedProperty = AvaloniaProperty.RegisterDirect<SpineHome, bool?>(nameof(IsChecked),
+    public static readonly DirectProperty<Home, bool?> IsCheckedProperty = AvaloniaProperty.RegisterDirect<Home, bool?>(nameof(IsChecked),
         x => x._toggle?.IsChecked, (x, v) => x._toggle!.IsChecked = v, unsetValue: false, defaultBindingMode: BindingMode.TwoWay);
 
     private readonly ToggleButton? _toggle;
@@ -20,9 +19,9 @@ public partial class SpineHome : UserControl
         set => SetValue(IsCheckedProperty, value);
     }
     
-    public SpineHome()
+    public Home()
     {
-        AffectsRender<SpineHome>(IsCheckedProperty);
+        AffectsRender<Home>(IsCheckedProperty);
         InitializeComponent();
         _toggle = this.Find<ToggleButton>("ToggleButton");
     }

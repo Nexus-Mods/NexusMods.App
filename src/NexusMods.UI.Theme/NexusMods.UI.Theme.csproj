@@ -55,6 +55,18 @@
       <DependentUpon>MainWindow.axaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Controls\Spine\Buttons\Add.axaml.cs">
+      <DependentUpon>SpineAdd.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\Spine\Buttons\Game.axaml.cs">
+      <DependentUpon>SpineGame.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\Spine\Buttons\Home.axaml.cs">
+      <DependentUpon>SpineHome.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

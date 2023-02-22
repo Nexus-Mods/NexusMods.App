@@ -2,10 +2,10 @@
     d:DesignHeight="65"
     d:DesignWidth="65"
     mc:Ignorable="d"
-    x:Class="NexusMods.UI.Theme.Controls.SpineHome"
+    x:Class="NexusMods.UI.Theme.Controls.Spine.Buttons.Add"
     xmlns="https://github.com/avaloniaui"
-    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <UserControl.Styles>
@@ -21,6 +21,7 @@
             <Setter Property="BorderBrush" Value="{DynamicResource ContentSecondary}" />
             <Setter Property="Background" Value="#01FFFFFF" />
             <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderDashArray" Value="2, 2" />
 
             <Setter Property="Transitions">
                 <Transitions>
@@ -34,14 +35,16 @@
 
         <Style Selector="ToggleButton.Spine:unchecked:pointerover Border">
             <Setter Property="Background" Value="#4CFFFFFF" />
-            <Setter Property="BorderBrush" Value="#FFFFFF" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ContentSecondaryBrush}" />
             <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderDashArray" Value="0, 0" />
         </Style>
 
         <Style Selector="ToggleButton.Spine:checked Border">
             <Setter Property="Background" Value="#00FFFFFF" />
             <Setter Property="BorderBrush" Value="#FFFFFF" />
             <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="BorderDashArray" Value="0, 0" />
             <Setter Property="BoxShadow" Value="0 0 10 0 #66FFFFFF" />
         </Style>
 
@@ -51,11 +54,11 @@
             <Setter Property="BorderThickness" Value="2" />
         </Style>
 
-        <Style Selector="ToggleButton.Spine:unchecked avalonia|Icon">
+        <Style Selector="ToggleButton.Spine:unchecked icons|Icon">
             <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryBrush}" />
         </Style>
 
-        <Style Selector="ToggleButton.Spine:checked avalonia|Icon">
+        <Style Selector="ToggleButton.Spine:checked icons|Icon">
             <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
         </Style>
     </UserControl.Styles>
@@ -68,12 +71,12 @@
         <ToggleButton.Template>
             <ControlTemplate>
                 <Grid>
-                    <avalonia:Icon
+                    <icons:Icon
                         FontSize="20"
                         HorizontalAlignment="Center"
                         Margin="0"
                         Padding="0"
-                        Value="mdi-home"
+                        Value="mdi-plus"
                         VerticalAlignment="Center" />
                     <Border
                         CornerRadius="48"
