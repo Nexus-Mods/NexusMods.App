@@ -1,4 +1,5 @@
 using NexusMods.Paths.HighPerformance.Backports.System.Globalization;
+using static NexusMods.Paths.Tests.New.Helpers.TestStringHelpers;
 
 namespace NexusMods.Paths.Tests.New.Conversions;
 
@@ -7,8 +8,6 @@ namespace NexusMods.Paths.Tests.New.Conversions;
 /// </summary>
 public class VectorisedChangeCase
 {
-    private static Random _random = new Random();
-    
     [Fact]
     public void Vectorised_ToUpper() => Vectorised_ToUpper_Common(RandomStringLower);
 
@@ -57,15 +56,4 @@ public class VectorisedChangeCase
         }
     }
 
-    private static string RandomString(int length, string charSet)
-    {
-        return new string(Enumerable.Repeat(charSet, length)
-            .Select(s => s[_random.Next(s.Length)]).ToArray());
-    }
-    
-    private static string RandomStringUpper(int length) => RandomString(length, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-    private static string RandomStringLower(int length) => RandomString(length, "abcdefghijklmnopqrstuvwxyz");
-    
-    private static string RandomStringUpperWithEmoji(int length) => RandomString(length, "ABCDEFGHIJKLMNOPQRSTUVWXYZ⚠️🚦🔺🏒😕🏞🖌🖕🌷☠⛩🍸👳🍠🚦📟💦🚏🌥🏪🌖😱");
-    private static string RandomStringLowerWithEmoji(int length) => RandomString(length, "abcdefghijklmnopqrstuvwxyz⚠️🚦🔺🏒😕🏞🖌🖕🌷☠⛩🍸👳🍠🚦📟💦🚏🌥🏪🌖😱");
 }
