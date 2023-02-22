@@ -21,7 +21,7 @@
 
     <TabControl>
         <TabItem Header="Main">
-            <Grid ColumnDefinitions="200, 50, 50, 50, 50" RowDefinitions="20, 50, 50, 50, 50 50">
+            <Grid ColumnDefinitions="200, 70, 70, 70, 70" RowDefinitions="20, 70, 70, 70, 70 70">
                 <TextBlock
                     Grid.Column="1"
                     Grid.Row="0"
@@ -69,20 +69,12 @@
                     IsEnabled="False" />
 
 
-                <buttons:Game
-                    Grid.Column="2"
-                    Grid.Row="1"
-                    Source="avares://NexusMods.UI.Theme/Assets/DesignTime/cyberpunk_game.png" />
-                <buttons:Game
-                    Grid.Column="2"
-                    Grid.Row="2"
-                    IsChecked="True"
-                    Source="avares://NexusMods.UI.Theme/Assets/DesignTime/cyberpunk_game.png" />
+                <buttons:Game Grid.Column="2" Grid.Row="1" />
+                <buttons:Game Grid.Column="2" Grid.Row="2" />
                 <buttons:Game
                     Grid.Column="2"
                     Grid.Row="3"
-                    IsEnabled="False"
-                    Source="avares://NexusMods.UI.Theme/Assets/DesignTime/fantasy_game.png" />
+                    IsEnabled="False" />
 
             </Grid>
         </TabItem>

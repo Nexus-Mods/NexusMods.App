@@ -8,7 +8,6 @@
     x:Class="NexusMods.UI.Theme.Sandbox.MainWindow"
     xmlns="https://github.com/avaloniaui"
     xmlns:buttons="clr-namespace:NexusMods.UI.Theme.Controls.Spine.Buttons;assembly=NexusMods.UI.Theme"
-    xmlns:controls="clr-namespace:NexusMods.UI.Theme.Controls;assembly=NexusMods.UI.Theme"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"

@@ -1,4 +1,5 @@
 ﻿using Avalonia;
+using Avalonia.ReactiveUI;
 using Projektanker.Icons.Avalonia;
 using Projektanker.Icons.Avalonia.MaterialDesign;
 
@@ -18,6 +19,7 @@ static class Program
     {
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
+            .UseReactiveUI()
             .LogToTrace()
             .WithIcons(c => c.Register<MaterialDesignIconProvider>());
     }

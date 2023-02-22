@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   
   <!-- NuGet Package Shared Details -->
-  <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+  <!-- <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" /> -->
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -30,17 +30,20 @@
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.0.0-preview4" />
     <PackageReference Include="Avalonia.Controls.TreeDataGrid" Version="11.0.0-preview4" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0-preview4" />
     <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0-preview4" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview4" />
     <PackageReference Include="Avalonia.Themes.Simple" Version="11.0.0-preview4" />
     <PackageReference Include="Avalonia.Desktop" Version="11.0.0-preview4" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.0-preview4" />
+    <PackageReference Include="ReactiveUI.Fody" Version="18.4.22" />
     <PackageReference Include="XamlNameReferenceGenerator" Version="1.6.1" />
     <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="6.3.0-preview4" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Controls\Spine\Buttons\TestingData" />
     <Folder Include="Fonts\Montserrat" />
   </ItemGroup>
 

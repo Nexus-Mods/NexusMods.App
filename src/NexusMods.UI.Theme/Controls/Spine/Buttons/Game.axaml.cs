@@ -1,43 +1,33 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Mixins;
 using Avalonia.Controls.Primitives;
 using Avalonia.Data;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using Avalonia.ReactiveUI;
+using Avalonia.VisualTree;
+using ReactiveUI;
 
 namespace NexusMods.UI.Theme.Controls.Spine.Buttons;
 
-public partial class Game : UserControl
+public partial class Game : ReactiveUserControl<GameViewModel>
 {
-    public static readonly StyledProperty<IImage> SourceProperty = AvaloniaProperty.Register<Game, IImage>(nameof(Source));
-    
-    public static readonly DirectProperty<Game, bool?> IsCheckedProperty = AvaloniaProperty.RegisterDirect<Game, bool?>(nameof(IsChecked),
-        x => x._toggle?.IsChecked, (x, v) => x._toggle!.IsChecked = v, unsetValue: false, defaultBindingMode: BindingMode.TwoWay);
+    private Image? _image;
 
-    private readonly ToggleButton? _toggle;
-
-    public IImage Source
-    {
-        get => GetValue(SourceProperty);
-        set => SetValue(SourceProperty, value);
-    }
-
-    public bool? IsChecked
-    {
-        get => GetValue(IsCheckedProperty);
-        set => SetValue(IsCheckedProperty, value);
-    }
-    
     public Game()
     {
-        AffectsRender<Home>(IsCheckedProperty, SourceProperty);
         InitializeComponent();
-        _toggle = this.Find<ToggleButton>("ToggleButton");
+        this.WhenActivated(disposables =>
+        {
+            _image = this.FindDescendantOfType<Image>();
+            this.OneWayBind(ViewModel, vm => vm.Image, v => v._image.Source)
+                .DisposeWith(disposables);
+            this.OneWayBind(ViewModel, vm => vm.IsActive, v => v.Toggle.IsChecked)
+                .DisposeWith(disposables);
+            this.BindCommand(ViewModel, vm => vm.Click, v => v.Toggle.Command)
+                .DisposeWith(disposables);
+        });
     }
 
-
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }
