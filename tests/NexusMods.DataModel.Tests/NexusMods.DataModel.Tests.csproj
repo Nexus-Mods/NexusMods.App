@@ -19,4 +19,10 @@
       </None>
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Update="FluentAssertions" Version="6.10.0" />
+      <PackageReference Update="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0-preview.1.23110.8" />
+      <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.5.0" />
+    </ItemGroup>
+
 </Project>
