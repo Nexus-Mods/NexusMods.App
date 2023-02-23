@@ -56,7 +56,7 @@ Further Reading: [Comparison of File Management Systems](/docs/ComparisonOfFileM
 
 **Q:** Company product? Is this going closed source?
 
-**A:** Absolutely not, modding tools should be free, and the Nexus Mods App will always be open source (GPL3). But we also want to use this app as a way to get tools into the hands of modders and users. Instead of publishing only a download API, we want to give users a download CLI tool. Once file uploading is rewroked on the site, this repo will contain the code and CLI tools required for authenticating with the Nexus and uploading files via a CLI (and eventually a UI). In short, this is us getting serious about supporting (and leading) the desktop side of modding, not just the file hosting side. 
+**A:** Absolutely not, modding tools should be free, and the Nexus Mods App will always be open source (GPL3). But we also want to use this app as a way to get tools into the hands of modders and users. Instead of publishing only a download API, we want to give users a download CLI tool. Once file uploading is reworked on the site, this repo will contain the code and CLI tools required for authenticating with the Nexus and uploading files via a CLI (and eventually a UI). In short, this is us getting serious about supporting (and leading) the desktop side of modding, not just the file hosting side. 
 
 
 **Q:** I see tests run on Linux, Windows and OSX, are you targeting all those platforms?
