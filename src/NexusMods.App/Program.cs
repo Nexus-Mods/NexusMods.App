@@ -27,22 +27,7 @@ var host = Host.CreateDefaultBuilder(Environment.GetCommandLineArgs())
     .ConfigureLogging(AddLogging)
     .ConfigureServices((_, services) =>
     {
-        services.AddCLI()
-            .AddUI()
-            .AddFileExtractors()
-            .AddDataModel()
-            .AddBethesdaGameStudios()
-            .AddRedEngineGames()
-            .AddGenericGameSupport()
-            .AddReshade()
-            .AddDarkestDungeon()
-            .AddStandardGameLocators()
-            .AddRenderers()
-            .AddNexusWebApi()
-            .AddAdvancedHttpDownloader()
-            .AddTestHarness();
-
-        services.AddSingleton<HttpClient>();
+        services.AddApp();
     }).Build();
 
 if (args.Length > 0)

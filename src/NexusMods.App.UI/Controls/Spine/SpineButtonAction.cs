@@ -9,6 +9,6 @@ public enum Type
     Add
 }
 
-public record SpineButtonAction(Type Type, IGame? Game)
+public record SpineButtonAction(Type Type, IGame? Game = null)
 {
 }

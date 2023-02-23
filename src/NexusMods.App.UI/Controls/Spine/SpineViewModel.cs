@@ -18,13 +18,10 @@ namespace NexusMods.App.UI.Controls.Spine;
 public class SpineViewModel : AViewModel
 {
     private readonly IDataStore _dataStore;
-    
-    [Reactive]
-    public SpineButtonViewModel Home { get; set; }
-    
-    [Reactive]
-    public SpineButtonViewModel Add { get; set; }
-    
+
+    public SpineButtonViewModel Home { get; } = new();
+
+    public SpineButtonViewModel Add { get; } = new();
 
     private ReadOnlyObservableCollection<GameViewModel> _game;
     public ReadOnlyObservableCollection<GameViewModel> Games => _game;
@@ -69,6 +66,18 @@ public class SpineViewModel : AViewModel
                 .Bind(out _game)
                 .Subscribe()
                 .DisposeWith(disposables);
+            
+            Home.Click = ReactiveCommand.Create(() =>
+            {
+                _logger.LogTrace("Home selected");
+                _actions.OnNext(new SpineButtonAction(Type.Home));
+            });
+            
+            Add.Click = ReactiveCommand.Create(() =>
+            {
+                _logger.LogTrace("Add selected");
+                _actions.OnNext(new SpineButtonAction(Type.Add));
+            });
 
             Activations.Subscribe(HandleActivation)
                 .DisposeWith(disposables);

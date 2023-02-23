@@ -1,13 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <XunitStartupAssembly>NexusMods.UI.Theme.Tests</XunitStartupAssembly>
-    </PropertyGroup>
-
-    <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+
         <IsPackable>false</IsPackable>
     </PropertyGroup>
 
@@ -26,10 +23,15 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Games\NexusMods.Games.RedEngine\NexusMods.Games.RedEngine.csproj" />
       <ProjectReference Include="..\..\src\NexusMods.App.UI\NexusMods.App.UI.csproj" />
-      <ProjectReference Include="..\..\src\NexusMods.UI.Theme\NexusMods.UI.Theme.csproj" />
+      <ProjectReference Include="..\..\src\NexusMods.App\NexusMods.App.csproj" />
       <ProjectReference Include="..\NexusMods.StandardGameLocators.TestHelpers\NexusMods.StandardGameLocators.TestHelpers.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Resources\cyberpunk2077.1.61.zip">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

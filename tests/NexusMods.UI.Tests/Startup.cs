@@ -1,18 +1,21 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Games.RedEngine;
+using NexusMods.App;
+using NexusMods.DataModel;
+using NexusMods.FileExtractor;
+using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.DependencyInjection;
 using Xunit.DependencyInjection.Logging;
 
-namespace NexusMods.UI.Theme.Tests;
+namespace NexusMods.UI.Tests;
 
 public class Startup
 {
     public void ConfigureServices(IServiceCollection container)
     {
-        container.AddUniversalGameLocator<Cyberpunk2077>(new Version("1.61"));
-        container.AddRedEngineGames();
+        container.AddApp()
+            .AddSingleton<AvaloniaApp>();
     }
     
     public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>

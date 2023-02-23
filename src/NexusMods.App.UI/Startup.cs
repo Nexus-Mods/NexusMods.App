@@ -12,7 +12,7 @@ public class Startup
     public static void Main(IServiceProvider provider, string[] args) => BuildAvaloniaApp(provider)
         .StartWithClassicDesktopLifetime(args);
 
-    private static AppBuilder BuildAvaloniaApp(IServiceProvider serviceProvider)
+    public static AppBuilder BuildAvaloniaApp(IServiceProvider serviceProvider)
         => AppBuilder.Configure(serviceProvider.GetRequiredService<App>)
             .UsePlatformDetect()
             .LogToTrace()
