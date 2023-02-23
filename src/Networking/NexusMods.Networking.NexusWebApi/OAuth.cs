@@ -1,25 +1,11 @@
-﻿using DynamicData;
-using GameFinder.Common;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Interprocess;
-using NexusMods.Networking.NexusWebApi.DTOs;
 using NexusMods.Networking.NexusWebApi.Types;
-using System;
-using System.Buffers.Binary;
-using System.Collections.Generic;
-using System.CommandLine.Parsing;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace NexusMods.Networking.NexusWebApi;
@@ -105,15 +91,17 @@ public class OAuth
     private readonly ILogger<OAuth> _logger;
     private readonly HttpClient _http;
     private readonly IOSInterop _os;
+    private readonly IIDGenerator _idGen;
 
     /// <summary>
     /// constructor
     /// </summary>
-    public OAuth(ILogger<OAuth> logger, HttpClient http, IOSInterop os, IMessageConsumer<NXMUrlMessage> message)
+    public OAuth(ILogger<OAuth> logger, HttpClient http, IIDGenerator idGen, IOSInterop os, IMessageConsumer<NXMUrlMessage> message)
     {
         _logger = logger;
         _http = http;
         _os = os;
+        _idGen = idGen;
         message.Messages.Subscribe(OnNXMUrl);
     }
 
@@ -126,13 +114,13 @@ public class OAuth
     {
         var completionSource = new TaskCompletionSource<JwtTokenReply>();
 
-        var state = MakeUUID();
+        var state = _idGen.UUIDv4();
 
         // see https://www.rfc-editor.org/rfc/rfc7636#section-4.1
-        var verifier = ToBase64(MakeUUID().Replace("-", ""));
+        var verifier = _idGen.UUIDv4().Replace("-", "").ToBase64();
         // see https://www.rfc-editor.org/rfc/rfc7636#section-4.2
         using SHA256 sha256 = SHA256.Create();
-        var challenge = ToBase64(sha256.ComputeHash(Encoding.UTF8.GetBytes(verifier)));
+        var challenge = sha256.ComputeHash(Encoding.UTF8.GetBytes(verifier)).ToBase64();
 
         // callback will be invoked if/when we heard back from the site
         _callbacks[state] = (Exception? ex, string code) =>
@@ -143,7 +131,7 @@ public class OAuth
                 }
                 else
                 {
-                    AuthorizeToken(verifier, code).ContinueWith(reply =>
+                    AuthorizeToken(verifier, code, CancellationToken.None).ContinueWith(reply =>
                     {
                         if (reply.Exception != null)
                         {
@@ -169,8 +157,9 @@ public class OAuth
     /// request a new access token
     /// </summary>
     /// <param name="refreshToken">the refresh token</param>
+    /// <param name="cancel"></param>
     /// <returns>a new token reply</returns>
-    public async Task<JwtTokenReply> RefreshToken(string refreshToken)
+    public async Task<JwtTokenReply> RefreshToken(string refreshToken, CancellationToken cancel)
     {
         var request = new Dictionary<string, string>
         {
@@ -181,12 +170,12 @@ public class OAuth
 
         var content = new FormUrlEncodedContent(request);
 
-        var response = await _http.PostAsync($"{OAuthUrl}/token", content);
-        var responseString = await response.Content.ReadAsStringAsync();
+        var response = await _http.PostAsync($"{OAuthUrl}/token", content, cancel);
+        var responseString = await response.Content.ReadAsStringAsync(cancel);
         return JsonSerializer.Deserialize<JwtTokenReply>(responseString);
     }
 
-    private async Task<JwtTokenReply> AuthorizeToken(string verifier, string code)
+    private async Task<JwtTokenReply> AuthorizeToken(string verifier, string code, CancellationToken cancel)
     {
         var request = new Dictionary<string, string> {
             { "grant_type", "authorization_code" },
@@ -198,8 +187,8 @@ public class OAuth
 
         var content = new FormUrlEncodedContent(request);
 
-        var response = await _http.PostAsync($"{OAuthUrl}/token", content);
-        var responseString = await response.Content.ReadAsStringAsync();
+        var response = await _http.PostAsync($"{OAuthUrl}/token", content, cancel);
+        var responseString = await response.Content.ReadAsStringAsync(cancel);
         return JsonSerializer.Deserialize<JwtTokenReply>(responseString);
     }
 
@@ -217,21 +206,6 @@ public class OAuth
                 _logger.LogWarning("received unexpected oauth callback");
             }
         }
-    }
-
-    private string MakeUUID()
-    {
-        return Guid.NewGuid().ToString();
-    }
-
-    private string ToBase64(byte[] input)
-    {
-        return Convert.ToBase64String(input);
-    }
-
-    private string ToBase64(string input)
-    {
-        return ToBase64(Encoding.UTF8.GetBytes(input));
     }
 
     private string SanitizeBase64(string input)

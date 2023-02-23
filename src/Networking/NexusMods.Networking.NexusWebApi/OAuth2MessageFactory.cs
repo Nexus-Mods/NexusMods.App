@@ -66,14 +66,14 @@ internal class TokenUserInfo
 /// </summary>
 public class OAuth2MessageFactory : IAuthenticatingMessageFactory
 {
-    private readonly ILogger<ApiKeyMessageFactory> _logger;
+    private readonly ILogger<OAuth2MessageFactory> _logger;
     private readonly IDataStore _store;
     private readonly OAuth _auth;
 
     /// <summary>
     /// constructor
     /// </summary>
-    public OAuth2MessageFactory(ILogger<ApiKeyMessageFactory> logger, IDataStore store, OAuth auth)
+    public OAuth2MessageFactory(ILogger<OAuth2MessageFactory> logger, IDataStore store, OAuth auth)
     {
         _logger = logger;
         _store = store;
@@ -149,7 +149,7 @@ public class OAuth2MessageFactory : IAuthenticatingMessageFactory
                 // unless there is a race condition whereby another thread has deleted the token after the request was made
                 return null;
             }
-            var newToken = await _auth.RefreshToken(tokens.RefreshToken);
+            var newToken = await _auth.RefreshToken(tokens.RefreshToken, cancel);
 
             _store.Put(JWTTokenEntity.StoreId, new JWTTokenEntity
             {

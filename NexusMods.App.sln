@@ -83,7 +83,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.Generic", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Benchmarks", "benchmarks\NexusMods.Benchmarks\NexusMods.Benchmarks.csproj", "{CB61A764-B3BB-42C0-8CDB-DBE57FB80DF5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Common.Tests", "src\NexusMods.CommonTests\NexusMods.Common.Tests.csproj", "{774EAA0D-268E-4A12-B8CC-7B22058A14A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Common.Tests", "src\NexusMods.CommonTests\NexusMods.Common.Tests.csproj", "{774EAA0D-268E-4A12-B8CC-7B22058A14A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

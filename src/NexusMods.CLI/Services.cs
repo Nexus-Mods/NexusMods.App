@@ -30,18 +30,10 @@ public static class Services
         services.AddSingleton<IOptionParser<ITool>, ToolParser>();
         services.AddSingleton<TemporaryFileManager>();
         services.AddSingleton<IProcessFactory, ProcessFactory>();
+        services.AddOSInterop();
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             services.AddSingleton<IProtocolRegistration, ProtocolRegistrationWindows>();
-            services.AddSingleton<IOSInterop, OSInteropWindows>();
-        }
-        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-        {
-            services.AddSingleton<IOSInterop, OSInteropLinux>();
-        }
-        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-        {
-            services.AddSingleton<IOSInterop, OSInteropOSX>();
         }
 
         services.AddVerb<AnalyzeArchive>()

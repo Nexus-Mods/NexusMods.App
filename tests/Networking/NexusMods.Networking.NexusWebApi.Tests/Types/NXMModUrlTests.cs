@@ -1,11 +1,5 @@
-﻿using Xunit;
-using NexusMods.Networking.NexusWebApi.Types;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NexusMods.DataModel.Games;
+﻿using NexusMods.DataModel.Games;
+using FluentAssertions;
 
 namespace NexusMods.Networking.NexusWebApi.Types.Tests;
 
@@ -15,61 +9,62 @@ public class NXMModUrlTests
     public void CanParseBasicModUrls()
     {
         var parsed = NXMUrl.Parse("nxm://skyrim/mods/123/files/456");
-        Assert.Equal(NXMUrlType.Mod, parsed.UrlType);
-        Assert.Equal(GameDomain.From("skyrim"), parsed.Mod.Game);
-        Assert.Equal(123u, parsed.Mod.ModId.Value);
-        Assert.Equal(456u, parsed.Mod.FileId.Value);
-        Assert.Null(parsed.Key);
-        Assert.Null(parsed.ExpireTime);
-        Assert.Null(parsed.User);
+        parsed.UrlType.Should().Be(NXMUrlType.Mod);
+        parsed.Mod.Game.Should().Be(GameDomain.From("skyrim"));
+        parsed.Mod.ModId.Value.Should().Be(123u);
+        parsed.Mod.FileId.Value.Should().Be(456u);
+        parsed.Key.Should().BeNull();
+        parsed.ExpireTime.Should().BeNull();
+        parsed.User.Should().BeNull();
     }
 
     [Fact()]
     public void CanParsePersonalizedModUrls()
     {
         var parsed = NXMUrl.Parse("nxm://skyrim/mods/123/files/456?key=key&expires=1676541088&user_id=12345");
-        Assert.Equal("key", parsed.Key?.Value);
-        Assert.NotNull(parsed.ExpireTime);
-        Assert.Equal(DateTime.UnixEpoch.AddSeconds(1676541088), parsed.ExpireTime.Value);
-        Assert.NotNull(parsed.User);
-        Assert.Equal(12345u, parsed.User.Value.Value);
+        parsed.Key?.Value.Should().Be("key");
+        parsed.ExpireTime.Should().NotBeNull();
+        parsed.ExpireTime!.Value.Should().Be(DateTime.UnixEpoch.AddSeconds(1676541088));
+        parsed.User.Should().NotBeNull();
+        parsed.User!.Value.Value.Should().Be(12345);
     }
 
     [Fact()]
     public void CanParseCollectionUrls()
     {
         var parsed = NXMUrl.Parse("nxm://skyrim/collections/slug/revisions/42");
-        Assert.Equal(NXMUrlType.Collection, parsed.UrlType);
-        Assert.Equal(GameDomain.From("skyrim"), parsed.Collection.Game);
-        Assert.Equal("slug", parsed.Collection.Slug.Value);
-        Assert.Equal(42u, parsed.Collection.Revision.Value);
+        parsed.UrlType.Should().Be(NXMUrlType.Collection);
+        parsed.Collection.Game.Should().Be(GameDomain.From("skyrim"));
+        parsed.Collection.Slug.Value.Should().Be("slug");
+        parsed.Collection.Revision.Value.Should().Be(42u);
     }
 
     [Fact()]
     public void CanParseOAuthUrls()
     {
         var parsed = NXMUrl.Parse("nxm://oauth/callback?code=code&state=state");
-        Assert.Equal(NXMUrlType.OAuth, parsed.UrlType);
-        Assert.Equal("code", parsed.OAuth.Code);
-        Assert.Equal("state", parsed.OAuth.State);
+        parsed.UrlType.Should().Be(NXMUrlType.OAuth);
+        parsed.OAuth.Code.Should().Be("code");
+        parsed.OAuth.State.Should().Be("state");
     }
 
     [Fact()]
     public void ToleratesUnknownParameters()
     {
         var parsed = NXMUrl.Parse("nxm://skyrim/mods/123/files/456?whatdis=value");
-        Assert.NotNull(parsed);
+        parsed.Should().NotBeNull();
     }
 
-    [Fact()]
-    public void RejectsInvalidUrls()
+    [Theory()]
+    [InlineData("notnxm://skyrim/mods/123/files/456")]
+    [InlineData("nxm://skyrim/invalid/123/files/456")]
+    [InlineData("nxm://skyrim/mods/notanumber/files/456")]
+    [InlineData("nxm://skyrim/mods/123/invalid/456")]
+    [InlineData("nxm://skyrim/mods/123/files/notanumber")]
+    [InlineData("nxm://skyrim/mods/123/files")]
+    [InlineData("nxm://skyrim/mods/123/files/456/toomuch")]
+    public void RejectsInvalidUrls(string url)
     {
-        Assert.Throws<ArgumentException>(() => NXMUrl.Parse("notnxm://skyrim/mods/123/files/456"));
-        Assert.Throws<ArgumentException>(() => NXMUrl.Parse("nxm://skyrim/invalid/123/files/456"));
-        Assert.Throws<ArgumentException>(() => NXMUrl.Parse("nxm://skyrim/mods/notanumber/files/456"));
-        Assert.Throws<ArgumentException>(() => NXMUrl.Parse("nxm://skyrim/mods/123/invalid/456"));
-        Assert.Throws<ArgumentException>(() => NXMUrl.Parse("nxm://skyrim/mods/123/files/notanumber"));
-        Assert.Throws<ArgumentException>(() => NXMUrl.Parse("nxm://skyrim/mods/123/files"));
-        Assert.Throws<ArgumentException>(() => NXMUrl.Parse("nxm://skyrim/mods/123/files/456/toomuch"));
+        url.Invoking(NXMUrl.Parse).Should().Throw<ArgumentException>();
     }
 }
