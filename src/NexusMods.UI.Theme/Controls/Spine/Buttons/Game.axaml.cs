@@ -13,7 +13,7 @@ namespace NexusMods.UI.Theme.Controls.Spine.Buttons;
 
 public partial class Game : ReactiveUserControl<GameViewModel>
 {
-    private Image? _image;
+    public Image? _image;
 
     public Game()
     {

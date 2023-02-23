@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.ViewModels;
 using NexusMods.App.UI.Views;
 
@@ -12,6 +13,7 @@ public static class Services
     {
         c.AddTransient<MainWindow>();
         c.AddTransient<MainWindowViewModel>();
+        c.AddTransient<SpineViewModel>();
         c.AddSingleton<App>();
         return c;
     }

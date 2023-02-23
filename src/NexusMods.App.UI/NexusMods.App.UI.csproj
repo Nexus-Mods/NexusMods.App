@@ -5,9 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Controls" />
     <Folder Include="Models\" />
     <AvaloniaResource Include="Assets\**" />
+    <Folder Include="Resources\Icons" />
     <None Remove=".gitignore" />
   </ItemGroup>
 
@@ -27,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
     <ProjectReference Include="..\NexusMods.UI.Theme\NexusMods.UI.Theme.csproj" />
   </ItemGroup>
 </Project>

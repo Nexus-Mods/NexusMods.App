@@ -10,5 +10,10 @@
       <PackageReference Update="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0-preview.1.23110.8" />
       <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.5.0" />
     </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Resources\question_mark_game.png" />
+      <EmbeddedResource Include="Resources\question_mark_game.png" />
+    </ItemGroup>
     
 </Project>

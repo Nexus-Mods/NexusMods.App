@@ -59,10 +59,7 @@
                     IsEnabled="False" />
 
                 <buttons:Add Grid.Column="3" Grid.Row="1" />
-                <buttons:Add
-                    Grid.Column="3"
-                    Grid.Row="2"
-                    IsChecked="True" />
+                <buttons:Add Grid.Column="3" Grid.Row="2" />
                 <buttons:Add
                     Grid.Column="3"
                     Grid.Row="3"

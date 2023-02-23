@@ -55,8 +55,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.App.UI", "src\Nex
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.UI.Theme", "src\NexusMods.UI.Theme\NexusMods.UI.Theme.csproj", "{43EE15F1-9C24-4F5D-A6FF-FC10C6183139}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.UI.Theme.Sandbox", "tests\NexusMods.UI.Theme.Sandbox\NexusMods.UI.Theme.Sandbox.csproj", "{6C3853FB-E904-418C-BA7B-4DC3100DB9F6}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Benchmarks", "Benchmarks", "{98448149-E44A-42E5-852D-B12C9D8AAABD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.StandardGameLocators.TestHelpers", "tests\NexusMods.StandardGameLocators.TestHelpers\NexusMods.StandardGameLocators.TestHelpers.csproj", "{846232AE-BDEA-4673-918E-A2079D4E78E0}"
@@ -82,6 +80,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.Generic", "src\Games\NexusMods.Games.Generic\NexusMods.Games.Generic.csproj", "{7CDE7572-9471-4966-B3B3-70DF7D2D9269}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Benchmarks", "benchmarks\NexusMods.Benchmarks\NexusMods.Benchmarks.csproj", "{CB61A764-B3BB-42C0-8CDB-DBE57FB80DF5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.UI.Theme.Tests", "tests\NexusMods.UI.Theme.Tests\NexusMods.UI.Theme.Tests.csproj", "{CBD72884-1EDF-4504-A7A6-FEA519FD65E9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Common.Tests", "src\NexusMods.CommonTests\NexusMods.Common.Tests.csproj", "{774EAA0D-268E-4A12-B8CC-7B22058A14A3}"
 EndProject
@@ -175,10 +175,6 @@ Global
 		{43EE15F1-9C24-4F5D-A6FF-FC10C6183139}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43EE15F1-9C24-4F5D-A6FF-FC10C6183139}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{43EE15F1-9C24-4F5D-A6FF-FC10C6183139}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6C3853FB-E904-418C-BA7B-4DC3100DB9F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6C3853FB-E904-418C-BA7B-4DC3100DB9F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6C3853FB-E904-418C-BA7B-4DC3100DB9F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6C3853FB-E904-418C-BA7B-4DC3100DB9F6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{846232AE-BDEA-4673-918E-A2079D4E78E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{846232AE-BDEA-4673-918E-A2079D4E78E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{846232AE-BDEA-4673-918E-A2079D4E78E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -223,6 +219,10 @@ Global
 		{CB61A764-B3BB-42C0-8CDB-DBE57FB80DF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CB61A764-B3BB-42C0-8CDB-DBE57FB80DF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CB61A764-B3BB-42C0-8CDB-DBE57FB80DF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBD72884-1EDF-4504-A7A6-FEA519FD65E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBD72884-1EDF-4504-A7A6-FEA519FD65E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBD72884-1EDF-4504-A7A6-FEA519FD65E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBD72884-1EDF-4504-A7A6-FEA519FD65E9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{774EAA0D-268E-4A12-B8CC-7B22058A14A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{774EAA0D-268E-4A12-B8CC-7B22058A14A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{774EAA0D-268E-4A12-B8CC-7B22058A14A3}.Release|Any CPU.ActiveCfg = Release|Any CPU

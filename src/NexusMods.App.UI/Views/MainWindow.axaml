@@ -16,6 +16,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:spine="clr-namespace:NexusMods.App.UI.Controls.Spine"
     xmlns:svg="clr-namespace:Avalonia.Svg;assembly=Avalonia.Svg"
     xmlns:vm="using:NexusMods.App.UI.ViewModels"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
@@ -65,19 +66,10 @@
             Margin="24,22.5"
             Text="HOME" />
 
-        <StackPanel
+        <spine:Spine
             Grid.Column="0"
             Grid.Row="1"
-            Margin="0,20">
-            <buttons:Home />
-            <Border
-                BorderBrush="{DynamicResource StructuralBorderBrush}"
-                BorderThickness="0,2,0,0"
-                Margin="0,16"
-                Width="48" />
-            <buttons:Add />
-            <buttons:Game />
-        </StackPanel>
+            x:Name="Spine" />
 
         <StackPanel
             Grid.Column="1"

@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
+using NexusMods.Common;
 using NexusMods.DataModel.Games;
+using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Games.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
@@ -29,4 +31,7 @@ public class Cyberpunk2077 : AGame, ISteamGame, IGogGame, IEpicGame
     public IEnumerable<int> SteamIds => new[] { 1091500 };
     public IEnumerable<long> GogIds => new[] { 2093619782L, 1423049311 };
     public IEnumerable<string> EpicCatalogItemId => new[] { "5beededaad9743df90e8f07d92df153f" };
+
+    public override IStreamFactory Icon => 
+        new EmbededResourceStreamFactory<Cyberpunk2077>("NexusMods.Games.RedEngine.Resources.Cyberpunk2077.icon.png");
 }

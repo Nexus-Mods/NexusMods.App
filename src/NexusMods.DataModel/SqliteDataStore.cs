@@ -1,6 +1,7 @@
 ﻿using System.Buffers.Binary;
 using System.Collections.Concurrent;
 using System.Data.SQLite;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text.Json;
 using BitFaster.Caching.Lru;
@@ -268,7 +269,24 @@ public class SqliteDataStore : IDataStore, IDisposable
         }
     }
 
-    public IObservable<RootChange> Changes => _rootChangeConsumer.Messages;
+    public IObservable<RootChange> Changes => _rootChangeConsumer.Messages.SelectMany(WaitTillReady);
+    
+    /// <summary>
+    /// Sometimes we may get a change notification before the underlying SQLite database has actually updated the value.
+    /// So we wait a bit to make sure the value is actually there before we forward the change.
+    /// </summary>
+    /// <param name="change"></param>
+    /// <returns></returns>
+    private async Task<RootChange> WaitTillReady(RootChange change)
+    {
+        var maxCycles = 0;
+        while (GetRaw(change.To) == null || maxCycles > 10)
+        {
+            await Task.Delay(100);
+            maxCycles++;
+        }
+        return change;
+    }
 
     public void Dispose()
     {
