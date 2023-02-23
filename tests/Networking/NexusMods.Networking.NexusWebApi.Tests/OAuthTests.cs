@@ -128,6 +128,87 @@ public class OAuthTests
         #endregion
     }
 
+    [Fact()]
+    public async void WarnsOnUnexpectedCallback()
+    {
+        var messageHandler = new Mock<HttpMessageHandler>();
+        HttpClient httpClient = new HttpClient(messageHandler.Object);
+        var idGen = new Mock<IIDGenerator>();
+        var os = new Mock<IOSInterop>();
+        var logger = new Mock<ILogger<OAuth>>();
+
+        var oauth = new OAuth(logger.Object, httpClient, idGen.Object, os.Object, _consumer);
+
+        await _producer.Write(new NXMUrlMessage { Value = NXMUrl.Parse($"nxm://oauth/callback?state=surprise&code=code") }, CancellationToken.None);
+        // allow message to be handled
+        await Task.Delay(100);
+
+        logger.Verify(logger => logger.Log(
+                It.Is<LogLevel>(logLevel => logLevel == LogLevel.Warning),
+                It.Is<EventId>(eventId => eventId.Id == 0),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+            Times.Once);
+    }
+
+    [Fact()]
+    public async void ThrowsOnInvalidResponse()
+    {
+        #region Setup
+        var stateId = "00000000-0000-0000-0000-000000000000";
+
+        var messageHandler = new Mock<HttpMessageHandler>();
+        messageHandler.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent("who dis?"),
+            });
+        HttpClient httpClient = new HttpClient(messageHandler.Object);
+
+        var idGen = new Mock<IIDGenerator>();
+        idGen.Setup(_ => _.UUIDv4()).Returns(stateId);
+
+        var os = new Mock<IOSInterop>();
+        #endregion
+
+        #region Execution
+        var oauth = new OAuth(_logger, httpClient, idGen.Object, os.Object, _consumer);
+        Func<Task> call = () => oauth.AuthorizeRequest(CancellationToken.None);
+        var tokenTask = call.Should().ThrowAsync<JsonException>();
+
+        await _producer.Write(new NXMUrlMessage { Value = NXMUrl.Parse($"nxm://oauth/callback?state={stateId}&code=code") }, CancellationToken.None);
+        var result = await tokenTask;
+        #endregion
+    }
+
+    [Fact()]
+    public async void AuthorizationCanBeCanceled()
+    {
+        #region Setup
+        var stateId = "00000000-0000-0000-0000-000000000000";
+
+        var messageHandler = new Mock<HttpMessageHandler>();
+        HttpClient httpClient = new HttpClient(messageHandler.Object);
+
+        var idGen = new Mock<IIDGenerator>();
+        idGen.Setup(_ => _.UUIDv4()).Returns(stateId);
+
+        var os = new Mock<IOSInterop>();
+        CancellationTokenSource cts = new CancellationTokenSource(); ;
+        #endregion
+
+        #region Execution
+        var oauth = new OAuth(_logger, httpClient, idGen.Object, os.Object, _consumer);
+        Func<Task> call = () => oauth.AuthorizeRequest(cts.Token);
+        var task = call.Should().ThrowAsync<OperationCanceledException>();
+        cts.Cancel();
+        await task;
+        #endregion
+    }
+
     private JwtTokenReply ReplyToken
     {
         get

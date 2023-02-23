@@ -51,7 +51,7 @@ public static class Services
             .AddVerb<ListMods>()
             .AddVerb<ListTools>()
             .AddVerb<ManageGame>()
-            .AddVerb<ProtocolInvokation>()
+            .AddVerb<ProtocolInvocation>()
             .AddVerb<Rename>()
             .AddVerb<RunTool>();
         

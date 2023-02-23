@@ -1,17 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
-using NexusMods.CLI;
 using NexusMods.CLI.Types;
-using NexusMods.Common;
-using NexusMods.DataModel.Interprocess;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NexusMods.CLI.Verbs;
 
-public class ProtocolInvokation : AVerb<string>
+public class ProtocolInvocation : AVerb<string>
 {
     public static VerbDefinition Definition => new("protocol-invoke",
         "handle a url with custom protocol",
@@ -21,9 +13,9 @@ public class ProtocolInvokation : AVerb<string>
         });
 
     private IEnumerable<IProtocolHandler> _handlers;
-    private ILogger<ProtocolInvokation> _logger;
+    private ILogger<ProtocolInvocation> _logger;
 
-    public ProtocolInvokation(ILogger<ProtocolInvokation> logger, IEnumerable<IProtocolHandler> handlers)
+    public ProtocolInvocation(ILogger<ProtocolInvocation> logger, IEnumerable<IProtocolHandler> handlers)
     {
         _logger = logger;
         _handlers = handlers;

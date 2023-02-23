@@ -6,12 +6,12 @@ using NexusMods.CLI.Verbs;
 
 namespace NexusMods.CLI.Tests.VerbTests;
 
-public class ProtocolInvokationTests
+public class ProtocolInvocationTests
 {
     private static readonly Times Once = Times.Once();
-    private ILogger<ProtocolInvokation> _logger;
+    private ILogger<ProtocolInvocation> _logger;
 
-    public ProtocolInvokationTests(ILogger<ProtocolInvokation> logger)
+    public ProtocolInvocationTests(ILogger<ProtocolInvocation> logger)
     {
         _logger = logger;
     }
@@ -26,7 +26,7 @@ public class ProtocolInvokationTests
         var secondHandler = new Mock<IProtocolHandler>();
         secondHandler.Setup(_ => _.Protocol).Returns("second");
 
-        var invok = new ProtocolInvokation(_logger, new List<IProtocolHandler> { firstHandler.Object, secondHandler.Object });
+        var invok = new ProtocolInvocation(_logger, new List<IProtocolHandler> { firstHandler.Object, secondHandler.Object });
         var res = await invok.Run(url, CancellationToken.None);
 
         res.Should().Be(0);
@@ -37,7 +37,7 @@ public class ProtocolInvokationTests
     [Fact()]
     public async void WillThrowOnUnsupportedProtocol()
     {
-        var invok = new ProtocolInvokation(_logger, new List<IProtocolHandler> {  });
+        var invok = new ProtocolInvocation(_logger, new List<IProtocolHandler> {  });
         Func<Task<int>> act = async () => await invok.Run("test://foobar", CancellationToken.None);
         await act.Should().ThrowAsync<Exception>();
     }
