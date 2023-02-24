@@ -5,6 +5,10 @@
     </PropertyGroup>
     
     <ItemGroup>
+      <PackageReference Include="Moq" Version="4.18.4" />
+    </ItemGroup>
+    
+    <ItemGroup>
       <ProjectReference Include="..\..\..\src\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
       <ProjectReference Include="..\NexusMods.Networking.HttpDownloader.Tests\NexusMods.Networking.HttpDownloader.Tests.csproj" />
     </ItemGroup>
