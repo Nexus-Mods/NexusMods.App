@@ -1,34 +1,29 @@
-﻿using Avalonia;
+﻿using System.Reactive.Linq;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Mixins;
 using Avalonia.Controls.Primitives;
 using Avalonia.Data;
 using Avalonia.Markup.Xaml;
+using Avalonia.ReactiveUI;
+using ReactiveUI;
 
 namespace NexusMods.UI.Theme.Controls.Spine.Buttons;
 
-public partial class Home : UserControl
+public partial class Home : ReactiveUserControl<SpineButtonViewModel>
 {
-    public static readonly DirectProperty<Home, bool?> IsCheckedProperty = AvaloniaProperty.RegisterDirect<Home, bool?>(nameof(IsChecked),
-        x => x._toggle?.IsChecked, (x, v) => x._toggle!.IsChecked = v, unsetValue: false, defaultBindingMode: BindingMode.TwoWay);
-
-    private readonly ToggleButton? _toggle;
-
-    public bool? IsChecked
-    {
-        get => GetValue(IsCheckedProperty);
-        set => SetValue(IsCheckedProperty, value);
-    }
-    
     public Home()
     {
-        AffectsRender<Home>(IsCheckedProperty);
         InitializeComponent();
-        _toggle = this.Find<ToggleButton>("ToggleButton");
-    }
-
-
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
+        this.WhenActivated(disposables =>
+        {
+            this.OneWayBind(ViewModel, vm => vm.IsActive, v => v.Toggle.IsChecked)
+                .DisposeWith(disposables);
+            this.BindCommand(ViewModel, vm => vm.Click, v => v.Toggle.Command)
+                .DisposeWith(disposables);
+            this.WhenAnyValue(vm => vm.ViewModel.Click)
+                .Subscribe(f => { })
+                .DisposeWith(disposables);
+        });
     }
 }

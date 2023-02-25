@@ -3,6 +3,8 @@ using Avalonia.ReactiveUI;
 using Microsoft.Extensions.DependencyInjection;
 using Projektanker.Icons.Avalonia;
 using Projektanker.Icons.Avalonia.MaterialDesign;
+using ReactiveUI;
+using Splat;
 
 namespace NexusMods.App.UI;
 
@@ -13,9 +15,11 @@ public class Startup
         .StartWithClassicDesktopLifetime(args);
 
     public static AppBuilder BuildAvaloniaApp(IServiceProvider serviceProvider)
-        => AppBuilder.Configure(serviceProvider.GetRequiredService<App>)
+    {
+        return AppBuilder.Configure(serviceProvider.GetRequiredService<App>)
             .UsePlatformDetect()
             .LogToTrace()
             .UseReactiveUI()
             .WithIcons(c => c.Register<MaterialDesignIconProvider>());
+    }
 }

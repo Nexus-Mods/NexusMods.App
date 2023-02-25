@@ -23,10 +23,4 @@ public partial class Add : ReactiveUserControl<SpineButtonViewModel>
                 .DisposeWith(disposables);
         });
     }
-
-
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
 }

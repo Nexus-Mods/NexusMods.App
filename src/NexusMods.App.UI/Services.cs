@@ -1,8 +1,10 @@
 ﻿
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.Controls.Spine;
+using NexusMods.App.UI.RightContent;
 using NexusMods.App.UI.ViewModels;
 using NexusMods.App.UI.Views;
+using ReactiveUI;
 
 namespace NexusMods.App.UI;
 
@@ -11,11 +13,14 @@ public static class Services
     // ReSharper disable once InconsistentNaming
     public static IServiceCollection AddUI(this IServiceCollection c)
     {
-        c.AddTransient<MainWindow>();
-        c.AddTransient<MainWindowViewModel>();
-        c.AddTransient<SpineViewModel>();
-        c.AddSingleton<App>();
-        return c;
+        return c.AddTransient<MainWindow>()
+            .AddTransient<MainWindowViewModel>()
+            .AddTransient<SpineViewModel>()
+            .AddTransient<FoundGamesViewModel>()
+            .AddSingleton<InjectedViewLocator>()
+            
+            .AddTransient<IViewFor<SpineViewModel>, Spine>()
+            .AddSingleton<App>();
     }
     
 }

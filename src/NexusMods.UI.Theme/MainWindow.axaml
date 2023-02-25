@@ -49,10 +49,7 @@
                     Text="Disabled" />
 
                 <buttons:Home Grid.Column="1" Grid.Row="1" />
-                <buttons:Home
-                    Grid.Column="1"
-                    Grid.Row="2"
-                    IsChecked="True" />
+                <buttons:Home Grid.Column="1" Grid.Row="2" />
                 <buttons:Home
                     Grid.Column="1"
                     Grid.Row="3"

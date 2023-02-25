@@ -1,12 +1,15 @@
-﻿<UserControl
+﻿<reactiveUi:ReactiveUserControl
     d:DesignHeight="65"
     d:DesignWidth="65"
     mc:Ignorable="d"
     x:Class="NexusMods.UI.Theme.Controls.Spine.Buttons.Home"
+    x:TypeArguments="buttons:SpineButtonViewModel"
     xmlns="https://github.com/avaloniaui"
+    xmlns:buttons="clr-namespace:NexusMods.UI.Theme.Controls.Spine.Buttons"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <UserControl.Styles>
         <Style Selector="ToggleButton.Spine">
@@ -64,7 +67,7 @@
         Classes="Spine"
         Height="64"
         Width="64"
-        x:Name="ToggleButton">
+        x:Name="Toggle">
         <ToggleButton.Template>
             <ControlTemplate>
                 <Grid>
@@ -83,4 +86,4 @@
             </ControlTemplate>
         </ToggleButton.Template>
     </ToggleButton>
-</UserControl>
+</reactiveUi:ReactiveUserControl>
