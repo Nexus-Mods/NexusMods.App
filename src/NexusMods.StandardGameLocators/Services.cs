@@ -71,11 +71,11 @@ public static class Services
 
         var searchPaths = new[]
         {
-            KnownFolders.HomeFolder.Join(".steam/debian-installation/".ToRelativePath())
+            KnownFolders.HomeFolder.CombineChecked(".steam/debian-installation/".ToRelativePath())
         };
 
 
-        var steamPath = searchPaths.First(p => p.Join("steam.sh".ToRelativePath()).FileExists);
+        var steamPath = searchPaths.First(p => p.CombineChecked("steam.sh".ToRelativePath()).FileExists);
 
         return new SteamHandler(steamPath.ToString(), new FileSystem(), null);
     }

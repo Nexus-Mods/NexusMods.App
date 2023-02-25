@@ -32,8 +32,8 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame
         yield return new (GameFolderType.Game, installation.Path);
         var appData = locator switch
         {
-            GogLocator => KnownFolders.MyGames.Join("Skyrim Special Edition GOG"),
-            _ => KnownFolders.MyGames.Join("Skyrim Special Edition"),
+            GogLocator => KnownFolders.MyGames.CombineUnchecked("Skyrim Special Edition GOG"),
+            _ => KnownFolders.MyGames.CombineUnchecked("Skyrim Special Edition"),
         };
         yield return new(GameFolderType.AppData, appData);
     }

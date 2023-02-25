@@ -1,5 +1,3 @@
-using NexusMods.Paths.New;
-
 namespace NexusMods.Paths.Tests.New.RelativePathTests;
 
 public class EqualsTests
@@ -15,8 +13,8 @@ public class EqualsTests
 
     private static void AssertEquals(string expected, string input)
     {
-        var expectedPath = new RelativePath2(expected);
-        var inputPath = new RelativePath2(input);
+        var expectedPath = new RelativePath(expected);
+        var inputPath = new RelativePath(input);
         Assert.Equal(expectedPath, inputPath);
     }
 }

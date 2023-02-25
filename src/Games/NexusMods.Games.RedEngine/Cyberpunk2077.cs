@@ -21,9 +21,9 @@ public class Cyberpunk2077 : AGame, ISteamGame, IGogGame, IEpicGame
     {
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Saves,
-            KnownFolders.HomeFolder.Join(@"Saved Games\CD Projeckt Red\Cyberpunk 2077"));
+            KnownFolders.HomeFolder.CombineUnchecked(@"Saved Games\CD Projekt Red\Cyberpunk 2077"));
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.AppData,
-            KnownFolders.HomeFolder.Join(@"AppData\Local\CD Projekt Red\Cyberpunk 2077"));
+            KnownFolders.HomeFolder.CombineUnchecked(@"AppData\Local\CD Projekt Red\Cyberpunk 2077"));
     }
 
     public IEnumerable<int> SteamIds => new[] { 1091500 };

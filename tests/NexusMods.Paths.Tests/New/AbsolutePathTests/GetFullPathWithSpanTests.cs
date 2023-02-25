@@ -1,4 +1,3 @@
-using NexusMods.Paths.New;
 using NexusMods.Paths.Tests.New.Helpers;
 
 namespace NexusMods.Paths.Tests.New.AbsolutePathTests;
@@ -31,7 +30,7 @@ public class GetFullPathWithSpanTests
     public void GetFullPath_WithInsufficientBuffer(string expected, string? directory, string fileName)
     {
         // Insufficient buffer means we return empty string.
-        var path = new AbsolutePath2(directory.NormalizeSeparator(), fileName.NormalizeSeparator());
+        var path = AbsolutePath.FromDirectoryAndFileName(directory.NormalizeSeparator(), fileName.NormalizeSeparator());
         Span<char> buffer = stackalloc char[path.GetFullPathLength() - 1];
         var result = path.GetFullPath(buffer);
         Assert.NotEqual(expected.NormalizeSeparator(), result.ToString());
@@ -40,7 +39,7 @@ public class GetFullPathWithSpanTests
 
     private static void AssertGetFullPath(string expected, string? directory, string fileName)
     {
-        var path = new AbsolutePath2(directory.NormalizeSeparator(), fileName.NormalizeSeparator());
+        var path = AbsolutePath.FromDirectoryAndFileName(directory.NormalizeSeparator(), fileName.NormalizeSeparator());
         Span<char> buffer = stackalloc char[path.GetFullPathLength()];
         Assert.Equal(expected.NormalizeSeparator(), path.GetFullPath(buffer).ToString());
     }

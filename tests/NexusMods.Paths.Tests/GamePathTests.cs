@@ -57,7 +57,7 @@ public class GamePathTests
     {
         var pathA = new GamePath(GameFolderType.Game, "foo/bar");
         var pathB = @"c:\qux".ToAbsolutePath();
-        Assert.Equal(@"c:\qux\foo\bar".ToAbsolutePath(), pathA.RelativeTo(pathB));
+        Assert.Equal(@"c:\qux\foo\bar".ToAbsolutePath(), pathA.CombineChecked(pathB));
     }
 
 }

@@ -16,8 +16,8 @@ public class FileAnalysisTests
     public FileAnalysisTests(FileContentsCache cache)
     {
         _cache = cache;
-        _plugin1 = KnownFolders.EntryFolder.Join("Resources", "testfile1.esp");
-        _plugin2 = KnownFolders.EntryFolder.Join("Resources", "testfile2.esl");
+        _plugin1 = KnownFolders.EntryFolder.CombineUnchecked("Resources").CombineUnchecked("testfile1.esp");
+        _plugin2 = KnownFolders.EntryFolder.CombineUnchecked("Resources").CombineUnchecked("testfile2.esl");
     }
 
     [Fact]

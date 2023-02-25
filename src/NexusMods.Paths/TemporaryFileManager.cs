@@ -14,7 +14,7 @@ public class TemporaryFileManager : IDisposable, IAsyncDisposable
     /// <summary>
     /// Utility for creating temporary folder and files to be later disposed.
     /// </summary>
-    public TemporaryFileManager() : this(KnownFolders.EntryFolder.Join("temp")) { }
+    public TemporaryFileManager() : this(KnownFolders.EntryFolder.CombineUnchecked("temp")) { }
     
     /// <summary>
     /// Utility for creating temporary folder and files to be later disposed.
@@ -23,8 +23,8 @@ public class TemporaryFileManager : IDisposable, IAsyncDisposable
     /// <param name="deleteOnDispose">True if all the paths should be deleted on disposal, else false.</param>
     public TemporaryFileManager(AbsolutePath basePath = default, bool deleteOnDispose = true)
     {
-        if (basePath == default)
-            basePath = KnownFolders.EntryFolder.Join("temp");
+        if (basePath.Equals(default))
+            basePath = KnownFolders.EntryFolder.CombineUnchecked("temp");
         
         _deleteOnDispose = deleteOnDispose;
         _basePath = basePath;
@@ -75,7 +75,7 @@ public class TemporaryFileManager : IDisposable, IAsyncDisposable
     /// </summary>
     public TemporaryPath CreateFile(Extension? ext = default, bool deleteOnDispose = true)
     {
-        var path = _basePath.Join(Guid.NewGuid().ToString());
+        var path = _basePath.CombineUnchecked(Guid.NewGuid().ToString());
         if (path.Extension != default)
             path = path.WithExtension(ext ?? KnownExtensions.Tmp);
         
@@ -87,7 +87,7 @@ public class TemporaryFileManager : IDisposable, IAsyncDisposable
     /// </summary>
     public TemporaryPath CreateFolder(string prefix = "", bool deleteOnDispose = true)
     {
-        var path = _basePath.Join(prefix + Guid.NewGuid());
+        var path = _basePath.CombineUnchecked(prefix + Guid.NewGuid());
         path.CreateDirectory();
         return new TemporaryPath(path, deleteOnDispose);
     }

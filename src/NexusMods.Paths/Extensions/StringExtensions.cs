@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 using NexusMods.Paths.HighPerformance.Backports.System.Globalization;
@@ -15,8 +16,15 @@ public static class StringExtensions
     /// Normalizes the given string in-place for use with string comparisons across
     /// the library such that they are case insensitive and use a consistent separator.
     /// </summary>
-    public static bool CompareStringsCaseAndSeparatorInsensitive(string a, string b)
+    [SkipLocalsInit]
+    public static bool CompareStringsCaseAndSeparatorInsensitive(ReadOnlySpan<char> a, ReadOnlySpan<char> b)
     {
+        if (a.Length == 0 && b.Length == 0)
+            return true;
+
+        if (a.Length == 0 && b.Length > 0 || b.Length == 0 && a.Length > 0)
+            return false;
+
         Span<char> aCopy = a.Length <= 512 ? stackalloc char[a.Length] : GC.AllocateUninitializedArray<char>(a.Length);
         Span<char> bCopy = b.Length <= 512 ? stackalloc char[b.Length] : GC.AllocateUninitializedArray<char>(b.Length);
         a.CopyTo(aCopy);
@@ -40,17 +48,16 @@ public static class StringExtensions
     }
 
     #region Legacy API
-
     /// <summary>
     /// Converts an existing path represented as a string to a <see cref="RelativePath"/>.
     /// </summary>
-    public static RelativePath ToRelativePath(this string s) => (RelativePath)s;
+    public static RelativePath ToRelativePath(this string s) => new(s);
 
     /// <summary>
     /// Converts an existing path represented as a string to a <see cref="AbsolutePath"/>.
+    /// Use scarcely. Absolute paths should only come from OS.
     /// </summary>
-    public static AbsolutePath ToAbsolutePath(this string s) => (AbsolutePath)s;
-
+    public static AbsolutePath ToAbsolutePath(this string s) => AbsolutePath.FromFullPath(s);
     #endregion
 
     /// <summary>
@@ -348,5 +355,24 @@ public static class StringExtensions
         }
 
         return hash1 + (hash2 * 1566083941);
+    }
+    
+    /// <summary>
+    /// Replaces the extension in a string instance.
+    /// </summary>
+    /// <param name="oldFileName">Old name of file.</param>
+    /// <param name="newExtension">New extension to add.</param>
+    /// <returns></returns>
+    public static string ReplaceExtension(this string oldFileName, Extension newExtension)
+    {
+        var nameLength = oldFileName.LastIndexOf(".", StringComparison.Ordinal);
+        if (nameLength < 0)
+        {
+            // no file extension
+            nameLength = oldFileName.Length;
+        }
+
+        var newName = oldFileName[..nameLength] + newExtension;
+        return newName;
     }
 }

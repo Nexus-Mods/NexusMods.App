@@ -1,10 +1,9 @@
 using NexusMods.Paths.Extensions;
-using NexusMods.Paths.New;
 
 namespace NexusMods.Paths.Tests.New.Conversions;
 
 /// <summary>
-/// Tests normalizing the string for comparisons used in <see cref="RelativePath2"/>.
+/// Tests normalizing the string for comparisons used in <see cref="RelativePath"/>.
 /// </summary>
 public class NormalizeString
 {

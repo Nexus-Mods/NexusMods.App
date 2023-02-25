@@ -1,5 +1,3 @@
-using NexusMods.Paths.New;
-
 namespace NexusMods.Paths.Tests.New.AbsolutePathTests;
 
 public class CombineCheckedTest
@@ -19,8 +17,8 @@ public class CombineCheckedTest
     {
         // Path.GetFullPath normalizes
         var expected = Path.GetFullPath(AppContext.BaseDirectory + actualRelativePath);
-        var relativePath = new RelativePath2(actualRelativePath.ToLower());
-        var absolutePath = new AbsolutePath2(AppContext.BaseDirectory, "");
+        var relativePath = new RelativePath(actualRelativePath.ToLower());
+        var absolutePath = AbsolutePath.FromDirectoryAndFileName(AppContext.BaseDirectory, "");
         Assert.Equal(expected, absolutePath.CombineChecked(relativePath).GetFullPath());
     }
 }

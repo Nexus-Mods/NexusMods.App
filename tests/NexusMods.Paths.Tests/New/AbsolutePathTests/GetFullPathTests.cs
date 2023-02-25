@@ -1,4 +1,3 @@
-using NexusMods.Paths.New;
 using NexusMods.Paths.Tests.New.Helpers;
 
 namespace NexusMods.Paths.Tests.New.AbsolutePathTests;
@@ -42,6 +41,6 @@ public class GetFullPathTests
         expected = expected.NormalizeSeparator();
         directory = directory.NormalizeSeparator();
         fileName = fileName.NormalizeSeparator();
-        Assert.Equal(expected, new AbsolutePath2(directory, fileName).GetFullPath());
+        Assert.Equal(expected, AbsolutePath.FromDirectoryAndFileName(directory, fileName).GetFullPath());
     }
 }

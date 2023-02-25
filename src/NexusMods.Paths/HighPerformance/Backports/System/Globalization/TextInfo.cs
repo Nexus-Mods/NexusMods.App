@@ -42,13 +42,29 @@ internal class TextInfo
         else
         {
             bool toUpper = typeof(TConversion) == typeof(ToUpperConversion);
+            ChangeCase_Fallback(source, destination, toUpper);
+        }
+    }
+
+    private static void ChangeCase_Fallback(ReadOnlySpan<char> source, Span<char> destination, bool toUpper)
+    {
+        try
+        {
             if (toUpper)
                 source.ToUpperInvariant(destination);
             else
                 source.ToLowerInvariant(destination);
         }
+        catch (InvalidOperationException e)
+        {
+            // Overlapping buffers
+            if (toUpper)
+                source.ToString().AsSpan().ToUpperInvariant(destination);
+            else
+                source.ToString().AsSpan().ToLowerInvariant(destination);
+        }
     }
-    
+
     /// <summary>
     /// Modified to assume ASCII casing same as invariant.
     /// </summary>
@@ -105,10 +121,7 @@ internal class TextInfo
         var length = charCount - (int)i;
         var srcSpan = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref source, i), length);
         var dstSpan = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref destination, i), length);
-        if (toUpper)
-            MemoryExtensions.ToUpperInvariant(srcSpan, dstSpan);
-        else
-            MemoryExtensions.ToLowerInvariant(srcSpan, dstSpan);
+        ChangeCase_Fallback(srcSpan, dstSpan, toUpper);
     }
     
     /// <summary>
@@ -167,10 +180,7 @@ internal class TextInfo
         var length = charCount - (int)i;
         var srcSpan = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref source, i), length);
         var dstSpan = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref destination, i), length);
-        if (toUpper)
-            MemoryExtensions.ToUpperInvariant(srcSpan, dstSpan);
-        else
-            MemoryExtensions.ToLowerInvariant(srcSpan, dstSpan);
+        ChangeCase_Fallback(srcSpan, dstSpan, toUpper);
     }
 
     // A dummy struct that is used for 'ToUpper' in generic parameters

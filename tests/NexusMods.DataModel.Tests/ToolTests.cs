@@ -25,16 +25,16 @@ public class ToolTests : ADataModelTest<ToolTests>
         await loadout.Install(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
         var gameFolder = loadout.Value.Installation.Locations[GameFolderType.Game];
         
-        gameFolder.Join("files.txt").FileExists.Should().BeFalse("tool should not have run yet");
-        gameFolder.Join("rootFile.txt").FileExists.Should().BeFalse("loadout has not yet been applied");
+        gameFolder.CombineUnchecked("files.txt").FileExists.Should().BeFalse("tool should not have run yet");
+        gameFolder.CombineUnchecked("rootFile.txt").FileExists.Should().BeFalse("loadout has not yet been applied");
         
         var tool = loadout.Tools.OfType<ListFilesTool>().First();
         await loadout.Run(tool, CancellationToken.None);
         
-        gameFolder.Join("files.txt").FileExists.Should().BeTrue("tool should have run");
-        gameFolder.Join("rootFile.txt").FileExists.Should().BeTrue("loadout has been automatically applied");
+        gameFolder.CombineUnchecked("files.txt").FileExists.Should().BeTrue("tool should have run");
+        gameFolder.CombineUnchecked("rootFile.txt").FileExists.Should().BeTrue("loadout has been automatically applied");
 
-        var expectedPath = ListFilesTool.GeneratedFilePath.RelativeTo(gameFolder);
+        var expectedPath = ListFilesTool.GeneratedFilePath.CombineChecked(gameFolder);
         var generatedFile = loadout.Value.Mods.Values
             .SelectMany(m => m.Files.Values)
             .FirstOrDefault(f => f.To == ListFilesTool.GeneratedFilePath);

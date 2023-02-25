@@ -1,6 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using NexusMods.Paths.HighPerformance.CommunityToolkit;
 using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Paths.Extensions;
@@ -13,6 +15,7 @@ public static class SpanExtensions
     /// <summary>
     /// Casts a span to another type without bounds checks.
     /// </summary>
+    [ExcludeFromCodeCoverage(Justification = "Taken from runtime.")]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Span<TTo> CastFast<TFrom, TTo>(this Span<TFrom> data) where TFrom : struct where TTo : struct
     {
@@ -188,5 +191,21 @@ public static class SpanExtensions
         }
 
         return buffer;
+    }
+    
+    /// <summary>
+    /// Counts the number of occurrences of a given value into a target <see cref="Span{T}"/> instance.
+    /// </summary>
+    /// <typeparam name="T">The type of items in the input <see cref="Span{T}"/> instance.</typeparam>
+    /// <param name="span">The input <see cref="Span{T}"/> instance to read.</param>
+    /// <param name="value">The <typeparamref name="T"/> value to look for.</param>
+    /// <returns>The number of occurrences of <paramref name="value"/> in <paramref name="span"/>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int Count<T>(this ReadOnlySpan<T> span, T value) where T : IEquatable<T>
+    {
+        ref T r0 = ref MemoryMarshal.GetReference(span);
+        nint length = (nint)(uint)span.Length;
+
+        return (int)SpanHelper.Count(ref r0, length, value);
     }
 }
