@@ -37,7 +37,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// <summary>
     /// Gets the parent directory, i.e. navigates one folder up.
     /// </summary>
-    public AbsolutePath Parent => FromFullPath(Path.GetDirectoryName(GetFullPath())! ?? "");
+    public AbsolutePath Parent => FromFullPath(Path.GetDirectoryName(GetFullPath()) ?? "");
 
     /// <summary>
     /// Returns the file name without extensions
@@ -89,7 +89,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// <param name="directoryPath">The path to the directory used.</param>
     /// <param name="fullPath">The full path to use.</param>
     /// <returns>The converted absolute path.</returns>
-    public static AbsolutePath FromDirectoryAndFileName(string directoryPath, string fullPath) => new(directoryPath, fullPath);
+    public static AbsolutePath FromDirectoryAndFileName(string? directoryPath, string fullPath) => new(directoryPath, fullPath);
 
     /// <summary>
     /// Returns the full path of the combined string.
@@ -161,7 +161,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     ///    guarantee casing will match the specified relative path.
     /// </remarks>
     [SkipLocalsInit]
-    public AbsolutePath CombineUnchecked(RelativePath path)
+    public readonly AbsolutePath CombineUnchecked(RelativePath path)
     {
         // Just in case.
         if (path.Path.Length <= 0)

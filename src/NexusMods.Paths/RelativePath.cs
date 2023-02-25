@@ -39,7 +39,7 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
     /// <summary>
     /// Traverses one directory up.
     /// </summary>
-    public RelativePath Parent => new(System.IO.Path.GetDirectoryName(Path)! ?? "");
+    public RelativePath Parent => new(System.IO.Path.GetDirectoryName(Path) ?? "");
 
     /// <summary>
     /// Creates a relative path given a string.

@@ -71,7 +71,7 @@ public static class StringExtensions
     /// </remarks>
     [ExcludeFromCodeCoverage(Justification = "Cannot be accurately measured without multiple architectures.")]
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    public static unsafe int GetNonRandomizedHashCode32(this ReadOnlySpan<char> text)
+    public static int GetNonRandomizedHashCode32(this ReadOnlySpan<char> text)
     {
         return GetNonRandomizedHashCode(text).GetHashCode();
     }

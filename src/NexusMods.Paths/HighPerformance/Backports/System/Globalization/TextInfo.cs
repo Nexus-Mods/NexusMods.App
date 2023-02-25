@@ -55,7 +55,7 @@ internal class TextInfo
             else
                 source.ToLowerInvariant(destination);
         }
-        catch (InvalidOperationException e)
+        catch (InvalidOperationException)
         {
             // Overlapping buffers
             if (toUpper)

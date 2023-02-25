@@ -225,7 +225,7 @@ public partial struct AbsolutePath
             {
                 System.IO.Directory.Delete(GetFullPath(), true);
             }
-            catch (IOException ex)
+            catch (IOException)
             {
                 if (attempts > 10) 
                     throw;

@@ -118,7 +118,7 @@ public static class SpanExtensions
     ///    The buffer to place the result in.
     ///    This can be the original <paramref name="data"/> buffer if required.
     /// </param>
-    /// <paramref name="TType">MUST BE POWER OF TWO IN SIZE. Type of value to replace.</paramref>
+    /// <typeparamref name="T">MUST BE POWER OF TWO IN SIZE. Type of value to replace.</typeparamref>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Span<T> Replace<T>(this Span<T> data, T oldValue, T newValue, Span<T> buffer) where T : unmanaged, IEquatable<T>
     {
