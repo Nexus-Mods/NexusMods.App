@@ -4,6 +4,7 @@ using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.RightContent;
 using NexusMods.App.UI.ViewModels;
 using NexusMods.App.UI.Views;
+using NexusMods.UI.Theme.Controls.Spine.Buttons;
 using ReactiveUI;
 
 namespace NexusMods.App.UI;
@@ -16,6 +17,8 @@ public static class Services
         return c.AddTransient<MainWindow>()
             .AddTransient<MainWindowViewModel>()
             .AddTransient<SpineViewModel>()
+            .AddTransient<SpineButtonViewModel>()
+            .AddTransient<IViewFor<SpineButtonViewModel>, Home>()
             .AddTransient<FoundGamesViewModel>()
             .AddSingleton<InjectedViewLocator>()
             

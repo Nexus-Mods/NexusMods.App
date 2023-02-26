@@ -19,7 +19,7 @@ public partial class Home : ReactiveUserControl<SpineButtonViewModel>
         {
             this.OneWayBind(ViewModel, vm => vm.IsActive, v => v.Toggle.IsChecked)
                 .DisposeWith(disposables);
-            this.BindCommand(ViewModel, vm => vm.Click, v => v.Toggle.Command)
+            this.BindCommand(ViewModel, vm => vm.Click, v => v.Toggle)
                 .DisposeWith(disposables);
             this.WhenAnyValue(vm => vm.ViewModel.Click)
                 .Subscribe(f => { })
