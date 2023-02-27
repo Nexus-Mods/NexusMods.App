@@ -44,9 +44,11 @@ public class UtilityTests
         var pathA = @"foo\bar\baz.zip".ToRelativePath();
         var pathB = @"foo\bar".ToRelativePath();
         var pathC = @"fOo\Bar".ToRelativePath();
+        var pathD = @"foo\barbaz".ToRelativePath();
         Assert.True(pathA.InFolder(pathB));
         Assert.True(pathA.InFolder(pathC));
         Assert.False(pathB.InFolder(pathA));
+        Assert.False(pathD.InFolder(pathB));
     }
     
     [Theory]

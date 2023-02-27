@@ -87,7 +87,16 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
         other.CopyTo(otherCopy);
         otherCopy.NormalizeStringCaseAndPathSeparator();
         
-        return thisCopy.StartsWith(otherCopy);
+        if (!thisCopy.StartsWith(otherCopy)) return false;
+        
+        // If thisCopy is bigger make sure the next character is a path separator
+        // So we don't assume that /foo/barbaz is in /foo/bar
+        if (thisCopy.Length > otherCopy.Length)
+        {
+            var next = thisCopy[otherCopy.Length];
+            return next is '\\' or '/';
+        }
+        return true;
     }
     
     /// <summary>
