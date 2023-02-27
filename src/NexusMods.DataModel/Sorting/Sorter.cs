@@ -78,7 +78,8 @@ public class Sorter
         var partitioner = Partitioner.Create(0, items.Count);
         var indexed = new ConcurrentDictionary<TId, (TId[] After, TItem Item)>(Environment.ProcessorCount, items.Count);
         
-        Parallel.ForEach(partitioner, tuple =>
+        Parallel.ForEach(partitioner, new ParallelOptions {MaxDegreeOfParallelism = 1},
+            tuple =>
         {
             var idBuffer = new HashSet<TId>(tuple.Item2 - tuple.Item1);
             
@@ -119,7 +120,7 @@ public class Sorter
             var valuesSlice = values.AsSpan(0, dict.Count);
             if (dict.Count > MultiThreadCutoff)
             {
-                parallelOptions.MaxDegreeOfParallelism = Math.Max(dict.Count / MinOperationsPerThread, 1);
+                parallelOptions.MaxDegreeOfParallelism = 1; //Math.Max(dict.Count / MinOperationsPerThread, 1);
                 parallelState.superSetSize = 0;
                 Parallel.ForEach(Partitioner.Create(0, valuesSlice.Length), parallelOptions, doWork);
                 superSetSize = parallelState.superSetSize;
