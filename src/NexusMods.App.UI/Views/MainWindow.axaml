@@ -106,7 +106,7 @@
             x:Name="RightContent">
             <ContentPresenter.DataTemplates>
                 <DataTemplate DataType="{x:Type rightContent:FoundGamesViewModel}">
-                    <views:FoundGamesView />
+                    <rightContent:FoundGamesView />
                 </DataTemplate>
             </ContentPresenter.DataTemplates>
         </ContentPresenter>

@@ -30,4 +30,11 @@
     <ProjectReference Include="..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
     <ProjectReference Include="..\NexusMods.UI.Theme\NexusMods.UI.Theme.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="RightContent\FoundGamesView.axaml.cs">
+      <DependentUpon>FoundGamesView.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
 </Project>

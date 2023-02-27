@@ -1,10 +1,10 @@
-﻿using Avalonia;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Avalonia.ReactiveUI;
 
-namespace NexusMods.App.UI.Views;
+namespace NexusMods.App.UI.RightContent;
 
-public partial class FoundGamesView : UserControl
+public partial class FoundGamesView : ReactiveUserControl<FoundGamesViewModel>
 {
     public FoundGamesView()
     {

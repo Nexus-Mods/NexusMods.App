@@ -15,15 +15,21 @@ public static class Services
     public static IServiceCollection AddUI(this IServiceCollection c)
     {
         return c.AddTransient<MainWindow>()
+            // View Models
             .AddTransient<MainWindowViewModel>()
             .AddTransient<SpineViewModel>()
             .AddTransient<HomeButtonViewModel>()
             .AddTransient<AddButtonViewModel>()
-            .AddTransient<IViewFor<HomeButtonViewModel>, Home>()
-            .AddTransient<IViewFor<AddButtonViewModel>, Add>()
             .AddTransient<FoundGamesViewModel>()
+            
+            // Views
+            .AddView<Home, HomeButtonViewModel>()
+            .AddView<Add, AddButtonViewModel>()
+            .AddView<Spine, SpineViewModel>()
+            .AddView<FoundGamesView, FoundGamesViewModel>()
+            
+            // Other
             .AddSingleton<InjectedViewLocator>()
-            .AddTransient<IViewFor<SpineViewModel>, Spine>()
             .AddSingleton<App>();
     }
     
