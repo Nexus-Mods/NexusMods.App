@@ -20,7 +20,7 @@ public class UtilityTests
     public void CanGetParent()
     {
         var path = @"\foo\bar\baz".ToRelativePath();
-        @"\foo\bar".ToRelativePath().Parent.Should().Be(path.Parent);
+        @"\foo\bar".ToRelativePath().Should().Be(path.Parent);
     }
 
     [Fact]
