@@ -17,11 +17,12 @@ public static class Services
         return c.AddTransient<MainWindow>()
             .AddTransient<MainWindowViewModel>()
             .AddTransient<SpineViewModel>()
-            .AddTransient<SpineButtonViewModel>()
-            .AddTransient<IViewFor<SpineButtonViewModel>, Home>()
+            .AddTransient<HomeButtonViewModel>()
+            .AddTransient<AddButtonViewModel>()
+            .AddTransient<IViewFor<HomeButtonViewModel>, Home>()
+            .AddTransient<IViewFor<AddButtonViewModel>, Add>()
             .AddTransient<FoundGamesViewModel>()
             .AddSingleton<InjectedViewLocator>()
-            
             .AddTransient<IViewFor<SpineViewModel>, Spine>()
             .AddSingleton<App>();
     }

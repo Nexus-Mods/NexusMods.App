@@ -34,7 +34,7 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-        <buttons:Add x:Name="Add" />
+        <reactiveUi:ViewModelViewHost x:Name="Add" />
     </StackPanel>
 
 </reactiveUi:ReactiveUserControl>

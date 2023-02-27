@@ -19,9 +19,9 @@ public class SpineViewModel : AViewModel
 {
     private readonly IDataStore _dataStore;
 
-    public SpineButtonViewModel Home { get; } = new();
+    public HomeButtonViewModel Home { get; }
 
-    public SpineButtonViewModel Add { get; } = new();
+    public AddButtonViewModel Add { get; }
 
     private ReadOnlyObservableCollection<GameViewModel> _game;
     public ReadOnlyObservableCollection<GameViewModel> Games => _game;
@@ -32,10 +32,13 @@ public class SpineViewModel : AViewModel
     private readonly ILogger<SpineViewModel> _logger;
     public IObservable<SpineButtonAction> Actions => _actions;
 
-    public SpineViewModel(ILogger<SpineViewModel> logger, IDataStore dataStore)
+    public SpineViewModel(ILogger<SpineViewModel> logger, IDataStore dataStore, AddButtonViewModel addButtonViewModel, HomeButtonViewModel homebuttonViewModel)
     {
         _logger = logger;
         _dataStore = dataStore;
+
+        Home = homebuttonViewModel;
+        Add = addButtonViewModel;
 
         this.WhenActivated(disposables =>
         {

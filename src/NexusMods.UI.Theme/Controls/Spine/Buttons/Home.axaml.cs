@@ -5,7 +5,7 @@ using ReactiveUI;
 
 namespace NexusMods.UI.Theme.Controls.Spine.Buttons;
 
-public partial class Home : ReactiveUserControl<SpineButtonViewModel>
+public partial class Home : ReactiveUserControl<HomeButtonViewModel>
 {
     public Home()
     {
