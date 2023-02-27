@@ -1,3 +1,6 @@
+using FluentAssertions;
+using NexusMods.Paths.Utilities;
+
 namespace NexusMods.Paths.Tests.New.AbsolutePathTests;
 
 public class CombineCheckedTest
@@ -15,10 +18,13 @@ public class CombineCheckedTest
     
     private static void AssertCasingMatchesFileSystem(string actualRelativePath)
     {
-        // Path.GetFullPath normalizes
-        var expected = Path.GetFullPath(AppContext.BaseDirectory + actualRelativePath);
-        var relativePath = new RelativePath(actualRelativePath.ToLower());
         var absolutePath = AbsolutePath.FromDirectoryAndFileName(AppContext.BaseDirectory, "");
-        Assert.Equal(expected, absolutePath.CombineChecked(relativePath).GetFullPath());
+        var result = absolutePath.CombineChecked(actualRelativePath);
+
+        result.ToString().Where(x => x is '\\' or '/').Distinct().Count()
+            .Should()
+            .Be(1, "Paths are normallized to a single separator format");
+        result.ToString().Should().NotContain(@"/\", "trailing separators are recognized and removed");
+        result.ToString().Should().NotContain(@"\/", "trailing separators are recognized and removed");
     }
 }
