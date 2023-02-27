@@ -12,15 +12,15 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <UserControl.Styles>
-        <Style Selector="ToggleButton.Spine">
+        <Style Selector="Button.Spine">
             <Setter Property="CornerRadius" Value="45" />
             <Setter Property="HorizontalAlignment" Value="Center" />
         </Style>
-        <Style Selector="ToggleButton.Spine:pressed">
+        <Style Selector="Button.Spine:pressed">
             <Setter Property="RenderTransform" Value="scale(0.9)" />
         </Style>
 
-        <Style Selector="ToggleButton.Spine:unchecked Border">
+        <Style Selector="Button.Spine.Inactive Border">
             <Setter Property="BorderBrush" Value="{DynamicResource ContentSecondary}" />
             <Setter Property="Background" Value="#01FFFFFF" />
             <Setter Property="BorderThickness" Value="1" />
@@ -35,40 +35,40 @@
             </Setter>
         </Style>
 
-        <Style Selector="ToggleButton.Spine:unchecked:pointerover Border">
+        <Style Selector="Button.Spine.Inactive:pointerover Border">
             <Setter Property="Background" Value="#4CFFFFFF" />
             <Setter Property="BorderBrush" Value="#FFFFFF" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
 
-        <Style Selector="ToggleButton.Spine:checked Border">
+        <Style Selector="Button.Spine.Active Border">
             <Setter Property="Background" Value="#00FFFFFF" />
             <Setter Property="BorderBrush" Value="#FFFFFF" />
             <Setter Property="BorderThickness" Value="2" />
             <Setter Property="BoxShadow" Value="0 0 10 0 #66FFFFFF" />
         </Style>
 
-        <Style Selector="ToggleButton.Spine:checked:pointerover Border">
+        <Style Selector="Button.Spine.Active:pointerover Border">
             <Setter Property="Background" Value="#80FFFFFF" />
             <Setter Property="BorderBrush" Value="#FFFFFF" />
             <Setter Property="BorderThickness" Value="2" />
         </Style>
 
-        <Style Selector="ToggleButton.Spine:unchecked icons|Icon">
+        <Style Selector="Button.Spine.Inactive icons|Icon">
             <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryBrush}" />
         </Style>
 
-        <Style Selector="ToggleButton.Spine:checked icons|Icon">
+        <Style Selector="Button.Spine.Active icons|Icon">
             <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
         </Style>
     </UserControl.Styles>
 
-    <ToggleButton
+    <Button
         Classes="Spine"
         Height="64"
         Width="64"
-        x:Name="Toggle">
-        <ToggleButton.Template>
+        x:Name="Button">
+        <Button.Template>
             <ControlTemplate>
                 <Grid>
                     <icons:Icon
@@ -84,6 +84,6 @@
                         Width="48" />
                 </Grid>
             </ControlTemplate>
-        </ToggleButton.Template>
-    </ToggleButton>
+        </Button.Template>
+    </Button>
 </reactiveUi:ReactiveUserControl>
