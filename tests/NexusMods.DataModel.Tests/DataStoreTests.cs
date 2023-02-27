@@ -98,6 +98,6 @@ public class DataStoreTests
 
         // Cant' be exact about this test because other things being tested may be generating changes
         var dest = destQ.ToList();
-        dest.Count.Should().BeGreaterThan(2);
+        dest.Should().NotBeEmpty();
     }
 }

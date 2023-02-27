@@ -87,6 +87,26 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
         other.CopyTo(otherCopy);
         otherCopy.NormalizeStringCaseAndPathSeparator();
         
+        return thisCopy.StartsWith(otherCopy);
+    }
+    
+    /// <summary>
+    /// Returns true if this path is a child of this path.
+    /// </summary>
+    /// <param name="pathToCheck">The path to verify.</param>
+    /// <returns>True if this is a child path of the parent path; else false.</returns>
+    public bool InFolder(RelativePath other)
+    {
+        // Note: We assume equality to be separator and case insensitive
+        //       therefore this property should transfer over to contains checks.
+        Span<char> thisCopy = Path.Length <= 512 ? stackalloc char[Path.Length] : GC.AllocateUninitializedArray<char>(Path.Length);
+        Path.CopyTo(thisCopy);
+        thisCopy.NormalizeStringCaseAndPathSeparator();
+        
+        Span<char> otherCopy = other.Path.Length <= 512 ? stackalloc char[other.Path.Length] : GC.AllocateUninitializedArray<char>(other.Path.Length);
+        other.Path.CopyTo(otherCopy);
+        otherCopy.NormalizeStringCaseAndPathSeparator();
+        
         if (!thisCopy.StartsWith(otherCopy)) return false;
         
         // If thisCopy is bigger make sure the next character is a path separator
@@ -98,13 +118,6 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
         }
         return true;
     }
-    
-    /// <summary>
-    /// Returns true if this path is a child of this path.
-    /// </summary>
-    /// <param name="pathToCheck">The path to verify.</param>
-    /// <returns>True if this is a child path of the parent path; else false.</returns>
-    public bool InFolder(RelativePath pathToCheck) => StartsWith(pathToCheck.Path);
 
     /// <summary>
     /// Drops first X directories of a path.
