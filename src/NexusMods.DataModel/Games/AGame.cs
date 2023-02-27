@@ -47,7 +47,7 @@ public abstract class AGame : IGame
 
     private Version GetVersion(IGameLocator locator, GameLocatorResult installation)
     {
-        var fvi = PrimaryFile.RelativeTo(installation.Path).VersionInfo;
+        var fvi = PrimaryFile.CombineChecked(installation.Path).VersionInfo;
         return fvi.ProductVersion == null ? new Version("1.0.0.0") : Version.Parse(fvi.ProductVersion!);
     }
 

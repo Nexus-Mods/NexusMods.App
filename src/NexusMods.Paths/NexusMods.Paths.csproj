@@ -16,5 +16,8 @@
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
       <PackageReference Include="Vogen" Version="3.0.11" />
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Utilities\Extensions" />
+    </ItemGroup>
 
 </Project>

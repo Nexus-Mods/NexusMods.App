@@ -56,9 +56,12 @@ public struct GamePath : IPath, IEquatable<GamePath>
     public override string ToString() => "{" + Type + "}\\" + Path;
 
     /// <summary>
-    /// Converts the relative path back to an absolute one.
+    /// Joins the current absolute path with a relative path.
     /// </summary>
-    public AbsolutePath RelativeTo(AbsolutePath folderPath) => Path.Combine(folderPath);
+    /// <param name="folderPath">
+    ///    The absolute path to combine with current relative path.
+    /// </param>
+    public AbsolutePath CombineChecked(AbsolutePath folderPath) => folderPath.CombineChecked(Path);
 }
 
 /// <summary>

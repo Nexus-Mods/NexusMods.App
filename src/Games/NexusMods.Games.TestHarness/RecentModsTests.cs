@@ -24,7 +24,7 @@ public class RecentModsTest
     private readonly IHttpDownloader _downloader;
     private readonly TimeSpan _updateDelay;
     public IEnumerable<(NexusModFile FileInfo, AbsolutePath Path)> GameRecords => _gameRecords
-        .Select(p => (p, _downloadedFilesLocation.Join($"{_game.Domain}_{p.ModId}_{p.FileId}")));
+        .Select(p => (p, _downloadedFilesLocation.CombineChecked($"{_game.Domain}_{p.ModId}_{p.FileId}")));
 
     private List<NexusModFile> _gameRecords = new();
 
@@ -35,7 +35,7 @@ public class RecentModsTest
         _client = client;
         _game = game;
         _downloader = downloader;
-        _downloadedFilesLocation = KnownFolders.EntryFolder.Join("DownloadedTestHarnessFiles");
+        _downloadedFilesLocation = KnownFolders.EntryFolder.CombineUnchecked("DownloadedTestHarnessFiles");
         _downloadedFilesLocation.CreateDirectory();
         _updateDelay = TimeSpan.FromDays(1);
     }
@@ -81,8 +81,8 @@ public class RecentModsTest
             };
             
             _logger.LogInformation("Downloading {FileName}", record.FileName);
-            var fileLocation = _downloadedFilesLocation.Join($"{_game.Domain}_{record.ModId}_{record.FileId}");
-            var tempFileLocation = _downloadedFilesLocation.Join($"{_game.Domain}_{record.ModId}_{record.FileId}.temp");
+            var fileLocation = _downloadedFilesLocation.CombineUnchecked($"{_game.Domain}_{record.ModId}_{record.FileId}");
+            var tempFileLocation = _downloadedFilesLocation.CombineUnchecked($"{_game.Domain}_{record.ModId}_{record.FileId}.temp");
             var urls = await _client.DownloadLinks(_game.Domain, record.ModId, record.FileId);
             var hash = await _downloader.Download(urls.Data.Select(u => new HttpRequestMessage(HttpMethod.Get, u.Uri)).ToList(),
                 tempFileLocation);

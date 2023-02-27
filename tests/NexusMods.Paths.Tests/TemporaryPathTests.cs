@@ -10,7 +10,7 @@ public class TemporaryPathTests : IDisposable
 
     public TemporaryPathTests()
     {
-        _manager = new TemporaryFileManager(KnownFolders.CurrentDirectory.Join("baseTmp", Guid.NewGuid().ToString()));
+        _manager = new TemporaryFileManager(KnownFolders.CurrentDirectory.CombineUnchecked($"baseTmp{Path.DirectorySeparatorChar}{Guid.NewGuid().ToString()}"));
     }
     
     [Fact]

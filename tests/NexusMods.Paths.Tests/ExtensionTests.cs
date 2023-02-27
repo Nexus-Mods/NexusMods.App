@@ -1,3 +1,4 @@
+using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Paths.Tests;
@@ -29,7 +30,7 @@ public class ExtensionTests
     [Fact]
     public void CanGetExtensionOfPath()
     {
-        Assert.Equal(DDS, ((AbsolutePath)@"c:\foo\bar.dds").Extension);
+        Assert.Equal(DDS, (@"c:\foo\bar.dds".ToAbsolutePath()).Extension);
     }
 
     [Fact]

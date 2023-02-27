@@ -21,7 +21,7 @@ public class RedModDeployTool : ITool
 
     public async Task Execute(Loadout loadout)
     {
-        var exe = _redModPath.RelativeTo(loadout.Installation);
+        var exe = _redModPath.CombineChecked(loadout.Installation);
         
         var stdOutBuffer = new StringBuilder();
         var stdErrBuffer = new StringBuilder();

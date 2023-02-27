@@ -6,7 +6,7 @@ using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Benchmarks.Benchmarks;
 
-[BenchmarkInfo("Paths", "Comparison between our internal path routines and .NET Path.* methods")]
+[BenchmarkInfo("Paths", "Comparison between our internal path routines and their closest .NET Path.* methods")]
 [MemoryDiagnoser]
 public class Paths : IBenchmark
 {
@@ -92,7 +92,9 @@ public class Paths : IBenchmark
     [Benchmark]
     public void NexusJoinSmall()
     {
-        CurrentPath.AbsolutePath.Join("foo");
+        // Not a fair test here since one is a string concat; other includes
+        // normalization to OS path.
+        CurrentPath.AbsolutePath.CombineUnchecked("foo");
     }
 
     [Benchmark]
@@ -104,7 +106,7 @@ public class Paths : IBenchmark
     [Benchmark]
     public void NexusJoinLarge()
     {
-        CurrentPath.AbsolutePath.Join("foo/bar/baz/quz/qax");
+        CurrentPath.AbsolutePath.CombineUnchecked("foo/bar/baz/quz/qax");
     }
 
     [Benchmark]

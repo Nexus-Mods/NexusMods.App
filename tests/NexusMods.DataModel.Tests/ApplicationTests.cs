@@ -49,14 +49,14 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
         var gameFolder = Install.Locations[GameFolderType.Game];
         foreach (var file in DATA_NAMES)
         {
-            gameFolder.Join(file).FileExists.Should().BeTrue("File has been applied");
+            gameFolder.CombineUnchecked(file).FileExists.Should().BeTrue("File has been applied");
         }
 
         var fileToDelete = DATA_NAMES.First();
         var fileToModify = DATA_NAMES.Skip(1).First();
         
-        gameFolder.Join(fileToDelete).Delete();
-        await gameFolder.Join(fileToModify).WriteAllTextAsync("modified");
+        gameFolder.CombineUnchecked(fileToDelete).Delete();
+        await gameFolder.CombineUnchecked(fileToModify).WriteAllTextAsync("modified");
         var modifiedHash = "modified".XxHash64();
 
         var firstMod = mainList.Value.Mods.Values.First();
@@ -66,17 +66,17 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
         {
             new BackupFile()
             {
-                To = fileToModify.Combine(gameFolder),
+                To = gameFolder.CombineUnchecked(fileToModify),
                 Size = Size.From("modified".Length),
                 Hash = modifiedHash
             },
             new RemoveFromLoadout
             {
-                To = fileToDelete.Combine(gameFolder),
+                To = gameFolder.CombineUnchecked(fileToDelete),
             },
             new IntegrateFile
             {
-                To = fileToModify.Combine(gameFolder),
+                To = gameFolder.CombineUnchecked(fileToModify),
                 Size = Size.From("modified".Length),
                 Hash = modifiedHash,
                 Mod = firstMod
@@ -99,8 +99,6 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
             .Should()
             .NotBeEmpty("Because we've updated a file");
         
-
-
         await BaseList?.Apply(Token)!;
     }
 }

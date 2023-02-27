@@ -29,7 +29,7 @@ public class SevenZipExtractor : IExtractor
 
     private static readonly FileType[] SupportedTypesCached = { FileType._7Z, FileType.RAR_NEW, FileType.RAR_OLD, FileType.ZIP };
     private static readonly Extension[] SupportedExtensionsCached = { KnownExtensions._7z, KnownExtensions.Rar, KnownExtensions.Zip, KnownExtensions._7zip };
-    private static readonly string ExePath = GetExeLocation().ToRelativePath().Combine(KnownFolders.EntryFolder).ToString();
+    private static readonly string ExePath = KnownFolders.EntryFolder.CombineChecked(GetExeLocation().ToRelativePath()).ToString();
 
     /// <inheritdoc />
     public FileType[] SupportedSignatures => SupportedTypesCached;

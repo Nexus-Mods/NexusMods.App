@@ -22,7 +22,7 @@ public class Startup
         container.AddBethesdaGameStudios();
         
         container.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug));
-        container.AddDataModel(KnownFolders.EntryFolder.Join("DataModel", Guid.NewGuid().ToString()));
+        container.AddDataModel(KnownFolders.EntryFolder.CombineUnchecked("DataModel").CombineUnchecked(Guid.NewGuid().ToString()));
         container.AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(s =>
             new Resource<FileContentsCache, Size>("File Analysis"));
         container.AddAllSingleton<IResource, IResource<IExtractor, Size>>(s =>
@@ -30,7 +30,7 @@ public class Startup
         container.AddFileExtractors();
 
         container.AddSingleton<TemporaryFileManager>(s => 
-            new TemporaryFileManager(KnownFolders.EntryFolder.Join("tempFiles")));
+            new TemporaryFileManager(KnownFolders.EntryFolder.CombineUnchecked("tempFiles")));
     }
     
     public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>
