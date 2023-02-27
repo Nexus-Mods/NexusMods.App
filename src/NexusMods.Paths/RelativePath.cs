@@ -28,7 +28,7 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
     public Extension Extension => Extension.FromPath(Path);
 
     /// <inheritdoc />
-    public RelativePath FileName => System.IO.Path.GetFileName(Path);
+    public RelativePath FileName => PathHelpers.GetFileName(Path);
 
     /// <summary>
     /// Amount of directories contained within this relative path.

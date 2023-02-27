@@ -1,3 +1,4 @@
+using FluentAssertions;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
 
@@ -19,7 +20,13 @@ public class UtilityTests
     public void CanGetParent()
     {
         var path = @"\foo\bar\baz".ToRelativePath();
-        Assert.Equal(@"\foo\bar".ToRelativePath(), path.Parent);
+        @"\foo\bar".ToRelativePath().Parent.Should().Be(path.Parent);
+    }
+
+    [Fact]
+    public void CanGetFileName()
+    {
+        @"\foo\bar".ToRelativePath().FileName.Should().BeEquivalentTo("bar".ToRelativePath());
     }
 
     [Fact]
