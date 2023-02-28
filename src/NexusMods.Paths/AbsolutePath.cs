@@ -373,4 +373,17 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
 
         return fileName;
     }
+    
+    /// <summary/>
+    /// <returns>Full path with directory separator string attached at the end.</returns>
+    private readonly string GetFullPathWithSeparator()
+    {
+        if (string.IsNullOrEmpty(Directory))
+            return string.Concat(FileName, DirectorySeparatorCharStr);
+
+        if (FileName.Length == 0)
+            return string.Concat(Directory, DirectorySeparatorCharStr);
+        
+        return string.Concat(Directory, DirectorySeparatorCharStr, FileName, DirectorySeparatorCharStr);
+    }
 }

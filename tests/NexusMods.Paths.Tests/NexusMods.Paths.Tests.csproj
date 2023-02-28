@@ -13,5 +13,9 @@
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
     </ItemGroup>
+    
+    <ItemGroup>
+      <PackageReference Include="Xunit.SkippableFact" Version="1.4.13" />
+    </ItemGroup>
 
 </Project>

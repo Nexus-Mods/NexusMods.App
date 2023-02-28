@@ -1,3 +1,4 @@
+using FluentAssertions;
 using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Paths.Tests.New.AbsolutePathTests;
@@ -8,6 +9,27 @@ namespace NexusMods.Paths.Tests.New.AbsolutePathTests;
 // ReSharper disable once InconsistentNaming
 public class IOTests
 {
+    // TODO: Linux/OSX equivalent.
+    
+    [SkippableTheory]
+    [InlineData("C:", 50000)]
+    public void GetFiles_ShouldSupportFsRoot_OnWindows(string directory, int minItems)
+    {
+        Skip.IfNot(OperatingSystem.IsWindows());
+        
+        // Note: This test can be slow, so the check is implemented like this.
+        var path = AbsolutePath.FromFullPath(directory);
+        int currentItems = 0;
+        foreach (var item in path.EnumerateFiles())
+        {
+            currentItems++;
+            if (currentItems > minItems)
+                return; // success
+        }
+        
+        Assert.Fail($"Minimum item count not reach, expected at least {minItems}, got {currentItems}");
+    }
+    
     [Fact]
     public async Task CanReadAndWriteFiles()
     {

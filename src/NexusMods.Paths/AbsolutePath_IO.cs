@@ -265,7 +265,7 @@ public partial struct AbsolutePath
     public readonly IEnumerable<AbsolutePath> EnumerateFiles(string pattern = "*", bool recursive = true)
     {
         var options = GetSearchOptions(recursive);
-        using var enumerator = new FilesEnumerator(GetFullPath(), pattern, options);
+        using var enumerator = new FilesEnumerator(GetFullPathWithSeparator(), pattern, options);
         while (enumerator.MoveNext())
         {
             var item = enumerator.Current;
@@ -281,11 +281,11 @@ public partial struct AbsolutePath
     public readonly IEnumerable<AbsolutePath> EnumerateDirectories(bool recursive = true)
     {
         var options = GetSearchOptions(recursive);
-        var enumerator = new DirectoriesEnumerator(GetFullPath(), "*", options);
+        var enumerator = new DirectoriesEnumerator(GetFullPathWithSeparator(), "*", options);
         while (enumerator.MoveNext())
         {
             var item = enumerator.Current;
-            yield return FromDirectoryAndFileName(Path.Combine(enumerator.CurrentDirectory, item), "");
+            yield return FromDirectoryAndFileName(Path.Combine(enumerator.CurrentDirectory!, item), "");
         }
     }
     
@@ -299,7 +299,7 @@ public partial struct AbsolutePath
         bool recursive = true)
     {
         var options = GetSearchOptions(recursive);
-        var enumerator = new FilesEnumeratorEx(GetFullPath(), pattern, options);
+        var enumerator = new FilesEnumeratorEx(GetFullPathWithSeparator(), pattern, options);
         
         while (enumerator.MoveNext())
         {
