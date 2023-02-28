@@ -106,7 +106,6 @@ public static class StringExtensions
                 nuint* ptr = (nuint*)(src);
                 
                 // Note. In this implementations we leave some (< sizeof(nuint)) data from the hash.
-                
                 // For our use of hashing file paths, this is okay, as files with different names but same extension
                 // would still hash differently. If I were to PR this to runtime though, this would need fixing.
                 
