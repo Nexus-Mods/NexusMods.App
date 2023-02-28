@@ -13,10 +13,10 @@ namespace NexusMods.Paths;
 /// </summary>
 public partial struct AbsolutePath 
 {
-    private static readonly EnumerationOptions _searchOptions = new()
+    private static EnumerationOptions GetSearchOptions(bool recursive) => new()
     {
         AttributesToSkip = 0,
-        RecurseSubdirectories = false,
+        RecurseSubdirectories = recursive,
         MatchType = MatchType.Win32
     };
     
@@ -264,23 +264,13 @@ public partial struct AbsolutePath
     /// <returns></returns>
     public readonly IEnumerable<AbsolutePath> EnumerateFiles(string pattern = "*", bool recursive = true)
     {
-        // Store all directories
-        var directories = new Queue<FilesEnumerator>();
-        directories.Enqueue(new FilesEnumerator(GetFullPath(), pattern, _searchOptions));
-
-        while (directories.TryDequeue(out var enumerator))
+        var options = GetSearchOptions(recursive);
+        using var enumerator = new FilesEnumerator(GetFullPath(), pattern, options);
+        while (enumerator.MoveNext())
         {
-            while (enumerator.MoveNext())
-            {
-                var item = enumerator.Current;
-                if (!item.IsDirectory)
-                    yield return FromDirectoryAndFileName(enumerator.Directory, item.FileName);
-                else
-                    if (recursive)
-                        directories.Enqueue(new FilesEnumerator(Path.Combine(enumerator.Directory, item.FileName), pattern, _searchOptions));
-            }
-            
-            enumerator.Dispose();
+            var item = enumerator.Current;
+            if (!item.IsDirectory)
+                yield return FromDirectoryAndFileName(enumerator.CurrentDirectory, item.FileName);
         }
     }
     
@@ -290,23 +280,12 @@ public partial struct AbsolutePath
     /// <param name="recursive">Whether to visit subdirectories or not.</param>
     public readonly IEnumerable<AbsolutePath> EnumerateDirectories(bool recursive = true)
     {
-        // Store all directories
-        var directories = new Queue<DirectoriesEnumerator>();
-        directories.Enqueue(new DirectoriesEnumerator(GetFullPath(), "*", _searchOptions));
-        
-        while (directories.TryDequeue(out var enumerator))
+        var options = GetSearchOptions(recursive);
+        var enumerator = new DirectoriesEnumerator(GetFullPath(), "*", options);
+        while (enumerator.MoveNext())
         {
-            while (enumerator.MoveNext())
-            {
-                var item = enumerator.Current;
-                var fullPath = Path.Combine(enumerator.Directory, item);
-                if (recursive)
-                    directories.Enqueue(new DirectoriesEnumerator(fullPath, "*", _searchOptions));
-                
-                yield return FromDirectoryAndFileName(fullPath, "");
-            }
-            
-            enumerator.Dispose();
+            var item = enumerator.Current;
+            yield return FromDirectoryAndFileName(Path.Combine(enumerator.CurrentDirectory, item), "");
         }
     }
     
@@ -319,23 +298,14 @@ public partial struct AbsolutePath
     public IEnumerable<FileEntry> EnumerateFileEntries(string pattern = "*",
         bool recursive = true)
     {
-        // Store all directories
-        var directories = new Queue<FilesEnumeratorEx>();
-        directories.Enqueue(new FilesEnumeratorEx(GetFullPath(), pattern, _searchOptions));
-
-        while (directories.TryDequeue(out var enumerator))
+        var options = GetSearchOptions(recursive);
+        var enumerator = new FilesEnumeratorEx(GetFullPath(), pattern, options);
+        
+        while (enumerator.MoveNext())
         {
-            while (enumerator.MoveNext())
-            {
-                var item = enumerator.Current;
-                if (!item.IsDirectory)
-                    yield return new FileEntry(FromDirectoryAndFileName(enumerator.Directory, item.FileName), item.Size, item.LastModified);
-                else
-                    if (recursive)
-                        directories.Enqueue(new FilesEnumeratorEx(Path.Combine(enumerator.Directory, item.FileName), pattern, _searchOptions));
-            }
-            
-            enumerator.Dispose();
+            var item = enumerator.Current;
+            if (!item.IsDirectory)
+                yield return new FileEntry(FromDirectoryAndFileName(enumerator.CurrentDirectory, item.FileName), item.Size, item.LastModified);
         }
     }
 
