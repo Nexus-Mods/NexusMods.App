@@ -4,6 +4,8 @@ using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.ViewModels;
 using NexusMods.App.UI.Views;
+using ReactiveUI;
+using Splat;
 
 namespace NexusMods.App.UI;
 
@@ -25,8 +27,11 @@ public class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = _provider.GetRequiredService<MainWindow>();
-            desktop.MainWindow.DataContext = _provider.GetRequiredService<MainWindowViewModel>();
+            Locator.CurrentMutable.UnregisterCurrent(typeof(IViewLocator));
+            Locator.CurrentMutable.Register(() => _provider.GetRequiredService<InjectedViewLocator>(), typeof(IViewLocator));
+            var reactiveWindow = _provider.GetRequiredService<MainWindow>();
+            reactiveWindow.ViewModel = _provider.GetRequiredService<MainWindowViewModel>();
+            desktop.MainWindow = reactiveWindow;
         }
 
         base.OnFrameworkInitializationCompleted();

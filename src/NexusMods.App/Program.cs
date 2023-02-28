@@ -1,5 +1,7 @@
 ﻿using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
+using Avalonia;
+using Avalonia.ReactiveUI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -25,22 +27,7 @@ var host = Host.CreateDefaultBuilder(Environment.GetCommandLineArgs())
     .ConfigureLogging(AddLogging)
     .ConfigureServices((_, services) =>
     {
-        services.AddCLI()
-            .AddUI()
-            .AddFileExtractors()
-            .AddDataModel()
-            .AddBethesdaGameStudios()
-            .AddRedEngineGames()
-            .AddGenericGameSupport()
-            .AddReshade()
-            .AddDarkestDungeon()
-            .AddStandardGameLocators()
-            .AddRenderers()
-            .AddNexusWebApi()
-            .AddAdvancedHttpDownloader()
-            .AddTestHarness();
-
-        services.AddSingleton<HttpClient>();
+        services.AddApp();
     }).Build();
 
 if (args.Length > 0)

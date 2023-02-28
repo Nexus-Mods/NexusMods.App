@@ -1,5 +1,7 @@
-﻿using System.Collections.Concurrent;
+﻿using System.Buffers.Binary;
+using System.Collections.Concurrent;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -11,8 +13,11 @@ namespace NexusMods.DataModel.Tests;
 
 public class DataStoreTests
 {
-    public DataStoreTests(IDataStore store)
+    private readonly ILogger<DataStoreTests> _logger;
+
+    public DataStoreTests(ILogger<DataStoreTests> logger, IDataStore store)
     {
+        _logger = logger;
         DataStore = store;
     }
 
@@ -86,17 +91,22 @@ public class DataStoreTests
 
         var oldId = DataStore.GetRoot(RootType.Tests) ?? IdEmpty.Empty;
 
+        var bytes = new byte[4];
+        
         foreach (var itm in Enumerable.Range(0, 128))
         {
             var newId = new Id64(EntityCategory.TestData, (ulong)itm);
+            BinaryPrimitives.WriteUInt32BigEndian(bytes, (uint)itm);
+            DataStore.PutRaw(newId, bytes);
             DataStore.PutRoot(RootType.Tests, oldId, newId).Should().BeTrue();
             src.Add(newId);
             oldId = newId;
         }
-
+        
         var attempts = 0;
         while (destQ.IsEmpty && attempts < 1000)
         {
+            _logger.LogInformation("Waiting for changes...");
             await Task.Delay(200);
             attempts++;
         }

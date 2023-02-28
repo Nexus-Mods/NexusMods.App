@@ -1,4 +1,5 @@
-﻿using NexusMods.DataModel.Abstractions;
+﻿using NexusMods.Common;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.DataModel.Games;
@@ -31,4 +32,9 @@ public interface IGame
     /// <param name="installation"></param>
     /// <returns></returns>
     public IEnumerable<AModFile> GetGameFiles(GameInstallation installation, IDataStore store);
+    
+    /// <summary>
+    /// Stream factory for the game's icon, must be square but need not be small.
+    /// </summary>
+    public IStreamFactory Icon { get; }
 }

@@ -1,6 +1,4 @@
-﻿<Style
-    xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+﻿<Style xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Style.Resources>
         <Color x:Key="BrandPrimary">#D98F40</Color>
         <Color x:Key="BrandPrimaryLighter">#E0A362</Color>
@@ -35,18 +33,33 @@
         <SolidColorBrush Color="{DynamicResource StatusSuccessDarker}" x:Key="StatusSuccessDarkerBrush" />
 
 
+        <Color x:Key="ContentSecondary">#2b2d2f</Color>
+        <SolidColorBrush Color="{DynamicResource ContentSecondary}" x:Key="ContentSecondaryBrush" />
+        <SolidColorBrush Color="{DynamicResource ContentSecondary}" x:Key="ContentSecondaryBrushDashed" />
 
         <Color x:Key="BrandWhite">#FFFFFF</Color>
         <Color x:Key="FontLightPrimary">#303030</Color>
         <Color x:Key="FontLightSecondary">#666666</Color>
 
 
-        <Color x:Key="ThemeBackgroundColor">#2b2d2f</Color>
-        <SolidColorBrush Color="{DynamicResource BrandSecondary}" x:Key="ThemeBackgroundBrush" />
+        <Color x:Key="ThemeBackgroundColor">#101010</Color>
+        <SolidColorBrush Color="{DynamicResource ThemeBackgroundColor}" x:Key="ThemeBackgroundBrush" />
+
+        <Color x:Key="TransparentColor">#00FFFFFF</Color>
+        <SolidColorBrush Color="{DynamicResource TransparentColor}" x:Key="TransparentBrush" />
+
+        <Color x:Key="BackgroundTertiaryColor">#222222</Color>
+        <SolidColorBrush Color="{DynamicResource BackgroundTertiaryColor}" x:Key="BackgroundTertiaryBrush" />
+
+        <Color x:Key="StructuralBorderColor">#303236</Color>
+        <SolidColorBrush Color="{DynamicResource StructuralBorderColor}" x:Key="StructuralBorderBrush" />
 
 
         <FontFamily x:Key="FontPrimary">avares://NexusMods.UI.Theme/Fonts/Montserrat/Montserrat-VariableFont_wght.ttf#Montserrat</FontFamily>
         <FontFamily x:Key="FontSecondary">avares://NexusMods.UI.Theme/Fonts/Roboto/Roboto-Regular.ttf#Roboto</FontFamily>
+
+        <Color x:Key="FontDarkSecondaryColor">#AAAAAA</Color>
+        <SolidColorBrush Color="{DynamicResource FontDarkSecondaryColor}" x:Key="FontDarkSecondaryBrush" />
 
 
         <SolidColorBrush Color="{DynamicResource BrandSecondaryLighter}" x:Key="DataGridCellFocusVisualPrimaryBrush" />

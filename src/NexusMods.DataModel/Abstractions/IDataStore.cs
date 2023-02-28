@@ -52,19 +52,19 @@ public struct RootChange : IMessage
             {
                 var stream = new PointerByteStream(ptr);
                 var writer = new BitStream<PointerByteStream>(stream);
-                writer.WriteAlignedFast((byte)Type);
+                writer.Write((byte)Type);
 
-                writer.WriteAlignedFast((byte)From.Category);
-                writer.WriteAlignedFast((byte)From.SpanSize);
+                writer.Write((byte)From.Category);
+                writer.Write((byte)From.SpanSize);
                 Span<byte> fromSpan = stackalloc byte[From.SpanSize];
                 From.ToSpan(fromSpan);
-                writer.WriteFast(fromSpan);
+                writer.Write(fromSpan);
                 
-                writer.WriteAlignedFast((byte)To.Category);
-                writer.WriteAlignedFast((byte)To.SpanSize);
+                writer.Write((byte)To.Category);
+                writer.Write((byte)To.SpanSize);
                 Span<byte> toSpan = stackalloc byte[To.SpanSize];
                 To.ToSpan(toSpan);
-                writer.WriteFast(toSpan);
+                writer.Write(toSpan);
             }   
         }
         // 1 byte for type, 2 bytes for each id (category + span size), 2 * span size for each id.
@@ -79,18 +79,18 @@ public struct RootChange : IMessage
             {
                 var stream = new PointerByteStream(ptr);
                 var reader = new BitStream<PointerByteStream>(stream);
-                var type = (RootType)reader.ReadAlignedFast<PointerByteStream, byte>();
+                var type = (RootType)reader.Read<byte>();
                 
-                var fromCategory = (EntityCategory)reader.ReadAlignedFast<PointerByteStream, byte>();
-                var fromSpanSize = reader.ReadAlignedFast<PointerByteStream, byte>();
+                var fromCategory = (EntityCategory)reader.Read<byte>();
+                var fromSpanSize = reader.Read<byte>();
                 Span<byte> fromSpan = stackalloc byte[fromSpanSize];
-                reader.ReadFast(fromSpan);
+                reader.Read(fromSpan);
                 var from = Id.FromSpan(fromCategory, fromSpan);
-
-                var toCategory = (EntityCategory)reader.ReadAlignedFast<PointerByteStream, byte>();
-                var toSpanSize = reader.ReadAlignedFast<PointerByteStream, byte>();
+                
+                var toCategory = (EntityCategory)reader.Read<byte>();
+                var toSpanSize = reader.Read<byte>();
                 Span<byte> toSpan = stackalloc byte[toSpanSize];
-                reader.ReadFast(toSpan);
+                reader.Read(toSpan);
                 var to = Id.FromSpan(toCategory, toSpan);
                 
                 return new RootChange

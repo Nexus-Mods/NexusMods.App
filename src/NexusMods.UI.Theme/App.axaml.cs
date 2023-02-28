@@ -1,8 +1,9 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using NexusMods.UI.Theme;
 
-namespace NexusMods.UI.Theme.Sandbox;
+namespace NexusMods.UI;
 
 public class App : Application
 {

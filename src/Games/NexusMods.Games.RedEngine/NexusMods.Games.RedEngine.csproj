@@ -11,4 +11,9 @@
       <PackageReference Include="CliWrap" Version="3.6.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="Resources\Cyberpunk2077\icon.png" />
+      <EmbeddedResource Include="Resources\Cyberpunk2077\icon.png" />
+    </ItemGroup>
+
 </Project>

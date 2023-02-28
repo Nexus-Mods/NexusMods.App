@@ -28,7 +28,8 @@ public static class Services
     public static IServiceCollection AddStandardGameLocators(this IServiceCollection services,
         bool registerConcreteLocators = true)
     {
-        services.AddSingleton<IGameLocator, SteamLocator>();
+
+        MaybeAddSteamHandler(services, registerConcreteLocators);
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
@@ -49,34 +50,37 @@ public static class Services
             services.AddSingleton<AHandler<OriginGame, string>>(_ => new OriginHandler());
         }
 #pragma warning restore CA1416
-
-        services.AddSingleton(s => CreateSteamHandler());
         
         return services;
     }
 
-    public static IServiceCollection AddSteamGameLocator(this IServiceCollection services,
-        bool registerConcreteLocator = true)
+    private static void MaybeAddSteamHandler(IServiceCollection services, 
+        bool registerConcreteLocators = true)
     {
         services.AddSingleton<IGameLocator, SteamLocator>();
-        if (registerConcreteLocator)
-            services.AddSingleton(s => CreateSteamHandler());
-        return services;
-    }
-
-    private static AHandler<SteamGame, int> CreateSteamHandler()
-    {
+        
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            return new SteamHandler(new WindowsRegistry());
+        {
+#pragma warning disable CA1416
+            if (registerConcreteLocators) 
+                services.AddSingleton<AHandler<SteamGame, int>, SteamHandler>(_ => new SteamHandler(new WindowsRegistry()));
+#pragma warning restore CA1416
+            return;
+        }
 
         var searchPaths = new[]
         {
-            KnownFolders.HomeFolder.CombineChecked(".steam/debian-installation/".ToRelativePath())
+            KnownFolders.HomeFolder.CombineUnchecked(".steam/debian-installation/".ToRelativePath()),
+            //KnownFolders.HomeFolder.CombineUnchecked(".steam/steam/".ToRelativePath())
         };
+        
+        var steamPath = searchPaths.FirstOrDefault(p => p.CombineChecked("steam.sh".ToRelativePath()).FileExists);
+        if (steamPath == default) return;
+        
 
-
-        var steamPath = searchPaths.First(p => p.CombineChecked("steam.sh".ToRelativePath()).FileExists);
-
-        return new SteamHandler(steamPath.ToString(), new FileSystem(), null);
+        
+        if (registerConcreteLocators) 
+            services.AddSingleton<AHandler<SteamGame, int>, SteamHandler>(_ => 
+                new SteamHandler(steamPath.ToString(), new FileSystem(), null));
     }
 }

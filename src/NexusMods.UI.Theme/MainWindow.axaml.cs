@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace NexusMods.UI.Theme.Sandbox;
+namespace NexusMods.UI.Theme;
 
 public partial class MainWindow : Window
 {

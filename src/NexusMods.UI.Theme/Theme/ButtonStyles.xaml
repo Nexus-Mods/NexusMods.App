@@ -170,4 +170,37 @@
         <Setter Property="Opacity" Value="40" />
     </Style>
 
+    <!--  Menu Button Styles  -->
+    <Style Selector="Button.Menu">
+        <Setter Property="Width" Value="184" />
+        <Setter Property="Height" Value="40" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="Background" Value="{DynamicResource TransparentBrush}" />
+        <Setter Property="Padding" Value="0" />
+    </Style>
+
+    <Style Selector="Button.Menu.Selected">
+        <Setter Property="Background" Value="{DynamicResource BackgroundTertiaryBrush}" />
+    </Style>
+
+    <Style Selector="Button.Menu StackPanel">
+        <Setter Property="Margin" Value="0" />
+    </Style>
+
+    <Style Selector="Button.Menu TextBlock">
+        <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+        <Setter Property="FontWeight" Value="700" />
+        <Setter Property="LineHeight" Value="16.41" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="LetterSpacing" Value="0.7" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+    </Style>
+    <Style Selector="Button.Menu Svg">
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="Margin" Value="13.5, 13.25, 9.5, 13.25" />
+    </Style>
+
 </Styles>

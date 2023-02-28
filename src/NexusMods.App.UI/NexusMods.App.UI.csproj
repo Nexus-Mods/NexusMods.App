@@ -7,6 +7,7 @@
   <ItemGroup>
     <Folder Include="Models\" />
     <AvaloniaResource Include="Assets\**" />
+    <Folder Include="Resources\Icons" />
     <None Remove=".gitignore" />
   </ItemGroup>
 
@@ -21,7 +22,19 @@
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.0-preview4" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0-preview4" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview4" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
-    <PackageReference Include="XamlNameReferenceGenerator" Version="1.5.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0-preview.1.23110.8" />
+    <PackageReference Include="XamlNameReferenceGenerator" Version="1.6.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+    <ProjectReference Include="..\NexusMods.UI.Theme\NexusMods.UI.Theme.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="RightContent\FoundGamesView.axaml.cs">
+      <DependentUpon>FoundGamesView.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 </Project>
