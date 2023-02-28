@@ -48,7 +48,7 @@ public class ModInstallerTests
         gameFiles.Files.Count.Should().BeGreaterThan(0);
 
         var file = await Download(modId, fileId, hash);
-        var installedId = await loadout.Install(file, "Cyber Engine Tweaks");
+        var installedId = await loadout.Install(file, name);
         loadout.Value.Mods[installedId].Files.Count.Should().Be(fileCount);
 
     }

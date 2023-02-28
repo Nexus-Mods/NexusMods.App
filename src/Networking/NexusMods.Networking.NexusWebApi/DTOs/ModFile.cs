@@ -146,7 +146,7 @@ public class ModFile : IJsonSerializable<ModFile>
     /// </summary>
     [JsonPropertyName("size_in_bytes")]
     // ReSharper disable once InconsistentNaming
-    public long SizeInBytes { get; set; }
+    public long? SizeInBytes { get; set; }
 
     /// <summary>
     /// The changelog for this item, expressed as raw HTML.

@@ -1,3 +1,4 @@
+using FluentAssertions;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
 
@@ -19,7 +20,13 @@ public class UtilityTests
     public void CanGetParent()
     {
         var path = @"\foo\bar\baz".ToRelativePath();
-        Assert.Equal(@"\foo\bar".ToRelativePath(), path.Parent);
+        @"\foo\bar".ToRelativePath().Should().Be(path.Parent);
+    }
+
+    [Fact]
+    public void CanGetFileName()
+    {
+        @"\foo\bar".ToRelativePath().FileName.Should().BeEquivalentTo("bar".ToRelativePath());
     }
 
     [Fact]
@@ -37,9 +44,11 @@ public class UtilityTests
         var pathA = @"foo\bar\baz.zip".ToRelativePath();
         var pathB = @"foo\bar".ToRelativePath();
         var pathC = @"fOo\Bar".ToRelativePath();
+        var pathD = @"foo\barbaz".ToRelativePath();
         Assert.True(pathA.InFolder(pathB));
         Assert.True(pathA.InFolder(pathC));
         Assert.False(pathB.InFolder(pathA));
+        Assert.False(pathD.InFolder(pathB));
     }
     
     [Theory]

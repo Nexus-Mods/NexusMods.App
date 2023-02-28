@@ -28,7 +28,7 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
     public Extension Extension => Extension.FromPath(Path);
 
     /// <inheritdoc />
-    public RelativePath FileName => System.IO.Path.GetFileName(Path);
+    public RelativePath FileName => PathHelpers.GetFileName(Path);
 
     /// <summary>
     /// Amount of directories contained within this relative path.
@@ -39,7 +39,7 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
     /// <summary>
     /// Traverses one directory up.
     /// </summary>
-    public RelativePath Parent => new(System.IO.Path.GetDirectoryName(Path) ?? "");
+    public RelativePath Parent => new(PathHelpers.GetDirectoryName(Path) ?? "");
 
     /// <summary>
     /// Creates a relative path given a string.
@@ -95,7 +95,29 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
     /// </summary>
     /// <param name="pathToCheck">The path to verify.</param>
     /// <returns>True if this is a child path of the parent path; else false.</returns>
-    public bool InFolder(RelativePath pathToCheck) => StartsWith(pathToCheck.Path);
+    public bool InFolder(RelativePath other)
+    {
+        // Note: We assume equality to be separator and case insensitive
+        //       therefore this property should transfer over to contains checks.
+        Span<char> thisCopy = Path.Length <= 512 ? stackalloc char[Path.Length] : GC.AllocateUninitializedArray<char>(Path.Length);
+        Path.CopyTo(thisCopy);
+        thisCopy.NormalizeStringCaseAndPathSeparator();
+        
+        Span<char> otherCopy = other.Path.Length <= 512 ? stackalloc char[other.Path.Length] : GC.AllocateUninitializedArray<char>(other.Path.Length);
+        other.Path.CopyTo(otherCopy);
+        otherCopy.NormalizeStringCaseAndPathSeparator();
+        
+        if (!thisCopy.StartsWith(otherCopy)) return false;
+        
+        // If thisCopy is bigger make sure the next character is a path separator
+        // So we don't assume that /foo/barbaz is in /foo/bar
+        if (thisCopy.Length > otherCopy.Length)
+        {
+            var next = thisCopy[otherCopy.Length];
+            return next is '\\' or '/';
+        }
+        return true;
+    }
 
     /// <summary>
     /// Drops first X directories of a path.

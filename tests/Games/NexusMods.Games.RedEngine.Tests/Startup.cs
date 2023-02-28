@@ -22,7 +22,7 @@ public class Startup
     {
         container.AddUniversalGameLocator<Cyberpunk2077>(new Version("1.61"));
         container.AddRedEngineGames();
-        container.AddNexusWebApi();
+        container.AddNexusWebApi(true);
         container.AddHttpDownloader();
 
         container.AddSingleton<HttpClient>();

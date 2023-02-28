@@ -1,12 +1,13 @@
 ﻿using System.Text;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.Networking.NexusWebApi.Types;
 
 namespace NexusMods.Networking.NexusWebApi;
 
 /// <summary>
 /// Injects Nexus API keys into HTTP messages.
 /// </summary>
-public class ApiKeyMessageFactory : IHttpMessageFactory
+public class ApiKeyMessageFactory : IAuthenticatingMessageFactory
 {
     private static readonly Id ApiKeyId = new IdVariableLength(EntityCategory.AuthData, "NexusMods.Networking.NexusWebApi.ApiKey"u8.ToArray());
 
@@ -58,5 +59,23 @@ public class ApiKeyMessageFactory : IHttpMessageFactory
     {
         _store.PutRaw(ApiKeyId, Encoding.UTF8.GetBytes(apiKey));
         return ValueTask.CompletedTask;
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask<UserInfo?> Verify(Client client, CancellationToken token)
+    {
+        var result = await client.Validate(token);
+        return new UserInfo
+        {
+            Name = result.Data.Name,
+            IsPremium = result.Data.IsPremium,
+            IsSupporter = result.Data.IsSupporter,
+        };
+    }
+
+    /// <inheritdoc/>
+    public ValueTask<HttpRequestMessage?> HandleError(HttpRequestMessage original, HttpRequestException ex, CancellationToken token)
+    {
+        return new ValueTask<HttpRequestMessage?>();
     }
 }

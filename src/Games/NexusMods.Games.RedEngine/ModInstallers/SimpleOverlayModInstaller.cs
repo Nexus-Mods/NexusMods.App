@@ -55,7 +55,7 @@ public class SimpleOverlayModInstaller : IModInstaller
         var depth = 0;
         while (true)
         {
-            if (basePath.Depth == 1) // root
+            if (basePath.Depth == 0) // root
                 yield break;
             
             if (basePath.Depth < subSection.Depth)

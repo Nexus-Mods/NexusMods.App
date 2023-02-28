@@ -6,11 +6,11 @@ namespace NexusMods.Networking.NexusWebApi.Verbs;
 
 public class NexusApiVerify : AVerb
 {
-    public NexusApiVerify(Configurator configurator, Client client)
+    public NexusApiVerify(Configurator configurator, Client client, IAuthenticatingMessageFactory messageFactory)
     {
         _client = client;
         _renderer = configurator.Renderer;
-
+        _messageFactory = messageFactory;
     }
 
     public static VerbDefinition Definition => new("nexus-api-verify",
@@ -19,19 +19,19 @@ public class NexusApiVerify : AVerb
 
     private readonly Client _client;
     private readonly IRenderer _renderer;
+    private readonly IAuthenticatingMessageFactory _messageFactory;
 
     public async Task<int> Run(CancellationToken token)
     {
-        var result = await _client.Validate(token);
-        await _renderer.Render(new Table(new[] { "Name", "Premium", "Daily Remaining", "Hourly Remaining" },
+        var userInfo = await _messageFactory.Verify(_client, token);
+        await _renderer.Render(new Table(new[] { "Name", "Premium", "Supporter" },
             new[]
             {
                 new object[]
                 {
-                    result.Data.Name, 
-                    result.Data.IsPremium, 
-                    result.Metadata.DailyRemaining,
-                    result.Metadata.HourlyRemaining
+                    userInfo?.Name ?? "<Not logged in>",
+                    userInfo?.IsPremium ?? false,
+                    userInfo?.IsSupporter ?? false,
                 }
             }));
 

@@ -1,14 +1,17 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.CLI.OptionParsers;
 using NexusMods.CLI.Verbs;
 using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Interprocess;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.FileExtractor.Extractors;
 using NexusMods.Paths;
+using System.Runtime.InteropServices;
 
 namespace NexusMods.CLI;
 
@@ -26,6 +29,12 @@ public static class Services
         services.AddSingleton<IOptionParser<Loadout>, LoadoutParser>();
         services.AddSingleton<IOptionParser<ITool>, ToolParser>();
         services.AddSingleton<TemporaryFileManager>();
+        services.AddSingleton<IProcessFactory, ProcessFactory>();
+        services.AddOSInterop();
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            services.AddSingleton<IProtocolRegistration, ProtocolRegistrationWindows>();
+        }
 
         services.AddVerb<AnalyzeArchive>()
             .AddVerb<Apply>()
@@ -42,6 +51,7 @@ public static class Services
             .AddVerb<ListMods>()
             .AddVerb<ListTools>()
             .AddVerb<ManageGame>()
+            .AddVerb<ProtocolInvocation>()
             .AddVerb<Rename>()
             .AddVerb<RunTool>();
         

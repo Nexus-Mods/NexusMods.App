@@ -38,7 +38,7 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame
         yield return new(GameFolderType.AppData, appData);
     }
 
-    public IEnumerable<AModFile> GetGameFiles(GameInstallation installation, IDataStore store)
+    public override IEnumerable<AModFile> GetGameFiles(GameInstallation installation, IDataStore store)
     {
         yield return new PluginFile
         {
