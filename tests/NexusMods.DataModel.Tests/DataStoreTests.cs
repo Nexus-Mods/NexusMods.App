@@ -93,16 +93,11 @@ public class DataStoreTests
             src.Add(newId);
             oldId = newId;
         }
-
-        var attempts = 0;
-        while (destQ.IsEmpty && attempts < 1000)
-        {
-            await Task.Delay(200);
-            attempts++;
-        }
+        
+        await Task.Delay(1000);
 
         // Cant' be exact about this test because other things being tested may be generating changes
         var dest = destQ.ToList();
-        dest.Should().NotBeEmpty();
+        dest.Count.Should().BeGreaterThan(2);
     }
 }
