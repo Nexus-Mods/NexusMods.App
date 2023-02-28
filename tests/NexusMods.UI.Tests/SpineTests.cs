@@ -9,6 +9,8 @@ using Type = NexusMods.App.UI.Controls.Spine.Type;
 
 namespace NexusMods.UI.Tests;
 
+
+[Trait("RequiresNetworking", "True")]
 public class SpineTests : AUiTest
 {
     private readonly LoadoutManager _loadoutManager;
