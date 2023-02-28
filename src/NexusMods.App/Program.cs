@@ -6,7 +6,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.App;
 using NexusMods.App.UI;
-using NexusMods.App.UI.Helpers;
 using NexusMods.CLI;
 using NLog.Extensions.Logging;
 using NLog.Targets;
@@ -75,7 +74,6 @@ public class Program
     private static AppBuilder BuildAvaloniaApp()
     {
         var host = BuildHost();
-        InjectedDataContext.ServiceProvider = host.Services;
         return Startup.BuildAvaloniaApp(host.Services);
     }
 }

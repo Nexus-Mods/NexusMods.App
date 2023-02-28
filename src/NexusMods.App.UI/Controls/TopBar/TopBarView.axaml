@@ -2,28 +2,104 @@
     d:DataContext=""
     d:DesignHeight="56"
     d:DesignWidth="1280"
-    helpers:InjectedDataContext.ViewModel="topBar:TopBarViewModel"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Controls.TopBar.TopBarView"
     x:TypeArguments="topBar:TopBarViewModel"
     xmlns="https://github.com/avaloniaui"
+    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:helpers="clr-namespace:NexusMods.App.UI.Helpers"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:pills="clr-namespace:NexusMods.App.UI.Controls.Pills"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:topBar="clr-namespace:NexusMods.App.UI.Controls.TopBar"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Grid ColumnDefinitions="Auto, Auto, *, Auto, Auto, Auto">
+    <Design.DataContext>
+        <topBar:TopBarDesignViewModel />
+    </Design.DataContext>
+    <Grid ColumnDefinitions="Auto, Auto, *, Auto, Auto, 3, Auto">
         <Svg
             Grid.Column="0"
             Grid.Row="0"
-            Height="30"
+            Height="34"
             HorizontalAlignment="Left"
-            Margin="12,13"
+            Margin="12,10"
             Path="avares://NexusMods.App.UI/Assets/nexus-logo-with-text.svg"
             VerticalAlignment="Center"
-            Width="127" />
+            Width="100" />
 
-        <Button Grid.Column="5" x:Name="Login" />
+        <pills:Premium
+            Grid.Column="1"
+            Grid.Row="0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            x:Name="Premium" />
+
+        <Border
+            BorderBrush="{DynamicResource StructuralBorderBrush}"
+            BorderThickness="1"
+            CornerRadius="4"
+            Grid.Column="2"
+            Height="36"
+            Margin="12,0">
+            <StackPanel
+                Margin="11"
+                Orientation="Horizontal"
+                VerticalAlignment="Center">
+                <avalonia:Icon
+                    FontSize="11"
+                    Foreground="{DynamicResource StructuralBorderBrush}"
+                    Value="mdi-magnify" />
+                <TextBlock
+                    Foreground="{DynamicResource StructuralBorderBrush}"
+                    HorizontalAlignment="Left"
+                    Margin="7,0"
+                    Text="Search"
+                    VerticalAlignment="Center" />
+            </StackPanel>
+        </Border>
+
+        <Button
+            Classes="Primary"
+            Grid.Column="4"
+            Height="34"
+            x:Name="LoginButton">
+            <TextBlock Height="20">LOG IN</TextBlock>
+        </Button>
+
+        <Border
+            BorderBrush="{DynamicResource AccentButtonBorderBrush}"
+            BorderThickness="1"
+            Grid.Column="5"
+            Height="34"
+            Width="1" />
+
+        <Grid
+            Classes="WindowControls"
+            ColumnDefinitions="*, *, *"
+            Grid.Column="6"
+            HorizontalAlignment="Right"
+            Width="160">
+
+            <Button Grid.Column="0" Padding="11">
+                <avalonia:Icon
+                    FontSize="11"
+                    Foreground="#DADADA"
+                    Value="mdi-window-minimize" />
+            </Button>
+            <Button Grid.Column="1" Padding="11">
+                <avalonia:Icon
+                    FontSize="11"
+                    Foreground="#DADADA"
+                    Value="mdi-window-maximize" />
+            </Button>
+            <Button Grid.Column="2" Padding="11">
+                <avalonia:Icon
+                    FontSize="11"
+                    Foreground="#DADADA"
+                    Value="mdi-window-close" />
+            </Button>
+
+
+        </Grid>
     </Grid>
 </reactiveUi:ReactiveUserControl>

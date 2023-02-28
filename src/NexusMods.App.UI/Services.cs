@@ -29,7 +29,7 @@ public static class Services
             .AddView<Spine, SpineViewModel>()
             .AddView<FoundGamesView, FoundGamesViewModel>()
             .AddView<Game, GameViewModel>()
-            .AddView<TopBarView, TopBarViewModel>()
+            .AddView<TopBarView, ITopBarViewModel>()
             
             // Other
             .AddSingleton<InjectedViewLocator>()
