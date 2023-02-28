@@ -1,11 +1,10 @@
 ﻿
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.Controls.Spine;
+using NexusMods.App.UI.Controls.Spine.Buttons;
 using NexusMods.App.UI.RightContent;
 using NexusMods.App.UI.ViewModels;
 using NexusMods.App.UI.Views;
-using NexusMods.UI.Theme.Controls.Spine.Buttons;
-using ReactiveUI;
 
 namespace NexusMods.App.UI;
 
@@ -27,6 +26,7 @@ public static class Services
             .AddView<Add, AddButtonViewModel>()
             .AddView<Spine, SpineViewModel>()
             .AddView<FoundGamesView, FoundGamesViewModel>()
+            .AddView<Game, GameViewModel>()
             
             // Other
             .AddSingleton<InjectedViewLocator>()

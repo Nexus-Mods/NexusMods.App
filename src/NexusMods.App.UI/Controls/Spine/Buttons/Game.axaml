@@ -1,28 +1,30 @@
 ﻿<reactiveUi:ReactiveUserControl
-    d:DesignHeight="65"
-    d:DesignWidth="65"
+    d:DesignHeight="90"
+    d:DesignWidth="90"
     mc:Ignorable="d"
-    x:Class="NexusMods.UI.Theme.Controls.Spine.Buttons.Home"
-    x:TypeArguments="buttons:SpineButtonViewModel"
+    x:Class="NexusMods.App.UI.Controls.Spine.Buttons.Game"
+    x:TypeArguments="buttons:GameViewModel"
     xmlns="https://github.com/avaloniaui"
-    xmlns:buttons="clr-namespace:NexusMods.UI.Theme.Controls.Spine.Buttons"
+    xmlns:buttons="clr-namespace:NexusMods.App.UI.Controls.Spine.Buttons"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.DataContext>
+        <buttons:GameViewModel Image="avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png" />
+    </Design.DataContext>
     <UserControl.Styles>
-        <Style Selector="Button.Spine">
+        <Style Selector="ToggleButton.Spine">
             <Setter Property="CornerRadius" Value="45" />
             <Setter Property="HorizontalAlignment" Value="Center" />
         </Style>
-        <Style Selector="Button.Spine:pressed">
+
+        <Style Selector="ToggleButton.Spine:pressed">
             <Setter Property="RenderTransform" Value="scale(0.9)" />
         </Style>
 
-        <Style Selector="Button.Spine.Inactive Border">
-            <Setter Property="BorderBrush" Value="{DynamicResource ContentSecondary}" />
-            <Setter Property="Background" Value="#01FFFFFF" />
+        <Style Selector="ToggleButton.Spine:unchecked Border">
+            <Setter Property="BorderBrush" Value="#28FFFFFF" />
             <Setter Property="BorderThickness" Value="1" />
 
             <Setter Property="Transitions">
@@ -35,55 +37,51 @@
             </Setter>
         </Style>
 
-        <Style Selector="Button.Spine.Inactive:pointerover Border">
+        <Style Selector="ToggleButton.Spine:unchecked:pointerover Border">
             <Setter Property="Background" Value="#4CFFFFFF" />
-            <Setter Property="BorderBrush" Value="#FFFFFF" />
+            <Setter Property="BorderBrush" Value="#80FFFFFF" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
 
-        <Style Selector="Button.Spine.Active Border">
+        <Style Selector="ToggleButton.Spine:checked Border">
             <Setter Property="Background" Value="#00FFFFFF" />
             <Setter Property="BorderBrush" Value="#FFFFFF" />
             <Setter Property="BorderThickness" Value="2" />
             <Setter Property="BoxShadow" Value="0 0 10 0 #66FFFFFF" />
         </Style>
 
-        <Style Selector="Button.Spine.Active:pointerover Border">
+        <Style Selector="ToggleButton.Spine:checked:pointerover Border">
             <Setter Property="Background" Value="#80FFFFFF" />
-            <Setter Property="BorderBrush" Value="#FFFFFF" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BrandPrimary}" />
             <Setter Property="BorderThickness" Value="2" />
-        </Style>
-
-        <Style Selector="Button.Spine.Inactive icons|Icon">
-            <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryBrush}" />
-        </Style>
-
-        <Style Selector="Button.Spine.Active icons|Icon">
-            <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
         </Style>
     </UserControl.Styles>
 
-    <Button
+    <ToggleButton
         Classes="Spine"
         Height="64"
         Width="64"
-        x:Name="Button">
-        <Button.Template>
+        x:Name="Toggle">
+        <ToggleButton.Template>
             <ControlTemplate>
                 <Grid>
-                    <icons:Icon
-                        FontSize="20"
-                        HorizontalAlignment="Center"
-                        Margin="0"
-                        Padding="0"
-                        Value="mdi-home"
-                        VerticalAlignment="Center" />
+                    <Image
+                        Height="48"
+                        Width="48"
+                        x:Name="GameImage">
+                        <Image.Clip>
+                            <EllipseGeometry Rect="0, 0, 48, 48" />
+                        </Image.Clip>
+                    </Image>
                     <Border
+                        Background="{DynamicResource TransparentBackground}"
                         CornerRadius="48"
                         Height="48"
                         Width="48" />
                 </Grid>
             </ControlTemplate>
-        </Button.Template>
-    </Button>
+        </ToggleButton.Template>
+
+
+    </ToggleButton>
 </reactiveUi:ReactiveUserControl>

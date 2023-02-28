@@ -20,6 +20,7 @@ public class InjectedViewLocator : IViewLocator
     
     public IViewFor? ResolveView<T>(T? viewModel, string? contract = null)
     {
+        _logger.LogDebug("Finding View for {ViewModel}", viewModel.GetType().FullName);
         try
         {
             var method = _method.MakeGenericMethod(viewModel?.GetType() ?? typeof(object));

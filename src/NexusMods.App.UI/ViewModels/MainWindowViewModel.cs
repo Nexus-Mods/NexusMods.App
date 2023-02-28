@@ -7,7 +7,7 @@ using Type = NexusMods.App.UI.Controls.Spine.Type;
 
 namespace NexusMods.App.UI.ViewModels;
 
-public class MainWindowViewModel : ReactiveObject, IActivatableViewModel
+public class MainWindowViewModel : AViewModel
 {
     private readonly AViewModel _homeViewModel;
 
@@ -20,8 +20,6 @@ public class MainWindowViewModel : ReactiveObject, IActivatableViewModel
             Spine.Actions
                 .Subscribe(HandleSpineAction)
                 .DisposeWith(disposables);
-
-
         });
     }
 
@@ -39,6 +37,4 @@ public class MainWindowViewModel : ReactiveObject, IActivatableViewModel
     
     [Reactive]
     public AViewModel RightContent { get; set; }
-
-    public ViewModelActivator Activator { get; } = new();
 }

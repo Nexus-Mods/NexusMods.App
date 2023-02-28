@@ -9,7 +9,7 @@ using Avalonia.ReactiveUI;
 using Avalonia.VisualTree;
 using ReactiveUI;
 
-namespace NexusMods.UI.Theme.Controls.Spine.Buttons;
+namespace NexusMods.App.UI.Controls.Spine.Buttons;
 
 public partial class Game : ReactiveUserControl<GameViewModel>
 {

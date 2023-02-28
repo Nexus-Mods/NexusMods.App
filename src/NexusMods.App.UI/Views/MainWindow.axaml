@@ -11,8 +11,8 @@
     x:TypeArguments="vm:MainWindowViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
-    xmlns:buttons="clr-namespace:NexusMods.UI.Theme.Controls.Spine.Buttons;assembly=NexusMods.UI.Theme"
-    xmlns:controls="clr-namespace:NexusMods.UI.Theme.Controls;assembly=NexusMods.UI.Theme"
+    xmlns:buttons="clr-namespace:NexusMods.App.UI.Controls.Spine.Buttons;assembly=NexusMods.App.UI"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
@@ -100,16 +100,10 @@
 
         </StackPanel>
 
-        <ContentPresenter
+        <reactiveUi:ViewModelViewHost
             Grid.Column="2"
             Grid.Row="1"
-            x:Name="RightContent">
-            <ContentPresenter.DataTemplates>
-                <DataTemplate DataType="{x:Type rightContent:FoundGamesViewModel}">
-                    <rightContent:FoundGamesView />
-                </DataTemplate>
-            </ContentPresenter.DataTemplates>
-        </ContentPresenter>
+            x:Name="RightContent" />
 
     </Grid>
 
