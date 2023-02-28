@@ -1,11 +1,17 @@
-﻿<UserControl
+﻿<reactiveUi:ReactiveUserControl
+    d:DataContext=""
     d:DesignHeight="56"
     d:DesignWidth="1280"
+    helpers:InjectedDataContext.ViewModel="topBar:TopBarViewModel"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Controls.TopBar.TopBarView"
+    x:TypeArguments="topBar:TopBarViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:helpers="clr-namespace:NexusMods.App.UI.Helpers"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:topBar="clr-namespace:NexusMods.App.UI.Controls.TopBar"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Grid ColumnDefinitions="Auto, Auto, *, Auto, Auto, Auto">
         <Svg
@@ -18,6 +24,6 @@
             VerticalAlignment="Center"
             Width="127" />
 
-        <Button Grid.Column="5">Login</Button>
+        <Button Grid.Column="5" x:Name="Login" />
     </Grid>
-</UserControl>
+</reactiveUi:ReactiveUserControl>
