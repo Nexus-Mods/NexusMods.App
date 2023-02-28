@@ -1,6 +1,9 @@
 using System.Diagnostics;
+using System.IO.Enumeration;
+using System.Runtime.CompilerServices;
 using System.Text;
 using NexusMods.Paths.Extensions;
+using NexusMods.Paths.Utilities.Internal.Enumerators;
 
 namespace NexusMods.Paths;
 
@@ -10,6 +13,13 @@ namespace NexusMods.Paths;
 /// </summary>
 public partial struct AbsolutePath 
 {
+    private static readonly EnumerationOptions _searchOptions = new()
+    {
+        AttributesToSkip = 0,
+        RecurseSubdirectories = false,
+        MatchType = MatchType.Win32
+    };
+    
     /// <summary>
     /// Returns the file information for this file.
     /// </summary>
@@ -254,9 +264,50 @@ public partial struct AbsolutePath
     /// <returns></returns>
     public readonly IEnumerable<AbsolutePath> EnumerateFiles(string pattern = "*", bool recursive = true)
     {
-        return System.IO.Directory.EnumerateFiles(GetFullPath(), pattern,
-                recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
-            .Select(file => file.ToAbsolutePath());
+        // Store all directories
+        var directories = new Queue<FilesEnumerator>();
+        directories.Enqueue(new FilesEnumerator(GetFullPath(), pattern, _searchOptions));
+
+        while (directories.TryDequeue(out var enumerator))
+        {
+            while (enumerator.MoveNext())
+            {
+                var item = enumerator.Current;
+                if (!item.IsDirectory)
+                    yield return FromDirectoryAndFileName(enumerator.Directory, item.FileName);
+                else
+                    if (recursive)
+                        directories.Enqueue(new FilesEnumerator(Path.Combine(enumerator.Directory, item.FileName), pattern, _searchOptions));
+            }
+            
+            enumerator.Dispose();
+        }
+    }
+    
+    /// <summary>
+    /// Enumerates individual FileSystem directories under this directory.
+    /// </summary>
+    /// <param name="recursive">Whether to visit subdirectories or not.</param>
+    public readonly IEnumerable<AbsolutePath> EnumerateDirectories(bool recursive = true)
+    {
+        // Store all directories
+        var directories = new Queue<DirectoriesEnumerator>();
+        directories.Enqueue(new DirectoriesEnumerator(GetFullPath(), "*", _searchOptions));
+        
+        while (directories.TryDequeue(out var enumerator))
+        {
+            while (enumerator.MoveNext())
+            {
+                var item = enumerator.Current;
+                var fullPath = Path.Combine(enumerator.Directory, item);
+                if (recursive)
+                    directories.Enqueue(new DirectoriesEnumerator(fullPath, "*", _searchOptions));
+                
+                yield return FromDirectoryAndFileName(fullPath, "");
+            }
+            
+            enumerator.Dispose();
+        }
     }
     
     /// <summary>
@@ -268,15 +319,24 @@ public partial struct AbsolutePath
     public IEnumerable<FileEntry> EnumerateFileEntries(string pattern = "*",
         bool recursive = true)
     {
-        if (!DirectoryExists()) return Array.Empty<FileEntry>();
-        return System.IO.Directory.EnumerateFiles(GetFullPath(), pattern,
-                recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
-            .Select(file =>
+        // Store all directories
+        var directories = new Queue<FilesEnumeratorEx>();
+        directories.Enqueue(new FilesEnumeratorEx(GetFullPath(), pattern, _searchOptions));
+
+        while (directories.TryDequeue(out var enumerator))
+        {
+            while (enumerator.MoveNext())
             {
-                var path = file.ToAbsolutePath();
-                var info = path.FileInfo;
-                return new FileEntry(Path: path, Size: Size.From(info.Length), LastModified:info.LastWriteTimeUtc);
-            });
+                var item = enumerator.Current;
+                if (!item.IsDirectory)
+                    yield return new FileEntry(FromDirectoryAndFileName(enumerator.Directory, item.FileName), item.Size, item.LastModified);
+                else
+                    if (recursive)
+                        directories.Enqueue(new FilesEnumeratorEx(Path.Combine(enumerator.Directory, item.FileName), pattern, _searchOptions));
+            }
+            
+            enumerator.Dispose();
+        }
     }
 
     /// <summary>
@@ -285,26 +345,8 @@ public partial struct AbsolutePath
     /// <param name="pattern">The extension to search for.</param>
     /// <param name="recursive">Whether the search should be done recursively or not.</param>
     /// <returns></returns>
-    public IEnumerable<AbsolutePath> EnumerateFiles(Extension pattern,
-        bool recursive = true)
-    {
-        return System.IO.Directory.EnumerateFiles(ToString(), "*" + pattern, 
-                recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
-            .Select(file => file.ToAbsolutePath());
-    }
-    
-    /// <summary>
-    /// Enumerates individual FileSystem directories under this directory.
-    /// </summary>
-    /// <param name="recursive">Whether to visit subdirectories or not.</param>
-    public readonly IEnumerable<AbsolutePath> EnumerateDirectories(bool recursive = true)
-    {
-        if (!DirectoryExists()) return Array.Empty<AbsolutePath>();
-        return System.IO.Directory.EnumerateDirectories(GetFullPath(), "*",
-                recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
-            .Select(p => p.ToAbsolutePath());
-    }
-    
+    public IEnumerable<AbsolutePath> EnumerateFiles(Extension pattern, bool recursive = true) => EnumerateFiles("*" + pattern, recursive);
+
     /// <summary>
     /// Writes all text specified in the given string to this path; using UTF-8 encoding.
     /// </summary>
@@ -348,5 +390,17 @@ public partial struct AbsolutePath
     {
         await using var fs = Create();
         await fs.WriteAsync(data, CancellationToken.None);
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool MatchesPattern(string expression, ReadOnlySpan<char> name, EnumerationOptions options)
+    {
+        bool ignoreCase = true;
+        return options.MatchType switch
+        {
+            MatchType.Simple => FileSystemName.MatchesSimpleExpression(expression.AsSpan(), name, ignoreCase),
+            MatchType.Win32 => FileSystemName.MatchesWin32Expression(expression.AsSpan(), name, ignoreCase),
+            _ => throw new ArgumentOutOfRangeException(nameof(options)),
+        };
     }
 }
