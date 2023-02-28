@@ -23,6 +23,7 @@
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0-preview4" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview4" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0-preview.1.23110.8" />
+    <PackageReference Include="ReactiveUI.Fody" Version="18.4.22" />
     <PackageReference Include="XamlNameReferenceGenerator" Version="1.6.1" />
   </ItemGroup>
 
