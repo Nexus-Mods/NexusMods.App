@@ -1,6 +1,7 @@
 ﻿using System.Buffers.Binary;
 using System.Collections.Concurrent;
 using System.Data.SQLite;
+using System.Diagnostics;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text.Json;
@@ -283,7 +284,7 @@ public class SqliteDataStore : IDataStore, IDisposable
     private async Task<RootChange> WaitTillReady(RootChange change)
     {
         var maxCycles = 0;
-        while (GetRaw(change.To) == null || maxCycles > 10)
+        while (GetRaw(change.To) == null && maxCycles < 10)
         {
             _logger.LogDebug("Waiting for root change {To} to be ready", change.To);
             await Task.Delay(100);
