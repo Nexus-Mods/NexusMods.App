@@ -35,7 +35,9 @@ public static class Services
         coll.AddSingleton<JsonConverter, EntityLinkConverterFactory>();
         coll.AddSingleton(typeof(EntityLinkConverter<>));
 
-        coll.AddSingleton<IDataStore>(s => new SqliteDataStore(baseFolder.Value.CombineUnchecked("DataModel.sqlite"), s, 
+        coll.AddSingleton<IDataStore>(s => new SqliteDataStore(
+            s.GetRequiredService<ILogger<SqliteDataStore>>(),
+            baseFolder.Value.CombineUnchecked("DataModel.sqlite"), s, 
             s.GetRequiredService<IMessageProducer<RootChange>>(), 
             s.GetRequiredService<IMessageConsumer<RootChange>>()));
         coll.AddSingleton(s => new ArchiveManager(s.GetRequiredService<ILogger<ArchiveManager>>(),
