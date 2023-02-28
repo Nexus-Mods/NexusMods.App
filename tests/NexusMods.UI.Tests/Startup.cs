@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.App;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
+using NexusMods.Games.RedEngine;
 using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.DependencyInjection;
@@ -14,7 +15,8 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection container)
     {
-        container.AddApp()
+        container.AddUniversalGameLocator<Cyberpunk2077>(new Version("1.61"));
+        container.AddApp(addStandardGameLocators:false)
             .AddSingleton<AvaloniaApp>();
     }
     

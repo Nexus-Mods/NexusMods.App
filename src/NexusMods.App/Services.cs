@@ -25,7 +25,7 @@ public static class Services
         return services;
     }
 
-    public static IServiceCollection AddApp(this IServiceCollection services)
+    public static IServiceCollection AddApp(this IServiceCollection services, bool addStandardGameLocators = true)
     {
         services.AddCLI()
             .AddUI()
@@ -36,12 +36,15 @@ public static class Services
             .AddGenericGameSupport()
             .AddReshade()
             .AddDarkestDungeon()
-            .AddStandardGameLocators()
             .AddRenderers()
             .AddNexusWebApi()
             .AddAdvancedHttpDownloader()
             .AddTestHarness()
             .AddSingleton<HttpClient>();
+        
+        if (addStandardGameLocators)
+            services.AddStandardGameLocators();
+        
         return services;
     }
 }
