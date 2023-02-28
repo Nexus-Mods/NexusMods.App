@@ -3,7 +3,7 @@ using Avalonia.Media;
 using NexusMods.App.UI.ViewModels;
 using ReactiveUI.Fody.Helpers;
 
-namespace NexusMods.UI.Theme.Controls.Spine.Buttons;
+namespace NexusMods.App.UI.Controls.Spine.Buttons;
 
 public class GameViewModel : SpineButtonViewModel
 {

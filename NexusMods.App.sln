@@ -53,8 +53,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.DarkestDung
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.App.UI", "src\NexusMods.App.UI\NexusMods.App.UI.csproj", "{4767144A-0130-47F2-9940-5D68CCBEE241}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.UI.Theme", "src\NexusMods.UI.Theme\NexusMods.UI.Theme.csproj", "{43EE15F1-9C24-4F5D-A6FF-FC10C6183139}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Benchmarks", "Benchmarks", "{98448149-E44A-42E5-852D-B12C9D8AAABD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.StandardGameLocators.TestHelpers", "tests\NexusMods.StandardGameLocators.TestHelpers\NexusMods.StandardGameLocators.TestHelpers.csproj", "{846232AE-BDEA-4673-918E-A2079D4E78E0}"
@@ -171,10 +169,6 @@ Global
 		{4767144A-0130-47F2-9940-5D68CCBEE241}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4767144A-0130-47F2-9940-5D68CCBEE241}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4767144A-0130-47F2-9940-5D68CCBEE241}.Release|Any CPU.Build.0 = Release|Any CPU
-		{43EE15F1-9C24-4F5D-A6FF-FC10C6183139}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{43EE15F1-9C24-4F5D-A6FF-FC10C6183139}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{43EE15F1-9C24-4F5D-A6FF-FC10C6183139}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{43EE15F1-9C24-4F5D-A6FF-FC10C6183139}.Release|Any CPU.Build.0 = Release|Any CPU
 		{846232AE-BDEA-4673-918E-A2079D4E78E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{846232AE-BDEA-4673-918E-A2079D4E78E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{846232AE-BDEA-4673-918E-A2079D4E78E0}.Release|Any CPU.ActiveCfg = Release|Any CPU

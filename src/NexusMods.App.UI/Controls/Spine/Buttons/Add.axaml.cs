@@ -1,14 +1,11 @@
 ﻿using System.Reactive.Linq;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Mixins;
-using Avalonia.Controls.Primitives;
-using Avalonia.Data;
-using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
+using NexusMods.App.UI.Controls.Spine.Buttons;
 using ReactiveUI;
 
-namespace NexusMods.UI.Theme.Controls.Spine.Buttons;
+namespace NexusMods.App.UI.Controls.Spine.Buttons;
 
 public partial class Add : ReactiveUserControl<AddButtonViewModel>
 {

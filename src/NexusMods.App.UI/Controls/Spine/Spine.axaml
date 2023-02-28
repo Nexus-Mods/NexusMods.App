@@ -5,7 +5,7 @@
     x:Class="NexusMods.App.UI.Controls.Spine.Spine"
     x:TypeArguments="spine:SpineViewModel"
     xmlns="https://github.com/avaloniaui"
-    xmlns:buttons="clr-namespace:NexusMods.UI.Theme.Controls.Spine.Buttons;assembly=NexusMods.UI.Theme"
+    xmlns:buttons="clr-namespace:NexusMods.App.UI.Controls.Spine.Buttons"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
@@ -28,11 +28,6 @@
                     <StackPanel />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <buttons:Game ViewModel="{Binding .}" />
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
         </ItemsControl>
         <reactiveUi:ViewModelViewHost x:Name="Add" />
     </StackPanel>

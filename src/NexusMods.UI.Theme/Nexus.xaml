@@ -1,7 +1,0 @@
-﻿<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <FluentTheme />
-    <StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml" />
-    <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
-    <StyleInclude Source="avares://NexusMods.UI.Theme/Palatte/Nexus.xaml" />
-    <StyleInclude Source="avares://NexusMods.UI.Theme/Theme/Index.xaml" />
-</Styles>

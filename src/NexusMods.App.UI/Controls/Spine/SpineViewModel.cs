@@ -1,17 +1,15 @@
 ﻿using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Windows.Input;
 using Avalonia.Controls.Mixins;
 using Avalonia.Media.Imaging;
 using DynamicData;
 using Microsoft.Extensions.Logging;
+using NexusMods.App.UI.Controls.Spine.Buttons;
 using NexusMods.App.UI.ViewModels;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.UI.Theme.Controls.Spine.Buttons;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Controls.Spine;
 

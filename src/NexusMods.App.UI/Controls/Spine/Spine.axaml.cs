@@ -1,4 +1,5 @@
-﻿using Avalonia.Controls.Mixins;
+﻿
+using Avalonia.Controls.Mixins;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 

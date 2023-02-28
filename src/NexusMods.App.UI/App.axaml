@@ -8,6 +8,6 @@
     </Application.DataTemplates>
 
     <Application.Styles>
-        <StyleInclude Source="avares://NexusMods.UI.Theme/Nexus.xaml" />
+        <StyleInclude Source="avares://NexusMods.App.UI/Nexus.xaml" />
     </Application.Styles>
 </Application>
