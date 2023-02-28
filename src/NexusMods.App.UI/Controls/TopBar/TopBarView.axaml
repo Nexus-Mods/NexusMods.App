@@ -1,0 +1,23 @@
+﻿<UserControl
+    d:DesignHeight="56"
+    d:DesignWidth="1280"
+    mc:Ignorable="d"
+    x:Class="NexusMods.App.UI.Controls.TopBar.TopBarView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid ColumnDefinitions="Auto, Auto, *, Auto, Auto, Auto">
+        <Svg
+            Grid.Column="0"
+            Grid.Row="0"
+            Height="30"
+            HorizontalAlignment="Left"
+            Margin="12,13"
+            Path="avares://NexusMods.App.UI/Assets/nexus-logo-with-text.svg"
+            VerticalAlignment="Center"
+            Width="127" />
+
+        <Button Grid.Column="5">Login</Button>
+    </Grid>
+</UserControl>
