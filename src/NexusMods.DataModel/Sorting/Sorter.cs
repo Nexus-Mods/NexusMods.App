@@ -100,16 +100,23 @@ public class Sorter
         var used = new HashSet<TId>(dict.Count);
         
         var values = GC.AllocateUninitializedArray<(TId[] After, TItem Item)>(dict.Count);
-        var parallelOptions = new ParallelOptions();
-        var parallelState = new ParallelIsSuperset<TId, TItem>()
-        {
-            values = values,
-            used = used
-        };
-        
-        var doWork = parallelState.DoWork;
         const int MultiThreadCutoff = 2000; // Based on benching with 5900X.
         const int MinOperationsPerThread = 666;
+        ParallelOptions parallelOptions = default!;
+        ParallelIsSuperset<TId, TItem> parallelState = default!;
+        Action<Tuple<int, int>>? doWork = default;
+        
+        if (dict.Count > MultiThreadCutoff)
+        {
+            parallelOptions = new ParallelOptions();
+            parallelState = new ParallelIsSuperset<TId, TItem>()
+            {
+                values = values,
+                used = used,
+                output = GC.AllocateUninitializedArray<(TId[] After, TItem Item)>(dict.Count)
+            };
+            doWork = parallelState.DoWork;
+        }
         
         while (dict.Count > 0)
         {
@@ -120,9 +127,10 @@ public class Sorter
             if (dict.Count > MultiThreadCutoff)
             {
                 parallelOptions.MaxDegreeOfParallelism = Math.Max(dict.Count / MinOperationsPerThread, 1);
-                parallelState.superSetSize = 0;
+                parallelState.superSetSize = -1;
                 Parallel.ForEach(Partitioner.Create(0, valuesSlice.Length), parallelOptions, doWork);
-                superSetSize = parallelState.superSetSize;
+                superSetSize = parallelState.NumberOfElements;
+                valuesSlice = parallelState.output.AsSpan(0, superSetSize); // <= assign output span.
             }
             else
             {
@@ -135,7 +143,7 @@ public class Sorter
             }
 
             // Slice to our superset.
-            valuesSlice = values.AsSpan(0, superSetSize);
+            valuesSlice = valuesSlice.Slice(0, superSetSize);
             if (comparer != null)
             {
                 valuesSlice.Sort((a, b) =>
@@ -247,12 +255,15 @@ public class Sorter
     {
         internal HashSet<TId> used;
         internal (TId[] After, TItem Item)[] values;
-        internal int superSetSize;
+        internal (TId[] After, TItem Item)[] output;
+        internal int superSetSize = -1; // after first thread safe increment this is 0
+        internal int NumberOfElements => superSetSize + 1;
 
         internal void DoWork(Tuple<int, int> tuple)
         {
             // Work on our slice.
             var val = values;
+            var otp = output;
             var used = this.used;
             for (int x = tuple.Item1; x < tuple.Item2; x++)
             {
@@ -260,8 +271,7 @@ public class Sorter
                 if (!IsSupersetOf(used, value.After))
                     continue;
 
-                lock (this)
-                    val[superSetSize++] = value;
+                otp[Interlocked.Increment(ref superSetSize)] = value;
             }
         }
     }
