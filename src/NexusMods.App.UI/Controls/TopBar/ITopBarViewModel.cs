@@ -12,4 +12,8 @@ public interface ITopBarViewModel
     
     public ICommand LoginCommand { get; }
     public ICommand LogoutCommand { get; }
+    
+    public ICommand MinimizeCommand { get; }
+    public ICommand MaximizeCommand { get; }
+    public ICommand CloseCommand { get; }
 }

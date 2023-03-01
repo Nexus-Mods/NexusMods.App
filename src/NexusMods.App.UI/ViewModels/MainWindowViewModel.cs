@@ -1,5 +1,6 @@
 ﻿using System.Reactive.Disposables;
 using NexusMods.App.UI.Controls.Spine;
+using NexusMods.App.UI.Controls.TopBar;
 using NexusMods.App.UI.RightContent;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -10,11 +11,13 @@ namespace NexusMods.App.UI.ViewModels;
 public class MainWindowViewModel : AViewModel
 {
     private readonly AViewModel _homeViewModel;
+    
 
-    public MainWindowViewModel(SpineViewModel spineViewModel, FoundGamesViewModel foundGamesViewModel)
+    public MainWindowViewModel(SpineViewModel spineViewModel, FoundGamesViewModel foundGamesViewModel, TopBarViewModel topBarViewModel)
     {
         Spine = spineViewModel;
         _homeViewModel = foundGamesViewModel;
+        TopBarViewModel = topBarViewModel;
         this.WhenActivated(disposables =>
         {
             Spine.Actions
@@ -37,4 +40,7 @@ public class MainWindowViewModel : AViewModel
     
     [Reactive]
     public AViewModel RightContent { get; set; }
+    
+    [Reactive]
+    public TopBarViewModel TopBarViewModel { get; set; }
 }

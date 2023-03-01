@@ -27,6 +27,15 @@ public class TopBarDesignViewModel : AViewModel, ITopBarViewModel
     [Reactive]
     public ICommand LogoutCommand { get; set; }
 
+    [Reactive]
+    public ICommand MinimizeCommand { get; set; }
+    
+    [Reactive]
+    public ICommand MaximizeCommand { get; set; }
+    
+    [Reactive]
+    public ICommand CloseCommand { get; set; }
+
     public TopBarDesignViewModel()
     {
         var assets = AvaloniaLocator.Current.GetService<IAssetLoader>();

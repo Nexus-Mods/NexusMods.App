@@ -18,6 +18,9 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
             
             this.OneWayBind(ViewModel, vm => vm.RightContent, v => v.RightContent.ViewModel)
                 .DisposeWith(disposables);
+            
+            this.OneWayBind(ViewModel, vm => vm.TopBarViewModel, v => v.TopBar.ViewModel)
+                .DisposeWith(disposables);
 
             ViewModel.WhenAnyValue(v => v.RightContent)
                 .Subscribe(x => { })
