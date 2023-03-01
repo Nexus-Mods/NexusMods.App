@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33122.133
@@ -78,6 +78,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.Generic", "src\Games\NexusMods.Games.Generic\NexusMods.Games.Generic.csproj", "{7CDE7572-9471-4966-B3B3-70DF7D2D9269}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Benchmarks", "benchmarks\NexusMods.Benchmarks\NexusMods.Benchmarks.csproj", "{CB61A764-B3BB-42C0-8CDB-DBE57FB80DF5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.FOMOD", "src\NexusMods.FOMOD\NexusMods.FOMOD.csproj", "{2D6BCB04-B8E3-45FC-9C83-77A6EEE8629E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.FOMOD.Tests", "src\NexusMods.FOMOD.Tests\NexusMods.FOMOD.Tests.csproj", "{1B3F240A-DACA-4EFB-B54E-2D51DB408044}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.UI.Tests", "tests\NexusMods.UI.Tests\NexusMods.UI.Tests.csproj", "{643BE310-8A6C-405C-AAE5-E0A3A3298624}"
 EndProject

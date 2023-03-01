@@ -56,7 +56,12 @@ public class ReshadePresetInstaller : IModInstaller
         return Common.Priority.Low;
     }
 
-    public IEnumerable<AModFile> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
+    public Task<IEnumerable<AModFile>> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken cancel)
+    {
+        return Task.FromResult(InstallSync(installation, srcArchive, files));
+    }
+
+    private IEnumerable<AModFile> InstallSync(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
         var game = installation.Game as AGame;
         var folder = game!.PrimaryFile.Path;

@@ -25,8 +25,11 @@ public class StubbedGameInstaller : IModInstaller
         return installation.Game is StubbedGame ? Common.Priority.Normal : Common.Priority.None;
     }
 
-    public IEnumerable<AModFile> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
+    public Task<IEnumerable<AModFile>> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken cancel)
     {
+        return Task.FromResult(InstallSync(installation, srcArchive, files));
+    }
+    private IEnumerable<AModFile> InstallSync(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)    {
         foreach (var (key, value) in files)
         {
             yield return new FromArchive

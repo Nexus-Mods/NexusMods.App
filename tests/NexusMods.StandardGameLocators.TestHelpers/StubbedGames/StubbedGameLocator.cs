@@ -8,6 +8,8 @@ public class StubbedGameLocator<TGame, TId> : AHandler<TGame, TId>
 {
     // ReSharper disable once NotAccessedField.Local
     private readonly Version? _version;
+    private readonly TemporaryFileManager _manager;
+    private readonly Func<TemporaryFileManager,TGame> _factory;
     private readonly Func<TGame, TId> _idSelector;
     private readonly TGame _game;
 
@@ -16,9 +18,11 @@ public class StubbedGameLocator<TGame, TId> : AHandler<TGame, TId>
         Func<TGame, TId> idSelector,
         Version? version = null)
     {
+        _manager = manager;
+        _factory = factory;
         _idSelector = idSelector;
         _version = version;
-        _game = factory(manager);
+        _game = factory(_manager);
     }
     public override IEnumerable<Result<TGame>> FindAllGames()
     {

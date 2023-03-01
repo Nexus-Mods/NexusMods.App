@@ -37,6 +37,7 @@ public record AnalyzedFile : Entity
     /// for there to be multiple matches.
     /// </remarks>
     public required FileType[] FileTypes { get; init; }
+    public AbsolutePath SourcePath { get; init; }
 
     /// <summary>
     /// Stores any data returned from a <see cref="IFileAnalyzer"/> that might be

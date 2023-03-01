@@ -26,10 +26,10 @@ public class DarkestDungeonModInstaller : IModInstaller
             : Common.Priority.None;
     }
 
-    public IEnumerable<AModFile> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
+    public Task<IEnumerable<AModFile>> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken cancel)
     {
-        var modFolder = files.Keys.First(m => m.FileName == _modFilesTxt).Parent;
-        return files.Where(f => f.Key.InFolder(modFolder))
+        var modFolder = files.Keys.First(m => m.FileName == ModFilesTxt).Parent;
+        IEnumerable<AModFile> res = files.Where(f => f.Key.InFolder(modFolder))
             .Select(f =>
             new FromArchive
             {
@@ -39,5 +39,6 @@ public class DarkestDungeonModInstaller : IModInstaller
                 Hash = f.Value.Hash,
                 Size = f.Value.Size
             });
+        return Task.FromResult(res);
     }
 }

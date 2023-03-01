@@ -49,9 +49,9 @@ public class LooseFileInstaller : IModInstaller
                select (kv.Key, kv.Value);
     }
 
-    public IEnumerable<AModFile> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
+    public Task<IEnumerable<AModFile>> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken cancel)
     {
-        return FilterFiles(files)
+        IEnumerable<AModFile> res = FilterFiles(files)
             .Select(file =>
             {
                 var outFile = file.Path;
@@ -67,5 +67,6 @@ public class LooseFileInstaller : IModInstaller
                     Size = file.Entry.Size
                 };
             });
+        return Task.FromResult(res);
     }
 }

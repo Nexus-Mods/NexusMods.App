@@ -17,6 +17,7 @@
         <ProjectReference Include="..\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
         <ProjectReference Include="..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
         <ProjectReference Include="..\NexusMods.CLI\NexusMods.CLI.csproj" />
+      <ProjectReference Include="..\NexusMods.FOMOD\NexusMods.FOMOD.csproj" />
     </ItemGroup>
 
     <ItemGroup>

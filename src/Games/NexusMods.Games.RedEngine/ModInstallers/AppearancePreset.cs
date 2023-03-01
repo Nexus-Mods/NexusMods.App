@@ -31,8 +31,13 @@ public class AppearancePreset : IModInstaller
         @"bin\x64\plugins\cyber_engine_tweaks\mods\AppearanceChangeUnlocker\character-preset\female".ToRelativePath(),
         @"bin\x64\plugins\cyber_engine_tweaks\mods\AppearanceChangeUnlocker\character-preset\male".ToRelativePath()
     };
+    
+    public Task<IEnumerable<AModFile>> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken cancel)
+    {
+        return Task.FromResult(InstallSync(installation, srcArchive, files));
+    }
 
-    public IEnumerable<AModFile> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
+    private IEnumerable<AModFile> InstallSync(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
         foreach (var (path, file) in files.Where(f => f.Key.Extension == KnownExtensions.Preset))
         {

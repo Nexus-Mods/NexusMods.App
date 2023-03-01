@@ -22,7 +22,12 @@ public class RedModInstaller : IModInstaller
         return files.Any(IsInfoJson) ? Common.Priority.High : Common.Priority.None;
     }
 
-    public IEnumerable<AModFile> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
+    public Task<IEnumerable<AModFile>> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken cancel)
+    {
+        return Task.FromResult(InstallSync(installation, srcArchive, files));
+    }
+
+    private IEnumerable<AModFile> InstallSync(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
         foreach (var infoJson in files.Where(IsInfoJson))
         {

@@ -45,7 +45,7 @@ public class FileExtractor
     /// <param name="path">The path to the source file.</param>
     /// <param name="dest">The folder where the file is to be extracted.</param>
     /// <param name="token">Used for cancellation of the operation.</param>
-    public async Task ExtractAllAsync(AbsolutePath path, AbsolutePath dest, CancellationToken token = default)
+    public virtual async Task ExtractAllAsync(AbsolutePath path, AbsolutePath dest, CancellationToken token = default)
     {
         await ExtractAllAsync(new NativeFileStreamFactory(path), dest, token);
     }
