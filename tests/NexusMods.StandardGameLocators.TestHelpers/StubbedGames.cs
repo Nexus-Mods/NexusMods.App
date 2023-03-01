@@ -7,6 +7,7 @@ using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.ModInstallers;
+using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
@@ -61,13 +62,17 @@ public class StubbedGame : IEADesktopGame, IEpicGame, IOriginGame, ISteamGame, I
         return Array.Empty<AModFile>();
     }
 
+    public IStreamFactory Icon =>
+        new EmbededResourceStreamFactory<StubbedGame>(
+            "NexusMods.StandardGameLocators.TestHelpers.Resources.StubbedGame.png");
+
     private AbsolutePath EnsureFiles(AbsolutePath path)
     {
         lock (this)
         {
             foreach (var file in DATA_NAMES)
             {
-                EnsureFile(path.Join(file));
+                EnsureFile(path.CombineUnchecked(file));
             }
             return path;
         }

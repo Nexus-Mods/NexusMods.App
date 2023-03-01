@@ -1,12 +1,13 @@
-<Application xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="using:NexusMods.App.UI"
-             x:Class="NexusMods.App.UI.App">
+<Application
+    x:Class="NexusMods.App.UI.App"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:local="using:NexusMods.App.UI"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Application.DataTemplates>
-        <local:ViewLocator/>
+        <local:ViewLocator />
     </Application.DataTemplates>
 
     <Application.Styles>
-        <FluentTheme Mode="Light"/>
+        <StyleInclude Source="avares://NexusMods.App.UI/Nexus.xaml" />
     </Application.Styles>
 </Application>

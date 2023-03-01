@@ -9,7 +9,7 @@ namespace NexusMods.CLI.Tests.VerbTests;
 public abstract class AVerbTest
 {
     // ReSharper disable InconsistentNaming
-    protected static AbsolutePath Data7ZipLZMA2 => KnownFolders.EntryFolder.Join(@"Resources\data_7zip_lzma2.7z");
+    protected static AbsolutePath Data7ZipLZMA2 => KnownFolders.EntryFolder.CombineUnchecked(@"Resources\data_7zip_lzma2.7z");
     // ReSharper restore InconsistentNaming
     
     private List<object> LastLog { get; set; } = new();

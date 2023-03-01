@@ -1,262 +1,389 @@
-﻿using NexusMods.Paths.Extensions;
+using System.Runtime.CompilerServices;
+using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
 
+[assembly: InternalsVisibleTo("NexusMods.Paths.Tests")]
 namespace NexusMods.Paths;
 
 /// <summary>
 /// A path that represents a full path to a file or directory.
 /// </summary>
-public partial struct AbsolutePath : IPath, IComparable<AbsolutePath>, IEquatable<AbsolutePath>
+public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
 {
-    // TODO: Optimise the APIs AbsolutePath & RelativePath more.
-    //       For now; this is postponed as the future of these APIs is uncertain;
-    //       Tim and I are considering potentially obsoleting or reworking these APIs entirely.
-    
-    /// <summary>
-    /// Represents an empty path.
-    /// </summary>
-    public static readonly AbsolutePath Empty = "".ToAbsolutePath();
-    
-    internal static readonly char[] StringSplits = { '/', '\\' };
-    
-    /// <summary>
-    /// The format used for storage of this path, either Unix style or Windows style.
-    /// </summary>
-    public PathFormat PathFormat { get; }
+    private static readonly char PathSeparatorForInternalOperations = Path.DirectorySeparatorChar;
+    private static readonly char SeparatorToReplace = PathSeparatorForInternalOperations == '/' ? '\\' : '/';
+
+    private static readonly string DirectorySeparatorCharStr = Path.DirectorySeparatorChar.ToString();
 
     /// <summary>
-    /// Individual components that make up the final assembled path.
+    /// Contains the path to the directory inside which this absolute path is contained in.  
     /// </summary>
-    public readonly string[] Parts = Array.Empty<string>();
+    /// <remarks>
+    ///    Shouldn't end with a backslash.
+    /// </remarks>
+    public string? Directory { get; private set; }
+
+    /// <inheritdoc />
+    public Extension Extension => Extension.FromPath(FileName);
+    
+    /// <inheritdoc />
+    RelativePath IPath.FileName => Path.GetFileName(FileName);
 
     /// <summary>
-    /// Returns the extension of this path [by extracting it from the filename].  
+    /// Contains the name of the file.  
     /// </summary>
-    public Extension Extension => Extension.FromPath(Parts[^1]);
+    public string FileName { get; private set; }
     
     /// <summary>
-    /// Extracts the file name from this path.
+    /// Gets the parent directory, i.e. navigates one folder up.
     /// </summary>
-    public RelativePath FileName => new(Parts[^1..]);
-    
-    /// <summary>
-    /// Returns the parent path to the current path.
-    /// i.e. The path '1 directory up'. (This is equivalent to <see cref="Path.GetDirectoryName(System.ReadOnlySpan{char})"/>)
-    /// </summary>
-    public AbsolutePath Parent => new(Parts.GetPathParent(), PathFormat);
+    public AbsolutePath Parent => FromFullPath(Path.GetDirectoryName(GetFullPath()) ?? "");
 
     /// <summary>
-    /// Returns the total amount of parts that constitute this path.
+    /// Returns the file name without extensions
     /// </summary>
-    public int Depth => Parts?.Length ?? 0;
-    
-    private int _hashCode = 0;
+    public string FileNameWithoutExtension => Path.GetFileNameWithoutExtension(FileName);
 
-    internal AbsolutePath(string[] parts, PathFormat format)
+    /// <summary/>
+    /// <param name="directory">
+    ///     Name of the directory in question.
+    ///     If possible, make sure doesn't end with backslash for optimal performance.
+    /// </param>
+    /// <param name="fileName">Name of the file. Full path if directory is null.</param>
+    internal AbsolutePath(string? directory, string fileName)
     {
-        Parts = parts;
-        PathFormat = format;
-    }
-
-    /// <summary>
-    /// Returns a <see cref="IEnumerable{T}"/> of this path and all of it's parents.
-    /// </summary>
-    public IEnumerable<AbsolutePath> ThisAndAllParents()
-    {
-        var p = this;
-        while (true)
+        if (!string.IsNullOrEmpty(directory))
         {
-            yield return p;
-            if (p.Depth == 1)
-                yield break;
-            
-            p = p.Parent;
+            Directory = directory.EndsWith(Path.DirectorySeparatorChar) 
+                ? directory[..^1] 
+                : directory;
         }
+        FileName = fileName;
     }
 
     /// <summary>
-    /// Returns a new path that is this path with the extension changed.
+    /// Converts an existing full path into an absolute path.
     /// </summary>
-    /// <param name="newExtension">The extension to replace the old extension.</param>
-    public readonly AbsolutePath ReplaceExtension(Extension newExtension) => new(Parts.ReplaceExtension(newExtension), PathFormat);
-
-    /// <inheritdoc />
-    public int CompareTo(AbsolutePath other)
+    /// <param name="fullPath">The full path to use.</param>
+    /// <returns>The converted absolute path.</returns>
+    /// <remarks>
+    ///    Do not use this API when searching/enumerating files; instead use <see cref="FromDirectoryAndFileName"/>.
+    /// </remarks>
+    public static AbsolutePath FromFullPath(string fullPath)
     {
-        return ArrayExtensions.CompareString(Parts, other.Parts);
+        var index = fullPath.LastIndexOf(Path.DirectorySeparatorChar);
+        if (index < 0)
+        {
+            // No directory
+            return new AbsolutePath(null, fullPath);
+        }
+
+        var directory = fullPath[..index];
+        var fileName = fullPath[(index+1)..];
+        return new(directory, fileName);
+    }
+
+    /// <summary>
+    /// Converts an existing full path into an absolute path.
+    /// </summary>
+    /// <param name="directoryPath">The path to the directory used.</param>
+    /// <param name="fullPath">The full path to use.</param>
+    /// <returns>The converted absolute path.</returns>
+    public static AbsolutePath FromDirectoryAndFileName(string? directoryPath, string fullPath) => new(directoryPath, fullPath);
+
+    /// <summary>
+    /// Returns the full path of the combined string.
+    /// </summary>
+    /// <returns>The full combined path.</returns>
+    public readonly string GetFullPath()
+    {
+        if (string.IsNullOrEmpty(Directory))
+            return FileName;
+
+        if (FileName.Length == 0)
+            return Directory;
+        
+        return string.Concat(Directory, DirectorySeparatorCharStr, FileName);
+    }
+
+    /// <summary>
+    /// Returns the full path of the combined string.
+    /// </summary>
+    /// <param name="buffer">
+    ///    The buffer which the resulting string will be stored inside.  
+    ///    Should at least be <see cref="GetFullPathLength"/> long.  
+    /// </param>
+    /// <returns>
+    ///     The full combined path.
+    /// If the buffer is not long enough; an empty path.
+    /// </returns>
+    /// <remarks>
+    ///    If <see cref="Directory"/> is null; might return different buffer than passed in via parameter.
+    /// </remarks>
+    public ReadOnlySpan<char> GetFullPath(Span<char> buffer)
+    {
+        if (string.IsNullOrEmpty(Directory))
+            return FileName;
+
+        if (FileName.Length == 0)
+            return Directory;
+        
+        var requiredLength = Directory.Length + FileName.Length + 1;
+        if (buffer.Length < requiredLength)
+            return default;
+
+        Directory.CopyTo(buffer);
+        buffer[Directory.Length] = Path.DirectorySeparatorChar;
+        FileName.CopyTo(buffer.SliceFast(Directory.Length + 1));
+        return buffer.SliceFast(0, requiredLength);
+    }
+
+    /// <summary>
+    /// Returns the expected length of the full path.
+    /// </summary>
+    /// <returns></returns>
+    public int GetFullPathLength()
+    {
+        if (Directory == null)
+            return FileName.Length;
+
+        return Directory.Length + FileName.Length + 1;
     }
     
-    /// <inheritdoc />
-    public override bool Equals(object? obj)
-    {
-        return obj is AbsolutePath path && Equals(path);
-    }
-
-    /// <inheritdoc />
-    public bool Equals(AbsolutePath other)
-    {
-        // We suppress nullable warning here because this is a struct.
-        // If initialised to default under some circumstances; e.g. method parameters,
-        // this may initialise null.
-        var partsNull = Parts == null;
-        var otherPartsNull = other.Parts == null!;
-        
-        if (partsNull && otherPartsNull) 
-            return true;
-        
-        if (partsNull != otherPartsNull) 
-            return false;
-
-        if (other.Depth != Depth) 
-            return false;
-        
-        for (var idx = 0; idx < Parts!.Length; idx++)
-            if (!Parts[idx].Equals(other.Parts![idx], StringComparison.InvariantCultureIgnoreCase))
-                return false;
-        
-        return true;
-    }
-
     /// <summary>
-    /// Extracts a relative path, given the base path supplied in the parameter.
+    /// Joins the current absolute path with a relative path without checking the case sensitivity of a path.
     /// </summary>
-    /// <param name="basePath">The path to extract.</param>
-    /// <returns>The extracted path.</returns>
-    public RelativePath RelativeTo(AbsolutePath basePath)
+    /// <param name="path">
+    ///    The relative path.
+    /// </param>
+    /// <remarks>
+    ///    Use this for paths created by our application; i.e. where we can
+    ///    guarantee casing will match the specified relative path.
+    /// </remarks>
+    [SkipLocalsInit]
+    public readonly AbsolutePath CombineUnchecked(RelativePath path)
     {
-        if (!ArrayExtensions.AreEqualIgnoreCase(basePath.Parts, 0, Parts, 0, basePath.Parts.Length))
-            ThrowHelpers.PathException($"{basePath} is not a base path of {this}");
-
-        var newParts = GC.AllocateUninitializedArray<string>(Parts.Length - basePath.Parts.Length);
-        Array.Copy(Parts, basePath.Parts.Length, newParts, 0, newParts.Length);
-        return new RelativePath(newParts);
+        // Just in case.
+        if (path.Path.Length <= 0)
+            return this;
+        
+        // Since AbsolutePaths are created from the OS; we will assume the existing path is already correct, therefore
+        // we only need to checked combine the relative path.
+        var relativeOrig = path.Path;
+        
+        // Copy and normalise.
+        var relativeSpan = relativeOrig.Length <= 512 ? stackalloc char[relativeOrig.Length] 
+            : GC.AllocateUninitializedArray<char>(relativeOrig.Length);
+        
+        relativeOrig.CopyTo(relativeSpan);
+        relativeSpan.Replace(SeparatorToReplace, PathSeparatorForInternalOperations, relativeSpan);
+        if (relativeSpan[0] == PathSeparatorForInternalOperations)
+            relativeSpan = relativeSpan.SliceFast(1);
+        
+        // Now walk the directories.
+        return FromFullPath($"{GetFullPath()}{DirectorySeparatorCharStr}{relativeSpan}");
     }
 
     /// <summary>
-    /// Returns true if this path is a child of the given path.
+    /// Joins the current absolute path with a relative path.
     /// </summary>
-    /// <param name="parent">The path to verify.</param>
-    /// <returns>True if this is a child path of the parent path; else false.</returns>
-    public bool InFolder(AbsolutePath parent)
+    /// <param name="path">
+    ///    The relative path; stored case insensitive.
+    /// </param>
+    [SkipLocalsInit]
+    public AbsolutePath CombineChecked(RelativePath path)
     {
-        return ArrayExtensions.AreEqualIgnoreCase(parent.Parts, 0, Parts, 0, parent.Parts.Length);
+        // Just in case.
+        if (path.Path.Length <= 0)
+            return this;
+        
+        // Note: Do not special case this for Windows.
+        // We have a constraint where Directory and FileName are normalised
+        // to follow OS casing. And Equals/GetHashCode relies on this.
+        
+        // Since AbsolutePaths are created from the OS; we will assume the existing path is already correct, therefore
+        // we only need to checked combine the relative path.
+        var relativeOrig = path.Path;
+        
+        // Copy and normalise.
+        var relativeSpan = relativeOrig.Length <= 512 ? stackalloc char[relativeOrig.Length] 
+                                                      : GC.AllocateUninitializedArray<char>(relativeOrig.Length);
+        
+        relativeOrig.CopyTo(relativeSpan);
+        relativeSpan.Replace(SeparatorToReplace, PathSeparatorForInternalOperations, relativeSpan);
+        if (relativeSpan[0] == PathSeparatorForInternalOperations)
+            relativeSpan = relativeSpan.SliceFast(1);
+        
+        // Now walk the directories.
+        return FromFullPath(AppendChecked(GetFullPath(), relativeSpan));
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static string AppendChecked(string path, Span<char> relativeSpan)
+    {
+        ReadOnlySpan<char> remainingPath = relativeSpan;
+        ReadOnlySpan<char> splitSpan = default;
+        while ((splitSpan = SplitDir(remainingPath)) != remainingPath)
+        {
+            path += $"{Path.DirectorySeparatorChar}{FindFileOrDirectoryCasing(path, splitSpan)}";
+            remainingPath = remainingPath[(splitSpan.Length + 1)..];
+        }
+
+        if (remainingPath.Length > 0)
+            path += $"{Path.DirectorySeparatorChar}{FindFileOrDirectoryCasing(path, remainingPath)}";
+        
+        return path;
     }
 
     /// <summary>
-    /// Combines this path with the given relative path(s).
+    /// Gets a path relative to another absolute path.
     /// </summary>
-    /// <param name="paths">Paths; can be either of type <see cref="string"/> or <see cref="RelativePath"/>.</param>
-    public readonly AbsolutePath Join(params object[] paths) => Join(paths.JoinRelativePathsWithUnknownTypes());
+    /// <param name="other">The path from which the relative path should be made.</param>
+    public RelativePath RelativeTo(AbsolutePath other)
+    {
+        var otherLength = other.GetFullPathLength();
+        if (otherLength == 0)
+            return new RelativePath(GetFullPath());
+        
+        // Note: We assume equality to be separator and case insensitive
+        //       therefore this property should transfer over to contains checks.
+        var thisPathLength = GetFullPathLength();
+        Span<char> thisFullPath = thisPathLength <= 512 ? stackalloc char[thisPathLength] : GC.AllocateUninitializedArray<char>(thisPathLength);
+        GetFullPath(thisFullPath);
+        
+        var otherPathLength = other.GetFullPathLength();
+        Span<char> otherFullPath = otherPathLength <= 512 ? stackalloc char[otherPathLength] : GC.AllocateUninitializedArray<char>(otherPathLength);
+        other.GetFullPath(otherFullPath);
 
-    /// <summary>
-    /// Combines this absolute path with a series of relative paths.
-    /// </summary>
-    /// <param name="paths">The array of relative paths to combine with the current path.</param>
-    public readonly AbsolutePath Join(params RelativePath[] paths) => new(paths.AppendRelativePaths(Parts), PathFormat);
+        if (!thisFullPath.StartsWith(otherFullPath))
+        {
+            ThrowHelpers.PathException("Can't create path relative to paths that aren't in the same folder");
+            return default;
+        }
+
+        return new RelativePath(thisFullPath.SliceFast(otherFullPath.Length + 1).ToString());
+    }
     
     /// <summary>
     /// Creates a new absolute path from the current one, appending an extension.
     /// </summary>
     /// <param name="ext">The extension to append to the absolute path.</param>
-    /// <returns></returns>
-    public AbsolutePath WithExtension(Extension ext) => new(Parts.WithExtension(ext), PathFormat);
+    public AbsolutePath WithExtension(Extension ext) => FromDirectoryAndFileName(Directory, FileName + ext);
 
     /// <summary>
-    /// Appends a given string to the file name of this item [not extension].
+    /// Returns true if this path is a child of the specified path.
     /// </summary>
-    /// <param name="append">The string to append.</param>
-    /// <returns></returns>
-    public AbsolutePath AppendToName(string append)
+    /// <param name="parent">The path to verify.</param>
+    /// <returns>True if this is a child path of the parent path; else false.</returns>
+    [SkipLocalsInit]
+    public bool InFolder(AbsolutePath parent)
     {
-        return Parent.Join((FileName.FileNameWithoutExtension + append)
-            .ToRelativePath()
-            .WithExtension(Extension));
-    }
-    
-    private static AbsolutePath Parse(string path)
-    {
-        if (string.IsNullOrWhiteSpace(path)) 
-            return default;
+        // other
+        var len = parent.GetFullPathLength();
+        var parentStr = len <= 512 ? stackalloc char[len] : GC.AllocateUninitializedArray<char>(len);
+        parent.GetFullPath(parentStr);
+
+        // this
+        len = GetFullPathLength();
+        var thisStr = len <= 512 ? stackalloc char[len] : GC.AllocateUninitializedArray<char>(len);
+        GetFullPath(thisStr);
         
-        var parts = path.Split(StringSplits, StringSplitOptions.RemoveEmptyEntries);
-        return new AbsolutePath(parts, DetectPathType(path));
-    }
-
-    private static bool IsDriveLetter(char c)
-    {
-        return c is >= 'A' and <= 'Z' or >= 'a' and <= 'z';
+        return thisStr.StartsWith(parentStr);
     }
     
-    private static PathFormat DetectPathType(string path)
+    /// <summary>
+    /// Replaces the extension used in this absolute path.
+    /// </summary>
+    /// <param name="ext">The extension to replace.</param>
+    public AbsolutePath ReplaceExtension(Extension ext)
     {
-        if (path.StartsWith("/"))
-            return PathFormat.Unix;
-        
-        if (path.StartsWith(@"\\"))
-            return PathFormat.Windows;
-
-        if (path.Length >= 2 && IsDriveLetter(path[0]) && path[1] == ':')
-            return PathFormat.Windows;
-
-        throw new PathException($"Invalid Path format: {path}");
+        return FromDirectoryAndFileName(Directory!, FileName.ReplaceExtension(ext));
     }
     
+    /// <summary/>
+    public static bool operator ==(AbsolutePath lhs, AbsolutePath rhs) => lhs.Equals(rhs);
+    
+    /// <summary/>
+    public static bool operator !=(AbsolutePath lhs, AbsolutePath rhs) => !(lhs == rhs);
+    
+    /// <inheritdoc />
+    public override string ToString() => GetFullPath();
+    
+    #region Equals & GetHashCode
+    // Implementation Note:
+    //    Directory is already normalised in this struct because.
+    //    - Paths are sourced from the OS.
+    //    - Paths where RelativePath was joined to AbsolutePath are normalised as part of the join (CombineChecked) process.
+    //    Therefore we can compare ordinal.
+
+    /// <inheritdoc />
+    public bool Equals(AbsolutePath other)
+    {
+        // Ordinal.
+        return Directory == other.Directory && 
+               FileName == other.FileName;
+    }
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj)
+    {
+        return obj is AbsolutePath other && 
+               Equals(other);
+    }
+
     /// <inheritdoc />
     public override int GetHashCode()
     {
-        if (_hashCode != 0) 
-            return _hashCode;
-        
-        if (Parts == null || Parts.Length == 0) 
-            return -1;
-
-        var result = 0;
-        foreach (var part in Parts)
-            result ^= part.GetHashCode(StringComparison.InvariantCultureIgnoreCase);
-        
-        _hashCode = result;
-        return _hashCode;
+        // Ordinal.
+        var a = StringExtensions.GetNonRandomizedHashCode(Directory);
+        var b = StringExtensions.GetNonRandomizedHashCode(FileName);
+        return HashCode.Combine(a, b);
     }
+    #endregion
     
-    /// <inheritdoc />
-    public readonly override string ToString()
+    /// <summary>
+    /// Splits the string up to the next directory separator.
+    /// </summary>
+    /// <param name="text">The text to substring.</param>
+    /// <returns>The text up to next directory separator, else unchanged.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static ReadOnlySpan<char> SplitDir(ReadOnlySpan<char> text)
     {
-        if (Parts == default) 
-            return "";
-        
-        if (PathFormat != PathFormat.Windows) 
-            return "/" + string.Join('/', Parts);
-        
-        return Parts.Length == 1 ? $"{Parts[0]}\\" : string.Join('\\', Parts);
+        var index = text.IndexOf(Path.DirectorySeparatorChar);
+        return index != -1 ? text[..index] : text;
+    }
+    
+    private static ReadOnlySpan<char> FindFileOrDirectoryCasing(string searchDir, ReadOnlySpan<char> fileName)
+    {
+        try
+        {
+            foreach (var entry in System.IO.Directory.EnumerateFileSystemEntries(searchDir, "*.*", SearchOption.TopDirectoryOnly))
+            {
+                var entryFileName = Path.GetFileName(entry.AsSpan());
+                if (fileName.Equals(entryFileName, StringComparison.OrdinalIgnoreCase))
+                    return entryFileName;
+            }
+        }
+        catch (Exception)
+        {
+            // Fallback if directory not found or cannot be accessed.
+            // Static logger here would be nice.
+            return fileName;
+        }
+
+        return fileName;
     }
     
     /// <summary/>
-    public static bool operator ==(AbsolutePath a, AbsolutePath b) => a.Equals(b);
+    /// <returns>Full path with directory separator string attached at the end.</returns>
+    private readonly string GetFullPathWithSeparator()
+    {
+        if (string.IsNullOrEmpty(Directory))
+            return string.Concat(FileName, DirectorySeparatorCharStr);
 
-    /// <summary/>
-    public static bool operator !=(AbsolutePath a, AbsolutePath b) => !a.Equals(b);
-    
-    /// <summary>
-    /// Converts a given string input into an absolute path
-    /// </summary>
-    public static explicit operator AbsolutePath(string input) => Parse(input);
-}
-
-/// <summary>
-/// Flags if the path should use Unix or Windows path separators.
-/// </summary>
-public enum PathFormat : byte
-{
-    /// <summary>
-    /// Uses back slashes for path separators.
-    /// </summary>
-    /// <remarks>
-    ///    Modern iterations of Windows tend to support both backslash and forward slash.
-    /// </remarks>
-    Windows = 0,
-    
-    /// <summary>
-    /// Uses forward slashes for path separators.
-    /// </summary>
-    Unix
+        if (FileName.Length == 0)
+            return string.Concat(Directory, DirectorySeparatorCharStr);
+        
+        return string.Concat(Directory, DirectorySeparatorCharStr, FileName, DirectorySeparatorCharStr);
+    }
 }

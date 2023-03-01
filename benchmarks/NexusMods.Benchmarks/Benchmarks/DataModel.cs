@@ -1,6 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using NexusMods.Benchmarks.Interfaces;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
@@ -39,7 +40,9 @@ public class DataStoreBenchmark : IBenchmark, IDisposable
             }).Build();
 
         var provider = host.Services.GetRequiredService<IServiceProvider>();
-        _dataStore = new SqliteDataStore(_temporaryFileManager.CreateFile(KnownExtensions.Sqlite).Path, provider, 
+        _dataStore = new SqliteDataStore(
+            provider.GetRequiredService<ILogger<SqliteDataStore>>(),
+            _temporaryFileManager.CreateFile(KnownExtensions.Sqlite).Path, provider, 
             provider.GetRequiredService<IMessageProducer<RootChange>>(),
             provider.GetRequiredService<IMessageConsumer<RootChange>>());
         

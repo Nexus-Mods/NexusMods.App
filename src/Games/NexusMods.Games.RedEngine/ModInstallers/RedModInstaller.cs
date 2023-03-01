@@ -34,7 +34,7 @@ public class RedModInstaller : IModInstaller
                 {
                     Id = ModFileId.New(),
                     From = new HashRelativePath(srcArchive, path),
-                    To = new GamePath(GameFolderType.Game, @"mods".ToRelativePath().Join(parentName, path.RelativeTo(parent))),
+                    To = new GamePath(GameFolderType.Game, @"mods".ToRelativePath().Join(parentName).Join(path.RelativeTo(parent))),
                     Hash = file.Hash,
                     Size = file.Size,
                     Store = file.Store

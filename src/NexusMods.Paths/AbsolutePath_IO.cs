@@ -1,6 +1,9 @@
 using System.Diagnostics;
+using System.IO.Enumeration;
+using System.Runtime.CompilerServices;
 using System.Text;
 using NexusMods.Paths.Extensions;
+using NexusMods.Paths.Utilities.Internal.Enumerators;
 
 namespace NexusMods.Paths;
 
@@ -10,15 +13,22 @@ namespace NexusMods.Paths;
 /// </summary>
 public partial struct AbsolutePath 
 {
+    private static EnumerationOptions GetSearchOptions(bool recursive) => new()
+    {
+        AttributesToSkip = 0,
+        RecurseSubdirectories = recursive,
+        MatchType = MatchType.Win32
+    };
+    
     /// <summary>
     /// Returns the file information for this file.
     /// </summary>
-    public FileInfo FileInfo => _info ??= new FileInfo(ToString());
+    public FileInfo FileInfo => _info ??= new FileInfo(GetFullPath());
     
     /// <summary>
     /// Returns a <see cref="FileVersionInfo"/> representing the version information associated with the specified file.
     /// </summary>
-    public FileVersionInfo VersionInfo => FileVersionInfo.GetVersionInfo(ToNativePath());
+    public FileVersionInfo VersionInfo => FileVersionInfo.GetVersionInfo(GetFullPath());
     
     /// <summary>
     /// Gets the size in bytes, of the current file.
@@ -48,15 +58,23 @@ public partial struct AbsolutePath
     /// <summary>
     /// Returns true if the file exists, else false.
     /// </summary>
-    public bool FileExists => Parts.Length != 0 && File.Exists(ToNativePath());
-    
+    public bool FileExists => File.Exists(GetFullPath());
+
     /// <summary>
     /// Obtains the name of the first folder stored in this path.
     /// </summary>
-    public AbsolutePath TopParent => PathFormat == PathFormat.Windows ? 
-        new(Parts[..1], PathFormat) : 
-        new AbsolutePath(Array.Empty<string>(), PathFormat);
-    
+    public AbsolutePath TopParent
+    {
+        get
+        {
+            var thisPathLength = GetFullPathLength();
+            Span<char> thisFullPath = thisPathLength <= 512 ? stackalloc char[thisPathLength] : GC.AllocateUninitializedArray<char>(thisPathLength);
+            GetFullPath(thisFullPath);
+            var path = thisFullPath[..thisFullPath.IndexOf(Path.DirectorySeparatorChar)];
+            return FromDirectoryAndFileName(path.ToString(), "");
+        }
+    }
+
     private FileInfo? _info = null;
     
     /// <summary>
@@ -64,31 +82,25 @@ public partial struct AbsolutePath
     /// </summary>
     public Stream Open(FileMode mode, FileAccess access = FileAccess.Read, FileShare share = FileShare.ReadWrite)
     {
-        return File.Open(ToNativePath(), mode, access, share);
+        return File.Open(GetFullPath(), mode, access, share);
     }
 
     /// <summary>
     /// Opens this file for read-only access.
     /// </summary>
-    public Stream Read()
-    {
-        return Open(FileMode.Open, FileAccess.Read, FileShare.Read);
-    }
+    public Stream Read() => Open(FileMode.Open, FileAccess.Read, FileShare.Read);
 
     /// <summary>
     /// Creates a new file, overwriting one if it already existed.
     /// </summary>
-    public Stream Create()
-    {
-        return Open(FileMode.Create, FileAccess.ReadWrite, FileShare.None);
-    }
+    public Stream Create() => Open(FileMode.Create, FileAccess.ReadWrite, FileShare.None);
 
     /// <summary>
     /// Deletes the file.
     /// </summary>
     public void Delete()
     {
-        var nativePath = ToNativePath();
+        var nativePath = GetFullPath();
         if (FileExists)
         {
             try
@@ -110,7 +122,7 @@ public partial struct AbsolutePath
             }
         }
         
-        if (Directory.Exists(nativePath))
+        if (System.IO.Directory.Exists(nativePath))
             DeleteDirectory();
     }
 
@@ -140,7 +152,7 @@ public partial struct AbsolutePath
     /// <param name="token">Token used for cancellation of the task.</param>
     public async ValueTask MoveToAsync(AbsolutePath dest, bool overwrite = true, CancellationToken? token = null)
     {
-        var srcStr = ToNativePath();
+        var srcStr = GetFullPath();
         var destStr = dest.ToString();
         var fi = new FileInfo(srcStr);
         if (fi.IsReadOnly)
@@ -195,7 +207,7 @@ public partial struct AbsolutePath
     /// <summary>
     /// Creates a directory if it does not already exist.
     /// </summary>
-    public void CreateDirectory() => Directory.CreateDirectory(ToNativePath());
+    public void CreateDirectory() => System.IO.Directory.CreateDirectory(GetFullPath());
 
     /// <summary>
     /// Deletes the directory specified by this absolute path.
@@ -203,15 +215,16 @@ public partial struct AbsolutePath
     public readonly void DeleteDirectory(bool dontDeleteIfNotEmpty = false)
     {
         if (!DirectoryExists()) return;
-        if (dontDeleteIfNotEmpty && (EnumerateFiles().Any() || EnumerateDirectories().Any())) return;
+        if (dontDeleteIfNotEmpty && (EnumerateFiles().Any() || EnumerateDirectories().Any())) 
+            return;
       
-        foreach (var directory in Directory.GetDirectories(ToString()))
+        foreach (var directory in System.IO.Directory.GetDirectories(GetFullPath()))
         {
             directory.ToAbsolutePath().DeleteDirectory(dontDeleteIfNotEmpty);
         }
         try
         {
-            var di = new DirectoryInfo(ToNativePath());
+            var di = new DirectoryInfo(GetFullPath());
             if (di.Attributes.HasFlag(FileAttributes.ReadOnly))
                 di.Attributes &= ~FileAttributes.ReadOnly;
 
@@ -220,11 +233,13 @@ public partial struct AbsolutePath
             
             try
             {
-                Directory.Delete(ToString(), true);
+                System.IO.Directory.Delete(GetFullPath(), true);
             }
-            catch (System.IO.IOException ex)
+            catch (IOException)
             {
-                if (attempts > 10) throw;
+                if (attempts > 10) 
+                    throw;
+                
                 Thread.Sleep(100);
                 attempts++;
                 goto TopParent;
@@ -232,14 +247,14 @@ public partial struct AbsolutePath
         }
         catch (UnauthorizedAccessException)
         {
-            Directory.Delete(ToString(), true);
+            System.IO.Directory.Delete(GetFullPath(), true);
         }
     }
 
     /// <summary>
     /// Returns true if this directory exists, else false.
     /// </summary>
-    public readonly bool DirectoryExists() => Parts.Length != 0 && Directory.Exists(ToNativePath());
+    public readonly bool DirectoryExists() => System.IO.Directory.Exists(GetFullPath());
 
     /// <summary>
     /// Enumerates through all the files present in this directory.
@@ -249,9 +264,29 @@ public partial struct AbsolutePath
     /// <returns></returns>
     public readonly IEnumerable<AbsolutePath> EnumerateFiles(string pattern = "*", bool recursive = true)
     {
-        return Directory.EnumerateFiles(ToNativePath(), pattern,
-                recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
-            .Select(file => file.ToAbsolutePath());
+        var options = GetSearchOptions(recursive);
+        using var enumerator = new FilesEnumerator(GetFullPathWithSeparator(), pattern, options);
+        while (enumerator.MoveNext())
+        {
+            var item = enumerator.Current;
+            if (!item.IsDirectory)
+                yield return FromDirectoryAndFileName(enumerator.CurrentDirectory, item.FileName);
+        }
+    }
+    
+    /// <summary>
+    /// Enumerates individual FileSystem directories under this directory.
+    /// </summary>
+    /// <param name="recursive">Whether to visit subdirectories or not.</param>
+    public readonly IEnumerable<AbsolutePath> EnumerateDirectories(bool recursive = true)
+    {
+        var options = GetSearchOptions(recursive);
+        var enumerator = new DirectoriesEnumerator(GetFullPathWithSeparator(), "*", options);
+        while (enumerator.MoveNext())
+        {
+            var item = enumerator.Current;
+            yield return FromDirectoryAndFileName(Path.Combine(enumerator.CurrentDirectory!, item), "");
+        }
     }
     
     /// <summary>
@@ -263,15 +298,15 @@ public partial struct AbsolutePath
     public IEnumerable<FileEntry> EnumerateFileEntries(string pattern = "*",
         bool recursive = true)
     {
-        if (!DirectoryExists()) return Array.Empty<FileEntry>();
-        return Directory.EnumerateFiles(ToNativePath(), pattern,
-                recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
-            .Select(file =>
-            {
-                var path = file.ToAbsolutePath();
-                var info = path.FileInfo;
-                return new FileEntry(Path: path, Size: Size.From(info.Length), LastModified:info.LastWriteTimeUtc);
-            });
+        var options = GetSearchOptions(recursive);
+        var enumerator = new FilesEnumeratorEx(GetFullPathWithSeparator(), pattern, options);
+        
+        while (enumerator.MoveNext())
+        {
+            var item = enumerator.Current;
+            if (!item.IsDirectory)
+                yield return new FileEntry(FromDirectoryAndFileName(enumerator.CurrentDirectory, item.FileName), item.Size, item.LastModified);
+        }
     }
 
     /// <summary>
@@ -280,26 +315,8 @@ public partial struct AbsolutePath
     /// <param name="pattern">The extension to search for.</param>
     /// <param name="recursive">Whether the search should be done recursively or not.</param>
     /// <returns></returns>
-    public IEnumerable<AbsolutePath> EnumerateFiles(Extension pattern,
-        bool recursive = true)
-    {
-        return Directory.EnumerateFiles(ToString(), "*" + pattern, 
-                recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
-            .Select(file => file.ToAbsolutePath());
-    }
-    
-    /// <summary>
-    /// Enumerates individual FileSystem directories under this directory.
-    /// </summary>
-    /// <param name="recursive">Whether to visit subdirectories or not.</param>
-    public readonly IEnumerable<AbsolutePath> EnumerateDirectories(bool recursive = true)
-    {
-        if (!DirectoryExists()) return Array.Empty<AbsolutePath>();
-        return Directory.EnumerateDirectories(ToNativePath(), "*",
-                recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
-            .Select(p => (AbsolutePath) p);
-    }
-    
+    public IEnumerable<AbsolutePath> EnumerateFiles(Extension pattern, bool recursive = true) => EnumerateFiles("*" + pattern, recursive);
+
     /// <summary>
     /// Writes all text specified in the given string to this path; using UTF-8 encoding.
     /// </summary>
@@ -345,5 +362,15 @@ public partial struct AbsolutePath
         await fs.WriteAsync(data, CancellationToken.None);
     }
     
-    private readonly string ToNativePath() => ToString();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool MatchesPattern(string expression, ReadOnlySpan<char> name, EnumerationOptions options)
+    {
+        bool ignoreCase = true;
+        return options.MatchType switch
+        {
+            MatchType.Simple => FileSystemName.MatchesSimpleExpression(expression.AsSpan(), name, ignoreCase),
+            MatchType.Win32 => FileSystemName.MatchesWin32Expression(expression.AsSpan(), name, ignoreCase),
+            _ => throw new ArgumentOutOfRangeException(nameof(options)),
+        };
+    }
 }

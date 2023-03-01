@@ -1,11 +1,14 @@
 ﻿using System.Buffers.Binary;
 using System.Collections.Concurrent;
 using System.Data.SQLite;
+using System.Diagnostics;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text.Json;
 using BitFaster.Caching.Lru;
 using NexusMods.DataModel.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Interprocess;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -30,9 +33,11 @@ public class SqliteDataStore : IDataStore, IDisposable
     private readonly ConcurrentQueue<RootChange> _pendingChanges = new();
     private readonly CancellationTokenSource _enqueuerTcs;
     private readonly Task _enqueuerTask;
+    private readonly ILogger<SqliteDataStore> _logger;
 
-    public SqliteDataStore(AbsolutePath path, IServiceProvider provider, IMessageProducer<RootChange> rootChangeProducer, IMessageConsumer<RootChange> rootChangeConsumer)
+    public SqliteDataStore(ILogger<SqliteDataStore> logger, AbsolutePath path, IServiceProvider provider, IMessageProducer<RootChange> rootChangeProducer, IMessageConsumer<RootChange> rootChangeConsumer)
     {
+        _logger = logger;
         _path = path;
         _connectionString = string.Intern($"Data Source={path}");
         _conn = new SQLiteConnection(_connectionString);
@@ -268,7 +273,26 @@ public class SqliteDataStore : IDataStore, IDisposable
         }
     }
 
-    public IObservable<RootChange> Changes => _rootChangeConsumer.Messages;
+    public IObservable<RootChange> Changes => _rootChangeConsumer.Messages.SelectMany(WaitTillReady);
+    
+    /// <summary>
+    /// Sometimes we may get a change notification before the underlying SQLite database has actually updated the value.
+    /// So we wait a bit to make sure the value is actually there before we forward the change.
+    /// </summary>
+    /// <param name="change"></param>
+    /// <returns></returns>
+    private async Task<RootChange> WaitTillReady(RootChange change)
+    {
+        var maxCycles = 0;
+        while (GetRaw(change.To) == null && maxCycles < 10)
+        {
+            _logger.LogDebug("Waiting for root change {To} to be ready", change.To);
+            await Task.Delay(100);
+            maxCycles++;
+        }
+        _logger.LogDebug("Root change {To} is ready", change.To);
+        return change;
+    }
 
     public void Dispose()
     {

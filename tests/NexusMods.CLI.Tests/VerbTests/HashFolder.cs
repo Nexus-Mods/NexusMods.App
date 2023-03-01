@@ -16,8 +16,8 @@ public class HashFolderTests : AVerbTest
     public async Task CanHashFolder()
     {
         await using var folder = TemporaryFileManager.CreateFolder();
-        await folder.Path.Join("file1.txt").WriteAllTextAsync("file1.txt");
-        await folder.Path.Join("file2.txt").WriteAllTextAsync("file2.txt");
+        await folder.Path.CombineUnchecked("file1.txt").WriteAllTextAsync("file1.txt");
+        await folder.Path.CombineUnchecked("file2.txt").WriteAllTextAsync("file2.txt");
         await RunNoBanner("hash-folder", "-f", folder.Path.ToString());
 
         LogSize.Should().Be(1);

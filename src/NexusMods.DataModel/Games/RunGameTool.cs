@@ -25,7 +25,7 @@ where T : AGame
     public IEnumerable<GameDomain> Domains => new[] { _game.Domain };
     public async Task Execute(Loadout loadout)
     {
-        var program = _game.PrimaryFile.RelativeTo(loadout.Installation.Locations[GameFolderType.Game]);
+        var program = _game.PrimaryFile.CombineChecked(loadout.Installation.Locations[GameFolderType.Game]);
         _logger.LogInformation("Running {Program}", program);
         
         var psi = new ProcessStartInfo(program.ToString())

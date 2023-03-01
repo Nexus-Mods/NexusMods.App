@@ -33,13 +33,13 @@ public class ArchiveManager
     {
         Hash hash;
         var folder = SelectLocation(path);
-        var tmpName = folder.Join(Guid.NewGuid().ToString().ToRelativePath().WithExtension(KnownExtensions.Tmp));
+        var tmpName = folder.CombineUnchecked(Guid.NewGuid().ToString().ToRelativePath().WithExtension(KnownExtensions.Tmp));
         {
             await using var tmpFile = tmpName.Create();
             await using var src = path.Read();
             hash = await src.HashingCopy(tmpFile, token, job);
         }
-        var finalName = folder.Join(NameForHash(hash));
+        var finalName = folder.CombineUnchecked(NameForHash(hash));
         if (!finalName.FileExists) 
             await tmpName.MoveToAsync(finalName);
         return hash;
@@ -58,14 +58,14 @@ public class ArchiveManager
     public AbsolutePath PathFor(Hash hash)
     {
         var rel = NameForHash(hash);
-        return _locations.Select(r => r.Join(rel))
+        return _locations.Select(r => r.CombineUnchecked(rel))
             .First(r => r.FileExists);
     }
 
     public bool HaveArchive(Hash hash)
     {
         var rel = NameForHash(hash);
-        return _locations.Any(r => r.Join(rel).FileExists);
+        return _locations.Any(r => r.CombineUnchecked(rel).FileExists);
     }
 
     /// <summary>
@@ -99,7 +99,7 @@ public class ArchiveManager
     public HashSet<Hash> AllArchives()
     {
         return _locations.SelectMany(e => e.EnumerateFiles(KnownExtensions.Ra))
-            .Select(a => Hash.FromHex(a.FileName.FileNameWithoutExtension.ToString()))
+            .Select(a => Hash.FromHex(a.FileNameWithoutExtension))
             .ToHashSet();
     }
 

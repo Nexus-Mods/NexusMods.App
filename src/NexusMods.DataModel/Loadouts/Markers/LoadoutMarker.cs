@@ -109,7 +109,7 @@ public class LoadoutMarker : IMarker<Loadout>
 
         var files = FlattenList().ToList();
         files = (await GenerateFiles(files, token)).ToList();
-        var flattenedList = files.ToDictionary(d => d.File.To.RelativeTo(gameFolders[d.File.To.Type]));
+        var flattenedList = files.ToDictionary(d => d.File.To.CombineChecked(gameFolders[d.File.To.Type]));
         
         var srcFiles = await srcFilesTask;
 
@@ -245,7 +245,7 @@ public class LoadoutMarker : IMarker<Loadout>
             .IndexFolders(list.Installation.Locations.Values, token)
             .ToDictionary(x => x.Path);
         
-        var flattenedList = FlattenList().ToDictionary(d => d.File.To.RelativeTo(gameFolders[d.File.To.Type]));
+        var flattenedList = FlattenList().ToDictionary(d => d.File.To.CombineChecked(gameFolders[d.File.To.Type]));
         var srcFiles = await srcFilesTask;
 
         foreach (var (absPath, (file, mod)) in flattenedList)

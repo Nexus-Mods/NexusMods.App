@@ -20,7 +20,7 @@ public class FileCache
     public async ValueTask<CacheEntry> Create()
     {
         var guid = Guid.NewGuid();
-        var path = _cachePath.Join(guid.ToString());
+        var path = _cachePath.CombineUnchecked(guid.ToString());
 
         return new CacheEntry(this, path);
     }
@@ -33,7 +33,7 @@ public class FileCache
 
     private AbsolutePath HashPath(Hash hash)
     {
-        return _cachePath.Join(hash.ToString());
+        return _cachePath.CombineUnchecked(hash.ToString());
     }
 
     public async Task<bool> CopyTo(Hash hash, AbsolutePath destination, CancellationToken token = default)
@@ -47,7 +47,7 @@ public class FileCache
     private async Task<Hash> Finish(CacheEntry cacheEntry)
     {
         var hash = await cacheEntry.Path.XxHash64();
-        await cacheEntry.Path.MoveToAsync(_cachePath.Join(hash.ToString()));
+        await cacheEntry.Path.MoveToAsync(_cachePath.CombineUnchecked(hash.ToString()));
         return hash;
     }
 

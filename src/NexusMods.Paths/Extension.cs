@@ -30,8 +30,8 @@ public readonly struct Extension : IEquatable<Extension>
     /// <param name="path">The file path to convert to an extension.</param>
     public static Extension FromPath(string path)
     {
-        var lastIndex = path.LastIndexOf(".", StringComparison.Ordinal);
-        return lastIndex == -1 ? None : new Extension(path[lastIndex..]);
+        var ext = Path.GetExtension(path);
+        return ext == "" ? None : new Extension(ext);
     }
     
     private void Validate()

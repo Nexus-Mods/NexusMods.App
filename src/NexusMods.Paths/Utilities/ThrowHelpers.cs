@@ -16,6 +16,17 @@ public class ThrowHelpers
     /// </summary>
     /// <param name="message">The message to throw.</param>
     public static void PathException(string message) => throw new PathException(message);
+    
+    /// <summary>
+    /// Throws <see cref="ArgumentOutOfRangeException"/>(s).
+    /// </summary>
+    /// <param name="message">The message to throw.</param>
+    public static void ArgumentOutOfRange(string message) => throw new ArgumentOutOfRangeException(message);
+
+    /// <summary>
+    /// Throws <see cref="InsufficientMemoryException"/>.
+    /// </summary>
+    public static void InsufficientMemoryException(string message) => throw new InsufficientMemoryException(message);
 }
 
 /// <inheritdoc />

@@ -34,7 +34,7 @@ public class SkyrimSpecialEditionTests
     [Fact]
     public async Task CanLoadLoadout()
     {
-        var loadout = await _manager.ImportFrom(KnownFolders.EntryFolder.Join(@"Resources\skyrim_1.6.659.0.zip"));
+        var loadout = await _manager.ImportFrom(KnownFolders.EntryFolder.CombineUnchecked(@"Resources\skyrim_1.6.659.0.zip"));
         loadout.Value.Mods.Values.Select(m => m.Name).Should().Contain("Game Files");
         var gameFiles = loadout.Value.Mods.Values.First(m => m.Name == "Game Files");
         gameFiles.Files.Count.Should().BeGreaterThan(0);
@@ -48,7 +48,7 @@ public class SkyrimSpecialEditionTests
     [Fact]
     public async Task CanGeneratePluginsFile()
     {
-        var loadout = await _manager.ImportFrom(KnownFolders.EntryFolder.Join(@"Resources\skyrim_1.6.659.0.zip"));
+        var loadout = await _manager.ImportFrom(KnownFolders.EntryFolder.CombineUnchecked(@"Resources\skyrim_1.6.659.0.zip"));
         loadout.Value.Mods.Values.Select(m => m.Name).Should().Contain("Game Files");
         var gameFiles = loadout.Value.Mods.Values.First(m => m.Name == "Game Files");
         gameFiles.Files.Count.Should().BeGreaterThan(0);

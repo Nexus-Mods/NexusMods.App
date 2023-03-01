@@ -1,4 +1,5 @@
-﻿using NexusMods.DataModel.Abstractions;
+﻿using NexusMods.Common;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Paths;
 
@@ -32,4 +33,6 @@ public class UnknownGame : IGame
     {
         return Array.Empty<AModFile>();
     }
+
+    public IStreamFactory Icon => throw new NotImplementedException("No icon provided for this game.");
 }

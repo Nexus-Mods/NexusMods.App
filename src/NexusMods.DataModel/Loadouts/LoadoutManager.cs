@@ -278,7 +278,7 @@ public class LoadoutManager
             await using var es = entry.Open();
             using var ms = new MemoryStream();
             await es.CopyToAsync(ms, token);
-            var id = Id.FromTaggedSpan(Convert.FromHexString(entry.Name));
+            var id = Id.FromTaggedSpan(Convert.FromHexString(entry.Name.ToRelativePath().FileName));
             return (id, ms.ToArray());
         }
 

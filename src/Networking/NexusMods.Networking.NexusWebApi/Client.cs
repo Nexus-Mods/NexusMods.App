@@ -34,7 +34,7 @@ public class Client
     }
 
     /// <summary>
-    /// Retrieves the current user information.
+    /// Retrieves the current user information when logged in via APIKEY
     /// </summary>
     /// <param name="token">Can be used to cancel this task.</param>
     public async Task<Response<ValidateInfo>> Validate(CancellationToken token = default)
@@ -138,19 +138,33 @@ public class Client
     private async Task<Response<T>> SendAsync<T>(HttpRequestMessage message, JsonTypeInfo<T> typeInfo,
         CancellationToken token = default)
     {
-        using var response = await _httpClient.SendAsync(message, token);
-        if (!response.IsSuccessStatusCode)
-            throw new HttpRequestException(response.ReasonPhrase, null, response.StatusCode);
-        
-        var data = await response.Content.ReadFromJsonAsync(typeInfo, token);
-        return new Response<T>
+        try
         {
-            Data = data!,
-            Metadata = ParseHeaders(response),
-            StatusCode = response.StatusCode
-        };
+            using var response = await _httpClient.SendAsync(message, token);
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException(response.ReasonPhrase, null, response.StatusCode);
+
+            var data = await response.Content.ReadFromJsonAsync(typeInfo, token);
+            return new Response<T>
+            {
+                Data = data!,
+                Metadata = ParseHeaders(response),
+                StatusCode = response.StatusCode
+            };
+        }
+        catch (HttpRequestException ex)
+        {
+            HttpRequestMessage? newMessage = await _factory.HandleError(message, ex, token);
+            if (newMessage != null)
+            {
+                return await SendAsync<T>(newMessage, typeInfo, token);
+            } else
+            {
+                throw;
+            }
+        }
     }
-    
+
     private ResponseMetadata ParseHeaders(HttpResponseMessage result)
     {
         var metaData = ResponseMetadata.FromHttpHeaders(result);

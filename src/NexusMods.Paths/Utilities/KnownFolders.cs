@@ -28,7 +28,7 @@ public static class KnownFolders
     /// <summary>
     /// Path to the 'My Games' folder; present only on Windows.
     /// </summary>
-    public static AbsolutePath MyGames => Documents.Join("My Games");
+    public static AbsolutePath MyGames => Documents.CombineUnchecked("My Games");
     
     /// <summary>
     /// Path to the user's profile.

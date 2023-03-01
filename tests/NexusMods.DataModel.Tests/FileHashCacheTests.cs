@@ -16,7 +16,7 @@ public class FileHashCacheTests : ADataModelTest<FileHashCacheTests>
     [Fact]
     public async Task CanGetHashOfSingleFile()
     {
-        var file = KnownFolders.CurrentDirectory.Join(Guid.NewGuid().ToString()).WithExtension(KnownExtensions.Tmp);
+        var file = KnownFolders.CurrentDirectory.CombineUnchecked(Guid.NewGuid().ToString()).WithExtension(KnownExtensions.Tmp);
         await file.WriteAllTextAsync("Test data here");
 
         var hash = await FileHashCache.HashFileAsync(file);
@@ -29,8 +29,8 @@ public class FileHashCacheTests : ADataModelTest<FileHashCacheTests>
     [Fact]
     public async Task CanHashFolder()
     {
-        var folder = KnownFolders.CurrentDirectory.Join("tempData");
-        var file = folder.Join(Guid.NewGuid().ToString()).WithExtension(KnownExtensions.Tmp);
+        var folder = KnownFolders.CurrentDirectory.CombineUnchecked("tempData");
+        var file = folder.CombineUnchecked(Guid.NewGuid().ToString()).WithExtension(KnownExtensions.Tmp);
         file.Parent.CreateDirectory();
         await file.WriteAllTextAsync("Test data here");
 

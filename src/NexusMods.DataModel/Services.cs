@@ -35,11 +35,13 @@ public static class Services
         coll.AddSingleton<JsonConverter, EntityLinkConverterFactory>();
         coll.AddSingleton(typeof(EntityLinkConverter<>));
 
-        coll.AddSingleton<IDataStore>(s => new SqliteDataStore(baseFolder.Value.Join("DataModel.sqlite"), s, 
+        coll.AddSingleton<IDataStore>(s => new SqliteDataStore(
+            s.GetRequiredService<ILogger<SqliteDataStore>>(),
+            baseFolder.Value.CombineUnchecked("DataModel.sqlite"), s, 
             s.GetRequiredService<IMessageProducer<RootChange>>(), 
             s.GetRequiredService<IMessageConsumer<RootChange>>()));
         coll.AddSingleton(s => new ArchiveManager(s.GetRequiredService<ILogger<ArchiveManager>>(),
-            new []{baseFolder.Value.Join("Archives")},
+            new []{baseFolder.Value.CombineUnchecked("Archives")},
             s.GetRequiredService<IDataStore>(),
             s.GetRequiredService<FileExtractor.FileExtractor>(),
             s.GetRequiredService<FileContentsCache>()));

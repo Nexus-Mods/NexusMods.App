@@ -89,7 +89,7 @@ public class SortTests
 
         rules = Shuffle(rules).ToList();
         
-        Sorter.Sort<Item, string>(rules, x => x.Id, x => x.Rules)
+        Sorter.Sort<Item, string>(rules, x => x.Id, x => x.Rules, null)
             .Select(i => i.Id)
             .Should().BeEquivalentTo(letters.Concat(numbers));
     }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
@@ -40,14 +41,16 @@ public abstract class AGame : IGame
         }
     }
 
-    public IEnumerable<AModFile> GetGameFiles(GameInstallation installation, IDataStore store)
+    public virtual IEnumerable<AModFile> GetGameFiles(GameInstallation installation, IDataStore store)
     {
         return Array.Empty<AModFile>();
     }
 
+    public virtual IStreamFactory Icon => throw new NotImplementedException("No icon provided for this game.");
+
     private Version GetVersion(IGameLocator locator, GameLocatorResult installation)
     {
-        var fvi = PrimaryFile.RelativeTo(installation.Path).VersionInfo;
+        var fvi = PrimaryFile.CombineChecked(installation.Path).VersionInfo;
         return fvi.ProductVersion == null ? new Version("1.0.0.0") : Version.Parse(fvi.ProductVersion!);
     }
 
