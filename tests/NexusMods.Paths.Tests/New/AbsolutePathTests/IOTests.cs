@@ -1,4 +1,3 @@
-using FluentAssertions;
 using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Paths.Tests.New.AbsolutePathTests;
@@ -20,7 +19,7 @@ public class IOTests
         // Note: This test can be slow, so the check is implemented like this.
         var path = AbsolutePath.FromFullPath(directory);
         int currentItems = 0;
-        foreach (var item in path.EnumerateFiles())
+        foreach (var _ in path.EnumerateFiles())
         {
             currentItems++;
             if (currentItems > minItems)

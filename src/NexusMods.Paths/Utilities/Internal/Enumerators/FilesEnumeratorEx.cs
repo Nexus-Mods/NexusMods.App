@@ -2,7 +2,7 @@ using System.IO.Enumeration;
 
 namespace NexusMods.Paths.Utilities.Internal.Enumerators;
 
-internal sealed unsafe class FilesEnumeratorEx : FileSystemEnumerator<FilesEnumeratorExEntry>
+internal sealed class FilesEnumeratorEx : FileSystemEnumerator<FilesEnumeratorExEntry>
 {
     public string? CurrentDirectory { get; private set; }
     

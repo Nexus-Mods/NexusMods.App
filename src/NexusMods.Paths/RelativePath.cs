@@ -93,7 +93,7 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
     /// <summary>
     /// Returns true if this path is a child of this path.
     /// </summary>
-    /// <param name="pathToCheck">The path to verify.</param>
+    /// <param name="other">The path to verify.</param>
     /// <returns>True if this is a child path of the parent path; else false.</returns>
     public bool InFolder(RelativePath other)
     {

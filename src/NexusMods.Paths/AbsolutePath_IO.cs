@@ -1,6 +1,4 @@
 using System.Diagnostics;
-using System.IO.Enumeration;
-using System.Runtime.CompilerServices;
 using System.Text;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities.Internal.Enumerators;
@@ -360,17 +358,5 @@ public partial struct AbsolutePath
     {
         await using var fs = Create();
         await fs.WriteAsync(data, CancellationToken.None);
-    }
-    
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool MatchesPattern(string expression, ReadOnlySpan<char> name, EnumerationOptions options)
-    {
-        bool ignoreCase = true;
-        return options.MatchType switch
-        {
-            MatchType.Simple => FileSystemName.MatchesSimpleExpression(expression.AsSpan(), name, ignoreCase),
-            MatchType.Win32 => FileSystemName.MatchesWin32Expression(expression.AsSpan(), name, ignoreCase),
-            _ => throw new ArgumentOutOfRangeException(nameof(options)),
-        };
     }
 }
