@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +27,7 @@ public class ProtocolRegistrationWindows : IProtocolRegistration
         using var key = GetClassKey(protocol);
         using var commandKey = GetCommandKey(key);
 
-        return commandKey != null && ((string?)commandKey.GetValue("") ?? "").Contains(GetOwnExe());
+        return ((string?)commandKey.GetValue("") ?? "").Contains(GetOwnExe());
     }
 
     /// <inheritdoc/>
