@@ -20,11 +20,18 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
                 .Select(v => !v)
                 .BindTo(this, v => v.LoginButton.IsVisible)
                 .DisposeWith(d);
+            
+            this.WhenAnyValue(v => v.ViewModel.IsLoggedIn)
+                .Select(v => v)
+                .BindTo(this, v => v.UserPanel.IsVisible)
+                .DisposeWith(d);
+            
             this.WhenAnyValue(view => view.ViewModel.IsLoggedIn)
                 .CombineLatest(this.WhenAnyValue(view => view.ViewModel.IsPremium))
                 .Select(t => t.First && t.Second)
                 .BindTo(this, view => view.Premium.IsVisible)
                 .DisposeWith(d);
+            
         });
     }
 }

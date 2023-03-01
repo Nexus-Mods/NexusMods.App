@@ -22,6 +22,8 @@
     <AvaloniaResource Include="Assets\**" />
     <Folder Include="Resources\Icons" />
     <None Remove=".gitignore" />
+    <None Remove="Theme\BareIcons.xaml" />
+    <AvaloniaResource Include="Theme\BareIcons.xaml" />
   </ItemGroup>
 
   <ItemGroup>

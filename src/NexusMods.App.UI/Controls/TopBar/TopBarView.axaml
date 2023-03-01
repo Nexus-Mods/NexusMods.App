@@ -58,6 +58,12 @@
             </StackPanel>
         </Border>
 
+        <StackPanel Grid.Column="3" Orientation="Horizontal">
+            <Button Classes="BareIcon Help" />
+
+            <Button Classes="BareIcon Cog" />
+        </StackPanel>
+
         <Button
             Classes="Primary"
             Grid.Column="4"
@@ -65,6 +71,22 @@
             x:Name="LoginButton">
             <TextBlock Height="20">LOG IN</TextBlock>
         </Button>
+
+        <StackPanel
+            Grid.Column="4"
+            Orientation="Horizontal"
+            x:Name="UserPanel">
+            <Button Classes="BareIcon Bell" />
+            <Button>
+                <Border
+                    Background="#C4C4C4"
+                    CornerRadius="40"
+                    Height="30"
+                    Width="30" />
+            </Button>
+        </StackPanel>
+
+
 
         <Border
             BorderBrush="{DynamicResource AccentButtonBorderBrush}"
@@ -80,24 +102,18 @@
             HorizontalAlignment="Right"
             Width="160">
 
-            <Button Grid.Column="0" Padding="11">
-                <avalonia:Icon
-                    FontSize="11"
-                    Foreground="#DADADA"
-                    Value="mdi-window-minimize" />
-            </Button>
-            <Button Grid.Column="1" Padding="11">
-                <avalonia:Icon
-                    FontSize="11"
-                    Foreground="#DADADA"
-                    Value="mdi-window-maximize" />
-            </Button>
-            <Button Grid.Column="2" Padding="11">
-                <avalonia:Icon
-                    FontSize="11"
-                    Foreground="#DADADA"
-                    Value="mdi-window-close" />
-            </Button>
+            <Button
+                Classes="BareIcon WindowMinimize"
+                Grid.Column="0"
+                Padding="11" />
+            <Button
+                Classes="BareIcon WindowMaximize"
+                Grid.Column="1"
+                Padding="11" />
+            <Button
+                Classes="BareIcon WindowClose"
+                Grid.Column="2"
+                Padding="11" />
 
 
         </Grid>
