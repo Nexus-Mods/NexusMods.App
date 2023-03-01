@@ -21,6 +21,9 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
             this.BindCommand(ViewModel, vm => vm.LoginCommand, v => v.LoginButton)
                 .DisposeWith(d);
             
+            this.BindCommand(ViewModel, vm => vm.LogoutCommand, view => view.UserButton)
+                .DisposeWith(d);
+            
             this.WhenAnyValue(v => v.ViewModel.IsLoggedIn)
                 .Select(v => !v)
                 .BindToUI(this, v => v.LoginButton.IsVisible)

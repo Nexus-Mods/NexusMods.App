@@ -25,15 +25,15 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
     {
         _logger = logger;
         _loginManager = loginManager;
-        LoginCommand = ReactiveCommand.CreateFromTask(Login, _loginManager.IsLoggedIn.Select(b => !b));
-        LogoutCommand = ReactiveCommand.CreateFromTask(Logout, _loginManager.IsLoggedIn.Select(b => b));
+        LoginCommand = ReactiveCommand.CreateFromTask(Login, _loginManager.IsLoggedIn.OnUI().Select(b => !b));
+        LogoutCommand = ReactiveCommand.CreateFromTask(Logout, _loginManager.IsLoggedIn.OnUI().Select(b => b));
         
         this.WhenActivated(d =>
         {
             _loginManager.IsLoggedIn
                 .Subscribe(x => IsLoggedIn = x)
                 .DisposeWith(d);
-            
+
             _loginManager.IsPremium
                 .Subscribe(x => IsPremium = x)
                 .DisposeWith(d);
