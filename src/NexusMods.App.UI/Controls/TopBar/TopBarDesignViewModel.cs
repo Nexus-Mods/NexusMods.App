@@ -23,10 +23,10 @@ public class TopBarDesignViewModel : AViewModel<ITopBarViewModel>, ITopBarViewMo
     public IImage Avatar { get; set; }
     
     [Reactive]
-    public ICommand LoginCommand { get; set; }
+    public ReactiveCommand<Unit, Unit> LoginCommand { get; set; }
     
     [Reactive]
-    public ICommand LogoutCommand { get; set; }
+    public ReactiveCommand<Unit, Unit> LogoutCommand { get; set; }
 
     [Reactive]
     public ReactiveCommand<Unit, Unit> MinimizeCommand { get; set; } = ReactiveCommand.Create(() => { });

@@ -26,6 +26,7 @@ public class SqliteDataStore : IDataStore, IDisposable
     private readonly Dictionary<EntityCategory,string> _casStatements;
     private readonly Lazy<JsonSerializerOptions> _jsonOptions;
     private readonly Dictionary<EntityCategory,string> _prefixStatements;
+    private readonly Dictionary<EntityCategory,string> _deleteStatements;
     private readonly ConcurrentLru<Id,Entity> _cache;
     
     private readonly IMessageProducer<RootChange> _rootChangeProducer;
@@ -47,6 +48,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         _putStatements = new Dictionary<EntityCategory, string>();
         _casStatements = new Dictionary<EntityCategory, string>();
         _prefixStatements = new Dictionary<EntityCategory, string>();
+        _deleteStatements = new Dictionary<EntityCategory, string>();
         EnsureTables();
         
         _jsonOptions = new Lazy<JsonSerializerOptions>(provider.GetRequiredService<JsonSerializerOptions>);
@@ -86,6 +88,7 @@ public class SqliteDataStore : IDataStore, IDisposable
             _casStatements[table] =
                 $"UPDATE [{table}] SET Data = @newData WHERE Data = @oldData AND Id = @id RETURNING *;";
             _prefixStatements[table] = $"SELECT Id, Data FROM [{table}] WHERE Id >= @prefix ORDER BY Id ASC";
+            _deleteStatements[table] = $"DELETE FROM [{table}] WHERE Id = @id";
         }
     }
     
@@ -199,6 +202,15 @@ public class SqliteDataStore : IDataStore, IDisposable
         id.ToSpan(idBytes.AsSpan());
         cmd.Parameters.AddWithValue("@id", idBytes);
         cmd.Parameters.AddWithValue("@data", val.ToArray());
+        cmd.ExecuteNonQuery();
+    }
+
+    public void Delete(Id id)
+    {
+        using var cmd = new SQLiteCommand(_deleteStatements[id.Category], _conn);
+        var idBytes = new byte[id.SpanSize];
+        id.ToSpan(idBytes.AsSpan());
+        cmd.Parameters.AddWithValue("@id", idBytes);
         cmd.ExecuteNonQuery();
     }
 

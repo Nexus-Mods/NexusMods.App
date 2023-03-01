@@ -12,8 +12,8 @@ public interface ITopBarViewModel : IViewModelInterface
     public bool IsPremium { get; }
     public IImage Avatar { get; }
     
-    public ICommand LoginCommand { get; }
-    public ICommand LogoutCommand { get; }
+    public ReactiveCommand<Unit, Unit> LoginCommand { get; }
+    public ReactiveCommand<Unit, Unit> LogoutCommand { get; }
     
     public ReactiveCommand<Unit, Unit> MinimizeCommand { get; }
     public ReactiveCommand<Unit, Unit> MaximizeCommand { get; }

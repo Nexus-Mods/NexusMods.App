@@ -14,6 +14,12 @@ public interface IDataStore
     Id? GetRoot(RootType type);
     byte[]? GetRaw(Id id);
     void PutRaw(Id key, ReadOnlySpan<byte> val);
+
+    /// <summary>
+    /// Delete the value for teh given id
+    /// </summary>
+    /// <param name="key"></param>
+    void Delete(Id id);
     Task<long> PutRaw(IAsyncEnumerable<(Id Key, byte[] Value)> kvs, CancellationToken token = default);
     IEnumerable<T> GetByPrefix<T>(Id prefix) where T : Entity;
     IObservable<RootChange> Changes { get; }

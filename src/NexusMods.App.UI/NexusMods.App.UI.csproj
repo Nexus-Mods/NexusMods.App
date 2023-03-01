@@ -45,6 +45,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
     <ProjectReference Include="..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
   </ItemGroup>
 

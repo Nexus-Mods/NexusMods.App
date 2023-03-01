@@ -15,9 +15,7 @@ namespace NexusMods.Networking.NexusWebApi.Verbs;
 /// </summary>
 public class NexusLogin : AVerb
 {
-    private readonly OAuth _oauth;
-    private readonly IProtocolRegistration _protocolRegistration;
-    private readonly IDataStore _store;
+    private readonly LoginManager _loginManager;
 
     /// <inheritdoc/>
     public static VerbDefinition Definition => new("nexus-login",
@@ -27,27 +25,15 @@ public class NexusLogin : AVerb
     /// <summary>
     /// constructor
     /// </summary>
-    public NexusLogin(Configurator configurator, IDataStore store, OAuth oauth, IProtocolRegistration protocolRegistration)
+    public NexusLogin(LoginManager loginManager)
     {
-        _oauth = oauth;
-        _protocolRegistration = protocolRegistration;
-        _store = store;
+        _loginManager = loginManager;
     }
 
     /// <inheritdoc/>
     public async Task<int> Run(CancellationToken cancel)
     {
-        // temporary but if we want oauth to work we _have_ to be registered as the nxm handler
-        _protocolRegistration.RegisterSelf("nxm");
-
-        var token = await _oauth.AuthorizeRequest(cancel);
-        _store.Put(JWTTokenEntity.StoreId, new JWTTokenEntity
-        {
-            RefreshToken = token.RefreshToken,
-            AccessToken = token.AccessToken,
-            Store = _store
-        });
-
+        await _loginManager.LoginAsync(cancel);
         return 0;
     }
 }

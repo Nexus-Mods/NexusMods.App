@@ -2,6 +2,7 @@
 using NexusMods.App.CLI.Renderers;
 using NexusMods.App.UI;
 using NexusMods.CLI;
+using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
 using NexusMods.Games.BethesdaGameStudios;
@@ -40,7 +41,9 @@ public static class Services
             .AddNexusWebApi()
             .AddAdvancedHttpDownloader()
             .AddTestHarness()
-            .AddSingleton<HttpClient>();
+            .AddSingleton<HttpClient>()
+            .AddCommon();
+
         
         if (addStandardGameLocators)
             services.AddStandardGameLocators();

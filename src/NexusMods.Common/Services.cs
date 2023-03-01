@@ -10,8 +10,11 @@ namespace NexusMods.Common
 {
     public static class Services
     {
-        public static IServiceCollection AddOSInterop(this IServiceCollection services)
+        public static IServiceCollection AddCommon(this IServiceCollection services)
         {
+            services.AddSingleton<IIDGenerator, IDGenerator>()
+                    .AddSingleton<IProcessFactory, ProcessFactory>();
+            
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 services.AddSingleton<IOSInterop, OSInteropWindows>();
