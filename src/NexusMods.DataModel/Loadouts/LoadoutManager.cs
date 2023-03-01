@@ -2,7 +2,6 @@
 using System.IO.Compression;
 using System.Reactive.Linq;
 using System.Text;
-using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;

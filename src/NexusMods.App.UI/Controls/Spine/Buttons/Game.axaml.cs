@@ -1,10 +1,5 @@
-﻿using Avalonia;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Controls.Mixins;
-using Avalonia.Controls.Primitives;
-using Avalonia.Data;
-using Avalonia.Markup.Xaml;
-using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using Avalonia.VisualTree;
 using ReactiveUI;

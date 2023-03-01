@@ -9,7 +9,6 @@ using NexusMods.Networking.NexusWebApi.DTOs;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
-using Size = NexusMods.Paths.Size;
 
 namespace NexusMods.Games.TestHarness;
 

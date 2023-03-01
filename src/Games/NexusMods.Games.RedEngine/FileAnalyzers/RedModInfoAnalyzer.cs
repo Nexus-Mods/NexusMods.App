@@ -3,7 +3,6 @@ using System.Text.Json.Serialization;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.FileExtractor.FileSignatures;
-using NexusMods.Paths;
 
 namespace NexusMods.Games.RedEngine.FileAnalyzers;
 

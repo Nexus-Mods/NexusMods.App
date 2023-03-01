@@ -2,7 +2,6 @@
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 
 namespace NexusMods.DataModel.Tests;

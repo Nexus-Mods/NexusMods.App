@@ -2,9 +2,7 @@
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using Noggog;
 using System.Buffers;
-using System.Data;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;

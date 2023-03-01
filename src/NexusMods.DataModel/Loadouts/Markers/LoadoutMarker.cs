@@ -1,7 +1,5 @@
-﻿using System.IO.Compression;
-using System.Reactive.Linq;
+﻿using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
-using System.Text.Json;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Extensions;

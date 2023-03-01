@@ -1,9 +1,7 @@
 ﻿using System.Buffers.Binary;
 using System.Collections.Concurrent;
 using System.Data.SQLite;
-using System.Diagnostics;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Text.Json;
 using BitFaster.Caching.Lru;
 using NexusMods.DataModel.Abstractions;

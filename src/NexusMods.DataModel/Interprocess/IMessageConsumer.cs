@@ -1,6 +1,4 @@
-﻿using System.Reactive.Subjects;
-
-namespace NexusMods.DataModel.Interprocess;
+﻿namespace NexusMods.DataModel.Interprocess;
 
 /// <summary>
 /// A message consumer for receiving messages from other processes.

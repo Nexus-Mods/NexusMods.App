@@ -2,7 +2,6 @@ using Microsoft.Extensions.Logging;
 using NexusMods.CLI;
 using NexusMods.CLI.DataOutputs;
 using NexusMods.DataModel;
-using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.FileExtractor.FileSignatures;

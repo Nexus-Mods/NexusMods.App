@@ -3,8 +3,6 @@ using Avalonia.ReactiveUI;
 using Microsoft.Extensions.DependencyInjection;
 using Projektanker.Icons.Avalonia;
 using Projektanker.Icons.Avalonia.MaterialDesign;
-using ReactiveUI;
-using Splat;
 
 namespace NexusMods.App.UI;
 

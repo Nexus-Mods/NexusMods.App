@@ -6,7 +6,6 @@ using NexusMods.DataModel.RateLimiting;
 using NexusMods.FileExtractor;
 using NexusMods.FileExtractor.Extractors;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
 using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;

@@ -1,8 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.DataModel.RateLimiting;
-using NexusMods.FileExtractor.Extractors;
-using NexusMods.Paths;
 using Xunit.DependencyInjection;
 using Xunit.DependencyInjection.Logging;
 

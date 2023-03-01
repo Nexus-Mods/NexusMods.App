@@ -1,21 +1,12 @@
-﻿using Xunit;
-using NexusMods.Networking.NexusWebApi;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Interprocess;
 using Moq;
 using System.Net;
 using Moq.Protected;
 using NexusMods.Networking.NexusWebApi.Types;
-using NexusMods.DataModel.JsonConverters;
 using System.Text.Json;
 using FluentAssertions;
-using System.Data.Entity.Core.Metadata.Edm;
 
 namespace NexusMods.Networking.NexusWebApi.Tests;
 

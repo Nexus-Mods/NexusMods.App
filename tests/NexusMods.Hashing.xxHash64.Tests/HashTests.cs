@@ -1,6 +1,4 @@
 using FluentAssertions;
-using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Hashing.xxHash64.Tests;

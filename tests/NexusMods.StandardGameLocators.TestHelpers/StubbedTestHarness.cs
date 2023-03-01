@@ -1,6 +1,4 @@
-﻿using GameFinder.Common;
-using GameFinder.StoreHandlers.Steam;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using NexusMods.DataModel.Games;
 using NexusMods.Paths;
 
