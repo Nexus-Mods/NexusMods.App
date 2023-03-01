@@ -38,6 +38,13 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
                 .BindTo(avatar, v => v.Source)
                 .DisposeWith(d);
             
+            this.BindCommand(ViewModel, vm => vm.CloseCommand, v => v.WindowCloseButton)
+                .DisposeWith(d);
+            this.BindCommand(ViewModel, vm => vm.MinimizeCommand, v => v.WindowMinimizeButton)
+                .DisposeWith(d);
+            this.BindCommand(ViewModel, vm => vm.MaximizeCommand, v => v.WindowMaximizeButton)
+                .DisposeWith(d);
+            
         });
     }
 }

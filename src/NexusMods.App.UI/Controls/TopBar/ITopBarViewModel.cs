@@ -1,10 +1,12 @@
-﻿using System.Windows.Input;
+﻿using System.Reactive;
+using System.Windows.Input;
 using Avalonia.Media;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Controls.TopBar;
 
-public interface ITopBarViewModel
+public interface ITopBarViewModel : IViewModelInterface
 {
     public bool IsLoggedIn { get; }
     public bool IsPremium { get; }
@@ -13,7 +15,7 @@ public interface ITopBarViewModel
     public ICommand LoginCommand { get; }
     public ICommand LogoutCommand { get; }
     
-    public ICommand MinimizeCommand { get; }
-    public ICommand MaximizeCommand { get; }
-    public ICommand CloseCommand { get; }
+    public ReactiveCommand<Unit, Unit> MinimizeCommand { get; }
+    public ReactiveCommand<Unit, Unit> MaximizeCommand { get; }
+    public ReactiveCommand<Unit, Unit> CloseCommand { get; }
 }

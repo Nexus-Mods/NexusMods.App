@@ -6,10 +6,13 @@
     <Style Selector="Button.BareIcon">
         <Setter Property="Template">
             <ControlTemplate>
-                <icons:Icon
-                    Height="24"
-                    Value="mdi-help-circle"
-                    Width="24" />
+                <!--  Transparent background so that the button is clickable over the entire area  -->
+                <Border Background="#00FFFFFF">
+                    <icons:Icon
+                        Height="24"
+                        Value="mdi-help-circle"
+                        Width="24" />
+                </Border>
             </ControlTemplate>
         </Setter>
         <Setter Property="Width" Value="24" />

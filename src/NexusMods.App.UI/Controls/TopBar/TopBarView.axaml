@@ -143,17 +143,20 @@
                     Classes="BareIcon WindowMinimize"
                     Grid.Column="0"
                     HorizontalAlignment="Center"
-                    Padding="11" />
+                    Padding="11"
+                    x:Name="WindowMinimizeButton" />
                 <Button
                     Classes="BareIcon WindowMaximize"
                     Grid.Column="1"
                     HorizontalAlignment="Center"
-                    Padding="11" />
+                    Padding="11"
+                    x:Name="WindowMaximizeButton" />
                 <Button
                     Classes="BareIcon WindowClose"
                     Grid.Column="2"
                     HorizontalAlignment="Center"
-                    Padding="11" />
+                    Padding="11"
+                    x:Name="WindowCloseButton" />
             </Grid>
         </Border>
     </Grid>

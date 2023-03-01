@@ -8,11 +8,10 @@ using Type = NexusMods.App.UI.Controls.Spine.Type;
 
 namespace NexusMods.App.UI.ViewModels;
 
-public class MainWindowViewModel : AViewModel
+public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
 {
-    private readonly AViewModel _homeViewModel;
+    private readonly IViewModel _homeViewModel;
     
-
     public MainWindowViewModel(SpineViewModel spineViewModel, FoundGamesViewModel foundGamesViewModel, TopBarViewModel topBarViewModel)
     {
         Spine = spineViewModel;
@@ -23,6 +22,7 @@ public class MainWindowViewModel : AViewModel
             Spine.Actions
                 .Subscribe(HandleSpineAction)
                 .DisposeWith(disposables);
+            
         });
     }
 
@@ -39,7 +39,7 @@ public class MainWindowViewModel : AViewModel
     public SpineViewModel Spine { get; }
     
     [Reactive]
-    public AViewModel RightContent { get; set; }
+    public IViewModel RightContent { get; set; }
     
     [Reactive]
     public TopBarViewModel TopBarViewModel { get; set; }

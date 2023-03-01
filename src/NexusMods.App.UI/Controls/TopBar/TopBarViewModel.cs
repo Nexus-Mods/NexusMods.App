@@ -1,12 +1,14 @@
-﻿using System.Windows.Input;
+﻿using System.Reactive;
+using System.Windows.Input;
 using Avalonia.Media;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.ViewModels;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Controls.TopBar;
 
-public class TopBarViewModel : AViewModel, ITopBarViewModel
+public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 {
     public TopBarViewModel(ILogger<TopBarViewModel> logger)
     {
@@ -28,11 +30,10 @@ public class TopBarViewModel : AViewModel, ITopBarViewModel
     public ICommand LogoutCommand { get; set; }
     
     [Reactive]
-    public ICommand MinimizeCommand { get; set; }
+    public ReactiveCommand<Unit, Unit> MinimizeCommand { get; set; } = ReactiveCommand.Create(() => { });
     
     [Reactive]
-    public ICommand MaximizeCommand { get; set; }
-    
-    [Reactive]
-    public ICommand CloseCommand { get; set; }
+    public ReactiveCommand<Unit, Unit> MaximizeCommand { get; set; } = ReactiveCommand.Create(() => { });
+
+    [Reactive] public ReactiveCommand<Unit, Unit> CloseCommand { get; set; } = ReactiveCommand.Create(() => { });
 }

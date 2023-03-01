@@ -1,4 +1,5 @@
-﻿using System.Reactive.Linq;
+﻿using System.Reactive;
+using System.Reactive.Linq;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Media;
@@ -10,7 +11,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Controls.TopBar;
 
-public class TopBarDesignViewModel : AViewModel, ITopBarViewModel
+public class TopBarDesignViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 {
     [Reactive]
     public bool IsLoggedIn { get; set; }
@@ -28,13 +29,12 @@ public class TopBarDesignViewModel : AViewModel, ITopBarViewModel
     public ICommand LogoutCommand { get; set; }
 
     [Reactive]
-    public ICommand MinimizeCommand { get; set; }
+    public ReactiveCommand<Unit, Unit> MinimizeCommand { get; set; } = ReactiveCommand.Create(() => { });
     
     [Reactive]
-    public ICommand MaximizeCommand { get; set; }
-    
-    [Reactive]
-    public ICommand CloseCommand { get; set; }
+    public ReactiveCommand<Unit, Unit> MaximizeCommand { get; set; } = ReactiveCommand.Create(() => { });
+
+    [Reactive] public ReactiveCommand<Unit, Unit> CloseCommand { get; set; } = ReactiveCommand.Create(() => { });
 
     public TopBarDesignViewModel()
     {

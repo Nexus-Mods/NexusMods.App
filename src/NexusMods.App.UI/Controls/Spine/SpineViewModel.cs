@@ -13,7 +13,7 @@ using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.Spine;
 
-public class SpineViewModel : AViewModel
+public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 {
     private readonly IDataStore _dataStore;
 

@@ -1,3 +1,5 @@
+using System.Reactive.Linq;
+using Avalonia.Controls;
 using Avalonia.Controls.Mixins;
 using Avalonia.ReactiveUI;
 using NexusMods.App.UI.ViewModels;
@@ -25,6 +27,25 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
             ViewModel.WhenAnyValue(v => v.RightContent)
                 .Subscribe(x => { })
                 .DisposeWith(disposables);
+            
+            this.WhenAnyValue(view => view.ViewModel!.TopBarViewModel.CloseCommand.IsExecuting)
+                .SelectMany(e => e)
+                .Where(e => e)
+                .Subscribe(_ => Close())
+                .DisposeWith(disposables);
+            
+            this.WhenAnyValue(view => view.ViewModel!.TopBarViewModel.MinimizeCommand.IsExecuting)
+                .SelectMany(e => e)
+                .Where(e => e)
+                .Subscribe(_ => WindowState = WindowState.Minimized)
+                .DisposeWith(disposables);
+            
+            this.WhenAnyValue(view => view.ViewModel!.TopBarViewModel.MaximizeCommand.IsExecuting)
+                .SelectMany(e => e)
+                .Where(e => e)
+                .Subscribe(_ => WindowState = WindowState.Maximized)
+                .DisposeWith(disposables);
+
         });
     }
 }
