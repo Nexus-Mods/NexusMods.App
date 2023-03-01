@@ -90,6 +90,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".solutionItems", ".solution
 		LICENSE.md = LICENSE.md
 		NuGet.Build.props = NuGet.Build.props
 		README.md = README.md
+		.gitattributes = .gitattributes
 	EndProjectSection
 EndProject
 Global
