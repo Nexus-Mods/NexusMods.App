@@ -1,0 +1,4 @@
+[submodule "src/NexusMods.FOMOD/fomod-installer"]
+	path = src/NexusMods.FOMOD/fomod-installer
+	url = https://github.com/Nexus-Mods/fomod-installer.git
+	branch = core

@@ -49,7 +49,7 @@ class UIDelegates : IUIDelegates
         _logger.LogError("A bad thing happened: {}: {} ({})", title, message, details);
     }
 
-    public void StartDialog(string moduleName, HeaderImage image, Action<int, int, int[]> select, Action<bool, int> cont, Action cancel)
+    public void StartDialog(string? moduleName, HeaderImage image, Action<int, int, int[]> select, Action<bool, int> cont, Action cancel)
     {
         _logger.LogInformation("Start dialog {}", moduleName);
         _cont = cont;

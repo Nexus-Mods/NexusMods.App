@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <Folder Include="fomod-installer\FomodInstaller.Interface\Properties\" />
+    <Folder Include="fomod-installer\InstallScripting\Scripting\Properties\" />
     <Folder Include="fomod-installer\Utils\Properties\" />
   </ItemGroup>
 
