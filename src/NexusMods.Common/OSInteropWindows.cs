@@ -1,19 +1,15 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 
 namespace NexusMods.Common;
 
 /// <summary>
 /// OS interoperation for windows
 /// </summary>
+// ReSharper disable once InconsistentNaming
 public class OSInteropWindows : IOSInterop
 {
     private readonly IProcessFactory _processFactory;
+    
     /// <summary>
     /// constructor
     /// </summary>
@@ -24,7 +20,7 @@ public class OSInteropWindows : IOSInterop
     }
 
     /// <inheritdoc/>
-    public void OpenURL(string url)
+    public void OpenUrl(string url)
     {
         _processFactory.Start(new ProcessStartInfo(url) { UseShellExecute = true });
     }

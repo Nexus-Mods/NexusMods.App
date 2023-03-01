@@ -18,7 +18,7 @@ namespace NexusMods.Common.Tests
             string url = "foobar://test";
             var mockFactory = new Mock<IProcessFactory>();
             var os = new OSInteropWindows(mockFactory.Object);
-            os.OpenURL(url);
+            os.OpenUrl(url);
             mockFactory.Verify(f => f.Start(It.IsAny<ProcessStartInfo>()), Times.Once());
             mockFactory.Verify(f => f.Start(It.Is<ProcessStartInfo>(psi => psi.UseShellExecute == true)), Times.Once());
         }
@@ -29,7 +29,7 @@ namespace NexusMods.Common.Tests
             string url = "foobar://test";
             var mockFactory = new Mock<IProcessFactory>();
             var os = new OSInteropLinux(mockFactory.Object);
-            os.OpenURL(url);
+            os.OpenUrl(url);
             mockFactory.Verify(f => f.Start("xdg-open", url), Times.Once());
         }
 
@@ -39,7 +39,7 @@ namespace NexusMods.Common.Tests
             string url = "foobar://test";
             var mockFactory = new Mock<IProcessFactory>();
             var os = new OSInteropOSX(mockFactory.Object);
-            os.OpenURL(url);
+            os.OpenUrl(url);
             mockFactory.Verify(f => f.Start("open", url), Times.Once());
         }    }
 }

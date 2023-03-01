@@ -148,7 +148,7 @@ public class OAuth
         cancel.Register(() => _callbacks[state].Invoke(new OperationCanceledException(), ""));
 
         // see https://www.rfc-editor.org/rfc/rfc7636#section-4.3
-        _os.OpenURL(GenerateAuthorizeUrl(challenge, state));
+        _os.OpenUrl(GenerateAuthorizeUrl(challenge, state));
 
         return await completionSource.Task;
     }

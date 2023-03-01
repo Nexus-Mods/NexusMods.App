@@ -1,11 +1,5 @@
-using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+﻿using Microsoft.Win32;
 using System.Runtime.Versioning;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NexusMods.Common;
 
@@ -18,7 +12,9 @@ public class ProtocolRegistrationWindows : IProtocolRegistration
     /// <summary>
     /// constructor
     /// </summary>
-    public ProtocolRegistrationWindows() {
+    public ProtocolRegistrationWindows() 
+    {
+        
     }
 
     /// <inheritdoc/>

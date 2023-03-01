@@ -1,13 +1,13 @@
-﻿using System.Diagnostics;
-
-namespace NexusMods.Common;
+﻿namespace NexusMods.Common;
 
 /// <summary>
 /// OS interoperation for MacOS
 /// </summary>
+// ReSharper disable once InconsistentNaming
 public class OSInteropOSX : IOSInterop
 {
     private readonly IProcessFactory _processFactory;
+    
     /// <summary>
     /// constructor
     /// </summary>
@@ -18,7 +18,7 @@ public class OSInteropOSX : IOSInterop
     }
 
     /// <inheritdoc/>
-    public void OpenURL(string url)
+    public void OpenUrl(string url)
     {
         _processFactory.Start("open", url);
     }

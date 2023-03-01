@@ -1,24 +1,21 @@
-﻿using System.Diagnostics;
-
-namespace NexusMods.Common;
+﻿namespace NexusMods.Common;
 
 /// <summary>
 /// OS interoperation for linux
 /// </summary>
+// ReSharper disable once InconsistentNaming
 public class OSInteropLinux : IOSInterop
 {
     private readonly IProcessFactory _processFactory;
-    /// <summary>
-    /// constructor
-    /// </summary>
-    /// <param name="processFactory"></param>
+    
+    /// <summary/>
     public OSInteropLinux(IProcessFactory processFactory)
     {
         _processFactory = processFactory;
     }
 
     /// <inheritdoc/>
-    public void OpenURL(string url)
+    public void OpenUrl(string url)
     {
         _processFactory.Start("xdg-open", url);
     }

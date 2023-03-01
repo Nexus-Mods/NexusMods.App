@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 
 namespace NexusMods.Common;
 
@@ -12,15 +7,15 @@ namespace NexusMods.Common;
 /// </summary>
 public class ProcessWrap : IProcess
 {
+    // Assuming Tannin will want to use this for tests later so suppressing for now, Sewer
+    // ReSharper disable once NotAccessedField.Local
     private Process _proc;
-    /// <summary>
-    /// constructor
-    /// </summary>
+    
+    /// <summary/>
     public ProcessWrap(Process proc)
     {
         _proc = proc;
     }
-
 }
 
 /// <summary>
@@ -32,14 +27,13 @@ public class ProcessFactory : IProcessFactory
     public IProcess? Start(ProcessStartInfo startInfo)
     {
         var res = Process.Start(startInfo);
-
         return (res != null) ? new ProcessWrap(res) : null;
     }
 
     /// <inheritdoc/>
-    public IProcess? Start(string executable, string arguments)
+    public IProcess Start(string executable, string arguments)
     {
         var res = Process.Start(executable, arguments);
-        return (res != null) ? new ProcessWrap(res) : null;
+        return new ProcessWrap(res);
     }
 }
