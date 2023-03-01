@@ -12,15 +12,17 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord;
 /// </summary>
 public sealed class MountAndBlade2Bannerlord : AGame,  ISteamGame, IGogGame, IEpicGame
 {
+    public static readonly GameDomain StaticDomain = GameDomain.From("mountandblade2bannerlord");
     public static string DisplayName => "Mount & Blade II: Bannerlord";
-    
+
     private readonly IEnumerable<IGameLocator> _gameLocators;
     private readonly LauncherManagerFactory _launcherManagerFactory;
     private IReadOnlyCollection<GameInstallation>? _installations;
-    
+
     public IEnumerable<int> SteamIds => new[] { 261550 };
     public IEnumerable<long> GogIds => new long[] { 1802539526, 1564781494 };
     public IEnumerable<string> EpicCatalogItemId => new[] { "Chickadee" };
+    public IEnumerable<string> XboxIds => new[] { "TaleWorldsEntertainment.MountBladeIIBannerlord" };
 
     public MountAndBlade2Bannerlord(ILogger<MountAndBlade2Bannerlord> logger, IEnumerable<IGameLocator> gameLocators, LauncherManagerFactory launcherManagerFactory)
         : base(logger, gameLocators)
@@ -30,8 +32,9 @@ public sealed class MountAndBlade2Bannerlord : AGame,  ISteamGame, IGogGame, IEp
     }
 
     public override string Name => DisplayName;
-    public override GameDomain Domain => GameDomain.MountAndBlade2Bannerlord;
+    public override GameDomain Domain => StaticDomain;
     public override GamePath PrimaryFile => new(GameFolderType.Game, @"bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.Launcher.exe");
+    public GamePath PrimaryXboxFile => new(GameFolderType.Game, @"bin\Win64_Shipping_Client\Launcher.Native.exe");
     public GamePath PrimaryStandaloneFile => new(GameFolderType.Game, @"bin\Win64_Shipping_Client\Bannerlord.exe");
 
     public GamePath BLSEStandaloneFile => new(GameFolderType.Game, @"bin\Win64_Shipping_Client\Bannerlord.BLSE.Standalone.exe");
@@ -63,7 +66,7 @@ public sealed class MountAndBlade2Bannerlord : AGame,  ISteamGame, IGogGame, IEp
     protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(IGameLocator locator, GameLocatorResult installation)
     {
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);
-        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Saves, KnownFolders.Documents.Join(@"Mount and Blade II Bannerlord\Game Saves"));
-        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Preferences, KnownFolders.Documents.Join(@"Mount and Blade II Bannerlord\Configs"));
+        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Saves, KnownFolders.Documents.CombineChecked(@"Mount and Blade II Bannerlord\Game Saves"));
+        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Preferences, KnownFolders.Documents.CombineChecked(@"Mount and Blade II Bannerlord\Configs"));
     }
 }

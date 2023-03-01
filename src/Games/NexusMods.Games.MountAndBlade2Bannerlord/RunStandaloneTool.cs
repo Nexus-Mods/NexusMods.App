@@ -13,8 +13,8 @@ public class RunStandaloneTool: ITool
     private readonly LauncherManagerFactory _launcherManagerFactory;
 
     public string Name => $"Run {MountAndBlade2Bannerlord.DisplayName}";
-    public IEnumerable<GameDomain> Domains => new[] { GameDomain.MountAndBlade2Bannerlord };
-    
+    public IEnumerable<GameDomain> Domains => new[] { MountAndBlade2Bannerlord.StaticDomain };
+
     public RunStandaloneTool(ILogger<RunStandaloneTool> logger, LauncherManagerFactory launcherManagerFactory)
     {
         _logger = logger;
@@ -24,12 +24,14 @@ public class RunStandaloneTool: ITool
     public async Task Execute(Loadout loadout)
     {
         if (loadout.Installation.Game is not MountAndBlade2Bannerlord mountAndBladeBannerlord) return;
-        
+
+        var hasXbox = false; // TODO:
         var hasBLSE = loadout.HasModuleId("Bannerlord.BLSE");
-        
+        if (hasXbox && !hasBLSE) return; // Not supported.
+
         var program = hasBLSE
-            ? mountAndBladeBannerlord.BLSEStandaloneFile.RelativeTo(loadout.Installation.Locations[GameFolderType.Game])
-            : mountAndBladeBannerlord.PrimaryStandaloneFile.RelativeTo(loadout.Installation.Locations[GameFolderType.Game]);
+            ? mountAndBladeBannerlord.BLSEStandaloneFile.CombineChecked(loadout.Installation.Locations[GameFolderType.Game])
+            : mountAndBladeBannerlord.PrimaryStandaloneFile.CombineChecked(loadout.Installation.Locations[GameFolderType.Game]);
         _logger.LogInformation("Running {Program}", program);
 
         var launcherManager = _launcherManagerFactory.Get(loadout.Installation);
