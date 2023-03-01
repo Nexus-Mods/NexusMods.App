@@ -39,7 +39,9 @@ public static class Services
             s.GetRequiredService<ILogger<SqliteDataStore>>(),
             baseFolder.Value.CombineUnchecked("DataModel.sqlite"), s, 
             s.GetRequiredService<IMessageProducer<RootChange>>(), 
-            s.GetRequiredService<IMessageConsumer<RootChange>>()));
+            s.GetRequiredService<IMessageConsumer<RootChange>>(),
+            s.GetRequiredService<IMessageProducer<IdPut>>(), 
+            s.GetRequiredService<IMessageConsumer<IdPut>>()));
         coll.AddSingleton(s => new ArchiveManager(s.GetRequiredService<ILogger<ArchiveManager>>(),
             new []{baseFolder.Value.CombineUnchecked("Archives")},
             s.GetRequiredService<IDataStore>(),

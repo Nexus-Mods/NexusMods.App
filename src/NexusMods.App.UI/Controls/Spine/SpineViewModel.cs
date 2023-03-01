@@ -40,7 +40,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
         this.WhenActivated(disposables =>
         {
-            _dataStore.Changes
+            _dataStore.RootChanges
                 .Where(c => c.To.Category == EntityCategory.Loadouts)
                 .Select(c => c.To)
                 .Select(id => _dataStore.Get<LoadoutRegistry>(id, true))
