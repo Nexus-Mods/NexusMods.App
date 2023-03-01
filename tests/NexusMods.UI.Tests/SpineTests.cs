@@ -3,8 +3,6 @@ using NexusMods.App.UI.Controls.Spine;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Paths.Utilities;
-using NexusMods.StandardGameLocators.TestHelpers;
-using Noggog;
 using Type = NexusMods.App.UI.Controls.Spine.Type;
 
 namespace NexusMods.UI.Tests;
@@ -63,7 +61,7 @@ public class SpineTests : AUiTest
         }
         
         using var vm = GetActivatedViewModel<SpineViewModel>();
-        var loadout = await _loadoutManager.ImportFrom(KnownFolders.EntryFolder.CombineUnchecked(@"Resources\cyberpunk2077.1.61.zip"));
+        var __ = await _loadoutManager.ImportFrom(KnownFolders.EntryFolder.CombineUnchecked(@"Resources\cyberpunk2077.1.61.zip"));
 
         using var _ = vm.VM.Actions.Subscribe(vm.VM.Activations);
         
@@ -77,11 +75,11 @@ public class SpineTests : AUiTest
 
         vm.VM.Home.Click.CanExecute(null).Should().BeTrue();
         vm.VM.Home.Click.Execute(null);
-        ValidateButtons(vm.VM, new SpineButtonAction(Type.Home, null));
+        ValidateButtons(vm.VM, new SpineButtonAction(Type.Home));
 
         vm.VM.Add.Click.CanExecute(null).Should().BeTrue();
         vm.VM.Add.Click.Execute(null);
-        ValidateButtons(vm.VM, new SpineButtonAction(Type.Add, null));
+        ValidateButtons(vm.VM, new SpineButtonAction(Type.Add));
     }
 
 }
