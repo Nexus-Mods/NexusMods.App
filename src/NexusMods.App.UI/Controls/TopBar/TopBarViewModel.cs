@@ -13,21 +13,19 @@ namespace NexusMods.App.UI.Controls.TopBar;
 public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 {
     private readonly LoginManager _loginManager;
+    private readonly ILogger<TopBarViewModel> _logger;
 
-    public TopBarViewModel(LoginManager loginManager)
+    public TopBarViewModel(ILogger<TopBarViewModel> logger, LoginManager loginManager)
     {
+        _logger = logger;
         _loginManager = loginManager;
-    }
-    
-    public TopBarViewModel(ILogger<TopBarViewModel> logger)
-    {
-        LogoutCommand = ReactiveCommand.CreateFromTask(Login);
+        LoginCommand = ReactiveCommand.CreateFromTask(Login);
     }
 
-    private Task Login()
+    private async Task Login()
     {
-        return Task.CompletedTask;
-
+        _logger.LogInformation("Logging into Nexus Mods");
+        await _loginManager.LoginAsync();
     }
 
     [Reactive]
