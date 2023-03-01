@@ -51,6 +51,10 @@
         <Setter Property="Value" Value="mdi-window-maximize" />
     </Style>
 
+    <Style Selector="Button.BareIcon.KeyboardArrowDown /template/ icons|Icon">
+        <Setter Property="Value" Value="mdi-chevron-down" />
+    </Style>
+
 
 
 </Styles>

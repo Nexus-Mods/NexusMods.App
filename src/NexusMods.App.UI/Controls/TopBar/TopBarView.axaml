@@ -16,6 +16,29 @@
     <Design.DataContext>
         <topBar:TopBarDesignViewModel />
     </Design.DataContext>
+    <UserControl.Styles>
+        <Style Selector="Button.BareIcon /template/ avalonia|Icon">
+            <Setter Property="Foreground" Value="#DADADA" />
+            <Setter Property="Width" Value="20" />
+            <Setter Property="Height" Value="20" />
+            <Setter Property="FontSize" Value="20" />
+        </Style>
+
+        <Style Selector="Button.BareIcon">
+            <Setter Property="Width" Value="40" />
+            <Setter Property="Height" Value="40" />
+        </Style>
+
+        <Style Selector="Grid.WindowControls Button.BareIcon /template/ avalonia|Icon">
+            <Setter Property="FontSize" Value="10" />
+        </Style>
+
+        <Style Selector="Grid.WindowControls Button.BareIcon">
+            <Setter Property="Width" Value="30" />
+            <Setter Property="Height" Value="30" />
+        </Style>
+    </UserControl.Styles>
+
     <Grid ColumnDefinitions="Auto, Auto, *, Auto, Auto, 3, Auto">
         <Svg
             Grid.Column="0"
@@ -60,7 +83,6 @@
 
         <StackPanel Grid.Column="3" Orientation="Horizontal">
             <Button Classes="BareIcon Help" />
-
             <Button Classes="BareIcon Cog" />
         </StackPanel>
 
@@ -68,54 +90,71 @@
             Classes="Primary"
             Grid.Column="4"
             Height="34"
+            Margin="16,0,16,0"
             x:Name="LoginButton">
             <TextBlock Height="20">LOG IN</TextBlock>
         </Button>
 
-        <StackPanel
+        <Border
+            BorderBrush="{DynamicResource StructuralBorderBrush}"
+            BorderThickness="1,0,0,0"
             Grid.Column="4"
-            Orientation="Horizontal"
             x:Name="UserPanel">
-            <Button Classes="BareIcon Bell" />
-            <Button>
-                <Border
-                    Background="#C4C4C4"
-                    CornerRadius="40"
-                    Height="30"
-                    Width="30" />
-            </Button>
-        </StackPanel>
-
-
+            <Grid ColumnDefinitions="71, 35, 35" Width="142">
+                <Button
+                    Classes="BareIcon Bell"
+                    Grid.Column="0"
+                    HorizontalAlignment="Center" />
+                <Button
+                    Grid.Column="1"
+                    HorizontalAlignment="Center"
+                    x:Name="UserButton">
+                    <Button.Template>
+                        <ControlTemplate>
+                            <Image
+                                Height="30"
+                                Width="30"
+                                x:Name="AvatarImage">
+                                <Image.Clip>
+                                    <EllipseGeometry Rect="0, 0, 30, 30" />
+                                </Image.Clip>
+                            </Image>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <Button
+                    Classes="BareIcon KeyboardArrowDown"
+                    Grid.Column="2"
+                    HorizontalAlignment="Left" />
+            </Grid>
+        </Border>
 
         <Border
-            BorderBrush="{DynamicResource AccentButtonBorderBrush}"
-            BorderThickness="1"
-            Grid.Column="5"
-            Height="34"
-            Width="1" />
+            BorderBrush="{DynamicResource StructuralBorderBrush}"
+            BorderThickness="1,0,0,0"
+            Grid.Column="6">
+            <Grid
+                Classes="WindowControls"
+                ColumnDefinitions="*, *, *"
+                HorizontalAlignment="Right"
+                Width="160">
 
-        <Grid
-            Classes="WindowControls"
-            ColumnDefinitions="*, *, *"
-            Grid.Column="6"
-            HorizontalAlignment="Right"
-            Width="160">
-
-            <Button
-                Classes="BareIcon WindowMinimize"
-                Grid.Column="0"
-                Padding="11" />
-            <Button
-                Classes="BareIcon WindowMaximize"
-                Grid.Column="1"
-                Padding="11" />
-            <Button
-                Classes="BareIcon WindowClose"
-                Grid.Column="2"
-                Padding="11" />
-
-
-        </Grid>
+                <Button
+                    Classes="BareIcon WindowMinimize"
+                    Grid.Column="0"
+                    HorizontalAlignment="Center"
+                    Padding="11" />
+                <Button
+                    Classes="BareIcon WindowMaximize"
+                    Grid.Column="1"
+                    HorizontalAlignment="Center"
+                    Padding="11" />
+                <Button
+                    Classes="BareIcon WindowClose"
+                    Grid.Column="2"
+                    HorizontalAlignment="Center"
+                    Padding="11" />
+            </Grid>
+        </Border>
     </Grid>
 </reactiveUi:ReactiveUserControl>

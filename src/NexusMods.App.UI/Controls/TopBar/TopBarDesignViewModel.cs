@@ -1,6 +1,9 @@
 ﻿using System.Reactive.Linq;
 using System.Windows.Input;
+using Avalonia;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using NexusMods.App.UI.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -26,6 +29,8 @@ public class TopBarDesignViewModel : AViewModel, ITopBarViewModel
 
     public TopBarDesignViewModel()
     {
+        var assets = AvaloniaLocator.Current.GetService<IAssetLoader>();
+        Avatar = new Bitmap(assets.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")));
         IsLoggedIn = false;
         IsPremium = true;
         
