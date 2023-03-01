@@ -33,7 +33,7 @@ public class ModManagementVerbs : AVerbTest
         await RunNoBanner("list-mods", "-l", listName);
         LastTable.Rows.Count().Should().Be(2);
 
-        await RunNoBanner("list-mod-contents", "-l", listName, "-n", Data7ZipLZMA2.FileName.ToString());
+        await RunNoBanner("list-mod-contents", "-l", listName, "-n", Data7ZipLZMA2.FileName);
         LastTable.Rows.Count().Should().Be(3);
         
         await RunNoBanner("flatten-list", "-l", listName);

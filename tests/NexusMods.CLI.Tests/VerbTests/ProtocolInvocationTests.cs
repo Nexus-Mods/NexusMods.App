@@ -8,10 +8,9 @@ namespace NexusMods.CLI.Tests.VerbTests;
 
 public class ProtocolInvocationTests
 {
-    private static readonly Times Once = Times.Once();
-    private ILogger<ProtocolInvocation> _logger;
+    private ILogger<ProtocolInvocationTests> _logger;
 
-    public ProtocolInvocationTests(ILogger<ProtocolInvocation> logger)
+    public ProtocolInvocationTests(ILogger<ProtocolInvocationTests> logger)
     {
         _logger = logger;
     }
@@ -37,7 +36,7 @@ public class ProtocolInvocationTests
     [Fact()]
     public async void WillThrowOnUnsupportedProtocol()
     {
-        var invok = new ProtocolInvocation(_logger, new List<IProtocolHandler> {  });
+        var invok = new ProtocolInvocation(_logger, new List<IProtocolHandler>());
         Func<Task<int>> act = async () => await invok.Run("test://foobar", CancellationToken.None);
         await act.Should().ThrowAsync<Exception>();
     }

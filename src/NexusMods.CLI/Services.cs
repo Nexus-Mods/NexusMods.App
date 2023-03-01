@@ -1,11 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NexusMods.CLI.OptionParsers;
 using NexusMods.CLI.Verbs;
 using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Interprocess;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.RateLimiting;
