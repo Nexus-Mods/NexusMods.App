@@ -3,6 +3,7 @@
     ExtendClientAreaTitleBarHeightHint="0"
     ExtendClientAreaToDecorationsHint="True"
     Icon="/Assets/nexus-logo.ico"
+    PointerPressed="PointerPressed_Handler"
     Title="NexusMods.App.UI"
     d:DesignHeight="450"
     d:DesignWidth="800"

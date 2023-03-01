@@ -1,6 +1,7 @@
 using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Controls.Mixins;
+using Avalonia.Input;
 using Avalonia.ReactiveUI;
 using NexusMods.App.UI.ViewModels;
 using ReactiveUI;
@@ -47,5 +48,13 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 .DisposeWith(disposables);
 
         });
+    }
+
+    private void PointerPressed_Handler(object? sender, PointerPressedEventArgs e)
+    {
+        if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+        {
+            BeginMoveDrag(e);
+        }
     }
 }
