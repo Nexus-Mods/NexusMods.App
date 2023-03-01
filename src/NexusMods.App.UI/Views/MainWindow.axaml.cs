@@ -20,7 +20,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 .DisposeWith(disposables);
 
             ViewModel.WhenAnyValue(v => v.RightContent)
-                .Subscribe(x => { })
+                .Subscribe(_ => { })
                 .DisposeWith(disposables);
         });
     }
