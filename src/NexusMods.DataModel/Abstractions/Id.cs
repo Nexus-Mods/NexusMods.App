@@ -1,4 +1,5 @@
 ﻿using System.Buffers.Binary;
+using System.Numerics;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -6,7 +7,7 @@ using System.Text.Json.Serialization;
 namespace NexusMods.DataModel.Abstractions;
 
 [JsonConverter(typeof(IdJsonConverter))]
-public interface Id : IEquatable<Id>
+public interface Id
 {
     public int SpanSize { get; }
     public void ToSpan(Span<byte> span);
@@ -228,7 +229,8 @@ public class IdVariableLength : AId
     
     public override bool Equals(Id? other)
     {
-        if (other == null || other.SpanSize == _data.Length) return false;
+        if (other == null || other.SpanSize != _data.Length) return false;
+        if (Category != other.Category) return false;
         Span<byte> buff = stackalloc byte[_data.Span.Length];
         other.ToSpan(buff);
         return _data.Span.SequenceEqual(buff);

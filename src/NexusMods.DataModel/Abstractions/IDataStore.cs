@@ -146,7 +146,7 @@ public struct IdPut : IMessage
                 Span<byte> fromSpan = stackalloc byte[Id.SpanSize];
                 Id.ToSpan(fromSpan);
                 writer.Write(fromSpan);
-                return 1 + sizeof(int) + Id.SpanSize;
+                return 2 + sizeof(int) + Id.SpanSize;
             }
         }
     }
@@ -162,7 +162,7 @@ public struct IdPut : IMessage
 
                 var type = reader.Read<byte>();
                 var category = (EntityCategory)reader.Read<byte>();
-                var spanSize = reader.Read<byte>();
+                var spanSize = reader.Read<int>();
                 Span<byte> fromSpan = stackalloc byte[spanSize];
                 reader.Read(fromSpan);
                 var id = Id.FromSpan(category, fromSpan);
