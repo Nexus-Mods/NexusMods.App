@@ -44,7 +44,9 @@ public class DataStoreBenchmark : IBenchmark, IDisposable
             provider.GetRequiredService<ILogger<SqliteDataStore>>(),
             _temporaryFileManager.CreateFile(KnownExtensions.Sqlite).Path, provider, 
             provider.GetRequiredService<IMessageProducer<RootChange>>(),
-            provider.GetRequiredService<IMessageConsumer<RootChange>>());
+            provider.GetRequiredService<IMessageConsumer<RootChange>>(), 
+        provider.GetRequiredService<IMessageProducer<IdPut>>(),
+        provider.GetRequiredService<IMessageConsumer<IdPut>>());
         
         _rawData = new byte[1024];
         Random.Shared.NextBytes(_rawData);
@@ -90,7 +92,7 @@ public class DataStoreBenchmark : IBenchmark, IDisposable
             Hash = Hash.From(42),
             To = new GamePath(GameFolderType.Game, "test.txt")
         };
-        var id = _dataStore.Put(record);
+        _dataStore.Put(record);
     }
 
     [Benchmark]

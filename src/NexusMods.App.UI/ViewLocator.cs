@@ -22,6 +22,6 @@ public class ViewLocator : IDataTemplate
     public bool Match(object? data)
     {
 
-        return data is AViewModel;
+        return data is IViewModel;
     }
 }

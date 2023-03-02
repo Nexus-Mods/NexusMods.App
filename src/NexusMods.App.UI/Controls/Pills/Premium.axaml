@@ -1,0 +1,43 @@
+﻿<UserControl
+    d:DesignHeight="30"
+    d:DesignWidth="100"
+    mc:Ignorable="d"
+    x:Class="NexusMods.App.UI.Controls.Pills.Premium"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:drawing="clr-namespace:System.Drawing;assembly=System.Drawing.Common"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Styles>
+        <Style Selector="Border">
+            <Setter Property="Background" Value="{DynamicResource BrandWhite}" />
+            <Setter Property="CornerRadius" Value="12" />
+        </Style>
+
+        <Style Selector="Border drawing|Icon" />
+        <Style Selector="Border TextBlock">
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="Foreground" Value="{DynamicResource BackgroundPrimaryBrush}" />
+            <Setter Property="FontFamily" Value="{DynamicResource FontPrimary}" />
+            <Setter Property="FontWeight" Value="700" />
+            <Setter Property="LineHeight" Value="12" />
+            <Setter Property="LetterSpacing" Value="0.25" />
+        </Style>
+    </UserControl.Styles>
+    <Border Height="16">
+        <StackPanel Margin="7,0" Orientation="Horizontal">
+            <avalonia:Icon
+                FontSize="10"
+                Height="10"
+                Value="mdi-star"
+                Width="10" />
+            <TextBlock
+                HorizontalAlignment="Left"
+                Margin="4,0,0,0"
+                Text="PREMIUM"
+                VerticalAlignment="Center" />
+        </StackPanel>
+
+    </Border>
+</UserControl>

@@ -39,6 +39,7 @@ public static class Services
             .AddSingleton<ITypeFinder, TypeFinder>()
             .AddSingleton<IProtocolHandler, NXMProtocolHandler>()
             .AddSingleton<Client>()
+            .AddSingleton<LoginManager>()
             .AddVerb<SetNexusAPIKey>()
             .AddVerb<NexusApiVerify>()
             .AddVerb<NexusGames>()

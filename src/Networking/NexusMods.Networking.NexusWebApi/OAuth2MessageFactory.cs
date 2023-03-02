@@ -82,12 +82,12 @@ public class OAuth2MessageFactory : IAuthenticatingMessageFactory
     
     /// <inheritdoc/>
     public ValueTask<HttpRequestMessage> Create(HttpMethod method, Uri uri)
-    {
+    {/*
         if (uri.LocalPath == "/v1/users/validate.json")
         {
             // we shouldn't have tried to call this
             throw new Exception("the validate endpoint does not work when using oauth");
-        }
+        }*/
         var msg = new HttpRequestMessage(method, uri);
         msg.Headers.Add("Authorization", $"Bearer {Token}");
         return ValueTask.FromResult(msg);
@@ -130,7 +130,8 @@ public class OAuth2MessageFactory : IAuthenticatingMessageFactory
         {
             Name = userInfo.Name,
             IsPremium = userInfo.MembershipRoles.Contains(MembershipRole.Premium),
-            IsSupporter = userInfo.MembershipRoles.Contains(MembershipRole.Supporter),
+            IsSupporter = userInfo.MembershipRoles.Contains(MembershipRole.Supporter), 
+            Avatar = new Uri($"https://forums.nexusmods.com/uploads/profile/photo-thumb-{userInfo.Id}.png")
         };
     }
 

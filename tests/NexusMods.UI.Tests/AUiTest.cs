@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using NexusMods.App.UI;
 using NexusMods.App.UI.ViewModels;
 
 namespace NexusMods.UI.Tests;
@@ -16,13 +17,13 @@ public class AUiTest
     }
 
     protected VMWrapper<T> GetActivatedViewModel<T>()
-    where T : AViewModel
+    where T : IViewModel
     {
         var vm = _provider.GetRequiredService<T>();
         return new VMWrapper<T>(vm);
     }
 
-    public class VMWrapper<T> : IDisposable where T : AViewModel
+    public class VMWrapper<T> : IDisposable where T : IViewModel
     {
         private readonly IDisposable _disposable;
         public T VM { get; }

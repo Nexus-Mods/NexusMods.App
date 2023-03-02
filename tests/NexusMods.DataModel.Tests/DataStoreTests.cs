@@ -87,7 +87,7 @@ public class DataStoreTests
         var src = new List<Id>();
         var destQ = new ConcurrentQueue<Id>();
 
-        using var _ = DataStore.Changes.Subscribe(c => destQ.Enqueue(c.To));
+        using var _ = DataStore.RootChanges.Subscribe(c => destQ.Enqueue(c.To));
 
         var oldId = DataStore.GetRoot(RootType.Tests) ?? IdEmpty.Empty;
 

@@ -4,7 +4,7 @@ using NexusMods.DataModel.Games;
 
 namespace NexusMods.App.UI.RightContent;
 
-public class FoundGamesViewModel : AViewModel
+public class FoundGamesViewModel : AViewModel<IFoundGamesViewModel>, IFoundGamesViewModel
 {
     private readonly IGame[] _games;
     private readonly IGame[] _installedGames;
