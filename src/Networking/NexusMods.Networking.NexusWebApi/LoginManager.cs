@@ -1,13 +1,8 @@
-﻿using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
+﻿using System.Reactive.Linq;
 using Microsoft.Extensions.Logging;
-using NexusMods.Common;
 using NexusMods.Common.ProtocolRegistration;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.Networking.NexusWebApi.DTOs;
 using NexusMods.Networking.NexusWebApi.Types;
-using Noggog;
 
 namespace NexusMods.Networking.NexusWebApi;
 
@@ -23,23 +18,23 @@ public class LoginManager
     private readonly Client _client;
     private readonly OAuth2MessageFactory _msgFactory;
     public IObservable<UserInfo?> UserInfo { get; }
-    
+
     /// <summary>
     /// True if the user is logged in
     /// </summary>
     public IObservable<bool> IsLoggedIn => UserInfo.Select(info => info != null);
-    
+
     /// <summary>
     /// True if the user is logged in and is a premium member
     /// </summary>
     public IObservable<bool> IsPremium => UserInfo.Select(info => info?.IsPremium ?? false);
-    
+
     /// <summary>
     /// The user's avatar
     /// </summary>
     public IObservable<Uri?> Avatar => UserInfo.Select(info => info?.Avatar);
 
-    public LoginManager(ILogger<LoginManager> logger, Client client, 
+    public LoginManager(ILogger<LoginManager> logger, Client client,
         OAuth2MessageFactory msgFactory,
         OAuth oauth, IDataStore dataStore, IProtocolRegistration protocolRegistration)
     {
@@ -58,7 +53,7 @@ public class LoginManager
 
     private async Task<UserInfo?> Verify()
     {
-        if (await _msgFactory.IsAuthenticated()) 
+        if (await _msgFactory.IsAuthenticated())
             return await _msgFactory.Verify(_client, CancellationToken.None);
         return null;
     }
@@ -70,7 +65,7 @@ public class LoginManager
     public async Task LoginAsync(CancellationToken token = default)
     {
         // temporary but if we want oauth to work we _have_ to be registered as the nxm handler
-        _protocolRegistration.RegisterSelf("nxm");
+        await _protocolRegistration.RegisterSelf("nxm");
 
         var jwtToken = await _oauth.AuthorizeRequest(token);
         _dataStore.Put(JWTTokenEntity.StoreId, new JWTTokenEntity

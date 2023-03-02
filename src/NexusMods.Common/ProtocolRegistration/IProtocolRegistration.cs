@@ -15,7 +15,7 @@ public interface IProtocolRegistration
     /// </summary>
     /// <param name="protocol">The protocol to register for</param>
     /// <returns>the previous handler, if any</returns>
-    string RegisterSelf(string protocol);
+    Task<string> RegisterSelf(string protocol);
 
     /// <summary>
     /// register an arbitrary command line as the handler for a protocol.
@@ -26,12 +26,12 @@ public interface IProtocolRegistration
     /// <param name="friendlyName">Arbitrary friendly name for the protocol</param>
     /// <param name="commandLine"></param>
     /// <returns>the previous handler, if any</returns>
-    string Register(string protocol, string friendlyName, string? commandLine = null);
+    Task<string> Register(string protocol, string friendlyName, string? commandLine = null);
 
     /// <summary>
     /// determine if this application is the handler for a protocol. This is based on the full url
     /// of the calling process so another installation of the same application would _not_ count
     /// </summary>
     /// <param name="protocol">The protocol to check for</param>
-    bool IsSelfHandler(string protocol);
+    Task<bool> IsSelfHandler(string protocol);
 }

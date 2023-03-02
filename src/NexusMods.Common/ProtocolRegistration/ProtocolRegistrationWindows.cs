@@ -16,16 +16,16 @@ public class ProtocolRegistrationWindows : IProtocolRegistration
     }
 
     /// <inheritdoc/>
-    public bool IsSelfHandler(string protocol)
+    public Task<bool> IsSelfHandler(string protocol)
     {
         using var key = GetClassKey(protocol);
         using var commandKey = GetCommandKey(key);
 
-        return commandKey != null && ((string?)commandKey.GetValue("") ?? "").Contains(GetOwnExe());
+        return Task.FromResult(commandKey is not null && ((string?)commandKey.GetValue("") ?? "").Contains(GetOwnExe()));
     }
 
     /// <inheritdoc/>
-    public string Register(string protocol, string friendlyName, string? commandLine = null)
+    public Task<string> Register(string protocol, string friendlyName, string? commandLine = null)
     {
         using var key = GetClassKey(protocol);
         key.SetValue("", "URL:" + friendlyName);
@@ -33,7 +33,7 @@ public class ProtocolRegistrationWindows : IProtocolRegistration
 
         using var commandKey = GetCommandKey(key);
 
-        string res = (string)(commandKey.GetValue("") ?? "");
+        var res = (string)(commandKey.GetValue("") ?? "");
         if (commandLine != null)
         {
             commandKey.SetValue("", commandLine);
@@ -43,26 +43,26 @@ public class ProtocolRegistrationWindows : IProtocolRegistration
             commandKey.DeleteValue("");
         }
 
-        return res;
+        return Task.FromResult(res);
     }
 
     /// <inheritdoc/>
-    public string RegisterSelf(string protocol)
+    public Task<string> RegisterSelf(string protocol)
     {
         return Register(protocol, "NMA", GetOwnExe() + " protocol-invoke --url \"%1\"");
     }
 
-    private string GetOwnExe()
+    private static string GetOwnExe()
     {
         return System.Diagnostics.Process.GetCurrentProcess().MainModule!.FileName;
     }
 
-    private RegistryKey GetClassKey(string protocol)
+    private static RegistryKey GetClassKey(string protocol)
     {
         return Registry.CurrentUser.CreateSubKey("SOFTWARE\\Classes\\" + protocol);
     }
 
-    private RegistryKey GetCommandKey(RegistryKey parent)
+    private static RegistryKey GetCommandKey(RegistryKey parent)
     {
         return parent.CreateSubKey(@"shell\open\command");
     }
