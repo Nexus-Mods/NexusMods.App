@@ -14,10 +14,14 @@ public class Startup
 
     public static AppBuilder BuildAvaloniaApp(IServiceProvider serviceProvider)
     {
-        return AppBuilder.Configure(serviceProvider.GetRequiredService<App>)
+
+        var app =  AppBuilder.Configure(serviceProvider.GetRequiredService<App>)
             .UsePlatformDetect()
             .LogToTrace()
             .UseReactiveUI()
             .WithIcons(c => c.Register<MaterialDesignIconProvider>());
+        Locator.CurrentMutable.UnregisterCurrent(typeof(IViewLocator));
+        Locator.CurrentMutable.Register(() => serviceProvider.GetRequiredService<InjectedViewLocator>(), typeof(IViewLocator));
+        return app;
     }
 }

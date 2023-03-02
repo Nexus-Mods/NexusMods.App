@@ -1,0 +1,163 @@
+﻿<reactiveUi:ReactiveUserControl
+    d:DataContext=""
+    d:DesignHeight="56"
+    d:DesignWidth="1280"
+    mc:Ignorable="d"
+    x:Class="NexusMods.App.UI.Controls.TopBar.TopBarView"
+    x:TypeArguments="topBar:TopBarViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:pills="clr-namespace:NexusMods.App.UI.Controls.Pills"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:topBar="clr-namespace:NexusMods.App.UI.Controls.TopBar"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.DataContext>
+        <topBar:TopBarDesignViewModel />
+    </Design.DataContext>
+    <UserControl.Styles>
+        <Style Selector="Button.BareIcon /template/ avalonia|Icon">
+            <Setter Property="Foreground" Value="#DADADA" />
+            <Setter Property="Width" Value="20" />
+            <Setter Property="Height" Value="20" />
+            <Setter Property="FontSize" Value="20" />
+        </Style>
+
+        <Style Selector="Button.BareIcon">
+            <Setter Property="Width" Value="40" />
+            <Setter Property="Height" Value="40" />
+        </Style>
+
+        <Style Selector="Grid.WindowControls Button.BareIcon /template/ avalonia|Icon">
+            <Setter Property="FontSize" Value="10" />
+        </Style>
+
+        <Style Selector="Grid.WindowControls Button.BareIcon">
+            <Setter Property="Width" Value="30" />
+            <Setter Property="Height" Value="30" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid ColumnDefinitions="Auto, Auto, *, Auto, Auto, 3, Auto">
+        <Svg
+            Grid.Column="0"
+            Grid.Row="0"
+            Height="34"
+            HorizontalAlignment="Left"
+            Margin="12,10"
+            Path="avares://NexusMods.App.UI/Assets/nexus-logo-with-text.svg"
+            VerticalAlignment="Center"
+            Width="100" />
+
+        <pills:Premium
+            Grid.Column="1"
+            Grid.Row="0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            x:Name="Premium" />
+
+        <Border
+            BorderBrush="{DynamicResource StructuralBorderBrush}"
+            BorderThickness="1"
+            CornerRadius="4"
+            Grid.Column="2"
+            Height="36"
+            Margin="12,0">
+            <StackPanel
+                Margin="11"
+                Orientation="Horizontal"
+                VerticalAlignment="Center">
+                <avalonia:Icon
+                    FontSize="11"
+                    Foreground="{DynamicResource StructuralBorderBrush}"
+                    Value="mdi-magnify" />
+                <TextBlock
+                    Foreground="{DynamicResource StructuralBorderBrush}"
+                    HorizontalAlignment="Left"
+                    Margin="7,0"
+                    Text="Search"
+                    VerticalAlignment="Center" />
+            </StackPanel>
+        </Border>
+
+        <StackPanel Grid.Column="3" Orientation="Horizontal">
+            <Button Classes="BareIcon Help" />
+            <Button Classes="BareIcon Cog" />
+        </StackPanel>
+
+        <Button
+            Classes="Primary"
+            Grid.Column="4"
+            Height="34"
+            Margin="16,0,16,0"
+            x:Name="LoginButton">
+            <TextBlock Height="20">LOG IN</TextBlock>
+        </Button>
+
+        <Border
+            BorderBrush="{DynamicResource StructuralBorderBrush}"
+            BorderThickness="1,0,0,0"
+            Grid.Column="4"
+            x:Name="UserPanel">
+            <Grid ColumnDefinitions="71, 35, 35" Width="142">
+                <Button
+                    Classes="BareIcon Bell"
+                    Grid.Column="0"
+                    HorizontalAlignment="Center" />
+                <Button
+                    Grid.Column="1"
+                    HorizontalAlignment="Center"
+                    x:Name="UserButton">
+                    <Button.Template>
+                        <ControlTemplate>
+                            <Image
+                                Height="30"
+                                Width="30"
+                                x:Name="AvatarImage">
+                                <Image.Clip>
+                                    <EllipseGeometry Rect="0, 0, 30, 30" />
+                                </Image.Clip>
+                            </Image>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <Button
+                    Classes="BareIcon KeyboardArrowDown"
+                    Grid.Column="2"
+                    HorizontalAlignment="Left" />
+            </Grid>
+        </Border>
+
+        <Border
+            BorderBrush="{DynamicResource StructuralBorderBrush}"
+            BorderThickness="1,0,0,0"
+            Grid.Column="6">
+            <Grid
+                Classes="WindowControls"
+                ColumnDefinitions="*, *, *"
+                HorizontalAlignment="Right"
+                Width="160">
+
+                <Button
+                    Classes="BareIcon WindowMinimize"
+                    Grid.Column="0"
+                    HorizontalAlignment="Center"
+                    Padding="11"
+                    x:Name="WindowMinimizeButton" />
+                <Button
+                    Classes="BareIcon WindowMaximize"
+                    Grid.Column="1"
+                    HorizontalAlignment="Center"
+                    Padding="11"
+                    x:Name="WindowMaximizeButton" />
+                <Button
+                    Classes="BareIcon WindowClose"
+                    Grid.Column="2"
+                    HorizontalAlignment="Center"
+                    Padding="11"
+                    x:Name="WindowCloseButton" />
+            </Grid>
+        </Border>
+    </Grid>
+</reactiveUi:ReactiveUserControl>

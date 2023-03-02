@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using System.Runtime.InteropServices;
 
 namespace NexusMods.Common;
@@ -15,19 +15,16 @@ public static class Services
     // ReSharper disable once InconsistentNaming
     public static IServiceCollection AddOSInterop(this IServiceCollection services)
     {
+        services.AddSingleton<IIDGenerator, IDGenerator>()
+            .AddSingleton<IProcessFactory, ProcessFactory>();
+
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
             services.AddSingleton<IOSInterop, OSInteropWindows>();
-        }
         else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-        {
             services.AddSingleton<IOSInterop, OSInteropLinux>();
-        }
         else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-        {
             services.AddSingleton<IOSInterop, OSInteropOSX>();
-        }
-        
+
         return services;
     }
 }

@@ -1,0 +1,63 @@
+﻿<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style Selector="Button.BareIcon">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <!--  Transparent background so that the button is clickable over the entire area  -->
+                <Border Background="#00FFFFFF">
+                    <icons:Icon
+                        Height="24"
+                        Value="mdi-help-circle"
+                        Width="24" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+        <Setter Property="Width" Value="24" />
+        <Setter Property="Height" Value="24" />
+    </Style>
+
+    <Style Selector="Button.BareIcon:pressed">
+        <Setter Property="RenderTransform" Value="scale(0.9)" />
+    </Style>
+
+    <Style Selector="Button.BareIcon /template/ icons|Icon">
+        <Setter Property="Foreground" Value="#FFFFFF" />
+        <Setter Property="FontSize" Value="24" />
+        <Setter Property="Height" Value="24" />
+    </Style>
+
+    <Style Selector="Button.BareIcon.Cog /template/ icons|Icon">
+        <Setter Property="Value" Value="mdi-cog" />
+    </Style>
+
+    <Style Selector="Button.BareIcon.Help /template/ icons|Icon">
+        <Setter Property="Value" Value="mdi-help-circle-outline" />
+    </Style>
+
+    <Style Selector="Button.BareIcon.Bell /template/ icons|Icon">
+        <Setter Property="Value" Value="mdi-bell" />
+    </Style>
+
+
+    <Style Selector="Button.BareIcon.WindowClose /template/ icons|Icon">
+        <Setter Property="Value" Value="mdi-window-close" />
+    </Style>
+
+    <Style Selector="Button.BareIcon.WindowMinimize /template/ icons|Icon">
+        <Setter Property="Value" Value="mdi-window-minimize" />
+    </Style>
+
+    <Style Selector="Button.BareIcon.WindowMaximize /template/ icons|Icon">
+        <Setter Property="Value" Value="mdi-window-maximize" />
+    </Style>
+
+    <Style Selector="Button.BareIcon.KeyboardArrowDown /template/ icons|Icon">
+        <Setter Property="Value" Value="mdi-chevron-down" />
+    </Style>
+
+
+
+</Styles>

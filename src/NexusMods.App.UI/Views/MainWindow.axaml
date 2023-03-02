@@ -3,6 +3,7 @@
     ExtendClientAreaTitleBarHeightHint="0"
     ExtendClientAreaToDecorationsHint="True"
     Icon="/Assets/nexus-logo.ico"
+    PointerPressed="PointerPressed_Handler"
     Title="NexusMods.App.UI"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -32,16 +33,11 @@
     </Design.DataContext>
 
     <Grid ColumnDefinitions="72, 216, *" RowDefinitions="62, *">
-        <Svg
+        <reactiveUi:ViewModelViewHost
             Grid.Column="0"
-            Grid.ColumnSpan="2"
+            Grid.ColumnSpan="3"
             Grid.Row="0"
-            Height="30"
-            HorizontalAlignment="Left"
-            Margin="12,16"
-            Path="avares://NexusMods.App.UI/Assets/nexus-logo-with-text.svg"
-            VerticalAlignment="Center"
-            Width="127" />
+            x:Name="TopBar" />
 
         <Border
             BorderBrush="{DynamicResource StructuralBorderBrush}"
@@ -54,19 +50,6 @@
             Grid.Column="0"
             Grid.ColumnSpan="3"
             Grid.Row="0" />
-        <Border
-            BorderBrush="{DynamicResource StructuralBorderBrush}"
-            BorderThickness="0,0,1,0"
-            Grid.Column="0"
-            Grid.ColumnSpan="2"
-            Grid.Row="0" />
-
-        <TextBlock
-            Classes="TopTitle"
-            Grid.Column="2"
-            Grid.Row="0"
-            Margin="24,22.5"
-            Text="HOME" />
 
         <reactiveUi:ViewModelViewHost
             Grid.Column="0"

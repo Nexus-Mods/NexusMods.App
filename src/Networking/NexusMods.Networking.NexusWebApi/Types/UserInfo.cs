@@ -19,4 +19,9 @@ public record UserInfo
     /// is the user a supporter (e.g. formerly premium)?
     /// </summary>
     public bool IsSupporter;
+
+    /// <summary>
+    /// Uri of the user's avatar
+    /// </summary>
+    public Uri Avatar { get; set; }
 }

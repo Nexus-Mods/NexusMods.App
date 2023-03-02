@@ -10,7 +10,7 @@ namespace NexusMods.Networking.NexusWebApi.Verbs;
 /// </summary>
 public class NexusLogout : AVerb
 {
-    private readonly IDataStore _store;
+    private readonly LoginManager _loginManager;
 
     /// <inheritdoc/>
     public static VerbDefinition Definition => new("nexus-logout",
@@ -20,17 +20,15 @@ public class NexusLogout : AVerb
     /// <summary>
     /// constructor
     /// </summary>
-    public NexusLogout(Configurator configurator, IDataStore store)
+    public NexusLogout(LoginManager loginManager)
     {
-        _store = store;
+        _loginManager = loginManager;
     }
 
     /// <inheritdoc/>
-    public Task<int> Run(CancellationToken cancel)
+    public async Task<int> Run(CancellationToken cancel)
     {
-        // TODO should be deleting from the store but the store doesn't have that function yet
-        _store.Put(JWTTokenEntity.StoreId, new JWTTokenEntity { AccessToken = "", RefreshToken = "", Store = _store });
-
-        return Task.FromResult(0);
+        await _loginManager.Logout();
+        return 0;
     }
 }

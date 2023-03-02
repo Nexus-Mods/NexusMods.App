@@ -4,7 +4,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Controls.Spine.Buttons;
 
-public abstract class SpineButtonViewModel : AViewModel
+public abstract class SpineButtonViewModel : AViewModel<ISpineButtonViewModel>
 {
     [Reactive]
     public bool IsActive { get; set; }

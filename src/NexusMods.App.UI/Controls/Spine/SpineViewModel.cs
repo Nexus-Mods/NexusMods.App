@@ -13,7 +13,7 @@ using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.Spine;
 
-public class SpineViewModel : AViewModel
+public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 {
     private readonly IDataStore _dataStore;
 
@@ -40,7 +40,7 @@ public class SpineViewModel : AViewModel
 
         this.WhenActivated(disposables =>
         {
-            _dataStore.Changes
+            _dataStore.RootChanges
                 .Where(c => c.To.Category == EntityCategory.Loadouts)
                 .Select(c => c.To)
                 .Select(id => _dataStore.Get<LoadoutRegistry>(id, true))

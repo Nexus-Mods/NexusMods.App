@@ -1,4 +1,5 @@
 ﻿using System.Buffers.Binary;
+using System.Numerics;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -6,7 +7,7 @@ using System.Text.Json.Serialization;
 namespace NexusMods.DataModel.Abstractions;
 
 [JsonConverter(typeof(IdJsonConverter))]
-public interface Id : IEquatable<Id>
+public interface Id
 {
     public int SpanSize { get; }
     public void ToSpan(Span<byte> span);
@@ -38,6 +39,8 @@ public interface Id : IEquatable<Id>
         
         switch (span.Length)
         {
+            case 1:
+                return IdEmpty.Empty;
             case 9:
                 return new Id64(tag, BinaryPrimitives.ReadUInt64BigEndian(span[1..]));
             case 17:
@@ -52,13 +55,14 @@ public interface Id : IEquatable<Id>
     
     public static Id FromSpan(EntityCategory category, ReadOnlySpan<byte> span)
     {
-        if (span.Length == 8)
+        switch (span.Length)
         {
-            return new Id64(category, BinaryPrimitives.ReadUInt64BigEndian(span));
-        }
-        if (span.Length == 16)
-        {
-            return new TwoId64(category, BinaryPrimitives.ReadUInt64BigEndian(span), BinaryPrimitives.ReadUInt64BigEndian(span[8..]));
+            case 0:
+                return IdEmpty.Empty;
+            case 8:
+                return new Id64(category, BinaryPrimitives.ReadUInt64BigEndian(span));
+            case 16:
+                return new TwoId64(category, BinaryPrimitives.ReadUInt64BigEndian(span), BinaryPrimitives.ReadUInt64BigEndian(span[8..]));
         }
 
         var mem = new Memory<byte>(new byte[span.Length]);
@@ -228,7 +232,8 @@ public class IdVariableLength : AId
     
     public override bool Equals(Id? other)
     {
-        if (other == null || other.SpanSize == _data.Length) return false;
+        if (other == null || other.SpanSize != _data.Length) return false;
+        if (Category != other.Category) return false;
         Span<byte> buff = stackalloc byte[_data.Span.Length];
         other.ToSpan(buff);
         return _data.Span.SequenceEqual(buff);

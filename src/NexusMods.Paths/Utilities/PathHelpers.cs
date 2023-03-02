@@ -14,7 +14,7 @@ public static class PathHelpers
     internal const char VolumeSeparatorChar = '/';
     internal const char PathSeparator = ':';
     internal const string DirectorySeparatorCharAsString = "/";
-    
+
     /// <summary>
     /// Returns the name and extension parts of the given path. The resulting string contains
     /// the characters of path that follow the last separator in path. The resulting string is
@@ -33,7 +33,7 @@ public static class PathHelpers
 
         return result.ToString();
     }
-    
+
     /// <summary>
     /// The returned ReadOnlySpan contains the characters of the path that follows the last separator in path.
     /// </summary>
@@ -52,7 +52,7 @@ public static class PathHelpers
 
         return path;
     }
-    
+
     /// <summary>
     /// Returns the root portion of the given path. The resulting string
     /// consists of those rightmost characters of the path that constitute the
@@ -81,13 +81,13 @@ public static class PathHelpers
     {
         return path.Length > 0 && path[0] == DirectorySeparatorChar;
     }
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool IsDirectorySeparator(char c)
     {
         return c is DirectorySeparatorChar or AltDirectorySeparatorChar;
     }
-    
+
     /// <summary>
     /// Returns the directory portion of a file path. This method effectively
     /// removes the last segment of the given file path, i.e. it returns a
@@ -116,7 +116,7 @@ public static class PathHelpers
     private static int GetDirectoryNameOffset(ReadOnlySpan<char> path)
     {
         int rootLength = GetRootLength(path);
-        int end = path.Length;
+        var end = path.Length;
         if (end <= rootLength)
             return -1;
 

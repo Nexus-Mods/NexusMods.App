@@ -24,16 +24,24 @@ public class SqliteDataStore : IDataStore, IDisposable
     private readonly Dictionary<EntityCategory,string> _casStatements;
     private readonly Lazy<JsonSerializerOptions> _jsonOptions;
     private readonly Dictionary<EntityCategory,string> _prefixStatements;
+    private readonly Dictionary<EntityCategory,string> _deleteStatements;
     private readonly ConcurrentLru<Id,Entity> _cache;
     
     private readonly IMessageProducer<RootChange> _rootChangeProducer;
     private readonly IMessageConsumer<RootChange> _rootChangeConsumer;
-    private readonly ConcurrentQueue<RootChange> _pendingChanges = new();
+    private readonly ConcurrentQueue<RootChange> _pendingRootChanges = new();
+    private readonly ConcurrentQueue<IdPut> _pendingIdPuts = new();
     private readonly CancellationTokenSource _enqueuerTcs;
     private readonly Task _enqueuerTask;
     private readonly ILogger<SqliteDataStore> _logger;
+    private readonly IMessageProducer<IdPut> _idPutProducer;
+    private readonly IMessageConsumer<IdPut> _idPutConsumer;
 
-    public SqliteDataStore(ILogger<SqliteDataStore> logger, AbsolutePath path, IServiceProvider provider, IMessageProducer<RootChange> rootChangeProducer, IMessageConsumer<RootChange> rootChangeConsumer)
+    public SqliteDataStore(ILogger<SqliteDataStore> logger, AbsolutePath path, IServiceProvider provider, 
+        IMessageProducer<RootChange> rootChangeProducer, 
+        IMessageConsumer<RootChange> rootChangeConsumer,
+        IMessageProducer<IdPut> idPutProducer,
+        IMessageConsumer<IdPut> idPutConsumer)
     {
         _logger = logger;
         _path = path;
@@ -45,6 +53,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         _putStatements = new Dictionary<EntityCategory, string>();
         _casStatements = new Dictionary<EntityCategory, string>();
         _prefixStatements = new Dictionary<EntityCategory, string>();
+        _deleteStatements = new Dictionary<EntityCategory, string>();
         EnsureTables();
         
         _jsonOptions = new Lazy<JsonSerializerOptions>(provider.GetRequiredService<JsonSerializerOptions>);
@@ -52,6 +61,8 @@ public class SqliteDataStore : IDataStore, IDisposable
         
         _rootChangeProducer = rootChangeProducer;
         _rootChangeConsumer = rootChangeConsumer;
+        _idPutProducer = idPutProducer;
+        _idPutConsumer = idPutConsumer;
 
         _enqueuerTcs = new CancellationTokenSource();
         _enqueuerTask = Task.Run(EnqueuerLoop);
@@ -59,16 +70,19 @@ public class SqliteDataStore : IDataStore, IDisposable
 
     private async Task EnqueuerLoop()
     {
-
         while (!_enqueuerTcs.Token.IsCancellationRequested)
         {
-            if (_pendingChanges.TryDequeue(out var change))
+            if (_pendingIdPuts.TryDequeue(out var put))
+            {
+                await _idPutProducer.Write(put, _enqueuerTcs.Token);
+                continue;
+            }
+            if (_pendingRootChanges.TryDequeue(out var change))
             {
                 await _rootChangeProducer.Write(change, _enqueuerTcs.Token);
                 continue;
             }
-            
-            Task.Delay(100).Wait();
+            await Task.Delay(100);
         }
     }
 
@@ -84,6 +98,7 @@ public class SqliteDataStore : IDataStore, IDisposable
             _casStatements[table] =
                 $"UPDATE [{table}] SET Data = @newData WHERE Data = @oldData AND Id = @id RETURNING *;";
             _prefixStatements[table] = $"SELECT Id, Data FROM [{table}] WHERE Id >= @prefix ORDER BY Id ASC";
+            _deleteStatements[table] = $"DELETE FROM [{table}] WHERE Id = @id";
         }
     }
     
@@ -100,7 +115,10 @@ public class SqliteDataStore : IDataStore, IDisposable
         cmd.Parameters.AddWithValue("@data", msBytes);
         
         cmd.ExecuteNonQuery();
-        return new Id64(value.Category, hash);
+
+        var id = new Id64(value.Category, hash);
+        _pendingIdPuts.Enqueue(new IdPut(IdPut.PutType.Put, id));
+        return id;
     }
 
     public void Put<T>(Id id, T value) where T : Entity
@@ -114,6 +132,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         ms.Position = 0;
         cmd.Parameters.AddWithValue("@Data", ms.ToArray());
         cmd.ExecuteNonQuery();
+        _pendingIdPuts.Enqueue(new IdPut(IdPut.PutType.Put, id));
     }
 
     public T? Get<T>(Id id, bool canCache) where T : Entity
@@ -150,7 +169,7 @@ public class SqliteDataStore : IDataStore, IDisposable
 
         cmd.ExecuteNonQuery();
         
-        _pendingChanges.Enqueue(new RootChange {Type = type, From = oldId, To = newId});
+        _pendingRootChanges.Enqueue(new RootChange {Type = type, From = oldId, To = newId});
         
         return true;
     }
@@ -198,6 +217,18 @@ public class SqliteDataStore : IDataStore, IDisposable
         cmd.Parameters.AddWithValue("@id", idBytes);
         cmd.Parameters.AddWithValue("@data", val.ToArray());
         cmd.ExecuteNonQuery();
+        _pendingIdPuts.Enqueue(new IdPut(IdPut.PutType.Put, id));
+
+    }
+
+    public void Delete(Id id)
+    {
+        using var cmd = new SQLiteCommand(_deleteStatements[id.Category], _conn);
+        var idBytes = new byte[id.SpanSize];
+        id.ToSpan(idBytes.AsSpan());
+        cmd.Parameters.AddWithValue("@id", idBytes);
+        cmd.ExecuteNonQuery();
+        _pendingIdPuts.Enqueue(new IdPut(IdPut.PutType.Delete, id));
     }
 
     public async Task<long> PutRaw(IAsyncEnumerable<(Id Key, byte[] Value)> kvs, CancellationToken token = default)
@@ -271,7 +302,8 @@ public class SqliteDataStore : IDataStore, IDisposable
         }
     }
 
-    public IObservable<RootChange> Changes => _rootChangeConsumer.Messages.SelectMany(WaitTillReady);
+    public IObservable<RootChange> RootChanges => _rootChangeConsumer.Messages.SelectMany(WaitTillRootReady);
+    public IObservable<Id> IdChanges  => _idPutConsumer.Messages.SelectMany(WaitTillPutReady);
     
     /// <summary>
     /// Sometimes we may get a change notification before the underlying SQLite database has actually updated the value.
@@ -279,7 +311,7 @@ public class SqliteDataStore : IDataStore, IDisposable
     /// </summary>
     /// <param name="change"></param>
     /// <returns></returns>
-    private async Task<RootChange> WaitTillReady(RootChange change)
+    private async Task<RootChange> WaitTillRootReady(RootChange change)
     {
         var maxCycles = 0;
         while (GetRaw(change.To) == null && maxCycles < 10)
@@ -290,6 +322,25 @@ public class SqliteDataStore : IDataStore, IDisposable
         }
         _logger.LogDebug("Root change {To} is ready", change.To);
         return change;
+    }
+    
+    /// <summary>
+    /// Sometimes we may get a change notification before the underlying SQLite database has actually updated the value.
+    /// So we wait a bit to make sure the value is actually there before we forward the change.
+    /// </summary>
+    /// <param name="change"></param>
+    /// <returns></returns>
+    private async Task<Id> WaitTillPutReady(IdPut change)
+    {
+        var maxCycles = 0;
+        while (change.Type != IdPut.PutType.Delete && GetRaw(change.Id) == null && maxCycles < 10)
+        {
+            _logger.LogDebug("Waiting for write to {Id} to complete", change.Id);
+            await Task.Delay(100);
+            maxCycles++;
+        }
+        _logger.LogTrace("Id {Id} is updated", change.Id);
+        return change.Id;
     }
 
     public void Dispose()
