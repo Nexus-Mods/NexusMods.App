@@ -1,13 +1,7 @@
-﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.Versioning;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.Versioning;
+using Microsoft.Win32;
 
-namespace NexusMods.Common;
+namespace NexusMods.Common.ProtocolRegistration;
 
 /// <summary>
 /// protocol registration for windows

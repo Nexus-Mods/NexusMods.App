@@ -12,6 +12,7 @@ using NexusMods.DataModel.RateLimiting;
 using NexusMods.FileExtractor.Extractors;
 using NexusMods.Paths;
 using System.Runtime.InteropServices;
+using NexusMods.Common.ProtocolRegistration;
 
 namespace NexusMods.CLI;
 

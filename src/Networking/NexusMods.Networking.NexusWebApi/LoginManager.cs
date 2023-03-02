@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
+using NexusMods.Common.ProtocolRegistration;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.Networking.NexusWebApi.DTOs;
 using NexusMods.Networking.NexusWebApi.Types;

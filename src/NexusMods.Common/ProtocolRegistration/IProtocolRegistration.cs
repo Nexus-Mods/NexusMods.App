@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace NexusMods.Common;
+﻿namespace NexusMods.Common.ProtocolRegistration;
 
 /// <summary>
 /// deals with protocol registration, that is: setting up this application system wide
