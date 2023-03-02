@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using CliWrap;
 using CliWrap.Exceptions;
 using Microsoft.Extensions.Logging;
@@ -110,7 +110,7 @@ public class SevenZipExtractor : IExtractor
             {
                 // File doesn't currently exist on-disk so we need to spool it to disk so we can use 7z against it
                 spoolFile = _manager.CreateFile(sFn.Name.FileName.Extension);
-                await using var s = await sFn.GetStream();
+                await using var s = await sFn.GetStreamAsync();
                 await spoolFile.Value.Path.CopyFromAsync(s, token);
                 source = spoolFile.Value.Path;
             }

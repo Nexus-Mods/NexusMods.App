@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using NexusMods.Common;
 using NexusMods.DataModel.Extensions;
 using NexusMods.FileExtractor.StreamFactories;
@@ -28,7 +28,7 @@ public class GenericExtractionTests
     {
         var results = await _extractor.ForEachEntry(new NativeFileStreamFactory(path), async (_, e) =>
         {
-            await using var fs = await e.GetStream();
+            await using var fs = await e.GetStreamAsync();
             return await fs.Hash(CancellationToken.None);
         }, CancellationToken.None);
 

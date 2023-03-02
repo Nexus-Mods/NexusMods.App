@@ -142,13 +142,13 @@ public class FileExtractor
     /// <returns>True if the extractor can extract this stream, else false.</returns>
     public async Task<bool> CanExtract(IStreamFactory sFn)
     {
-        await using var stream = await sFn.GetStream();
+        await using var stream = await sFn.GetStreamAsync();
         return (await SignatureChecker.MatchesAsync(stream)).Any();
     }
 
     private async ValueTask<IExtractor[]> FindExtractors(IStreamFactory sFn)
     {
-        await using var archive = await sFn.GetStream();
+        await using var archive = await sFn.GetStreamAsync();
         var sig = await SignatureChecker.MatchesAsync(archive);
 
         return _extractors.Select(e => (Extractor: e, Result: e.DeterminePriority(sig)))

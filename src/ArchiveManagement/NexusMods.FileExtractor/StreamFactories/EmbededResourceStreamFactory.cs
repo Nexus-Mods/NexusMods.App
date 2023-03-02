@@ -1,4 +1,4 @@
-using System.Resources;
+﻿using System.Resources;
 using NexusMods.Common;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
@@ -53,9 +53,12 @@ public class EmbededResourceStreamFactory<T> : IStreamFactory
     /// </summary>
     /// <returns></returns>
     /// <exception cref="MissingManifestResourceException"></exception>
-    public async ValueTask<Stream> GetStream()
+    public ValueTask<Stream> GetStreamAsync()
     {
-        return typeof(T).Assembly.GetManifestResourceStream(_path) ??
-               throw new MissingManifestResourceException($"Could not find {_path}");
+        var result = typeof(T).Assembly.GetManifestResourceStream(_path);
+        if (result == null)
+            throw new MissingManifestResourceException($"Could not find {_path}");
+
+        return ValueTask.FromResult(result);
     }
 }

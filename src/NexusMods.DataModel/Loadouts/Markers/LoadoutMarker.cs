@@ -1,4 +1,4 @@
-using System.Reactive.Linq;
+﻿using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
@@ -217,7 +217,7 @@ public class LoadoutMarker : IMarker<Loadout>
                     {
                         foreach (var entry in byPath[path])
                         {
-                            await using var strm = await sFn.GetStream();
+                            await using var strm = await sFn.GetStreamAsync();
                             entry.Step.To.Parent.CreateDirectory();
                             await using var of = entry.Step.To.Create();
                             var hash = await strm.HashingCopy(of, token, job);

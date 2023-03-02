@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Avalonia.Controls.Mixins;
@@ -50,7 +50,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 .ToObservableChangeSet(x => x.Domain)
                 .Transform(game =>
                 {
-                    using var iconStream = game.Icon.GetStream().Result;
+                    using var iconStream = game.Icon.GetStreamAsync().Result;
                     return new GameViewModel
                     {
                         Name = game.Name,

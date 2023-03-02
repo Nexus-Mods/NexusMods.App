@@ -1,4 +1,4 @@
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
@@ -69,7 +69,7 @@ public class FileContentsCache
         var sigs = new List<FileType>();
         var analysisData = new List<IFileAnalysisData>();
         {
-            await using var hashStream = await sFn.GetStream();
+            await using var hashStream = await sFn.GetStreamAsync();
             if (level == 0)
             {
                 if (sFn.Name is AbsolutePath ap)

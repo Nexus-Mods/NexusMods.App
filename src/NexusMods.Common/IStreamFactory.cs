@@ -27,5 +27,5 @@ public interface IStreamFactory
     /// Returns a read-only stream for the given factory
     /// </summary>
     /// <returns></returns>
-    ValueTask<Stream> GetStream();
+    ValueTask<Stream> GetStreamAsync();
 }
