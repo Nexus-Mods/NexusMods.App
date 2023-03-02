@@ -132,7 +132,7 @@ public class OAuth
 
         _logger.LogInformation("Opening browser for NexusMods OAuth2 authorization request");
         // see https://www.rfc-editor.org/rfc/rfc7636#section-4.3
-        _os.OpenURL(GenerateAuthorizeUrl(challenge, state));
+        await _os.OpenURL(GenerateAuthorizeUrl(challenge, state), cancel);
         var code = await codeTask;
 
         _logger.LogInformation("Received OAuth2 authorization code, requesting token");
