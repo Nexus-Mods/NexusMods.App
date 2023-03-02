@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.DataModel.Games;
 using NexusMods.Paths;
 
@@ -11,10 +11,10 @@ public class StubbedTestHarness<TGame> where TGame : IGame
 
 public static class StubbedTestHarnessExtensions
 {
-    public static IServiceCollection AddUniversalGameLocator<TGame>(this IServiceCollection services, Version version) 
+    public static IServiceCollection AddUniversalGameLocator<TGame>(this IServiceCollection services, Version version)
         where TGame : ISteamGame
     {
-        services.AddSingleton<IGameLocator, UniversalStubbedGameLocator<TGame>>(s => 
+        services.AddSingleton<IGameLocator, UniversalStubbedGameLocator<TGame>>(s =>
             new UniversalStubbedGameLocator<TGame>(s.GetRequiredService<TemporaryFileManager>(),
                 version));
         return services;

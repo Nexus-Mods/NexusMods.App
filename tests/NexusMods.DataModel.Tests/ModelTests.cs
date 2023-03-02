@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using System.IO.Compression;
 using FluentAssertions;
 using NexusMods.DataModel.Abstractions;
@@ -15,11 +15,11 @@ namespace NexusMods.DataModel.Tests;
 
 public class ModelTests : ADataModelTest<ModelTests>
 {
-    
+
     public ModelTests(IServiceProvider provider) : base(provider)
     {
     }
-    
+
     [Fact]
     public void CanCreateModFile()
     {
@@ -42,16 +42,16 @@ public class ModelTests : ADataModelTest<ModelTests>
     public async Task CanSeeChangesViaObservable()
     {
         var list = new HashSet<string>();
-        
+
         var loadout = await LoadoutManager.ManageGame(Install, "OldName");
         using var _ = loadout.Changes.Subscribe(f => list.Add(f.Name));
-        loadout.Alter(m => m with {Name = "NewName"});
+        loadout.Alter(m => m with { Name = "NewName" });
 
         loadout.Value.Name.Should().Be("NewName");
         list.Count.Should().Be(1);
         list.First().Should().Be("NewName");
     }
-    
+
     [Fact]
     public async Task CanInstallAMod()
     {
@@ -62,7 +62,7 @@ public class ModelTests : ADataModelTest<ModelTests>
 
         loadout.Value.Mods.Count.Should().Be(3);
         loadout.Value.Mods.Values.Sum(m => m.Files.Count).Should().Be(DATA_NAMES.Length * 2 + StubbedGame.DATA_NAMES.Length);
-        
+
     }
 
     [Fact]
@@ -78,16 +78,16 @@ public class ModelTests : ADataModelTest<ModelTests>
 
         loadout.Value.Mods.Values.Count(m => m.Id == id1).Should().Be(1);
         loadout.Value.Mods.Values.Count(m => m.Id == id2).Should().Be(1);
-        
+
         var history = loadout.History().Select(h => h.DataStoreId).ToArray();
         history.Length.Should().Be(4);
-        
+
         LoadoutManager.Alter(loadout.Value.LoadoutId, l => l.PreviousVersion.Value);
 
         var newHistory = loadout.History().Select(h => h.DataStoreId).ToArray();
 
         newHistory.Skip(1).Should().BeEquivalentTo(history);
-        
+
     }
 
     [Fact]
@@ -96,7 +96,7 @@ public class ModelTests : ADataModelTest<ModelTests>
         var loadout = await LoadoutManager.ManageGame(Install, Guid.NewGuid().ToString());
         var id1 = await loadout.Install(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
         var id2 = await loadout.Install(DATA_ZIP_LZMA, "Mod2", CancellationToken.None);
-        
+
         var tempFile = TemporaryFileManager.CreateFile(KnownExtensions.Zip);
         await loadout.ExportTo(tempFile, CancellationToken.None);
 
@@ -111,10 +111,10 @@ public class ModelTests : ADataModelTest<ModelTests>
 
             var ids = loadout.Value.Walk((set, itm) => set.Add(itm.DataStoreId),
                 ImmutableHashSet<Id>.Empty);
-            
+
             foreach (var id in ids)
                 entries.Should().Contain(id);
-            
+
             entries.Should().Contain(loadout.Value.DataStoreId, "The loadout is stored");
 
             foreach (var mod in loadout.Value.Mods.Values)
@@ -131,16 +131,16 @@ public class ModelTests : ADataModelTest<ModelTests>
                 root.ReadAllTextAsync(CancellationToken.None).Result.Should()
                     .Be(loadout.Value.DataStoreId.TaggedSpanHex);
             }
-            
-            
+
+
         }
-        
-        loadout.Alter(l => l with {Mods = new EntityDictionary<ModId, Mod>(l.Store)});
+
+        loadout.Alter(l => l with { Mods = new EntityDictionary<ModId, Mod>(l.Store) });
         loadout.Value.Mods.Should().BeEmpty("All mods are removed");
-        
+
         await LoadoutManager.ImportFrom(tempFile, CancellationToken.None);
         loadout.Value.Mods.Should().NotBeEmpty("The loadout is restored");
-        
+
     }
 
 }

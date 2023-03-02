@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using NexusMods.Networking.NexusWebApi.DTOs.Interfaces;
 using NexusMods.Networking.NexusWebApi.Types;

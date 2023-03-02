@@ -16,7 +16,7 @@ public class ExtensionTests
         Assert.NotEqual(@"foo\bar\z.zip".ToRelativePath(), @"foo\bar.dds".ToRelativePath().ReplaceExtension(new Extension(".zip")));
         Assert.Equal(@"foo\bar.zip".ToRelativePath(), @"foo\bar".ToRelativePath().ReplaceExtension(new Extension(".zip")));
     }
-    
+
     [Fact]
     public void CanAddExtension()
     {

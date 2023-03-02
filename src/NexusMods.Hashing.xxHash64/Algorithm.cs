@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using static System.Numerics.BitOperations;
 
 namespace NexusMods.Hashing.xxHash64;
@@ -61,7 +61,7 @@ public struct xxHashAlgorithm
 
         return FinalizeHashValueInternal(data[initialSize..]);
     }
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void TransformByteGroupsInternal(ReadOnlySpan<byte> data)
     {
@@ -69,19 +69,19 @@ public struct xxHashAlgorithm
         if (_finished || data.Length % 32 > 0)
             throw new Exception("Hash is finished, or input is not a multiple of 32");
 #endif
-        
+
         var tempA = _a;
         var tempB = _b;
         var tempC = _c;
         var tempD = _d;
-        
+
         unsafe
         {
             fixed (byte* ptr = data)
             {
                 var len = data.Length / 8;
-                ulong* dataPtr = (ulong*)ptr;
-                
+                var dataPtr = (ulong*)ptr;
+
                 for (var currentIndex = 0; currentIndex < len; currentIndex += 4)
                 {
                     tempA += dataPtr[currentIndex] * Primes64_1;
@@ -110,10 +110,10 @@ public struct xxHashAlgorithm
         _c = tempC;
         _d = tempD;
 
-        _bytesProcessed += (ulong) data.Length;
+        _bytesProcessed += (ulong)data.Length;
     }
 
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ulong FinalizeHashValueInternal(ReadOnlySpan<byte> data)
     {
@@ -169,7 +169,7 @@ public struct xxHashAlgorithm
 
         var remainderLength = data.Length;
 
-        hashValue += _bytesProcessed + (ulong) remainderLength;
+        hashValue += _bytesProcessed + (ulong)remainderLength;
 
         if (remainderLength > 0)
         {

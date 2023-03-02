@@ -1,4 +1,4 @@
-﻿using System.Resources;
+using System.Resources;
 using NexusMods.Common;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
@@ -21,23 +21,23 @@ public class EmbededResourceStreamFactory<T> : IStreamFactory
     {
         _path = path;
     }
-    
+
     /// <summary>
     /// Always returns DateTime.MinValue
     /// </summary>
     public DateTime LastModifiedUtc => DateTime.MinValue;
-    
+
     /// <summary>
     /// Returns the name of the resource as a relative path.
     /// </summary>
     public IPath Name => _path.ToRelativePath();
-    
+
     /// <summary>
     /// Returns the size of the resource.
     /// </summary>
     /// <exception cref="MissingManifestResourceException"></exception>
-    public Size Size 
-    
+    public Size Size
+
     {
         get
         {
@@ -47,7 +47,7 @@ public class EmbededResourceStreamFactory<T> : IStreamFactory
             return Size.From(info.Length);
         }
     }
-    
+
     /// <summary>
     /// Returns a stream to the resource.
     /// </summary>
@@ -55,7 +55,7 @@ public class EmbededResourceStreamFactory<T> : IStreamFactory
     /// <exception cref="MissingManifestResourceException"></exception>
     public async ValueTask<Stream> GetStream()
     {
-        return typeof(T).Assembly.GetManifestResourceStream(_path) ?? 
+        return typeof(T).Assembly.GetManifestResourceStream(_path) ??
                throw new MissingManifestResourceException($"Could not find {_path}");
     }
 }

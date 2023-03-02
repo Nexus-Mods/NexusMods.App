@@ -17,12 +17,12 @@ public interface IStreamFactory
     /// The Path of the stream.
     /// </summary>
     IPath Name { get; }
-    
+
     /// <summary>
     /// The size of the stream
     /// </summary>
     Size Size { get; }
-    
+
     /// <summary>
     /// Returns a read-only stream for the given factory
     /// </summary>

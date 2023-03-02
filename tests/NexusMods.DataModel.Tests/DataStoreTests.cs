@@ -1,4 +1,4 @@
-﻿using System.Buffers.Binary;
+using System.Buffers.Binary;
 using System.Collections.Concurrent;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
@@ -61,9 +61,9 @@ public class DataStoreTests
             Store = DataStore,
             To = new GamePath(GameFolderType.Game, $"{idx}.file"),
         }).ToList();
-        
+
         var set = new EntityHashSet<AModFile>(DataStore, files.Select(m => m.DataStoreId));
-        
+
         var mod = new Mod
         {
             Id = ModId.New(),
@@ -71,7 +71,7 @@ public class DataStoreTests
             Files = EntityDictionary<ModFileId, AModFile>.Empty(DataStore),
             Store = DataStore,
         };
-        mod = mod with { Files = mod.Files.With(files, x => x.Id)};
+        mod = mod with { Files = mod.Files.With(files, x => x.Id) };
         mod.EnsureStored();
         var modLoaded = DataStore.Get<Mod>(mod.DataStoreId);
 
@@ -92,7 +92,7 @@ public class DataStoreTests
         var oldId = DataStore.GetRoot(RootType.Tests) ?? IdEmpty.Empty;
 
         var bytes = new byte[4];
-        
+
         foreach (var itm in Enumerable.Range(0, 128))
         {
             var newId = new Id64(EntityCategory.TestData, (ulong)itm);
@@ -102,7 +102,7 @@ public class DataStoreTests
             src.Add(newId);
             oldId = newId;
         }
-        
+
         var attempts = 0;
         while (destQ.IsEmpty && attempts < 1000)
         {

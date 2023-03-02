@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using NexusMods.DataModel;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
@@ -28,7 +28,7 @@ public class FileAnalysisTests
         result.AnalysisData.Should().ContainEquivalentOf(new PluginAnalysisData
         {
             IsLightMaster = true,
-            Masters = new []{ "Skyrim.esm".ToRelativePath() },
+            Masters = new[] { "Skyrim.esm".ToRelativePath() },
         });
     }
 }

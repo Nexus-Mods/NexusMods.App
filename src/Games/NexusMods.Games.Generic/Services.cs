@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.Games.Generic.Entities;

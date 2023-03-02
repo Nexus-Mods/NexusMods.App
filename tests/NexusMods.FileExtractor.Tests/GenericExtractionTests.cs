@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using NexusMods.Common;
 using NexusMods.DataModel.Extensions;
 using NexusMods.FileExtractor.StreamFactories;
@@ -21,7 +21,7 @@ public class GenericExtractionTests
         _extractor = extractor;
         _temporaryFileManager = temporaryFileManager;
     }
-    
+
     [Theory]
     [MemberData(nameof(Archives))]
     public async Task CanForEachOverFiles(AbsolutePath path)
@@ -43,7 +43,7 @@ public class GenericExtractionTests
                 (@"rootFile.txt".ToRelativePath(), (Hash)0x33DDBF7930BA002A),
             });
     }
-    
+
     [Theory]
     [MemberData(nameof(Archives))]
     public async Task CanExtractAll(AbsolutePath path)

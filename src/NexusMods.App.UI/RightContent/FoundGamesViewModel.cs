@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.ViewModels;
 using NexusMods.DataModel.Games;
 

@@ -1,4 +1,4 @@
-﻿using GameFinder.Common;
+using GameFinder.Common;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
@@ -21,7 +21,7 @@ public class StubbedGame : IEADesktopGame, IEpicGame, IOriginGame, ISteamGame, I
     private readonly IEnumerable<IGameLocator> _locators;
     public string Name => "Stubbed Game";
     public GameDomain Domain => GameDomain.From("stubbed-game");
-    
+
     public static readonly RelativePath[] DATA_NAMES = new[]
     {
         "StubbedGame.exe",
@@ -31,7 +31,7 @@ public class StubbedGame : IEADesktopGame, IEpicGame, IOriginGame, ISteamGame, I
     }.Select(t => t.ToRelativePath()).ToArray();
 
     public static readonly Dictionary<RelativePath, (Hash Hash, Size Size)> DATA_CONTENTS = DATA_NAMES
-        .ToDictionary(d => d, 
+        .ToDictionary(d => d,
             d => (d.FileName.ToString().XxHash64(), Size.From(d.FileName.ToString().Length)));
 
     public StubbedGame(ILogger<StubbedGame> logger, IEnumerable<IGameLocator> locators)
@@ -39,10 +39,11 @@ public class StubbedGame : IEADesktopGame, IEpicGame, IOriginGame, ISteamGame, I
         _logger = logger;
         _locators = locators;
     }
-    
+
     public IEnumerable<GameInstallation> Installations
     {
-        get {
+        get
+        {
             _logger.LogInformation("Looking for {Game} in {Count} locators", this, _locators.Count());
             return _locators.SelectMany(l => l.Find(this))
                 .Select((i, idx) => new GameInstallation()
@@ -85,23 +86,23 @@ public class StubbedGame : IEADesktopGame, IEpicGame, IOriginGame, ISteamGame, I
         File.WriteAllText(path.ToString(), path.FileName.ToString());
     }
 
-    public IEnumerable<int> SteamIds => new [] {42};
+    public IEnumerable<int> SteamIds => new[] { 42 };
     public IEnumerable<long> GogIds => new[] { (long)42 };
     public IEnumerable<string> EADesktopSoftwareIDs => new[] { "ea-game-id" };
-    public IEnumerable<string> EpicCatalogItemId => new []{ "epic-game-id" };
-    public IEnumerable<string> OriginGameIds => new []{ "origin-game-id" };
+    public IEnumerable<string> EpicCatalogItemId => new[] { "epic-game-id" };
+    public IEnumerable<string> OriginGameIds => new[] { "origin-game-id" };
 }
 
-public class StubbedGameLocator<TGame, TId> : AHandler<TGame, TId> 
+public class StubbedGameLocator<TGame, TId> : AHandler<TGame, TId>
     where TGame : class where TId : notnull
 {
     private readonly TemporaryFileManager _manager;
-    private readonly Func<TemporaryFileManager,TGame> _factory;
-    private readonly Func<TGame,TId> _idSelector;
+    private readonly Func<TemporaryFileManager, TGame> _factory;
+    private readonly Func<TGame, TId> _idSelector;
     private readonly TGame _game;
 
-    public StubbedGameLocator(TemporaryFileManager manager, 
-        Func<TemporaryFileManager, TGame> factory, 
+    public StubbedGameLocator(TemporaryFileManager manager,
+        Func<TemporaryFileManager, TGame> factory,
         Func<TGame, TId> idSelector,
         Version? version = null)
     {

@@ -1,6 +1,6 @@
-﻿namespace NexusMods.App.UI.Controls.Spine;
+namespace NexusMods.App.UI.Controls.Spine;
 
 public interface ISpineViewModel : IViewModelInterface
 {
-    
+
 }

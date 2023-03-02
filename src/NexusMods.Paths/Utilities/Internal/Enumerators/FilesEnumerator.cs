@@ -5,10 +5,10 @@ namespace NexusMods.Paths.Utilities.Internal.Enumerators;
 internal sealed class FilesEnumerator : FileSystemEnumerator<FilesEnumeratorEntry>
 {
     public string? CurrentDirectory { get; private set; }
-    
+
     private readonly string _pattern;
     private readonly EnumerationOptions _options;
-    
+
     public FilesEnumerator(string directory, string pattern, EnumerationOptions options) : base(directory, options)
     {
         _pattern = pattern;
@@ -16,8 +16,8 @@ internal sealed class FilesEnumerator : FileSystemEnumerator<FilesEnumeratorEntr
     }
 
     protected override void OnDirectoryFinished(ReadOnlySpan<char> directory) => CurrentDirectory = null;
-    
-    protected override bool ShouldIncludeEntry(ref FileSystemEntry entry) => 
+
+    protected override bool ShouldIncludeEntry(ref FileSystemEntry entry) =>
         Common.MatchesPattern(_pattern, entry.FileName, _options);
 
     protected override FilesEnumeratorEntry TransformEntry(ref FileSystemEntry entry)

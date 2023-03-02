@@ -1,7 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI;
-using NexusMods.App.UI.ViewModels;
 
 namespace NexusMods.UI.Tests;
 

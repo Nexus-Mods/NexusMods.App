@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Sorting.Rules;
@@ -19,12 +19,12 @@ public class SortTests
                 new First<Item, string>()
             }},
         };
-        
+
         Sorter.Sort<Item, string>(data, x => x.Id, x => x.Rules)
             .Select(i => i.Id)
             .Should().BeEquivalentTo("A", "B");
     }
-    
+
     [Fact]
     public void BeforeAndAfterWorks()
     {
@@ -40,12 +40,12 @@ public class SortTests
                 new After<Item, string>("B")
             }}
         };
-        
+
         Sorter.Sort<Item, string>(data, x => x.Id, x => x.Rules)
             .Select(i => i.Id)
             .Should().BeEquivalentTo("A", "B", "C");
     }
-    
+
     [Fact]
     public void LargeComplexCollectionsCanBeSorted()
     {
@@ -57,15 +57,18 @@ public class SortTests
         {
             if (idx == 0)
             {
-                rules.Add(new Item {Id = n, Rules = new() {new First<Item, string>()}});
+                rules.Add(new Item { Id = n, Rules = new() { new First<Item, string>() } });
             }
             else
             {
-                rules.Add(new Item {Id = n, Rules = new()
+                rules.Add(new Item
+                {
+                    Id = n, Rules = new()
                 {
                     new First<Item, string>(),
                     new After<Item, string>(letters.ElementAt(idx - 1))
-                }});
+                }
+                });
             }
         }
 
@@ -88,7 +91,7 @@ public class SortTests
         }
 
         rules = Shuffle(rules).ToList();
-        
+
         Sorter.Sort<Item, string>(rules, x => x.Id, x => x.Rules, null)
             .Select(i => i.Id)
             .Should().BeEquivalentTo(letters.Concat(numbers));

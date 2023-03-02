@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using System.Text.Json;

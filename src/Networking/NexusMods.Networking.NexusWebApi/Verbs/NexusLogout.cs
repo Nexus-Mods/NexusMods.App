@@ -1,5 +1,4 @@
-﻿using NexusMods.CLI;
-using NexusMods.DataModel.Abstractions;
+using NexusMods.CLI;
 
 namespace NexusMods.Networking.NexusWebApi.Verbs;
 

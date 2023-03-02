@@ -1,4 +1,4 @@
-﻿using System.Buffers.Binary;
+using System.Buffers.Binary;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
@@ -56,7 +56,7 @@ public class FileHashCache
     public async IAsyncEnumerable<HashedEntry> IndexFolders(IEnumerable<AbsolutePath> paths, CancellationToken? token)
     {
         token ??= CancellationToken.None;
-        
+
         var result = _limiter.ForEachFile(paths, async (job, entry) =>
         {
             if (TryGetCached(entry.Path, out var found))
@@ -98,7 +98,7 @@ public class FileHashCache
 
 public record HashedEntry(AbsolutePath Path, Hash Hash, DateTime LastModified, Size Size) : FileEntry(Path, Size, LastModified)
 {
-    public HashedEntry(FileEntry fe, Hash hash) : this(fe.Path, hash, fe.LastModified, fe.Size){}
+    public HashedEntry(FileEntry fe, Hash hash) : this(fe.Path, hash, fe.LastModified, fe.Size) { }
 
 }
 

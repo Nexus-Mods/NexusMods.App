@@ -16,7 +16,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     private static readonly string DirectorySeparatorCharStr = Path.DirectorySeparatorChar.ToString();
 
     /// <summary>
-    /// Contains the path to the directory inside which this absolute path is contained in.  
+    /// Contains the path to the directory inside which this absolute path is contained in.
     /// </summary>
     /// <remarks>
     ///    Shouldn't end with a backslash.
@@ -25,15 +25,15 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
 
     /// <inheritdoc />
     public Extension Extension => Extension.FromPath(FileName);
-    
+
     /// <inheritdoc />
     RelativePath IPath.FileName => Path.GetFileName(FileName);
 
     /// <summary>
-    /// Contains the name of the file.  
+    /// Contains the name of the file.
     /// </summary>
     public string FileName { get; private set; }
-    
+
     /// <summary>
     /// Gets the parent directory, i.e. navigates one folder up.
     /// </summary>
@@ -54,8 +54,8 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     {
         if (!string.IsNullOrEmpty(directory))
         {
-            Directory = directory.EndsWith(Path.DirectorySeparatorChar) 
-                ? directory[..^1] 
+            Directory = directory.EndsWith(Path.DirectorySeparatorChar)
+                ? directory[..^1]
                 : directory;
         }
         FileName = fileName;
@@ -79,7 +79,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         }
 
         var directory = fullPath[..index];
-        var fileName = fullPath[(index+1)..];
+        var fileName = fullPath[(index + 1)..];
         return new(directory, fileName);
     }
 
@@ -102,7 +102,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
 
         if (FileName.Length == 0)
             return Directory;
-        
+
         return string.Concat(Directory, DirectorySeparatorCharStr, FileName);
     }
 
@@ -110,8 +110,8 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// Returns the full path of the combined string.
     /// </summary>
     /// <param name="buffer">
-    ///    The buffer which the resulting string will be stored inside.  
-    ///    Should at least be <see cref="GetFullPathLength"/> long.  
+    ///    The buffer which the resulting string will be stored inside.
+    ///    Should at least be <see cref="GetFullPathLength"/> long.
     /// </param>
     /// <returns>
     ///     The full combined path.
@@ -127,7 +127,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
 
         if (FileName.Length == 0)
             return Directory;
-        
+
         var requiredLength = Directory.Length + FileName.Length + 1;
         if (buffer.Length < requiredLength)
             return default;
@@ -149,7 +149,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
 
         return Directory.Length + FileName.Length + 1;
     }
-    
+
     /// <summary>
     /// Joins the current absolute path with a relative path without checking the case sensitivity of a path.
     /// </summary>
@@ -166,20 +166,20 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         // Just in case.
         if (path.Path.Length <= 0)
             return this;
-        
+
         // Since AbsolutePaths are created from the OS; we will assume the existing path is already correct, therefore
         // we only need to checked combine the relative path.
         var relativeOrig = path.Path;
-        
+
         // Copy and normalise.
-        var relativeSpan = relativeOrig.Length <= 512 ? stackalloc char[relativeOrig.Length] 
+        var relativeSpan = relativeOrig.Length <= 512 ? stackalloc char[relativeOrig.Length]
             : GC.AllocateUninitializedArray<char>(relativeOrig.Length);
-        
+
         relativeOrig.CopyTo(relativeSpan);
         relativeSpan.Replace(SeparatorToReplace, PathSeparatorForInternalOperations, relativeSpan);
         if (relativeSpan[0] == PathSeparatorForInternalOperations)
             relativeSpan = relativeSpan.SliceFast(1);
-        
+
         // Now walk the directories.
         return FromFullPath($"{GetFullPath()}{DirectorySeparatorCharStr}{relativeSpan}");
     }
@@ -196,24 +196,24 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         // Just in case.
         if (path.Path.Length <= 0)
             return this;
-        
+
         // Note: Do not special case this for Windows.
         // We have a constraint where Directory and FileName are normalised
         // to follow OS casing. And Equals/GetHashCode relies on this.
-        
+
         // Since AbsolutePaths are created from the OS; we will assume the existing path is already correct, therefore
         // we only need to checked combine the relative path.
         var relativeOrig = path.Path;
-        
+
         // Copy and normalise.
-        var relativeSpan = relativeOrig.Length <= 512 ? stackalloc char[relativeOrig.Length] 
+        var relativeSpan = relativeOrig.Length <= 512 ? stackalloc char[relativeOrig.Length]
                                                       : GC.AllocateUninitializedArray<char>(relativeOrig.Length);
-        
+
         relativeOrig.CopyTo(relativeSpan);
         relativeSpan.Replace(SeparatorToReplace, PathSeparatorForInternalOperations, relativeSpan);
         if (relativeSpan[0] == PathSeparatorForInternalOperations)
             relativeSpan = relativeSpan.SliceFast(1);
-        
+
         // Now walk the directories.
         return FromFullPath(AppendChecked(GetFullPath(), relativeSpan));
     }
@@ -231,7 +231,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
 
         if (remainingPath.Length > 0)
             path += $"{Path.DirectorySeparatorChar}{FindFileOrDirectoryCasing(path, remainingPath)}";
-        
+
         return path;
     }
 
@@ -244,15 +244,15 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         var otherLength = other.GetFullPathLength();
         if (otherLength == 0)
             return new RelativePath(GetFullPath());
-        
+
         // Note: We assume equality to be separator and case insensitive
         //       therefore this property should transfer over to contains checks.
         var thisPathLength = GetFullPathLength();
-        Span<char> thisFullPath = thisPathLength <= 512 ? stackalloc char[thisPathLength] : GC.AllocateUninitializedArray<char>(thisPathLength);
+        var thisFullPath = thisPathLength <= 512 ? stackalloc char[thisPathLength] : GC.AllocateUninitializedArray<char>(thisPathLength);
         GetFullPath(thisFullPath);
-        
+
         var otherPathLength = other.GetFullPathLength();
-        Span<char> otherFullPath = otherPathLength <= 512 ? stackalloc char[otherPathLength] : GC.AllocateUninitializedArray<char>(otherPathLength);
+        var otherFullPath = otherPathLength <= 512 ? stackalloc char[otherPathLength] : GC.AllocateUninitializedArray<char>(otherPathLength);
         other.GetFullPath(otherFullPath);
 
         if (!thisFullPath.StartsWith(otherFullPath))
@@ -263,7 +263,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
 
         return new RelativePath(thisFullPath.SliceFast(otherFullPath.Length + 1).ToString());
     }
-    
+
     /// <summary>
     /// Creates a new absolute path from the current one, appending an extension.
     /// </summary>
@@ -287,10 +287,10 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         len = GetFullPathLength();
         var thisStr = len <= 512 ? stackalloc char[len] : GC.AllocateUninitializedArray<char>(len);
         GetFullPath(thisStr);
-        
+
         return thisStr.StartsWith(parentStr);
     }
-    
+
     /// <summary>
     /// Replaces the extension used in this absolute path.
     /// </summary>
@@ -299,16 +299,16 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     {
         return FromDirectoryAndFileName(Directory!, FileName.ReplaceExtension(ext));
     }
-    
+
     /// <summary/>
     public static bool operator ==(AbsolutePath lhs, AbsolutePath rhs) => lhs.Equals(rhs);
-    
+
     /// <summary/>
     public static bool operator !=(AbsolutePath lhs, AbsolutePath rhs) => !(lhs == rhs);
-    
+
     /// <inheritdoc />
     public override string ToString() => GetFullPath();
-    
+
     #region Equals & GetHashCode
     // Implementation Note:
     //    Directory is already normalised in this struct because.
@@ -320,14 +320,14 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     public bool Equals(AbsolutePath other)
     {
         // Ordinal.
-        return Directory == other.Directory && 
+        return Directory == other.Directory &&
                FileName == other.FileName;
     }
 
     /// <inheritdoc />
     public override bool Equals(object? obj)
     {
-        return obj is AbsolutePath other && 
+        return obj is AbsolutePath other &&
                Equals(other);
     }
 
@@ -340,7 +340,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         return HashCode.Combine(a, b);
     }
     #endregion
-    
+
     /// <summary>
     /// Splits the string up to the next directory separator.
     /// </summary>
@@ -352,7 +352,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         var index = text.IndexOf(Path.DirectorySeparatorChar);
         return index != -1 ? text[..index] : text;
     }
-    
+
     private static ReadOnlySpan<char> FindFileOrDirectoryCasing(string searchDir, ReadOnlySpan<char> fileName)
     {
         try
@@ -373,7 +373,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
 
         return fileName;
     }
-    
+
     /// <summary/>
     /// <returns>Full path with directory separator string attached at the end.</returns>
     private readonly string GetFullPathWithSeparator()
@@ -383,7 +383,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
 
         if (FileName.Length == 0)
             return string.Concat(Directory, DirectorySeparatorCharStr);
-        
+
         return string.Concat(Directory, DirectorySeparatorCharStr, FileName, DirectorySeparatorCharStr);
     }
 }

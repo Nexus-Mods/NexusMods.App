@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Immutable;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -6,8 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace NexusMods.DataModel.Abstractions;
 
-public struct EntityHashSet<T> : IEmptyWithDataStore<EntityHashSet<T>>, 
-    IEnumerable<T>, 
+public struct EntityHashSet<T> : IEmptyWithDataStore<EntityHashSet<T>>,
+    IEnumerable<T>,
     IEquatable<EntityHashSet<T>>,
     IWalkable<Entity>
     where T : Entity
@@ -43,7 +43,7 @@ public struct EntityHashSet<T> : IEmptyWithDataStore<EntityHashSet<T>>,
     {
         return new EntityHashSet<T>(_store, _coll.Remove(val.DataStoreId));
     }
-    
+
     public EntityHashSet<T> Without(IEnumerable<T> vals)
     {
         var newColl = vals.Aggregate(_coll, (acc, itm) => acc.Remove(itm.DataStoreId));
@@ -148,12 +148,12 @@ public class EntityHashSetConverter<T> : JsonConverter<EntityHashSet<T>>
     where T : Entity
 {
     private Lazy<IDataStore> _store;
-    
+
     public EntityHashSetConverter(IServiceProvider provider)
     {
         _store = new Lazy<IDataStore>(provider.GetRequiredService<IDataStore>);
     }
-    
+
     public override EntityHashSet<T> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType != JsonTokenType.StartArray)
@@ -166,7 +166,7 @@ public class EntityHashSetConverter<T> : JsonConverter<EntityHashSet<T>>
             lst.Add(JsonSerializer.Deserialize<Id>(ref reader, options)!);
             reader.Read();
         }
-        
+
         return new EntityHashSet<T>(_store.Value, lst);
     }
 

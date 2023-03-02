@@ -1,15 +1,12 @@
-﻿using System.Reactive;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Windows.Input;
-using Avalonia;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.ViewModels;
 using NexusMods.Networking.NexusWebApi;
-using Noggog;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -27,7 +24,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
         _loginManager = loginManager;
         LoginCommand = ReactiveCommand.CreateFromTask(Login, _loginManager.IsLoggedIn.OnUI().Select(b => !b));
         LogoutCommand = ReactiveCommand.CreateFromTask(Logout, _loginManager.IsLoggedIn.OnUI().Select(b => b));
-        
+
         this.WhenActivated(d =>
         {
             _loginManager.IsLoggedIn
@@ -37,19 +34,20 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             _loginManager.IsPremium
                 .Subscribe(x => IsPremium = x)
                 .DisposeWith(d);
-            
+
             _loginManager.Avatar
                 .Where(a => a != null)
                 .SelectMany(LoadImage)
                 .Subscribe(x => Avatar = x)
                 .DisposeWith(d);
         });
-        
+
     }
 
     private async Task<IImage?> LoadImage(Uri uri)
     {
-        try {
+        try
+        {
             var client = new HttpClient();
             var stream = await client.GetByteArrayAsync(uri);
             return new Bitmap(new MemoryStream(stream));
@@ -66,7 +64,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
         _logger.LogInformation("Logging into Nexus Mods");
         await _loginManager.LoginAsync();
     }
-    
+
     private async Task Logout()
     {
         _logger.LogInformation("Logging out of Nexus Mods");
@@ -75,20 +73,20 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 
     [Reactive]
     public bool IsLoggedIn { get; set; }
-    
+
     [Reactive]
     public bool IsPremium { get; set; }
-    
+
     [Reactive]
     public IImage Avatar { get; set; }
 
     [Reactive] public ReactiveCommand<Unit, Unit> LoginCommand { get; set; }
 
     [Reactive] public ReactiveCommand<Unit, Unit> LogoutCommand { get; set; } = ReactiveCommand.Create(() => { });
-    
+
     [Reactive]
     public ReactiveCommand<Unit, Unit> MinimizeCommand { get; set; } = ReactiveCommand.Create(() => { });
-    
+
     [Reactive]
     public ReactiveCommand<Unit, Unit> MaximizeCommand { get; set; } = ReactiveCommand.Create(() => { });
 

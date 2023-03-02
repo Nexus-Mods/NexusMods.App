@@ -1,4 +1,4 @@
-﻿using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
+using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 
 namespace NexusMods.Networking.NexusWebApi;
 

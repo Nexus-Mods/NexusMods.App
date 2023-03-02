@@ -1,4 +1,4 @@
-﻿using System.Reactive.Linq;
+using System.Reactive.Linq;
 using Avalonia.Controls.Mixins;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
@@ -19,7 +19,7 @@ public partial class Home : ReactiveUserControl<HomeButtonViewModel>
             this.BindCommand(ViewModel, vm => vm.Click, v => v.Button)
                 .DisposeWith(disposables);
             this.WhenAnyValue(vm => vm.ViewModel.Click)
-                .Subscribe(f => { })
+                .Subscribe(_ => { })
                 .DisposeWith(disposables);
         });
     }

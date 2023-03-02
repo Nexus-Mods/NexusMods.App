@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using System.IO.Compression;
 using System.Reactive.Linq;
 using System.Text;
@@ -29,15 +29,15 @@ public class LoadoutManager
     private readonly IModInstaller[] _installers;
     private readonly FileContentsCache _analyzer;
     private readonly IEnumerable<IFileMetadataSource> _metadataSources;
-    private readonly ILookup<GameDomain,ITool> _tools;
+    private readonly ILookup<GameDomain, ITool> _tools;
 
     public LoadoutManager(ILogger<LoadoutManager> logger,
         IResource<LoadoutManager, Size> limiter,
         ArchiveManager archiveManager,
         IEnumerable<IFileMetadataSource> metadataSources,
-        IDataStore store, 
-        FileHashCache fileHashCache, 
-        IEnumerable<IModInstaller> installers, 
+        IDataStore store,
+        FileHashCache fileHashCache,
+        IEnumerable<IModInstaller> installers,
         FileContentsCache analyzer,
         IEnumerable<ITool> tools)
     {
@@ -53,14 +53,14 @@ public class LoadoutManager
         _tools = tools.SelectMany(t => t.Domains.Select(d => (Tool: t, Domain: d)))
             .ToLookup(t => t.Domain, t => t.Tool);
     }
-    
+
     public LoadoutManager Rebase(SqliteDataStore store)
     {
         return new LoadoutManager(_logger, Limiter, ArchiveManager, _metadataSources, store, FileHashCache, _installers,
             _analyzer, _tools.SelectMany(f => f));
     }
 
-    public IResource<LoadoutManager,Size> Limiter { get; set; }
+    public IResource<LoadoutManager, Size> Limiter { get; set; }
 
     public IObservable<LoadoutRegistry> Changes => _root.Changes.Select(r => r.New);
     public IEnumerable<LoadoutMarker> AllLoadouts => _root.Value.Lists.Values.Select(m => new LoadoutMarker(this, m.LoadoutId));
@@ -78,19 +78,19 @@ public class LoadoutManager
             Store = _store,
             SortRules = ImmutableList<ISortRule<Mod, ModId>>.Empty.Add(new First<Mod, ModId>())
         };
-        
+
         var n = Loadout.Empty(_store) with
         {
             Installation = installation,
-            Name = name, 
-            Mods = new EntityDictionary<ModId, Mod>(_store, new [] {new KeyValuePair<ModId,Id>(mod.Id, mod.DataStoreId)})
+            Name = name,
+            Mods = new EntityDictionary<ModId, Mod>(_store, new[] { new KeyValuePair<ModId, Id>(mod.Id, mod.DataStoreId) })
         };
-        
-        _root.Alter(r => r with {Lists = r.Lists.With(n.LoadoutId, n)});
-                
+
+        _root.Alter(r => r with { Lists = r.Lists.With(n.LoadoutId, n) });
+
         _logger.LogInformation("Loadout {Name} {Id} created", name, n.LoadoutId);
         _logger.LogInformation("Adding game files");
-        
+
         foreach (var (type, path) in installation.Locations)
         {
             await foreach (var result in FileHashCache.IndexFolder(path, token).WithCancellation(token))
@@ -105,19 +105,19 @@ public class LoadoutManager
                     Size = result.Size,
                     Store = _store
                 };
-                
+
                 var metaData = await GetMetadata(n, mod, file, analysis).ToHashSet();
-                gameFiles.Add(file with {Metadata = metaData.ToImmutableHashSet()});
+                gameFiles.Add(file with { Metadata = metaData.ToImmutableHashSet() });
             }
         }
         gameFiles.AddRange(installation.Game.GetGameFiles(installation, _store));
         var marker = new LoadoutMarker(this, n.LoadoutId);
-        marker.Alter(mod.Id, m => m with {Files = m.Files.With(gameFiles, f => f.Id)});
+        marker.Alter(mod.Id, m => m with { Files = m.Files.With(gameFiles, f => f.Id) });
 
         return marker;
     }
 
-    
+
     private async IAsyncEnumerable<IModFileMetadata> GetMetadata(Loadout loadout, Mod mod, GameFile file,
         AnalyzedFile analyzed)
     {
@@ -183,11 +183,11 @@ public class LoadoutManager
             var previousList = r.Lists[id];
             var newList = func(previousList)
                 with
-                {
-                    LastModified = DateTime.UtcNow,
-                    ChangeMessage = changeMessage,
-                    PreviousVersion = previousList
-                };
+            {
+                LastModified = DateTime.UtcNow,
+                ChangeMessage = changeMessage,
+                PreviousVersion = previousList
+            };
             return r with { Lists = r.Lists.With(newList.LoadoutId, newList) };
         });
     }
@@ -223,7 +223,7 @@ public class LoadoutManager
     public async Task ExportTo(LoadoutId id, AbsolutePath output, CancellationToken token)
     {
         var loadout = Get(id);
-        
+
         if (output.FileExists)
             output.Delete();
         using var zip = ZipFile.Open(output.ToString(), ZipArchiveMode.Create);
@@ -242,7 +242,7 @@ public class LoadoutManager
                     hashes.Add(foundIn.DataStoreId);
                 }
             }
-            
+
             if (itm is AStaticModFile file)
             {
                 AddFile(file.Hash, state);
@@ -254,15 +254,15 @@ public class LoadoutManager
 
             return state;
         }, new HashSet<Id>());
-        
+
         _logger.LogDebug("Found {Count} entities to export", ids.Count);
 
         foreach (var entityId in ids)
         {
             var data = _store.GetRaw(entityId);
             if (data == null) continue;
-            
-            await using var entry = zip.CreateEntry("entities\\"+entityId.TaggedSpanHex, CompressionLevel.Optimal).Open();
+
+            await using var entry = zip.CreateEntry("entities\\" + entityId.TaggedSpanHex, CompressionLevel.Optimal).Open();
             await entry.WriteAsync(data, token);
         }
 
@@ -283,20 +283,20 @@ public class LoadoutManager
 
         using var zip = ZipFile.Open(path.ToString(), ZipArchiveMode.Read);
         var entityFolder = "entities".ToRelativePath();
-        
+
         var entries = zip.Entries.Where(p => p.FullName.ToRelativePath().InFolder(entityFolder))
-            .SelectAsync(ProcessEntry); 
-        
+            .SelectAsync(ProcessEntry);
+
         var loaded = await _store.PutRaw(entries, token);
         _logger.LogDebug("Loaded {Count} entities", loaded);
-        
+
         await using var root = zip.GetEntry("root")!.Open();
         var rootId = Id.FromTaggedSpan(Convert.FromHexString(await root.ReadAllTextAsync(token)));
 
         var loadout = _store.Get<Loadout>(rootId);
         if (loadout == null)
             throw new Exception("Loadout not found after loading data store, the loadout may be corrupt");
-        _root.Alter(r => r with { Lists = r.Lists.With(loadout.LoadoutId, loadout)});
+        _root.Alter(r => r with { Lists = r.Lists.With(loadout.LoadoutId, loadout) });
         return new LoadoutMarker(this, loadout.LoadoutId);
     }
 }

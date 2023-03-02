@@ -1,4 +1,4 @@
-﻿namespace NexusMods.Common;
+namespace NexusMods.Common;
 
 /// <summary>
 /// OS interoperation for linux
@@ -7,7 +7,7 @@
 public class OSInteropLinux : IOSInterop
 {
     private readonly IProcessFactory _processFactory;
-    
+
     /// <summary/>
     public OSInteropLinux(IProcessFactory processFactory)
     {

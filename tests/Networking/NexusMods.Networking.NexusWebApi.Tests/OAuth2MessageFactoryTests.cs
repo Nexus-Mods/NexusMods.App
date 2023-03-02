@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NexusMods.Common;
 using System.Net;
@@ -20,7 +20,7 @@ public class OAuth2MessageFactoryTests
     public OAuth2MessageFactoryTests(ILogger<OAuth> logger, IMessageConsumer<NXMUrlMessage> consumer)
     {
         _handler = new Mock<HttpMessageHandler>();
-        HttpClient httpClient = new HttpClient(_handler.Object);
+        var httpClient = new HttpClient(_handler.Object);
         var idGen = new Mock<IIDGenerator>();
         var os = new Mock<IOSInterop>();
         _store = new Mock<IDataStore>();

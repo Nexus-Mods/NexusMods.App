@@ -1,10 +1,10 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace NexusMods.DataModel.Abstractions;
 
 [JsonConverter(typeof(EntityLinkConverterFactory))]
-public record EntityLink <T> : IEmptyWithDataStore<EntityLink<T>>,
+public record EntityLink<T> : IEmptyWithDataStore<EntityLink<T>>,
     IWalkable<Entity>
     where T : Entity
 {
@@ -13,13 +13,13 @@ public record EntityLink <T> : IEmptyWithDataStore<EntityLink<T>>,
     [JsonIgnore]
     private T? _value = null;
     public Id Id { get; }
-    
+
     [JsonIgnore]
     public T Value => Get();
 
     public static implicit operator T(EntityLink<T> t) => t.Value;
     public static implicit operator EntityLink<T>(T t) => new(t.DataStoreId, t.Store);
-    
+
     [JsonIgnore]
     private readonly IDataStore _store;
 

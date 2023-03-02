@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers;
@@ -16,7 +16,7 @@ public class Startup
         container.AddStubbedGameLocators();
         container.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug));
     }
-    
+
     public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>
-        loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(accessor, delegate { return true;}));
+        loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(accessor, delegate { return true; }));
 }

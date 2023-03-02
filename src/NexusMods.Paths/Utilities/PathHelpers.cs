@@ -27,7 +27,7 @@ public static class PathHelpers
         if (path == null)
             return null;
 
-        ReadOnlySpan<char> result = GetFileName(path.AsSpan());
+        var result = GetFileName(path.AsSpan());
         if (path.Length == result.Length)
             return path;
 
@@ -39,12 +39,12 @@ public static class PathHelpers
     /// </summary>
     public static ReadOnlySpan<char> GetFileName(ReadOnlySpan<char> path)
     {
-        int root = GetPathRoot(path).Length;
+        var root = GetPathRoot(path).Length;
 
         // We don't want to cut off "C:\file.txt:stream" (i.e. should be "file.txt:stream")
         // but we *do* want "C:Foo" => "Foo". This necessitates checking for the root.
 
-        for (int i = path.Length; --i >= 0;)
+        for (var i = path.Length; --i >= 0;)
         {
             if (i < root || IsDirectorySeparator(path[i]))
                 return path.Slice(i + 1);
@@ -104,7 +104,7 @@ public static class PathHelpers
         if (path == null || IsEffectivelyEmpty(path.AsSpan()))
             return null;
 
-        int end = GetDirectoryNameOffset(path.AsSpan());
+        var end = GetDirectoryNameOffset(path.AsSpan());
         return end >= 0 ? path.Substring(0, end) : null;
     }
 
@@ -115,7 +115,7 @@ public static class PathHelpers
 
     private static int GetDirectoryNameOffset(ReadOnlySpan<char> path)
     {
-        int rootLength = GetRootLength(path);
+        var rootLength = GetRootLength(path);
         var end = path.Length;
         if (end <= rootLength)
             return -1;

@@ -1,4 +1,4 @@
-﻿namespace NexusMods.Common;
+namespace NexusMods.Common;
 
 /// <summary>
 /// deals with protocol registration, that is: setting up this application system wide

@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers;
 
@@ -29,16 +29,16 @@ public class ModManagementVerbs : AVerbTest
         LastTable.Rows.Count().Should().Be(1);
 
         await RunNoBanner("install-mod", "-l", listName, "-f", Data7ZipLZMA2.ToString());
-        
+
         await RunNoBanner("list-mods", "-l", listName);
         LastTable.Rows.Count().Should().Be(2);
 
         await RunNoBanner("list-mod-contents", "-l", listName, "-n", Data7ZipLZMA2.FileName);
         LastTable.Rows.Count().Should().Be(3);
-        
+
         await RunNoBanner("flatten-list", "-l", listName);
         LastTable.Rows.Count().Should().Be(7);
-        
+
         await RunNoBanner("apply", "-l", listName, "-r", "false");
     }
 }

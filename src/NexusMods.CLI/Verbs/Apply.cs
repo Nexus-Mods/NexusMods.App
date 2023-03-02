@@ -1,4 +1,4 @@
-﻿using NexusMods.CLI.DataOutputs;
+using NexusMods.CLI.DataOutputs;
 using NexusMods.DataModel.Loadouts.ApplySteps;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.Paths;
@@ -9,7 +9,7 @@ namespace NexusMods.CLI.Verbs;
 public class Apply : AVerb<LoadoutMarker, bool, bool>
 {
     private readonly IRenderer _renderer;
-    
+
     public Apply(Configurator configurator)
     {
         _renderer = configurator.Renderer;
@@ -21,7 +21,7 @@ public class Apply : AVerb<LoadoutMarker, bool, bool>
         new OptionDefinition<bool>("r", "run", "Run the application? (defaults to just printing the steps)"),
         new OptionDefinition<bool>("s", "summary", "Print the summary, not the detailed step list")
     });
-    
+
     public async Task<int> Run(LoadoutMarker loadout, bool run, bool summary, CancellationToken token)
     {
 
@@ -35,7 +35,7 @@ public class Apply : AVerb<LoadoutMarker, bool, bool>
                     {
                         g.Key.Name, g.Count(), g.OfType<IStaticFileStep>().Aggregate((Size)0L, (o, n) => o + n.Size)
                     });
-            await _renderer.Render(new Table(new[] { "Action", "Count", "Size"}, rows));
+            await _renderer.Render(new Table(new[] { "Action", "Count", "Size" }, rows));
         }
         else
         {
@@ -44,18 +44,19 @@ public class Apply : AVerb<LoadoutMarker, bool, bool>
             {
                 if (step is IStaticFileStep smf)
                 {
-                    rows.Add(new object[]{step, step.To, smf.Hash, smf.Size});
+                    rows.Add(new object[] { step, step.To, smf.Hash, smf.Size });
                 }
                 else
                 {
-                    rows.Add(new object[]{step, step.To, "", ""});
+                    rows.Add(new object[] { step, step.To, "", "" });
                 }
-            
+
             }
-            await _renderer.Render(new Table(new[] { "Action", "To", "Hash", "Size"}, rows));
+            await _renderer.Render(new Table(new[] { "Action", "To", "Hash", "Size" }, rows));
         }
 
-        if (run) {
+        if (run)
+        {
             await _renderer.WithProgress(token, async () =>
             {
                 await loadout.Apply(plan, token);

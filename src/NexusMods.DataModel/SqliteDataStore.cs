@@ -1,4 +1,4 @@
-﻿using System.Buffers.Binary;
+using System.Buffers.Binary;
 using System.Collections.Concurrent;
 using System.Data.SQLite;
 using System.Reactive.Linq;
@@ -19,14 +19,14 @@ public class SqliteDataStore : IDataStore, IDisposable
     private readonly AbsolutePath _path;
     private readonly string _connectionString;
     private readonly SQLiteConnection _conn;
-    private readonly Dictionary<EntityCategory,string> _getStatements;
-    private readonly Dictionary<EntityCategory,string> _putStatements;
-    private readonly Dictionary<EntityCategory,string> _casStatements;
+    private readonly Dictionary<EntityCategory, string> _getStatements;
+    private readonly Dictionary<EntityCategory, string> _putStatements;
+    private readonly Dictionary<EntityCategory, string> _casStatements;
     private readonly Lazy<JsonSerializerOptions> _jsonOptions;
-    private readonly Dictionary<EntityCategory,string> _prefixStatements;
-    private readonly Dictionary<EntityCategory,string> _deleteStatements;
-    private readonly ConcurrentLru<Id,Entity> _cache;
-    
+    private readonly Dictionary<EntityCategory, string> _prefixStatements;
+    private readonly Dictionary<EntityCategory, string> _deleteStatements;
+    private readonly ConcurrentLru<Id, Entity> _cache;
+
     private readonly IMessageProducer<RootChange> _rootChangeProducer;
     private readonly IMessageConsumer<RootChange> _rootChangeConsumer;
     private readonly ConcurrentQueue<RootChange> _pendingRootChanges = new();
@@ -37,8 +37,8 @@ public class SqliteDataStore : IDataStore, IDisposable
     private readonly IMessageProducer<IdPut> _idPutProducer;
     private readonly IMessageConsumer<IdPut> _idPutConsumer;
 
-    public SqliteDataStore(ILogger<SqliteDataStore> logger, AbsolutePath path, IServiceProvider provider, 
-        IMessageProducer<RootChange> rootChangeProducer, 
+    public SqliteDataStore(ILogger<SqliteDataStore> logger, AbsolutePath path, IServiceProvider provider,
+        IMessageProducer<RootChange> rootChangeProducer,
         IMessageConsumer<RootChange> rootChangeConsumer,
         IMessageProducer<IdPut> idPutProducer,
         IMessageConsumer<IdPut> idPutConsumer)
@@ -48,17 +48,17 @@ public class SqliteDataStore : IDataStore, IDisposable
         _connectionString = string.Intern($"Data Source={path}");
         _conn = new SQLiteConnection(_connectionString);
         _conn.Open();
-        
+
         _getStatements = new Dictionary<EntityCategory, string>();
         _putStatements = new Dictionary<EntityCategory, string>();
         _casStatements = new Dictionary<EntityCategory, string>();
         _prefixStatements = new Dictionary<EntityCategory, string>();
         _deleteStatements = new Dictionary<EntityCategory, string>();
         EnsureTables();
-        
+
         _jsonOptions = new Lazy<JsonSerializerOptions>(provider.GetRequiredService<JsonSerializerOptions>);
         _cache = new ConcurrentLru<Id, Entity>(1000);
-        
+
         _rootChangeProducer = rootChangeProducer;
         _rootChangeConsumer = rootChangeConsumer;
         _idPutProducer = idPutProducer;
@@ -92,7 +92,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         {
             using var cmd = new SQLiteCommand($"CREATE TABLE IF NOT EXISTS {table} (Id BLOB PRIMARY KEY, Data BLOB)", _conn);
             cmd.ExecuteNonQuery();
-            
+
             _getStatements[table] = $"SELECT Data FROM [{table}] WHERE Id = @id";
             _putStatements[table] = $"INSERT OR REPLACE INTO [{table}] (Id, Data) VALUES (@Id, @data)";
             _casStatements[table] =
@@ -101,10 +101,10 @@ public class SqliteDataStore : IDataStore, IDisposable
             _deleteStatements[table] = $"DELETE FROM [{table}] WHERE Id = @id";
         }
     }
-    
+
     public Id Put<T>(T value) where T : Entity
     {
-        using var cmd = new SQLiteCommand(_putStatements[value.Category], _conn); 
+        using var cmd = new SQLiteCommand(_putStatements[value.Category], _conn);
         var ms = new MemoryStream();
         JsonSerializer.Serialize(ms, value, _jsonOptions.Value);
         var msBytes = ms.ToArray();
@@ -113,7 +113,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         BinaryPrimitives.WriteUInt64BigEndian(idBytes, hash);
         cmd.Parameters.AddWithValue("@id", idBytes);
         cmd.Parameters.AddWithValue("@data", msBytes);
-        
+
         cmd.ExecuteNonQuery();
 
         var id = new Id64(value.Category, hash);
@@ -123,7 +123,7 @@ public class SqliteDataStore : IDataStore, IDisposable
 
     public void Put<T>(Id id, T value) where T : Entity
     {
-        using var cmd = new SQLiteCommand(_putStatements[value.Category], _conn); 
+        using var cmd = new SQLiteCommand(_putStatements[value.Category], _conn);
         Span<byte> idSpan = stackalloc byte[id.SpanSize];
         id.ToSpan(idSpan);
         cmd.Parameters.AddWithValue("@Id", idSpan.ToArray());
@@ -152,10 +152,10 @@ public class SqliteDataStore : IDataStore, IDisposable
         var value = (T?)JsonSerializer.Deserialize<Entity>(blob, _jsonOptions.Value);
         if (value == null) return null;
         value.DataStoreId = id;
-        
+
         if (canCache)
             _cache.AddOrUpdate(id, value);
-        
+
         return value;
     }
 
@@ -168,9 +168,9 @@ public class SqliteDataStore : IDataStore, IDisposable
         cmd.Parameters.AddWithValue("@data", newData);
 
         cmd.ExecuteNonQuery();
-        
-        _pendingRootChanges.Enqueue(new RootChange {Type = type, From = oldId, To = newId});
-        
+
+        _pendingRootChanges.Enqueue(new RootChange { Type = type, From = oldId, To = newId });
+
         return true;
     }
 
@@ -291,7 +291,7 @@ public class SqliteDataStore : IDataStore, IDisposable
             {
                 yield break;
             }
-            
+
             var blob = reader.GetStream(1);
             var value = JsonSerializer.Deserialize<Entity>(blob, _jsonOptions.Value);
             if (value is T tc)
@@ -303,8 +303,8 @@ public class SqliteDataStore : IDataStore, IDisposable
     }
 
     public IObservable<RootChange> RootChanges => _rootChangeConsumer.Messages.SelectMany(WaitTillRootReady);
-    public IObservable<Id> IdChanges  => _idPutConsumer.Messages.SelectMany(WaitTillPutReady);
-    
+    public IObservable<Id> IdChanges => _idPutConsumer.Messages.SelectMany(WaitTillPutReady);
+
     /// <summary>
     /// Sometimes we may get a change notification before the underlying SQLite database has actually updated the value.
     /// So we wait a bit to make sure the value is actually there before we forward the change.
@@ -323,7 +323,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         _logger.LogDebug("Root change {To} is ready", change.To);
         return change;
     }
-    
+
     /// <summary>
     /// Sometimes we may get a change notification before the underlying SQLite database has actually updated the value.
     /// So we wait a bit to make sure the value is actually there before we forward the change.

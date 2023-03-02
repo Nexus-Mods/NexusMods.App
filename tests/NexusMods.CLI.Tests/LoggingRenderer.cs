@@ -1,12 +1,12 @@
-﻿namespace NexusMods.CLI.Tests;
+namespace NexusMods.CLI.Tests;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 public class LoggingRenderer : IRenderer
 {
     public static readonly AsyncLocal<List<Object>> Logs = new();
-    
+
     public string Name => "logging";
-    
+
     public Task Render<T>(T o)
     {
         Logs.Value!.Add(o!);

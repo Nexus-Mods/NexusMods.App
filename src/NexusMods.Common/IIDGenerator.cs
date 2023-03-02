@@ -1,4 +1,4 @@
-﻿namespace NexusMods.Common;
+namespace NexusMods.Common;
 
 /// <summary>
 /// abstraction for functions generating unique ids

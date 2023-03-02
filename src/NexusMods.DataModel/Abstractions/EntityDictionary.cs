@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Immutable;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -9,15 +9,15 @@ using Microsoft.Extensions.DependencyInjection;
 namespace NexusMods.DataModel.Abstractions;
 
 [JsonConverter(typeof(EntityDictionaryConverterFactory))]
-public struct EntityDictionary<TK, TV> : 
-    IEmptyWithDataStore<EntityDictionary<TK, TV>>, 
+public struct EntityDictionary<TK, TV> :
+    IEmptyWithDataStore<EntityDictionary<TK, TV>>,
     IEnumerable<KeyValuePair<TK, TV>>,
     IWalkable<Entity>
     where TV : Entity where TK : notnull
 {
     private readonly ImmutableDictionary<TK, Id> _coll;
     private readonly IDataStore _store;
-    
+
     public EntityDictionary(IDataStore store)
     {
         _store = store;
@@ -33,8 +33,8 @@ public struct EntityDictionary<TK, TV> :
     {
         return new EntityDictionary<TK, TV>(_store, _coll.SetItem(key, val.DataStoreId));
     }
-    
-    
+
+
     /// <summary>
     /// Adds val to the collection using keyFn(val) as the key
     /// </summary>
@@ -45,7 +45,7 @@ public struct EntityDictionary<TK, TV> :
     {
         return new EntityDictionary<TK, TV>(_store, _coll.SetItem(keyFn(val), val.DataStoreId));
     }
-    
+
     public EntityDictionary<TK, TV> With(IEnumerable<TV> val, Func<TV, TK> keyFn)
     {
         var builder = _coll.ToBuilder();
@@ -110,7 +110,7 @@ public struct EntityDictionary<TK, TV> :
             return this;
         return newVal is null ? Without(key) : With(key, newVal);
     }
-    
+
     /// <summary>
     /// Transforms all values in the dictionary with a given function.
     /// </summary>
@@ -194,7 +194,7 @@ public class EntityDictionaryConverter<TK, TV> : JsonConverter<EntityDictionary<
             reader.Read();
             lst.Add(new KeyValuePair<TK, Id>(tk, tv));
         }
-        
+
         return new EntityDictionary<TK, TV>(_store, lst);
     }
 

@@ -1,4 +1,4 @@
-﻿using NexusMods.CLI;
+using NexusMods.CLI;
 using NexusMods.CLI.DataOutputs;
 using NexusMods.DataModel.Games;
 using NexusMods.Networking.NexusWebApi.Types;
@@ -17,7 +17,7 @@ public class DownloadLinks : AVerb<GameDomain, ModId, FileId>
         _client = client;
         _renderer = configurator.Renderer;
     }
-    
+
     public static VerbDefinition Definition => new VerbDefinition("nexus-download-links",
         "Generates download links for a given file",
         new OptionDefinition[]
@@ -26,7 +26,7 @@ public class DownloadLinks : AVerb<GameDomain, ModId, FileId>
             new OptionDefinition<ModId>("m", "modId", "Mod ID"),
             new OptionDefinition<FileId>("f", "fileId", "File ID"),
         });
-    
+
     public async Task<int> Run(GameDomain gameDomain, ModId modId, FileId fileId, CancellationToken token)
     {
         var links = await _client.DownloadLinks(gameDomain, modId, fileId, token);

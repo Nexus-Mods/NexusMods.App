@@ -19,7 +19,7 @@ public class VectorisedReplaceCharacter
     {
         AssertStringReplaceInPlace(expected, input, '/', '\\');
     }
-    
+
     /// <summary>
     /// Tests strings smaller than any vector variable would store.
     /// </summary>
@@ -32,7 +32,7 @@ public class VectorisedReplaceCharacter
     {
         AssertStringReplaceInAnotherBuffer(expected, input, '/', '\\');
     }
-    
+
     private static unsafe void AssertStringReplaceInPlace(string expected, string input, char oldChar, char newChar)
     {
         // Please don't do this in production; unless lifetime of string doesn't 
@@ -44,7 +44,7 @@ public class VectorisedReplaceCharacter
             Assert.Equal(expected, input);
         }
     }
-    
+
     private static unsafe void AssertStringReplaceInAnotherBuffer(string expected, string input, char oldChar, char newChar)
     {
         // Please don't do this in production; unless lifetime of string doesn't 

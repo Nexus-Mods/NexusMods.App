@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Sorting.Rules;

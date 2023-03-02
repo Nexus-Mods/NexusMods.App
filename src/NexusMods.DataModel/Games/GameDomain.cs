@@ -1,4 +1,4 @@
-﻿using Vogen;
+using Vogen;
 
 namespace NexusMods.DataModel.Games;
 

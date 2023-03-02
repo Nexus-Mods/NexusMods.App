@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Avalonia.Controls.Mixins;
@@ -48,7 +48,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 .Where(registry => registry != null)
                 .SelectMany(registry => registry.Lists.Select(lst => lst.Value.Installation.Game).Distinct())
                 .ToObservableChangeSet(x => x.Domain)
-                .Transform( game =>
+                .Transform(game =>
                 {
                     using var iconStream = game.Icon.GetStream().Result;
                     return new GameViewModel
@@ -67,13 +67,13 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 .Bind(out _game)
                 .Subscribe()
                 .DisposeWith(disposables);
-            
+
             Home.Click = ReactiveCommand.Create(() =>
             {
                 _logger.LogTrace("Home selected");
                 _actions.OnNext(new SpineButtonAction(Type.Home));
             });
-            
+
             Add.Click = ReactiveCommand.Create(() =>
             {
                 _logger.LogTrace("Add selected");

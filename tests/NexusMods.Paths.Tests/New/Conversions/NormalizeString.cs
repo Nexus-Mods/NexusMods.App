@@ -13,7 +13,7 @@ public class NormalizeString
     public unsafe void NormalizeBasicPaths(string expected, string value)
     {
         var copy = new string(value.AsSpan());
-        
+
         // Please don't do this in production; unless string doesn't escape the method :)
         fixed (char* copyPtr = copy)
         {

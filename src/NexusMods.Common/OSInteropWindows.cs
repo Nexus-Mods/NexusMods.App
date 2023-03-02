@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 
 namespace NexusMods.Common;
 
@@ -9,7 +9,7 @@ namespace NexusMods.Common;
 public class OSInteropWindows : IOSInterop
 {
     private readonly IProcessFactory _processFactory;
-    
+
     /// <summary>
     /// constructor
     /// </summary>

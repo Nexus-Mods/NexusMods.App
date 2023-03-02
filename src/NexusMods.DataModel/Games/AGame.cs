@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
@@ -12,7 +12,7 @@ public abstract class AGame : IGame
     private IReadOnlyCollection<GameInstallation>? _installations;
     private readonly IEnumerable<IGameLocator> _gamelocators;
     protected readonly ILogger _logger;
-    
+
     public AGame(ILogger logger, IEnumerable<IGameLocator> gameLocators)
     {
         _logger = logger;
@@ -21,20 +21,20 @@ public abstract class AGame : IGame
     public abstract string Name { get; }
     public abstract GameDomain Domain { get; }
     public abstract GamePath PrimaryFile { get; }
-    
-    public virtual IEnumerable<GameInstallation> Installations 
+
+    public virtual IEnumerable<GameInstallation> Installations
     {
         get
         {
             if (_installations != null) return _installations;
             _installations = (from locator in _gamelocators
-                from installation in locator.Find(this)
-                select new GameInstallation
-                {
-                    Game = this,
-                    Locations = new Dictionary<GameFolderType, AbsolutePath>(GetLocations(locator, installation)),
-                    Version = installation.Version ?? GetVersion(locator, installation)
-                })
+                              from installation in locator.Find(this)
+                              select new GameInstallation
+                              {
+                                  Game = this,
+                                  Locations = new Dictionary<GameFolderType, AbsolutePath>(GetLocations(locator, installation)),
+                                  Version = installation.Version ?? GetVersion(locator, installation)
+                              })
                 .DistinctBy(g => g.Locations[GameFolderType.Game])
                 .ToList();
             return _installations;
@@ -59,5 +59,5 @@ public abstract class AGame : IGame
         return Name;
     }
 
-    protected abstract IEnumerable<KeyValuePair<GameFolderType,AbsolutePath>> GetLocations(IGameLocator locator, GameLocatorResult installation);
+    protected abstract IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(IGameLocator locator, GameLocatorResult installation);
 }

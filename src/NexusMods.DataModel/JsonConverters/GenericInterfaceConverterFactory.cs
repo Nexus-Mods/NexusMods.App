@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace NexusMods.DataModel.JsonConverters;
@@ -13,7 +13,7 @@ public class GenericInterfaceConverterFactory : JsonConverterFactory
         _provider = provider;
         _type = type;
     }
-    
+
     public override bool CanConvert(Type typeToConvert)
     {
         if (typeToConvert.IsGenericType && typeToConvert.GetGenericTypeDefinition() == _type)

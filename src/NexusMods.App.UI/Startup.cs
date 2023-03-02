@@ -1,8 +1,10 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.ReactiveUI;
 using Microsoft.Extensions.DependencyInjection;
 using Projektanker.Icons.Avalonia;
 using Projektanker.Icons.Avalonia.MaterialDesign;
+using ReactiveUI;
+using Splat;
 
 namespace NexusMods.App.UI;
 
@@ -15,13 +17,13 @@ public class Startup
     public static AppBuilder BuildAvaloniaApp(IServiceProvider serviceProvider)
     {
 
-        var app =  AppBuilder.Configure(serviceProvider.GetRequiredService<App>)
+        var app = AppBuilder.Configure(serviceProvider.GetRequiredService<App>)
             .UsePlatformDetect()
             .LogToTrace()
             .UseReactiveUI()
             .WithIcons(c => c.Register<MaterialDesignIconProvider>());
         Locator.CurrentMutable.UnregisterCurrent(typeof(IViewLocator));
-        Locator.CurrentMutable.Register(() => serviceProvider.GetRequiredService<InjectedViewLocator>(), typeof(IViewLocator));
+        Locator.CurrentMutable.Register(serviceProvider.GetRequiredService<InjectedViewLocator>, typeof(IViewLocator));
         return app;
     }
 }

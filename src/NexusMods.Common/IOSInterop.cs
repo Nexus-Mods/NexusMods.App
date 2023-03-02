@@ -1,4 +1,4 @@
-﻿namespace NexusMods.Common;
+namespace NexusMods.Common;
 
 /// <summary>
 /// abstractions for functionality that has no platform independent implementation in .NET

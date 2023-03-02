@@ -30,9 +30,9 @@ where TUnit : IAdditionOperators<TUnit, TUnit, TUnit>, IDivisionOperators<TUnit,
 
     public void Finish(IJob<TResource, TUnit> job);
 
-    ValueTask Report(Job<TResource,TUnit> job, TUnit processedSize, CancellationToken token);
-    void ReportNoWait(Job<TResource,TUnit> job, TUnit processedSize);
-    
+    ValueTask Report(Job<TResource, TUnit> job, TUnit processedSize, CancellationToken token);
+    void ReportNoWait(Job<TResource, TUnit> job, TUnit processedSize);
+
     StatusReport<TUnit> StatusReport { get; }
     TUnit MaxThroughput { get; set; }
 }

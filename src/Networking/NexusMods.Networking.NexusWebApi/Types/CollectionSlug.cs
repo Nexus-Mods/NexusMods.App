@@ -1,4 +1,4 @@
-﻿using Vogen;
+using Vogen;
 
 namespace NexusMods.Networking.NexusWebApi.Types;
 
@@ -8,5 +8,5 @@ namespace NexusMods.Networking.NexusWebApi.Types;
 [ValueObject<string>]
 public partial struct CollectionSlug
 {
-    
+
 }

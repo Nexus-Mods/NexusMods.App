@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 
 namespace NexusMods.App.UI;
 
@@ -7,5 +7,5 @@ namespace NexusMods.App.UI;
 /// </summary>
 public interface IViewModelInterface : INotifyPropertyChanged
 {
-    
+
 }

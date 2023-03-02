@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 
 namespace NexusMods.Common;
 
@@ -7,7 +7,7 @@ namespace NexusMods.Common;
 /// </summary>
 public interface IProcess
 {
-    
+
 }
 
 /// <summary>

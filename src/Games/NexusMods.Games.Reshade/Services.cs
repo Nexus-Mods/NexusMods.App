@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.DataModel.ModInstallers;
 
 namespace NexusMods.Games.Reshade;
@@ -10,5 +10,5 @@ public static class Services
         services.AddSingleton<IModInstaller, ReshadePresetInstaller>();
         return services;
     }
-    
+
 }

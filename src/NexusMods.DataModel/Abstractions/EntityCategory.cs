@@ -1,4 +1,4 @@
-﻿namespace NexusMods.DataModel.Abstractions;
+namespace NexusMods.DataModel.Abstractions;
 
 public enum EntityCategory
 {

@@ -1,4 +1,4 @@
-﻿using NexusMods.DataModel.Loadouts.ModFiles;
+using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
@@ -18,8 +18,8 @@ public abstract record class AGeneratedFile : AStaticModFile
     /// <param name="ct"></param>
     /// <returns></returns>
     public abstract Task GenerateAsync(Stream stream, Loadout loadout, IReadOnlyCollection<(AModFile File, Mod Mod)> flattenedList, CancellationToken ct = default);
-    
+
     public abstract Task<(Size Size, Hash Hash)> GetMetaData(Loadout loadout, IReadOnlyCollection<(AModFile File, Mod Mod)> flattenedList, CancellationToken ct = default);
-    
-    
+
+
 }

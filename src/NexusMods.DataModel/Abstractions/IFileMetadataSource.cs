@@ -1,4 +1,4 @@
-﻿using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.FileExtractor.FileSignatures;
@@ -16,12 +16,12 @@ public interface IFileMetadataSource
     /// Apply this source to files with the given extensions
     /// </summary>
     public IEnumerable<Extension> Extensions { get; }
-    
+
     /// <summary>
     /// Apply this source to the given file types
     /// </summary>
     public IEnumerable<FileType> FileTypes { get; }
-    
+
     /// <summary>
     /// Apply this source to the given games
     /// </summary>

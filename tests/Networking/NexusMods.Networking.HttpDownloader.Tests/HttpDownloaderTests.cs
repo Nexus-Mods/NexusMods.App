@@ -17,7 +17,7 @@ public class HttpDownloaderTests
         _temporaryFileManager = temporaryFileManager;
         _localHttpServer = localHttpServer;
     }
-    
+
     [Fact]
     [Trait("RequiresNetworking", "True")]
     public async Task CanDownloadFromExternalSource()
@@ -45,7 +45,7 @@ public class HttpDownloaderTests
         {
             new HttpRequestMessage(HttpMethod.Get, _localHttpServer.Uri + "hello")
         }, path);
-        
+
         resultHash.Should().Be(Hash.From(0xA52B286A3E7F4D91));
         (await path.Path.ReadAllTextAsync()).Should().Be("Hello World!");
     }

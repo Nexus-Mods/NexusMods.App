@@ -37,7 +37,7 @@ public class UtilityTests
         Assert.True(pathA.StartsWith("Fo"));
         Assert.False(pathA.StartsWith("fooo"));
     }
-    
+
     [Fact]
     public void CanCheckInFolder()
     {
@@ -50,7 +50,7 @@ public class UtilityTests
         Assert.False(pathB.InFolder(pathA));
         Assert.False(pathD.InFolder(pathB));
     }
-    
+
     [Theory]
     [InlineData("Desktop/Cat.png", "/home/sewer", "/home/sewer/Desktop/Cat.png")]
     [InlineData("Desktop\\Cat.png", "/home\\sewer", "/home\\sewer\\Desktop\\Cat.png")] // mixed slash
@@ -59,7 +59,7 @@ public class UtilityTests
     {
         Assert.Equal(expected, child.ToRelativePath().RelativeTo(parent).ToString());
     }
-    
+
     [Theory]
     [InlineData("home/sewer/cat.png", "/home/sewer/cat.png", 1)]
     [InlineData("sewer/cat.png", "/home/sewer/cat.png", 2)]
@@ -68,7 +68,7 @@ public class UtilityTests
     {
         Assert.Equal(expected, path.ToRelativePath().DropFirst(directories).ToString());
     }
-    
+
     [Theory]
     [InlineData("/home/sewer/cat.png", 4)]
     public void DropFirst_TooLong(string path, int directories)

@@ -26,7 +26,7 @@ public class CommandLineConfigurator
         _provider = provider;
         _verbs = verbs.ToArray();
     }
-    
+
     /// <summary>
     /// Creates the main verb-less root command the application executes. 
     /// </summary>
@@ -39,13 +39,13 @@ public class CommandLineConfigurator
                 var found = _provider.GetServices<IRenderer>().FirstOrDefault(r => r.Name == x.Tokens.Single().Value);
                 if (found == null)
                     throw new Exception($"Invalid renderer {x.Tokens.Single()}");
-                
+
                 return found;
             });
-        
+
         root.AddOption(renderOption);
         root.AddOption(new Option<bool>("--noBanner"));
-        
+
         foreach (var verb in _verbs)
             root.Add(MakeCommand(verb.Type, verb.Run, verb.Definition));
 
@@ -58,11 +58,11 @@ public class CommandLineConfigurator
 
         foreach (var option in definition.Options)
             command.Add(option.GetOption(_provider));
-        
+
         command.Handler = new HandlerDelegate(_provider, verbType, verbHandler);
         return command;
     }
-    
+
     private class HandlerDelegate : ICommandHandler
     {
         // ReSharper disable once MemberHidesStaticFromOuterClass
@@ -76,7 +76,7 @@ public class CommandLineConfigurator
             _type = type;
             _delegate = inner;
         }
-        
+
         public int Invoke(InvocationContext context)
         {
             var configurator = _provider.GetRequiredService<Configurator>();
@@ -102,13 +102,13 @@ public record OptionDefinition<T>(string ShortOption, string LongOption, string 
     public override Option GetOption(IServiceProvider provider)
     {
         var converter = provider.GetService<IOptionParser<T>>();
-        
+
         if (converter == null)
             return new Option<T>(Aliases, description: Description);
 
         var opt = new Option<T>(Aliases, description: Description,
             parseArgument: x => converter.Parse(x.Tokens.Single().Value, this));
-        
+
         opt.AddCompletions(x => converter.GetOptions(x.WordToComplete));
         return opt;
     }

@@ -1,4 +1,4 @@
-﻿using System.IO.Abstractions;
+using System.IO.Abstractions;
 using System.Runtime.InteropServices;
 using GameFinder.Common;
 using GameFinder.RegistryUtils;
@@ -49,19 +49,19 @@ public static class Services
             services.AddSingleton<AHandler<OriginGame, string>>(_ => new OriginHandler());
         }
 #pragma warning restore CA1416
-        
+
         return services;
     }
 
-    private static void MaybeAddSteamHandler(IServiceCollection services, 
+    private static void MaybeAddSteamHandler(IServiceCollection services,
         bool registerConcreteLocators = true)
     {
         services.AddSingleton<IGameLocator, SteamLocator>();
-        
+
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
 #pragma warning disable CA1416
-            if (registerConcreteLocators) 
+            if (registerConcreteLocators)
                 services.AddSingleton<AHandler<SteamGame, int>, SteamHandler>(_ => new SteamHandler(new WindowsRegistry()));
 #pragma warning restore CA1416
             return;
@@ -72,14 +72,14 @@ public static class Services
             KnownFolders.HomeFolder.CombineUnchecked(".steam/debian-installation/".ToRelativePath()),
             //KnownFolders.HomeFolder.CombineUnchecked(".steam/steam/".ToRelativePath())
         };
-        
+
         var steamPath = searchPaths.FirstOrDefault(p => p.CombineChecked("steam.sh".ToRelativePath()).FileExists);
         if (steamPath == default) return;
-        
 
-        
-        if (registerConcreteLocators) 
-            services.AddSingleton<AHandler<SteamGame, int>, SteamHandler>(_ => 
+
+
+        if (registerConcreteLocators)
+            services.AddSingleton<AHandler<SteamGame, int>, SteamHandler>(_ =>
                 new SteamHandler(steamPath.ToString(), new FileSystem(), null));
     }
 }

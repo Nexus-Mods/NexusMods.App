@@ -12,7 +12,7 @@ public class ClientTests
     {
         _client = client;
     }
-    
+
     [Fact]
     public async Task CanGetGames()
     {

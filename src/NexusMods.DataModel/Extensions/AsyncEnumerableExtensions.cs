@@ -1,4 +1,4 @@
-﻿namespace NexusMods.DataModel.Extensions;
+namespace NexusMods.DataModel.Extensions;
 
 public static class AsyncEnumerableExtensions
 {
@@ -11,7 +11,7 @@ public static class AsyncEnumerableExtensions
         }
         return lst;
     }
-    
+
     public static async Task<T[]> ToArray<T>(this IAsyncEnumerable<T> coll)
     {
         return (await coll.ToList()).ToArray();

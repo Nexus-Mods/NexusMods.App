@@ -1,4 +1,4 @@
-﻿using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.JsonConverters;
 
@@ -7,15 +7,15 @@ namespace NexusMods.DataModel.Loadouts;
 [JsonName("NexusMods.DataModel.Loadout")]
 public record Loadout : Entity, IEmptyWithDataStore<Loadout>
 {
-    
+
     public required EntityDictionary<ModId, Mod> Mods { get; init; }
     public required LoadoutId LoadoutId { get; init; }
-    
+
     public required string Name { get; init; }
     public required GameInstallation Installation { get; init; }
     public required DateTime LastModified { get; init; }
     public required EntityLink<Loadout> PreviousVersion { get; init; }
-    
+
     public override EntityCategory Category => EntityCategory.Loadouts;
     public required string ChangeMessage { get; init; } = "";
 
@@ -38,7 +38,7 @@ public record Loadout : Entity, IEmptyWithDataStore<Loadout>
             Mods = Mods.Keep(modId, func)
         };
     }
-    
+
     public Loadout Add(Mod mod)
     {
         return this with

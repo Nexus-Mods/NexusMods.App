@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Interprocess;
 using NexusMods.Networking.NexusWebApi.Types;
@@ -119,7 +119,7 @@ public class OAuth
         // see https://www.rfc-editor.org/rfc/rfc7636#section-4.1
         var verifier = _idGen.UUIDv4().Replace("-", "").ToBase64();
         // see https://www.rfc-editor.org/rfc/rfc7636#section-4.2
-        using SHA256 sha256 = SHA256.Create();
+        using var sha256 = SHA256.Create();
         var challenge = sha256.ComputeHash(Encoding.UTF8.GetBytes(verifier)).ToBase64();
 
         // callback will be invoked if/when we heard back from the site

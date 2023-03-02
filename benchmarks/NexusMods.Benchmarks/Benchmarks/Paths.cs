@@ -1,4 +1,4 @@
-﻿using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Attributes;
 using NexusMods.Benchmarks.Interfaces;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
@@ -31,7 +31,7 @@ public class Paths : IBenchmark
 
     public IEnumerable<(string StringPath, AbsolutePath AbsolutePath)> AllPaths =>
         _paths.Select(p => (p, p.ToAbsolutePath()));
-    
+
     [ParamsSource(nameof(AllPaths))]
     public (string StringPath, AbsolutePath AbsolutePath) CurrentPath { get; set; }
 

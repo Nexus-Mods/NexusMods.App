@@ -11,7 +11,7 @@ public class GetFullPathTests
     {
         AssertResult(expected, directory, fileName);
     }
-    
+
     [Theory]
     [InlineData("C:/NMA/test.png", "", "C:/NMA/test.png")]
     [InlineData("/home/sewer/NMA/test.png", "", "/home/sewer/NMA/test.png")]
@@ -19,7 +19,7 @@ public class GetFullPathTests
     {
         AssertResult(expected, directory, fileName);
     }
-    
+
     [Theory]
     [InlineData("C:/NMA/test", "", "C:/NMA/test")]
     [InlineData("/home/sewer/NMA/test", "", "/home/sewer/NMA/test")]
@@ -27,7 +27,7 @@ public class GetFullPathTests
     {
         AssertResult(expected, directory, fileName);
     }
-    
+
     [Theory]
     [InlineData("C:/NMA/test", "C:/NMA/test", "")]
     [InlineData("/home/sewer/NMA/test", "/home/sewer/NMA/test", "")]

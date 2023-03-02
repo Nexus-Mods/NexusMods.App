@@ -1,4 +1,4 @@
-﻿namespace NexusMods.Networking.NexusWebApi.Types;
+namespace NexusMods.Networking.NexusWebApi.Types;
 
 /// <summary>
 /// Information about a logged in user

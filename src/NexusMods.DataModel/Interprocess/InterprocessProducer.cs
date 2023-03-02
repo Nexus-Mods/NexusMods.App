@@ -1,4 +1,4 @@
-﻿using Cloudtoid.Interprocess;
+using Cloudtoid.Interprocess;
 using Microsoft.Extensions.Logging;
 
 namespace NexusMods.DataModel.Interprocess;

@@ -1,4 +1,4 @@
-﻿using System.CommandLine.Builder;
+using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

@@ -12,16 +12,16 @@ public class EnumerateFiles : IBenchmark
     // Placeholder path that'll probably work for people using Windows.
     // Point this at your games' directory.
     public AbsolutePath FilePath { get; set; } = AbsolutePath.FromFullPath(Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.SystemX86))!.FullName);
-    
+
     // Note: Tests are written using 'foreach' to provide more accurate memory measurements
     //       ToArray leads to extra allocation.
-    
+
     [Benchmark]
     public AbsolutePath EnumerateFiles_New()
     {
         var paths = FilePath.EnumerateFiles();
         AbsolutePath result;
-        foreach (var path in paths) 
+        foreach (var path in paths)
             result = path;
 
         return result;
@@ -32,18 +32,18 @@ public class EnumerateFiles : IBenchmark
     {
         var paths = OriginalImplementation.EnumerateFiles(FilePath);
         AbsolutePath result;
-        foreach (var path in paths) 
+        foreach (var path in paths)
             result = path;
 
         return result;
     }
-    
+
     [Benchmark]
     public AbsolutePath EnumerateDirectories_New()
     {
         var paths = FilePath.EnumerateDirectories();
         AbsolutePath result;
-        foreach (var path in paths) 
+        foreach (var path in paths)
             result = path;
 
         return result;
@@ -54,18 +54,18 @@ public class EnumerateFiles : IBenchmark
     {
         var paths = OriginalImplementation.EnumerateDirectories(FilePath);
         AbsolutePath result;
-        foreach (var path in paths) 
+        foreach (var path in paths)
             result = path;
 
         return result;
     }
-    
+
     [Benchmark]
     public FileEntry? EnumerateFileEntries_New()
     {
         var entries = FilePath.EnumerateFileEntries();
         FileEntry? result = default;
-        foreach (var entry in entries) 
+        foreach (var entry in entries)
             result = entry;
 
         return result;
@@ -76,7 +76,7 @@ public class EnumerateFiles : IBenchmark
     {
         var entries = OriginalImplementation.EnumerateFileEntries(FilePath);
         FileEntry? result = default;
-        foreach (var entry in entries) 
+        foreach (var entry in entries)
             result = entry;
 
         return result;
@@ -97,12 +97,12 @@ public class EnumerateFiles : IBenchmark
                     })
                 .Select(file => file.ToAbsolutePath());
         }
-    
+
         public static IEnumerable<AbsolutePath> EnumerateDirectories(AbsolutePath path, bool recursive = true)
         {
-            if (!path.DirectoryExists()) 
+            if (!path.DirectoryExists())
                 return Array.Empty<AbsolutePath>();
-        
+
             return Directory.EnumerateDirectories(path.GetFullPath(), "*",
                     new EnumerationOptions()
                     {
@@ -112,7 +112,7 @@ public class EnumerateFiles : IBenchmark
                     })
                 .Select(p => p.ToAbsolutePath());
         }
-    
+
         public static IEnumerable<FileEntry> EnumerateFileEntries(AbsolutePath path, string pattern = "*",
             bool recursive = true)
         {
@@ -128,9 +128,9 @@ public class EnumerateFiles : IBenchmark
                 {
                     var path = file.ToAbsolutePath();
                     var info = path.FileInfo;
-                    return new FileEntry(Path: path, Size: Size.From(info.Length), LastModified:info.LastWriteTimeUtc);
+                    return new FileEntry(Path: path, Size: Size.From(info.Length), LastModified: info.LastWriteTimeUtc);
                 });
-        } 
+        }
     }
     #endregion
 }

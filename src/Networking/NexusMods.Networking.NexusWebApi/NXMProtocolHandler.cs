@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using NexusMods.CLI.Types;
 using NexusMods.DataModel.Interprocess;
 using NexusMods.Networking.NexusWebApi.Types;

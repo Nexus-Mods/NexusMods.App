@@ -5,7 +5,7 @@ using NexusMods.Paths.Utilities;
 namespace NexusMods.Paths;
 
 /// <summary>
-/// A path that represents a partial path to a file or directory.  
+/// A path that represents a partial path to a file or directory.
 /// </summary>
 public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<RelativePath>
 {
@@ -13,7 +13,7 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
     /// Gets the comparer used for sorting.
     /// </summary>
     public static readonly RelativePathComparer Comparer = new();
-    
+
     /// <summary>
     /// Represents an empty path.
     /// </summary>
@@ -61,7 +61,7 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
     /// </summary>
     /// <param name="ext">The extension to add.</param>
     public RelativePath WithExtension(Extension ext) => new RelativePath(Path + ext);
-    
+
     /// <summary>
     /// Appends another path to an existing path.
     /// </summary>
@@ -71,7 +71,7 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
     {
         return new RelativePath(string.Concat(Path, DetermineDirectorySeparatorString(), other.Path));
     }
-    
+
     /// <summary>
     /// Returns true if the relative path starts with a given string.
     /// </summary>
@@ -79,17 +79,17 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
     {
         // Note: We assume equality to be separator and case insensitive
         //       therefore this property should transfer over to contains checks.
-        Span<char> thisCopy = Path.Length <= 512 ? stackalloc char[Path.Length] : GC.AllocateUninitializedArray<char>(Path.Length);
+        var thisCopy = Path.Length <= 512 ? stackalloc char[Path.Length] : GC.AllocateUninitializedArray<char>(Path.Length);
         Path.CopyTo(thisCopy);
         thisCopy.NormalizeStringCaseAndPathSeparator();
-        
-        Span<char> otherCopy = other.Length <= 512 ? stackalloc char[other.Length] : GC.AllocateUninitializedArray<char>(other.Length);
+
+        var otherCopy = other.Length <= 512 ? stackalloc char[other.Length] : GC.AllocateUninitializedArray<char>(other.Length);
         other.CopyTo(otherCopy);
         otherCopy.NormalizeStringCaseAndPathSeparator();
-        
+
         return thisCopy.StartsWith(otherCopy);
     }
-    
+
     /// <summary>
     /// Returns true if this path is a child of this path.
     /// </summary>
@@ -99,16 +99,16 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
     {
         // Note: We assume equality to be separator and case insensitive
         //       therefore this property should transfer over to contains checks.
-        Span<char> thisCopy = Path.Length <= 512 ? stackalloc char[Path.Length] : GC.AllocateUninitializedArray<char>(Path.Length);
+        var thisCopy = Path.Length <= 512 ? stackalloc char[Path.Length] : GC.AllocateUninitializedArray<char>(Path.Length);
         Path.CopyTo(thisCopy);
         thisCopy.NormalizeStringCaseAndPathSeparator();
-        
-        Span<char> otherCopy = other.Path.Length <= 512 ? stackalloc char[other.Path.Length] : GC.AllocateUninitializedArray<char>(other.Path.Length);
+
+        var otherCopy = other.Path.Length <= 512 ? stackalloc char[other.Path.Length] : GC.AllocateUninitializedArray<char>(other.Path.Length);
         other.Path.CopyTo(otherCopy);
         otherCopy.NormalizeStringCaseAndPathSeparator();
-        
+
         if (!thisCopy.StartsWith(otherCopy)) return false;
-        
+
         // If thisCopy is bigger make sure the next character is a path separator
         // So we don't assume that /foo/barbaz is in /foo/bar
         if (thisCopy.Length > otherCopy.Length)
@@ -126,13 +126,13 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
     public RelativePath DropFirst(int numDirectories = 1)
     {
         // Normalize first
-        Span<char> thisCopy = Path.Length <= 512 ? stackalloc char[Path.Length] : GC.AllocateUninitializedArray<char>(Path.Length);
+        var thisCopy = Path.Length <= 512 ? stackalloc char[Path.Length] : GC.AllocateUninitializedArray<char>(Path.Length);
         Path.CopyTo(thisCopy);
-        
+
         // Now count in loop.
         var separatorChar = DetermineDirectorySeparatorChar();
-        int currentIndex = 0;
-        for (int x = 0; x < numDirectories; x++)
+        var currentIndex = 0;
+        for (var x = 0; x < numDirectories; x++)
         {
             var foundIndex = thisCopy.SliceFast(currentIndex).IndexOf(separatorChar);
             currentIndex += foundIndex;
@@ -142,7 +142,7 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
                 ThrowHelpers.PathException($"Cannot drop first {numDirectories} directories in {Path}.");
                 return default;
             }
-            
+
             if (x == numDirectories - 1)
                 break;
 
@@ -159,7 +159,7 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
     ///    Returns forward slash if found before a backslash, else backslash.
     /// </returns>
     public string DetermineDirectorySeparatorString() => IsDirectorySeparatorFrontSlash() ? "/" : "\\";
-    
+
     /// <summary>
     /// Determines the directory separator character used in this relative path between '\' and '/'.
     /// </summary>
@@ -184,7 +184,7 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
 
         return false;
     }
-    
+
     /// <summary>
     /// Returns a path relative to the sub-path specified.
     /// </summary>
@@ -194,14 +194,14 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
         var other = basePath.Path;
         if (other.Length == 0)
             return this;
-        
+
         // Note: We assume equality to be separator and case insensitive
         //       therefore this property should transfer over to contains checks.
-        Span<char> thisCopy = Path.Length <= 512 ? stackalloc char[Path.Length] : GC.AllocateUninitializedArray<char>(Path.Length);
+        var thisCopy = Path.Length <= 512 ? stackalloc char[Path.Length] : GC.AllocateUninitializedArray<char>(Path.Length);
         Path.CopyTo(thisCopy);
         thisCopy.NormalizeStringCaseAndPathSeparator();
-        
-        Span<char> otherCopy = other.Length <= 512 ? stackalloc char[other.Length] : GC.AllocateUninitializedArray<char>(other.Length);
+
+        var otherCopy = other.Length <= 512 ? stackalloc char[other.Length] : GC.AllocateUninitializedArray<char>(other.Length);
         other.CopyTo(otherCopy);
         otherCopy.NormalizeStringCaseAndPathSeparator();
 
@@ -216,7 +216,7 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
 
     /// <inheritdoc />
     public override string ToString() => Path;
-    
+
     #region Equals & GetHashCode
     /// <inheritdoc />
     public bool Equals(RelativePath other)
@@ -234,25 +234,25 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
     [SkipLocalsInit]
     public override int GetHashCode()
     {
-        Span<char> thisCopy = Path.Length <= 512 ? stackalloc char[Path.Length] : GC.AllocateUninitializedArray<char>(Path.Length);
+        var thisCopy = Path.Length <= 512 ? stackalloc char[Path.Length] : GC.AllocateUninitializedArray<char>(Path.Length);
         Path.CopyTo(thisCopy);
         thisCopy.NormalizeStringCaseAndPathSeparator();
         return ((ReadOnlySpan<char>)thisCopy).GetNonRandomizedHashCode32();
     }
     #endregion
-    
+
     /// <summary/>
     public static implicit operator string(RelativePath d) => d.Path;
-    
+
     /// <summary/>
     public static implicit operator ReadOnlySpan<char>(RelativePath d) => d.Path;
-    
+
     /// <summary/>
     public static implicit operator RelativePath(string b) => new(b);
-    
+
     /// <summary/>
     public static bool operator ==(RelativePath lhs, RelativePath rhs) => lhs.Equals(rhs);
-    
+
     /// <summary/>
     public static bool operator !=(RelativePath lhs, RelativePath rhs) => !(lhs == rhs);
 
@@ -266,7 +266,7 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
         var bCopy = other.Path.Length <= 512 ? stackalloc char[other.Path.Length] : GC.AllocateUninitializedArray<char>(other.Path.Length);
         other.Path.CopyTo(bCopy);
         bCopy.NormalizeStringCaseAndPathSeparator();
-        
+
         return MemoryExtensions.CompareTo(aCopy, bCopy, StringComparison.Ordinal);
     }
 }

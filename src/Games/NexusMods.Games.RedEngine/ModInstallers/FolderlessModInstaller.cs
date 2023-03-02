@@ -1,4 +1,4 @@
-﻿using NexusMods.Common;
+using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Games;
@@ -17,14 +17,14 @@ namespace NexusMods.Games.RedEngine.ModInstallers;
 /// </summary>
 public class FolderlessModInstaller : IModInstaller
 {
-    
+
     public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
         if (!installation.Is<Cyberpunk2077>())
             return Common.Priority.None;
-        
+
         if (!installation.Is<Cyberpunk2077>()) return Common.Priority.None;
-        
+
         if (files.All(f => Helpers.IgnoreExtensions.Contains(f.Key.Extension) ||
                            f.Key.Extension == KnownExtensions.Archive))
             return Common.Priority.Low;
@@ -37,7 +37,7 @@ public class FolderlessModInstaller : IModInstaller
         {
             if (Helpers.IgnoreExtensions.Contains(path.Extension))
                 continue;
-            
+
             yield return new FromArchive
             {
                 Id = ModFileId.New(),

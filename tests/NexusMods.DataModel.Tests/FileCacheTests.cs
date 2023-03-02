@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
@@ -27,7 +27,7 @@ public class FileCacheTests
         await using var strm = await _cache.Read(Hash.From(0xA52B286A3E7F4D91));
         strm.Should().NotBeNull();
         (await strm!.ReadAllTextAsync()).Should().Be("Hello World!");
-        
+
         await using var path = _fileManager.CreateFile();
         await _cache.CopyTo(Hash.From(0xA52B286A3E7F4D91), path.Path);
         (await path.Path.ReadAllTextAsync()).Should().Be("Hello World!");

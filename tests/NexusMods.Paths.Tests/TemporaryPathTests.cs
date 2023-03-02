@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
 
@@ -12,7 +12,7 @@ public class TemporaryPathTests : IDisposable
     {
         _manager = new TemporaryFileManager(KnownFolders.CurrentDirectory.CombineUnchecked($"baseTmp{Path.DirectorySeparatorChar}{Guid.NewGuid().ToString()}"));
     }
-    
+
     [Fact]
     public async Task FilesAreInBaseDirectory()
     {
@@ -26,12 +26,12 @@ public class TemporaryPathTests : IDisposable
         var deletedPath = _manager.CreateFile();
         await deletedPath.Path.WriteAllTextAsync("File A");
 
-        var notDeletedPath = _manager.CreateFile(deleteOnDispose:false);
+        var notDeletedPath = _manager.CreateFile(deleteOnDispose: false);
         await notDeletedPath.Path.WriteAllTextAsync("File B");
 
         deletedPath.Path.FileExists.Should().BeTrue();
         notDeletedPath.Path.FileExists.Should().BeTrue();
-        
+
         await deletedPath.DisposeAsync();
         await notDeletedPath.DisposeAsync();
 

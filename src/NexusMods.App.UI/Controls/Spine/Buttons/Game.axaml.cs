@@ -1,4 +1,4 @@
-﻿using Avalonia.Controls;
+using Avalonia.Controls;
 using Avalonia.Controls.Mixins;
 using Avalonia.ReactiveUI;
 using Avalonia.VisualTree;

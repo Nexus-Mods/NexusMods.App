@@ -24,7 +24,7 @@ public class ModInstallerTests
     private readonly ArchiveManager _archiveManager;
     private readonly ILogger<ModInstallerTests> _logger;
 
-    public ModInstallerTests(ILogger<ModInstallerTests> logger, LoadoutManager manager, 
+    public ModInstallerTests(ILogger<ModInstallerTests> logger, LoadoutManager manager,
         Cyberpunk2077 game, TemporaryFileManager temporaryFileManager,
         Client nexusClient, IHttpDownloader httpDownloader,
         ArchiveManager archiveManager)
@@ -37,7 +37,7 @@ public class ModInstallerTests
         _nexusClient = nexusClient;
         _httpDownloader = httpDownloader;
     }
-    
+
     [Theory]
     [MemberData(nameof(TestFiles))]
     public async Task CanCreateLoadout(string name, ModId modId, FileId fileId, Hash hash, int fileCount)
@@ -57,10 +57,10 @@ public class ModInstallerTests
     {
         if (_archiveManager.HaveArchive(hash))
             return _archiveManager.PathFor(hash);
-            
+
         _logger.LogInformation("Downloading {ModId} {FileId} {Hash}", modId, fileId, hash);
         var uris = await _nexusClient.DownloadLinks(GameDomain.Cyberpunk2077, modId, fileId);
-        
+
         var file = _temporaryFileManager.CreateFile();
         var downloadHash = await _httpDownloader.Download(uris.Data.Select(u => new HttpRequestMessage(HttpMethod.Get, u.Uri)).ToArray(), file);
         downloadHash.Should().Be(hash);

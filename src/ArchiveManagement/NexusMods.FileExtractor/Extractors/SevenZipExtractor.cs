@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using CliWrap;
 using CliWrap.Exceptions;
 using Microsoft.Extensions.Logging;
@@ -25,7 +25,7 @@ public class SevenZipExtractor : IExtractor
 {
     private readonly TemporaryFileManager _manager;
     private readonly ILogger<SevenZipExtractor> _logger;
-    private readonly IResource<IExtractor,Size> _limiter;
+    private readonly IResource<IExtractor, Size> _limiter;
 
     private static readonly FileType[] SupportedTypesCached = { FileType._7Z, FileType.RAR_NEW, FileType.RAR_OLD, FileType.ZIP };
     private static readonly Extension[] SupportedExtensionsCached = { KnownExtensions._7z, KnownExtensions.Rar, KnownExtensions.Zip, KnownExtensions._7zip };
@@ -63,7 +63,7 @@ public class SevenZipExtractor : IExtractor
         using var job = await _limiter.Begin($"[${nameof(ForEachEntryAsync)}] Extracting {sFn.Name.FileName}", sFn.Size, token);
         await using var dest = _manager.CreateFolder();
         await ExtractAllAsync_Impl(sFn, dest, token, job);
-        
+
         var results = await dest.Path.EnumerateFiles()
             .SelectAsync(async f =>
             {
@@ -76,7 +76,7 @@ public class SevenZipExtractor : IExtractor
             })
             .Where(d => d.Key != default)
             .ToDictionary();
-        
+
         return results;
     }
 
@@ -85,17 +85,17 @@ public class SevenZipExtractor : IExtractor
     {
         // Yes this is O(n*m) but the search space (should) be very small. 
         // 'signatures' should usually be only 1 element :)
-        if ((from supported in SupportedSignatures 
-                from sig in signatures 
-                where supported == sig 
-                select supported).Any())
+        if ((from supported in SupportedSignatures
+             from sig in signatures
+             where supported == sig
+             select supported).Any())
         {
             return Priority.Low;
         }
 
         return Priority.None;
     }
-    
+
     private async Task ExtractAllAsync_Impl(IStreamFactory sFn, AbsolutePath destination, CancellationToken token, IJob<IExtractor, Size> job)
     {
         TemporaryPath? spoolFile = null;
@@ -155,13 +155,13 @@ public class SevenZipExtractor : IExtractor
             await spoolFile.DisposeIfNotNullAsync();
         }
     }
-    
+
     private static string GetExeLocation()
     {
         var initialPath = "";
         if (RuntimeInformation.ProcessArchitecture != Architecture.X64)
             throw new NotSupportedException($"{nameof(NexusMods.FileExtractor)}'s {nameof(SevenZipExtractor)} only supports x64 processors.");
-        
+
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             initialPath = @"runtimes\win-x64\native\7z.exe";
         else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))

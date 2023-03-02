@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using NexusMods.Networking.NexusWebApi.DTOs.Interfaces;
 using NexusMods.Networking.NexusWebApi.Types;
@@ -21,7 +21,7 @@ public class ModUpdate : IJsonArraySerializable<ModUpdate>
     /// </summary>
     [JsonPropertyName("mod_id")]
     public ulong _ModId { get; set; }
-    
+
     /// <summary>
     /// An individual mod ID that is unique for this game.
     /// </summary>
@@ -37,12 +37,12 @@ public class ModUpdate : IJsonArraySerializable<ModUpdate>
     /// </remarks>
     [JsonPropertyName("LatestFileUpdated")]
     public long LatestFileUpdated { get; set; }
-    
+
     /// <summary>
     /// The last time a file on the mod page was updated.
     /// </summary>
     public DateTime LatestFileUpdatedUtc => DateTimeOffset.FromUnixTimeSeconds(LatestFileUpdated).UtcDateTime;
-    
+
     /// <summary>
     /// The last time any change was made to the mod page.
     /// </summary>
@@ -51,7 +51,7 @@ public class ModUpdate : IJsonArraySerializable<ModUpdate>
     /// </remarks>
     [JsonPropertyName("LatestModActivity")]
     public long LatestModActivity { get; set; }
-    
+
     /// <summary>
     /// The last time any change was made to the mod page.
     /// </summary>

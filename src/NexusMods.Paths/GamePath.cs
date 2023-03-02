@@ -1,4 +1,4 @@
-﻿using NexusMods.Paths.Extensions;
+using NexusMods.Paths.Extensions;
 
 namespace NexusMods.Paths;
 
@@ -11,12 +11,12 @@ public struct GamePath : IPath, IEquatable<GamePath>
     /// The path to this instance.
     /// </summary>
     public RelativePath Path { get; } = RelativePath.Empty;
-    
+
     /// <summary>
     /// Type of folder stored in this instance.
     /// </summary>
     public GameFolderType Type { get; }
-    
+
     /// <inheritdoc />
     public Extension Extension => Path.Extension;
 
@@ -31,7 +31,7 @@ public struct GamePath : IPath, IEquatable<GamePath>
         Type = type;
         Path = path;
     }
-    
+
     /// <summary/>
     /// <param name="type">Type of folder contained in this path.</param>
     /// <param name="path">The path to the item.</param>
@@ -73,17 +73,17 @@ public enum GameFolderType : byte
     /// Stores the path for the game.
     /// </summary>
     Game = 0,
-    
+
     /// <summary>
     /// Path used to store the save data of a game.
     /// </summary>
     Saves,
-    
+
     /// <summary>
     /// Path used to store player settings/preferences.
     /// </summary>
     Preferences,
-    
+
     /// <summary>
     /// Stores other application data [sometimes including save data].
     /// </summary>

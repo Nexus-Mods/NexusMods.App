@@ -1,5 +1,4 @@
-﻿using System.Buffers.Binary;
-using System.Numerics;
+using System.Buffers.Binary;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -11,9 +10,9 @@ public interface Id
 {
     public int SpanSize { get; }
     public void ToSpan(Span<byte> span);
-    
+
     public EntityCategory Category { get; }
-    public string SpanHex 
+    public string SpanHex
     {
         get
         {
@@ -22,8 +21,8 @@ public interface Id
             return Convert.ToHexString(span);
         }
     }
-    
-    public string TaggedSpanHex 
+
+    public string TaggedSpanHex
     {
         get
         {
@@ -36,7 +35,7 @@ public interface Id
     public static Id FromTaggedSpan(ReadOnlySpan<byte> span)
     {
         var tag = (EntityCategory)span[0];
-        
+
         switch (span.Length)
         {
             case 1:
@@ -52,7 +51,7 @@ public interface Id
         span[1..].CopyTo(mem.Span);
         return new IdVariableLength(tag, mem);
     }
-    
+
     public static Id FromSpan(EntityCategory category, ReadOnlySpan<byte> span)
     {
         switch (span.Length)
@@ -78,7 +77,7 @@ public interface Id
 
     bool IsPrefixedBy(Id prefix)
     {
-        if (prefix.SpanSize > SpanSize) 
+        if (prefix.SpanSize > SpanSize)
             return false;
         Span<byte> ourSpan = stackalloc byte[SpanSize + 1];
         ToTaggedSpan(ourSpan);
@@ -145,7 +144,7 @@ public class RootId : AId
     {
         _type = type;
     }
-    
+
     public override bool Equals(Id? other)
     {
         if (other is RootId id)
@@ -174,7 +173,7 @@ public class TwoId64 : AId
         _a = a;
         _b = b;
     }
-    
+
     public override bool Equals(Id? other)
     {
         if (other is TwoId64 id)
@@ -195,7 +194,7 @@ public class TwoId64 : AId
 public class IdEmpty : Id
 {
     public EntityCategory Category => 0;
-    
+
     public bool Equals(Id? other)
     {
         return other is IdEmpty;
@@ -218,7 +217,7 @@ public class IdVariableLength : AId
         _category = category;
         _data = data;
     }
-    
+
     /// <summary>
     /// Creates a new id for a temporary entity with the given string id
     /// </summary>
@@ -228,8 +227,8 @@ public class IdVariableLength : AId
         _category = entityCategory;
         _data = Encoding.UTF8.GetBytes(data);
     }
-    
-    
+
+
     public override bool Equals(Id? other)
     {
         if (other == null || other.SpanSize != _data.Length) return false;
@@ -278,17 +277,17 @@ public class Id64 : AId
 }
 
 public class IdJsonConverter : JsonConverter<Id>
-{ 
+{
     public override Id Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         var str = reader.GetString()!;
         var spanSize = (int)Math.Ceiling((double)str.Length / 4) * 3;
-        Span<byte> span = stackalloc byte[spanSize]; 
+        Span<byte> span = stackalloc byte[spanSize];
         Convert.TryFromBase64String(str, span, out var _);
 
         return Id.FromTaggedSpan(span);
     }
-    
+
     public override void Write(Utf8JsonWriter writer, Id value, JsonSerializerOptions options)
     {
         Span<byte> span = stackalloc byte[value.SpanSize + 1];

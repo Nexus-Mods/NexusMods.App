@@ -18,29 +18,29 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         {
             this.OneWayBind(ViewModel, vm => vm.Spine, v => v.Spine.ViewModel)
                 .DisposeWith(disposables);
-            
+
             this.OneWayBind(ViewModel, vm => vm.RightContent, v => v.RightContent.ViewModel)
                 .DisposeWith(disposables);
-            
+
             this.OneWayBind(ViewModel, vm => vm.TopBarViewModel, v => v.TopBar.ViewModel)
                 .DisposeWith(disposables);
 
             ViewModel.WhenAnyValue(v => v.RightContent)
                 .Subscribe(_ => { })
                 .DisposeWith(disposables);
-            
+
             this.WhenAnyValue(view => view.ViewModel!.TopBarViewModel.CloseCommand.IsExecuting)
                 .SelectMany(e => e)
                 .Where(e => e)
                 .Subscribe(_ => Close())
                 .DisposeWith(disposables);
-            
+
             this.WhenAnyValue(view => view.ViewModel!.TopBarViewModel.MinimizeCommand.IsExecuting)
                 .SelectMany(e => e)
                 .Where(e => e)
                 .Subscribe(_ => WindowState = WindowState.Minimized)
                 .DisposeWith(disposables);
-            
+
             this.WhenAnyValue(view => view.ViewModel!.TopBarViewModel.MaximizeCommand.IsExecuting)
                 .SelectMany(e => e)
                 .Where(e => e)

@@ -1,4 +1,4 @@
-﻿using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Attributes;
 using NexusMods.Benchmarks.Interfaces;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Sorting;
@@ -11,7 +11,7 @@ namespace NexusMods.Benchmarks.Benchmarks;
 public class Sorting : IBenchmark
 {
     private List<Item> _rules;
-    
+
     [Params(100, 1000, 2000, 5000, 10000)]
     public int NumItems { get; set; }
 
@@ -26,15 +26,18 @@ public class Sorting : IBenchmark
         {
             if (idx == 0)
             {
-                rules.Add(new Item {Id = n, Rules = new() {new First<Item, string>()}});
+                rules.Add(new Item { Id = n, Rules = new() { new First<Item, string>() } });
             }
             else
             {
-                rules.Add(new Item {Id = n, Rules = new()
+                rules.Add(new Item
+                {
+                    Id = n, Rules = new()
                 {
                     new First<Item, string>(),
                     new After<Item, string>(letters.ElementAt(idx - 1))
-                }});
+                }
+                });
             }
         }
 
@@ -78,7 +81,7 @@ public class Sorting : IBenchmark
 
         return rules;
     }
-    
+
     public class Item : IHasEntityId<string>
     {
         public string Id { get; init; } = string.Empty;

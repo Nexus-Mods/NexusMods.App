@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.CLI.OptionParsers;
 using NexusMods.CLI.Verbs;
 using NexusMods.Common;
@@ -50,10 +50,10 @@ public static class Services
             .AddVerb<ProtocolInvocation>()
             .AddVerb<Rename>()
             .AddVerb<RunTool>();
-        
+
         services.AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ => new Resource<IExtractor, Size>("File Extraction"));
         services.AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(_ => new Resource<FileContentsCache, Size>("File Analysis"));
         return services;
     }
-    
+
 }

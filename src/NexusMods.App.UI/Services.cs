@@ -1,4 +1,4 @@
-﻿
+
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.Spine.Buttons;
@@ -22,7 +22,7 @@ public static class Services
             .AddTransient<AddButtonViewModel>()
             .AddTransient<FoundGamesViewModel>()
             .AddTransient<TopBarViewModel>()
-            
+
             // Views
             .AddView<Home, HomeButtonViewModel>()
             .AddView<Add, AddButtonViewModel>()
@@ -30,10 +30,10 @@ public static class Services
             .AddView<FoundGamesView, FoundGamesViewModel>()
             .AddView<Game, GameViewModel>()
             .AddView<TopBarView, ITopBarViewModel>()
-            
+
             // Other
             .AddSingleton<InjectedViewLocator>()
             .AddSingleton<App>();
     }
-    
+
 }

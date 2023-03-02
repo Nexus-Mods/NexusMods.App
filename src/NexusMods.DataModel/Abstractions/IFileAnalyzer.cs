@@ -1,4 +1,4 @@
-﻿using NexusMods.FileExtractor.FileSignatures;
+using NexusMods.FileExtractor.FileSignatures;
 
 namespace NexusMods.DataModel.Abstractions;
 

@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.CLI;
 using NexusMods.CLI.OptionParsers;
 using NexusMods.CLI.Types;
@@ -26,7 +26,8 @@ public static class Services
             collection
                 .AddAllSingleton<IHttpMessageFactory, ApiKeyMessageFactory>()
                 .AddSingleton<IAuthenticatingMessageFactory, ApiKeyMessageFactory>();
-        } else
+        }
+        else
         {
             collection
                 .AddAllSingleton<IHttpMessageFactory, OAuth2MessageFactory>()
@@ -46,7 +47,7 @@ public static class Services
             .AddVerb<DownloadLinks>()
             .AddVerb<NexusLogin>()
             .AddVerb<NexusLogout>()
-            
+
             .AddSingleton<IOptionParser<CDNName>, StringOptionParser<CDNName>>()
             .AddSingleton<IOptionParser<ModId>, ULongOptionParser<ModId>>()
             .AddSingleton<IOptionParser<FileId>, ULongOptionParser<FileId>>()

@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Hashing.xxHash64;
@@ -11,7 +11,7 @@ public class FileHashCacheTests : ADataModelTest<FileHashCacheTests>
     public FileHashCacheTests(IServiceProvider provider) : base(provider)
     {
     }
-    
+
     [Fact]
     public async Task CanGetHashOfSingleFile()
     {

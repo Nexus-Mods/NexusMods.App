@@ -24,7 +24,7 @@ internal static class BoolExtensions
         // remove unwanted stack spills if the caller is using constant arguments. This is
         // because taking the address of an argument can interfere with some of the flow
         // analysis executed by the JIT, which can in some cases block constant propagation.
-        bool copy = flag;
+        var copy = flag;
 
         return *(byte*)&copy;
     }

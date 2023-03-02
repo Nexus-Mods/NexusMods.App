@@ -1,4 +1,4 @@
-﻿using NexusMods.CLI.DataOutputs;
+using NexusMods.CLI.DataOutputs;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.ModFiles;
 
@@ -16,20 +16,20 @@ public class ListModContents : AVerb<LoadoutMarker, string>
             new OptionDefinition<LoadoutMarker>( "l", "loadout", "The loadout instance that contains the mod"),
             new OptionDefinition<string>("n", "modName", "The name of the mod to list")
         });
-    
+
     public async Task<int> Run(LoadoutMarker loadout, string modName, CancellationToken token)
     {
         var rows = new List<object[]>();
         var mod = loadout.Value.Mods.Values.First(m => m.Name == modName);
         foreach (var file in mod.Files.Values)
         {
-            if (file is FromArchive fa) 
-                rows.Add(new object[]{fa.To, fa.From});
+            if (file is FromArchive fa)
+                rows.Add(new object[] { fa.To, fa.From });
             else if (file is GameFile gf)
-                rows.Add(new object[]{gf.To, gf.Installation});
+                rows.Add(new object[] { gf.To, gf.Installation });
         }
 
-        await _renderer.Render(new Table(new[] { "Name", "Source"}, rows));
+        await _renderer.Render(new Table(new[] { "Name", "Source" }, rows));
         return 0;
     }
 }

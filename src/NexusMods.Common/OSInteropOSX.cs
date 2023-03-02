@@ -1,4 +1,4 @@
-﻿namespace NexusMods.Common;
+namespace NexusMods.Common;
 
 /// <summary>
 /// OS interoperation for MacOS
@@ -7,7 +7,7 @@
 public class OSInteropOSX : IOSInterop
 {
     private readonly IProcessFactory _processFactory;
-    
+
     /// <summary>
     /// constructor
     /// </summary>

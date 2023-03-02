@@ -16,7 +16,7 @@ public class UtilityTests
         var childPath = AbsolutePath.FromFullPath(child.NormalizeSeparator());
         Assert.True(childPath.InFolder(parentPath));
     }
-    
+
     [Theory]
     [InlineData("Desktop/Cat.png", "/home/sewer", "/home/sewer/Desktop/Cat.png")]
     [InlineData("/home/sewer/Desktop/Cat.png", "", "/home/sewer/Desktop/Cat.png")]
@@ -27,7 +27,7 @@ public class UtilityTests
         expected = expected.NormalizeSeparator();
         Assert.Equal(expected, child.ToAbsolutePath().RelativeTo(parent.ToAbsolutePath()).ToString());
     }
-    
+
     [Theory]
     [InlineData("nya", "nya/neko/nyan/nyanya")]
     public void TopParent(string expected, string item)

@@ -1,4 +1,4 @@
-﻿using Avalonia.Threading;
+using Avalonia.Threading;
 
 namespace NexusMods.UI.Tests;
 
@@ -24,7 +24,7 @@ public class AvaloniaApp
         {
             IsBackground = true
         };
-        
+
         thread.Start();
         SynchronizationContext.SetSynchronizationContext(tcs.Task.Result);
     }

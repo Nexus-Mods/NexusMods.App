@@ -1,4 +1,4 @@
-﻿using NexusMods.Common;
+using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Games;
@@ -17,7 +17,7 @@ public class DarkestDungeonModInstaller : IModInstaller
     {
         _store = store;
     }
-    
+
     private readonly RelativePath ModFilesTxt = "modfiles.txt".ToRelativePath();
     private readonly RelativePath ModFolder = "mods".ToRelativePath();
     private readonly IDataStore _store;
@@ -26,8 +26,8 @@ public class DarkestDungeonModInstaller : IModInstaller
     {
         if (installation.Game is not DarkestDungeon) return Common.Priority.None;
 
-        return files.Keys.Any(f => f.FileName == ModFilesTxt) 
-            ? Common.Priority.Normal 
+        return files.Keys.Any(f => f.FileName == ModFilesTxt)
+            ? Common.Priority.Normal
             : Common.Priority.None;
     }
 
@@ -36,7 +36,8 @@ public class DarkestDungeonModInstaller : IModInstaller
         var modFolder = files.Keys.First(m => m.FileName == ModFilesTxt).Parent;
         return files.Where(f => f.Key.InFolder(modFolder))
             .Select(f =>
-            new FromArchive{
+            new FromArchive
+            {
                 Id = ModFileId.New(),
                 To = new GamePath(GameFolderType.Game, ModFolder.Join(f.Key)),
                 From = new HashRelativePath(srcArchive, f.Key),

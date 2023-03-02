@@ -12,9 +12,9 @@ public readonly struct HashRelativePath : IPath, IEquatable<HashRelativePath>, I
     public readonly RelativePath[] Parts;
 
 
-     public Extension Extension => Parts.Length > 0
-        ? Parts[^1].Extension
-        : throw new InvalidOperationException("No path in HashRelativePath");
+    public Extension Extension => Parts.Length > 0
+       ? Parts[^1].Extension
+       : throw new InvalidOperationException("No path in HashRelativePath");
 
     public RelativePath FileName => Parts.Length > 0
         ? Parts[^1].FileName
@@ -76,7 +76,7 @@ public class HashRelativePathConverter : JsonConverter<HashRelativePath>
 
         var hash = reader.GetUInt64();
         reader.Read();
-        
+
         var lst = new List<RelativePath>();
         while (reader.TokenType != JsonTokenType.EndArray)
         {

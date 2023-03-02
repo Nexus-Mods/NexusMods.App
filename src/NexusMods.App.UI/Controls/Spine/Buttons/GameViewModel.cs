@@ -1,4 +1,4 @@
-﻿using System.Windows.Input;
+using System.Windows.Input;
 using Avalonia.Media;
 using ReactiveUI.Fody.Helpers;
 
@@ -8,16 +8,16 @@ public class GameViewModel : SpineButtonViewModel
 {
     [Reactive]
     public bool IsActive { get; set; }
-    
+
     [Reactive]
     public string Name { get; set; }
-    
+
     [Reactive]
     public IImage Image { get; set; }
-    
+
     [Reactive]
     public ICommand Click { get; set; }
-    
+
     [Reactive]
     public object Tag { get; set; }
 }

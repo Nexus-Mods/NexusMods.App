@@ -19,20 +19,20 @@ public class Startup
     {
         container.AddUniversalGameLocator<SkyrimSpecialEdition>(new Version("1.6.659.0"));
         container.AddBethesdaGameStudios();
-        
+
         container.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug));
         container.AddDataModel(KnownFolders.EntryFolder.CombineUnchecked("DataModel").CombineUnchecked(Guid.NewGuid().ToString()));
-        container.AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(s =>
+        container.AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(_ =>
             new Resource<FileContentsCache, Size>("File Analysis"));
-        container.AddAllSingleton<IResource, IResource<IExtractor, Size>>(s =>
+        container.AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ =>
             new Resource<IExtractor, Size>("File Extraction"));
         container.AddFileExtractors();
 
-        container.AddSingleton<TemporaryFileManager>(s => 
+        container.AddSingleton<TemporaryFileManager>(_ =>
             new TemporaryFileManager(KnownFolders.EntryFolder.CombineUnchecked("tempFiles")));
     }
-    
+
     public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>
-        loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(accessor, delegate { return true;}));
+        loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(accessor, delegate { return true; }));
 }
 

@@ -1,4 +1,4 @@
-﻿namespace NexusMods.DataModel.Games;
+namespace NexusMods.DataModel.Games;
 
 /// <summary>
 /// A service capable of finding the path to the game's installation directory.

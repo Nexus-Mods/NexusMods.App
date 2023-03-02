@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.CLI.Renderers;
 using NexusMods.App.UI;
 using NexusMods.CLI;
@@ -44,10 +44,10 @@ public static class Services
             .AddSingleton<HttpClient>()
             .AddCommon();
 
-        
+
         if (addStandardGameLocators)
             services.AddStandardGameLocators();
-        
+
         return services;
     }
 }

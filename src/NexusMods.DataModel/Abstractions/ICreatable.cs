@@ -1,4 +1,4 @@
-﻿namespace NexusMods.DataModel.Abstractions;
+namespace NexusMods.DataModel.Abstractions;
 
 /// <summary>
 /// Interface that allows types to have a new instance created without having either

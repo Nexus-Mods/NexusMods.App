@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using NexusMods.Networking.NexusWebApi.DTOs.Interfaces;
 
@@ -28,7 +28,7 @@ public class Category : IJsonSerializable<Category>
     public string Name { get; set; }
 
     // TODO: Convenient way to handle this.
-    
+
     /// <summary>
     /// Category which owns this category.
     /// </summary>

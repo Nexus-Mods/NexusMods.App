@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using NexusMods.Networking.NexusWebApi.DTOs.Interfaces;
 using NexusMods.Networking.NexusWebApi.Types;
@@ -23,12 +23,12 @@ public class DownloadLink : IJsonArraySerializable<DownloadLink>
     /// </summary>
     [JsonPropertyName("short_name")]
     public string _ShortName { get; set; }
-    
+
     /// <summary>
     /// Name of the CDN server that handles your download request.
     /// </summary>
     public CDNName ShortName => CDNName.From(_ShortName);
-    
+
     /// <summary>
     /// Download URI used to download the files.
     /// </summary>

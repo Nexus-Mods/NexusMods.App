@@ -1,4 +1,4 @@
-﻿namespace NexusMods.DataModel.Loadouts;
+namespace NexusMods.DataModel.Loadouts;
 
 public interface IModFileMetadata
 {

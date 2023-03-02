@@ -9,7 +9,7 @@ namespace NexusMods.Paths;
 /// Extensions for absolute paths.
 /// Functionality not directly tied to class but useful nonetheless.
 /// </summary>
-public partial struct AbsolutePath 
+public partial struct AbsolutePath
 {
     private static EnumerationOptions GetSearchOptions(bool recursive) => new()
     {
@@ -17,37 +17,37 @@ public partial struct AbsolutePath
         RecurseSubdirectories = recursive,
         MatchType = MatchType.Win32
     };
-    
+
     /// <summary>
     /// Returns the file information for this file.
     /// </summary>
     public FileInfo FileInfo => _info ??= new FileInfo(GetFullPath());
-    
+
     /// <summary>
     /// Returns a <see cref="FileVersionInfo"/> representing the version information associated with the specified file.
     /// </summary>
     public FileVersionInfo VersionInfo => FileVersionInfo.GetVersionInfo(GetFullPath());
-    
+
     /// <summary>
     /// Gets the size in bytes, of the current file.
     /// </summary>
     public Size Length => Size.From(FileInfo.Length);
-    
+
     /// <summary>
     /// Retrieves the last time this file was written to in coordinated universal time (UTC).
     /// </summary>
     public DateTime LastWriteTimeUtc => FileInfo.LastWriteTimeUtc;
-    
+
     /// <summary>
     /// Retrieves the creation time of this file in coordinated universal time (UTC).
     /// </summary>
     public DateTime CreationTimeUtc => FileInfo.CreationTimeUtc;
-    
+
     /// <summary>
     /// Retrieves the last time this file was written to.
     /// </summary>
     public DateTime LastWriteTime => FileInfo.LastWriteTime;
-    
+
     /// <summary>
     /// Retrieves the creation time of this file.
     /// </summary>
@@ -66,7 +66,7 @@ public partial struct AbsolutePath
         get
         {
             var thisPathLength = GetFullPathLength();
-            Span<char> thisFullPath = thisPathLength <= 512 ? stackalloc char[thisPathLength] : GC.AllocateUninitializedArray<char>(thisPathLength);
+            var thisFullPath = thisPathLength <= 512 ? stackalloc char[thisPathLength] : GC.AllocateUninitializedArray<char>(thisPathLength);
             GetFullPath(thisFullPath);
             var path = thisFullPath[..thisFullPath.IndexOf(Path.DirectorySeparatorChar)];
             return FromDirectoryAndFileName(path.ToString(), "");
@@ -74,7 +74,7 @@ public partial struct AbsolutePath
     }
 
     private FileInfo? _info = null;
-    
+
     /// <summary>
     /// Opens a file stream to the given absolute path.
     /// </summary>
@@ -119,7 +119,7 @@ public partial struct AbsolutePath
                 }
             }
         }
-        
+
         if (System.IO.Directory.Exists(nativePath))
             DeleteDirectory();
     }
@@ -141,7 +141,7 @@ public partial struct AbsolutePath
         await s.ReadAtLeastAsync(bytes, bytes.Length, false, token);
         return bytes;
     }
-    
+
     /// <summary>
     /// Moves the current path to a new destination.
     /// </summary>
@@ -172,7 +172,7 @@ public partial struct AbsolutePath
             {
                 if (retries > 10)
                     throw;
-                
+
                 retries++;
                 await Task.Delay(TimeSpan.FromSeconds(1), token ?? CancellationToken.None);
             }
@@ -190,7 +190,7 @@ public partial struct AbsolutePath
         await using var ouf = dest.Create();
         await inf.CopyToAsync(ouf, token);
     }
-    
+
     /// <summary>
     /// Copies the contents of <paramref name="src"/> into this path.
     /// </summary>
@@ -201,7 +201,7 @@ public partial struct AbsolutePath
         await using var output = Create();
         await src.CopyToAsync(output, token);
     }
-    
+
     /// <summary>
     /// Creates a directory if it does not already exist.
     /// </summary>
@@ -213,9 +213,9 @@ public partial struct AbsolutePath
     public readonly void DeleteDirectory(bool dontDeleteIfNotEmpty = false)
     {
         if (!DirectoryExists()) return;
-        if (dontDeleteIfNotEmpty && (EnumerateFiles().Any() || EnumerateDirectories().Any())) 
+        if (dontDeleteIfNotEmpty && (EnumerateFiles().Any() || EnumerateDirectories().Any()))
             return;
-      
+
         foreach (var directory in System.IO.Directory.GetDirectories(GetFullPath()))
         {
             directory.ToAbsolutePath().DeleteDirectory(dontDeleteIfNotEmpty);
@@ -227,17 +227,17 @@ public partial struct AbsolutePath
                 di.Attributes &= ~FileAttributes.ReadOnly;
 
             var attempts = 0;
-            TopParent:
-            
+        TopParent:
+
             try
             {
                 System.IO.Directory.Delete(GetFullPath(), true);
             }
             catch (IOException)
             {
-                if (attempts > 10) 
+                if (attempts > 10)
                     throw;
-                
+
                 Thread.Sleep(100);
                 attempts++;
                 goto TopParent;
@@ -271,7 +271,7 @@ public partial struct AbsolutePath
                 yield return FromDirectoryAndFileName(enumerator.CurrentDirectory, item.FileName);
         }
     }
-    
+
     /// <summary>
     /// Enumerates individual FileSystem directories under this directory.
     /// </summary>
@@ -286,7 +286,7 @@ public partial struct AbsolutePath
             yield return FromDirectoryAndFileName(Path.Combine(enumerator.CurrentDirectory!, item), "");
         }
     }
-    
+
     /// <summary>
     /// Enumerates individual FileSystem entries for this directory.
     /// </summary>
@@ -298,7 +298,7 @@ public partial struct AbsolutePath
     {
         var options = GetSearchOptions(recursive);
         var enumerator = new FilesEnumeratorEx(GetFullPathWithSeparator(), pattern, options);
-        
+
         while (enumerator.MoveNext())
         {
             var item = enumerator.Current;
@@ -340,7 +340,7 @@ public partial struct AbsolutePath
             await sw.WriteLineAsync(line.AsMemory(), token);
         }
     }
-    
+
     /// <summary>
     /// Reads all text from this absolute path, assuming UTF8 encoding.
     /// </summary>

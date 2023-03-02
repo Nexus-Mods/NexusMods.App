@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 
 namespace NexusMods.Common;
 
@@ -10,7 +10,7 @@ public class ProcessWrap : IProcess
     // Assuming Tannin will want to use this for tests later so suppressing for now, Sewer
     // ReSharper disable once NotAccessedField.Local
     private Process _proc;
-    
+
     /// <summary/>
     public ProcessWrap(Process proc)
     {

@@ -1,4 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
+// See https://aka.ms/new-console-template for more information
 
 using System.Reflection;
 using BenchmarkDotNet.Running;
@@ -16,7 +16,7 @@ if (args.Length > 0)
 {
     foreach (var arg in args)
     {
-        if (int.TryParse(arg, out int result) && (result >= 0 && result < benchmarks.Length))
+        if (int.TryParse(arg, out var result) && (result >= 0 && result < benchmarks.Length))
             BenchmarkRunner.Run(benchmarks[result].Type);
     }
 
@@ -26,9 +26,9 @@ if (args.Length > 0)
 while (true)
 {
     Console.WriteLine("Select a Benchmark");
-    
+
     var origColour = Console.ForegroundColor;
-    
+
     Console.ForegroundColor = ConsoleColor.Green;
     for (var x = 0; x < benchmarks.Length; x++)
         PrintOption(x, benchmarks[x]);
@@ -37,7 +37,7 @@ while (true)
     Console.WriteLine("\nEnter any invalid number to exit.");
 
     var line = Console.ReadLine();
-    if (int.TryParse(line, out int result))
+    if (int.TryParse(line, out var result))
     {
         if (result >= 0 && result < benchmarks.Length)
             BenchmarkRunner.Run(benchmarks[result].Type);

@@ -1,4 +1,4 @@
-﻿using NexusMods.DataModel.RateLimiting;
+using NexusMods.DataModel.RateLimiting;
 using NexusMods.Paths;
 
 namespace NexusMods.Hashing.xxHash64;
@@ -10,5 +10,5 @@ public static class AbsolutePathExtensions
         await using var stream = path.Read();
         return await stream.Hash(token ?? CancellationToken.None, job);
     }
-    
+
 }

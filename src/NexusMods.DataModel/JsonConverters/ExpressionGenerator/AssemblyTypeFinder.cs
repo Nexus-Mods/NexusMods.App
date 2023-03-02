@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 
 namespace NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 
@@ -23,7 +23,7 @@ public class AssemblyTypeFinder : ITypeFinder
                             t.GetGenericArguments().Length == type.GetGenericArguments().Length);
             baseTypes = baseTypes.Concat(subtypes.Select(s => s.MakeGenericType(type.GetGenericArguments())).ToArray());
         }
-        
+
         return baseTypes;
     }
 }

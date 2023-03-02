@@ -1,4 +1,4 @@
-﻿using System.Reactive.Linq;
+using System.Reactive.Linq;
 using Avalonia.Controls.Mixins;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
@@ -7,7 +7,7 @@ namespace NexusMods.App.UI.Controls.Spine.Buttons;
 
 public partial class Add : ReactiveUserControl<AddButtonViewModel>
 {
-    public Add() 
+    public Add()
     {
         InitializeComponent();
         this.WhenActivated(disposables =>
@@ -20,7 +20,7 @@ public partial class Add : ReactiveUserControl<AddButtonViewModel>
                 .DisposeWith(disposables);
         });
     }
-    
+
     private void SetClasses(bool isActive)
     {
         if (isActive)

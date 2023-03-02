@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using System.Diagnostics;
 
 namespace NexusMods.Common.Tests;
@@ -9,7 +9,7 @@ public class OSInteropTests
     [Fact]
     public void UsesShellExecuteOnWindows()
     {
-        string url = "foobar://test";
+        var url = "foobar://test";
         var mockFactory = new Mock<IProcessFactory>();
         var os = new OSInteropWindows(mockFactory.Object);
         os.OpenUrl(url);
@@ -20,7 +20,7 @@ public class OSInteropTests
     [Fact]
     public void UsesXDGOpenOnLinux()
     {
-        string url = "foobar://test";
+        var url = "foobar://test";
         var mockFactory = new Mock<IProcessFactory>();
         var os = new OSInteropLinux(mockFactory.Object);
         os.OpenUrl(url);
@@ -30,9 +30,10 @@ public class OSInteropTests
     [Fact]
     public void UsesOpenOnOSX()
     {
-        string url = "foobar://test";
+        var url = "foobar://test";
         var mockFactory = new Mock<IProcessFactory>();
         var os = new OSInteropOSX(mockFactory.Object);
         os.OpenUrl(url);
         mockFactory.Verify(f => f.Start("open", url), Times.Once());
-    }    }
+    }
+}

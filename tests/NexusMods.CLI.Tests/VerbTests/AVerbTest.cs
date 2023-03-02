@@ -1,4 +1,4 @@
-﻿using System.CommandLine;
+using System.CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.CLI.DataOutputs;
 using NexusMods.Paths;
@@ -11,12 +11,12 @@ public abstract class AVerbTest
     // ReSharper disable InconsistentNaming
     protected static AbsolutePath Data7ZipLZMA2 => KnownFolders.EntryFolder.CombineUnchecked(@"Resources\data_7zip_lzma2.7z");
     // ReSharper restore InconsistentNaming
-    
+
     private List<object> LastLog { get; set; } = new();
-    
+
     protected readonly TemporaryFileManager TemporaryFileManager;
     private readonly IServiceProvider _provider;
-    
+
     protected AVerbTest(TemporaryFileManager temporaryFileManager, IServiceProvider provider)
     {
         _provider = provider;

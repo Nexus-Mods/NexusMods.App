@@ -1,6 +1,6 @@
-﻿namespace NexusMods.App.UI.Controls.Spine.Buttons;
+namespace NexusMods.App.UI.Controls.Spine.Buttons;
 
 public class HomeButtonViewModel : SpineButtonViewModel
 {
-    
+
 }

@@ -1,4 +1,4 @@
-﻿using System.Windows.Input;
+using System.Windows.Input;
 using NexusMods.App.UI.ViewModels;
 using ReactiveUI.Fody.Helpers;
 
@@ -8,7 +8,7 @@ public abstract class SpineButtonViewModel : AViewModel<ISpineButtonViewModel>
 {
     [Reactive]
     public bool IsActive { get; set; }
-    
+
     [Reactive]
     public ICommand Click { get; set; }
 }

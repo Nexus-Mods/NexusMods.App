@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 
 namespace NexusMods.Hashing.xxHash64.Tests;
 

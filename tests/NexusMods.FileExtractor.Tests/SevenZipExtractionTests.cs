@@ -14,7 +14,7 @@ public class SevenZipExtractionTests
     {
         _extractor = extractor;
     }
-    
+
     [Fact]
     public async Task CanForeachOverFiles()
     {

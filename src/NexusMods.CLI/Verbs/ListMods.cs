@@ -1,4 +1,4 @@
-﻿using NexusMods.CLI.DataOutputs;
+using NexusMods.CLI.DataOutputs;
 using NexusMods.DataModel.Loadouts.Markers;
 
 namespace NexusMods.CLI.Verbs;
@@ -15,14 +15,14 @@ public class ListMods : AVerb<LoadoutMarker>
         {
             new OptionDefinition<LoadoutMarker>("l", "loadout", "The managed game to access")
         });
-    
+
     public async Task<int> Run(LoadoutMarker loadout, CancellationToken token)
     {
         var rows = new List<object[]>();
         foreach (var mod in loadout.Value.Mods.Values)
-            rows.Add(new object[]{mod.Name, mod.Files.Count});
+            rows.Add(new object[] { mod.Name, mod.Files.Count });
 
-        await _renderer.Render(new Table(new[] { "Name", "File Count"}, rows));
+        await _renderer.Render(new Table(new[] { "Name", "File Count" }, rows));
         return 0;
     }
 }

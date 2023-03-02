@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Loadouts;
@@ -87,7 +87,8 @@ public class SkyrimSpecialEditionTests
                     "ccQDRSSE001-SurvivalMode.esl"
                 });
         }
-        else {
+        else
+        {
             // Skyrim SE with CC downloads
             results
                 .Select(t => t.ToLowerInvariant())

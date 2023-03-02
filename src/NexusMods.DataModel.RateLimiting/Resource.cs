@@ -5,8 +5,8 @@ using System.Threading.Channels;
 
 namespace NexusMods.DataModel.RateLimiting;
 
-public class Resource<TResource, TUnit> : IResource<TResource, TUnit> 
-    where TUnit : IAdditionOperators<TUnit, TUnit, TUnit>, 
+public class Resource<TResource, TUnit> : IResource<TResource, TUnit>
+    where TUnit : IAdditionOperators<TUnit, TUnit, TUnit>,
     IAdditiveIdentity<TUnit, TUnit>, IDivisionOperators<TUnit, TUnit, double>,
     IEqualityOperators<TUnit, TUnit, bool>
 {
@@ -20,7 +20,7 @@ public class Resource<TResource, TUnit> : IResource<TResource, TUnit>
 
     public Resource(string humanName) : this(humanName, 0, TUnit.AdditiveIdentity)
     {
-        
+
     }
 
     public Resource(string humanName, int maxJobs, TUnit maxThroughput)

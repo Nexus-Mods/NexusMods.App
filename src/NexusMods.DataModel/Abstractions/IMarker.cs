@@ -1,4 +1,4 @@
-﻿namespace NexusMods.DataModel.Abstractions;
+namespace NexusMods.DataModel.Abstractions;
 
 
 /// <summary>
@@ -15,7 +15,7 @@ public interface IMarker<T>
     /// </summary>
     /// <param name="func"></param>
     public void Alter(Func<T, T> func);
-    
+
     /// <summary>
     /// Get the current value of the subset of the tree pointed at by this marker.
     /// </summary>

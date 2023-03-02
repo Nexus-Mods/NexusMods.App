@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 using System.Runtime.Versioning;
 
 namespace NexusMods.Common;
@@ -12,9 +12,9 @@ public class ProtocolRegistrationWindows : IProtocolRegistration
     /// <summary>
     /// constructor
     /// </summary>
-    public ProtocolRegistrationWindows() 
+    public ProtocolRegistrationWindows()
     {
-        
+
     }
 
     /// <inheritdoc/>
@@ -35,7 +35,7 @@ public class ProtocolRegistrationWindows : IProtocolRegistration
 
         using var commandKey = GetCommandKey(key);
 
-        string res = (string)(commandKey.GetValue("") ?? "");
+        var res = (string)(commandKey.GetValue("") ?? "");
         if (commandLine != null)
         {
             commandKey.SetValue("", commandLine);

@@ -1,4 +1,4 @@
-﻿using NexusMods.Common;
+using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Games;
@@ -56,7 +56,7 @@ public class SimpleOverlayModInstaller : IModInstaller
         {
             if (basePath.Depth == 0) // root
                 yield break;
-            
+
             if (basePath.Depth < subSection.Depth)
                 yield break;
 
@@ -75,7 +75,7 @@ public class SimpleOverlayModInstaller : IModInstaller
     {
         var root = RootFolder(files).First();
         var filtered = files.Where(f => !Helpers.IgnoreExtensions.Contains(f.Key.Extension));
-        
+
         foreach (var (path, file) in filtered)
         {
             yield return new FromArchive()

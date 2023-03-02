@@ -1,4 +1,4 @@
-﻿using NexusMods.DataModel.Interprocess;
+using NexusMods.DataModel.Interprocess;
 using Sewer56.BitStream;
 using Sewer56.BitStream.ByteStreams;
 
@@ -35,12 +35,12 @@ public struct RootChange : IMessage
     /// The root type that changed.
     /// </summary>
     public required RootType Type { get; init; }
-    
+
     /// <summary>
     /// The old Id of the root.
     /// </summary>
     public required Id From { get; init; }
-    
+
     /// <summary>
     /// The new Id of the root.
     /// </summary>
@@ -50,7 +50,7 @@ public struct RootChange : IMessage
     /// We'll assume the max id size is 128 bytes.
     /// </summary>
     public static int MaxSize => 1 * 128 * 128;
-    
+
     public int Write(Span<byte> buffer)
     {
         unsafe
@@ -66,13 +66,13 @@ public struct RootChange : IMessage
                 Span<byte> fromSpan = stackalloc byte[From.SpanSize];
                 From.ToSpan(fromSpan);
                 writer.Write(fromSpan);
-                
+
                 writer.Write((byte)To.Category);
                 writer.Write((byte)To.SpanSize);
                 Span<byte> toSpan = stackalloc byte[To.SpanSize];
                 To.ToSpan(toSpan);
                 writer.Write(toSpan);
-            }   
+            }
         }
         // 1 byte for type, 2 bytes for each id (category + span size), 2 * span size for each id.
         return 5 + From.SpanSize + To.SpanSize;
@@ -87,19 +87,19 @@ public struct RootChange : IMessage
                 var stream = new PointerByteStream(ptr);
                 var reader = new BitStream<PointerByteStream>(stream);
                 var type = (RootType)reader.Read<byte>();
-                
+
                 var fromCategory = (EntityCategory)reader.Read<byte>();
                 var fromSpanSize = reader.Read<byte>();
                 Span<byte> fromSpan = stackalloc byte[fromSpanSize];
                 reader.Read(fromSpan);
                 var from = Id.FromSpan(fromCategory, fromSpan);
-                
+
                 var toCategory = (EntityCategory)reader.Read<byte>();
                 var toSpanSize = reader.Read<byte>();
                 Span<byte> toSpan = stackalloc byte[toSpanSize];
                 reader.Read(toSpan);
                 var to = Id.FromSpan(toCategory, toSpan);
-                
+
                 return new RootChange
                 {
                     Type = type,
@@ -139,7 +139,7 @@ public struct IdPut : IMessage
             {
                 var stream = new PointerByteStream(ptr);
                 var writer = new BitStream<PointerByteStream>(stream);
-                
+
                 writer.Write((byte)Type);
                 writer.Write((byte)Id.Category);
                 writer.Write(Id.SpanSize);
@@ -166,7 +166,7 @@ public struct IdPut : IMessage
                 Span<byte> fromSpan = stackalloc byte[spanSize];
                 reader.Read(fromSpan);
                 var id = Id.FromSpan(category, fromSpan);
-                
+
                 return new IdPut((PutType)type, id);
             }
         }

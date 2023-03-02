@@ -1,6 +1,5 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using NexusMods.App.UI.ViewModels;
 
 namespace NexusMods.App.UI;
 
@@ -15,7 +14,7 @@ public class ViewLocator : IDataTemplate
         {
             return (Control)Activator.CreateInstance(type)!;
         }
-        
+
         return new TextBlock { Text = "Not Found: " + name };
     }
 
