@@ -39,7 +39,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
     public SpineViewModel Spine { get; }
 
     [Reactive]
-    public IViewModel RightContent { get; set; }
+    public IViewModel? RightContent { get; set; }
 
     [Reactive]
     public TopBarViewModel TopBarViewModel { get; set; }
