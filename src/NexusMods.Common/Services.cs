@@ -13,7 +13,7 @@ public static class Services
     /// </summary>
     /// <param name="services">The services to add OS interop to.</param>
     // ReSharper disable once InconsistentNaming
-    public static IServiceCollection AddOSInterop(this IServiceCollection services)
+    public static IServiceCollection AddCommon(this IServiceCollection services)
     {
         services.AddSingleton<IIDGenerator, IDGenerator>()
             .AddSingleton<IProcessFactory, ProcessFactory>();
