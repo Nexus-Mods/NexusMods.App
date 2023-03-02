@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+﻿using CliWrap;
 
 namespace NexusMods.Common;
 
@@ -18,8 +18,9 @@ public class OSInteropLinux : IOSInterop
     }
 
     /// <inheritdoc/>
-    public void OpenURL(string url)
+    public async Task OpenURL(string url, CancellationToken cancellationToken = default)
     {
-        _processFactory.Start("xdg-open", url);
+        var command = Cli.Wrap("xdg-open").WithArguments(url);
+        await _processFactory.ExecuteAsync(command, cancellationToken);
     }
 }
