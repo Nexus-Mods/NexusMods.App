@@ -1,6 +1,6 @@
 ﻿using CliWrap;
 
-namespace NexusMods.Common;
+namespace NexusMods.Common.OSInterop;
 
 /// <summary>
 /// OS interoperation for windows

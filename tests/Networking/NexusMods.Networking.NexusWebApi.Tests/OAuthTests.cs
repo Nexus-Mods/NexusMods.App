@@ -7,6 +7,7 @@ using Moq.Protected;
 using NexusMods.Networking.NexusWebApi.Types;
 using System.Text.Json;
 using FluentAssertions;
+using NexusMods.Common.OSInterop;
 
 namespace NexusMods.Networking.NexusWebApi.Tests;
 

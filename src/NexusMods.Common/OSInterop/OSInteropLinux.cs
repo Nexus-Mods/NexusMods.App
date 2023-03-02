@@ -1,18 +1,18 @@
 ﻿using CliWrap;
 
-namespace NexusMods.Common;
+namespace NexusMods.Common.OSInterop;
 
 /// <summary>
-/// OS interoperation for MacOS
+/// OS interoperation for linux
 /// </summary>
-public class OSInteropOSX : IOSInterop
+public class OSInteropLinux : IOSInterop
 {
     private readonly IProcessFactory _processFactory;
     /// <summary>
     /// constructor
     /// </summary>
     /// <param name="processFactory"></param>
-    public OSInteropOSX(IProcessFactory processFactory)
+    public OSInteropLinux(IProcessFactory processFactory)
     {
         _processFactory = processFactory;
     }
@@ -20,7 +20,7 @@ public class OSInteropOSX : IOSInterop
     /// <inheritdoc/>
     public async Task OpenURL(string url, CancellationToken cancellationToken = default)
     {
-        var command = Cli.Wrap("open").WithArguments(url);
+        var command = Cli.Wrap("xdg-open").WithArguments(url);
         await _processFactory.ExecuteAsync(command, cancellationToken);
     }
 }

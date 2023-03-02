@@ -1,5 +1,6 @@
 ﻿using Moq;
 using CliWrap;
+using NexusMods.Common.OSInterop;
 
 namespace NexusMods.Common.Tests;
 
