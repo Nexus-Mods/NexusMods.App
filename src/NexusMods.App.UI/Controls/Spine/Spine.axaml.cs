@@ -10,6 +10,7 @@ public partial class Spine : ReactiveUserControl<SpineViewModel>
     public Spine()
     {
         InitializeComponent();
+        /*
         this.WhenActivated(disposables =>
         {
             this.OneWayBind(ViewModel, vm => vm.Home, v => v.Home.ViewModel)
@@ -18,6 +19,6 @@ public partial class Spine : ReactiveUserControl<SpineViewModel>
                 .DisposeWith(disposables);
             this.OneWayBind(ViewModel, vm => vm.Add, v => v.Add.ViewModel)
                 .DisposeWith(disposables);
-        });
+        });*/
     }
 }

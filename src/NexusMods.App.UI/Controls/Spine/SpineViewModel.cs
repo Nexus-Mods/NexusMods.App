@@ -6,6 +6,7 @@ using Avalonia.Media.Imaging;
 using DynamicData;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.Controls.Spine.Buttons;
+using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.ViewModels;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
@@ -19,10 +20,10 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
     public HomeButtonViewModel Home { get; }
 
-    public AddButtonViewModel Add { get; }
+    public IconButtonViewModel Add { get; }
 
-    private ReadOnlyObservableCollection<GameViewModel> _game;
-    public ReadOnlyObservableCollection<GameViewModel> Games => _game;
+    //private ReadOnlyObservableCollection<GameViewModel> _game;
+    public ReadOnlyObservableCollection<IImageViewModel> Games { get; } // _game;
 
     public Subject<SpineButtonAction> Activations { get; } = new();
 
@@ -30,7 +31,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     private readonly ILogger<SpineViewModel> _logger;
     public IObservable<SpineButtonAction> Actions => _actions;
 
-    public SpineViewModel(ILogger<SpineViewModel> logger, IDataStore dataStore, AddButtonViewModel addButtonViewModel, HomeButtonViewModel homebuttonViewModel)
+    public SpineViewModel(ILogger<SpineViewModel> logger, IDataStore dataStore, IconButtonViewModel addButtonViewModel, HomeButtonViewModel homebuttonViewModel)
     {
         _logger = logger;
         _dataStore = dataStore;
@@ -38,6 +39,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         Home = homebuttonViewModel;
         Add = addButtonViewModel;
 
+        /*
         this.WhenActivated(disposables =>
         {
             _dataStore.RootChanges
@@ -67,13 +69,13 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 .Bind(out _game)
                 .Subscribe()
                 .DisposeWith(disposables);
-            
+
             Home.Click = ReactiveCommand.Create(() =>
             {
                 _logger.LogTrace("Home selected");
                 _actions.OnNext(new SpineButtonAction(Type.Home));
             });
-            
+
             Add.Click = ReactiveCommand.Create(() =>
             {
                 _logger.LogTrace("Add selected");
@@ -83,6 +85,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
             Activations.Subscribe(HandleActivation)
                 .DisposeWith(disposables);
         });
+        */
     }
 
     private void HandleActivation(SpineButtonAction action)

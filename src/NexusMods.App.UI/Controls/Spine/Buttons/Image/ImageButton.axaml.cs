@@ -1,28 +1,38 @@
 ﻿using System.Reactive.Linq;
+using System.Windows.Input;
 using Avalonia.Controls;
 using Avalonia.Controls.Mixins;
 using Avalonia.ReactiveUI;
-using NexusMods.App.UI.Controls.Spine.Buttons;
+using Avalonia.VisualTree;
+using Noggog;
 using ReactiveUI;
 
-namespace NexusMods.App.UI.Controls.Spine.Buttons;
+namespace NexusMods.App.UI.Controls.Spine.Buttons.Image;
 
-public partial class Add : ReactiveUserControl<AddButtonViewModel>
+public partial class ImageButton : ReactiveUserControl<IImageButtonViewModel>
 {
-    public Add() 
+    private Avalonia.Controls.Image? _image;
+
+    public ImageButton()
     {
         InitializeComponent();
-        this.WhenActivated(disposables =>
+
+        this.WhenActivated(d =>
         {
-            ViewModel.WhenAnyValue(vm => vm.IsActive)
+            this.WhenAnyValue(vm => vm.ViewModel.IsActive)
                 .StartWith(false)
                 .Subscribe(SetClasses)
-                .DisposeWith(disposables);
+                .DisposeWith(d);
+
             this.BindCommand(ViewModel, vm => vm.Click, v => v.Button)
-                .DisposeWith(disposables);
+                .DisposeWith(d);
+
+            _image = this.FindDescendantOfType<Avalonia.Controls.Image>();
+            this.OneWayBind(ViewModel, vm => vm.Image, v => v._image!.Source)
+                .DisposeWith(d);
         });
     }
-    
+
     private void SetClasses(bool isActive)
     {
         if (isActive)
@@ -36,4 +46,5 @@ public partial class Add : ReactiveUserControl<AddButtonViewModel>
             Button.Classes.Add("Inactive");
         }
     }
+
 }

@@ -55,11 +55,17 @@
       <DependentUpon>FoundGamesView.axaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Controls\Spine\Buttons\Image\ImageButton.axaml.cs">
+      <DependentUpon>Game.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\Spine\Buttons\Add\AddButton.axaml.cs">
+      <DependentUpon>Add.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <AdditionalFiles Include="Controls\Spine\Buttons\Add.axaml" />
-    <AdditionalFiles Include="Controls\Spine\Buttons\Game.axaml" />
     <AdditionalFiles Include="Controls\Spine\Buttons\Home.axaml" />
   </ItemGroup>
 

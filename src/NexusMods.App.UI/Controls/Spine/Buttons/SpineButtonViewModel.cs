@@ -4,11 +4,11 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Controls.Spine.Buttons;
 
-public abstract class SpineButtonViewModel : AViewModel<ISpineButtonViewModel>
+public abstract class SpineButtonViewModel : AViewModel<ISpineButtonViewModel>, ISpineButtonViewModel
 {
     [Reactive]
     public bool IsActive { get; set; }
-    
+
     [Reactive]
     public ICommand Click { get; set; }
 }
