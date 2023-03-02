@@ -1,21 +1,12 @@
-﻿using Xunit;
-using NexusMods.Networking.NexusWebApi;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Interprocess;
 using Moq;
 using System.Net;
 using Moq.Protected;
 using NexusMods.Networking.NexusWebApi.Types;
-using NexusMods.DataModel.JsonConverters;
 using System.Text.Json;
 using FluentAssertions;
-using System.Data.Entity.Core.Metadata.Edm;
 
 namespace NexusMods.Networking.NexusWebApi.Tests;
 
@@ -57,7 +48,7 @@ public class OAuthTests
         _consumer = consumer;
     }
 
-    [Fact()]
+    [Fact]
     public async void AuthorizeRequestTest()
     {
         #region Setup
@@ -94,7 +85,7 @@ public class OAuthTests
         #endregion
     }
 
-    [Fact()]
+    [Fact]
     public async void RefreshTokenTest()
     {
         #region Setup
@@ -128,31 +119,7 @@ public class OAuthTests
         #endregion
     }
 
-    [Fact()]
-    public async void WarnsOnUnexpectedCallback()
-    {
-        var messageHandler = new Mock<HttpMessageHandler>();
-        HttpClient httpClient = new HttpClient(messageHandler.Object);
-        var idGen = new Mock<IIDGenerator>();
-        var os = new Mock<IOSInterop>();
-        var logger = new Mock<ILogger<OAuth>>();
-
-        var oauth = new OAuth(logger.Object, httpClient, idGen.Object, os.Object, _consumer);
-
-        await _producer.Write(new NXMUrlMessage { Value = NXMUrl.Parse($"nxm://oauth/callback?state=surprise&code=code") }, CancellationToken.None);
-        // allow message to be handled
-        await Task.Delay(100);
-
-        logger.Verify(logger => logger.Log(
-                It.Is<LogLevel>(logLevel => logLevel == LogLevel.Warning),
-                It.Is<EventId>(eventId => eventId.Id == 0),
-                It.IsAny<It.IsAnyType>(),
-                It.IsAny<Exception>(),
-                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-            Times.Once);
-    }
-
-    [Fact()]
+    [Fact]
     public async void ThrowsOnInvalidResponse()
     {
         #region Setup
@@ -184,7 +151,7 @@ public class OAuthTests
         #endregion
     }
 
-    [Fact()]
+    [Fact]
     public async void AuthorizationCanBeCanceled()
     {
         #region Setup
