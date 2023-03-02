@@ -70,3 +70,4 @@ When designing a component, consider if an existing component (from the Avalonia
   * For `.Bind()` calls there's a helper `.BindUI()` method that will ensure that the binding is run on the UI thread.
 * Perform heavy compute logic off of the main UI thread. We currently don't have a way to switch to a non-UI thread, but any call to `Task.Run()` will run on a non-UI thread.
 * Try to drive as much behavior from `IDataStore` as possible. This will allow the UI to be updated in real time when the data changes even when the change comes from another process. If pulling data from IDataStore becomes too slow, we will improve the performance (and caching) of the store to compensate.
+* Keep all UI code in the `NexusMods.App.UI` project. Having UI code in game specific projects is an anti-pattern and should be avoided. If a game requires specialized UI logic, that logic should be abstracted and added as a generalized feature to the main UI project.
