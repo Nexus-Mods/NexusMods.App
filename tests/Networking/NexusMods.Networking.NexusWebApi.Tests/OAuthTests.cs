@@ -7,6 +7,7 @@ using Moq.Protected;
 using NexusMods.Networking.NexusWebApi.Types;
 using System.Text.Json;
 using FluentAssertions;
+using NexusMods.Common.OSInterop;
 
 namespace NexusMods.Networking.NexusWebApi.Tests;
 
@@ -80,7 +81,7 @@ public class OAuthTests
 
         #region Verification
         idGen.Verify(_ => _.UUIDv4(), Times.Exactly(2));
-        os.Verify(_ => _.OpenURL(ExpectedAuthURL), Times.Once);
+        os.Verify(_ => _.OpenURL(ExpectedAuthURL, It.IsAny<CancellationToken>()), Times.Once);
         result.Should().BeEquivalentTo(ReplyToken);
         #endregion
     }
@@ -114,7 +115,7 @@ public class OAuthTests
 
         #region Verification
         idGen.Verify(_ => _.UUIDv4(), Times.Never);
-        os.Verify(_ => _.OpenURL(It.IsAny<string>()), Times.Never);
+        os.Verify(_ => _.OpenURL(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
         token.Should().BeEquivalentTo(ReplyToken);
         #endregion
     }
