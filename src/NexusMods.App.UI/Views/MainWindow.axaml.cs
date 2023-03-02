@@ -50,6 +50,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         });
     }
 
+    // ReSharper disable once UnusedParameter.Local
     private void PointerPressed_Handler(object? sender, PointerPressedEventArgs e)
     {
         if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
