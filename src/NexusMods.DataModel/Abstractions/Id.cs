@@ -39,6 +39,8 @@ public interface Id
         
         switch (span.Length)
         {
+            case 1:
+                return IdEmpty.Empty;
             case 9:
                 return new Id64(tag, BinaryPrimitives.ReadUInt64BigEndian(span[1..]));
             case 17:
@@ -53,13 +55,14 @@ public interface Id
     
     public static Id FromSpan(EntityCategory category, ReadOnlySpan<byte> span)
     {
-        if (span.Length == 8)
+        switch (span.Length)
         {
-            return new Id64(category, BinaryPrimitives.ReadUInt64BigEndian(span));
-        }
-        if (span.Length == 16)
-        {
-            return new TwoId64(category, BinaryPrimitives.ReadUInt64BigEndian(span), BinaryPrimitives.ReadUInt64BigEndian(span[8..]));
+            case 0:
+                return IdEmpty.Empty;
+            case 8:
+                return new Id64(category, BinaryPrimitives.ReadUInt64BigEndian(span));
+            case 16:
+                return new TwoId64(category, BinaryPrimitives.ReadUInt64BigEndian(span), BinaryPrimitives.ReadUInt64BigEndian(span[8..]));
         }
 
         var mem = new Memory<byte>(new byte[span.Length]);
