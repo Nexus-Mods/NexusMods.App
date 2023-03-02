@@ -8,6 +8,7 @@ namespace NexusMods.Benchmarks.Benchmarks;
 [MemoryDiagnoser]
 public class XxHash64 : IBenchmark
 {
+    // ReSharper disable once InconsistentNaming
     private readonly byte[] _oneGB;
 
     public XxHash64()
@@ -17,6 +18,7 @@ public class XxHash64 : IBenchmark
     }
 
     [Params(1024, 1024 * 1024, 1024 * 1024 * 1024)]
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public int Size { get; set; }
 
     [Benchmark]

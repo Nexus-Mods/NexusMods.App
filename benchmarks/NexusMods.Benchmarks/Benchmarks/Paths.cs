@@ -10,126 +10,123 @@ namespace NexusMods.Benchmarks.Benchmarks;
 [MemoryDiagnoser]
 public class Paths : IBenchmark
 {
-    private readonly string _longPath;
     private readonly string _shortPath;
-    private readonly string _shortestPath;
-    private readonly string _cPath;
-    private readonly AbsolutePath _longPathNexus;
     private readonly string[] _paths;
     private readonly AbsolutePath _nexusShortPath;
 
     public Paths()
     {
-        _longPath = @"c:\" + string.Join(@"\", Enumerable.Range(0, 20).Select(x => $"path_{x}"));
+        var longPath = @"c:\" + string.Join(@"\", Enumerable.Range(0, 20).Select(x => $"path_{x}"));
+        var shortestPath = @"c:\foo";
         _shortPath = @"c:\foo\bar\baz";
-        _shortestPath = @"c:\foo";
         _nexusShortPath = _shortPath.ToAbsolutePath();
-        _cPath = @"c:\";
+        var cPath = @"c:\";
 
-        _paths = new[] { _longPath, _shortPath, _shortestPath, _cPath };
+        _paths = new[] { longPath, _shortPath, shortestPath, cPath };
     }
 
     public IEnumerable<(string StringPath, AbsolutePath AbsolutePath)> AllPaths =>
         _paths.Select(p => (p, p.ToAbsolutePath()));
 
     [ParamsSource(nameof(AllPaths))]
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public (string StringPath, AbsolutePath AbsolutePath) CurrentPath { get; set; }
 
     [Benchmark]
-    public void SystemGetExtension()
+    public string SystemGetExtension()
     {
-        Path.GetExtension(CurrentPath.StringPath);
+        return Path.GetExtension(CurrentPath.StringPath);
     }
 
     [Benchmark]
-    public void NexusGetExtension()
+    public Extension NexusGetExtension()
     {
-        var ext = CurrentPath.AbsolutePath.Extension;
+        return CurrentPath.AbsolutePath.Extension;
     }
 
     [Benchmark]
-    public void SystemChangeExtension()
+    public string SystemChangeExtension()
     {
-        Path.ChangeExtension(CurrentPath.StringPath, ".zip");
+        return Path.ChangeExtension(CurrentPath.StringPath, ".zip");
     }
 
     [Benchmark]
-    public void NexusChangeExtension()
+    public AbsolutePath NexusChangeExtension()
     {
-        CurrentPath.AbsolutePath.ReplaceExtension(KnownExtensions.Zip);
+        return CurrentPath.AbsolutePath.ReplaceExtension(KnownExtensions.Zip);
     }
 
     [Benchmark]
-    public void SystemGetParent()
+    public string SystemGetParent()
     {
-        Path.GetDirectoryName(CurrentPath.StringPath);
+        return Path.GetDirectoryName(CurrentPath.StringPath)!;
     }
 
     [Benchmark]
-    public void NexusGetParent()
+    public AbsolutePath NexusGetParent()
     {
-        var _ = CurrentPath.AbsolutePath.Parent;
+        return CurrentPath.AbsolutePath.Parent;
     }
 
     [Benchmark]
-    public void SystemFileExists()
+    public bool SystemFileExists()
     {
-        File.Exists(CurrentPath.StringPath);
+        return File.Exists(CurrentPath.StringPath);
     }
 
     [Benchmark]
-    public void NexusFileExists()
+    public bool NexusFileExists()
     {
-        var _ = CurrentPath.AbsolutePath.FileExists;
+        return CurrentPath.AbsolutePath.FileExists;
     }
 
     [Benchmark]
-    public void SystemJoinSmall()
+    public string SystemJoinSmall()
     {
-        Path.Combine(CurrentPath.StringPath, "foo");
+        return Path.Combine(CurrentPath.StringPath, "foo");
     }
 
     [Benchmark]
-    public void NexusJoinSmall()
+    public AbsolutePath NexusJoinSmall()
     {
         // Not a fair test here since one is a string concat; other includes
         // normalization to OS path.
-        CurrentPath.AbsolutePath.CombineUnchecked("foo");
+        return CurrentPath.AbsolutePath.CombineUnchecked("foo");
     }
 
     [Benchmark]
-    public void SystemJoinLarge()
+    public string SystemJoinLarge()
     {
-        Path.Combine(CurrentPath.StringPath, "foo/bar/baz/qux/qax");
+        return Path.Combine(CurrentPath.StringPath, "foo/bar/baz/qux/qax");
     }
 
     [Benchmark]
-    public void NexusJoinLarge()
+    public AbsolutePath NexusJoinLarge()
     {
-        CurrentPath.AbsolutePath.CombineUnchecked("foo/bar/baz/quz/qax");
+        return CurrentPath.AbsolutePath.CombineUnchecked("foo/bar/baz/quz/qax");
     }
 
     [Benchmark]
-    public void SystemHash()
+    public int SystemHash()
     {
-        CurrentPath.StringPath.GetHashCode();
+        return CurrentPath.StringPath.GetHashCode();
     }
 
     [Benchmark]
-    public void NexusHash()
+    public int NexusHash()
     {
-        CurrentPath.AbsolutePath.GetHashCode();
+        return CurrentPath.AbsolutePath.GetHashCode();
     }
 
     [Benchmark]
-    public void SystemEquals()
+    public bool SystemEquals()
     {
-        CurrentPath.StringPath.Equals(_shortPath);
+        return CurrentPath.StringPath.Equals(_shortPath);
     }
 
     [Benchmark]
-    public void NexusEquals()
+    public bool NexusEquals()
     {
-        CurrentPath.AbsolutePath.Equals(_nexusShortPath);
+        return CurrentPath.AbsolutePath.Equals(_nexusShortPath);
     }
 }

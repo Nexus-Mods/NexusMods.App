@@ -11,7 +11,7 @@ public class EnumerateFiles : IBenchmark
 {
     // Placeholder path that'll probably work for people using Windows.
     // Point this at your games' directory.
-    public AbsolutePath FilePath { get; set; } = AbsolutePath.FromFullPath(Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.SystemX86))!.FullName);
+    public AbsolutePath FilePath { get; } = AbsolutePath.FromFullPath(Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.SystemX86))!.FullName);
 
     // Note: Tests are written using 'foreach' to provide more accurate memory measurements
     //       ToArray leads to extra allocation.
@@ -126,9 +126,9 @@ public class EnumerateFiles : IBenchmark
                     })
                 .Select(file =>
                 {
-                    var path = file.ToAbsolutePath();
-                    var info = path.FileInfo;
-                    return new FileEntry(Path: path, Size: Size.From(info.Length), LastModified: info.LastWriteTimeUtc);
+                    var absPath = file.ToAbsolutePath();
+                    var info = absPath.FileInfo;
+                    return new FileEntry(Path: absPath, Size: Size.From(info.Length), LastModified: info.LastWriteTimeUtc);
                 });
         }
     }

@@ -10,16 +10,17 @@ namespace NexusMods.Benchmarks.Benchmarks;
 [MemoryDiagnoser]
 public class Sorting : IBenchmark
 {
-    private List<Item> _rules;
+    private List<Item> _rules = null!;
 
     [Params(100, 1000, 2000, 5000, 10000)]
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public int NumItems { get; set; }
 
     [GlobalSetup]
     public void Setup()
     {
-        var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".Select(e => e.ToString());
-        var numbers = Enumerable.Range(0, NumItems).Select(e => e.ToString());
+        var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".Select(e => e.ToString()).ToArray();
+        var numbers = Enumerable.Range(0, NumItems).Select(e => e.ToString()).ToArray();
 
         var rules = new List<Item>();
         foreach (var (n, idx) in letters.Select((n, idx) => (n, idx)))
@@ -63,9 +64,9 @@ public class Sorting : IBenchmark
     }
 
     [Benchmark]
-    public void Sort()
+    public Item[] Sort()
     {
-        Sorter.Sort<Item, string>(_rules, x => x.Id, x => x.Rules).ToArray();
+        return Sorter.Sort<Item, string>(_rules, x => x.Id, x => x.Rules).ToArray();
     }
 
     private IEnumerable<Item> Shuffle(List<Item> rules)
@@ -85,6 +86,7 @@ public class Sorting : IBenchmark
     public class Item : IHasEntityId<string>
     {
         public string Id { get; init; } = string.Empty;
-        public List<ISortRule<Item, string>> Rules { get; set; }
+
+        public List<ISortRule<Item, string>> Rules { get; init; } = new();
     }
 }

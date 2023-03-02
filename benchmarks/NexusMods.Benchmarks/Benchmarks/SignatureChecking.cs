@@ -11,7 +11,7 @@ public class SignatureChecking : IBenchmark
     private MemoryStream _data7Z = null!;
     private MemoryStream _dataZip = null!;
     private MemoryStream _notFound = null!;
-    private SignatureChecker _signatureChecker;
+    private SignatureChecker _signatureChecker = null!;
 
     [GlobalSetup]
     public void Setup()
@@ -22,14 +22,14 @@ public class SignatureChecking : IBenchmark
         _signatureChecker = new SignatureChecker(Enum.GetValues<FileType>());
     }
 
-    [Benchmark()]
+    [Benchmark]
     public async ValueTask<IReadOnlyList<FileType>> Find7Z()
     {
         _data7Z.Position = 0;
         return await _signatureChecker.MatchesAsync(_data7Z);
     }
 
-    [Benchmark()]
+    [Benchmark]
     public async ValueTask<IReadOnlyList<FileType>> FindZip()
     {
         _dataZip.Position = 0;

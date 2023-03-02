@@ -11,11 +11,12 @@ namespace NexusMods.Benchmarks.Benchmarks;
 public class ChangeCase : IBenchmark
 {
     [Params(4, 16, 64, 256, 1024)]
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public int StringLength { get; set; }
 
-    private static Random _random = new Random();
-    private string _value;
-    private string _valueEmoji;
+    private static Random _random = new();
+    private string _value = null!;
+    private string _valueEmoji = null!;
 
     [GlobalSetup]
     public void Setup()
@@ -61,5 +62,4 @@ public class ChangeCase : IBenchmark
     private static string RandomStringUpper(int length) => RandomString(length, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 
     private static string RandomStringUpperWithEmoji(int length) => RandomString(length, "ABCDEFGHIJKLMNOPQRSTUVWXYZ⚠️🚦🔺🏒😕🏞🖌🖕🌷☠⛩🍸👳🍠🚦📟💦🚏🌥🏪🌖😱");
-
 }

@@ -2,6 +2,7 @@ using System.Numerics;
 using BenchmarkDotNet.Attributes;
 using NexusMods.Benchmarks.Interfaces;
 using NexusMods.Paths.Extensions;
+// ReSharper disable RedundantAssignment
 
 namespace NexusMods.Benchmarks.Benchmarks;
 
@@ -11,6 +12,7 @@ public class VectorisedStringHash : IBenchmark
     private const int ItemCount = 10000;
 
     [Params(12, 64, 96, 128, 256, 1024)]
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public int CharacterCount { get; set; }
 
     public string[] Input { get; set; } = null!;
