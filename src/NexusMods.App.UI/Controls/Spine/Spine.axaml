@@ -3,7 +3,7 @@
     d:DesignWidth="60"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Controls.Spine.Spine"
-    x:TypeArguments="spine:SpineViewModel"
+    x:TypeArguments="spine:ISpineViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:buttons="clr-namespace:NexusMods.App.UI.Controls.Spine.Buttons"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -11,8 +11,11 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:spine="clr-namespace:NexusMods.App.UI.Controls.Spine"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.DataContext>
+        <spine:SpineDesignViewModel />
+    </Design.DataContext>
     <StackPanel Margin="0,20">
-        <reactiveUi:ViewModelViewHost x:Name="Home" />
+        <reactiveUi:ViewModelViewHost ViewContract="Home" x:Name="Home" />
         <Border
             BorderBrush="{DynamicResource StructuralBorderBrush}"
             BorderThickness="0,2,0,0"
@@ -29,7 +32,7 @@
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>
-        <reactiveUi:ViewModelViewHost x:Name="Add" />
+        <reactiveUi:ViewModelViewHost ViewContract="Add" x:Name="Add" />
     </StackPanel>
 
 </reactiveUi:ReactiveUserControl>

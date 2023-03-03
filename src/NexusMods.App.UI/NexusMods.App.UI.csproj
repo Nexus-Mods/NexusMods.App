@@ -18,9 +18,7 @@
     <AvaloniaResource Include="Theme\TextBox.xaml" />
     <AvaloniaResource Include="Theme\ToggleSwitchStyles.xaml" />
     <AvaloniaResource Include="Theme\WindowStyles.xaml" />
-    <Folder Include="Models\" />
     <AvaloniaResource Include="Assets\**" />
-    <Folder Include="Resources\Icons" />
     <None Remove=".gitignore" />
     <None Remove="Theme\BareIcons.xaml" />
     <AvaloniaResource Include="Theme\BareIcons.xaml" />
@@ -42,6 +40,7 @@
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0-preview.1.23110.8" />
       <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="6.3.0-preview4" />
       <PackageReference Include="ReactiveUI.Fody" Version="18.4.22" />
+      <PackageReference Include="Splat.Microsoft.Extensions.Logging" Version="14.6.8" />
       <PackageReference Include="XamlNameReferenceGenerator" Version="1.6.1" />
   </ItemGroup>
 
@@ -55,12 +54,14 @@
       <DependentUpon>FoundGamesView.axaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <AdditionalFiles Include="Controls\Spine\Buttons\Add.axaml" />
-    <AdditionalFiles Include="Controls\Spine\Buttons\Game.axaml" />
-    <AdditionalFiles Include="Controls\Spine\Buttons\Home.axaml" />
+    <Compile Update="Controls\Spine\Buttons\Image\ImageButton.axaml.cs">
+      <DependentUpon>Game.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\Spine\Buttons\Add\AddButton.axaml.cs">
+      <DependentUpon>Add.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 
 </Project>

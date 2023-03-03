@@ -1,5 +1,6 @@
 ﻿using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
+using System.Reactive;
 using Avalonia;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -9,15 +10,31 @@ using NexusMods.App.UI;
 using NexusMods.CLI;
 using NLog.Extensions.Logging;
 using NLog.Targets;
+using ReactiveUI;
 using static NexusMods.App.UI.Startup;
 
 
 public class Program
 {
+    private static ILogger<Program> _logger;
+
     [STAThread]
     public static async Task<int> Main(string[] args)
     {
+
         var host = BuildHost();
+
+        _logger = host.Services.GetRequiredService<ILogger<Program>>();
+        TaskScheduler.UnobservedTaskException += (sender, e) =>
+        {
+            _logger.LogError(e.Exception, "Unobserved task exception");
+            e.SetObserved();
+        };
+
+        RxApp.DefaultExceptionHandler = Observer.Create<Exception>(ex =>
+        {
+            _logger.LogError(ex, "Unhandled exception");
+        });
 
         if (args.Length > 0)
         {
@@ -70,7 +87,7 @@ public class Program
         loggingBuilder.SetMinimumLevel(LogLevel.Information);
         loggingBuilder.AddNLog(config);
     }
-    
+
     private static AppBuilder BuildAvaloniaApp()
     {
         var host = BuildHost();

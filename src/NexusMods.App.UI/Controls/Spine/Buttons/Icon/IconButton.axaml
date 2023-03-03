@@ -1,18 +1,19 @@
 ﻿<reactiveUi:ReactiveUserControl
+    Classes="Add"
     d:DesignHeight="65"
     d:DesignWidth="65"
     mc:Ignorable="d"
-    x:Class="NexusMods.App.UI.Controls.Spine.Buttons.Add"
-    x:TypeArguments="buttons:SpineButtonViewModel"
+    x:Class="NexusMods.App.UI.Controls.Spine.Buttons.Icon.IconButton"
+    x:TypeArguments="icon:IIconButtonViewModel"
     xmlns="https://github.com/avaloniaui"
-    xmlns:buttons="clr-namespace:NexusMods.App.UI.Controls.Spine.Buttons"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:icon="clr-namespace:NexusMods.App.UI.Controls.Spine.Buttons.Icon"
     xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.DataContext>
-        <buttons:SpineButtonViewModel />
+        <icon:IconButtonDesignViewModel />
     </Design.DataContext>
     <UserControl.Styles>
         <Style Selector="Button.Spine">
@@ -23,7 +24,17 @@
             <Setter Property="RenderTransform" Value="scale(0.9)" />
         </Style>
 
-        <Style Selector="Button.Spine.Inactive Border">
+
+        <Style Selector="Button.Spine.Add /template/ icons|Icon">
+            <Setter Property="Value" Value="mdi-plus" />
+        </Style>
+
+        <Style Selector="Button.Spine.Home /template/ icons|Icon">
+            <Setter Property="Value" Value="mdi-home" />
+        </Style>
+
+
+        <Style Selector="Button.Spine.Inactive.Add Border">
             <Setter Property="BorderBrush" Value="{DynamicResource ContentSecondary}" />
             <Setter Property="Background" Value="#01FFFFFF" />
             <Setter Property="BorderThickness" Value="1" />
@@ -39,14 +50,14 @@
             </Setter>
         </Style>
 
-        <Style Selector="Button.Spine.Inactive:pointerover Border">
+        <Style Selector="Button.Spine.Inactive.Add:pointerover Border">
             <Setter Property="Background" Value="#4CFFFFFF" />
             <Setter Property="BorderBrush" Value="{DynamicResource ContentSecondaryBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="BorderDashArray" Value="0, 0" />
         </Style>
 
-        <Style Selector="Button.Spine.Active Border">
+        <Style Selector="Button.Spine.Active.Add Border">
             <Setter Property="Background" Value="#00FFFFFF" />
             <Setter Property="BorderBrush" Value="#FFFFFF" />
             <Setter Property="BorderThickness" Value="2" />
@@ -54,23 +65,66 @@
             <Setter Property="BoxShadow" Value="0 0 10 0 #66FFFFFF" />
         </Style>
 
-        <Style Selector="Button.Spine.Active:pointerover Border">
+        <Style Selector="Button.Spine.Active.Add:pointerover Border">
             <Setter Property="Background" Value="#80FFFFFF" />
             <Setter Property="BorderBrush" Value="#FFFFFF" />
             <Setter Property="BorderThickness" Value="2" />
         </Style>
 
-        <Style Selector="Button.Spine.Inactive icons|Icon">
+        <Style Selector="Button.Spine.Inactive.Add icons|Icon">
             <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryBrush}" />
         </Style>
 
-        <Style Selector="Button.Spine.Active icons|Icon">
+        <Style Selector="Button.Spine.Active.Add icons|Icon">
             <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
         </Style>
+
+        <Style Selector="Button.Spine.Inactive.Home Border">
+            <Setter Property="BorderBrush" Value="{DynamicResource ContentSecondary}" />
+            <Setter Property="Background" Value="#01FFFFFF" />
+            <Setter Property="BorderThickness" Value="1" />
+
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Duration="0:0:0.2" Property="Background" />
+                    <BrushTransition Duration="0:0:0.2" Property="BorderBrush" />
+                    <ThicknessTransition Duration="0:0:0.2" Property="BorderThickness" />
+                    <BoxShadowsTransition Duration="0:0:0.2" Property="BoxShadow" />
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.Spine.Inactive.Home:pointerover Border">
+            <Setter Property="Background" Value="#4CFFFFFF" />
+            <Setter Property="BorderBrush" Value="#FFFFFF" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+
+        <Style Selector="Button.Spine.Active.Home Border">
+            <Setter Property="Background" Value="#00FFFFFF" />
+            <Setter Property="BorderBrush" Value="#FFFFFF" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="BoxShadow" Value="0 0 10 0 #66FFFFFF" />
+        </Style>
+
+        <Style Selector="Button.Spine.Active.Home:pointerover Border">
+            <Setter Property="Background" Value="#80FFFFFF" />
+            <Setter Property="BorderBrush" Value="#FFFFFF" />
+            <Setter Property="BorderThickness" Value="2" />
+        </Style>
+
+        <Style Selector="Button.Spine.Inactive.Home icons|Icon">
+            <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryBrush}" />
+        </Style>
+
+        <Style Selector="Button.Spine.Active.Home icons|Icon">
+            <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+        </Style>
+
     </UserControl.Styles>
 
     <Button
-        Classes="Spine"
+        Classes="Spine Add"
         Height="64"
         Width="64"
         x:Name="Button">
@@ -82,7 +136,7 @@
                         HorizontalAlignment="Center"
                         Margin="0"
                         Padding="0"
-                        Value="mdi-plus"
+                        Value="mdi-help-circle"
                         VerticalAlignment="Center" />
                     <Border
                         CornerRadius="48"
