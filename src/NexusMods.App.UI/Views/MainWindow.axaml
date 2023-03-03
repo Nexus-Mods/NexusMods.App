@@ -32,6 +32,11 @@
             Grid.Row="0"
             x:Name="TopBar" />
 
+        <reactiveUi:ViewModelViewHost
+            Grid.Column="0"
+            Grid.Row="1"
+            x:Name="Spine" />
+
         <Border
             BorderBrush="{DynamicResource StructuralBorderBrush}"
             BorderThickness="1,0"
@@ -44,10 +49,7 @@
             Grid.ColumnSpan="3"
             Grid.Row="0" />
 
-        <reactiveUi:ViewModelViewHost
-            Grid.Column="0"
-            Grid.Row="1"
-            x:Name="Spine" />
+
 
         <StackPanel
             Grid.Column="1"

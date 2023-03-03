@@ -35,7 +35,8 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
         Spine.Activations.OnNext(action);
     }
 
-    public ISpineViewModel Spine { get; }
+    [Reactive]
+    public ISpineViewModel Spine { get; set; }
 
     [Reactive]
     public IViewModel RightContent { get; set; }

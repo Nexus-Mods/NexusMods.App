@@ -3,7 +3,7 @@
     d:DesignWidth="60"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Controls.Spine.Spine"
-    x:TypeArguments="spine:SpineViewModel"
+    x:TypeArguments="spine:ISpineViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:buttons="clr-namespace:NexusMods.App.UI.Controls.Spine.Buttons"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
