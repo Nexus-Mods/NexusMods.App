@@ -9,7 +9,7 @@ namespace NexusMods.DataModel.Abstractions;
 /// </summary>
 /// <typeparam name="T">Type of entity this entity links to </typeparam>
 [JsonConverter(typeof(EntityLinkConverterFactory))]
-public record EntityLink<T> : IEmptyWithDataStore<EntityLink<T>>,
+public record struct EntityLink<T> : IEmptyWithDataStore<EntityLink<T>>,
     IWalkable<Entity>
     where T : Entity
 {
