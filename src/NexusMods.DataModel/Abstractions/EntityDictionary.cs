@@ -127,10 +127,7 @@ public struct EntityDictionary<TK, TV> :
         return _coll.ContainsKey(val);
     }
 
-    /// <summary>
-    /// Returns a new empty dictionary for use.
-    /// </summary>
-    /// <param name="store"></param>
+    /// <inheritdoc />
     public static EntityDictionary<TK, TV> Empty(IDataStore store) => new(store);
 
     /// <inheritdoc />
