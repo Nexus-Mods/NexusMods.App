@@ -65,8 +65,4 @@
     </Compile>
   </ItemGroup>
 
-  <ItemGroup>
-    <AdditionalFiles Include="Controls\Spine\Buttons\Home.axaml" />
-  </ItemGroup>
-
 </Project>

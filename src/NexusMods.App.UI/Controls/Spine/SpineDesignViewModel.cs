@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Reactive.Subjects;
 using DynamicData;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
@@ -16,4 +17,9 @@ public class SpineDesignViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         new ImageButtonDesignViewModel(),
         new ImageButtonDesignViewModel(),
     });
+
+    public IObservable<SpineButtonAction> Actions { get; } =
+        new Subject<SpineButtonAction>();
+
+    public Subject<SpineButtonAction> Activations { get; } = new();
 }

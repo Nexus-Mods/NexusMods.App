@@ -12,18 +12,17 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
 {
     private readonly IViewModel _homeViewModel;
 
-    public MainWindowViewModel(ISpineViewModel spineViewModel, FoundGamesViewModel foundGamesViewModel, TopBarViewModel topBarViewModel)
+    public MainWindowViewModel(ISpineViewModel spineViewModel, FoundGamesViewModel foundGamesViewModel, ITopBarViewModel topBarViewModel)
     {
         Spine = spineViewModel;
         _homeViewModel = foundGamesViewModel;
         TopBarViewModel = topBarViewModel;
-        //this.WhenActivated(disposables =>
-        //{
-         /*   Spine.Actions
+        this.WhenActivated(disposables =>
+        {
+            Spine.Actions
                 .Subscribe(HandleSpineAction)
                 .DisposeWith(disposables);
-*/
-        //});
+        });
     }
 
     private void HandleSpineAction(SpineButtonAction action)
@@ -33,7 +32,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
             RightContent = _homeViewModel;
         }
 
-        //Spine.Activations.OnNext(action);
+        Spine.Activations.OnNext(action);
     }
 
     public ISpineViewModel Spine { get; }
@@ -42,5 +41,5 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
     public IViewModel RightContent { get; set; }
 
     [Reactive]
-    public TopBarViewModel TopBarViewModel { get; set; }
+    public ITopBarViewModel TopBarViewModel { get; set; }
 }

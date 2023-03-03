@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Reactive.Subjects;
 using DynamicData;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
@@ -21,5 +22,16 @@ public interface ISpineViewModel : IViewModelInterface
     /// Game Buttons
     /// </summary>
     public ReadOnlyObservableCollection<IImageButtonViewModel> Games { get; }
+
+
+    /// <summary>
+    /// Actions invoked by buttons on this spine
+    /// </summary>
+    public IObservable<SpineButtonAction> Actions { get; }
+
+    /// <summary>
+    /// Incoming activations from buttons on this spine
+    /// </summary>
+    public Subject<SpineButtonAction> Activations { get; }
 
 }

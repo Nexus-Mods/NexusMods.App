@@ -20,14 +20,13 @@ public static class Services
         return c.AddTransient<MainWindow>()
             // View Models
             .AddTransient<MainWindowViewModel>()
-            .AddTransient<ISpineViewModel, SpineDesignViewModel>()
-            .AddTransient<HomeButtonViewModel>()
-            .AddTransient<IconButtonViewModel>()
             .AddTransient<FoundGamesViewModel>()
-            .AddTransient<TopBarViewModel>()
+
+            .AddViewModel<IconButtonViewModel, IIconButtonViewModel>()
+            .AddViewModel<SpineViewModel, ISpineViewModel>()
+            .AddViewModel<TopBarViewModel, ITopBarViewModel>()
 
             // Views
-            .AddView<Home, HomeButtonViewModel>()
             .AddView<IconButton, IIconButtonViewModel>()
             .AddView<Spine, ISpineViewModel>()
             .AddView<FoundGamesView, FoundGamesViewModel>()
