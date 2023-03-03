@@ -1,4 +1,5 @@
 using System.Reactive.Linq;
+using System.Runtime.InteropServices;
 using Avalonia.Controls;
 using Avalonia.Controls.Mixins;
 using Avalonia.Input;
@@ -24,8 +25,6 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 
             this.OneWayBind(ViewModel, vm => vm.RightContent, v => v.RightContent.ViewModel)
                 .DisposeWith(disposables);
-
-
 
             ViewModel.WhenAnyValue(v => v.RightContent)
                 .Subscribe(x => { })

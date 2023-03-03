@@ -18,9 +18,7 @@
     <AvaloniaResource Include="Theme\TextBox.xaml" />
     <AvaloniaResource Include="Theme\ToggleSwitchStyles.xaml" />
     <AvaloniaResource Include="Theme\WindowStyles.xaml" />
-    <Folder Include="Models\" />
     <AvaloniaResource Include="Assets\**" />
-    <Folder Include="Resources\Icons" />
     <None Remove=".gitignore" />
     <None Remove="Theme\BareIcons.xaml" />
     <AvaloniaResource Include="Theme\BareIcons.xaml" />

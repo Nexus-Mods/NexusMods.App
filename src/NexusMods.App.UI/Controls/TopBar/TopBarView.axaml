@@ -14,7 +14,7 @@
     xmlns:topBar="clr-namespace:NexusMods.App.UI.Controls.TopBar"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.DataContext>
-        <topBar:TopBarDesignViewModel />
+        <topBar:TopBarDesignViewModel ShowWindowControls="True" />
     </Design.DataContext>
     <UserControl.Styles>
         <Style Selector="Button.BareIcon /template/ avalonia|Icon">
@@ -39,7 +39,7 @@
         </Style>
     </UserControl.Styles>
 
-    <Grid ColumnDefinitions="Auto, Auto, *, Auto, Auto, 3, Auto">
+    <Grid ColumnDefinitions="Auto, Auto, *, Auto, Auto, 3, Auto" x:Name="MainGrid">
         <Svg
             Grid.Column="0"
             Grid.Row="0"
@@ -130,6 +130,7 @@
         </Border>
 
         <Border
+            x:Name="WindowControlsBorder"
             BorderBrush="{DynamicResource StructuralBorderBrush}"
             BorderThickness="1,0,0,0"
             Grid.Column="6">

@@ -27,7 +27,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
         _loginManager = loginManager;
         LoginCommand = ReactiveCommand.CreateFromTask(Login, _loginManager.IsLoggedIn.OnUI().Select(b => !b));
         LogoutCommand = ReactiveCommand.CreateFromTask(Logout, _loginManager.IsLoggedIn.OnUI().Select(b => b));
-        
+
         this.WhenActivated(d =>
         {
             _loginManager.IsLoggedIn
@@ -37,14 +37,14 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             _loginManager.IsPremium
                 .Subscribe(x => IsPremium = x)
                 .DisposeWith(d);
-            
+
             _loginManager.Avatar
                 .Where(a => a != null)
                 .SelectMany(LoadImage)
                 .Subscribe(x => Avatar = x)
                 .DisposeWith(d);
         });
-        
+
     }
 
     private async Task<IImage?> LoadImage(Uri uri)
@@ -66,29 +66,31 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
         _logger.LogInformation("Logging into Nexus Mods");
         await _loginManager.LoginAsync();
     }
-    
+
     private async Task Logout()
     {
         _logger.LogInformation("Logging out of Nexus Mods");
         await _loginManager.Logout();
     }
 
+    [Reactive] public bool ShowWindowControls { get; set; } = false;
+
     [Reactive]
     public bool IsLoggedIn { get; set; }
-    
+
     [Reactive]
     public bool IsPremium { get; set; }
-    
+
     [Reactive]
     public IImage Avatar { get; set; }
 
     [Reactive] public ReactiveCommand<Unit, Unit> LoginCommand { get; set; }
 
     [Reactive] public ReactiveCommand<Unit, Unit> LogoutCommand { get; set; } = ReactiveCommand.Create(() => { });
-    
+
     [Reactive]
     public ReactiveCommand<Unit, Unit> MinimizeCommand { get; set; } = ReactiveCommand.Create(() => { });
-    
+
     [Reactive]
     public ReactiveCommand<Unit, Unit> MaximizeCommand { get; set; } = ReactiveCommand.Create(() => { });
 

@@ -1,4 +1,5 @@
 ﻿using System.Reactive.Disposables;
+using System.Runtime.InteropServices;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.TopBar;
 using NexusMods.App.UI.RightContent;
@@ -17,6 +18,9 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
         TopBar = topBarViewModel;
         Spine = spineViewModel;
         _homeViewModel = foundGamesViewModel;
+
+        // Only show controls in Windows since we can remove the chrome on that platform
+        TopBar.ShowWindowControls = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
         this.WhenActivated(disposables =>
         {
