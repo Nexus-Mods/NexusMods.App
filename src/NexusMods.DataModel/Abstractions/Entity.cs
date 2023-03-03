@@ -15,26 +15,26 @@ namespace NexusMods.DataModel.Abstractions;
 /// </summary>
 public abstract record Entity : IWalkable<Entity>
 {
-/*
-    There's a part of implementation detail here that might be unclear to people
-    not familiar with C# in depth.
+    /*
+        There's a part of implementation detail here that might be unclear to people
+        not familiar with C# in depth.
 
-    How do we keep track of IDs and Changes?
+        How do we keep track of IDs and Changes?
 
-    Because we use records (immutable), a new copy of the object is
-    created every time you modify the object by using the `with` keyword, or similar.
+        Because we use records (immutable), a new copy of the object is
+        created every time you modify the object by using the `with` keyword, or similar.
 
-    To do the copy, the language calls the copy constructor (see below); this
-    copy constructor copies everything *except* for the ID; which means that
-    if you modify the object in any way; the ID is missing and thus the object
-    is considered not persistent in the database.
+        To do the copy, the language calls the copy constructor (see below); this
+        copy constructor copies everything *except* for the ID; which means that
+        if you modify the object in any way; the ID is missing and thus the object
+        is considered not persistent in the database.
 
-    Let me know if this was useful to you
+        Let me know if this was useful to you
 
-    - Sewer
+        - Sewer
 
-    i.e. If you ever add any fields here, please add them to the copy constructor!!
-*/
+        i.e. If you ever add any fields here, please add them to the copy constructor!!
+    */
 
     /// <summary>
     /// Marks the type of entity this is.
