@@ -41,7 +41,7 @@ public class ProtocolRegistrationLinux : IProtocolRegistration
         var stdOutBuffer = new StringBuilder();
 
         var command = Cli.Wrap("xdg-settings")
-            .WithArguments($"get default-url-scheme-handler {protocol}")
+            .WithArguments($"check default-url-scheme-handler {protocol} {BaseId}-{protocol}.desktop")
             .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer));
 
         var res = await _processFactory.ExecuteAsync(command);
@@ -50,6 +50,6 @@ public class ProtocolRegistrationLinux : IProtocolRegistration
         var stdOut = stdOutBuffer.ToString();
 
         // might end with 0xA (LF)
-        return stdOut.StartsWith($"{BaseId}-{protocol}.desktop", StringComparison.InvariantCultureIgnoreCase);
+        return stdOut.StartsWith("yes", StringComparison.InvariantCultureIgnoreCase);
     }
 }
