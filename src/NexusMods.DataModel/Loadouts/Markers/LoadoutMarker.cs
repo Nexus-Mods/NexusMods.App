@@ -1,4 +1,4 @@
-﻿using System.Reactive.Linq;
+using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;

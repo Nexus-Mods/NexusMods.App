@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
