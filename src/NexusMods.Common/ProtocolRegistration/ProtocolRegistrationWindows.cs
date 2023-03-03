@@ -1,13 +1,7 @@
-﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.Versioning;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.Versioning;
+using Microsoft.Win32;
 
-namespace NexusMods.Common;
+namespace NexusMods.Common.ProtocolRegistration;
 
 /// <summary>
 /// protocol registration for windows
@@ -22,16 +16,16 @@ public class ProtocolRegistrationWindows : IProtocolRegistration
     }
 
     /// <inheritdoc/>
-    public bool IsSelfHandler(string protocol)
+    public Task<bool> IsSelfHandler(string protocol)
     {
         using var key = GetClassKey(protocol);
         using var commandKey = GetCommandKey(key);
 
-        return commandKey != null && ((string?)commandKey.GetValue("") ?? "").Contains(GetOwnExe());
+        return Task.FromResult(commandKey is not null && ((string?)commandKey.GetValue("") ?? "").Contains(GetOwnExe()));
     }
 
     /// <inheritdoc/>
-    public string Register(string protocol, string friendlyName, string? commandLine = null)
+    public Task<string?> Register(string protocol, string friendlyName, string commandLine)
     {
         using var key = GetClassKey(protocol);
         key.SetValue("", "URL:" + friendlyName);
@@ -39,36 +33,29 @@ public class ProtocolRegistrationWindows : IProtocolRegistration
 
         using var commandKey = GetCommandKey(key);
 
-        string res = (string)(commandKey.GetValue("") ?? "");
-        if (commandLine != null)
-        {
-            commandKey.SetValue("", commandLine);
-        }
-        else
-        {
-            commandKey.DeleteValue("");
-        }
+        var res = (string?)commandKey.GetValue("");
+        commandKey.SetValue("", commandLine);
 
-        return res;
+        return Task.FromResult(res);
     }
 
     /// <inheritdoc/>
-    public string RegisterSelf(string protocol)
+    public Task<string?> RegisterSelf(string protocol)
     {
         return Register(protocol, "NMA", GetOwnExe() + " protocol-invoke --url \"%1\"");
     }
 
-    private string GetOwnExe()
+    private static string GetOwnExe()
     {
         return System.Diagnostics.Process.GetCurrentProcess().MainModule!.FileName;
     }
 
-    private RegistryKey GetClassKey(string protocol)
+    private static RegistryKey GetClassKey(string protocol)
     {
         return Registry.CurrentUser.CreateSubKey("SOFTWARE\\Classes\\" + protocol);
     }
 
-    private RegistryKey GetCommandKey(RegistryKey parent)
+    private static RegistryKey GetCommandKey(RegistryKey parent)
     {
         return parent.CreateSubKey(@"shell\open\command");
     }

@@ -1,17 +1,16 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NexusMods.CLI.OptionParsers;
 using NexusMods.CLI.Verbs;
 using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Interprocess;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.FileExtractor.Extractors;
 using NexusMods.Paths;
 using System.Runtime.InteropServices;
+using NexusMods.Common.ProtocolRegistration;
 
 namespace NexusMods.CLI;
 
@@ -29,9 +28,18 @@ public static class Services
         services.AddSingleton<IOptionParser<Loadout>, LoadoutParser>();
         services.AddSingleton<IOptionParser<ITool>, ToolParser>();
         services.AddSingleton<TemporaryFileManager>();
+
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             services.AddSingleton<IProtocolRegistration, ProtocolRegistrationWindows>();
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            services.AddSingleton<IProtocolRegistration, ProtocolRegistrationLinux>();
+        }
+        else
+        {
+            throw new PlatformNotSupportedException("This platform does not support protocol registration");
         }
 
         services.AddVerb<AnalyzeArchive>()
@@ -52,10 +60,9 @@ public static class Services
             .AddVerb<ProtocolInvocation>()
             .AddVerb<Rename>()
             .AddVerb<RunTool>();
-        
+
         services.AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ => new Resource<IExtractor, Size>("File Extraction"));
         services.AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(_ => new Resource<FileContentsCache, Size>("File Analysis"));
         return services;
     }
-    
 }
