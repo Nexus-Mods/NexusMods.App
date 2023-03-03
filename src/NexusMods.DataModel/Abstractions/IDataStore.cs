@@ -14,9 +14,16 @@ public interface IDataStore
     Id? GetRoot(RootType type);
     byte[]? GetRaw(Id id);
     void PutRaw(Id key, ReadOnlySpan<byte> val);
+
+    /// <summary>
+    /// Delete the value for teh given id
+    /// </summary>
+    /// <param name="key"></param>
+    void Delete(Id id);
     Task<long> PutRaw(IAsyncEnumerable<(Id Key, byte[] Value)> kvs, CancellationToken token = default);
     IEnumerable<T> GetByPrefix<T>(Id prefix) where T : Entity;
-    IObservable<RootChange> Changes { get; }
+    IObservable<RootChange> RootChanges { get; }
+    IObservable<Id> IdChanges { get; }
 }
 
 /// <summary>
@@ -99,6 +106,68 @@ public struct RootChange : IMessage
                     From = from,
                     To = to
                 };
+            }
+        }
+    }
+}
+
+/// <summary>
+/// Notice of a new id being inserted or updated.
+/// </summary>
+public struct IdPut : IMessage
+{
+    public Id Id { get; }
+    public PutType Type { get; }
+
+    public enum PutType : byte
+    {
+        Put,
+        Delete
+    }
+
+    public IdPut(PutType type, Id id)
+    {
+        Type = type;
+        Id = id;
+    }
+    public static int MaxSize { get; } = 1024 * 16;
+    public int Write(Span<byte> buffer)
+    {
+        unsafe
+        {
+            fixed (byte* ptr = buffer)
+            {
+                var stream = new PointerByteStream(ptr);
+                var writer = new BitStream<PointerByteStream>(stream);
+                
+                writer.Write((byte)Type);
+                writer.Write((byte)Id.Category);
+                writer.Write(Id.SpanSize);
+                Span<byte> fromSpan = stackalloc byte[Id.SpanSize];
+                Id.ToSpan(fromSpan);
+                writer.Write(fromSpan);
+                return 2 + sizeof(int) + Id.SpanSize;
+            }
+        }
+    }
+
+    public static IMessage Read(ReadOnlySpan<byte> buffer)
+    {
+        unsafe
+        {
+            fixed (byte* ptr = buffer)
+            {
+                var stream = new PointerByteStream(ptr);
+                var reader = new BitStream<PointerByteStream>(stream);
+
+                var type = reader.Read<byte>();
+                var category = (EntityCategory)reader.Read<byte>();
+                var spanSize = reader.Read<int>();
+                Span<byte> fromSpan = stackalloc byte[spanSize];
+                reader.Read(fromSpan);
+                var id = Id.FromSpan(category, fromSpan);
+                
+                return new IdPut((PutType)type, id);
             }
         }
     }

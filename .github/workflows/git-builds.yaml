@@ -1,0 +1,39 @@
+name: Git Builds
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Info
+        run: dotnet --info
+
+      - name: Build (Linux)
+        if: runner.os == 'Linux'
+        shell: sh
+        run: ./scripts/build-linux-x64.sh
+
+      - name: Build (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: scripts\build-win-x64.ps1
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          # example: "NexusMods.App-Windows-279a5092173a6f687f89dc3c6a2b7c5898e289f6"
+          name: NexusMods.App-${{ runner.os }}-${{ github.sha }}
+          path: ${{ github.workspace }}/bin
+          if-no-files-found: error
+          retention-days: 7

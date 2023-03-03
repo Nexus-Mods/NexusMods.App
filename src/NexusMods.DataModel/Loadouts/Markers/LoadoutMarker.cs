@@ -58,7 +58,10 @@ public class LoadoutMarker : IMarker<Loadout>
     public IEnumerable<Loadout> History()
     {
         var list = Value;
-        while (true)
+        // This exists to deal with bad data we may have for previous list versions
+        // for example if we've purged the previous versions of a list
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        while (list != null)
         {
             yield return list;
             

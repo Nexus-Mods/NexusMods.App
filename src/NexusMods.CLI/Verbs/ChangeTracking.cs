@@ -22,7 +22,7 @@ public class ChangeTracking : AVerb
     
     public async Task<int> Run(CancellationToken token)
     {
-        using var _ = _store.Changes.Subscribe(s =>
+        using var _ = _store.RootChanges.Subscribe(s =>
         HandleEvent(new Table(new [] {"Type", "From", "To"}, new[]
         {
             new object[] {s.Type, s.From, s.To},

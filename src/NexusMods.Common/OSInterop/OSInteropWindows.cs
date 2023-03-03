@@ -1,12 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CliWrap;
 
-namespace NexusMods.Common;
+namespace NexusMods.Common.OSInterop;
 
 /// <summary>
 /// OS interoperation for windows
@@ -24,8 +18,9 @@ public class OSInteropWindows : IOSInterop
     }
 
     /// <inheritdoc/>
-    public void OpenURL(string url)
+    public async Task OpenURL(string url, CancellationToken cancellationToken = default)
     {
-        _processFactory.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+        var command = Cli.Wrap("explorer.exe").WithArguments(url);
+        await _processFactory.ExecuteAsync(command, cancellationToken);
     }
 }

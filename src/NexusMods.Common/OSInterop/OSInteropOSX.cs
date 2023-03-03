@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
+﻿using CliWrap;
 
-namespace NexusMods.Common;
+namespace NexusMods.Common.OSInterop;
 
 /// <summary>
 /// OS interoperation for MacOS
@@ -18,8 +18,9 @@ public class OSInteropOSX : IOSInterop
     }
 
     /// <inheritdoc/>
-    public void OpenURL(string url)
+    public async Task OpenURL(string url, CancellationToken cancellationToken = default)
     {
-        _processFactory.Start("open", url);
+        var command = Cli.Wrap("open").WithArguments(url);
+        await _processFactory.ExecuteAsync(command, cancellationToken);
     }
 }

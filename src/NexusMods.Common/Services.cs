@@ -5,13 +5,17 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using NexusMods.Common.OSInterop;
 
 namespace NexusMods.Common
 {
     public static class Services
     {
-        public static IServiceCollection AddOSInterop(this IServiceCollection services)
+        public static IServiceCollection AddCommon(this IServiceCollection services)
         {
+            services.AddSingleton<IIDGenerator, IDGenerator>()
+                    .AddSingleton<IProcessFactory, ProcessFactory>();
+            
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 services.AddSingleton<IOSInterop, OSInteropWindows>();
