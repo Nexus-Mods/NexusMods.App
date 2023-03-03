@@ -85,6 +85,7 @@ public abstract record Entity : IWalkable<Entity>
 
     /// <summary>
     /// ID of this item from within the data store.
+    /// If this item is not in the store, it is persisted.
     /// </summary>
     [JsonIgnore]
     public Id DataStoreId
