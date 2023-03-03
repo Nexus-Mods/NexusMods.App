@@ -1,4 +1,6 @@
 using System.Runtime.Versioning;
+using System.Text;
+using CliWrap;
 
 namespace NexusMods.Common.ProtocolRegistration;
 
@@ -8,6 +10,19 @@ namespace NexusMods.Common.ProtocolRegistration;
 [SupportedOSPlatform("linux")]
 public class ProtocolRegistrationLinux : IProtocolRegistration
 {
+    private const string BaseId = "nexusmods-app";
+
+    private readonly IProcessFactory _processFactory;
+
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    /// <param name="processFactory"></param>
+    public ProtocolRegistrationLinux(IProcessFactory processFactory)
+    {
+        _processFactory = processFactory;
+    }
+
     /// <inheritdoc/>
     public Task<string> RegisterSelf(string protocol)
     {
@@ -21,8 +36,20 @@ public class ProtocolRegistrationLinux : IProtocolRegistration
     }
 
     /// <inheritdoc/>
-    public Task<bool> IsSelfHandler(string protocol)
+    public async Task<bool> IsSelfHandler(string protocol)
     {
-        throw new NotImplementedException();
+        var stdOutBuffer = new StringBuilder();
+
+        var command = Cli.Wrap("xdg-settings")
+            .WithArguments($"get default-url-scheme-handler {protocol}")
+            .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer));
+
+        var res = await _processFactory.ExecuteAsync(command);
+        if (res.ExitCode != 0) return false;
+
+        var stdOut = stdOutBuffer.ToString();
+
+        // might end with 0xA (LF)
+        return stdOut.StartsWith($"{BaseId}-{protocol}.desktop", StringComparison.InvariantCultureIgnoreCase);
     }
 }
