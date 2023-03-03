@@ -32,9 +32,10 @@ public static class Services
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             services.AddSingleton<IProtocolRegistration, ProtocolRegistrationWindows>();
-        } else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
-            services.AddSingleton<IProtocolRegistration, ProtocolRegistrationWindows>();
+            services.AddSingleton<IProtocolRegistration, ProtocolRegistrationLinux>();
         }
         else
         {

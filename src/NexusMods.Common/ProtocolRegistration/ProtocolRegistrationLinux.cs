@@ -1,6 +1,7 @@
 using System.Runtime.Versioning;
 using System.Text;
 using CliWrap;
+using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Common.ProtocolRegistration;
 
@@ -24,15 +25,41 @@ public class ProtocolRegistrationLinux : IProtocolRegistration
     }
 
     /// <inheritdoc/>
-    public Task<string> RegisterSelf(string protocol)
+    public async Task<string?> RegisterSelf(string protocol)
     {
-        throw new NotImplementedException();
+        var executable = System.Diagnostics.Process.GetCurrentProcess().MainModule!.FileName;
+
+        return await Register(
+            protocol,
+            $"{BaseId}-{protocol}.desktop",
+            $"{executable} protocol-invoke --url %u");
     }
 
     /// <inheritdoc/>
-    public Task<string> Register(string protocol, string friendlyName, string? commandLine = null)
+    public async Task<string?> Register(string protocol, string friendlyName, string commandLine)
     {
-        throw new NotImplementedException();
+        var applicationsFolder = KnownFolders.HomeFolder
+            .CombineChecked(".local/share/applications");
+
+        applicationsFolder.CreateDirectory();
+
+        var desktopEntryFile = applicationsFolder.CombineChecked(friendlyName);
+
+        var sb = new StringBuilder();
+        sb.AppendLine("[Desktop Entry]");
+        sb.AppendLine($"Name=NexusMods.App {protocol.ToUpper()} Handler");
+        sb.AppendLine("Terminal=false");
+        sb.AppendLine("Type=Application");
+        sb.AppendLine($"Exec={commandLine}");
+        sb.AppendLine($"MimeType=x-scheme-handler/{protocol}");
+
+        await desktopEntryFile.WriteAllTextAsync(sb.ToString());
+
+        var command = Cli.Wrap("update-desktop-database")
+            .WithArguments(applicationsFolder.ToString());
+
+        await _processFactory.ExecuteAsync(command);
+        return null;
     }
 
     /// <inheritdoc/>
