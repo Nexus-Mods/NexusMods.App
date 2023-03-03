@@ -19,11 +19,11 @@ public class SpineTests : AUiTest
     {
         _loadoutManager = loadoutManager;
     }
-    
+
     [Fact]
     public async Task ActivatingButtonsDeactivatesOtherButtons()
     {
-        void ValidateButtons(SpineViewModel vm, SpineButtonAction action)
+        void ValidateButtons(ISpineViewModel vm, SpineButtonAction action)
         {
             if (action.Type == Type.Game)
             {
@@ -61,12 +61,12 @@ public class SpineTests : AUiTest
             }
 
         }
-        
-        using var vm = GetActivatedViewModel<SpineViewModel>();
+
+        using var vm = GetActivatedViewModel<ISpineViewModel>();
         var loadout = await _loadoutManager.ImportFrom(KnownFolders.EntryFolder.CombineUnchecked(@"Resources\cyberpunk2077.1.61.zip"));
 
         using var _ = vm.VM.Actions.Subscribe(vm.VM.Activations);
-        
+
         vm.VM.Games.Select(g => g.Name).Should().Contain("Cyberpunk 2077");
 
         vm.VM.Games.First().Click.CanExecute(null).Should().BeTrue();
