@@ -11,19 +11,19 @@ namespace NexusMods.App.UI.ViewModels;
 public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
 {
     private readonly IViewModel _homeViewModel;
-    
-    public MainWindowViewModel(SpineViewModel spineViewModel, FoundGamesViewModel foundGamesViewModel, TopBarViewModel topBarViewModel)
+
+    public MainWindowViewModel(ISpineViewModel spineViewModel, FoundGamesViewModel foundGamesViewModel, TopBarViewModel topBarViewModel)
     {
         Spine = spineViewModel;
         _homeViewModel = foundGamesViewModel;
         TopBarViewModel = topBarViewModel;
-        this.WhenActivated(disposables =>
-        {
-            Spine.Actions
+        //this.WhenActivated(disposables =>
+        //{
+         /*   Spine.Actions
                 .Subscribe(HandleSpineAction)
                 .DisposeWith(disposables);
-            
-        });
+*/
+        //});
     }
 
     private void HandleSpineAction(SpineButtonAction action)
@@ -32,15 +32,15 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
         {
             RightContent = _homeViewModel;
         }
-        
-        Spine.Activations.OnNext(action);
+
+        //Spine.Activations.OnNext(action);
     }
-    
-    public SpineViewModel Spine { get; }
-    
+
+    public ISpineViewModel Spine { get; }
+
     [Reactive]
     public IViewModel RightContent { get; set; }
-    
+
     [Reactive]
     public TopBarViewModel TopBarViewModel { get; set; }
 }

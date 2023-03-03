@@ -8,10 +8,21 @@ using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 
-public partial class IconButton : ReactiveUserControl<IconButtonViewModel>
+public partial class IconButton : ReactiveUserControl<IIconButtonViewModel>, IViewContract
 {
     public static readonly StyledProperty<IconType> IconProperty =
         AvaloniaProperty.Register<IconButton, IconType>(nameof(Icon));
+
+    public string ViewContract
+    {
+        get => GetValue(IconProperty).ToString();
+        set
+        {
+            var parsed = Enum.Parse<IconType>(value);
+            SetValue(IconProperty, parsed);
+            RestClasses(parsed);
+        }
+    }
 
     public IconType Icon
     {
@@ -38,7 +49,7 @@ public partial class IconButton : ReactiveUserControl<IconButtonViewModel>
                 .StartWith(false)
                 .Subscribe(SetClasses)
                 .DisposeWith(disposables);
-            this.BindCommand<IconButton, IconButtonViewModel, ICommand, Button>(ViewModel, vm => vm.Click, v => v.Button)
+            this.BindCommand(ViewModel, vm => vm.Click, v => v.Button)
                 .DisposeWith(disposables);
         });
     }

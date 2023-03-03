@@ -7,6 +7,7 @@ using DynamicData;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.Controls.Spine.Buttons;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
+using NexusMods.App.UI.Controls.Spine.Buttons.Image;
 using NexusMods.App.UI.ViewModels;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
@@ -18,12 +19,12 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 {
     private readonly IDataStore _dataStore;
 
-    public HomeButtonViewModel Home { get; }
+    public IIconButtonViewModel Home { get; }
 
-    public IconButtonViewModel Add { get; }
+    public IIconButtonViewModel Add { get; }
 
     //private ReadOnlyObservableCollection<GameViewModel> _game;
-    public ReadOnlyObservableCollection<IImageViewModel> Games { get; } // _game;
+    public ReadOnlyObservableCollection<IImageButtonViewModel> Games { get; } // _game;
 
     public Subject<SpineButtonAction> Activations { get; } = new();
 
@@ -36,8 +37,8 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         _logger = logger;
         _dataStore = dataStore;
 
-        Home = homebuttonViewModel;
-        Add = addButtonViewModel;
+        //Home = homebuttonViewModel;
+        //Add = addButtonViewModel;
 
         /*
         this.WhenActivated(disposables =>
@@ -88,6 +89,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         */
     }
 
+    /*
     private void HandleActivation(SpineButtonAction action)
     {
         _logger.LogTrace("Activation {Action}", action);
@@ -109,5 +111,5 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 game.IsActive = false;
             }
         }
-    }
+    }*/
 }
