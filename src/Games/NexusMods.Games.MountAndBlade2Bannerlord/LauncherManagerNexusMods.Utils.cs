@@ -1,4 +1,4 @@
-﻿using Bannerlord.ModuleManager;
+using Bannerlord.ModuleManager;
 using FetchBannerlordVersion;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;

@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <PackageReference Include="Bannerlord.LauncherManager" Version="1.0.46" />
-    <PackageReference Include="FetchBannerlordVersion" Version="1.0.6.35" />
+    <PackageReference Include="FetchBannerlordVersion" Version="1.0.6.39" />
   </ItemGroup>
 
 </Project>

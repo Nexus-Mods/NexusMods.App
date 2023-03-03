@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using Bannerlord.LauncherManager;
 using Bannerlord.LauncherManager.Models;
 using NexusMods.Common;
@@ -22,7 +22,7 @@ internal sealed class MountAndBlade2BannerlordModInstaller : IModInstaller
         _launcherManagerFactory = launcherManagerFactory;
         _store = store;
     }
-    
+
     private static readonly RelativePath ModFolder = Constants.ModulesFolder.ToRelativePath();
     private static readonly RelativePath SubModuleFile = Constants.SubModuleName.ToRelativePath();
     private readonly LauncherManagerFactory _launcherManagerFactory;
@@ -35,18 +35,18 @@ internal sealed class MountAndBlade2BannerlordModInstaller : IModInstaller
 
         var launcherManager = _launcherManagerFactory.Get(installation);
         var result = launcherManager.TestModuleContent(files.Select(x => x.Key.ToString()).ToArray());
-        
-        return result.Supported 
-            ? Common.Priority.Normal 
+
+        return result.Supported
+            ? Common.Priority.Normal
             : Common.Priority.None;
     }
 
     public IEnumerable<AModFile> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
         if (!installation.Is<MountAndBlade2Bannerlord>()) return Enumerable.Empty<AModFile>();
-        
+
         var modFolder = files.Keys.First(m => m.FileName == SubModuleFile).Parent;
-        
+
         var launcherManager = _launcherManagerFactory.Get(installation);
         var result = launcherManager.InstallModuleContent(files.Select(x => x.Key.ToString()).ToArray(), modFolder.ToString());
         var moduleInfos = result.Instructions.OfType<ModuleInfoInstallInstruction>().Select(x => x.ModuleInfo);

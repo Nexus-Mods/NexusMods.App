@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
 using NexusMods.Games.Abstractions;
 using NexusMods.Paths;
@@ -10,7 +10,7 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord;
 /// Maintained by the BUTR Team
 /// https://github.com/BUTR
 /// </summary>
-public sealed class MountAndBlade2Bannerlord : AGame,  ISteamGame, IGogGame, IEpicGame
+public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpicGame
 {
     public static readonly GameDomain StaticDomain = GameDomain.From("mountandblade2bannerlord");
     public static string DisplayName => "Mount & Blade II: Bannerlord";

@@ -1,4 +1,4 @@
-﻿using Bannerlord.LauncherManager;
+using Bannerlord.LauncherManager;
 using Microsoft.Extensions.Logging;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
@@ -9,7 +9,7 @@ internal sealed partial class LauncherManagerNexusMods : LauncherManagerHandler
     private readonly string _installationPath;
 
     public string ExecutableParameters { get; private set; } = string.Empty;
-    
+
     public LauncherManagerNexusMods(ILogger<LauncherManagerNexusMods> logger, string installationPath)
     {
         _logger = logger;

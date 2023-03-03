@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
 using NexusMods.Paths;
@@ -20,7 +20,7 @@ public sealed class LauncherManagerFactory
         return _instances.GetOrAdd(installation.Locations[GameFolderType.Game].ToString(),
             static (installationPath, factory) => ValueFactory(factory, installationPath), _loggerFactory);
     }
-    
+
     internal LauncherManagerNexusMods Get(string installationPath)
     {
         return _instances.GetOrAdd(installationPath,

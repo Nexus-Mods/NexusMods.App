@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
@@ -7,7 +7,7 @@ using NexusMods.Paths;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
-public class RunLauncherTool: ITool
+public class RunLauncherTool : ITool
 {
     private readonly ILogger _logger;
 

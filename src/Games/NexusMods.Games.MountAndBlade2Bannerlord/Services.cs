@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.ModInstallers;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
-public static class Services 
+public static class Services
 {
     public static IServiceCollection AddMountAndBladeBannerlord(this IServiceCollection services)
     {
