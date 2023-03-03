@@ -14,9 +14,10 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
 
     public MainWindowViewModel(ISpineViewModel spineViewModel, FoundGamesViewModel foundGamesViewModel, ITopBarViewModel topBarViewModel)
     {
+        TopBar = topBarViewModel;
         Spine = spineViewModel;
         _homeViewModel = foundGamesViewModel;
-        TopBarViewModel = topBarViewModel;
+
         this.WhenActivated(disposables =>
         {
             Spine.Actions
@@ -42,5 +43,5 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
     public IViewModel RightContent { get; set; }
 
     [Reactive]
-    public ITopBarViewModel TopBarViewModel { get; set; }
+    public ITopBarViewModel TopBar { get; set; }
 }

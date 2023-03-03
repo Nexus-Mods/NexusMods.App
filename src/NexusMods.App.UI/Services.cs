@@ -23,6 +23,7 @@ public static class Services
             .AddTransient<FoundGamesViewModel>()
 
             .AddViewModel<IconButtonViewModel, IIconButtonViewModel>()
+            .AddViewModel<ImageButtonViewModel, IImageButtonViewModel>()
             .AddViewModel<SpineViewModel, ISpineViewModel>()
             .AddViewModel<TopBarViewModel, ITopBarViewModel>()
 

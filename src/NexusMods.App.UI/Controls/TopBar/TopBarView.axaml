@@ -4,7 +4,7 @@
     d:DesignWidth="1280"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Controls.TopBar.TopBarView"
-    x:TypeArguments="topBar:TopBarViewModel"
+    x:TypeArguments="topBar:ITopBarViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"

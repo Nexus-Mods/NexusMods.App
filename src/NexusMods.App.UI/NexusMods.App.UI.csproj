@@ -42,6 +42,7 @@
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0-preview.1.23110.8" />
       <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="6.3.0-preview4" />
       <PackageReference Include="ReactiveUI.Fody" Version="18.4.22" />
+      <PackageReference Include="Splat.Microsoft.Extensions.Logging" Version="14.6.8" />
       <PackageReference Include="XamlNameReferenceGenerator" Version="1.6.1" />
   </ItemGroup>
 
