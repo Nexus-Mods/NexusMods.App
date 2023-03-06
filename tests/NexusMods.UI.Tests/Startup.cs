@@ -2,8 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.App;
 using NexusMods.Common;
-using NexusMods.DataModel;
-using NexusMods.FileExtractor;
 using NexusMods.Games.RedEngine;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.DependencyInjection;
