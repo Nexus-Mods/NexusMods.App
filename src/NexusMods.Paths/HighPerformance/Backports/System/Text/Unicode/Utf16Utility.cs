@@ -20,7 +20,7 @@ internal static class Utf16Utility
     {
         return (vec & Vector128.Create(unchecked((ushort)~0x007F))) == Vector128<ushort>.Zero;
     }
-        
+
     /// <summary>
     /// Returns true iff the Vector256 represents 16 ASCII UTF-16 characters in machine endianness.
     /// </summary>
@@ -40,16 +40,16 @@ internal static class Utf16Utility
         Debug.Assert(AllCharsInVector128AreAscii(vec));
 
         // the 0x80 bit of each word of 'lowerIndicator' will be set iff the word has value >= 'A'
-        Vector128<sbyte> lowIndicator1 = Vector128.Create((sbyte)(0x80 - 'A')) + vec.AsSByte();
+        var lowIndicator1 = Vector128.Create((sbyte)(0x80 - 'A')) + vec.AsSByte();
 
         // the 0x80 bit of each word of 'combinedIndicator' will be set iff the word has value >= 'A' and <= 'Z'
-        Vector128<sbyte> combIndicator1 = Vector128.LessThan(
+        var combIndicator1 = Vector128.LessThan(
             Vector128.Create(unchecked((sbyte)(('Z' - 'A') - 0x80))), lowIndicator1);
 
         // Add the lowercase indicator (0x20 bit) to all A-Z letters
         return Vector128.AndNot(Vector128.Create((sbyte)0x20), combIndicator1).AsUInt16() + vec;
     }
-        
+
     /// <summary>
     /// Convert Vector256 that represent 16 ASCII UTF-16 characters to lowercase
     /// </summary>
@@ -57,10 +57,10 @@ internal static class Utf16Utility
     internal static Vector256<ushort> Vector256AsciiToLowercase(Vector256<ushort> vec)
     {
         // the 0x80 bit of each word of 'lowerIndicator' will be set iff the word has value >= 'A'
-        Vector256<sbyte> lowIndicator1 = Vector256.Create((sbyte)(0x80 - 'A')) + vec.AsSByte();
+        var lowIndicator1 = Vector256.Create((sbyte)(0x80 - 'A')) + vec.AsSByte();
 
         // the 0x80 bit of each word of 'combinedIndicator' will be set iff the word has value >= 'A' and <= 'Z'
-        Vector256<sbyte> combIndicator1 = Vector256.LessThan(
+        var combIndicator1 = Vector256.LessThan(
             Vector256.Create(unchecked((sbyte)(('Z' - 'A') - 0x80))), lowIndicator1);
 
         // Add the lowercase indicator (0x20 bit) to all A-Z letters
@@ -77,16 +77,16 @@ internal static class Utf16Utility
         Debug.Assert(AllCharsInVector128AreAscii(vec));
 
         // the 0x80 bit of each word of 'lowerIndicator' will be set iff the word has value >= 'a'
-        Vector128<sbyte> lowIndicator1 = Vector128.Create((sbyte)(0x80 - 'a')) + vec.AsSByte();
+        var lowIndicator1 = Vector128.Create((sbyte)(0x80 - 'a')) + vec.AsSByte();
 
         // the 0x80 bit of each word of 'combinedIndicator' will be set iff the word has value >= 'a' and <= 'z'
-        Vector128<sbyte> combIndicator1 = Vector128.LessThan(
+        var combIndicator1 = Vector128.LessThan(
             Vector128.Create(unchecked((sbyte)(('z' - 'a') - 0x80))), lowIndicator1);
 
         // Drop the lowercase indicator (0x20 bit) from all a-z letters
         return vec - Vector128.AndNot(Vector128.Create((sbyte)0x20), combIndicator1).AsUInt16();
     }
-        
+
     /// <summary>
     /// Convert Vector256 that represent 16 ASCII UTF-16 characters to uppercase
     /// </summary>
@@ -94,10 +94,10 @@ internal static class Utf16Utility
     internal static Vector256<ushort> Vector256AsciiToUppercase(Vector256<ushort> vec)
     {
         // the 0x80 bit of each word of 'lowerIndicator' will be set iff the word has value >= 'a'
-        Vector256<sbyte> lowIndicator1 = Vector256.Create((sbyte)(0x80 - 'a')) + vec.AsSByte();
+        var lowIndicator1 = Vector256.Create((sbyte)(0x80 - 'a')) + vec.AsSByte();
 
         // the 0x80 bit of each word of 'combinedIndicator' will be set iff the word has value >= 'a' and <= 'z'
-        Vector256<sbyte> combIndicator1 = Vector256.LessThan(
+        var combIndicator1 = Vector256.LessThan(
             Vector256.Create(unchecked((sbyte)(('z' - 'a') - 0x80))), lowIndicator1);
 
         // Drop the lowercase indicator (0x20 bit) from all a-z letters

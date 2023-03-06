@@ -1,4 +1,4 @@
-﻿using GameFinder.Common;
+using GameFinder.Common;
 using GameFinder.StoreHandlers.Steam;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;

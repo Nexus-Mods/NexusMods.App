@@ -1,4 +1,4 @@
-﻿using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Attributes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -6,7 +6,9 @@ using NexusMods.Benchmarks.Interfaces;
 using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Interprocess;
+using NexusMods.DataModel.Interprocess.Messages;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Hashing.xxHash64;
@@ -18,16 +20,15 @@ using Hash = NexusMods.Hashing.xxHash64.Hash;
 namespace NexusMods.Benchmarks.Benchmarks;
 
 [MemoryDiagnoser]
-[BenchmarkInfo("DataStore","Test the interfaces on IDataStore")]
+[BenchmarkInfo("DataStore", "Test the interfaces on IDataStore")]
 public class DataStoreBenchmark : IBenchmark, IDisposable
 {
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly IDataStore _dataStore;
     private readonly byte[] _rawData;
     private readonly Id64 _rawId;
-    private readonly RelativePath _relPutPath;
     private readonly HashRelativePath _fromPutPath;
-    private readonly Id _immutableRecord;
+    private readonly IId _immutableRecord;
     private readonly FromArchive _record;
 
     public DataStoreBenchmark()
@@ -55,8 +56,8 @@ public class DataStoreBenchmark : IBenchmark, IDisposable
         _rawId = new Id64(EntityCategory.TestData, (ulong)Random.Shared.NextInt64());
         _dataStore.PutRaw(_rawId, _rawData);
 
-        _relPutPath = "test.txt".ToRelativePath();
-        _fromPutPath = new HashRelativePath(Hash.From((ulong)Random.Shared.NextInt64()), _relPutPath);
+        var relPutPath = "test.txt".ToRelativePath();
+        _fromPutPath = new HashRelativePath(Hash.From((ulong)Random.Shared.NextInt64()), relPutPath);
 
         _record = new FromArchive
         {
@@ -70,6 +71,12 @@ public class DataStoreBenchmark : IBenchmark, IDisposable
         _immutableRecord = _dataStore.Put(_record);
     }
 
+    [GlobalCleanup]
+    public void Dispose()
+    {
+        _temporaryFileManager.Dispose();
+    }
+
     [Benchmark]
     public void PutRawData()
     {
@@ -77,13 +84,13 @@ public class DataStoreBenchmark : IBenchmark, IDisposable
     }
 
     [Benchmark]
-    public void GetRawData()
+    public byte[]? GetRawData()
     {
-        _dataStore.GetRaw(_rawId);
+        return _dataStore.GetRaw(_rawId);
     }
 
     [Benchmark]
-    public void PutImmutable()
+    public IId PutImmutable()
     {
         var record = new FromArchive
         {
@@ -94,7 +101,7 @@ public class DataStoreBenchmark : IBenchmark, IDisposable
             Hash = Hash.From(42),
             To = new GamePath(GameFolderType.Game, "test.txt")
         };
-        _dataStore.Put(record);
+        return _dataStore.Put(record);
     }
 
     [Benchmark]
@@ -104,19 +111,14 @@ public class DataStoreBenchmark : IBenchmark, IDisposable
     }
 
     [Benchmark]
-    public void GetImmutable()
+    public FromArchive? GetImmutable()
     {
-        _dataStore.Get<FromArchive>(_immutableRecord);
+        return _dataStore.Get<FromArchive>(_immutableRecord);
     }
 
     [Benchmark]
-    public void GetImmutableCached()
+    public FromArchive? GetImmutableCached()
     {
-        _dataStore.Get<FromArchive>(_immutableRecord, true);
-    }
-
-    public void Dispose()
-    {
-        _temporaryFileManager.Dispose();
+        return _dataStore.Get<FromArchive>(_immutableRecord, true);
     }
 }

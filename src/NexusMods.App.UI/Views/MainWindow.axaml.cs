@@ -1,5 +1,4 @@
 using System.Reactive.Linq;
-using System.Runtime.InteropServices;
 using Avalonia.Controls;
 using Avalonia.Controls.Mixins;
 using Avalonia.Input;
@@ -27,7 +26,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 .DisposeWith(disposables);
 
             ViewModel.WhenAnyValue(v => v.RightContent)
-                .Subscribe(x => { })
+                .Subscribe(_ => { })
                 .DisposeWith(disposables);
 
             this.WhenAnyValue(view => view.ViewModel!.TopBar.CloseCommand.IsExecuting)
@@ -51,6 +50,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         });
     }
 
+    // ReSharper disable once UnusedParameter.Local
     private void PointerPressed_Handler(object? sender, PointerPressedEventArgs e)
     {
         if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)

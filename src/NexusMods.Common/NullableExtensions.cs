@@ -13,6 +13,6 @@ public static class NullableExtensions
     public static async ValueTask DisposeIfNotNullAsync<T>(this T? item) where T : struct, IAsyncDisposable
     {
         if (item.HasValue)
-            await item.Value.DisposeAsync();   
+            await item.Value.DisposeAsync();
     }
 }

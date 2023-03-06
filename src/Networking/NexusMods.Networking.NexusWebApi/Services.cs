@@ -1,9 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.CLI;
 using NexusMods.CLI.OptionParsers;
 using NexusMods.CLI.Types;
 using NexusMods.Common;
-using NexusMods.DataModel;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.Networking.NexusWebApi.Types;
@@ -26,7 +25,8 @@ public static class Services
             collection
                 .AddAllSingleton<IHttpMessageFactory, ApiKeyMessageFactory>()
                 .AddSingleton<IAuthenticatingMessageFactory, ApiKeyMessageFactory>();
-        } else
+        }
+        else
         {
             collection
                 .AddAllSingleton<IHttpMessageFactory, OAuth2MessageFactory>()

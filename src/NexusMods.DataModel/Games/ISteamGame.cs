@@ -1,4 +1,4 @@
-﻿namespace NexusMods.DataModel.Games;
+namespace NexusMods.DataModel.Games;
 
 /// <summary>
 /// Marker interface for the steam store locator.

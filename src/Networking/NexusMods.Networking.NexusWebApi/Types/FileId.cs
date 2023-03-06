@@ -1,4 +1,4 @@
-﻿using Vogen;
+using Vogen;
 
 namespace NexusMods.Networking.NexusWebApi.Types;
 
@@ -11,5 +11,5 @@ namespace NexusMods.Networking.NexusWebApi.Types;
 [ValueObject<ulong>]
 public partial struct FileId
 {
-    
+
 }

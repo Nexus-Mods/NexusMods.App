@@ -1,4 +1,4 @@
-﻿using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Games;
 using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators.TestHelpers;
@@ -20,7 +20,7 @@ public class UniversalStubbedGameLocator<TGame> : IGameLocator
     {
         if (game is not TGame tg)
             yield break;
-        
+
         yield return new GameLocatorResult(_path, _version ?? new Version(1, 0, 0, 0));
     }
 }

@@ -1,4 +1,4 @@
-﻿using NexusMods.CLI;
+using NexusMods.CLI;
 // Temporary until moved to CLI project.
 #pragma warning disable CS1591
 namespace NexusMods.Networking.NexusWebApi.Verbs;

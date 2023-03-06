@@ -2,10 +2,10 @@ using System.IO.Enumeration;
 
 namespace NexusMods.Paths.Utilities.Internal.Enumerators;
 
-internal sealed unsafe class FilesEnumeratorEx : FileSystemEnumerator<FilesEnumeratorExEntry>
+internal sealed class FilesEnumeratorEx : FileSystemEnumerator<FilesEnumeratorExEntry>
 {
     public string? CurrentDirectory { get; private set; }
-    
+
     private readonly string _pattern;
     private readonly EnumerationOptions _options;
 
@@ -16,8 +16,8 @@ internal sealed unsafe class FilesEnumeratorEx : FileSystemEnumerator<FilesEnume
     }
 
     protected override void OnDirectoryFinished(ReadOnlySpan<char> directory) => CurrentDirectory = null;
-    
-    protected override bool ShouldIncludeEntry(ref FileSystemEntry entry) => 
+
+    protected override bool ShouldIncludeEntry(ref FileSystemEntry entry) =>
         Common.MatchesPattern(_pattern, entry.FileName, _options);
 
     protected override FilesEnumeratorExEntry TransformEntry(ref FileSystemEntry entry)

@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using NexusMods.DataModel.Games;
 
@@ -13,7 +13,7 @@ public class GameInstallationConverter : JsonConverter<GameInstallation>
         _games = games.SelectMany(g => g.Installations.Select(i => (Slug: g.Domain, Install: i)))
             .ToDictionary(r => (r.Slug, r.Install.Version), r => r.Install);
     }
-    
+
     public override GameInstallation? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType != JsonTokenType.StartArray)

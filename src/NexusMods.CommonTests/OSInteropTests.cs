@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using CliWrap;
 using NexusMods.Common.OSInterop;
 

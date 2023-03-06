@@ -1,4 +1,4 @@
-﻿namespace NexusMods.DataModel.Abstractions;
+namespace NexusMods.DataModel.Abstractions;
 
 /// <summary>
 /// Interface that allows types to have a new instance created without having either
@@ -8,5 +8,8 @@
 /// <typeparam name="T"></typeparam>
 public interface ICreatable<out T>
 {
+    /// <summary>
+    /// Creates a new instance.
+    /// </summary>
     public static abstract T Create();
 }

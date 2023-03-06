@@ -1,4 +1,4 @@
-﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable MemberCanBePrivate.Global
 namespace NexusMods.Networking.NexusWebApi.DTOs;
 
@@ -12,33 +12,33 @@ public class ResponseMetadata
     /// <see cref="DailyReset"/> occurs.
     /// </summary>
     public int DailyLimit { get; set; }
-    
+
     /// <summary>
     /// [Rate Limit] Number of API requests available for the rest of this day period.
     /// </summary>
     public int DailyRemaining { get; set; }
-    
+
     /// <summary>
     /// [Rate Limit] Stores the time when the daily limit is next reset.
     /// </summary>
     public DateTime DailyReset { get; set; }
-    
+
     /// <summary>
     /// [Rate Limit] Stores the limit your <see cref="HourlyRemaining"/> will be reset to once
     /// <see cref="HourlyReset"/> occurs.
     /// </summary>
     public int HourlyLimit { get; set; }
-    
+
     /// <summary>
     /// [Rate Limit] Number of API requests available for the rest of this hour period.
     /// </summary>
     public int HourlyRemaining { get; set; }
-    
+
     /// <summary>
     /// [Rate Limit] Stores the time when the hourly limit is next reset.
     /// </summary>
     public DateTime HourlyReset { get; set; }
-    
+
     /// <summary>
     /// Time taken to execute the request server side, in seconds.
     /// </summary>
@@ -57,15 +57,15 @@ public class ResponseMetadata
                 if (int.TryParse(values.First(), out var limit))
                     output = limit;
         }
-        
+
         void ParseDateTime(string headerName, out DateTime output)
         {
             output = default;
             if (result.Headers.TryGetValues(headerName, out var values))
-                if (DateTime.TryParse(values.First(), out DateTime limit))
+                if (DateTime.TryParse(values.First(), out var limit))
                     output = limit;
         }
-        
+
         ParseInt("x-rl-daily-limit", out var dailyLimit);
         ParseInt("x-rl-daily-remaining", out var dailyRemaining);
         ParseDateTime("x-rl-daily-reset", out var dailyReset);
@@ -78,7 +78,7 @@ public class ResponseMetadata
         metaData.HourlyLimit = hourlyLimit;
         metaData.HourlyRemaining = hourlyRemaining;
         metaData.HourlyReset = hourlyReset;
-        
+
         if (result.Headers.TryGetValues("x-runtime", out var runtimes))
             if (double.TryParse(runtimes.First(), out var reset))
                 metaData.Runtime = reset;

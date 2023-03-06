@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Abstractions;
@@ -9,13 +9,12 @@ using NexusMods.Networking.NexusWebApi.DTOs;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
-using Size = NexusMods.Paths.Size;
 
 namespace NexusMods.Games.TestHarness;
 
 public class RecentModsTest
 {
-    
+
     private readonly Client _client;
     private readonly ILogger _logger;
     private readonly IDataStore _store;
@@ -39,7 +38,7 @@ public class RecentModsTest
         _downloadedFilesLocation.CreateDirectory();
         _updateDelay = TimeSpan.FromDays(1);
     }
-    
+
     public async Task Generate()
     {
         var previousRecords = NexusModFile.LoadAll(_store, _game.Domain);
@@ -49,7 +48,7 @@ public class RecentModsTest
             _gameRecords = previousRecords.ToList();
             return;
         }
-        
+
         var updates = await _client.ModUpdates(_game.Domain, Client.PastTime.Day);
         _logger.LogInformation("Found {Count} updates", updates.Data.Length);
         var files = new List<(ModId ModId, ModFile File)>();
@@ -66,7 +65,7 @@ public class RecentModsTest
             }
         }
         _logger.LogInformation("Found {Count} files totaling {Size}", files.Count, files.Sum(f => f.File.SizeInBytes));
-        
+
         foreach (var file in files)
         {
             var record = new NexusModFile
@@ -79,21 +78,21 @@ public class RecentModsTest
                 Hash = Hash.Zero,
                 Store = _store
             };
-            
+
             _logger.LogInformation("Downloading {FileName}", record.FileName);
             var fileLocation = _downloadedFilesLocation.CombineUnchecked($"{_game.Domain}_{record.ModId}_{record.FileId}");
             var tempFileLocation = _downloadedFilesLocation.CombineUnchecked($"{_game.Domain}_{record.ModId}_{record.FileId}.temp");
             var urls = await _client.DownloadLinks(_game.Domain, record.ModId, record.FileId);
             var hash = await _downloader.Download(urls.Data.Select(u => new HttpRequestMessage(HttpMethod.Get, u.Uri)).ToList(),
                 tempFileLocation);
-            
+
             await tempFileLocation.MoveToAsync(fileLocation);
-            
+
             record = record with { Hash = hash };
             record.EnsureStored();
 
         }
-        
+
         _gameRecords = NexusModFile.LoadAll(_store, _game.Domain).ToList();
     }
 

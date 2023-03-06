@@ -1,4 +1,4 @@
-﻿namespace NexusMods.DataModel.Interprocess;
+namespace NexusMods.DataModel.Interprocess;
 
 /// <summary>
 /// A message producer for sending messages to other processes.

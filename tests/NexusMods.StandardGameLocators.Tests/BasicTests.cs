@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
@@ -19,12 +19,12 @@ public class BasicTests
         _game = game;
         _logger = logger;
         _steamInstall = _game.Installations.First(g => g.Locations.Any(l => l.ToString().Contains("steam_game")));
-        
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) 
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             _gogInstall = _game.Installations.First(g => g.Locations.Any(l => l.ToString().Contains("gog_game")));
 
     }
-    
+
     [Fact]
     public void CanFindGames()
     {

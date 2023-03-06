@@ -1,15 +1,12 @@
-﻿using System.Reactive;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Windows.Input;
-using Avalonia;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.ViewModels;
 using NexusMods.Networking.NexusWebApi;
-using Noggog;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -49,7 +46,8 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 
     private async Task<IImage?> LoadImage(Uri uri)
     {
-        try {
+        try
+        {
             var client = new HttpClient();
             var stream = await client.GetByteArrayAsync(uri);
             return new Bitmap(new MemoryStream(stream));

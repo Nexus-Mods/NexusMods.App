@@ -1,4 +1,4 @@
-﻿using NexusMods.CLI;
+using NexusMods.CLI;
 using NexusMods.DataModel.RateLimiting;
 using Spectre.Console;
 
@@ -10,7 +10,7 @@ namespace NexusMods.App.CLI.Renderers;
 public class Spectre : IRenderer
 {
     private static readonly Color NexusColor = new(0xda, 0x8e, 0x35);
-    
+
     private readonly IResource[] _resources;
     public Spectre(IEnumerable<IResource> resources)
     {
@@ -55,7 +55,7 @@ public class Spectre : IRenderer
             .Columns(columns)
             .StartAsync(async ctx =>
         {
-            
+
             try
             {
                 var innerTask = Task.Run(f, token);

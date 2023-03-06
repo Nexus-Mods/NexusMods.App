@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
@@ -15,7 +15,7 @@ public class InjectedViewLocator : IViewLocator
     {
         _logger = logger;
         _provider = provider;
-        _method = this.GetType().GetMethod("ResolveViewInner", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        _method = GetType().GetMethod("ResolveViewInner", BindingFlags.NonPublic | BindingFlags.Instance)!;
     }
 
     public IViewFor? ResolveView<T>(T? viewModel, string? contract = null)

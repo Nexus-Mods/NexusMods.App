@@ -5,7 +5,6 @@
     x:Class="NexusMods.App.UI.Controls.Spine.Spine"
     x:TypeArguments="spine:ISpineViewModel"
     xmlns="https://github.com/avaloniaui"
-    xmlns:buttons="clr-namespace:NexusMods.App.UI.Controls.Spine.Buttons"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"

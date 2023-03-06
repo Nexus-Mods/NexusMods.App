@@ -1,4 +1,4 @@
-﻿namespace NexusMods.DataModel.JsonConverters.ExpressionGenerator;
+namespace NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 
 public interface ITypeFinder
 {

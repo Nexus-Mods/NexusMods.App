@@ -1,4 +1,4 @@
-﻿using System.Reactive.Linq;
+using System.Reactive.Linq;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common.ProtocolRegistration;
 using NexusMods.DataModel.Abstractions;

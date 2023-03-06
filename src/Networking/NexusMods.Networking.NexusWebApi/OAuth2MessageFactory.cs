@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.Networking.NexusWebApi.Types;
@@ -79,7 +79,7 @@ public class OAuth2MessageFactory : IAuthenticatingMessageFactory
         _store = store;
         _auth = auth;
     }
-    
+
     /// <inheritdoc/>
     public ValueTask<HttpRequestMessage> Create(HttpMethod method, Uri uri)
     {/*
@@ -130,7 +130,7 @@ public class OAuth2MessageFactory : IAuthenticatingMessageFactory
         {
             Name = userInfo.Name,
             IsPremium = userInfo.MembershipRoles.Contains(MembershipRole.Premium),
-            IsSupporter = userInfo.MembershipRoles.Contains(MembershipRole.Supporter), 
+            IsSupporter = userInfo.MembershipRoles.Contains(MembershipRole.Supporter),
             Avatar = new Uri($"https://forums.nexusmods.com/uploads/profile/photo-thumb-{userInfo.Id}.png")
         };
     }

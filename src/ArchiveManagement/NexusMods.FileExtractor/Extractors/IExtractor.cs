@@ -1,4 +1,4 @@
-﻿using NexusMods.Common;
+using NexusMods.Common;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Paths;
 
@@ -14,12 +14,12 @@ public interface IExtractor
     /// A list of all the file type signatures supported by this extractor.
     /// </summary>
     public FileType[] SupportedSignatures { get; }
-    
+
     /// <summary>
     /// Returns a list of extensions supported by this extractor.
     /// </summary>
     public Extension[] SupportedExtensions { get; }
-    
+
     /// <summary>
     /// Extracts and calls `func` over every entry in an archive.
     /// </summary>
@@ -43,7 +43,7 @@ public interface IExtractor
     /// <param name="token">Token used for cancellation of the task</param>
     /// <returns>Task signalling completion.</returns>
     Task ExtractAllAsync(IStreamFactory source, AbsolutePath destination, CancellationToken token = default);
-    
+
     /// <summary>
     /// Given a FileType return the priority this extractor requests.
     /// Higher priority extractors will be tried first.

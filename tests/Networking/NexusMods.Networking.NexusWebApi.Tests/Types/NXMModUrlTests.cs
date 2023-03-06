@@ -1,4 +1,4 @@
-﻿using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Games;
 using FluentAssertions;
 
 namespace NexusMods.Networking.NexusWebApi.Types.Tests;

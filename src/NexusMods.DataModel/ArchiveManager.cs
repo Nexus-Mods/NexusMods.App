@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.RateLimiting;
@@ -17,7 +17,7 @@ public class ArchiveManager
     private readonly FileExtractor.FileExtractor _fileExtractor;
     private readonly FileContentsCache _contentsCache;
 
-    public ArchiveManager(ILogger<ArchiveManager> logger, IEnumerable<AbsolutePath> locations, IDataStore store, 
+    public ArchiveManager(ILogger<ArchiveManager> logger, IEnumerable<AbsolutePath> locations, IDataStore store,
         FileExtractor.FileExtractor fileExtractor, FileContentsCache contentsCache)
     {
         _logger = logger;
@@ -40,7 +40,7 @@ public class ArchiveManager
             hash = await src.HashingCopy(tmpFile, token, job);
         }
         var finalName = folder.CombineUnchecked(NameForHash(hash));
-        if (!finalName.FileExists) 
+        if (!finalName.FileExists)
             await tmpName.MoveToAsync(finalName);
         return hash;
     }
@@ -79,7 +79,7 @@ public class ArchiveManager
 
         return _contentsCache.ArchivesThatContain(hash).Any(containedIn => HaveFile(containedIn.Parent));
     }
-    
+
     /// <summary>
     /// Returns true if the given hash is managed, or any archive that contains this file is managed
     /// </summary>
@@ -87,7 +87,7 @@ public class ArchiveManager
     /// <returns></returns>
     public IEnumerable<HashRelativePath> ArchivesThatContain(Hash hash)
     {
-        if (HaveArchive(hash)) return new[]{ new HashRelativePath(hash, Array.Empty<RelativePath>())};
+        if (HaveArchive(hash)) return new[] { new HashRelativePath(hash, Array.Empty<RelativePath>()) };
         return _contentsCache.ArchivesThatContain(hash).Select(r => new HashRelativePath(r.Parent, r.Path));
     }
 

@@ -1,4 +1,4 @@
-﻿namespace NexusMods.CLI.Types;
+namespace NexusMods.CLI.Types;
 
 public interface IProtocolHandler
 {

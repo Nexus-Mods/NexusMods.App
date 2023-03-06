@@ -5,5 +5,5 @@ namespace NexusMods.Paths.Tests.New.RelativePathTests;
 /// </summary>
 public class GenerativeTests
 {
-    
+
 }

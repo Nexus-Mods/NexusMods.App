@@ -1,19 +1,17 @@
-﻿using System.CommandLine.Builder;
+using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
 using System.Reactive;
-using Avalonia;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using NexusMods.App;
 using NexusMods.App.UI;
 using NexusMods.CLI;
 using NexusMods.Common;
 using NLog.Extensions.Logging;
 using NLog.Targets;
 using ReactiveUI;
-using static NexusMods.App.UI.Startup;
 
+namespace NexusMods.App;
 
 public class Program
 {
@@ -90,11 +88,5 @@ public class Program
         loggingBuilder.ClearProviders();
         loggingBuilder.SetMinimumLevel(LogLevel.Information);
         loggingBuilder.AddNLog(config);
-    }
-
-    private static AppBuilder BuildAvaloniaApp()
-    {
-        var host = BuildHost();
-        return Startup.BuildAvaloniaApp(host.Services);
     }
 }

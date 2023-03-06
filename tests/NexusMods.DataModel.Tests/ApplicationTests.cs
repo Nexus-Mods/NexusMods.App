@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Loadouts.ApplySteps;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -10,10 +10,10 @@ namespace NexusMods.DataModel.Tests;
 
 public class ApplicationTests : ADataModelTest<ApplicationTests>
 {
-    
+
     public ApplicationTests(IServiceProvider provider) : base(provider)
     {
-        
+
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
 
         await BaseList?.Apply()!;
     }
-    
+
     [Fact]
     public async Task CanIntegrateChanges()
     {
@@ -54,13 +54,13 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
 
         var fileToDelete = DATA_NAMES.First();
         var fileToModify = DATA_NAMES.Skip(1).First();
-        
+
         gameFolder.CombineUnchecked(fileToDelete).Delete();
         await gameFolder.CombineUnchecked(fileToModify).WriteAllTextAsync("modified");
         var modifiedHash = "modified".XxHash64();
 
         var firstMod = mainList.Value.Mods.Values.First();
-        var ingestPlan = await mainList.MakeIngestionPlan(x => firstMod, Token).ToHashSet();
+        var ingestPlan = await mainList.MakeIngestionPlan(_ => firstMod, Token).ToHashSet();
 
         ingestPlan.Should().BeEquivalentTo(new IApplyStep[]
         {
@@ -85,20 +85,20 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
 
 
         mainList.FlattenList().Count().Should().Be(7, "because no changes are applied yet");
-        
+
         await mainList.ApplyIngest(ingestPlan, Token);
 
 
         var flattened = mainList.FlattenList().ToDictionary(f => f.File.To);
         flattened.Count.Should().Be(6, "Because we've deleted one file");
-        
+
         mainList.Value.Mods.Values
             .SelectMany(m => m.Files.Values)
             .OfType<AStaticModFile>()
             .Where(f => f.Hash == modifiedHash)
             .Should()
             .NotBeEmpty("Because we've updated a file");
-        
+
         await BaseList?.Apply(Token)!;
     }
 }

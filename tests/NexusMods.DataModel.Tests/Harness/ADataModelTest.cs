@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
@@ -27,7 +27,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     }.Select(t => t.ToRelativePath()).ToArray();
 
     public static readonly Dictionary<RelativePath, (Hash Hash, Size Size)> DATA_CONTENTS = DATA_NAMES
-        .ToDictionary(d => d, 
+        .ToDictionary(d => d,
             d => (d.FileName.ToString().XxHash64(), Size.From(d.FileName.ToString().Length)));
 
     private readonly IServiceProvider _provider;
@@ -44,14 +44,14 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected LoadoutMarker? BaseList;
     protected readonly ILogger<T> _logger;
     private readonly IHost _host;
-    
+
     protected CancellationToken Token = CancellationToken.None;
 
     protected ADataModelTest(IServiceProvider provider)
     {
         var startup = new Startup();
         _host = Host.CreateDefaultBuilder(Environment.GetCommandLineArgs())
-            .ConfigureServices((host, service) => startup.ConfigureServices(service))
+            .ConfigureServices((_, service) => startup.ConfigureServices(service))
             .Build();
         _provider = _host.Services;
         ArchiveContentsCache = _provider.GetRequiredService<FileContentsCache>();
@@ -62,7 +62,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         _logger = _provider.GetRequiredService<ILogger<T>>();
         TemporaryFileManager = _provider.GetRequiredService<TemporaryFileManager>();
         ServiceProvider = provider;
-        
+
         Game = _provider.GetRequiredService<StubbedGame>();
         Install = Game.Installations.First();
 
@@ -81,8 +81,8 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         await ArchiveContentsCache.AnalyzeFile(DATA_ZIP_LZMA, Token);
         await ArchiveContentsCache.AnalyzeFile(DATA_7Z_LZMA2, Token);
         await ArchiveManager.ArchiveFile(DATA_ZIP_LZMA, Token);
-        await ArchiveManager.ArchiveFile(DATA_7Z_LZMA2, Token); 
-        
+        await ArchiveManager.ArchiveFile(DATA_7Z_LZMA2, Token);
+
         BaseList = await LoadoutManager.ManageGame(Install, "BaseList", CancellationToken.None);
     }
 

@@ -1,6 +1,6 @@
-﻿namespace NexusMods.App.UI.ViewModels;
+namespace NexusMods.App.UI.ViewModels;
 
 public interface IMainWindowViewModel : IViewModelInterface
 {
-    
+
 }

@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -9,7 +9,7 @@ public class SimpleHttpDownloader : IHttpDownloader
 {
     private readonly ILogger<SimpleHttpDownloader> _logger;
     private readonly HttpClient _client;
-    private readonly IResource<IHttpDownloader,Size> _limiter;
+    private readonly IResource<IHttpDownloader, Size> _limiter;
 
     public SimpleHttpDownloader(ILogger<SimpleHttpDownloader> logger, HttpClient client,
         IResource<IHttpDownloader, Size> limiter)
@@ -27,15 +27,15 @@ public class SimpleHttpDownloader : IHttpDownloader
 
             using var job = await _limiter.Begin($"Downloading {destination.FileName}", size ?? Size.One, token);
             var response = await _client.SendAsync(source, HttpCompletionOption.ResponseHeadersRead, token);
-            
+
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogWarning("Failed to download {Source} to {Destination}: {StatusCode}", source.RequestUri, destination, response.StatusCode);
                 continue;
             }
-            
+
             job.Size = size ?? Size.From(response.Content.Headers.ContentLength ?? 1);
-            
+
             await using var stream = await response.Content.ReadAsStreamAsync(token);
             await using var file = destination.Create();
             return await stream.HashingCopy(file, token, job);

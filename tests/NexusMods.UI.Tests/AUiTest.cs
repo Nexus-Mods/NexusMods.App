@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics.CodeAnalysis;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI;
-using NexusMods.App.UI.ViewModels;
 
 namespace NexusMods.UI.Tests;
 
@@ -23,6 +23,7 @@ public class AUiTest
         return new VMWrapper<T>(vm);
     }
 
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class VMWrapper<T> : IDisposable where T : IViewModelInterface
     {
         private readonly IDisposable _disposable;

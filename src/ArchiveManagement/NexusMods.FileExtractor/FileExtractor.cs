@@ -38,7 +38,7 @@ public class FileExtractor
         _extractors = extractors.ToArray();
         SignatureChecker = new SignatureChecker(_extractors.SelectMany(e => e.SupportedSignatures).Distinct().ToArray());
     }
-    
+
     /// <summary>
     /// Extracts all files to disk in an asynchronous fashion.
     /// </summary>
@@ -72,7 +72,7 @@ public class FileExtractor
                 _logger.LogError(ex, "While extracting via {Extractor}", extractor);
             }
         }
-        
+
         throw new FileExtractionException($"No Extractors found for file {sFn.Name}");
     }
 
@@ -106,7 +106,7 @@ public class FileExtractor
 
         throw new FileExtractionException("No Extractors found for file");
     }
-    
+
     /// <summary>
     /// Extracts and calls `func` over every entry in an archive.
     /// </summary>
@@ -134,7 +134,7 @@ public class FileExtractor
     {
         return await CanExtract(new NativeFileStreamFactory(sFn));
     }
-    
+
     /// <summary>
     /// Tests if a specific file can be extracted with this extractor.
     /// </summary>
@@ -142,13 +142,13 @@ public class FileExtractor
     /// <returns>True if the extractor can extract this stream, else false.</returns>
     public async Task<bool> CanExtract(IStreamFactory sFn)
     {
-        await using var stream = await sFn.GetStream();
+        await using var stream = await sFn.GetStreamAsync();
         return (await SignatureChecker.MatchesAsync(stream)).Any();
     }
-    
+
     private async ValueTask<IExtractor[]> FindExtractors(IStreamFactory sFn)
     {
-        await using var archive = await sFn.GetStream();
+        await using var archive = await sFn.GetStreamAsync();
         var sig = await SignatureChecker.MatchesAsync(archive);
 
         return _extractors.Select(e => (Extractor: e, Result: e.DeterminePriority(sig)))

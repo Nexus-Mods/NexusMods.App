@@ -1,5 +1,4 @@
-﻿namespace NexusMods.DataModel.Abstractions;
-
+namespace NexusMods.DataModel.Abstractions;
 
 /// <summary>
 /// Markers are helpful mutable classes for tracking the position of edits in an immutable tree.
@@ -15,7 +14,7 @@ public interface IMarker<T>
     /// </summary>
     /// <param name="func"></param>
     public void Alter(Func<T, T> func);
-    
+
     /// <summary>
     /// Get the current value of the subset of the tree pointed at by this marker.
     /// </summary>

@@ -1,4 +1,4 @@
-﻿namespace NexusMods.CLI.OptionParsers;
+namespace NexusMods.CLI.OptionParsers;
 
 public class VersionParser : IOptionParser<Version>
 {

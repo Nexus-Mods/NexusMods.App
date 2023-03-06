@@ -26,8 +26,8 @@ public class RateLimiterTests
         }
 
         await Parallel.ForEachAsync(Enumerable.Range(0, 100),
-            new ParallelOptions {MaxDegreeOfParallelism = 10},
-            async (x, token) =>
+            new ParallelOptions { MaxDegreeOfParallelism = 10 },
+            async (_, token) =>
             {
                 using var job = await rateLimiter.Begin("Incrementing", Size.One, CancellationToken.None);
                 SetMax(lockObj, ref current, ref max, 1);

@@ -1,4 +1,4 @@
-﻿namespace NexusMods.DataModel.RateLimiting;
+namespace NexusMods.DataModel.RateLimiting;
 
 public readonly struct Percent : IComparable, IEquatable<Percent>
 {
@@ -34,7 +34,7 @@ public readonly struct Percent : IComparable, IEquatable<Percent>
     {
         return new Percent(c1.Value - c2.Value);
     }
-    
+
     public static bool operator ==(Percent c1, Percent c2)
     {
         return c1.Value == c2.Value;
@@ -88,7 +88,7 @@ public readonly struct Percent : IComparable, IEquatable<Percent>
     {
         return FactoryPutInRange(1.0d * cur / max);
     }
-    
+
     public override bool Equals(object? obj)
     {
         if (!(obj is Percent rhs)) return false;

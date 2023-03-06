@@ -1,4 +1,4 @@
-﻿using NexusMods.Common;
+using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Games;
@@ -28,11 +28,11 @@ public class ReshadePresetInstaller : IModInstaller
     {
         var filtered = files.Where(f => !_ignoreFiles.Contains(f.Key.FileName))
             .ToList();
-        
+
         // We have to be able to find the game's executable
         if (installation.Game is not AGame)
             return Common.Priority.None;
-        
+
         // We only support ini files for now
         if (!filtered.All(f => f.Value.FileTypes.Contains(FileType.INI)))
             return Common.Priority.None;

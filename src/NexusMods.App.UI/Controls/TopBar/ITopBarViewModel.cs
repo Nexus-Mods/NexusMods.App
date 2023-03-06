@@ -1,8 +1,6 @@
-﻿using System.Reactive;
-using System.Windows.Input;
+using System.Reactive;
 using Avalonia.Media;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Controls.TopBar;
 

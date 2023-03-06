@@ -25,8 +25,8 @@ public static class StringExtensions
         if (a.Length == 0 && b.Length > 0 || b.Length == 0 && a.Length > 0)
             return false;
 
-        Span<char> aCopy = a.Length <= 512 ? stackalloc char[a.Length] : GC.AllocateUninitializedArray<char>(a.Length);
-        Span<char> bCopy = b.Length <= 512 ? stackalloc char[b.Length] : GC.AllocateUninitializedArray<char>(b.Length);
+        var aCopy = a.Length <= 512 ? stackalloc char[a.Length] : GC.AllocateUninitializedArray<char>(a.Length);
+        var bCopy = b.Length <= 512 ? stackalloc char[b.Length] : GC.AllocateUninitializedArray<char>(b.Length);
         a.CopyTo(aCopy);
         b.CopyTo(bCopy);
 
@@ -76,7 +76,7 @@ public static class StringExtensions
         return GetNonRandomizedHashCode(text).GetHashCode();
     }
 
-/// <summary>
+    /// <summary>
     /// Faster hashcode for strings; but does not randomize between application runs.
     /// Inspired by .NET Runtime's own implementation; combining unrolled djb-like and FNV-1.
     /// </summary>
@@ -92,23 +92,23 @@ public static class StringExtensions
         // Sewer: This is from my VFS.
         fixed (char* src = &text.GetPinnableReference())
         {
-            int length = text.Length; // Span has no guarantee of null terminator.
-            
+            var length = text.Length; // Span has no guarantee of null terminator.
+
             // For short strings below size of nuint, we need separate approach; so we use legacy runtime approach
             // for said cold case.
             if (length >= sizeof(nuint) / sizeof(char))
             {
                 nuint hash1 = (5381 << 16) + 5381;
-                nuint hash2 = hash1;
+                var hash2 = hash1;
 
                 // I tried aligning the data here; but it didn't help much perf wise
                 // despite being 3-4 instructions. I do not know why.
-                nuint* ptr = (nuint*)(src);
-                
+                var ptr = (nuint*)(src);
+
                 // Note. In this implementations we leave some (< sizeof(nuint)) data from the hash.
                 // For our use of hashing file paths, this is okay, as files with different names but same extension
                 // would still hash differently. If I were to PR this to runtime though, this would need fixing.
-                
+
                 if (Avx2.IsSupported || Vector128.IsHardwareAccelerated)
                 {
                     // AVX Version
@@ -118,13 +118,13 @@ public static class StringExtensions
                         var prime = Vector256.Create((ulong)0x100000001b3);
                         var hash1Avx = Vector256.Create(0xcbf29ce484222325);
                         var hash2Avx = Vector256.Create(0xcbf29ce484222325);
-                        
+
                         while (length >= sizeof(Vector256<ulong>) / sizeof(char) * 4) // 128 byte chunks.
                         {
                             length -= (sizeof(Vector256<ulong>) / sizeof(char)) * 4;
                             hash1Avx = Avx2.Xor(hash1Avx, Avx.LoadVector256((ulong*)ptr));
                             hash1Avx = Avx2.Multiply(hash1Avx.AsUInt32(), prime.AsUInt32());
-                            
+
                             hash2Avx = Avx2.Xor(hash2Avx, Avx.LoadVector256((ulong*)ptr + 4));
                             hash2Avx = Avx2.Multiply(hash2Avx.AsUInt32(), prime.AsUInt32());
 
@@ -135,7 +135,7 @@ public static class StringExtensions
                             hash2Avx = Avx2.Multiply(hash2Avx.AsUInt32(), prime.AsUInt32());
                             ptr += (sizeof(Vector256<ulong>) / sizeof(nuint)) * 4;
                         }
-                        
+
                         while (length >= sizeof(Vector256<ulong>) / sizeof(char)) // 32 byte chunks.
                         {
                             length -= sizeof(Vector256<ulong>) / sizeof(char);
@@ -143,7 +143,7 @@ public static class StringExtensions
                             hash1Avx = Avx2.Multiply(hash1Avx.AsUInt32(), prime.AsUInt32());
                             ptr += (sizeof(Vector256<ulong>) / sizeof(nuint));
                         }
-                        
+
                         // Flatten
                         hash1Avx ^= hash2Avx;
                         if (sizeof(nuint) == 8)
@@ -161,7 +161,7 @@ public static class StringExtensions
                             hash1 = (BitOperations.RotateLeft(hash1, 5) + hash1) ^ (hash1Uint[3] * hash1Uint[4]);
                             hash2 = (BitOperations.RotateLeft(hash2, 5) + hash2) ^ (hash1Uint[5] * hash1Uint[6]);
                         }
-                        
+
                         // 4/8 byte remainders
                         while (length >= (sizeof(nuint) / sizeof(char)))
                         {
@@ -169,12 +169,12 @@ public static class StringExtensions
                             hash1 = (BitOperations.RotateLeft(hash1, 5) + hash1) ^ ptr[0];
                             ptr += 1;
                         }
-                        
+
                         return hash1 + (hash2 * 1566083941);
                     }
 
                     // Over 64 bytes + SSE. Supported on all x64 processors
-                    if (Vector128.IsHardwareAccelerated && length >= sizeof(Vector128<ulong>) / sizeof(char) * 4) 
+                    if (Vector128.IsHardwareAccelerated && length >= sizeof(Vector128<ulong>) / sizeof(char) * 4)
                     {
                         var prime = Vector128.Create((ulong)0x100000001b3);
                         var hash1_128 = Vector128.Create(0xcbf29ce484222325);
@@ -196,7 +196,7 @@ public static class StringExtensions
                             hash2_128 = Vector128.Multiply(hash2_128.AsUInt32(), prime.AsUInt32()).AsUInt64();
                             ptr += (sizeof(Vector128<ulong>) / sizeof(nuint)) * 4;
                         }
-                        
+
                         while (length >= sizeof(Vector128<ulong>) / sizeof(char)) // 16 byte chunks.
                         {
                             length -= sizeof(Vector128<ulong>) / sizeof(char);
@@ -204,7 +204,7 @@ public static class StringExtensions
                             hash1_128 = Vector128.Multiply(hash1_128.AsUInt32(), prime.AsUInt32()).AsUInt64();
                             ptr += (sizeof(Vector128<ulong>) / sizeof(nuint));
                         }
-                        
+
                         // Flatten
                         hash1_128 ^= hash2_128;
                         if (sizeof(nuint) == 8)
@@ -218,7 +218,7 @@ public static class StringExtensions
                             hash1 = (BitOperations.RotateLeft(hash1, 5) + hash1) ^ (hash1Uint[0] * hash1Uint[1]);
                             hash2 = (BitOperations.RotateLeft(hash2, 5) + hash2) ^ (hash1Uint[2] * hash1Uint[3]);
                         }
-                        
+
                         // 4/8 byte remainders
                         while (length >= (sizeof(nuint) / sizeof(char)))
                         {
@@ -226,7 +226,7 @@ public static class StringExtensions
                             hash1 = (BitOperations.RotateLeft(hash1, 5) + hash1) ^ ptr[0];
                             ptr += 1;
                         }
-                        
+
                         return hash1 + (hash2 * 1566083941);
                     }
 
@@ -240,10 +240,10 @@ public static class StringExtensions
                             hash2 = (BitOperations.RotateLeft(hash2, 5) + hash2) ^ ptr[1];
                             ptr += 2;
                         }
-                        
+
                         if (length >= sizeof(nuint) / sizeof(char))
                             hash1 = (BitOperations.RotateLeft(hash1, 5) + hash1) ^ ptr[0];
-                        
+
                         return hash1 + (hash2 * 1566083941);
                     }
                     else if (sizeof(nuint) == 4) // 32-bit. Max 16 operations (16 * 4 = 64 bytes)
@@ -271,10 +271,10 @@ public static class StringExtensions
                         // 4 byte
                         if (length >= (sizeof(nuint) / sizeof(char)))
                             hash1 = (BitOperations.RotateLeft(hash1, 5) + hash1) ^ ptr[0];
-                        
-                        return  hash1 + (hash2 * 1566083941);
+
+                        return hash1 + (hash2 * 1566083941);
                     }
-                    
+
                     // The future is now.
                     return NonRandomizedHashCode_Fallback(src, length);
                 }
@@ -325,18 +325,18 @@ public static class StringExtensions
             return NonRandomizedHashCode_Fallback(src, length);
         }
     }
-    
+
     [ExcludeFromCodeCoverage(Justification = "Cannot be accurately measured without multiple architectures.")]
     private static unsafe nuint NonRandomizedHashCode_Fallback(char* src, int length)
     {
         // -1 because we cannot assume string has null terminator at end unlike runtime.
         length -= 1;
-        
+
         // Version for when input data is smaller than native int. This one is taken from the runtime.
         // For tiny strings like 'C:'
         uint hash1 = (5381 << 16) + 5381;
-        uint hash2 = hash1;
-        uint* ptr = (uint*)src;
+        var hash2 = hash1;
+        var ptr = (uint*)src;
 
         while (length > 2)
         {
@@ -355,7 +355,7 @@ public static class StringExtensions
 
         return hash1 + (hash2 * 1566083941);
     }
-    
+
     /// <summary>
     /// Replaces the extension in a string instance.
     /// </summary>

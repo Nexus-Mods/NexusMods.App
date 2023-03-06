@@ -8,7 +8,7 @@ internal class Common
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool MatchesPattern(string expression, ReadOnlySpan<char> name, EnumerationOptions options)
     {
-        bool ignoreCase = true;
+        var ignoreCase = true;
         if (options.MatchType == MatchType.Win32)
             return FileSystemName.MatchesWin32Expression(expression.AsSpan(), name, ignoreCase);
 

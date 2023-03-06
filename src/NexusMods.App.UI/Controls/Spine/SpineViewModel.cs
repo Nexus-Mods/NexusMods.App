@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Avalonia.Controls.Mixins;
@@ -10,6 +10,7 @@ using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
 using NexusMods.App.UI.ViewModels;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Loadouts;
 using ReactiveUI;
 
@@ -53,9 +54,9 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 .Where(registry => registry != null)
                 .SelectMany(registry => registry!.Lists.Select(lst => lst.Value.Installation.Game).Distinct())
                 .ToObservableChangeSet(x => x.Domain)
-                .Transform( game =>
+                .Transform(game =>
                 {
-                    using var iconStream = game.Icon.GetStream().Result;
+                    using var iconStream = game.Icon.GetStreamAsync().Result;
                     var vm = _provider.GetRequiredService<IImageButtonViewModel>();
                     vm.Name = game.Name;
                     vm.Image = Bitmap.DecodeToWidth(iconStream, 48);

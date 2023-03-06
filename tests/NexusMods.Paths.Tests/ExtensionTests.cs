@@ -11,7 +11,7 @@ public class ExtensionTests
     public static Extension DDS2 = new(".DDS");
     public static Extension EMPTY = new("");
     // ReSharper restore InconsistentNaming
-    
+
     [Fact]
     public void ExtensionsAreEqual()
     {

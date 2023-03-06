@@ -1,4 +1,4 @@
-﻿
+
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.Spine.Buttons;

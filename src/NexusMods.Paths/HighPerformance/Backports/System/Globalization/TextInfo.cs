@@ -1,4 +1,4 @@
-﻿// Modified source, originally:  
+// Modified source, originally:  
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
@@ -25,7 +25,7 @@ internal class TextInfo
             ChangeCase<TConversion>(state, span);
         });
     }
-    
+
     /// <summary>
     /// Backported vectorised change case implementations from .NET 8.
     /// </summary>
@@ -41,7 +41,7 @@ internal class TextInfo
         }
         else
         {
-            bool toUpper = typeof(TConversion) == typeof(ToUpperConversion);
+            var toUpper = typeof(TConversion) == typeof(ToUpperConversion);
             ChangeCase_Fallback(source, destination, toUpper);
         }
     }
@@ -72,19 +72,19 @@ internal class TextInfo
     {
         Debug.Assert(charCount >= Vector256<ushort>.Count);
         Debug.Assert(Vector256.IsHardwareAccelerated);
-        
+
         // JIT will treat this as a constant in release builds
-        bool toUpper = typeof(TConversion) == typeof(ToUpperConversion);
+        var toUpper = typeof(TConversion) == typeof(ToUpperConversion);
         nuint i = 0;
 
-        ref ushort src = ref Unsafe.As<char, ushort>(ref source);
-        ref ushort dst = ref Unsafe.As<char, ushort>(ref destination);
+        ref var src = ref Unsafe.As<char, ushort>(ref source);
+        ref var dst = ref Unsafe.As<char, ushort>(ref destination);
 
-        nuint lengthU = (nuint)charCount;
-        nuint lengthToExamine = lengthU - (nuint)Vector256<ushort>.Count;
+        var lengthU = (nuint)charCount;
+        var lengthToExamine = lengthU - (nuint)Vector256<ushort>.Count;
         do
         {
-            Vector256<ushort> vec = Vector256.LoadUnsafe(ref src, i);
+            var vec = Vector256.LoadUnsafe(ref src, i);
             if (!Utf16Utility.AllCharsInVector256AreAscii(vec))
             {
                 goto NON_ASCII;
@@ -101,8 +101,8 @@ internal class TextInfo
         // Handle trailing elements
         if (i < lengthU)
         {
-            nuint trailingElements = lengthU - (nuint)Vector256<ushort>.Count;
-            Vector256<ushort> vec = Vector256.LoadUnsafe(ref src, trailingElements);
+            var trailingElements = lengthU - (nuint)Vector256<ushort>.Count;
+            var vec = Vector256.LoadUnsafe(ref src, trailingElements);
             if (!Utf16Utility.AllCharsInVector256AreAscii(vec))
             {
                 goto NON_ASCII;
@@ -114,7 +114,7 @@ internal class TextInfo
 
         return;
 
-        NON_ASCII:
+    NON_ASCII:
         // We encountered non-ASCII data and therefore can't perform invariant case conversion;
         // Fallback to ICU/NLS.
         // We modify this to fall back to current runtime impl.
@@ -123,7 +123,7 @@ internal class TextInfo
         var dstSpan = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref destination, i), length);
         ChangeCase_Fallback(srcSpan, dstSpan, toUpper);
     }
-    
+
     /// <summary>
     /// Modified to assume ASCII casing same as invariant.
     /// </summary>
@@ -131,19 +131,19 @@ internal class TextInfo
     {
         Debug.Assert(charCount >= Vector128<ushort>.Count);
         Debug.Assert(Vector128.IsHardwareAccelerated);
-        
+
         // JIT will treat this as a constant in release builds
-        bool toUpper = typeof(TConversion) == typeof(ToUpperConversion);
+        var toUpper = typeof(TConversion) == typeof(ToUpperConversion);
         nuint i = 0;
 
-        ref ushort src = ref Unsafe.As<char, ushort>(ref source);
-        ref ushort dst = ref Unsafe.As<char, ushort>(ref destination);
+        ref var src = ref Unsafe.As<char, ushort>(ref source);
+        ref var dst = ref Unsafe.As<char, ushort>(ref destination);
 
-        nuint lengthU = (nuint)charCount;
-        nuint lengthToExamine = lengthU - (nuint)Vector128<ushort>.Count;
+        var lengthU = (nuint)charCount;
+        var lengthToExamine = lengthU - (nuint)Vector128<ushort>.Count;
         do
         {
-            Vector128<ushort> vec = Vector128.LoadUnsafe(ref src, i);
+            var vec = Vector128.LoadUnsafe(ref src, i);
             if (!Utf16Utility.AllCharsInVector128AreAscii(vec))
             {
                 goto NON_ASCII;
@@ -160,8 +160,8 @@ internal class TextInfo
         // Handle trailing elements
         if (i < lengthU)
         {
-            nuint trailingElements = lengthU - (nuint)Vector128<ushort>.Count;
-            Vector128<ushort> vec = Vector128.LoadUnsafe(ref src, trailingElements);
+            var trailingElements = lengthU - (nuint)Vector128<ushort>.Count;
+            var vec = Vector128.LoadUnsafe(ref src, trailingElements);
             if (!Utf16Utility.AllCharsInVector128AreAscii(vec))
             {
                 goto NON_ASCII;
@@ -173,7 +173,7 @@ internal class TextInfo
 
         return;
 
-        NON_ASCII:
+    NON_ASCII:
         // We encountered non-ASCII data and therefore can't perform invariant case conversion;
         // Fallback to ICU/NLS.
         // We modify this to fall back to current runtime impl.

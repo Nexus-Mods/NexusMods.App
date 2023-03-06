@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 
 namespace NexusMods.Networking.NexusWebApi.DTOs;
 
@@ -13,12 +13,12 @@ public class Response<T>
     /// The data contained within the actual response, i.e. one of the members in <see cref="DTOs"/>.
     /// </summary>
     public required T Data { get; init; }
-    
+
     /// <summary>
     /// Contains useful metadata sourced from the response header.
     /// </summary>
     public required ResponseMetadata Metadata { get; init; }
-    
+
     /// <summary>
     /// Returned HTTP Status Code.
     /// </summary>

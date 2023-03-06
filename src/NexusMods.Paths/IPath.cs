@@ -9,7 +9,7 @@ public interface IPath
     /// Gets the extension of this path.
     /// </summary>
     Extension Extension { get; }
-    
+
     /// <summary>
     /// Gets the file name of this path.
     /// </summary>

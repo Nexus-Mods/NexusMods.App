@@ -22,9 +22,9 @@ public static class SpanExtensions
         // Taken from the runtime.
         // Use unsigned integers - unsigned division by constant (especially by power of 2)
         // and checked casts are faster and smaller.
-        uint fromSize = (uint)Unsafe.SizeOf<TFrom>();
-        uint toSize = (uint)Unsafe.SizeOf<TTo>();
-        uint fromLength = (uint)data.Length;
+        var fromSize = (uint)Unsafe.SizeOf<TFrom>();
+        var toSize = (uint)Unsafe.SizeOf<TTo>();
+        var fromLength = (uint)data.Length;
         int toLength;
         if (fromSize == toSize)
         {
@@ -45,15 +45,15 @@ public static class SpanExtensions
             // Ensure that casts are done in such a way that the JIT is able to "see"
             // the uint->ulong casts and the multiply together so that on 32 bit targets
             // 32x32to64 multiplication is used.
-            ulong toLengthUInt64 = fromLength * (ulong)fromSize / toSize;
+            var toLengthUInt64 = fromLength * (ulong)fromSize / toSize;
             toLength = (int)toLengthUInt64;
         }
-        
+
         return MemoryMarshal.CreateSpan(
             ref Unsafe.As<TFrom, TTo>(ref MemoryMarshal.GetReference(data)),
             toLength);
     }
-    
+
     /// <summary>
     /// Slices a span without any bounds checks.
     /// </summary>
@@ -62,7 +62,7 @@ public static class SpanExtensions
     {
         return MemoryMarshal.CreateSpan(ref Unsafe.Add(ref MemoryMarshal.GetReference(data), start), data.Length - start);
     }
-    
+
     /// <summary>
     /// Slices a span without any bounds checks.
     /// </summary>
@@ -71,7 +71,7 @@ public static class SpanExtensions
     {
         return MemoryMarshal.CreateSpan(ref Unsafe.Add(ref MemoryMarshal.GetReference(data), start), length);
     }
-    
+
     /// <summary>
     /// Slices a span without any bounds checks.
     /// </summary>
@@ -80,7 +80,7 @@ public static class SpanExtensions
     {
         return MemoryMarshal.CreateSpan(ref Unsafe.Add(ref MemoryMarshal.GetReference(data), start), data.Length - start);
     }
-    
+
     /// <summary>
     /// Slices a span without any bounds checks.
     /// </summary>
@@ -89,7 +89,7 @@ public static class SpanExtensions
     {
         return MemoryMarshal.CreateSpan(ref Unsafe.Add(ref MemoryMarshal.GetReference(data), start), length);
     }
-    
+
     /// <summary>
     /// Replaces the occurrences of one character with another in a span.
     /// </summary>
@@ -125,22 +125,22 @@ public static class SpanExtensions
         // In the case they are the same, do nothing.
         if (oldValue.Equals(newValue))
             return data;
-        
+
         // Vectorised Span item replace by Sewer56 
         if (data.Length > buffer.Length)
         {
             ThrowHelpers.InsufficientMemoryException($"Length of '{nameof(buffer)}' passed into {nameof(Replace)} is insufficient.");
             return data;
         }
-        
+
         // Slice our output buffer.
         buffer = buffer.SliceFast(0, data.Length);
-        nuint remainingLength = (nuint)data.Length;
-        
+        var remainingLength = (nuint)data.Length;
+
         // Copy the remaining characters, doing the replacement as we go.
         // Note: We can index 0 directly since we know length is >0 given length check from earlier.
-        ref T pSrc = ref data[0];
-        ref T pDst = ref buffer[0];
+        ref var pSrc = ref data[0];
+        ref var pDst = ref buffer[0];
         nuint x = 0;
 
         if (Vector.IsHardwareAccelerated && data.Length >= Vector<T>.Count)
@@ -154,13 +154,13 @@ public static class SpanExtensions
 
             if (remainingLength > (nuint)Vector<T>.Count)
             {
-                nuint lengthToExamine = remainingLength - (nuint)Vector<T>.Count;
+                var lengthToExamine = remainingLength - (nuint)Vector<T>.Count;
 
                 do
                 {
                     original = VectorExtensions.LoadUnsafe(ref pSrc, x);
-                    equals   = Vector.Equals(original, oldValues); // Generate Mask
-                    results  = Vector.ConditionalSelect(equals, newValues, original); // Swap in Values
+                    equals = Vector.Equals(original, oldValues); // Generate Mask
+                    results = Vector.ConditionalSelect(equals, newValues, original); // Swap in Values
                     results.StoreUnsafe(ref pDst, x);
 
                     x += (nuint)Vector<T>.Count;
@@ -169,15 +169,15 @@ public static class SpanExtensions
             }
 
             // There are between 0 to Vector<T>.Count elements remaining now.  
-            
+
             // Since our operation can be applied multiple times without changing the result
             // [applying the replacement twice is non destructive]. We can avoid non-vectorised code
             // here and simply do the vectorised logic in an unaligned fashion, doing just the chunk
             // at the end of the original buffer.
             x = (uint)(data.Length - Vector<T>.Count);
             original = VectorExtensions.LoadUnsafe(ref data[0], x);
-            equals   = Vector.Equals(original, oldValues);
-            results  = Vector.ConditionalSelect(equals, newValues, original);
+            equals = Vector.Equals(original, oldValues);
+            results = Vector.ConditionalSelect(equals, newValues, original);
             results.StoreUnsafe(ref buffer[0], x);
         }
         else
@@ -185,14 +185,14 @@ public static class SpanExtensions
             // Non-vector fallback, slow.
             for (; x < remainingLength; ++x)
             {
-                T currentChar = Unsafe.Add(ref pSrc, x);
+                var currentChar = Unsafe.Add(ref pSrc, x);
                 Unsafe.Add(ref pDst, x) = currentChar.Equals(oldValue) ? newValue : currentChar;
             }
         }
 
         return buffer;
     }
-    
+
     /// <summary>
     /// Counts the number of occurrences of a given value into a target <see cref="Span{T}"/> instance.
     /// </summary>
@@ -203,8 +203,8 @@ public static class SpanExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Count<T>(this ReadOnlySpan<T> span, T value) where T : IEquatable<T>
     {
-        ref T r0 = ref MemoryMarshal.GetReference(span);
-        nint length = (nint)(uint)span.Length;
+        ref var r0 = ref MemoryMarshal.GetReference(span);
+        var length = (nint)(uint)span.Length;
 
         return (int)SpanHelper.Count(ref r0, length, value);
     }

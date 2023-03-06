@@ -1,7 +1,8 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.RateLimiting;
@@ -17,15 +18,15 @@ public class FileContentsCache
     private readonly ILogger<FileContentsCache> _logger;
     private readonly FileExtractor.FileExtractor _extractor;
     private readonly TemporaryFileManager _manager;
-    private readonly IResource<FileContentsCache,Size> _limiter;
+    private readonly IResource<FileContentsCache, Size> _limiter;
     private readonly SignatureChecker _sigs;
     private readonly IDataStore _store;
     private readonly FileHashCache _fileHashCahce;
     private readonly ILookup<FileType, IFileAnalyzer> _analyzers;
 
-    public FileContentsCache(ILogger<FileContentsCache> logger, 
-        IResource<FileContentsCache, Size> limiter,  
-        FileExtractor.FileExtractor extractor, 
+    public FileContentsCache(ILogger<FileContentsCache> logger,
+        IResource<FileContentsCache, Size> limiter,
+        FileExtractor.FileExtractor extractor,
         TemporaryFileManager manager,
         FileHashCache hashCache,
         IEnumerable<IFileAnalyzer> analyzers,
@@ -36,7 +37,7 @@ public class FileContentsCache
         _extractor = extractor;
         _manager = manager;
         _sigs = new SignatureChecker(Enum.GetValues<FileType>());
-        _analyzers = analyzers.SelectMany(a => a.FileTypes.Select(t => (Type:t, Analyzer:a)))
+        _analyzers = analyzers.SelectMany(a => a.FileTypes.Select(t => (Type: t, Analyzer: a)))
             .ToLookup(k => k.Type, v => v.Analyzer);
         _store = dataStore;
         _fileHashCahce = hashCache;
@@ -47,12 +48,12 @@ public class FileContentsCache
         var entry = await _fileHashCahce.HashFileAsync(path, token);
         var found = _store.Get<AnalyzedFile>(new Id64(EntityCategory.FileAnalysis, (ulong)entry.Hash));
         if (found != null) return found;
-        
+
         var result = await AnalyzeFileInner(new NativeFileStreamFactory(path), token);
         result.EnsureStored();
         return result;
     }
-    
+
     public AnalyzedFile? GetAnalysisData(Hash hash)
     {
         return _store.Get<AnalyzedFile>(new Id64(EntityCategory.FileAnalysis, (ulong)hash));
@@ -69,7 +70,7 @@ public class FileContentsCache
         var sigs = new List<FileType>();
         var analysisData = new List<IFileAnalysisData>();
         {
-            await using var hashStream = await sFn.GetStream();
+            await using var hashStream = await sFn.GetStreamAsync();
             if (level == 0)
             {
                 if (sFn.Name is AbsolutePath ap)
@@ -90,13 +91,13 @@ public class FileContentsCache
 
             var found = _store.Get<Entity>(new Id64(EntityCategory.FileAnalysis, (ulong)hash));
             if (found is AnalyzedFile af) return af;
-            
+
             hashStream.Position = 0;
             sigs = (await _sigs.MatchesAsync(hashStream)).ToList();
-            
+
             if (parentPath != default && SignatureChecker.TryGetFileType(parentPath.Extension, out var type))
                 sigs.Add(type);
-            
+
             foreach (var sig in sigs)
             {
                 foreach (var analyzer in _analyzers[sig])
@@ -114,7 +115,7 @@ public class FileContentsCache
                 }
             }
         }
-        
+
 
         AnalyzedFile? file = null;
 
@@ -132,10 +133,10 @@ public class FileContentsCache
             Store = _store
         };
 
-        if (parent != Hash.Zero) 
+        if (parent != Hash.Zero)
             EnsureReverseIndex(hash, parent, parentPath);
 
-            
+
         return file;
     }
 
@@ -146,11 +147,11 @@ public class FileContentsCache
         {
             AnalyzedFile file;
             await using var tmpFolder = _manager.CreateFolder();
-            List<KeyValuePair<RelativePath, Id>> children;
+            List<KeyValuePair<RelativePath, IId>> children;
             {
                 await _extractor.ExtractAllAsync(sFn, tmpFolder, token);
                 children = await _limiter.ForEachFile(tmpFolder,
-                        async (job, entry) =>
+                        async (_, entry) =>
                         {
                             var relPath = entry.Path.RelativeTo(tmpFolder.Path);
                             return (entry.Path,

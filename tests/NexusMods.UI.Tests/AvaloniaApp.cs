@@ -1,21 +1,19 @@
-﻿using Avalonia.Threading;
+using Avalonia.Threading;
 
 namespace NexusMods.UI.Tests;
 
 public class AvaloniaApp
 {
-    private readonly Thread _thread;
-
     public AvaloniaApp(IServiceProvider provider)
     {
         var tcs = new TaskCompletionSource<SynchronizationContext>();
-        _thread = new Thread(() =>
+        var thread = new Thread(() =>
         {
             try
             {
-                var app = NexusMods.App.UI.Startup.BuildAvaloniaApp(provider)
+                _ = App.UI.Startup.BuildAvaloniaApp(provider)
                     .SetupWithoutStarting();
-                tcs.SetResult(SynchronizationContext.Current);
+                tcs.SetResult(SynchronizationContext.Current!);
             }
             catch (Exception e)
             {
@@ -26,7 +24,8 @@ public class AvaloniaApp
         {
             IsBackground = true
         };
-        _thread.Start();
+
+        thread.Start();
         SynchronizationContext.SetSynchronizationContext(tcs.Task.Result);
     }
 }

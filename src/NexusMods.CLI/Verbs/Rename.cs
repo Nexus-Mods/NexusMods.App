@@ -1,4 +1,4 @@
-﻿using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.CLI.Verbs;
 
@@ -15,7 +15,7 @@ public class Rename : AVerb<Loadout, string>
             new OptionDefinition<Loadout>("l", "loadout", "Loadout to assign a name"),
             new OptionDefinition<string>("n", "name", "Name to assign the loadout")
         });
-    
+
     public Task<int> Run(Loadout loadout, string name, CancellationToken token)
     {
         _manager.Alter(loadout.LoadoutId, _ => loadout, $"Renamed {loadout.DataStoreId} to {name}");

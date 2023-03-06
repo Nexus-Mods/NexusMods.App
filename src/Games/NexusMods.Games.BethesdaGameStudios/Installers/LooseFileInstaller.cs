@@ -1,4 +1,4 @@
-﻿using NexusMods.Common;
+using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Games;
@@ -20,7 +20,7 @@ public class LooseFileInstaller : IModInstaller
     public LooseFileInstaller(IDataStore store)
     {
         _store = store;
-        _prefixes = new []
+        _prefixes = new[]
         {
             ("meshes".ToRelativePath(), FileType.NIF),
             ("textures".ToRelativePath(), FileType.DDS)
@@ -46,9 +46,9 @@ public class LooseFileInstaller : IModInstaller
     private IEnumerable<(RelativePath Path, AnalyzedFile Entry)> FilterFiles(EntityDictionary<RelativePath, AnalyzedFile> files)
     {
         return from kv in files
-            from prefix in _prefixes
-            where kv.Key.InFolder(prefix.Prefix)
-            select (kv.Key, kv.Value);
+               from prefix in _prefixes
+               where kv.Key.InFolder(prefix.Prefix)
+               select (kv.Key, kv.Value);
     }
 
     public IEnumerable<AModFile> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
@@ -59,7 +59,7 @@ public class LooseFileInstaller : IModInstaller
                 var outFile = file.Path;
                 if (!file.Path.InFolder(_dataFolder))
                     outFile = _dataFolder.Join(file.Path);
-                
+
                 return new FromArchive
                 {
                     Id = ModFileId.New(),

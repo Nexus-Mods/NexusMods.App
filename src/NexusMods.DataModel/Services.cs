@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Cloudtoid.Interprocess;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Interprocess;
+using NexusMods.DataModel.Interprocess.Messages;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.DataModel.Loadouts;
@@ -22,7 +23,7 @@ public static class Services
     {
         baseFolder ??= KnownFolders.EntryFolder;
         baseFolder.Value.CreateDirectory();
-        
+
         coll.AddSingleton<JsonConverter, RelativePathConverter>();
         coll.AddSingleton<JsonConverter, GamePathConverter>();
         coll.AddSingleton<JsonConverter, DateTimeConverter>();
@@ -37,13 +38,13 @@ public static class Services
 
         coll.AddSingleton<IDataStore>(s => new SqliteDataStore(
             s.GetRequiredService<ILogger<SqliteDataStore>>(),
-            baseFolder.Value.CombineUnchecked("DataModel.sqlite"), s, 
-            s.GetRequiredService<IMessageProducer<RootChange>>(), 
+            baseFolder.Value.CombineUnchecked("DataModel.sqlite"), s,
+            s.GetRequiredService<IMessageProducer<RootChange>>(),
             s.GetRequiredService<IMessageConsumer<RootChange>>(),
-            s.GetRequiredService<IMessageProducer<IdPut>>(), 
+            s.GetRequiredService<IMessageProducer<IdPut>>(),
             s.GetRequiredService<IMessageConsumer<IdPut>>()));
         coll.AddSingleton(s => new ArchiveManager(s.GetRequiredService<ILogger<ArchiveManager>>(),
-            new []{baseFolder.Value.CombineUnchecked("Archives")},
+            new[] { baseFolder.Value.CombineUnchecked("Archives") },
             s.GetRequiredService<IDataStore>(),
             s.GetRequiredService<FileExtractor.FileExtractor>(),
             s.GetRequiredService<FileContentsCache>()));
@@ -57,12 +58,12 @@ public static class Services
         coll.AddSingleton(typeof(IMessageConsumer<>), typeof(InterprocessConsumer<>));
         coll.AddSingleton(typeof(IMessageProducer<>), typeof(InterprocessProducer<>));
 
-        coll.AddSingleton<ITypeFinder>(s => new AssemblyTypeFinder(typeof(Services).Assembly));
+        coll.AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Services).Assembly));
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<Entity>>();
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<ISortRule<Mod, ModId>>>();
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<IModFileMetadata>>();
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<IFileAnalysisData>>();
-        
+
         coll.AddSingleton(s =>
         {
             var opts = new JsonSerializerOptions();
@@ -73,5 +74,5 @@ public static class Services
         });
         return coll;
     }
-    
+
 }

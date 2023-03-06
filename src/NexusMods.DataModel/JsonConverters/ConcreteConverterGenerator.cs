@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using System.Text.Json;
 
 namespace NexusMods.DataModel.JsonConverters;
@@ -13,11 +13,11 @@ public class ConcreteConverterGenerator<T> : AExpressionConverterGenerator<T>
 {
     public ConcreteConverterGenerator(IServiceProvider provider) : base(provider)
     {
-        
+
         _readerFunction = new Lazy<ReadDelegate>(() => GenerateReaderFunction(provider));
         _writerFunction = new Lazy<WriteDelegate>(GenerateWriter);
     }
-    
+
     private ReadDelegate GenerateReaderFunction(IServiceProvider provider)
     {
         var members = GetMembers();
@@ -36,17 +36,17 @@ public class ConcreteConverterGenerator<T> : AExpressionConverterGenerator<T>
         var readNext = Expression.Call(readerParam, "Read", null);
 
         var vars = members.ToDictionary(m => m.RealName, m => Expression.Variable(m.Type, m.PropName));
-        
+
         var propName = Expression.Variable(typeof(string), "propName");
-        
+
         var loopExit = Expression.Label("loopExit");
-        
+
         var loopExprs = new List<Expression>();
         loopExprs.Add(readNext);
         loopExprs.Add(Expression.IfThen(Expression.Equal(Expression.Property(readerParam, "TokenType"),
             Expression.Constant(JsonTokenType.EndObject)),
             Expression.Break(loopExit)));
-        
+
         var endOfSwitch = Expression.Label("endOfSwitch");
 
         var clauses = members.Select(m =>
@@ -68,7 +68,7 @@ public class ConcreteConverterGenerator<T> : AExpressionConverterGenerator<T>
                 return Expression.SwitchCase(Expression.Block(
                     readNext,
                     Expression.Assign(vars[m.RealName],
-                        Expression.Call(typeof(JsonSerializer), "Deserialize", new [] {m.Type}, readerParam, optionsParam)),
+                        Expression.Call(typeof(JsonSerializer), "Deserialize", new[] { m.Type }, readerParam, optionsParam)),
                     Expression.Break(endOfSwitch)),
                     Expression.Constant(m.RealName));
             }
@@ -78,18 +78,18 @@ public class ConcreteConverterGenerator<T> : AExpressionConverterGenerator<T>
             .Append(Expression.SwitchCase(
                 Expression.Block(readNext, Expression.Break(endOfSwitch)),
                 Expression.Constant("$type")));
-        
-        loopExprs.Add(Expression.Switch(Expression.Call(readerParam, "GetString", null), 
-            Expression.Throw(Expression.New(typeof(NotImplementedException).GetConstructor(new []{typeof(string)}), 
-                Expression.Add( 
-                    Expression.Constant($"Unknown property on {Type.Name}: "), 
+
+        loopExprs.Add(Expression.Switch(Expression.Call(readerParam, "GetString", null),
+            Expression.Throw(Expression.New(typeof(NotImplementedException).GetConstructor(new[] { typeof(string) }),
+                Expression.Add(
+                    Expression.Constant($"Unknown property on {Type.Name}: "),
                     Expression.Call(readerParam, "GetString", null),
-                    typeof(string).GetMethod("Concat", new[] {typeof(string), typeof(string)})))),
+                    typeof(string).GetMethod("Concat", new[] { typeof(string), typeof(string) })))),
             clauses.ToArray()));
         loopExprs.Add(Expression.Label(endOfSwitch));
         exprs.Add(Expression.Loop(Expression.Block(loopExprs)));
         exprs.Add(Expression.Label(loopExit));
-        exprs.Add(Expression.MemberInit(Expression.New(Type), 
+        exprs.Add(Expression.MemberInit(Expression.New(Type),
             members.Select(m =>
             {
                 if (m.IsInjected)
@@ -98,7 +98,7 @@ public class ConcreteConverterGenerator<T> : AExpressionConverterGenerator<T>
             })));
 
         var block = Expression.Block(vars.Values, exprs);
-        
+
         var d = Expression.Lambda<ReadDelegate>(block, false, readerParam, typeToConvertParam, optionsParam);
         return d.Compile();
 
@@ -108,16 +108,16 @@ public class ConcreteConverterGenerator<T> : AExpressionConverterGenerator<T>
     {
         var nameAttr = GetNameAttr();
         var members = GetMembers();
-        
+
         var writerParam = Expression.Parameter(typeof(Utf8JsonWriter), "writer");
         var valueParam = Expression.Parameter(typeof(T), "value");
         var optionsParam = Expression.Parameter(typeof(JsonSerializerOptions), "options");
 
 
         List<Expression> exprs = new();
-        
+
         exprs.Add(Expression.Call(writerParam, "WriteStartObject", null));
-        exprs.Add(Expression.Call(writerParam, "WriteString", null, 
+        exprs.Add(Expression.Call(writerParam, "WriteString", null,
             Expression.Constant("$type"), Expression.Constant(nameAttr)));
 
         foreach (var member in members)
@@ -134,15 +134,15 @@ public class ConcreteConverterGenerator<T> : AExpressionConverterGenerator<T>
             else
             {
                 exprs.Add(Expression.Call(writerParam, "WritePropertyName", null, Expression.Constant(member.RealName)));
-                exprs.Add(Expression.Call(typeof(JsonSerializer), "Serialize", new []{member.Type}, 
-                    writerParam, 
+                exprs.Add(Expression.Call(typeof(JsonSerializer), "Serialize", new[] { member.Type },
+                    writerParam,
                     Expression.Property(valueParam, member.RealName), optionsParam));
             }
         }
-        
+
         exprs.Add(Expression.Call(writerParam, "WriteEndObject", Array.Empty<Type>()));
-            
-            
+
+
 
         var block = Expression.Block(exprs);
 

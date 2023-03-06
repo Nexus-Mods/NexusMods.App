@@ -22,7 +22,7 @@ public class NativeFileStreamFactory : IStreamFactory
     public NativeFileStreamFactory(AbsolutePath file) => _file = file;
 
     /// <inheritdoc />
-    public ValueTask<Stream> GetStream()
+    public ValueTask<Stream> GetStreamAsync()
     {
         return new ValueTask<Stream>(_file.Open(FileMode.Open, FileAccess.Read, FileShare.Read));
     }

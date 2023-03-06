@@ -1,4 +1,4 @@
-﻿using System.Buffers.Binary;
+using System.Buffers.Binary;
 using FluentAssertions;
 
 namespace NexusMods.Hashing.xxHash64.Tests;
@@ -14,7 +14,7 @@ public class StreamExtensionTests
         _buffer = new byte[_random.Next(1024 * 1024 * 2)];
         _random.NextBytes(_buffer);
     }
-    
+
 
     [Fact]
     public async Task CanHashStreams()
@@ -24,8 +24,8 @@ public class StreamExtensionTests
 
         hashValue.Should().Be(MSHash(_buffer));
     }
-    
-    
+
+
     [Fact]
     public async Task CanHashStreamsWithCallback()
     {

@@ -1,5 +1,3 @@
-﻿using System.Buffers;
-
 namespace NexusMods.DataModel;
 
 public static class StreamExtensions
@@ -19,7 +17,7 @@ public static class StreamExtensions
             await writer.WriteAsync(separator);
         }
     }
-    
+
     public static async Task<string> ReadAllTextAsync(this Stream stream, CancellationToken token = default)
     {
         using var reader = new StreamReader(stream, leaveOpen: true);

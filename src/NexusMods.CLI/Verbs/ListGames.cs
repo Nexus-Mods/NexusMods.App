@@ -1,4 +1,4 @@
-﻿using NexusMods.CLI.DataOutputs;
+using NexusMods.CLI.DataOutputs;
 using NexusMods.DataModel.Games;
 using NexusMods.Paths;
 
@@ -20,16 +20,16 @@ public class ListGames : AVerb
         _games = games;
         _renderer = configurator.Renderer;
     }
-    
+
     public async Task<int> Run(CancellationToken token)
     {
         var installs = from game in _games.OrderBy(g => g.Name)
-            from install in game.Installations.OrderBy(g => g.Version)
-            select install;
-        
+                       from install in game.Installations.OrderBy(g => g.Version)
+                       select install;
+
         await _renderer.Render(new Table(new[] { "Game", "Version", "Path" },
-            installs.Select(i => new object[] { i.Game, i.Version, i.Locations[GameFolderType.Game]})));
-        
+            installs.Select(i => new object[] { i.Game, i.Version, i.Locations[GameFolderType.Game] })));
+
         return 0;
     }
 }

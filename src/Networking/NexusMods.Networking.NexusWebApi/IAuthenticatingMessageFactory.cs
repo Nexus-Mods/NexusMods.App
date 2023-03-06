@@ -1,4 +1,4 @@
-﻿using NexusMods.Networking.NexusWebApi.Types;
+using NexusMods.Networking.NexusWebApi.Types;
 
 namespace NexusMods.Networking.NexusWebApi;
 

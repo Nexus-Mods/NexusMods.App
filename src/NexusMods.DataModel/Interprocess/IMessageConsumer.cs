@@ -1,5 +1,3 @@
-﻿using System.Reactive.Subjects;
-
 namespace NexusMods.DataModel.Interprocess;
 
 /// <summary>

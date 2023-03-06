@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using NexusMods.Networking.NexusWebApi.DTOs.Interfaces;
 using NexusMods.Networking.NexusWebApi.Types;
@@ -32,11 +32,11 @@ public class GameInfo : IJsonArraySerializable<GameInfo>
     /// Returns the ID as typed ValueObject <see cref="GameId"/>.
     /// </summary>
     public GameId Id => GameId.From(_Id);
-    
+
     /// <summary>
     /// Name of the game.
     /// </summary>
-    [JsonPropertyName("name")] 
+    [JsonPropertyName("name")]
     public string Name { get; set; }
 
     /// <summary>
@@ -48,7 +48,7 @@ public class GameInfo : IJsonArraySerializable<GameInfo>
     /// <summary>
     /// URL to the Nexus page for this game.
     /// </summary>
-    [JsonPropertyName("nexusmods_url")] 
+    [JsonPropertyName("nexusmods_url")]
     public Uri NexusModsUrl { get; set; }
 
     /// <summary>

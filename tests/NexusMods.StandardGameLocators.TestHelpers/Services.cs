@@ -1,4 +1,4 @@
-﻿using GameFinder.Common;
+using GameFinder.Common;
 using GameFinder.StoreHandlers.EADesktop;
 using GameFinder.StoreHandlers.EGS;
 using GameFinder.StoreHandlers.GOG;
@@ -16,31 +16,31 @@ public static class Services
 {
     public static IServiceCollection AddStubbedGameLocators(this IServiceCollection coll)
     {
-        
+
         coll.AddAllSingleton<IGame, StubbedGame>();
         coll.AddAllSingleton<IModInstaller, StubbedGameInstaller>();
         coll.AddAllSingleton<ITool, ListFilesTool>();
-        coll.AddSingleton<AHandler<EADesktopGame, string>>(s => 
+        coll.AddSingleton<AHandler<EADesktopGame, string>>(s =>
             new StubbedGameLocator<EADesktopGame, string>(s.GetRequiredService<TemporaryFileManager>(),
                 tfm => new EADesktopGame("ea-game-id", "Stubbed Game", tfm.CreateFolder("ea_game").Path.ToString()),
                 game => game.SoftwareID));
-        
-        coll.AddSingleton<AHandler<EGSGame, string>>(s => 
+
+        coll.AddSingleton<AHandler<EGSGame, string>>(s =>
             new StubbedGameLocator<EGSGame, string>(s.GetRequiredService<TemporaryFileManager>(),
                 tfm => new EGSGame("epic-game-id", "Stubbed Game", tfm.CreateFolder("epic_game").Path.ToString()),
                 game => game.CatalogItemId));
-        
-        coll.AddSingleton<AHandler<OriginGame, string>>(s => 
+
+        coll.AddSingleton<AHandler<OriginGame, string>>(s =>
             new StubbedGameLocator<OriginGame, string>(s.GetRequiredService<TemporaryFileManager>(),
                 tfm => new OriginGame("origin-game-id", tfm.CreateFolder("origin_game").Path.ToString()),
                 game => game.Id));
 
-        coll.AddSingleton<AHandler<GOGGame, long>>(s => 
+        coll.AddSingleton<AHandler<GOGGame, long>>(s =>
             new StubbedGameLocator<GOGGame, long>(s.GetRequiredService<TemporaryFileManager>(),
                 tfm => new GOGGame(42, "Stubbed Game", tfm.CreateFolder("gog_game").Path.ToString()),
                 game => game.Id));
-        
-        coll.AddSingleton<AHandler<SteamGame, int>>(s => 
+
+        coll.AddSingleton<AHandler<SteamGame, int>>(s =>
             new StubbedGameLocator<SteamGame, int>(s.GetRequiredService<TemporaryFileManager>(),
                 tfm => new SteamGame(42, "Stubbed Game", tfm.CreateFolder("steam_game").Path.ToString()),
                 game => game.AppId));

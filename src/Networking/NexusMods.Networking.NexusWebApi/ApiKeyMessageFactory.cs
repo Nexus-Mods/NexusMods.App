@@ -1,5 +1,6 @@
-﻿using System.Text;
+using System.Text;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.Networking.NexusWebApi.Types;
 
 namespace NexusMods.Networking.NexusWebApi;
@@ -9,10 +10,10 @@ namespace NexusMods.Networking.NexusWebApi;
 /// </summary>
 public class ApiKeyMessageFactory : IAuthenticatingMessageFactory
 {
-    private static readonly Id ApiKeyId = new IdVariableLength(EntityCategory.AuthData, "NexusMods.Networking.NexusWebApi.ApiKey"u8.ToArray());
+    private static readonly IId ApiKeyId = new IdVariableLength(EntityCategory.AuthData, "NexusMods.Networking.NexusWebApi.ApiKey"u8.ToArray());
 
     private readonly IDataStore _store;
-    
+
     private string? EnvironmentApiKey => Environment.GetEnvironmentVariable("NEXUS_API_KEY");
 
     private string ApiKey
@@ -20,15 +21,15 @@ public class ApiKeyMessageFactory : IAuthenticatingMessageFactory
         get
         {
             var value = Encoding.UTF8.GetString(_store.GetRaw(ApiKeyId) ?? Array.Empty<byte>());
-            if (!string.IsNullOrWhiteSpace(value)) 
+            if (!string.IsNullOrWhiteSpace(value))
                 return value;
-            
+
             return EnvironmentApiKey ?? throw new Exception("No API key set");
         }
     }
 
     // TODO: Remove dependency on external components here.
-    
+
     /// <summary/>
     /// <param name="store"></param>
     public ApiKeyMessageFactory(IDataStore store)
@@ -46,7 +47,7 @@ public class ApiKeyMessageFactory : IAuthenticatingMessageFactory
 
     /// <inheritdoc />
     public async ValueTask<bool> IsAuthenticated()
-    { 
+    {
         var dataStoreResult = await ValueTask.FromResult(_store.GetRaw(ApiKeyId) != null);
         return dataStoreResult || EnvironmentApiKey != null;
     }

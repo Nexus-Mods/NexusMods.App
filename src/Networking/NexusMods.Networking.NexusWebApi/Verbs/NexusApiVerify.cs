@@ -1,4 +1,4 @@
-﻿using NexusMods.CLI;
+using NexusMods.CLI;
 using NexusMods.CLI.DataOutputs;
 // Temporary until moved to CLI project.
 #pragma warning disable CS1591

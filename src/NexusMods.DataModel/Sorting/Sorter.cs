@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using NexusMods.DataModel.Sorting.Rules;
 
 namespace NexusMods.DataModel.Sorting;
@@ -37,7 +37,7 @@ public class Sorter
         */
         return Sort(items.ToArray(), idSelector, ruleFn, comparer);
     }
-    
+
     /// <summary>
     /// Sorts a collection of user items.
     /// </summary>
@@ -51,7 +51,7 @@ public class Sorter
     public static IEnumerable<TItem> Sort<TItem, TId>(List<TItem> items,
         Func<TItem, TId> idSelector,
         Func<TItem, IReadOnlyList<ISortRule<TItem, TId>>> ruleFn,
-        IComparer<TId>? comparer = null) 
+        IComparer<TId>? comparer = null)
         where TId : IEquatable<TId>
     {
         return Sort<TItem, TId, List<TItem>>(items, idSelector, ruleFn, comparer);
@@ -71,19 +71,19 @@ public class Sorter
     public static IEnumerable<TItem> Sort<TItem, TId, TCollection>(TCollection items,
         Func<TItem, TId> idSelector,
         Func<TItem, IReadOnlyList<ISortRule<TItem, TId>>> ruleFn,
-        IComparer<TId>? comparer = null) 
+        IComparer<TId>? comparer = null)
         where TId : IEquatable<TId>
         where TCollection : class, IReadOnlyList<TItem>
     {
         var partitioner = Partitioner.Create(0, items.Count);
         var indexed = new ConcurrentDictionary<TId, (TId[] After, TItem Item)>(Environment.ProcessorCount, items.Count);
-        
+
         Parallel.ForEach(partitioner, tuple =>
         {
             var idBuffer = new HashSet<TId>(tuple.Item2 - tuple.Item1);
-            
+
             // Work on our slice.
-            for (int x = tuple.Item1; x < tuple.Item2; x++)
+            for (var x = tuple.Item1; x < tuple.Item2; x++)
             {
                 var item = items[x];
                 var rules = RefineRules(item, idSelector, ruleFn, items, idBuffer);
@@ -94,18 +94,18 @@ public class Sorter
         // This copy is necessary because ConcurrentDictionary does not have required APIs
         // for fast value access, and that bottlenecks us. No better option without custom dict.
         var dict = new Dictionary<TId, (TId[] After, TItem Item)>(indexed);
-        int currentPrimeIndex = GetRuntimePrimeIndex(dict.Count);
-        int prevPrime = RuntimePrimes[--currentPrimeIndex];
+        var currentPrimeIndex = GetRuntimePrimeIndex(dict.Count);
+        var prevPrime = RuntimePrimes[--currentPrimeIndex];
         var sorted = new List<TItem>(dict.Count);
         var used = new HashSet<TId>(dict.Count);
-        
+
         var values = GC.AllocateUninitializedArray<(TId[] After, TItem Item)>(dict.Count);
         const int MultiThreadCutoff = 2000; // Based on benching with 5900X.
         const int MinOperationsPerThread = 666;
         ParallelOptions parallelOptions = default!;
         ParallelIsSuperset<TId, TItem> parallelState = default!;
         Action<Tuple<int, int>>? doWork = default;
-        
+
         if (dict.Count > MultiThreadCutoff)
         {
             parallelOptions = new ParallelOptions();
@@ -117,12 +117,12 @@ public class Sorter
             };
             doWork = parallelState.DoWork;
         }
-        
+
         while (dict.Count > 0)
         {
             // Copy to values (no alloc), then filter them in-place
             dict.Values.CopyTo(values, 0); // <= Bottleneck. 
-            int superSetSize = 0;
+            var superSetSize = 0;
             var valuesSlice = values.AsSpan(0, dict.Count);
             if (dict.Count > MultiThreadCutoff)
             {
@@ -153,7 +153,7 @@ public class Sorter
                     return comparer.Compare(aId, bId);
                 });
             }
-            
+
             var found = false;
 
             foreach (var value in valuesSlice)
@@ -164,7 +164,7 @@ public class Sorter
                 used.Add(id);
                 dict.Remove(id, out _);
             }
-            
+
             // This is pretty stupid, but it's fastest way to work around the huge bottleneck pulling values.
             // It'd be nice if the runtime had that one loop unrolled. :), maybe I'll PR it.
             if (dict.Count < prevPrime)
@@ -180,17 +180,17 @@ public class Sorter
         return sorted;
     }
 
-    private static TId[] RefineRules<TItem, TId>(TItem thisItem, 
+    private static TId[] RefineRules<TItem, TId>(TItem thisItem,
         Func<TItem, TId> idSelector,
-        Func<TItem, IReadOnlyList<ISortRule<TItem, TId>>> ruleFn, 
+        Func<TItem, IReadOnlyList<ISortRule<TItem, TId>>> ruleFn,
         IReadOnlyList<TItem> items,
         HashSet<TId> idsBuffer)
     where TId : IEquatable<TId>
     {
         idsBuffer.Clear();
-        bool haveFirst = false;
+        var haveFirst = false;
         var rulesForThisItem = ruleFn(thisItem);
-        
+
         /*
              Please do not refactor 'for' as foreach in this method.
              That will lead to enumerator allocation, which in turn is a 
@@ -265,7 +265,7 @@ public class Sorter
             var val = values;
             var otp = output;
             var used = this.used;
-            for (int x = tuple.Item1; x < tuple.Item2; x++)
+            for (var x = tuple.Item1; x < tuple.Item2; x++)
             {
                 var value = val[x];
                 if (!IsSupersetOf(used, value.After))
@@ -288,7 +288,7 @@ public class Sorter
 
         return ContainsAllElements(set, other);
     }
-    
+
     /// <summary>
     /// Checks if this contains of other's elements. Iterates over other's elements and
     /// returns false as soon as it finds an element in other that's not in this.
@@ -310,7 +310,7 @@ public class Sorter
     // These haven't changed in at least ~15 years.
     private static int GetRuntimePrimeIndex(int value)
     {
-        for (int x = 0; x < RuntimePrimes.Length; x++)
+        for (var x = 0; x < RuntimePrimes.Length; x++)
         {
             var prime = RuntimePrimes[x];
             if (prime >= value)
@@ -319,13 +319,13 @@ public class Sorter
 
         return RuntimePrimes.Length - 1;
     }
-    
+
     private static readonly int[] RuntimePrimes =
     {
-        -1, 107, 131, 163, 197, 239, 293, 353, 431, 521, 631, 761, 919, 1103, 1327, 1597, 1931, 2333, 2801, 
-        3371, 4049, 4861, 5839, 7013, 8419, 10103, 12143, 14591, 17519, 21023, 25229, 30293, 36353, 
-        43627, 52361, 62851, 75431, 90523, 108631, 130363, 156437, 187751, 225307, 270371, 324449, 
-        389357, 467237, 560689, 672827, 807403, 968897, 1162687, 1395263, 1674319, 2009191, 2411033, 
+        -1, 107, 131, 163, 197, 239, 293, 353, 431, 521, 631, 761, 919, 1103, 1327, 1597, 1931, 2333, 2801,
+        3371, 4049, 4861, 5839, 7013, 8419, 10103, 12143, 14591, 17519, 21023, 25229, 30293, 36353,
+        43627, 52361, 62851, 75431, 90523, 108631, 130363, 156437, 187751, 225307, 270371, 324449,
+        389357, 467237, 560689, 672827, 807403, 968897, 1162687, 1395263, 1674319, 2009191, 2411033,
         2893249, 3471899, 4166287, 4999559, 5999471, 7199369
     };
 }

@@ -1,4 +1,5 @@
-﻿using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.Hashing.xxHash64;
@@ -15,18 +16,18 @@ public record NexusModFile : Entity
     public required string FileName { get; init; }
     public required Hash Hash { get; init; }
     public override EntityCategory Category => EntityCategory.TestData;
-    
+
     public required DateTime LastUpdated { get; init; }
 
 
-    protected override Id Persist()
+    protected override IId Persist()
     {
         var id = MakeId(Domain, ModId, FileId);
         Store.Put<Entity>(id, this);
         return id;
     }
 
-    private static Id MakeId(GameDomain gameDomain, ModId modId, FileId fileId)
+    private static IId MakeId(GameDomain gameDomain, ModId modId, FileId fileId)
     {
         return new IdVariableLength(EntityCategory.TestData, $"TestHarness.NexusModFile_{gameDomain.Value}_{modId.Value}_{fileId.Value}");
     }
@@ -36,7 +37,7 @@ public record NexusModFile : Entity
         var id = MakeId(gameDomain, modId, fileId);
         return store.Get<NexusModFile>(id);
     }
-    
+
     public static IEnumerable<NexusModFile> LoadAll(IDataStore store, GameDomain gameDomain)
     {
         return store.GetByPrefix<NexusModFile>(new IdVariableLength(EntityCategory.TestData, $"TestHarness.NexusModFile_{gameDomain.Value}_"));

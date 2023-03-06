@@ -1,8 +1,8 @@
-﻿namespace NexusMods.FileExtractor;
+namespace NexusMods.FileExtractor;
 
 /// <inheritdoc />
 public class FileExtractionException : Exception
 {
     /// <inheritdoc />
-    public FileExtractionException(string message) : base(message) {}
+    public FileExtractionException(string message) : base(message) { }
 }

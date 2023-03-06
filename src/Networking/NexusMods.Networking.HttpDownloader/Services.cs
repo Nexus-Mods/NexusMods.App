@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.CLI;
 using NexusMods.Common;
 using NexusMods.DataModel.RateLimiting;
@@ -13,13 +13,13 @@ public static class Services
     {
         return services.AddSingleton<IHttpDownloader, SimpleHttpDownloader>()
             .AddVerb<DownloadUri>()
-            .AddAllSingleton<IResource, IResource<IHttpDownloader, Size>>(s => new Resource<IHttpDownloader, Size>("Downloads"));
+            .AddAllSingleton<IResource, IResource<IHttpDownloader, Size>>(_ => new Resource<IHttpDownloader, Size>("Downloads"));
     }
 
     public static IServiceCollection AddAdvancedHttpDownloader(this IServiceCollection services)
     {
         return services.AddSingleton<IHttpDownloader, AdvancedHttpDownloader>()
             .AddVerb<DownloadUri>()
-            .AddAllSingleton<IResource, IResource<IHttpDownloader, Size>>(s => new Resource<IHttpDownloader, Size>("Downloads"));
+            .AddAllSingleton<IResource, IResource<IHttpDownloader, Size>>(_ => new Resource<IHttpDownloader, Size>("Downloads"));
     }
 }

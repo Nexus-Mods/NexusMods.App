@@ -13,17 +13,17 @@ public class GetFullPathWithSpanTests
     [InlineData("C:/NMA/test.png", "", "C:/NMA/test.png")]
     [InlineData("/home/sewer/NMA/test.png", "", "/home/sewer/NMA/test.png")]
     public void GetFullPath_WithNullDirectory(string expected, string? directory, string fileName) => AssertGetFullPath(expected, directory, fileName);
-    
+
     [Theory]
     [InlineData("C:/NMA/test", "", "C:/NMA/test")]
     [InlineData("/home/sewer/NMA/test", "", "/home/sewer/NMA/test")]
     public void GetFullPath_WithEmptyDirectory(string expected, string? directory, string fileName) => AssertGetFullPath(expected, directory, fileName);
-    
+
     [Theory]
     [InlineData("C:/NMA/test", "C:/NMA/test", "")]
     [InlineData("/home/sewer/NMA/test", "/home/sewer/NMA/test", "")]
     public void GetFullPath_WithDirectoryOnly(string expected, string? directory, string fileName) => AssertGetFullPath(expected, directory, fileName);
-    
+
     [Theory]
     [InlineData("C:/NMA/test.png", "C:/NMA", "test.png")]
     [InlineData("/home/sewer/NMA/test.png", "/home/sewer/NMA", "test.png")]

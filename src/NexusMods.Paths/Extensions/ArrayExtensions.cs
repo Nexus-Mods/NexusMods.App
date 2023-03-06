@@ -20,10 +20,10 @@ public static class ArrayExtensions
         for (var i = 0; i < length; i++)
             if (!a![startA + i].Equals(b![startB + i]))
                 return false;
-        
+
         return true;
     }
-    
+
     /// <summary>
     /// Verifies if two slices of string arrays are equal, ignoring case.
     /// </summary>
@@ -35,7 +35,7 @@ public static class ArrayExtensions
         for (var i = 0; i < length; i++)
             if (!a![startA + i].Equals(b![startB + i], StringComparison.InvariantCultureIgnoreCase))
                 return false;
-        
+
         return true;
     }
 
@@ -75,7 +75,7 @@ public static class ArrayExtensions
             idx++;
         }
     }
-    
+
     /// <summary>
     /// Returns a reference to an element at a specified index without performing a bounds check.
     /// </summary>
@@ -87,7 +87,7 @@ public static class ArrayExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref T DangerousGetReferenceAt<T>(this T[] array, int i)
     {
-        ref T r0 = ref MemoryMarshal.GetArrayDataReference(array);
+        ref var r0 = ref MemoryMarshal.GetArrayDataReference(array);
         return ref Unsafe.Add(ref r0, (nint)(uint)i);
     }
 }

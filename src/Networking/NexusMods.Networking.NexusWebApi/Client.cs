@@ -1,4 +1,4 @@
-﻿using System.Net.Http.Json;
+using System.Net.Http.Json;
 using System.Text.Json.Serialization.Metadata;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
@@ -42,7 +42,7 @@ public class Client
         var msg = await _factory.Create(HttpMethod.Get, new Uri("https://api.nexusmods.com/v1/users/validate.json"));
         return await SendAsync<ValidateInfo>(msg, token);
     }
-    
+
     /// <summary>
     /// Returns a list of games supported by Nexus.
     /// </summary>
@@ -97,13 +97,13 @@ public class Client
             PastTime.Month => "1m",
             _ => throw new ArgumentOutOfRangeException(nameof(time), time, null)
         };
-        
+
         var msg = await _factory.Create(HttpMethod.Get, new Uri(
             $"https://api.nexusmods.com/v1/games/{domain}/mods/updated.json?period={timeString}"));
 
         return await SendAsyncArray<ModUpdate>(msg, token: token);
     }
-    
+
     /// <summary>
     /// Returns all of the downloadable files associated with a mod.
     /// </summary>
@@ -122,19 +122,19 @@ public class Client
             $"https://api.nexusmods.com/v1/games/{domain}/mods/{modId}/files.json"));
         return await SendAsync<ModFiles>(msg, token);
     }
-    
+
     private async Task<Response<T>> SendAsync<T>(HttpRequestMessage message,
         CancellationToken token = default) where T : IJsonSerializable<T>
     {
         return await SendAsync(message, T.GetTypeInfo(), token);
     }
-    
+
     private async Task<Response<T[]>> SendAsyncArray<T>(HttpRequestMessage message,
         CancellationToken token = default) where T : IJsonArraySerializable<T>
     {
         return await SendAsync(message, T.GetArrayTypeInfo(), token);
     }
-    
+
     private async Task<Response<T>> SendAsync<T>(HttpRequestMessage message, JsonTypeInfo<T> typeInfo,
         CancellationToken token = default)
     {
@@ -154,11 +154,12 @@ public class Client
         }
         catch (HttpRequestException ex)
         {
-            HttpRequestMessage? newMessage = await _factory.HandleError(message, ex, token);
+            var newMessage = await _factory.HandleError(message, ex, token);
             if (newMessage != null)
             {
                 return await SendAsync<T>(newMessage, typeInfo, token);
-            } else
+            }
+            else
             {
                 throw;
             }
@@ -168,13 +169,13 @@ public class Client
     private ResponseMetadata ParseHeaders(HttpResponseMessage result)
     {
         var metaData = ResponseMetadata.FromHttpHeaders(result);
-        
+
         _logger.LogInformation("Nexus API call finished: {Runtime} - Remaining Limit: {RemainingLimit}",
             metaData.Runtime, Math.Max(metaData.DailyRemaining, metaData.HourlyRemaining));
 
         return metaData;
     }
-    
+
     /// <summary>
     /// Specifies the time period used to search for items.
     /// </summary>
@@ -184,12 +185,12 @@ public class Client
         /// Searches the past 24 hours.
         /// </summary>
         Day,
-        
+
         /// <summary>
         /// Searches the past 7 days. 
         /// </summary>
         Week,
-        
+
         /// <summary>
         /// Searches the past month.
         /// </summary>

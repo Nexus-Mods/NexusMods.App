@@ -1,6 +1,13 @@
-﻿namespace NexusMods.DataModel.Abstractions;
+namespace NexusMods.DataModel.Abstractions;
 
-public interface IEmptyWithDataStore<out T>
+/// <summary>
+/// Provides access to creating an empty element with a backing datastore,
+/// </summary>
+/// <typeparam name="TSelf">Empty item to return. Usually own/self class.</typeparam>
+public interface IEmptyWithDataStore<out TSelf>
 {
-    public static abstract T Empty(IDataStore store);
+    /// <summary>
+    /// Returns a new empty item for use.
+    /// </summary>
+    public static abstract TSelf Empty(IDataStore store);
 }

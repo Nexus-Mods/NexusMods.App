@@ -1,4 +1,4 @@
-﻿using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Games;
 using NexusMods.DataModel.JsonConverters;
 
 namespace NexusMods.DataModel.Loadouts.ModFiles;

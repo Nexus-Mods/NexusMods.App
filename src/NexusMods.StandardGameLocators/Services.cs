@@ -1,4 +1,4 @@
-﻿using System.IO.Abstractions;
+using System.IO.Abstractions;
 using System.Runtime.InteropServices;
 using GameFinder.Common;
 using GameFinder.RegistryUtils;

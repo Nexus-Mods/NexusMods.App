@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Games.Abstractions;
@@ -27,7 +27,7 @@ where T : AGame
     {
         var program = _game.PrimaryFile.CombineChecked(loadout.Installation.Locations[GameFolderType.Game]);
         _logger.LogInformation("Running {Program}", program);
-        
+
         var psi = new ProcessStartInfo(program.ToString())
         {
 

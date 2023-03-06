@@ -1,4 +1,4 @@
-﻿namespace NexusMods.DataModel.Interprocess;
+namespace NexusMods.DataModel.Interprocess;
 
 public interface IMessage
 {
@@ -6,7 +6,7 @@ public interface IMessage
     /// Maximum size of the message. Internally enough buffer space will be allocated to hold 16 messages.
     /// </summary>
     public static abstract int MaxSize { get; }
-    
+
     /// <summary>
     /// Writes the message to the buffer.
     /// </summary>

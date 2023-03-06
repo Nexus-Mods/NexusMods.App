@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.ModInstallers;
 
 namespace NexusMods.Games.DarkestDungeon;
 
-public static class Services 
+public static class Services
 {
     public static IServiceCollection AddDarkestDungeon(this IServiceCollection serviceCollection)
     {
@@ -12,5 +12,5 @@ public static class Services
         serviceCollection.AddSingleton<IModInstaller, DarkestDungeonModInstaller>();
         return serviceCollection;
     }
-    
+
 }

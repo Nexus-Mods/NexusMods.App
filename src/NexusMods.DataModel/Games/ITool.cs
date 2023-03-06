@@ -1,4 +1,4 @@
-﻿using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.DataModel.Games;
 
@@ -11,6 +11,6 @@ public interface ITool
     public IEnumerable<GameDomain> Domains { get; }
 
     public Task Execute(Loadout loadout);
-    
+
     public string Name { get; }
 }

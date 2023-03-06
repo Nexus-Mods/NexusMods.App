@@ -1,4 +1,4 @@
-﻿using NexusMods.CLI.DataOutputs;
+using NexusMods.CLI.DataOutputs;
 using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.CLI.Verbs;
@@ -17,12 +17,12 @@ public class ListManagedGames : AVerb
     public static VerbDefinition Definition => new("list-managed-games",
         "List all the managed game instances (Loadouts) in the app",
         Array.Empty<OptionDefinition>());
-    
+
     public async Task<int> Run(CancellationToken token)
     {
         var rows = new List<object[]>();
         foreach (var list in _manager.AllLoadouts.Select(x => x.Value))
-            rows.Add(new object[]{list.Name, list.Installation, list.LoadoutId, list.Mods.Count});
+            rows.Add(new object[] { list.Name, list.Installation, list.LoadoutId, list.Mods.Count });
 
         await _renderer.Render(new Table(new[] { "Name", "Game", "Id", "Mod Count" }, rows));
 

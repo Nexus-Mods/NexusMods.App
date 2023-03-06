@@ -13,8 +13,8 @@ namespace NexusMods.Paths;
 /// 1MB * 1MB is technically 1MB^2, but we don't want to allow that because it's not a valid size.
 /// </summary>
 [ValueObject<ulong>]
-public readonly partial struct Size : 
-    IAdditionOperators<Size, Size, Size>, 
+public readonly partial struct Size :
+    IAdditionOperators<Size, Size, Size>,
     ISubtractionOperators<Size, Size, Size>,
     IDivisionOperators<Size, Size, double>,
     IDivisionOperators<Size, double, Size>,
@@ -28,7 +28,7 @@ public readonly partial struct Size :
     /// A size that represents 'zero'.
     /// </summary>
     public static readonly Size Zero = From(0);
-    
+
     /// <summary>
     /// A size that represents 'one'.
     /// </summary>
@@ -39,27 +39,27 @@ public readonly partial struct Size :
 
     /// <inheritdoc />
     public static Size AdditiveIdentity => Zero;
-    
+
     /// <summary>
     /// Converts a long to a Size object.
     /// </summary>
     public static Size From(long value) => From((ulong)value);
-    
+
     /// <summary>
     /// Represents a size of 1 KiB. (1024 bytes)
     /// </summary>
     public static Size KB => From(1024);
-    
+
     /// <summary>
     /// Represents a size of 1 MiB. (1024^2 bytes)
     /// </summary>
     public static Size MB => From(1024 * 1024);
-    
+
     /// <summary>
     /// Represents a size of 1 GiB. (1024^3 bytes)
     /// </summary>
     public static Size GB => From(1024 * 1024 * 1024);
-    
+
     /// <summary>
     /// Represents a size of 1 TiB. (1024^4 bytes)
     /// </summary>
@@ -79,7 +79,7 @@ public readonly partial struct Size :
     {
         return Bandwidth.From((ulong)(left._value / right.TotalSeconds));
     }
-    
+
     /// <inheritdoc />
     public static Size operator +(Size left, Size right) => From(left._value + right._value);
 
