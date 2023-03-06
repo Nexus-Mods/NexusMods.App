@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using CliWrap;
 
 namespace NexusMods.Common.OSInterop;
 

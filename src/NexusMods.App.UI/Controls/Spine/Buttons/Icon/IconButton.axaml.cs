@@ -1,7 +1,5 @@
 using System.Reactive.Linq;
-using System.Windows.Input;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.Mixins;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
