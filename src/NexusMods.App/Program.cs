@@ -11,6 +11,7 @@ using NexusMods.Common;
 using NLog.Extensions.Logging;
 using NLog.Targets;
 using ReactiveUI;
+using static NexusMods.App.UI.Startup;
 
 namespace NexusMods.App;
 

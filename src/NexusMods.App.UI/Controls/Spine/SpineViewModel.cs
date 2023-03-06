@@ -56,7 +56,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 .ToObservableChangeSet(x => x.Domain)
                 .Transform(game =>
                 {
-                    using var iconStream = game.Icon.GetStreamAsync().Result;
+                    using var iconStream = game.Icon.GetStream().Result;
                     var vm = _provider.GetRequiredService<IImageButtonViewModel>();
                     vm.Name = game.Name;
                     vm.Image = Bitmap.DecodeToWidth(iconStream, 48);
