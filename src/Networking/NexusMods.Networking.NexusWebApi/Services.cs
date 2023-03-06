@@ -35,7 +35,6 @@ public static class Services
         }
 
         return collection
-            .AddDataModel()
             .AddSingleton<ITypeFinder, TypeFinder>()
             .AddSingleton<IProtocolHandler, NXMProtocolHandler>()
             .AddSingleton<Client>()
@@ -46,7 +45,7 @@ public static class Services
             .AddVerb<DownloadLinks>()
             .AddVerb<NexusLogin>()
             .AddVerb<NexusLogout>()
-            
+
             .AddSingleton<IOptionParser<CDNName>, StringOptionParser<CDNName>>()
             .AddSingleton<IOptionParser<ModId>, ULongOptionParser<ModId>>()
             .AddSingleton<IOptionParser<FileId>, ULongOptionParser<FileId>>()

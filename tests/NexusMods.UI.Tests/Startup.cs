@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.App;
+using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
 using NexusMods.Games.RedEngine;
@@ -13,13 +14,14 @@ namespace NexusMods.UI.Tests;
 
 public class Startup
 {
-    public void ConfigureServices(IServiceCollection container)
+    public void ConfigureServices(IServiceCollection services)
     {
-        container.AddUniversalGameLocator<Cyberpunk2077>(new Version("1.61"));
-        container.AddApp(addStandardGameLocators:false)
-            .AddSingleton<AvaloniaApp>();
+        services.AddUniversalGameLocator<Cyberpunk2077>(new Version("1.61"))
+                .AddApp(addStandardGameLocators:false)
+                .AddSingleton<AvaloniaApp>()
+                .Validate();
     }
-    
+
     public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>
         loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(accessor, delegate { return true;}));
 }
