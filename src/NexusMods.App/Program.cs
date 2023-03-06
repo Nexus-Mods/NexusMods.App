@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.App;
 using NexusMods.App.UI;
 using NexusMods.CLI;
+using NexusMods.Common;
 using NLog.Extensions.Logging;
 using NLog.Targets;
 using ReactiveUI;
@@ -56,7 +57,10 @@ public class Program
     {
         var host = Host.CreateDefaultBuilder(Environment.GetCommandLineArgs())
             .ConfigureLogging(AddLogging)
-            .ConfigureServices((_, services) => { services.AddApp(); }).Build();
+            .ConfigureServices((_, services) =>
+                services.AddApp()
+                    .Validate())
+            .Build();
         return host;
     }
 
