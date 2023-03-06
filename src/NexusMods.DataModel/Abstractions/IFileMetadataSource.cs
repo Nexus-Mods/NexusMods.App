@@ -28,15 +28,21 @@ public interface IFileMetadataSource
     public IEnumerable<GameDomain> Games { get; }
 
     /// <summary>
-    /// Return metadata for the given file. If metadata for this source already exists on the file
-    /// it will be removed before the new metadata is added, so this method should always return
-    /// all metadata for the given file.
+    /// Return metadata for the given file.
     /// </summary>
-    /// <param name="filLoadout"></param>
-    /// <param name="mod"></param>
-    /// <param name="file"></param>
-    /// <param name="analyzedFile"></param>
+    /// <param name="loadout">The mod loadout for which the metadata is to be fetched.</param>
+    /// <param name="mod">The mod which owns the <paramref name="file"/> and <paramref name="analyzedFile"/>,</param>
+    /// <param name="file">
+    ///     Individual file belonging to the mod, the
+    ///     <paramref name="analyzedFile"/> corresponds to this file.
+    /// </param>
+    /// <param name="analyzedFile">Individual file returned as a result of analysis.</param>
     /// <returns></returns>
-    public IAsyncEnumerable<IModFileMetadata> GetMetadata(Loadout filLoadout, Mod mod, AModFile file,
+    /// <remarks>
+    ///     During file analysis, if metadata for this source already exists on the file
+    ///     it will be removed before the new metadata is added, so this method should always return
+    ///     all metadata for the given file.
+    /// </remarks>
+    public IAsyncEnumerable<IModFileMetadata> GetMetadata(Loadout loadout, Mod mod, AModFile file,
         AnalyzedFile analyzedFile);
 }
