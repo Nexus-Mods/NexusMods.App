@@ -1,6 +1,5 @@
 namespace NexusMods.DataModel.Abstractions;
 
-
 /// <summary>
 /// Markers are helpful mutable classes for tracking the position of edits in an immutable tree.
 /// A marker can be made for a sub portion of the tree, and the value can be read with `Value`,

@@ -1,3 +1,5 @@
+using NexusMods.DataModel.Loadouts;
+
 namespace NexusMods.DataModel.Abstractions;
 
 /// <summary>
@@ -10,7 +12,8 @@ namespace NexusMods.DataModel.Abstractions;
 public enum RootType : byte
 {
     /// <summary>
-    /// Root into a loadout, i.e. a Collection of Mods
+    /// Root into a loadout, i.e. a Collection of Mods.
+    /// Currently represented by <see cref="LoadoutRegistry"/>.
     /// </summary>
     Loadouts = 0,
 
