@@ -17,14 +17,14 @@ public class AUiTest
     }
 
     protected VMWrapper<T> GetActivatedViewModel<T>()
-    where T : IViewModel
+    where T : IViewModelInterface
     {
         var vm = _provider.GetRequiredService<T>();
         return new VMWrapper<T>(vm);
     }
 
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    public class VMWrapper<T> : IDisposable where T : IViewModel
+    public class VMWrapper<T> : IDisposable where T : IViewModelInterface
     {
         private readonly IDisposable _disposable;
         public T VM { get; }

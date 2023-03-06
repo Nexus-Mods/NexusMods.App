@@ -1,13 +1,13 @@
-namespace NexusMods.Common;
+﻿using CliWrap;
+
+namespace NexusMods.Common.OSInterop;
 
 /// <summary>
 /// OS interoperation for MacOS
 /// </summary>
-// ReSharper disable once InconsistentNaming
 public class OSInteropOSX : IOSInterop
 {
     private readonly IProcessFactory _processFactory;
-
     /// <summary>
     /// constructor
     /// </summary>
@@ -18,8 +18,9 @@ public class OSInteropOSX : IOSInterop
     }
 
     /// <inheritdoc/>
-    public void OpenUrl(string url)
+    public async Task OpenURL(string url, CancellationToken cancellationToken = default)
     {
-        _processFactory.Start("open", url);
+        var command = Cli.Wrap("open").WithArguments(url);
+        await _processFactory.ExecuteAsync(command, cancellationToken);
     }
 }

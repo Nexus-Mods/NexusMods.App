@@ -13,6 +13,9 @@ namespace NexusMods.App.UI.Controls.TopBar;
 public class TopBarDesignViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 {
     [Reactive]
+    public bool ShowWindowControls { get; set; }
+
+    [Reactive]
     public bool IsLoggedIn { get; set; }
 
     [Reactive]

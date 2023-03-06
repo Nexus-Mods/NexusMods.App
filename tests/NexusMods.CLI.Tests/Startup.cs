@@ -10,15 +10,16 @@ namespace NexusMods.CLI.Tests;
 
 public class Startup
 {
-    public void ConfigureServices(IServiceCollection container)
+    public void ConfigureServices(IServiceCollection services)
     {
-        container.AddStandardGameLocators(false)
-            .AddStubbedGameLocators()
-            .AddDataModel()
-            .AddFileExtractors()
-            .AddCLI()
-            .AddAllScoped<IRenderer, LoggingRenderer>()
-            .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug));
+        services.AddStandardGameLocators(false)
+                .AddStubbedGameLocators()
+                .AddDataModel()
+                .AddFileExtractors()
+                .AddCLI()
+                .AddAllScoped<IRenderer, LoggingRenderer>()
+                .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
+                .Validate();
     }
 }
 

@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Interprocess;
 using Moq;
@@ -7,6 +7,7 @@ using Moq.Protected;
 using NexusMods.Networking.NexusWebApi.Types;
 using System.Text.Json;
 using FluentAssertions;
+using NexusMods.Common.OSInterop;
 
 namespace NexusMods.Networking.NexusWebApi.Tests;
 
@@ -48,7 +49,7 @@ public class OAuthTests
         _consumer = consumer;
     }
 
-    [Fact()]
+    [Fact]
     public async void AuthorizeRequestTest()
     {
         #region Setup
@@ -80,12 +81,12 @@ public class OAuthTests
 
         #region Verification
         idGen.Verify(_ => _.UUIDv4(), Times.Exactly(2));
-        os.Verify(_ => _.OpenUrl(ExpectedAuthURL), Times.Once);
+        os.Verify(_ => _.OpenURL(ExpectedAuthURL, It.IsAny<CancellationToken>()), Times.Once);
         result.Should().BeEquivalentTo(ReplyToken);
         #endregion
     }
 
-    [Fact()]
+    [Fact]
     public async void RefreshTokenTest()
     {
         #region Setup
@@ -114,36 +115,12 @@ public class OAuthTests
 
         #region Verification
         idGen.Verify(_ => _.UUIDv4(), Times.Never);
-        os.Verify(_ => _.OpenUrl(It.IsAny<string>()), Times.Never);
+        os.Verify(_ => _.OpenURL(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
         token.Should().BeEquivalentTo(ReplyToken);
         #endregion
     }
 
-    [Fact()]
-    public async void WarnsOnUnexpectedCallback()
-    {
-        var messageHandler = new Mock<HttpMessageHandler>();
-        var httpClient = new HttpClient(messageHandler.Object);
-        var idGen = new Mock<IIDGenerator>();
-        var os = new Mock<IOSInterop>();
-        var logger = new Mock<ILogger<OAuth>>();
-
-        var oauth = new OAuth(logger.Object, httpClient, idGen.Object, os.Object, _consumer);
-
-        await _producer.Write(new NXMUrlMessage { Value = NXMUrl.Parse($"nxm://oauth/callback?state=surprise&code=code") }, CancellationToken.None);
-        // allow message to be handled
-        await Task.Delay(100);
-
-        logger.Verify(logger => logger.Log(
-                It.Is<LogLevel>(logLevel => logLevel == LogLevel.Warning),
-                It.Is<EventId>(eventId => eventId.Id == 0),
-                It.IsAny<It.IsAnyType>(),
-                It.IsAny<Exception>(),
-                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-            Times.Once);
-    }
-
-    [Fact()]
+    [Fact]
     public async void ThrowsOnInvalidResponse()
     {
         #region Setup
@@ -175,7 +152,7 @@ public class OAuthTests
         #endregion
     }
 
-    [Fact()]
+    [Fact]
     public async void AuthorizationCanBeCanceled()
     {
         #region Setup

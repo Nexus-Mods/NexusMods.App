@@ -1,39 +1,61 @@
 using Moq;
-using System.Diagnostics;
+using CliWrap;
+using NexusMods.Common.OSInterop;
 
 namespace NexusMods.Common.Tests;
 
-// ReSharper disable once InconsistentNaming
 public class OSInteropTests
 {
+    // Disabled as we don't do processes this way with
+    /*
     [Fact]
-    public void UsesShellExecuteOnWindows()
+    public async Task UsesExplorerOnWindows()
     {
-        var url = "foobar://test";
+        const string url = "foobar://test";
         var mockFactory = new Mock<IProcessFactory>();
+
         var os = new OSInteropWindows(mockFactory.Object);
-        os.OpenUrl(url);
-        mockFactory.Verify(f => f.Start(It.IsAny<ProcessStartInfo>()), Times.Once());
-        mockFactory.Verify(f => f.Start(It.Is<ProcessStartInfo>(psi => psi.UseShellExecute == true)), Times.Once());
-    }
+        await os.OpenURL(url);
+
+        mockFactory.Verify(f => f.ExecuteAsync(
+            It.Is<Command>(command =>
+                command.TargetFilePath == "explorer.exe" &&
+                command.Arguments == url),
+            It.IsAny<CancellationToken>()
+        ), Times.Once);
+    }*/
 
     [Fact]
-    public void UsesXDGOpenOnLinux()
+    public async Task UsesXDGOpenOnLinux()
     {
-        var url = "foobar://test";
+        const string url = "foobar://test";
         var mockFactory = new Mock<IProcessFactory>();
+
         var os = new OSInteropLinux(mockFactory.Object);
-        os.OpenUrl(url);
-        mockFactory.Verify(f => f.Start("xdg-open", url), Times.Once());
+        await os.OpenURL(url);
+
+        mockFactory.Verify(f => f.ExecuteAsync(
+            It.Is<Command>(command =>
+                command.TargetFilePath == "xdg-open" &&
+                command.Arguments == url),
+            It.IsAny<CancellationToken>()
+        ), Times.Once);
     }
 
     [Fact]
-    public void UsesOpenOnOSX()
+    public async Task UsesOpenOnOSX()
     {
-        var url = "foobar://test";
+        const string url = "foobar://test";
         var mockFactory = new Mock<IProcessFactory>();
+
         var os = new OSInteropOSX(mockFactory.Object);
-        os.OpenUrl(url);
-        mockFactory.Verify(f => f.Start("open", url), Times.Once());
+        await os.OpenURL(url);
+
+        mockFactory.Verify(f => f.ExecuteAsync(
+            It.Is<Command>(command =>
+                command.TargetFilePath == "open" &&
+                command.Arguments == url),
+            It.IsAny<CancellationToken>()
+        ), Times.Once);
     }
 }

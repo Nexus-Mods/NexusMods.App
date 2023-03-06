@@ -71,6 +71,8 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
         await _loginManager.Logout();
     }
 
+    [Reactive] public bool ShowWindowControls { get; set; } = false;
+
     [Reactive]
     public bool IsLoggedIn { get; set; }
 

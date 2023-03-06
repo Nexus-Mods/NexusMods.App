@@ -1,3 +1,4 @@
+using System.Reactive.Linq;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Interprocess;
@@ -6,6 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using NexusMods.Common.OSInterop;
 
 
 namespace NexusMods.Networking.NexusWebApi;
@@ -64,7 +66,7 @@ public struct NXMUrlMessage : IMessage
     public static IMessage Read(ReadOnlySpan<byte> buffer)
     {
         var value = Encoding.UTF8.GetString(buffer);
-        return new NXMUrlMessage() { Value = NXMUrl.Parse(value) };
+        return new NXMUrlMessage { Value = NXMUrl.Parse(value) };
     }
 
     /// <inheritdoc/>
@@ -87,22 +89,22 @@ public class OAuth
     private static string OAuthRedirectURL = "nxm://oauth/callback";
     private static string OAuthClientId = "vortex";
 
-    private IDictionary<string, Action<Exception?, string>> _callbacks = new Dictionary<string, Action<Exception?, string>>();
     private readonly ILogger<OAuth> _logger;
     private readonly HttpClient _http;
     private readonly IOSInterop _os;
     private readonly IIDGenerator _idGen;
+    private readonly IMessageConsumer<NXMUrlMessage> _nxmUrlMessages;
 
     /// <summary>
     /// constructor
     /// </summary>
-    public OAuth(ILogger<OAuth> logger, HttpClient http, IIDGenerator idGen, IOSInterop os, IMessageConsumer<NXMUrlMessage> message)
+    public OAuth(ILogger<OAuth> logger, HttpClient http, IIDGenerator idGen, IOSInterop os, IMessageConsumer<NXMUrlMessage> nxmUrlMessages)
     {
         _logger = logger;
         _http = http;
         _os = os;
         _idGen = idGen;
-        message.Messages.Subscribe(OnNXMUrl);
+        _nxmUrlMessages = nxmUrlMessages;
     }
 
     /// <summary>
@@ -112,8 +114,7 @@ public class OAuth
     /// <returns>task with the jwt token once we receive one</returns>
     public async Task<JwtTokenReply> AuthorizeRequest(CancellationToken cancel)
     {
-        var completionSource = new TaskCompletionSource<JwtTokenReply>();
-
+        _logger.LogInformation("Starting NexusMods OAuth2 authorization request");
         var state = _idGen.UUIDv4();
 
         // see https://www.rfc-editor.org/rfc/rfc7636#section-4.1
@@ -122,35 +123,22 @@ public class OAuth
         using var sha256 = SHA256.Create();
         var challenge = sha256.ComputeHash(Encoding.UTF8.GetBytes(verifier)).ToBase64();
 
-        // callback will be invoked if/when we heard back from the site
-        _callbacks[state] = (Exception? ex, string code) =>
-            {
-                if (ex != null)
-                {
-                    completionSource.SetException(ex);
-                }
-                else
-                {
-                    AuthorizeToken(verifier, code, CancellationToken.None).ContinueWith(reply =>
-                    {
-                        if (reply.Exception != null)
-                        {
-                            completionSource.SetException(reply.Exception);
-                        }
-                        else
-                        {
-                            completionSource.SetResult(reply.Result);
-                        }
-                    });
-                }
-            };
+        // Start listening first, otherwise we might miss the message
+        var codeTask = _nxmUrlMessages.Messages
+            .Where(url => url.Value.UrlType == NXMUrlType.OAuth)
+            .Where(url => url.Value.OAuth.State == state)
+            .Select(url => url.Value.OAuth.Code!)
+            .ToAsyncEnumerable()
+            .FirstAsync(cancel);
 
-        cancel.Register(() => _callbacks[state].Invoke(new OperationCanceledException(), ""));
-
+        _logger.LogInformation("Opening browser for NexusMods OAuth2 authorization request");
         // see https://www.rfc-editor.org/rfc/rfc7636#section-4.3
-        _os.OpenUrl(GenerateAuthorizeUrl(challenge, state));
+        await _os.OpenURL(GenerateAuthorizeUrl(challenge, state), cancel);
+        var code = await codeTask;
 
-        return await completionSource.Task;
+        _logger.LogInformation("Received OAuth2 authorization code, requesting token");
+        return await AuthorizeToken(verifier, code, cancel);
+
     }
 
     /// <summary>
@@ -190,22 +178,6 @@ public class OAuth
         var response = await _http.PostAsync($"{OAuthUrl}/token", content, cancel);
         var responseString = await response.Content.ReadAsStringAsync(cancel);
         return JsonSerializer.Deserialize<JwtTokenReply>(responseString);
-    }
-
-    private void OnNXMUrl(NXMUrlMessage url)
-    {
-        if ((url.Value.UrlType == NXMUrlType.OAuth) && (url.Value.OAuth.State != null))
-        {
-            if (_callbacks.ContainsKey(url.Value.OAuth.State))
-            {
-                _callbacks[url.Value.OAuth.State].Invoke(null, url.Value.OAuth.Code ?? "");
-                _callbacks.Remove(url.Value.OAuth.State);
-            }
-            else
-            {
-                _logger.LogWarning("received unexpected oauth callback");
-            }
-        }
     }
 
     private string SanitizeBase64(string input)

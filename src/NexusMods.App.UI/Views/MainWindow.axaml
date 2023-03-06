@@ -4,7 +4,7 @@
     ExtendClientAreaToDecorationsHint="True"
     Icon="/Assets/nexus-logo.ico"
     PointerPressed="PointerPressed_Handler"
-    Title="NexusMods.App.UI"
+    Title="Nexus Mods App"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d"
@@ -33,6 +33,11 @@
             Grid.Row="0"
             x:Name="TopBar" />
 
+        <reactiveUi:ViewModelViewHost
+            Grid.Column="0"
+            Grid.Row="1"
+            x:Name="Spine" />
+
         <Border
             BorderBrush="{DynamicResource StructuralBorderBrush}"
             BorderThickness="1,0"
@@ -45,10 +50,7 @@
             Grid.ColumnSpan="3"
             Grid.Row="0" />
 
-        <reactiveUi:ViewModelViewHost
-            Grid.Column="0"
-            Grid.Row="1"
-            x:Name="Spine" />
+
 
         <StackPanel
             Grid.Column="1"

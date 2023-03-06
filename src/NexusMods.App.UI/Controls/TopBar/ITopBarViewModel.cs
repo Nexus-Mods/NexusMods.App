@@ -6,6 +6,7 @@ namespace NexusMods.App.UI.Controls.TopBar;
 
 public interface ITopBarViewModel : IViewModelInterface
 {
+    public bool ShowWindowControls { get; set; }
     public bool IsLoggedIn { get; }
     public bool IsPremium { get; }
     public IImage Avatar { get; }

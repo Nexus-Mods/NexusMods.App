@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Common;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.DependencyInjection;
@@ -11,10 +12,11 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection container)
     {
-        container.AddStandardGameLocators(false);
-        container.AddSingleton<TemporaryFileManager>();
-        container.AddStubbedGameLocators();
-        container.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug));
+        container.AddStandardGameLocators(false)
+                 .AddSingleton<TemporaryFileManager>()
+                 .AddStubbedGameLocators()
+                 .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
+                 .Validate();
     }
 
     public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>

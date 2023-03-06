@@ -1,15 +1,14 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using CliWrap;
 
-namespace NexusMods.Common;
+namespace NexusMods.Common.OSInterop;
 
 /// <summary>
 /// OS interoperation for windows
 /// </summary>
-// ReSharper disable once InconsistentNaming
 public class OSInteropWindows : IOSInterop
 {
     private readonly IProcessFactory _processFactory;
-
     /// <summary>
     /// constructor
     /// </summary>
@@ -20,8 +19,11 @@ public class OSInteropWindows : IOSInterop
     }
 
     /// <inheritdoc/>
-    public void OpenUrl(string url)
+    public async Task OpenURL(string url, CancellationToken cancellationToken = default)
     {
-        _processFactory.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+        var process = new ProcessStartInfo(url) { UseShellExecute = true };
+        var started = Process.Start(process);
+        if (started != null)
+            await started.WaitForExitAsync(cancellationToken);
     }
 }

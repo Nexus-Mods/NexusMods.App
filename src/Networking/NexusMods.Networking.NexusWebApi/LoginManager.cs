@@ -1,6 +1,6 @@
 using System.Reactive.Linq;
 using Microsoft.Extensions.Logging;
-using NexusMods.Common;
+using NexusMods.Common.ProtocolRegistration;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.Networking.NexusWebApi.Types;
 
@@ -65,7 +65,7 @@ public class LoginManager
     public async Task LoginAsync(CancellationToken token = default)
     {
         // temporary but if we want oauth to work we _have_ to be registered as the nxm handler
-        _protocolRegistration.RegisterSelf("nxm");
+        await _protocolRegistration.RegisterSelf("nxm");
 
         var jwtToken = await _oauth.AuthorizeRequest(token);
         _dataStore.Put(JWTTokenEntity.StoreId, new JWTTokenEntity

@@ -21,7 +21,7 @@ public class SpineTests : AUiTest
     [Fact]
     public async Task ActivatingButtonsDeactivatesOtherButtons()
     {
-        void ValidateButtons(SpineViewModel vm, SpineButtonAction action)
+        void ValidateButtons(ISpineViewModel vm, SpineButtonAction action)
         {
             if (action.Type == Type.Game)
             {
@@ -60,8 +60,8 @@ public class SpineTests : AUiTest
 
         }
 
-        using var vm = GetActivatedViewModel<SpineViewModel>();
-        var __ = await _loadoutManager.ImportFrom(KnownFolders.EntryFolder.CombineUnchecked(@"Resources\cyberpunk2077.1.61.zip"));
+        using var vm = GetActivatedViewModel<ISpineViewModel>();
+        var loadout = await _loadoutManager.ImportFrom(KnownFolders.EntryFolder.CombineUnchecked(@"Resources\cyberpunk2077.1.61.zip"));
 
         using var _ = vm.VM.Actions.Subscribe(vm.VM.Activations);
 

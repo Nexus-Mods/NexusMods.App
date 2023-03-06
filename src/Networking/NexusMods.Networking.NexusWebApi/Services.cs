@@ -36,7 +36,6 @@ public static class Services
         }
 
         return collection
-            .AddDataModel()
             .AddSingleton<ITypeFinder, TypeFinder>()
             .AddSingleton<IProtocolHandler, NXMProtocolHandler>()
             .AddSingleton<Client>()

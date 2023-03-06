@@ -1,10 +1,10 @@
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using NexusMods.App.UI.ViewModels;
 using ReactiveUI.Fody.Helpers;
 
-namespace NexusMods.App.UI.Controls.Spine.Buttons;
+namespace NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 
-public abstract class SpineButtonViewModel : AViewModel<ISpineButtonViewModel>
+public class IconButtonViewModel : AViewModel<IIconButtonViewModel>, IIconButtonViewModel
 {
     [Reactive]
     public bool IsActive { get; set; }

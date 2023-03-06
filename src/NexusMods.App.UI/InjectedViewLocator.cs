@@ -27,7 +27,12 @@ public class InjectedViewLocator : IViewLocator
             {
                 var intType = vm.ViewModelInterface;
                 var method = _method.MakeGenericMethod(intType);
-                return (IViewFor?)method.Invoke(this, Array.Empty<object>());
+                var view = (IViewFor?)method.Invoke(this, Array.Empty<object>());
+                if (view is IViewContract vc && contract is not null)
+                {
+                    vc.ViewContract = contract;
+                }
+                return view;
             }
             _logger.LogError("Failed to resolve view for {ViewModel}", typeof(T).FullName);
             return null;

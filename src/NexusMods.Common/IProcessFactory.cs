@@ -1,22 +1,11 @@
-using System.Diagnostics;
+using CliWrap;
 
 namespace NexusMods.Common;
 
 /// <summary>
-/// Wrapper for <see cref="Process"/> so they can be mocked and tested
-/// </summary>
-public interface IProcess
-{
-
-}
-
-/// <summary>
-/// Factory for OS processes, wraps the static part of the Process class so we can mock and test it
+/// Process factory.
 /// </summary>
 public interface IProcessFactory
 {
-    /// <inheritdoc cref="Process.Start(ProcessStartInfo)"/>
-    public IProcess? Start(ProcessStartInfo startInfo);
-    /// <inheritdoc cref="Process.Start(string, string)"/>
-    public IProcess? Start(string executable, string arguments);
+    Task<CommandResult> ExecuteAsync(Command command, CancellationToken cancellationToken = default);
 }

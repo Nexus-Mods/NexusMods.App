@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.Benchmarks.Interfaces;
+using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
@@ -37,7 +38,8 @@ public class DataStoreBenchmark : IBenchmark, IDisposable
             .ConfigureServices((_, services) =>
             {
                 services
-                    .AddDataModel();
+                    .AddDataModel()
+                    .Validate();
             }).Build();
 
         var provider = host.Services.GetRequiredService<IServiceProvider>();

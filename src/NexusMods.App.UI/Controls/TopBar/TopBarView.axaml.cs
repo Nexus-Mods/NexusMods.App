@@ -1,4 +1,5 @@
 using System.Reactive.Linq;
+using Avalonia.Controls;
 using Avalonia.Controls.Mixins;
 using Avalonia.ReactiveUI;
 using Avalonia.VisualTree;
@@ -50,6 +51,23 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
             this.BindCommand(ViewModel, vm => vm.MaximizeCommand, v => v.WindowMaximizeButton)
                 .DisposeWith(d);
 
+            this.WhenAnyValue(view => view.ViewModel.ShowWindowControls)
+                .Subscribe(SetShowWindowControls)
+                .DisposeWith(d);
         });
+    }
+
+    public void SetShowWindowControls(bool shouldShow)
+    {
+        if (shouldShow)
+        {
+            MainGrid.ColumnDefinitions.Last().Width = GridLength.Auto;
+            WindowControlsBorder.IsVisible = true;
+        }
+        else
+        {
+            MainGrid.ColumnDefinitions.Last().Width = new GridLength(0);
+            WindowControlsBorder.IsVisible = false;
+        }
     }
 }
