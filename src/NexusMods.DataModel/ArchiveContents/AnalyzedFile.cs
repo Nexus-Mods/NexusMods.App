@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Hashing.xxHash64;
@@ -17,7 +18,7 @@ public record AnalyzedFile : Entity
 
     public override EntityCategory Category => EntityCategory.FileAnalysis;
 
-    protected override Id Persist()
+    protected override IId Persist()
     {
         var newId = new Id64(Category, (ulong)Hash);
         Store.Put<Entity>(newId, this);

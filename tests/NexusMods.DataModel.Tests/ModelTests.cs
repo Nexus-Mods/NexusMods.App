@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using System.IO.Compression;
 using FluentAssertions;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Tests.Harness;
@@ -106,11 +107,11 @@ public class ModelTests : ADataModelTest<ModelTests>
             var entries = zip.Entries.Select(e => e.FullName.ToRelativePath())
                 .Where(p => p.InFolder("entities".ToRelativePath()))
                 .Select(f => f.FileName)
-                .Select(h => Id.FromTaggedSpan(Convert.FromHexString(h.ToString())))
+                .Select(h => IId.FromTaggedSpan(Convert.FromHexString(h.ToString())))
                 .ToHashSet();
 
             var ids = loadout.Value.Walk((set, itm) => set.Add(itm.DataStoreId),
-                ImmutableHashSet<Id>.Empty);
+                ImmutableHashSet<IId>.Empty);
 
             foreach (var id in ids)
                 entries.Should().Contain(id);

@@ -1,5 +1,6 @@
 using System.Text;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.Networking.NexusWebApi.Types;
 
 namespace NexusMods.Networking.NexusWebApi;
@@ -9,7 +10,7 @@ namespace NexusMods.Networking.NexusWebApi;
 /// </summary>
 public class ApiKeyMessageFactory : IAuthenticatingMessageFactory
 {
-    private static readonly Id ApiKeyId = new IdVariableLength(EntityCategory.AuthData, "NexusMods.Networking.NexusWebApi.ApiKey"u8.ToArray());
+    private static readonly IId ApiKeyId = new IdVariableLength(EntityCategory.AuthData, "NexusMods.Networking.NexusWebApi.ApiKey"u8.ToArray());
 
     private readonly IDataStore _store;
 

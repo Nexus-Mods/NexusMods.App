@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.DataModel.Abstractions.Ids;
 
 namespace NexusMods.DataModel.Abstractions;
 
@@ -21,7 +22,7 @@ public struct EntityHashSet<T> : IEmptyWithDataStore<EntityHashSet<T>>,
     /// <inheritdoc />
     public static EntityHashSet<T> Empty(IDataStore store) => new(store);
 
-    private readonly ImmutableHashSet<Id> _coll;
+    private readonly ImmutableHashSet<IId> _coll;
     private readonly IDataStore _store;
 
     /// <summary>
@@ -31,7 +32,7 @@ public struct EntityHashSet<T> : IEmptyWithDataStore<EntityHashSet<T>>,
     /// <param name="store">The store in which the resulting data is held.</param>
     public EntityHashSet(IDataStore store)
     {
-        _coll = ImmutableHashSet<Id>.Empty;
+        _coll = ImmutableHashSet<IId>.Empty;
         _store = store;
     }
 
@@ -40,13 +41,13 @@ public struct EntityHashSet<T> : IEmptyWithDataStore<EntityHashSet<T>>,
     /// </summary>
     /// <param name="store">The store to which all of the data is written to.</param>
     /// <param name="ids">The IDs to be stored within this hashset.</param>
-    public EntityHashSet(IDataStore store, IEnumerable<Id> ids)
+    public EntityHashSet(IDataStore store, IEnumerable<IId> ids)
     {
         _coll = ImmutableHashSet.CreateRange(ids);
         _store = store;
     }
 
-    private EntityHashSet(IDataStore store, ImmutableHashSet<Id> coll)
+    private EntityHashSet(IDataStore store, ImmutableHashSet<IId> coll)
     {
         _coll = coll;
         _store = store;
@@ -55,7 +56,7 @@ public struct EntityHashSet<T> : IEmptyWithDataStore<EntityHashSet<T>>,
     /// <summary>
     /// Returns the IDs of all of the items stored in this collection.
     /// </summary>
-    public IEnumerable<Id> Ids => _coll;
+    public IEnumerable<IId> Ids => _coll;
 
     /// <summary>
     /// Returns the number of elements stored in this collection.
@@ -213,10 +214,10 @@ public class EntityHashSetConverter<T> : JsonConverter<EntityHashSet<T>> where T
             throw new JsonException("Expected array start");
         reader.Read();
 
-        var lst = new List<Id>();
+        var lst = new List<IId>();
         while (reader.TokenType != JsonTokenType.EndArray)
         {
-            lst.Add(JsonSerializer.Deserialize<Id>(ref reader, options)!);
+            lst.Add(JsonSerializer.Deserialize<IId>(ref reader, options)!);
             reader.Read();
         }
 

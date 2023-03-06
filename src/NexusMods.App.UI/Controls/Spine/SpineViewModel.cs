@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.Controls.Spine.Buttons;
 using NexusMods.App.UI.ViewModels;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Loadouts;
 using ReactiveUI;
 

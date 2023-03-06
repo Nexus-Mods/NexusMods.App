@@ -8,5 +8,8 @@ namespace NexusMods.DataModel.Abstractions;
 /// <typeparam name="T"></typeparam>
 public interface ICreatable<out T>
 {
+    /// <summary>
+    /// Creates a new instance.
+    /// </summary>
     public static abstract T Create();
 }

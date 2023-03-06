@@ -1,4 +1,5 @@
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -12,7 +13,7 @@ public record FileContainedIn : Entity
     public required Hash Parent { get; init; }
     public required RelativePath Path { get; init; }
 
-    protected override Id Persist()
+    protected override IId Persist()
     {
         var id = new TwoId64(Category, (ulong)File, (ulong)Parent);
         Store.Put(id, this);

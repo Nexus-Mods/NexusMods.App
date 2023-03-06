@@ -1,3 +1,4 @@
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Interprocess;
 using Sewer56.BitStream;
 using Sewer56.BitStream.ByteStreams;
@@ -6,24 +7,24 @@ namespace NexusMods.DataModel.Abstractions;
 
 public interface IDataStore
 {
-    public Id Put<T>(T value) where T : Entity;
-    public void Put<T>(Id id, T value) where T : Entity;
-    T? Get<T>(Id id, bool canCache = false) where T : Entity;
+    public IId Put<T>(T value) where T : Entity;
+    public void Put<T>(IId id, T value) where T : Entity;
+    T? Get<T>(IId id, bool canCache = false) where T : Entity;
 
-    bool PutRoot(RootType type, Id oldId, Id newId);
-    Id? GetRoot(RootType type);
-    byte[]? GetRaw(Id id);
-    void PutRaw(Id key, ReadOnlySpan<byte> val);
+    bool PutRoot(RootType type, IId oldId, IId newId);
+    IId? GetRoot(RootType type);
+    byte[]? GetRaw(IId id);
+    void PutRaw(IId key, ReadOnlySpan<byte> val);
 
     /// <summary>
     /// Delete the value for teh given id
     /// </summary>
     /// <param name="key"></param>
-    void Delete(Id id);
-    Task<long> PutRaw(IAsyncEnumerable<(Id Key, byte[] Value)> kvs, CancellationToken token = default);
-    IEnumerable<T> GetByPrefix<T>(Id prefix) where T : Entity;
+    void Delete(IId id);
+    Task<long> PutRaw(IAsyncEnumerable<(IId Key, byte[] Value)> kvs, CancellationToken token = default);
+    IEnumerable<T> GetByPrefix<T>(IId prefix) where T : Entity;
     IObservable<RootChange> RootChanges { get; }
-    IObservable<Id> IdChanges { get; }
+    IObservable<IId> IdChanges { get; }
 }
 
 /// <summary>
@@ -39,12 +40,12 @@ public struct RootChange : IMessage
     /// <summary>
     /// The old Id of the root.
     /// </summary>
-    public required Id From { get; init; }
+    public required IId From { get; init; }
 
     /// <summary>
     /// The new Id of the root.
     /// </summary>
-    public required Id To { get; init; }
+    public required IId To { get; init; }
 
     /// <summary>
     /// We'll assume the max id size is 128 bytes.
@@ -92,13 +93,13 @@ public struct RootChange : IMessage
                 var fromSpanSize = reader.Read<byte>();
                 Span<byte> fromSpan = stackalloc byte[fromSpanSize];
                 reader.Read(fromSpan);
-                var from = Id.FromSpan(fromCategory, fromSpan);
+                var from = IId.FromSpan(fromCategory, fromSpan);
 
                 var toCategory = (EntityCategory)reader.Read<byte>();
                 var toSpanSize = reader.Read<byte>();
                 Span<byte> toSpan = stackalloc byte[toSpanSize];
                 reader.Read(toSpan);
-                var to = Id.FromSpan(toCategory, toSpan);
+                var to = IId.FromSpan(toCategory, toSpan);
 
                 return new RootChange
                 {
@@ -116,7 +117,7 @@ public struct RootChange : IMessage
 /// </summary>
 public struct IdPut : IMessage
 {
-    public Id Id { get; }
+    public IId Id { get; }
     public PutType Type { get; }
 
     public enum PutType : byte
@@ -125,7 +126,7 @@ public struct IdPut : IMessage
         Delete
     }
 
-    public IdPut(PutType type, Id id)
+    public IdPut(PutType type, IId id)
     {
         Type = type;
         Id = id;
@@ -165,7 +166,7 @@ public struct IdPut : IMessage
                 var spanSize = reader.Read<int>();
                 Span<byte> fromSpan = stackalloc byte[spanSize];
                 reader.Read(fromSpan);
-                var id = Id.FromSpan(category, fromSpan);
+                var id = IId.FromSpan(category, fromSpan);
 
                 return new IdPut((PutType)type, id);
             }

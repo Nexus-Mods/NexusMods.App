@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.RateLimiting;
@@ -146,7 +147,7 @@ public class FileContentsCache
         {
             AnalyzedFile file;
             await using var tmpFolder = _manager.CreateFolder();
-            List<KeyValuePair<RelativePath, Id>> children;
+            List<KeyValuePair<RelativePath, IId>> children;
             {
                 await _extractor.ExtractAllAsync(sFn, tmpFolder, token);
                 children = await _limiter.ForEachFile(tmpFolder,

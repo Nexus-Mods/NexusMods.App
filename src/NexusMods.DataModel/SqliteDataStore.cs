@@ -7,6 +7,7 @@ using BitFaster.Caching.Lru;
 using NexusMods.DataModel.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Interprocess;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -25,7 +26,7 @@ public class SqliteDataStore : IDataStore, IDisposable
     private readonly Lazy<JsonSerializerOptions> _jsonOptions;
     private readonly Dictionary<EntityCategory, string> _prefixStatements;
     private readonly Dictionary<EntityCategory, string> _deleteStatements;
-    private readonly ConcurrentLru<Id, Entity> _cache;
+    private readonly ConcurrentLru<IId, Entity> _cache;
 
     private readonly IMessageProducer<RootChange> _rootChangeProducer;
     private readonly IMessageConsumer<RootChange> _rootChangeConsumer;
@@ -57,7 +58,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         EnsureTables();
 
         _jsonOptions = new Lazy<JsonSerializerOptions>(provider.GetRequiredService<JsonSerializerOptions>);
-        _cache = new ConcurrentLru<Id, Entity>(1000);
+        _cache = new ConcurrentLru<IId, Entity>(1000);
 
         _rootChangeProducer = rootChangeProducer;
         _rootChangeConsumer = rootChangeConsumer;
@@ -102,7 +103,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         }
     }
 
-    public Id Put<T>(T value) where T : Entity
+    public IId Put<T>(T value) where T : Entity
     {
         using var cmd = new SQLiteCommand(_putStatements[value.Category], _conn);
         var ms = new MemoryStream();
@@ -121,7 +122,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         return id;
     }
 
-    public void Put<T>(Id id, T value) where T : Entity
+    public void Put<T>(IId id, T value) where T : Entity
     {
         using var cmd = new SQLiteCommand(_putStatements[value.Category], _conn);
         Span<byte> idSpan = stackalloc byte[id.SpanSize];
@@ -135,7 +136,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         _pendingIdPuts.Enqueue(new IdPut(IdPut.PutType.Put, id));
     }
 
-    public T? Get<T>(Id id, bool canCache) where T : Entity
+    public T? Get<T>(IId id, bool canCache) where T : Entity
     {
         if (canCache && _cache.TryGet(id, out var cached))
             return (T)cached;
@@ -159,7 +160,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         return value;
     }
 
-    public bool PutRoot(RootType type, Id oldId, Id newId)
+    public bool PutRoot(RootType type, IId oldId, IId newId)
     {
         using var cmd = new SQLiteCommand(_putStatements[EntityCategory.Roots], _conn);
         cmd.Parameters.AddWithValue("@id", (byte)type);
@@ -174,7 +175,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         return true;
     }
 
-    public Id? GetRoot(RootType type)
+    public IId? GetRoot(RootType type)
     {
         using var cmd = new SQLiteCommand(_getStatements[EntityCategory.Roots], _conn);
         cmd.Parameters.AddWithValue("@id", (byte)type);
@@ -185,7 +186,7 @@ public class SqliteDataStore : IDataStore, IDisposable
             var blob = reader.GetStream(0);
             var bytes = new byte[blob.Length];
             blob.Read(bytes, 0, bytes.Length);
-            return Id.FromTaggedSpan(bytes);
+            return IId.FromTaggedSpan(bytes);
         }
 
         return null;
@@ -193,7 +194,7 @@ public class SqliteDataStore : IDataStore, IDisposable
     }
 
 
-    public byte[]? GetRaw(Id id)
+    public byte[]? GetRaw(IId id)
     {
         using var cmd = new SQLiteCommand(_getStatements[id.Category], _conn);
         var idBytes = new byte[id.SpanSize];
@@ -209,7 +210,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         return bytes;
     }
 
-    public void PutRaw(Id id, ReadOnlySpan<byte> val)
+    public void PutRaw(IId id, ReadOnlySpan<byte> val)
     {
         using var cmd = new SQLiteCommand(_putStatements[id.Category], _conn);
         var idBytes = new byte[id.SpanSize];
@@ -221,7 +222,7 @@ public class SqliteDataStore : IDataStore, IDisposable
 
     }
 
-    public void Delete(Id id)
+    public void Delete(IId id)
     {
         using var cmd = new SQLiteCommand(_deleteStatements[id.Category], _conn);
         var idBytes = new byte[id.SpanSize];
@@ -231,7 +232,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         _pendingIdPuts.Enqueue(new IdPut(IdPut.PutType.Delete, id));
     }
 
-    public async Task<long> PutRaw(IAsyncEnumerable<(Id Key, byte[] Value)> kvs, CancellationToken token = default)
+    public async Task<long> PutRaw(IAsyncEnumerable<(IId Key, byte[] Value)> kvs, CancellationToken token = default)
     {
         var iterator = kvs.GetAsyncEnumerator(token);
         var processed = 0;
@@ -277,7 +278,7 @@ public class SqliteDataStore : IDataStore, IDisposable
 
     }
 
-    public IEnumerable<T> GetByPrefix<T>(Id prefix) where T : Entity
+    public IEnumerable<T> GetByPrefix<T>(IId prefix) where T : Entity
     {
         using var cmd = new SQLiteCommand(_prefixStatements[prefix.Category], _conn);
         var idBytes = new byte[prefix.SpanSize];
@@ -303,7 +304,7 @@ public class SqliteDataStore : IDataStore, IDisposable
     }
 
     public IObservable<RootChange> RootChanges => _rootChangeConsumer.Messages.SelectMany(WaitTillRootReady);
-    public IObservable<Id> IdChanges => _idPutConsumer.Messages.SelectMany(WaitTillPutReady);
+    public IObservable<IId> IdChanges => _idPutConsumer.Messages.SelectMany(WaitTillPutReady);
 
     /// <summary>
     /// Sometimes we may get a change notification before the underlying SQLite database has actually updated the value.
@@ -330,7 +331,7 @@ public class SqliteDataStore : IDataStore, IDisposable
     /// </summary>
     /// <param name="change"></param>
     /// <returns></returns>
-    private async Task<Id> WaitTillPutReady(IdPut change)
+    private async Task<IId> WaitTillPutReady(IdPut change)
     {
         var maxCycles = 0;
         while (change.Type != IdPut.PutType.Delete && GetRaw(change.Id) == null && maxCycles < 10)
@@ -353,11 +354,11 @@ public class SqliteDataStore : IDataStore, IDisposable
 
 internal static class SqlExtensions
 {
-    public static Id GetId(this SQLiteDataReader reader, EntityCategory ent, int column)
+    public static IId GetId(this SQLiteDataReader reader, EntityCategory ent, int column)
     {
         var blob = reader.GetStream(column);
         var bytes = new byte[blob.Length];
         blob.Read(bytes, 0, bytes.Length);
-        return Id.FromSpan(ent, bytes);
+        return IId.FromSpan(ent, bytes);
     }
 }

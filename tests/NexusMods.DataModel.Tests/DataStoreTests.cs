@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Hashing.xxHash64;
@@ -84,8 +85,8 @@ public class DataStoreTests
     [Fact]
     public async Task CanGetRootUpdates()
     {
-        var src = new List<Id>();
-        var destQ = new ConcurrentQueue<Id>();
+        var src = new List<IId>();
+        var destQ = new ConcurrentQueue<IId>();
 
         using var _ = DataStore.RootChanges.Subscribe(c => destQ.Enqueue(c.To));
 

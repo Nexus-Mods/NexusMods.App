@@ -1,4 +1,5 @@
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.CLI.OptionParsers;

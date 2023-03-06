@@ -7,7 +7,6 @@ namespace NexusMods.DataModel.Loadouts;
 [JsonName("NexusMods.DataModel.Loadout")]
 public record Loadout : Entity, IEmptyWithDataStore<Loadout>
 {
-
     public required EntityDictionary<ModId, Mod> Mods { get; init; }
     public required LoadoutId LoadoutId { get; init; }
 
@@ -19,6 +18,7 @@ public record Loadout : Entity, IEmptyWithDataStore<Loadout>
     public override EntityCategory Category => EntityCategory.Loadouts;
     public required string ChangeMessage { get; init; } = "";
 
+    /// <inheritdoc />
     public static Loadout Empty(IDataStore store) => new()
     {
         LoadoutId = LoadoutId.Create(),

@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
@@ -74,7 +75,7 @@ public class LoadoutManager
         {
             Id = ModId.New(),
             Name = "Game Files",
-            Files = new EntityDictionary<ModFileId, AModFile>(_store, gameFiles.Select(g => new KeyValuePair<ModFileId, Id>(g.Id, g.DataStoreId))),
+            Files = new EntityDictionary<ModFileId, AModFile>(_store, gameFiles.Select(g => new KeyValuePair<ModFileId, IId>(g.Id, g.DataStoreId))),
             Store = _store,
             SortRules = ImmutableList<ISortRule<Mod, ModId>>.Empty.Add(new First<Mod, ModId>())
         };
@@ -83,7 +84,7 @@ public class LoadoutManager
         {
             Installation = installation,
             Name = name,
-            Mods = new EntityDictionary<ModId, Mod>(_store, new[] { new KeyValuePair<ModId, Id>(mod.Id, mod.DataStoreId) })
+            Mods = new EntityDictionary<ModId, Mod>(_store, new[] { new KeyValuePair<ModId, IId>(mod.Id, mod.DataStoreId) })
         };
 
         _root.Alter(r => r with { Lists = r.Lists.With(n.LoadoutId, n) });
@@ -163,7 +164,7 @@ public class LoadoutManager
         {
             Id = ModId.New(),
             Name = name,
-            Files = new EntityDictionary<ModFileId, AModFile>(_store, contents.Select(c => new KeyValuePair<ModFileId, Id>(c.Id, c.DataStoreId))),
+            Files = new EntityDictionary<ModFileId, AModFile>(_store, contents.Select(c => new KeyValuePair<ModFileId, IId>(c.Id, c.DataStoreId))),
             Store = _store
         };
         loadout.Add(newMod);
@@ -233,7 +234,7 @@ public class LoadoutManager
         {
             state.Add(itm.DataStoreId);
 
-            void AddFile(Hash hash, ISet<Id> hashes)
+            void AddFile(Hash hash, ISet<IId> hashes)
             {
                 hashes.Add(new Id64(EntityCategory.FileAnalysis, (ulong)hash));
                 foreach (var foundIn in _store.GetByPrefix<FileContainedIn>(new Id64(EntityCategory.FileContainedIn,
@@ -253,7 +254,7 @@ public class LoadoutManager
             }
 
             return state;
-        }, new HashSet<Id>());
+        }, new HashSet<IId>());
 
         _logger.LogDebug("Found {Count} entities to export", ids.Count);
 
@@ -272,12 +273,12 @@ public class LoadoutManager
 
     public async Task<LoadoutMarker> ImportFrom(AbsolutePath path, CancellationToken token = default)
     {
-        async ValueTask<(Id, byte[])> ProcessEntry(ZipArchiveEntry entry)
+        async ValueTask<(IId, byte[])> ProcessEntry(ZipArchiveEntry entry)
         {
             await using var es = entry.Open();
             using var ms = new MemoryStream();
             await es.CopyToAsync(ms, token);
-            var id = Id.FromTaggedSpan(Convert.FromHexString(entry.Name.ToRelativePath().FileName));
+            var id = IId.FromTaggedSpan(Convert.FromHexString(entry.Name.ToRelativePath().FileName));
             return (id, ms.ToArray());
         }
 
@@ -291,7 +292,7 @@ public class LoadoutManager
         _logger.LogDebug("Loaded {Count} entities", loaded);
 
         await using var root = zip.GetEntry("root")!.Open();
-        var rootId = Id.FromTaggedSpan(Convert.FromHexString(await root.ReadAllTextAsync(token)));
+        var rootId = IId.FromTaggedSpan(Convert.FromHexString(await root.ReadAllTextAsync(token)));
 
         var loadout = _store.Get<Loadout>(rootId);
         if (loadout == null)

@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Hashing.xxHash64;

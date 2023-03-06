@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.DataModel.Abstractions.Ids;
 
 #pragma warning disable CS8604
 
@@ -21,7 +22,7 @@ public struct EntityDictionary<TK, TV> :
 {
     // Note: Items are currently persisted through calls to .DataStoreId ; but this will probably be improved.
 
-    private readonly ImmutableDictionary<TK, Id> _coll;
+    private readonly ImmutableDictionary<TK, IId> _coll;
     private readonly IDataStore _store;
 
     /// <summary>
@@ -31,14 +32,14 @@ public struct EntityDictionary<TK, TV> :
     public EntityDictionary(IDataStore store)
     {
         _store = store;
-        _coll = ImmutableDictionary<TK, Id>.Empty;
+        _coll = ImmutableDictionary<TK, IId>.Empty;
     }
     /// <summary>
     /// Initializes a dictionary of entities backed by a store.
     /// </summary>
     /// <param name="store">Abstraction over where the data will be held.</param>
     /// <param name="kvs">Initial set of keys and values from which to create the collection from.</param>
-    public EntityDictionary(IDataStore store, IEnumerable<KeyValuePair<TK, Id>> kvs)
+    public EntityDictionary(IDataStore store, IEnumerable<KeyValuePair<TK, IId>> kvs)
     {
         _store = store;
         _coll = ImmutableDictionary.CreateRange(kvs);
@@ -52,7 +53,7 @@ public struct EntityDictionary<TK, TV> :
     /// <summary>
     /// Returns the key-value pairs in this dictionary.
     /// </summary>
-    public IEnumerable<KeyValuePair<TK, Id>> Ids => _coll;
+    public IEnumerable<KeyValuePair<TK, IId>> Ids => _coll;
 
     /// <summary>
     /// Number of elements in this dictionary.
@@ -165,7 +166,7 @@ public struct EntityDictionary<TK, TV> :
     public EntityDictionary<TK, TV> Keep(Func<TV?, TV?> func)
     {
         var modified = false;
-        var builder = ImmutableDictionary.CreateBuilder<TK, Id>();
+        var builder = ImmutableDictionary.CreateBuilder<TK, IId>();
         foreach (var (key, id) in _coll)
         {
             var val = _store.Get<TV>(id);
@@ -249,7 +250,7 @@ public class EntityDictionaryConverter<TK, TV> : JsonConverter<EntityDictionary<
 
         reader.Read();
 
-        var lst = new List<KeyValuePair<TK, Id>>();
+        var lst = new List<KeyValuePair<TK, IId>>();
         while (reader.TokenType != JsonTokenType.EndArray)
         {
             var tk = JsonSerializer.Deserialize<TK>(ref reader, options)!;
@@ -257,9 +258,9 @@ public class EntityDictionaryConverter<TK, TV> : JsonConverter<EntityDictionary<
             if (reader.TokenType == JsonTokenType.EndArray)
                 throw new JsonException("Found end of array when expecting dictionary value");
 
-            var tv = JsonSerializer.Deserialize<Id>(ref reader, options);
+            var tv = JsonSerializer.Deserialize<IId>(ref reader, options);
             reader.Read();
-            lst.Add(new KeyValuePair<TK, Id>(tk, tv));
+            lst.Add(new KeyValuePair<TK, IId>(tk, tv));
         }
 
         return new EntityDictionary<TK, TV>(_store, lst);

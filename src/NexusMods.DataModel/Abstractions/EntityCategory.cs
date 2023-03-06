@@ -10,6 +10,9 @@ namespace NexusMods.DataModel.Abstractions;
 /// Category is mostly used to determine which section/table of the datastore
 /// (database) our information will be stored inside.
 /// </summary>
+/// <remarks>
+///    Limited to 255 in our current implementation due to how we create IDs.
+/// </remarks>
 public enum EntityCategory
 {
     /// <summary>

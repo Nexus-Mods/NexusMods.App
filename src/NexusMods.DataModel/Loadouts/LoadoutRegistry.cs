@@ -8,6 +8,8 @@ public record LoadoutRegistry : Entity, IEmptyWithDataStore<LoadoutRegistry>
 {
     public required EntityDictionary<LoadoutId, Loadout> Lists { get; init; }
     public override EntityCategory Category => EntityCategory.Loadouts;
+
+    /// <inheritdoc />
     public static LoadoutRegistry Empty(IDataStore store) => new()
     {
         Lists = EntityDictionary<LoadoutId, Loadout>.Empty(store),

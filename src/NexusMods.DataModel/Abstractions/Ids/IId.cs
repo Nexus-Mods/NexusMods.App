@@ -1,6 +1,4 @@
 using System.Buffers.Binary;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -10,17 +8,12 @@ namespace NexusMods.DataModel.Abstractions.Ids;
 /// Represents a unique identifier for an item stored in the datastore (database).
 /// </summary>
 [JsonConverter(typeof(IdJsonConverter))]
-public interface Id
+public interface IId
 {
     /// <summary>
     /// Size of the span required to store this ID.
     /// </summary>
     public int SpanSize { get; }
-
-    /// <summary>
-    /// Serializes to a span.
-    /// </summary>
-    public void ToSpan(Span<byte> span);
 
     /// <summary/>
     public EntityCategory Category { get; }
@@ -52,10 +45,15 @@ public interface Id
     }
 
     /// <summary>
+    /// Serializes to a span.
+    /// </summary>
+    public void ToSpan(Span<byte> span);
+
+    /// <summary>
     /// Converts a tagged span back into an ID.
     /// </summary>
     /// <param name="span">The span to convert back.</param>
-    public static Id FromTaggedSpan(ReadOnlySpan<byte> span)
+    public static IId FromTaggedSpan(ReadOnlySpan<byte> span)
     {
         var tag = (EntityCategory)span[0];
 
@@ -81,7 +79,7 @@ public interface Id
     /// <param name="category">The category associated with this span.</param>
     /// <param name="span">The bytes from which the ID is obtained back from.</param>
     /// <returns>ID converted back from the Span.</returns>
-    public static Id FromSpan(EntityCategory category, ReadOnlySpan<byte> span)
+    public static IId FromSpan(EntityCategory category, ReadOnlySpan<byte> span)
     {
         switch (span.Length)
         {
@@ -113,7 +111,7 @@ public interface Id
     /// Returns true if the given ID is a prefix of the current ID.
     /// </summary>
     /// <param name="prefix">The prefix to text.</param>
-    bool IsPrefixedBy(Id prefix)
+    bool IsPrefixedBy(IId prefix)
     {
         if (prefix.SpanSize > SpanSize)
             return false;
@@ -131,7 +129,7 @@ public interface Id
     /// <param name="category">The category associated with this span.</param>
     /// <param name="bytes">The bytes from which the ID is obtained back from.</param>
     /// <returns>ID converted back from the Span.</returns>
-    static Id? FromSpan(RootType category, byte[] bytes)
+    static IId FromSpan(RootType category, byte[] bytes)
     {
         return category switch
         {
@@ -145,7 +143,7 @@ public interface Id
     /// Creates an unique ID for the given category.
     /// </summary>
     /// <param name="category">The category to create the ID for.</param>
-    static Id CreateUnique(EntityCategory category)
+    static IId CreateUnique(EntityCategory category)
     {
         var guid = Guid.NewGuid();
         Span<byte> span = stackalloc byte[16];
@@ -155,21 +153,21 @@ public interface Id
 }
 
 /// <inheritdoc />
-public class IdJsonConverter : JsonConverter<Id>
+public class IdJsonConverter : JsonConverter<IId>
 {
     /// <inheritdoc />
-    public override Id Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override IId Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         var str = reader.GetString()!;
         var spanSize = (int)Math.Ceiling((double)str.Length / 4) * 3;
         Span<byte> span = stackalloc byte[spanSize];
         Convert.TryFromBase64String(str, span, out _);
 
-        return Id.FromTaggedSpan(span);
+        return IId.FromTaggedSpan(span);
     }
 
     /// <inheritdoc />
-    public override void Write(Utf8JsonWriter writer, Id value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, IId value, JsonSerializerOptions options)
     {
         Span<byte> span = stackalloc byte[value.SpanSize + 1];
         value.ToTaggedSpan(span);

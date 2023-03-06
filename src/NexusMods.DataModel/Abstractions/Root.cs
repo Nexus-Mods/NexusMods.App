@@ -1,4 +1,5 @@
 using System.Reactive.Subjects;
+using NexusMods.DataModel.Abstractions.Ids;
 
 namespace NexusMods.DataModel.Abstractions;
 

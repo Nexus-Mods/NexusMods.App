@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
@@ -52,7 +53,7 @@ public abstract record Entity : IWalkable<Entity>
     [JsonInjected]
     public required IDataStore Store { get; init; }
 
-    private Id? _id;
+    private IId? _id;
 
     /// <summary>
     /// Copy constructor.
@@ -70,7 +71,7 @@ public abstract record Entity : IWalkable<Entity>
     /// <summary>
     /// Writes the current value to the database.
     /// </summary>
-    protected virtual Id Persist()
+    protected virtual IId Persist()
     {
         return Store.Put(this);
     }
@@ -88,7 +89,7 @@ public abstract record Entity : IWalkable<Entity>
     /// If this item is not in the store, it is persisted.
     /// </summary>
     [JsonIgnore]
-    public Id DataStoreId
+    public IId DataStoreId
     {
         get => _id ??= Persist();
         set => _id = value;

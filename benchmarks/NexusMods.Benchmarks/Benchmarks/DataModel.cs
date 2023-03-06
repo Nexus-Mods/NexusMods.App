@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Benchmarks.Interfaces;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Interprocess;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -25,7 +26,7 @@ public class DataStoreBenchmark : IBenchmark, IDisposable
     private readonly byte[] _rawData;
     private readonly Id64 _rawId;
     private readonly HashRelativePath _fromPutPath;
-    private readonly Id _immutableRecord;
+    private readonly IId _immutableRecord;
     private readonly FromArchive _record;
 
     public DataStoreBenchmark()
@@ -86,7 +87,7 @@ public class DataStoreBenchmark : IBenchmark, IDisposable
     }
 
     [Benchmark]
-    public Id PutImmutable()
+    public IId PutImmutable()
     {
         var record = new FromArchive
         {

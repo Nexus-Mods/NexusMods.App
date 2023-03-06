@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using NexusMods.DataModel.Abstractions.Ids;
 
 namespace NexusMods.DataModel.Abstractions;
 
@@ -19,7 +20,7 @@ public record struct EntityLink<T> : IEmptyWithDataStore<EntityLink<T>>,
     /// <summary>
     /// ID of the element in the data store.
     /// </summary>
-    public Id Id { get; }
+    public IId Id { get; }
 
     /// <summary>
     /// Retrieves the item from the data store.
@@ -33,7 +34,7 @@ public record struct EntityLink<T> : IEmptyWithDataStore<EntityLink<T>>,
     /// <summary/>
     /// <param name="id">The ID to link to within the database.</param>
     /// <param name="store">The store in which the link will be held.</param>
-    public EntityLink(Id id, IDataStore store)
+    public EntityLink(IId id, IDataStore store)
     {
         Id = id;
         _store = store;
@@ -99,7 +100,7 @@ public class EntityLinkConverter<T> : JsonConverter<EntityLink<T>>
     /// <inheritdoc />
     public override EntityLink<T> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        var id = JsonSerializer.Deserialize<Id>(ref reader, options)!;
+        var id = JsonSerializer.Deserialize<IId>(ref reader, options)!;
         return new EntityLink<T>(id, _store);
     }
 
