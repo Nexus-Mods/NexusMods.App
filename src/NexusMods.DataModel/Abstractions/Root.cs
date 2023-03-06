@@ -22,7 +22,9 @@ public class Root<TRoot> where TRoot : Entity, IEmptyWithDataStore<TRoot>
     /// <summary>
     /// Retrieves the value of this root.
     /// </summary>
+    // ReSharper disable once PossibleUnintendedReferenceComparison
     public TRoot Value => _root.Id == IdEmpty.Empty ? TRoot.Empty(Store) : _root.Value;
+    // ^ This reference comparison is fine because we assign IdEmpty.Empty explicitly.
 
     /// <summary>
     /// Datastore used by this root when creating new entities.
@@ -65,14 +67,16 @@ public class Root<TRoot> where TRoot : Entity, IEmptyWithDataStore<TRoot>
     public void Alter(Func<TRoot, TRoot> f)
     {
         var oldId = Store.GetRoot(Type);
-        if (oldId != null && oldId != _root.Id)
+        if (oldId != null && !oldId.Equals(_root.Id))
             _root = new EntityLink<TRoot>(oldId, Store);
 
         restart:
+        // This reference comparison is fine because we assign IdEmpty.Empty explicitly.
+        // ReSharper disable once PossibleUnintendedReferenceComparison
         var oldRoot = _root.Id == IdEmpty.Empty ? TRoot.Empty(Store) : _root.Value;
 
         var newRoot = f(oldRoot);
-        if (newRoot.DataStoreId == oldRoot.DataStoreId)
+        if (newRoot.DataStoreId.Equals(oldRoot.DataStoreId))
             return;
 
         if (!Store.PutRoot(Type, _root.Id, newRoot.DataStoreId))
