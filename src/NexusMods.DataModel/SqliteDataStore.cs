@@ -32,18 +32,18 @@ public class SqliteDataStore : IDataStore, IDisposable
     private readonly IMessageProducer<RootChange> _rootChangeProducer;
     private readonly IMessageConsumer<RootChange> _rootChangeConsumer;
     private readonly ConcurrentQueue<RootChange> _pendingRootChanges = new();
-    private readonly ConcurrentQueue<IdPut> _pendingIdPuts = new();
+    private readonly ConcurrentQueue<IdUpdated> _pendingIdPuts = new();
     private readonly CancellationTokenSource _enqueuerTcs;
     private readonly Task _enqueuerTask;
     private readonly ILogger<SqliteDataStore> _logger;
-    private readonly IMessageProducer<IdPut> _idPutProducer;
-    private readonly IMessageConsumer<IdPut> _idPutConsumer;
+    private readonly IMessageProducer<IdUpdated> _idPutProducer;
+    private readonly IMessageConsumer<IdUpdated> _idPutConsumer;
 
     public SqliteDataStore(ILogger<SqliteDataStore> logger, AbsolutePath path, IServiceProvider provider,
         IMessageProducer<RootChange> rootChangeProducer,
         IMessageConsumer<RootChange> rootChangeConsumer,
-        IMessageProducer<IdPut> idPutProducer,
-        IMessageConsumer<IdPut> idPutConsumer)
+        IMessageProducer<IdUpdated> idPutProducer,
+        IMessageConsumer<IdUpdated> idPutConsumer)
     {
         _logger = logger;
         _path = path;
@@ -119,7 +119,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         cmd.ExecuteNonQuery();
 
         var id = new Id64(value.Category, hash);
-        _pendingIdPuts.Enqueue(new IdPut(IdPut.PutType.Put, id));
+        _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
         return id;
     }
 
@@ -134,7 +134,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         ms.Position = 0;
         cmd.Parameters.AddWithValue("@Data", ms.ToArray());
         cmd.ExecuteNonQuery();
-        _pendingIdPuts.Enqueue(new IdPut(IdPut.PutType.Put, id));
+        _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
     }
 
     public T? Get<T>(IId id, bool canCache) where T : Entity
@@ -219,7 +219,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         cmd.Parameters.AddWithValue("@id", idBytes);
         cmd.Parameters.AddWithValue("@data", val.ToArray());
         cmd.ExecuteNonQuery();
-        _pendingIdPuts.Enqueue(new IdPut(IdPut.PutType.Put, id));
+        _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
 
     }
 
@@ -230,7 +230,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         id.ToSpan(idBytes.AsSpan());
         cmd.Parameters.AddWithValue("@id", idBytes);
         cmd.ExecuteNonQuery();
-        _pendingIdPuts.Enqueue(new IdPut(IdPut.PutType.Delete, id));
+        _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Delete, id));
     }
 
     public async Task<long> PutRaw(IAsyncEnumerable<(IId Key, byte[] Value)> kvs, CancellationToken token = default)
@@ -332,10 +332,10 @@ public class SqliteDataStore : IDataStore, IDisposable
     /// </summary>
     /// <param name="change"></param>
     /// <returns></returns>
-    private async Task<IId> WaitTillPutReady(IdPut change)
+    private async Task<IId> WaitTillPutReady(IdUpdated change)
     {
         var maxCycles = 0;
-        while (change.Type != IdPut.PutType.Delete && GetRaw(change.Id) == null && maxCycles < 10)
+        while (change.Type != IdUpdated.UpdateType.Delete && GetRaw(change.Id) == null && maxCycles < 10)
         {
             _logger.LogDebug("Waiting for write to {Id} to complete", change.Id);
             await Task.Delay(100);

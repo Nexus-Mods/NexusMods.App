@@ -48,8 +48,8 @@ public class DataStoreBenchmark : IBenchmark, IDisposable
             _temporaryFileManager.CreateFile(KnownExtensions.Sqlite).Path, provider,
             provider.GetRequiredService<IMessageProducer<RootChange>>(),
             provider.GetRequiredService<IMessageConsumer<RootChange>>(),
-        provider.GetRequiredService<IMessageProducer<IdPut>>(),
-        provider.GetRequiredService<IMessageConsumer<IdPut>>());
+        provider.GetRequiredService<IMessageProducer<IdUpdated>>(),
+        provider.GetRequiredService<IMessageConsumer<IdUpdated>>());
 
         _rawData = new byte[1024];
         Random.Shared.NextBytes(_rawData);
