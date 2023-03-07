@@ -23,5 +23,5 @@ public record UserInfo
     /// <summary>
     /// Uri of the user's avatar
     /// </summary>
-    public Uri Avatar { get; set; }
+    public Uri? Avatar { get; set; }
 }
