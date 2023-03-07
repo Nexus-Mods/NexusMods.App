@@ -60,7 +60,7 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
         var modifiedHash = "modified".XxHash64();
 
         var firstMod = mainList.Value.Mods.Values.First();
-        var ingestPlan = await mainList.MakeIngestionPlan(_ => firstMod, Token).ToHashSet();
+        var ingestPlan = await mainList.MakeIngestionPlan(_ => firstMod, Token).ToHashSetAsync();
 
         ingestPlan.Should().BeEquivalentTo(new IApplyStep[]
         {

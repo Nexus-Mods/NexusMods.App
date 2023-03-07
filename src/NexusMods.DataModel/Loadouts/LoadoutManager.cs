@@ -107,7 +107,7 @@ public class LoadoutManager
                     Store = _store
                 };
 
-                var metaData = await GetMetadata(n, mod, file, analysis).ToHashSet();
+                var metaData = await GetMetadata(n, mod, file, analysis).ToHashSetAsync();
                 gameFiles.Add(file with { Metadata = metaData.ToImmutableHashSet() });
             }
         }

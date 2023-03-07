@@ -52,7 +52,7 @@ public class GenericExtractionTests
         await _extractor.ExtractAllAsync(path, tempFolder, CancellationToken.None);
         (await tempFolder.Path.EnumerateFiles()
             .SelectAsync(async f => (f.RelativeTo(tempFolder.Path), await f.XxHash64()))
-            .ToArray())
+            .ToArrayAsync())
             .Should()
             .BeEquivalentTo(new[]
             {

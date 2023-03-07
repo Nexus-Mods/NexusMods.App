@@ -325,7 +325,7 @@ public class LoadoutMarker : IMarker<Loadout>
 
     public async Task ApplyIngest(Func<HashedEntry, Mod> modMapper, CancellationToken token)
     {
-        await ApplyIngest(await MakeIngestionPlan(modMapper, token).ToHashSet(), token);
+        await ApplyIngest(await MakeIngestionPlan(modMapper, token).ToHashSetAsync(), token);
     }
 
     public async Task ApplyIngest(HashSet<IApplyStep> steps, CancellationToken token)

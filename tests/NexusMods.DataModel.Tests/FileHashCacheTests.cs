@@ -33,7 +33,7 @@ public class FileHashCacheTests : ADataModelTest<FileHashCacheTests>
         file.Parent.CreateDirectory();
         await file.WriteAllTextAsync("Test data here");
 
-        var results = await FileHashCache.IndexFolder(folder, CancellationToken.None).ToList();
+        var results = await FileHashCache.IndexFolder(folder, CancellationToken.None).ToListAsync();
         results.Should().ContainSingle(x => x.Path == file);
     }
 
