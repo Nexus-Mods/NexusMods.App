@@ -1,7 +1,7 @@
 ﻿namespace NexusMods.DataModel.Abstractions.Ids;
 
 /// <summary>
-/// Represents the unique index of a <see cref="Root"/>.
+/// Represents the unique index of a <see cref="Root{T}"/>.
 /// </summary>
 public class RootId : AId
 {
