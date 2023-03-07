@@ -17,7 +17,7 @@ public class CombinePathsTests
         Assert.Equal(pathA, pathB.Join(pathC));
         Assert.Equal(pathA, pathB.Join(@"bar\baz").Join(pathD));
     }
-    
+
     [Fact]
     public void CanJoinPaths_WithForwardSlash()
     {

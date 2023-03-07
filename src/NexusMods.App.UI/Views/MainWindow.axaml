@@ -4,23 +4,16 @@
     ExtendClientAreaToDecorationsHint="True"
     Icon="/Assets/nexus-logo.ico"
     PointerPressed="PointerPressed_Handler"
-    Title="NexusMods.App.UI"
+    Title="Nexus Mods App"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Views.MainWindow"
     x:TypeArguments="vm:MainWindowViewModel"
     xmlns="https://github.com/avaloniaui"
-    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
-    xmlns:buttons="clr-namespace:NexusMods.App.UI.Controls.Spine.Buttons;assembly=NexusMods.App.UI"
-    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
-    xmlns:rightContent="clr-namespace:NexusMods.App.UI.RightContent"
-    xmlns:spine="clr-namespace:NexusMods.App.UI.Controls.Spine"
-    xmlns:svg="clr-namespace:Avalonia.Svg;assembly=Avalonia.Svg"
-    xmlns:views="clr-namespace:NexusMods.App.UI.Views"
     xmlns:vm="using:NexusMods.App.UI.ViewModels"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
@@ -29,6 +22,7 @@
             This only sets the DataContext for the previewer in an IDE,
             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs)
         -->
+        <!-- ReSharper disable once Xaml.ConstructorWarning -->
         <vm:MainWindowViewModel />
     </Design.DataContext>
 
@@ -38,6 +32,11 @@
             Grid.ColumnSpan="3"
             Grid.Row="0"
             x:Name="TopBar" />
+
+        <reactiveUi:ViewModelViewHost
+            Grid.Column="0"
+            Grid.Row="1"
+            x:Name="Spine" />
 
         <Border
             BorderBrush="{DynamicResource StructuralBorderBrush}"
@@ -51,10 +50,7 @@
             Grid.ColumnSpan="3"
             Grid.Row="0" />
 
-        <reactiveUi:ViewModelViewHost
-            Grid.Column="0"
-            Grid.Row="1"
-            x:Name="Spine" />
+
 
         <StackPanel
             Grid.Column="1"

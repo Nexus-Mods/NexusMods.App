@@ -1,4 +1,4 @@
-﻿using NexusMods.DataModel.Loadouts.ModFiles;
+using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 

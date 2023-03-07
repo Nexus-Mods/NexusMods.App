@@ -10,7 +10,7 @@ public class ConversionTests
         Assert.Equal("foo", (string)"foo".ToRelativePath());
         Assert.Equal((RelativePath)"foo", "foo".ToRelativePath());
     }
-    
+
     [Fact]
     public void ObjectMethods()
     {
@@ -23,7 +23,7 @@ public class ConversionTests
 
         Assert.Equal(((RelativePath)@"foo\bar").GetHashCode(), ((RelativePath)@"Foo\bar").GetHashCode());
     }
-    
+
     [Fact]
     public void CanGetFilenameFromRelativePath()
     {

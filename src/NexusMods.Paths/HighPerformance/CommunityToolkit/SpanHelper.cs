@@ -33,8 +33,8 @@ internal static class SpanHelper
             typeof(T) == typeof(sbyte) ||
             typeof(T) == typeof(bool))
         {
-            ref sbyte r1 = ref Unsafe.As<T, sbyte>(ref r0);
-            sbyte target = Unsafe.As<T, sbyte>(ref value);
+            ref var r1 = ref Unsafe.As<T, sbyte>(ref r0);
+            var target = Unsafe.As<T, sbyte>(ref value);
 
             return CountSimd(ref r1, length, target);
         }
@@ -43,8 +43,8 @@ internal static class SpanHelper
             typeof(T) == typeof(ushort) ||
             typeof(T) == typeof(short))
         {
-            ref short r1 = ref Unsafe.As<T, short>(ref r0);
-            short target = Unsafe.As<T, short>(ref value);
+            ref var r1 = ref Unsafe.As<T, short>(ref r0);
+            var target = Unsafe.As<T, short>(ref value);
 
             return CountSimd(ref r1, length, target);
         }
@@ -52,8 +52,8 @@ internal static class SpanHelper
         if (typeof(T) == typeof(int) ||
             typeof(T) == typeof(uint))
         {
-            ref int r1 = ref Unsafe.As<T, int>(ref r0);
-            int target = Unsafe.As<T, int>(ref value);
+            ref var r1 = ref Unsafe.As<T, int>(ref r0);
+            var target = Unsafe.As<T, int>(ref value);
 
             return CountSimd(ref r1, length, target);
         }
@@ -61,8 +61,8 @@ internal static class SpanHelper
         if (typeof(T) == typeof(long) ||
             typeof(T) == typeof(ulong))
         {
-            ref long r1 = ref Unsafe.As<T, long>(ref r0);
-            long target = Unsafe.As<T, long>(ref value);
+            ref var r1 = ref Unsafe.As<T, long>(ref r0);
+            var target = Unsafe.As<T, long>(ref value);
 
             return CountSimd(ref r1, length, target);
         }
@@ -70,8 +70,8 @@ internal static class SpanHelper
         if (typeof(T) == typeof(nint) ||
             typeof(T) == typeof(nuint))
         {
-            ref nint r1 = ref Unsafe.As<T, nint>(ref r0);
-            nint target = Unsafe.As<T, nint>(ref value);
+            ref var r1 = ref Unsafe.As<T, nint>(ref r0);
+            var target = Unsafe.As<T, nint>(ref value);
 
             return CountSimd(ref r1, length, target);
         }
@@ -148,11 +148,11 @@ internal static class SpanHelper
                 // to sum the partial results. We also backup the current offset to
                 // be able to track how many items have been processed, which lets
                 // us avoid updating a third counter (length) in the loop body.
-                nint max = GetUpperBound<T>();
-                nint chunkLength = length <= max ? length : max;
-                nint initialOffset = offset;
+                var max = GetUpperBound<T>();
+                var chunkLength = length <= max ? length : max;
+                var initialOffset = offset;
 
-                Vector<T> partials = Vector<T>.Zero;
+                var partials = Vector<T>.Zero;
 
                 // Unrolled vectorized loop, with 8 unrolled iterations. We only run this when the
                 // current type T is at least 2 bytes in size, otherwise the average chunk length
@@ -162,51 +162,51 @@ internal static class SpanHelper
                 {
                     while (chunkLength >= Vector<T>.Count * 8)
                     {
-                        ref T ri0 = ref Unsafe.Add(ref r0, offset + (Vector<T>.Count * 0));
-                        Vector<T> vi0 = Unsafe.As<T, Vector<T>>(ref ri0);
-                        Vector<T> ve0 = Vector.Equals(vi0, vc);
+                        ref var ri0 = ref Unsafe.Add(ref r0, offset + (Vector<T>.Count * 0));
+                        var vi0 = Unsafe.As<T, Vector<T>>(ref ri0);
+                        var ve0 = Vector.Equals(vi0, vc);
 
                         partials -= ve0;
 
-                        ref T ri1 = ref Unsafe.Add(ref r0, offset + (Vector<T>.Count * 1));
-                        Vector<T> vi1 = Unsafe.As<T, Vector<T>>(ref ri1);
-                        Vector<T> ve1 = Vector.Equals(vi1, vc);
+                        ref var ri1 = ref Unsafe.Add(ref r0, offset + (Vector<T>.Count * 1));
+                        var vi1 = Unsafe.As<T, Vector<T>>(ref ri1);
+                        var ve1 = Vector.Equals(vi1, vc);
 
                         partials -= ve1;
 
-                        ref T ri2 = ref Unsafe.Add(ref r0, offset + (Vector<T>.Count * 2));
-                        Vector<T> vi2 = Unsafe.As<T, Vector<T>>(ref ri2);
-                        Vector<T> ve2 = Vector.Equals(vi2, vc);
+                        ref var ri2 = ref Unsafe.Add(ref r0, offset + (Vector<T>.Count * 2));
+                        var vi2 = Unsafe.As<T, Vector<T>>(ref ri2);
+                        var ve2 = Vector.Equals(vi2, vc);
 
                         partials -= ve2;
 
-                        ref T ri3 = ref Unsafe.Add(ref r0, offset + (Vector<T>.Count * 3));
-                        Vector<T> vi3 = Unsafe.As<T, Vector<T>>(ref ri3);
-                        Vector<T> ve3 = Vector.Equals(vi3, vc);
+                        ref var ri3 = ref Unsafe.Add(ref r0, offset + (Vector<T>.Count * 3));
+                        var vi3 = Unsafe.As<T, Vector<T>>(ref ri3);
+                        var ve3 = Vector.Equals(vi3, vc);
 
                         partials -= ve3;
 
-                        ref T ri4 = ref Unsafe.Add(ref r0, offset + (Vector<T>.Count * 4));
-                        Vector<T> vi4 = Unsafe.As<T, Vector<T>>(ref ri4);
-                        Vector<T> ve4 = Vector.Equals(vi4, vc);
+                        ref var ri4 = ref Unsafe.Add(ref r0, offset + (Vector<T>.Count * 4));
+                        var vi4 = Unsafe.As<T, Vector<T>>(ref ri4);
+                        var ve4 = Vector.Equals(vi4, vc);
 
                         partials -= ve4;
 
-                        ref T ri5 = ref Unsafe.Add(ref r0, offset + (Vector<T>.Count * 5));
-                        Vector<T> vi5 = Unsafe.As<T, Vector<T>>(ref ri5);
-                        Vector<T> ve5 = Vector.Equals(vi5, vc);
+                        ref var ri5 = ref Unsafe.Add(ref r0, offset + (Vector<T>.Count * 5));
+                        var vi5 = Unsafe.As<T, Vector<T>>(ref ri5);
+                        var ve5 = Vector.Equals(vi5, vc);
 
                         partials -= ve5;
 
-                        ref T ri6 = ref Unsafe.Add(ref r0, offset + (Vector<T>.Count * 6));
-                        Vector<T> vi6 = Unsafe.As<T, Vector<T>>(ref ri6);
-                        Vector<T> ve6 = Vector.Equals(vi6, vc);
+                        ref var ri6 = ref Unsafe.Add(ref r0, offset + (Vector<T>.Count * 6));
+                        var vi6 = Unsafe.As<T, Vector<T>>(ref ri6);
+                        var ve6 = Vector.Equals(vi6, vc);
 
                         partials -= ve6;
 
-                        ref T ri7 = ref Unsafe.Add(ref r0, offset + (Vector<T>.Count * 7));
-                        Vector<T> vi7 = Unsafe.As<T, Vector<T>>(ref ri7);
-                        Vector<T> ve7 = Vector.Equals(vi7, vc);
+                        ref var ri7 = ref Unsafe.Add(ref r0, offset + (Vector<T>.Count * 7));
+                        var vi7 = Unsafe.As<T, Vector<T>>(ref ri7);
+                        var ve7 = Vector.Equals(vi7, vc);
 
                         partials -= ve7;
 
@@ -217,7 +217,7 @@ internal static class SpanHelper
 
                 while (chunkLength >= Vector<T>.Count)
                 {
-                    ref T ri = ref Unsafe.Add(ref r0, offset);
+                    ref var ri = ref Unsafe.Add(ref r0, offset);
 
                     // Load the current Vector<T> register, and then use
                     // Vector.Equals to check for matches. This API sets the
@@ -227,8 +227,8 @@ internal static class SpanHelper
                     // signed numbers are represented in two's complement.
                     // So we can just subtract this intermediate value to the
                     // partial results, which effectively sums 1 for each match.
-                    Vector<T> vi = Unsafe.As<T, Vector<T>>(ref ri);
-                    Vector<T> ve = Vector.Equals(vi, vc);
+                    var vi = Unsafe.As<T, Vector<T>>(ref ri);
+                    var ve = Vector.Equals(vi, vc);
 
                     partials -= ve;
 
@@ -285,7 +285,7 @@ internal static class SpanHelper
 
         return result;
     }
-    
+
     /// <summary>
     /// Gets the upper bound for partial sums with a given <typeparamref name="T"/> parameter.
     /// </summary>
@@ -334,7 +334,7 @@ internal static class SpanHelper
 
         throw null!;
     }
-    
+
     /// <summary>
     /// Casts a value of a given type to a native <see cref="int"/>.
     /// </summary>

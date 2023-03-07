@@ -1,4 +1,4 @@
-﻿using NexusMods.Paths;
+using NexusMods.Paths;
 
 namespace NexusMods.CLI.Verbs;
 
@@ -6,7 +6,7 @@ namespace NexusMods.CLI.Verbs;
 public class ExtractArchive : AVerb<AbsolutePath, AbsolutePath>
 {
     private readonly FileExtractor.FileExtractor _extractor;
-    
+
     public ExtractArchive(FileExtractor.FileExtractor extractor) => _extractor = extractor;
 
     public static VerbDefinition Definition => new("extract-archive",
@@ -15,7 +15,7 @@ public class ExtractArchive : AVerb<AbsolutePath, AbsolutePath>
             new OptionDefinition<AbsolutePath>("i", "inputFile", "Input archive to extract"),
             new OptionDefinition<AbsolutePath>("o", "outputFolder", "Output location for files")
         });
-    
+
 
     public async Task<int> Run(AbsolutePath inputFile, AbsolutePath outputFolder, CancellationToken token)
     {

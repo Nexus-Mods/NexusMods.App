@@ -1,4 +1,5 @@
-﻿using System.Reactive.Disposables;
+using System.Reactive.Disposables;
+using System.Runtime.InteropServices;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.TopBar;
 using NexusMods.App.UI.RightContent;
@@ -11,18 +12,21 @@ namespace NexusMods.App.UI.ViewModels;
 public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
 {
     private readonly IViewModel _homeViewModel;
-    
-    public MainWindowViewModel(SpineViewModel spineViewModel, FoundGamesViewModel foundGamesViewModel, TopBarViewModel topBarViewModel)
+
+    public MainWindowViewModel(ISpineViewModel spineViewModel, FoundGamesViewModel foundGamesViewModel, ITopBarViewModel topBarViewModel)
     {
+        TopBar = topBarViewModel;
         Spine = spineViewModel;
         _homeViewModel = foundGamesViewModel;
-        TopBarViewModel = topBarViewModel;
+
+        // Only show controls in Windows since we can remove the chrome on that platform
+        TopBar.ShowWindowControls = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+
         this.WhenActivated(disposables =>
         {
             Spine.Actions
                 .Subscribe(HandleSpineAction)
                 .DisposeWith(disposables);
-            
         });
     }
 
@@ -32,15 +36,16 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
         {
             RightContent = _homeViewModel;
         }
-        
+
         Spine.Activations.OnNext(action);
     }
-    
-    public SpineViewModel Spine { get; }
-    
+
+    [Reactive]
+    public ISpineViewModel Spine { get; set; }
+
     [Reactive]
     public IViewModel RightContent { get; set; }
-    
+
     [Reactive]
-    public TopBarViewModel TopBarViewModel { get; set; }
+    public ITopBarViewModel TopBar { get; set; }
 }

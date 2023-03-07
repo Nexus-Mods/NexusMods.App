@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 // ReSharper disable InconsistentNaming
 
 namespace NexusMods.CLI;
@@ -12,7 +12,7 @@ public class Verb
     /// Describes the verb; its name, description and options.
     /// </summary>
     public required VerbDefinition Definition { get; init; }
-    
+
     /// <summary>
     /// The function that is ran to execute it.
     /// </summary>
@@ -62,11 +62,11 @@ public static class ServiceExtensions
     {
         services.AddSingleton(new Verb
         {
-            Definition = T.Definition, 
-            Run = o => ((T)o).Delegate, 
+            Definition = T.Definition,
+            Run = o => ((T)o).Delegate,
             Type = typeof(T)
         });
-        
+
         services.AddSingleton(typeof(T));
         return services;
     }

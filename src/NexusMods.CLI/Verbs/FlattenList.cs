@@ -1,4 +1,4 @@
-﻿using NexusMods.CLI.DataOutputs;
+using NexusMods.CLI.DataOutputs;
 using NexusMods.DataModel.Loadouts.Markers;
 
 namespace NexusMods.CLI.Verbs;
@@ -14,14 +14,14 @@ public class FlattenList : AVerb<LoadoutMarker>
         {
             new OptionDefinition<LoadoutMarker>("l", "loadout", "loadout to target")
         });
-    
+
     public async Task<int> Run(LoadoutMarker loadout, CancellationToken token)
     {
         var rows = new List<object[]>();
         foreach (var (file, mod) in loadout.FlattenList())
-            rows.Add(new object[]{mod.Name, file.To});
+            rows.Add(new object[] { mod.Name, file.To });
 
-        await _renderer.Render(new Table(new[] { "Mod", "To"}, rows));
+        await _renderer.Render(new Table(new[] { "Mod", "To" }, rows));
         return 0;
     }
 }

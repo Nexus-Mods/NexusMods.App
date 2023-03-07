@@ -1,7 +1,6 @@
 using FluentAssertions;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
 
@@ -15,14 +14,14 @@ public class SevenZipExtractionTests
     {
         _extractor = extractor;
     }
-    
+
     [Fact]
     public async Task CanForeachOverFiles()
     {
         var file = KnownFolders.CurrentDirectory.CombineUnchecked("Resources/data_7zip_lzma2.7z");
         var results = await _extractor.ForEachEntry(new NativeFileStreamFactory(file), async (_, e) =>
         {
-            await using var fs = await e.GetStream();
+            await using var fs = await e.GetStreamAsync();
             return await fs.Hash(CancellationToken.None);
         }, CancellationToken.None);
 

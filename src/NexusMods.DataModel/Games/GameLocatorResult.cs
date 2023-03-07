@@ -1,4 +1,4 @@
-﻿using NexusMods.Paths;
+using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Games;
 

@@ -1,8 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Vogen;
 
 namespace NexusMods.Networking.NexusWebApi.Types;
@@ -13,5 +8,5 @@ namespace NexusMods.Networking.NexusWebApi.Types;
 [ValueObject<string>]
 public partial struct NXMKey
 {
-    
+
 }

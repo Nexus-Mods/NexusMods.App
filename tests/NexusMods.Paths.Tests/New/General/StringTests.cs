@@ -12,12 +12,12 @@ public class StringTests
     [Fact]
     public void HashRandomString()
     {
-        for (int x = 0; x < 257; x++)
+        for (var x = 0; x < 257; x++)
         {
             var text = TestStringHelpers.RandomStringUpperWithEmoji(x);
             var expected = text.AsSpan().GetNonRandomizedHashCode();
 
-            for (int y = 0; y < 10; y++) 
+            for (var y = 0; y < 10; y++)
                 Assert.Equal(expected, text.AsSpan().GetNonRandomizedHashCode());
         }
     }

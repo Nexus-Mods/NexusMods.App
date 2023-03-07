@@ -1,4 +1,4 @@
-﻿using NexusMods.Paths;
+using NexusMods.Paths;
 
 namespace NexusMods.FileExtractor.FileSignatures;
 
@@ -40,7 +40,7 @@ public class SignatureChecker
         foreach (var (fileType, signature) in _signatures)
             if (_buffer.AsSpan().StartsWith(signature))
                 lst.Add(fileType);
-        
+
         return lst;
     }
 

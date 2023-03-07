@@ -16,32 +16,32 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 
         this.WhenActivated(disposables =>
         {
+            this.OneWayBind(ViewModel, vm => vm.TopBar, v => v.TopBar.ViewModel)
+                .DisposeWith(disposables);
+
             this.OneWayBind(ViewModel, vm => vm.Spine, v => v.Spine.ViewModel)
                 .DisposeWith(disposables);
-            
+
             this.OneWayBind(ViewModel, vm => vm.RightContent, v => v.RightContent.ViewModel)
-                .DisposeWith(disposables);
-            
-            this.OneWayBind(ViewModel, vm => vm.TopBarViewModel, v => v.TopBar.ViewModel)
                 .DisposeWith(disposables);
 
             ViewModel.WhenAnyValue(v => v.RightContent)
-                .Subscribe(x => { })
+                .Subscribe(_ => { })
                 .DisposeWith(disposables);
-            
-            this.WhenAnyValue(view => view.ViewModel!.TopBarViewModel.CloseCommand.IsExecuting)
+
+            this.WhenAnyValue(view => view.ViewModel!.TopBar.CloseCommand.IsExecuting)
                 .SelectMany(e => e)
                 .Where(e => e)
                 .Subscribe(_ => Close())
                 .DisposeWith(disposables);
-            
-            this.WhenAnyValue(view => view.ViewModel!.TopBarViewModel.MinimizeCommand.IsExecuting)
+
+            this.WhenAnyValue(view => view.ViewModel!.TopBar.MinimizeCommand.IsExecuting)
                 .SelectMany(e => e)
                 .Where(e => e)
                 .Subscribe(_ => WindowState = WindowState.Minimized)
                 .DisposeWith(disposables);
-            
-            this.WhenAnyValue(view => view.ViewModel!.TopBarViewModel.MaximizeCommand.IsExecuting)
+
+            this.WhenAnyValue(view => view.ViewModel!.TopBar.MaximizeCommand.IsExecuting)
                 .SelectMany(e => e)
                 .Where(e => e)
                 .Subscribe(_ => WindowState = WindowState.Maximized)
@@ -50,6 +50,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         });
     }
 
+    // ReSharper disable once UnusedParameter.Local
     private void PointerPressed_Handler(object? sender, PointerPressedEventArgs e)
     {
         if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)

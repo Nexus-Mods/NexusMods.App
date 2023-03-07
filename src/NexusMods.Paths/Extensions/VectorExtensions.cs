@@ -19,7 +19,7 @@ internal static class VectorExtensions
         source = ref Unsafe.Add(ref source, elementOffset);
         return Unsafe.ReadUnaligned<Vector<T>>(ref Unsafe.As<T, byte>(ref source));
     }
-    
+
     /// <summary>
     /// Stores an element from a vector into destination + offset.
     /// </summary>

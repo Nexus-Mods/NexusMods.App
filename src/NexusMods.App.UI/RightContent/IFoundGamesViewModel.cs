@@ -1,6 +1,6 @@
-﻿namespace NexusMods.App.UI.RightContent;
+namespace NexusMods.App.UI.RightContent;
 
 public interface IFoundGamesViewModel : IViewModelInterface
 {
-    
+
 }

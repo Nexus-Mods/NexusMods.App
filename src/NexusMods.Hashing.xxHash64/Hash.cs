@@ -8,12 +8,12 @@ namespace NexusMods.Hashing.xxHash64;
 public partial struct Hash
 {
     public static readonly Hash Zero = From(0);
-    
+
     public override string ToString()
     {
-        return "0x"+ToHex();
+        return "0x" + ToHex();
     }
-    
+
     public static implicit operator long(Hash a)
     {
         return BitConverter.ToInt64(BitConverter.GetBytes(a._value));

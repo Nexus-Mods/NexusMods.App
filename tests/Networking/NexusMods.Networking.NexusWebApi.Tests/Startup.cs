@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NexusMods.Common;
@@ -14,11 +14,11 @@ namespace NexusMods.Networking.NexusWebApi.Tests;
 
 public class Startup
 {
-    public void ConfigureServices(IServiceCollection container)
+    public void ConfigureServices(IServiceCollection services)
     {
         var mockOSInterop = new Mock<IOSInterop>();
 
-        container
+        services
             .AddSingleton<HttpClient>()
             .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
             .AddHttpDownloader()
@@ -27,10 +27,11 @@ public class Startup
             .AddSingleton(mockOSInterop.Object)
             .AddSingleton<LocalHttpServer>()
             .AddNexusWebApi(true)
-            .AddDataModel();
+            .AddDataModel()
+            .Validate();
     }
-    
+
     public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>
-        loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(accessor, delegate { return true;}));
+        loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(accessor, delegate { return true; }));
 }
 

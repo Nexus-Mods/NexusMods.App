@@ -1,4 +1,4 @@
-﻿using NexusMods.Paths.Utilities;
+using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Paths;
 
@@ -10,12 +10,12 @@ public class TemporaryFileManager : IDisposable, IAsyncDisposable
 {
     private readonly AbsolutePath _basePath;
     private readonly bool _deleteOnDispose;
-    
+
     /// <summary>
     /// Utility for creating temporary folder and files to be later disposed.
     /// </summary>
     public TemporaryFileManager() : this(KnownFolders.EntryFolder.CombineUnchecked("temp")) { }
-    
+
     /// <summary>
     /// Utility for creating temporary folder and files to be later disposed.
     /// </summary>
@@ -25,7 +25,7 @@ public class TemporaryFileManager : IDisposable, IAsyncDisposable
     {
         if (basePath.Equals(default))
             basePath = KnownFolders.EntryFolder.CombineUnchecked("temp");
-        
+
         _deleteOnDispose = deleteOnDispose;
         _basePath = basePath;
         _basePath.CreateDirectory();
@@ -44,12 +44,12 @@ public class TemporaryFileManager : IDisposable, IAsyncDisposable
         await Dispose_Impl(true);
         GC.SuppressFinalize(this);
     }
-    
+
     private async ValueTask Dispose_Impl(bool waitAsync)
-    {        
-        if (!_deleteOnDispose) 
+    {
+        if (!_deleteOnDispose)
             return;
-        
+
         for (var retries = 0; retries < 10; retries++)
         {
             try
@@ -78,7 +78,7 @@ public class TemporaryFileManager : IDisposable, IAsyncDisposable
         var path = _basePath.CombineUnchecked(Guid.NewGuid().ToString());
         if (path.Extension != default)
             path = path.WithExtension(ext ?? KnownExtensions.Tmp);
-        
+
         return new TemporaryPath(path, deleteOnDispose);
     }
 
@@ -105,7 +105,7 @@ public readonly struct TemporaryPath : IDisposable, IAsyncDisposable
     /// Full path to the temporary location.
     /// </summary>
     public AbsolutePath Path { get; }
-    
+
     /// <summary>
     /// True if deleted on dispose, else false.
     /// </summary>
@@ -121,7 +121,7 @@ public readonly struct TemporaryPath : IDisposable, IAsyncDisposable
         Path = path;
         DeleteOnDispose = deleteOnDispose;
     }
-    
+
     /// <inheritdoc />
     public void Dispose()
     {
@@ -132,9 +132,9 @@ public readonly struct TemporaryPath : IDisposable, IAsyncDisposable
     /// <inheritdoc />
     public ValueTask DisposeAsync()
     {
-        if (DeleteOnDispose) 
+        if (DeleteOnDispose)
             Path.Delete();
-        
+
         return ValueTask.CompletedTask;
     }
 

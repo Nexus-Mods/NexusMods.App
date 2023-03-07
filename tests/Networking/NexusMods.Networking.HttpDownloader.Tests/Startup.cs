@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.Paths;
@@ -11,15 +11,16 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection container)
     {
-        container.AddAdvancedHttpDownloader();
-        container.AddSingleton<SimpleHttpDownloader>();
-        container.AddSingleton<AdvancedHttpDownloader>();
-        container.AddSingleton<TemporaryFileManager>();
-        container.AddSingleton<HttpClient>();
-        container.AddSingleton<LocalHttpServer>();
+        container.AddAdvancedHttpDownloader()
+                 .AddSingleton<SimpleHttpDownloader>()
+                 .AddSingleton<AdvancedHttpDownloader>()
+                 .AddSingleton<TemporaryFileManager>()
+                 .AddSingleton<HttpClient>()
+                 .AddSingleton<LocalHttpServer>()
+                 .Validate();
     }
-    
+
     public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>
-        loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(accessor, delegate { return true;}));
+        loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(accessor, delegate { return true; }));
 }
 

@@ -1,4 +1,4 @@
-﻿namespace NexusMods.Common;
+namespace NexusMods.Common;
 
 /// <summary>
 /// Extensions related to implementations of <see cref="IAsyncEnumerable{T}"/>.

@@ -1,9 +1,9 @@
-﻿using NexusMods.DataModel.JsonConverters;
+using NexusMods.DataModel.JsonConverters;
 
 namespace NexusMods.DataModel.Sorting.Rules;
 
 [JsonName("First")]
-public record First<TType, TId> : ISortRule<TType, TId> 
+public record First<TType, TId> : ISortRule<TType, TId>
 {
-    
+
 }

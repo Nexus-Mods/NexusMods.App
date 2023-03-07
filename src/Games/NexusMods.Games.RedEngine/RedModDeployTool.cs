@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using CliWrap;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Extensions;
@@ -14,7 +14,7 @@ public class RedModDeployTool : ITool
     {
         _logger = logger;
     }
-    public IEnumerable<GameDomain> Domains => new []{Cyberpunk2077.StaticDomain};
+    public IEnumerable<GameDomain> Domains => new[] { Cyberpunk2077.StaticDomain };
 
     private static readonly GamePath _redModPath = new(GameFolderType.Game, @"tools\redmod\bin\redmod.exe");
     private readonly ILogger<RedModDeployTool> _logger;
@@ -22,7 +22,7 @@ public class RedModDeployTool : ITool
     public async Task Execute(Loadout loadout)
     {
         var exe = _redModPath.CombineChecked(loadout.Installation);
-        
+
         var stdOutBuffer = new StringBuilder();
         var stdErrBuffer = new StringBuilder();
 
@@ -34,7 +34,7 @@ public class RedModDeployTool : ITool
             .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
             .ExecuteAsync();
         _logger.LogInformation("Finished running {Program}", exe);
-        
+
         if (result.ExitCode != 0)
         {
             _logger.LogError("RedMod Deploy failed with exit code {ExitCode}", result);

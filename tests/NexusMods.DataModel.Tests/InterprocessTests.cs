@@ -1,4 +1,4 @@
-﻿using System.Buffers.Binary;
+using System.Buffers.Binary;
 using FluentAssertions;
 using NexusMods.DataModel.Interprocess;
 
@@ -21,8 +21,8 @@ public class InterprocessTests
 
         public static IMessage Read(ReadOnlySpan<byte> buffer)
         {
-            int value = BinaryPrimitives.ReadInt32BigEndian(buffer);
-            return new Message() {Value = value};
+            var value = BinaryPrimitives.ReadInt32BigEndian(buffer);
+            return new Message() { Value = value };
         }
     }
 
@@ -38,14 +38,14 @@ public class InterprocessTests
         var src = Enumerable.Range(0, 128).ToList();
         var dest = new List<int>();
         using var _ = _consumer.Messages.Subscribe(x => dest.Add(x.Value));
-        
+
         foreach (var i in src)
         {
-            await _producer.Write(new Message {Value = i}, CancellationToken.None);
+            await _producer.Write(new Message { Value = i }, CancellationToken.None);
         }
-        
+
         await Task.Delay(500);
         dest.Should().BeEquivalentTo(src, opt => opt.WithStrictOrdering());
     }
-    
+
 }

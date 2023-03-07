@@ -1,4 +1,4 @@
-﻿using NexusMods.Paths.Extensions;
+using NexusMods.Paths.Extensions;
 using Vogen;
 
 namespace NexusMods.Paths;

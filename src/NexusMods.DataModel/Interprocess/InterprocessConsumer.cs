@@ -1,4 +1,4 @@
-﻿using System.Reactive.Subjects;
+using System.Reactive.Subjects;
 using Cloudtoid.Interprocess;
 using Microsoft.Extensions.Logging;
 
@@ -32,17 +32,17 @@ public class InterprocessConsumer<T> : IMessageConsumer<T>, IDisposable where T 
         {
             if (_queue.TryDequeue(buffer, _tcs.Token, out var read))
             {
-                _logger.LogTrace("Read {Size} byte message from queue {Queue}", read.Length, _queueName); 
+                _logger.LogTrace("Read {Size} byte message from queue {Queue}", read.Length, _queueName);
                 _messages.OnNext((T)T.Read(read.Span));
                 continue;
             }
-            
+
             await Task.Delay(100, _tcs.Token);
         }
     }
 
     public IObservable<T> Messages => _messages;
-    
+
     public void Dispose()
     {
         _tcs.Cancel();

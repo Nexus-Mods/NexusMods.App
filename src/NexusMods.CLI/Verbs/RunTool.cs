@@ -1,4 +1,4 @@
-﻿using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts.Markers;
 
 namespace NexusMods.CLI.Verbs;
@@ -16,7 +16,7 @@ public class RunTool : AVerb<ITool, LoadoutMarker>
             new OptionDefinition<ITool>("t", "tool", "Tool to run"),
             new OptionDefinition<LoadoutMarker>("l", "loadout", "Loadout to run the tool with")
         });
-    
+
     public async Task<int> Run(ITool tool, LoadoutMarker loadout, CancellationToken token)
     {
         await _renderer.WithProgress(token, async () =>

@@ -1,4 +1,4 @@
-﻿using NexusMods.DataModel.Loadouts.Markers;
+using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.Paths;
 
 namespace NexusMods.CLI.Verbs;

@@ -1,10 +1,6 @@
-﻿using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.JsonConverters;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NexusMods.Networking.NexusWebApi;
 
@@ -20,7 +16,7 @@ namespace NexusMods.Networking.NexusWebApi;
 public record JWTTokenEntity : Entity
 {
     /// <inheritdoc/>
-    public static readonly Id StoreId = new IdVariableLength(EntityCategory.AuthData, "NexusMods.Networking.NexusWebApi.JWTTokens"u8.ToArray());
+    public static readonly IId StoreId = new IdVariableLength(EntityCategory.AuthData, "NexusMods.Networking.NexusWebApi.JWTTokens"u8.ToArray());
 
     /// <inheritdoc/>
     public override EntityCategory Category => EntityCategory.AuthData;

@@ -1,4 +1,4 @@
-﻿using GameFinder.Common;
+using GameFinder.Common;
 using GameFinder.StoreHandlers.GOG;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;

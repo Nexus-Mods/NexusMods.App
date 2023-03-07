@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
@@ -15,7 +15,7 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame
     public static Extension ESL = new(".esl");
     public static Extension ESM = new(".esm");
     public static Extension ESP = new(".esp");
-    
+
     public static HashSet<Extension> PluginExtensions = new() { ESL, ESM, ESP };
     public static GameDomain StaticDomain => GameDomain.From("skyrimspecialedition");
     public override string Name => "Skyrim Special Edition";
@@ -26,10 +26,10 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame
     public SkyrimSpecialEdition(ILogger<SkyrimSpecialEdition> logger, IEnumerable<IGameLocator> gameLocators) : base(logger, gameLocators)
     {
     }
-    
+
     protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(IGameLocator locator, GameLocatorResult installation)
     {
-        yield return new (GameFolderType.Game, installation.Path);
+        yield return new(GameFolderType.Game, installation.Path);
         var appData = locator switch
         {
             GogLocator => KnownFolders.MyGames.CombineUnchecked("Skyrim Special Edition GOG"),

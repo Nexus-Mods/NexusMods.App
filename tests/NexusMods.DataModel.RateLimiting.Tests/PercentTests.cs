@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 
 namespace NexusMods.DataModel.RateLimiting.Tests;
 
@@ -21,18 +21,18 @@ public class PercentTests
 
         (p1 > p0).Should().BeTrue();
         (p1 > p2).Should().BeFalse();
-        
+
         (p1 < p0).Should().BeFalse();
         (p1 < p2).Should().BeTrue();
 
-        
+
         (p0 == p2).Should().BeFalse();
         (p0 != p2).Should().BeTrue();
-        
+
         (p0 <= p1).Should().BeTrue();
 
         (p1 >= p0).Should().BeTrue();
-        
+
         new[] { p1, p0, p2 }.Order().Should().BeEquivalentTo(new[] { p0, p1, p2 });
     }
 

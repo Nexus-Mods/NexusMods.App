@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
@@ -7,11 +7,11 @@ namespace NexusMods.CLI.Tests.VerbTests;
 
 public class HashFolderTests : AVerbTest
 {
-    public HashFolderTests(TemporaryFileManager temporaryFileManager, IServiceProvider provider) 
+    public HashFolderTests(TemporaryFileManager temporaryFileManager, IServiceProvider provider)
         : base(temporaryFileManager, provider)
     {
     }
-    
+
     [Fact]
     public async Task CanHashFolder()
     {

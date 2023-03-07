@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Interprocess;
 using Moq;
@@ -16,7 +16,7 @@ public class DelegatingHandlerStub : DelegatingHandler
     private readonly Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> _handlerFunc;
     public DelegatingHandlerStub()
     {
-        _handlerFunc = (request, cancellationToken) =>
+        _handlerFunc = (request, _) =>
         {
             var resp = new HttpResponseMessage(HttpStatusCode.OK);
             resp.RequestMessage = request;
@@ -63,7 +63,7 @@ public class OAuthTests
                 StatusCode = HttpStatusCode.OK,
                 Content = new StringContent(JsonSerializer.Serialize(ReplyToken)),
             });
-        HttpClient httpClient = new HttpClient(messageHandler.Object);
+        var httpClient = new HttpClient(messageHandler.Object);
 
         var idGen = new Mock<IIDGenerator>();
         idGen.Setup(_ => _.UUIDv4()).Returns(stateId);
@@ -100,7 +100,7 @@ public class OAuthTests
                 StatusCode = HttpStatusCode.OK,
                 Content = new StringContent(JsonSerializer.Serialize(ReplyToken)),
             });
-        HttpClient httpClient = new HttpClient(messageHandler.Object);
+        var httpClient = new HttpClient(messageHandler.Object);
 
         var idGen = new Mock<IIDGenerator>();
         idGen.Setup(_ => _.UUIDv4()).Returns(stateId);
@@ -134,7 +134,7 @@ public class OAuthTests
                 StatusCode = HttpStatusCode.OK,
                 Content = new StringContent("who dis?"),
             });
-        HttpClient httpClient = new HttpClient(messageHandler.Object);
+        var httpClient = new HttpClient(messageHandler.Object);
 
         var idGen = new Mock<IIDGenerator>();
         idGen.Setup(_ => _.UUIDv4()).Returns(stateId);
@@ -159,13 +159,13 @@ public class OAuthTests
         var stateId = "00000000-0000-0000-0000-000000000000";
 
         var messageHandler = new Mock<HttpMessageHandler>();
-        HttpClient httpClient = new HttpClient(messageHandler.Object);
+        var httpClient = new HttpClient(messageHandler.Object);
 
         var idGen = new Mock<IIDGenerator>();
         idGen.Setup(_ => _.UUIDv4()).Returns(stateId);
 
         var os = new Mock<IOSInterop>();
-        CancellationTokenSource cts = new CancellationTokenSource(); ;
+        var cts = new CancellationTokenSource(); ;
         #endregion
 
         #region Execution

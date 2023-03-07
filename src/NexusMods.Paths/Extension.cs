@@ -8,14 +8,14 @@ namespace NexusMods.Paths;
 public readonly struct Extension : IEquatable<Extension>
 {
     private static readonly Extension None = new("");
-    
+
     /// <summary>
     /// Length of this extension.
     /// </summary>
     public int Length => _extension.Length;
-    
+
     private readonly string _extension;
-    
+
     /// <summary/>
     /// <param name="extension">An extension which starts with a . (dot)</param>
     public Extension(string extension)
@@ -23,7 +23,7 @@ public readonly struct Extension : IEquatable<Extension>
         _extension = extension;
         Validate();
     }
-    
+
     /// <summary>
     /// Creates an extension instance given a file path.
     /// </summary>
@@ -33,7 +33,7 @@ public readonly struct Extension : IEquatable<Extension>
         var ext = Path.GetExtension(path);
         return ext == "" ? None : new Extension(ext);
     }
-    
+
     private void Validate()
     {
         if (!_extension.StartsWith(".") && _extension != "")
@@ -54,7 +54,7 @@ public readonly struct Extension : IEquatable<Extension>
 
     /// <summary/>
     public static bool operator !=(Extension a, Extension b) => !(a == b);
-    
+
     /// <inheritdoc />
     public bool Equals(Extension other)
     {

@@ -3,8 +3,6 @@ using NexusMods.App.UI.Controls.Spine;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Paths.Utilities;
-using NexusMods.StandardGameLocators.TestHelpers;
-using Noggog;
 using Type = NexusMods.App.UI.Controls.Spine.Type;
 
 namespace NexusMods.UI.Tests;
@@ -19,11 +17,11 @@ public class SpineTests : AUiTest
     {
         _loadoutManager = loadoutManager;
     }
-    
+
     [Fact]
     public async Task ActivatingButtonsDeactivatesOtherButtons()
     {
-        void ValidateButtons(SpineViewModel vm, SpineButtonAction action)
+        void ValidateButtons(ISpineViewModel vm, SpineButtonAction action)
         {
             if (action.Type == Type.Game)
             {
@@ -61,12 +59,12 @@ public class SpineTests : AUiTest
             }
 
         }
-        
-        using var vm = GetActivatedViewModel<SpineViewModel>();
+
+        using var vm = GetActivatedViewModel<ISpineViewModel>();
         var loadout = await _loadoutManager.ImportFrom(KnownFolders.EntryFolder.CombineUnchecked(@"Resources\cyberpunk2077.1.61.zip"));
 
         using var _ = vm.VM.Actions.Subscribe(vm.VM.Activations);
-        
+
         vm.VM.Games.Select(g => g.Name).Should().Contain("Cyberpunk 2077");
 
         vm.VM.Games.First().Click.CanExecute(null).Should().BeTrue();
@@ -77,11 +75,11 @@ public class SpineTests : AUiTest
 
         vm.VM.Home.Click.CanExecute(null).Should().BeTrue();
         vm.VM.Home.Click.Execute(null);
-        ValidateButtons(vm.VM, new SpineButtonAction(Type.Home, null));
+        ValidateButtons(vm.VM, new SpineButtonAction(Type.Home));
 
         vm.VM.Add.Click.CanExecute(null).Should().BeTrue();
         vm.VM.Add.Click.Execute(null);
-        ValidateButtons(vm.VM, new SpineButtonAction(Type.Add, null));
+        ValidateButtons(vm.VM, new SpineButtonAction(Type.Add));
     }
 
 }

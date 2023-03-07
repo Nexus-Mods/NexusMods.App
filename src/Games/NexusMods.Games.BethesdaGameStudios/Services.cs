@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
@@ -8,7 +8,7 @@ using NexusMods.Games.BethesdaGameStudios.Installers;
 
 namespace NexusMods.Games.BethesdaGameStudios;
 
-public static class Services 
+public static class Services
 {
     public static IServiceCollection AddBethesdaGameStudios(this IServiceCollection services)
     {
@@ -19,5 +19,5 @@ public static class Services
         services.AddAllSingleton<IFileMetadataSource, AnalysisMetaDataSource>();
         return services;
     }
-    
+
 }

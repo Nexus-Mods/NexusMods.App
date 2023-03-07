@@ -1,11 +1,5 @@
-﻿using NexusMods.DataModel.Games;
-using System;
-using System.Collections;
-using System.Collections.Generic;
+using NexusMods.DataModel.Games;
 using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NexusMods.Networking.NexusWebApi.Types;
 
@@ -45,7 +39,7 @@ public class NXMUrl
     {
         get
         {
-            string? expires = _query?.Get("expires");
+            var expires = _query?.Get("expires");
             return expires != null ? DateTime.UnixEpoch.AddSeconds(ulong.Parse(expires)) : null;
         }
     }
@@ -58,7 +52,7 @@ public class NXMUrl
     {
         get
         {
-            string? user = _query?.Get("user_id");
+            var user = _query?.Get("user_id");
             return user != null ? UserId.From(ulong.Parse(user)) : null;
         }
     }
@@ -71,7 +65,7 @@ public class NXMUrl
     {
         get
         {
-            string? key = _query?.Get("key");
+            var key = _query?.Get("key");
             return key != null ? NXMKey.From(key) : null;
         }
     }
@@ -216,7 +210,8 @@ public class NXMModUrl : NXMUrl
         {
             ModId = ModId.From(ulong.Parse(uri.Segments[2].TrimEnd('/')));
             FileId = FileId.From(ulong.Parse(uri.Segments[4].TrimEnd('/')));
-        } catch (FormatException)
+        }
+        catch (FormatException)
         {
             throw new ArgumentException($"invalid nxm url \"{uri}\"");
         }
@@ -266,7 +261,8 @@ public class NXMCollectionUrl : NXMUrl
         {
             Slug = CollectionSlug.From(uri.Segments[2].TrimEnd('/'));
             Revision = RevisionNumber.From(ulong.Parse(uri.Segments[4].TrimEnd('/')));
-        } catch (FormatException)
+        }
+        catch (FormatException)
         {
             throw new ArgumentException($"invalid nxm url \"{uri}\"");
         }

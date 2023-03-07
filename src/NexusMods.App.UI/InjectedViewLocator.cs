@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
@@ -15,9 +15,9 @@ public class InjectedViewLocator : IViewLocator
     {
         _logger = logger;
         _provider = provider;
-        _method = this.GetType().GetMethod("ResolveViewInner", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        _method = GetType().GetMethod("ResolveViewInner", BindingFlags.NonPublic | BindingFlags.Instance)!;
     }
-    
+
     public IViewFor? ResolveView<T>(T? viewModel, string? contract = null)
     {
         _logger.LogDebug("Finding View for {ViewModel}", viewModel.GetType().FullName);
@@ -27,7 +27,12 @@ public class InjectedViewLocator : IViewLocator
             {
                 var intType = vm.ViewModelInterface;
                 var method = _method.MakeGenericMethod(intType);
-                return (IViewFor?)method.Invoke(this, Array.Empty<object>());
+                var view = (IViewFor?)method.Invoke(this, Array.Empty<object>());
+                if (view is IViewContract vc && contract is not null)
+                {
+                    vc.ViewContract = contract;
+                }
+                return view;
             }
             _logger.LogError("Failed to resolve view for {ViewModel}", typeof(T).FullName);
             return null;

@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using CliWrap;
 using NexusMods.Common.OSInterop;
 
@@ -6,6 +6,8 @@ namespace NexusMods.Common.Tests;
 
 public class OSInteropTests
 {
+    // Disabled as we don't do processes this way with
+    /*
     [Fact]
     public async Task UsesExplorerOnWindows()
     {
@@ -21,7 +23,7 @@ public class OSInteropTests
                 command.Arguments == url),
             It.IsAny<CancellationToken>()
         ), Times.Once);
-    }
+    }*/
 
     [Fact]
     public async Task UsesXDGOpenOnLinux()

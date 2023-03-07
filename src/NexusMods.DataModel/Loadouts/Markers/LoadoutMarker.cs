@@ -1,9 +1,8 @@
-﻿using System.IO.Compression;
 using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
-using System.Text.Json;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts.ApplySteps;
@@ -31,7 +30,7 @@ public class LoadoutMarker : IMarker<Loadout>
         _manager.Alter(_id, f);
     }
 
-    public Loadout Value => _manager.Get(_id); 
+    public Loadout Value => _manager.Get(_id);
     public IEnumerable<ITool> Tools => _manager.Tools(Value.Installation.Game.Domain);
     public IObservable<Loadout> Changes => _manager.Changes.Select(c => c.Lists[_id]);
 
@@ -64,7 +63,7 @@ public class LoadoutMarker : IMarker<Loadout>
         while (list != null)
         {
             yield return list;
-            
+
             if (list.PreviousVersion.Id.Equals(IdEmpty.Empty))
                 break;
             list = list.PreviousVersion.Value;
@@ -81,7 +80,7 @@ public class LoadoutMarker : IMarker<Loadout>
             if (file is AGeneratedFile gen && gen.Hash == Hash.Zero)
             {
                 var metaData = await gen.GetMetaData(loadout, flattenedList, token);
-                var newFile = (gen with {Hash = metaData.Hash, Size = metaData.Size}, mod);
+                var newFile = (gen with { Hash = metaData.Hash, Size = metaData.Size }, mod);
                 generated.Add(newFile);
                 response.Add(newFile);
             }
@@ -113,7 +112,7 @@ public class LoadoutMarker : IMarker<Loadout>
         var files = FlattenList().ToList();
         files = (await GenerateFiles(files, token)).ToList();
         var flattenedList = files.ToDictionary(d => d.File.To.CombineChecked(gameFolders[d.File.To.Type]));
-        
+
         var srcFiles = await srcFilesTask;
 
         foreach (var (path, (file, mod)) in flattenedList)
@@ -146,7 +145,7 @@ public class LoadoutMarker : IMarker<Loadout>
                         });
                     }
                 }
-                
+
                 steps.Add(new CopyFile
                 {
                     To = path,
@@ -157,7 +156,7 @@ public class LoadoutMarker : IMarker<Loadout>
 
         foreach (var (path, entry) in srcFiles)
         {
-            if (flattenedList.TryGetValue(path, out _)) 
+            if (flattenedList.TryGetValue(path, out _))
                 continue;
 
             if (!_manager.ArchiveManager.HaveFile(entry.Hash))
@@ -188,7 +187,7 @@ public class LoadoutMarker : IMarker<Loadout>
     public async Task Apply(ApplyPlan plan, CancellationToken token = default)
     {
         var loadout = _manager.Get(_id);
-        
+
         await _manager.Limiter.ForEach(plan.Steps.OfType<BackupFile>().GroupBy(b => b.Hash),
             i => i.First().Size,
             async (j, itm) =>
@@ -200,7 +199,7 @@ public class LoadoutMarker : IMarker<Loadout>
 
         await _manager.Limiter.ForEach(plan.Steps.OfType<DeleteFile>(), file => file.Size,
 #pragma warning disable CS1998
-            async (j, f) =>
+            async (_, f) =>
 #pragma warning restore CS1998
             {
                 f.To.Delete();
@@ -219,7 +218,7 @@ public class LoadoutMarker : IMarker<Loadout>
                     {
                         foreach (var entry in byPath[path])
                         {
-                            await using var strm = await sFn.GetStream();
+                            await using var strm = await sFn.GetStreamAsync();
                             entry.Step.To.Parent.CreateDirectory();
                             await using var of = entry.Step.To.Create();
                             var hash = await strm.HashingCopy(of, token, job);
@@ -228,7 +227,7 @@ public class LoadoutMarker : IMarker<Loadout>
                         }
                     }, token);
             });
-        
+
         var generated = plan.Steps.OfType<CopyFile>().Select(f => (Step: f, From: f.From as AGeneratedFile))
             .Where(f => f.From is not null);
 
@@ -239,7 +238,7 @@ public class LoadoutMarker : IMarker<Loadout>
         }
     }
 
-    
+
     public async IAsyncEnumerable<IApplyStep> MakeIngestionPlan(Func<HashedEntry, Mod> modMapper, [EnumeratorCancellation] CancellationToken token)
     {
         var list = _manager.Get(_id);
@@ -247,7 +246,7 @@ public class LoadoutMarker : IMarker<Loadout>
         var srcFilesTask = _manager.FileHashCache
             .IndexFolders(list.Installation.Locations.Values, token)
             .ToDictionary(x => x.Path);
-        
+
         var flattenedList = FlattenList().ToDictionary(d => d.File.To.CombineChecked(gameFolders[d.File.To.Type]));
         var srcFiles = await srcFilesTask;
 
@@ -296,7 +295,7 @@ public class LoadoutMarker : IMarker<Loadout>
         foreach (var (absolutePath, entry) in srcFiles)
         {
             if (flattenedList.ContainsKey(absolutePath)) continue;
-            
+
             if (!_manager.ArchiveManager.HaveFile(entry.Hash))
             {
                 yield return new BackupFile
@@ -306,7 +305,7 @@ public class LoadoutMarker : IMarker<Loadout>
                     To = absolutePath
                 };
             }
-            
+
             yield return new AddToLoadout
             {
                 To = absolutePath,
@@ -338,8 +337,8 @@ public class LoadoutMarker : IMarker<Loadout>
                 if (hash != itm.Key)
                     throw new Exception("Archived file did not match expected hash");
             }, token);
-        
-        
+
+
         Loadout Apply(Loadout Loadout)
         {
             foreach (var step in steps.Where(s => s is not BackupFile))
@@ -361,7 +360,7 @@ public class LoadoutMarker : IMarker<Loadout>
                             }, x => x.Id)
                         });
                         break;
-                        
+
                     case RemoveFromLoadout remove:
                         Loadout = Loadout.AlterFiles(x => x.To == gamePath ? null : x);
                         break;
@@ -412,7 +411,7 @@ public class LoadoutMarker : IMarker<Loadout>
     {
         if (!tool.Domains.Contains(Value.Installation.Game.Domain))
             throw new Exception("Tool does not support this game");
-        
+
         await Apply(token);
         await tool.Execute(Value);
         var modName = $"{tool.Name} Generated Files";

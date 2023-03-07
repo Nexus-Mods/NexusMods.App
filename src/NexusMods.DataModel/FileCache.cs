@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
@@ -64,7 +64,7 @@ public class FileCache
             _cache = cache;
             Path = path;
         }
-        
+
         public void DontCache()
         {
             _isValid = false;
@@ -73,7 +73,7 @@ public class FileCache
         public async ValueTask DisposeAsync()
         {
             _isDisposed = true;
-            if (_isValid) 
+            if (_isValid)
                 _hash = await _cache.Finish(this);
         }
     }

@@ -1,4 +1,4 @@
-﻿using NexusMods.Common;
+using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Games;
@@ -18,8 +18,8 @@ public class AppearancePreset : IModInstaller
     public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
         if (!installation.Is<Cyberpunk2077>()) return Common.Priority.None;
-        
-        if (files.All(f => Helpers.IgnoreExtensions.Contains(f.Key.Extension) || 
+
+        if (files.All(f => Helpers.IgnoreExtensions.Contains(f.Key.Extension) ||
                            (f.Value.FileTypes.Contains(FileType.Cyberpunk2077AppearancePreset) &&
                             f.Key.Extension == KnownExtensions.Preset)))
             return Common.Priority.Normal;
@@ -31,7 +31,7 @@ public class AppearancePreset : IModInstaller
         @"bin\x64\plugins\cyber_engine_tweaks\mods\AppearanceChangeUnlocker\character-preset\female".ToRelativePath(),
         @"bin\x64\plugins\cyber_engine_tweaks\mods\AppearanceChangeUnlocker\character-preset\male".ToRelativePath()
     };
-    
+
     public IEnumerable<AModFile> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
         foreach (var (path, file) in files.Where(f => f.Key.Extension == KnownExtensions.Preset))

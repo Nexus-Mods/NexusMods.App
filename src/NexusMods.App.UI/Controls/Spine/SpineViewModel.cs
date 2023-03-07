@@ -1,13 +1,16 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Avalonia.Controls.Mixins;
 using Avalonia.Media.Imaging;
 using DynamicData;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.App.UI.Controls.Spine.Buttons;
+using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
+using NexusMods.App.UI.Controls.Spine.Buttons.Image;
 using NexusMods.App.UI.ViewModels;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Loadouts;
 using ReactiveUI;
 
@@ -17,26 +20,29 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 {
     private readonly IDataStore _dataStore;
 
-    public HomeButtonViewModel Home { get; }
+    public IIconButtonViewModel Home { get; }
 
-    public AddButtonViewModel Add { get; }
+    public IIconButtonViewModel Add { get; }
 
-    private ReadOnlyObservableCollection<GameViewModel> _game;
-    public ReadOnlyObservableCollection<GameViewModel> Games => _game;
+    private ReadOnlyObservableCollection<IImageButtonViewModel> _games;
+    public ReadOnlyObservableCollection<IImageButtonViewModel> Games => _games;
 
     public Subject<SpineButtonAction> Activations { get; } = new();
 
     private readonly Subject<SpineButtonAction> _actions = new();
     private readonly ILogger<SpineViewModel> _logger;
+    private readonly IServiceProvider _provider;
     public IObservable<SpineButtonAction> Actions => _actions;
 
-    public SpineViewModel(ILogger<SpineViewModel> logger, IDataStore dataStore, AddButtonViewModel addButtonViewModel, HomeButtonViewModel homebuttonViewModel)
+    public SpineViewModel(ILogger<SpineViewModel> logger, IDataStore dataStore, IIconButtonViewModel addButtonViewModel, IIconButtonViewModel homeButtonViewModel, IServiceProvider provider)
     {
         _logger = logger;
         _dataStore = dataStore;
+        _provider = provider;
 
-        Home = homebuttonViewModel;
+        Home = homeButtonViewModel;
         Add = addButtonViewModel;
+
 
         this.WhenActivated(disposables =>
         {
@@ -46,34 +52,33 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 .Select(id => _dataStore.Get<LoadoutRegistry>(id, true))
                 .StartWith(_dataStore.Get<LoadoutRegistry>(_dataStore.GetRoot(RootType.Loadouts) ?? IdEmpty.Empty, true))
                 .Where(registry => registry != null)
-                .SelectMany(registry => registry.Lists.Select(lst => lst.Value.Installation.Game).Distinct())
+                .SelectMany(registry => registry!.Lists.Select(lst => lst.Value.Installation.Game).Distinct())
                 .ToObservableChangeSet(x => x.Domain)
-                .Transform( game =>
+                .Transform(game =>
                 {
-                    using var iconStream = game.Icon.GetStream().Result;
-                    return new GameViewModel
+                    using var iconStream = game.Icon.GetStreamAsync().Result;
+                    var vm = _provider.GetRequiredService<IImageButtonViewModel>();
+                    vm.Name = game.Name;
+                    vm.Image = Bitmap.DecodeToWidth(iconStream, 48);
+                    vm.IsActive = false;
+                    vm.Tag = game;
+                    vm.Click = ReactiveCommand.Create(() =>
                     {
-                        Name = game.Name,
-                        Image = Bitmap.DecodeToWidth(iconStream, 48),
-                        IsActive = false,
-                        Tag = game,
-                        Click = ReactiveCommand.Create(() =>
-                        {
-                            _logger.LogTrace("Game {Game} selected", game);
-                            _actions.OnNext(new SpineButtonAction(Type.Game, game));
-                        })
-                    };
+                        _logger.LogTrace("Game {Game} selected", game);
+                        _actions.OnNext(new SpineButtonAction(Type.Game, game));
+                    });
+                    return vm;
                 })
-                .Bind(out _game)
+                .Bind(out _games)
                 .Subscribe()
                 .DisposeWith(disposables);
-            
+
             Home.Click = ReactiveCommand.Create(() =>
             {
                 _logger.LogTrace("Home selected");
                 _actions.OnNext(new SpineButtonAction(Type.Home));
             });
-            
+
             Add.Click = ReactiveCommand.Create(() =>
             {
                 _logger.LogTrace("Add selected");

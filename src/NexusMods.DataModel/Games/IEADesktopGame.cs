@@ -1,4 +1,4 @@
-﻿namespace NexusMods.DataModel.Games;
+namespace NexusMods.DataModel.Games;
 
 public interface IEADesktopGame : IGame
 {

@@ -1,13 +1,7 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.Networking.HttpDownloader;
 using NexusMods.Paths;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace NexusMods.Networking.HttpDownloader.Tests;
 

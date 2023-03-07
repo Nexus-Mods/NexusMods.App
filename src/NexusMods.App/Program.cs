@@ -1,23 +1,39 @@
-﻿using System.CommandLine.Builder;
+using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
-using Avalonia;
+using System.Reactive;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using NexusMods.App;
 using NexusMods.App.UI;
 using NexusMods.CLI;
+using NexusMods.Common;
 using NLog.Extensions.Logging;
 using NLog.Targets;
-using static NexusMods.App.UI.Startup;
+using ReactiveUI;
 
+namespace NexusMods.App;
 
 public class Program
 {
+    private static ILogger<Program> _logger;
+
     [STAThread]
     public static async Task<int> Main(string[] args)
     {
+
         var host = BuildHost();
+
+        _logger = host.Services.GetRequiredService<ILogger<Program>>();
+        TaskScheduler.UnobservedTaskException += (sender, e) =>
+        {
+            _logger.LogError(e.Exception, "Unobserved task exception");
+            e.SetObserved();
+        };
+
+        RxApp.DefaultExceptionHandler = Observer.Create<Exception>(ex =>
+        {
+            _logger.LogError(ex, "Unhandled exception");
+        });
 
         if (args.Length > 0)
         {
@@ -39,7 +55,10 @@ public class Program
     {
         var host = Host.CreateDefaultBuilder(Environment.GetCommandLineArgs())
             .ConfigureLogging(AddLogging)
-            .ConfigureServices((_, services) => { services.AddApp(); }).Build();
+            .ConfigureServices((_, services) =>
+                services.AddApp()
+                    .Validate())
+            .Build();
         return host;
     }
 
@@ -69,11 +88,5 @@ public class Program
         loggingBuilder.ClearProviders();
         loggingBuilder.SetMinimumLevel(LogLevel.Information);
         loggingBuilder.AddNLog(config);
-    }
-
-    private static AppBuilder BuildAvaloniaApp()
-    {
-        var host = BuildHost();
-        return Startup.BuildAvaloniaApp(host.Services);
     }
 }

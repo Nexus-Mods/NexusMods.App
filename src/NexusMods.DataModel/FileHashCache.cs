@@ -1,7 +1,8 @@
-﻿using System.Buffers.Binary;
+using System.Buffers.Binary;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -27,7 +28,7 @@ public class FileHashCache
         var normalized = path.ToString();
         Span<byte> span = stackalloc byte[Encoding.UTF8.GetByteCount(normalized)];
         var used = Encoding.UTF8.GetBytes(normalized, span);
-        var found = _store.GetRaw(Id.FromSpan(EntityCategory.FileHashes, span));
+        var found = _store.GetRaw(IId.FromSpan(EntityCategory.FileHashes, span));
         if (found != null && found is not { Length: 0 })
         {
             entry = FileHashCacheEntry.FromSpan(found);
@@ -46,7 +47,7 @@ public class FileHashCache
         Span<byte> vSpan = stackalloc byte[24];
         entry.ToSpan(vSpan);
 
-        _store.PutRaw(Id.FromSpan(EntityCategory.FileHashes, kSpan), vSpan);
+        _store.PutRaw(IId.FromSpan(EntityCategory.FileHashes, kSpan), vSpan);
     }
 
     public IAsyncEnumerable<HashedEntry> IndexFolder(AbsolutePath path, CancellationToken? token)
@@ -56,7 +57,7 @@ public class FileHashCache
     public async IAsyncEnumerable<HashedEntry> IndexFolders(IEnumerable<AbsolutePath> paths, CancellationToken? token)
     {
         token ??= CancellationToken.None;
-        
+
         var result = _limiter.ForEachFile(paths, async (job, entry) =>
         {
             if (TryGetCached(entry.Path, out var found))
@@ -98,7 +99,7 @@ public class FileHashCache
 
 public record HashedEntry(AbsolutePath Path, Hash Hash, DateTime LastModified, Size Size) : FileEntry(Path, Size, LastModified)
 {
-    public HashedEntry(FileEntry fe, Hash hash) : this(fe.Path, hash, fe.LastModified, fe.Size){}
+    public HashedEntry(FileEntry fe, Hash hash) : this(fe.Path, hash, fe.LastModified, fe.Size) { }
 
 }
 

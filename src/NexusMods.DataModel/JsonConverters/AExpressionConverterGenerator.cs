@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -29,7 +29,7 @@ public abstract class AExpressionConverterGenerator<T> : JsonConverter<T>
         Provider = provider;
         Type = typeof(T);
     }
-    
+
     public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         return _readerFunction.Value(ref reader, typeToConvert, options);
@@ -39,7 +39,7 @@ public abstract class AExpressionConverterGenerator<T> : JsonConverter<T>
     {
         _writerFunction.Value(writer, value, options);
     }
-    
+
     protected static MemberRecord[] GetMembers()
     {
         var members = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance)
@@ -77,7 +77,7 @@ public abstract class AExpressionConverterGenerator<T> : JsonConverter<T>
             throw new JsonException($"Type {Type} does not have a JsonNameAttribute");
         return nameAttr;
     }
-    
+
     protected class MemberRecord
     {
         public required string Name { get; init; }

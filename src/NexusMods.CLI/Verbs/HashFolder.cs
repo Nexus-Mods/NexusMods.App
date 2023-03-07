@@ -1,4 +1,4 @@
-﻿using NexusMods.CLI.DataOutputs;
+using NexusMods.CLI.DataOutputs;
 using NexusMods.DataModel;
 using NexusMods.Paths;
 
@@ -15,7 +15,7 @@ public class HashFolder : AVerb<AbsolutePath>
         _cache = cache;
         _renderer = configurator.Renderer;
     }
-    
+
     public static VerbDefinition Definition => new("hash-folder",
         "Hashes the contents of a directory, caching the results",
         new OptionDefinition[]
@@ -35,10 +35,10 @@ public class HashFolder : AVerb<AbsolutePath>
         });
 
         var results = new Table(
-            Columns:new[] { "Path", "Hash", "Size", "LastModified" },
-            Rows:rows.OrderBy(r => (RelativePath)r.First())
+            Columns: new[] { "Path", "Hash", "Size", "LastModified" },
+            Rows: rows.OrderBy(r => (RelativePath)r.First())
         );
-        
+
         await _renderer.Render(results);
         return 0;
     }

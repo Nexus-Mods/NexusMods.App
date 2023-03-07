@@ -1,6 +1,4 @@
 using FluentAssertions;
-using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Hashing.xxHash64.Tests;
@@ -9,12 +7,12 @@ public class HashTests
 {
     private static string _knownString = "Something clever should go here";
     private static Hash _knownHash = Hash.FromHex("F4C92BE058F432D0");
-    
+
     [Fact]
     public void CanConvertHashBetweenFormats()
     {
         var hash = Hash.FromULong(0xDEADBEEFDECAFBAD);
-        
+
         ((ulong)hash).Should().Be(0xDEADBEEFDECAFBAD);
         hash.ToHex().Should().Be("DEADBEEFDECAFBAD");
 
@@ -39,7 +37,7 @@ public class HashTests
         hash1.Should().NotBe(hash2);
 
         hash1.Should().BeRankedEquallyTo(hash1);
-        
+
         Assert.True(hash1 != hash2);
         Assert.False(hash1 == hash2);
     }

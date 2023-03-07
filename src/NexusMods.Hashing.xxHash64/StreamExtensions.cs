@@ -17,7 +17,7 @@ public static class StreamExtensions
         return await stream.HashingCopy(Stream.Null, token, job);
     }
 
-    
+
     /// <summary>
     /// Perform a stream copy, calculating the hash in the process
     /// </summary>
@@ -85,7 +85,7 @@ public static class StreamExtensions
 
         return xxHash64.Hash.From(finalHash);
     }
-    
+
     /// <summary>
     /// Perform a stream copy, calculating the hash inline with the copy routines. For each chunk
     /// of data read, call `fn` with a buffer of the data currently being processed.
@@ -112,7 +112,7 @@ public static class StreamExtensions
             {
                 var read = await inputStream.ReadAsync(buffer.Slice(totalRead, buffer.Length - totalRead),
                     token);
-                
+
                 if (read == 0)
                 {
                     running = false;
@@ -143,7 +143,7 @@ public static class StreamExtensions
                 break;
             }
         }
-        
+
         return xxHash64.Hash.From(finalHash);
     }
 }

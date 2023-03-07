@@ -2,6 +2,7 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
+        <ApplicationIcon>nexus-logo.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup>

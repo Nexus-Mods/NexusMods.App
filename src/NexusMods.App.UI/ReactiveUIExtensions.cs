@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using System.Reactive.Linq;
 using ReactiveUI;
 
@@ -11,7 +11,7 @@ public static class ReactiveUIExtensions
     {
         return observable.ObserveOn(RxApp.MainThreadScheduler);
     }
-    
+
     public static IDisposable BindToUI<TValue, TTarget, TTValue>(
         this IObservable<TValue> @this,
         TTarget? target,

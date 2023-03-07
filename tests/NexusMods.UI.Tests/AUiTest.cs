@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics.CodeAnalysis;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI;
-using NexusMods.App.UI.ViewModels;
 
 namespace NexusMods.UI.Tests;
 
@@ -11,19 +11,20 @@ public class AUiTest
     public AUiTest(IServiceProvider provider)
     {
         _provider = provider;
-        
+
         // Do this to trigger the AvaloniaApp constructor/initialization
         provider.GetRequiredService<AvaloniaApp>();
     }
 
     protected VMWrapper<T> GetActivatedViewModel<T>()
-    where T : IViewModel
+    where T : IViewModelInterface
     {
         var vm = _provider.GetRequiredService<T>();
         return new VMWrapper<T>(vm);
     }
 
-    public class VMWrapper<T> : IDisposable where T : IViewModel
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    public class VMWrapper<T> : IDisposable where T : IViewModelInterface
     {
         private readonly IDisposable _disposable;
         public T VM { get; }
@@ -37,7 +38,7 @@ public class AUiTest
         {
             _disposable.Dispose();
         }
-        
+
         public void Deconstruct(out T vm)
         {
             vm = VM;

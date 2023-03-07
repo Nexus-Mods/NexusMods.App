@@ -1,4 +1,4 @@
-﻿using NexusMods.Paths;
+using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Games;
 
@@ -17,7 +17,7 @@ public class GameInstallation
     /// </summary>
     public IReadOnlyDictionary<GameFolderType, AbsolutePath> Locations { get; init; } =
         new Dictionary<GameFolderType, AbsolutePath>();
-    
+
     /// <summary>
     /// The game to which this installation belongs
     /// </summary>
@@ -49,6 +49,6 @@ public class GameInstallation
             .Select(l => new GamePath(l.Key, path.RelativeTo(l.Value)))
             .MinBy(x => x.Path.Depth);
     }
-    
+
     public bool Is<T>() where T : IGame => Game is T;
 }

@@ -21,23 +21,23 @@ public class EmbededResourceStreamFactory<T> : IStreamFactory
     {
         _path = path;
     }
-    
+
     /// <summary>
     /// Always returns DateTime.MinValue
     /// </summary>
     public DateTime LastModifiedUtc => DateTime.MinValue;
-    
+
     /// <summary>
     /// Returns the name of the resource as a relative path.
     /// </summary>
     public IPath Name => _path.ToRelativePath();
-    
+
     /// <summary>
     /// Returns the size of the resource.
     /// </summary>
     /// <exception cref="MissingManifestResourceException"></exception>
-    public Size Size 
-    
+    public Size Size
+
     {
         get
         {
@@ -47,15 +47,18 @@ public class EmbededResourceStreamFactory<T> : IStreamFactory
             return Size.From(info.Length);
         }
     }
-    
+
     /// <summary>
     /// Returns a stream to the resource.
     /// </summary>
     /// <returns></returns>
     /// <exception cref="MissingManifestResourceException"></exception>
-    public async ValueTask<Stream> GetStream()
+    public ValueTask<Stream> GetStreamAsync()
     {
-        return typeof(T).Assembly.GetManifestResourceStream(_path) ?? 
-               throw new MissingManifestResourceException($"Could not find {_path}");
+        var result = typeof(T).Assembly.GetManifestResourceStream(_path);
+        if (result == null)
+            throw new MissingManifestResourceException($"Could not find {_path}");
+
+        return ValueTask.FromResult(result);
     }
 }

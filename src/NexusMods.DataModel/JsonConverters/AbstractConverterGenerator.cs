@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
@@ -15,7 +15,7 @@ public class AbstractClassConverterFactory<T> : JsonConverterFactory
         _provider = provider;
         _type = typeof(T);
     }
-    
+
     public override bool CanConvert(Type typeToConvert)
     {
         return typeToConvert.IsAssignableTo(_type);
@@ -37,7 +37,7 @@ public class AbstractClassConverterGenerator<T> : JsonConverter<T>
 {
     private readonly IServiceProvider _provider;
     private readonly Type _type;
-    private readonly Dictionary<string,Type> _registry;
+    private readonly Dictionary<string, Type> _registry;
 
     public AbstractClassConverterGenerator(IServiceProvider provider)
     {
@@ -49,7 +49,7 @@ public class AbstractClassConverterGenerator<T> : JsonConverter<T>
         foreach (var type in GetSubClasses())
         {
             var nameAttr = type.CustomAttributes.Where(t => t.AttributeType == typeof(JsonNameAttribute))
-                .Select(t => (string) t.ConstructorArguments.First().Value!)
+                .Select(t => (string)t.ConstructorArguments.First().Value!)
                 .FirstOrDefault();
 
             if (nameAttr == default)
@@ -58,15 +58,15 @@ public class AbstractClassConverterGenerator<T> : JsonConverter<T>
 
             var aliases = type.CustomAttributes.Where(t => t.AttributeType == typeof(JsonAliasAttribute))
                 .Select(t => t.ConstructorArguments.First());
-            
-            
 
-            foreach (var alias in aliases) 
-                _registry[(string) alias.Value!] = type;
-            
-            
+
+
+            foreach (var alias in aliases)
+                _registry[(string)alias.Value!] = type;
+
+
         }
-        
+
 
     }
 

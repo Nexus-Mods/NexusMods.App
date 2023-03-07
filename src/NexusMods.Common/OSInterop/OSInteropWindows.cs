@@ -1,4 +1,4 @@
-﻿using CliWrap;
+using System.Diagnostics;
 
 namespace NexusMods.Common.OSInterop;
 
@@ -20,7 +20,9 @@ public class OSInteropWindows : IOSInterop
     /// <inheritdoc/>
     public async Task OpenURL(string url, CancellationToken cancellationToken = default)
     {
-        var command = Cli.Wrap("explorer.exe").WithArguments(url);
-        await _processFactory.ExecuteAsync(command, cancellationToken);
+        var process = new ProcessStartInfo(url) { UseShellExecute = true };
+        var started = Process.Start(process);
+        if (started != null)
+            await started.WaitForExitAsync(cancellationToken);
     }
 }

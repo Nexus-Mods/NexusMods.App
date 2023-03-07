@@ -1,4 +1,4 @@
-﻿namespace NexusMods.Benchmarks.Interfaces;
+namespace NexusMods.Benchmarks.Interfaces;
 
 /// <summary>
 /// Common base interface for benchmarks.

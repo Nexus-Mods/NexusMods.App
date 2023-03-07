@@ -1,10 +1,10 @@
-﻿namespace NexusMods.CLI;
+namespace NexusMods.CLI;
 
 /// <summary>
 /// Generic interface used by CLI verbs to output data and progress updates.
 /// </summary>
 public interface IRenderer
-{ 
+{
     /// <summary>
     /// Renders the results of an operation.
     /// </summary>
@@ -15,17 +15,17 @@ public interface IRenderer
     ///    One of the types defined in <see cref="DataOutputs"/>.
     /// </typeparam>
     Task Render<T>(T o);
-    
+
     /// <summary>
     /// Name of the renderer used to display the data.
     /// </summary>
     public string Name { get; }
-    
+
     /// <summary>
     /// Renders a logo/welcome screen banner to the user.
     /// </summary>
     void RenderBanner();
-    
+
     /// <summary>
     /// Renders the progress of an ongoing operation.
     /// </summary>

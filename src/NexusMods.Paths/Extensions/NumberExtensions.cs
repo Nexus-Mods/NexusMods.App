@@ -51,13 +51,13 @@ public static class NumberExtensions
             default:
                 return value.ToString("0 B"); // Byte
         }
-        
+
         // Divide by 1024 to get fractional value and return formatted number with suffix
         readable /= 1024;
         var formatted = readable.ToString("0.### ") + units;
         if (suffix.Length > 0)
             formatted += suffix;
-        
+
         return formatted;
     }
 }

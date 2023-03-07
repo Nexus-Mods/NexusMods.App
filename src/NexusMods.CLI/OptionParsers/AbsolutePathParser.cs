@@ -1,4 +1,4 @@
-﻿using NexusMods.Paths;
+using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 
 namespace NexusMods.CLI.OptionParsers;

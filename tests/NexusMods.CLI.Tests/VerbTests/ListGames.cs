@@ -4,12 +4,12 @@ using NexusMods.Paths;
 
 namespace NexusMods.CLI.Tests.VerbTests;
 
-public class ListGames : AVerbTest 
-{ 
+public class ListGames : AVerbTest
+{
     public ListGames(TemporaryFileManager temporaryFileManager, IServiceProvider provider) : base(temporaryFileManager, provider)
     {
     }
-    
+
     [Fact]
     public async Task CanListGames()
     {

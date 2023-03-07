@@ -1,4 +1,4 @@
-﻿using Vogen;
+using Vogen;
 
 namespace NexusMods.Networking.NexusWebApi.Types;
 
@@ -9,5 +9,5 @@ namespace NexusMods.Networking.NexusWebApi.Types;
 // ReSharper disable once InconsistentNaming
 public partial struct CDNName
 {
-    
+
 }

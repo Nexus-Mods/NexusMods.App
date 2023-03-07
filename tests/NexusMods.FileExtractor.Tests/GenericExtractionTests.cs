@@ -21,14 +21,14 @@ public class GenericExtractionTests
         _extractor = extractor;
         _temporaryFileManager = temporaryFileManager;
     }
-    
+
     [Theory]
     [MemberData(nameof(Archives))]
     public async Task CanForEachOverFiles(AbsolutePath path)
     {
         var results = await _extractor.ForEachEntry(new NativeFileStreamFactory(path), async (_, e) =>
         {
-            await using var fs = await e.GetStream();
+            await using var fs = await e.GetStreamAsync();
             return await fs.Hash(CancellationToken.None);
         }, CancellationToken.None);
 
@@ -43,7 +43,7 @@ public class GenericExtractionTests
                 (@"rootFile.txt".ToRelativePath(), (Hash)0x33DDBF7930BA002A),
             });
     }
-    
+
     [Theory]
     [MemberData(nameof(Archives))]
     public async Task CanExtractAll(AbsolutePath path)

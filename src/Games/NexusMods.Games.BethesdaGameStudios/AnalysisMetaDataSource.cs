@@ -1,4 +1,4 @@
-﻿using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
@@ -9,10 +9,10 @@ namespace NexusMods.Games.BethesdaGameStudios;
 
 public class AnalysisMetaDataSource : IFileMetadataSource
 {
-    public IEnumerable<Extension> Extensions => new []{ new Extension(".esp"), new Extension(".esm"), new Extension(".esl") };
+    public IEnumerable<Extension> Extensions => new[] { new Extension(".esp"), new Extension(".esm"), new Extension(".esl") };
     public IEnumerable<FileType> FileTypes => new[] { FileType.TES4 };
     public IEnumerable<GameDomain> Games => new[] { SkyrimSpecialEdition.StaticDomain };
-    public async IAsyncEnumerable<IModFileMetadata> GetMetadata(Loadout filLoadout, Mod mod, AModFile file,
+    public async IAsyncEnumerable<IModFileMetadata> GetMetadata(Loadout loadout, Mod mod, AModFile file,
         AnalyzedFile analyzedFile)
     {
         yield return new AnalysisSortData()

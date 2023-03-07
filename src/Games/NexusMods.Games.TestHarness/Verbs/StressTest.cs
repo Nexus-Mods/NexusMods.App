@@ -2,7 +2,6 @@ using Microsoft.Extensions.Logging;
 using NexusMods.CLI;
 using NexusMods.CLI.DataOutputs;
 using NexusMods.DataModel;
-using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.FileExtractor.FileSignatures;
@@ -24,8 +23,8 @@ public class StressTest : AVerb<IGame, AbsolutePath, AbsolutePath>
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly IHttpDownloader _downloader;
 
-    public StressTest(ILogger<StressTest> logger, Configurator configurator, IServiceProvider provider, 
-        LoadoutManager loadoutManager, FileContentsCache fileContentsCache, Client client, 
+    public StressTest(ILogger<StressTest> logger, Configurator configurator, IServiceProvider provider,
+        LoadoutManager loadoutManager, FileContentsCache fileContentsCache, Client client,
         TemporaryFileManager temporaryFileManager, IHttpDownloader downloader)
     {
         _downloader = downloader;
@@ -37,9 +36,9 @@ public class StressTest : AVerb<IGame, AbsolutePath, AbsolutePath>
         _client = client;
         _temporaryFileManager = temporaryFileManager;
     }
-    
-    public static VerbDefinition Definition => 
-        new VerbDefinition("stress-test", "Stress test the application by installing all recent mods for a given game", 
+
+    public static VerbDefinition Definition =>
+        new VerbDefinition("stress-test", "Stress test the application by installing all recent mods for a given game",
             new OptionDefinition[]
             {
                 new OptionDefinition<IGame>("g", "game", "The game to install mods for"),
@@ -90,7 +89,7 @@ public class StressTest : AVerb<IGame, AbsolutePath, AbsolutePath>
 
                     var cts = new CancellationTokenSource();
                     cts.CancelAfter(TimeSpan.FromMinutes(20));
-                    
+
                     hash = await _downloader.Download(urls.Data.Select(d => d.Uri), tmpPath, token: cts.Token);
 
                     _logger.LogInformation("Installing {ModId} {FileId} {FileName} - {Size}", mod.ModId, file.FileId,
@@ -98,7 +97,7 @@ public class StressTest : AVerb<IGame, AbsolutePath, AbsolutePath>
 
                     var list = await _loadoutManager.ImportFrom(loadout, token);
                     await list.Install(tmpPath, "Stress Test Mod", token);
-                    
+
                     results.Add((file.FileName, mod.ModId, file.FileId, hash, true, null));
                     _logger.LogInformation("Installed {ModId} {FileId} {FileName} - {Size}", mod.ModId, file.FileId,
                         file.FileName, file.SizeInBytes);
@@ -138,7 +137,7 @@ public class StressTest : AVerb<IGame, AbsolutePath, AbsolutePath>
 
         if (output != default)
             await output.WriteAllLinesAsync(lines, token);
-        
+
         return results.Count(f => !f.Passed);
     }
 }

@@ -1,4 +1,4 @@
-﻿using NexusMods.DataModel.JsonConverters;
+using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Paths;
 
