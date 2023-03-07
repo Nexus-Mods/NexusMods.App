@@ -228,16 +228,17 @@ public class LoadoutMarker : IMarker<Loadout>
                     }, token);
             });
 
-        var generated = plan.Steps.OfType<CopyFile>().Select(f => (Step: f, From: f.From as AGeneratedFile))
+        var generated = plan.Steps
+            .OfType<CopyFile>()
+            .Select(f => (Step: f, From: f.From as AGeneratedFile))
             .Where(f => f.From is not null);
 
         foreach (var (step, from) in generated)
         {
             await using var stream = step.To.Create();
-            await from.GenerateAsync(stream, loadout, plan.Files, token);
+            await from!.GenerateAsync(stream, loadout, plan.Files, token);
         }
     }
-
 
     public async IAsyncEnumerable<IApplyStep> MakeIngestionPlan(Func<HashedEntry, Mod> modMapper, [EnumeratorCancellation] CancellationToken token)
     {
@@ -390,7 +391,7 @@ public class LoadoutMarker : IMarker<Loadout>
         _manager.Alter(_id, Apply);
     }
 
-    public void Alter(ModId mod, Func<Mod?, Mod?> fn)
+    public void Alter(ModId mod, Func<Mod, Mod?> fn)
     {
         _manager.Alter(_id, l => l.Alter(mod, fn));
     }

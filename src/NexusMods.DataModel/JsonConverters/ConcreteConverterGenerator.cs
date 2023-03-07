@@ -80,7 +80,7 @@ public class ConcreteConverterGenerator<T> : AExpressionConverterGenerator<T>
                 Expression.Constant("$type")));
 
         loopExprs.Add(Expression.Switch(Expression.Call(readerParam, "GetString", null),
-            Expression.Throw(Expression.New(typeof(NotImplementedException).GetConstructor(new[] { typeof(string) }),
+            Expression.Throw(Expression.New(typeof(NotImplementedException).GetConstructor(new[] { typeof(string) })!,
                 Expression.Add(
                     Expression.Constant($"Unknown property on {Type.Name}: "),
                     Expression.Call(readerParam, "GetString", null),

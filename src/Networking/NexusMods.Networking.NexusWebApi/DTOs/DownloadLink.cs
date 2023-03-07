@@ -22,7 +22,7 @@ public class DownloadLink : IJsonArraySerializable<DownloadLink>
     /// For deserialization only. Please use <see cref="ShortName"/>.
     /// </summary>
     [JsonPropertyName("short_name")]
-    public string _ShortName { get; set; }
+    public string _ShortName { get; set; } = null!;
 
     /// <summary>
     /// Name of the CDN server that handles your download request.

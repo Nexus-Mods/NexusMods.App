@@ -1,10 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
     <!-- NuGet Package Shared Details -->
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
-    
-    <ItemGroup>
-      <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
-    </ItemGroup>
 
+    <!-- nullable warnings as errors -->
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('NullableErrors.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+    </ItemGroup>
 </Project>

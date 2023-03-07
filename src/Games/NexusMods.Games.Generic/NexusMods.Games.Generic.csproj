@@ -1,14 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
     <!-- NuGet Package Shared Details -->
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
-    
+
+    <!-- nullable warnings as errors -->
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('NullableErrors.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
     <ItemGroup>
-      <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+        <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="ini-parser-netstandard" Version="2.5.2" />
+        <PackageReference Include="ini-parser-netstandard" Version="2.5.2" />
     </ItemGroup>
-
 </Project>

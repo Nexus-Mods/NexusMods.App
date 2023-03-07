@@ -145,7 +145,7 @@ public struct EntityDictionary<TK, TV> :
     /// Transforms a value found at at given id with a given function.
     /// If the function returns null, the value is removed from the dictionary.
     /// </summary>
-    public EntityDictionary<TK, TV> Keep(TK key, Func<TV?, TV?> func)
+    public EntityDictionary<TK, TV> Keep(TK key, Func<TV, TV?> func)
     {
         var id = _coll[key];
         var val = _store.Get<TV>(id);
@@ -163,7 +163,7 @@ public struct EntityDictionary<TK, TV> :
     ///     Returning a null value discards the item.
     ///     Returning the original value or a new one will keep it.
     /// </param>
-    public EntityDictionary<TK, TV> Keep(Func<TV?, TV?> func)
+    public EntityDictionary<TK, TV> Keep(Func<TV, TV?> func)
     {
         var modified = false;
         var builder = ImmutableDictionary.CreateBuilder<TK, IId>();

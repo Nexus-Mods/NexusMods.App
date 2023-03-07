@@ -31,7 +31,7 @@ public record Loadout : Entity, IEmptyWithDataStore<Loadout>
         Store = store
     };
 
-    public Loadout Alter(ModId modId, Func<Mod?, Mod?> func)
+    public Loadout Alter(ModId modId, Func<Mod, Mod?> func)
     {
         return this with
         {
@@ -46,7 +46,6 @@ public record Loadout : Entity, IEmptyWithDataStore<Loadout>
             Mods = Mods.With(mod.Id, mod)
         };
     }
-
 
     public Loadout AlterFiles(Func<AModFile, AModFile?> func)
     {

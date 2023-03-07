@@ -28,12 +28,11 @@ where T : AGame
         var program = _game.PrimaryFile.CombineChecked(loadout.Installation.Locations[GameFolderType.Game]);
         _logger.LogInformation("Running {Program}", program);
 
-        var psi = new ProcessStartInfo(program.ToString())
-        {
-
-        };
+        // TODO: use IProcessFactory
+        var psi = new ProcessStartInfo(program.ToString());
         var process = Process.Start(psi);
-        await process.WaitForExitAsync();
+        await process!.WaitForExitAsync();
+
         _logger.LogInformation("Finished running {Program}", program);
     }
 
