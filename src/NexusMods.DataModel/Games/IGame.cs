@@ -1,4 +1,4 @@
-using NexusMods.Common;
+﻿using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
 
@@ -37,4 +37,9 @@ public interface IGame
     /// Stream factory for the game's icon, must be square but need not be small.
     /// </summary>
     public IStreamFactory Icon { get; }
+
+    /// <summary>
+    /// Stream factory for the game's image, should be close to 16:9 aspect ratio.
+    /// </summary>
+    public IStreamFactory GameImage { get; }
 }

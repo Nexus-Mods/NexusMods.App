@@ -1,3 +1,4 @@
+﻿using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using NexusMods.DataModel.Abstractions.Ids;
 
@@ -24,14 +25,12 @@ public class Root<TRoot> where TRoot : Entity, IEmptyWithDataStore<TRoot>
     /// </summary>
     // ReSharper disable once PossibleUnintendedReferenceComparison
     public TRoot Value => _root.Id == IdEmpty.Empty ? TRoot.Empty(Store) : _root.Value;
-    // ^ This reference comparison is fine because we assign IdEmpty.Empty explicitly.
-
+// ^ This reference comparison is fine because we assign IdEmpty.Empty explicitly.
     /// <summary>
     /// Datastore used by this root when creating new entities.
     /// </summary>
     public IDataStore Store { get; private set; }
-
-    /// <summary>
+/// <summary>
     /// The item type this root currently represents.
     /// </summary>
     public RootType Type { get; private set; }
@@ -43,9 +42,12 @@ public class Root<TRoot> where TRoot : Entity, IEmptyWithDataStore<TRoot>
     /// multi-threaded code inside of the `Alter` function instead of having multiple threads
     /// call `Alter` at once.
     /// </summary>
-    public IObservable<(TRoot Old, TRoot New)> Changes => _changes;
-
-    /// <summary>
+    public IObservable<TRoot> Changes => Store.RootChanges
+        .Where(ch => ch.Type == Type)
+        .Select(ch => Store.Get<TRoot>(ch.To))
+        .Where(v => v != null)
+        .Select(v => v!);
+/// <summary>
     /// Creates a new root with a certain backing data store.
     /// </summary>
     /// <param name="type">Type of element stored by this root.</param>

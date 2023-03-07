@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Games;
 using NexusMods.FileExtractor.StreamFactories;
@@ -34,4 +34,7 @@ public class Cyberpunk2077 : AGame, ISteamGame, IGogGame, IEpicGame
 
     public override IStreamFactory Icon =>
         new EmbededResourceStreamFactory<Cyberpunk2077>("NexusMods.Games.RedEngine.Resources.Cyberpunk2077.icon.png");
+
+    public override IStreamFactory GameImage =>
+        new EmbededResourceStreamFactory<Cyberpunk2077>("NexusMods.Games.RedEngine.Resources.Cyberpunk2077.game_image.jpg");
 }

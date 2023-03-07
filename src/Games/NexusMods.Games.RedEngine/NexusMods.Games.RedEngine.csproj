@@ -1,20 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
     <!-- NuGet Package Shared Details -->
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
-    <!-- nullable warnings as errors -->
-    <Import Project="$([MSBuild]::GetPathOfFileAbove('NullableErrors.Build.props', '$(MSBuildThisFileDirectory)../'))" />
-
     <ItemGroup>
-        <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+      <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="CliWrap" Version="3.6.0" />
+      <PackageReference Include="CliWrap" Version="3.6.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <None Remove="Resources\Cyberpunk2077\icon.png" />
-        <EmbeddedResource Include="Resources\Cyberpunk2077\icon.png" />
+      <None Remove="Resources\Cyberpunk2077\icon.png" />
+      <EmbeddedResource Include="Resources\Cyberpunk2077\icon.png" />
+      <None Remove="Resources\Cyberpunk2077\game_image.jpg" />
+      <EmbeddedResource Include="Resources\Cyberpunk2077\game_image.jpg" />
     </ItemGroup>
+
 </Project>

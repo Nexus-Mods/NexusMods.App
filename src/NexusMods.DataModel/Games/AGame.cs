@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
@@ -47,6 +47,8 @@ public abstract class AGame : IGame
     }
 
     public virtual IStreamFactory Icon => throw new NotImplementedException("No icon provided for this game.");
+
+    public virtual IStreamFactory GameImage => throw new NotImplementedException("No game image provided for this game.");
 
     private Version GetVersion(IGameLocator locator, GameLocatorResult installation)
     {

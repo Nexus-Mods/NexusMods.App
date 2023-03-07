@@ -3,5 +3,6 @@
     <!--<StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml" />-->
     <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Palatte/Nexus.xaml" />
+    <StyleInclude Source="avares://NexusMods.App.UI/Controls/GameWidget/GameWidgetStyles.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/Index.xaml" />
 </Styles>

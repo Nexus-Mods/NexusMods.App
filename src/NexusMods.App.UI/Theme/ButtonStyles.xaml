@@ -17,6 +17,34 @@
 
     <!--  End invisible button  -->
 
+    <!--  Rounded Button  -->
+    <Style Selector="Button.Rounded">
+        <Setter Property="CornerRadius" Value="45" />
+        <Setter Property="Height" Value="40" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="#19FFFFFF" />
+        <Setter Property="Padding" Value="0" />
+    </Style>
+
+    <Style Selector="Button.Rounded icons|Icon">
+        <Setter Property="Width" Value="20" />
+        <Setter Property="Height" Value="20" />
+        <Setter Property="Margin" Value="10, 0, 0, 0" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+    </Style>
+
+    <Style Selector="Button.Rounded TextBlock">
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+    </Style>
+
+    <Style Selector="Button.Rounded:pressed">
+        <Setter Property="RenderTransform" Value="scale(0.9)" />
+    </Style>
+
+    <!--  End Rounded Button  -->
+
 
     <Style Selector="Button">
         <Setter Property="BorderThickness" Value="0" />

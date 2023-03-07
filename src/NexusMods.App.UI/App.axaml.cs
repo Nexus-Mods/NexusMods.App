@@ -4,7 +4,7 @@ using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.ViewModels;
-using NexusMods.App.UI.Views;
+using NexusMods.App.UI.Windows;
 using ReactiveUI;
 using Splat;
 using Splat.Microsoft.Extensions.Logging;

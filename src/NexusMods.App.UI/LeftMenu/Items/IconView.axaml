@@ -1,0 +1,39 @@
+﻿<reactiveUi:ReactiveUserControl
+    d:DesignHeight="40"
+    d:DesignWidth="184"
+    mc:Ignorable="d"
+    x:Class="NexusMods.App.UI.LeftMenu.Items.IconView"
+    x:TypeArguments="items:IIconViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:items="clr-namespace:NexusMods.App.UI.LeftMenu.Items"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.DataContext>
+        <items:IconViewModel Icon="News" Name="Some Text" />
+    </Design.DataContext>
+    <Button Classes="Invisible" x:Name="ItemButton">
+        <Grid
+            ColumnDefinitions="38, *"
+            Height="40"
+            Width="184">
+            <avalonia:Icon
+                FontSize="15"
+                Foreground="#FFFFFF"
+                Grid.Column="0"
+                Height="16"
+                Width="15"
+                x:Name="LeftIcon" />
+            <TextBlock
+                Classes="Subheading"
+                Grid.Column="1"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                x:Name="NameText" />
+        </Grid>
+    </Button>
+
+</reactiveUi:ReactiveUserControl>
+

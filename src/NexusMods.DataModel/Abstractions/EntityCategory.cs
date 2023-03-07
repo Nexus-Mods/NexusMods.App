@@ -1,3 +1,5 @@
+﻿using NexusMods.DataModel.Attributes;
+
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -18,6 +20,7 @@ public enum EntityCategory
     /// <summary>
     /// Loadouts, essentially 'profiles' for individual games.
     /// </summary>
+    [Immutable]
     Loadouts,
 
     /// <summary>
