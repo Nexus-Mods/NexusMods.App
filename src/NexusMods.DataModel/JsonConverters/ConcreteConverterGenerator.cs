@@ -1,21 +1,21 @@
 using System.Linq.Expressions;
 using System.Text.Json;
+#pragma warning disable CS1591
 
 namespace NexusMods.DataModel.JsonConverters;
 
 /// <summary>
-/// Several classes in the app don't map directly to JSON classes. Inheritence isn't supported super well, and in some
+/// Several classes in the app don't map directly to JSON classes. Inheritance isn't supported super well, and in some
 /// cases we need to support generic types (sometimes with inheritence). Pre-generating this code is certainly possible
 /// but even that sometimes results in a lot of complexity due to generic types and trying to print that data in a way
 /// that the compiler will accept. This class provides a more flexible yet efficent way to map types to and from JSON data
 /// </summary>
 public class ConcreteConverterGenerator<T> : AExpressionConverterGenerator<T>
 {
-    public ConcreteConverterGenerator(IServiceProvider provider) : base(provider)
+    public ConcreteConverterGenerator(IServiceProvider provider) : base()
     {
-
-        _readerFunction = new Lazy<ReadDelegate>(() => GenerateReaderFunction(provider));
-        _writerFunction = new Lazy<WriteDelegate>(GenerateWriter);
+        ReaderFunction = new Lazy<ReadDelegate>(() => GenerateReaderFunction(provider));
+        WriterFunction = new Lazy<WriteDelegate>(GenerateWriter);
     }
 
     private ReadDelegate GenerateReaderFunction(IServiceProvider provider)
@@ -34,11 +34,8 @@ public class ConcreteConverterGenerator<T> : AExpressionConverterGenerator<T>
                 Expression.Constant("Expected StartObject")))));
 
         var readNext = Expression.Call(readerParam, "Read", null);
-
         var vars = members.ToDictionary(m => m.RealName, m => Expression.Variable(m.Type, m.PropName));
-
-        var propName = Expression.Variable(typeof(string), "propName");
-
+        Expression.Variable(typeof(string), "propName");
         var loopExit = Expression.Label("loopExit");
 
         var loopExprs = new List<Expression>();
@@ -63,15 +60,13 @@ public class ConcreteConverterGenerator<T> : AExpressionConverterGenerator<T>
                         Expression.Break(endOfSwitch)),
                     Expression.Constant(m.RealName));
             }
-            else
-            {
-                return Expression.SwitchCase(Expression.Block(
+
+            return Expression.SwitchCase(Expression.Block(
                     readNext,
                     Expression.Assign(vars[m.RealName],
                         Expression.Call(typeof(JsonSerializer), "Deserialize", new[] { m.Type }, readerParam, optionsParam)),
                     Expression.Break(endOfSwitch)),
-                    Expression.Constant(m.RealName));
-            }
+                Expression.Constant(m.RealName));
         })
             .Where(c => c != null)
             .Select(c => c!)
@@ -93,7 +88,7 @@ public class ConcreteConverterGenerator<T> : AExpressionConverterGenerator<T>
             members.Select(m =>
             {
                 if (m.IsInjected)
-                    return (MemberBinding)Expression.Bind(m.Property, Expression.Constant(provider.GetService(m.Type)));
+                    return Expression.Bind(m.Property, Expression.Constant(provider.GetService(m.Type)));
                 return (MemberBinding)Expression.Bind(m.Property, vars[m.RealName]);
             })));
 
@@ -141,9 +136,6 @@ public class ConcreteConverterGenerator<T> : AExpressionConverterGenerator<T>
         }
 
         exprs.Add(Expression.Call(writerParam, "WriteEndObject", Array.Empty<Type>()));
-
-
-
         var block = Expression.Block(exprs);
 
         return Expression.Lambda<WriteDelegate>(block, writerParam, valueParam, optionsParam).Compile();
