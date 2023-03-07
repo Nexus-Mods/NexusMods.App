@@ -1,11 +1,10 @@
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Paths;
 
-namespace NexusMods.Games.Abstractions;
+namespace NexusMods.DataModel.Games;
 
 public abstract class AGame : IGame
 {

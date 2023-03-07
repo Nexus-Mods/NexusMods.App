@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.Games.Abstractions;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Games;

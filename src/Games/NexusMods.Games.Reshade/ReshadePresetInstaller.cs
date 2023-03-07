@@ -6,7 +6,6 @@ using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.FileSignatures;
-using NexusMods.Games.Abstractions;
 using NexusMods.Games.Generic.Entities;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
