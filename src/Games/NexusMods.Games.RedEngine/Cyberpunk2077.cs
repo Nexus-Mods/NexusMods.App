@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Games;
 using NexusMods.FileExtractor.StreamFactories;
@@ -11,7 +10,7 @@ public class Cyberpunk2077 : AGame, ISteamGame, IGogGame, IEpicGame
 {
     public static readonly GameDomain StaticDomain = GameDomain.From("cyberpunk2077");
 
-    public Cyberpunk2077(ILogger<Cyberpunk2077> logger, IEnumerable<IGameLocator> gameLocators) : base(logger, gameLocators)
+    public Cyberpunk2077(IEnumerable<IGameLocator> gameLocators) : base(gameLocators)
     {
     }
 

@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
@@ -10,13 +9,12 @@ public abstract class AGame : IGame
 {
     private IReadOnlyCollection<GameInstallation>? _installations;
     private readonly IEnumerable<IGameLocator> _gamelocators;
-    protected readonly ILogger _logger;
 
-    public AGame(ILogger logger, IEnumerable<IGameLocator> gameLocators)
+    public AGame(IEnumerable<IGameLocator> gameLocators)
     {
-        _logger = logger;
         _gamelocators = gameLocators;
     }
+
     public abstract string Name { get; }
     public abstract GameDomain Domain { get; }
     public abstract GamePath PrimaryFile { get; }

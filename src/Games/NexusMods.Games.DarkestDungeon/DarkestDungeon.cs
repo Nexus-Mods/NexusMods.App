@@ -1,5 +1,4 @@
 using System.Runtime.InteropServices;
-using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
 using NexusMods.Paths;
 
@@ -10,7 +9,7 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame
     public IEnumerable<int> SteamIds => new[] { 262060 };
     public IEnumerable<long> GogIds => new long[] { 1450711444 };
 
-    public DarkestDungeon(ILogger<DarkestDungeon> logger, IEnumerable<IGameLocator> gameLocators) : base(logger, gameLocators)
+    public DarkestDungeon(IEnumerable<IGameLocator> gameLocators) : base(gameLocators)
     {
     }
 

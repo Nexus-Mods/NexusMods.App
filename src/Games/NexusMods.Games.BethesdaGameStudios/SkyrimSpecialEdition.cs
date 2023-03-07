@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
@@ -22,7 +21,7 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame
     public override GamePath PrimaryFile => new(GameFolderType.Game, "SkyrimSE.exe");
 
 
-    public SkyrimSpecialEdition(ILogger<SkyrimSpecialEdition> logger, IEnumerable<IGameLocator> gameLocators) : base(logger, gameLocators)
+    public SkyrimSpecialEdition(IEnumerable<IGameLocator> gameLocators) : base(gameLocators)
     {
     }
 
@@ -54,7 +53,7 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame
     public IEnumerable<long> GogIds => new long[]
     {
         1711230643, // The Elder Scrolls V: Skyrim Special Edition AKA Base Game
-        1801825368, // The Elder Scrolls V: Skyrim Anniversary Edition AKA The Store Bundle 
+        1801825368, // The Elder Scrolls V: Skyrim Anniversary Edition AKA The Store Bundle
         1162721350 // Upgrade DLC
     };
 }
