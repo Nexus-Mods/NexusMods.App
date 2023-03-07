@@ -1,18 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    
+
     <!-- NuGet Package Shared Details -->
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
-    
+
+    <!-- nullable warnings as errors -->
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('NullableErrors.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
     <ItemGroup>
-      <ProjectReference Include="..\..\NexusMods.Common\NexusMods.Common.csproj" />
-      <ProjectReference Include="..\..\NexusMods.DataModel.RateLimiting\NexusMods.DataModel.RateLimiting.csproj" />
-      <ProjectReference Include="..\..\NexusMods.Hashing.xxHash64\NexusMods.Hashing.xxHash64.csproj" />
-      <ProjectReference Include="..\..\NexusMods.Paths\NexusMods.Paths.csproj" />
+        <ProjectReference Include="..\..\NexusMods.Common\NexusMods.Common.csproj" />
+        <ProjectReference Include="..\..\NexusMods.DataModel.RateLimiting\NexusMods.DataModel.RateLimiting.csproj" />
+        <ProjectReference Include="..\..\NexusMods.Hashing.xxHash64\NexusMods.Hashing.xxHash64.csproj" />
+        <ProjectReference Include="..\..\NexusMods.Paths\NexusMods.Paths.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="CliWrap" Version="3.6.0" />
-      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0-preview.1.23110.8" />
+        <PackageReference Include="CliWrap" Version="3.6.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0-preview.1.23110.8" />
     </ItemGroup>
 
     <ItemGroup>
@@ -32,24 +35,24 @@
           <Pack>true</Pack>
           <PackagePath>runtimes/linux-x64</PackagePath>
       </None>
-        
+
       <None Update="FileSignatures\Signatures.tt">
-        <Generator>TextTemplatingFileGenerator</Generator>
-        <LastGenOutput>Signatures.cs</LastGenOutput>
+          <Generator>TextTemplatingFileGenerator</Generator>
+          <LastGenOutput>Signatures.cs</LastGenOutput>
       </None>
-        
+
       <None Update="build\NexusMods.FileExtractor.targets">
-        <Pack>true</Pack>
-        <PackagePath>build</PackagePath>
+          <Pack>true</Pack>
+          <PackagePath>build</PackagePath>
       </None>
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="FileSignatures\Signatures.cs">
-        <AutoGen>True</AutoGen>
-        <DesignTime>True</DesignTime>
-        <DependentUpon>Signatures.tt</DependentUpon>
-      </Compile>
+        <Compile Update="FileSignatures\Signatures.cs">
+            <AutoGen>True</AutoGen>
+            <DesignTime>True</DesignTime>
+            <DependentUpon>Signatures.tt</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <!-- Non-NuGet Only -->

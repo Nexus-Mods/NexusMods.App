@@ -1,14 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
     <!-- NuGet Package Shared Details -->
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
     <ItemGroup>
-      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.27.0" />
-    </ItemGroup>
-    
-    <ItemGroup>
-      <ProjectReference Include="..\..\NexusMods.CLI\NexusMods.CLI.csproj" />
-      <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.27.0" />
     </ItemGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\..\NexusMods.CLI\NexusMods.CLI.csproj" />
+        <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+    </ItemGroup>
 </Project>

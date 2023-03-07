@@ -38,8 +38,12 @@ public class ReshadePresetInstaller : IModInstaller
             return Common.Priority.None;
 
         // Get all the ini data
-        var iniData = filtered.Select(f => f.Value.AnalysisData.OfType<IniAnalysisData>()
-            .FirstOrDefault()).Where(d => d != null)
+        var iniData = filtered
+            .Select(f => f.Value.AnalysisData
+                .OfType<IniAnalysisData>()
+                .FirstOrDefault())
+            .Where(d => d is not null)
+            .Select(d => d!)
             .ToList();
 
         // All the files must have ini data

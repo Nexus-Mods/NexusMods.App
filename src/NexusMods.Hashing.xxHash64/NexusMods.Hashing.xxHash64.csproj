@@ -1,15 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    
     <!-- NuGet Package Shared Details -->
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
+    <!-- nullable warnings as errors -->
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('NullableErrors.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
     <ItemGroup>
-      <ProjectReference Include="..\NexusMods.DataModel.RateLimiting\NexusMods.DataModel.RateLimiting.csproj" />
-      <ProjectReference Include="..\NexusMods.Paths\NexusMods.Paths.csproj" />
+        <ProjectReference Include="..\NexusMods.DataModel.RateLimiting\NexusMods.DataModel.RateLimiting.csproj" />
+        <ProjectReference Include="..\NexusMods.Paths\NexusMods.Paths.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Vogen" Version="3.0.12" />
+        <PackageReference Include="Vogen" Version="3.0.12" />
     </ItemGroup>
-
 </Project>

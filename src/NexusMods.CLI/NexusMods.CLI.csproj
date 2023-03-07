@@ -1,16 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    
+    <!-- nullable warnings as errors -->
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('NullableErrors.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
     <ItemGroup>
-      <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
-      <PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
+        <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+        <PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ArchiveManagement\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj" />
-      <ProjectReference Include="..\Games\NexusMods.Games.BethesdaGameStudios\NexusMods.Games.BethesdaGameStudios.csproj" />
-      <ProjectReference Include="..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
-      <ProjectReference Include="..\NexusMods.Paths\NexusMods.Paths.csproj" />
-      <ProjectReference Include="..\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj" />
+        <ProjectReference Include="..\ArchiveManagement\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj" />
+        <ProjectReference Include="..\Games\NexusMods.Games.BethesdaGameStudios\NexusMods.Games.BethesdaGameStudios.csproj" />
+        <ProjectReference Include="..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+        <ProjectReference Include="..\NexusMods.Paths\NexusMods.Paths.csproj" />
+        <ProjectReference Include="..\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj" />
     </ItemGroup>
-
 </Project>
