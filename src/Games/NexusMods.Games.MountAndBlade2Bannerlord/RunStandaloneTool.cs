@@ -40,6 +40,12 @@ public class RunStandaloneTool : ITool
             Arguments = launcherManager.ExecutableParameters
         };
         var process = Process.Start(psi);
+        if (process is null)
+        {
+            _logger.LogError("Failed to run {Program}", program);
+            return;
+        }
+
         await process.WaitForExitAsync();
         _logger.LogInformation("Finished running {Program}", program);
     }
