@@ -14,10 +14,14 @@ public interface IGame
     /// Human friendly name for the game
     /// </summary>
     public string Name { get; }
+
     /// <summary>
     /// Machine friendly name for the game, should be devoid of special characters
     /// that may conflict with URLs or file paths.
     /// </summary>
+    /// <remarks>
+    ///    Usually we match these with NexusMods' URLs.
+    /// </remarks>
     public GameDomain Domain { get; }
 
     /// <summary>
