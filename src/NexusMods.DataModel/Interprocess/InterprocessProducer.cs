@@ -6,22 +6,22 @@ namespace NexusMods.DataModel.Interprocess;
 /// <summary>
 /// Implementation of <see cref="IMessageProducer{T}"/> that uses an interprocess queue.
 /// </summary>
-/// <typeparam name="T"></typeparam>
-public class InterprocessProducer<T> : IMessageProducer<T>, IDisposable where T : IMessage
+public sealed class InterprocessProducer<T> : IMessageProducer<T>, IDisposable where T : IMessage
 {
     private readonly ILogger<InterprocessProducer<T>> _logger;
-    private readonly IQueueFactory _queueFactory;
     private readonly IPublisher _queue;
     private readonly string _queueName;
 
     /// <summary>
-    /// DI Constructor
+    /// Creates a producer capable of sending messages across process boundaries.
     /// </summary>
-    /// <param name="logger">Logger</param>
-    /// <param name="queueFactory">Queue Factory</param>
+    /// <param name="logger">Logs received interprocess messages.</param>
+    /// <param name="queueFactory">Factory used to create queues for receiving inter-process messages.</param>
+    /// <remarks>
+    ///    This method is usually called from DI container, not by user directly.
+    /// </remarks>
     public InterprocessProducer(ILogger<InterprocessProducer<T>> logger, IQueueFactory queueFactory)
     {
-        _queueFactory = queueFactory;
         _logger = logger;
         _queueName = "NexusMods.DataModel.Interprocess." + typeof(T).Name;
 
@@ -29,6 +29,9 @@ public class InterprocessProducer<T> : IMessageProducer<T>, IDisposable where T 
             _queueName,
             T.MaxSize * 16));
     }
+
+    /// <inheritdoc />
+    public void Dispose() => _queue.Dispose();
 
     /// <summary>
     /// Writes a message to the queue.
@@ -43,9 +46,7 @@ public class InterprocessProducer<T> : IMessageProducer<T>, IDisposable where T 
         while (!token.IsCancellationRequested)
         {
             if (WriteInner(message))
-            {
                 return;
-            }
 
             _logger.LogDebug("Failed to write {Message} to queue {Queue}, retrying", message, _queueName);
             await Task.Delay(100, token);
@@ -66,10 +67,5 @@ public class InterprocessProducer<T> : IMessageProducer<T>, IDisposable where T 
         Span<byte> buffer = stackalloc byte[T.MaxSize];
         var used = message.Write(buffer);
         return _queue.TryEnqueue(buffer[..used]);
-    }
-
-    public void Dispose()
-    {
-        _queue.Dispose();
     }
 }
