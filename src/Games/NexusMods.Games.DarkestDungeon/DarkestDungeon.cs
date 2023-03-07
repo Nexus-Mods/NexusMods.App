@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Games;

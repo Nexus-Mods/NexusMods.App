@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using ReactiveUI;

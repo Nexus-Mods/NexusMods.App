@@ -1,4 +1,4 @@
-﻿namespace NexusMods.DataModel.Attributes;
+namespace NexusMods.DataModel.Attributes;
 
 /// <summary>
 /// Used to mark an entity category as immutable. This means we can cache

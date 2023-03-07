@@ -5,5 +5,5 @@ namespace NexusMods.App.UI.RightContent;
 
 public interface IFoundGamesViewModel : IRightContent
 {
-public ReadOnlyObservableCollection<IGameWidgetViewModel> Games { get; }
+    public ReadOnlyObservableCollection<IGameWidgetViewModel> Games { get; }
 }

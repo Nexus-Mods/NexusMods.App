@@ -1,4 +1,4 @@
-﻿namespace NexusMods.App.UI.LeftMenu.Home;
+namespace NexusMods.App.UI.LeftMenu.Home;
 
 public interface IHomeLeftMenuViewModel : ILeftMenuViewModel
 {

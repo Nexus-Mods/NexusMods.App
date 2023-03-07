@@ -1,4 +1,4 @@
-﻿using System.Reactive.Disposables;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
 using NexusMods.App.UI.Icons;

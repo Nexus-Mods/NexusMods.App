@@ -14,7 +14,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddUniversalGameLocator<Cyberpunk2077>(new Version("1.61"))
-                .AddApp(addStandardGameLocators:false)
+                .AddApp(addStandardGameLocators: false)
                 .AddSingleton<AvaloniaApp>()
                 .Validate();
     }

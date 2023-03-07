@@ -1,4 +1,4 @@
-﻿namespace NexusMods.App.UI.Icons;
+namespace NexusMods.App.UI.Icons;
 
 [AttributeUsage(AttributeTargets.Field)]
 public class MaterialNameAttribute : Attribute

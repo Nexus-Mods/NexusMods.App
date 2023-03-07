@@ -1,4 +1,4 @@
-﻿using System.Reactive.Disposables;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;

@@ -1,4 +1,4 @@
-﻿using System.Buffers.Binary;
+using System.Buffers.Binary;
 using System.Collections.Concurrent;
 using System.Data.SQLite;
 using System.Reactive.Linq;
@@ -38,7 +38,7 @@ public class SqliteDataStore : IDataStore, IDisposable
     private readonly ILogger<SqliteDataStore> _logger;
     private readonly IMessageProducer<IdPut> _idPutProducer;
     private readonly IMessageConsumer<IdPut> _idPutConsumer;
-    private readonly Dictionary<EntityCategory,bool> _immutableFields;
+    private readonly Dictionary<EntityCategory, bool> _immutableFields;
 
     public SqliteDataStore(ILogger<SqliteDataStore> logger, AbsolutePath path, IServiceProvider provider,
         IMessageProducer<RootChange> rootChangeProducer,

@@ -1,4 +1,4 @@
-﻿using NexusMods.DataModel.Attributes;
+using NexusMods.DataModel.Attributes;
 
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Hashing.xxHash64;

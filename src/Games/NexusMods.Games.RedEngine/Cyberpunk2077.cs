@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Games;
 using NexusMods.FileExtractor.StreamFactories;
