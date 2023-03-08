@@ -74,7 +74,7 @@ public partial struct AbsolutePath
                 return FromFullPath(DirectorySeparatorCharStr);
 
             var path = thisFullPath[..index];
-            return FromDirectoryAndFileName(path.ToString(), "");
+            return FromDirectoryAndFileName(path.ToString(), "", FileSystem);
         }
     }
 
@@ -273,7 +273,7 @@ public partial struct AbsolutePath
         {
             var item = enumerator.Current;
             if (!item.IsDirectory)
-                yield return FromDirectoryAndFileName(enumerator.CurrentDirectory, item.FileName);
+                yield return FromDirectoryAndFileName(enumerator.CurrentDirectory, item.FileName, FileSystem);
         }
     }
 
@@ -288,7 +288,7 @@ public partial struct AbsolutePath
         while (enumerator.MoveNext())
         {
             var item = enumerator.Current;
-            yield return FromDirectoryAndFileName(Path.Combine(enumerator.CurrentDirectory!, item), "");
+            yield return FromDirectoryAndFileName(Path.Combine(enumerator.CurrentDirectory!, item), "", FileSystem);
         }
     }
 
@@ -308,7 +308,7 @@ public partial struct AbsolutePath
         {
             var item = enumerator.Current;
             if (!item.IsDirectory)
-                yield return new FileEntry(FromDirectoryAndFileName(enumerator.CurrentDirectory, item.FileName), item.Size, item.LastModified);
+                yield return new FileEntry(FromDirectoryAndFileName(enumerator.CurrentDirectory, item.FileName, FileSystem), item.Size, item.LastModified);
         }
     }
 
