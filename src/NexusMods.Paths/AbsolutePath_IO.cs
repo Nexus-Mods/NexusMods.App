@@ -85,7 +85,7 @@ public partial struct AbsolutePath
     /// </summary>
     public Stream Open(FileMode mode, FileAccess access = FileAccess.Read, FileShare share = FileShare.ReadWrite)
     {
-        return File.Open(GetFullPath(), mode, access, share);
+        return FileSystem.OpenFile(this, mode, access, share);
     }
 
     /// <summary>

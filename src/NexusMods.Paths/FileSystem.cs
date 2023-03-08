@@ -19,4 +19,13 @@ public class FileSystem : IFileSystem
     /// <inheritdoc/>
     public AbsolutePath FromDirectoryAndFileName(string? directoryPath, string fullPath)
         => AbsolutePath.FromDirectoryAndFileName(directoryPath, fullPath, this);
+
+    /// <inheritdoc/>
+    public Stream OpenFile(AbsolutePath path,
+        FileMode mode,
+        FileAccess access = FileAccess.Read,
+        FileShare share = FileShare.ReadWrite)
+    {
+        return File.Open(path.GetFullPath(), mode, access, share);
+    }
 }
