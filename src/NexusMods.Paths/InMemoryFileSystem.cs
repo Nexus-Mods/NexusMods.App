@@ -8,10 +8,17 @@ namespace NexusMods.Paths;
 [PublicAPI]
 public class InMemoryFileSystem : BaseFileSystem
 {
+    private readonly Dictionary<AbsolutePath, byte[]> _virtualFiles = new();
+
     /// <summary>
     /// Constructor.
     /// </summary>
     public InMemoryFileSystem() { }
+
+    public void AddFile(AbsolutePath path, byte[] contents)
+    {
+        _virtualFiles[path] = contents;
+    }
 
     #region Implementation
 
@@ -22,9 +29,17 @@ public class InMemoryFileSystem : BaseFileSystem
         => new InMemoryFileSystem(pathMappings);
 
     /// <inheritdoc/>
-    protected override Stream OpenFile(AbsolutePath path, FileMode mode, FileAccess access, FileShare share)
+    protected override Stream InternalOpenFile(AbsolutePath path, FileMode mode, FileAccess access, FileShare share)
     {
-        throw new NotImplementedException();
+        // TODO: support more file modes
+        if (mode != FileMode.Open)
+            throw new NotImplementedException();
+
+        if (!_virtualFiles.TryGetValue(path, out var fileContents))
+            throw new FileNotFoundException("File does not exist!", path.FileName);
+
+        var ms = new MemoryStream(fileContents, 0, fileContents.Length, access.HasFlag(FileAccess.Write));
+        return ms;
     }
 
     #endregion

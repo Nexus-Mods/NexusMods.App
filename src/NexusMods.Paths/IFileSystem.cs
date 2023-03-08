@@ -37,14 +37,14 @@ public interface IFileSystem
     /// </summary>
     /// <param name="path">Path to the file.</param>
     /// <returns></returns>
-    Stream ReadFile(AbsolutePath path) => OpenFile(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+    Stream ReadFile(AbsolutePath path);
 
     /// <summary>
     /// Opens the file for write-only access.
     /// </summary>
     /// <param name="path">Path to the file.</param>
     /// <returns></returns>
-    Stream WriteFile(AbsolutePath path) => OpenFile(path, FileMode.Open, FileAccess.Write, FileShare.Read);
+    Stream WriteFile(AbsolutePath path);
 
     /// <summary>
     /// Creates a new file for read/write access. If the file already exists,
@@ -52,5 +52,5 @@ public interface IFileSystem
     /// </summary>
     /// <param name="path">Path to the file.</param>
     /// <returns></returns>
-    Stream CreateFile(AbsolutePath path) => OpenFile(path, FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
+    Stream CreateFile(AbsolutePath path);
 }

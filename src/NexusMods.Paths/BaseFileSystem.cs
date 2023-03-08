@@ -25,8 +25,12 @@ public abstract class BaseFileSystem : IFileSystem
         _pathMappings = pathMappings;
     }
 
-    private AbsolutePath GetMappedPath(AbsolutePath originalPath)
+    internal AbsolutePath GetMappedPath(AbsolutePath originalPath)
     {
+        // TODO: support directory mapping
+        // eg: mapping["/home", "/mnt/hdd/home"]
+        // GetMappedPath("/home/bob") should return "/mnt/hdd/home/bob"
+
         return _pathMappings.TryGetValue(originalPath, out var mappedPath)
             ? mappedPath
             : originalPath;
@@ -47,10 +51,19 @@ public abstract class BaseFileSystem : IFileSystem
         => AbsolutePath.FromDirectoryAndFileName(directoryPath, fullPath, this);
 
     /// <inheritdoc/>
-    Stream IFileSystem.OpenFile(AbsolutePath path, FileMode mode, FileAccess access, FileShare share)
+    public Stream ReadFile(AbsolutePath path) => OpenFile(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+    /// <inheritdoc/>
+    public Stream WriteFile(AbsolutePath path) => OpenFile(path, FileMode.Open, FileAccess.Write, FileShare.Read);
+
+    /// <inheritdoc/>
+    public Stream CreateFile(AbsolutePath path) => OpenFile(path, FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
+
+    /// <inheritdoc/>
+    public Stream OpenFile(AbsolutePath path, FileMode mode, FileAccess access, FileShare share)
     {
         var actualPath = GetMappedPath(path);
-        return OpenFile(actualPath, mode, access, share);
+        return InternalOpenFile(actualPath, mode, access, share);
     }
 
     #endregion
@@ -58,7 +71,7 @@ public abstract class BaseFileSystem : IFileSystem
     #region Abstract Methods
 
     /// <inheritdoc cref="IFileSystem.OpenFile"/>
-    protected abstract Stream OpenFile(AbsolutePath path, FileMode mode, FileAccess access, FileShare share);
+    protected abstract Stream InternalOpenFile(AbsolutePath path, FileMode mode, FileAccess access, FileShare share);
 
     #endregion
 }

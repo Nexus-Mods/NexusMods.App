@@ -24,7 +24,7 @@ public class FileSystem : BaseFileSystem
         => new FileSystem(pathMappings);
 
     /// <inheritdoc/>
-    protected override Stream OpenFile(AbsolutePath path, FileMode mode, FileAccess access, FileShare share)
+    protected override Stream InternalOpenFile(AbsolutePath path, FileMode mode, FileAccess access, FileShare share)
     {
         return File.Open(path.GetFullPath(), mode, access, share);
     }
