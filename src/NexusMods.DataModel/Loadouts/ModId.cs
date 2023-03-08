@@ -6,7 +6,7 @@ namespace NexusMods.DataModel.Loadouts;
 
 [ValueObject<Guid>(conversions: Conversions.None)]
 [JsonConverter(typeof(ModIdConverter))]
-public partial class ModId
+public partial struct ModId
 {
     public static ModId New()
     {
@@ -15,7 +15,7 @@ public partial class ModId
 
     public class ModIdConverter : JsonConverter<ModId>
     {
-        public override ModId? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override ModId Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             var data = reader.GetBytesFromBase64();
             return From(new Guid(data));
