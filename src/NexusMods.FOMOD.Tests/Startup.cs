@@ -1,4 +1,4 @@
-﻿using FomodInstaller.Interface;
+using FomodInstaller.Interface;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -23,8 +23,6 @@ public class Startup
             .AddSingleton<IResource<IExtractor, Size>>(s => new Resource<IExtractor, Size>("File Extraction"))
             .AddSingleton<FileExtractor.FileExtractor>()
             .AddSingleton<ICoreDelegates, MockDelegates>()
-            // .AddSingleton<TemporaryFileManager>()
-            // .AddAllSingleton<IExtractor, SevenZipExtractor>()
             ;
     }
 

@@ -83,23 +83,28 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.FOMOD", "src\Nexu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.FOMOD.Tests", "src\NexusMods.FOMOD.Tests\NexusMods.FOMOD.Tests.csproj", "{1B3F240A-DACA-4EFB-B54E-2D51DB408044}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.UI.Tests", "tests\NexusMods.UI.Tests\NexusMods.UI.Tests.csproj", "{643BE310-8A6C-405C-AAE5-E0A3A3298624}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.UI.Tests", "tests\NexusMods.UI.Tests\NexusMods.UI.Tests.csproj", "{643BE310-8A6C-405C-AAE5-E0A3A3298624}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Common.Tests", "src\NexusMods.CommonTests\NexusMods.Common.Tests.csproj", "{774EAA0D-268E-4A12-B8CC-7B22058A14A3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".solutionItems", ".solutionItems", "{D9476FF9-B9A1-4C63-A58F-2E19BE356770}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
 		codecov.yaml = codecov.yaml
 		Directory.Build.props = Directory.Build.props
 		LICENSE.md = LICENSE.md
 		NuGet.Build.props = NuGet.Build.props
 		README.md = README.md
-		.gitattributes = .gitattributes
-		.editorconfig = .editorconfig
 		NullableErrors.Build.props = NullableErrors.Build.props
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Paths.TestingHelpers", "src\NexusMods.Paths.TestingHelpers\NexusMods.Paths.TestingHelpers.csproj", "{F9107626-3380-4472-B17F-D5B54C5CEB2D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{4A870EF7-AC4C-43B9-8EF6-A7CF020EA33C}"
+	ProjectSection(SolutionItems) = preProject
+		src\NexusMods.FOMOD\fomod.md = src\NexusMods.FOMOD\fomod.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -235,6 +240,22 @@ Global
 		{CBD72884-1EDF-4504-A7A6-FEA519FD65E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CBD72884-1EDF-4504-A7A6-FEA519FD65E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CBD72884-1EDF-4504-A7A6-FEA519FD65E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D6BCB04-B8E3-45FC-9C83-77A6EEE8629E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D6BCB04-B8E3-45FC-9C83-77A6EEE8629E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D6BCB04-B8E3-45FC-9C83-77A6EEE8629E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D6BCB04-B8E3-45FC-9C83-77A6EEE8629E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B3F240A-DACA-4EFB-B54E-2D51DB408044}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B3F240A-DACA-4EFB-B54E-2D51DB408044}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B3F240A-DACA-4EFB-B54E-2D51DB408044}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B3F240A-DACA-4EFB-B54E-2D51DB408044}.Release|Any CPU.Build.0 = Release|Any CPU
+    {CBD72884-1EDF-4504-A7A6-FEA519FD65E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+    {CBD72884-1EDF-4504-A7A6-FEA519FD65E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+    {CBD72884-1EDF-4504-A7A6-FEA519FD65E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+    {CBD72884-1EDF-4504-A7A6-FEA519FD65E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{643BE310-8A6C-405C-AAE5-E0A3A3298624}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{643BE310-8A6C-405C-AAE5-E0A3A3298624}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{643BE310-8A6C-405C-AAE5-E0A3A3298624}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{643BE310-8A6C-405C-AAE5-E0A3A3298624}.Release|Any CPU.Build.0 = Release|Any CPU
 		{774EAA0D-268E-4A12-B8CC-7B22058A14A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{774EAA0D-268E-4A12-B8CC-7B22058A14A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{774EAA0D-268E-4A12-B8CC-7B22058A14A3}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -236,6 +236,7 @@ namespace NexusMods.FOMOD.Tests
                 Size = Size.Zero,
                 FileTypes = new FileType[] { },
                 Store = _store.Object,
+                SourcePath = AbsolutePath.FromFullPath("Fake"),
             };
         }
     }

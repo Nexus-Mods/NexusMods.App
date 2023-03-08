@@ -5,6 +5,7 @@ using NexusMods.CLI;
 using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
+using NexusMods.FOMOD;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.DarkestDungeon;
 using NexusMods.Games.Generic;
@@ -34,6 +35,7 @@ public static class Services
             .AddUI()
             .AddFileExtractors()
             .AddDataModel()
+            .AddFOMOD()
             .AddBethesdaGameStudios()
             .AddRedEngineGames()
             .AddGenericGameSupport()
@@ -45,7 +47,6 @@ public static class Services
             .AddTestHarness()
             .AddSingleton<HttpClient>()
             .AddCommon();
-
 
         if (addStandardGameLocators)
             services.AddStandardGameLocators();

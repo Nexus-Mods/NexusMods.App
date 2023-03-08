@@ -30,6 +30,7 @@ public static class Services
         baseFolder.Value.CreateDirectory();
 
         coll.AddSingleton<JsonConverter, RelativePathConverter>();
+        coll.AddSingleton<JsonConverter, AbsolutePathConverter>();
         coll.AddSingleton<JsonConverter, GamePathConverter>();
         coll.AddSingleton<JsonConverter, DateTimeConverter>();
         coll.AddSingleton<JsonConverter, SizeConverter>();

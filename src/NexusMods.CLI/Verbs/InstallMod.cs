@@ -1,4 +1,6 @@
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.DataModel.Loadouts.Markers;
+using NexusMods.FileExtractor.Extractors;
 using NexusMods.Paths;
 
 namespace NexusMods.CLI.Verbs;
@@ -7,7 +9,12 @@ namespace NexusMods.CLI.Verbs;
 public class InstallMod : AVerb<LoadoutMarker, AbsolutePath, string>
 {
     private readonly IRenderer _renderer;
-    public InstallMod(Configurator configurator) => _renderer = configurator.Renderer;
+    // public InstallMod(Configurator configurator) => _renderer = configurator.Renderer;
+    public InstallMod(Configurator configurator, IServiceProvider provider)
+    {
+        provider.GetService<IExtractor>();
+        _renderer = configurator.Renderer;
+    }
 
     public static VerbDefinition Definition => new("install-mod", "Installs a mod into a loadout", new OptionDefinition[]
     {

@@ -22,7 +22,10 @@ public class SignatureChecker
         HashSet<FileType> types1 = new(types);
         _signatures = Definitions.Signatures.Where(row => types1.Contains(row.Item1))
             .OrderByDescending(x => x.Item2.Length).ToArray();
-        _buffer = new byte[_signatures[0].Item2.Length];
+        if (_signatures.Length > 0)
+        {
+            _buffer = new byte[_signatures[0].Item2.Length];
+        }
     }
 
     /// <summary>

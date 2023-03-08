@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.App.UI;
 using NexusMods.CLI;
 using NexusMods.Common;
+using NexusMods.FileExtractor.Extractors;
 using NexusMods.FOMOD;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
@@ -55,6 +56,11 @@ public class Program
             var builder = new CommandLineBuilder(root)
                 .UseDefaults()
                 .Build();
+
+
+            var extr = host.Services.GetRequiredService<IExtractor>();
+            var extr2 = host.Services.GetService<IExtractor>();
+            var extrList = host.Services.GetServices<IExtractor>();
 
             return await builder.InvokeAsync(args);
         }

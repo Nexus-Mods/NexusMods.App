@@ -161,7 +161,9 @@ public class FileContentsCache
             Hash = hash,
             Size = sFn.Size,
             FileTypes = sigs.ToArray(),
-            AnalysisData = analysisData.ToImmutableList()
+            AnalysisData = analysisData.ToImmutableList(),
+            Store = _store,
+            SourcePath = (AbsolutePath)sFn.Name,
         };
 
         if (parent != Hash.Zero)
@@ -204,7 +206,9 @@ public class FileContentsCache
                 Size = sFn.Size,
                 FileTypes = sigs.ToArray(),
                 AnalysisData = analysisData.ToImmutableList(),
-                Contents = new EntityDictionary<RelativePath, AnalyzedFile>(_store, children)
+                Contents = new EntityDictionary<RelativePath, AnalyzedFile>(_store, children),
+                Store = _store,
+                SourcePath = (AbsolutePath)sFn.Name
             };
             return file;
         }

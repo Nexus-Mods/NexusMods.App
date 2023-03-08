@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using FomodInstaller.Interface;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
 using NexusMods.DataModel.ModInstallers;
 
@@ -8,7 +9,10 @@ public static class Services
 {
     public static IServiceCollection AddFOMOD(this IServiceCollection services)
     {
-        services.AddAllSingleton<IModInstaller, FomodXMLInstaller>();
+        services
+            .AddSingleton<ICoreDelegates, InstallerDelegates>()
+            .AddAllSingleton<IModInstaller, FomodXMLInstaller>()
+            ;
         return services;
     }
 }

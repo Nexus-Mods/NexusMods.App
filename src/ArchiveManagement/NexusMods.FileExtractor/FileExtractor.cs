@@ -32,7 +32,7 @@ public class FileExtractor
     ///    This method is usually called via DI container.
     ///    See <see cref="Services.AddFileExtractors"/>; and then ask the DI container nicely to give you an instance of this.
     /// </remarks>
-    public FileExtractor(ILogger<FileExtractor> logger, IEnumerable<IExtractor> extractors)
+    public FileExtractor(ILogger<FileExtractor> logger, IEnumerable<IExtractor> extractors, IServiceProvider provider)
     {
         _logger = logger;
         _extractors = extractors.ToArray();
