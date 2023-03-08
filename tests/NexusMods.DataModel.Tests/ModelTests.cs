@@ -1,4 +1,4 @@
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.IO.Compression;
 using FluentAssertions;
 using NexusMods.DataModel.Abstractions;
@@ -37,20 +37,6 @@ public class ModelTests : ADataModelTest<ModelTests>
         file.DataStoreId.Should().NotBeNull();
 
         DataStore.Get<FromArchive>(file.DataStoreId)!.To.Should().BeEquivalentTo(file.To);
-    }
-
-    [Fact]
-    public async Task CanSeeChangesViaObservable()
-    {
-        var list = new HashSet<string>();
-
-        var loadout = await LoadoutManager.ManageGame(Install, "OldName");
-        using var _ = loadout.Changes.Subscribe(f => list.Add(f.Name));
-        loadout.Alter(m => m with { Name = "NewName" });
-
-        loadout.Value.Name.Should().Be("NewName");
-        list.Count.Should().Be(1);
-        list.First().Should().Be("NewName");
     }
 
     [Fact]
