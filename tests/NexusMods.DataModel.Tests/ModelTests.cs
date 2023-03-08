@@ -30,10 +30,8 @@ public class ModelTests : ADataModelTest<ModelTests>
             To = new GamePath(GameFolderType.Game, "foo/bar.pez"),
             From = new HashRelativePath(Hash.Zero, RelativePath.Empty),
             Hash = (Hash)0x42L,
-            Size = Size.From(44L),
-            Store = DataStore
+            Size = Size.From(44L)
         };
-        file.Store.Should().NotBeNull();
         file.DataStoreId.Should().NotBeNull();
 
         DataStore.Get<FromArchive>(file.DataStoreId)!.To.Should().BeEquivalentTo(file.To);
@@ -122,7 +120,7 @@ public class ModelTests : ADataModelTest<ModelTests>
 
         }
 
-        loadout.Alter(l => l with { Mods = new EntityDictionary<ModId, Mod>(l.Store) });
+        loadout.Alter(l => l with { Mods = new EntityDictionary<ModId, Mod>(DataStore) });
         loadout.Value.Mods.Should().BeEmpty("All mods are removed");
 
         await LoadoutManager.ImportFrom(tempFile, CancellationToken.None);

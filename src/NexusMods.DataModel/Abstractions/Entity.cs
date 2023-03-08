@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.Exceptions;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
 
@@ -46,13 +47,6 @@ public abstract record Entity : IWalkable<Entity>
     [JsonIgnore]
     public abstract EntityCategory Category { get; }
 
-    /// <summary>
-    /// An abstraction over where we store this entity.
-    /// Usually database, (DataModel.sqlite)
-    /// </summary>
-    [JsonInjected]
-    public required IDataStore Store { get; init; }
-
     private IId? _id;
 
     /// <summary>
@@ -60,9 +54,6 @@ public abstract record Entity : IWalkable<Entity>
     /// </summary>
     public Entity(Entity self)
     {
-        Store = self.Store;
-        if (Store == null!)
-            ThrowNoDataStoreException();
     }
 
     /// <summary/>
@@ -71,17 +62,17 @@ public abstract record Entity : IWalkable<Entity>
     /// <summary>
     /// Writes the current value to the database.
     /// </summary>
-    protected virtual IId Persist()
+    protected virtual IId Persist(IDataStore store)
     {
-        return Store.Put(this);
+        return store.Put(this);
     }
 
     /// <summary>
     /// Ensures this item is stored in the database.
     /// </summary>
-    public void EnsureStored()
+    public void EnsurePersisted(IDataStore store)
     {
-        _id ??= Persist();
+        _id ??= Persist(store);
     }
 
     /// <summary>
@@ -91,7 +82,7 @@ public abstract record Entity : IWalkable<Entity>
     [JsonIgnore]
     public IId DataStoreId
     {
-        get => _id ??= Persist();
+        get => _id ?? throw new UnpersistedEntity(this);
         set => _id = value;
     }
 

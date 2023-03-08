@@ -20,10 +20,10 @@ public record NexusModFile : Entity
     public required DateTime LastUpdated { get; init; }
 
 
-    protected override IId Persist()
+    protected override IId Persist(IDataStore store)
     {
         var id = MakeId(Domain, ModId, FileId);
-        Store.Put<Entity>(id, this);
+        store.Put<Entity>(id, this);
         return id;
     }
 

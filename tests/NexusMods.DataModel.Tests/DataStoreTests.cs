@@ -30,7 +30,6 @@ public class DataStoreTests
         var foo = new FromArchive
         {
             Id = ModFileId.New(),
-            Store = DataStore,
             Hash = Hash.Zero,
             From = new HashRelativePath((Hash)42L, Array.Empty<RelativePath>()),
             Size = (Size)42L,
@@ -59,7 +58,6 @@ public class DataStoreTests
             From = new HashRelativePath((Hash)(ulong)idx, $"{idx}.file".ToRelativePath()),
             Hash = (Hash)(ulong)idx,
             Size = Size.From(idx),
-            Store = DataStore,
             To = new GamePath(GameFolderType.Game, $"{idx}.file"),
         }).ToList();
 
@@ -69,11 +67,10 @@ public class DataStoreTests
         {
             Id = ModId.New(),
             Name = "Large Entity",
-            Files = EntityDictionary<ModFileId, AModFile>.Empty(DataStore),
-            Store = DataStore,
+            Files = EntityDictionary<ModFileId, AModFile>.Empty(DataStore)
         };
         mod = mod with { Files = mod.Files.With(files, x => x.Id) };
-        mod.EnsureStored();
+        mod.EnsurePersisted(DataStore);
         var modLoaded = DataStore.Get<Mod>(mod.DataStoreId);
 
         foreach (var itm in set)

@@ -23,7 +23,7 @@ namespace NexusMods.DataModel.Loadouts;
 public class LoadoutManager
 {
     private readonly ILogger<LoadoutManager> _logger;
-    private readonly IDataStore _store;
+    public IDataStore Store { get; }
     private readonly Root<LoadoutRegistry> _root;
     public readonly FileHashCache FileHashCache;
     public readonly ArchiveManager ArchiveManager;
@@ -45,7 +45,7 @@ public class LoadoutManager
         _logger = logger;
         Limiter = limiter;
         ArchiveManager = archiveManager;
-        _store = store;
+        Store = store;
         _root = new Root<LoadoutRegistry>(RootType.Loadouts, store);
         FileHashCache = fileHashCache;
         _metadataSources = metadataSources;
@@ -75,16 +75,15 @@ public class LoadoutManager
         {
             Id = ModId.New(),
             Name = "Game Files",
-            Files = new EntityDictionary<ModFileId, AModFile>(_store, gameFiles.Select(g => new KeyValuePair<ModFileId, IId>(g.Id, g.DataStoreId))),
-            Store = _store,
+            Files = new EntityDictionary<ModFileId, AModFile>(Store, gameFiles.Select(g => new KeyValuePair<ModFileId, IId>(g.Id, g.DataStoreId))),
             SortRules = ImmutableList<ISortRule<Mod, ModId>>.Empty.Add(new First<Mod, ModId>())
         };
 
-        var n = Loadout.Empty(_store) with
+        var n = Loadout.Empty(Store) with
         {
             Installation = installation,
             Name = name,
-            Mods = new EntityDictionary<ModId, Mod>(_store, new[] { new KeyValuePair<ModId, IId>(mod.Id, mod.DataStoreId) })
+            Mods = new EntityDictionary<ModId, Mod>(Store, new[] { new KeyValuePair<ModId, IId>(mod.Id, mod.DataStoreId) })
         };
 
         _root.Alter(r => r with { Lists = r.Lists.With(n.LoadoutId, n) });
@@ -102,15 +101,14 @@ public class LoadoutManager
                     To = new GamePath(type, result.Path.RelativeTo(path)),
                     Installation = installation,
                     Hash = result.Hash,
-                    Size = result.Size,
-                    Store = _store
+                    Size = result.Size
                 };
 
                 var metaData = await GetMetadata(n, mod, file, analysis).ToHashSet();
                 gameFiles.Add(file with { Metadata = metaData.ToImmutableHashSet() });
             }
         }
-        gameFiles.AddRange(installation.Game.GetGameFiles(installation, _store));
+        gameFiles.AddRange(installation.Game.GetGameFiles(installation, Store));
         var marker = new LoadoutMarker(this, n.LoadoutId);
         marker.Alter(mod.Id, m => m with { Files = m.Files.With(gameFiles, f => f.Id) });
 
@@ -163,8 +161,7 @@ public class LoadoutManager
         {
             Id = ModId.New(),
             Name = name,
-            Files = new EntityDictionary<ModFileId, AModFile>(_store, contents.Select(c => new KeyValuePair<ModFileId, IId>(c.Id, c.DataStoreId))),
-            Store = _store
+            Files = new EntityDictionary<ModFileId, AModFile>(Store, contents.Select(c => new KeyValuePair<ModFileId, IId>(c.Id, c.DataStoreId)))
         };
         loadout.Add(newMod);
         return (loadout, newMod.Id);
@@ -186,7 +183,7 @@ public class LoadoutManager
             {
                 LastModified = DateTime.UtcNow,
                 ChangeMessage = changeMessage,
-                PreviousVersion = previousList
+                PreviousVersion = new EntityLink<Loadout>(previousList.DataStoreId, Store)
             };
             return r with { Lists = r.Lists.With(newList.LoadoutId, newList) };
         });
@@ -236,7 +233,7 @@ public class LoadoutManager
             void AddFile(Hash hash, ISet<IId> hashes)
             {
                 hashes.Add(new Id64(EntityCategory.FileAnalysis, (ulong)hash));
-                foreach (var foundIn in _store.GetByPrefix<FileContainedIn>(new Id64(EntityCategory.FileContainedIn,
+                foreach (var foundIn in Store.GetByPrefix<FileContainedIn>(new Id64(EntityCategory.FileContainedIn,
                              (ulong)hash)))
                 {
                     hashes.Add(foundIn.DataStoreId);
@@ -258,7 +255,7 @@ public class LoadoutManager
 
         foreach (var entityId in ids)
         {
-            var data = _store.GetRaw(entityId);
+            var data = Store.GetRaw(entityId);
             if (data == null) continue;
 
             await using var entry = zip.CreateEntry("entities\\" + entityId.TaggedSpanHex, CompressionLevel.Optimal).Open();
@@ -286,13 +283,13 @@ public class LoadoutManager
         var entries = zip.Entries.Where(p => p.FullName.ToRelativePath().InFolder(entityFolder))
             .SelectAsync(ProcessEntry);
 
-        var loaded = await _store.PutRaw(entries, token);
+        var loaded = await Store.PutRaw(entries, token);
         _logger.LogDebug("Loaded {Count} entities", loaded);
 
         await using var root = zip.GetEntry("root")!.Open();
         var rootId = IId.FromTaggedSpan(Convert.FromHexString(await root.ReadAllTextAsync(token)));
 
-        var loadout = _store.Get<Loadout>(rootId);
+        var loadout = Store.Get<Loadout>(rootId);
         if (loadout == null)
             throw new Exception("Loadout not found after loading data store, the loadout may be corrupt");
         _root.Alter(r => r with { Lists = r.Lists.With(loadout.LoadoutId, loadout) });

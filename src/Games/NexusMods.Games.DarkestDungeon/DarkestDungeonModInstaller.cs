@@ -42,8 +42,7 @@ public class DarkestDungeonModInstaller : IModInstaller
                 To = new GamePath(GameFolderType.Game, ModFolder.Join(f.Key)),
                 From = new HashRelativePath(srcArchive, f.Key),
                 Hash = f.Value.Hash,
-                Size = f.Value.Size,
-                Store = _store
+                Size = f.Value.Size
             });
     }
 }

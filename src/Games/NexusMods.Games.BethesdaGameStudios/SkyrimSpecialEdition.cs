@@ -47,8 +47,7 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame
             Id = ModFileId.New(),
             To = new GamePath(GameFolderType.AppData, "plugins.txt"),
             Size = Size.Zero,
-            Hash = Hash.Zero,
-            Store = store
+            Hash = Hash.Zero
         };
     }
 

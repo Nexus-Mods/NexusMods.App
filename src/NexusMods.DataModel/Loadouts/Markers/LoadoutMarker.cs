@@ -356,7 +356,6 @@ public class LoadoutMarker : IMarker<Loadout>
                                 From = new HashRelativePath(add.Hash),
                                 Hash = add.Hash,
                                 Size = add.Size,
-                                Store = m.Store,
                                 To = gamePath
                             }, x => x.Id)
                         });
@@ -375,7 +374,6 @@ public class LoadoutMarker : IMarker<Loadout>
                                 From = sourceArchive,
                                 Hash = t.Hash,
                                 Size = t.Size,
-                                Store = m.Store,
                                 To = gamePath
                             }, x => x.Id)
                         });
@@ -421,8 +419,7 @@ public class LoadoutMarker : IMarker<Loadout>
                   {
                       Name = modName,
                       Id = ModId.New(),
-                      Store = Value.Store,
-                      Files = EntityDictionary<ModFileId, AModFile>.Empty(Value.Store)
+                      Files = EntityDictionary<ModFileId, AModFile>.Empty(_manager.Store)
                   };
         Add(mod);
         await ApplyIngest(_ => mod, token);
