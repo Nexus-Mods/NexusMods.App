@@ -1,7 +1,9 @@
 using Microsoft.Extensions.Logging;
+using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Games.Abstractions;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -55,7 +57,13 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame
     public IEnumerable<long> GogIds => new long[]
     {
         1711230643, // The Elder Scrolls V: Skyrim Special Edition AKA Base Game
-        1801825368, // The Elder Scrolls V: Skyrim Anniversary Edition AKA The Store Bundle 
+        1801825368, // The Elder Scrolls V: Skyrim Anniversary Edition AKA The Store Bundle
         1162721350 // Upgrade DLC
     };
+
+    public override IStreamFactory Icon =>
+        new EmbededResourceStreamFactory<SkyrimSpecialEdition>("NexusMods.Games.BethesdaGameStudios.Resources.SkyrimSpecialEdition.icon.jpg");
+
+    public override IStreamFactory GameImage =>
+        new EmbededResourceStreamFactory<SkyrimSpecialEdition>("NexusMods.Games.BethesdaGameStudios.Resources.SkyrimSpecialEdition.game_image.png");
 }

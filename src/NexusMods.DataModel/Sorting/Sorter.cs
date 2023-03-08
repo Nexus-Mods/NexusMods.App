@@ -272,7 +272,7 @@ public class Sorter
             // Work on our slice.
             var val = Values;
             var otp = Output;
-            var used = this.Used;
+            var used = Used;
             for (var x = tuple.Item1; x < tuple.Item2; x++)
             {
                 var value = val[x];

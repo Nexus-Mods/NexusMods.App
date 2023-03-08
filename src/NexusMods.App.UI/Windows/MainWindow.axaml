@@ -3,18 +3,19 @@
     ExtendClientAreaTitleBarHeightHint="0"
     ExtendClientAreaToDecorationsHint="True"
     Icon="/Assets/nexus-logo.ico"
-    PointerPressed="PointerPressed_Handler"
     Title="Nexus Mods App"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d"
-    x:Class="NexusMods.App.UI.Views.MainWindow"
-    x:TypeArguments="vm:MainWindowViewModel"
+    x:Class="NexusMods.App.UI.Windows.MainWindow"
+    x:TypeArguments="windows:MainWindowViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:gameWidget="clr-namespace:NexusMods.App.UI.Controls.GameWidget"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:vm="using:NexusMods.App.UI.ViewModels"
+    xmlns:windows="clr-namespace:NexusMods.App.UI.Windows"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Design.DataContext>
@@ -22,8 +23,8 @@
             This only sets the DataContext for the previewer in an IDE,
             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs)
         -->
-        <!-- ReSharper disable once Xaml.ConstructorWarning -->
-        <vm:MainWindowViewModel />
+        <!--  ReSharper disable once Xaml.ConstructorWarning  -->
+        <windows:MainWindowViewModel />
     </Design.DataContext>
 
     <Grid ColumnDefinitions="72, 216, *" RowDefinitions="62, *">
@@ -50,34 +51,10 @@
             Grid.ColumnSpan="3"
             Grid.Row="0" />
 
-
-
-        <StackPanel
+        <reactiveUi:ViewModelViewHost
             Grid.Column="1"
             Grid.Row="1"
-            Margin="12,24">
-            <Button Classes="Menu Selected">
-                <Grid ColumnDefinitions="38, *">
-                    <Svg Grid.Column="0" Path="avares://NexusMods.App.UI/Assets/Icons/newspaper-variant-outline-1.svg" />
-                    <TextBlock Grid.Column="1" Text="Newsfeed" />
-                </Grid>
-            </Button>
-
-            <Button Classes="Menu">
-                <Grid ColumnDefinitions="38, *">
-                    <Svg Grid.Column="0" Path="avares://NexusMods.App.UI/Assets/Icons/bookmarks_24px.svg" />
-                    <TextBlock Grid.Column="1" Text="My Games" />
-                </Grid>
-            </Button>
-
-            <Button Classes="Menu">
-                <Grid ColumnDefinitions="38, *">
-                    <Svg Grid.Column="0" Path="avares://NexusMods.App.UI/Assets/Icons/videogame_asset_24px.svg" />
-                    <TextBlock Grid.Column="1" Text="Browse Games" />
-                </Grid>
-            </Button>
-
-        </StackPanel>
+            x:Name="LeftMenuViewModelHost" />
 
         <reactiveUi:ViewModelViewHost
             Grid.Column="2"

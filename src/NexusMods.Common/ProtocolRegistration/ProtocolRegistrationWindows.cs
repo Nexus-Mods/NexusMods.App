@@ -1,4 +1,4 @@
-﻿using System.Runtime.Versioning;
+using System.Runtime.Versioning;
 using Microsoft.Win32;
 
 namespace NexusMods.Common.ProtocolRegistration;
@@ -12,7 +12,8 @@ public class ProtocolRegistrationWindows : IProtocolRegistration
     /// <summary>
     /// constructor
     /// </summary>
-    public ProtocolRegistrationWindows() {
+    public ProtocolRegistrationWindows()
+    {
     }
 
     /// <inheritdoc/>

@@ -3,7 +3,6 @@
 
     <Style Selector="DataGrid">
         <Setter Property="Background" Value="{DynamicResource BrandSecondaryBrush}" />
-        <Setter Property="AlternatingRowBackground" Value="{DynamicResource BrandSecondaryLighterBrush}" />
     </Style>
     <Style Selector="DataGridColumnHeader">
         <Setter Property="Background" Value="{DynamicResource BrandSecondaryBrush}" />

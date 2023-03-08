@@ -22,6 +22,8 @@
     <None Remove=".gitignore" />
     <None Remove="Theme\BareIcons.xaml" />
     <AvaloniaResource Include="Theme\BareIcons.xaml" />
+    <None Remove="Controls\GameWidget\GameWidgetStyles.xaml" />
+    <AvaloniaResource Include="Controls\GameWidget\GameWidgetStyles.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -29,17 +31,17 @@
   </ItemGroup>
 
   <ItemGroup>
-      <PackageReference Include="Avalonia" Version="11.0.0-preview4" />
-      <PackageReference Include="Avalonia.Desktop" Version="11.0.0-preview4" />
-      <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.0-preview4" />
+      <PackageReference Include="Avalonia" Version="11.0.0-preview5" />
+      <PackageReference Include="Avalonia.Desktop" Version="11.0.0-preview5" />
+      <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.0-preview5" />
       <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-      <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.0-preview4" />
-      <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0-preview4" />
-      <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0-preview4" />
-      <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview4" />
+      <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.0-preview5" />
+      <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0-preview5" />
+      <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0-preview5" />
+      <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview5" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0-preview.1.23110.8" />
-      <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="6.3.0-preview4" />
-      <PackageReference Include="ReactiveUI.Fody" Version="18.4.22" />
+      <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="6.5.0-preview5" />
+      <PackageReference Include="ReactiveUI.Fody" Version="18.4.25" />
       <PackageReference Include="Splat.Microsoft.Extensions.Logging" Version="14.6.8" />
       <PackageReference Include="XamlNameReferenceGenerator" Version="1.6.1" />
   </ItemGroup>
@@ -62,6 +64,14 @@
       <DependentUpon>Add.axaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Windows\MainWindow.axaml.cs">
+      <DependentUpon>MainWindow.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Theme\Icons.xaml" />
   </ItemGroup>
 
 </Project>
