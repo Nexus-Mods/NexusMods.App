@@ -17,7 +17,7 @@ public class GameInstallationConverter : JsonConverter<GameInstallation>
     }
 
     /// <inheritdoc />
-    public override GameInstallation? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override GameInstallation Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType != JsonTokenType.StartArray)
             throw new JsonException("Expected array start");

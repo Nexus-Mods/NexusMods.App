@@ -12,7 +12,7 @@ namespace NexusMods.DataModel.JsonConverters;
 /// </summary>
 public class ConcreteConverterGenerator<T> : AExpressionConverterGenerator<T>
 {
-    public ConcreteConverterGenerator(IServiceProvider provider) : base()
+    public ConcreteConverterGenerator(IServiceProvider provider)
     {
         ReaderFunction = new Lazy<ReadDelegate>(() => GenerateReaderFunction(provider));
         WriterFunction = new Lazy<WriteDelegate>(GenerateWriter);

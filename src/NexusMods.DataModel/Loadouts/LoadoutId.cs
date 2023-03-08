@@ -1,6 +1,6 @@
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.JsonConverters;
 using NexusMods.Hashing.xxHash64;
 using Vogen;
 
@@ -40,21 +40,5 @@ public readonly partial struct LoadoutId : ICreatable<LoadoutId>
     public static LoadoutId Create()
     {
         return From(Guid.NewGuid());
-    }
-}
-
-public class LoadoutIdConverter : JsonConverter<LoadoutId>
-{
-    public override LoadoutId Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        var str = reader.GetString();
-        return LoadoutId.FromHex(str);
-    }
-
-    public override void Write(Utf8JsonWriter writer, LoadoutId value, JsonSerializerOptions options)
-    {
-        Span<char> span = stackalloc char[32];
-        value.ToHex(span);
-        writer.WriteStringValue(span);
     }
 }
