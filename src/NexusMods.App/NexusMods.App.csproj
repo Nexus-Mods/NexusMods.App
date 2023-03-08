@@ -1,4 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
+    <!-- nullable warnings as errors -->
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('NullableErrors.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
@@ -6,23 +8,22 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Games\NexusMods.Games.DarkestDungeon\NexusMods.Games.DarkestDungeon.csproj" />
-      <ProjectReference Include="..\Games\NexusMods.Games.Generic\NexusMods.Games.Generic.csproj" />
-      <ProjectReference Include="..\Games\NexusMods.Games.RedEngine\NexusMods.Games.RedEngine.csproj" />
-      <ProjectReference Include="..\Games\NexusMods.Games.Reshade\NexusMods.Games.Reshade.csproj" />
-      <ProjectReference Include="..\Games\NexusMods.Games.MountAndBlade2Bannerlord\NexusMods.Games.MountAndBlade2Bannerlord.csproj" />
-      <ProjectReference Include="..\Games\NexusMods.Games.TestHarness\NexusMods.Games.TestHarness.csproj" />
-      <ProjectReference Include="..\Networking\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />
-      <ProjectReference Include="..\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
-      <ProjectReference Include="..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
-      <ProjectReference Include="..\NexusMods.CLI\NexusMods.CLI.csproj" />
+        <ProjectReference Include="..\Games\NexusMods.Games.DarkestDungeon\NexusMods.Games.DarkestDungeon.csproj" />
+        <ProjectReference Include="..\Games\NexusMods.Games.Generic\NexusMods.Games.Generic.csproj" />
+        <ProjectReference Include="..\Games\NexusMods.Games.RedEngine\NexusMods.Games.RedEngine.csproj" />
+        <ProjectReference Include="..\Games\NexusMods.Games.Reshade\NexusMods.Games.Reshade.csproj" />
+        <ProjectReference Include="..\Games\NexusMods.Games.MountAndBlade2Bannerlord\NexusMods.Games.MountAndBlade2Bannerlord.csproj" />
+        <ProjectReference Include="..\Games\NexusMods.Games.TestHarness\NexusMods.Games.TestHarness.csproj" />
+        <ProjectReference Include="..\Networking\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />
+        <ProjectReference Include="..\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
+        <ProjectReference Include="..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
+        <ProjectReference Include="..\NexusMods.CLI\NexusMods.CLI.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0-preview.1.23110.8" />
-      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0-preview.1.23110.8" />
-      <PackageReference Include="NLog.Extensions.Logging" Version="5.2.2" />
-      <PackageReference Include="Spectre.Console" Version="0.46.1-preview.0.7" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0-preview.1.23110.8" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0-preview.1.23110.8" />
+        <PackageReference Include="NLog.Extensions.Logging" Version="5.2.2" />
+        <PackageReference Include="Spectre.Console" Version="0.46.1-preview.0.7" />
     </ItemGroup>
-
 </Project>

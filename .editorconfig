@@ -66,3 +66,6 @@ dotnet_diagnostic.cs4014.severity = error
 [{*.yaml,*.yml}]
 indent_style = space
 indent_size = 2
+
+[*.csproj]
+indent_size = 4

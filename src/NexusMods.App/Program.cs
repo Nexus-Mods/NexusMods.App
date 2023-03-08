@@ -15,12 +15,11 @@ namespace NexusMods.App;
 
 public class Program
 {
-    private static ILogger<Program> _logger;
+    private static ILogger<Program> _logger = default!;
 
     [STAThread]
     public static async Task<int> Main(string[] args)
     {
-
         var host = BuildHost();
 
         _logger = host.Services.GetRequiredService<ILogger<Program>>();

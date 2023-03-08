@@ -25,13 +25,13 @@ public class Sorter
         where TId : IEquatable<TId>
     {
         /*
-             Observation from me (Sewer).  
-             
-             In practice our mods/items are fetched from an IDataStore.  
-             
-             At the current moment in time, this is backed by an in memory database, 
-             so access times should be relatively quick and thus calling `.ToArray()` should be fine.  
-             
+             Observation from me (Sewer).
+
+             In practice our mods/items are fetched from an IDataStore.
+
+             At the current moment in time, this is backed by an in memory database,
+             so access times should be relatively quick and thus calling `.ToArray()` should be fine.
+
              That said, if this data ever was to be file backed, adding an asynchronous access method
              might not be too bad.
         */
@@ -104,24 +104,23 @@ public class Sorter
         const int MinOperationsPerThread = 666;
         ParallelOptions parallelOptions = default!;
         ParallelIsSuperset<TId, TItem> parallelState = default!;
-        Action<Tuple<int, int>>? doWork = default;
+        Action<Tuple<int, int>> doWork = default!;
 
         if (dict.Count > MultiThreadCutoff)
         {
             parallelOptions = new ParallelOptions();
-            parallelState = new ParallelIsSuperset<TId, TItem>()
-            {
-                values = values,
-                used = used,
-                output = GC.AllocateUninitializedArray<(TId[] After, TItem Item)>(dict.Count)
-            };
+            parallelState = new ParallelIsSuperset<TId, TItem>(
+                used,
+                values,
+                GC.AllocateUninitializedArray<(TId[] After, TItem Item)>(dict.Count)
+            );
             doWork = parallelState.DoWork;
         }
 
         while (dict.Count > 0)
         {
             // Copy to values (no alloc), then filter them in-place
-            dict.Values.CopyTo(values, 0); // <= Bottleneck. 
+            dict.Values.CopyTo(values, 0); // <= Bottleneck.
             var superSetSize = 0;
             var valuesSlice = values.AsSpan(0, dict.Count);
             if (dict.Count > MultiThreadCutoff)
@@ -130,7 +129,7 @@ public class Sorter
                 parallelState.superSetSize = -1;
                 Parallel.ForEach(Partitioner.Create(0, valuesSlice.Length), parallelOptions, doWork);
                 superSetSize = parallelState.NumberOfElements;
-                valuesSlice = parallelState.output.AsSpan(0, superSetSize); // <= assign output span.
+                valuesSlice = parallelState.Output.AsSpan(0, superSetSize); // <= assign output span.
             }
             else
             {
@@ -193,9 +192,9 @@ public class Sorter
 
         /*
              Please do not refactor 'for' as foreach in this method.
-             That will lead to enumerator allocation, which in turn is a 
+             That will lead to enumerator allocation, which in turn is a
              lot of allocations made; as this is O(N^2)
-             
+
              - Sewer
         */
         for (var x = 0; x < rulesForThisItem.Count; x++)
@@ -253,18 +252,27 @@ public class Sorter
     /// </summary>
     private class ParallelIsSuperset<TId, TItem>
     {
-        internal HashSet<TId> used;
-        internal (TId[] After, TItem Item)[] values;
-        internal (TId[] After, TItem Item)[] output;
+        internal HashSet<TId> Used;
+        internal (TId[] After, TItem Item)[] Values;
+        internal (TId[] After, TItem Item)[] Output;
         internal int superSetSize = -1; // after first thread safe increment this is 0
         internal int NumberOfElements => superSetSize + 1;
+
+        internal ParallelIsSuperset(HashSet<TId> used,
+            (TId[] After, TItem Item)[] values,
+            (TId[] After, TItem Item)[] output)
+        {
+            Used = used;
+            Values = values;
+            Output = output;
+        }
 
         internal void DoWork(Tuple<int, int> tuple)
         {
             // Work on our slice.
-            var val = values;
-            var otp = output;
-            var used = this.used;
+            var val = Values;
+            var otp = Output;
+            var used = Used;
             for (var x = tuple.Item1; x < tuple.Item2; x++)
             {
                 var value = val[x];

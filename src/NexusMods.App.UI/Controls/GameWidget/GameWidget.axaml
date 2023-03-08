@@ -1,0 +1,81 @@
+﻿<reactiveUi:ReactiveUserControl
+    Classes="AddGame"
+    d:DesignHeight="220"
+    d:DesignWidth="180"
+    mc:Ignorable="d"
+    x:Class="NexusMods.App.UI.Controls.GameWidget.GameWidget"
+    x:TypeArguments="gameWidget:IGameWidgetViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:gameWidget="clr-namespace:NexusMods.App.UI.Controls.GameWidget"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.DataContext>
+        <gameWidget:GameWidgetDesignViewModel />
+    </Design.DataContext>
+    <UserControl.Styles>
+        <Style Selector="Border.MainBorder">
+            <Setter Property="CornerRadius" Value="25" />
+        </Style>
+
+        <Style Selector="TextBlock.GameName">
+            <Setter Property="Foreground" Value="{DynamicResource FontDarkPrimary}" />
+            <Setter Property="FontFamily" Value="{DynamicResource FontPrimary}" />
+            <Setter Property="FontWeight" Value="600" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="LineHeight" Value="16.5" />
+            <Setter Property="LetterSpacing" Value="0.6" />
+        </Style>
+
+
+    </UserControl.Styles>
+
+    <Border
+        Classes="MainBorder"
+        ClipToBounds="True"
+        Height="220"
+        Width="180">
+        <Grid RowDefinitions="106, *">
+            <Image
+                Grid.Row="0"
+                Grid.RowSpan="2"
+                Height="220"
+                Stretch="UniformToFill"
+                Width="180"
+                x:Name="BlurryImage" />
+            <Image
+                Grid.Row="0"
+                Stretch="UniformToFill"
+                Width="180"
+                x:Name="GameImage" />
+            <Border Classes="Background" Grid.Row="1">
+                <StackPanel Margin="16,8" Orientation="Vertical">
+                    <TextBlock
+                        Classes="GameName"
+                        Height="34"
+                        TextWrapping="Wrap"
+                        x:Name="NameTextBlock" />
+                    <Border
+                        BorderBrush="#14FFFFFF"
+                        BorderThickness="0,1,0,0"
+                        Margin="0,8,0,0"
+                        Width="148" />
+                    <StackPanel Orientation="Horizontal">
+                        <Button
+                            Classes="Rounded"
+                            Margin="0,8,0,8"
+                            x:Name="PrimaryButton">
+                            <StackPanel Orientation="Horizontal">
+                                <avalonia:Icon Foreground="#FFFFFF" Value="mdi-plus-circle" />
+                                <TextBlock Classes="Body2RobotoRegular" Margin="6,9.5,12,9.5">Add game</TextBlock>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
+</reactiveUi:ReactiveUserControl>
+

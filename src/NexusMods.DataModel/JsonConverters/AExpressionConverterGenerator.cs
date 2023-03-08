@@ -7,8 +7,8 @@ namespace NexusMods.DataModel.JsonConverters;
 public abstract class AExpressionConverterGenerator<T> : JsonConverter<T>
 {
     protected readonly IServiceProvider Provider;
-    protected Lazy<WriteDelegate> _writerFunction;
-    protected Lazy<ReadDelegate> _readerFunction;
+    protected Lazy<WriteDelegate> _writerFunction = default!;
+    protected Lazy<ReadDelegate> _readerFunction = default!;
     protected readonly Type Type;
 
     protected delegate T? ReadDelegate(ref Utf8JsonReader read, Type typeToConvert, JsonSerializerOptions options);

@@ -48,6 +48,8 @@ public abstract class AGame : IGame
 
     public virtual IStreamFactory Icon => throw new NotImplementedException("No icon provided for this game.");
 
+    public virtual IStreamFactory GameImage => throw new NotImplementedException("No game image provided for this game.");
+
     private Version GetVersion(IGameLocator locator, GameLocatorResult installation)
     {
         var fvi = PrimaryFile.CombineChecked(installation.Path).VersionInfo;

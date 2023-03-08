@@ -92,6 +92,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".solutionItems", ".solution
 		README.md = README.md
 		.gitattributes = .gitattributes
 		.editorconfig = .editorconfig
+		NullableErrors.Build.props = NullableErrors.Build.props
 	EndProjectSection
 EndProject
 Global

@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using ReactiveUI;
@@ -11,7 +11,7 @@ public class ImageButtonDesignViewModel : ImageButtonViewModel
     {
         var assets = AvaloniaLocator.Current.GetService<IAssetLoader>();
         Image = new Bitmap(assets.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")));
-        Click = ReactiveCommand.Create(() => { IsActive = !IsActive;});
+        Click = ReactiveCommand.Create(() => { IsActive = !IsActive; });
         Name = "Image Text";
         Tag = new object();
     }

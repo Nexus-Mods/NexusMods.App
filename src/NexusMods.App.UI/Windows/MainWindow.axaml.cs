@@ -1,12 +1,11 @@
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Controls;
-using Avalonia.Controls.Mixins;
 using Avalonia.Input;
 using Avalonia.ReactiveUI;
-using NexusMods.App.UI.ViewModels;
 using ReactiveUI;
 
-namespace NexusMods.App.UI.Views;
+namespace NexusMods.App.UI.Windows;
 
 public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 {
@@ -47,6 +46,9 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 .Subscribe(_ => WindowState = WindowState.Maximized)
                 .DisposeWith(disposables);
 
+            this.WhenAnyValue(view => view.ViewModel!.LeftMenu)
+                .BindTo(this, view => view.LeftMenuViewModelHost.ViewModel)
+                .DisposeWith(disposables);
         });
     }
 

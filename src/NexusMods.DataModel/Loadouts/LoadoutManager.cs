@@ -63,7 +63,7 @@ public class LoadoutManager
 
     public IResource<LoadoutManager, Size> Limiter { get; set; }
 
-    public IObservable<LoadoutRegistry> Changes => _root.Changes.Select(r => r.New);
+    public IObservable<LoadoutRegistry> Changes => _root.Changes;
     public IEnumerable<LoadoutMarker> AllLoadouts => _root.Value.Lists.Values.Select(m => new LoadoutMarker(this, m.LoadoutId));
 
     public async Task<LoadoutMarker> ManageGame(GameInstallation installation, string name = "", CancellationToken token = default)
@@ -88,7 +88,6 @@ public class LoadoutManager
         };
 
         _root.Alter(r => r with { Lists = r.Lists.With(n.LoadoutId, n) });
-
         _logger.LogInformation("Loadout {Name} {Id} created", name, n.LoadoutId);
         _logger.LogInformation("Adding game files");
 
@@ -255,7 +254,6 @@ public class LoadoutManager
 
             return state;
         }, new HashSet<IId>());
-
         _logger.LogDebug("Found {Count} entities to export", ids.Count);
 
         foreach (var entityId in ids)
@@ -299,5 +297,23 @@ public class LoadoutManager
             throw new Exception("Loadout not found after loading data store, the loadout may be corrupt");
         _root.Alter(r => r with { Lists = r.Lists.With(loadout.LoadoutId, loadout) });
         return new LoadoutMarker(this, loadout.LoadoutId);
+    }
+
+    /// <summary>
+    /// Finds a free name for a new loadout. Will return a name like "My Loadout 1" or "My Loadout 2" etc.
+    /// Will return a name like "My Loadout 1234-1234-1234-1234" if it can't find a free name.
+    /// </summary>
+    /// <param name="installation"></param>
+    /// <returns></returns>
+    public string FindName(GameInstallation installation)
+    {
+        for (var i = 1; i < 1000; i++)
+        {
+            var name = $"My Loadout {i}";
+            if (_root.Value.Lists.All(l => l.Value.Name != name))
+                return name;
+        }
+
+        return $"My Loadout {Guid.NewGuid()}";
     }
 }
