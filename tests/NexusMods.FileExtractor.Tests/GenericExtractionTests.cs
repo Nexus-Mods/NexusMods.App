@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using NexusMods.Common;
 using NexusMods.DataModel.Extensions;
 using NexusMods.FileExtractor.StreamFactories;

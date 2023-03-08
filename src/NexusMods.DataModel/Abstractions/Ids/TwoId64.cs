@@ -1,4 +1,4 @@
-using System.Buffers.Binary;
+﻿using System.Buffers.Binary;
 
 namespace NexusMods.DataModel.Abstractions.Ids;
 

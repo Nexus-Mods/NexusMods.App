@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using CliWrap;
 using CliWrap.Exceptions;
 using Microsoft.Extensions.Logging;

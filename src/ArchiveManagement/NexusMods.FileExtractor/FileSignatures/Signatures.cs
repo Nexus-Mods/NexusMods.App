@@ -8,7 +8,7 @@ namespace NexusMods.FileExtractor.FileSignatures
     {                /// <summary>
                      /// Bethesda Tar
                      /// </summary>
-        BTAR,
+                BTAR,
         /// <summary>
         /// Creation Engine Plugin
         /// </summary>

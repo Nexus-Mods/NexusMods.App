@@ -1,4 +1,4 @@
-using CliWrap;
+﻿using CliWrap;
 
 namespace NexusMods.Common.OSInterop;
 

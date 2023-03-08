@@ -1,4 +1,4 @@
-using NexusMods.DataModel.Abstractions;
+﻿using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using Sewer56.BitStream;
 using Sewer56.BitStream.ByteStreams;

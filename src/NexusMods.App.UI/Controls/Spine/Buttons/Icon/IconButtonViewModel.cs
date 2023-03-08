@@ -1,4 +1,4 @@
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using NexusMods.App.UI.ViewModels;
 using ReactiveUI.Fody.Helpers;
 
