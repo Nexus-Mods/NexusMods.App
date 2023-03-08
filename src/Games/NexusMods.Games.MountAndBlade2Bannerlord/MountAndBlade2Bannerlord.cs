@@ -47,8 +47,8 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
     public override IStreamFactory Icon =>
         new EmbededResourceStreamFactory<MountAndBlade2Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.MountAndBlade2Bannerlord.icon.jpg");
 
-    //public override IStreamFactory GameImage =>
-    //    new EmbededResourceStreamFactory<MountAndBlade2Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.MountAndBlade2Bannerlord.game_image.jpg");
+    public override IStreamFactory GameImage =>
+        new EmbededResourceStreamFactory<MountAndBlade2Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.MountAndBlade2Bannerlord.game_image.jpg");
 
     public override IEnumerable<GameInstallation> Installations
     {

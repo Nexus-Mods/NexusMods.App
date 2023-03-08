@@ -120,7 +120,7 @@ internal sealed partial class LauncherManagerNexusMods : LauncherManagerHandler
                     Title = title,
                     FileTypeFilter = filters.Select(x => new FilePickerFileType(x.Name) { Patterns = x.Extensions }).ToArray(),
                     AllowMultiple = false
-                }).ContinueWith(x => onResult(x.Result.Count < 1 || !x.Result[0].TryGetUri(out var fileUri) ? string.Empty : fileUri.ToString()));
+                }).ContinueWith(x => onResult(x.Result.Count < 1 ? string.Empty : x.Result[0].Path.ToString()));
                 return;
             }
             case DialogType.FileSave:
@@ -132,7 +132,7 @@ internal sealed partial class LauncherManagerNexusMods : LauncherManagerHandler
                     FileTypeChoices = filters.Select(x => new FilePickerFileType(x.Name) { Patterns = x.Extensions }).ToArray(),
                     SuggestedFileName = fileName,
                     ShowOverwritePrompt = true
-                }).ContinueWith(x => onResult(x.Result is null || !x.Result.TryGetUri(out var fileUri) ? string.Empty : fileUri.ToString()));
+                }).ContinueWith(x => onResult(x.Result is null ? string.Empty : x.Result.Path.ToString()));
                 return;
             }
         }
