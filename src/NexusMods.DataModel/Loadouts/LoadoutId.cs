@@ -16,6 +16,12 @@ namespace NexusMods.DataModel.Loadouts;
 [JsonConverter(typeof(LoadoutIdConverter))]
 public readonly partial struct LoadoutId : ICreatable<LoadoutId>
 {
+    // Note: We store this as hex because we need to serialize to JSON.
+
+    /// <summary>
+    /// Deserializes a loadout ID from hex string.
+    /// </summary>
+    /// <param name="hex">The span of characters storing the value for this loadout.</param>
     public static LoadoutId FromHex(ReadOnlySpan<char> hex)
     {
         Span<byte> span = stackalloc byte[16];
@@ -23,6 +29,10 @@ public readonly partial struct LoadoutId : ICreatable<LoadoutId>
         return From(new Guid(span));
     }
 
+    /// <summary>
+    /// Serializes the loadout id to this hex string.
+    /// </summary>
+    /// <param name="span">To span.</param>
     public void ToHex(Span<char> span)
     {
         Span<byte> bytes = stackalloc byte[16];
@@ -30,6 +40,7 @@ public readonly partial struct LoadoutId : ICreatable<LoadoutId>
         ((ReadOnlySpan<byte>)bytes).ToHex(span);
     }
 
+    /// <inheritdoc />
     public override string ToString()
     {
         Span<byte> span = stackalloc byte[16];
@@ -37,6 +48,9 @@ public readonly partial struct LoadoutId : ICreatable<LoadoutId>
         return ((ReadOnlySpan<byte>)span).ToHex();
     }
 
+    /// <summary>
+    /// Creates a new loadout ID.
+    /// </summary>
     public static LoadoutId Create()
     {
         return From(Guid.NewGuid());

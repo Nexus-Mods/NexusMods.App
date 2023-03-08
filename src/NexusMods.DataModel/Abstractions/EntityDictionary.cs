@@ -144,6 +144,10 @@ public struct EntityDictionary<TK, TV> :
     /// Transforms a value found at at given id with a given function.
     /// If the function returns null, the value is removed from the dictionary.
     /// </summary>
+    /// <remarks>
+    ///    This function respects the returned value from the function <paramref name="func"/>,
+    ///    as such, it can also be used to alter existing elements within the dictionary.
+    /// </remarks>
     public EntityDictionary<TK, TV> Keep(TK key, Func<TV, TV?> func)
     {
         var id = _coll[key];

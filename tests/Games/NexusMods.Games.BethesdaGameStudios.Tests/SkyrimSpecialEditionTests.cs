@@ -62,7 +62,7 @@ public class SkyrimSpecialEditionTests
 
         ms.Position = 0;
 
-        var (size, hash) = await pluginFile.GetMetaData(loadout.Value, flattenedList);
+        var (size, hash) = await pluginFile.GetMetadataAsync(loadout.Value, flattenedList);
 
         size.Should().Be(Size.From(ms.Length));
         (await ms.Hash()).Should().Be(hash);

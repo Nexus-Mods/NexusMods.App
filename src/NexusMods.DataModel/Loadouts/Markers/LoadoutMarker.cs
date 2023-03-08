@@ -79,7 +79,7 @@ public class LoadoutMarker : IMarker<Loadout>
         {
             if (file is AGeneratedFile gen && gen.Hash == Hash.Zero)
             {
-                var metaData = await gen.GetMetaData(loadout, flattenedList, token);
+                var metaData = await gen.GetMetadataAsync(loadout, flattenedList, token);
                 var newFile = (gen with { Hash = metaData.Hash, Size = metaData.Size }, mod);
                 generated.Add(newFile);
                 response.Add(newFile);
@@ -362,7 +362,7 @@ public class LoadoutMarker : IMarker<Loadout>
                         });
                         break;
 
-                    case RemoveFromLoadout remove:
+                    case RemoveFromLoadout:
                         Loadout = Loadout.AlterFiles(x => x.To == gamePath ? null : x);
                         break;
                     case IntegrateFile t:

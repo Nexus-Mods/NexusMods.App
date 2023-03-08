@@ -137,9 +137,9 @@ public class LoadoutManager
 
     }
 
-    public async Task<(LoadoutMarker Loadout, ModId ModId)> InstallMod(LoadoutId LoadoutId, AbsolutePath path, string name, CancellationToken token = default)
+    public async Task<(LoadoutMarker Loadout, ModId ModId)> InstallMod(LoadoutId loadoutId, AbsolutePath path, string name, CancellationToken token = default)
     {
-        var loadout = GetLoadout(LoadoutId);
+        var loadout = GetLoadout(loadoutId);
 
         var analyzed = await _analyzer.AnalyzeFile(path, token);
         if (analyzed is not AnalyzedArchive archive)
@@ -158,7 +158,7 @@ public class LoadoutManager
 
         var contents = installer.Installer.Install(loadout.Value.Installation, analyzed.Hash, archive.Contents);
 
-        name = string.IsNullOrWhiteSpace(name) ? path.FileName.ToString() : name;
+        name = string.IsNullOrWhiteSpace(name) ? path.FileName : name;
 
         var newMod = new Mod
         {
@@ -171,9 +171,9 @@ public class LoadoutManager
         return (loadout, newMod.Id);
     }
 
-    private LoadoutMarker GetLoadout(LoadoutId LoadoutId)
+    private LoadoutMarker GetLoadout(LoadoutId loadoutId)
     {
-        return new LoadoutMarker(this, LoadoutId);
+        return new LoadoutMarker(this, loadoutId);
     }
 
 
