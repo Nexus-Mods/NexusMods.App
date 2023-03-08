@@ -82,9 +82,12 @@ public abstract record Entity : IWalkable<Entity>
     [JsonIgnore]
     public IId DataStoreId
     {
-        get => _id ?? throw new UnpersistedEntity(this);
+        get => _id ?? throw new UnpersistedEntity();
         set => _id = value;
     }
+
+    [JsonIgnore]
+    public bool IsPersisted => _id != null;
 
     /// <inheritdoc />
     public TState Walk<TState>(Func<TState, Entity, TState> visitor, TState initial)

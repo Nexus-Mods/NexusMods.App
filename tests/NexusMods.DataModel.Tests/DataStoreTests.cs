@@ -34,7 +34,7 @@ public class DataStoreTests
             From = new HashRelativePath((Hash)42L, Array.Empty<RelativePath>()),
             Size = (Size)42L,
             To = new GamePath(GameFolderType.Game, "test.foo")
-        };
+        }.WithPersist(DataStore);
         foo.DataStoreId.ToString().Should().NotBeEmpty();
         DataStore.Get<FromArchive>(foo.DataStoreId).Should().NotBeNull();
     }
@@ -59,7 +59,8 @@ public class DataStoreTests
             Hash = (Hash)(ulong)idx,
             Size = Size.From(idx),
             To = new GamePath(GameFolderType.Game, $"{idx}.file"),
-        }).ToList();
+        }).WithPersist(DataStore)
+            .ToList();
 
         var set = new EntityHashSet<AModFile>(DataStore, files.Select(m => m.DataStoreId));
 

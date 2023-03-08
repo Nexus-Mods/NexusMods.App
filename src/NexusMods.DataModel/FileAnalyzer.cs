@@ -153,9 +153,12 @@ public class FileContentsCache
                         async (_, entry) =>
                         {
                             var relPath = entry.Path.RelativeTo(tmpFolder.Path);
+                            var analysisRecord = await AnalyzeFileInner(
+                                new NativeFileStreamFactory(entry.Path), token,
+                                level + 1, hash, relPath);
+                            analysisRecord.WithPersist(_store);
                             return (entry.Path,
-                                Results: await AnalyzeFileInner(new NativeFileStreamFactory(entry.Path), token,
-                                    level + 1, hash, relPath));
+                                Results: analysisRecord);
                         },
                         token, "Analyzing Files")
                     .Select(a => KeyValuePair.Create(a.Path.RelativeTo(tmpFolder.Path), a.Results.DataStoreId))

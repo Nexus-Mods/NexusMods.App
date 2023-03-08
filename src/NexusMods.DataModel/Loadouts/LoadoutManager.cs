@@ -77,7 +77,7 @@ public class LoadoutManager
             Name = "Game Files",
             Files = new EntityDictionary<ModFileId, AModFile>(Store, gameFiles.Select(g => new KeyValuePair<ModFileId, IId>(g.Id, g.DataStoreId))),
             SortRules = ImmutableList<ISortRule<Mod, ModId>>.Empty.Add(new First<Mod, ModId>())
-        };
+        }.WithPersist(Store);
 
         var n = Loadout.Empty(Store) with
         {
@@ -85,6 +85,8 @@ public class LoadoutManager
             Name = name,
             Mods = new EntityDictionary<ModId, Mod>(Store, new[] { new KeyValuePair<ModId, IId>(mod.Id, mod.DataStoreId) })
         };
+
+        n.WithPersist(Store);
 
         _root.Alter(r => r with { Lists = r.Lists.With(n.LoadoutId, n) });
         _logger.LogInformation("Loadout {Name} {Id} created", name, n.LoadoutId);
@@ -102,7 +104,7 @@ public class LoadoutManager
                     Installation = installation,
                     Hash = result.Hash,
                     Size = result.Size
-                };
+                }.WithPersist(Store);
 
                 var metaData = await GetMetadata(n, mod, file, analysis).ToHashSet();
                 gameFiles.Add(file with { Metadata = metaData.ToImmutableHashSet() });
@@ -153,7 +155,8 @@ public class LoadoutManager
         if (installer == default)
             throw new Exception($"No Installer found for {path}");
 
-        var contents = installer.Installer.Install(loadout.Value.Installation, analyzed.Hash, archive.Contents);
+        var contents = installer.Installer.Install(loadout.Value.Installation, analyzed.Hash, archive.Contents)
+            .WithPersist(Store);
 
         name = string.IsNullOrWhiteSpace(name) ? path.FileName.ToString() : name;
 

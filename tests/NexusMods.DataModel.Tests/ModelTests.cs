@@ -32,6 +32,7 @@ public class ModelTests : ADataModelTest<ModelTests>
             Hash = (Hash)0x42L,
             Size = Size.From(44L)
         };
+        file.EnsurePersisted(DataStore);
         file.DataStoreId.Should().NotBeNull();
 
         DataStore.Get<FromArchive>(file.DataStoreId)!.To.Should().BeEquivalentTo(file.To);
