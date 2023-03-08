@@ -1,5 +1,7 @@
 using Microsoft.Extensions.Logging;
+using NexusMods.Common;
 using NexusMods.DataModel.Games;
+using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Games.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
@@ -41,6 +43,12 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
     public GamePath BLSELauncherFile => new(GameFolderType.Game, @"bin\Win64_Shipping_Client\Bannerlord.BLSE.Launcher.exe");
 
     public GamePath BLSELauncherExFile => new(GameFolderType.Game, @"bin\Win64_Shipping_Client\Bannerlord.BLSE.LauncherEx.exe");
+
+    public override IStreamFactory Icon =>
+        new EmbededResourceStreamFactory<MountAndBlade2Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.MountAndBlade2Bannerlord.icon.jpg");
+
+    //public override IStreamFactory GameImage =>
+    //    new EmbededResourceStreamFactory<MountAndBlade2Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.MountAndBlade2Bannerlord.game_image.jpg");
 
     public override IEnumerable<GameInstallation> Installations
     {
