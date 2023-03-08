@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
@@ -43,7 +44,10 @@ public class FomodXMLInstaller : IModInstaller
     public async Task<IEnumerable<AModFile>> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken cancel)
     {
         var filePaths = files.Select(_ => (string)_.Key).ToList();
-        var stopPattern = new List<string> { "textures", "meshes" };
+        // the component dealing with fomods is built to support all kinds of mods, including those without a script.
+        // for those cases, stop patterns can be way more complex to deduce the intended installation structure. In our case, where
+        // we only intend to support xml scripted fomods, this should be good enough
+        var stopPattern = new List<string> { "fomod" };
 
         var found = _store.Get<AnalyzedFile>(new Id64(EntityCategory.FileAnalysis, (ulong)srcArchive));
 
