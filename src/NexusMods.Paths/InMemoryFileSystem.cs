@@ -3,30 +3,28 @@ using JetBrains.Annotations;
 namespace NexusMods.Paths;
 
 /// <summary>
-/// Default implementation of <see cref="IFileSystem"/>.
+/// Implementation of <see cref="IFileSystem"/> for use with tests.
 /// </summary>
 [PublicAPI]
-public class FileSystem : BaseFileSystem
+public class InMemoryFileSystem : BaseFileSystem
 {
     /// <summary>
-    /// Shared instance of the default implementation.
+    /// Constructor.
     /// </summary>
-    public static readonly IFileSystem Shared = new FileSystem();
-
-    private FileSystem() { }
+    public InMemoryFileSystem() { }
 
     #region Implementation
 
-    private FileSystem(Dictionary<AbsolutePath, AbsolutePath> pathMappings) : base(pathMappings) { }
+    private InMemoryFileSystem(Dictionary<AbsolutePath, AbsolutePath> pathMappings) : base(pathMappings) { }
 
     /// <inheritdoc/>
     public override IFileSystem CreateOverlayFileSystem(Dictionary<AbsolutePath, AbsolutePath> pathMappings)
-        => new FileSystem(pathMappings);
+        => new InMemoryFileSystem(pathMappings);
 
     /// <inheritdoc/>
     protected override Stream OpenFile(AbsolutePath path, FileMode mode, FileAccess access, FileShare share)
     {
-        return File.Open(path.GetFullPath(), mode, access, share);
+        throw new NotImplementedException();
     }
 
     #endregion

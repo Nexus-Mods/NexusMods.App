@@ -8,6 +8,13 @@ namespace NexusMods.Paths;
 [PublicAPI]
 public interface IFileSystem
 {
+    /// <summary>
+    /// Creates a new <see cref="FileSystem"/> that allows for path mapping.
+    /// </summary>
+    /// <param name="pathMappings">Path mappings</param>
+    /// <returns></returns>
+    IFileSystem CreateOverlayFileSystem(Dictionary<AbsolutePath, AbsolutePath> pathMappings);
+
     AbsolutePath FromFullPath(string fullPath);
 
     AbsolutePath FromDirectoryAndFileName(string? directoryPath, string fullPath);
