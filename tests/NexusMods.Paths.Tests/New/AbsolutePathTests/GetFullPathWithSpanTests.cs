@@ -5,6 +5,7 @@ namespace NexusMods.Paths.Tests.New.AbsolutePathTests;
 public class GetFullPathWithSpanTests
 {
     [Theory]
+    [InlineData("/foo", "/", "foo")]
     [InlineData("C:/NMA/test.png", "C:/NMA", "test.png")]
     [InlineData("/home/sewer/NMA/test.png", "/home/sewer/NMA", "test.png")]
     public void GetFullPath_Common(string expected, string? directory, string fileName) => AssertGetFullPath(expected, directory, fileName);
@@ -25,6 +26,7 @@ public class GetFullPathWithSpanTests
     public void GetFullPath_WithDirectoryOnly(string expected, string? directory, string fileName) => AssertGetFullPath(expected, directory, fileName);
 
     [Theory]
+    [InlineData("/foo.txt", "/", "foo.txt")]
     [InlineData("C:/NMA/test.png", "C:/NMA", "test.png")]
     [InlineData("/home/sewer/NMA/test.png", "/home/sewer/NMA", "test.png")]
     public void GetFullPath_WithInsufficientBuffer(string expected, string? directory, string fileName)

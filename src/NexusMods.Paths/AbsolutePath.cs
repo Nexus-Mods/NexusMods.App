@@ -140,13 +140,23 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         if (FileName.Length == 0)
             return Directory;
 
-        var requiredLength = Directory.Length + FileName.Length + 1;
+        var requiredLength = GetFullPathLength();
         if (buffer.Length < requiredLength)
             return default;
 
         Directory.CopyTo(buffer);
-        buffer[Directory.Length] = Path.DirectorySeparatorChar;
-        FileName.CopyTo(buffer.SliceFast(Directory.Length + 1));
+
+        // on Linux: Directory="/", FileName="foo" should return "/foo" and not "//foo"
+        if (OperatingSystem.IsWindows() || Directory != DirectorySeparatorCharStr)
+        {
+            buffer[Directory.Length] = Path.DirectorySeparatorChar;
+            FileName.CopyTo(buffer.SliceFast(Directory.Length + 1));
+        }
+        else
+        {
+            FileName.CopyTo(buffer.SliceFast(Directory.Length));
+        }
+
         return buffer.SliceFast(0, requiredLength);
     }
 
@@ -158,6 +168,10 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     {
         if (Directory == null)
             return FileName.Length;
+
+        // on Linux: Directory="/", FileName="foo" should return 1 + 3 and not 1 + 3 + 1
+        if (!OperatingSystem.IsWindows() && Directory == DirectorySeparatorCharStr)
+            return 1 + FileName.Length;
 
         return Directory.Length + FileName.Length + 1;
     }
