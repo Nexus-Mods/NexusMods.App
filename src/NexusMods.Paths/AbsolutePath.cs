@@ -95,9 +95,9 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// Converts an existing full path into an absolute path.
     /// </summary>
     /// <param name="directoryPath">The path to the directory used.</param>
-    /// <param name="fullPath">The full path to use.</param>
+    /// <param name="fileName">The file name to use.</param>
     /// <returns>The converted absolute path.</returns>
-    public static AbsolutePath FromDirectoryAndFileName(string? directoryPath, string fullPath) => new(directoryPath, fullPath);
+    public static AbsolutePath FromDirectoryAndFileName(string? directoryPath, string fileName) => new(directoryPath, fileName);
 
     /// <summary>
     /// Returns the full path of the combined string.
@@ -119,32 +119,26 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     }
 
     /// <summary>
-    /// Returns the full path of the combined string.
+    /// Copies the full path into <paramref name="buffer"/>.
     /// </summary>
-    /// <param name="buffer">
-    ///    The buffer which the resulting string will be stored inside.
-    ///    Should at least be <see cref="GetFullPathLength"/> long.
-    /// </param>
-    /// <returns>
-    ///     The full combined path.
-    /// If the buffer is not long enough; an empty path.
-    /// </returns>
-    /// <remarks>
-    ///    If <see cref="Directory"/> is null; might return different buffer than passed in via parameter.
-    /// </remarks>
-    public ReadOnlySpan<char> GetFullPath(Span<char> buffer)
+    /// <param name="buffer">The buffer that will store the full path. Has to be large enough
+    /// to fit the full path. Use <see cref="GetFullPathLength"/> to get the required length.</param>
+    /// <exception cref="ArgumentException">The buffer is too small.</exception>
+    public void GetFullPath(Span<char> buffer)
     {
-        if (string.IsNullOrEmpty(Directory))
-            return FileName;
-
-        if (FileName.Length == 0)
-            return Directory;
-
         var requiredLength = GetFullPathLength();
         if (buffer.Length < requiredLength)
-            return default;
+            throw new ArgumentException($"Buffer is too small: {buffer.Length} < {requiredLength}");
+
+        if (string.IsNullOrEmpty(Directory))
+        {
+            FileName.CopyTo(buffer);
+            return;
+        }
 
         Directory.CopyTo(buffer);
+
+        if (string.IsNullOrEmpty(FileName)) return;
 
         // on Linux: Directory="/", FileName="foo" should return "/foo" and not "//foo"
         if (OperatingSystem.IsWindows() || Directory != DirectorySeparatorCharStr)
@@ -156,8 +150,6 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         {
             FileName.CopyTo(buffer.SliceFast(Directory.Length));
         }
-
-        return buffer.SliceFast(0, requiredLength);
     }
 
     /// <summary>
@@ -166,8 +158,11 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// <returns></returns>
     public int GetFullPathLength()
     {
-        if (Directory == null)
+        if (string.IsNullOrEmpty(Directory))
             return FileName.Length;
+
+        if (FileName.Length == 0)
+            return Directory.Length;
 
         // on Linux: Directory="/", FileName="foo" should return 1 + 3 and not 1 + 3 + 1
         if (!OperatingSystem.IsWindows() && Directory == DirectorySeparatorCharStr)
