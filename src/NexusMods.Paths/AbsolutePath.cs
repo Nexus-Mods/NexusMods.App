@@ -85,7 +85,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
 
         // Windows: "C:\foo", directory should be "C:"
         // Linux: "/foo", directory should be "/"
-        var directory = index == 0 ? $"{fullPath[0]}": fullPath[..index];
+        var directory = index == 0 ? DirectorySeparatorCharStr : fullPath[..index];
 
         var fileName = fullPath[(index + 1)..];
         return new AbsolutePath(directory, fileName);
@@ -111,9 +111,8 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         if (FileName.Length == 0)
             return Directory;
 
-        // on Linux: Directory="/", FileName="foo" should return "/foo"
-        // and not "//foo"
-        if (Directory.Length == 1 && Directory == DirectorySeparatorCharStr)
+        // on Linux: Directory="/", FileName="foo" should return "/foo" and not "//foo"
+        if (!OperatingSystem.IsWindows() && Directory == DirectorySeparatorCharStr)
             return string.Concat(Directory, FileName);
 
         return string.Concat(Directory, DirectorySeparatorCharStr, FileName);
