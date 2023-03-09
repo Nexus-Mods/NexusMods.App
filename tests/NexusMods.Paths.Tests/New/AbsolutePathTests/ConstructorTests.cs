@@ -13,7 +13,7 @@ public class ConstructorTests
     public void Test_Constructor_Windows(string inputDirectory, string inputFileName,
         string expectedDirectory, string expectedFileName, string expectedFullPath)
     {
-        Skip.IfNot(RuntimeInformation.IsOSPlatform(OSPlatform.Linux));
+        Skip.IfNot(RuntimeInformation.IsOSPlatform(OSPlatform.Windows));
         var path = new AbsolutePath(inputDirectory, inputFileName);
         path.Directory.Should().Be(expectedDirectory);
         path.FileName.Should().Be(expectedFileName);
