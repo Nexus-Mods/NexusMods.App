@@ -229,7 +229,6 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         // Copy and normalise.
         var relativeSpan = relativeOrig.Length <= 512 ? stackalloc char[relativeOrig.Length]
                                                       : GC.AllocateUninitializedArray<char>(relativeOrig.Length);
-
         relativeOrig.CopyTo(relativeSpan);
         relativeSpan.Replace(SeparatorToReplace, PathSeparatorForInternalOperations, relativeSpan);
         if (relativeSpan[0] == PathSeparatorForInternalOperations)
@@ -243,7 +242,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     private static string AppendChecked(string path, Span<char> relativeSpan)
     {
         ReadOnlySpan<char> remainingPath = relativeSpan;
-        ReadOnlySpan<char> splitSpan = default;
+        ReadOnlySpan<char> splitSpan;
         while ((splitSpan = SplitDir(remainingPath)) != remainingPath)
         {
             path += $"{Path.DirectorySeparatorChar}{FindFileOrDirectoryCasing(path, splitSpan)}";
@@ -281,6 +280,9 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
             ThrowHelpers.PathException("Can't create path relative to paths that aren't in the same folder");
             return default;
         }
+
+        if (OperatingSystem.IsLinux() && other.Directory == DirectorySeparatorCharStr && otherPathLength == 1)
+            return new RelativePath(thisFullPath.SliceFast(1).ToString());
 
         return new RelativePath(thisFullPath.SliceFast(otherFullPath.Length + 1).ToString());
     }
@@ -399,12 +401,6 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// <returns>Full path with directory separator string attached at the end.</returns>
     private readonly string GetFullPathWithSeparator()
     {
-        if (string.IsNullOrEmpty(Directory))
-            return string.Concat(FileName, DirectorySeparatorCharStr);
-
-        if (FileName.Length == 0)
-            return string.Concat(Directory, DirectorySeparatorCharStr);
-
-        return string.Concat(Directory, DirectorySeparatorCharStr, FileName, DirectorySeparatorCharStr);
+        return string.Concat(GetFullPath(), DirectorySeparatorCharStr);
     }
 }
