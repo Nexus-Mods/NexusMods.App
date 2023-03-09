@@ -6,12 +6,10 @@ namespace NexusMods.DataModel;
 
 public class FileCache
 {
-    private readonly ILogger<FileCache> _logger;
     private readonly AbsolutePath _cachePath;
 
     public FileCache(ILogger<FileCache> logger, AbsolutePath cachePath)
     {
-        _logger = logger;
         _cachePath = cachePath;
         if (!cachePath.DirectoryExists())
             cachePath.CreateDirectory();

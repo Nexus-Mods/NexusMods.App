@@ -16,7 +16,7 @@ public class ModSortingTests : ADataModelTest<ModSortingTests>
     [Fact]
     public async Task ModSortingRulesArePreserved()
     {
-        var loadout = await LoadoutManager.ManageGame(Install, Guid.NewGuid().ToString());
+        var loadout = await LoadoutManager.ManageGameAsync(Install, Guid.NewGuid().ToString());
         var id1 = await loadout.Install(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
         var id2 = await loadout.Install(DATA_ZIP_LZMA, "Mod2", CancellationToken.None);
 

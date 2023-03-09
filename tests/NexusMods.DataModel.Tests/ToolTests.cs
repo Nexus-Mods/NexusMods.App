@@ -21,7 +21,7 @@ public class ToolTests : ADataModelTest<ToolTests>
     public async Task CanRunTools()
     {
         var name = Guid.NewGuid().ToString();
-        var loadout = await LoadoutManager.ManageGame(Install, name);
+        var loadout = await LoadoutManager.ManageGameAsync(Install, name);
         await loadout.Install(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
         var gameFolder = loadout.Value.Installation.Locations[GameFolderType.Game];
 

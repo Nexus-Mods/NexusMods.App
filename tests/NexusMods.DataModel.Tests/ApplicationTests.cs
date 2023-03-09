@@ -19,7 +19,7 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
     [Fact]
     public async Task CanApplyGame()
     {
-        var mainList = await LoadoutManager.ManageGame(Install, "MainList", CancellationToken.None);
+        var mainList = await LoadoutManager.ManageGameAsync(Install, "MainList", CancellationToken.None);
         await mainList.Install(DATA_ZIP_LZMA, "First Mod", CancellationToken.None);
 
         var plan = await mainList.MakeApplyPlan();
@@ -36,7 +36,7 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
     [Fact]
     public async Task CanIntegrateChanges()
     {
-        var mainList = await LoadoutManager.ManageGame(Install, "MainList", Token);
+        var mainList = await LoadoutManager.ManageGameAsync(Install, "MainList", Token);
         await mainList.Install(DATA_ZIP_LZMA, "First Mod", Token);
         await mainList.Install(DATA_7Z_LZMA2, "Second Mod", Token);
 

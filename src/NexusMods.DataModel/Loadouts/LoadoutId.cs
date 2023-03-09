@@ -14,6 +14,7 @@ namespace NexusMods.DataModel.Loadouts;
 /// </summary>
 [ValueObject<Guid>(conversions: Conversions.None)]
 [JsonConverter(typeof(LoadoutIdConverter))]
+// ReSharper disable once PartialTypeWithSinglePart
 public readonly partial struct LoadoutId : ICreatable<LoadoutId>
 {
     // Note: We store this as hex because we need to serialize to JSON.

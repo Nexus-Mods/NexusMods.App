@@ -20,12 +20,12 @@ public class ArchiveManagerTests
     {
         await using var file = _temporaryFileManager.CreateFile();
         await file.Path.WriteAllTextAsync("Hello World!");
-        var hash = await _manager.ArchiveFile(file.Path);
+        var hash = await _manager.ArchiveFileAsync(file.Path);
         hash.Should().Be(Hash.From(0xA52B286A3E7F4D91));
 
         _manager.HaveArchive(hash).Should().BeTrue();
         _manager.HaveFile(hash).Should().BeTrue();
-        (await _manager.Open(hash).ReadAllTextAsync()).Should().Be("Hello World!");
+        (await _manager.OpenRead(hash).ReadAllTextAsync()).Should().Be("Hello World!");
 
         _manager.AllArchives().Should().Contain(hash);
     }

@@ -3,8 +3,13 @@ using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Loadouts.ApplySteps;
 
-// TODO: Ask Tim about this.
-/// <summary/>
+/// <summary>
+/// Used for marking files as being 'for integration'.
+///
+/// i.e. When you run a game or tool, and it produces a file, such as
+/// a log, or savegame; we might want to integrate those files as mods
+/// in order to allow the user to manage these files.
+/// </summary>
 public record IntegrateFile : IApplyStep, IStaticFileStep
 {
     /// <summary>

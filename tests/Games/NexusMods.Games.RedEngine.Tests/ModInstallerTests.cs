@@ -55,6 +55,7 @@ public class ModInstallerTests
 
     private async Task<AbsolutePath> Download(ModId modId, FileId fileId, Hash hash)
     {
+        // TODO: Change HaveArchive to output file path, otherwise end users might see tests, copy this code and do it inefficiently.
         if (_archiveManager.HaveArchive(hash))
             return _archiveManager.PathFor(hash);
 

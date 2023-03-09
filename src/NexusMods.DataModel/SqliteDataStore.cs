@@ -18,11 +18,10 @@ namespace NexusMods.DataModel;
 
 public class SqliteDataStore : IDataStore, IDisposable
 {
-    private readonly AbsolutePath _path;
-    private readonly string _connectionString;
     private readonly SQLiteConnection _conn;
     private readonly Dictionary<EntityCategory, string> _getStatements;
     private readonly Dictionary<EntityCategory, string> _putStatements;
+    // ReSharper disable once CollectionNeverQueried.Local
     private readonly Dictionary<EntityCategory, string> _casStatements;
     private readonly Lazy<JsonSerializerOptions> _jsonOptions;
     private readonly Dictionary<EntityCategory, string> _prefixStatements;
@@ -34,7 +33,6 @@ public class SqliteDataStore : IDataStore, IDisposable
     private readonly ConcurrentQueue<RootChange> _pendingRootChanges = new();
     private readonly ConcurrentQueue<IdUpdated> _pendingIdPuts = new();
     private readonly CancellationTokenSource _enqueuerTcs;
-    private readonly Task _enqueuerTask;
     private readonly ILogger<SqliteDataStore> _logger;
     private readonly IMessageProducer<IdUpdated> _idPutProducer;
     private readonly IMessageConsumer<IdUpdated> _idPutConsumer;
@@ -46,9 +44,8 @@ public class SqliteDataStore : IDataStore, IDisposable
         IMessageConsumer<IdUpdated> idPutConsumer)
     {
         _logger = logger;
-        _path = path;
-        _connectionString = string.Intern($"Data Source={path}");
-        _conn = new SQLiteConnection(_connectionString);
+        var connectionString = string.Intern($"Data Source={path}");
+        _conn = new SQLiteConnection(connectionString);
         _conn.Open();
 
         _getStatements = new Dictionary<EntityCategory, string>();
@@ -67,7 +64,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         _idPutConsumer = idPutConsumer;
 
         _enqueuerTcs = new CancellationTokenSource();
-        _enqueuerTask = Task.Run(EnqueuerLoop);
+        Task.Run(EnqueuerLoop);
     }
 
     private async Task EnqueuerLoop()
@@ -186,6 +183,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         {
             var blob = reader.GetStream(0);
             var bytes = new byte[blob.Length];
+            // TODO: Potential bug fix here.
             blob.Read(bytes, 0, bytes.Length);
             return IId.FromTaggedSpan(bytes);
         }
@@ -357,6 +355,7 @@ internal static class SqlExtensions
 {
     public static IId GetId(this SQLiteDataReader reader, EntityCategory ent, int column)
     {
+        // TODO: Potential bug fix here.
         var blob = reader.GetStream(column);
         var bytes = new byte[blob.Length];
         blob.Read(bytes, 0, bytes.Length);

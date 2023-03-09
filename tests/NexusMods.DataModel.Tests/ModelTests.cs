@@ -1,4 +1,4 @@
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.IO.Compression;
 using FluentAssertions;
 using NexusMods.DataModel.Abstractions;
@@ -44,7 +44,7 @@ public class ModelTests : ADataModelTest<ModelTests>
     {
         var list = new HashSet<string>();
 
-        var loadout = await LoadoutManager.ManageGame(Install, "OldName");
+        var loadout = await LoadoutManager.ManageGameAsync(Install, "OldName");
         using var _ = loadout.Changes.Subscribe(f => list.Add(f.Name));
         loadout.Alter(m => m with { Name = "NewName" });
 
@@ -57,7 +57,7 @@ public class ModelTests : ADataModelTest<ModelTests>
     public async Task CanInstallAMod()
     {
         var name = Guid.NewGuid().ToString();
-        var loadout = await LoadoutManager.ManageGame(Install, name);
+        var loadout = await LoadoutManager.ManageGameAsync(Install, name);
         await loadout.Install(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
         await loadout.Install(DATA_ZIP_LZMA, "", CancellationToken.None);
 
@@ -69,7 +69,7 @@ public class ModelTests : ADataModelTest<ModelTests>
     [Fact]
     public async Task RenamingAListDoesntChangeOldIds()
     {
-        var loadout = await LoadoutManager.ManageGame(Install, Guid.NewGuid().ToString());
+        var loadout = await LoadoutManager.ManageGameAsync(Install, Guid.NewGuid().ToString());
         var id1 = await loadout.Install(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
         var id2 = await loadout.Install(DATA_ZIP_LZMA, "Mod2", CancellationToken.None);
 
@@ -94,7 +94,7 @@ public class ModelTests : ADataModelTest<ModelTests>
     [Fact]
     public async Task CanExportAndImportLoadouts()
     {
-        var loadout = await LoadoutManager.ManageGame(Install, Guid.NewGuid().ToString());
+        var loadout = await LoadoutManager.ManageGameAsync(Install, Guid.NewGuid().ToString());
         var id1 = await loadout.Install(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
         var id2 = await loadout.Install(DATA_ZIP_LZMA, "Mod2", CancellationToken.None);
 

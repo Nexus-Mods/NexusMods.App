@@ -20,18 +20,34 @@ using NexusMods.Paths.Extensions;
 
 namespace NexusMods.DataModel.Loadouts;
 
+/// <summary>
+/// Provides utility methods responsible for creating and modifying loadouts.
+/// </summary>
 public class LoadoutManager
 {
+    /// <summary>
+    /// Provides access to a cache of file hashes for quick and easy access.
+    /// This is used to speed up deployment [apply & ingest].
+    /// </summary>
+    public readonly FileHashCache FileHashCache;
+
+    /// <summary>
+    /// Provides lookup
+    /// </summary>
+    public readonly ArchiveManager ArchiveManager;
+
     private readonly ILogger<LoadoutManager> _logger;
     private readonly IDataStore _store;
     private readonly Root<LoadoutRegistry> _root;
-    public readonly FileHashCache FileHashCache;
-    public readonly ArchiveManager ArchiveManager;
     private readonly IModInstaller[] _installers;
     private readonly FileContentsCache _analyzer;
     private readonly IEnumerable<IFileMetadataSource> _metadataSources;
     private readonly ILookup<GameDomain, ITool> _tools;
 
+    /// <summary/>
+    /// <remarks>
+    ///    This item is usually constructed using dependency injection (DI).
+    /// </remarks>
     public LoadoutManager(ILogger<LoadoutManager> logger,
         IResource<LoadoutManager, Size> limiter,
         ArchiveManager archiveManager,
@@ -42,12 +58,12 @@ public class LoadoutManager
         FileContentsCache analyzer,
         IEnumerable<ITool> tools)
     {
+        FileHashCache = fileHashCache;
+        ArchiveManager = archiveManager;
         _logger = logger;
         Limiter = limiter;
-        ArchiveManager = archiveManager;
         _store = store;
         _root = new Root<LoadoutRegistry>(RootType.Loadouts, store);
-        FileHashCache = fileHashCache;
         _metadataSources = metadataSources;
         _installers = installers.ToArray();
         _analyzer = analyzer;
@@ -55,18 +71,55 @@ public class LoadoutManager
             .ToLookup(t => t.Domain, t => t.Tool);
     }
 
+    /// <summary>
+    /// Limits the number of concurrent jobs/threads [to not completely hog CPU]
+    /// when needed.
+    /// </summary>
+    public IResource<LoadoutManager, Size> Limiter { get; set; }
+
+    /// <summary>
+    /// A list of all changes to the loadouts.
+    ///
+    /// Values here are published outside of the locking
+    /// semantics and may thus be received out-of-order of a large number of
+    /// updates are happening and once from multiple threads.
+    ///
+    /// See <see cref="Root{TRoot}.Changes"/> for more info.
+    /// </summary>
+    public IObservable<LoadoutRegistry> Changes => _root.Changes.Select(r => r.New);
+
+    /// <summary>
+    /// Returns a list of all currently user registered loadouts.
+    /// </summary>
+    public IEnumerable<LoadoutMarker> AllLoadouts => _root.Value.Lists.Values.Select(m => new LoadoutMarker(this, m.LoadoutId));
+
+    /// <summary>
+    /// Clones this loadout manager, used for operations analogous to `git rebase`.
+    /// </summary>
+    /// <param name="store">Data store to which we write to.</param>
+    /// <remarks>
+    ///    For now this just clones the current object; the actual rebase
+    ///    functionality might not yet quite be here.
+    /// </remarks>
     public LoadoutManager Rebase(SqliteDataStore store)
     {
         return new LoadoutManager(_logger, Limiter, ArchiveManager, _metadataSources, store, FileHashCache, _installers,
             _analyzer, _tools.SelectMany(f => f));
     }
 
-    public IResource<LoadoutManager, Size> Limiter { get; set; }
-
-    public IObservable<LoadoutRegistry> Changes => _root.Changes.Select(r => r.New);
-    public IEnumerable<LoadoutMarker> AllLoadouts => _root.Value.Lists.Values.Select(m => new LoadoutMarker(this, m.LoadoutId));
-
-    public async Task<LoadoutMarker> ManageGame(GameInstallation installation, string name = "", CancellationToken token = default)
+    /// <summary>
+    /// Brings a game instance/installation under management of the Nexus app
+    /// such that it is tracked file-wise under a loadout.
+    /// </summary>
+    /// <param name="installation">Instance of the game on disk to newly manage.</param>
+    /// <param name="name">Name of the newly created loadout.</param>
+    /// <param name="token">Allows for cancelling the operation.</param>
+    /// <returns></returns>
+    /// <remarks>
+    /// In the context of the Nexus app 'Manage Game' effectively means 'Add Game to App'; we call it
+    /// 'Manage Game' because it effectively means putting the game files under our control.
+    /// </remarks>
+    public async Task<LoadoutMarker> ManageGameAsync(GameInstallation installation, string name = "", CancellationToken token = default)
     {
         _logger.LogInformation("Indexing game files");
         var gameFiles = new HashSet<AModFile>();
@@ -94,7 +147,7 @@ public class LoadoutManager
 
         foreach (var (type, path) in installation.Locations)
         {
-            await foreach (var result in FileHashCache.IndexFolder(path, token).WithCancellation(token))
+            await foreach (var result in FileHashCache.IndexFolderAsync(path, token).WithCancellation(token))
             {
                 var analysis = await _analyzer.AnalyzeFile(result.Path, token);
                 var file = new GameFile
@@ -118,25 +171,18 @@ public class LoadoutManager
         return marker;
     }
 
-
-    private async IAsyncEnumerable<IModFileMetadata> GetMetadata(Loadout loadout, Mod mod, GameFile file,
-        AnalyzedFile analyzed)
-    {
-        foreach (var source in _metadataSources)
-        {
-            if (!source.Games.Contains(loadout.Installation.Game.Domain))
-                continue;
-            if (!source.Extensions.Contains(file.To.Extension))
-                continue;
-
-            await foreach (var metadata in source.GetMetadata(loadout, mod, file, analyzed))
-            {
-                yield return metadata;
-            }
-        }
-
-    }
-
+    /// <summary>
+    /// Installs a mod to a loadout with a given ID.
+    /// </summary>
+    /// <param name="loadoutId"></param>
+    /// <param name="path"></param>
+    /// <param name="name"></param>
+    /// <param name="token"></param>
+    /// <returns></returns>
+    /// <remarks>
+    ///    For more details, consider reading <a href="https://github.com/Nexus-Mods/NexusMods.App/blob/main/docs/AddingAGame.md#mod-installation">Adding a Game</a>.
+    /// </remarks>
+    /// <exception cref="Exception">No supported installer.</exception>
     public async Task<(LoadoutMarker Loadout, ModId ModId)> InstallMod(LoadoutId loadoutId, AbsolutePath path, string name, CancellationToken token = default)
     {
         var loadout = GetLoadout(loadoutId);
@@ -153,6 +199,7 @@ public class LoadoutManager
             .Where(p => p.Priority != Priority.None)
             .OrderBy(p => p.Priority)
             .FirstOrDefault();
+
         if (installer == default)
             throw new Exception($"No Installer found for {path}");
 
@@ -169,11 +216,6 @@ public class LoadoutManager
         };
         loadout.Add(newMod);
         return (loadout, newMod.Id);
-    }
-
-    private LoadoutMarker GetLoadout(LoadoutId loadoutId)
-    {
-        return new LoadoutMarker(this, loadoutId);
     }
 
 
@@ -300,4 +342,23 @@ public class LoadoutManager
         _root.Alter(r => r with { Lists = r.Lists.With(loadout.LoadoutId, loadout) });
         return new LoadoutMarker(this, loadout.LoadoutId);
     }
+
+    private async IAsyncEnumerable<IModFileMetadata> GetMetadata(Loadout loadout, Mod mod, GameFile file,
+        AnalyzedFile analyzed)
+    {
+        foreach (var source in _metadataSources)
+        {
+            if (!source.Games.Contains(loadout.Installation.Game.Domain))
+                continue;
+            if (!source.Extensions.Contains(file.To.Extension))
+                continue;
+
+            await foreach (var metadata in source.GetMetadata(loadout, mod, file, analyzed))
+            {
+                yield return metadata;
+            }
+        }
+    }
+
+    private LoadoutMarker GetLoadout(LoadoutId loadoutId) => new(this, loadoutId);
 }

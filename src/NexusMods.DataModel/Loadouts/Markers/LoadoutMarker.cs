@@ -34,11 +34,19 @@ public class LoadoutMarker : IMarker<Loadout>
     public IEnumerable<ITool> Tools => _manager.Tools(Value.Installation.Game.Domain);
     public IObservable<Loadout> Changes => _manager.Changes.Select(c => c.Lists[_id]);
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="file">TODO.</param>
+    /// <param name="name">Name of the file to be installed.</param>
+    /// <param name="token"></param>
+    /// <returns></returns>
     public async Task<ModId> Install(AbsolutePath file, string name, CancellationToken token = default)
     {
-        await _manager.ArchiveManager.ArchiveFile(file, token);
+        await _manager.ArchiveManager.ArchiveFileAsync(file, token);
         return (await _manager.InstallMod(_id, file, name, token)).ModId;
     }
+
     public IEnumerable<(AModFile File, Mod Mod)> FlattenList()
     {
         var list = _manager.Get(_id);
@@ -106,7 +114,7 @@ public class LoadoutMarker : IMarker<Loadout>
         var list = _manager.Get(_id);
         var gameFolders = list.Installation.Locations;
         var srcFilesTask = _manager.FileHashCache
-            .IndexFolders(list.Installation.Locations.Values, token)
+            .IndexFoldersAsync(list.Installation.Locations.Values, token)
             .ToDictionary(x => x.Path);
 
         var files = FlattenList().ToList();
@@ -115,7 +123,7 @@ public class LoadoutMarker : IMarker<Loadout>
 
         var srcFiles = await srcFilesTask;
 
-        foreach (var (path, (file, mod)) in flattenedList)
+        foreach (var (path, (file, _)) in flattenedList)
         {
             if (file is AStaticModFile smf)
             {
@@ -192,7 +200,7 @@ public class LoadoutMarker : IMarker<Loadout>
             i => i.First().Size,
             async (j, itm) =>
             {
-                var hash = await _manager.ArchiveManager.ArchiveFile(itm.First().To, token, j);
+                var hash = await _manager.ArchiveManager.ArchiveFileAsync(itm.First().To, token, j);
                 if (hash != itm.Key)
                     throw new Exception("Archived file did not match expected hash");
             }, token);
@@ -213,7 +221,7 @@ public class LoadoutMarker : IMarker<Loadout>
             async (job, group) =>
             {
                 var byPath = group.ToLookup(x => x.From!.From.Parts.First());
-                await _manager.ArchiveManager.Extract(group.Key, byPath.Select(e => e.Key),
+                await _manager.ArchiveManager.ExtractAsync(group.Key, byPath.Select(e => e.Key),
                     async (path, sFn) =>
                     {
                         foreach (var entry in byPath[path])
@@ -245,7 +253,7 @@ public class LoadoutMarker : IMarker<Loadout>
         var list = _manager.Get(_id);
         var gameFolders = list.Installation.Locations;
         var srcFilesTask = _manager.FileHashCache
-            .IndexFolders(list.Installation.Locations.Values, token)
+            .IndexFoldersAsync(list.Installation.Locations.Values, token)
             .ToDictionary(x => x.Path);
 
         var flattenedList = FlattenList().ToDictionary(d => d.File.To.CombineChecked(gameFolders[d.File.To.Type]));
@@ -334,21 +342,21 @@ public class LoadoutMarker : IMarker<Loadout>
             i => i.First().Size,
             async (j, itm) =>
             {
-                var hash = await _manager.ArchiveManager.ArchiveFile(itm.First().To, token, j);
+                var hash = await _manager.ArchiveManager.ArchiveFileAsync(itm.First().To, token, j);
                 if (hash != itm.Key)
                     throw new Exception("Archived file did not match expected hash");
             }, token);
 
 
-        Loadout Apply(Loadout Loadout)
+        Loadout ApplyLoadout(Loadout loadout)
         {
             foreach (var step in steps.Where(s => s is not BackupFile))
             {
-                var gamePath = Loadout.Installation.ToGamePath(step.To);
+                var gamePath = loadout.Installation.ToGamePath(step.To);
                 switch (step)
                 {
                     case AddToLoadout add:
-                        Loadout = Loadout.Alter(add.Mod, m => m with
+                        loadout = loadout.Alter(add.Mod, m => m with
                         {
                             Files = m.Files.With(new FromArchive
                             {
@@ -363,15 +371,16 @@ public class LoadoutMarker : IMarker<Loadout>
                         break;
 
                     case RemoveFromLoadout:
-                        Loadout = Loadout.AlterFiles(x => x.To == gamePath ? null : x);
+                        loadout = loadout.AlterFiles(x => x.To == gamePath ? null : x);
                         break;
                     case IntegrateFile t:
                         var sourceArchive = _manager.ArchiveManager.ArchivesThatContain(t.Hash).First();
-                        Loadout = Loadout.Alter(t.Mod.Id, m => m with
+                        loadout = loadout.Alter(t.Mod.Id, m => m with
                         {
                             Files = m.Files.With(new FromArchive
                             {
                                 Id = ModFileId.New(),
+                                // ReSharper disable once AccessToModifiedClosure
                                 From = sourceArchive,
                                 Hash = t.Hash,
                                 Size = t.Size,
@@ -385,10 +394,10 @@ public class LoadoutMarker : IMarker<Loadout>
                 }
             }
 
-            return Loadout;
+            return loadout;
         }
 
-        _manager.Alter(_id, Apply);
+        _manager.Alter(_id, ApplyLoadout);
     }
 
     public void Alter(ModId mod, Func<Mod, Mod?> fn)
@@ -405,7 +414,6 @@ public class LoadoutMarker : IMarker<Loadout>
     /// Runs the given tool, integrating the results into the loadout
     /// </summary>
     /// <param name="tool"></param>
-    /// <param name="none"></param>
     /// <param name="token"></param>
     /// <exception cref="NotImplementedException"></exception>
     public async Task Run(ITool tool, CancellationToken token = default)

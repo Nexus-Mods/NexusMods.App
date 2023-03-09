@@ -28,7 +28,7 @@ public class HashFolder : AVerb<AbsolutePath>
         var rows = new List<object[]>();
         await _renderer.WithProgress(token, async () =>
         {
-            await foreach (var r in _cache.IndexFolder(folder, token).WithCancellation(token))
+            await foreach (var r in _cache.IndexFolderAsync(folder, token).WithCancellation(token))
                 rows.Add(new object[] { r.Path.RelativeTo(folder), r.Hash, r.Size, r.LastModified });
 
             return rows;

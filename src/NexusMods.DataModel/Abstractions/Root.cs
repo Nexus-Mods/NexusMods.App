@@ -14,7 +14,6 @@ namespace NexusMods.DataModel.Abstractions;
 /// </remarks>
 public class Root<TRoot> where TRoot : Entity, IEmptyWithDataStore<TRoot>
 {
-    // TODO: Potentially incorrect equals check here.
     private readonly Subject<(TRoot Old, TRoot New)> _changes = new();
 
     private EntityLink<TRoot> _root;

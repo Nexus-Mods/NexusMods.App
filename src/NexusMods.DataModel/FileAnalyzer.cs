@@ -45,7 +45,7 @@ public class FileContentsCache
 
     public async Task<AnalyzedFile> AnalyzeFile(AbsolutePath path, CancellationToken token = default)
     {
-        var entry = await _fileHashCahce.HashFileAsync(path, token);
+        var entry = await _fileHashCahce.IndexFileAsync(path, token);
         var found = _store.Get<AnalyzedFile>(new Id64(EntityCategory.FileAnalysis, (ulong)entry.Hash));
         if (found != null) return found;
 
@@ -75,7 +75,7 @@ public class FileContentsCache
             {
                 if (sFn.Name is AbsolutePath ap)
                 {
-                    hash = (await _fileHashCahce.HashFileAsync(ap, token)).Hash;
+                    hash = (await _fileHashCahce.IndexFileAsync(ap, token)).Hash;
                 }
                 else
                 {

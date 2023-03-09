@@ -100,13 +100,13 @@ public class Sorter
         var used = new HashSet<TId>(dict.Count);
 
         var values = GC.AllocateUninitializedArray<(TId[] After, TItem Item)>(dict.Count);
-        const int MultiThreadCutoff = 2000; // Based on benching with 5900X.
-        const int MinOperationsPerThread = 666;
+        const int multiThreadCutoff = 2000; // Based on benching with 5900X.
+        const int minOperationsPerThread = 666;
         ParallelOptions parallelOptions = default!;
         ParallelIsSuperset<TId, TItem> parallelState = default!;
         Action<Tuple<int, int>> doWork = default!;
 
-        if (dict.Count > MultiThreadCutoff)
+        if (dict.Count > multiThreadCutoff)
         {
             parallelOptions = new ParallelOptions();
             parallelState = new ParallelIsSuperset<TId, TItem>(
@@ -123,10 +123,10 @@ public class Sorter
             dict.Values.CopyTo(values, 0); // <= Bottleneck.
             var superSetSize = 0;
             var valuesSlice = values.AsSpan(0, dict.Count);
-            if (dict.Count > MultiThreadCutoff)
+            if (dict.Count > multiThreadCutoff)
             {
-                parallelOptions.MaxDegreeOfParallelism = Math.Max(dict.Count / MinOperationsPerThread, 1);
-                parallelState.superSetSize = -1;
+                parallelOptions.MaxDegreeOfParallelism = Math.Max(dict.Count / minOperationsPerThread, 1);
+                parallelState.SuperSetSize = -1;
                 Parallel.ForEach(Partitioner.Create(0, valuesSlice.Length), parallelOptions, doWork);
                 superSetSize = parallelState.NumberOfElements;
                 valuesSlice = parallelState.Output.AsSpan(0, superSetSize); // <= assign output span.
@@ -232,7 +232,7 @@ public class Sorter
                         if (!haveFirst)
                             idsBuffer.Add(otherId);
                         break;
-                    case After<TItem, TId> after:
+                    case After<TItem, TId>:
                         // Handled above
                         break;
                     case Before<TItem, TId> b:
@@ -255,8 +255,8 @@ public class Sorter
         internal HashSet<TId> Used;
         internal (TId[] After, TItem Item)[] Values;
         internal (TId[] After, TItem Item)[] Output;
-        internal int superSetSize = -1; // after first thread safe increment this is 0
-        internal int NumberOfElements => superSetSize + 1;
+        internal int SuperSetSize = -1; // after first thread safe increment this is 0
+        internal int NumberOfElements => SuperSetSize + 1;
 
         internal ParallelIsSuperset(HashSet<TId> used,
             (TId[] After, TItem Item)[] values,
@@ -272,20 +272,22 @@ public class Sorter
             // Work on our slice.
             var val = Values;
             var otp = Output;
-            var used = this.Used;
+            var used = Used;
             for (var x = tuple.Item1; x < tuple.Item2; x++)
             {
                 var value = val[x];
                 if (!IsSupersetOf(used, value.After))
                     continue;
 
-                otp[Interlocked.Increment(ref superSetSize)] = value;
+                otp[Interlocked.Increment(ref SuperSetSize)] = value;
             }
         }
     }
 
     #region Modified Runtime Code for No Alloc
+
     /// <summary>Determines whether a <see cref="HashSet{T}"/> object is a proper superset of the specified collection.</summary>
+    /// <param name="set">The set to check if array is superset of.</param>
     /// <param name="other">The collection to compare to the current <see cref="HashSet{T}"/> object.</param>
     /// <returns>true if the <see cref="HashSet{T}"/> object is a superset of <paramref name="other"/>; otherwise, false.</returns>
     public static bool IsSupersetOf<T>(HashSet<T> set, T[] other)
