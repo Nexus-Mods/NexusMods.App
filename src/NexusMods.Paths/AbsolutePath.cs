@@ -52,12 +52,17 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// <param name="fileName">Name of the file. Full path if directory is null.</param>
     internal AbsolutePath(string? directory, string fileName)
     {
+        // remove directory separator at the end of the directory
+        // on Linux: don't do this if the directory is "/"
         if (!string.IsNullOrEmpty(directory))
         {
             Directory = directory.EndsWith(Path.DirectorySeparatorChar)
+                        && directory.Length != 1
+                        && directory != DirectorySeparatorCharStr
                 ? directory[..^1]
                 : directory;
         }
+
         FileName = fileName;
     }
 
@@ -78,9 +83,12 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
             return new AbsolutePath(null, fullPath);
         }
 
-        var directory = fullPath[..index];
+        // Windows: "C:\foo", directory should be "C:"
+        // Linux: "/foo", directory should be "/"
+        var directory = index == 0 ? DirectorySeparatorCharStr : fullPath[..index];
+
         var fileName = fullPath[(index + 1)..];
-        return new(directory, fileName);
+        return new AbsolutePath(directory, fileName);
     }
 
     /// <summary>
@@ -102,6 +110,10 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
 
         if (FileName.Length == 0)
             return Directory;
+
+        // on Linux: Directory="/", FileName="foo" should return "/foo" and not "//foo"
+        if (!OperatingSystem.IsWindows() && Directory == DirectorySeparatorCharStr)
+            return string.Concat(Directory, FileName);
 
         return string.Concat(Directory, DirectorySeparatorCharStr, FileName);
     }
