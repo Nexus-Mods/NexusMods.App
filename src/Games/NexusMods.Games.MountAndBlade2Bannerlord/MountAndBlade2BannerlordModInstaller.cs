@@ -61,7 +61,6 @@ internal sealed class MountAndBlade2BannerlordModInstaller : IModInstaller
                 From = new HashRelativePath(srcArchive, relativePath),
                 Hash = file.Hash,
                 Size = file.Size,
-                Store = _store,
                 Metadata = new IModFileMetadata[]
                 {
                     new ModuleIdMetadata
