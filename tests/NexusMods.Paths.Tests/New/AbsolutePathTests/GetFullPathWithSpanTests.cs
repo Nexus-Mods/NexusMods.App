@@ -1,48 +1,65 @@
+using FluentAssertions;
 using NexusMods.Paths.Tests.New.Helpers;
 
 namespace NexusMods.Paths.Tests.New.AbsolutePathTests;
 
 public class GetFullPathWithSpanTests
 {
-    [Theory]
-    [InlineData("/foo", "/", "foo")]
-    [InlineData("C:/NMA/test.png", "C:/NMA", "test.png")]
-    [InlineData("/home/sewer/NMA/test.png", "/home/sewer/NMA", "test.png")]
-    public void GetFullPath_Common(string expected, string? directory, string fileName) => AssertGetFullPath(expected, directory, fileName);
+    [SkippableTheory]
+    [InlineData("/", "/", "", true)]
+    [InlineData("/foo", "/", "foo", true)]
+    [InlineData("/foo/bar", "/foo", "bar", true)]
+    [InlineData("C:", "C:", "", false)]
+    [InlineData("C:\\foo", "C:", "foo", false)]
+    [InlineData("C:\\foo\\bar", "C:\\foo", "bar", false)]
+    public void Test_GetFullPath(string expected, string? directory, string fileName, bool linux)
+        => AssertGetFullPath(expected, directory, fileName, linux);
 
-    [Theory]
-    [InlineData("C:/NMA/test.png", "", "C:/NMA/test.png")]
-    [InlineData("/home/sewer/NMA/test.png", "", "/home/sewer/NMA/test.png")]
-    public void GetFullPath_WithNullDirectory(string expected, string? directory, string fileName) => AssertGetFullPath(expected, directory, fileName);
+    [SkippableTheory]
+    [InlineData("foo", "foo", true)]
+    [InlineData("foo", "foo", false)]
+    [InlineData("foo/bar", "foo/bar", true)]
+    [InlineData("foo\\bar", "foo\\bar", false)]
+    public void Test_GetFullPath_WithoutDirectory(string expected, string fileName, bool linux)
+        => AssertGetFullPath(expected, null, fileName, linux);
 
-    [Theory]
-    [InlineData("C:/NMA/test", "", "C:/NMA/test")]
-    [InlineData("/home/sewer/NMA/test", "", "/home/sewer/NMA/test")]
-    public void GetFullPath_WithEmptyDirectory(string expected, string? directory, string fileName) => AssertGetFullPath(expected, directory, fileName);
+    [SkippableTheory]
+    [InlineData("/", "/", true)]
+    [InlineData("C:", "C:", false)]
+    [InlineData("/foo", "/foo", true)]
+    [InlineData("C:\\foo", "C:\\foo", false)]
+    public void Test_GetFullPath_WithoutFileName(string expected, string directory, bool linux)
+        => AssertGetFullPath(expected, directory, "", linux);
 
-    [Theory]
-    [InlineData("C:/NMA/test", "C:/NMA/test", "")]
-    [InlineData("/home/sewer/NMA/test", "/home/sewer/NMA/test", "")]
-    public void GetFullPath_WithDirectoryOnly(string expected, string? directory, string fileName) => AssertGetFullPath(expected, directory, fileName);
-
-    [Theory]
-    [InlineData("/foo.txt", "/", "foo.txt")]
-    [InlineData("C:/NMA/test.png", "C:/NMA", "test.png")]
-    [InlineData("/home/sewer/NMA/test.png", "/home/sewer/NMA", "test.png")]
-    public void GetFullPath_WithInsufficientBuffer(string expected, string? directory, string fileName)
+    [SkippableTheory]
+    [InlineData("/", true)]
+    [InlineData("C:", false)]
+    [InlineData("/foo", true)]
+    [InlineData("C:\\foo", false)]
+    public void GetFullPath_WithInsufficientBuffer(string input, bool linux)
     {
-        // Insufficient buffer means we return empty string.
-        var path = AbsolutePath.FromDirectoryAndFileName(directory.NormalizeSeparator(), fileName.NormalizeSeparator());
-        Span<char> buffer = stackalloc char[path.GetFullPathLength() - 1];
-        var result = path.GetFullPath(buffer);
-        Assert.NotEqual(expected.NormalizeSeparator(), result.ToString());
-        Assert.Equal(0, result.Length);
+        Skip.IfNot(linux && OperatingSystem.IsLinux());
+
+        var path = AbsolutePath.FromFullPath(input);
+        var insufficientLength = path.GetFullPathLength() - 1;
+
+        path.Invoking(x =>
+            {
+                Span<char> buffer = stackalloc char[insufficientLength < 0 ? 0 : insufficientLength];
+                x.GetFullPath(buffer);
+            })
+            .Should()
+            .Throw<ArgumentException>();
     }
 
-    private static void AssertGetFullPath(string expected, string? directory, string fileName)
+    private static void AssertGetFullPath(string expected, string? directory, string fileName, bool linux)
     {
-        var path = AbsolutePath.FromDirectoryAndFileName(directory.NormalizeSeparator(), fileName.NormalizeSeparator());
+        Skip.IfNot(linux && OperatingSystem.IsLinux());
+
+        var path = AbsolutePath.FromDirectoryAndFileName(directory, fileName);
         Span<char> buffer = stackalloc char[path.GetFullPathLength()];
-        Assert.Equal(expected.NormalizeSeparator(), path.GetFullPath(buffer).ToString());
+        path.GetFullPath(buffer);
+
+        buffer.ToString().Should().Be(expected);
     }
 }
