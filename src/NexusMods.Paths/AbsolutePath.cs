@@ -52,12 +52,15 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// <param name="fileName">Name of the file. Full path if directory is null.</param>
     internal AbsolutePath(string? directory, string fileName)
     {
+        // remove directory separator at the end of the directory
+        // on Linux: don't do this if the directory is "/"
         if (!string.IsNullOrEmpty(directory))
         {
-            Directory = directory.EndsWith(Path.DirectorySeparatorChar)
+            Directory = directory.EndsWith(Path.DirectorySeparatorChar) && directory.Length != 1
                 ? directory[..^1]
                 : directory;
         }
+
         FileName = fileName;
     }
 
