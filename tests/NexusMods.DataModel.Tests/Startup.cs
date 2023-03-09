@@ -21,7 +21,7 @@ public class Startup
         var prefix = KnownFolders.EntryFolder.CombineUnchecked("tempTestData").CombineUnchecked(Guid.NewGuid().ToString());
 
         container.AddDataModel(prefix)
-                 .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
+                 .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                  .AddStandardGameLocators(false)
                  .AddSingleton<TemporaryFileManager>(s => new TemporaryFileManager(prefix.CombineUnchecked("tempFiles")))
                  .AddFileExtractors()

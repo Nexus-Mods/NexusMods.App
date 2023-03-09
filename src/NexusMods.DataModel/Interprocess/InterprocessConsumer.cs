@@ -1,51 +1,20 @@
-using System.Reactive.Subjects;
-using Cloudtoid.Interprocess;
-using Microsoft.Extensions.Logging;
+using System.Reactive.Linq;
 
 namespace NexusMods.DataModel.Interprocess;
 
-public class InterprocessConsumer<T> : IMessageConsumer<T>, IDisposable where T : IMessage
+public class InterprocessConsumer<T> : IMessageConsumer<T> where T : IMessage
 {
-    private readonly IQueueFactory _queueFactory;
     private readonly string _queueName;
-    private readonly ISubscriber _queue;
-    private CancellationTokenSource _tcs;
-    private Subject<T> _messages = new();
-    private readonly Task _task;
-    private readonly ILogger<InterprocessConsumer<T>> _logger;
+    private readonly SqliteIPC _sqliteIpc;
 
-    public InterprocessConsumer(ILogger<InterprocessConsumer<T>> logger, IQueueFactory queueFactory)
+    public InterprocessConsumer(SqliteIPC sqliteIpc)
     {
-        _logger = logger;
-        _queueFactory = queueFactory;
-        _queueName = "NexusMods.DataModel.Interprocess." + typeof(T).Name;
-        _queue = queueFactory.CreateSubscriber(new QueueOptions(_queueName, T.MaxSize * 16));
-
-        _tcs = new CancellationTokenSource();
-        _task = Task.Run(StartDequeueLoop);
+        _queueName = typeof(T).Name;
+        _sqliteIpc = sqliteIpc;
     }
 
-    private async Task StartDequeueLoop()
-    {
-        var buffer = new Memory<byte>(new byte[T.MaxSize * 16]);
-        while (!_tcs.Token.IsCancellationRequested)
-        {
-            if (_queue.TryDequeue(buffer, _tcs.Token, out var read))
-            {
-                _logger.LogTrace("Read {Size} byte message from queue {Queue}", read.Length, _queueName);
-                _messages.OnNext((T)T.Read(read.Span));
-                continue;
-            }
+    public IObservable<T> Messages => _sqliteIpc.Messages
+        .Where(msg => msg.Queue == _queueName)
+        .Select(msg => (T)T.Read(msg.Message));
 
-            await Task.Delay(100, _tcs.Token);
-        }
-    }
-
-    public IObservable<T> Messages => _messages;
-
-    public void Dispose()
-    {
-        _tcs.Cancel();
-        _queue.Dispose();
-    }
 }
