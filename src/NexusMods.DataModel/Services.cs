@@ -55,8 +55,7 @@ public static class Services
 
         coll.AddSingleton(s => new SqliteIPC(
             s.GetRequiredService<ILogger<SqliteIPC>>(),
-            baseFolder.Value.CombineUnchecked("DataModel_IPC.sqlite"),
-            baseFolder.Value.CombineUnchecked("DataModel_IPC.mmap")));
+            baseFolder.Value.CombineUnchecked("DataModel_IPC.sqlite")));
         coll.AddSingleton(typeof(IMessageConsumer<>), typeof(InterprocessConsumer<>));
         coll.AddSingleton(typeof(IMessageProducer<>), typeof(InterprocessProducer<>));
 

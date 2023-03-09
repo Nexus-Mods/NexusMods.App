@@ -20,7 +20,6 @@ public class SqliteIPC : IDisposable
     private static int CleanupJitter = 2000; // Jitter cleanup by up to 2 second
 
     private readonly AbsolutePath _storePath;
-    private readonly AbsolutePath _syncPath;
     private readonly string _connectionString;
     private readonly SQLiteConnection _conn;
 
@@ -38,11 +37,10 @@ public class SqliteIPC : IDisposable
     /// <param name="logger"></param>
     /// <param name="storePath"></param>
     /// <param name="syncPath"></param>
-    public SqliteIPC(ILogger<SqliteIPC> logger, AbsolutePath storePath, AbsolutePath syncPath)
+    public SqliteIPC(ILogger<SqliteIPC> logger, AbsolutePath storePath)
     {
         _logger = logger;
         _storePath = storePath;
-        _syncPath = syncPath;
 
         _connectionString = string.Intern($"Data Source={_storePath}");
         _conn = new SQLiteConnection(_connectionString);
@@ -73,7 +71,7 @@ public class SqliteIPC : IDisposable
     /// <param name="token"></param>
     public async Task CleanupOnce(CancellationToken token)
     {
-        var oldTime = DateTime.UtcNow - TimeSpan.FromMinutes(1);
+        var oldTime = DateTime.UtcNow - RetentionTime;
 
         _logger.LogTrace("Cleaning up old IPC messages");
         await using var cmd = new SQLiteCommand(
