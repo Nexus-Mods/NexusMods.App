@@ -35,6 +35,18 @@ public class FileSystem : BaseFileSystem
     protected override bool InternalDirectoryExists(AbsolutePath path)
         => Directory.Exists(path.GetFullPath());
 
+    /// <inheritdoc/>
+    protected override void InternalDeleteDirectory(AbsolutePath path, bool recursive)
+        => Directory.Delete(path.GetFullPath(), recursive);
+
+    /// <inheritdoc/>
+    protected override bool InternalFileExists(AbsolutePath path)
+        => File.Exists(path.GetFullPath());
+
+    /// <inheritdoc/>
+    protected override void InternalDeleteFile(AbsolutePath path)
+        => File.Delete(path.GetFullPath());
+
     #endregion
 
 }

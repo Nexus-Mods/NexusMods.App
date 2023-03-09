@@ -78,6 +78,18 @@ public abstract class BaseFileSystem : IFileSystem
     public bool DirectoryExists(AbsolutePath path)
         => InternalDirectoryExists(GetMappedPath(path));
 
+    /// <inheritdoc/>
+    public void DeleteDirectory(AbsolutePath path, bool recursive)
+        => InternalDeleteDirectory(GetMappedPath(path), recursive);
+
+    /// <inheritdoc/>
+    public bool FileExists(AbsolutePath path)
+        => InternalFileExists(GetMappedPath(path));
+
+    /// <inheritdoc/>
+    public void DeleteFile(AbsolutePath path)
+        => InternalDeleteFile(GetMappedPath(path));
+
     #endregion
 
     #region Abstract Methods
@@ -90,6 +102,15 @@ public abstract class BaseFileSystem : IFileSystem
 
     /// <inheritdoc cref="IFileSystem.DirectoryExists"/>
     protected abstract bool InternalDirectoryExists(AbsolutePath path);
+
+    /// <inheritdoc cref="IFileSystem.DeleteDirectory"/>
+    protected abstract void InternalDeleteDirectory(AbsolutePath path, bool recursive);
+
+    /// <inheritdoc cref="IFileSystem.FileExists"/>
+    protected abstract bool InternalFileExists(AbsolutePath path);
+
+    /// <inheritdoc cref="IFileSystem.DeleteFile"/>
+    protected abstract void InternalDeleteFile(AbsolutePath path);
 
     #endregion
 }

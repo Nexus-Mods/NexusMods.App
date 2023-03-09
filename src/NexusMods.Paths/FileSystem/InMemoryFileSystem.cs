@@ -64,6 +64,13 @@ public class InMemoryFileSystem : BaseFileSystem
     }
 
     /// <summary>
+    /// Adds an empty file to the in-memory file system.
+    /// </summary>
+    /// <param name="path">Path to the file.</param>
+    public void AddEmptyFile(AbsolutePath path)
+        => AddFile(path, Array.Empty<byte>());
+
+    /// <summary>
     /// Adds a new directory to the in-memory file system.
     /// </summary>
     /// <param name="path">Path to the directory.</param>
@@ -86,11 +93,11 @@ public class InMemoryFileSystem : BaseFileSystem
         var directoriesToCreate = new Stack<AbsolutePath>();
 
         var current = path;
-        while (current.Parent != _rootDirectory.Path)
+        do
         {
             directoriesToCreate.Push(current);
             current = current.Parent;
-        }
+        } while (current != _rootDirectory.Path);
 
         var currentParentDirectory = _rootDirectory;
         while (directoriesToCreate.TryPop(out var directoryPath))
@@ -143,6 +150,51 @@ public class InMemoryFileSystem : BaseFileSystem
     /// <inheritdoc/>
     protected override bool InternalDirectoryExists(AbsolutePath path)
         => _directories.ContainsKey(path);
+
+    /// <inheritdoc/>
+    protected override bool InternalFileExists(AbsolutePath path)
+        => _files.ContainsKey(path);
+
+    /// <inheritdoc/>
+    protected override void InternalDeleteFile(AbsolutePath path)
+    {
+        if (!_files.TryGetValue(path, out var file))
+            throw new FileNotFoundException($"File at {path} does not exist!");
+
+        var parentDirectory = file.ParentDirectory;
+        parentDirectory.Files.Remove(path.RelativeTo(parentDirectory.Path));
+        _files.Remove(path);
+    }
+
+    /// <inheritdoc/>
+    protected override void InternalDeleteDirectory(AbsolutePath path, bool recursive)
+    {
+        if (!_directories.TryGetValue(path, out var directory))
+            throw new DirectoryNotFoundException($"Directory at {path} does not exist!");
+
+        if (recursive)
+        {
+            foreach (var kv in directory.Files)
+            {
+                var (_, file) = kv;
+                _files.Remove(file.Path);
+            }
+
+            foreach (var kv in directory.Directories)
+            {
+                var (_, subDirectory) = kv;
+                InternalDeleteDirectory(subDirectory.Path, true);
+            }
+        }
+        else
+        {
+            if (directory.Files.Any() || directory.Directories.Any())
+                throw new IOException($"The directory at {path} is not empty!");
+
+        }
+
+        _directories.Remove(path);
+    }
 
     #endregion
 }

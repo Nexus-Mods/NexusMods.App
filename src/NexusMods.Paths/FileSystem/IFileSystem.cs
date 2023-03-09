@@ -66,4 +66,31 @@ public interface IFileSystem
     /// <param name="path">Path to the directory.</param>
     /// <returns></returns>
     bool DirectoryExists(AbsolutePath path);
+
+    /// <summary>
+    /// Deletes a specified empty directory, or a specified
+    /// directory and any directory contents (subdirectories and files).
+    /// </summary>
+    /// <param name="path">Path to the directory.</param>
+    /// <param name="recursive">
+    /// <c>true</c> to delete this directory and it's contents,
+    /// <c>false</c> to only delete this directory if it's empty. If <paramref name="recursive"/>
+    /// is set to <c>false</c> and the directory is not empty, an exception will be thrown.
+    /// </param>
+    /// <exception cref="IOException">The directory specified is not empty and <paramref name="recursive"/>
+    /// is set to <c>false</c>.</exception>
+    void DeleteDirectory(AbsolutePath path, bool recursive);
+
+    /// <summary>
+    /// Determines whether the specified file exists.
+    /// </summary>
+    /// <param name="path">Path to the file.</param>
+    /// <returns></returns>
+    bool FileExists(AbsolutePath path);
+
+    /// <summary>
+    /// Deletes the specified file.
+    /// </summary>
+    /// <param name="path">Path to the file.</param>
+    void DeleteFile(AbsolutePath path);
 }

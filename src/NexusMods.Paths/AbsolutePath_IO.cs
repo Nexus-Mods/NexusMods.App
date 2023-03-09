@@ -58,7 +58,7 @@ public partial struct AbsolutePath
     /// <summary>
     /// Returns true if the file exists, else false.
     /// </summary>
-    public bool FileExists => File.Exists(GetFullPath());
+    public bool FileExists => FileSystem.FileExists(this);
 
     /// <summary>
     /// Obtains the name of the first folder stored in this path.
