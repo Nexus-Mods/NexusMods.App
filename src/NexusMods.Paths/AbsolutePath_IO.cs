@@ -18,6 +18,8 @@ public partial struct AbsolutePath
         MatchType = MatchType.Win32
     };
 
+    private FileInfo? _info = null;
+
     /// <summary>
     /// Returns the file information for this file.
     /// </summary>
@@ -77,8 +79,6 @@ public partial struct AbsolutePath
             return FromDirectoryAndFileName(path.ToString(), "", FileSystem);
         }
     }
-
-    private FileInfo? _info = null;
 
     /// <summary>
     /// Opens a file stream to the given absolute path.
@@ -210,7 +210,12 @@ public partial struct AbsolutePath
     /// <summary>
     /// Creates a directory if it does not already exist.
     /// </summary>
-    public void CreateDirectory() => System.IO.Directory.CreateDirectory(GetFullPath());
+    public void CreateDirectory() => FileSystem.CreateDirectory(this);
+
+    /// <summary>
+    /// Returns true if this directory exists, else false.
+    /// </summary>
+    public readonly bool DirectoryExists() => FileSystem.DirectoryExists(this);
 
     /// <summary>
     /// Deletes the directory specified by this absolute path.
@@ -253,11 +258,6 @@ public partial struct AbsolutePath
             System.IO.Directory.Delete(GetFullPath(), true);
         }
     }
-
-    /// <summary>
-    /// Returns true if this directory exists, else false.
-    /// </summary>
-    public readonly bool DirectoryExists() => System.IO.Directory.Exists(GetFullPath());
 
     /// <summary>
     /// Enumerates through all the files present in this directory.

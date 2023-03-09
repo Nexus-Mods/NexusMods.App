@@ -9,6 +9,7 @@ namespace NexusMods.Paths;
 public class InMemoryFileSystem : BaseFileSystem
 {
     private readonly Dictionary<AbsolutePath, byte[]> _virtualFiles = new();
+    private readonly List<AbsolutePath> _directories = new();
 
     /// <summary>
     /// Constructor.
@@ -40,6 +41,18 @@ public class InMemoryFileSystem : BaseFileSystem
 
         var ms = new MemoryStream(fileContents, 0, fileContents.Length, access.HasFlag(FileAccess.Write));
         return ms;
+    }
+
+    /// <inheritdoc/>
+    protected override void InternalCreateDirectory(AbsolutePath path)
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <inheritdoc/>
+    protected override bool InternalDirectoryExists(AbsolutePath path)
+    {
+        throw new NotImplementedException();
     }
 
     #endregion

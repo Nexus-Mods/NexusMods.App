@@ -68,10 +68,15 @@ public abstract class BaseFileSystem : IFileSystem
 
     /// <inheritdoc/>
     public Stream OpenFile(AbsolutePath path, FileMode mode, FileAccess access, FileShare share)
-    {
-        var actualPath = GetMappedPath(path);
-        return InternalOpenFile(actualPath, mode, access, share);
-    }
+        => InternalOpenFile(GetMappedPath(path), mode, access, share);
+
+    /// <inheritdoc/>
+    public void CreateDirectory(AbsolutePath path)
+        => InternalCreateDirectory(GetMappedPath(path));
+
+    /// <inheritdoc/>
+    public bool DirectoryExists(AbsolutePath path)
+        => InternalDirectoryExists(GetMappedPath(path));
 
     #endregion
 
@@ -79,6 +84,12 @@ public abstract class BaseFileSystem : IFileSystem
 
     /// <inheritdoc cref="IFileSystem.OpenFile"/>
     protected abstract Stream InternalOpenFile(AbsolutePath path, FileMode mode, FileAccess access, FileShare share);
+
+    /// <inheritdoc cref="IFileSystem.CreateDirectory"/>
+    protected abstract void InternalCreateDirectory(AbsolutePath path);
+
+    /// <inheritdoc cref="IFileSystem.DirectoryExists"/>
+    protected abstract bool InternalDirectoryExists(AbsolutePath path);
 
     #endregion
 }

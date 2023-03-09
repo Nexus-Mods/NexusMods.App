@@ -25,9 +25,15 @@ public class FileSystem : BaseFileSystem
 
     /// <inheritdoc/>
     protected override Stream InternalOpenFile(AbsolutePath path, FileMode mode, FileAccess access, FileShare share)
-    {
-        return File.Open(path.GetFullPath(), mode, access, share);
-    }
+        => File.Open(path.GetFullPath(), mode, access, share);
+
+    /// <inheritdoc/>
+    protected override void InternalCreateDirectory(AbsolutePath path)
+        => Directory.CreateDirectory(path.GetFullPath());
+
+    /// <inheritdoc/>
+    protected override bool InternalDirectoryExists(AbsolutePath path)
+        => Directory.Exists(path.GetFullPath());
 
     #endregion
 

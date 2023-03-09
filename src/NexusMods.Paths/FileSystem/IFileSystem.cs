@@ -53,4 +53,17 @@ public interface IFileSystem
     /// <param name="path">Path to the file.</param>
     /// <returns></returns>
     Stream CreateFile(AbsolutePath path);
+
+    /// <summary>
+    /// Creates a directory if it does not already exists.
+    /// </summary>
+    /// <param name="path"></param>
+    void CreateDirectory(AbsolutePath path);
+
+    /// <summary>
+    /// Determines whether the given path refers to an existing directory on disk.
+    /// </summary>
+    /// <param name="path">Path to the directory.</param>
+    /// <returns></returns>
+    bool DirectoryExists(AbsolutePath path);
 }
