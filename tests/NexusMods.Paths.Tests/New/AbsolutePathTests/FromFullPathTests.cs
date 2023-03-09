@@ -5,7 +5,8 @@ namespace NexusMods.Paths.Tests.New.AbsolutePathTests;
 
 public class FromFullPathTests
 {
-    [Theory]
+    [SkippableTheory]
+    [InlineData("C:")]
     [InlineData("C:\foo")]
     [InlineData("C:\foo\bar")]
     [InlineData("C:\foo\bar\baz")]
@@ -15,7 +16,8 @@ public class FromFullPathTests
         AbsolutePath.FromFullPath(fullPath).GetFullPath().Should().Be(fullPath);
     }
 
-    [Theory]
+    [SkippableTheory]
+    [InlineData("/")]
     [InlineData("/foo")]
     [InlineData("/foo/bar")]
     [InlineData("/foo/bar/baz")]

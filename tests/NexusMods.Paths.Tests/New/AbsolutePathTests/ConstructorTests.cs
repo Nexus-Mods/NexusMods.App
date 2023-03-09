@@ -5,7 +5,8 @@ namespace NexusMods.Paths.Tests.New.AbsolutePathTests;
 
 public class ConstructorTests
 {
-    [Theory]
+    [SkippableTheory]
+    [InlineData("C:", "C:", "")]
     [InlineData("C:\foo", "C:", "foo")]
     [InlineData("C:\foo\bar", "C:\foo", "bar")]
     public void Test_Constructor_Windows(string fullPath, string directory, string fileName)
@@ -17,7 +18,8 @@ public class ConstructorTests
         path.GetFullPath().Should().Be(fullPath);
     }
 
-    [Theory]
+    [SkippableTheory]
+    [InlineData("/", "/", "")]
     [InlineData("/foo", "/", "foo")]
     [InlineData("/foo/bar", "/foo", "bar")]
     public void Test_Constructor_Linux(string fullPath, string directory, string fileName)

@@ -109,6 +109,11 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         if (FileName.Length == 0)
             return Directory;
 
+        // on Linux: Directory="/", FileName="foo" should return "/foo"
+        // and not "//foo"
+        if (Directory.Length == 1 && Directory == DirectorySeparatorCharStr)
+            return string.Concat(Directory, FileName);
+
         return string.Concat(Directory, DirectorySeparatorCharStr, FileName);
     }
 
