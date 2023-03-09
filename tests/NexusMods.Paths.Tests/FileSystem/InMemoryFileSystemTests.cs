@@ -1,18 +1,15 @@
 using System.Text;
-using AutoFixture.Xunit2;
 using FluentAssertions;
+using NexusMods.Paths.Tests.AutoData;
 
 namespace NexusMods.Paths.Tests.FileSystem;
 
 public class InMemoryFileSystemTests
 {
-    [Theory, AutoData]
-    public async Task Test_OpenFile(string fileName, string contents)
+    [Theory, AutoFileSystem]
+    public async Task Test_OpenFile(InMemoryFileSystem fs, AbsolutePath path, string contents)
     {
         var bytes = Encoding.UTF8.GetBytes(contents);
-
-        var fs = new InMemoryFileSystem();
-        var path = fs.FromFullPath($"/foo/{fileName}");
 
         fs.AddFile(path, bytes);
 
@@ -29,12 +26,10 @@ public class InMemoryFileSystemTests
         actualBytes.Should().BeEquivalentTo(bytes);
     }
 
-    [Theory, AutoData]
-    public void Test_OpenFile_FileNotFound(string fileName)
+    [Theory, AutoFileSystem]
+    public void Test_OpenFile_FileNotFound(InMemoryFileSystem fs, AbsolutePath path)
     {
-        var fs = new InMemoryFileSystem();
-
-        fs.Invoking(x => x.ReadFile(fs.FromFullPath(fileName)))
+        fs.Invoking(x => x.ReadFile(path))
             .Should()
             .Throw<FileNotFoundException>();
     }
