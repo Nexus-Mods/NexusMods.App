@@ -8,22 +8,114 @@ namespace NexusMods.Paths;
 [PublicAPI]
 public class InMemoryFileSystem : BaseFileSystem
 {
-    private readonly Dictionary<AbsolutePath, byte[]> _virtualFiles = new();
-    private readonly List<AbsolutePath> _directories = new();
+    private readonly InMemoryDirectory _rootDirectory;
+
+    private readonly Dictionary<AbsolutePath, InMemoryFile> _files = new();
+    private readonly Dictionary<AbsolutePath, InMemoryDirectory> _directories = new();
 
     /// <summary>
     /// Constructor.
     /// </summary>
-    public InMemoryFileSystem() { }
+    public InMemoryFileSystem() : this(new Dictionary<AbsolutePath, AbsolutePath>()) { }
 
-    public void AddFile(AbsolutePath path, byte[] contents)
+    private InMemoryFileSystem(Dictionary<AbsolutePath, AbsolutePath> pathMappings) : base(pathMappings)
     {
-        _virtualFiles[path] = contents;
+        _rootDirectory = new InMemoryDirectory(
+            AbsolutePath.FromFullPath("/"),
+            null!,
+            new Dictionary<RelativePath, InMemoryFile>(),
+            new Dictionary<RelativePath, InMemoryDirectory>());
+
+        _directories[_rootDirectory.Path] = _rootDirectory;
     }
 
-    #region Implementation
+    private record InMemoryEntry(
+        AbsolutePath Path,
+        InMemoryDirectory ParentDirectory);
 
-    private InMemoryFileSystem(Dictionary<AbsolutePath, AbsolutePath> pathMappings) : base(pathMappings) { }
+    private record InMemoryDirectory(
+        AbsolutePath Path,
+        InMemoryDirectory ParentDirectory,
+        Dictionary<RelativePath, InMemoryFile> Files,
+        Dictionary<RelativePath, InMemoryDirectory> Directories) : InMemoryEntry(Path, ParentDirectory);
+
+    private record InMemoryFile(
+        AbsolutePath Path,
+        InMemoryDirectory ParentDirectory,
+        byte[] Contents) : InMemoryEntry(Path, ParentDirectory);
+
+    #region Helper Functions
+
+    /// <summary>
+    /// Helper function to add a new file to the in-memory file system.
+    /// </summary>
+    /// <param name="path">Path to the file.</param>
+    /// <param name="contents"></param>
+    public void AddFile(AbsolutePath path, byte[] contents)
+    {
+        if (!path.InFolder(_rootDirectory.Path))
+            throw new ArgumentException($"Path {path} is not in root directory {_rootDirectory.Path}");
+
+        var directory = GetOrAddDirectory(path.Parent);
+        var inMemoryFile = new InMemoryFile(path, directory, contents);
+
+        _files.Add(path, inMemoryFile);
+        directory.Files.Add(inMemoryFile.Path.RelativeTo(directory.Path), inMemoryFile);
+    }
+
+    /// <summary>
+    /// Adds a new directory to the in-memory file system.
+    /// </summary>
+    /// <param name="path">Path to the directory.</param>
+    public void AddDirectory(AbsolutePath path)
+    {
+        if (!path.InFolder(_rootDirectory.Path))
+            throw new ArgumentException($"Path {path} is not in root directory {_rootDirectory.Path}");
+
+        GetOrAddDirectory(path);
+    }
+
+    private InMemoryDirectory GetOrAddDirectory(AbsolutePath path)
+    {
+        // directory already exists
+        if (_directories.TryGetValue(path, out var existingDir))
+            return existingDir;
+
+        // directory doesn't exist, we have to create this directory and all
+        // parent directories, using a scuffed top-to-bottom implementation for now
+        var directoriesToCreate = new Stack<AbsolutePath>();
+
+        var current = path;
+        while (current.Parent != _rootDirectory.Path)
+        {
+            directoriesToCreate.Push(current);
+            current = current.Parent;
+        }
+
+        var currentParentDirectory = _rootDirectory;
+        while (directoriesToCreate.TryPop(out var directoryPath))
+        {
+            if (!_directories.TryGetValue(directoryPath, out var directory))
+            {
+                directory = new InMemoryDirectory(
+                    directoryPath,
+                    _rootDirectory,
+                    new Dictionary<RelativePath, InMemoryFile>(),
+                    new Dictionary<RelativePath, InMemoryDirectory>());
+
+                currentParentDirectory.Directories[directory.Path.RelativeTo(currentParentDirectory.Path)] = directory;
+                _directories[directoryPath] = directory;
+            }
+
+            currentParentDirectory = directory;
+        }
+
+        return _directories[path];
+    }
+
+    #endregion
+
+    #region Implementation
 
     /// <inheritdoc/>
     public override IFileSystem CreateOverlayFileSystem(Dictionary<AbsolutePath, AbsolutePath> pathMappings)
@@ -36,25 +128,21 @@ public class InMemoryFileSystem : BaseFileSystem
         if (mode != FileMode.Open)
             throw new NotImplementedException();
 
-        if (!_virtualFiles.TryGetValue(path, out var fileContents))
+        if (!_files.TryGetValue(path, out var inMemoryFile))
             throw new FileNotFoundException("File does not exist!", path.FileName);
 
+        var fileContents = inMemoryFile.Contents;
         var ms = new MemoryStream(fileContents, 0, fileContents.Length, access.HasFlag(FileAccess.Write));
         return ms;
     }
 
     /// <inheritdoc/>
     protected override void InternalCreateDirectory(AbsolutePath path)
-    {
-        throw new NotImplementedException();
-    }
+        => AddDirectory(path);
 
     /// <inheritdoc/>
     protected override bool InternalDirectoryExists(AbsolutePath path)
-    {
-        throw new NotImplementedException();
-    }
+        => _directories.ContainsKey(path);
 
     #endregion
-
 }

@@ -33,4 +33,19 @@ public class InMemoryFileSystemTests
             .Should()
             .Throw<FileNotFoundException>();
     }
+
+    [Theory, AutoFileSystem]
+    public void Test_CreateDirectory(InMemoryFileSystem fs, AbsolutePath path)
+    {
+        fs.CreateDirectory(path);
+        fs.DirectoryExists(path).Should().BeTrue();
+        path.DirectoryExists().Should().BeTrue();
+    }
+
+    [Theory, AutoFileSystem]
+    public void Test_DirectoryExists(InMemoryFileSystem fs, AbsolutePath path)
+    {
+        fs.DirectoryExists(path).Should().BeFalse();
+        path.DirectoryExists().Should().BeFalse();
+    }
 }
