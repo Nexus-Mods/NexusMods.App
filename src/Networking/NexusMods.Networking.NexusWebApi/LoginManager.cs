@@ -71,8 +71,7 @@ public class LoginManager
         _dataStore.Put(JWTTokenEntity.StoreId, new JWTTokenEntity
         {
             RefreshToken = jwtToken.RefreshToken,
-            AccessToken = jwtToken.AccessToken,
-            Store = _dataStore
+            AccessToken = jwtToken.AccessToken
         });
     }
 

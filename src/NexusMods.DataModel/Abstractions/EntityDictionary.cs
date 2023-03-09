@@ -78,7 +78,7 @@ public struct EntityDictionary<TK, TV> :
     /// <returns>A new dictionary with the item present in its collection.</returns>
     public EntityDictionary<TK, TV> With(TK key, TV val)
     {
-        return new EntityDictionary<TK, TV>(_store, _coll.SetItem(key, val.DataStoreId));
+        return new EntityDictionary<TK, TV>(_store, _coll.SetItem(key, val.WithPersist(_store).DataStoreId));
     }
 
     /// <summary>
@@ -89,7 +89,7 @@ public struct EntityDictionary<TK, TV> :
     /// <returns>A new dictionary with the item present in its collection.</returns>
     public EntityDictionary<TK, TV> With(TV val, Func<TV, TK> keyFn)
     {
-        return new EntityDictionary<TK, TV>(_store, _coll.SetItem(keyFn(val), val.DataStoreId));
+        return new EntityDictionary<TK, TV>(_store, _coll.SetItem(keyFn(val), val.WithPersist(_store).DataStoreId));
     }
 
     /// <summary>
@@ -103,7 +103,7 @@ public struct EntityDictionary<TK, TV> :
     {
         var builder = _coll.ToBuilder();
         foreach (var v in val)
-            builder[keyFn(v)] = v.DataStoreId;
+            builder[keyFn(v)] = v.WithPersist(_store).DataStoreId;
 
         return new EntityDictionary<TK, TV>(_store, builder.ToImmutable());
     }
@@ -178,7 +178,7 @@ public struct EntityDictionary<TK, TV> :
             }
 
             if (newVal is not null)
-                builder.Add(key, newVal.DataStoreId);
+                builder.Add(key, newVal.WithPersist(_store).DataStoreId);
 
             modified = true;
         }

@@ -84,8 +84,7 @@ public class SimpleOverlayModInstaller : IModInstaller
                 From = new HashRelativePath(srcArchive, path),
                 To = new GamePath(GameFolderType.Game, path.DropFirst(root)),
                 Hash = file.Hash,
-                Size = file.Size,
-                Store = file.Store
+                Size = file.Size
             };
         }
     }

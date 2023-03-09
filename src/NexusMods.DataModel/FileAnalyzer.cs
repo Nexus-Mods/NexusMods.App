@@ -50,7 +50,7 @@ public class FileContentsCache
         if (found != null) return found;
 
         var result = await AnalyzeFileInner(new NativeFileStreamFactory(path), token);
-        result.EnsureStored();
+        result.EnsurePersisted(_store);
         return result;
     }
 
@@ -129,8 +129,7 @@ public class FileContentsCache
             Hash = hash,
             Size = sFn.Size,
             FileTypes = sigs.ToArray(),
-            AnalysisData = analysisData.ToImmutableList(),
-            Store = _store
+            AnalysisData = analysisData.ToImmutableList()
         };
 
         if (parent != Hash.Zero)
@@ -154,9 +153,12 @@ public class FileContentsCache
                         async (_, entry) =>
                         {
                             var relPath = entry.Path.RelativeTo(tmpFolder.Path);
+                            var analysisRecord = await AnalyzeFileInner(
+                                new NativeFileStreamFactory(entry.Path), token,
+                                level + 1, hash, relPath);
+                            analysisRecord.WithPersist(_store);
                             return (entry.Path,
-                                Results: await AnalyzeFileInner(new NativeFileStreamFactory(entry.Path), token,
-                                    level + 1, hash, relPath));
+                                Results: analysisRecord);
                         },
                         token, "Analyzing Files")
                     .Select(a => KeyValuePair.Create(a.Path.RelativeTo(tmpFolder.Path), a.Results.DataStoreId))
@@ -168,8 +170,7 @@ public class FileContentsCache
                 Size = sFn.Size,
                 FileTypes = sigs.ToArray(),
                 AnalysisData = analysisData.ToImmutableList(),
-                Contents = new EntityDictionary<RelativePath, AnalyzedFile>(_store, children),
-                Store = _store
+                Contents = new EntityDictionary<RelativePath, AnalyzedFile>(_store, children)
             };
             return file;
         }
@@ -186,10 +187,9 @@ public class FileContentsCache
         {
             File = hash,
             Parent = parent,
-            Path = parentPath,
-            Store = _store
+            Path = parentPath
         };
-        entity.EnsureStored();
+        entity.EnsurePersisted(_store);
     }
 
     public IEnumerable<FileContainedIn> ArchivesThatContain(Hash hash)
