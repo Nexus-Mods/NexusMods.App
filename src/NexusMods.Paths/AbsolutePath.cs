@@ -56,7 +56,9 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         // on Linux: don't do this if the directory is "/"
         if (!string.IsNullOrEmpty(directory))
         {
-            Directory = directory.EndsWith(Path.DirectorySeparatorChar) && directory.Length != 1
+            Directory = directory.EndsWith(Path.DirectorySeparatorChar)
+                        && directory.Length != 1
+                        && directory != DirectorySeparatorCharStr
                 ? directory[..^1]
                 : directory;
         }
