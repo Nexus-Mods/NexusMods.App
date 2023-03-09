@@ -155,8 +155,7 @@ public class OAuth2MessageFactory : IAuthenticatingMessageFactory
             _store.Put(JWTTokenEntity.StoreId, new JWTTokenEntity
             {
                 RefreshToken = newToken.RefreshToken,
-                AccessToken = newToken.AccessToken,
-                Store = _store
+                AccessToken = newToken.AccessToken
             });
 
             var msg = new HttpRequestMessage(original.Method, original.RequestUri);

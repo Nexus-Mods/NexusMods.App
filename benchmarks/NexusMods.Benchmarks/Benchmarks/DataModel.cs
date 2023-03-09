@@ -62,7 +62,6 @@ public class DataStoreBenchmark : IBenchmark, IDisposable
         _record = new FromArchive
         {
             Id = ModFileId.New(),
-            Store = _dataStore,
             From = _fromPutPath,
             Size = Size.From(1024),
             Hash = Hash.From(42),
@@ -95,7 +94,6 @@ public class DataStoreBenchmark : IBenchmark, IDisposable
         var record = new FromArchive
         {
             Id = ModFileId.New(),
-            Store = _dataStore,
             From = _fromPutPath,
             Size = Size.From(1024),
             Hash = Hash.From(42),

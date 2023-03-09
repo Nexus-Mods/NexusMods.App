@@ -68,7 +68,12 @@ public partial struct AbsolutePath
             var thisPathLength = GetFullPathLength();
             var thisFullPath = thisPathLength <= 512 ? stackalloc char[thisPathLength] : GC.AllocateUninitializedArray<char>(thisPathLength);
             GetFullPath(thisFullPath);
-            var path = thisFullPath[..thisFullPath.IndexOf(Path.DirectorySeparatorChar)];
+
+            var index = thisFullPath.IndexOf(Path.DirectorySeparatorChar);
+            if (OperatingSystem.IsLinux() && index == 0)
+                return FromFullPath(DirectorySeparatorCharStr);
+
+            var path = thisFullPath[..index];
             return FromDirectoryAndFileName(path.ToString(), "");
         }
     }

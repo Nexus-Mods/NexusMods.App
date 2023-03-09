@@ -66,8 +66,7 @@ public class LooseFileInstaller : IModInstaller
                     From = new HashRelativePath(srcArchive, file.Path),
                     To = new GamePath(GameFolderType.Game, outFile),
                     Hash = file.Entry.Hash,
-                    Size = file.Entry.Size,
-                    Store = _store
+                    Size = file.Entry.Size
                 };
             });
     }

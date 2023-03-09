@@ -36,8 +36,7 @@ public class OAuth2MessageFactoryTests
         _store.Setup(_ => _.Get<JWTTokenEntity>(JWTTokenEntity.StoreId, false)).Returns(() => new JWTTokenEntity
         {
             AccessToken = "access_token",
-            RefreshToken = "refresh_token",
-            Store = _store.Object
+            RefreshToken = "refresh_token"
         });
 
         var request = await _factory.Create(HttpMethod.Get, new Uri("test://foobar"));
@@ -69,8 +68,7 @@ public class OAuth2MessageFactoryTests
         _store.Setup(_ => _.Get<JWTTokenEntity>(JWTTokenEntity.StoreId, false)).Returns(() => new JWTTokenEntity
         {
             AccessToken = "access_token",
-            RefreshToken = "refresh_token",
-            Store = _store.Object
+            RefreshToken = "refresh_token"
         });
 
         _handler.Protected()

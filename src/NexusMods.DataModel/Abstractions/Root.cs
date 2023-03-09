@@ -78,7 +78,8 @@ public class Root<TRoot> where TRoot : Entity, IEmptyWithDataStore<TRoot>
         var oldRoot = _root.Id == IdEmpty.Empty ? TRoot.Empty(Store) : _root.Value;
 
         var newRoot = f(oldRoot);
-        if (newRoot.DataStoreId.Equals(oldRoot.DataStoreId))
+        newRoot.EnsurePersisted(Store);
+        if (oldRoot.IsPersisted && newRoot.DataStoreId.Equals(oldRoot.DataStoreId))
             return;
 
         if (!Store.PutRoot(Type, _root.Id, newRoot.DataStoreId))

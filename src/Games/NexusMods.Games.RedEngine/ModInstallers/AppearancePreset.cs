@@ -44,8 +44,7 @@ public class AppearancePreset : IModInstaller
                     From = new HashRelativePath(srcArchive, path),
                     To = new GamePath(GameFolderType.Game, relPath.Join(path.FileName)),
                     Hash = file.Hash,
-                    Size = file.Size,
-                    Store = file.Store
+                    Size = file.Size
                 };
             }
         }

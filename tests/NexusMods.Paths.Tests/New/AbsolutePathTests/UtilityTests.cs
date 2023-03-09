@@ -1,5 +1,4 @@
-using NexusMods.Paths.Extensions;
-using NexusMods.Paths.Tests.New.Helpers;
+using FluentAssertions;
 
 namespace NexusMods.Paths.Tests.New.AbsolutePathTests;
 
@@ -8,30 +7,55 @@ namespace NexusMods.Paths.Tests.New.AbsolutePathTests;
 /// </summary>
 public class UtilityTests
 {
-    [Theory]
-    [InlineData("nya/neko/nyan", "nya/neko/nyan/nyanya")]
-    public void InFolder(string parent, string child)
+    [SkippableTheory]
+    [InlineData("/", "/foo", true)]
+    [InlineData("/foo", "/foo/bar", true)]
+    [InlineData("C:", "C:\\foo", false)]
+    [InlineData("C:\\foo", "C:\\foo\\bar", false)]
+    public void InFolder(string parent, string child, bool linux)
     {
-        var parentPath = AbsolutePath.FromFullPath(parent.NormalizeSeparator());
-        var childPath = AbsolutePath.FromFullPath(child.NormalizeSeparator());
-        Assert.True(childPath.InFolder(parentPath));
+        Skip.IfNot(linux && OperatingSystem.IsLinux());
+
+        var parentPath = AbsolutePath.FromFullPath(parent);
+        var childPath = AbsolutePath.FromFullPath(child);
+
+        childPath.InFolder(parentPath).Should().BeTrue();
     }
 
-    [Theory]
-    [InlineData("Desktop/Cat.png", "/home/sewer", "/home/sewer/Desktop/Cat.png")]
-    [InlineData("/home/sewer/Desktop/Cat.png", "", "/home/sewer/Desktop/Cat.png")]
-    public void RelativeTo(string expected, string parent, string child)
+    [SkippableTheory]
+    [InlineData("foo", "/", "/foo", true)]
+    [InlineData("foo/bar", "/", "/foo/bar", true)]
+    [InlineData("bar", "/foo", "/foo/bar", true)]
+    [InlineData("foo", "C:", "C:\\foo", false)]
+    [InlineData("foo\\bar", "C:", "C:\\foo\\bar", false)]
+    [InlineData("bar", "C:\\foo", "C:\\foo\\bar", false)]
+    public void RelativeTo(string expected, string parent, string child, bool linux)
     {
-        child = child.NormalizeSeparator();
-        parent = parent.NormalizeSeparator();
-        expected = expected.NormalizeSeparator();
-        Assert.Equal(expected, child.ToAbsolutePath().RelativeTo(parent.ToAbsolutePath()).ToString());
+        Skip.IfNot(linux && OperatingSystem.IsLinux());
+
+        var childPath = AbsolutePath.FromFullPath(child);
+        var parentPath = AbsolutePath.FromFullPath(parent);
+
+        childPath
+            .RelativeTo(parentPath)
+            .ToString()
+            .Should()
+            .Be(expected);
     }
 
-    [Theory]
-    [InlineData("nya", "nya/neko/nyan/nyanya")]
-    public void TopParent(string expected, string item)
+    [SkippableTheory]
+    [InlineData("/", "/foo", true)]
+    [InlineData("/", "/foo/bar", true)]
+    [InlineData("C:", "C:\\foo", false)]
+    [InlineData("C:", "C:\\foo\\bar", false)]
+    public void TopParent(string expected, string item, bool linux)
     {
-        Assert.Equal(expected, AbsolutePath.FromFullPath(item.NormalizeSeparator()).TopParent.GetFullPath());
+        Skip.IfNot(linux && OperatingSystem.IsLinux());
+
+        var path = AbsolutePath.FromFullPath(item);
+
+        path.TopParent.GetFullPath()
+            .Should()
+            .Be(expected);
     }
 }
