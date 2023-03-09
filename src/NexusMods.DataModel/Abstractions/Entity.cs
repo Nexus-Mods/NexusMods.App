@@ -82,10 +82,13 @@ public abstract record Entity : IWalkable<Entity>
     [JsonIgnore]
     public IId DataStoreId
     {
-        get => _id ?? throw new UnpersistedEntity();
+        get => _id ?? ThrowUnpersistedEntity();
         set => _id = value;
     }
 
+    /// <summary>
+    /// Returns true if this item is persisted in the data store and has an ID.
+    /// </summary>
     [JsonIgnore]
     public bool IsPersisted => _id != null;
 
@@ -112,5 +115,5 @@ public abstract record Entity : IWalkable<Entity>
     // Throwing prevents inlining which is costly in copy constructor
     // thus I moved the throw into a separate method so the constructor
     // can be inlined for faster mutations. - Sewer
-    private static void ThrowNoDataStoreException() => throw new NoDataStoreException();
+    private static IId ThrowUnpersistedEntity() => throw new UnpersistedEntity();
 }
