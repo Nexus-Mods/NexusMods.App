@@ -27,13 +27,20 @@ public abstract class BaseFileSystem : IFileSystem
 
     internal AbsolutePath GetMappedPath(AbsolutePath originalPath)
     {
-        // TODO: support directory mapping
-        // eg: mapping["/home", "/mnt/hdd/home"]
-        // GetMappedPath("/home/bob") should return "/mnt/hdd/home/bob"
+        // direct mapping
+        if (_pathMappings.TryGetValue(originalPath, out var mappedPath))
+            return mappedPath;
 
-        return _pathMappings.TryGetValue(originalPath, out var mappedPath)
-            ? mappedPath
-            : originalPath;
+        // indirect mapping via parent directory
+        var (originalParentDirectory, newParentDirectory) = _pathMappings
+            .FirstOrDefault(kv => originalPath.InFolder(kv.Key));
+
+        if (newParentDirectory == default) return originalPath;
+
+        var relativePath = originalPath.RelativeTo(originalParentDirectory);
+        var newPath = newParentDirectory.CombineUnchecked(relativePath);
+
+        return newPath;
     }
 
     #region IFileStream Implementation

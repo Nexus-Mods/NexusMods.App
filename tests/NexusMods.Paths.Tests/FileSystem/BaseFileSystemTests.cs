@@ -18,4 +18,22 @@ public class BaseFileSystemTests
 
         overlayFileSystem.GetMappedPath(originalPath).Should().Be(mappedPath);
     }
+
+    [Theory, AutoData]
+    public void Test_PathMapping_WithDirectory(InMemoryFileSystem fs, string fileName)
+    {
+        var originalDirectoryPath = fs.FromFullPath("/foo/bar");
+        var newDirectoryPath = fs.FromFullPath("/foo/baz");
+
+        var originalFilePath = originalDirectoryPath.CombineUnchecked(fileName);
+        var newFilePath = newDirectoryPath.CombineUnchecked(fileName);
+
+        var overlayFileSystem = (BaseFileSystem)fs.CreateOverlayFileSystem(
+            new Dictionary<AbsolutePath, AbsolutePath>
+            {
+                { originalDirectoryPath, newDirectoryPath }
+            });
+
+        overlayFileSystem.GetMappedPath(originalFilePath).Should().Be(newFilePath);
+    }
 }
