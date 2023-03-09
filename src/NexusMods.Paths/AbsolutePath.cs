@@ -78,9 +78,12 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
             return new AbsolutePath(null, fullPath);
         }
 
-        var directory = fullPath[..index];
+        // Windows: "C:\foo", directory should be "C:"
+        // Linux: "/foo", directory should be "/"
+        var directory = index == 0 ? $"{fullPath[0]}": fullPath[..index];
+
         var fileName = fullPath[(index + 1)..];
-        return new(directory, fileName);
+        return new AbsolutePath(directory, fileName);
     }
 
     /// <summary>
