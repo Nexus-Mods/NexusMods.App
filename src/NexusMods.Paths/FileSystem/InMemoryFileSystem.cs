@@ -21,7 +21,7 @@ public class InMemoryFileSystem : BaseFileSystem
     private InMemoryFileSystem(Dictionary<AbsolutePath, AbsolutePath> pathMappings) : base(pathMappings)
     {
         _rootDirectory = new InMemoryDirectory(
-            AbsolutePath.FromFullPath("/"),
+            AbsolutePath.FromFullPath(OperatingSystem.IsWindows() ? "C:" : "/"),
             null!,
             new Dictionary<RelativePath, InMemoryFile>(),
             new Dictionary<RelativePath, InMemoryDirectory>());
