@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text;
 using JetBrains.Annotations;
 
 namespace NexusMods.Paths;
@@ -37,6 +38,14 @@ public partial class InMemoryFileSystem : BaseFileSystem
     /// <param name="contents"></param>
     public void AddFile(AbsolutePath path, byte[] contents)
         => InternalAddFile(path, contents);
+
+    /// <summary>
+    /// Helper function to add a new file to the in-memory file system.
+    /// </summary>
+    /// <param name="path">Path to the file.</param>
+    /// <param name="contents"></param>
+    public void AddFile(AbsolutePath path, string contents)
+        => InternalAddFile(path, Encoding.UTF8.GetBytes(contents));
 
     /// <summary>
     /// Adds an empty file to the in-memory file system.

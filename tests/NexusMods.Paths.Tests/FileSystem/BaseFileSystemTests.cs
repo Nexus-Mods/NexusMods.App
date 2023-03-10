@@ -32,4 +32,20 @@ public class BaseFileSystemTests
 
         overlayFileSystem.GetMappedPath(originalFilePath).Should().Be(newFilePath);
     }
+
+    [Theory, AutoFileSystem]
+    public async Task Test_ReadAllBytesAsync(InMemoryFileSystem fs, AbsolutePath path, byte[] contents)
+    {
+        fs.AddFile(path, contents);
+        var result = await fs.ReadAllBytesAsync(path);
+        result.Should().BeEquivalentTo(contents);
+    }
+
+    [Theory, AutoFileSystem]
+    public async Task Test_ReadAllTextAsync(InMemoryFileSystem fs, AbsolutePath path, string contents)
+    {
+        fs.AddFile(path, contents);
+        var result = await fs.ReadAllTextAsync(path);
+        result.Should().BeEquivalentTo(contents);
+    }
 }
