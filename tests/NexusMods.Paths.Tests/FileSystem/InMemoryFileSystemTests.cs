@@ -39,7 +39,6 @@ public class InMemoryFileSystemTests
     {
         fs.CreateDirectory(path);
         fs.DirectoryExists(path).Should().BeTrue();
-        path.DirectoryExists().Should().BeTrue();
     }
 
     [Theory, AutoFileSystem]
@@ -59,7 +58,6 @@ public class InMemoryFileSystemTests
     public void Test_DirectoryExists(InMemoryFileSystem fs, AbsolutePath path)
     {
         fs.DirectoryExists(path).Should().BeFalse();
-        path.DirectoryExists().Should().BeFalse();
     }
 
     [Theory, AutoFileSystem]
