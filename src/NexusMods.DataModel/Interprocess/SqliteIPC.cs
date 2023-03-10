@@ -18,6 +18,8 @@ public class SqliteIPC : IDisposable
     private static TimeSpan RetentionTime = TimeSpan.FromSeconds(10); // Keep messages for 10 seconds
     private static TimeSpan CleanupInterval = TimeSpan.FromMinutes(10); // Cleanup every 10 minutes
     private static int CleanupJitter = 2000; // Jitter cleanup by up to 2 second
+    private static TimeSpan ShortPollInterval = TimeSpan.FromMilliseconds(100); // Poll every 100ms
+    private static TimeSpan LongPollInterval = TimeSpan.FromSeconds(10); // Poll every 10s
 
     private readonly AbsolutePath _storePath;
     private readonly string _connectionString;
@@ -88,6 +90,7 @@ public class SqliteIPC : IDisposable
             lastId = ProcessMessages(lastId);
             var lastEdit = _storePath.FileInfo;
 
+            var elapsed = DateTime.UtcNow;
             while (!shutdownTokenToken.IsCancellationRequested)
             {
                 var currentEdit = _storePath.FileInfo;
@@ -95,7 +98,12 @@ public class SqliteIPC : IDisposable
                 {
                     break;
                 }
-                await Task.Delay(100, shutdownTokenToken);
+                await Task.Delay(ShortPollInterval, shutdownTokenToken);
+
+                if (DateTime.UtcNow - elapsed > LongPollInterval)
+                {
+                    break;
+                }
             }
         }
     }
