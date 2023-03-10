@@ -1,3 +1,4 @@
+using System.Text;
 using JetBrains.Annotations;
 
 namespace NexusMods.Paths;
@@ -101,6 +102,47 @@ public abstract class BaseFileSystem : IFileSystem
     /// <inheritdoc/>
     public void MoveFile(AbsolutePath source, AbsolutePath dest, bool overwrite)
         => InternalMoveFile(GetMappedPath(source), GetMappedPath(dest), overwrite);
+
+    /// <inheritdoc/>
+    public async Task<byte[]> ReadAllBytesAsync(AbsolutePath path, CancellationToken cancellationToken = default)
+    {
+        await using var s = ReadFile(path);
+        var length = s.Length;
+        var bytes = GC.AllocateUninitializedArray<byte>((int)length);
+        await s.ReadAtLeastAsync(bytes, bytes.Length, false, cancellationToken);
+        return bytes;
+    }
+
+    /// <inheritdoc/>
+    public async Task<string> ReadAllTextAsync(AbsolutePath path, CancellationToken cancellationToken = default)
+    {
+        return Encoding.UTF8.GetString(await ReadAllBytesAsync(path, cancellationToken));
+    }
+
+    /// <inheritdoc/>
+    public async Task WriteAllBytesAsync(AbsolutePath path, byte[] data, CancellationToken cancellationToken = default)
+    {
+        await using var fs = CreateFile(path);
+        await fs.WriteAsync(data, CancellationToken.None);
+    }
+
+    /// <inheritdoc/>
+    public async Task WriteAllTextAsync(AbsolutePath path, string text, CancellationToken cancellationToken = default)
+    {
+        await using var fs = CreateFile(path);
+        await fs.WriteAsync(Encoding.UTF8.GetBytes(text), cancellationToken);
+    }
+
+    /// <inheritdoc/>
+    public async Task WriteAllLinesAsync(AbsolutePath path, [InstantHandle(RequireAwait = true)] IEnumerable<string> lines, CancellationToken cancellationToken = default)
+    {
+        await using var fs = CreateFile(path);
+        await using var sw = new StreamWriter(fs);
+        foreach (var line in lines)
+        {
+            await sw.WriteLineAsync(line.AsMemory(), cancellationToken);
+        }
+    }
 
     #endregion
 

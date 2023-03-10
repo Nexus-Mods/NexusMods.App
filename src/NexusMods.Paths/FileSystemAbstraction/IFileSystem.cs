@@ -116,4 +116,47 @@ public interface IFileSystem
     /// <param name="overwrite"><c>true</c> to overwrite the destination file if it already exists; <c>false</c> otherwise</param>
     /// <exception cref="IOException">The destination already exists and <paramref name="overwrite"/> is <c>false</c></exception>
     void MoveFile(AbsolutePath source, AbsolutePath dest, bool overwrite);
+
+    /// <summary>
+    /// Reads all bytes from a file into an array.
+    /// </summary>
+    /// <param name="path">Path to the file.</param>
+    /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
+    /// <returns></returns>
+    Task<byte[]> ReadAllBytesAsync(AbsolutePath path, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Reads all text from a file using UTF-8 encoding.
+    /// </summary>
+    /// <param name="path">Path to the file.</param>
+    /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
+    /// <returns></returns>
+    Task<string> ReadAllTextAsync(AbsolutePath path, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Writes all bytes to a file.
+    /// </summary>
+    /// <param name="path">Path to the file.</param>
+    /// <param name="data">Data to write.</param>
+    /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
+    /// <returns></returns>
+    Task WriteAllBytesAsync(AbsolutePath path, byte[] data, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Writes all text to a file using UTF-8 encoding.
+    /// </summary>
+    /// <param name="path">Path to the file.</param>
+    /// <param name="text">Text to write to the file.</param>
+    /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
+    /// <returns></returns>
+    Task WriteAllTextAsync(AbsolutePath path, string text, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Writes all lines of text to a file using UTF-8 encoding.
+    /// </summary>
+    /// <param name="path">Path to the file.</param>
+    /// <param name="lines">Lines of text to write to the file.</param>
+    /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
+    /// <returns></returns>
+    Task WriteAllLinesAsync(AbsolutePath path, [InstantHandle(RequireAwait = true)] IEnumerable<string> lines, CancellationToken cancellationToken = default);
 }

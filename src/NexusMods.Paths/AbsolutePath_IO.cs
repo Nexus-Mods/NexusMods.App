@@ -1,4 +1,5 @@
 using System.Text;
+using JetBrains.Annotations;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities.Internal.Enumerators;
 
@@ -135,14 +136,8 @@ public partial struct AbsolutePath
     ///    Supports max 2GB file size.
     /// </remarks>
     // ReSharper disable once MemberCanBePrivate.Global
-    public async Task<byte[]> ReadAllBytesAsync(CancellationToken token = default)
-    {
-        await using var s = Read();
-        var length = s.Length;
-        var bytes = GC.AllocateUninitializedArray<byte>((int)length);
-        await s.ReadAtLeastAsync(bytes, bytes.Length, false, token);
-        return bytes;
-    }
+    public Task<byte[]> ReadAllBytesAsync(CancellationToken token = default)
+        => FileSystem.ReadAllBytesAsync(this, token);
 
     /// <summary>
     /// Moves the current path to a new destination.
@@ -318,43 +313,28 @@ public partial struct AbsolutePath
     /// </summary>
     /// <param name="text">The text to write to the path.</param>
     /// <param name="token">Use this to cancel task if needed.</param>
-    public async Task WriteAllTextAsync(string text, CancellationToken token = default)
-    {
-        await using var fs = Create();
-        await fs.WriteAsync(Encoding.UTF8.GetBytes(text), token);
-    }
+    public Task WriteAllTextAsync(string text, CancellationToken token = default)
+        => FileSystem.WriteAllTextAsync(this, text, token);
 
     /// <summary>
     /// Writes all lines of text specified in the given collection to this path; using UTF-8 encoding.
     /// </summary>
     /// <param name="lines">The lines to write to the path.</param>
     /// <param name="token">Use this to cancel task if needed.</param>
-    public async Task WriteAllLinesAsync(IEnumerable<string> lines, CancellationToken token = default)
-    {
-        await using var fs = Create();
-        await using var sw = new StreamWriter(fs);
-        foreach (var line in lines)
-        {
-            await sw.WriteLineAsync(line.AsMemory(), token);
-        }
-    }
+    public Task WriteAllLinesAsync([InstantHandle(RequireAwait = true)] IEnumerable<string> lines, CancellationToken token = default)
+        => FileSystem.WriteAllLinesAsync(this, lines, token);
 
     /// <summary>
     /// Reads all text from this absolute path, assuming UTF8 encoding.
     /// </summary>
     /// <param name="token">Use this to cancel task if needed.</param>
-    public async Task<string> ReadAllTextAsync(CancellationToken token = default)
-    {
-        return Encoding.UTF8.GetString(await ReadAllBytesAsync(token));
-    }
+    public Task<string> ReadAllTextAsync(CancellationToken token = default)
+        => FileSystem.ReadAllTextAsync(this, token);
 
     /// <summary>
     /// Writes the specified byte array to the path.
     /// </summary>
     /// <param name="data">The array to write.</param>
-    public async Task WriteAllBytesAsync(byte[] data)
-    {
-        await using var fs = Create();
-        await fs.WriteAsync(data, CancellationToken.None);
-    }
+    public Task WriteAllBytesAsync(byte[] data)
+        => FileSystem.WriteAllBytesAsync(this, data);
 }
