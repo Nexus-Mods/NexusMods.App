@@ -20,31 +20,31 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
     public async Task CanApplyGame()
     {
         var mainList = await LoadoutManager.ManageGameAsync(Install, "MainList", CancellationToken.None);
-        await mainList.Install(DATA_ZIP_LZMA, "First Mod", CancellationToken.None);
+        await mainList.InstallModAsync(DATA_ZIP_LZMA, "First Mod", CancellationToken.None);
 
-        var plan = await mainList.MakeApplyPlan();
+        var plan = await mainList.MakeApplyPlanAsync();
         plan.Steps.OfType<CopyFile>().Count().Should().Be(3);
 
-        await mainList.Apply(plan, CancellationToken.None);
+        await mainList.ApplyAsync(plan, CancellationToken.None);
 
-        var newPlan = await mainList.MakeApplyPlan();
+        var newPlan = await mainList.MakeApplyPlanAsync();
         newPlan.Steps.Count.Should().Be(0);
 
-        await BaseList?.Apply()!;
+        await BaseList?.ApplyAsync()!;
     }
 
     [Fact]
     public async Task CanIntegrateChanges()
     {
         var mainList = await LoadoutManager.ManageGameAsync(Install, "MainList", Token);
-        await mainList.Install(DATA_ZIP_LZMA, "First Mod", Token);
-        await mainList.Install(DATA_7Z_LZMA2, "Second Mod", Token);
+        await mainList.InstallModAsync(DATA_ZIP_LZMA, "First Mod", Token);
+        await mainList.InstallModAsync(DATA_7Z_LZMA2, "Second Mod", Token);
 
         var list = mainList.FlattenList().ToList();
-        var originalPlan = await mainList.MakeApplyPlan();
+        var originalPlan = await mainList.MakeApplyPlanAsync();
         originalPlan.Steps.OfType<CopyFile>().Count().Should().Be(3, "Files override each other");
 
-        await mainList.Apply(originalPlan, CancellationToken.None);
+        await mainList.ApplyAsync(originalPlan, CancellationToken.None);
 
         var gameFolder = Install.Locations[GameFolderType.Game];
         foreach (var file in DATA_NAMES)
@@ -60,7 +60,7 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
         var modifiedHash = "modified".XxHash64();
 
         var firstMod = mainList.Value.Mods.Values.First();
-        var ingestPlan = await mainList.MakeIngestionPlan(_ => firstMod, Token).ToHashSetAsync();
+        var ingestPlan = await mainList.MakeIngestionPlanAsync(_ => firstMod, Token).ToHashSetAsync();
 
         ingestPlan.Should().BeEquivalentTo(new IApplyStep[]
         {
@@ -99,6 +99,6 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
             .Should()
             .NotBeEmpty("Because we've updated a file");
 
-        await BaseList?.Apply(Token)!;
+        await BaseList?.ApplyAsync(Token)!;
     }
 }

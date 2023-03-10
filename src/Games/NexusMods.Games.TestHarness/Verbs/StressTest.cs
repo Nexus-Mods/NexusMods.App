@@ -95,8 +95,8 @@ public class StressTest : AVerb<IGame, AbsolutePath, AbsolutePath>
                     _logger.LogInformation("Installing {ModId} {FileId} {FileName} - {Size}", mod.ModId, file.FileId,
                         file.FileName, file.SizeInBytes);
 
-                    var list = await _loadoutManager.ImportFrom(loadout, token);
-                    await list.Install(tmpPath, "Stress Test Mod", token);
+                    var list = await _loadoutManager.ImportFromAsync(loadout, token);
+                    await list.InstallModAsync(tmpPath, "Stress Test Mod", token);
 
                     results.Add((file.FileName, mod.ModId, file.FileId, hash, true, null));
                     _logger.LogInformation("Installed {ModId} {FileId} {FileName} - {Size}", mod.ModId, file.FileId,

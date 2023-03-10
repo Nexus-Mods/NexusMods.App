@@ -10,6 +10,8 @@ namespace NexusMods.DataModel.ModInstallers;
 
 public interface IModInstaller
 {
+
     public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files);
+
     public IEnumerable<AModFile> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files);
 }

@@ -22,7 +22,7 @@ public class ToolTests : ADataModelTest<ToolTests>
     {
         var name = Guid.NewGuid().ToString();
         var loadout = await LoadoutManager.ManageGameAsync(Install, name);
-        await loadout.Install(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
+        await loadout.InstallModAsync(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
         var gameFolder = loadout.Value.Installation.Locations[GameFolderType.Game];
 
         gameFolder.CombineUnchecked("files.txt").FileExists.Should().BeFalse("tool should not have run yet");

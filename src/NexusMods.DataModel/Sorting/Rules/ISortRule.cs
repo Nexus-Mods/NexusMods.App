@@ -1,3 +1,4 @@
+// ReSharper disable UnusedTypeParameter
 namespace NexusMods.DataModel.Sorting.Rules;
 
 /// <summary>

@@ -16,6 +16,9 @@ using NexusMods.Paths;
 
 namespace NexusMods.DataModel;
 
+/// <summary>
+/// An implementation of a <see cref="IDataStore"/> backed by an Sqlite 3.X database.
+/// </summary>
 public class SqliteDataStore : IDataStore, IDisposable
 {
     private readonly SQLiteConnection _conn;
@@ -37,6 +40,14 @@ public class SqliteDataStore : IDataStore, IDisposable
     private readonly IMessageProducer<IdUpdated> _idPutProducer;
     private readonly IMessageConsumer<IdUpdated> _idPutConsumer;
 
+    /// <summary/>
+    /// <param name="logger">Logs events.</param>
+    /// <param name="path">Location of the database.</param>
+    /// <param name="provider">Dependency injection container.</param>
+    /// <param name="rootChangeProducer">Producer of changes to <see cref="Root{TRoot}"/>s</param>
+    /// <param name="rootChangeConsumer">Consumer of changes to <see cref="Root{TRoot}"/>s</param>
+    /// <param name="idPutProducer">Producer of events for updated IDs.</param>
+    /// <param name="idPutConsumer">Consumer of events for updated IDs.</param>
     public SqliteDataStore(ILogger<SqliteDataStore> logger, AbsolutePath path, IServiceProvider provider,
         IMessageProducer<RootChange> rootChangeProducer,
         IMessageConsumer<RootChange> rootChangeConsumer,
@@ -101,6 +112,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         }
     }
 
+    /// <inheritdoc />
     public IId Put<T>(T value) where T : Entity
     {
         using var cmd = new SQLiteCommand(_putStatements[value.Category], _conn);
@@ -120,6 +132,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         return id;
     }
 
+    /// <inheritdoc />
     public void Put<T>(IId id, T value) where T : Entity
     {
         using var cmd = new SQLiteCommand(_putStatements[value.Category], _conn);
@@ -134,6 +147,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
     }
 
+    /// <inheritdoc />
     public T? Get<T>(IId id, bool canCache) where T : Entity
     {
         if (canCache && _cache.TryGet(id, out var cached))
@@ -158,6 +172,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         return value;
     }
 
+    /// <inheritdoc />
     public bool PutRoot(RootType type, IId oldId, IId newId)
     {
         using var cmd = new SQLiteCommand(_putStatements[EntityCategory.Roots], _conn);
@@ -173,6 +188,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         return true;
     }
 
+    /// <inheritdoc />
     public IId? GetRoot(RootType type)
     {
         using var cmd = new SQLiteCommand(_getStatements[EntityCategory.Roots], _conn);
@@ -189,10 +205,9 @@ public class SqliteDataStore : IDataStore, IDisposable
         }
 
         return null;
-
     }
 
-
+    /// <inheritdoc />
     public byte[]? GetRaw(IId id)
     {
         using var cmd = new SQLiteCommand(_getStatements[id.Category], _conn);
@@ -209,6 +224,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         return bytes;
     }
 
+    /// <inheritdoc />
     public void PutRaw(IId id, ReadOnlySpan<byte> val)
     {
         using var cmd = new SQLiteCommand(_putStatements[id.Category], _conn);
@@ -221,6 +237,7 @@ public class SqliteDataStore : IDataStore, IDisposable
 
     }
 
+    /// <inheritdoc />
     public void Delete(IId id)
     {
         using var cmd = new SQLiteCommand(_deleteStatements[id.Category], _conn);
@@ -231,6 +248,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Delete, id));
     }
 
+    /// <inheritdoc />
     public async Task<long> PutRaw(IAsyncEnumerable<(IId Key, byte[] Value)> kvs, CancellationToken token = default)
     {
         var iterator = kvs.GetAsyncEnumerator(token);
@@ -277,6 +295,7 @@ public class SqliteDataStore : IDataStore, IDisposable
 
     }
 
+    /// <inheritdoc />
     public IEnumerable<T> GetByPrefix<T>(IId prefix) where T : Entity
     {
         using var cmd = new SQLiteCommand(_prefixStatements[prefix.Category], _conn);
@@ -302,7 +321,10 @@ public class SqliteDataStore : IDataStore, IDisposable
         }
     }
 
+    /// <inheritdoc />
     public IObservable<RootChange> RootChanges => _rootChangeConsumer.Messages.SelectMany(WaitTillRootReady);
+
+    /// <inheritdoc />
     public IObservable<IId> IdChanges => _idPutConsumer.Messages.SelectMany(WaitTillPutReady);
 
     /// <summary>
@@ -343,13 +365,13 @@ public class SqliteDataStore : IDataStore, IDisposable
         return change.Id;
     }
 
+    /// <inheritdoc />
     public void Dispose()
     {
         _conn.Dispose();
         _enqueuerTcs.Dispose();
     }
 }
-
 
 internal static class SqlExtensions
 {

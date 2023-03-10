@@ -27,12 +27,13 @@ public class LoadoutManager
 {
     /// <summary>
     /// Provides access to a cache of file hashes for quick and easy access.
-    /// This is used to speed up deployment [apply & ingest].
+    /// This is used to speed up deployment [apply and ingest].
     /// </summary>
     public readonly FileHashCache FileHashCache;
 
     /// <summary>
-    /// Provides lookup
+    /// Provides lookup within the 'Archives' folder, for existing installed mods
+    /// etc.
     /// </summary>
     public readonly ArchiveManager ArchiveManager;
 
@@ -174,16 +175,18 @@ public class LoadoutManager
     /// <summary>
     /// Installs a mod to a loadout with a given ID.
     /// </summary>
-    /// <param name="loadoutId"></param>
-    /// <param name="path"></param>
-    /// <param name="name"></param>
-    /// <param name="token"></param>
+    /// <param name="loadoutId">Index of the loadout to install a mod to.</param>
+    /// <param name="path">Path of the archive to install.</param>
+    /// <param name="name">Name of the mod being installed.</param>
+    /// <param name="token">Allows you to cancel the operation.</param>
     /// <returns></returns>
     /// <remarks>
+    ///    In the context of NMA, 'install' currently means, analyze archives and
+    ///    run archive through installers.
     ///    For more details, consider reading <a href="https://github.com/Nexus-Mods/NexusMods.App/blob/main/docs/AddingAGame.md#mod-installation">Adding a Game</a>.
     /// </remarks>
     /// <exception cref="Exception">No supported installer.</exception>
-    public async Task<(LoadoutMarker Loadout, ModId ModId)> InstallMod(LoadoutId loadoutId, AbsolutePath path, string name, CancellationToken token = default)
+    public async Task<(LoadoutMarker Loadout, ModId ModId)> InstallModAsync(LoadoutId loadoutId, AbsolutePath path, string name, CancellationToken token = default)
     {
         var loadout = GetLoadout(loadoutId);
 
@@ -218,7 +221,12 @@ public class LoadoutManager
         return (loadout, newMod.Id);
     }
 
-
+    /// <summary>
+    /// Makes changes to the loadout with a given ID.
+    /// </summary>
+    /// <param name="id">The ID of the loadout to change.</param>
+    /// <param name="func">Function which performs the changes on the loadout.</param>
+    /// <param name="changeMessage">Commit message tied to the change.</param>
     public void Alter(LoadoutId id, Func<Loadout, Loadout> func, string changeMessage = "")
     {
         _root.Alter(r =>
@@ -235,43 +243,89 @@ public class LoadoutManager
         });
     }
 
+    /// <summary>
+    /// Retrieves a loadout with a given ID.
+    /// </summary>
+    /// <param name="id">ID of the loadout to retrieve.</param>
+    /// <returns>The loadout to get.</returns>
     public Loadout Get(LoadoutId id)
     {
         return _root.Value.Lists[id];
     }
 
+    /// <summary>
+    /// Returns the available tools for a game.
+    /// </summary>
+    /// <param name="game">The game to get the tools for.</param>
     public IEnumerable<ITool> Tools(GameDomain game)
     {
         return _tools[game];
     }
 
-    public void ReplaceFiles(LoadoutId id, List<(AModFile File, Mod Mod)> generated, string message)
+    // TODO: Should probably provide this API for already grouped elements.
+
+    /// <summary>
+    /// Replaces existing files for a given mod within the loadout/data store.
+    /// Files to be replaced are matched using their <see cref="GamePath"/>(s).
+    /// </summary>
+    /// <param name="id">ID of the loadout to replace files in.</param>
+    /// <param name="items">
+    ///     List of files and their corresponding mods to perform the file replacement in.
+    /// </param>
+    /// <param name="message">The change message to attach to the new version of the loadout.</param>
+    /// <remarks>
+    ///    This is mostly used with 'generated' files, i.e. those output by a
+    ///    game specific extension of NMA like RedEngine.
+    ///
+    ///    Does not add new files, only performs replacements.
+    /// </remarks>
+    public void ReplaceFiles(LoadoutId id, List<(AModFile File, Mod Mod)> items, string message)
     {
-        var byMod = generated.GroupBy(x => x.Mod, x => x.File)
+        var byMod = items.GroupBy(x => x.Mod, x => x.File)
             .ToDictionary(x => x.Key);
+
         Alter(id, l =>
         {
             return l with
             {
                 Mods = l.Mods.Keep(m =>
                 {
-                    if (!byMod.TryGetValue(m, out var files)) return m;
+                    if (!byMod.TryGetValue(m, out var files))
+                        return m; // not one of our mods
+
+                    // This mod matches with one of our own provided ones for replacement.
+
+                    // If the path of a given file matches one of our own, replace it with
+                    // our own [the path therefore gets a new ID/Metadata/etc., and replacement is complete].
                     var indexed = files.ToDictionary(f => f.To);
-                    return m with { Files = m.Files.Keep(f => indexed.GetValueOrDefault(f.To, f)) };
+                    return m with
+                    {
+                        Files = m.Files.Keep(f => indexed.GetValueOrDefault(f.To, f))
+                    };
                 })
             };
         }, message);
     }
 
-    public async Task ExportTo(LoadoutId id, AbsolutePath output, CancellationToken token)
+    // TODO: These methods have hardcoded paths [below]; those should be replaced with shared constants.
+    // TODO: A path below in zip has explicit backslash; this goes against standard, might break with Linux archiving utils; check at some point.
+
+    /// <summary>
+    /// Exports the contents of this loadout to a given directory.
+    /// Exported loadout is zipped up.
+    /// </summary>
+    /// <param name="id">ID of the loadout to export.</param>
+    /// <param name="output">The file path to export the loadout to.</param>
+    /// <param name="token">Cancel operation with this.</param>
+    /// <remarks></remarks>
+    public async Task ExportToAsync(LoadoutId id, AbsolutePath output, CancellationToken token)
     {
         var loadout = Get(id);
 
         if (output.FileExists)
             output.Delete();
+
         using var zip = ZipFile.Open(output.ToString(), ZipArchiveMode.Create);
-
-
         var ids = loadout.Walk((state, itm) =>
         {
             state.Add(itm.DataStoreId);
@@ -313,7 +367,13 @@ public class LoadoutManager
         await rootEntry.WriteAsync(Encoding.UTF8.GetBytes(loadout.DataStoreId.TaggedSpanHex), token);
     }
 
-    public async Task<LoadoutMarker> ImportFrom(AbsolutePath path, CancellationToken token = default)
+    /// <summary>
+    /// Imports the contents of this loadout from a given directory [zip archive].
+    /// </summary>
+    /// <param name="path">Location of the file to import from.</param>
+    /// <param name="token">Cancel operation with this.</param>
+    /// <remarks></remarks>
+    public async Task<LoadoutMarker> ImportFromAsync(AbsolutePath path, CancellationToken token = default)
     {
         async ValueTask<(IId, byte[])> ProcessEntry(ZipArchiveEntry entry)
         {

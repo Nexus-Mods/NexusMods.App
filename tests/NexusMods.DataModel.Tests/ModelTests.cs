@@ -58,8 +58,8 @@ public class ModelTests : ADataModelTest<ModelTests>
     {
         var name = Guid.NewGuid().ToString();
         var loadout = await LoadoutManager.ManageGameAsync(Install, name);
-        await loadout.Install(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
-        await loadout.Install(DATA_ZIP_LZMA, "", CancellationToken.None);
+        await loadout.InstallModAsync(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
+        await loadout.InstallModAsync(DATA_ZIP_LZMA, "", CancellationToken.None);
 
         loadout.Value.Mods.Count.Should().Be(3);
         loadout.Value.Mods.Values.Sum(m => m.Files.Count).Should().Be(DATA_NAMES.Length * 2 + StubbedGame.DATA_NAMES.Length);
@@ -70,8 +70,8 @@ public class ModelTests : ADataModelTest<ModelTests>
     public async Task RenamingAListDoesntChangeOldIds()
     {
         var loadout = await LoadoutManager.ManageGameAsync(Install, Guid.NewGuid().ToString());
-        var id1 = await loadout.Install(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
-        var id2 = await loadout.Install(DATA_ZIP_LZMA, "Mod2", CancellationToken.None);
+        var id1 = await loadout.InstallModAsync(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
+        var id2 = await loadout.InstallModAsync(DATA_ZIP_LZMA, "Mod2", CancellationToken.None);
 
         id1.Should().NotBe(id2);
         id1.Should().BeEquivalentTo(id1);
@@ -95,11 +95,11 @@ public class ModelTests : ADataModelTest<ModelTests>
     public async Task CanExportAndImportLoadouts()
     {
         var loadout = await LoadoutManager.ManageGameAsync(Install, Guid.NewGuid().ToString());
-        var id1 = await loadout.Install(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
-        var id2 = await loadout.Install(DATA_ZIP_LZMA, "Mod2", CancellationToken.None);
+        var id1 = await loadout.InstallModAsync(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
+        var id2 = await loadout.InstallModAsync(DATA_ZIP_LZMA, "Mod2", CancellationToken.None);
 
         var tempFile = TemporaryFileManager.CreateFile(KnownExtensions.Zip);
-        await loadout.ExportTo(tempFile, CancellationToken.None);
+        await loadout.ExportToAsync(tempFile, CancellationToken.None);
 
         {
             await using var of = tempFile.Path.Read();
@@ -139,7 +139,7 @@ public class ModelTests : ADataModelTest<ModelTests>
         loadout.Alter(l => l with { Mods = new EntityDictionary<ModId, Mod>(l.Store) });
         loadout.Value.Mods.Should().BeEmpty("All mods are removed");
 
-        await LoadoutManager.ImportFrom(tempFile, CancellationToken.None);
+        await LoadoutManager.ImportFromAsync(tempFile, CancellationToken.None);
         loadout.Value.Mods.Should().NotBeEmpty("The loadout is restored");
 
     }

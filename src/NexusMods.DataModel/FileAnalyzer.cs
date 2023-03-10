@@ -66,8 +66,8 @@ public class FileContentsCache
 
     private async Task<AnalyzedFile> AnalyzeFileInner(IStreamFactory sFn, CancellationToken token, int level, Hash parent, RelativePath parentPath)
     {
-        Hash hash = default;
-        var sigs = new List<FileType>();
+        Hash hash;
+        List<FileType> sigs;
         var analysisData = new List<IFileAnalysisData>();
         {
             await using var hashStream = await sFn.GetStreamAsync();
@@ -153,12 +153,14 @@ public class FileContentsCache
                 children = await _limiter.ForEachFile(tmpFolder,
                         async (_, entry) =>
                         {
+                            // ReSharper disable once AccessToDisposedClosure
                             var relPath = entry.Path.RelativeTo(tmpFolder.Path);
                             return (entry.Path,
                                 Results: await AnalyzeFileInner(new NativeFileStreamFactory(entry.Path), token,
                                     level + 1, hash, relPath));
                         },
                         token, "Analyzing Files")
+                    // ReSharper disable once AccessToDisposedClosure
                     .SelectAsync(a => KeyValuePair.Create(a.Path.RelativeTo(tmpFolder.Path), a.Results.DataStoreId))
                     .ToListAsync();
             }

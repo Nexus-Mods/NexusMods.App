@@ -25,7 +25,7 @@ public class Apply : AVerb<LoadoutMarker, bool, bool>
     public async Task<int> Run(LoadoutMarker loadout, bool run, bool summary, CancellationToken token)
     {
 
-        var plan = await loadout.MakeApplyPlan(token);
+        var plan = await loadout.MakeApplyPlanAsync(token);
 
         if (summary)
         {
@@ -59,7 +59,7 @@ public class Apply : AVerb<LoadoutMarker, bool, bool>
         {
             await _renderer.WithProgress(token, async () =>
             {
-                await loadout.Apply(plan, token);
+                await loadout.ApplyAsync(plan, token);
                 return plan.Steps;
             });
         }
