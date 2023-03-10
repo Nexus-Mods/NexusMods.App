@@ -107,4 +107,13 @@ public interface IFileSystem
     /// </summary>
     /// <param name="path">Path to the file.</param>
     void DeleteFile(AbsolutePath path);
+
+    /// <summary>
+    /// Moves a specified file to a new location.
+    /// </summary>
+    /// <param name="source">Path of the file to move.</param>
+    /// <param name="dest">Path to move the file to.</param>
+    /// <param name="overwrite"><c>true</c> to overwrite the destination file if it already exists; <c>false</c> otherwise</param>
+    /// <exception cref="IOException">The destination already exists and <paramref name="overwrite"/> is <c>false</c></exception>
+    void MoveFile(AbsolutePath source, AbsolutePath dest, bool overwrite);
 }

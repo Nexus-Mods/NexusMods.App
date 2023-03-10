@@ -15,6 +15,14 @@ public class InMemoryFileSystemTests
     }
 
     [Theory, AutoFileSystem]
+    public void Test_GetFileEntry_MissingFile(InMemoryFileSystem fs,
+        AbsolutePath path)
+    {
+        var entry = fs.GetFileEntry(path);
+        entry.Path.Should().Be(path);
+    }
+
+    [Theory, AutoFileSystem]
     public async Task Test_OpenFile(InMemoryFileSystem fs, AbsolutePath path, string contents)
     {
         var bytes = Encoding.UTF8.GetBytes(contents);
@@ -162,5 +170,59 @@ public class InMemoryFileSystemTests
         fs.Invoking(x => x.DeleteDirectory(directory, false))
             .Should()
             .Throw<IOException>();
+    }
+
+    [Theory, AutoFileSystem]
+    public void Test_MoveFile_NoOverwrite(InMemoryFileSystem fs, AbsolutePath source, AbsolutePath dest, byte[] contents)
+    {
+        fs.FileExists(source).Should().BeFalse();
+        fs.FileExists(dest).Should().BeFalse();
+
+        fs.AddFile(source, contents);
+        fs.FileExists(source).Should().BeTrue();
+
+        fs.MoveFile(source, dest, false);
+        fs.FileExists(source).Should().BeFalse();
+        fs.FileExists(dest).Should().BeTrue();
+
+        fs.GetFileEntry(dest).Size.Should().Be(Size.From(contents.Length));
+    }
+
+    [Theory, AutoFileSystem]
+    public void Test_MoveFile_NoOverwriteExists(InMemoryFileSystem fs,
+        AbsolutePath source, AbsolutePath dest, byte[] contents)
+    {
+        fs.FileExists(source).Should().BeFalse();
+        fs.FileExists(dest).Should().BeFalse();
+
+        fs.AddFile(source, contents);
+        fs.AddEmptyFile(dest);
+
+        fs.FileExists(source).Should().BeTrue();
+        fs.FileExists(dest).Should().BeTrue();
+
+        fs.Invoking(x => x.MoveFile(source, dest, false))
+            .Should()
+            .Throw<IOException>();
+    }
+
+    [Theory, AutoFileSystem]
+    public void Test_MoveFile_Overwrite(InMemoryFileSystem fs,
+        AbsolutePath source, AbsolutePath dest, byte[] contents)
+    {
+        fs.FileExists(source).Should().BeFalse();
+        fs.FileExists(dest).Should().BeFalse();
+
+        fs.AddFile(source, contents);
+        fs.AddEmptyFile(dest);
+
+        fs.FileExists(source).Should().BeTrue();
+        fs.FileExists(dest).Should().BeTrue();
+
+        fs.MoveFile(source, dest, true);
+        fs.FileExists(source).Should().BeFalse();
+        fs.FileExists(dest).Should().BeTrue();
+
+        fs.GetFileEntry(dest).Size.Should().Be(Size.From(contents.Length));
     }
 }

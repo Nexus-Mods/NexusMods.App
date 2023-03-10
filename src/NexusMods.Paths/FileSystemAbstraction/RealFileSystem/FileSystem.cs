@@ -57,6 +57,10 @@ public partial class FileSystem : BaseFileSystem
     protected override void InternalDeleteFile(AbsolutePath path)
         => File.Delete(path.GetFullPath());
 
+    /// <inheritdoc/>
+    protected override void InternalMoveFile(AbsolutePath source, AbsolutePath dest, bool overwrite)
+        => File.Move(source.GetFullPath(), dest.GetFullPath(), overwrite);
+
     #endregion
 
 }

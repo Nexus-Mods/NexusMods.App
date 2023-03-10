@@ -4,7 +4,7 @@ public partial class InMemoryFileSystem
 {
     private class InMemoryFileEntry : IFileEntry
     {
-        public byte[] Contents { get; }
+        public byte[] Contents { get; set; }
         public InMemoryDirectoryEntry ParentDirectory { get; }
 
         public IFileSystem FileSystem { get; set; }

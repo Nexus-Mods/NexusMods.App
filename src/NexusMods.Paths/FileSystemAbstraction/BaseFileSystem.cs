@@ -98,6 +98,10 @@ public abstract class BaseFileSystem : IFileSystem
     public void DeleteFile(AbsolutePath path)
         => InternalDeleteFile(GetMappedPath(path));
 
+    /// <inheritdoc/>
+    public void MoveFile(AbsolutePath source, AbsolutePath dest, bool overwrite)
+        => InternalMoveFile(GetMappedPath(source), GetMappedPath(dest), overwrite);
+
     #endregion
 
     #region Abstract Methods
@@ -125,6 +129,9 @@ public abstract class BaseFileSystem : IFileSystem
 
     /// <inheritdoc cref="IFileSystem.DeleteFile"/>
     protected abstract void InternalDeleteFile(AbsolutePath path);
+
+    /// <inheritdoc cref="IFileSystem.MoveFile"/>
+    protected abstract void InternalMoveFile(AbsolutePath source, AbsolutePath dest, bool overwrite);
 
     #endregion
 }

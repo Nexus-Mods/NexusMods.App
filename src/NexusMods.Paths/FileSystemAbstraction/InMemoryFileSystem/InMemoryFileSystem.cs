@@ -36,6 +36,16 @@ public partial class InMemoryFileSystem : BaseFileSystem
     /// <param name="path">Path to the file.</param>
     /// <param name="contents"></param>
     public void AddFile(AbsolutePath path, byte[] contents)
+        => InternalAddFile(path, contents);
+
+    /// <summary>
+    /// Adds an empty file to the in-memory file system.
+    /// </summary>
+    /// <param name="path">Path to the file.</param>
+    public void AddEmptyFile(AbsolutePath path)
+        => AddFile(path, Array.Empty<byte>());
+
+    private InMemoryFileEntry InternalAddFile(AbsolutePath path, byte[] contents)
     {
         if (!path.InFolder(_rootDirectory.Path))
             throw new ArgumentException($"Path {path} is not in root directory {_rootDirectory.Path}");
@@ -45,29 +55,22 @@ public partial class InMemoryFileSystem : BaseFileSystem
 
         _files.Add(path, inMemoryFile);
         directory.Files.Add(inMemoryFile.Path.RelativeTo(directory.Path), inMemoryFile);
-    }
 
-    /// <summary>
-    /// Adds an empty file to the in-memory file system.
-    /// </summary>
-    /// <param name="path">Path to the file.</param>
-    public void AddEmptyFile(AbsolutePath path)
-        => AddFile(path, Array.Empty<byte>());
+        return inMemoryFile;
+    }
 
     /// <summary>
     /// Adds a new directory to the in-memory file system.
     /// </summary>
     /// <param name="path">Path to the directory.</param>
     public void AddDirectory(AbsolutePath path)
+        => GetOrAddDirectory(path);
+
+    private InMemoryDirectoryEntry GetOrAddDirectory(AbsolutePath path)
     {
         if (!path.InFolder(_rootDirectory.Path))
             throw new ArgumentException($"Path {path} is not in root directory {_rootDirectory.Path}");
 
-        GetOrAddDirectory(path);
-    }
-
-    private InMemoryDirectoryEntry GetOrAddDirectory(AbsolutePath path)
-    {
         // directory already exists
         if (_directories.TryGetValue(path, out var existingDir))
             return existingDir;
@@ -114,17 +117,21 @@ public partial class InMemoryFileSystem : BaseFileSystem
     /// <inheritdoc/>
     protected override IFileEntry InternalGetFileEntry(AbsolutePath path)
     {
-        if (!_files.TryGetValue(path, out var file))
-            throw new FileNotFoundException($"File does not exist at {path}");
-        return file;
+        if (_files.TryGetValue(path, out var file)) return file;
+
+        var parentDirectory = GetOrAddDirectory(path);
+        var inMemoryFile = new InMemoryFileEntry(this, path, parentDirectory, Array.Empty<byte>());
+        return inMemoryFile;
     }
 
     /// <inheritdoc/>
     protected override IDirectoryEntry InternalGetDirectoryEntry(AbsolutePath path)
     {
-        if (!_directories.TryGetValue(path, out var directory))
-            throw new DirectoryNotFoundException($"Directory does not exist at {path}");
-        return directory;
+        if (_directories.TryGetValue(path, out var directory)) return directory;
+
+        var parentDirectory = InternalGetDirectoryEntry(path.Parent);
+        var inMemoryDirectory = new InMemoryDirectoryEntry(path, (InMemoryDirectoryEntry)parentDirectory);
+        return inMemoryDirectory;
     }
 
     /// <inheritdoc/>
@@ -193,6 +200,31 @@ public partial class InMemoryFileSystem : BaseFileSystem
         }
 
         _directories.Remove(path);
+    }
+
+    /// <inheritdoc/>
+    protected override void InternalMoveFile(AbsolutePath source, AbsolutePath dest, bool overwrite)
+    {
+        if (!_files.TryGetValue(source, out var sourceFile))
+            throw new FileNotFoundException($"File does not exist at path {source}");
+
+        if (_files.TryGetValue(dest, out var destFile))
+        {
+            if (!overwrite)
+                throw new IOException($"Destination file at {dest} already exist!");
+
+            destFile.Contents = sourceFile.Contents;
+        }
+        else
+        {
+            destFile = InternalAddFile(dest, sourceFile.Contents);
+        }
+
+        destFile.CreationTime = sourceFile.CreationTime;
+        destFile.LastWriteTime = sourceFile.LastWriteTime;
+        destFile.IsReadOnly = sourceFile.IsReadOnly;
+
+        DeleteFile(source);
     }
 
     #endregion

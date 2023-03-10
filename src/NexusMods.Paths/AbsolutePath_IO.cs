@@ -152,24 +152,20 @@ public partial struct AbsolutePath
     /// <param name="dest">The destination to write to.</param>
     /// <param name="overwrite">True to overwrite existing file at destination, else false.</param>
     /// <param name="token">Token used for cancellation of the task.</param>
-    public async ValueTask MoveToAsync(AbsolutePath dest, bool overwrite = true, CancellationToken? token = null)
+    public async ValueTask MoveToAsync(AbsolutePath dest, bool overwrite = true, CancellationToken token = default)
     {
-        var srcStr = GetFullPath();
-        var destStr = dest.ToString();
-        var fi = new FileInfo(srcStr);
-        if (fi.IsReadOnly)
-            fi.IsReadOnly = false;
+        if (FileInfo.IsReadOnly)
+            FileInfo.IsReadOnly = false;
 
-        var fid = new FileInfo(destStr);
-        if (dest.FileExists && fid.IsReadOnly)
-            fid.IsReadOnly = false;
+        if (dest is { FileExists: true, FileInfo.IsReadOnly: true })
+            dest.FileInfo.IsReadOnly = false;
 
         var retries = 0;
         while (true)
         {
             try
             {
-                File.Move(srcStr, destStr, overwrite);
+                FileSystem.MoveFile(this, dest, overwrite);
                 return;
             }
             catch (Exception)
@@ -178,7 +174,7 @@ public partial struct AbsolutePath
                     throw;
 
                 retries++;
-                await Task.Delay(TimeSpan.FromSeconds(1), token ?? CancellationToken.None);
+                await Task.Delay(TimeSpan.FromSeconds(1), token);
             }
         }
     }
