@@ -7,6 +7,14 @@ namespace NexusMods.Paths.Tests.FileSystem;
 public class InMemoryFileSystemTests
 {
     [Theory, AutoFileSystem]
+    public void Test_GetFileEntry(InMemoryFileSystem fs, AbsolutePath path)
+    {
+        fs.AddEmptyFile(path);
+        var entry = fs.GetFileEntry(path);
+        entry.Path.Should().Be(path);
+    }
+
+    [Theory, AutoFileSystem]
     public async Task Test_OpenFile(InMemoryFileSystem fs, AbsolutePath path, string contents)
     {
         var bytes = Encoding.UTF8.GetBytes(contents);

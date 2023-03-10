@@ -6,12 +6,12 @@ namespace NexusMods.Paths;
 /// Implementation of <see cref="IFileSystem"/> for use with tests.
 /// </summary>
 [PublicAPI]
-public class InMemoryFileSystem : BaseFileSystem
+public partial class InMemoryFileSystem : BaseFileSystem
 {
-    private readonly InMemoryDirectory _rootDirectory;
+    private readonly InMemoryDirectoryEntry _rootDirectory;
 
-    private readonly Dictionary<AbsolutePath, InMemoryFile> _files = new();
-    private readonly Dictionary<AbsolutePath, InMemoryDirectory> _directories = new();
+    private readonly Dictionary<AbsolutePath, InMemoryFileEntry> _files = new();
+    private readonly Dictionary<AbsolutePath, InMemoryDirectoryEntry> _directories = new();
 
     /// <summary>
     /// Constructor.
@@ -20,29 +20,12 @@ public class InMemoryFileSystem : BaseFileSystem
 
     private InMemoryFileSystem(Dictionary<AbsolutePath, AbsolutePath> pathMappings) : base(pathMappings)
     {
-        _rootDirectory = new InMemoryDirectory(
+        _rootDirectory = new InMemoryDirectoryEntry(
             AbsolutePath.FromFullPath(OperatingSystem.IsWindows() ? "C:" : "/"),
-            null!,
-            new Dictionary<RelativePath, InMemoryFile>(),
-            new Dictionary<RelativePath, InMemoryDirectory>());
+            null!);
 
         _directories[_rootDirectory.Path] = _rootDirectory;
     }
-
-    private record InMemoryEntry(
-        AbsolutePath Path,
-        InMemoryDirectory ParentDirectory);
-
-    private record InMemoryDirectory(
-        AbsolutePath Path,
-        InMemoryDirectory ParentDirectory,
-        Dictionary<RelativePath, InMemoryFile> Files,
-        Dictionary<RelativePath, InMemoryDirectory> Directories) : InMemoryEntry(Path, ParentDirectory);
-
-    private record InMemoryFile(
-        AbsolutePath Path,
-        InMemoryDirectory ParentDirectory,
-        byte[] Contents) : InMemoryEntry(Path, ParentDirectory);
 
     #region Helper Functions
 
@@ -57,7 +40,7 @@ public class InMemoryFileSystem : BaseFileSystem
             throw new ArgumentException($"Path {path} is not in root directory {_rootDirectory.Path}");
 
         var directory = GetOrAddDirectory(path.Parent);
-        var inMemoryFile = new InMemoryFile(path, directory, contents);
+        var inMemoryFile = new InMemoryFileEntry(this, path, directory, contents);
 
         _files.Add(path, inMemoryFile);
         directory.Files.Add(inMemoryFile.Path.RelativeTo(directory.Path), inMemoryFile);
@@ -82,7 +65,7 @@ public class InMemoryFileSystem : BaseFileSystem
         GetOrAddDirectory(path);
     }
 
-    private InMemoryDirectory GetOrAddDirectory(AbsolutePath path)
+    private InMemoryDirectoryEntry GetOrAddDirectory(AbsolutePath path)
     {
         // directory already exists
         if (_directories.TryGetValue(path, out var existingDir))
@@ -104,11 +87,7 @@ public class InMemoryFileSystem : BaseFileSystem
         {
             if (!_directories.TryGetValue(directoryPath, out var directory))
             {
-                directory = new InMemoryDirectory(
-                    directoryPath,
-                    _rootDirectory,
-                    new Dictionary<RelativePath, InMemoryFile>(),
-                    new Dictionary<RelativePath, InMemoryDirectory>());
+                directory = new InMemoryDirectoryEntry(directoryPath, _rootDirectory);
 
                 currentParentDirectory.Directories[directory.Path.RelativeTo(currentParentDirectory.Path)] = directory;
                 _directories[directoryPath] = directory;
@@ -127,6 +106,22 @@ public class InMemoryFileSystem : BaseFileSystem
     /// <inheritdoc/>
     public override IFileSystem CreateOverlayFileSystem(Dictionary<AbsolutePath, AbsolutePath> pathMappings)
         => new InMemoryFileSystem(pathMappings);
+
+    /// <inheritdoc/>
+    protected override IFileEntry InternalGetFileEntry(AbsolutePath path)
+    {
+        if (!_files.TryGetValue(path, out var file))
+            throw new FileNotFoundException($"File does not exist at {path}");
+        return file;
+    }
+
+    /// <inheritdoc/>
+    protected override IDirectoryEntry InternalGetDirectoryEntry(AbsolutePath path)
+    {
+        if (!_directories.TryGetValue(path, out var directory))
+            throw new DirectoryNotFoundException($"Directory does not exist at {path}");
+        return directory;
+    }
 
     /// <inheritdoc/>
     protected override Stream InternalOpenFile(AbsolutePath path, FileMode mode, FileAccess access, FileShare share)

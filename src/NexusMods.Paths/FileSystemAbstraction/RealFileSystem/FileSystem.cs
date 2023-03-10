@@ -25,9 +25,7 @@ public partial class FileSystem : BaseFileSystem
 
     /// <inheritdoc/>
     protected override IFileEntry InternalGetFileEntry(AbsolutePath path)
-    {
-        throw new NotImplementedException();
-    }
+        => new FileEntry(this, path);
 
     /// <inheritdoc/>
     protected override IDirectoryEntry InternalGetDirectoryEntry(AbsolutePath path)

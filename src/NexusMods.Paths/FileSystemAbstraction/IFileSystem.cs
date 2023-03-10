@@ -19,8 +19,18 @@ public interface IFileSystem
 
     AbsolutePath FromDirectoryAndFileName(string? directoryPath, string fullPath);
 
+    /// <summary>
+    /// Returns the <see cref="IFileEntry"/> of the file at the given path.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
     IFileEntry GetFileEntry(AbsolutePath path);
 
+    /// <summary>
+    /// Returns the <see cref="IDirectoryEntry"/> of the directory at the given path.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
     IDirectoryEntry GetDirectoryEntry(AbsolutePath path);
 
     /// <summary>
