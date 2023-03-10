@@ -6,7 +6,7 @@ namespace NexusMods.Paths;
 /// Default implementation of <see cref="IFileSystem"/>.
 /// </summary>
 [PublicAPI]
-public class FileSystem : BaseFileSystem
+public partial class FileSystem : BaseFileSystem
 {
     /// <summary>
     /// Shared instance of the default implementation.
