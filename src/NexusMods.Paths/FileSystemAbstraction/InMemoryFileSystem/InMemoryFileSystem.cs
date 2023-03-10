@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using JetBrains.Annotations;
 
 namespace NexusMods.Paths;
@@ -79,6 +80,9 @@ public partial class InMemoryFileSystem : BaseFileSystem
         do
         {
             directoriesToCreate.Push(current);
+            if (current == current.Parent)
+                throw new UnreachableException("Infinite loop should not happen if our code is correct.");
+
             current = current.Parent;
         } while (current != _rootDirectory.Path);
 
