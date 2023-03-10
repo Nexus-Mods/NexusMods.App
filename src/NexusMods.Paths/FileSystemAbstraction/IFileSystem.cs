@@ -19,6 +19,10 @@ public interface IFileSystem
 
     AbsolutePath FromDirectoryAndFileName(string? directoryPath, string fullPath);
 
+    IFileEntry GetFileEntry(AbsolutePath path);
+
+    IDirectoryEntry GetDirectoryEntry(AbsolutePath path);
+
     /// <summary>
     /// Opens a file stream to the giving path.
     /// </summary>

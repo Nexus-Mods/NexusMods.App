@@ -58,6 +58,14 @@ public abstract class BaseFileSystem : IFileSystem
         => AbsolutePath.FromDirectoryAndFileName(directoryPath, fullPath, this);
 
     /// <inheritdoc/>
+    public IFileEntry GetFileEntry(AbsolutePath path)
+        => InternalGetFileEntry(GetMappedPath(path));
+
+    /// <inheritdoc/>
+    public IDirectoryEntry GetDirectoryEntry(AbsolutePath path)
+        => InternalGetDirectoryEntry(GetMappedPath(path));
+
+    /// <inheritdoc/>
     public Stream ReadFile(AbsolutePath path) => OpenFile(path, FileMode.Open, FileAccess.Read, FileShare.Read);
 
     /// <inheritdoc/>
@@ -93,6 +101,12 @@ public abstract class BaseFileSystem : IFileSystem
     #endregion
 
     #region Abstract Methods
+
+    /// <inheritdoc cref="IFileSystem.GetFileEntry"/>
+    protected abstract IFileEntry InternalGetFileEntry(AbsolutePath path);
+
+    /// <inheritdoc cref="IFileSystem.GetDirectoryEntry"/>
+    protected abstract IDirectoryEntry InternalGetDirectoryEntry(AbsolutePath path);
 
     /// <inheritdoc cref="IFileSystem.OpenFile"/>
     protected abstract Stream InternalOpenFile(AbsolutePath path, FileMode mode, FileAccess access, FileShare share);

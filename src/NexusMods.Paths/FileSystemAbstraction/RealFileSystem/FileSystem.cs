@@ -24,6 +24,18 @@ public class FileSystem : BaseFileSystem
         => new FileSystem(pathMappings);
 
     /// <inheritdoc/>
+    protected override IFileEntry InternalGetFileEntry(AbsolutePath path)
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <inheritdoc/>
+    protected override IDirectoryEntry InternalGetDirectoryEntry(AbsolutePath path)
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <inheritdoc/>
     protected override Stream InternalOpenFile(AbsolutePath path, FileMode mode, FileAccess access, FileShare share)
         => File.Open(path.GetFullPath(), mode, access, share);
 
