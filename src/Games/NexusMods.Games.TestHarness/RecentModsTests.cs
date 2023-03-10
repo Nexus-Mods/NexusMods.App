@@ -75,8 +75,7 @@ public class RecentModsTest
                 ModId = file.ModId,
                 FileId = FileId.From((ulong)file.File.FileId),
                 Domain = _game.Domain,
-                Hash = Hash.Zero,
-                Store = _store
+                Hash = Hash.Zero
             };
 
             _logger.LogInformation("Downloading {FileName}", record.FileName);
@@ -89,7 +88,7 @@ public class RecentModsTest
             await tempFileLocation.MoveToAsync(fileLocation);
 
             record = record with { Hash = hash };
-            record.EnsureStored();
+            record.EnsurePersisted(_store);
 
         }
 

@@ -1,0 +1,15 @@
+﻿<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:gameWidget="clr-namespace:NexusMods.App.UI.Controls.GameWidget"
+    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style Selector="gameWidget|GameWidget Button.FirstButton icons|Icon">
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="gameWidget|GameWidget.AddGame Button icons|Icon">
+        <Setter Property="Value" Value="mdi-plus-circle" />
+    </Style>
+</Styles>

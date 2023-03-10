@@ -54,7 +54,8 @@ public static class Services
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             services.AddSingleton<AHandler<SteamGame, int>, SteamHandler>(_ => new SteamHandler(new WindowsRegistry()));
-        } else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
             var steamPath = Environment.GetEnvironmentVariable(
                 "NMA_STEAM_PATH",

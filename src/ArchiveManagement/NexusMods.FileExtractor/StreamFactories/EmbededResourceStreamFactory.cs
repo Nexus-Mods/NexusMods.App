@@ -1,4 +1,4 @@
-﻿using System.Resources;
+using System.Resources;
 using NexusMods.Common;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;

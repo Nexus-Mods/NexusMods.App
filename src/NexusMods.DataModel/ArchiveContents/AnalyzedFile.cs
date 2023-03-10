@@ -51,11 +51,15 @@ public record AnalyzedFile : Entity
     /// <inheritdoc />
     public override EntityCategory Category => EntityCategory.FileAnalysis;
 
-    /// <inheritdoc />
-    protected override IId Persist()
+    /// <summary>
+    /// Persist the entity in the data store. Calculates the ID based on the Hash field.
+    /// </summary>
+    /// <param name="store"></param>
+    /// <returns></returns>
+    protected override IId Persist(IDataStore store)
     {
         var newId = new Id64(Category, (ulong)Hash);
-        Store.Put<Entity>(newId, this);
+        store.Put<Entity>(newId, this);
         return newId;
     }
 }

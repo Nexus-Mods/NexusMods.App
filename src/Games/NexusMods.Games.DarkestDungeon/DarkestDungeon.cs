@@ -1,5 +1,7 @@
 using System.Runtime.InteropServices;
+using NexusMods.Common;
 using NexusMods.DataModel.Games;
+using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.DarkestDungeon;
@@ -31,6 +33,13 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame
     {
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);
     }
+
+    public override IStreamFactory Icon =>
+        new EmbededResourceStreamFactory<DarkestDungeon>("NexusMods.Games.DarkestDungeon.Resources.DarkestDungeon.icon.png");
+
+    public override IStreamFactory GameImage =>
+        new EmbededResourceStreamFactory<DarkestDungeon>("NexusMods.Games.DarkestDungeon.Resources.DarkestDungeon.game_image.jpg");
+
 
 
 }

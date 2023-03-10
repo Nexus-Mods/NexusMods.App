@@ -1,11 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
     <!-- NuGet Package Shared Details -->
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
-    <!-- nullable warnings as errors -->
-    <Import Project="$([MSBuild]::GetPathOfFileAbove('NullableErrors.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+    <ItemGroup>
+      <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+    </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+      <None Remove="Resources\DarkestDungeon\game_image.jpg" />
+      <EmbeddedResource Include="Resources\DarkestDungeon\game_image.jpg" />
+      <None Remove="Resources\DarkestDungeon\icon.png" />
+      <EmbeddedResource Include="Resources\DarkestDungeon\icon.png" />
     </ItemGroup>
+
 </Project>

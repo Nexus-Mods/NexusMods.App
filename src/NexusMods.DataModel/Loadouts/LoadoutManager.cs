@@ -1,6 +1,5 @@
 using System.Collections.Immutable;
 using System.IO.Compression;
-using System.Reactive.Linq;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
@@ -38,7 +37,7 @@ public class LoadoutManager
     public readonly ArchiveManager ArchiveManager;
 
     private readonly ILogger<LoadoutManager> _logger;
-    private readonly IDataStore _store;
+
     private readonly Root<LoadoutRegistry> _root;
     private readonly IModInstaller[] _installers;
     private readonly FileContentsCache _analyzer;
@@ -63,7 +62,7 @@ public class LoadoutManager
         ArchiveManager = archiveManager;
         _logger = logger;
         Limiter = limiter;
-        _store = store;
+        Store = store;
         _root = new Root<LoadoutRegistry>(RootType.Loadouts, store);
         _metadataSources = metadataSources;
         _installers = installers.ToArray();
@@ -87,12 +86,17 @@ public class LoadoutManager
     ///
     /// See <see cref="Root{TRoot}.Changes"/> for more info.
     /// </summary>
-    public IObservable<LoadoutRegistry> Changes => _root.Changes.Select(r => r.New);
+    public IObservable<LoadoutRegistry> Changes => _root.Changes;
 
     /// <summary>
     /// Returns a list of all currently user registered loadouts.
     /// </summary>
     public IEnumerable<LoadoutMarker> AllLoadouts => _root.Value.Lists.Values.Select(m => new LoadoutMarker(this, m.LoadoutId));
+
+    /// <summary>
+    /// Returns the data store.
+    /// </summary>
+    public IDataStore Store { get; }
 
     /// <summary>
     /// Clones this loadout manager, used for operations analogous to `git rebase`.
@@ -129,20 +133,20 @@ public class LoadoutManager
         {
             Id = ModId.New(),
             Name = "Game Files",
-            Files = new EntityDictionary<ModFileId, AModFile>(_store, gameFiles.Select(g => new KeyValuePair<ModFileId, IId>(g.Id, g.DataStoreId))),
-            Store = _store,
+            Files = new EntityDictionary<ModFileId, AModFile>(Store, gameFiles.Select(g => new KeyValuePair<ModFileId, IId>(g.Id, g.DataStoreId))),
             SortRules = ImmutableList<ISortRule<Mod, ModId>>.Empty.Add(new First<Mod, ModId>())
-        };
+        }.WithPersist(Store);
 
-        var n = Loadout.Empty(_store) with
+        var n = Loadout.Empty(Store) with
         {
             Installation = installation,
             Name = name,
-            Mods = new EntityDictionary<ModId, Mod>(_store, new[] { new KeyValuePair<ModId, IId>(mod.Id, mod.DataStoreId) })
+            Mods = new EntityDictionary<ModId, Mod>(Store, new[] { new KeyValuePair<ModId, IId>(mod.Id, mod.DataStoreId) })
         };
 
-        _root.Alter(r => r with { Lists = r.Lists.With(n.LoadoutId, n) });
+        n.WithPersist(Store);
 
+        _root.Alter(r => r with { Lists = r.Lists.With(n.LoadoutId, n) });
         _logger.LogInformation("Loadout {Name} {Id} created", name, n.LoadoutId);
         _logger.LogInformation("Adding game files");
 
@@ -157,15 +161,14 @@ public class LoadoutManager
                     To = new GamePath(type, result.Path.RelativeTo(path)),
                     Installation = installation,
                     Hash = result.Hash,
-                    Size = result.Size,
-                    Store = _store
-                };
+                    Size = result.Size
+                }.WithPersist(Store);
 
                 var metaData = await GetMetadata(n, mod, file, analysis).ToHashSetAsync();
                 gameFiles.Add(file with { Metadata = metaData.ToImmutableHashSet() });
             }
         }
-        gameFiles.AddRange(installation.Game.GetGameFiles(installation, _store));
+        gameFiles.AddRange(installation.Game.GetGameFiles(installation, Store));
         var marker = new LoadoutMarker(this, n.LoadoutId);
         marker.Alter(mod.Id, m => m with { Files = m.Files.With(gameFiles, f => f.Id) });
 
@@ -206,7 +209,8 @@ public class LoadoutManager
         if (installer == default)
             throw new Exception($"No Installer found for {path}");
 
-        var contents = installer.Installer.Install(loadout.Value.Installation, analyzed.Hash, archive.Contents);
+        var contents = installer.Installer.Install(loadout.Value.Installation, analyzed.Hash, archive.Contents)
+            .WithPersist(Store);
 
         name = string.IsNullOrWhiteSpace(name) ? path.FileName : name;
 
@@ -214,8 +218,7 @@ public class LoadoutManager
         {
             Id = ModId.New(),
             Name = name,
-            Files = new EntityDictionary<ModFileId, AModFile>(_store, contents.Select(c => new KeyValuePair<ModFileId, IId>(c.Id, c.DataStoreId))),
-            Store = _store
+            Files = new EntityDictionary<ModFileId, AModFile>(Store, contents.Select(c => new KeyValuePair<ModFileId, IId>(c.Id, c.DataStoreId)))
         };
         loadout.Add(newMod);
         return (loadout, newMod.Id);
@@ -237,7 +240,7 @@ public class LoadoutManager
             {
                 LastModified = DateTime.UtcNow,
                 ChangeMessage = changeMessage,
-                PreviousVersion = previousList
+                PreviousVersion = new EntityLink<Loadout>(previousList.DataStoreId, Store)
             };
             return r with { Lists = r.Lists.With(newList.LoadoutId, newList) };
         });
@@ -333,7 +336,7 @@ public class LoadoutManager
             void AddFile(Hash hash, ISet<IId> hashes)
             {
                 hashes.Add(new Id64(EntityCategory.FileAnalysis, (ulong)hash));
-                foreach (var foundIn in _store.GetByPrefix<FileContainedIn>(new Id64(EntityCategory.FileContainedIn,
+                foreach (var foundIn in Store.GetByPrefix<FileContainedIn>(new Id64(EntityCategory.FileContainedIn,
                              (ulong)hash)))
                 {
                     hashes.Add(foundIn.DataStoreId);
@@ -351,12 +354,11 @@ public class LoadoutManager
 
             return state;
         }, new HashSet<IId>());
-
         _logger.LogDebug("Found {Count} entities to export", ids.Count);
 
         foreach (var entityId in ids)
         {
-            var data = _store.GetRaw(entityId);
+            var data = Store.GetRaw(entityId);
             if (data == null) continue;
 
             await using var entry = zip.CreateEntry("entities\\" + entityId.TaggedSpanHex, CompressionLevel.Optimal).Open();
@@ -390,17 +392,35 @@ public class LoadoutManager
         var entries = zip.Entries.Where(p => p.FullName.ToRelativePath().InFolder(entityFolder))
             .SelectAsync(ProcessEntry);
 
-        var loaded = await _store.PutRaw(entries, token);
+        var loaded = await Store.PutRaw(entries, token);
         _logger.LogDebug("Loaded {Count} entities", loaded);
 
         await using var root = zip.GetEntry("root")!.Open();
         var rootId = IId.FromTaggedSpan(Convert.FromHexString(await root.ReadAllTextAsync(token)));
 
-        var loadout = _store.Get<Loadout>(rootId);
+        var loadout = Store.Get<Loadout>(rootId);
         if (loadout == null)
             throw new Exception("Loadout not found after loading data store, the loadout may be corrupt");
         _root.Alter(r => r with { Lists = r.Lists.With(loadout.LoadoutId, loadout) });
         return new LoadoutMarker(this, loadout.LoadoutId);
+    }
+
+    /// <summary>
+    /// Finds a free name for a new loadout. Will return a name like "My Loadout 1" or "My Loadout 2" etc.
+    /// Will return a name like "My Loadout 1234-1234-1234-1234" if it can't find a free name.
+    /// </summary>
+    /// <param name="installation"></param>
+    /// <returns></returns>
+    public string FindName(GameInstallation installation)
+    {
+        for (var i = 1; i < 1000; i++)
+        {
+            var name = $"My Loadout {i}";
+            if (_root.Value.Lists.All(l => l.Value.Name != name))
+                return name;
+        }
+
+        return $"My Loadout {Guid.NewGuid()}";
     }
 
     private async IAsyncEnumerable<IModFileMetadata> GetMetadata(Loadout loadout, Mod mod, GameFile file,

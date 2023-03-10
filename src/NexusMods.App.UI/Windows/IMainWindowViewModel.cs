@@ -1,4 +1,4 @@
-namespace NexusMods.App.UI.ViewModels;
+namespace NexusMods.App.UI.Windows;
 
 public interface IMainWindowViewModel : IViewModelInterface
 {

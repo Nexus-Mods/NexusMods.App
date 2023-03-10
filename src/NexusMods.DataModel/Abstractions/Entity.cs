@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.ArchiveContents;
-using NexusMods.DataModel.JsonConverters;
+using NexusMods.DataModel.Exceptions;
 using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.DataModel.Abstractions;
@@ -46,13 +46,6 @@ public abstract record Entity : IWalkable<Entity>
     [JsonIgnore]
     public abstract EntityCategory Category { get; }
 
-    /// <summary>
-    /// An abstraction over where we store this entity.
-    /// Usually database, (DataModel.sqlite)
-    /// </summary>
-    [JsonInjected]
-    public required IDataStore Store { get; init; }
-
     private IId? _id;
 
     /// <summary>
@@ -60,9 +53,6 @@ public abstract record Entity : IWalkable<Entity>
     /// </summary>
     public Entity(Entity self)
     {
-        Store = self.Store;
-        if (Store == null!)
-            ThrowNoDataStoreException();
     }
 
     /// <summary/>
@@ -71,17 +61,17 @@ public abstract record Entity : IWalkable<Entity>
     /// <summary>
     /// Writes the current value to the database.
     /// </summary>
-    protected virtual IId Persist()
+    protected virtual IId Persist(IDataStore store)
     {
-        return Store.Put(this);
+        return store.Put(this);
     }
 
     /// <summary>
     /// Ensures this item is stored in the database.
     /// </summary>
-    public void EnsureStored()
+    public void EnsurePersisted(IDataStore store)
     {
-        _id ??= Persist();
+        _id ??= Persist(store);
     }
 
     /// <summary>
@@ -91,9 +81,15 @@ public abstract record Entity : IWalkable<Entity>
     [JsonIgnore]
     public IId DataStoreId
     {
-        get => _id ??= Persist();
+        get => _id ?? ThrowUnpersistedEntity();
         set => _id = value;
     }
+
+    /// <summary>
+    /// Returns true if this item is persisted in the data store and has an ID.
+    /// </summary>
+    [JsonIgnore]
+    public bool IsPersisted => _id != null;
 
     /// <inheritdoc />
     public TState Walk<TState>(Func<TState, Entity, TState> visitor, TState initial)
@@ -118,5 +114,5 @@ public abstract record Entity : IWalkable<Entity>
     // Throwing prevents inlining which is costly in copy constructor
     // thus I moved the throw into a separate method so the constructor
     // can be inlined for faster mutations. - Sewer
-    private static void ThrowNoDataStoreException() => throw new NoDataStoreException();
+    private static IId ThrowUnpersistedEntity() => throw new UnpersistedEntity();
 }

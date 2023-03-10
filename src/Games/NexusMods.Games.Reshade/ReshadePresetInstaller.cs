@@ -68,8 +68,7 @@ public class ReshadePresetInstaller : IModInstaller
                 To = new GamePath(GameFolderType.Game, folder.Join(file.Key.FileName)),
                 From = new HashRelativePath(srcArchive, file.Key),
                 Hash = file.Value.Hash,
-                Size = file.Value.Size,
-                Store = file.Value.Store
+                Size = file.Value.Size
             };
         }
     }

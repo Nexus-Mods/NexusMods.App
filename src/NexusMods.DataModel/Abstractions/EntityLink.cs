@@ -57,7 +57,4 @@ public record struct EntityLink<T> : IEmptyWithDataStore<EntityLink<T>>,
 
     /// <summary/>
     public static implicit operator T(EntityLink<T> t) => t.Value;
-
-    /// <summary/>
-    public static implicit operator EntityLink<T>(T t) => new(t.DataStoreId, t.Store);
 }

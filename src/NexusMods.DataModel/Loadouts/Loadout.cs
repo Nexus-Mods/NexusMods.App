@@ -63,8 +63,7 @@ public record Loadout : Entity, IEmptyWithDataStore<Loadout>
         Mods = EntityDictionary<ModId, Mod>.Empty(store),
         LastModified = DateTime.UtcNow,
         PreviousVersion = EntityLink<Loadout>.Empty(store),
-        ChangeMessage = "",
-        Store = store
+        ChangeMessage = ""
     };
 
     /// <summary>

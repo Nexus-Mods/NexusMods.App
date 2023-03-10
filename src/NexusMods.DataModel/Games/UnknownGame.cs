@@ -48,4 +48,6 @@ public class UnknownGame : IGame
 
     /// <inheritdoc />
     public IStreamFactory Icon => throw new NotImplementedException("No icon provided for this game.");
+
+    public IStreamFactory GameImage => throw new NotImplementedException("No game image provided for this game.");
 }

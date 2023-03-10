@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using System.IO.Compression;
 using FluentAssertions;
 using NexusMods.DataModel.Abstractions;
@@ -30,27 +30,12 @@ public class ModelTests : ADataModelTest<ModelTests>
             To = new GamePath(GameFolderType.Game, "foo/bar.pez"),
             From = new HashRelativePath(Hash.Zero, RelativePath.Empty),
             Hash = (Hash)0x42L,
-            Size = Size.From(44L),
-            Store = DataStore
+            Size = Size.From(44L)
         };
-        file.Store.Should().NotBeNull();
+        file.EnsurePersisted(DataStore);
         file.DataStoreId.Should().NotBeNull();
 
         DataStore.Get<FromArchive>(file.DataStoreId)!.To.Should().BeEquivalentTo(file.To);
-    }
-
-    [Fact]
-    public async Task CanSeeChangesViaObservable()
-    {
-        var list = new HashSet<string>();
-
-        var loadout = await LoadoutManager.ManageGameAsync(Install, "OldName");
-        using var _ = loadout.Changes.Subscribe(f => list.Add(f.Name));
-        loadout.Alter(m => m with { Name = "NewName" });
-
-        loadout.Value.Name.Should().Be("NewName");
-        list.Count.Should().Be(1);
-        list.First().Should().Be("NewName");
     }
 
     [Fact]
@@ -136,7 +121,7 @@ public class ModelTests : ADataModelTest<ModelTests>
 
         }
 
-        loadout.Alter(l => l with { Mods = new EntityDictionary<ModId, Mod>(l.Store) });
+        loadout.Alter(l => l with { Mods = new EntityDictionary<ModId, Mod>(DataStore) });
         loadout.Value.Mods.Should().BeEmpty("All mods are removed");
 
         await LoadoutManager.ImportFromAsync(tempFile, CancellationToken.None);

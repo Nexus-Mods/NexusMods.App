@@ -1,6 +1,8 @@
+using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
@@ -43,8 +45,7 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame
             Id = ModFileId.New(),
             To = new GamePath(GameFolderType.AppData, "plugins.txt"),
             Size = Size.Zero,
-            Hash = Hash.Zero,
-            Store = store
+            Hash = Hash.Zero
         };
     }
 
@@ -56,4 +57,10 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame
         1801825368, // The Elder Scrolls V: Skyrim Anniversary Edition AKA The Store Bundle
         1162721350 // Upgrade DLC
     };
+
+    public override IStreamFactory Icon =>
+        new EmbededResourceStreamFactory<SkyrimSpecialEdition>("NexusMods.Games.BethesdaGameStudios.Resources.SkyrimSpecialEdition.icon.jpg");
+
+    public override IStreamFactory GameImage =>
+        new EmbededResourceStreamFactory<SkyrimSpecialEdition>("NexusMods.Games.BethesdaGameStudios.Resources.SkyrimSpecialEdition.game_image.png");
 }

@@ -7,6 +7,7 @@ using BitFaster.Caching.Lru;
 using NexusMods.DataModel.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.DataModel.Attributes;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Interprocess;
 using NexusMods.DataModel.Interprocess.Messages;
@@ -30,7 +31,6 @@ public class SqliteDataStore : IDataStore, IDisposable
     private readonly Dictionary<EntityCategory, string> _prefixStatements;
     private readonly Dictionary<EntityCategory, string> _deleteStatements;
     private readonly ConcurrentLru<IId, Entity> _cache;
-
     private readonly IMessageProducer<RootChange> _rootChangeProducer;
     private readonly IMessageConsumer<RootChange> _rootChangeConsumer;
     private readonly ConcurrentQueue<RootChange> _pendingRootChanges = new();
@@ -39,6 +39,7 @@ public class SqliteDataStore : IDataStore, IDisposable
     private readonly ILogger<SqliteDataStore> _logger;
     private readonly IMessageProducer<IdUpdated> _idPutProducer;
     private readonly IMessageConsumer<IdUpdated> _idPutConsumer;
+    private readonly Dictionary<EntityCategory, bool> _immutableFields;
 
     /// <summary/>
     /// <param name="logger">Logs events.</param>
@@ -64,11 +65,11 @@ public class SqliteDataStore : IDataStore, IDisposable
         _casStatements = new Dictionary<EntityCategory, string>();
         _prefixStatements = new Dictionary<EntityCategory, string>();
         _deleteStatements = new Dictionary<EntityCategory, string>();
+        _immutableFields = new Dictionary<EntityCategory, bool>();
         EnsureTables();
 
         _jsonOptions = new Lazy<JsonSerializerOptions>(provider.GetRequiredService<JsonSerializerOptions>);
         _cache = new ConcurrentLru<IId, Entity>(1000);
-
         _rootChangeProducer = rootChangeProducer;
         _rootChangeConsumer = rootChangeConsumer;
         _idPutProducer = idPutProducer;
@@ -98,6 +99,7 @@ public class SqliteDataStore : IDataStore, IDisposable
 
     private void EnsureTables()
     {
+
         foreach (var table in Enum.GetValues<EntityCategory>())
         {
             using var cmd = new SQLiteCommand($"CREATE TABLE IF NOT EXISTS {table} (Id BLOB PRIMARY KEY, Data BLOB)", _conn);
@@ -109,6 +111,9 @@ public class SqliteDataStore : IDataStore, IDisposable
                 $"UPDATE [{table}] SET Data = @newData WHERE Data = @oldData AND Id = @id RETURNING *;";
             _prefixStatements[table] = $"SELECT Id, Data FROM [{table}] WHERE Id >= @prefix ORDER BY Id ASC";
             _deleteStatements[table] = $"DELETE FROM [{table}] WHERE Id = @id";
+
+            var memberInfo = typeof(EntityCategory).GetField(Enum.GetName(table)!)!;
+            _immutableFields[table] = memberInfo.CustomAttributes.Any(x => x.AttributeType == typeof(ImmutableAttribute));
         }
     }
 
@@ -128,7 +133,8 @@ public class SqliteDataStore : IDataStore, IDisposable
         cmd.ExecuteNonQuery();
 
         var id = new Id64(value.Category, hash);
-        _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
+        if (!_immutableFields[id.Category])
+            _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
         return id;
     }
 
@@ -144,7 +150,9 @@ public class SqliteDataStore : IDataStore, IDisposable
         ms.Position = 0;
         cmd.Parameters.AddWithValue("@Data", ms.ToArray());
         cmd.ExecuteNonQuery();
-        _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
+
+        if (!_immutableFields[id.Category])
+            _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
     }
 
     /// <inheritdoc />
@@ -184,7 +192,6 @@ public class SqliteDataStore : IDataStore, IDisposable
         cmd.ExecuteNonQuery();
 
         _pendingRootChanges.Enqueue(new RootChange { Type = type, From = oldId, To = newId });
-
         return true;
     }
 
@@ -233,7 +240,9 @@ public class SqliteDataStore : IDataStore, IDisposable
         cmd.Parameters.AddWithValue("@id", idBytes);
         cmd.Parameters.AddWithValue("@data", val.ToArray());
         cmd.ExecuteNonQuery();
-        _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
+
+        if (!_immutableFields[id.Category])
+            _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
 
     }
 
@@ -245,7 +254,9 @@ public class SqliteDataStore : IDataStore, IDisposable
         id.ToSpan(idBytes.AsSpan());
         cmd.Parameters.AddWithValue("@id", idBytes);
         cmd.ExecuteNonQuery();
-        _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Delete, id));
+
+        if (!_immutableFields[id.Category])
+            _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Delete, id));
     }
 
     /// <inheritdoc />
@@ -326,7 +337,6 @@ public class SqliteDataStore : IDataStore, IDisposable
 
     /// <inheritdoc />
     public IObservable<IId> IdChanges => _idPutConsumer.Messages.SelectMany(WaitTillPutReady);
-
     /// <summary>
     /// Sometimes we may get a change notification before the underlying SQLite database has actually updated the value.
     /// So we wait a bit to make sure the value is actually there before we forward the change.

@@ -52,12 +52,17 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// <param name="fileName">Name of the file. Full path if directory is null.</param>
     internal AbsolutePath(string? directory, string fileName)
     {
+        // remove directory separator at the end of the directory
+        // on Linux: don't do this if the directory is "/"
         if (!string.IsNullOrEmpty(directory))
         {
             Directory = directory.EndsWith(Path.DirectorySeparatorChar)
+                        && directory.Length != 1
+                        && directory != DirectorySeparatorCharStr
                 ? directory[..^1]
                 : directory;
         }
+
         FileName = fileName;
     }
 
@@ -78,18 +83,21 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
             return new AbsolutePath(null, fullPath);
         }
 
-        var directory = fullPath[..index];
+        // Windows: "C:\foo", directory should be "C:"
+        // Linux: "/foo", directory should be "/"
+        var directory = index == 0 ? DirectorySeparatorCharStr : fullPath[..index];
+
         var fileName = fullPath[(index + 1)..];
-        return new(directory, fileName);
+        return new AbsolutePath(directory, fileName);
     }
 
     /// <summary>
     /// Converts an existing full path into an absolute path.
     /// </summary>
     /// <param name="directoryPath">The path to the directory used.</param>
-    /// <param name="fullPath">The full path to use.</param>
+    /// <param name="fileName">The file name to use.</param>
     /// <returns>The converted absolute path.</returns>
-    public static AbsolutePath FromDirectoryAndFileName(string? directoryPath, string fullPath) => new(directoryPath, fullPath);
+    public static AbsolutePath FromDirectoryAndFileName(string? directoryPath, string fileName) => new(directoryPath, fileName);
 
     /// <summary>
     /// Returns the full path of the combined string.
@@ -103,39 +111,45 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         if (FileName.Length == 0)
             return Directory;
 
+        // on Linux: Directory="/", FileName="foo" should return "/foo" and not "//foo"
+        if (!OperatingSystem.IsWindows() && Directory == DirectorySeparatorCharStr)
+            return string.Concat(Directory, FileName);
+
         return string.Concat(Directory, DirectorySeparatorCharStr, FileName);
     }
 
     /// <summary>
-    /// Returns the full path of the combined string.
+    /// Copies the full path into <paramref name="buffer"/>.
     /// </summary>
-    /// <param name="buffer">
-    ///    The buffer which the resulting string will be stored inside.
-    ///    Should at least be <see cref="GetFullPathLength"/> long.
-    /// </param>
-    /// <returns>
-    ///     The full combined path.
-    /// If the buffer is not long enough; an empty path.
-    /// </returns>
-    /// <remarks>
-    ///    If <see cref="Directory"/> is null; might return different buffer than passed in via parameter.
-    /// </remarks>
-    public ReadOnlySpan<char> GetFullPath(Span<char> buffer)
+    /// <param name="buffer">The buffer that will store the full path. Has to be large enough
+    /// to fit the full path. Use <see cref="GetFullPathLength"/> to get the required length.</param>
+    /// <exception cref="ArgumentException">The buffer is too small.</exception>
+    public void GetFullPath(Span<char> buffer)
     {
-        if (string.IsNullOrEmpty(Directory))
-            return FileName;
-
-        if (FileName.Length == 0)
-            return Directory;
-
-        var requiredLength = Directory.Length + FileName.Length + 1;
+        var requiredLength = GetFullPathLength();
         if (buffer.Length < requiredLength)
-            return default;
+            throw new ArgumentException($"Buffer is too small: {buffer.Length} < {requiredLength}");
+
+        if (string.IsNullOrEmpty(Directory))
+        {
+            FileName.CopyTo(buffer);
+            return;
+        }
 
         Directory.CopyTo(buffer);
-        buffer[Directory.Length] = Path.DirectorySeparatorChar;
-        FileName.CopyTo(buffer.SliceFast(Directory.Length + 1));
-        return buffer.SliceFast(0, requiredLength);
+
+        if (string.IsNullOrEmpty(FileName)) return;
+
+        // on Linux: Directory="/", FileName="foo" should return "/foo" and not "//foo"
+        if (OperatingSystem.IsWindows() || Directory != DirectorySeparatorCharStr)
+        {
+            buffer[Directory.Length] = Path.DirectorySeparatorChar;
+            FileName.CopyTo(buffer.SliceFast(Directory.Length + 1));
+        }
+        else
+        {
+            FileName.CopyTo(buffer.SliceFast(Directory.Length));
+        }
     }
 
     /// <summary>
@@ -144,8 +158,15 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// <returns></returns>
     public int GetFullPathLength()
     {
-        if (Directory == null)
+        if (string.IsNullOrEmpty(Directory))
             return FileName.Length;
+
+        if (FileName.Length == 0)
+            return Directory.Length;
+
+        // on Linux: Directory="/", FileName="foo" should return 1 + 3 and not 1 + 3 + 1
+        if (!OperatingSystem.IsWindows() && Directory == DirectorySeparatorCharStr)
+            return 1 + FileName.Length;
 
         return Directory.Length + FileName.Length + 1;
     }
@@ -208,7 +229,6 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         // Copy and normalise.
         var relativeSpan = relativeOrig.Length <= 512 ? stackalloc char[relativeOrig.Length]
                                                       : GC.AllocateUninitializedArray<char>(relativeOrig.Length);
-
         relativeOrig.CopyTo(relativeSpan);
         relativeSpan.Replace(SeparatorToReplace, PathSeparatorForInternalOperations, relativeSpan);
         if (relativeSpan[0] == PathSeparatorForInternalOperations)
@@ -222,7 +242,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     private static string AppendChecked(string path, Span<char> relativeSpan)
     {
         ReadOnlySpan<char> remainingPath = relativeSpan;
-        ReadOnlySpan<char> splitSpan = default;
+        ReadOnlySpan<char> splitSpan;
         while ((splitSpan = SplitDir(remainingPath)) != remainingPath)
         {
             path += $"{Path.DirectorySeparatorChar}{FindFileOrDirectoryCasing(path, splitSpan)}";
@@ -260,6 +280,9 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
             ThrowHelpers.PathException("Can't create path relative to paths that aren't in the same folder");
             return default;
         }
+
+        if (OperatingSystem.IsLinux() && other.Directory == DirectorySeparatorCharStr && otherPathLength == 1)
+            return new RelativePath(thisFullPath.SliceFast(1).ToString());
 
         return new RelativePath(thisFullPath.SliceFast(otherFullPath.Length + 1).ToString());
     }
@@ -378,12 +401,6 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// <returns>Full path with directory separator string attached at the end.</returns>
     private readonly string GetFullPathWithSeparator()
     {
-        if (string.IsNullOrEmpty(Directory))
-            return string.Concat(FileName, DirectorySeparatorCharStr);
-
-        if (FileName.Length == 0)
-            return string.Concat(Directory, DirectorySeparatorCharStr);
-
-        return string.Concat(Directory, DirectorySeparatorCharStr, FileName, DirectorySeparatorCharStr);
+        return string.Concat(GetFullPath(), DirectorySeparatorCharStr);
     }
 }

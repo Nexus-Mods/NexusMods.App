@@ -39,5 +39,20 @@
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
 
+    <Style Selector="TextBlock.Body2RobotoRegular">
+        <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
+        <Setter Property="FontWeight" Value="400" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="LineHeight" Value="21" />
+    </Style>
+
+    <Style Selector="TextBlock.Subheading">
+        <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
+        <Setter Property="FontWeight" Value="700" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="LineHeight" Value="16.41" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
 
 </Styles>

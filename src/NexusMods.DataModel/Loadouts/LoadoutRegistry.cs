@@ -22,7 +22,6 @@ public record LoadoutRegistry : Entity, IEmptyWithDataStore<LoadoutRegistry>
     /// <inheritdoc />
     public static LoadoutRegistry Empty(IDataStore store) => new()
     {
-        Lists = EntityDictionary<LoadoutId, Loadout>.Empty(store),
-        Store = store
+        Lists = EntityDictionary<LoadoutId, Loadout>.Empty(store)
     };
 }

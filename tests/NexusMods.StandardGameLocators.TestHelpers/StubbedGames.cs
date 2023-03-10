@@ -67,6 +67,8 @@ public class StubbedGame : IEADesktopGame, IEpicGame, IOriginGame, ISteamGame, I
         new EmbededResourceStreamFactory<StubbedGame>(
             "NexusMods.StandardGameLocators.TestHelpers.Resources.StubbedGame.png");
 
+    public IStreamFactory GameImage => throw new NotImplementedException("No game image for stubbed game.");
+
     private AbsolutePath EnsureFiles(AbsolutePath path)
     {
         lock (this)
@@ -149,8 +151,7 @@ public class StubbedGameInstaller : IModInstaller
                 From = new HashRelativePath(srcArchive, key),
                 To = new GamePath(GameFolderType.Game, key),
                 Hash = value.Hash,
-                Size = value.Size,
-                Store = _store
+                Size = value.Size
             };
         }
     }
