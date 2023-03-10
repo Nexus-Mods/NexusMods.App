@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Text;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities.Internal.Enumerators;
@@ -18,22 +17,22 @@ public partial struct AbsolutePath
         MatchType = MatchType.Win32
     };
 
-    private FileInfo? _info = null;
+    private IFileEntry? _info = null;
 
     /// <summary>
     /// Returns the file information for this file.
     /// </summary>
-    public FileInfo FileInfo => _info ??= new FileInfo(GetFullPath());
+    public IFileEntry FileInfo => _info ??= FileSystem.GetFileEntry(this);
 
     /// <summary>
     /// Returns a <see cref="FileVersionInfo"/> representing the version information associated with the specified file.
     /// </summary>
-    public FileVersionInfo VersionInfo => FileVersionInfo.GetVersionInfo(GetFullPath());
+    public FileVersionInfo VersionInfo => FileInfo.GetFileVersionInfo();
 
     /// <summary>
     /// Gets the size in bytes, of the current file.
     /// </summary>
-    public Size Length => Size.From(FileInfo.Length);
+    public Size Length => FileInfo.Size;
 
     /// <summary>
     /// Retrieves the last time this file was written to in coordinated universal time (UTC).
