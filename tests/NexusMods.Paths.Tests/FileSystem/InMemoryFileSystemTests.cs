@@ -69,6 +69,25 @@ public class InMemoryFileSystemTests
     }
 
     [Theory, AutoFileSystem]
+    public void Test_DeleteFile(InMemoryFileSystem fs, AbsolutePath path)
+    {
+        fs.FileExists(path).Should().BeFalse();
+        fs.AddEmptyFile(path);
+        fs.FileExists(path).Should().BeTrue();
+        fs.DeleteFile(path);
+        fs.FileExists(path).Should().BeFalse();
+    }
+
+    [Theory, AutoFileSystem]
+    public void Test_DeleteFile_NotExists(InMemoryFileSystem fs, AbsolutePath path)
+    {
+        fs.FileExists(path).Should().BeFalse();
+        fs.Invoking(x => x.DeleteFile(path))
+            .Should()
+            .Throw<FileNotFoundException>();
+    }
+
+    [Theory, AutoFileSystem]
     public void Test_DeleteDirectory(InMemoryFileSystem fs, AbsolutePath path)
     {
         fs.DirectoryExists(path).Should().BeFalse();
