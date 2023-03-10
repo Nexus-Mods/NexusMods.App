@@ -94,7 +94,7 @@ public class SqliteIPC : IDisposable
             while (!shutdownTokenToken.IsCancellationRequested)
             {
                 var currentEdit = _storePath.FileInfo;
-                if (currentEdit.Length != lastEdit.Length || currentEdit.LastWriteTimeUtc != lastEdit.LastWriteTimeUtc)
+                if (currentEdit.Size != lastEdit.Size || currentEdit.LastWriteTimeUtc != lastEdit.LastWriteTimeUtc)
                 {
                     break;
                 }
