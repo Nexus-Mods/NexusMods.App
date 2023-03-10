@@ -28,6 +28,8 @@
     <AvaloniaResource Include="Theme\BareIcons.xaml" />
     <None Remove="Controls\GameWidget\GameWidgetStyles.xaml" />
     <AvaloniaResource Include="Controls\GameWidget\GameWidgetStyles.xaml" />
+    <None Remove="Theme\Borders.xaml" />
+    <AvaloniaResource Include="Theme\Borders.xaml" />
   </ItemGroup>
 
   <ItemGroup>

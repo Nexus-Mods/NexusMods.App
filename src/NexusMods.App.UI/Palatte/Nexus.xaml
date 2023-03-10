@@ -55,8 +55,13 @@
         <Color x:Key="StructuralBorderColor">#303236</Color>
         <SolidColorBrush Color="{DynamicResource StructuralBorderColor}" x:Key="StructuralBorderBrush" />
 
+        <Color x:Key="StatusInfo">#388FFA</Color>
+        <Color x:Key="StatusInfoTransparent">#0C388FFA</Color>
+        <SolidColorBrush Color="{DynamicResource StatusInfo}" x:Key="StatusInfoBrush" />
+        <SolidColorBrush Color="{DynamicResource StatusInfoTransparent}" x:Key="StatusInfoTransparentBrush" />
 
-        <FontFamily x:Key="FontPrimary">avares://NexusMods.App.UI/Fonts/Montserrat/Montserrat-VariableFont_wght.ttf#Montserrat</FontFamily>
+
+        <FontFamily x:Key="FontPrimary">avares://NexusMods.App.UI/Fonts/Montserrat/Montserrat-VariableFont_wght.ttf</FontFamily>
         <FontFamily x:Key="FontSecondary">avares://NexusMods.App.UI/Fonts/Roboto/Roboto-Regular.ttf#Roboto</FontFamily>
 
         <Color x:Key="FontDarkSecondaryColor">#AAAAAA</Color>

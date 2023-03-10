@@ -10,6 +10,7 @@ using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.LeftMenu.Home;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.RightContent;
+using NexusMods.App.UI.RightContent.Home;
 using NexusMods.App.UI.Windows;
 using ImageButton = NexusMods.App.UI.Controls.Spine.Buttons.Image.ImageButton;
 
@@ -32,6 +33,7 @@ public static class Services
             .AddViewModel<TopBarViewModel, ITopBarViewModel>()
             .AddViewModel<IconViewModel, IIconViewModel>()
             .AddViewModel<HomeLeftMenuViewModel, IHomeLeftMenuViewModel>()
+            .AddViewModel<HomeViewDesignerViewModel, IHomeViewModel>()
 
             // Views
             .AddView<GameWidget, IGameWidgetViewModel>()
@@ -43,6 +45,7 @@ public static class Services
             .AddView<LeftMenuView, ILeftMenuViewModel>()
             .AddView<IconView, IIconViewModel>()
             .AddView<HomeLeftMenuView, IHomeLeftMenuViewModel>()
+            .AddView<HomeView, IHomeViewModel>()
 
             // Other
             .AddSingleton<InjectedViewLocator>()

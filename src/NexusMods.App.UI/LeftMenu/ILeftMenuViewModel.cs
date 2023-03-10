@@ -7,5 +7,5 @@ public interface ILeftMenuViewModel : IViewModelInterface
 {
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items { get; }
 
-    public IRightContent RightContent { get; }
+    public IRightContentViewModel RightContent { get; }
 }

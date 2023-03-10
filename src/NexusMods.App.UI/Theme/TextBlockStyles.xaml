@@ -55,4 +55,22 @@
     </Style>
 
 
+    <Style Selector="TextBlock.H5MontserratSemi">
+        <Setter Property="FontFamily" Value="{DynamicResource FontPrimary}" />
+        <Setter Property="FontWeight" Value="600" />
+        <Setter Property="FontSize" Value="24" />
+        <Setter Property="LineHeight" Value="33" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="TextBlock.CaptionMontserratSemi">
+        <Setter Property="FontFamily" Value="{DynamicResource FontPrimary}" />
+        <Setter Property="FontWeight" Value="600" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="LineHeight" Value="16.5" />
+        <Setter Property="LetterSpacing" Value="0.6" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+
 </Styles>

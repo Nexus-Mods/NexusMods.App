@@ -9,13 +9,13 @@ namespace NexusMods.App.UI.LeftMenu.Home;
 public class HomeLeftMenuDesignViewModel : AViewModel<IHomeLeftMenuViewModel>, IHomeLeftMenuViewModel
 {
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items { get; }
-    public IRightContent RightContent { get; } = Initializers.IRightContent;
+    public IRightContentViewModel RightContent { get; } = Initializers.IRightContent;
 
     public HomeLeftMenuDesignViewModel()
     {
         var items = new ILeftMenuItemViewModel[]
         {
-            new IconViewModel { Name = "Newsfeed", Icon = IconType.News },
+            new IconViewModel { Name = "Newsfeed", Icon = IconType.News},
             new IconViewModel { Name = "My Games", Icon = IconType.Bookmark },
             new IconViewModel { Name = "Browse Games", Icon = IconType.Game }
         };

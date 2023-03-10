@@ -3,7 +3,7 @@ using NexusMods.App.UI.Controls.GameWidget;
 
 namespace NexusMods.App.UI.RightContent;
 
-public interface IFoundGamesViewModel : IRightContent
+public interface IFoundGamesViewModel : IRightContentViewModel
 {
     public ReadOnlyObservableCollection<IGameWidgetViewModel> Games { get; }
 }
