@@ -1,4 +1,4 @@
-﻿using System.Data.SQLite;
+using System.Data.SQLite;
 using System.Reactive.Subjects;
 using Microsoft.Extensions.Logging;
 using NexusMods.Paths;

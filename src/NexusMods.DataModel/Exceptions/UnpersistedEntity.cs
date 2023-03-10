@@ -1,4 +1,4 @@
-﻿namespace NexusMods.DataModel.Exceptions;
+namespace NexusMods.DataModel.Exceptions;
 
 public class UnpersistedEntity : Exception
 {
