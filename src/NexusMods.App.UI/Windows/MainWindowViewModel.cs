@@ -61,10 +61,12 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
     public ISpineViewModel Spine { get; set; }
 
     [Reactive]
-    public IViewModelInterface RightContent { get; set; }
+    public IViewModelInterface RightContent { get; set; } =
+        Initializers.IRightContent;
 
     [Reactive]
-    public ILeftMenuViewModel LeftMenu { get; set; }
+    public ILeftMenuViewModel LeftMenu { get; set; } =
+        Initializers.ILeftMenuViewModel;
 
     [Reactive]
     public ITopBarViewModel TopBar { get; set; }

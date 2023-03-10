@@ -27,13 +27,15 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
     public IIconButtonViewModel Add { get; }
 
-    private ReadOnlyObservableCollection<IImageButtonViewModel> _games;
+    private ReadOnlyObservableCollection<IImageButtonViewModel> _games =
+        Initializers.ReadOnlyObservableCollection<IImageButtonViewModel>();
     public ReadOnlyObservableCollection<IImageButtonViewModel> Games => _games;
 
     public Subject<SpineButtonAction> Activations { get; } = new();
 
     [Reactive]
-    public ILeftMenuViewModel LeftMenu { get; set; }
+    public ILeftMenuViewModel LeftMenu { get; set; } =
+        Initializers.ILeftMenuViewModel;
 
     private readonly Subject<SpineButtonAction> _actions = new();
     private readonly ILogger<SpineViewModel> _logger;

@@ -14,8 +14,7 @@ namespace NexusMods.App.UI.RightContent;
 
 public class FoundGamesViewModel : AViewModel<IFoundGamesViewModel>, IFoundGamesViewModel
 {
-    private readonly IGame[] _games;
-    private readonly IGameWidgetViewModel[] _installedGames;
+    private readonly IGameWidgetViewModel[] _installedGames = Array.Empty<IGameWidgetViewModel>();
     private readonly ILogger<FoundGamesViewModel> _logger;
     private readonly LoadoutManager _loadoutManager;
 
@@ -23,12 +22,12 @@ public class FoundGamesViewModel : AViewModel<IFoundGamesViewModel>, IFoundGames
     public IObservable<(GameInstallation Installation, string LoadOutNmae)>
         CreatedLoadouts => _createdLoadouts;
 
-    public FoundGamesViewModel(ILogger<FoundGamesViewModel> logger, IEnumerable<IGame> games, IServiceProvider provider, LoadoutManager loadoutManager)
+    public FoundGamesViewModel(ILogger<FoundGamesViewModel> logger,
+        IEnumerable<IGame> games, IServiceProvider provider, LoadoutManager loadoutManager)
     {
         _logger = logger;
-        _games = games.ToArray();
         _loadoutManager = loadoutManager;
-        var installed = _games
+        var installed = games
             .SelectMany(g => g.Installations)
             .Select(install =>
             {

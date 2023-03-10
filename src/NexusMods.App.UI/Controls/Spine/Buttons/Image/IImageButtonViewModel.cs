@@ -28,5 +28,5 @@ public interface IImageButtonViewModel : IViewModelInterface
     /// <summary>
     /// User defined data
     /// </summary>
-    public object Tag { get; set; }
+    public object? Tag { get; set; }
 }

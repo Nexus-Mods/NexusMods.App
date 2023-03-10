@@ -55,13 +55,11 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
     }
 
     [Reactive]
-    public GameInstallation Installation { get; set; }
+    public GameInstallation Installation { get; set; } = GameInstallation.Empty;
 
-    [Reactive]
-    public string Name { get; set; }
+    [Reactive] public string Name { get; set; } = "";
 
-    [Reactive]
-    public IImage Image { get; set; }
+    [Reactive] public IImage Image { get; set; } = Initializers.IImage;
 
     [Reactive]
     public ICommand PrimaryButton { get; set; }

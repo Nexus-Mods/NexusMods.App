@@ -1,5 +1,6 @@
 ﻿using System.Windows.Input;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
 using NexusMods.App.UI.ViewModels;
 using ReactiveUI.Fody.Helpers;
@@ -11,15 +12,12 @@ public class ImageButtonViewModel : AViewModel<IImageButtonViewModel>, IImageBut
     [Reactive]
     public bool IsActive { get; set; }
 
-    [Reactive]
-    public string Name { get; set; }
+    [Reactive] public string Name { get; set; } = "";
+
+    [Reactive] public IImage Image { get; set; } = Initializers.IImage;
+
+    [Reactive] public ICommand Click { get; set; } = Initializers.ICommand;
 
     [Reactive]
-    public IImage Image { get; set; }
-
-    [Reactive]
-    public ICommand Click { get; set; }
-
-    [Reactive]
-    public object Tag { get; set; }
+    public object? Tag { get; set; }
 }

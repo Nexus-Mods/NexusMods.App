@@ -6,7 +6,6 @@ namespace NexusMods.App.UI.RightContent;
 
 public class FoundGamesDesignViewModel : AViewModel<IFoundGamesViewModel>, IFoundGamesViewModel
 {
-    private readonly IEnumerable<GameWidgetDesignViewModel> _games;
 
     public FoundGamesDesignViewModel()
     {

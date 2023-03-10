@@ -13,15 +13,15 @@ namespace NexusMods.App.UI.Controls.GameWidget;
 public class GameWidgetDesignViewModel : AViewModel<IGameWidgetViewModel>, IGameWidgetViewModel
 {
     [Reactive]
-    public GameInstallation Installation { get; set; }
+    public GameInstallation Installation { get; set; } = GameInstallation.Empty;
     public string Name { get; } = "SOME CYBERPUNK GAME WITH A LONG NAME";
-    public IImage Image { get; }
-    public ICommand PrimaryButton { get; set; }
+    public IImage Image { get; set; }
+    public ICommand PrimaryButton { get; set; } = Initializers.ICommand;
     public ICommand? SecondaryButton { get; set; }
 
     public GameWidgetDesignViewModel()
     {
-        var assets = AvaloniaLocator.Current.GetService<IAssetLoader>();
+        var assets = AvaloniaLocator.Current.GetRequiredService<IAssetLoader>();
         Image = new Bitmap(assets.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/fantasy_game.png")));
         SecondaryButton = ReactiveCommand.Create(() => { });
     }
