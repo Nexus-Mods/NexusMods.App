@@ -102,20 +102,18 @@ public partial struct AbsolutePath
     /// </summary>
     public void Delete()
     {
-        var nativePath = GetFullPath();
         if (FileExists)
         {
             try
             {
-                File.Delete(nativePath);
+                FileSystem.DeleteFile(this);
             }
             catch (UnauthorizedAccessException)
             {
-                var fi = FileInfo;
-                if (fi.IsReadOnly)
+                if (FileInfo.IsReadOnly)
                 {
-                    fi.IsReadOnly = false;
-                    File.Delete(nativePath);
+                    FileInfo.IsReadOnly = false;
+                    FileSystem.DeleteFile(this);
                 }
                 else
                 {
@@ -124,7 +122,7 @@ public partial struct AbsolutePath
             }
         }
 
-        if (System.IO.Directory.Exists(nativePath))
+        if (FileSystem.DirectoryExists(this))
             DeleteDirectory();
     }
 
