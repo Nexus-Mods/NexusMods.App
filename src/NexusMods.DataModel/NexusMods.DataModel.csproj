@@ -13,7 +13,6 @@
 
     <ItemGroup>
         <PackageReference Include="BitFaster.Caching" Version="2.1.1" />
-        <PackageReference Include="Cloudtoid.Interprocess" Version="2.0.0-alpha176" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0-preview.1.23110.8" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0-preview.1.23110.8" />
         <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.3.1" />
