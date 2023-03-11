@@ -1,5 +1,4 @@
 using System.Buffers.Binary;
-using System.Collections.Concurrent;
 using FluentAssertions;
 using NexusMods.DataModel.Interprocess;
 
@@ -42,7 +41,7 @@ public class InterprocessTests
         var dest = new List<int>();
         using var _ = _consumer.Messages.Subscribe(x =>
         {
-            lock(dest)
+            lock (dest)
                 dest.Add(x.Value);
         });
 
@@ -56,7 +55,7 @@ public class InterprocessTests
         await Task.Delay(1000);
 
         // Dest is in a stack, so we'll reverse the src to make sure it all worked
-        lock(dest)
+        lock (dest)
             dest.Should().BeEquivalentTo(src, opt => opt.WithStrictOrdering());
     }
 

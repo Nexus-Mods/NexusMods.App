@@ -1,4 +1,4 @@
-﻿using System.Data.SQLite;
+using System.Data.SQLite;
 using System.Reactive.Subjects;
 using Microsoft.Extensions.Logging;
 using NexusMods.Paths;
@@ -13,50 +13,47 @@ namespace NexusMods.DataModel.Interprocess;
 /// changed, it will re-poll the database for new messages. This method of polling allows for fairly simple change detection
 /// without having to run a SQL query every second.
 /// </summary>
+// ReSharper disable once InconsistentNaming
 public class SqliteIPC : IDisposable
 {
-    private static TimeSpan RetentionTime = TimeSpan.FromSeconds(10); // Keep messages for 10 seconds
-    private static TimeSpan CleanupInterval = TimeSpan.FromMinutes(10); // Cleanup every 10 minutes
-    private static int CleanupJitter = 2000; // Jitter cleanup by up to 2 second
-    private static TimeSpan ShortPollInterval = TimeSpan.FromMilliseconds(100); // Poll every 100ms
-    private static TimeSpan LongPollInterval = TimeSpan.FromSeconds(10); // Poll every 10s
+    private static readonly TimeSpan RetentionTime = TimeSpan.FromSeconds(10); // Keep messages for 10 seconds
+    private static readonly TimeSpan CleanupInterval = TimeSpan.FromMinutes(10); // Cleanup every 10 minutes
+    private static readonly int CleanupJitter = 2000; // Jitter cleanup by up to 2 second
+    private static readonly TimeSpan ShortPollInterval = TimeSpan.FromMilliseconds(100); // Poll every 100ms
+    private static readonly TimeSpan LongPollInterval = TimeSpan.FromSeconds(10); // Poll every 10s
 
     private readonly AbsolutePath _storePath;
-    private readonly string _connectionString;
     private readonly SQLiteConnection _conn;
 
-    private Subject<(string Queue, byte[] Message)> _subject = new();
+    private readonly Subject<(string Queue, byte[] Message)> _subject = new();
     private readonly CancellationTokenSource _shutdownToken;
-    private readonly Task _rdrTask;
     private readonly ILogger<SqliteIPC> _logger;
-    private readonly Task _cleanupTask;
 
     public IObservable<(string Queue, byte[] Message)> Messages => _subject;
 
     /// <summary>
     /// DI Constructor
     /// </summary>
-    /// <param name="logger"></param>
-    /// <param name="storePath"></param>
-    /// <param name="syncPath"></param>
+    /// <param name="logger">Allows for logging of messages.</param>
+    /// <param name="storePath">Physical location on disk where the IPC database is stored.</param>
     public SqliteIPC(ILogger<SqliteIPC> logger, AbsolutePath storePath)
     {
         _logger = logger;
         _storePath = storePath;
 
-        _connectionString = string.Intern($"Data Source={_storePath}");
-        _conn = new SQLiteConnection(_connectionString);
+        var connectionString = string.Intern($"Data Source={_storePath}");
+        _conn = new SQLiteConnection(connectionString);
         _conn.Open();
 
         EnsureTables();
 
         _shutdownToken = new CancellationTokenSource();
         var startId = GetStartId();
-        _rdrTask = Task.Run(() => ReaderLoop(startId, _shutdownToken.Token));
-        _cleanupTask = Task.Run(() => CleanupLoop(_shutdownToken.Token));
+        Task.Run(() => ReaderLoop(startId, _shutdownToken.Token));
+        Task.Run(() => CleanupLoop(_shutdownToken.Token));
     }
 
-    private async Task CleanupLoop(CancellationToken token, bool force = false)
+    private async Task CleanupLoop(CancellationToken token)
     {
         // Wait a bit so a bunch of CLI processes don't all try to clean up at the same time.
         await Task.Delay(Random.Shared.Next(CleanupJitter), token);

@@ -17,13 +17,15 @@ using NexusMods.Paths;
 
 namespace NexusMods.DataModel;
 
+/// <summary>
+/// An implementation of a <see cref="IDataStore"/> backed by an Sqlite 3.X database.
+/// </summary>
 public class SqliteDataStore : IDataStore, IDisposable
 {
-    private readonly AbsolutePath _path;
-    private readonly string _connectionString;
     private readonly SQLiteConnection _conn;
     private readonly Dictionary<EntityCategory, string> _getStatements;
     private readonly Dictionary<EntityCategory, string> _putStatements;
+    // ReSharper disable once CollectionNeverQueried.Local
     private readonly Dictionary<EntityCategory, string> _casStatements;
     private readonly Lazy<JsonSerializerOptions> _jsonOptions;
     private readonly Dictionary<EntityCategory, string> _prefixStatements;
@@ -32,24 +34,30 @@ public class SqliteDataStore : IDataStore, IDisposable
     private readonly IMessageProducer<RootChange> _rootChangeProducer;
     private readonly IMessageConsumer<RootChange> _rootChangeConsumer;
     private readonly ConcurrentQueue<RootChange> _pendingRootChanges = new();
-    private readonly ConcurrentQueue<IdPut> _pendingIdPuts = new();
+    private readonly ConcurrentQueue<IdUpdated> _pendingIdPuts = new();
     private readonly CancellationTokenSource _enqueuerTcs;
-    private readonly Task _enqueuerTask;
     private readonly ILogger<SqliteDataStore> _logger;
-    private readonly IMessageProducer<IdPut> _idPutProducer;
-    private readonly IMessageConsumer<IdPut> _idPutConsumer;
+    private readonly IMessageProducer<IdUpdated> _idPutProducer;
+    private readonly IMessageConsumer<IdUpdated> _idPutConsumer;
     private readonly Dictionary<EntityCategory, bool> _immutableFields;
 
+    /// <summary/>
+    /// <param name="logger">Logs events.</param>
+    /// <param name="path">Location of the database.</param>
+    /// <param name="provider">Dependency injection container.</param>
+    /// <param name="rootChangeProducer">Producer of changes to <see cref="Root{TRoot}"/>s</param>
+    /// <param name="rootChangeConsumer">Consumer of changes to <see cref="Root{TRoot}"/>s</param>
+    /// <param name="idPutProducer">Producer of events for updated IDs.</param>
+    /// <param name="idPutConsumer">Consumer of events for updated IDs.</param>
     public SqliteDataStore(ILogger<SqliteDataStore> logger, AbsolutePath path, IServiceProvider provider,
         IMessageProducer<RootChange> rootChangeProducer,
         IMessageConsumer<RootChange> rootChangeConsumer,
-        IMessageProducer<IdPut> idPutProducer,
-        IMessageConsumer<IdPut> idPutConsumer)
+        IMessageProducer<IdUpdated> idPutProducer,
+        IMessageConsumer<IdUpdated> idPutConsumer)
     {
         _logger = logger;
-        _path = path;
-        _connectionString = string.Intern($"Data Source={path}");
-        _conn = new SQLiteConnection(_connectionString);
+        var connectionString = string.Intern($"Data Source={path}");
+        _conn = new SQLiteConnection(connectionString);
         _conn.Open();
 
         _getStatements = new Dictionary<EntityCategory, string>();
@@ -68,7 +76,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         _idPutConsumer = idPutConsumer;
 
         _enqueuerTcs = new CancellationTokenSource();
-        _enqueuerTask = Task.Run(EnqueuerLoop);
+        Task.Run(EnqueuerLoop);
     }
 
     private async Task EnqueuerLoop()
@@ -109,6 +117,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         }
     }
 
+    /// <inheritdoc />
     public IId Put<T>(T value) where T : Entity
     {
         using var cmd = new SQLiteCommand(_putStatements[value.Category], _conn);
@@ -125,10 +134,11 @@ public class SqliteDataStore : IDataStore, IDisposable
 
         var id = new Id64(value.Category, hash);
         if (!_immutableFields[id.Category])
-            _pendingIdPuts.Enqueue(new IdPut(IdPut.PutType.Put, id));
+            _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
         return id;
     }
 
+    /// <inheritdoc />
     public void Put<T>(IId id, T value) where T : Entity
     {
         using var cmd = new SQLiteCommand(_putStatements[value.Category], _conn);
@@ -142,9 +152,10 @@ public class SqliteDataStore : IDataStore, IDisposable
         cmd.ExecuteNonQuery();
 
         if (!_immutableFields[id.Category])
-            _pendingIdPuts.Enqueue(new IdPut(IdPut.PutType.Put, id));
+            _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
     }
 
+    /// <inheritdoc />
     public T? Get<T>(IId id, bool canCache) where T : Entity
     {
         if (canCache && _cache.TryGet(id, out var cached))
@@ -169,6 +180,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         return value;
     }
 
+    /// <inheritdoc />
     public bool PutRoot(RootType type, IId oldId, IId newId)
     {
         using var cmd = new SQLiteCommand(_putStatements[EntityCategory.Roots], _conn);
@@ -183,6 +195,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         return true;
     }
 
+    /// <inheritdoc />
     public IId? GetRoot(RootType type)
     {
         using var cmd = new SQLiteCommand(_getStatements[EntityCategory.Roots], _conn);
@@ -193,15 +206,15 @@ public class SqliteDataStore : IDataStore, IDisposable
         {
             var blob = reader.GetStream(0);
             var bytes = new byte[blob.Length];
+            // TODO: Potential bug fix here.
             blob.Read(bytes, 0, bytes.Length);
             return IId.FromTaggedSpan(bytes);
         }
 
         return null;
-
     }
 
-
+    /// <inheritdoc />
     public byte[]? GetRaw(IId id)
     {
         using var cmd = new SQLiteCommand(_getStatements[id.Category], _conn);
@@ -218,6 +231,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         return bytes;
     }
 
+    /// <inheritdoc />
     public void PutRaw(IId id, ReadOnlySpan<byte> val)
     {
         using var cmd = new SQLiteCommand(_putStatements[id.Category], _conn);
@@ -228,10 +242,11 @@ public class SqliteDataStore : IDataStore, IDisposable
         cmd.ExecuteNonQuery();
 
         if (!_immutableFields[id.Category])
-            _pendingIdPuts.Enqueue(new IdPut(IdPut.PutType.Put, id));
+            _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
 
     }
 
+    /// <inheritdoc />
     public void Delete(IId id)
     {
         using var cmd = new SQLiteCommand(_deleteStatements[id.Category], _conn);
@@ -241,9 +256,10 @@ public class SqliteDataStore : IDataStore, IDisposable
         cmd.ExecuteNonQuery();
 
         if (!_immutableFields[id.Category])
-            _pendingIdPuts.Enqueue(new IdPut(IdPut.PutType.Delete, id));
+            _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Delete, id));
     }
 
+    /// <inheritdoc />
     public async Task<long> PutRaw(IAsyncEnumerable<(IId Key, byte[] Value)> kvs, CancellationToken token = default)
     {
         var iterator = kvs.GetAsyncEnumerator(token);
@@ -290,6 +306,7 @@ public class SqliteDataStore : IDataStore, IDisposable
 
     }
 
+    /// <inheritdoc />
     public IEnumerable<T> GetByPrefix<T>(IId prefix) where T : Entity
     {
         using var cmd = new SQLiteCommand(_prefixStatements[prefix.Category], _conn);
@@ -315,7 +332,10 @@ public class SqliteDataStore : IDataStore, IDisposable
         }
     }
 
+    /// <inheritdoc />
     public IObservable<RootChange> RootChanges => _rootChangeConsumer.Messages.SelectMany(WaitTillRootReady);
+
+    /// <inheritdoc />
     public IObservable<IId> IdChanges => _idPutConsumer.Messages.SelectMany(WaitTillPutReady);
     /// <summary>
     /// Sometimes we may get a change notification before the underlying SQLite database has actually updated the value.
@@ -342,10 +362,10 @@ public class SqliteDataStore : IDataStore, IDisposable
     /// </summary>
     /// <param name="change"></param>
     /// <returns></returns>
-    private async Task<IId> WaitTillPutReady(IdPut change)
+    private async Task<IId> WaitTillPutReady(IdUpdated change)
     {
         var maxCycles = 0;
-        while (change.Type != IdPut.PutType.Delete && GetRaw(change.Id) == null && maxCycles < 10)
+        while (change.Type != IdUpdated.UpdateType.Delete && GetRaw(change.Id) == null && maxCycles < 10)
         {
             _logger.LogDebug("Waiting for write to {Id} to complete", change.Id);
             await Task.Delay(100);
@@ -355,6 +375,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         return change.Id;
     }
 
+    /// <inheritdoc />
     public void Dispose()
     {
         _conn.Dispose();
@@ -362,11 +383,11 @@ public class SqliteDataStore : IDataStore, IDisposable
     }
 }
 
-
 internal static class SqlExtensions
 {
     public static IId GetId(this SQLiteDataReader reader, EntityCategory ent, int column)
     {
+        // TODO: Potential bug fix here.
         var blob = reader.GetStream(column);
         var bytes = new byte[blob.Length];
         blob.Read(bytes, 0, bytes.Length);

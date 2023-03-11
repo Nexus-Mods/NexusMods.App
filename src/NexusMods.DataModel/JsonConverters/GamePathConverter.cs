@@ -5,8 +5,10 @@ using NexusMods.Paths.Extensions;
 
 namespace NexusMods.DataModel.JsonConverters;
 
+/// <inheritdoc />
 public class GamePathConverter : JsonConverter<GamePath>
 {
+    /// <inheritdoc />
     public override GamePath Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType != JsonTokenType.StartArray)
@@ -20,6 +22,7 @@ public class GamePathConverter : JsonConverter<GamePath>
         return new GamePath(folder, path);
     }
 
+    /// <inheritdoc />
     public override void Write(Utf8JsonWriter writer, GamePath value, JsonSerializerOptions options)
     {
         writer.WriteStartArray();

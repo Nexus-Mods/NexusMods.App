@@ -25,8 +25,6 @@ public class Startup
                  .AddStandardGameLocators(false)
                  .AddSingleton<TemporaryFileManager>(s => new TemporaryFileManager(prefix.CombineUnchecked("tempFiles")))
                  .AddFileExtractors()
-                 .AddSingleton(s => new FileCache(s.GetRequiredService<ILogger<FileCache>>(), KnownFolders.EntryFolder.CombineUnchecked("cache")))
-
                  .AddStubbedGameLocators()
 
                  .AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(s =>

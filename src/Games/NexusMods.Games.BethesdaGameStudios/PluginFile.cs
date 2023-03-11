@@ -110,7 +110,7 @@ public record PluginFile : AGeneratedFile
         }
     }
 
-    public override async Task<(Size Size, Hash Hash)> GetMetaData(Loadout loadout, IReadOnlyCollection<(AModFile File, Mod Mod)> flattenedList, CancellationToken ct = default)
+    public override async Task<(Size Size, Hash Hash)> GetMetadataAsync(Loadout loadout, IReadOnlyCollection<(AModFile File, Mod Mod)> flattenedList, CancellationToken ct = default)
     {
         var ms = new MemoryStream();
         await GenerateAsync(ms, loadout, flattenedList, ct);

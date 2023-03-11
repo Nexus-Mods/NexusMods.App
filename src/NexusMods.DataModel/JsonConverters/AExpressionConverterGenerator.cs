@@ -1,20 +1,21 @@
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+#pragma warning disable CS1591
 
 namespace NexusMods.DataModel.JsonConverters;
 
 public abstract class AExpressionConverterGenerator<T> : JsonConverter<T>
 {
-    protected readonly IServiceProvider Provider;
-    protected Lazy<WriteDelegate> _writerFunction = default!;
-    protected Lazy<ReadDelegate> _readerFunction = default!;
+    protected Lazy<WriteDelegate> WriterFunction = default!;
+    protected Lazy<ReadDelegate> ReaderFunction = default!;
     protected readonly Type Type;
 
     protected delegate T? ReadDelegate(ref Utf8JsonReader read, Type typeToConvert, JsonSerializerOptions options);
 
     protected delegate void WriteDelegate(Utf8JsonWriter writer, T value, JsonSerializerOptions options);
 
+    // ReSharper disable once StaticMemberInGenericType
     public static readonly Dictionary<Type, (string Writer, string Reader)> MethodMappings = new()
     {
         { typeof(int), ("WriteNumber", "GetInt32") },
@@ -24,20 +25,19 @@ public abstract class AExpressionConverterGenerator<T> : JsonConverter<T>
         { typeof(string), ("WriteString", "GetString")},
     };
 
-    protected AExpressionConverterGenerator(IServiceProvider provider)
+    protected AExpressionConverterGenerator()
     {
-        Provider = provider;
         Type = typeof(T);
     }
 
     public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        return _readerFunction.Value(ref reader, typeToConvert, options);
+        return ReaderFunction.Value(ref reader, typeToConvert, options);
     }
 
     public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
     {
-        _writerFunction.Value(writer, value, options);
+        WriterFunction.Value(writer, value, options);
     }
 
     protected static MemberRecord[] GetMembers()
@@ -75,6 +75,7 @@ public abstract class AExpressionConverterGenerator<T> : JsonConverter<T>
 
         if (nameAttr == default)
             throw new JsonException($"Type {Type} does not have a JsonNameAttribute");
+
         return nameAttr;
     }
 
@@ -85,7 +86,7 @@ public abstract class AExpressionConverterGenerator<T> : JsonConverter<T>
         public required PropertyInfo Property { get; init; }
         public required Type Type { get; init; }
         public required string RealName { get; init; }
-        public bool IsInjected { get; set; }
+        public bool IsInjected { get; init; }
     }
 
 }

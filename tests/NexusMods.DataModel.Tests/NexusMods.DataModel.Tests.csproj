@@ -19,7 +19,7 @@
 
     <Target Name="CopyResources" AfterTargets="PostBuildEvent">
         <ItemGroup>
-            <_Resources Include="Resources\**"/>
+            <_Resources Include="Resources\**" />
         </ItemGroup>
 
         <Copy SourceFiles="@(_Resources)" DestinationFolder="$(TargetDir)\Resources" />

@@ -1,6 +1,6 @@
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.JsonConverters;
 using NexusMods.Hashing.xxHash64;
 using Vogen;
 
@@ -14,8 +14,15 @@ namespace NexusMods.DataModel.Loadouts;
 /// </summary>
 [ValueObject<Guid>(conversions: Conversions.None)]
 [JsonConverter(typeof(LoadoutIdConverter))]
+// ReSharper disable once PartialTypeWithSinglePart
 public readonly partial struct LoadoutId : ICreatable<LoadoutId>
 {
+    // Note: We store this as hex because we need to serialize to JSON.
+
+    /// <summary>
+    /// Deserializes a loadout ID from hex string.
+    /// </summary>
+    /// <param name="hex">The span of characters storing the value for this loadout.</param>
     public static LoadoutId FromHex(ReadOnlySpan<char> hex)
     {
         Span<byte> span = stackalloc byte[16];
@@ -23,6 +30,10 @@ public readonly partial struct LoadoutId : ICreatable<LoadoutId>
         return From(new Guid(span));
     }
 
+    /// <summary>
+    /// Serializes the loadout id to this hex string.
+    /// </summary>
+    /// <param name="span">To span.</param>
     public void ToHex(Span<char> span)
     {
         Span<byte> bytes = stackalloc byte[16];
@@ -30,6 +41,7 @@ public readonly partial struct LoadoutId : ICreatable<LoadoutId>
         ((ReadOnlySpan<byte>)bytes).ToHex(span);
     }
 
+    /// <inheritdoc />
     public override string ToString()
     {
         Span<byte> span = stackalloc byte[16];
@@ -37,24 +49,11 @@ public readonly partial struct LoadoutId : ICreatable<LoadoutId>
         return ((ReadOnlySpan<byte>)span).ToHex();
     }
 
+    /// <summary>
+    /// Creates a new loadout ID.
+    /// </summary>
     public static LoadoutId Create()
     {
         return From(Guid.NewGuid());
-    }
-}
-
-public class LoadoutIdConverter : JsonConverter<LoadoutId>
-{
-    public override LoadoutId Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        var str = reader.GetString();
-        return LoadoutId.FromHex(str);
-    }
-
-    public override void Write(Utf8JsonWriter writer, LoadoutId value, JsonSerializerOptions options)
-    {
-        Span<char> span = stackalloc char[32];
-        value.ToHex(span);
-        writer.WriteStringValue(span);
     }
 }

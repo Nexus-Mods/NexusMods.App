@@ -18,7 +18,7 @@ public class FileHashCacheTests : ADataModelTest<FileHashCacheTests>
         var file = KnownFolders.CurrentDirectory.CombineUnchecked(Guid.NewGuid().ToString()).WithExtension(KnownExtensions.Tmp);
         await file.WriteAllTextAsync("Test data here");
 
-        var hash = await FileHashCache.HashFileAsync(file);
+        var hash = await FileHashCache.IndexFileAsync(file);
         hash.Hash.Should().Be((Hash)0xB08C91D1CDF11402);
         FileHashCache.TryGetCached(file, out var found).Should().BeTrue();
         found.Hash.Should().Be(hash.Hash);
@@ -33,7 +33,7 @@ public class FileHashCacheTests : ADataModelTest<FileHashCacheTests>
         file.Parent.CreateDirectory();
         await file.WriteAllTextAsync("Test data here");
 
-        var results = await FileHashCache.IndexFolder(folder, CancellationToken.None).ToList();
+        var results = await FileHashCache.IndexFolderAsync(folder, CancellationToken.None).ToListAsync();
         results.Should().ContainSingle(x => x.Path == file);
     }
 

@@ -1,5 +1,8 @@
 namespace NexusMods.DataModel.Interprocess;
 
+/// <summary>
+/// Represents an individual message that can be passed via Interprocess Communication (IPC).
+/// </summary>
 public interface IMessage
 {
     /// <summary>

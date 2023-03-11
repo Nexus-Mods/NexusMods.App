@@ -1,5 +1,4 @@
 using FluentAssertions;
-using NexusMods.Paths.Tests.New.Helpers;
 
 namespace NexusMods.Paths.Tests.New.AbsolutePathTests;
 

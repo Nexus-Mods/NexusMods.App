@@ -5,7 +5,6 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.ViewModels;
-using NexusMods.Common;
 using NexusMods.DataModel.Games;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

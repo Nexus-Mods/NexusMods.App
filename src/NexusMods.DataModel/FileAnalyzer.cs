@@ -45,7 +45,7 @@ public class FileContentsCache
 
     public async Task<AnalyzedFile> AnalyzeFile(AbsolutePath path, CancellationToken token = default)
     {
-        var entry = await _fileHashCahce.HashFileAsync(path, token);
+        var entry = await _fileHashCahce.IndexFileAsync(path, token);
         var found = _store.Get<AnalyzedFile>(new Id64(EntityCategory.FileAnalysis, (ulong)entry.Hash));
         if (found != null) return found;
 
@@ -66,8 +66,8 @@ public class FileContentsCache
 
     private async Task<AnalyzedFile> AnalyzeFileInner(IStreamFactory sFn, CancellationToken token, int level, Hash parent, RelativePath parentPath)
     {
-        Hash hash = default;
-        var sigs = new List<FileType>();
+        Hash hash;
+        List<FileType> sigs;
         var analysisData = new List<IFileAnalysisData>();
         {
             await using var hashStream = await sFn.GetStreamAsync();
@@ -75,7 +75,7 @@ public class FileContentsCache
             {
                 if (sFn.Name is AbsolutePath ap)
                 {
-                    hash = (await _fileHashCahce.HashFileAsync(ap, token)).Hash;
+                    hash = (await _fileHashCahce.IndexFileAsync(ap, token)).Hash;
                 }
                 else
                 {
@@ -152,6 +152,7 @@ public class FileContentsCache
                 children = await _limiter.ForEachFile(tmpFolder,
                         async (_, entry) =>
                         {
+                            // ReSharper disable once AccessToDisposedClosure
                             var relPath = entry.Path.RelativeTo(tmpFolder.Path);
                             var analysisRecord = await AnalyzeFileInner(
                                 new NativeFileStreamFactory(entry.Path), token,
@@ -161,8 +162,9 @@ public class FileContentsCache
                                 Results: analysisRecord);
                         },
                         token, "Analyzing Files")
-                    .Select(a => KeyValuePair.Create(a.Path.RelativeTo(tmpFolder.Path), a.Results.DataStoreId))
-                    .ToList();
+                    // ReSharper disable once AccessToDisposedClosure
+                    .SelectAsync(a => KeyValuePair.Create(a.Path.RelativeTo(tmpFolder.Path), a.Results.DataStoreId))
+                    .ToListAsync();
             }
             file = new AnalyzedArchive
             {

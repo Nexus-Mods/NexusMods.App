@@ -1,9 +1,7 @@
 using System.Runtime.InteropServices;
-using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Games;
 using NexusMods.FileExtractor.StreamFactories;
-using NexusMods.Games.Abstractions;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.DarkestDungeon;
@@ -13,7 +11,7 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame
     public IEnumerable<int> SteamIds => new[] { 262060 };
     public IEnumerable<long> GogIds => new long[] { 1450711444 };
 
-    public DarkestDungeon(ILogger<DarkestDungeon> logger, IEnumerable<IGameLocator> gameLocators) : base(logger, gameLocators)
+    public DarkestDungeon(IEnumerable<IGameLocator> gameLocators) : base(gameLocators)
     {
     }
 

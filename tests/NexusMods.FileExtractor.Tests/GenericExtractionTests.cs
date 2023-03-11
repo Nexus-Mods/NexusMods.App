@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using NexusMods.Common;
 using NexusMods.DataModel.Extensions;
 using NexusMods.FileExtractor.StreamFactories;
@@ -52,7 +52,7 @@ public class GenericExtractionTests
         await _extractor.ExtractAllAsync(path, tempFolder, CancellationToken.None);
         (await tempFolder.Path.EnumerateFiles()
             .SelectAsync(async f => (f.RelativeTo(tempFolder.Path), await f.XxHash64()))
-            .ToArray())
+            .ToArrayAsync())
             .Should()
             .BeEquivalentTo(new[]
             {

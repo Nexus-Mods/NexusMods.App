@@ -1,4 +1,4 @@
-﻿namespace NexusMods.DataModel.Abstractions.Ids;
+namespace NexusMods.DataModel.Abstractions.Ids;
 
 /// <summary>
 /// Represents a zero-sized dummy ID.

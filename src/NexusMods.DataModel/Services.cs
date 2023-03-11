@@ -16,8 +16,13 @@ using NexusMods.Paths.Utilities;
 
 namespace NexusMods.DataModel;
 
+/// <summary/>
 public static class Services
 {
+    /// <summary>
+    /// Adds all services related to the <see cref="DataModel"/> to your dependency
+    /// injection container.
+    /// </summary>
     public static IServiceCollection AddDataModel(this IServiceCollection coll, AbsolutePath? baseFolder = null)
     {
         baseFolder ??= KnownFolders.EntryFolder;
@@ -40,11 +45,9 @@ public static class Services
             baseFolder.Value.CombineUnchecked("DataModel.sqlite"), s,
             s.GetRequiredService<IMessageProducer<RootChange>>(),
             s.GetRequiredService<IMessageConsumer<RootChange>>(),
-            s.GetRequiredService<IMessageProducer<IdPut>>(),
-            s.GetRequiredService<IMessageConsumer<IdPut>>()));
-        coll.AddSingleton(s => new ArchiveManager(s.GetRequiredService<ILogger<ArchiveManager>>(),
-            new[] { baseFolder.Value.CombineUnchecked("Archives") },
-            s.GetRequiredService<IDataStore>(),
+            s.GetRequiredService<IMessageProducer<IdUpdated>>(),
+            s.GetRequiredService<IMessageConsumer<IdUpdated>>()));
+        coll.AddSingleton(s => new ArchiveManager(new[] { baseFolder.Value.CombineUnchecked("Archives") },
             s.GetRequiredService<FileExtractor.FileExtractor>(),
             s.GetRequiredService<FileContentsCache>()));
         coll.AddAllSingleton<IResource, IResource<FileHashCache, Size>>(_ => new Resource<FileHashCache, Size>("File Hashing", Environment.ProcessorCount, Size.Zero));
