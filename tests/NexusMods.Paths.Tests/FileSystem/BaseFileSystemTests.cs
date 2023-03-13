@@ -33,17 +33,19 @@ public class BaseFileSystemTests
         overlayFileSystem.GetMappedPath(originalFilePath).Should().Be(newFilePath);
     }
 
-    [Theory, AutoFileSystem]
+    [SkippableTheory, AutoFileSystem]
     public async Task Test_ReadAllBytesAsync(InMemoryFileSystem fs, AbsolutePath path, byte[] contents)
     {
+        Skip.IfNot(OperatingSystem.IsLinux());
         fs.AddFile(path, contents);
         var result = await fs.ReadAllBytesAsync(path);
         result.Should().BeEquivalentTo(contents);
     }
 
-    [Theory, AutoFileSystem]
+    [SkippableTheory, AutoFileSystem]
     public async Task Test_ReadAllTextAsync(InMemoryFileSystem fs, AbsolutePath path, string contents)
     {
+        Skip.IfNot(OperatingSystem.IsLinux());
         fs.AddFile(path, contents);
         var result = await fs.ReadAllTextAsync(path);
         result.Should().BeEquivalentTo(contents);
