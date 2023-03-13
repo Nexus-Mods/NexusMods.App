@@ -16,7 +16,6 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 {
     private readonly LoginManager _loginManager;
     private readonly ILogger<TopBarViewModel> _logger;
-    private readonly IAssetLoader _assets;
 
     public TopBarViewModel(ILogger<TopBarViewModel> logger, LoginManager loginManager)
     {
@@ -38,14 +37,16 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             _loginManager.Avatar
                 .Where(a => a != null)
                 .SelectMany(LoadImage)
-                .Subscribe(x => Avatar = x)
+                .Where(img => img != null)
+                .Subscribe(x => Avatar = x!)
                 .DisposeWith(d);
         });
 
     }
 
-    private async Task<IImage?> LoadImage(Uri uri)
+    private async Task<IImage?> LoadImage(Uri? uri)
     {
+        if (uri == null) return null;
         try
         {
             var client = new HttpClient();
@@ -79,8 +80,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
     [Reactive]
     public bool IsPremium { get; set; }
 
-    [Reactive]
-    public IImage Avatar { get; set; }
+    [Reactive] public IImage Avatar { get; set; } = Initializers.IImage;
 
     [Reactive] public ReactiveCommand<Unit, Unit> LoginCommand { get; set; }
 

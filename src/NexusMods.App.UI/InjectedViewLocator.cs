@@ -20,6 +20,9 @@ public class InjectedViewLocator : IViewLocator
 
     public IViewFor? ResolveView<T>(T? viewModel, string? contract = null)
     {
+        if (viewModel == null)
+            return null;
+
         _logger.LogDebug("Finding View for {ViewModel}", viewModel.GetType().FullName);
         try
         {

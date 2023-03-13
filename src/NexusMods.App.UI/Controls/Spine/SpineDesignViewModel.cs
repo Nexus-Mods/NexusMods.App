@@ -22,5 +22,7 @@ public class SpineDesignViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         new Subject<SpineButtonAction>();
 
     public Subject<SpineButtonAction> Activations { get; } = new();
-    public ILeftMenuViewModel LeftMenu { get; set; }
+
+    public ILeftMenuViewModel LeftMenu { get; set; } =
+        Initializers.ILeftMenuViewModel;
 }

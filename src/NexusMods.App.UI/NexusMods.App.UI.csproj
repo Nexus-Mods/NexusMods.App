@@ -4,7 +4,11 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
-  <ItemGroup>
+  <!-- nullable warnings as errors -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('NullableErrors.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+
+    <ItemGroup>
     <AvaloniaResource Include="Fonts\Montserrat\Montserrat-VariableFont_wght.ttf" />
     <AvaloniaResource Include="Fonts\Roboto\Roboto-Regular.ttf" />
     <AvaloniaResource Include="Nexus.xaml" />

@@ -13,7 +13,8 @@ public class HomeLeftMenuViewModel : AViewModel<IHomeLeftMenuViewModel>, IHomeLe
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items { get; }
 
     [Reactive]
-    public IRightContent RightContent { get; set; }
+    public IRightContent RightContent { get; set; } =
+        Initializers.IRightContent;
 
     public HomeLeftMenuViewModel(IFoundGamesViewModel foundGamesViewModel)
     {

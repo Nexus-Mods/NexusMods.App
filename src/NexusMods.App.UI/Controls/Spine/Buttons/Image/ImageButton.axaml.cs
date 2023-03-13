@@ -16,7 +16,7 @@ public partial class ImageButton : ReactiveUserControl<IImageButtonViewModel>
 
         this.WhenActivated(d =>
         {
-            this.WhenAnyValue(vm => vm.ViewModel.IsActive)
+            this.WhenAnyValue(vm => vm.ViewModel!.IsActive)
                 .StartWith(false)
                 .Subscribe(SetClasses)
                 .DisposeWith(d);

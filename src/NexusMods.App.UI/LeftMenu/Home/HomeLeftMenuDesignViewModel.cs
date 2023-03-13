@@ -9,7 +9,7 @@ namespace NexusMods.App.UI.LeftMenu.Home;
 public class HomeLeftMenuDesignViewModel : AViewModel<IHomeLeftMenuViewModel>, IHomeLeftMenuViewModel
 {
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items { get; }
-    public IRightContent RightContent { get; }
+    public IRightContent RightContent { get; } = Initializers.IRightContent;
 
     public HomeLeftMenuDesignViewModel()
     {
