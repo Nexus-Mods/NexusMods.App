@@ -1,4 +1,4 @@
-﻿namespace NexusMods.App.UI;
+namespace NexusMods.App.UI;
 
 public interface IViewContract
 {

@@ -1,4 +1,4 @@
-﻿using System.Buffers.Binary;
+using System.Buffers.Binary;
 
 namespace NexusMods.DataModel.Abstractions.Ids;
 
@@ -35,6 +35,7 @@ public class Id64 : AId
     /// <inheritdoc />
     public override bool Equals(IId? other)
     {
+        // TODO: stackalloc and allocateuninitializedarray where needed.
         if (other is not { SpanSize: 8 }) return false;
         Span<byte> buff = stackalloc byte[8];
         other.ToSpan(buff);

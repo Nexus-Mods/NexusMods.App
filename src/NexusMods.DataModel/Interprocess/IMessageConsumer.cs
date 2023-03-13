@@ -7,7 +7,7 @@ namespace NexusMods.DataModel.Interprocess;
 public interface IMessageConsumer<T> where T : IMessage
 {
     /// <summary>
-    /// A subject that will receive messages from the queue.
+    /// Allows you to receive messages from the queue.
     /// </summary>
     public IObservable<T> Messages { get; }
 }

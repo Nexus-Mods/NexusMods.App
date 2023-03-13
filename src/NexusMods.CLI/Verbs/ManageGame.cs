@@ -31,7 +31,7 @@ public class ManageGame : AVerb<IGame, Version, string>
 
         await _renderer.WithProgress(token, async () =>
         {
-            await _manager.ManageGame(installation, name, token);
+            await _manager.ManageGameAsync(installation, name, token);
             return 0;
         });
         return 0;

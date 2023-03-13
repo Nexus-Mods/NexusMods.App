@@ -1,32 +1,23 @@
-using System.Text.Json;
 using System.Text.Json.Serialization;
+using NexusMods.DataModel.JsonConverters;
 using Vogen;
 
 namespace NexusMods.DataModel.Loadouts;
 
+/// <summary>
+/// A unique identifier for the mod for use within the data store/database.
+/// These IDs are assigned to mods upon installation (i.e. when a mod is
+/// added to a loadout), or when a tool generates some files after running.
+/// </summary>
 [ValueObject<Guid>(conversions: Conversions.None)]
 [JsonConverter(typeof(ModIdConverter))]
-public partial class ModId
+public partial struct ModId
 {
+    /// <summary>
+    /// Creates a new <see cref="ModId"/> with a unique GUID.
+    /// </summary>
     public static ModId New()
     {
         return From(Guid.NewGuid());
     }
-
-    public class ModIdConverter : JsonConverter<ModId>
-    {
-        public override ModId? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            var data = reader.GetBytesFromBase64();
-            return From(new Guid(data));
-        }
-
-        public override void Write(Utf8JsonWriter writer, ModId value, JsonSerializerOptions options)
-        {
-            Span<byte> span = stackalloc byte[16];
-            value._value.TryWriteBytes(span);
-            writer.WriteBase64StringValue(span);
-        }
-    }
 }
-

@@ -6,11 +6,25 @@ using NexusMods.Paths;
 
 namespace NexusMods.DataModel.ArchiveContents;
 
+/// <summary>
+///
+/// </summary>
 [JsonName("FileContainedIn")]
 public record FileContainedIn : Entity
 {
+    /// <summary>
+    /// Hash of the individual file, corresponding to an <see cref="AnalyzedFile"/>.
+    /// </summary>
     public required Hash File { get; init; }
+
+    /// <summary>
+    /// Hash of the parent element [usually an <see cref="AnalyzedArchive"/>].
+    /// </summary>
     public required Hash Parent { get; init; }
+
+    /// <summary>
+    /// Relative path of the file inside the parent archive.
+    /// </summary>
     public required RelativePath Path { get; init; }
 
     /// <summary>
@@ -26,5 +40,6 @@ public record FileContainedIn : Entity
         return id;
     }
 
+    /// <inheritdoc />
     public override EntityCategory Category => EntityCategory.FileContainedIn;
 }

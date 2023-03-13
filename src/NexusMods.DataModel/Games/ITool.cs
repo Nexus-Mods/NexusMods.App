@@ -8,9 +8,19 @@ namespace NexusMods.DataModel.Games;
 /// </summary>
 public interface ITool
 {
+    /// <summary>
+    /// List of supported game IDs (domains).
+    /// </summary>
     public IEnumerable<GameDomain> Domains { get; }
 
-    public Task Execute(Loadout loadout);
-
+    /// <summary>
+    /// Human friendly name of the tool.
+    /// </summary>
     public string Name { get; }
+
+    /// <summary>
+    /// Executes this tool.
+    /// </summary>
+    /// <param name="loadout">The collection of mods (loadout) to be used with this tool.</param>
+    public Task Execute(Loadout loadout);
 }

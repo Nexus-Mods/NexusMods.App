@@ -1,5 +1,3 @@
-﻿using NexusMods.DataModel.Abstractions;
-
 namespace NexusMods.DataModel.Exceptions;
 
 public class UnpersistedEntity : Exception

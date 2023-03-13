@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
+#pragma warning disable CS1591
 
 namespace NexusMods.DataModel.JsonConverters;
 
@@ -59,18 +60,10 @@ public class AbstractClassConverterGenerator<T> : JsonConverter<T>
             var aliases = type.CustomAttributes.Where(t => t.AttributeType == typeof(JsonAliasAttribute))
                 .Select(t => t.ConstructorArguments.First());
 
-
-
             foreach (var alias in aliases)
                 _registry[(string)alias.Value!] = type;
-
-
         }
-
-
     }
-
-
 
     private IEnumerable<Type> GetSubClasses()
     {

@@ -14,10 +14,14 @@ public interface IGame
     /// Human friendly name for the game
     /// </summary>
     public string Name { get; }
+
     /// <summary>
     /// Machine friendly name for the game, should be devoid of special characters
     /// that may conflict with URLs or file paths.
     /// </summary>
+    /// <remarks>
+    ///    Usually we match these with NexusMods' URLs.
+    /// </remarks>
     public GameDomain Domain { get; }
 
     /// <summary>
@@ -27,9 +31,10 @@ public interface IGame
 
     /// <summary>
     /// Returns any files that should be placed in the "Game Files" that are generated or maintained
-    /// by this IGame instance.
+    /// by this <see cref="IGame"/> instance.
     /// </summary>
-    /// <param name="installation"></param>
+    /// <param name="installation">Individual installation of the game.</param>
+    /// <param name="store">Data store [usually database] where information about game files can be cached/stored.</param>
     /// <returns></returns>
     public IEnumerable<AModFile> GetGameFiles(GameInstallation installation, IDataStore store);
 

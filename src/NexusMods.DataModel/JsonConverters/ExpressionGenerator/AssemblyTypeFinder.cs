@@ -2,14 +2,25 @@ using System.Reflection;
 
 namespace NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 
+/// <summary>
+/// An implementation of <see cref="ITypeFinder"/> that finds all types
+/// in a given assembly.
+/// </summary>
 public class AssemblyTypeFinder : ITypeFinder
 {
     private readonly Assembly _assembly;
+
+    /// <summary>
+    /// Creates an <see cref="AssemblyTypeFinder"/> that finds polymorphically
+    /// assignable types for the JSON converter.
+    /// </summary>
+    /// <param name="assembly">The assembly to find the types in.</param>
     public AssemblyTypeFinder(Assembly assembly)
     {
         _assembly = assembly;
     }
 
+    /// <inheritdoc />
     public IEnumerable<Type> DescendentsOf(Type type)
     {
         var baseTypes = _assembly.GetTypes().Where(t => t.IsAssignableTo(type));

@@ -1,7 +1,9 @@
+using System.Text.Json.Serialization;
+
 namespace NexusMods.DataModel.JsonConverters;
 
 /// <summary>
-/// Marks a class for JsonConverter<> generation by DataModel.CodeGenerator class.
+/// Marks a class for <see cref="JsonConverter{T}"/> generation by <see cref="AExpressionConverterGenerator{T}"/> (and friends).
 /// Types marked with this attribute participate in the polymorphic deserialization
 /// features of the project and their data is marked by the $type: "name" field on each
 /// JSON object
@@ -9,10 +11,12 @@ namespace NexusMods.DataModel.JsonConverters;
 [AttributeUsage(AttributeTargets.Class, Inherited = false)]
 public class JsonNameAttribute : Attribute
 {
-    public JsonNameAttribute(string name)
-    {
-        Name = name;
-    }
-
+    /// <summary>
+    /// Name of the item as serialized in JSON.
+    /// </summary>
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public string Name { get; }
+
+    /// <inheritdoc />
+    public JsonNameAttribute(string name) => Name = name;
 }

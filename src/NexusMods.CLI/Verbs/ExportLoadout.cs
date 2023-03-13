@@ -3,6 +3,8 @@ using NexusMods.Paths;
 
 namespace NexusMods.CLI.Verbs;
 
+// TODO: We don't have an import loadout option.
+
 // ReSharper disable once ClassNeverInstantiated.Global
 public class ExportLoadout : AVerb<LoadoutMarker, AbsolutePath>
 {
@@ -15,7 +17,7 @@ public class ExportLoadout : AVerb<LoadoutMarker, AbsolutePath>
 
     public async Task<int> Run(LoadoutMarker loadout, AbsolutePath output, CancellationToken token)
     {
-        await loadout.ExportTo(output, token);
+        await loadout.ExportToAsync(output, token);
         return 0;
     }
 }

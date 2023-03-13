@@ -88,6 +88,8 @@ public partial struct AbsolutePath
         return File.Open(GetFullPath(), mode, access, share);
     }
 
+    // TODO: This should probably be called OpenRead & OpenCreate. Will change once am done with docs to make merging less hard.
+
     /// <summary>
     /// Opens this file for read-only access.
     /// </summary>

@@ -15,7 +15,6 @@ namespace NexusMods.DataModel.Abstractions;
 /// </remarks>
 public class Root<TRoot> where TRoot : Entity, IEmptyWithDataStore<TRoot>
 {
-    // TODO: Potentially incorrect equals check here.
     private readonly Subject<(TRoot Old, TRoot New)> _changes = new();
 
     private EntityLink<TRoot> _root;
@@ -47,6 +46,7 @@ public class Root<TRoot> where TRoot : Entity, IEmptyWithDataStore<TRoot>
         .Select(ch => Store.Get<TRoot>(ch.To))
         .Where(v => v != null)
         .Select(v => v!);
+
     /// <summary>
     /// Creates a new root with a certain backing data store.
     /// </summary>

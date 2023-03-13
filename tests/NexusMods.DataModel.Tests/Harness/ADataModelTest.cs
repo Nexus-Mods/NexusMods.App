@@ -80,10 +80,10 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     {
         await ArchiveContentsCache.AnalyzeFile(DATA_ZIP_LZMA, Token);
         await ArchiveContentsCache.AnalyzeFile(DATA_7Z_LZMA2, Token);
-        await ArchiveManager.ArchiveFile(DATA_ZIP_LZMA, Token);
-        await ArchiveManager.ArchiveFile(DATA_7Z_LZMA2, Token);
+        await ArchiveManager.ArchiveFileAsync(DATA_ZIP_LZMA, Token);
+        await ArchiveManager.ArchiveFileAsync(DATA_7Z_LZMA2, Token);
 
-        BaseList = await LoadoutManager.ManageGame(Install, "BaseList", CancellationToken.None);
+        BaseList = await LoadoutManager.ManageGameAsync(Install, "BaseList", CancellationToken.None);
     }
 
     public Task DisposeAsync()
