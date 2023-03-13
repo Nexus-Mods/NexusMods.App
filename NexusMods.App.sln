@@ -78,7 +78,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.Generic", "src\Games\NexusMods.Games.Generic\NexusMods.Games.Generic.csproj", "{7CDE7572-9471-4966-B3B3-70DF7D2D9269}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Benchmarks", "benchmarks\NexusMods.Benchmarks\NexusMods.Benchmarks.csproj", "{CB61A764-B3BB-42C0-8CDB-DBE57FB80DF5}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.MountAndBlade2Bannerlord", "src\Games\NexusMods.Games.MountAndBlade2Bannerlord\NexusMods.Games.MountAndBlade2Bannerlord.csproj", "{D8F96987-B284-414D-A1D3-B89C86C3DD67}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.UI.Tests", "tests\NexusMods.UI.Tests\NexusMods.UI.Tests.csproj", "{643BE310-8A6C-405C-AAE5-E0A3A3298624}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Common.Tests", "src\NexusMods.CommonTests\NexusMods.Common.Tests.csproj", "{774EAA0D-268E-4A12-B8CC-7B22058A14A3}"
@@ -94,6 +96,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".solutionItems", ".solution
 		.editorconfig = .editorconfig
 		NullableErrors.Build.props = NullableErrors.Build.props
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.MountAndBlade2Bannerlord.Tests", "tests\Games\NexusMods.Games.MountAndBlade2Bannerlord.Tests\NexusMods.Games.MountAndBlade2Bannerlord.Tests.csproj", "{3F9EDF61-D38C-4478-B0C8-824ED2E6188A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -241,6 +245,10 @@ Global
 		{643BE310-8A6C-405C-AAE5-E0A3A3298624}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{643BE310-8A6C-405C-AAE5-E0A3A3298624}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{643BE310-8A6C-405C-AAE5-E0A3A3298624}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F9EDF61-D38C-4478-B0C8-824ED2E6188A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F9EDF61-D38C-4478-B0C8-824ED2E6188A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F9EDF61-D38C-4478-B0C8-824ED2E6188A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F9EDF61-D38C-4478-B0C8-824ED2E6188A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -273,6 +281,7 @@ Global
 		{7CDE7572-9471-4966-B3B3-70DF7D2D9269} = {B95A2142-2872-4FFD-BAB2-596373401461}
 		{CB61A764-B3BB-42C0-8CDB-DBE57FB80DF5} = {98448149-E44A-42E5-852D-B12C9D8AAABD}
 		{D8F96987-B284-414D-A1D3-B89C86C3DD67} = {B95A2142-2872-4FFD-BAB2-596373401461}
+		{3F9EDF61-D38C-4478-B0C8-824ED2E6188A} = {B95A2142-2872-4FFD-BAB2-596373401461}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F9F8352-34DD-42C0-8564-EE9AF34A3501}

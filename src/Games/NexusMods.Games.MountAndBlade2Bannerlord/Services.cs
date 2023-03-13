@@ -8,7 +8,8 @@ public static class Services
 {
     public static IServiceCollection AddMountAndBladeBannerlord(this IServiceCollection services)
     {
-        services.AddSingleton<IGame, MountAndBlade2Bannerlord>();
+        services.AddSingleton<MountAndBlade2Bannerlord>();
+        services.AddSingleton<IGame, MountAndBlade2Bannerlord>(sp => sp.GetRequiredService<MountAndBlade2Bannerlord>());
         services.AddSingleton<IModInstaller, MountAndBlade2BannerlordModInstaller>();
         services.AddSingleton<LauncherManagerFactory>();
         services.AddSingleton<ITool, RunStandaloneTool>();

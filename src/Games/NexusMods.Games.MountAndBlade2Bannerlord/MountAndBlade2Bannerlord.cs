@@ -1,8 +1,6 @@
-using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Games;
 using NexusMods.FileExtractor.StreamFactories;
-using NexusMods.Games.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 
@@ -26,8 +24,7 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
     public IEnumerable<string> EpicCatalogItemId => new[] { "Chickadee" };
     public IEnumerable<string> XboxIds => new[] { "TaleWorldsEntertainment.MountBladeIIBannerlord" };
 
-    public MountAndBlade2Bannerlord(ILogger<MountAndBlade2Bannerlord> logger, IEnumerable<IGameLocator> gameLocators, LauncherManagerFactory launcherManagerFactory)
-        : base(logger, gameLocators)
+    public MountAndBlade2Bannerlord(IEnumerable<IGameLocator> gameLocators, LauncherManagerFactory launcherManagerFactory) : base(gameLocators)
     {
         _gameLocators = gameLocators;
         _launcherManagerFactory = launcherManagerFactory;
