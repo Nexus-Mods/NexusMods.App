@@ -22,7 +22,7 @@
 
         <Style Selector="TextBlock.GameName">
             <Setter Property="Foreground" Value="{DynamicResource FontDarkPrimary}" />
-            <Setter Property="FontFamily" Value="{DynamicResource FontPrimary}" />
+            <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
             <Setter Property="FontWeight" Value="600" />
             <Setter Property="FontSize" Value="12" />
             <Setter Property="LineHeight" Value="16.5" />
@@ -42,7 +42,6 @@
             Classes="MainBorder"
             ClipToBounds="True"
             Height="228"
-            Margin="5"
             Width="180">
             <Grid RowDefinitions="106, *">
                 <Image

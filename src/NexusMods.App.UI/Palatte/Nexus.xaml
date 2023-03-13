@@ -60,9 +60,10 @@
         <SolidColorBrush Color="{DynamicResource StatusInfo}" x:Key="StatusInfoBrush" />
         <SolidColorBrush Color="{DynamicResource StatusInfoTransparent}" x:Key="StatusInfoTransparentBrush" />
 
-
-        <FontFamily x:Key="FontPrimary">avares://NexusMods.App.UI/Fonts/Montserrat/Montserrat-VariableFont_wght.ttf</FontFamily>
-        <FontFamily x:Key="FontSecondary">avares://NexusMods.App.UI/Fonts/Roboto/Roboto-Regular.ttf#Roboto</FontFamily>
+        <FontFamily x:Key="FontPrimarySemiBold">/Fonts/SemiBold#Montserrat</FontFamily>
+        <FontFamily x:Key="FontPrimaryRegular">/Fonts/Regular#Montserrat</FontFamily>
+        <FontFamily x:Key="FontPrimaryBold">/Fonts/Bold#Montserrat</FontFamily>
+        <FontFamily x:Key="FontSecondary">/Fonts/Regular#Roboto</FontFamily>
 
         <Color x:Key="FontDarkSecondaryColor">#AAAAAA</Color>
         <SolidColorBrush Color="{DynamicResource FontDarkSecondaryColor}" x:Key="FontDarkSecondaryBrush" />

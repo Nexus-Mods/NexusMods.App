@@ -60,7 +60,7 @@
     </Style>
 
     <Style Selector="Button TextBlock">
-        <Setter Property="FontFamily" Value="{DynamicResource FontPrimary}" />
+        <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
         <Setter Property="FontWeight" Value="600" />
         <Setter Property="LineHeight" Value="14" />
