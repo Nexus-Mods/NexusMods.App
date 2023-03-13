@@ -8,6 +8,7 @@ using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts.ApplySteps;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.RateLimiting;
+using NexusMods.DataModel.RateLimiting.Extensions;
 using NexusMods.DataModel.Sorting;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -244,7 +245,7 @@ public class LoadoutMarker : IMarker<Loadout>
     {
         var loadout = _manager.Get(_id);
 
-        await _manager.Limiter.ForEach(plan.Steps.OfType<BackupFile>().GroupBy(b => b.Hash),
+        await _manager.Limiter.ForEachAsync(plan.Steps.OfType<BackupFile>().GroupBy(b => b.Hash),
             i => i.First().Size,
             async (j, itm) =>
             {
@@ -253,7 +254,7 @@ public class LoadoutMarker : IMarker<Loadout>
                     throw new Exception("Archived file did not match expected hash");
             }, token);
 
-        await _manager.Limiter.ForEach(plan.Steps.OfType<DeleteFile>(), file => file.Size,
+        await _manager.Limiter.ForEachAsync(plan.Steps.OfType<DeleteFile>(), file => file.Size,
 #pragma warning disable CS1998
             async (_, f) =>
 #pragma warning restore CS1998
@@ -265,7 +266,7 @@ public class LoadoutMarker : IMarker<Loadout>
             .Where(f => f.From is not null)
             .GroupBy(f => f.From!.From.Hash);
 
-        await _manager.Limiter.ForEach(fromArchive, x => x.Aggregate(Size.Zero, (acc, f) => acc + f.Step.Size),
+        await _manager.Limiter.ForEachAsync(fromArchive, x => x.Aggregate(Size.Zero, (acc, f) => acc + f.Step.Size),
             async (job, group) =>
             {
                 var byPath = group.ToLookup(x => x.From!.From.Parts.First());
@@ -412,7 +413,7 @@ public class LoadoutMarker : IMarker<Loadout>
     /// <exception cref="Exception">Some error occurred.</exception>
     public async Task ApplyIngest(HashSet<IApplyStep> steps, CancellationToken token)
     {
-        await _manager.Limiter.ForEach(steps.OfType<BackupFile>().GroupBy(b => b.Hash),
+        await _manager.Limiter.ForEachAsync(steps.OfType<BackupFile>().GroupBy(b => b.Hash),
             i => i.First().Size,
             async (j, itm) =>
             {
