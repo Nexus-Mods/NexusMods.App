@@ -15,9 +15,20 @@ public interface IFileSystem
     /// <returns></returns>
     IFileSystem CreateOverlayFileSystem(Dictionary<AbsolutePath, AbsolutePath> pathMappings);
 
+    /// <summary>
+    /// Creates a new <see cref="AbsolutePath"/> from a full path.
+    /// </summary>
+    /// <param name="fullPath">Full path</param>
+    /// <returns></returns>
     AbsolutePath FromFullPath(string fullPath);
 
-    AbsolutePath FromDirectoryAndFileName(string? directoryPath, string fullPath);
+    /// <summary>
+    /// Creates a new <see cref="AbsolutePath"/> from a directory path and a file name.
+    /// </summary>
+    /// <param name="directoryPath">Directory path</param>
+    /// <param name="fileName">File name</param>
+    /// <returns></returns>
+    AbsolutePath FromDirectoryAndFileName(string directoryPath, string fileName);
 
     /// <summary>
     /// Returns the <see cref="IFileEntry"/> of the file at the given path.
