@@ -27,9 +27,10 @@
     </Style>
 
     <Style Selector="Button.Rounded icons|Icon">
-        <Setter Property="Width" Value="20" />
-        <Setter Property="Height" Value="20" />
-        <Setter Property="Margin" Value="10, 0, 0, 0" />
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="Width" Value="22" />
+        <Setter Property="Height" Value="22" />
+        <Setter Property="Margin" Value="8, 0, 0, 0" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="HorizontalAlignment" Value="Left" />
     </Style>

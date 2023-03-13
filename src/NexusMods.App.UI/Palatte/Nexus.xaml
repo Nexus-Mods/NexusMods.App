@@ -52,7 +52,7 @@
         <Color x:Key="BackgroundTertiaryColor">#222222</Color>
         <SolidColorBrush Color="{DynamicResource BackgroundTertiaryColor}" x:Key="BackgroundTertiaryBrush" />
 
-        <Color x:Key="StructuralBorderColor">#303236</Color>
+        <Color x:Key="StructuralBorderColor">#2DFFFFFF</Color>
         <SolidColorBrush Color="{DynamicResource StructuralBorderColor}" x:Key="StructuralBorderBrush" />
 
         <Color x:Key="StatusInfo">#388FFA</Color>

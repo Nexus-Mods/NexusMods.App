@@ -35,21 +35,20 @@
     <Border
         BoxShadow="0 0 5 0 #80000000, 0 3 4 0 #1E000000, 0 2 4 0 #23000000"
         CornerRadius="25"
-        Height="220"
-        Margin="10"
+        Height="228"
         Width="180"
         x:Name="DropShadow1Border">
         <Border
             Classes="MainBorder"
             ClipToBounds="True"
-            Height="220"
+            Height="228"
             Margin="5"
             Width="180">
             <Grid RowDefinitions="106, *">
                 <Image
                     Grid.Row="0"
                     Grid.RowSpan="2"
-                    Height="220"
+                    Height="228"
                     Stretch="UniformToFill"
                     Width="180"
                     x:Name="BlurryImage" />
@@ -59,29 +58,37 @@
                     Width="180"
                     x:Name="GameImage" />
                 <Border Classes="Background" Grid.Row="1">
-                    <StackPanel Margin="16,8" Orientation="Vertical">
+                    <Grid
+                        Margin="16,0,16,0"
+                        RowDefinitions="Auto, 1,  *"
+                        VerticalAlignment="Top"
+                        Width="148">
                         <TextBlock
-                            Classes="GameName"
+                            Classes="CaptionMontserratSemi"
+                            Grid.Row="0"
                             Height="34"
+                            Margin="0,8"
                             TextWrapping="Wrap"
+                            VerticalAlignment="Center"
                             x:Name="NameTextBlock" />
                         <Border
-                            BorderBrush="#14FFFFFF"
-                            BorderThickness="0,1,0,0"
-                            Margin="0,8,0,0"
-                            Width="148" />
-                        <StackPanel Orientation="Horizontal">
-                            <Button
-                                Classes="Rounded"
-                                Margin="0,8,0,8"
-                                x:Name="PrimaryButton">
+                            BorderBrush="{DynamicResource StructuralBorderBrush}"
+                            BorderThickness="0,0,0,1"
+                            Grid.Row="1"
+                            Margin="0" />
+                        <StackPanel
+                            Grid.Row="2"
+                            Margin="0,16,0,0"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center">
+                            <Button Classes="Rounded" x:Name="PrimaryButton">
                                 <StackPanel Orientation="Horizontal">
                                     <avalonia:Icon Foreground="#FFFFFF" Value="mdi-plus-circle" />
                                     <TextBlock Classes="Body2RobotoRegular" Margin="6,9.5,12,9.5">Add game</TextBlock>
                                 </StackPanel>
                             </Button>
                         </StackPanel>
-                    </StackPanel>
+                    </Grid>
                 </Border>
             </Grid>
         </Border>
