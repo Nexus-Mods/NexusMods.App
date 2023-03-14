@@ -235,7 +235,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         Directory.CopyTo(buffer);
 
         // directory without file name
-        if (string.IsNullOrEmpty(FileName)) return;
+        if (FileName.Length == 0) return;
 
         if (IsRootDirectory(Directory))
         {
