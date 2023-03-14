@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using NexusMods.Paths.Extensions;
+using NexusMods.Paths.HighPerformance.CommunityToolkit;
 using NexusMods.Paths.Utilities;
 
 [assembly: InternalsVisibleTo("NexusMods.Paths.Tests")]
@@ -85,34 +86,35 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// </remarks>
     public static AbsolutePath FromFullPath(string fullPath, IFileSystem? fileSystem = null)
     {
+        fileSystem ??= Paths.FileSystem.Shared;
         var span = fullPath.AsSpan();
 
         // path is not rooted
         var rootLength = GetRootLength(span);
         if (rootLength == 0)
-            return new AbsolutePath(null, fullPath, fileSystem ?? Paths.FileSystem.Shared);
+            return new AbsolutePath(null, fullPath, fileSystem);
 
         // path is only the root directory
         if (span.Length == rootLength)
-            return new AbsolutePath(fullPath, "", fileSystem ?? Paths.FileSystem.Shared);
+            return new AbsolutePath(fullPath, "", fileSystem);
 
-        var slice = span[rootLength..];
-        if (slice[^1] == PathSeparatorForInternalOperations)
-            slice = slice[..^1];
+        var slice = span.SliceFast(rootLength);
+        if (slice.DangerousGetReferenceAt(slice.Length - 1) == PathSeparatorForInternalOperations)
+            slice = slice.SliceFast(0, slice.Length - 1);
 
         var separatorIndex = slice.LastIndexOf(PathSeparatorForInternalOperations);
         if (separatorIndex == -1)
         {
             // root directory (eg: "/" or "C:\\") is the directory
-            return new AbsolutePath(span[..rootLength].ToString(), slice.ToString(), fileSystem ?? Paths.FileSystem.Shared);
+            return new AbsolutePath(span.SliceFast(0, rootLength).ToString(), slice.ToString(), fileSystem);
         }
 
         // everything before the separator
-        var directorySpan = span[..(rootLength + separatorIndex)];
+        var directorySpan = span.SliceFast(0, rootLength + separatorIndex);
         // everything after the separator (+1 since we don't want "/foo" but "foo")
-        var fileNameSpan = slice[(separatorIndex + 1)..];
+        var fileNameSpan = slice.SliceFast(separatorIndex + 1);
 
-        return new AbsolutePath(directorySpan.ToString(), fileNameSpan.ToString(), fileSystem ?? Paths.FileSystem.Shared);
+        return new AbsolutePath(directorySpan.ToString(), fileNameSpan.ToString(), fileSystem);
     }
 
     /// <summary>
