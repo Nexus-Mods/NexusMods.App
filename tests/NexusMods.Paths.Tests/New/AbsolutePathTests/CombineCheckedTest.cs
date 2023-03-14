@@ -28,17 +28,40 @@ public class CombineCheckedTest
     }
 
     [SkippableTheory]
-    [InlineData("/foo", "/", "foo", true)]
-    [InlineData("/foo/bar", "/foo", "bar", true)]
-    [InlineData("C:\\foo", "C:\\", "foo", false)]
-    [InlineData("C:\\foo\\bar", "C:\\foo", "bar", false)]
-    public void Test_CombinedChecked(string expected, string left, string right, bool linux)
+    [InlineData("/", "foo", "/foo", "/", "foo", true)]
+    [InlineData("/foo", "bar", "/foo/bar", "/foo", "bar", true)]
+    [InlineData("C:\\", "foo", "C:\\foo", "C:\\", "foo", false)]
+    [InlineData("C:\\foo", "bar", "C:\\foo\\bar", "C:\\foo", "bar", false)]
+    public void Test_CombinedChecked(string left, string right,
+        string expectedFullPath, string expectedDirectory,
+        string expectedFileName, bool linux)
     {
         Skip.IfNot(OperatingSystem.IsLinux() && linux);
         var absolutePath = AbsolutePath.FromFullPath(left);
         var relativePath = new RelativePath(right);
 
         var result = absolutePath.CombineChecked(relativePath);
-        result.GetFullPath().Should().Be(expected);
+        result.GetFullPath().Should().Be(expectedFullPath);
+        result.Directory.Should().Be(expectedDirectory);
+        result.FileName.Should().Be(expectedFileName);
+    }
+
+    [SkippableTheory]
+    [InlineData("/", "foo", "/foo", "/", "foo", true)]
+    [InlineData("/foo", "bar", "/foo/bar", "/foo", "bar", true)]
+    [InlineData("C:\\", "foo", "C:\\foo", "C:\\", "foo", false)]
+    [InlineData("C:\\foo", "bar", "C:\\foo\\bar", "C:\\foo", "bar", false)]
+    public void Test_CombineUnchecked(string left, string right,
+        string expectedFullPath, string expectedDirectory,
+        string expectedFileName, bool linux)
+    {
+        Skip.IfNot(OperatingSystem.IsLinux() && linux);
+        var absolutePath = AbsolutePath.FromFullPath(left);
+        var relativePath = new RelativePath(right);
+
+        var result = absolutePath.CombineUnchecked(relativePath);
+        result.GetFullPath().Should().Be(expectedFullPath);
+        result.Directory.Should().Be(expectedDirectory);
+        result.FileName.Should().Be(expectedFileName);
     }
 }

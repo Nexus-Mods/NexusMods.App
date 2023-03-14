@@ -104,6 +104,9 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         // everything after the separator (+1 since we don't want "/foo" but "foo")
         var fileNameSpan = slice[(separatorIndex + 1)..];
 
+        if (fileNameSpan[^1] == PathSeparatorForInternalOperations)
+            fileNameSpan = fileNameSpan[..^1];
+
         return new AbsolutePath(directorySpan.ToString(), fileNameSpan.ToString(), fileSystem ?? Paths.FileSystem.Shared);
     }
 

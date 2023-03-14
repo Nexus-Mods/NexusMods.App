@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using FluentAssertions;
 
 namespace NexusMods.Paths.Tests.New.AbsolutePathTests;
@@ -6,24 +5,23 @@ namespace NexusMods.Paths.Tests.New.AbsolutePathTests;
 public class FromFullPathTests
 {
     [SkippableTheory]
-    [InlineData("C:\\")]
-    [InlineData("C:\\foo")]
-    [InlineData("C:\\foo\\bar")]
-    [InlineData("C:\\foo\\bar\\baz")]
-    public void Test_FromFullPath_Windows(string fullPath)
+    [InlineData("/", "/", "/", "", true)]
+    [InlineData("/foo", "/foo", "/", "foo", true)]
+    [InlineData("/foo/bar", "/foo/bar", "/foo", "bar", true)]
+    [InlineData("/foo/bar/", "/foo/bar", "/foo", "bar", true)]
+    [InlineData("foo", "foo", null, "foo", true)]
+    [InlineData("C:\\", "C:\\", "C:\\", "", false)]
+    [InlineData("C:\\foo", "C:\\foo", "C:\\", "foo", false)]
+    [InlineData("C:\\foo\\bar", "C:\\foo\\bar", "C:\\foo", "bar", false)]
+    [InlineData("C:\\foo\\bar\\", "C:\\foo\\bar", "C:\\foo", "bar", false)]
+    [InlineData("foo", "foo", null, "foo", false)]
+    public void Test_FromFullPath(string input, string expectedFullPath,
+        string? expectedDirectory, string expectedFileName, bool linux)
     {
-        Skip.IfNot(RuntimeInformation.IsOSPlatform(OSPlatform.Windows));
-        AbsolutePath.FromFullPath(fullPath).GetFullPath().Should().Be(fullPath);
-    }
-
-    [SkippableTheory]
-    [InlineData("/")]
-    [InlineData("/foo")]
-    [InlineData("/foo/bar")]
-    [InlineData("/foo/bar/baz")]
-    public void Test_FromFullPath_Linux(string fullPath)
-    {
-        Skip.IfNot(RuntimeInformation.IsOSPlatform(OSPlatform.Linux));
-        AbsolutePath.FromFullPath(fullPath).GetFullPath().Should().Be(fullPath);
+        Skip.IfNot(OperatingSystem.IsLinux() && linux);
+        var path = AbsolutePath.FromFullPath(input);
+        path.GetFullPath().Should().Be(expectedFullPath);
+        path.Directory.Should().Be(expectedDirectory);
+        path.FileName.Should().Be(expectedFileName);
     }
 }
