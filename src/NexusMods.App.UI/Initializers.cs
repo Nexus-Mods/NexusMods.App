@@ -19,7 +19,7 @@ public static class Initializers
     public static readonly ICommand ICommand  = ReactiveCommand.Create(() => { });
     public static readonly IImage IImage = new WriteableBitmap(new PixelSize(16, 16), new Vector(96, 96), PixelFormat.Rgba8888, AlphaFormat.Opaque);
     public static readonly ILeftMenuViewModel ILeftMenuViewModel = new HomeLeftMenuDesignViewModel();
-    public static readonly IRightContentViewModel IRightContent = new FoundGamesDesignViewModel();
+    public static readonly IRightContentViewModel IRightContent = new PlaceholderDesignViewModel();
 
     public static ReadOnlyObservableCollection<T> ReadOnlyObservableCollection<T>()
     {

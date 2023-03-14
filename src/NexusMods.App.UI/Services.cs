@@ -7,6 +7,7 @@ using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
 using NexusMods.App.UI.Controls.TopBar;
 using NexusMods.App.UI.LeftMenu;
+using NexusMods.App.UI.LeftMenu.Game;
 using NexusMods.App.UI.LeftMenu.Home;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.RightContent;
@@ -36,6 +37,9 @@ public static class Services
             .AddViewModel<HomeLeftMenuViewModel, IHomeLeftMenuViewModel>()
             .AddViewModel<HomeViewDesignerViewModel, IHomeViewModel>()
             .AddViewModel<MyGamesViewModel, IMyGamesViewModel>()
+            .AddViewModel<LaunchButtonViewModel, ILaunchButtonViewModel>()
+            .AddViewModel<GameLeftMenuViewModel, IGameLeftMenuViewModel>()
+            .AddViewModel<PlaceholderDesignViewModel, IPlaceholderViewModel>()
 
             // Views
             .AddView<GameWidget, IGameWidgetViewModel>()
@@ -49,6 +53,9 @@ public static class Services
             .AddView<HomeLeftMenuView, IHomeLeftMenuViewModel>()
             .AddView<HomeView, IHomeViewModel>()
             .AddView<MyGamesView, IMyGamesViewModel>()
+            .AddView<LaunchButtonView, ILaunchButtonViewModel>()
+            .AddView<GameLeftMenuView, IGameLeftMenuViewModel>()
+            .AddView<PlaceholderView, IPlaceholderViewModel>()
 
             // Other
             .AddSingleton<InjectedViewLocator>()

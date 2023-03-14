@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
 using NexusMods.App.UI.LeftMenu;
+using NexusMods.App.UI.LeftMenu.Game;
 using NexusMods.App.UI.LeftMenu.Home;
 using NexusMods.App.UI.ViewModels;
 using NexusMods.DataModel.Abstractions;
@@ -42,12 +43,14 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     private readonly IServiceProvider _provider;
     private readonly Root<LoadoutRegistry> _root;
     private readonly IHomeLeftMenuViewModel _homeLeftMenuViewModel;
+    private readonly IGameLeftMenuViewModel _gameLeftMenuViewModel;
     public IObservable<SpineButtonAction> Actions => _actions;
 
     public SpineViewModel(ILogger<SpineViewModel> logger, IDataStore dataStore,
         IIconButtonViewModel addButtonViewModel,
         IIconButtonViewModel homeButtonViewModel,
         IHomeLeftMenuViewModel homeLeftMenuViewModel,
+        IGameLeftMenuViewModel gameLeftMenuViewModel,
         IServiceProvider provider)
     {
         _logger = logger;
@@ -55,6 +58,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         _provider = provider;
 
         _homeLeftMenuViewModel = homeLeftMenuViewModel;
+        _gameLeftMenuViewModel = gameLeftMenuViewModel;
 
         Home = homeButtonViewModel;
         Add = addButtonViewModel;
@@ -81,6 +85,8 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                     {
                         _logger.LogTrace("Game {Game} selected", game);
                         _actions.OnNext(new SpineButtonAction(Type.Game, game));
+                        _gameLeftMenuViewModel.Game = game;
+                        LeftMenu = _gameLeftMenuViewModel;
                     });
                     return vm;
                 })
