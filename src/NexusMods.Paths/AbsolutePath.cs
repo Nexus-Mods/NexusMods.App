@@ -182,11 +182,9 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         if (FileName.Length == 0)
             return Directory;
 
-        // on Linux: Directory="/", FileName="foo" should return "/foo" and not "//foo"
-        if (!OperatingSystem.IsWindows() && Directory == DirectorySeparatorCharStr)
-            return string.Concat(Directory, FileName);
-
-        return string.Concat(Directory, DirectorySeparatorCharStr, FileName);
+        return IsRootDirectory(Directory)
+            ? string.Concat(Directory, FileName)
+            : string.Concat(Directory, DirectorySeparatorCharStr, FileName);
     }
 
     /// <summary>
@@ -201,6 +199,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         if (buffer.Length < requiredLength)
             throw new ArgumentException($"Buffer is too small: {buffer.Length} < {requiredLength}");
 
+        // file name without directory
         if (string.IsNullOrEmpty(Directory))
         {
             FileName.CopyTo(buffer);
@@ -209,17 +208,17 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
 
         Directory.CopyTo(buffer);
 
+        // directory without file name
         if (string.IsNullOrEmpty(FileName)) return;
 
-        // on Linux: Directory="/", FileName="foo" should return "/foo" and not "//foo"
-        if (OperatingSystem.IsWindows() || Directory != DirectorySeparatorCharStr)
+        if (IsRootDirectory(Directory))
         {
-            buffer[Directory.Length] = Path.DirectorySeparatorChar;
-            FileName.CopyTo(buffer.SliceFast(Directory.Length + 1));
+            FileName.CopyTo(buffer.SliceFast(Directory.Length));
         }
         else
         {
-            FileName.CopyTo(buffer.SliceFast(Directory.Length));
+            buffer[Directory.Length] = PathSeparatorForInternalOperations;
+            FileName.CopyTo(buffer.SliceFast(Directory.Length + 1));
         }
     }
 
@@ -235,11 +234,13 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         if (FileName.Length == 0)
             return Directory.Length;
 
-        // on Linux: Directory="/", FileName="foo" should return 1 + 3 and not 1 + 3 + 1
-        if (!OperatingSystem.IsWindows() && Directory == DirectorySeparatorCharStr)
-            return 1 + FileName.Length;
+        var rootLength = GetRootLength(Directory);
+        if (rootLength == Directory.Length)
+        {
+            return rootLength + FileName.Length;
+        }
 
-        return Directory.Length + FileName.Length + 1;
+        return Directory.Length + DirectorySeparatorCharStr.Length + FileName.Length;
     }
 
     /// <summary>
