@@ -6,28 +6,25 @@ namespace NexusMods.Paths.Tests.FileSystem;
 
 public class InMemoryFileSystemTests
 {
-    [SkippableTheory, AutoFileSystem]
+    [Theory, AutoFileSystem]
     public void Test_GetFileEntry(InMemoryFileSystem fs, AbsolutePath path)
     {
-        Skip.IfNot(OperatingSystem.IsLinux());
         fs.AddEmptyFile(path);
         var entry = fs.GetFileEntry(path);
         entry.Path.Should().Be(path);
     }
 
-    [SkippableTheory, AutoFileSystem]
+    [Theory, AutoFileSystem]
     public void Test_GetFileEntry_MissingFile(InMemoryFileSystem fs,
         AbsolutePath path)
     {
-        Skip.IfNot(OperatingSystem.IsLinux());
         var entry = fs.GetFileEntry(path);
         entry.Path.Should().Be(path);
     }
 
-    [SkippableTheory, AutoFileSystem]
+    [Theory, AutoFileSystem]
     public async Task Test_OpenFile(InMemoryFileSystem fs, AbsolutePath path, string contents)
     {
-        Skip.IfNot(OperatingSystem.IsLinux());
         var bytes = Encoding.UTF8.GetBytes(contents);
 
         fs.AddFile(path, bytes);
@@ -45,29 +42,26 @@ public class InMemoryFileSystemTests
         actualBytes.Should().BeEquivalentTo(bytes);
     }
 
-    [SkippableTheory, AutoFileSystem]
+    [Theory, AutoFileSystem]
     public void Test_OpenFile_FileNotFound(InMemoryFileSystem fs, AbsolutePath path)
     {
-        Skip.IfNot(OperatingSystem.IsLinux());
         fs.Invoking(x => x.ReadFile(path))
             .Should()
             .Throw<FileNotFoundException>();
     }
 
-    [SkippableTheory, AutoFileSystem]
+    [Theory, AutoFileSystem]
     public void Test_CreateDirectory(InMemoryFileSystem fs, AbsolutePath path)
     {
-        Skip.IfNot(OperatingSystem.IsLinux());
         fs.CreateDirectory(path);
         fs.DirectoryExists(path).Should().BeTrue();
     }
 
-    [SkippableTheory, AutoFileSystem]
+    [Theory, AutoFileSystem]
     public void Test_CreateDirectory_SubDirectory(InMemoryFileSystem fs,
         AbsolutePath parentDirectory,
         string subDirectoryName)
     {
-        Skip.IfNot(OperatingSystem.IsLinux());
         var subDirectory = parentDirectory.CombineUnchecked(subDirectoryName);
 
         fs.CreateDirectory(subDirectory);
@@ -76,26 +70,23 @@ public class InMemoryFileSystemTests
         fs.DirectoryExists(parentDirectory).Should().BeTrue();
     }
 
-    [SkippableTheory, AutoFileSystem]
+    [Theory, AutoFileSystem]
     public void Test_DirectoryExists(InMemoryFileSystem fs, AbsolutePath path)
     {
-        Skip.IfNot(OperatingSystem.IsLinux());
         fs.DirectoryExists(path).Should().BeFalse();
     }
 
-    [SkippableTheory, AutoFileSystem]
+    [Theory, AutoFileSystem]
     public void Test_FileExists(InMemoryFileSystem fs, AbsolutePath path)
     {
-        Skip.IfNot(OperatingSystem.IsLinux());
         fs.FileExists(path).Should().BeFalse();
         fs.AddEmptyFile(path);
         fs.FileExists(path).Should().BeTrue();
     }
 
-    [SkippableTheory, AutoFileSystem]
+    [Theory, AutoFileSystem]
     public void Test_DeleteFile(InMemoryFileSystem fs, AbsolutePath path)
     {
-        Skip.IfNot(OperatingSystem.IsLinux());
         fs.FileExists(path).Should().BeFalse();
         fs.AddEmptyFile(path);
         fs.FileExists(path).Should().BeTrue();
@@ -103,20 +94,18 @@ public class InMemoryFileSystemTests
         fs.FileExists(path).Should().BeFalse();
     }
 
-    [SkippableTheory, AutoFileSystem]
+    [Theory, AutoFileSystem]
     public void Test_DeleteFile_NotExists(InMemoryFileSystem fs, AbsolutePath path)
     {
-        Skip.IfNot(OperatingSystem.IsLinux());
         fs.FileExists(path).Should().BeFalse();
         fs.Invoking(x => x.DeleteFile(path))
             .Should()
             .Throw<FileNotFoundException>();
     }
 
-    [SkippableTheory, AutoFileSystem]
+    [Theory, AutoFileSystem]
     public void Test_DeleteDirectory(InMemoryFileSystem fs, AbsolutePath path)
     {
-        Skip.IfNot(OperatingSystem.IsLinux());
         fs.DirectoryExists(path).Should().BeFalse();
         fs.CreateDirectory(path);
         fs.DirectoryExists(path).Should().BeTrue();
@@ -124,16 +113,15 @@ public class InMemoryFileSystemTests
         fs.DirectoryExists(path).Should().BeFalse();
     }
 
-    [SkippableTheory, AutoFileSystem]
+    [Theory, AutoFileSystem]
     public void Test_DeleteDirectory_NotExist(InMemoryFileSystem fs, AbsolutePath path)
     {
-        Skip.IfNot(OperatingSystem.IsLinux());
         fs.Invoking(x => x.DeleteDirectory(path, false))
             .Should()
             .Throw<DirectoryNotFoundException>();
     }
 
-    [SkippableTheory, AutoFileSystem]
+    [Theory, AutoFileSystem]
     public void Test_DeleteDirectory_Recursive(
         InMemoryFileSystem fs,
         AbsolutePath directory,
@@ -141,7 +129,6 @@ public class InMemoryFileSystemTests
         string fileName1,
         string fileName2)
     {
-        Skip.IfNot(OperatingSystem.IsLinux());
         fs.CreateDirectory(directory);
 
         var subDirectory = directory.CombineUnchecked(subDirectoryName);
@@ -166,13 +153,12 @@ public class InMemoryFileSystemTests
         fs.FileExists(file2).Should().BeFalse();
     }
 
-    [SkippableTheory, AutoFileSystem]
+    [Theory, AutoFileSystem]
     public void Test_DeleteDirectory_NotEmpty(
         InMemoryFileSystem fs,
         AbsolutePath directory,
         string fileName)
     {
-        Skip.IfNot(OperatingSystem.IsLinux());
         fs.CreateDirectory(directory);
 
         var file = directory.CombineUnchecked(fileName);
@@ -186,10 +172,9 @@ public class InMemoryFileSystemTests
             .Throw<IOException>();
     }
 
-    [SkippableTheory, AutoFileSystem]
+    [Theory, AutoFileSystem]
     public void Test_MoveFile_NoOverwrite(InMemoryFileSystem fs, AbsolutePath source, AbsolutePath dest, byte[] contents)
     {
-        Skip.IfNot(OperatingSystem.IsLinux());
         fs.FileExists(source).Should().BeFalse();
         fs.FileExists(dest).Should().BeFalse();
 
@@ -203,11 +188,10 @@ public class InMemoryFileSystemTests
         fs.GetFileEntry(dest).Size.Should().Be(Size.From(contents.Length));
     }
 
-    [SkippableTheory, AutoFileSystem]
+    [Theory, AutoFileSystem]
     public void Test_MoveFile_NoOverwriteExists(InMemoryFileSystem fs,
         AbsolutePath source, AbsolutePath dest, byte[] contents)
     {
-        Skip.IfNot(OperatingSystem.IsLinux());
         fs.FileExists(source).Should().BeFalse();
         fs.FileExists(dest).Should().BeFalse();
 
@@ -222,11 +206,10 @@ public class InMemoryFileSystemTests
             .Throw<IOException>();
     }
 
-    [SkippableTheory, AutoFileSystem]
+    [Theory, AutoFileSystem]
     public void Test_MoveFile_Overwrite(InMemoryFileSystem fs,
         AbsolutePath source, AbsolutePath dest, byte[] contents)
     {
-        Skip.IfNot(OperatingSystem.IsLinux());
         fs.FileExists(source).Should().BeFalse();
         fs.FileExists(dest).Should().BeFalse();
 

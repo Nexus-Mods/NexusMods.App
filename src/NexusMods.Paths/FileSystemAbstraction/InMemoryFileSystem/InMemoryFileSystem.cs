@@ -23,7 +23,7 @@ public partial class InMemoryFileSystem : BaseFileSystem
     private InMemoryFileSystem(Dictionary<AbsolutePath, AbsolutePath> pathMappings) : base(pathMappings)
     {
         _rootDirectory = new InMemoryDirectoryEntry(
-            AbsolutePath.FromFullPath(OperatingSystem.IsWindows() ? "C:" : "/"),
+            AbsolutePath.FromFullPath(OperatingSystem.IsWindows() ? "C:\\" : "/"),
             null!);
 
         _directories[_rootDirectory.Path] = _rootDirectory;
