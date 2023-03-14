@@ -4,6 +4,7 @@ using System.Runtime.Intrinsics.X86;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.Controls.GameWidget;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.ViewModels;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
@@ -19,24 +20,20 @@ public class FoundGamesViewModel : AViewModel<IFoundGamesViewModel>, IFoundGames
     private readonly LoadoutManager _loadoutManager;
 
     private Subject<(GameInstallation Installation, string LoadOutName)> _createdLoadouts = new();
+    private readonly IServiceProvider _provider;
+
     public IObservable<(GameInstallation Installation, string LoadOutNmae)>
         CreatedLoadouts => _createdLoadouts;
 
-    public FoundGamesViewModel(ILogger<FoundGamesViewModel> logger,
-        IEnumerable<IGame> games, IServiceProvider provider, LoadoutManager loadoutManager)
+    public FoundGamesViewModel(ILogger<FoundGamesViewModel> logger, IServiceProvider provider, LoadoutManager loadoutManager)
     {
         _logger = logger;
         _loadoutManager = loadoutManager;
-        var installed = games
-            .SelectMany(g => g.Installations)
-            .Select(install =>
-            {
-                var vm = provider.GetRequiredService<IGameWidgetViewModel>();
-                vm.Installation = install;
-                vm.PrimaryButton = ReactiveCommand.Create(() => ManageGame(install));
-                return vm;
-            });
-        Games = new ReadOnlyObservableCollection<IGameWidgetViewModel>(new ObservableCollection<IGameWidgetViewModel>(installed));
+        _provider = provider;
+
+        Games = Array.Empty<IGameWidgetViewModel>()
+            .ToReadOnlyObservableCollection();
+
     }
 
     private async Task ManageGame(GameInstallation installation)
@@ -46,5 +43,31 @@ public class FoundGamesViewModel : AViewModel<IFoundGamesViewModel>, IFoundGames
         _createdLoadouts.OnNext((installation, name));
     }
 
-    public ReadOnlyObservableCollection<IGameWidgetViewModel> Games { get; }
+    [Reactive]
+    public ReadOnlyObservableCollection<IGameWidgetViewModel> Games
+    {
+        get;
+        set;
+    }
+
+    public void InitializeFromFound(IEnumerable<IGame> games)
+    {
+        var installed = games
+            .SelectMany(g => g.Installations)
+            .Select(install =>
+            {
+                var vm = _provider.GetRequiredService<IGameWidgetViewModel>();
+                vm.Installation = install;
+                vm.PrimaryButton = ReactiveCommand.Create(() => ManageGame(install));
+                return vm;
+            });
+        Games = new ReadOnlyObservableCollection<IGameWidgetViewModel>(new ObservableCollection<IGameWidgetViewModel>(installed));
+
+    }
+
+    public void InitializeManual(IEnumerable<IGame> games)
+    {
+        // TODO: Implement manual game add
+        InitializeFromFound(games);
+    }
 }

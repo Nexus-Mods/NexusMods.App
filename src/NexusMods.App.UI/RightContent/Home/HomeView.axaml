@@ -26,15 +26,11 @@
                 Grid.Row="0"
                 Margin="24,27,0,0"
                 Text="We found games ready to mod!" />
-            <ScrollViewer
-                ClipToBounds="True"
-                CornerRadius="8"
+            <reactiveUi:ViewModelViewHost
                 Grid.Column="0"
                 Grid.ColumnSpan="2"
                 Grid.Row="1"
-                Margin="24,12,20,0">
-                <reactiveUi:ViewModelViewHost x:Name="FoundGamesHost" />
-            </ScrollViewer>
+                x:Name="FoundGamesHost" />
             <TextBlock
                 Classes="CaptionMontserratSemi"
                 Grid.Column="0"

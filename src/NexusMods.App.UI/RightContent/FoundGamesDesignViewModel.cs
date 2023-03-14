@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using NexusMods.App.UI.Controls.GameWidget;
 using NexusMods.App.UI.ViewModels;
+using NexusMods.DataModel.Games;
 
 namespace NexusMods.App.UI.RightContent;
 
@@ -16,4 +17,13 @@ public class FoundGamesDesignViewModel : AViewModel<IFoundGamesViewModel>, IFoun
     }
 
     public ReadOnlyObservableCollection<IGameWidgetViewModel> Games { get; }
+    public void InitializeFromFound(IEnumerable<IGame> games)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void InitializeManual(IEnumerable<IGame> games)
+    {
+        throw new NotImplementedException();
+    }
 }
