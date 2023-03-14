@@ -30,8 +30,10 @@ public class CombineCheckedTest
     [SkippableTheory]
     [InlineData("/", "foo", "/foo", "/", "foo", true)]
     [InlineData("/foo", "bar", "/foo/bar", "/foo", "bar", true)]
+    [InlineData("/foo/bar", "baz", "/foo/bar/baz", "/foo/bar", "baz", true)]
     [InlineData("C:\\", "foo", "C:\\foo", "C:\\", "foo", false)]
     [InlineData("C:\\foo", "bar", "C:\\foo\\bar", "C:\\foo", "bar", false)]
+    [InlineData("C:\\foo\\bar", "baz", "C:\\foo\\bar\\baz", "C:\\foo\\bar", "baz", false)]
     public void Test_CombinedChecked(string left, string right,
         string expectedFullPath, string expectedDirectory,
         string expectedFileName, bool linux)
@@ -49,8 +51,10 @@ public class CombineCheckedTest
     [SkippableTheory]
     [InlineData("/", "foo", "/foo", "/", "foo", true)]
     [InlineData("/foo", "bar", "/foo/bar", "/foo", "bar", true)]
+    [InlineData("/foo/bar", "baz", "/foo/bar/baz", "/foo/bar", "baz", true)]
     [InlineData("C:\\", "foo", "C:\\foo", "C:\\", "foo", false)]
     [InlineData("C:\\foo", "bar", "C:\\foo\\bar", "C:\\foo", "bar", false)]
+    [InlineData("C:\\foo\\bar", "baz", "C:\\foo\\bar\\baz", "C:\\foo\\bar", "baz", false)]
     public void Test_CombineUnchecked(string left, string right,
         string expectedFullPath, string expectedDirectory,
         string expectedFileName, bool linux)

@@ -87,12 +87,20 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     {
         var span = fullPath.AsSpan();
 
+        // path is not rooted
         var rootLength = GetRootLength(span);
         if (rootLength == 0)
             return new AbsolutePath(null, fullPath, fileSystem ?? Paths.FileSystem.Shared);
 
+        // path is only the root directory
+        if (span.Length == rootLength)
+            return new AbsolutePath(fullPath, "", fileSystem ?? Paths.FileSystem.Shared);
+
         var slice = span[rootLength..];
-        var separatorIndex = slice.IndexOf(PathSeparatorForInternalOperations);
+        if (slice[^1] == PathSeparatorForInternalOperations)
+            slice = slice[..^1];
+
+        var separatorIndex = slice.LastIndexOf(PathSeparatorForInternalOperations);
         if (separatorIndex == -1)
         {
             // root directory (eg: "/" or "C:\\") is the directory
@@ -103,9 +111,6 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         var directorySpan = span[..(rootLength + separatorIndex)];
         // everything after the separator (+1 since we don't want "/foo" but "foo")
         var fileNameSpan = slice[(separatorIndex + 1)..];
-
-        if (fileNameSpan[^1] == PathSeparatorForInternalOperations)
-            fileNameSpan = fileNameSpan[..^1];
 
         return new AbsolutePath(directorySpan.ToString(), fileNameSpan.ToString(), fileSystem ?? Paths.FileSystem.Shared);
     }
