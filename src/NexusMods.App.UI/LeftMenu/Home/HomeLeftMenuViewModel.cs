@@ -27,7 +27,7 @@ public class HomeLeftMenuViewModel : AViewModel<IHomeLeftMenuViewModel>, IHomeLe
             new IconViewModel { Name = "Newsfeed", Icon = IconType.News, Activate = ReactiveCommand.Create(
                 () =>
                 {
-                    RightContent = _homeViewModel;
+                    RightContent = Initializers.IRightContent;
                 })},
             new IconViewModel { Name = "My Games", Icon = IconType.Bookmark, Activate = ReactiveCommand.Create(
                 () =>
