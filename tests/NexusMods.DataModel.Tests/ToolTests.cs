@@ -22,7 +22,7 @@ public class ToolTests : ADataModelTest<ToolTests>
     {
         var name = Guid.NewGuid().ToString();
         var loadout = await LoadoutManager.ManageGameAsync(Install, name);
-        await loadout.InstallModAsync(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
+        await loadout.InstallModAsync(Data7ZLzma2, "Mod1", CancellationToken.None);
         var gameFolder = loadout.Value.Installation.Locations[GameFolderType.Game];
 
         gameFolder.CombineUnchecked("files.txt").FileExists.Should().BeFalse("tool should not have run yet");
@@ -34,7 +34,6 @@ public class ToolTests : ADataModelTest<ToolTests>
         gameFolder.CombineUnchecked("files.txt").FileExists.Should().BeTrue("tool should have run");
         gameFolder.CombineUnchecked("rootFile.txt").FileExists.Should().BeTrue("loadout has been automatically applied");
 
-        var expectedPath = ListFilesTool.GeneratedFilePath.CombineChecked(gameFolder);
         var generatedFile = loadout.Value.Mods.Values
             .SelectMany(m => m.Files.Values)
             .FirstOrDefault(f => f.To == ListFilesTool.GeneratedFilePath);
