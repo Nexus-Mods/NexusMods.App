@@ -110,6 +110,46 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         => new(directoryPath, fullPath, fileSystem ?? Paths.FileSystem.Shared);
 
     /// <summary>
+    /// Returns true if the given directory is a root directory on the current
+    /// platform.
+    /// </summary>
+    /// <param name="directory"></param>
+    /// <returns></returns>
+    /// <exception cref="PlatformNotSupportedException">
+    /// The current platform is not supported.
+    /// </exception>
+    internal static bool IsRootDirectory(string directory)
+    {
+        if (OperatingSystem.IsLinux())
+            return directory == DirectorySeparatorCharStr;
+
+        if (!OperatingSystem.IsWindows())
+            throw new PlatformNotSupportedException();
+
+        // NOTE (erri120): UNC paths (\\?\C:\) and Device paths (\\?\.)
+        // are not supported. Only classic drive specific paths: C:\
+
+        // https://github.com/dotnet/runtime/blob/bb2b8605df0e916dcd6339f2056efb2bd4521ff5/src/libraries/Common/src/System/IO/PathInternal.Windows.cs#L223-L233
+        return directory is [_, ':', _]
+               && IsValidDriveChar(directory[0])
+               && directory[2] == PathSeparatorForInternalOperations;
+    }
+
+    /// <summary>
+    /// Returns true if the given character is a valid drive letter.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    private static bool IsValidDriveChar(char value)
+    {
+        // Licensed to the .NET Foundation under one or more agreements.
+        // The .NET Foundation licenses this file to you under the MIT license.
+        // https://github.com/dotnet/runtime/blob/main/LICENSE.TXT
+        // source: https://github.com/dotnet/runtime/blob/d9f453924f7c3cca9f02d920a57e1477293f216e/src/libraries/Common/src/System/IO/PathInternal.Windows.cs#L69-L75
+        return (uint)((value | 0x20) - 'a') <= (uint)('z' - 'a');
+    }
+
+    /// <summary>
     /// Returns the full path of the combined string.
     /// </summary>
     /// <returns>The full combined path.</returns>
