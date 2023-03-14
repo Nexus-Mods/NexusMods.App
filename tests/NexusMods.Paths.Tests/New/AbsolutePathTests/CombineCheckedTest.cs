@@ -26,4 +26,19 @@ public class CombineCheckedTest
         result.ToString().Should().NotContain(@"/\", "trailing separators are recognized and removed");
         result.ToString().Should().NotContain(@"\/", "trailing separators are recognized and removed");
     }
+
+    [SkippableTheory]
+    [InlineData("/foo", "/", "foo", true)]
+    [InlineData("/foo/bar", "/foo", "bar", true)]
+    [InlineData("C:\\foo", "C:\\", "foo", false)]
+    [InlineData("C:\\foo\\bar", "C:\\foo", "bar", false)]
+    public void Test_CombinedChecked(string expected, string left, string right, bool linux)
+    {
+        Skip.IfNot(OperatingSystem.IsLinux() && linux);
+        var absolutePath = AbsolutePath.FromFullPath(left);
+        var relativePath = new RelativePath(right);
+
+        var result = absolutePath.CombineChecked(relativePath);
+        result.GetFullPath().Should().Be(expected);
+    }
 }

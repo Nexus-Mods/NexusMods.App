@@ -167,7 +167,21 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         // The .NET Foundation licenses this file to you under the MIT license.
         // https://github.com/dotnet/runtime/blob/main/LICENSE.TXT
         // source: https://github.com/dotnet/runtime/blob/d9f453924f7c3cca9f02d920a57e1477293f216e/src/libraries/Common/src/System/IO/PathInternal.Windows.cs#L69-L75
-        return (uint)((value | 0x20) - 'a') <= (uint)('z' - 'a');
+        return (uint)((value | 0x20) - 'a') <= 'z' - 'a';
+    }
+
+    /// <summary>
+    /// Joins two path components together.
+    /// </summary>
+    /// <param name="left"></param>
+    /// <param name="right"></param>
+    /// <returns></returns>
+    private static string JoinPathComponents(string left, string right)
+    {
+        // this is true for root directories
+        return left.EndsWith(PathSeparatorForInternalOperations)
+            ? string.Concat(left, right)
+            : string.Concat(left, DirectorySeparatorCharStr, right);
     }
 
     /// <summary>
@@ -182,9 +196,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         if (FileName.Length == 0)
             return Directory;
 
-        return IsRootDirectory(Directory)
-            ? string.Concat(Directory, FileName)
-            : string.Concat(Directory, DirectorySeparatorCharStr, FileName);
+        return JoinPathComponents(Directory, FileName);
     }
 
     /// <summary>
@@ -270,11 +282,13 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
 
         relativeOrig.CopyTo(relativeSpan);
         relativeSpan.Replace(SeparatorToReplace, PathSeparatorForInternalOperations, relativeSpan);
+
+        // remove leading separator character
         if (relativeSpan[0] == PathSeparatorForInternalOperations)
             relativeSpan = relativeSpan.SliceFast(1);
 
-        // Now walk the directories.
-        return FromFullPath($"{GetFullPath()}{DirectorySeparatorCharStr}{relativeSpan}", FileSystem);
+        var newPath = JoinPathComponents(GetFullPath(), relativeSpan.ToString());
+        return FromFullPath(newPath, FileSystem);
     }
 
     /// <summary>
@@ -299,10 +313,13 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         var relativeOrig = path.Path;
 
         // Copy and normalise.
-        var relativeSpan = relativeOrig.Length <= 512 ? stackalloc char[relativeOrig.Length]
-                                                      : GC.AllocateUninitializedArray<char>(relativeOrig.Length);
+        var relativeSpan = relativeOrig.Length <= 512
+            ? stackalloc char[relativeOrig.Length]
+            : GC.AllocateUninitializedArray<char>(relativeOrig.Length);
+
         relativeOrig.CopyTo(relativeSpan);
         relativeSpan.Replace(SeparatorToReplace, PathSeparatorForInternalOperations, relativeSpan);
+
         if (relativeSpan[0] == PathSeparatorForInternalOperations)
             relativeSpan = relativeSpan.SliceFast(1);
 
@@ -317,12 +334,12 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         ReadOnlySpan<char> splitSpan;
         while ((splitSpan = SplitDir(remainingPath)) != remainingPath)
         {
-            path += $"{Path.DirectorySeparatorChar}{FindFileOrDirectoryCasing(path, splitSpan)}";
+            path = JoinPathComponents(path,FindFileOrDirectoryCasing(path, splitSpan).ToString());
             remainingPath = remainingPath[(splitSpan.Length + 1)..];
         }
 
         if (remainingPath.Length > 0)
-            path += $"{Path.DirectorySeparatorChar}{FindFileOrDirectoryCasing(path, remainingPath)}";
+            path = JoinPathComponents(path, FindFileOrDirectoryCasing(path, remainingPath).ToString());
 
         return path;
     }
@@ -444,7 +461,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ReadOnlySpan<char> SplitDir(ReadOnlySpan<char> text)
     {
-        var index = text.IndexOf(Path.DirectorySeparatorChar);
+        var index = text.IndexOf(PathSeparatorForInternalOperations);
         return index != -1 ? text[..index] : text;
     }
 
