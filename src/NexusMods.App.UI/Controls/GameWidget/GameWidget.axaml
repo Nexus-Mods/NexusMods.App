@@ -67,6 +67,7 @@
                             Grid.Row="0"
                             Height="34"
                             Margin="0,8"
+                            TextTrimming="CharacterEllipsis"
                             TextWrapping="Wrap"
                             VerticalAlignment="Center"
                             x:Name="NameTextBlock" />

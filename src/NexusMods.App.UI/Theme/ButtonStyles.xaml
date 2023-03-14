@@ -50,8 +50,8 @@
     <Style Selector="Button">
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Margin" Value="0 0" />
-        <Setter Property="Padding" Value="16, 5" />
         <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="Height" Value="34" />
     </Style>
 
     <!--  Disable the scaling found in Fluent buttons  -->
@@ -66,7 +66,9 @@
         <Setter Property="LineHeight" Value="14" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="LetterSpacing" Value="0.7" />
-        <Setter Property="Margin" Value="5" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="Margin" Value="6, 0" />
     </Style>
 
     <Style Selector="Button.Primary">
