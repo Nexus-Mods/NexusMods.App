@@ -6,8 +6,8 @@ namespace NexusMods.Paths.Tests.New.AbsolutePathTests;
 public class ConstructorTests
 {
     [SkippableTheory]
-    [InlineData("C:", "", "C:", "", "C:")]
-    [InlineData("C:", "foo", "C:", "foo", "C:\\foo")]
+    [InlineData("C:\\", "", "C:\\", "", "C:\\")]
+    [InlineData("C:\\", "foo", "C:\\", "foo", "C:\\foo")]
     [InlineData("C:\\foo", "bar", "C:\\foo", "bar", "C:\\foo\\bar")]
     [InlineData("C:\\foo\\", "bar", "C:\\foo", "bar", "C:\\foo\\bar")]
     public void Test_Constructor_Windows(string inputDirectory, string inputFileName,

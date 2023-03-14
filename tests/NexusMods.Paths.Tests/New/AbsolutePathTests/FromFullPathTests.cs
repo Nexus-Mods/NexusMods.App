@@ -6,10 +6,10 @@ namespace NexusMods.Paths.Tests.New.AbsolutePathTests;
 public class FromFullPathTests
 {
     [SkippableTheory]
-    [InlineData("C:")]
-    [InlineData("C:\foo")]
-    [InlineData("C:\foo\bar")]
-    [InlineData("C:\foo\bar\baz")]
+    [InlineData("C:\\")]
+    [InlineData("C:\\foo")]
+    [InlineData("C:\\foo\\bar")]
+    [InlineData("C:\\foo\\bar\\baz")]
     public void Test_FromFullPath_Windows(string fullPath)
     {
         Skip.IfNot(RuntimeInformation.IsOSPlatform(OSPlatform.Windows));
