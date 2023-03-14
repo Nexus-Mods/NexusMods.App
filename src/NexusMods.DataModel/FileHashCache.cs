@@ -3,6 +3,7 @@ using System.Text;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.RateLimiting;
+using NexusMods.DataModel.RateLimiting.Extensions;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
@@ -94,7 +95,7 @@ public class FileHashCache
     {
         token ??= CancellationToken.None;
 
-        var result = _limiter.ForEachFile(paths, async (job, entry) =>
+        var result = _limiter.ForEachFileAsync(paths, async (job, entry) =>
         {
             if (TryGetCached(entry.Path, out var found))
             {
@@ -136,7 +137,7 @@ public class FileHashCache
             }
         }
 
-        using var job = await _limiter.Begin($"Hashing {file.FileName}", size, token ?? CancellationToken.None);
+        using var job = await _limiter.BeginAsync($"Hashing {file.FileName}", size, token ?? CancellationToken.None);
         var hashed = await file.XxHash64(token, job);
         PutCachedAsync(file, new FileHashCacheEntry(info.LastWriteTimeUtc, hashed, size));
         return new HashedEntry(file, hashed, info.LastWriteTimeUtc, size);

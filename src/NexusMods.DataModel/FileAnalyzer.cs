@@ -6,6 +6,7 @@ using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.RateLimiting;
+using NexusMods.DataModel.RateLimiting.Extensions;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Hashing.xxHash64;
@@ -79,7 +80,7 @@ public class FileContentsCache
                 }
                 else
                 {
-                    using var job = await _limiter.Begin($"Hashing {sFn.Name.FileName}", sFn.Size, token);
+                    using var job = await _limiter.BeginAsync($"Hashing {sFn.Name.FileName}", sFn.Size, token);
                     hash = await hashStream.Hash(token, job);
                 }
             }
@@ -149,7 +150,7 @@ public class FileContentsCache
             List<KeyValuePair<RelativePath, IId>> children;
             {
                 await _extractor.ExtractAllAsync(sFn, tmpFolder, token);
-                children = await _limiter.ForEachFile(tmpFolder,
+                children = await _limiter.ForEachFileAsync(tmpFolder,
                         async (_, entry) =>
                         {
                             // ReSharper disable once AccessToDisposedClosure

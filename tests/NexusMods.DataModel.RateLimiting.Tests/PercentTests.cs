@@ -7,14 +7,14 @@ public class PercentTests
     [Fact]
     public void CanCreateAndComparePercents()
     {
-        var p1 = Percent.FactoryPutInRange(0.50);
-        p1.Should().BeEquivalentTo(Percent.FactoryPutInRange(0.50));
+        var p1 = Percent.CreateClamped(0.50);
+        p1.Should().BeEquivalentTo(Percent.CreateClamped(0.50));
         p1.ToString().Should().Be("50%");
         p1.Value.Should().Be(0.5);
         ((double)p1).Should().Be(0.5);
 
-        Percent.FactoryPutInRange(1.1).Should().Be(Percent.FactoryPutInRange(1.0));
-        Percent.FactoryPutInRange(-1).Should().Be(Percent.FactoryPutInRange(0.0));
+        Percent.CreateClamped(1.1).Should().Be(Percent.CreateClamped(1.0));
+        Percent.CreateClamped(-1).Should().Be(Percent.CreateClamped(0.0));
 
         var p0 = Percent.Zero;
         var p2 = Percent.One;
@@ -39,8 +39,8 @@ public class PercentTests
     [Fact]
     public void CanHashPercents()
     {
-        var p0 = Percent.FactoryPutInRange(0.5);
-        var p1 = Percent.FactoryPutInRange(0.3);
+        var p0 = Percent.CreateClamped(0.5);
+        var p1 = Percent.CreateClamped(0.3);
 
         p0.GetHashCode().Should().Be(p0.GetHashCode());
         p1.GetHashCode().Should().Be(p1.GetHashCode());
@@ -50,23 +50,23 @@ public class PercentTests
     [Fact]
     public void CanPerformMathOnPercents()
     {
-        var p0 = Percent.FactoryPutInRange(0.5);
-        var p2 = Percent.FactoryPutInRange(0.25);
-        (p0 + p2).Should().Be(Percent.FactoryPutInRange(0.75));
-        (p0 - p2).Should().Be(Percent.FactoryPutInRange(0.25));
+        var p0 = Percent.CreateClamped(0.5);
+        var p2 = Percent.CreateClamped(0.25);
+        (p0 + p2).Should().Be(Percent.CreateClamped(0.75));
+        (p0 - p2).Should().Be(Percent.CreateClamped(0.25));
     }
 
     [Fact]
     public void SupportsOtherConstructors()
     {
-        Percent.FactoryPutInRange(1, 2).Value.Should().Be(0.5);
-        Percent.FactoryPutInRange(1L, 2L).Value.Should().Be(0.5);
+        Percent.CreateClamped(1, 2).Value.Should().Be(0.5);
+        Percent.CreateClamped(1L, 2L).Value.Should().Be(0.5);
     }
 
     [Fact]
     public void CanRoundTripThroughString()
     {
-        Percent.FactoryPutInRange(0.33333).ToString(3).Should().Be("33.333%");
+        Percent.CreateClamped(0.33333).ToString(3).Should().Be("33.333%");
         Percent.TryParse("3.33", out var parsed).Should().BeTrue();
         parsed.Value.Should().Be(0.0333);
 
@@ -75,8 +75,8 @@ public class PercentTests
     [Fact]
     public void CanGetInverse()
     {
-        Percent.FactoryPutInRange(0.75).Inverse.Value.Should().Be(0.25);
-        Percent.FactoryPutInRange(0.25).Inverse.Value.Should().Be(0.75);
+        Percent.CreateClamped(0.75).Inverse.Value.Should().Be(0.25);
+        Percent.CreateClamped(0.25).Inverse.Value.Should().Be(0.75);
     }
 
     [Fact]
