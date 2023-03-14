@@ -148,6 +148,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// <exception cref="PlatformNotSupportedException">
     /// The current platform is not supported.
     /// </exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static int GetRootLength(ReadOnlySpan<char> path)
     {
         if (OperatingSystem.IsLinux())
@@ -169,6 +170,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool IsValidDriveChar(char value)
     {
         // Licensed to the .NET Foundation under one or more agreements.
