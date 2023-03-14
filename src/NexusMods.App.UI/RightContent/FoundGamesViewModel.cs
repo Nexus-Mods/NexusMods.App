@@ -8,6 +8,7 @@ using NexusMods.App.UI.ViewModels;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.RightContent;
 
@@ -37,7 +38,7 @@ public class FoundGamesViewModel : AViewModel<IFoundGamesViewModel>, IFoundGames
     private async Task ManageGame(GameInstallation installation)
     {
         var name = _loadoutManager.FindName(installation);
-        var manage = _loadoutManager.ManageGame(installation, name);
+        var manage = _loadoutManager.ManageGameAsync(installation, name);
         _createdLoadouts.OnNext((installation, name));
     }
 

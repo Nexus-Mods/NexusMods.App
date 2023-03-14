@@ -12,16 +12,14 @@ namespace NexusMods.App.UI.LeftMenu.Home;
 
 public class HomeLeftMenuViewModel : AViewModel<IHomeLeftMenuViewModel>, IHomeLeftMenuViewModel
 {
-    private readonly IHomeViewModel _homeViewModel;
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items { get; }
 
     [Reactive]
     public IRightContentViewModel RightContent { get; set; } =
         Initializers.IRightContent;
 
-    public HomeLeftMenuViewModel(IMyGamesViewModel myGamesViewModel, IFoundGamesViewModel foundGamesViewModel, IHomeViewModel homeViewModel)
+    public HomeLeftMenuViewModel(IMyGamesViewModel myGamesViewModel, IFoundGamesViewModel foundGamesViewModel)
     {
-        _homeViewModel = homeViewModel;
         var items = new ILeftMenuItemViewModel[]
         {
             new IconViewModel { Name = "Newsfeed", Icon = IconType.News, Activate = ReactiveCommand.Create(
