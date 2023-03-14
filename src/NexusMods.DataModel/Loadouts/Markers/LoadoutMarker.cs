@@ -277,7 +277,7 @@ public class LoadoutMarker : IMarker<Loadout>
                             await using var stream = await sFn.GetStreamAsync();
                             entry.Step.To.Parent.CreateDirectory();
                             await using var of = entry.Step.To.Create();
-                            var hash = await stream.HashingCopy(of, token, job);
+                            var hash = await stream.HashingCopyAsync(of, token, job);
                             if (hash != entry.Step.Hash)
                                 throw new Exception("Unmatching hashes after installation");
                         }

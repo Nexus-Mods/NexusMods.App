@@ -52,7 +52,7 @@ public class ArchiveManager
         {
             await using var tmpFile = tmpName.Create();
             await using var src = path.Read();
-            hash = await src.HashingCopy(tmpFile, token, job);
+            hash = await src.HashingCopyAsync(tmpFile, token, job);
         }
         var finalName = folder.CombineUnchecked(NameForHash(hash));
         if (!finalName.FileExists)

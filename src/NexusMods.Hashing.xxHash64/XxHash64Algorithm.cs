@@ -23,14 +23,16 @@ namespace NexusMods.Hashing.xxHash64;
 ///     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 ///     SOFTWARE.
 /// </summary>
-public struct xxHashAlgorithm
+// ReSharper disable once InconsistentNaming
+public struct XxHash64Algorithm
 {
+    // ReSharper disable InconsistentNaming
     private const ulong Primes64_0 = 11400714785074694791UL;
     private const ulong Primes64_1 = 14029467366897019727UL;
     private const ulong Primes64_2 = 1609587929392839161UL;
     private const ulong Primes64_3 = 9650029242287828579UL;
     private const ulong Primes64_4 = 2870177450012600261UL;
-
+    // ReSharper restore InconsistentNaming
 
     private readonly ulong _seed;
 
@@ -40,9 +42,12 @@ public struct xxHashAlgorithm
     private ulong _d;
 
     private ulong _bytesProcessed;
-    private readonly bool _finished;
 
-    public xxHashAlgorithm(ulong seed)
+    /// <summary>
+    /// Creates a new implementation of the XxHash64 hasher.
+    /// </summary>
+    /// <param name="seed"></param>
+    public XxHash64Algorithm(ulong seed)
     {
         _seed = seed;
         _a = _seed + Primes64_0 + Primes64_1;
@@ -50,24 +55,43 @@ public struct xxHashAlgorithm
         _c = _seed;
         _d = _seed - Primes64_0;
         _bytesProcessed = 0;
-        _finished = false;
     }
 
+    /// <summary>
+    /// Hashes the given span of bytes.
+    /// </summary>
+    /// <param name="data">The complete data to hash.</param>
+    /// <returns>Hash for the given bytes.</returns>
+    /// <remarks>
+    ///     Assumes the given bytes form a complete object you want to hash.
+    /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ulong HashBytes(ReadOnlySpan<byte> data)
     {
         var initialSize = (data.Length >> 5) << 5;
-        if (initialSize > 0) TransformByteGroupsInternal(data[..initialSize]);
+        if (initialSize > 0)
+            TransformByteGroupsInternal(data[..initialSize]);
 
         return FinalizeHashValueInternal(data[initialSize..]);
     }
 
+    /// <summary>
+    /// Updates the internal hasher state.
+    /// </summary>
+    /// <param name="data">
+    ///     The data to feed into the hasher.
+    ///     Size of this data must be a multiple of 32, and be directly after
+    ///     the data used in the last call to `TransformByteGroupsInternal`.
+    /// </param>
+    /// <remarks>
+    ///    The last &lt;32 bytes should be sent to <see cref="FinalizeHashValueInternal"/>.
+    /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TransformByteGroupsInternal(ReadOnlySpan<byte> data)
+    public unsafe void TransformByteGroupsInternal(ReadOnlySpan<byte> data)
     {
 #if DEBUG
-        if (_finished || data.Length % 32 > 0)
-            throw new Exception("Hash is finished, or input is not a multiple of 32");
+        if (data.Length % 32 > 0)
+            throw new Exception("Input is not a multiple of 32");
 #endif
 
         var tempA = _a;
@@ -75,35 +99,30 @@ public struct xxHashAlgorithm
         var tempC = _c;
         var tempD = _d;
 
-        unsafe
+        fixed (byte* ptr = data)
         {
-            fixed (byte* ptr = data)
+            var len = data.Length / 8;
+            var dataPtr = (ulong*)ptr;
+
+            for (var currentIndex = 0; currentIndex < len; currentIndex += 4)
             {
-                var len = data.Length / 8;
-                var dataPtr = (ulong*)ptr;
+                tempA += dataPtr[currentIndex] * Primes64_1;
+                tempA = RotateLeft(tempA, 31);
+                tempA *= Primes64_0;
 
-                for (var currentIndex = 0; currentIndex < len; currentIndex += 4)
-                {
-                    tempA += dataPtr[currentIndex] * Primes64_1;
-                    tempA = RotateLeft(tempA, 31);
-                    tempA *= Primes64_0;
+                tempB += dataPtr[currentIndex + 1] * Primes64_1;
+                tempB = RotateLeft(tempB, 31);
+                tempB *= Primes64_0;
 
-                    tempB += dataPtr[currentIndex + 1] * Primes64_1;
-                    tempB = RotateLeft(tempB, 31);
-                    tempB *= Primes64_0;
+                tempC += dataPtr[currentIndex + 2] * Primes64_1;
+                tempC = RotateLeft(tempC, 31);
+                tempC *= Primes64_0;
 
-                    tempC += dataPtr[currentIndex + 2] * Primes64_1;
-                    tempC = RotateLeft(tempC, 31);
-                    tempC *= Primes64_0;
-
-                    tempD += dataPtr[currentIndex + 3] * Primes64_1;
-                    tempD = RotateLeft(tempD, 31);
-                    tempD *= Primes64_0;
-                }
+                tempD += dataPtr[currentIndex + 3] * Primes64_1;
+                tempD = RotateLeft(tempD, 31);
+                tempD *= Primes64_0;
             }
         }
-
-
 
         _a = tempA;
         _b = tempB;
@@ -113,7 +132,15 @@ public struct xxHashAlgorithm
         _bytesProcessed += (ulong)data.Length;
     }
 
-
+    /// <summary>
+    /// Updates the internal hasher state for the last &lt;32 bytes.
+    /// After this function is completed, the final hash is returned.
+    /// </summary>
+    /// <param name="data">The last &lt;32 bytes to hash.</param>
+    /// <returns>The final hash for the object.</returns>
+    /// <remarks>
+    ///    This should only be called once.
+    /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ulong FinalizeHashValueInternal(ReadOnlySpan<byte> data)
     {
@@ -125,7 +152,6 @@ public struct xxHashAlgorithm
                 var tempB = _b;
                 var tempC = _c;
                 var tempD = _d;
-
 
                 hashValue = RotateLeft(_a, 1) + RotateLeft(_b, 7) + RotateLeft(_c, 12) + RotateLeft(_d, 18);
 
@@ -168,7 +194,6 @@ public struct xxHashAlgorithm
         }
 
         var remainderLength = data.Length;
-
         hashValue += _bytesProcessed + (ulong)remainderLength;
 
         if (remainderLength > 0)

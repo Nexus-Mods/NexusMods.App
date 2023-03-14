@@ -81,12 +81,12 @@ public class FileContentsCache
                 else
                 {
                     using var job = await _limiter.BeginAsync($"Hashing {sFn.Name.FileName}", sFn.Size, token);
-                    hash = await hashStream.Hash(token, job);
+                    hash = await hashStream.XxHash64Async(token, job);
                 }
             }
             else
             {
-                hash = await hashStream.Hash(token);
+                hash = await hashStream.XxHash64Async(token);
             }
 
 

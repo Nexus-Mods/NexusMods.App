@@ -106,7 +106,7 @@ public class FileHashCache
                 }
             }
 
-            var hashed = await entry.Path.XxHash64(token, job);
+            var hashed = await entry.Path.XxHash64Async(token, job);
             PutCachedAsync(entry.Path, new FileHashCacheEntry(entry.LastModified, hashed, entry.Size));
             return new HashedEntry(entry, hashed);
         }, token, "Hashing Files");
@@ -138,7 +138,7 @@ public class FileHashCache
         }
 
         using var job = await _limiter.BeginAsync($"Hashing {file.FileName}", size, token ?? CancellationToken.None);
-        var hashed = await file.XxHash64(token, job);
+        var hashed = await file.XxHash64Async(token, job);
         PutCachedAsync(file, new FileHashCacheEntry(info.LastWriteTimeUtc, hashed, size));
         return new HashedEntry(file, hashed, info.LastWriteTimeUtc, size);
     }

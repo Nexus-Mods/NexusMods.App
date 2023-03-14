@@ -117,7 +117,7 @@ namespace NexusMods.Networking.HttpDownloader
             {
                 StateFilePath(state.Destination).Delete();
                 File.Move(tempPath.ToString(), state.Destination.ToString(), true);
-                return await state.Destination.XxHash64(cancel);
+                return await state.Destination.XxHash64Async(cancel);
             }
             else
             {

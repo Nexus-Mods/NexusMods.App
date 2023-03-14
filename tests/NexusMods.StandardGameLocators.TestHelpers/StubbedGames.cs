@@ -32,7 +32,7 @@ public class StubbedGame : IEADesktopGame, IEpicGame, IOriginGame, ISteamGame, I
 
     public static readonly Dictionary<RelativePath, (Hash Hash, Size Size)> DATA_CONTENTS = DATA_NAMES
         .ToDictionary(d => d,
-            d => (d.FileName.ToString().XxHash64(), Size.From(d.FileName.ToString().Length)));
+            d => (d.FileName.ToString().XxHash64AsUtf8(), Size.From(d.FileName.ToString().Length)));
 
     public StubbedGame(ILogger<StubbedGame> logger, IEnumerable<IGameLocator> locators)
     {

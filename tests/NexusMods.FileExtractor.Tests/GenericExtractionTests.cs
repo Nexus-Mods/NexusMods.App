@@ -29,7 +29,7 @@ public class GenericExtractionTests
         var results = await _extractor.ForEachEntry(new NativeFileStreamFactory(path), async (_, e) =>
         {
             await using var fs = await e.GetStreamAsync();
-            return await fs.Hash(CancellationToken.None);
+            return await fs.XxHash64Async(CancellationToken.None);
         }, CancellationToken.None);
 
         results.Count.Should().Be(3);
@@ -51,7 +51,7 @@ public class GenericExtractionTests
         await using var tempFolder = _temporaryFileManager.CreateFolder();
         await _extractor.ExtractAllAsync(path, tempFolder, CancellationToken.None);
         (await tempFolder.Path.EnumerateFiles()
-            .SelectAsync(async f => (f.RelativeTo(tempFolder.Path), await f.XxHash64()))
+            .SelectAsync(async f => (f.RelativeTo(tempFolder.Path), await f.XxHash64Async()))
             .ToArrayAsync())
             .Should()
             .BeEquivalentTo(new[]

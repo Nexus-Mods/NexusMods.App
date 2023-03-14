@@ -56,7 +56,7 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
 
         gameFolder.CombineUnchecked(fileToDelete).Delete();
         await gameFolder.CombineUnchecked(fileToModify).WriteAllTextAsync("modified");
-        var modifiedHash = "modified".XxHash64();
+        var modifiedHash = "modified".XxHash64AsUtf8();
 
         var firstMod = mainList.Value.Mods.Values.First();
         var ingestPlan = await mainList.MakeIngestionPlanAsync(_ => firstMod, Token).ToHashSetAsync();
