@@ -58,15 +58,16 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// <param name="fileSystem">File system implementation.</param>
     internal AbsolutePath(string? directory, string fileName, IFileSystem fileSystem)
     {
-        // remove directory separator at the end of the directory
-        // on Linux: don't do this if the directory is "/"
-        if (!string.IsNullOrEmpty(directory))
+        if (!string.IsNullOrEmpty(directory) && !IsRootDirectory(directory))
         {
-            Directory = directory.EndsWith(Path.DirectorySeparatorChar)
-                        && directory.Length != 1
-                        && directory != DirectorySeparatorCharStr
+            // remove trailing separator char
+            Directory = directory.EndsWith(PathSeparatorForInternalOperations)
                 ? directory[..^1]
                 : directory;
+        }
+        else
+        {
+            Directory = directory;
         }
 
         FileName = fileName;
@@ -84,19 +85,26 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// </remarks>
     public static AbsolutePath FromFullPath(string fullPath, IFileSystem? fileSystem = null)
     {
-        var index = fullPath.LastIndexOf(Path.DirectorySeparatorChar);
-        if (index < 0)
-        {
-            // No directory
+        var span = fullPath.AsSpan();
+
+        var rootLength = GetRootLength(span);
+        if (rootLength == 0)
             return new AbsolutePath(null, fullPath, fileSystem ?? Paths.FileSystem.Shared);
+
+        var slice = span[rootLength..];
+        var separatorIndex = slice.IndexOf(PathSeparatorForInternalOperations);
+        if (separatorIndex == -1)
+        {
+            // root directory (eg: "/" or "C:\\") is the directory
+            return new AbsolutePath(span[..rootLength].ToString(), slice.ToString(), fileSystem ?? Paths.FileSystem.Shared);
         }
 
-        // Windows: "C:\foo", directory should be "C:"
-        // Linux: "/foo", directory should be "/"
-        var directory = index == 0 ? DirectorySeparatorCharStr : fullPath[..index];
+        // everything before the separator
+        var directorySpan = span[..(rootLength + separatorIndex)];
+        // everything after the separator (+1 since we don't want "/foo" but "foo")
+        var fileNameSpan = slice[(separatorIndex + 1)..];
 
-        var fileName = fullPath[(index + 1)..];
-        return new AbsolutePath(directory, fileName, fileSystem ?? Paths.FileSystem.Shared);
+        return new AbsolutePath(directorySpan.ToString(), fileNameSpan.ToString(), fileSystem ?? Paths.FileSystem.Shared);
     }
 
     /// <summary>
@@ -118,10 +126,24 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// <exception cref="PlatformNotSupportedException">
     /// The current platform is not supported.
     /// </exception>
-    internal static bool IsRootDirectory(string directory)
+    internal static bool IsRootDirectory(ReadOnlySpan<char> directory)
+    {
+        var rootLength = GetRootLength(directory);
+        return rootLength == directory.Length;
+    }
+
+    /// <summary>
+    /// Gets the length of the root of the path.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    /// <exception cref="PlatformNotSupportedException">
+    /// The current platform is not supported.
+    /// </exception>
+    private static int GetRootLength(ReadOnlySpan<char> path)
     {
         if (OperatingSystem.IsLinux())
-            return directory == DirectorySeparatorCharStr;
+            return path == DirectorySeparatorCharStr ? 1 : 0;
 
         if (!OperatingSystem.IsWindows())
             throw new PlatformNotSupportedException();
@@ -130,9 +152,8 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         // are not supported. Only classic drive specific paths: C:\
 
         // https://github.com/dotnet/runtime/blob/bb2b8605df0e916dcd6339f2056efb2bd4521ff5/src/libraries/Common/src/System/IO/PathInternal.Windows.cs#L223-L233
-        return directory is [_, ':', _]
-               && IsValidDriveChar(directory[0])
-               && directory[2] == PathSeparatorForInternalOperations;
+        if (path.Length < 3 || path[1] != ':' || !IsValidDriveChar(path[0])) return 0;
+        return path[2] == PathSeparatorForInternalOperations ? 3 : 0;
     }
 
     /// <summary>

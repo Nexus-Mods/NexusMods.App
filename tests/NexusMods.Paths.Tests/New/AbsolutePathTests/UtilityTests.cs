@@ -62,9 +62,11 @@ public class UtilityTests
     [SkippableTheory]
     [InlineData("/", true, true)]
     [InlineData("/foo", false, true)]
+    [InlineData("foo", false, true)]
     [InlineData("C:\\", true, false)]
     [InlineData("C:", false, false)]
     [InlineData("C:\\foo", false, false)]
+    [InlineData("foo", false, false)]
     public void Test_IsRootDirectory(string input, bool expected, bool linux)
     {
         Skip.IfNot(linux && OperatingSystem.IsLinux());
