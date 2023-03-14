@@ -143,7 +143,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     private static int GetRootLength(ReadOnlySpan<char> path)
     {
         if (OperatingSystem.IsLinux())
-            return path == DirectorySeparatorCharStr ? 1 : 0;
+            return path.Length == 1 && path[0] == PathSeparatorForInternalOperations ? 1 : 0;
 
         if (!OperatingSystem.IsWindows())
             throw new PlatformNotSupportedException();
