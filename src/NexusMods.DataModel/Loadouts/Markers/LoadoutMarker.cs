@@ -7,7 +7,6 @@ using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts.ApplySteps;
 using NexusMods.DataModel.Loadouts.ModFiles;
-using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.RateLimiting.Extensions;
 using NexusMods.DataModel.Sorting;
 using NexusMods.Hashing.xxHash64;
