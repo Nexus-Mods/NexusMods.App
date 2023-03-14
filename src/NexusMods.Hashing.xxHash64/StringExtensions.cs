@@ -8,6 +8,8 @@ public static class StringExtensions
 {
     private static readonly char[] _hexLookup = "0123456789ABCDEF".ToArray();
 
+    // TODO: I can elide bounds checks here, let me do it later - Sew
+
     public static string ToHex(this ReadOnlySpan<char> bytes)
     {
         Span<char> outputBuf = stackalloc char[bytes.Length * 2];

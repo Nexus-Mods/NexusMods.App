@@ -21,20 +21,18 @@ public class Startup
         var prefix = KnownFolders.EntryFolder.CombineUnchecked("tempTestData").CombineUnchecked(Guid.NewGuid().ToString());
 
         container.AddDataModel(prefix)
-                 .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
+                 .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                  .AddStandardGameLocators(false)
-                 .AddSingleton<TemporaryFileManager>(s => new TemporaryFileManager(prefix.CombineUnchecked("tempFiles")))
+                 .AddSingleton<TemporaryFileManager>(_ => new TemporaryFileManager(prefix.CombineUnchecked("tempFiles")))
                  .AddFileExtractors()
-                 .AddSingleton(s => new FileCache(s.GetRequiredService<ILogger<FileCache>>(), KnownFolders.EntryFolder.CombineUnchecked("cache")))
-
                  .AddStubbedGameLocators()
 
-                 .AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(s =>
+                 .AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(_ =>
             new Resource<FileContentsCache, Size>("File Analysis"))
-                 .AddAllSingleton<IResource, IResource<IExtractor, Size>>(s =>
+                 .AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ =>
             new Resource<IExtractor, Size>("File Extraction"))
 
-                 .AddSingleton<ITypeFinder>(s => new AssemblyTypeFinder(typeof(Startup).Assembly))
+                 .AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Startup).Assembly))
                  .Validate();
     }
 

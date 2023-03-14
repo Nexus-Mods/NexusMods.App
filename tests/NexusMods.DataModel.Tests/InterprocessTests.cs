@@ -8,6 +8,7 @@ public class InterprocessTests
 {
     private readonly IMessageProducer<Message> _producer;
     private readonly IMessageConsumer<Message> _consumer;
+    private readonly SqliteIPC _ipc;
 
     public class Message : IMessage
     {
@@ -26,8 +27,9 @@ public class InterprocessTests
         }
     }
 
-    public InterprocessTests(IMessageProducer<Message> producer, IMessageConsumer<Message> consumer)
+    public InterprocessTests(SqliteIPC ipc, IMessageProducer<Message> producer, IMessageConsumer<Message> consumer)
     {
+        _ipc = ipc;
         _producer = producer;
         _consumer = consumer;
     }
@@ -37,15 +39,30 @@ public class InterprocessTests
     {
         var src = Enumerable.Range(0, 128).ToList();
         var dest = new List<int>();
-        using var _ = _consumer.Messages.Subscribe(x => dest.Add(x.Value));
+        using var _ = _consumer.Messages.Subscribe(x =>
+        {
+            lock (dest)
+                dest.Add(x.Value);
+        });
+
+        await Task.Delay(1000);
 
         foreach (var i in src)
         {
             await _producer.Write(new Message { Value = i }, CancellationToken.None);
         }
 
-        await Task.Delay(500);
-        dest.Should().BeEquivalentTo(src, opt => opt.WithStrictOrdering());
+        await Task.Delay(1000);
+
+        // Dest is in a stack, so we'll reverse the src to make sure it all worked
+        lock (dest)
+            dest.Should().BeEquivalentTo(src, opt => opt.WithStrictOrdering());
+    }
+
+    [Fact]
+    public async Task CanCleanup()
+    {
+        await _ipc.CleanupOnce(CancellationToken.None);
     }
 
 }

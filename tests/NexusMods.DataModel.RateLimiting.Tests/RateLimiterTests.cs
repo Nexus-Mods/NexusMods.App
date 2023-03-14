@@ -29,7 +29,7 @@ public class RateLimiterTests
             new ParallelOptions { MaxDegreeOfParallelism = 10 },
             async (_, token) =>
             {
-                using var job = await rateLimiter.Begin("Incrementing", Size.One, CancellationToken.None);
+                using var job = await rateLimiter.BeginAsync("Incrementing", Size.One, CancellationToken.None);
                 SetMax(lockObj, ref current, ref max, 1);
                 await Delay(10, token);
                 SetMax(lockObj, ref current, ref max, -1);
@@ -43,20 +43,25 @@ public class RateLimiterTests
     {
         var rateLimiter = new Resource<RateLimiterTests, Size>("Test Resource", 1, Size.MB);
 
-        using var job = await rateLimiter.Begin("Transferring", Size.MB * 5 / 2, CancellationToken.None);
+        using var job = await rateLimiter.BeginAsync("Transferring", Size.MB * 5 / 2, CancellationToken.None);
 
         var sw = Stopwatch.StartNew();
 
         var report = rateLimiter.StatusReport;
         Assert.Equal((Size)0L, report.Transferred);
-        foreach (var x in Enumerable.Range(0, 5)) await job.Report(Size.MB / 2, CancellationToken.None);
+        foreach (var _ in Enumerable.Range(0, 5))
+            await job.ReportAsync(Size.MB / 2, CancellationToken.None);
 
+        // TODO: I presume Tim disabled these tests due to concurrency issues.
+        // ReSharper disable UnusedVariable
         var elapsed = sw.Elapsed;
         //Assert.True(elapsed > TimeSpan.FromSeconds(1));
         //Assert.True(elapsed < TimeSpan.FromSeconds(3));
 
+        // ReSharper disable once RedundantAssignment
         report = rateLimiter.StatusReport;
         //Assert.Equal((Size)(1024L * 1024 * 5 / 2), report.Transferred);
+        // ReSharper restore UnusedVariable
     }
 
     [Fact]
@@ -71,30 +76,30 @@ public class RateLimiterTests
         for (var i = 0; i < 4; i++)
             tasks.Add(Run(async () =>
             {
-                using var job = await rateLimiter.Begin("Transferring", Size.MB / 10 * 5, CancellationToken.None);
-                for (var x = 0; x < 5; x++) await job.Report(Size.MB / 10, CancellationToken.None);
+                using var job = await rateLimiter.BeginAsync("Transferring", Size.MB / 10 * 5, CancellationToken.None);
+                for (var x = 0; x < 5; x++) await job.ReportAsync(Size.MB / 10, CancellationToken.None);
             }));
 
         await WhenAll(tasks.ToArray());
+        // ReSharper disable UnusedVariable
         var elapsed = sw.Elapsed;
         //Assert.True(elapsed > TimeSpan.FromSeconds(1));
         //Assert.True(elapsed < TimeSpan.FromSeconds(6));
+        // ReSharper restore UnusedVariable
     }
 
     [Fact]
     public async Task TestParallelThroughputWithLimitedTasks()
     {
         var rateLimiter = new Resource<RateLimiterTests, Size>("Test Resource", 1, Size.MB * 4);
-        ;
-
         var sw = Stopwatch.StartNew();
 
         var tasks = new List<Task>();
         for (var i = 0; i < 4; i++)
             tasks.Add(Run(async () =>
             {
-                using var job = await rateLimiter.Begin("Transferring", Size.MB / 10 * 5L, CancellationToken.None);
-                for (var x = 0; x < 5; x++) await job.Report(Size.MB / 10, CancellationToken.None);
+                using var job = await rateLimiter.BeginAsync("Transferring", Size.MB / 10 * 5L, CancellationToken.None);
+                for (var x = 0; x < 5; x++) await job.ReportAsync(Size.MB / 10, CancellationToken.None);
             }));
 
         await WhenAll(tasks.ToArray());
@@ -107,7 +112,7 @@ public class RateLimiterTests
     public async Task CanGetJobStatus()
     {
         var rateLimiter = new Resource<RateLimiterTests, Size>("Test Resource");
-        var job = await rateLimiter.Begin("Test Job", Size.KB, CancellationToken.None);
+        var job = await rateLimiter.BeginAsync("Test Job", Size.KB, CancellationToken.None);
 
         job.Started.Should().BeTrue();
         job.Size.Should().Be(Size.KB);
@@ -115,6 +120,6 @@ public class RateLimiterTests
         job.Description.Should().Be("Test Job");
         job.Progress.Should().Be(Percent.Zero);
         job.ReportNoWait(Size.KB / 2);
-        job.Progress.Should().Be(Percent.FactoryPutInRange(0.50));
+        job.Progress.Should().Be(Percent.CreateClamped(0.50));
     }
 }

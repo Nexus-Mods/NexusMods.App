@@ -3,6 +3,10 @@ using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Extensions;
 
+/// <summary>
+/// Extensions related to the <see cref="GamePath"/> class that cannot be stored inside
+/// the Paths library due to requiring additional types.
+/// </summary>
 public static class GamePathExtensions
 {
     /// <summary>

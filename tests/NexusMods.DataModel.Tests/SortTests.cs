@@ -49,8 +49,8 @@ public class SortTests
     [Fact]
     public void LargeComplexCollectionsCanBeSorted()
     {
-        var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".Select(e => e.ToString());
-        var numbers = Enumerable.Range(0, 10000).Select(e => e.ToString());
+        var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".Select(e => e.ToString()).ToArray();
+        var numbers = Enumerable.Range(0, 10000).Select(e => e.ToString()).ToArray();
 
         var rules = new List<Item>();
         foreach (var (n, idx) in letters.Select((n, idx) => (n, idx)))
@@ -92,7 +92,7 @@ public class SortTests
 
         rules = Shuffle(rules).ToList();
 
-        Sorter.Sort<Item, string>(rules, x => x.Id, x => x.Rules, null)
+        Sorter.Sort<Item, string>(rules, x => x.Id, x => x.Rules)
             .Select(i => i.Id)
             .Should().BeEquivalentTo(letters.Concat(numbers));
     }
@@ -115,6 +115,7 @@ public class SortTests
     public class Item : IHasEntityId<string>
     {
         public string Id { get; init; } = string.Empty;
-        public List<ISortRule<Item, string>> Rules { get; set; }
+
+        public List<ISortRule<Item, string>> Rules { get; set; } = new();
     }
 }

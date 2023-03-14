@@ -2,7 +2,6 @@ using System.Text.Json.Serialization;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Exceptions;
-using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.DataModel.Abstractions;

@@ -5,12 +5,21 @@ using NexusMods.Paths.Extensions;
 
 namespace NexusMods.Hashing.xxHash64;
 
+/// <summary>
+/// A tuple which contains the hash of the source archive a file has came from and its
+/// relative path.
+/// </summary>
 [JsonConverter(typeof(HashRelativePathConverter))]
 public readonly struct HashRelativePath : IPath, IEquatable<HashRelativePath>, IComparable<HashRelativePath>
 {
     public readonly Hash Hash;
-    public readonly RelativePath[] Parts;
 
+    // TODO: This needs rewritten for new path system.
+
+    /// <summary>
+    /// Path to the item within the archive marked by <see cref="Hash"/>.
+    /// </summary>
+    public readonly RelativePath[] Parts;
 
     public Extension Extension => Parts.Length > 0
        ? Parts[^1].Extension

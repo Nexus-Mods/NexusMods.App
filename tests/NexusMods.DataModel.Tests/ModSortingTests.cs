@@ -16,9 +16,9 @@ public class ModSortingTests : ADataModelTest<ModSortingTests>
     [Fact]
     public async Task ModSortingRulesArePreserved()
     {
-        var loadout = await LoadoutManager.ManageGame(Install, Guid.NewGuid().ToString());
-        var id1 = await loadout.Install(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
-        var id2 = await loadout.Install(DATA_ZIP_LZMA, "Mod2", CancellationToken.None);
+        var loadout = await LoadoutManager.ManageGameAsync(Install, Guid.NewGuid().ToString());
+        await loadout.InstallModAsync(Data7ZLzma2, "Mod1", CancellationToken.None);
+        await loadout.InstallModAsync(DataZipLzma, "Mod2", CancellationToken.None);
 
         loadout.Value.Mods.Values.First(m => m.Files.Values.OfType<GameFile>().Any())
             .SortRules.Should().Contain(new First<Mod, ModId>(), "game files are loaded first");

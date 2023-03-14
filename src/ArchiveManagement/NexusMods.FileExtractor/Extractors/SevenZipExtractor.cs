@@ -53,14 +53,14 @@ public class SevenZipExtractor : IExtractor
     /// <inheritdoc />
     public async Task ExtractAllAsync(IStreamFactory sFn, AbsolutePath destination, CancellationToken token)
     {
-        using var job = await _limiter.Begin($"[${nameof(ExtractAllAsync)}] Extracting {sFn.Name.FileName}", sFn.Size, token);
+        using var job = await _limiter.BeginAsync($"[${nameof(ExtractAllAsync)}] Extracting {sFn.Name.FileName}", sFn.Size, token);
         await ExtractAllAsync_Impl(sFn, destination, token, job);
     }
 
     /// <inheritdoc />
     public async Task<IDictionary<RelativePath, T>> ForEachEntryAsync<T>(IStreamFactory sFn, Func<RelativePath, IStreamFactory, ValueTask<T>> func, CancellationToken token)
     {
-        using var job = await _limiter.Begin($"[${nameof(ForEachEntryAsync)}] Extracting {sFn.Name.FileName}", sFn.Size, token);
+        using var job = await _limiter.BeginAsync($"[${nameof(ForEachEntryAsync)}] Extracting {sFn.Name.FileName}", sFn.Size, token);
         await using var dest = _manager.CreateFolder();
         await ExtractAllAsync_Impl(sFn, dest, token, job);
 

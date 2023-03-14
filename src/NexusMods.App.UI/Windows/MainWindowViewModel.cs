@@ -5,11 +5,9 @@ using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.TopBar;
 using NexusMods.App.UI.LeftMenu;
-using NexusMods.App.UI.RightContent;
 using NexusMods.App.UI.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Type = NexusMods.App.UI.Controls.Spine.Type;
 
 namespace NexusMods.App.UI.Windows;
 

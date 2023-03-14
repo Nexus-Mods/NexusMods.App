@@ -1,19 +1,25 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+#pragma warning disable CS1591
 
 namespace NexusMods.DataModel.JsonConverters;
 
+// TODO: Is this dead code?
+
+/// <inheritdoc />
 public class GenericInterfaceConverterFactory : JsonConverterFactory
 {
     private readonly Type _type;
     private readonly IServiceProvider _provider;
 
+    /// <inheritdoc />
     public GenericInterfaceConverterFactory(Type type, IServiceProvider provider)
     {
         _provider = provider;
         _type = type;
     }
 
+    /// <inheritdoc />
     public override bool CanConvert(Type typeToConvert)
     {
         if (typeToConvert.IsGenericType && typeToConvert.GetGenericTypeDefinition() == _type)

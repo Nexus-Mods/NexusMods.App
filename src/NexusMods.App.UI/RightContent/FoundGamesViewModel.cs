@@ -1,6 +1,5 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Subjects;
-using System.Runtime.Intrinsics.X86;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.Controls.GameWidget;
@@ -9,7 +8,6 @@ using NexusMods.App.UI.ViewModels;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.RightContent;
 
@@ -67,7 +65,6 @@ public class FoundGamesViewModel : AViewModel<IFoundGamesViewModel>, IFoundGames
 
     public void InitializeManual(IEnumerable<IGame> games)
     {
-        // TODO: Implement manual game add
         InitializeFromFound(games);
     }
 }

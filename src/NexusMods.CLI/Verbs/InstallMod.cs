@@ -20,7 +20,7 @@ public class InstallMod : AVerb<LoadoutMarker, AbsolutePath, string>
     {
         await _renderer.WithProgress(token, async () =>
         {
-            await loadout.Install(file, name, token);
+            await loadout.InstallModAsync(file, name, token);
             return file;
         });
         return 0;

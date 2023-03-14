@@ -1,12 +1,17 @@
 namespace NexusMods.DataModel.Games;
 
 /// <summary>
-/// Marker interface for the Gog store locator
+/// When implemented, enables support for detecting installations of your
+/// <see cref="AGame"/> managed by GOG (Galaxy) launcher.
 /// </summary>
+/// <remarks>
+/// Game detection is automatic provided the correct <see cref="GogIds"/>
+/// is applied.
+/// </remarks>
 public interface IGogGame : IGame
 {
     /// <summary>
-    /// Returns a list of gog game ids
+    /// Returns a list of GOG game IDs.
     /// </summary>
     IEnumerable<long> GogIds { get; }
 

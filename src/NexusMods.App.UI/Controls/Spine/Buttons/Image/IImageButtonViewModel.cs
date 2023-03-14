@@ -1,4 +1,4 @@
-﻿using System.Windows.Input;
+using System.Windows.Input;
 using Avalonia.Media;
 
 namespace NexusMods.App.UI.Controls.Spine.Buttons.Image;
