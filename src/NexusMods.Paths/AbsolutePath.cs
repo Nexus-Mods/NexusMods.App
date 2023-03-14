@@ -370,8 +370,9 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
             return default;
         }
 
-        if (OperatingSystem.IsLinux() && other.Directory == DirectorySeparatorCharStr && otherPathLength == 1)
-            return new RelativePath(thisFullPath.SliceFast(1).ToString());
+        var rootLength = GetRootLength(otherFullPath);
+        if (rootLength == otherPathLength)
+            return new RelativePath(thisFullPath.SliceFast(rootLength).ToString());
 
         return new RelativePath(thisFullPath.SliceFast(otherFullPath.Length + 1).ToString());
     }
@@ -490,6 +491,9 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// <returns>Full path with directory separator string attached at the end.</returns>
     private readonly string GetFullPathWithSeparator()
     {
-        return string.Concat(GetFullPath(), DirectorySeparatorCharStr);
+        var fullPath = GetFullPath();
+        return IsRootDirectory(fullPath)
+            ? fullPath
+            : string.Concat(fullPath, DirectorySeparatorCharStr);
     }
 }
