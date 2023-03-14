@@ -188,12 +188,14 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// <param name="left"></param>
     /// <param name="right"></param>
     /// <returns></returns>
-    private static string JoinPathComponents(string left, string right)
+    private static string JoinPathComponents(ReadOnlySpan<char> left, ReadOnlySpan<char> right)
     {
-        // this is true for root directories
-        return left.EndsWith(PathSeparatorForInternalOperations)
-            ? string.Concat(left, right)
-            : string.Concat(left, DirectorySeparatorCharStr, right);
+        if (left.Length < 1) return string.Empty;
+        if (left.DangerousGetReferenceAt(left.Length - 1) == PathSeparatorForInternalOperations)
+            return string.Concat(left, right);
+
+        ReadOnlySpan<char> separatorCharSpan = stackalloc char[1]{ PathSeparatorForInternalOperations };
+        return string.Concat(left, separatorCharSpan, right);
     }
 
     /// <summary>
@@ -299,7 +301,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         if (relativeSpan[0] == PathSeparatorForInternalOperations)
             relativeSpan = relativeSpan.SliceFast(1);
 
-        var newPath = JoinPathComponents(GetFullPath(), relativeSpan.ToString());
+        var newPath = JoinPathComponents(GetFullPath(), relativeSpan);
         return FromFullPath(newPath, FileSystem);
     }
 
@@ -346,12 +348,12 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         ReadOnlySpan<char> splitSpan;
         while ((splitSpan = SplitDir(remainingPath)) != remainingPath)
         {
-            path = JoinPathComponents(path,FindFileOrDirectoryCasing(path, splitSpan).ToString());
+            path = JoinPathComponents(path,FindFileOrDirectoryCasing(path, splitSpan));
             remainingPath = remainingPath[(splitSpan.Length + 1)..];
         }
 
         if (remainingPath.Length > 0)
-            path = JoinPathComponents(path, FindFileOrDirectoryCasing(path, remainingPath).ToString());
+            path = JoinPathComponents(path, FindFileOrDirectoryCasing(path, remainingPath));
 
         return path;
     }
