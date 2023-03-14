@@ -127,7 +127,7 @@ public class FileHashCache
     public async ValueTask<HashedEntry> IndexFileAsync(AbsolutePath file, CancellationToken? token = null)
     {
         var info = file.FileInfo;
-        var size = Size.From(info.Length);
+        var size = info.Size;
         if (TryGetCached(file, out var found))
         {
             if (found.Size == size && found.LastModified == info.LastWriteTimeUtc)

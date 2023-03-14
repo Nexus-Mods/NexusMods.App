@@ -128,7 +128,7 @@ public class EnumerateFiles : IBenchmark
                 {
                     var absPath = file.ToAbsolutePath();
                     var info = absPath.FileInfo;
-                    return new FileEntry(Path: absPath, Size: Size.From(info.Length), LastModified: info.LastWriteTimeUtc);
+                    return new FileEntry(Path: absPath, Size: info.Size, LastModified: info.LastWriteTimeUtc);
                 });
         }
     }

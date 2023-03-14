@@ -14,7 +14,7 @@ public class ConstructorTests
         string expectedDirectory, string expectedFileName, string expectedFullPath)
     {
         Skip.IfNot(RuntimeInformation.IsOSPlatform(OSPlatform.Windows));
-        var path = new AbsolutePath(inputDirectory, inputFileName);
+        var path = new AbsolutePath(inputDirectory, inputFileName, new InMemoryFileSystem());
         path.Directory.Should().Be(expectedDirectory);
         path.FileName.Should().Be(expectedFileName);
         path.GetFullPath().Should().Be(expectedFullPath);
@@ -29,7 +29,7 @@ public class ConstructorTests
         string expectedDirectory, string expectedFileName, string expectedFullPath)
     {
         Skip.IfNot(RuntimeInformation.IsOSPlatform(OSPlatform.Linux));
-        var path = new AbsolutePath(inputDirectory, inputFileName);
+        var path = new AbsolutePath(inputDirectory, inputFileName, new InMemoryFileSystem());
         path.Directory.Should().Be(expectedDirectory);
         path.FileName.Should().Be(expectedFileName);
         path.GetFullPath().Should().Be(expectedFullPath);

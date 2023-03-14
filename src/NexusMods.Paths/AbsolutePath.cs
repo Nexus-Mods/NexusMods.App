@@ -16,6 +16,11 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     private static readonly string DirectorySeparatorCharStr = Path.DirectorySeparatorChar.ToString();
 
     /// <summary>
+    /// File system implementation.
+    /// </summary>
+    public IFileSystem FileSystem { get; set; }
+
+    /// <summary>
     /// Contains the path to the directory inside which this absolute path is contained in.
     /// </summary>
     /// <remarks>
@@ -37,7 +42,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// <summary>
     /// Gets the parent directory, i.e. navigates one folder up.
     /// </summary>
-    public AbsolutePath Parent => FromFullPath(Path.GetDirectoryName(GetFullPath()) ?? "");
+    public AbsolutePath Parent => FromFullPath(Path.GetDirectoryName(GetFullPath()) ?? "", FileSystem);
 
     /// <summary>
     /// Returns the file name without extensions
@@ -50,7 +55,8 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     ///     If possible, make sure doesn't end with backslash for optimal performance.
     /// </param>
     /// <param name="fileName">Name of the file. Full path if directory is null.</param>
-    internal AbsolutePath(string? directory, string fileName)
+    /// <param name="fileSystem">File system implementation.</param>
+    internal AbsolutePath(string? directory, string fileName, IFileSystem fileSystem)
     {
         // remove directory separator at the end of the directory
         // on Linux: don't do this if the directory is "/"
@@ -64,23 +70,25 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         }
 
         FileName = fileName;
+        FileSystem = fileSystem;
     }
 
     /// <summary>
     /// Converts an existing full path into an absolute path.
     /// </summary>
     /// <param name="fullPath">The full path to use.</param>
+    /// <param name="fileSystem">File system implementation.</param>
     /// <returns>The converted absolute path.</returns>
     /// <remarks>
     ///    Do not use this API when searching/enumerating files; instead use <see cref="FromDirectoryAndFileName"/>.
     /// </remarks>
-    public static AbsolutePath FromFullPath(string fullPath)
+    public static AbsolutePath FromFullPath(string fullPath, IFileSystem? fileSystem = null)
     {
         var index = fullPath.LastIndexOf(Path.DirectorySeparatorChar);
         if (index < 0)
         {
             // No directory
-            return new AbsolutePath(null, fullPath);
+            return new AbsolutePath(null, fullPath, fileSystem ?? Paths.FileSystem.Shared);
         }
 
         // Windows: "C:\foo", directory should be "C:"
@@ -88,16 +96,18 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         var directory = index == 0 ? DirectorySeparatorCharStr : fullPath[..index];
 
         var fileName = fullPath[(index + 1)..];
-        return new AbsolutePath(directory, fileName);
+        return new AbsolutePath(directory, fileName, fileSystem ?? Paths.FileSystem.Shared);
     }
 
     /// <summary>
     /// Converts an existing full path into an absolute path.
     /// </summary>
     /// <param name="directoryPath">The path to the directory used.</param>
-    /// <param name="fileName">The file name to use.</param>
+    /// <param name="fullPath">The full path to use.</param>
+    /// <param name="fileSystem">File system implementation.</param>
     /// <returns>The converted absolute path.</returns>
-    public static AbsolutePath FromDirectoryAndFileName(string? directoryPath, string fileName) => new(directoryPath, fileName);
+    public static AbsolutePath FromDirectoryAndFileName(string? directoryPath, string fullPath, IFileSystem? fileSystem = null)
+        => new(directoryPath, fullPath, fileSystem ?? Paths.FileSystem.Shared);
 
     /// <summary>
     /// Returns the full path of the combined string.
@@ -202,7 +212,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
             relativeSpan = relativeSpan.SliceFast(1);
 
         // Now walk the directories.
-        return FromFullPath($"{GetFullPath()}{DirectorySeparatorCharStr}{relativeSpan}");
+        return FromFullPath($"{GetFullPath()}{DirectorySeparatorCharStr}{relativeSpan}", FileSystem);
     }
 
     /// <summary>
@@ -235,7 +245,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
             relativeSpan = relativeSpan.SliceFast(1);
 
         // Now walk the directories.
-        return FromFullPath(AppendChecked(GetFullPath(), relativeSpan));
+        return FromFullPath(AppendChecked(GetFullPath(), relativeSpan), FileSystem);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -291,7 +301,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// Creates a new absolute path from the current one, appending an extension.
     /// </summary>
     /// <param name="ext">The extension to append to the absolute path.</param>
-    public AbsolutePath WithExtension(Extension ext) => FromDirectoryAndFileName(Directory, FileName + ext);
+    public AbsolutePath WithExtension(Extension ext) => FromDirectoryAndFileName(Directory, FileName + ext, FileSystem);
 
     /// <summary>
     /// Returns true if this path is a child of the specified path.
@@ -320,7 +330,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// <param name="ext">The extension to replace.</param>
     public AbsolutePath ReplaceExtension(Extension ext)
     {
-        return FromDirectoryAndFileName(Directory!, FileName.ReplaceExtension(ext));
+        return FromDirectoryAndFileName(Directory!, FileName.ReplaceExtension(ext), FileSystem);
     }
 
     /// <summary/>
