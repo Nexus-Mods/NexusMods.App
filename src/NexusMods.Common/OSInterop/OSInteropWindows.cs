@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using CliWrap;
 
 namespace NexusMods.Common.OSInterop;
 
@@ -20,9 +21,8 @@ public class OSInteropWindows : IOSInterop
     /// <inheritdoc/>
     public async Task OpenURL(string url, CancellationToken cancellationToken = default)
     {
-        var process = new ProcessStartInfo(url) { UseShellExecute = true };
-        var started = Process.Start(process);
-        if (started != null)
-            await started.WaitForExitAsync(cancellationToken);
+        // cmd /c start "" "https://google.com"
+        var command = Cli.Wrap("cmd.exe").WithArguments($@"/c start """" ""{url}""");
+        await _processFactory.ExecuteAsync(command, cancellationToken);
     }
 }

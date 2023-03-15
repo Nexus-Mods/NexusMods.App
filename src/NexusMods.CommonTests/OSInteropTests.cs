@@ -6,8 +6,6 @@ namespace NexusMods.Common.Tests;
 
 public class OSInteropTests
 {
-    // Disabled as we don't do processes this way with
-    /*
     [Fact]
     public async Task UsesExplorerOnWindows()
     {
@@ -19,11 +17,11 @@ public class OSInteropTests
 
         mockFactory.Verify(f => f.ExecuteAsync(
             It.Is<Command>(command =>
-                command.TargetFilePath == "explorer.exe" &&
-                command.Arguments == url),
+                command.TargetFilePath == "cmd.exe" &&
+                command.Arguments == $@"/c start """" ""{url}"""),
             It.IsAny<CancellationToken>()
         ), Times.Once);
-    }*/
+    }
 
     [Fact]
     public async Task UsesXDGOpenOnLinux()
