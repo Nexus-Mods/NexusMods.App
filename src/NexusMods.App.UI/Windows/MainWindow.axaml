@@ -11,10 +11,8 @@
     x:TypeArguments="windows:MainWindowViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:gameWidget="clr-namespace:NexusMods.App.UI.Controls.GameWidget"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
-    xmlns:vm="using:NexusMods.App.UI.ViewModels"
     xmlns:windows="clr-namespace:NexusMods.App.UI.Windows"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 

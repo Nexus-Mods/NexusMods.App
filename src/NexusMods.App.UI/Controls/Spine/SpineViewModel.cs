@@ -11,7 +11,6 @@ using NexusMods.App.UI.Controls.Spine.Buttons.Image;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.LeftMenu.Game;
 using NexusMods.App.UI.LeftMenu.Home;
-using NexusMods.App.UI.ViewModels;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Loadouts;
@@ -22,8 +21,6 @@ namespace NexusMods.App.UI.Controls.Spine;
 
 public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 {
-    private readonly IDataStore _dataStore;
-
     public IIconButtonViewModel Home { get; }
 
     public IIconButtonViewModel Add { get; }
@@ -40,10 +37,6 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
     private readonly Subject<SpineButtonAction> _actions = new();
     private readonly ILogger<SpineViewModel> _logger;
-    private readonly IServiceProvider _provider;
-    private readonly Root<LoadoutRegistry> _root;
-    private readonly IHomeLeftMenuViewModel _homeLeftMenuViewModel;
-    private readonly IGameLeftMenuViewModel _gameLeftMenuViewModel;
     public IObservable<SpineButtonAction> Actions => _actions;
 
     public SpineViewModel(ILogger<SpineViewModel> logger, IDataStore dataStore,
@@ -54,29 +47,24 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         IServiceProvider provider)
     {
         _logger = logger;
-        _dataStore = dataStore;
-        _provider = provider;
-
-        _homeLeftMenuViewModel = homeLeftMenuViewModel;
-        _gameLeftMenuViewModel = gameLeftMenuViewModel;
 
         Home = homeButtonViewModel;
         Add = addButtonViewModel;
 
-        _root = new Root<LoadoutRegistry>(RootType.Loadouts, dataStore);
+        Root<LoadoutRegistry> root = new(RootType.Loadouts, dataStore);
 
 
         this.WhenActivated(disposables =>
         {
-            _root.Changes
-                .StartWith(_dataStore.Get<LoadoutRegistry>(_dataStore.GetRoot(RootType.Loadouts) ?? IdEmpty.Empty, true))
-                .Where(registry => registry != null)
-                .SelectMany(registry => registry!.Lists.Select(lst => lst.Value.Installation.Game).Distinct())
+            root.Changes
+                .StartWith(dataStore.Get<LoadoutRegistry>(dataStore.GetRoot(RootType.Loadouts) ?? IdEmpty.Empty, true))
+                .WhereNotNull()
+                .SelectMany(registry => registry.Lists.Select(lst => lst.Value.Installation.Game).Distinct())
                 .ToObservableChangeSet(x => x.Domain)
                 .Transform(game =>
                 {
                     using var iconStream = game.Icon.GetStreamAsync().Result;
-                    var vm = _provider.GetRequiredService<IImageButtonViewModel>();
+                    var vm = provider.GetRequiredService<IImageButtonViewModel>();
                     vm.Name = game.Name;
                     vm.Image = Bitmap.DecodeToWidth(iconStream, 48);
                     vm.IsActive = false;
@@ -85,8 +73,8 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                     {
                         _logger.LogTrace("Game {Game} selected", game);
                         _actions.OnNext(new SpineButtonAction(Type.Game, game));
-                        _gameLeftMenuViewModel.Game = game;
-                        LeftMenu = _gameLeftMenuViewModel;
+                        gameLeftMenuViewModel.Game = game;
+                        LeftMenu = gameLeftMenuViewModel;
                     });
                     return vm;
                 })
@@ -99,7 +87,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
             {
                 _logger.LogTrace("Home selected");
                 _actions.OnNext(new SpineButtonAction(Type.Home));
-                LeftMenu = _homeLeftMenuViewModel;
+                LeftMenu = homeLeftMenuViewModel;
             });
 
             Add.Click = ReactiveCommand.Create(() =>

@@ -1,5 +1,4 @@
-﻿using NexusMods.App.UI.ViewModels;
-using NexusMods.DataModel.Games;
+﻿using NexusMods.DataModel.Games;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.RightContent.MyGames;
@@ -14,10 +13,11 @@ public class MyGamesViewModel : AViewModel<IMyGamesViewModel>, IMyGamesViewModel
 
     public MyGamesViewModel(IFoundGamesViewModel foundGames, IFoundGamesViewModel allGames, IEnumerable<IGame> games)
     {
+        var gamesList = games.ToList();
         FoundGames = foundGames;
-        foundGames.InitializeFromFound(games);
+        foundGames.InitializeFromFound(gamesList);
 
         AllGames = allGames;
-        allGames.InitializeManual(games);
+        allGames.InitializeManual(gamesList);
     }
 }

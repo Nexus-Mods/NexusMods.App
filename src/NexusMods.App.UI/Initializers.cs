@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.Drawing;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Media;
@@ -8,7 +7,6 @@ using Avalonia.Platform;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.LeftMenu.Home;
 using NexusMods.App.UI.RightContent;
-using NexusMods.DataModel.Games;
 using ReactiveUI;
 // ReSharper disable InconsistentNaming
 

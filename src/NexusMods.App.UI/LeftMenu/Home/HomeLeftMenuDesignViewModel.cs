@@ -2,7 +2,6 @@ using System.Collections.ObjectModel;
 using NexusMods.App.UI.Icons;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.RightContent;
-using NexusMods.App.UI.ViewModels;
 
 namespace NexusMods.App.UI.LeftMenu.Home;
 

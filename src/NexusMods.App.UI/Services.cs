@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.Controls.GameWidget;
 using NexusMods.App.UI.Controls.Spine;
-using NexusMods.App.UI.Controls.Spine.Buttons;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
 using NexusMods.App.UI.Controls.TopBar;

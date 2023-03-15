@@ -1,7 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using NexusMods.App.UI.Controls.GameWidget;
-using NexusMods.App.UI.ViewModels;
-using ReactiveUI.Fody.Helpers;
+﻿using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.RightContent.MyGames;
 

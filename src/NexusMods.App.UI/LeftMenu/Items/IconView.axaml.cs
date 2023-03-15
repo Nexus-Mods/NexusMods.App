@@ -18,7 +18,7 @@ public partial class IconView : ReactiveUserControl<IIconViewModel>
                 .DisposeWith(d);
 
             this.WhenAnyValue(view => view.ViewModel!.Icon)
-                .Select(v => v.ToMaterialUIName())
+                .Select(v => v.ToMaterialUiName())
                 .BindTo(this, view => view.LeftIcon.Value)
                 .DisposeWith(d);
 

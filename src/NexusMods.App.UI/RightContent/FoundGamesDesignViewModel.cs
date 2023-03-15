@@ -1,6 +1,5 @@
 using System.Collections.ObjectModel;
 using NexusMods.App.UI.Controls.GameWidget;
-using NexusMods.App.UI.ViewModels;
 using NexusMods.DataModel.Games;
 
 namespace NexusMods.App.UI.RightContent;
@@ -11,7 +10,7 @@ public class FoundGamesDesignViewModel : AViewModel<IFoundGamesViewModel>, IFoun
     public FoundGamesDesignViewModel()
     {
         var games = Enumerable.Range(0, 10)
-            .Select(g => new GameWidgetDesignViewModel());
+            .Select(_ => new GameWidgetDesignViewModel());
 
         Games = new ReadOnlyObservableCollection<IGameWidgetViewModel>(new ObservableCollection<IGameWidgetViewModel>(games));
     }

@@ -3,9 +3,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using Avalonia.Platform;
 using Microsoft.Extensions.Logging;
-using NexusMods.App.UI.ViewModels;
 using NexusMods.Networking.NexusWebApi;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -55,7 +53,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed to load image: {uri}", uri);
+            _logger.LogError(e, "Failed to load image: {Uri}", uri);
             return null;
         }
     }

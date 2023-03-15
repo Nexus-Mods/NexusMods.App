@@ -17,10 +17,10 @@ public partial class GameWidget : ReactiveUserControl<IGameWidgetViewModel>
             this.Bind(ViewModel, vm => vm.Image, v => v.GameImage.Source)
                 .DisposeWith(d);
             this.WhenAnyValue(view => view.ViewModel!.Image)
-                .Where(img => img != null)
-                .OffUI()
+                .WhereNotNull()
+                .OffUi()
                 .Select(img => BlurImage((IBitmap)img))
-                .BindToUI(this, view => view.BlurryImage.Source)
+                .BindToUi(this, view => view.BlurryImage.Source)
                 .DisposeWith(d);
             this.Bind(ViewModel, vm => vm.Name, v => v.NameTextBlock.Text)
                 .DisposeWith(d);

@@ -2,19 +2,15 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
-using DynamicData.Alias;
-using DynamicData.Binding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Icons;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.RightContent;
-using NexusMods.App.UI.ViewModels;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
-using Noggog;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -46,7 +42,7 @@ public class GameLeftMenuViewModel : AViewModel<IGameLeftMenuViewModel>, IGameLe
 
             dataStore.RootChanges
                 .Where(r => r.To.Category == EntityCategory.Loadouts)
-                .Select(change => dataStore.GetRoot(RootType.Loadouts))
+                .Select(_ => dataStore.GetRoot(RootType.Loadouts))
                 .StartWith(dataStore.GetRoot(RootType.Loadouts))
                 .Where(id => id != null)
                 .Select(id => dataStore.Get<LoadoutRegistry>(id!, true))

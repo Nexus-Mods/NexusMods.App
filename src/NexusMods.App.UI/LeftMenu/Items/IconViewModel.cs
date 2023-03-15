@@ -1,6 +1,5 @@
 using System.Windows.Input;
 using NexusMods.App.UI.Icons;
-using NexusMods.App.UI.ViewModels;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.LeftMenu.Items;
