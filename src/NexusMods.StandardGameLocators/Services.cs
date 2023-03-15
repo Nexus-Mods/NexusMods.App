@@ -12,6 +12,9 @@ using NexusMods.DataModel.Games;
 
 namespace NexusMods.StandardGameLocators;
 
+/// <summary>
+/// Adds services tied to this library to your Dependency Injector container.
+/// </summary>
 public static class Services
 {
     /// <summary>
