@@ -156,7 +156,7 @@ public class LoadoutManager
 
         var managementJob = new InterprocessJob(JobType.ManageGame, _jobManager, n.LoadoutId,
                 $"Analyzing game files for {installation.Game.Name}");
-        var indexTask = IndexAndAddGameFiles(installation, token, n, mod, managementJob);
+        var indexTask = Task.Run(() => IndexAndAddGameFiles(installation, token, n, mod, managementJob), token);
 
         if (!earlyReturn)
             await indexTask;
