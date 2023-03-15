@@ -30,7 +30,7 @@ public class ModelTests : ADataModelTest<ModelTests>
             To = new GamePath(GameFolderType.Game, "foo/bar.pez"),
             From = new HashRelativePath(Hash.Zero, RelativePath.Empty),
             Hash = (Hash)0x42L,
-            Size = Size.From(44L)
+            Size = Size.FromLong(44L)
         };
         file.EnsurePersisted(DataStore);
         file.DataStoreId.Should().NotBeNull();

@@ -23,7 +23,7 @@ internal sealed class FilesEnumeratorEx : FileSystemEnumerator<FilesEnumeratorEx
     protected override FilesEnumeratorExEntry TransformEntry(ref FileSystemEntry entry)
     {
         CurrentDirectory ??= entry.Directory.ToString();
-        return new(entry.FileName.ToString(), Size.From(entry.Length), entry.LastWriteTimeUtc.DateTime,
+        return new(entry.FileName.ToString(), Size.FromLong(entry.Length), entry.LastWriteTimeUtc.DateTime,
             entry.IsDirectory);
     }
 }

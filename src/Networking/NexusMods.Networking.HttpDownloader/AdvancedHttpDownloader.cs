@@ -173,7 +173,7 @@ namespace NexusMods.Networking.HttpDownloader
                 }
                 await ApplyWriteOrder(file, order.Order, state);
                 // _bufferPool.Return(order.Data);
-                await job.ReportAsync(Size.From(order.Order.Size), cancel);
+                await job.ReportAsync(Size.FromLong(order.Order.Size), cancel);
             }
         }
 
@@ -229,7 +229,7 @@ namespace NexusMods.Networking.HttpDownloader
             // start one task per unfinished chunk. We never start additional tasks but a task may take on another chunks
             await Task.WhenAll(UnfinishedChunks(state).Select(async chunk =>
             {
-                using var chunkJob = await _limiter.BeginAsync($"Download Chunk @${chunk.Offset}", Size.From(chunk.Size), cancel);
+                using var chunkJob = await _limiter.BeginAsync($"Download Chunk @${chunk.Offset}", Size.FromLong(chunk.Size), cancel);
 
                 try
                 {
@@ -405,7 +405,7 @@ namespace NexusMods.Networking.HttpDownloader
             {
                 var buffer = _bufferPool.Rent(ReadBlockSize);
                 lastRead = await stream.ReadAsync(buffer, 0, ReadBlockSize, cancel);
-                job.ReportNoWait(Size.From(lastRead));
+                job.ReportNoWait(Size.FromLong(lastRead));
                 if (lastRead > 0)
                 {
                     chunk.Read += lastRead;

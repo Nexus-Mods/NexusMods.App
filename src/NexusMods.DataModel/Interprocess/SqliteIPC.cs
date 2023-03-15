@@ -163,7 +163,7 @@ public class SqliteIPC : IDisposable
     {
         try
         {
-            _logger.LogTrace("Sending {Bytes} byte message to queue {Queue}", Size.From(message.Length), queue);
+            _logger.LogTrace("Sending {Bytes} byte message to queue {Queue}", Size.FromLong(message.Length), queue);
             using var cmd = new SQLiteCommand(
                 "INSERT INTO Ipc (Queue, Data, TimeStamp) VALUES (@queue, @data, @timestamp);",
                 _conn);

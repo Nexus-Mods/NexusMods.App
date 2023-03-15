@@ -8,7 +8,7 @@ public class SizeTests
     public void MathAndSize()
     {
         var a = (Size)10L;
-        var b = Size.From(20L);
+        var b = Size.FromLong(20L);
 
         a.Should().BeLessThan(b);
         b.Should().BeGreaterThan(a);
@@ -17,7 +17,7 @@ public class SizeTests
         (a != b).Should().BeTrue();
 
         (b / a).Should().Be(2L);
-        (b * 20).Should().Be(Size.From(400));
+        (b * 20).Should().Be(Size.FromLong(400));
 
         (b > a).Should().BeTrue();
         (a < b).Should().BeTrue();

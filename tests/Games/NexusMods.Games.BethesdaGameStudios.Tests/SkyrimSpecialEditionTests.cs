@@ -60,7 +60,7 @@ public class SkyrimSpecialEditionTests
 
         var (size, hash) = await pluginFile.GetMetadataAsync(loadout.Value, flattenedList);
 
-        size.Should().Be(Size.From(ms.Length));
+        size.Should().Be(Size.FromLong(ms.Length));
         (await ms.XxHash64Async()).Should().Be(hash);
 
         var results = Encoding.UTF8.GetString(ms.ToArray())

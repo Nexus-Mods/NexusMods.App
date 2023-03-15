@@ -191,7 +191,7 @@ public readonly record struct FileHashCacheEntry(DateTime LastModified, Hash Has
         var date = BinaryPrimitives.ReadInt64BigEndian(span);
         var hash = BinaryPrimitives.ReadUInt64BigEndian(span[8..]);
         var size = BinaryPrimitives.ReadInt64BigEndian(span[16..]);
-        return new FileHashCacheEntry(DateTime.FromFileTimeUtc(date), Hash.FromULong(hash), Size.From(size));
+        return new FileHashCacheEntry(DateTime.FromFileTimeUtc(date), Hash.FromULong(hash), Size.FromLong(size));
     }
 
     /// <summary>

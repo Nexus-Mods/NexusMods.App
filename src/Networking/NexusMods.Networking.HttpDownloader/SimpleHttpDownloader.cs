@@ -34,7 +34,7 @@ public class SimpleHttpDownloader : IHttpDownloader
                 continue;
             }
 
-            job.Size = size ?? Size.From(response.Content.Headers.ContentLength ?? 1);
+            job.Size = size ?? Size.FromLong(response.Content.Headers.ContentLength ?? 1);
 
             await using var stream = await response.Content.ReadAsStreamAsync(token);
             await using var file = destination.Create();
