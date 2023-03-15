@@ -9,7 +9,7 @@ namespace NexusMods.Paths;
 /// <summary>
 /// A path that represents a full path to a file or directory.
 /// </summary>
-public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
+public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
 {
     private static readonly char PathSeparatorForInternalOperations = Path.DirectorySeparatorChar;
     private static readonly char SeparatorToReplace = PathSeparatorForInternalOperations == '/' ? '\\' : '/';
@@ -19,7 +19,12 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// <summary>
     /// File system implementation.
     /// </summary>
-    public IFileSystem FileSystem { get; set; }
+    /// <remarks>
+    /// This string is never empty and might end with a directory separator.
+    /// This is only guaranteed for root directories, every other directory
+    /// shall not have trailing directory separators.
+    /// </remarks>
+    public readonly string Directory;
 
     /// <summary>
     /// Contains the path to the directory inside which this absolute path is contained in.
@@ -27,37 +32,31 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// <remarks>
     ///    Shouldn't end with a backslash.
     /// </remarks>
-    public string? Directory { get; private set; }
+    public readonly string FileName;
+
+    /// <summary>
+    /// The <see cref="IFileSystem"/> implementation used by the IO methods.
+    /// </summary>
+    [Obsolete("This will be phased out once all references to the AbsolutePath IO methods are replaced with direct calls to IFileSystem.")]
+    private readonly IFileSystem _fileSystem;
 
     /// <inheritdoc />
     public Extension Extension => Extension.FromPath(FileName);
 
     /// <inheritdoc />
-    RelativePath IPath.FileName => Path.GetFileName(FileName);
-
-    /// <summary>
-    /// Contains the name of the file.
-    /// </summary>
-    public string FileName { get; private set; }
+    RelativePath IPath.FileName => FileName;
 
     /// <summary>
     /// Gets the parent directory, i.e. navigates one folder up.
     /// </summary>
-    public AbsolutePath Parent => FromFullPath(Path.GetDirectoryName(GetFullPath()) ?? "", FileSystem);
+    public AbsolutePath Parent => FromFullPath(Directory, _fileSystem);
 
     /// <summary>
     /// Returns the file name without extensions
     /// </summary>
     public string FileNameWithoutExtension => Path.GetFileNameWithoutExtension(FileName);
 
-    /// <summary/>
-    /// <param name="directory">
-    ///     Name of the directory in question.
-    ///     If possible, make sure doesn't end with backslash for optimal performance.
-    /// </param>
-    /// <param name="fileName">Name of the file. Full path if directory is null.</param>
-    /// <param name="fileSystem">File system implementation.</param>
-    internal AbsolutePath(string? directory, string fileName, IFileSystem fileSystem)
+    internal AbsolutePath(string directory, string fileName, IFileSystem fileSystem)
     {
         if (!string.IsNullOrEmpty(directory) && !IsRootDirectory(directory))
         {
@@ -72,18 +71,12 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         }
 
         FileName = fileName;
-        FileSystem = fileSystem;
+        _fileSystem = fileSystem;
     }
 
-    /// <summary>
-    /// Converts an existing full path into an absolute path.
-    /// </summary>
-    /// <param name="fullPath">The full path to use.</param>
-    /// <param name="fileSystem">File system implementation.</param>
-    /// <returns>The converted absolute path.</returns>
-    /// <remarks>
-    ///    Do not use this API when searching/enumerating files; instead use <see cref="FromDirectoryAndFileName"/>.
-    /// </remarks>
+    public static AbsolutePath FromDirectoryAndFileName(string directoryPath, string fullPath, IFileSystem? fileSystem = null)
+        => new(directoryPath, fullPath, fileSystem ?? Paths.FileSystem.Shared);
+
     public static AbsolutePath FromFullPath(string fullPath, IFileSystem? fileSystem = null)
     {
         fileSystem ??= Paths.FileSystem.Shared;
@@ -92,7 +85,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         // path is not rooted
         var rootLength = GetRootLength(span);
         if (rootLength == 0)
-            return new AbsolutePath(null, fullPath, fileSystem);
+            throw new ArgumentException("The provided path is not rooted.", nameof(fullPath));
 
         // path is only the root directory
         if (span.Length == rootLength)
@@ -202,7 +195,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// Returns the full path of the combined string.
     /// </summary>
     /// <returns>The full combined path.</returns>
-    public readonly string GetFullPath()
+    public string GetFullPath()
     {
         if (string.IsNullOrEmpty(Directory))
             return FileName;
@@ -280,7 +273,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     ///    guarantee casing will match the specified relative path.
     /// </remarks>
     [SkipLocalsInit]
-    public readonly AbsolutePath CombineUnchecked(RelativePath path)
+    public AbsolutePath CombineUnchecked(RelativePath path)
     {
         // Just in case.
         if (path.Path.Length <= 0)
@@ -302,7 +295,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
             relativeSpan = relativeSpan.SliceFast(1);
 
         var newPath = JoinPathComponents(GetFullPath(), relativeSpan);
-        return FromFullPath(newPath, FileSystem);
+        return FromFullPath(newPath, _fileSystem);
     }
 
     /// <summary>
@@ -338,7 +331,7 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
             relativeSpan = relativeSpan.SliceFast(1);
 
         // Now walk the directories.
-        return FromFullPath(AppendChecked(GetFullPath(), relativeSpan), FileSystem);
+        return FromFullPath(AppendChecked(GetFullPath(), relativeSpan), _fileSystem);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

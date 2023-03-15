@@ -9,7 +9,7 @@ namespace NexusMods.Paths;
 /// Extensions for absolute paths.
 /// Functionality not directly tied to class but useful nonetheless.
 /// </summary>
-public partial struct AbsolutePath
+public readonly partial struct AbsolutePath
 {
     private static EnumerationOptions GetSearchOptions(bool recursive) => new()
     {
@@ -18,12 +18,10 @@ public partial struct AbsolutePath
         MatchType = MatchType.Win32
     };
 
-    private IFileEntry? _info = null;
-
     /// <summary>
     /// Returns the file information for this file.
     /// </summary>
-    public IFileEntry FileInfo => _info ??= FileSystem.GetFileEntry(this);
+    public IFileEntry FileInfo => _fileSystem.GetFileEntry(this);
 
     /// <summary>
     /// Returns a <see cref="FileVersionInfo"/> representing the version information associated with the specified file.
@@ -58,7 +56,7 @@ public partial struct AbsolutePath
     /// <summary>
     /// Returns true if the file exists, else false.
     /// </summary>
-    public bool FileExists => FileSystem.FileExists(this);
+    public bool FileExists => _fileSystem.FileExists(this);
 
     /// <summary>
     /// Obtains the name of the first folder stored in this path.
@@ -76,7 +74,7 @@ public partial struct AbsolutePath
                 return FromFullPath(DirectorySeparatorCharStr);
 
             var path = thisFullPath[..index];
-            return FromDirectoryAndFileName(path.ToString(), "", FileSystem);
+            return FromDirectoryAndFileName(path.ToString(), "", _fileSystem);
         }
     }
 
@@ -85,7 +83,7 @@ public partial struct AbsolutePath
     /// </summary>
     public Stream Open(FileMode mode, FileAccess access = FileAccess.Read, FileShare share = FileShare.ReadWrite)
     {
-        return FileSystem.OpenFile(this, mode, access, share);
+        return _fileSystem.OpenFile(this, mode, access, share);
     }
 
     // TODO: This should probably be called OpenRead & OpenCreate. Will change once am done with docs to make merging less hard.
@@ -109,14 +107,14 @@ public partial struct AbsolutePath
         {
             try
             {
-                FileSystem.DeleteFile(this);
+                _fileSystem.DeleteFile(this);
             }
             catch (UnauthorizedAccessException)
             {
                 if (FileInfo.IsReadOnly)
                 {
                     FileInfo.IsReadOnly = false;
-                    FileSystem.DeleteFile(this);
+                    _fileSystem.DeleteFile(this);
                 }
                 else
                 {
@@ -125,7 +123,7 @@ public partial struct AbsolutePath
             }
         }
 
-        if (FileSystem.DirectoryExists(this))
+        if (_fileSystem.DirectoryExists(this))
             DeleteDirectory();
     }
 
@@ -139,7 +137,7 @@ public partial struct AbsolutePath
     /// </remarks>
     // ReSharper disable once MemberCanBePrivate.Global
     public Task<byte[]> ReadAllBytesAsync(CancellationToken token = default)
-        => FileSystem.ReadAllBytesAsync(this, token);
+        => _fileSystem.ReadAllBytesAsync(this, token);
 
     /// <summary>
     /// Moves the current path to a new destination.
@@ -160,7 +158,7 @@ public partial struct AbsolutePath
         {
             try
             {
-                FileSystem.MoveFile(this, dest, overwrite);
+                _fileSystem.MoveFile(this, dest, overwrite);
                 return;
             }
             catch (Exception)
@@ -200,12 +198,12 @@ public partial struct AbsolutePath
     /// <summary>
     /// Creates a directory if it does not already exist.
     /// </summary>
-    public void CreateDirectory() => FileSystem.CreateDirectory(this);
+    public void CreateDirectory() => _fileSystem.CreateDirectory(this);
 
     /// <summary>
     /// Returns true if this directory exists, else false.
     /// </summary>
-    public readonly bool DirectoryExists() => FileSystem.DirectoryExists(this);
+    public readonly bool DirectoryExists() => _fileSystem.DirectoryExists(this);
 
     /// <summary>
     /// Deletes the directory specified by this absolute path.
@@ -263,7 +261,7 @@ public partial struct AbsolutePath
         {
             var item = enumerator.Current;
             if (!item.IsDirectory)
-                yield return FromDirectoryAndFileName(enumerator.CurrentDirectory, item.FileName, FileSystem);
+                yield return FromDirectoryAndFileName(enumerator.CurrentDirectory, item.FileName, _fileSystem);
         }
     }
 
@@ -278,7 +276,7 @@ public partial struct AbsolutePath
         while (enumerator.MoveNext())
         {
             var item = enumerator.Current;
-            yield return FromDirectoryAndFileName(Path.Combine(enumerator.CurrentDirectory!, item), "", FileSystem);
+            yield return FromDirectoryAndFileName(Path.Combine(enumerator.CurrentDirectory!, item), "", _fileSystem);
         }
     }
 
@@ -298,7 +296,7 @@ public partial struct AbsolutePath
         {
             var item = enumerator.Current;
             if (!item.IsDirectory)
-                yield return new FileEntry(FromDirectoryAndFileName(enumerator.CurrentDirectory, item.FileName, FileSystem), item.Size, item.LastModified);
+                yield return new FileEntry(FromDirectoryAndFileName(enumerator.CurrentDirectory, item.FileName, _fileSystem), item.Size, item.LastModified);
         }
     }
 
@@ -316,7 +314,7 @@ public partial struct AbsolutePath
     /// <param name="text">The text to write to the path.</param>
     /// <param name="token">Use this to cancel task if needed.</param>
     public Task WriteAllTextAsync(string text, CancellationToken token = default)
-        => FileSystem.WriteAllTextAsync(this, text, token);
+        => _fileSystem.WriteAllTextAsync(this, text, token);
 
     /// <summary>
     /// Writes all lines of text specified in the given collection to this path; using UTF-8 encoding.
@@ -324,19 +322,19 @@ public partial struct AbsolutePath
     /// <param name="lines">The lines to write to the path.</param>
     /// <param name="token">Use this to cancel task if needed.</param>
     public Task WriteAllLinesAsync([InstantHandle(RequireAwait = true)] IEnumerable<string> lines, CancellationToken token = default)
-        => FileSystem.WriteAllLinesAsync(this, lines, token);
+        => _fileSystem.WriteAllLinesAsync(this, lines, token);
 
     /// <summary>
     /// Reads all text from this absolute path, assuming UTF8 encoding.
     /// </summary>
     /// <param name="token">Use this to cancel task if needed.</param>
     public Task<string> ReadAllTextAsync(CancellationToken token = default)
-        => FileSystem.ReadAllTextAsync(this, token);
+        => _fileSystem.ReadAllTextAsync(this, token);
 
     /// <summary>
     /// Writes the specified byte array to the path.
     /// </summary>
     /// <param name="data">The array to write.</param>
     public Task WriteAllBytesAsync(byte[] data)
-        => FileSystem.WriteAllBytesAsync(this, data);
+        => _fileSystem.WriteAllBytesAsync(this, data);
 }
