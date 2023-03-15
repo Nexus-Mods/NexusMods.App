@@ -1,19 +1,15 @@
-using GameFinder.Common;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.ModFiles;
-using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
+// ReSharper disable InconsistentNaming
 
-namespace NexusMods.StandardGameLocators.TestHelpers;
-
+namespace NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
 public class StubbedGame : IEADesktopGame, IEpicGame, IOriginGame, ISteamGame, IGogGame
 {
@@ -44,7 +40,7 @@ public class StubbedGame : IEADesktopGame, IEpicGame, IOriginGame, ISteamGame, I
     {
         get
         {
-            _logger.LogInformation("Looking for {Game} in {Count} locators", this, _locators.Count());
+            _logger.LogInformation("Looking for {Game} in {Count} locators", ToString(), _locators.Count());
             return _locators.SelectMany(l => l.Find(this))
                 .Select((i, idx) => new GameInstallation()
                 {
@@ -85,7 +81,7 @@ public class StubbedGame : IEADesktopGame, IEpicGame, IOriginGame, ISteamGame, I
     {
         path.Parent.CreateDirectory();
         if (path.FileExists) return;
-        File.WriteAllText(path.ToString(), path.FileName.ToString());
+        File.WriteAllText(path.ToString(), path.FileName);
     }
 
     public IEnumerable<int> SteamIds => new[] { 42 };
@@ -93,66 +89,4 @@ public class StubbedGame : IEADesktopGame, IEpicGame, IOriginGame, ISteamGame, I
     public IEnumerable<string> EADesktopSoftwareIDs => new[] { "ea-game-id" };
     public IEnumerable<string> EpicCatalogItemId => new[] { "epic-game-id" };
     public IEnumerable<string> OriginGameIds => new[] { "origin-game-id" };
-}
-
-public class StubbedGameLocator<TGame, TId> : AHandler<TGame, TId>
-    where TGame : class where TId : notnull
-{
-    private readonly TemporaryFileManager _manager;
-    private readonly Func<TemporaryFileManager, TGame> _factory;
-    private readonly Func<TGame, TId> _idSelector;
-    private readonly TGame _game;
-
-    public StubbedGameLocator(TemporaryFileManager manager,
-        Func<TemporaryFileManager, TGame> factory,
-        Func<TGame, TId> idSelector,
-        Version? version = null)
-    {
-        _manager = manager;
-        _factory = factory;
-        _idSelector = idSelector;
-        _game = _factory(_manager);
-    }
-    public override IEnumerable<Result<TGame>> FindAllGames()
-    {
-        return new[]
-        {
-            Result.FromGame(_game)
-        };
-    }
-
-    public override Dictionary<TId, TGame> FindAllGamesById(out string[] errors)
-    {
-        errors = Array.Empty<string>();
-        return FindAllGames().ToDictionary(g => _idSelector(g.Game!), v => v.Game)!;
-    }
-}
-
-public class StubbedGameInstaller : IModInstaller
-{
-    private readonly IDataStore _store;
-
-    public StubbedGameInstaller(IDataStore store)
-    {
-        _store = store;
-    }
-    public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
-    {
-        return installation.Game is StubbedGame ? Common.Priority.Normal : Common.Priority.None;
-    }
-
-    public IEnumerable<AModFile> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
-    {
-        foreach (var (key, value) in files)
-        {
-            yield return new FromArchive
-            {
-                Id = ModFileId.New(),
-                From = new HashRelativePath(srcArchive, key),
-                To = new GamePath(GameFolderType.Game, key),
-                Hash = value.Hash,
-                Size = value.Size
-            };
-        }
-    }
 }

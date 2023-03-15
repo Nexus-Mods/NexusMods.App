@@ -4,11 +4,6 @@ using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators.TestHelpers;
 
-public class StubbedTestHarness<TGame> where TGame : IGame
-{
-
-}
-
 public static class StubbedTestHarnessExtensions
 {
     public static IServiceCollection AddUniversalGameLocator<TGame>(this IServiceCollection services, Version version)

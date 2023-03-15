@@ -9,6 +9,7 @@ using NexusMods.Common;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Paths;
+using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
 namespace NexusMods.StandardGameLocators.TestHelpers;
 
@@ -16,7 +17,6 @@ public static class Services
 {
     public static IServiceCollection AddStubbedGameLocators(this IServiceCollection coll)
     {
-
         coll.AddAllSingleton<IGame, StubbedGame>();
         coll.AddAllSingleton<IModInstaller, StubbedGameInstaller>();
         coll.AddAllSingleton<ITool, ListFilesTool>();

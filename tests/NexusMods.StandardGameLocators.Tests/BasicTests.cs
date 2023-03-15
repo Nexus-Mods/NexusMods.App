@@ -1,23 +1,20 @@
 using System.Runtime.InteropServices;
 using FluentAssertions;
-using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
 using NexusMods.Paths;
-using NexusMods.StandardGameLocators.TestHelpers;
+using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
 namespace NexusMods.StandardGameLocators.Tests;
 
 public class BasicTests
 {
     private readonly IGame _game;
-    private readonly ILogger<BasicTests> _logger;
     private readonly GameInstallation _steamInstall;
     private readonly GameInstallation? _gogInstall;
 
-    public BasicTests(ILogger<BasicTests> logger, StubbedGame game)
+    public BasicTests(StubbedGame game)
     {
         _game = game;
-        _logger = logger;
         _steamInstall = _game.Installations.First(g => g.Locations.Any(l => l.ToString().Contains("steam_game")));
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -34,7 +31,7 @@ public class BasicTests
     [Fact]
     public void CanGetInstallLocations()
     {
-        _steamInstall!.Locations[GameFolderType.Game].CombineUnchecked("StubbedGame.exe").FileExists.Should().BeTrue();
+        _steamInstall.Locations[GameFolderType.Game].CombineUnchecked("StubbedGame.exe").FileExists.Should().BeTrue();
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             _gogInstall!.Locations[GameFolderType.Game].CombineUnchecked("StubbedGame.exe").FileExists.Should().BeTrue();
