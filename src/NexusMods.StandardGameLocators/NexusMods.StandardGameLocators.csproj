@@ -9,8 +9,8 @@
       <PackageReference Include="GameFinder.StoreHandlers.GOG" Version="2.5.0" />
       <PackageReference Include="GameFinder.StoreHandlers.Origin" Version="2.5.0" />
       <PackageReference Include="GameFinder.StoreHandlers.Steam" Version="2.5.0" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0-preview.1.23110.8" />
-      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0-preview.1.23110.8" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
     </ItemGroup>
     
     <ItemGroup>
