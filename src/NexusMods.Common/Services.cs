@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Runtime.InteropServices;
-using System.Text;
 using NexusMods.Common.OSInterop;
 
 namespace NexusMods.Common;

@@ -1,4 +1,3 @@
-using AutoFixture.Xunit2;
 using FluentAssertions;
 using NexusMods.Paths.Tests.AutoData;
 

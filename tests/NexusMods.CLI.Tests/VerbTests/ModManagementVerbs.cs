@@ -1,6 +1,6 @@
 using FluentAssertions;
 using NexusMods.Paths;
-using NexusMods.StandardGameLocators.TestHelpers;
+using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
 namespace NexusMods.CLI.Tests.VerbTests;
 

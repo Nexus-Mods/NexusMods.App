@@ -36,7 +36,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
                 .WhereNotNull()
                 .SelectMany(LoadImage)
                 .WhereNotNull()
-                .Subscribe(x => Avatar = x!)
+                .Subscribe(x => Avatar = x)
                 .DisposeWith(d);
         });
 

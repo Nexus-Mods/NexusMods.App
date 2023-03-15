@@ -3,7 +3,7 @@ using NexusMods.Common.ProtocolRegistration;
 
 namespace NexusMods.Common.Tests;
 
-public partial class ProtocolRegistrationTests
+public class ProtocolRegistrationTests
 {
     [Fact]
     public async Task ShouldWork_IsSelfHandler_Linux()

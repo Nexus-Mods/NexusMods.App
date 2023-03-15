@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using CliWrap;
 
 namespace NexusMods.Common.OSInterop;
@@ -6,6 +5,7 @@ namespace NexusMods.Common.OSInterop;
 /// <summary>
 /// OS interoperation for windows
 /// </summary>
+// ReSharper disable once InconsistentNaming
 public class OSInteropWindows : IOSInterop
 {
     private readonly IProcessFactory _processFactory;
@@ -19,7 +19,7 @@ public class OSInteropWindows : IOSInterop
     }
 
     /// <inheritdoc/>
-    public async Task OpenURL(string url, CancellationToken cancellationToken = default)
+    public async Task OpenUrl(string url, CancellationToken cancellationToken = default)
     {
         // cmd /c start "" "https://google.com"
         var command = Cli.Wrap("cmd.exe").WithArguments($@"/c start """" ""{url}""");

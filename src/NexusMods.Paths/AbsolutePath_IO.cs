@@ -1,4 +1,3 @@
-using System.Text;
 using JetBrains.Annotations;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities.Internal.Enumerators;
