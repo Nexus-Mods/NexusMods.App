@@ -119,21 +119,21 @@ public class LoadoutManager
     /// <param name="installation">Instance of the game on disk to newly manage.</param>
     /// <param name="name">Name of the newly created loadout.</param>
     /// <param name="token">Allows for cancelling the operation.</param>
+    /// <param name="earlyReturn">If true, the function will return as soon as possible running indexing operations in the background, default is` false`</param>
     /// <returns></returns>
     /// <remarks>
     /// In the context of the Nexus app 'Manage Game' effectively means 'Add Game to App'; we call it
     /// 'Manage Game' because it effectively means putting the game files under our control.
     /// </remarks>
-    public async Task<LoadoutMarker> ManageGameAsync(GameInstallation installation, string name = "", CancellationToken token = default)
+    public async Task<LoadoutMarker> ManageGameAsync(GameInstallation installation, string name = "", CancellationToken token = default, bool earlyReturn = false)
     {
         _logger.LogInformation("Indexing game files");
-        var gameFiles = new HashSet<AModFile>();
 
         var mod = new Mod
         {
             Id = ModId.New(),
             Name = "Game Files",
-            Files = new EntityDictionary<ModFileId, AModFile>(Store, gameFiles.Select(g => new KeyValuePair<ModFileId, IId>(g.Id, g.DataStoreId))),
+            Files = new EntityDictionary<ModFileId, AModFile>(Store),
             SortRules = ImmutableList<ISortRule<Mod, ModId>>.Empty.Add(new First<Mod, ModId>())
         }.WithPersist(Store);
 
@@ -148,11 +148,24 @@ public class LoadoutManager
 
         _root.Alter(r => r with { Lists = r.Lists.With(n.LoadoutId, n) });
         _logger.LogInformation("Loadout {Name} {Id} created", name, n.LoadoutId);
+        var indexTask = IndexAndAddGameFiles(installation, token, n, mod);
+
+        if (!earlyReturn)
+            await indexTask;
+
+        return new LoadoutMarker(this, n.LoadoutId);
+    }
+
+    private async Task IndexAndAddGameFiles(GameInstallation installation,
+        CancellationToken token, Loadout n, Mod mod)
+    {
+        var gameFiles = new HashSet<AModFile>();
         _logger.LogInformation("Adding game files");
 
         foreach (var (type, path) in installation.Locations)
         {
-            await foreach (var result in FileHashCache.IndexFolderAsync(path, token).WithCancellation(token))
+            await foreach (var result in FileHashCache.IndexFolderAsync(path, token)
+                               .WithCancellation(token))
             {
                 var analysis = await _analyzer.AnalyzeFileAsync(result.Path, token);
                 var file = new GameFile
@@ -164,15 +177,18 @@ public class LoadoutManager
                     Size = result.Size
                 }.WithPersist(Store);
 
-                var metaData = await GetMetadata(n, mod, file, analysis).ToHashSetAsync();
-                gameFiles.Add(file with { Metadata = metaData.ToImmutableHashSet() });
+                var metaData =
+                    await GetMetadata(n, mod, file, analysis).ToHashSetAsync();
+                gameFiles.Add(
+                    file with { Metadata = metaData.ToImmutableHashSet() });
             }
         }
+
         gameFiles.AddRange(installation.Game.GetGameFiles(installation, Store));
         var marker = new LoadoutMarker(this, n.LoadoutId);
-        marker.Alter(mod.Id, m => m with { Files = m.Files.With(gameFiles, f => f.Id) });
+        marker.Alter(mod.Id,
+            m => m with { Files = m.Files.With(gameFiles, f => f.Id) });
 
-        return marker;
     }
 
     /// <summary>

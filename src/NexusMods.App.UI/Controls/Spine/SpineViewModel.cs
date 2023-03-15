@@ -11,8 +11,11 @@ using NexusMods.App.UI.Controls.Spine.Buttons.Image;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.LeftMenu.Game;
 using NexusMods.App.UI.LeftMenu.Home;
+using NexusMods.App.UI.Routing;
+using NexusMods.App.UI.Routing.Messages;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
+using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -37,6 +40,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
     private readonly Subject<SpineButtonAction> _actions = new();
     private readonly ILogger<SpineViewModel> _logger;
+    private readonly IGameLeftMenuViewModel _gameLeftMenuViewModel;
     public IObservable<SpineButtonAction> Actions => _actions;
 
     public SpineViewModel(ILogger<SpineViewModel> logger, IDataStore dataStore,
@@ -44,6 +48,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         IIconButtonViewModel homeButtonViewModel,
         IHomeLeftMenuViewModel homeLeftMenuViewModel,
         IGameLeftMenuViewModel gameLeftMenuViewModel,
+        IRouter router,
         IServiceProvider provider)
     {
         _logger = logger;
@@ -53,9 +58,16 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
         Root<LoadoutRegistry> root = new(RootType.Loadouts, dataStore);
 
+        _gameLeftMenuViewModel = gameLeftMenuViewModel;
+
 
         this.WhenActivated(disposables =>
         {
+
+            router.Messages
+                .Subscribe(HandleMessage)
+                .DisposeWith(disposables);
+
             root.Changes
                 .StartWith(dataStore.Get<LoadoutRegistry>(dataStore.GetRoot(RootType.Loadouts) ?? IdEmpty.Empty, true))
                 .WhereNotNull()
@@ -69,13 +81,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                     vm.Image = Bitmap.DecodeToWidth(iconStream, 48);
                     vm.IsActive = false;
                     vm.Tag = game;
-                    vm.Click = ReactiveCommand.Create(() =>
-                    {
-                        _logger.LogTrace("Game {Game} selected", game);
-                        _actions.OnNext(new SpineButtonAction(Type.Game, game));
-                        gameLeftMenuViewModel.Game = game;
-                        LeftMenu = gameLeftMenuViewModel;
-                    });
+                    vm.Click = ReactiveCommand.Create(() => NavigateToGame(game));
                     return vm;
                 })
                 .OnUI()
@@ -99,6 +105,22 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
             Activations.Subscribe(HandleActivation)
                 .DisposeWith(disposables);
         });
+    }
+
+    private void NavigateToGame(IGame game)
+    {
+        _logger.LogTrace("Game {Game} selected", game);
+        _actions.OnNext(new SpineButtonAction(Type.Game, game));
+        _gameLeftMenuViewModel.Game = game;
+        LeftMenu = _gameLeftMenuViewModel;
+    }
+
+    private void HandleMessage(IRoutingMessage message)
+    {
+        if (message is NavigateToLoadout navigateToLoadout)
+        {
+            NavigateToGame(navigateToLoadout.Game);
+        }
     }
 
     private void HandleActivation(SpineButtonAction action)
