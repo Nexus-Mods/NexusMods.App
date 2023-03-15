@@ -1,8 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <!-- NuGet Package Shared Details -->
-    <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
-
     <!-- nullable warnings as errors -->
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NullableErrors.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
