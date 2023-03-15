@@ -27,7 +27,7 @@ public class FileAnalysisTests
     [Fact]
     public async Task LoadsMetadataForPlugins()
     {
-        var result = await _cache.AnalyzeFile(_plugin1);
+        var result = await _cache.AnalyzeFileAsync(_plugin1);
 
         result.AnalysisData.Should().ContainEquivalentOf(new PluginAnalysisData
         {

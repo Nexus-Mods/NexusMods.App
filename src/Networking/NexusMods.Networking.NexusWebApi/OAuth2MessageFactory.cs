@@ -61,7 +61,7 @@ internal class TokenUserInfo
 }
 
 /// <summary>
-/// OAuth2 based authentification
+/// OAuth2 based authentication
 /// </summary>
 public class OAuth2MessageFactory : IAuthenticatingMessageFactory
 {

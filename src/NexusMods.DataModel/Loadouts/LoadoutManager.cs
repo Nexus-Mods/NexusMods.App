@@ -154,7 +154,7 @@ public class LoadoutManager
         {
             await foreach (var result in FileHashCache.IndexFolderAsync(path, token).WithCancellation(token))
             {
-                var analysis = await _analyzer.AnalyzeFile(result.Path, token);
+                var analysis = await _analyzer.AnalyzeFileAsync(result.Path, token);
                 var file = new GameFile
                 {
                     Id = ModFileId.New(),
@@ -193,7 +193,7 @@ public class LoadoutManager
     {
         var loadout = GetLoadout(loadoutId);
 
-        var analyzed = await _analyzer.AnalyzeFile(path, token);
+        var analyzed = await _analyzer.AnalyzeFileAsync(path, token);
         if (analyzed is not AnalyzedArchive archive)
         {
             var types = string.Join(", ", analyzed.FileTypes);

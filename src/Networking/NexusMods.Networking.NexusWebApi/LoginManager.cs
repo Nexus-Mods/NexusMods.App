@@ -15,6 +15,10 @@ public class LoginManager
     private readonly IProtocolRegistration _protocolRegistration;
     private readonly Client _client;
     private readonly OAuth2MessageFactory _msgFactory;
+
+    /// <summary>
+    /// Allows you to subscribe to notifications of when the user information changes.
+    /// </summary>
     public IObservable<UserInfo?> UserInfo { get; }
 
     /// <summary>
@@ -32,6 +36,12 @@ public class LoginManager
     /// </summary>
     public IObservable<Uri?> Avatar => UserInfo.Select(info => info?.Avatar);
 
+    /// <summary/>
+    /// <param name="client">Nexus API client.</param>
+    /// <param name="msgFactory">Used to check authentication status and ensure verified.</param>
+    /// <param name="oauth">Helper class to deal with authentication messages.</param>
+    /// <param name="dataStore">Used for storing information about the current login session.</param>
+    /// <param name="protocolRegistration">Used to register NXM protocol.</param>
     public LoginManager(Client client,
         OAuth2MessageFactory msgFactory,
         OAuth oauth, IDataStore dataStore, IProtocolRegistration protocolRegistration)

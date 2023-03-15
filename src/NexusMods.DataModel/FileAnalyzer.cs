@@ -14,6 +14,10 @@ using NexusMods.Paths;
 
 namespace NexusMods.DataModel;
 
+/// <summary>
+/// Helper method that allows you to index (analyze) files using provided <see cref="IFileAnalyzer"/>(s),
+/// caching the results inside the given <see cref="IDataStore"/>.
+/// </summary>
 public class FileContentsCache
 {
     private readonly ILogger<FileContentsCache> _logger;
@@ -22,9 +26,11 @@ public class FileContentsCache
     private readonly IResource<FileContentsCache, Size> _limiter;
     private readonly SignatureChecker _sigs;
     private readonly IDataStore _store;
-    private readonly FileHashCache _fileHashCahce;
+    private readonly FileHashCache _fileHashCache;
     private readonly ILookup<FileType, IFileAnalyzer> _analyzers;
 
+    /// <summary/>
+    /// <remarks>Called from DI container.</remarks>
     public FileContentsCache(ILogger<FileContentsCache> logger,
         IResource<FileContentsCache, Size> limiter,
         FileExtractor.FileExtractor extractor,
@@ -41,31 +47,56 @@ public class FileContentsCache
         _analyzers = analyzers.SelectMany(a => a.FileTypes.Select(t => (Type: t, Analyzer: a)))
             .ToLookup(k => k.Type, v => v.Analyzer);
         _store = dataStore;
-        _fileHashCahce = hashCache;
+        _fileHashCache = hashCache;
     }
 
-    public async Task<AnalyzedFile> AnalyzeFile(AbsolutePath path, CancellationToken token = default)
+    /// <summary>
+    /// Analyzes a file and caches the result within the data store.
+    /// </summary>
+    /// <param name="path">Path of the file to be analyzed.</param>
+    /// <param name="token">Allows you to cancel the operation.</param>
+    /// <returns>The file analysis data.</returns>
+    public async Task<AnalyzedFile> AnalyzeFileAsync(AbsolutePath path, CancellationToken token = default)
     {
-        var entry = await _fileHashCahce.IndexFileAsync(path, token);
+        var entry = await _fileHashCache.IndexFileAsync(path, token);
         var found = _store.Get<AnalyzedFile>(new Id64(EntityCategory.FileAnalysis, (ulong)entry.Hash));
         if (found != null) return found;
 
-        var result = await AnalyzeFileInner(new NativeFileStreamFactory(path), token);
+        var result = await AnalyzeFileInnerAsync(new NativeFileStreamFactory(path), token);
         result.EnsurePersisted(_store);
         return result;
     }
 
+    /// <summary>
+    /// Retrieves all archives that contain a file with a specific hash.
+    /// </summary>
+    /// <param name="hash">The hash of the file inside the archive.</param>
+    /// <returns>All matching archives.</returns>
+    public IEnumerable<FileContainedIn> ArchivesThatContain(Hash hash)
+    {
+        var prefix = new Id64(EntityCategory.FileContainedIn, (ulong)hash);
+        return _store.GetByPrefix<FileContainedIn>(prefix);
+    }
+
+    /// <summary>
+    /// Gets the file analysis result for a file with a given hash.
+    ///
+    /// This file can either be an archive or a file stored within
+    /// an archive for a given file.
+    /// </summary>
+    /// <param name="hash">The hash of the file for which data is to be obtained.</param>
+    /// <returns></returns>
     public AnalyzedFile? GetAnalysisData(Hash hash)
     {
         return _store.Get<AnalyzedFile>(new Id64(EntityCategory.FileAnalysis, (ulong)hash));
     }
 
-    private Task<AnalyzedFile> AnalyzeFileInner(IStreamFactory sFn, CancellationToken token = default)
+    private Task<AnalyzedFile> AnalyzeFileInnerAsync(IStreamFactory sFn, CancellationToken token = default)
     {
-        return AnalyzeFileInner(sFn, token, 0, Hash.Zero, default);
+        return AnalyzeFileInnerAsync(sFn, token, 0, Hash.Zero, default);
     }
 
-    private async Task<AnalyzedFile> AnalyzeFileInner(IStreamFactory sFn, CancellationToken token, int level, Hash parent, RelativePath parentPath)
+    private async Task<AnalyzedFile> AnalyzeFileInnerAsync(IStreamFactory sFn, CancellationToken token, int level, Hash parent, RelativePath parentPath)
     {
         Hash hash;
         List<FileType> sigs;
@@ -76,7 +107,7 @@ public class FileContentsCache
             {
                 if (sFn.Name is AbsolutePath ap)
                 {
-                    hash = (await _fileHashCahce.IndexFileAsync(ap, token)).Hash;
+                    hash = (await _fileHashCache.IndexFileAsync(ap, token)).Hash;
                 }
                 else
                 {
@@ -122,7 +153,7 @@ public class FileContentsCache
 
         if (await _extractor.CanExtract(sFn))
         {
-            file = await AnalyzeArchiveInner(sFn, level, hash, sigs, analysisData, token) ?? default;
+            file = await AnalyzeArchiveInnerAsync(sFn, level, hash, sigs, analysisData, token) ?? default;
         }
 
         file ??= new AnalyzedFile
@@ -140,7 +171,7 @@ public class FileContentsCache
         return file;
     }
 
-    private async Task<AnalyzedFile?> AnalyzeArchiveInner(IStreamFactory sFn, int level, Hash hash, List<FileType> sigs,
+    private async Task<AnalyzedFile?> AnalyzeArchiveInnerAsync(IStreamFactory sFn, int level, Hash hash, List<FileType> sigs,
         List<IFileAnalysisData> analysisData, CancellationToken token)
     {
         try
@@ -155,7 +186,7 @@ public class FileContentsCache
                         {
                             // ReSharper disable once AccessToDisposedClosure
                             var relPath = entry.Path.RelativeTo(tmpFolder.Path);
-                            var analysisRecord = await AnalyzeFileInner(
+                            var analysisRecord = await AnalyzeFileInnerAsync(
                                 new NativeFileStreamFactory(entry.Path), token,
                                 level + 1, hash, relPath);
                             analysisRecord.WithPersist(_store);
@@ -193,11 +224,5 @@ public class FileContentsCache
             Path = parentPath
         };
         entity.EnsurePersisted(_store);
-    }
-
-    public IEnumerable<FileContainedIn> ArchivesThatContain(Hash hash)
-    {
-        var prefix = new Id64(EntityCategory.FileContainedIn, (ulong)hash);
-        return _store.GetByPrefix<FileContainedIn>(prefix);
     }
 }

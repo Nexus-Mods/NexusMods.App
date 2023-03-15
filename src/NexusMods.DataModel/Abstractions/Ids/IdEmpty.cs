@@ -13,6 +13,7 @@ public class IdEmpty : IId
     /// </summary>
     public static readonly IId Empty = new IdEmpty();
 
+    /// <inheritdoc />
     public EntityCategory Category => 0;
 
     /// <inheritdoc />

@@ -29,6 +29,9 @@ public class SqliteIPC : IDisposable
     private readonly CancellationTokenSource _shutdownToken;
     private readonly ILogger<SqliteIPC> _logger;
 
+    /// <summary>
+    /// Allows you to subscribe to newly incoming IPC messages.
+    /// </summary>
     public IObservable<(string Queue, byte[] Message)> Messages => _subject;
 
     /// <summary>
