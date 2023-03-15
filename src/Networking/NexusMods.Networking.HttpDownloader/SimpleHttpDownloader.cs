@@ -19,7 +19,7 @@ public class SimpleHttpDownloader : IHttpDownloader
         _limiter = limiter;
     }
 
-    public async Task<Hash> Download(IReadOnlyList<HttpRequestMessage> sources, AbsolutePath destination, Size? size, CancellationToken token)
+    public async Task<Hash> DownloadAsync(IReadOnlyList<HttpRequestMessage> sources, AbsolutePath destination, Size? size, CancellationToken token)
     {
         foreach (var source in sources)
         {

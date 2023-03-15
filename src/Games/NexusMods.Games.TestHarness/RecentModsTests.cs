@@ -81,7 +81,7 @@ public class RecentModsTest
             var fileLocation = _downloadedFilesLocation.CombineUnchecked($"{_game.Domain}_{record.ModId}_{record.FileId}");
             var tempFileLocation = _downloadedFilesLocation.CombineUnchecked($"{_game.Domain}_{record.ModId}_{record.FileId}.temp");
             var urls = await _client.DownloadLinks(_game.Domain, record.ModId, record.FileId);
-            var hash = await _downloader.Download(urls.Data.Select(u => new HttpRequestMessage(HttpMethod.Get, u.Uri)).ToList(),
+            var hash = await _downloader.DownloadAsync(urls.Data.Select(u => new HttpRequestMessage(HttpMethod.Get, u.Uri)).ToList(),
                 tempFileLocation);
 
             await tempFileLocation.MoveToAsync(fileLocation);

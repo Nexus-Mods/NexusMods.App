@@ -61,7 +61,7 @@ public class SpineTests : AUiTest
         }
 
         using var vm = GetActivatedViewModel<ISpineViewModel>();
-        var loadout = await _loadoutManager.ImportFromAsync(KnownFolders.EntryFolder.CombineUnchecked(@"Resources\cyberpunk2077.1.61.zip"));
+        await _loadoutManager.ImportFromAsync(KnownFolders.EntryFolder.CombineUnchecked(@"Resources\cyberpunk2077.1.61.zip"));
 
         using var _ = vm.VM.Actions.Subscribe(vm.VM.Activations);
 
