@@ -47,6 +47,15 @@ public class InjectedViewLocator : IViewLocator
         }
     }
 
+    /// <summary>
+    /// This is a helper method used to simplify the casting involved in
+    /// creating a view for a given view model. This is not dead code or typed
+    /// incorrectly, it is used by the <see cref="ResolveView{T}"/> method.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    // ReSharper disable once UnusedMember.Local
+    // ReSharper disable once ReturnTypeCanBeNotNullable
     private IViewFor? ResolveViewInner<T>() where T : class
     {
         return _provider.GetRequiredService<IViewFor<T>>();

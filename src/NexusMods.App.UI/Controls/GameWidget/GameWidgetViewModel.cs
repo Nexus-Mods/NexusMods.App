@@ -4,7 +4,6 @@ using System.Windows.Input;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Microsoft.Extensions.Logging;
-using NexusMods.App.UI.ViewModels;
 using NexusMods.DataModel.Games;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -25,16 +24,16 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.Installation)
-                .OffUI()
+                .OffUi()
                 .SelectMany(async install => await LoadImage(install))
-                .Where(img => img != null)
+                .WhereNotNull()
                 .OnUI()
-                .BindToUI(this, vm => vm.Image)
+                .BindToUi(this, vm => vm.Image)
                 .DisposeWith(d);
 
             this.WhenAnyValue(vm => vm.Installation)
                 .Select(inst => $"{inst.Game.Name} v{inst.Version}")
-                .BindToUI(this, vm => vm.Name)
+                .BindToUi(this, vm => vm.Name)
                 .DisposeWith(d);
         });
     }

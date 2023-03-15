@@ -1,11 +1,8 @@
 using System.Windows.Input;
 using Avalonia.Media;
-using Avalonia.Media.Imaging;
-using NexusMods.App.UI.Controls.Spine.Buttons.Image;
-using NexusMods.App.UI.ViewModels;
 using ReactiveUI.Fody.Helpers;
 
-namespace NexusMods.App.UI.Controls.Spine.Buttons;
+namespace NexusMods.App.UI.Controls.Spine.Buttons.Image;
 
 public class ImageButtonViewModel : AViewModel<IImageButtonViewModel>, IImageButtonViewModel
 {

@@ -1,6 +1,7 @@
 using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
 using System.Reactive;
+using Avalonia;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -68,8 +69,8 @@ public class Program
 
         var fileTarget = new FileTarget("file")
         {
-            FileName = "logs/nexusmods.app.current.log",
-            ArchiveFileName = "logs/nexusmods.app.{##}.log",
+            FileName = @"c:\tmp\logs\nexusmods.app.current.log",
+            ArchiveFileName = @"c:\tmp\logs\nexusmods.app.{##}.log",
             ArchiveOldFileOnStartup = true,
             MaxArchiveFiles = 10,
             Layout = "${processtime} [${level:uppercase=true}] (${logger}) ${message:withexception=true}",
@@ -87,5 +88,15 @@ public class Program
         loggingBuilder.ClearProviders();
         loggingBuilder.SetMinimumLevel(LogLevel.Information);
         loggingBuilder.AddNLog(config);
+    }
+
+    /// <summary>
+    /// Don't Delete this method. It's used by the Avalonia Designer.
+    /// </summary>
+    /// <returns></returns>
+    private static AppBuilder BuildAvaloniaApp()
+    {
+        var host = BuildHost();
+        return Startup.BuildAvaloniaApp(host.Services);
     }
 }

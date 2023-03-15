@@ -9,8 +9,6 @@
 
 
     <ItemGroup>
-    <AvaloniaResource Include="Fonts\Montserrat\Montserrat-VariableFont_wght.ttf" />
-    <AvaloniaResource Include="Fonts\Roboto\Roboto-Regular.ttf" />
     <AvaloniaResource Include="Nexus.xaml" />
     <AvaloniaResource Include="Palatte\Nexus.xaml" />
     <AvaloniaResource Include="Theme\ButtonStyles.xaml" />
@@ -28,6 +26,33 @@
     <AvaloniaResource Include="Theme\BareIcons.xaml" />
     <None Remove="Controls\GameWidget\GameWidgetStyles.xaml" />
     <AvaloniaResource Include="Controls\GameWidget\GameWidgetStyles.xaml" />
+    <None Remove="Theme\Borders.xaml" />
+    <AvaloniaResource Include="Theme\Borders.xaml" />
+    <None Remove="Fonts\Montserrat\static\Montserrat-Black.ttf" />
+    <None Remove="Fonts\Montserrat\static\Montserrat-BlackItalic.ttf" />
+    <None Remove="Fonts\Montserrat\static\Montserrat-Bold.ttf" />
+    <None Remove="Fonts\Montserrat\static\Montserrat-BoldItalic.ttf" />
+    <None Remove="Fonts\Montserrat\static\Montserrat-ExtraBold.ttf" />
+    <None Remove="Fonts\Montserrat\static\Montserrat-ExtraBoldItalic.ttf" />
+    <None Remove="Fonts\Montserrat\static\Montserrat-ExtraLight.ttf" />
+    <None Remove="Fonts\Montserrat\static\Montserrat-ExtraLightItalic.ttf" />
+    <None Remove="Fonts\Montserrat\static\Montserrat-Italic.ttf" />
+    <None Remove="Fonts\Montserrat\static\Montserrat-Light.ttf" />
+    <None Remove="Fonts\Montserrat\static\Montserrat-LightItalic.ttf" />
+    <None Remove="Fonts\Montserrat\static\Montserrat-Medium.ttf" />
+    <None Remove="Fonts\Montserrat\static\Montserrat-MediumItalic.ttf" />
+    <None Remove="Fonts\Montserrat\static\Montserrat-Regular.ttf" />
+    <None Remove="Fonts\Montserrat\static\Montserrat-SemiBold.ttf" />
+    <None Remove="Fonts\Montserrat\static\Montserrat-SemiBoldItalic.ttf" />
+    <None Remove="Fonts\Montserrat\static\Montserrat-Thin.ttf" />
+    <None Remove="Fonts\Montserrat\static\Montserrat-ThinItalic.ttf" />
+    <None Remove="Fonts\Montserrat\Montserrat-Italic-VariableFont_wght.ttf" />
+    <None Remove="Fonts\Regular\Montserrat-Regular.ttf" />
+    <AvaloniaResource Include="Fonts\Regular\Montserrat-Regular.ttf" />
+    <None Remove="Fonts\Regular\Roboto-Regular.ttf" />
+    <AvaloniaResource Include="Fonts\Regular\Roboto-Regular.ttf" />
+    <None Remove="Fonts\SemiBold\Montserrat-SemiBold.ttf" />
+    <AvaloniaResource Include="Fonts\SemiBold\Montserrat-SemiBold.ttf" />
   </ItemGroup>
 
   <ItemGroup>
@@ -76,6 +101,11 @@
 
   <ItemGroup>
     <None Remove="Theme\Icons.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Fonts\Bold\Montserrat-Bold.ttf" />
+    <AvaloniaResource Include="Fonts\Bold\Montserrat-Bold.ttf" />
   </ItemGroup>
 
 </Project>

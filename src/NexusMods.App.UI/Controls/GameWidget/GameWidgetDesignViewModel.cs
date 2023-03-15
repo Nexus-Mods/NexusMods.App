@@ -3,7 +3,6 @@ using Avalonia;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using NexusMods.App.UI.ViewModels;
 using NexusMods.DataModel.Games;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -22,7 +21,7 @@ public class GameWidgetDesignViewModel : AViewModel<IGameWidgetViewModel>, IGame
     public GameWidgetDesignViewModel()
     {
         var assets = AvaloniaLocator.Current.GetRequiredService<IAssetLoader>();
-        Image = new Bitmap(assets.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/fantasy_game.png")));
+        Image = new Bitmap(assets.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")));
         SecondaryButton = ReactiveCommand.Create(() => { });
     }
 }

@@ -19,7 +19,7 @@
         <Style Selector="Border TextBlock">
             <Setter Property="FontSize" Value="10" />
             <Setter Property="Foreground" Value="{DynamicResource BackgroundPrimaryBrush}" />
-            <Setter Property="FontFamily" Value="{DynamicResource FontPrimary}" />
+            <Setter Property="FontFamily" Value="{DynamicResource FontPrimaryBold}" />
             <Setter Property="FontWeight" Value="700" />
             <Setter Property="LineHeight" Value="12" />
             <Setter Property="LetterSpacing" Value="0.25" />

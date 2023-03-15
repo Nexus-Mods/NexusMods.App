@@ -3,7 +3,6 @@ using System.Reactive.Subjects;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
 using NexusMods.App.UI.LeftMenu;
-using NexusMods.App.UI.ViewModels;
 
 namespace NexusMods.App.UI.Controls.Spine;
 

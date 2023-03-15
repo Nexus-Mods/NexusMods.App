@@ -10,4 +10,9 @@ public enum IconType
     Bookmark,
     [MaterialName("mdi-gamepad-square-outline")]
     Game,
+    [MaterialName("mdi-arrow-right")]
+    ArrowRight,
+
+    [MaterialName("mdi-chevron-right")]
+    ChevronRight,
 }
