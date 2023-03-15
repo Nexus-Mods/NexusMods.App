@@ -16,6 +16,9 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
 
     private static readonly string DirectorySeparatorCharStr = Path.DirectorySeparatorChar.ToString();
 
+    // Cached file info.
+    private IFileEntry? _info = null;
+
     /// <summary>
     /// File system implementation.
     /// </summary>
@@ -29,16 +32,18 @@ public partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// </remarks>
     public string? Directory { get; private set; }
 
+    /// <summary>
+    /// Contains the name of the file.
+    /// </summary>
+    public string FileName { get; private set; }
+
     /// <inheritdoc />
     public Extension Extension => Extension.FromPath(FileName);
 
     /// <inheritdoc />
     RelativePath IPath.FileName => Path.GetFileName(FileName);
 
-    /// <summary>
-    /// Contains the name of the file.
-    /// </summary>
-    public string FileName { get; private set; }
+
 
     /// <summary>
     /// Gets the parent directory, i.e. navigates one folder up.

@@ -17,8 +17,6 @@ public partial struct AbsolutePath
         MatchType = MatchType.Win32
     };
 
-    private IFileEntry? _info = null;
-
     /// <summary>
     /// Returns the file information for this file.
     /// </summary>
