@@ -54,10 +54,13 @@
             Grid.Row="1"
             x:Name="LeftMenuViewModelHost" />
 
-        <reactiveUi:ViewModelViewHost
+        <ScrollViewer
             Grid.Column="2"
             Grid.Row="1"
-            x:Name="RightContent" />
+            HorizontalScrollBarVisibility="Disabled"
+            VerticalScrollBarVisibility="Auto">
+            <reactiveUi:ViewModelViewHost x:Name="RightContent" />
+        </ScrollViewer>
 
     </Grid>
 

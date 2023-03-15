@@ -1,4 +1,5 @@
 using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
 
@@ -6,12 +7,14 @@ namespace NexusMods.App.UI;
 
 public class InjectedViewLocator : IViewLocator
 {
+    private readonly IServiceProvider _provider;
     private readonly MethodInfo _method;
     private readonly ILogger<InjectedViewLocator> _logger;
 
-    public InjectedViewLocator(ILogger<InjectedViewLocator> logger)
+    public InjectedViewLocator(ILogger<InjectedViewLocator> logger, IServiceProvider provider)
     {
         _logger = logger;
+        _provider = provider;
         _method = GetType().GetMethod("ResolveViewInner", BindingFlags.NonPublic | BindingFlags.Instance)!;
     }
 
@@ -42,5 +45,19 @@ public class InjectedViewLocator : IViewLocator
             _logger.LogError(e, "Failed to resolve view for {ViewModel}", typeof(T).FullName);
             return null;
         }
+    }
+
+    /// <summary>
+    /// This is a helper method used to simplify the casting involved in
+    /// creating a view for a given view model. This is not dead code or typed
+    /// incorrectly, it is used by the <see cref="ResolveView{T}"/> method.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    // ReSharper disable once UnusedMember.Local
+    // ReSharper disable once ReturnTypeCanBeNotNullable
+    private IViewFor? ResolveViewInner<T>() where T : class
+    {
+        return _provider.GetRequiredService<IViewFor<T>>();
     }
 }
