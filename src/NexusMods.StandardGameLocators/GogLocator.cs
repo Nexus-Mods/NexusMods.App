@@ -7,7 +7,7 @@ using NexusMods.Paths.Extensions;
 
 namespace NexusMods.StandardGameLocators;
 
-public class GogLocator : AGameLocator<GOGHandler, GOGGame, long, IGogGame>
+public class GogLocator : AGameLocator<GOGGame, long, IGogGame>
 {
     public GogLocator(ILogger<GogLocator> logger, AHandler<GOGGame, long> handler) : base(logger, handler)
     {

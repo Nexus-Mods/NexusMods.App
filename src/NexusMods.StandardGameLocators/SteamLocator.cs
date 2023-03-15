@@ -7,7 +7,7 @@ using NexusMods.Paths.Extensions;
 
 namespace NexusMods.StandardGameLocators;
 
-public class SteamLocator : AGameLocator<SteamHandler, SteamGame, int, ISteamGame>
+public class SteamLocator : AGameLocator<SteamGame, int, ISteamGame>
 {
     public SteamLocator(ILogger<SteamLocator> logger, AHandler<SteamGame, int> handler) : base(logger, handler)
     {

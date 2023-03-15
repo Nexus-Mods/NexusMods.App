@@ -5,9 +5,7 @@ using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators;
 
-public abstract class AGameLocator<TStore, TRecord, TId, TGame> : IGameLocator
-    where TStore : AHandler<TRecord, TId>
-    where TRecord : class
+public abstract class AGameLocator<TRecord, TId, TGame> : IGameLocator where TRecord : class
     where TGame : IGame
 {
     private readonly ILogger _logger;

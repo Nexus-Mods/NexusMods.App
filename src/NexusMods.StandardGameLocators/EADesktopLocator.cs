@@ -7,7 +7,7 @@ using NexusMods.Paths.Extensions;
 
 namespace NexusMods.StandardGameLocators;
 
-public class EADesktopLocator : AGameLocator<EADesktopHandler, EADesktopGame, string, IEADesktopGame>
+public class EADesktopLocator : AGameLocator<EADesktopGame, string, IEADesktopGame>
 {
     public EADesktopLocator(ILogger<EADesktopLocator> logger, AHandler<EADesktopGame, string> handler) : base(logger, handler)
     {

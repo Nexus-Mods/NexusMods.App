@@ -7,7 +7,7 @@ using NexusMods.Paths.Extensions;
 
 namespace NexusMods.StandardGameLocators;
 
-public class EpicLocator : AGameLocator<EGSHandler, EGSGame, string, IEpicGame>
+public class EpicLocator : AGameLocator<EGSGame, string, IEpicGame>
 {
     public EpicLocator(ILogger<EpicLocator> logger, AHandler<EGSGame, string> handler) : base(logger, handler)
     {

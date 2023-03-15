@@ -7,7 +7,7 @@ using NexusMods.Paths.Extensions;
 
 namespace NexusMods.StandardGameLocators;
 
-public class OriginLocator : AGameLocator<OriginHandler, OriginGame, string, IOriginGame>
+public class OriginLocator : AGameLocator<OriginGame, string, IOriginGame>
 {
     public OriginLocator(ILogger<OriginLocator> logger, AHandler<OriginGame, string> handler) : base(logger, handler)
     {
