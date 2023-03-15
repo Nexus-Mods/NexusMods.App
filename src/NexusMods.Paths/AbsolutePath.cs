@@ -17,7 +17,7 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     private static readonly string DirectorySeparatorCharStr = Path.DirectorySeparatorChar.ToString();
 
     /// <summary>
-    /// File system implementation.
+    /// The directory component of the path.
     /// </summary>
     /// <remarks>
     /// This string is never empty and might end with a directory separator.
@@ -27,10 +27,10 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     public readonly string Directory;
 
     /// <summary>
-    /// Contains the path to the directory inside which this absolute path is contained in.
+    /// The characters after the last directory separator.
     /// </summary>
     /// <remarks>
-    ///    Shouldn't end with a backslash.
+    /// This string can be empty if the entire path is just a root directory.
     /// </remarks>
     public readonly string FileName;
 
@@ -107,7 +107,7 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     }
 
     /// <summary>
-    /// Converts an existing full path into an absolute path.
+    /// Returns the file name of the specified path string without the extension.
     /// </summary>
     public string GetFileNameWithoutExtension()
     {
