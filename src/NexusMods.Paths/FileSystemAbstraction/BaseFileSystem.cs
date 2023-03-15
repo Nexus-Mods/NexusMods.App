@@ -55,7 +55,7 @@ public abstract class BaseFileSystem : IFileSystem
         => AbsolutePath.FromFullPath(fullPath, this);
 
     /// <inheritdoc/>
-    public AbsolutePath FromDirectoryAndFileName(string? directoryPath, string fullPath)
+    public AbsolutePath FromDirectoryAndFileName(string directoryPath, string fullPath)
         => AbsolutePath.FromDirectoryAndFileName(directoryPath, fullPath, this);
 
     /// <inheritdoc/>

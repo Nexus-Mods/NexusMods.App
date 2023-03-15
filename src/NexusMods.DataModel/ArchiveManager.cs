@@ -125,7 +125,7 @@ public class ArchiveManager
     public HashSet<Hash> AllArchives()
     {
         return _locations.SelectMany(e => e.EnumerateFiles(KnownExtensions.Ra))
-            .Select(a => Hash.FromHex(a.FileNameWithoutExtension))
+            .Select(a => Hash.FromHex(a.GetFileNameWithoutExtension()))
             .ToHashSet();
     }
 

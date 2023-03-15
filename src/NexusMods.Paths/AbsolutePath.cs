@@ -51,10 +51,6 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// </summary>
     public AbsolutePath Parent => FromFullPath(Directory, _fileSystem);
 
-    /// <summary>
-    /// Returns the file name without extensions
-    /// </summary>
-    public string FileNameWithoutExtension => Path.GetFileNameWithoutExtension(FileName);
 
     internal AbsolutePath(string directory, string fileName, IFileSystem fileSystem)
     {
@@ -113,12 +109,37 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// <summary>
     /// Converts an existing full path into an absolute path.
     /// </summary>
-    /// <param name="directoryPath">The path to the directory used.</param>
-    /// <param name="fullPath">The full path to use.</param>
-    /// <param name="fileSystem">File system implementation.</param>
-    /// <returns>The converted absolute path.</returns>
-    public static AbsolutePath FromDirectoryAndFileName(string? directoryPath, string fullPath, IFileSystem? fileSystem = null)
-        => new(directoryPath, fullPath, fileSystem ?? Paths.FileSystem.Shared);
+    public string GetFileNameWithoutExtension()
+    {
+        var span = FileName.AsSpan();
+        var length = span.LastIndexOf('.');
+        return length >= 0 ? span.SliceFast(0, length).ToString() : span.ToString();
+    }
+
+    /// <summary>
+    /// Creates a new <see cref="AbsolutePath"/> from the current one, appending the provided
+    /// extension to the file name.
+    /// </summary>
+    /// <remarks>
+    /// Do not use this method if you want to change the extension. Use <see cref="ReplaceExtension"/>
+    /// instead. This method literally just does <see cref="FileName"/> + <paramref name="ext"/>.
+    /// </remarks>
+    /// <param name="ext">The extension to append.</param>
+    public AbsolutePath AppendExtension(Extension ext) => FromDirectoryAndFileName(Directory, FileName + ext, _fileSystem);
+
+    /// <summary>
+    /// Creates a new <see cref="AbsolutePath"/> from the current one, replacing
+    /// the existing extension with a new one.
+    /// </summary>
+    /// <remarks>
+    /// This method will behave the same as <see cref="AppendExtension"/>, if the
+    /// current <see cref="FileName"/> doesn't have an extension.
+    /// </remarks>
+    /// <param name="ext">The extension to replace.</param>
+    public AbsolutePath ReplaceExtension(Extension ext)
+    {
+        return FromDirectoryAndFileName(Directory, FileName.ReplaceExtension(ext), _fileSystem);
+    }
 
     /// <summary>
     /// Returns true if the given directory is a root directory on the current
@@ -384,11 +405,6 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         return new RelativePath(thisFullPath.SliceFast(otherFullPath.Length + 1).ToString());
     }
 
-    /// <summary>
-    /// Creates a new absolute path from the current one, appending an extension.
-    /// </summary>
-    /// <param name="ext">The extension to append to the absolute path.</param>
-    public AbsolutePath WithExtension(Extension ext) => FromDirectoryAndFileName(Directory, FileName + ext, FileSystem);
 
     /// <summary>
     /// Returns true if this path is a child of the specified path.
@@ -411,14 +427,6 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         return thisStr.StartsWith(parentStr);
     }
 
-    /// <summary>
-    /// Replaces the extension used in this absolute path.
-    /// </summary>
-    /// <param name="ext">The extension to replace.</param>
-    public AbsolutePath ReplaceExtension(Extension ext)
-    {
-        return FromDirectoryAndFileName(Directory!, FileName.ReplaceExtension(ext), FileSystem);
-    }
 
     /// <summary/>
     public static bool operator ==(AbsolutePath lhs, AbsolutePath rhs) => lhs.Equals(rhs);

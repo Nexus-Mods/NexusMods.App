@@ -77,7 +77,7 @@ public class TemporaryFileManager : IDisposable, IAsyncDisposable
     {
         var path = _basePath.CombineUnchecked(Guid.NewGuid().ToString());
         if (path.Extension != default)
-            path = path.WithExtension(ext ?? KnownExtensions.Tmp);
+            path = path.AppendExtension(ext ?? KnownExtensions.Tmp);
 
         return new TemporaryPath(path, deleteOnDispose);
     }
