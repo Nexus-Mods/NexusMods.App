@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.LeftMenu.Game;
 using NexusMods.App.UI.LeftMenu.Home;
@@ -56,8 +57,6 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         Home = homeButtonViewModel;
         Add = addButtonViewModel;
 
-        Root<LoadoutRegistry> root = new(RootType.Loadouts, dataStore);
-
         _gameLeftMenuViewModel = gameLeftMenuViewModel;
 
 
@@ -68,11 +67,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 .Subscribe(HandleMessage)
                 .DisposeWith(disposables);
 
-            root.Changes
-                .StartWith(dataStore.Get<LoadoutRegistry>(dataStore.GetRoot(RootType.Loadouts) ?? IdEmpty.Empty, true))
-                .WhereNotNull()
-                .SelectMany(registry => registry.Lists.Select(lst => lst.Value.Installation.Game).Distinct())
-                .ToObservableChangeSet(x => x.Domain)
+            dataStore.ObservableManagedGames()
                 .Transform(game =>
                 {
                     using var iconStream = game.Icon.GetStreamAsync().Result;

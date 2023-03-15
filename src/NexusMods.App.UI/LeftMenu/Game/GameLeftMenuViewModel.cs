@@ -40,16 +40,7 @@ public class GameLeftMenuViewModel : AViewModel<IGameLeftMenuViewModel>, IGameLe
                 .Select<IGame, Func<Loadout, bool>>(game => loadout =>
                     loadout.Installation.Game.Domain == game.Domain);
 
-            dataStore.RootChanges
-                .Where(r => r.To.Category == EntityCategory.Loadouts)
-                .Select(_ => dataStore.GetRoot(RootType.Loadouts))
-                .StartWith(dataStore.GetRoot(RootType.Loadouts))
-                .WhereNotNull()
-                .Select(id => dataStore.Get<LoadoutRegistry>(id, true))
-                .WhereNotNull()
-                .Select(registry => registry.Lists)
-                .SelectMany(lists => lists.Values)
-                .ToObservableChangeSet(list => list.LoadoutId)
+            dataStore.ObservableLoadouts()
                 .Filter(gameFilterFn)
                 .SortBy(list => list.Name)
                 .Transform(loadout =>
