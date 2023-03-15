@@ -13,9 +13,12 @@ namespace NexusMods.Networking.NexusWebApi;
 ///   changes, we might want to refresh tokens more proactively and then we'd need to save the expire time.
 /// </summary>
 [JsonName("JWTTokens")]
+// ReSharper disable once InconsistentNaming
 public record JWTTokenEntity : Entity
 {
-    /// <inheritdoc/>
+    /// <summary>
+    /// ID used to refer to JWT tokens in the data store.
+    /// </summary>
     public static readonly IId StoreId = new IdVariableLength(EntityCategory.AuthData, "NexusMods.Networking.NexusWebApi.JWTTokens"u8.ToArray());
 
     /// <inheritdoc/>

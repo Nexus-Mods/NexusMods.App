@@ -16,7 +16,7 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        var mockOSInterop = new Mock<IOSInterop>();
+        var mockOsInterop = new Mock<IOSInterop>();
 
         services
             .AddSingleton<HttpClient>()
@@ -24,7 +24,7 @@ public class Startup
             .AddHttpDownloader()
             .AddSingleton<TemporaryFileManager>()
             .AddSingleton<IProcessFactory, ProcessFactory>()
-            .AddSingleton(mockOSInterop.Object)
+            .AddSingleton(mockOsInterop.Object)
             .AddSingleton<LocalHttpServer>()
             .AddNexusWebApi(true)
             .AddDataModel()

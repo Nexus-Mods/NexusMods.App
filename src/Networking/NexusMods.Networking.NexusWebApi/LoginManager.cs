@@ -1,5 +1,4 @@
 using System.Reactive.Linq;
-using Microsoft.Extensions.Logging;
 using NexusMods.Common.ProtocolRegistration;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.Networking.NexusWebApi.Types;
@@ -11,7 +10,6 @@ namespace NexusMods.Networking.NexusWebApi;
 /// </summary>
 public class LoginManager
 {
-    private readonly ILogger<LoginManager> _logger;
     private readonly OAuth _oauth;
     private readonly IDataStore _dataStore;
     private readonly IProtocolRegistration _protocolRegistration;
@@ -34,11 +32,10 @@ public class LoginManager
     /// </summary>
     public IObservable<Uri?> Avatar => UserInfo.Select(info => info?.Avatar);
 
-    public LoginManager(ILogger<LoginManager> logger, Client client,
+    public LoginManager(Client client,
         OAuth2MessageFactory msgFactory,
         OAuth oauth, IDataStore dataStore, IProtocolRegistration protocolRegistration)
     {
-        _logger = logger;
         _oauth = oauth;
         _msgFactory = msgFactory;
         _client = client;
@@ -78,8 +75,9 @@ public class LoginManager
     /// <summary>
     ///  Log out of Nexus Mods
     /// </summary>
-    public async Task Logout()
+    public Task Logout()
     {
         _dataStore.Delete(JWTTokenEntity.StoreId);
+        return Task.CompletedTask;
     }
 }

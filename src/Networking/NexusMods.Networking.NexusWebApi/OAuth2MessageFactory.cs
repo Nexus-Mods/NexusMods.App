@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.Networking.NexusWebApi.Types;
@@ -66,16 +65,14 @@ internal class TokenUserInfo
 /// </summary>
 public class OAuth2MessageFactory : IAuthenticatingMessageFactory
 {
-    private readonly ILogger<OAuth2MessageFactory> _logger;
     private readonly IDataStore _store;
     private readonly OAuth _auth;
 
     /// <summary>
     /// constructor
     /// </summary>
-    public OAuth2MessageFactory(ILogger<OAuth2MessageFactory> logger, IDataStore store, OAuth auth)
+    public OAuth2MessageFactory(IDataStore store, OAuth auth)
     {
-        _logger = logger;
         _store = store;
         _auth = auth;
     }
@@ -107,7 +104,7 @@ public class OAuth2MessageFactory : IAuthenticatingMessageFactory
         //   Once graphql is implemented I recommend to fetch user info about the user the token belongs to
         //   so we can report more details about them.
         //   For now, any query will fail if the token is valid
-        var files = await client.ModFiles(GameDomain.From("site"), ModId.From(1), cancel);
+        await client.ModFiles(GameDomain.From("site"), ModId.From(1), cancel);
 
         var tokens = _store.Get<JWTTokenEntity>(JWTTokenEntity.StoreId);
         if (tokens == null)
