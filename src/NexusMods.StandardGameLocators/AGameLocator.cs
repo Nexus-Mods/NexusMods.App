@@ -22,7 +22,7 @@ public abstract class AGameLocator<TStore, TRecord, TId, TGame> : IGameLocator
 
     public IEnumerable<GameLocatorResult> Find(IGame game)
     {
-        if (game is not TGame tg) return Enumerable.Empty<GameLocatorResult>();
+        if (game is not TGame tg) yield break;
 
         if (_cachedGames is null)
         {
@@ -34,10 +34,11 @@ public abstract class AGameLocator<TStore, TRecord, TId, TGame> : IGameLocator
             }
         }
 
-        return Ids(tg)
-            .Where(id => _cachedGames.ContainsKey(id))
-            .Select(id => _cachedGames[id])
-            .Select(found => new GameLocatorResult(Path(found)));
+        foreach (var id in Ids(tg))
+        {
+            if (!_cachedGames.TryGetValue(id, out var found)) continue;
+            yield return new GameLocatorResult(Path(found));
+        }
     }
 
     protected abstract IEnumerable<TId> Ids(TGame game);
