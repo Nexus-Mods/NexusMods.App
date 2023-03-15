@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Interprocess.Messages;
+using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.RateLimiting;
 
 namespace NexusMods.DataModel.Interprocess.Jobs;
@@ -24,6 +25,18 @@ public class InterprocessJob : IInterprocessJob
     /// <param name="description"></param>
     public InterprocessJob(JobType jobType, IInterprocessJobManager manager, IId payload, string description) :
         this(jobType, manager, payload.ToTaggedBytes(), description)
+    {
+    }
+
+    /// <summary>
+    /// Create a new job, where the payload is a <see cref="LoadoutId"/>.
+    /// </summary>
+    /// <param name="jobType"></param>
+    /// <param name="manager"></param>
+    /// <param name="payload"></param>
+    /// <param name="description"></param>
+    public InterprocessJob(JobType jobType, IInterprocessJobManager manager, LoadoutId payload, string description) :
+        this(jobType, manager, payload.ToArray(), description)
     {
     }
 

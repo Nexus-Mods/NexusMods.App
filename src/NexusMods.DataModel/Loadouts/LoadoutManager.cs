@@ -8,6 +8,8 @@ using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Interprocess.Jobs;
+using NexusMods.DataModel.Interprocess.Messages;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -43,6 +45,7 @@ public class LoadoutManager
     private readonly FileContentsCache _analyzer;
     private readonly IEnumerable<IFileMetadataSource> _metadataSources;
     private readonly ILookup<GameDomain, ITool> _tools;
+    private readonly IInterprocessJobManager _jobManager;
 
     /// <summary/>
     /// <remarks>
@@ -56,13 +59,15 @@ public class LoadoutManager
         FileHashCache fileHashCache,
         IEnumerable<IModInstaller> installers,
         FileContentsCache analyzer,
-        IEnumerable<ITool> tools)
+        IEnumerable<ITool> tools,
+        IInterprocessJobManager jobManager)
     {
         FileHashCache = fileHashCache;
         ArchiveManager = archiveManager;
         _logger = logger;
         Limiter = limiter;
         Store = store;
+        _jobManager = jobManager;
         _root = new Root<LoadoutRegistry>(RootType.Loadouts, store);
         _metadataSources = metadataSources;
         _installers = installers.ToArray();
@@ -109,7 +114,7 @@ public class LoadoutManager
     public LoadoutManager Rebase(SqliteDataStore store)
     {
         return new LoadoutManager(_logger, Limiter, ArchiveManager, _metadataSources, store, FileHashCache, _installers,
-            _analyzer, _tools.SelectMany(f => f));
+            _analyzer, _tools.SelectMany(f => f), _jobManager);
     }
 
     /// <summary>
@@ -148,7 +153,10 @@ public class LoadoutManager
 
         _root.Alter(r => r with { Lists = r.Lists.With(n.LoadoutId, n) });
         _logger.LogInformation("Loadout {Name} {Id} created", name, n.LoadoutId);
-        var indexTask = IndexAndAddGameFiles(installation, token, n, mod);
+
+        var managementJob = new InterprocessJob(JobType.ManageGame, _jobManager, n.LoadoutId,
+                $"Analyzing game files for {installation.Game.Name}");
+        var indexTask = IndexAndAddGameFiles(installation, token, n, mod, managementJob);
 
         if (!earlyReturn)
             await indexTask;
@@ -157,10 +165,15 @@ public class LoadoutManager
     }
 
     private async Task IndexAndAddGameFiles(GameInstallation installation,
-        CancellationToken token, Loadout n, Mod mod)
+        CancellationToken token, Loadout n, Mod mod, IInterprocessJob managementJob)
     {
+        // So we release this after the job is done.
+        using var _ = managementJob;
+
         var gameFiles = new HashSet<AModFile>();
         _logger.LogInformation("Adding game files");
+
+        managementJob.Progress = new Percent(0.0);
 
         foreach (var (type, path) in installation.Locations)
         {
@@ -184,6 +197,7 @@ public class LoadoutManager
             }
         }
 
+        managementJob.Progress = new Percent(0.5);
         gameFiles.AddRange(installation.Game.GetGameFiles(installation, Store));
         var marker = new LoadoutMarker(this, n.LoadoutId);
         marker.Alter(mod.Id,
