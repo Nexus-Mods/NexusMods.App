@@ -85,6 +85,8 @@ public class SqliteIPC : IDisposable
         while (!shutdownTokenToken.IsCancellationRequested)
         {
             lastId = ProcessMessages(lastId);
+
+            // TODO: Bug, FileInfo is a cached field.
             var lastEdit = _storePath.FileInfo;
 
             var elapsed = DateTime.UtcNow;
