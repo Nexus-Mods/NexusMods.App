@@ -26,7 +26,7 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
             this.WhenAnyValue(vm => vm.Installation)
                 .OffUi()
                 .SelectMany(async install => await LoadImage(install))
-                .Where(img => img != null)
+                .WhereNotNull()
                 .OnUI()
                 .BindToUi(this, vm => vm.Image)
                 .DisposeWith(d);

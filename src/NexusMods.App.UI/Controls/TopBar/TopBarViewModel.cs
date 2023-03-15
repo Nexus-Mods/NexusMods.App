@@ -33,9 +33,9 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
                 .DisposeWith(d);
 
             _loginManager.Avatar
-                .Where(a => a != null)
+                .WhereNotNull()
                 .SelectMany(LoadImage)
-                .Where(img => img != null)
+                .WhereNotNull()
                 .Subscribe(x => Avatar = x!)
                 .DisposeWith(d);
         });
