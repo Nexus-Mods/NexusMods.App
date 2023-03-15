@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Interprocess.Jobs;
+using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.RateLimiting;
 
 namespace NexusMods.DataModel.Interprocess.Messages;
@@ -39,4 +40,9 @@ public interface IInterprocessJob : INotifyPropertyChanged, IDisposable
     /// is a <see cref="IId"/>.
     /// </summary>
     IId PayloadAsId { get; }
+
+    /// <summary>
+    /// Returns the payload as a <see cref="ILoadoutId"/>. This is only valid if the payload
+    /// </summary>
+    LoadoutId LoadoutId { get; }
 }

@@ -40,6 +40,10 @@ public class GameLeftMenuViewModel : AViewModel<IGameLeftMenuViewModel>, IGameLe
                 .Select<IGame, Func<Loadout, bool>>(game => loadout =>
                     loadout.Installation.Game.Domain == game.Domain);
 
+            this.WhenAnyValue(vm => vm.Game)
+                .BindTo(launchButton, vm => vm.Game)
+                .DisposeWith(d);
+
             dataStore.ObservableLoadouts()
                 .Filter(gameFilterFn)
                 .SortBy(list => list.Name)

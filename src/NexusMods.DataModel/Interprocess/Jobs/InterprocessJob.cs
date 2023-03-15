@@ -104,7 +104,11 @@ public class InterprocessJob : IInterprocessJob
     /// <inheritdoc />
     public byte[] Data { get; }
 
+    /// <inheritdoc />
     public IId PayloadAsId => IId.FromTaggedSpan(Data);
+
+    /// <inheritdoc />
+    public LoadoutId LoadoutId => LoadoutId.From(Data);
 
     public void Dispose()
     {

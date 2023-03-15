@@ -28,7 +28,7 @@ public class GameLeftMenuDesignViewModel : AViewModel<IGameLeftMenuViewModel>, I
 
     public GameLeftMenuDesignViewModel()
     {
-        LaunchButton = new LaunchButtonViewModel();
+        LaunchButton = new LaunchButtonDesignViewModel();
 
         var items = new ILeftMenuItemViewModel[]
         {
