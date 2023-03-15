@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using FluentAssertions;
 using NexusMods.Common.ProtocolRegistration;
