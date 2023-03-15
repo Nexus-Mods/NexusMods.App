@@ -6,12 +6,13 @@ using NexusMods.Paths;
 namespace NexusMods.StandardGameLocators;
 
 public abstract class AGameLocator<TStore, TRecord, TId, TGame> : IGameLocator
-where TStore : AHandler<TRecord, TId>
-where TRecord : class
-where TGame : IGame
+    where TStore : AHandler<TRecord, TId>
+    where TRecord : class
+    where TGame : IGame
 {
     private readonly ILogger _logger;
     private readonly AHandler<TRecord, TId> _handler;
+    private IDictionary<TId, TRecord>? _cachedGames;
 
     protected AGameLocator(ILogger logger, AHandler<TRecord, TId> handler)
     {
@@ -23,18 +24,20 @@ where TGame : IGame
     {
         if (game is not TGame tg) yield break;
 
-        foreach (var id in Ids(tg))
+        if (_cachedGames is null)
         {
-            var found = _handler.FindOneGameById(id, out var errors);
-            if (errors.Any() || found == null)
+            _cachedGames = _handler.FindAllGamesById(out var errors);
+            if (errors.Any())
             {
                 foreach (var error in errors)
-                    _logger.LogError("While looking for {Game}: {Error}", game, error);
+                    _logger.LogError("While looking for games: {Error}", error);
             }
-            else
-            {
-                yield return new GameLocatorResult(Path(found));
-            }
+        }
+
+        foreach (var id in Ids(tg))
+        {
+            if (!_cachedGames.TryGetValue(id, out var found)) continue;
+            yield return new GameLocatorResult(Path(found));
         }
     }
 
