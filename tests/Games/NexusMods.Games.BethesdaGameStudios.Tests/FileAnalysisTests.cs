@@ -9,8 +9,12 @@ namespace NexusMods.Games.BethesdaGameStudios.Tests;
 [Trait("RequiresGameInstalls", "True")] // Technically this doesn't require the game, but the DI system does for the other tests
 public class FileAnalysisTests
 {
+
     private readonly FileContentsCache _cache;
     private readonly AbsolutePath _plugin1;
+
+    // TODO: Write tests using _plugin2.
+    // ReSharper disable once NotAccessedField.Local
     private readonly AbsolutePath _plugin2;
 
     public FileAnalysisTests(FileContentsCache cache)

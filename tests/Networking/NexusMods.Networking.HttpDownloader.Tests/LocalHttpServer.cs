@@ -8,19 +8,18 @@ public class LocalHttpServer : IDisposable
     private readonly ILogger<LocalHttpServer> _logger;
     private readonly HttpListener _listener;
     private readonly string _prefix;
-    private readonly Task _loopTask;
 
     public LocalHttpServer(ILogger<LocalHttpServer> logger)
     {
         _logger = logger;
         (_listener, _prefix) = CreateNewListener();
         _listener.Start();
-        _loopTask = StartLoop();
+        StartLoop();
     }
 
-    private Task StartLoop()
+    private void StartLoop()
     {
-        return Task.Run(async () =>
+        Task.Run(async () =>
         {
             while (_listener.IsListening)
             {
@@ -31,42 +30,42 @@ public class LocalHttpServer : IDisposable
                 switch (context.Request.Url?.PathAndQuery)
                 {
                     case "/hello":
-                        {
-                            resp.StatusCode = 200;
-                            resp.StatusDescription = "OK";
-                            await using var ros = resp.OutputStream;
-                            ros.Write("Hello World!"u8);
-                            break;
-                        }
+                    {
+                        resp.StatusCode = 200;
+                        resp.StatusDescription = "OK";
+                        await using var ros = resp.OutputStream;
+                        ros.Write("Hello World!"u8);
+                        break;
+                    }
                     case "/100MB-Break":
-                        {
-                            resp.StatusCode = 200;
-                            resp.StatusDescription = "OK";
-                            await using var ros = resp.OutputStream;
-                            ros.Write("Hello World!"u8);
-                            break;
-                        }
+                    {
+                        resp.StatusCode = 200;
+                        resp.StatusDescription = "OK";
+                        await using var ros = resp.OutputStream;
+                        ros.Write("Hello World!"u8);
+                        break;
+                    }
                     case "/resume":
-                        {
-                            resp.StatusCode = (int)HttpStatusCode.PartialContent;
-                            resp.StatusDescription = "Partial Content";
-                            resp.ProtocolVersion = HttpVersion.Version11;
-                            resp.Headers.Add(HttpResponseHeader.ContentType, "text/plain");
-                            // resp.Headers.Add(HttpResponseHeader.ContentType, "application/octet-stream");
-                            resp.Headers.Add(HttpResponseHeader.AcceptRanges, "bytes");
-                            resp.Headers.Add(HttpResponseHeader.ContentRange, $"bytes 15-20/21");
-                            resp.Headers.Add(HttpResponseHeader.KeepAlive, "true");
+                    {
+                        resp.StatusCode = (int)HttpStatusCode.PartialContent;
+                        resp.StatusDescription = "Partial Content";
+                        resp.ProtocolVersion = HttpVersion.Version11;
+                        resp.Headers.Add(HttpResponseHeader.ContentType, "text/plain");
+                        // resp.Headers.Add(HttpResponseHeader.ContentType, "application/octet-stream");
+                        resp.Headers.Add(HttpResponseHeader.AcceptRanges, "bytes");
+                        resp.Headers.Add(HttpResponseHeader.ContentRange, $"bytes 15-20/21");
+                        resp.Headers.Add(HttpResponseHeader.KeepAlive, "true");
 
-                            await using var ros = resp.OutputStream;
-                            ros.Write("World!"u8);
-                            break;
-                        }
+                        await using var ros = resp.OutputStream;
+                        ros.Write("World!"u8);
+                        break;
+                    }
                     default:
-                        {
-                            resp.StatusCode = 404;
-                            resp.StatusDescription = "Not Found";
-                            break;
-                        }
+                    {
+                        resp.StatusCode = 404;
+                        resp.StatusDescription = "Not Found";
+                        break;
+                    }
                 }
             }
         });

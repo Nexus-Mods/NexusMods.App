@@ -16,8 +16,10 @@ namespace NexusMods.Games.RedEngine.Tests;
 [Trait("RequiresNetworking", "True")]
 public class ModInstallerTests
 {
-    private readonly LoadoutManager _manager;
+    // ReSharper disable once NotAccessedField.Local
     private readonly GameInstallation _installation;
+
+    private readonly LoadoutManager _manager;
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly Client _nexusClient;
     private readonly IHttpDownloader _httpDownloader;

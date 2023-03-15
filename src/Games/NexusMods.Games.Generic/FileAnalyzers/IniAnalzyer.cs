@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using IniParser;
 using IniParser.Parser;
 using NexusMods.DataModel.Abstractions;
@@ -10,7 +11,10 @@ namespace NexusMods.Games.Generic.FileAnalyzers;
 public class IniAnalzyer : IFileAnalyzer
 {
     public IEnumerable<FileType> FileTypes => new[] { FileType.INI };
-    public async IAsyncEnumerable<IFileAnalysisData> AnalyzeAsync(Stream stream, CancellationToken token = default)
+
+#pragma warning disable CS1998
+    public async IAsyncEnumerable<IFileAnalysisData> AnalyzeAsync(Stream stream, [EnumeratorCancellation] CancellationToken token = default)
+#pragma warning restore CS1998
     {
         var data = new StreamIniDataParser(new IniDataParser()).ReadData(new StreamReader(stream));
         var sections = data.Sections.Select(s => s.SectionName).ToHashSet();

@@ -1,6 +1,5 @@
 using System.Text;
 using FluentAssertions;
-using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -10,15 +9,12 @@ namespace NexusMods.Games.BethesdaGameStudios.Tests;
 
 public class SkyrimSpecialEditionTests
 {
-    private readonly ILogger<SkyrimSpecialEditionTests> _logger;
     private readonly SkyrimSpecialEdition _game;
     private readonly LoadoutManager _manager;
 
-    public SkyrimSpecialEditionTests(ILogger<SkyrimSpecialEditionTests> logger,
-        SkyrimSpecialEdition game,
+    public SkyrimSpecialEditionTests(SkyrimSpecialEdition game,
         LoadoutManager manager)
     {
-        _logger = logger;
         _game = game;
         _manager = manager;
     }

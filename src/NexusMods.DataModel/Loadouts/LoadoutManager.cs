@@ -433,7 +433,7 @@ public class LoadoutManager
             if (!source.Extensions.Contains(file.To.Extension))
                 continue;
 
-            await foreach (var metadata in source.GetMetadata(loadout, mod, file, analyzed))
+            await foreach (var metadata in source.GetMetadataAsync(loadout, mod, file, analyzed))
             {
                 yield return metadata;
             }
