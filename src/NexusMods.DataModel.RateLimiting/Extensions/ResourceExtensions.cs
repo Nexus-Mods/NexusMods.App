@@ -47,7 +47,7 @@ public static class ResourceExtensions
         token ??= CancellationToken.None;
 
         var allFiles = roots.SelectMany(f => f.EnumerateFileEntries()).OrderBy(x => x.Size).ToList();
-        var tasks   = new List<Task<List<TItem>>>();
+        var tasks = new List<Task<List<TItem>>>();
         var maxJobs = resource.MaxJobs;
 
         // TODO: Can we dedupe this?
@@ -69,8 +69,8 @@ public static class ResourceExtensions
         })));
 
         foreach (var result in tasks)
-        foreach (var itm in (await result))
-            yield return itm;
+            foreach (var itm in (await result))
+                yield return itm;
     }
 
     /// <summary>

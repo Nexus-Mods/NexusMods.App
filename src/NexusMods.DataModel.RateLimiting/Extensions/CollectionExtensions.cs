@@ -1,4 +1,4 @@
-﻿namespace NexusMods.DataModel.RateLimiting.Extensions;
+namespace NexusMods.DataModel.RateLimiting.Extensions;
 
 /// <summary>
 /// Extension methods tied to collections.

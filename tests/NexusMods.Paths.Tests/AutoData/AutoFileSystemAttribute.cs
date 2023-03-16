@@ -20,5 +20,6 @@ public class AutoFileSystemAttribute : AutoDataAttribute
                 => fs.FromFullPath(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? $"C:\\{path}" : $"/{path}")));
 
         return ret;
-    }) { }
+    })
+    { }
 }

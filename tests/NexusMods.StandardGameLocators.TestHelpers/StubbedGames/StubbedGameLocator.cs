@@ -1,4 +1,4 @@
-﻿using GameFinder.Common;
+using GameFinder.Common;
 using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
