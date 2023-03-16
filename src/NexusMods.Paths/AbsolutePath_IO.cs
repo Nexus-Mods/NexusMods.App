@@ -1,5 +1,4 @@
 using JetBrains.Annotations;
-using NexusMods.Paths.Extensions;
 
 namespace NexusMods.Paths;
 
@@ -110,11 +109,6 @@ public readonly partial struct AbsolutePath
     [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.EnumerateFiles)} directly.")]
     public IEnumerable<AbsolutePath> EnumerateFiles(string pattern = "*", bool recursive = true)
         => _fileSystem.EnumerateFiles(this, pattern, recursive);
-
-    /// <inheritdoc cref="IFileSystem.EnumerateDirectories"/>
-    [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.EnumerateDirectories)} directly.")]
-    public IEnumerable<AbsolutePath> EnumerateDirectories(bool recursive = true)
-        => _fileSystem.EnumerateDirectories(this, recursive: recursive);
 
     /// <inheritdoc cref="IFileSystem.EnumerateFileEntries"/>
     [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.EnumerateFileEntries)} directly.")]

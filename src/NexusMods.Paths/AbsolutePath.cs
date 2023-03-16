@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using JetBrains.Annotations;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.HighPerformance.CommunityToolkit;
 using NexusMods.Paths.Utilities;
@@ -9,6 +10,7 @@ namespace NexusMods.Paths;
 /// <summary>
 /// A path that represents a full path to a file or directory.
 /// </summary>
+[PublicAPI]
 public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
 {
     private static readonly char PathSeparatorForInternalOperations = Path.DirectorySeparatorChar;
