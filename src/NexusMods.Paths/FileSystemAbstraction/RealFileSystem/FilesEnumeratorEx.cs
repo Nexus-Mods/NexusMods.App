@@ -1,6 +1,7 @@
 using System.IO.Enumeration;
+using NexusMods.Paths.Utilities;
 
-namespace NexusMods.Paths.Utilities.Internal.Enumerators;
+namespace NexusMods.Paths;
 
 internal sealed class FilesEnumeratorEx : FileSystemEnumerator<FilesEnumeratorExEntry>
 {
@@ -16,8 +17,8 @@ internal sealed class FilesEnumeratorEx : FileSystemEnumerator<FilesEnumeratorEx
         _options = options;
     }
 
-    protected override bool ShouldIncludeEntry(ref FileSystemEntry entry) =>
-        Common.MatchesPattern(_pattern, entry.FileName, _options);
+    protected override bool ShouldIncludeEntry(ref FileSystemEntry entry)
+        => EnumeratorHelpers.MatchesPattern(_pattern, entry.FileName, _options.MatchType);
 
     protected override FilesEnumeratorExEntry TransformEntry(ref FileSystemEntry entry)
     {

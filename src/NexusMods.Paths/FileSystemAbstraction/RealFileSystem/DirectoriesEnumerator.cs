@@ -1,6 +1,7 @@
 using System.IO.Enumeration;
+using NexusMods.Paths.Utilities;
 
-namespace NexusMods.Paths.Utilities.Internal.Enumerators;
+namespace NexusMods.Paths;
 
 internal sealed class DirectoriesEnumerator : FileSystemEnumerator<string>
 {
@@ -16,8 +17,8 @@ internal sealed class DirectoriesEnumerator : FileSystemEnumerator<string>
         _options = options;
     }
 
-    protected override bool ShouldIncludeEntry(ref FileSystemEntry entry) =>
-        entry.IsDirectory && Common.MatchesPattern(_pattern, entry.FileName, _options);
+    protected override bool ShouldIncludeEntry(ref FileSystemEntry entry)
+        => entry.IsDirectory && EnumeratorHelpers.MatchesPattern(_pattern, entry.FileName, _options.MatchType);
 
     protected override string TransformEntry(ref FileSystemEntry entry)
     {
