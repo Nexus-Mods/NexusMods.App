@@ -101,7 +101,33 @@ public partial class FileSystem : BaseFileSystem
 
     /// <inheritdoc/>
     protected override void InternalDeleteFile(AbsolutePath path)
-        => File.Delete(path.GetFullPath());
+    {
+        var fullPath = path.GetFullPath();
+        if (File.Exists(fullPath))
+        {
+            try
+            {
+                File.Delete(fullPath);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                var fi = new FileInfo(fullPath);
+
+                if (fi.IsReadOnly)
+                {
+                    fi.IsReadOnly = false;
+                    File.Delete(fullPath);
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+
+        if (Directory.Exists(fullPath))
+            DeleteDirectory(path, true);
+    }
 
     /// <inheritdoc/>
     protected override void InternalMoveFile(AbsolutePath source, AbsolutePath dest, bool overwrite)

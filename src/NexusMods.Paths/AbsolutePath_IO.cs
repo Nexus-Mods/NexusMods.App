@@ -33,45 +33,22 @@ public readonly partial struct AbsolutePath
         }
     }
 
-    /// <inheritdoc cref="IFileSystem.Open"/>
+    /// <inheritdoc cref="IFileSystem.OpenFile"/>
     [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.OpenFile)} directly.")]
     public Stream Open(FileMode mode, FileAccess access = FileAccess.Read, FileShare share = FileShare.ReadWrite)
         => _fileSystem.OpenFile(this, mode, access, share);
 
+    /// <inheritdoc cref="IFileSystem.ReadFile"/>
     [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.ReadFile)} directly.")]
     public Stream Read() => _fileSystem.ReadFile(this);
 
+    /// <inheritdoc cref="IFileSystem.CreateFile"/>
     [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.CreateFile)} directly.")]
     public Stream Create() => _fileSystem.CreateFile(this);
 
-    /// <summary>
-    /// Deletes the file.
-    /// </summary>
-    public void Delete()
-    {
-        if (FileExists)
-        {
-            try
-            {
-                _fileSystem.DeleteFile(this);
-            }
-            catch (UnauthorizedAccessException)
-            {
-                if (FileInfo.IsReadOnly)
-                {
-                    FileInfo.IsReadOnly = false;
-                    _fileSystem.DeleteFile(this);
-                }
-                else
-                {
-                    throw;
-                }
-            }
-        }
-
-        if (_fileSystem.DirectoryExists(this))
-            DeleteDirectory();
-    }
+    /// <inheritdoc cref="IFileSystem.DeleteFile"/>
+    [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.DeleteFile)} directly.")]
+    public void Delete() => _fileSystem.DeleteFile(this);
 
     /// <summary>
     /// Moves the current path to a new destination.
