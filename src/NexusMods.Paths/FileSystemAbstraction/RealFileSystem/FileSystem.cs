@@ -93,7 +93,50 @@ public partial class FileSystem : BaseFileSystem
 
     /// <inheritdoc/>
     protected override void InternalDeleteDirectory(AbsolutePath path, bool recursive)
-        => Directory.Delete(path.GetFullPath(), recursive);
+    {
+        var fullPath = path.GetFullPath();
+        if (!Directory.Exists(fullPath)) return;
+
+        if (!recursive)
+        {
+            var isEmpty = EnumerateFiles(path, recursive: false).Any() ||
+                          EnumerateDirectories(path, recursive: false).Any();
+            if (!isEmpty) return;
+        }
+
+        foreach (var subDirectories in Directory.GetDirectories(fullPath))
+        {
+            InternalDeleteDirectory(FromFullPath(subDirectories), recursive);
+        }
+
+        try
+        {
+            var di = new DirectoryInfo(fullPath);
+            if (di.Attributes.HasFlag(FileAttributes.ReadOnly))
+                di.Attributes &= ~FileAttributes.ReadOnly;
+
+            var attempts = 0;
+        TopParent:
+
+            try
+            {
+                Directory.Delete(fullPath, true);
+            }
+            catch (IOException)
+            {
+                if (attempts > 10)
+                    throw;
+
+                Thread.Sleep(100);
+                attempts++;
+                goto TopParent;
+            }
+        }
+        catch (UnauthorizedAccessException)
+        {
+            Directory.Delete(fullPath, true);
+        }
+    }
 
     /// <inheritdoc/>
     protected override bool InternalFileExists(AbsolutePath path)

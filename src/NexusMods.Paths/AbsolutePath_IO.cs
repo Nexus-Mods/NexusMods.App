@@ -102,47 +102,9 @@ public readonly partial struct AbsolutePath
     [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.DirectoryExists)} directly.")]
     public bool DirectoryExists() => _fileSystem.DirectoryExists(this);
 
-    /// <summary>
-    /// Deletes the directory specified by this absolute path.
-    /// </summary>
-    public void DeleteDirectory(bool dontDeleteIfNotEmpty = false)
-    {
-        if (!DirectoryExists()) return;
-        if (dontDeleteIfNotEmpty && (EnumerateFiles().Any() || EnumerateDirectories().Any()))
-            return;
-
-        foreach (var directory in System.IO.Directory.GetDirectories(GetFullPath()))
-        {
-            directory.ToAbsolutePath().DeleteDirectory(dontDeleteIfNotEmpty);
-        }
-        try
-        {
-            var di = new DirectoryInfo(GetFullPath());
-            if (di.Attributes.HasFlag(FileAttributes.ReadOnly))
-                di.Attributes &= ~FileAttributes.ReadOnly;
-
-            var attempts = 0;
-        TopParent:
-
-            try
-            {
-                System.IO.Directory.Delete(GetFullPath(), true);
-            }
-            catch (IOException)
-            {
-                if (attempts > 10)
-                    throw;
-
-                Thread.Sleep(100);
-                attempts++;
-                goto TopParent;
-            }
-        }
-        catch (UnauthorizedAccessException)
-        {
-            System.IO.Directory.Delete(GetFullPath(), true);
-        }
-    }
+    /// <inheritdoc cref="IFileSystem.DeleteDirectory"/>
+    [Obsolete($"This method is obsolete. Use IFileSystem.${nameof(IFileSystem.DeleteDirectory)} directly.")]
+    public void DeleteDirectory(bool recursive = false) => _fileSystem.DeleteDirectory(this, recursive);
 
     /// <inheritdoc cref="IFileSystem.EnumerateFiles"/>
     [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.EnumerateFiles)} directly.")]
