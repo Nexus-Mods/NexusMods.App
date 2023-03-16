@@ -45,6 +45,36 @@ public interface IFileSystem
     IDirectoryEntry GetDirectoryEntry(AbsolutePath path);
 
     /// <summary>
+    /// Enumerates through all files present in the directory that match the
+    /// provided pattern.
+    /// </summary>
+    /// <param name="directory"></param>
+    /// <param name="pattern"></param>
+    /// <param name="recursive"></param>
+    /// <returns></returns>
+    IEnumerable<AbsolutePath> EnumerateFiles(AbsolutePath directory, string pattern = "*", bool recursive = true);
+
+    /// <summary>
+    /// Enumerates through all directories in the directory that match the
+    /// provided pattern.
+    /// </summary>
+    /// <param name="directory"></param>
+    /// <param name="pattern"></param>
+    /// <param name="recursive"></param>
+    /// <returns></returns>
+    IEnumerable<AbsolutePath> EnumerateDirectories(AbsolutePath directory, string pattern = "*", bool recursive = true);
+
+    /// <summary>
+    /// Enumerates through all file entries in the directory that match the
+    /// provided pattern.
+    /// </summary>
+    /// <param name="directory"></param>
+    /// <param name="pattern"></param>
+    /// <param name="recursive"></param>
+    /// <returns></returns>
+    IEnumerable<IFileEntry> EnumerateFileEntries(AbsolutePath directory, string pattern = "*", bool recursive = true);
+
+    /// <summary>
     /// Opens a file stream to the giving path.
     /// </summary>
     /// <param name="path">Path to the file.</param>

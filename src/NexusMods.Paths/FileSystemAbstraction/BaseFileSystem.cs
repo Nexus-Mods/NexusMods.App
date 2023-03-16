@@ -67,6 +67,18 @@ public abstract class BaseFileSystem : IFileSystem
         => InternalGetDirectoryEntry(GetMappedPath(path));
 
     /// <inheritdoc/>
+    public IEnumerable<AbsolutePath> EnumerateFiles(AbsolutePath directory, string pattern = "*", bool recursive = true)
+        => InternalEnumerateFiles(GetMappedPath(directory), pattern, recursive);
+
+    /// <inheritdoc/>
+    public IEnumerable<AbsolutePath> EnumerateDirectories(AbsolutePath directory, string pattern = "*", bool recursive = true)
+        => InternalEnumerateDirectories(GetMappedPath(directory), pattern, recursive);
+
+    /// <inheritdoc/>
+    public IEnumerable<IFileEntry> EnumerateFileEntries(AbsolutePath directory, string pattern = "*", bool recursive = true)
+        => InternalEnumerateFileEntries(GetMappedPath(directory), pattern, recursive);
+
+    /// <inheritdoc/>
     public Stream ReadFile(AbsolutePath path) => OpenFile(path, FileMode.Open, FileAccess.Read, FileShare.Read);
 
     /// <inheritdoc/>
@@ -153,6 +165,15 @@ public abstract class BaseFileSystem : IFileSystem
 
     /// <inheritdoc cref="IFileSystem.GetDirectoryEntry"/>
     protected abstract IDirectoryEntry InternalGetDirectoryEntry(AbsolutePath path);
+
+    /// <inheritdoc cref="IFileSystem.EnumerateFiles"/>
+    protected abstract IEnumerable<AbsolutePath> InternalEnumerateFiles(AbsolutePath directory, string pattern, bool recursive);
+
+    /// <inheritdoc cref="IFileSystem.EnumerateFiles"/>
+    protected abstract IEnumerable<AbsolutePath> InternalEnumerateDirectories(AbsolutePath directory, string pattern, bool recursive);
+
+    /// <inheritdoc cref="IFileSystem.EnumerateFiles"/>
+    protected abstract IEnumerable<IFileEntry> InternalEnumerateFileEntries(AbsolutePath directory, string pattern, bool recursive);
 
     /// <inheritdoc cref="IFileSystem.OpenFile"/>
     protected abstract Stream InternalOpenFile(AbsolutePath path, FileMode mode, FileAccess access, FileShare share);
