@@ -216,7 +216,7 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// <param name="left"></param>
     /// <param name="right"></param>
     /// <returns></returns>
-    private static string JoinPathComponents(ReadOnlySpan<char> left, ReadOnlySpan<char> right)
+    internal static string JoinPathComponents(ReadOnlySpan<char> left, ReadOnlySpan<char> right)
     {
         if (left.Length < 1) return string.Empty;
         if (left.DangerousGetReferenceAt(left.Length - 1) == PathSeparatorForInternalOperations)
