@@ -19,42 +19,18 @@ public readonly partial struct AbsolutePath
     };
 
     /// <summary>
-    /// Returns the file information for this file.
+    /// Returns the <see cref="IFileEntry"/> of the current file.
     /// </summary>
     public IFileEntry FileInfo => _fileSystem.GetFileEntry(this);
 
     /// <summary>
-    /// Returns a <see cref="FileVersionInfo"/> representing the version information associated with the specified file.
+    /// Returns a <see cref="FileVersionInfo"/> representing the version
+    /// information associated with the specified file.
     /// </summary>
     public FileVersionInfo VersionInfo => FileInfo.GetFileVersionInfo();
 
     /// <summary>
-    /// Gets the size in bytes, of the current file.
-    /// </summary>
-    public Size Length => FileInfo.Size;
-
-    /// <summary>
-    /// Retrieves the last time this file was written to in coordinated universal time (UTC).
-    /// </summary>
-    public DateTime LastWriteTimeUtc => FileInfo.LastWriteTimeUtc;
-
-    /// <summary>
-    /// Retrieves the creation time of this file in coordinated universal time (UTC).
-    /// </summary>
-    public DateTime CreationTimeUtc => FileInfo.CreationTimeUtc;
-
-    /// <summary>
-    /// Retrieves the last time this file was written to.
-    /// </summary>
-    public DateTime LastWriteTime => FileInfo.LastWriteTime;
-
-    /// <summary>
-    /// Retrieves the creation time of this file.
-    /// </summary>
-    public DateTime CreationTime => FileInfo.CreationTime;
-
-    /// <summary>
-    /// Returns true if the file exists, else false.
+    /// Determines whether the specified file exists.
     /// </summary>
     public bool FileExists => _fileSystem.FileExists(this);
 
