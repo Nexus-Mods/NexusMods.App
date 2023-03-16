@@ -61,26 +61,26 @@ public class EnumerateFiles : IBenchmark
     }
 
     [Benchmark]
-    public FileEntry? EnumerateFileEntries_New()
+    public IFileEntry? EnumerateFileEntries_New()
     {
         var entries = FilePath.EnumerateFileEntries();
-        FileEntry? result = default;
+        IFileEntry? result = default;
         foreach (var entry in entries)
             result = entry;
 
         return result;
     }
 
-    [Benchmark]
-    public FileEntry? EnumerateFileEntries_Old()
-    {
-        var entries = OriginalImplementation.EnumerateFileEntries(FilePath);
-        FileEntry? result = default;
-        foreach (var entry in entries)
-            result = entry;
-
-        return result;
-    }
+    // [Benchmark]
+    // public IFileEntry? EnumerateFileEntries_Old()
+    // {
+    //     var entries = OriginalImplementation.EnumerateFileEntries(FilePath);
+    //     IFileEntry? result = default;
+    //     foreach (var entry in entries)
+    //         result = entry;
+    //
+    //     return result;
+    // }
 
     #region Original Implementation
 
@@ -113,24 +113,24 @@ public class EnumerateFiles : IBenchmark
                 .Select(p => p.ToAbsolutePath());
         }
 
-        public static IEnumerable<FileEntry> EnumerateFileEntries(AbsolutePath path, string pattern = "*",
-            bool recursive = true)
-        {
-            if (!path.DirectoryExists()) return Array.Empty<FileEntry>();
-            return Directory.EnumerateFiles(path.GetFullPath(), pattern,
-                    new EnumerationOptions()
-                    {
-                        AttributesToSkip = 0,
-                        RecurseSubdirectories = recursive,
-                        MatchType = MatchType.Win32
-                    })
-                .Select(file =>
-                {
-                    var absPath = file.ToAbsolutePath();
-                    var info = absPath.FileInfo;
-                    return new FileEntry(Path: absPath, Size: info.Size, LastModified: info.LastWriteTimeUtc);
-                });
-        }
+        // public static IEnumerable<FileEntry> EnumerateFileEntries(AbsolutePath path, string pattern = "*",
+        //     bool recursive = true)
+        // {
+        //     if (!path.DirectoryExists()) return Array.Empty<FileEntry>();
+        //     return Directory.EnumerateFiles(path.GetFullPath(), pattern,
+        //             new EnumerationOptions()
+        //             {
+        //                 AttributesToSkip = 0,
+        //                 RecurseSubdirectories = recursive,
+        //                 MatchType = MatchType.Win32
+        //             })
+        //         .Select(file =>
+        //         {
+        //             var absPath = file.ToAbsolutePath();
+        //             var info = absPath.FileInfo;
+        //             return new FileEntry(Path: absPath, Size: info.Size, LastModified: info.LastWriteTimeUtc);
+        //         });
+        // }
     }
     #endregion
 }
