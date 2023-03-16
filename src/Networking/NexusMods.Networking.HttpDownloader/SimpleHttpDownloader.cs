@@ -38,7 +38,7 @@ public class SimpleHttpDownloader : IHttpDownloader
 
             await using var stream = await response.Content.ReadAsStreamAsync(token);
             await using var file = destination.Create();
-            return await stream.HashingCopy(file, token, job);
+            return await stream.HashingCopyAsync(file, token, job);
         }
 
         throw new Exception($"Could not download {destination.FileName}");

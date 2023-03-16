@@ -29,7 +29,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
     public static readonly Dictionary<RelativePath, (Hash Hash, Size Size)> DataContents = DataNames
         .ToDictionary(d => d,
-            d => (d.FileName.ToString().XxHash64(), Size.From(d.FileName.ToString().Length)));
+            d => (d.FileName.ToString().XxHash64AsUtf8(), Size.From(d.FileName.ToString().Length)));
 
     protected readonly TemporaryFileManager TemporaryFileManager;
     protected readonly IServiceProvider ServiceProvider;

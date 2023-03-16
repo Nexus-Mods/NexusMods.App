@@ -6,13 +6,12 @@ namespace NexusMods.Hashing.xxHash64.Tests;
 public class StreamExtensionTests
 {
     private readonly byte[] _buffer;
-    private readonly Random _random;
 
     public StreamExtensionTests()
     {
-        _random = new Random();
-        _buffer = new byte[_random.Next(1024 * 1024 * 2)];
-        _random.NextBytes(_buffer);
+        var random = new Random();
+        _buffer = new byte[random.Next(1024 * 1024 * 2)];
+        random.NextBytes(_buffer);
     }
 
 
@@ -20,7 +19,7 @@ public class StreamExtensionTests
     public async Task CanHashStreams()
     {
         var stream = new MemoryStream(_buffer);
-        var hashValue = await stream.Hash(CancellationToken.None);
+        var hashValue = await stream.XxHash64Async(CancellationToken.None);
 
         hashValue.Should().Be(MSHash(_buffer));
     }
@@ -31,7 +30,7 @@ public class StreamExtensionTests
     {
         var stream = new MemoryStream(_buffer);
         var stream2 = new MemoryStream();
-        var hashValue = await stream.HashingCopyWithFn(async b =>
+        var hashValue = await stream.HashingCopyWithFnAsync(async b =>
         {
             await stream2.WriteAsync(b);
         });
@@ -40,6 +39,7 @@ public class StreamExtensionTests
         stream2.ToArray().Should().BeEquivalentTo(stream.ToArray());
     }
 
+    // ReSharper disable once InconsistentNaming
     private Hash MSHash(byte[] data)
     {
         var bytes = System.IO.Hashing.XxHash64.Hash(data);

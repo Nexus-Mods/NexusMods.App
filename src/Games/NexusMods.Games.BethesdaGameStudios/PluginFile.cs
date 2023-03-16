@@ -115,7 +115,7 @@ public record PluginFile : AGeneratedFile
         var ms = new MemoryStream();
         await GenerateAsync(ms, loadout, flattenedList, ct);
         ms.Position = 0;
-        return (Size.From(ms.Length), await ms.Hash(token: ct));
+        return (Size.From(ms.Length), await ms.XxHash64Async(token: ct));
     }
 
     private struct ModRuleTuple
