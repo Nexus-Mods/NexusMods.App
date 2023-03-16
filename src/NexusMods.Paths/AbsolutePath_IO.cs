@@ -1,14 +1,9 @@
-using System.Text;
 using JetBrains.Annotations;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities.Internal.Enumerators;
 
 namespace NexusMods.Paths;
 
-/// <summary>
-/// Extensions for absolute paths.
-/// Functionality not directly tied to class but useful nonetheless.
-/// </summary>
 public readonly partial struct AbsolutePath
 {
     private static EnumerationOptions GetSearchOptions(bool recursive) => new()
@@ -58,11 +53,7 @@ public readonly partial struct AbsolutePath
     /// Opens a file stream to the given absolute path.
     /// </summary>
     public Stream Open(FileMode mode, FileAccess access = FileAccess.Read, FileShare share = FileShare.ReadWrite)
-    {
-        return _fileSystem.OpenFile(this, mode, access, share);
-    }
-
-    // TODO: This should probably be called OpenRead & OpenCreate. Will change once am done with docs to make merging less hard.
+        => _fileSystem.OpenFile(this, mode, access, share);
 
     /// <summary>
     /// Opens this file for read-only access.
@@ -104,18 +95,6 @@ public readonly partial struct AbsolutePath
     }
 
     /// <summary>
-    /// Reads all of the data from this file into an array.
-    /// </summary>
-    /// <param name="token">Optional token to cancel this task.</param>
-    /// <returns></returns>
-    /// <remarks>
-    ///    Supports max 2GB file size.
-    /// </remarks>
-    // ReSharper disable once MemberCanBePrivate.Global
-    public Task<byte[]> ReadAllBytesAsync(CancellationToken token = default)
-        => _fileSystem.ReadAllBytesAsync(this, token);
-
-    /// <summary>
     /// Moves the current path to a new destination.
     /// </summary>
     /// <param name="dest">The destination to write to.</param>
@@ -149,18 +128,6 @@ public readonly partial struct AbsolutePath
     }
 
     /// <summary>
-    /// Copies the contents of this file to the destination asynchronously.
-    /// </summary>
-    /// <param name="dest">The destination file.</param>
-    /// <param name="token">[Optional] Use for cancelling the task.</param>
-    public async ValueTask CopyToAsync(AbsolutePath dest, CancellationToken token = default)
-    {
-        await using var inf = Read();
-        await using var ouf = dest.Create();
-        await inf.CopyToAsync(ouf, token);
-    }
-
-    /// <summary>
     /// Copies the contents of <paramref name="src"/> into this path.
     /// </summary>
     /// <param name="src">The source stream to copy from.</param>
@@ -179,12 +146,12 @@ public readonly partial struct AbsolutePath
     /// <summary>
     /// Returns true if this directory exists, else false.
     /// </summary>
-    public readonly bool DirectoryExists() => _fileSystem.DirectoryExists(this);
+    public bool DirectoryExists() => _fileSystem.DirectoryExists(this);
 
     /// <summary>
     /// Deletes the directory specified by this absolute path.
     /// </summary>
-    public readonly void DeleteDirectory(bool dontDeleteIfNotEmpty = false)
+    public void DeleteDirectory(bool dontDeleteIfNotEmpty = false)
     {
         if (!DirectoryExists()) return;
         if (dontDeleteIfNotEmpty && (EnumerateFiles().Any() || EnumerateDirectories().Any()))
@@ -229,7 +196,7 @@ public readonly partial struct AbsolutePath
     /// <param name="pattern">Pattern to search for files.</param>
     /// <param name="recursive">Whether the search should be done recursively or not.</param>
     /// <returns></returns>
-    public readonly IEnumerable<AbsolutePath> EnumerateFiles(string pattern = "*", bool recursive = true)
+    public IEnumerable<AbsolutePath> EnumerateFiles(string pattern = "*", bool recursive = true)
     {
         var options = GetSearchOptions(recursive);
         using var enumerator = new FilesEnumerator(GetFullPathWithSeparator(), pattern, options);
@@ -245,7 +212,7 @@ public readonly partial struct AbsolutePath
     /// Enumerates individual FileSystem directories under this directory.
     /// </summary>
     /// <param name="recursive">Whether to visit subdirectories or not.</param>
-    public readonly IEnumerable<AbsolutePath> EnumerateDirectories(bool recursive = true)
+    public IEnumerable<AbsolutePath> EnumerateDirectories(bool recursive = true)
     {
         var options = GetSearchOptions(recursive);
         var enumerator = new DirectoriesEnumerator(GetFullPathWithSeparator(), "*", options);

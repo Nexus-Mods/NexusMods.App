@@ -51,8 +51,7 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// </summary>
     public AbsolutePath Parent => FromFullPath(Directory, _fileSystem);
 
-
-    internal AbsolutePath(string directory, string fileName, IFileSystem fileSystem)
+    internal AbsolutePath(string directory, string fileName, IFileSystem? fileSystem)
     {
         if (!string.IsNullOrEmpty(directory) && !IsRootDirectory(directory))
         {
@@ -67,15 +66,31 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         }
 
         FileName = fileName;
-        _fileSystem = fileSystem;
+        _fileSystem = fileSystem ?? FileSystem.Shared;
     }
 
+    /// <summary>
+    /// Create a new <see cref="AbsolutePath"/> from a directory path and a
+    /// file name.
+    /// </summary>
+    /// <param name="directoryPath"></param>
+    /// <param name="fullPath"></param>
+    /// <param name="fileSystem"></param>
+    /// <returns></returns>
     public static AbsolutePath FromDirectoryAndFileName(string directoryPath, string fullPath, IFileSystem? fileSystem = null)
-        => new(directoryPath, fullPath, fileSystem ?? Paths.FileSystem.Shared);
+        => new(directoryPath, fullPath, fileSystem);
 
+    /// <summary>
+    /// Create a new <see cref="AbsolutePath"/> from an existing full path.
+    /// </summary>
+    /// <param name="fullPath"></param>
+    /// <param name="fileSystem"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException">
+    /// The given <paramref name="fullPath"/> is not rooted.
+    /// </exception>
     public static AbsolutePath FromFullPath(string fullPath, IFileSystem? fileSystem = null)
     {
-        fileSystem ??= Paths.FileSystem.Shared;
         var span = fullPath.AsSpan();
 
         // path is not rooted
@@ -125,7 +140,8 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// instead. This method literally just does <see cref="FileName"/> + <paramref name="ext"/>.
     /// </remarks>
     /// <param name="ext">The extension to append.</param>
-    public AbsolutePath AppendExtension(Extension ext) => FromDirectoryAndFileName(Directory, FileName + ext, _fileSystem);
+    public AbsolutePath AppendExtension(Extension ext)
+        => FromDirectoryAndFileName(Directory, FileName + ext, _fileSystem);
 
     /// <summary>
     /// Creates a new <see cref="AbsolutePath"/> from the current one, replacing
@@ -137,9 +153,7 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// </remarks>
     /// <param name="ext">The extension to replace.</param>
     public AbsolutePath ReplaceExtension(Extension ext)
-    {
-        return FromDirectoryAndFileName(Directory, FileName.ReplaceExtension(ext), _fileSystem);
-    }
+        => FromDirectoryAndFileName(Directory, FileName.ReplaceExtension(ext), _fileSystem);
 
     /// <summary>
     /// Returns true if the given directory is a root directory on the current
@@ -500,15 +514,5 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         }
 
         return fileName;
-    }
-
-    /// <summary/>
-    /// <returns>Full path with directory separator string attached at the end.</returns>
-    private readonly string GetFullPathWithSeparator()
-    {
-        var fullPath = GetFullPath();
-        return IsRootDirectory(fullPath)
-            ? fullPath
-            : string.Concat(fullPath, DirectorySeparatorCharStr);
     }
 }
