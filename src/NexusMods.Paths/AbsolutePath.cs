@@ -53,19 +53,9 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
 
     internal AbsolutePath(string directory, string fileName, IFileSystem? fileSystem)
     {
-        if (!string.IsNullOrEmpty(directory) && !IsRootDirectory(directory))
-        {
-            // remove trailing separator char
-            Directory = directory.EndsWith(PathSeparatorForInternalOperations)
-                ? directory[..^1]
-                : directory;
-        }
-        else
-        {
-            Directory = directory;
-        }
-
+        Directory = directory;
         FileName = fileName;
+
         _fileSystem = fileSystem ?? FileSystem.Shared;
     }
 
@@ -232,13 +222,12 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// <returns>The full combined path.</returns>
     public string GetFullPath()
     {
-        if (string.IsNullOrEmpty(Directory))
-            return FileName;
-
-        if (FileName.Length == 0)
-            return Directory;
-
-        return JoinPathComponents(Directory, FileName);
+        var requiredLength = GetFullPathLength();
+        return string.Create(requiredLength, (Directory, FileName), (span, tuple) =>
+        {
+            var (directory, fileName) = tuple;
+            GetFullPath(span, directory, fileName);
+        });
     }
 
     /// <summary>
@@ -252,27 +241,22 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         var requiredLength = GetFullPathLength();
         if (buffer.Length < requiredLength)
             throw new ArgumentException($"Buffer is too small: {buffer.Length} < {requiredLength}");
+        GetFullPath(buffer, Directory, FileName);
+    }
 
-        // file name without directory
-        if (string.IsNullOrEmpty(Directory))
+    private static void GetFullPath(Span<char> span, ReadOnlySpan<char> directory, ReadOnlySpan<char> fileName)
+    {
+        directory.CopyTo(span);
+        if (fileName.Length == 0) return;
+
+        if (directory.DangerousGetReferenceAt(directory.Length - 1) == PathSeparatorForInternalOperations)
         {
-            FileName.CopyTo(buffer);
-            return;
-        }
-
-        Directory.CopyTo(buffer);
-
-        // directory without file name
-        if (FileName.Length == 0) return;
-
-        if (IsRootDirectory(Directory))
-        {
-            FileName.CopyTo(buffer.SliceFast(Directory.Length));
+            fileName.CopyTo(span.SliceFast(directory.Length));
         }
         else
         {
-            buffer[Directory.Length] = PathSeparatorForInternalOperations;
-            FileName.CopyTo(buffer.SliceFast(Directory.Length + 1));
+            span[directory.Length] = PathSeparatorForInternalOperations;
+            fileName.CopyTo(span.SliceFast(directory.Length + 1));
         }
     }
 
@@ -282,11 +266,7 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// <returns></returns>
     public int GetFullPathLength()
     {
-        if (string.IsNullOrEmpty(Directory))
-            return FileName.Length;
-
-        if (FileName.Length == 0)
-            return Directory.Length;
+        if (FileName.Length == 0) return Directory.Length;
 
         var rootLength = GetRootLength(Directory);
         if (rootLength == Directory.Length)
