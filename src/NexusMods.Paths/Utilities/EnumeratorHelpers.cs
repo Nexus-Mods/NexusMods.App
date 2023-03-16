@@ -1,21 +1,21 @@
 using System.IO.Enumeration;
 using System.Runtime.CompilerServices;
 
-namespace NexusMods.Paths.Utilities.Internal.Enumerators;
+namespace NexusMods.Paths.Utilities;
 
-internal class Common
+internal class EnumeratorHelpers
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool MatchesPattern(string expression, ReadOnlySpan<char> name, EnumerationOptions options)
+    internal static bool MatchesPattern(string expression, ReadOnlySpan<char> name, MatchType matchType)
     {
-        switch (options.MatchType)
+        switch (matchType)
         {
             case MatchType.Win32:
                 return FileSystemName.MatchesWin32Expression(expression.AsSpan(), name);
             case MatchType.Simple:
                 return FileSystemName.MatchesSimpleExpression(expression.AsSpan(), name);
             default:
-                ThrowHelpers.ArgumentOutOfRange(nameof(options));
+                ThrowHelpers.ArgumentOutOfRange(nameof(matchType));
                 return false;
         }
     }
