@@ -38,7 +38,7 @@ public class DownloadUri : AVerb<Uri, AbsolutePath>
 
         var elapsed = sw.Elapsed;
         await _renderer.Render(new Table(new[] { "File", "Hash", "Size", "Elapsed", "Speed" },
-            new[] { new object[] { output, hash, output.Length, elapsed, output.Length / elapsed } }));
+            new[] { new object[] { output, hash, output.FileInfo.Size, elapsed, output.FileInfo.Size / elapsed } }));
         return 0;
     }
 }

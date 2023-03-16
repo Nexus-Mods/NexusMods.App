@@ -20,7 +20,7 @@ public class EnumerateFiles : IBenchmark
     public AbsolutePath EnumerateFiles_New()
     {
         var paths = FilePath.EnumerateFiles();
-        AbsolutePath result;
+        AbsolutePath result = default;
         foreach (var path in paths)
             result = path;
 
@@ -31,7 +31,7 @@ public class EnumerateFiles : IBenchmark
     public AbsolutePath EnumerateFiles_Old()
     {
         var paths = OriginalImplementation.EnumerateFiles(FilePath);
-        AbsolutePath result;
+        AbsolutePath result = default;
         foreach (var path in paths)
             result = path;
 
@@ -42,7 +42,7 @@ public class EnumerateFiles : IBenchmark
     public AbsolutePath EnumerateDirectories_New()
     {
         var paths = FilePath.EnumerateDirectories();
-        AbsolutePath result;
+        AbsolutePath result = default;
         foreach (var path in paths)
             result = path;
 
@@ -53,7 +53,7 @@ public class EnumerateFiles : IBenchmark
     public AbsolutePath EnumerateDirectories_Old()
     {
         var paths = OriginalImplementation.EnumerateDirectories(FilePath);
-        AbsolutePath result;
+        AbsolutePath result = default;
         foreach (var path in paths)
             result = path;
 
