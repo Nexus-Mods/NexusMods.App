@@ -1,3 +1,4 @@
+using System.Reflection;
 using FluentAssertions;
 
 namespace NexusMods.Paths.Tests.FileSystem;
@@ -5,24 +6,40 @@ namespace NexusMods.Paths.Tests.FileSystem;
 public class FileSystemTests
 {
     [Fact]
-    public void Test_FromFullPath_SameReference()
+    public void Test_EnumerateFiles()
     {
-        var fs = Paths.FileSystem.Shared;
-        var a = fs.FromFullPath("/home");
-        var b = AbsolutePath.FromFullPath("/home");
-        a.FileSystem.Should().BeSameAs(fs);
-        b.FileSystem.Should().BeSameAs(fs);
-        a.Should().Be(b);
+        var fs = new Paths.FileSystem();
+
+        var file = fs.FromFullPath(Assembly.GetExecutingAssembly().Location);
+        var directory = fs.FromFullPath(AppContext.BaseDirectory);
+        fs.EnumerateFiles(directory, recursive: false)
+            .Should()
+            .Contain(file);
     }
 
     [Fact]
-    public void Test_FromDirectoryAndFileName_SameReference()
+    public void Test_EnumerateDirectories()
     {
-        var fs = Paths.FileSystem.Shared;
-        var a = fs.FromDirectoryAndFileName("/", "home");
-        var b = AbsolutePath.FromDirectoryAndFileName("/", "home");
-        a.FileSystem.Should().BeSameAs(fs);
-        b.FileSystem.Should().BeSameAs(fs);
-        a.Should().Be(b);
+        var fs = new Paths.FileSystem();
+
+        var directory = fs.FromFullPath(AppContext.BaseDirectory);
+        var parentDirectory = directory.Parent;
+
+        fs.EnumerateDirectories(parentDirectory, recursive: false)
+            .Should()
+            .Contain(directory);
+    }
+
+    [Fact]
+    public void Test_EnumerateFileEntries()
+    {
+        var fs = new Paths.FileSystem();
+
+        var file = fs.FromFullPath(Assembly.GetExecutingAssembly().Location);
+        var directory = fs.FromFullPath(AppContext.BaseDirectory);
+
+        fs.EnumerateFileEntries(directory, recursive: false)
+            .Should()
+            .Contain(x => x.Path == file);
     }
 }

@@ -51,7 +51,7 @@ public abstract class AGame : IGame
 
     private Version GetVersion(GameLocatorResult installation)
     {
-        var fvi = PrimaryFile.CombineChecked(installation.Path).VersionInfo;
+        var fvi = PrimaryFile.CombineChecked(installation.Path).FileInfo.GetFileVersionInfo();
         return fvi.ProductVersion;
     }
 

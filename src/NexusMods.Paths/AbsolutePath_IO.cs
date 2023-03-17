@@ -1,64 +1,16 @@
-using System.Text;
 using JetBrains.Annotations;
-using NexusMods.Paths.Extensions;
-using NexusMods.Paths.Utilities.Internal.Enumerators;
 
 namespace NexusMods.Paths;
 
-/// <summary>
-/// Extensions for absolute paths.
-/// Functionality not directly tied to class but useful nonetheless.
-/// </summary>
-public partial struct AbsolutePath
+public readonly partial struct AbsolutePath
 {
-    private static EnumerationOptions GetSearchOptions(bool recursive) => new()
-    {
-        AttributesToSkip = 0,
-        RecurseSubdirectories = recursive,
-        MatchType = MatchType.Win32
-    };
+    /// <inheritdoc cref="IFileSystem.GetFileEntry"/>
+    [Obsolete($"This property is obsolete. Use IFileSystem.{nameof(IFileSystem.GetFileEntry)} directly.")]
+    public IFileEntry FileInfo => _fileSystem.GetFileEntry(this);
 
-    private IFileEntry? _info = null;
-
-    /// <summary>
-    /// Returns the file information for this file.
-    /// </summary>
-    public IFileEntry FileInfo => _info ??= FileSystem.GetFileEntry(this);
-
-    /// <summary>
-    /// Returns a <see cref="FileVersionInfo"/> representing the version information associated with the specified file.
-    /// </summary>
-    public FileVersionInfo VersionInfo => FileInfo.GetFileVersionInfo();
-
-    /// <summary>
-    /// Gets the size in bytes, of the current file.
-    /// </summary>
-    public Size Length => FileInfo.Size;
-
-    /// <summary>
-    /// Retrieves the last time this file was written to in coordinated universal time (UTC).
-    /// </summary>
-    public DateTime LastWriteTimeUtc => FileInfo.LastWriteTimeUtc;
-
-    /// <summary>
-    /// Retrieves the creation time of this file in coordinated universal time (UTC).
-    /// </summary>
-    public DateTime CreationTimeUtc => FileInfo.CreationTimeUtc;
-
-    /// <summary>
-    /// Retrieves the last time this file was written to.
-    /// </summary>
-    public DateTime LastWriteTime => FileInfo.LastWriteTime;
-
-    /// <summary>
-    /// Retrieves the creation time of this file.
-    /// </summary>
-    public DateTime CreationTime => FileInfo.CreationTime;
-
-    /// <summary>
-    /// Returns true if the file exists, else false.
-    /// </summary>
-    public bool FileExists => FileSystem.FileExists(this);
+    /// <inheritdoc cref="IFileSystem.FileExists"/>
+    [Obsolete($"This property is obsolete. Use IFileSystem.{nameof(IFileSystem.FileExists)} directly.")]
+    public bool FileExists => _fileSystem.FileExists(this);
 
     /// <summary>
     /// Obtains the name of the first folder stored in this path.
@@ -76,70 +28,26 @@ public partial struct AbsolutePath
                 return FromFullPath(DirectorySeparatorCharStr);
 
             var path = thisFullPath[..index];
-            return FromDirectoryAndFileName(path.ToString(), "", FileSystem);
+            return FromDirectoryAndFileName(path.ToString(), "", _fileSystem);
         }
     }
 
-    /// <summary>
-    /// Opens a file stream to the given absolute path.
-    /// </summary>
+    /// <inheritdoc cref="IFileSystem.OpenFile"/>
+    [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.OpenFile)} directly.")]
     public Stream Open(FileMode mode, FileAccess access = FileAccess.Read, FileShare share = FileShare.ReadWrite)
-    {
-        return FileSystem.OpenFile(this, mode, access, share);
-    }
+        => _fileSystem.OpenFile(this, mode, access, share);
 
-    // TODO: This should probably be called OpenRead & OpenCreate. Will change once am done with docs to make merging less hard.
+    /// <inheritdoc cref="IFileSystem.ReadFile"/>
+    [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.ReadFile)} directly.")]
+    public Stream Read() => _fileSystem.ReadFile(this);
 
-    /// <summary>
-    /// Opens this file for read-only access.
-    /// </summary>
-    public Stream Read() => Open(FileMode.Open, FileAccess.Read, FileShare.Read);
+    /// <inheritdoc cref="IFileSystem.CreateFile"/>
+    [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.CreateFile)} directly.")]
+    public Stream Create() => _fileSystem.CreateFile(this);
 
-    /// <summary>
-    /// Creates a new file, overwriting one if it already existed.
-    /// </summary>
-    public Stream Create() => Open(FileMode.Create, FileAccess.ReadWrite, FileShare.None);
-
-    /// <summary>
-    /// Deletes the file.
-    /// </summary>
-    public void Delete()
-    {
-        if (FileExists)
-        {
-            try
-            {
-                FileSystem.DeleteFile(this);
-            }
-            catch (UnauthorizedAccessException)
-            {
-                if (FileInfo.IsReadOnly)
-                {
-                    FileInfo.IsReadOnly = false;
-                    FileSystem.DeleteFile(this);
-                }
-                else
-                {
-                    throw;
-                }
-            }
-        }
-
-        if (FileSystem.DirectoryExists(this))
-            DeleteDirectory();
-    }
-
-    /// <summary>
-    /// Reads all of the data from this file into an array.
-    /// </summary>
-    /// <param name="token">Optional token to cancel this task.</param>
-    /// <returns></returns>
-    /// <remarks>
-    ///    Supports max 2GB file size.
-    /// </remarks>
-    // ReSharper disable once MemberCanBePrivate.Global
-    public Task<byte[]> ReadAllBytesAsync(CancellationToken token = default)
-        => FileSystem.ReadAllBytesAsync(this, token);
+    /// <inheritdoc cref="IFileSystem.DeleteFile"/>
+    [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.DeleteFile)} directly.")]
+    public void Delete() => _fileSystem.DeleteFile(this);
 
     /// <summary>
     /// Moves the current path to a new destination.
@@ -160,7 +68,7 @@ public partial struct AbsolutePath
         {
             try
             {
-                FileSystem.MoveFile(this, dest, overwrite);
+                _fileSystem.MoveFile(this, dest, overwrite);
                 return;
             }
             catch (Exception)
@@ -175,18 +83,6 @@ public partial struct AbsolutePath
     }
 
     /// <summary>
-    /// Copies the contents of this file to the destination asynchronously.
-    /// </summary>
-    /// <param name="dest">The destination file.</param>
-    /// <param name="token">[Optional] Use for cancelling the task.</param>
-    public async ValueTask CopyToAsync(AbsolutePath dest, CancellationToken token = default)
-    {
-        await using var inf = Read();
-        await using var ouf = dest.Create();
-        await inf.CopyToAsync(ouf, token);
-    }
-
-    /// <summary>
     /// Copies the contents of <paramref name="src"/> into this path.
     /// </summary>
     /// <param name="src">The source stream to copy from.</param>
@@ -197,146 +93,50 @@ public partial struct AbsolutePath
         await src.CopyToAsync(output, token);
     }
 
-    /// <summary>
-    /// Creates a directory if it does not already exist.
-    /// </summary>
-    public void CreateDirectory() => FileSystem.CreateDirectory(this);
+    /// <inheritdoc cref="IFileSystem.CreateDirectory"/>
+    [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.CreateDirectory)} directly.")]
+    public void CreateDirectory() => _fileSystem.CreateDirectory(this);
 
-    /// <summary>
-    /// Returns true if this directory exists, else false.
-    /// </summary>
-    public readonly bool DirectoryExists() => FileSystem.DirectoryExists(this);
+    /// <inheritdoc cref="IFileSystem.DirectoryExists"/>
+    [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.DirectoryExists)} directly.")]
+    public bool DirectoryExists() => _fileSystem.DirectoryExists(this);
 
-    /// <summary>
-    /// Deletes the directory specified by this absolute path.
-    /// </summary>
-    public readonly void DeleteDirectory(bool dontDeleteIfNotEmpty = false)
-    {
-        if (!DirectoryExists()) return;
-        if (dontDeleteIfNotEmpty && (EnumerateFiles().Any() || EnumerateDirectories().Any()))
-            return;
+    /// <inheritdoc cref="IFileSystem.DeleteDirectory"/>
+    [Obsolete($"This method is obsolete. Use IFileSystem.${nameof(IFileSystem.DeleteDirectory)} directly.")]
+    public void DeleteDirectory(bool recursive = false) => _fileSystem.DeleteDirectory(this, recursive);
 
-        foreach (var directory in System.IO.Directory.GetDirectories(GetFullPath()))
-        {
-            directory.ToAbsolutePath().DeleteDirectory(dontDeleteIfNotEmpty);
-        }
-        try
-        {
-            var di = new DirectoryInfo(GetFullPath());
-            if (di.Attributes.HasFlag(FileAttributes.ReadOnly))
-                di.Attributes &= ~FileAttributes.ReadOnly;
+    /// <inheritdoc cref="IFileSystem.EnumerateFiles"/>
+    [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.EnumerateFiles)} directly.")]
+    public IEnumerable<AbsolutePath> EnumerateFiles(string pattern = "*", bool recursive = true)
+        => _fileSystem.EnumerateFiles(this, pattern, recursive);
 
-            var attempts = 0;
-        TopParent:
+    /// <inheritdoc cref="IFileSystem.EnumerateFileEntries"/>
+    [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.EnumerateFileEntries)} directly.")]
+    public IEnumerable<IFileEntry> EnumerateFileEntries(string pattern = "*", bool recursive = true)
+        => _fileSystem.EnumerateFileEntries(this, pattern, recursive);
 
-            try
-            {
-                System.IO.Directory.Delete(GetFullPath(), true);
-            }
-            catch (IOException)
-            {
-                if (attempts > 10)
-                    throw;
+    /// <inheritdoc cref="IFileSystem.EnumerateFiles"/>
+    [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.EnumerateFiles)} directly.")]
+    public IEnumerable<AbsolutePath> EnumerateFiles(Extension pattern, bool recursive = true)
+        => EnumerateFiles("*" + pattern, recursive);
 
-                Thread.Sleep(100);
-                attempts++;
-                goto TopParent;
-            }
-        }
-        catch (UnauthorizedAccessException)
-        {
-            System.IO.Directory.Delete(GetFullPath(), true);
-        }
-    }
-
-    /// <summary>
-    /// Enumerates through all the files present in this directory.
-    /// </summary>
-    /// <param name="pattern">Pattern to search for files.</param>
-    /// <param name="recursive">Whether the search should be done recursively or not.</param>
-    /// <returns></returns>
-    public readonly IEnumerable<AbsolutePath> EnumerateFiles(string pattern = "*", bool recursive = true)
-    {
-        var options = GetSearchOptions(recursive);
-        using var enumerator = new FilesEnumerator(GetFullPathWithSeparator(), pattern, options);
-        while (enumerator.MoveNext())
-        {
-            var item = enumerator.Current;
-            if (!item.IsDirectory)
-                yield return FromDirectoryAndFileName(enumerator.CurrentDirectory, item.FileName, FileSystem);
-        }
-    }
-
-    /// <summary>
-    /// Enumerates individual FileSystem directories under this directory.
-    /// </summary>
-    /// <param name="recursive">Whether to visit subdirectories or not.</param>
-    public readonly IEnumerable<AbsolutePath> EnumerateDirectories(bool recursive = true)
-    {
-        var options = GetSearchOptions(recursive);
-        var enumerator = new DirectoriesEnumerator(GetFullPathWithSeparator(), "*", options);
-        while (enumerator.MoveNext())
-        {
-            var item = enumerator.Current;
-            yield return FromDirectoryAndFileName(Path.Combine(enumerator.CurrentDirectory!, item), "", FileSystem);
-        }
-    }
-
-    /// <summary>
-    /// Enumerates individual FileSystem entries for this directory.
-    /// </summary>
-    /// <param name="pattern">Pattern to search for files.</param>
-    /// <param name="recursive">Whether the search should be done recursively or not.</param>
-    /// <returns></returns>
-    public IEnumerable<FileEntry> EnumerateFileEntries(string pattern = "*",
-        bool recursive = true)
-    {
-        var options = GetSearchOptions(recursive);
-        var enumerator = new FilesEnumeratorEx(GetFullPathWithSeparator(), pattern, options);
-
-        while (enumerator.MoveNext())
-        {
-            var item = enumerator.Current;
-            if (!item.IsDirectory)
-                yield return new FileEntry(FromDirectoryAndFileName(enumerator.CurrentDirectory, item.FileName, FileSystem), item.Size, item.LastModified);
-        }
-    }
-
-    /// <summary>
-    /// Enumerates individual FileSystem entries for this directory where they match a specific extension.
-    /// </summary>
-    /// <param name="pattern">The extension to search for.</param>
-    /// <param name="recursive">Whether the search should be done recursively or not.</param>
-    /// <returns></returns>
-    public IEnumerable<AbsolutePath> EnumerateFiles(Extension pattern, bool recursive = true) => EnumerateFiles("*" + pattern, recursive);
-
-    /// <summary>
-    /// Writes all text specified in the given string to this path; using UTF-8 encoding.
-    /// </summary>
-    /// <param name="text">The text to write to the path.</param>
-    /// <param name="token">Use this to cancel task if needed.</param>
+    /// <inheritdoc cref="IFileSystem.WriteAllTextAsync"/>
+    [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.WriteAllTextAsync)} directly.")]
     public Task WriteAllTextAsync(string text, CancellationToken token = default)
-        => FileSystem.WriteAllTextAsync(this, text, token);
+        => _fileSystem.WriteAllTextAsync(this, text, token);
 
-    /// <summary>
-    /// Writes all lines of text specified in the given collection to this path; using UTF-8 encoding.
-    /// </summary>
-    /// <param name="lines">The lines to write to the path.</param>
-    /// <param name="token">Use this to cancel task if needed.</param>
+    /// <inheritdoc cref="IFileSystem.WriteAllLinesAsync"/>
+    [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.WriteAllLinesAsync)} directly.")]
     public Task WriteAllLinesAsync([InstantHandle(RequireAwait = true)] IEnumerable<string> lines, CancellationToken token = default)
-        => FileSystem.WriteAllLinesAsync(this, lines, token);
+        => _fileSystem.WriteAllLinesAsync(this, lines, token);
 
-    /// <summary>
-    /// Reads all text from this absolute path, assuming UTF8 encoding.
-    /// </summary>
-    /// <param name="token">Use this to cancel task if needed.</param>
+    /// <inheritdoc cref="IFileSystem.ReadAllTextAsync"/>
+    [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.ReadAllTextAsync)} directly.")]
     public Task<string> ReadAllTextAsync(CancellationToken token = default)
-        => FileSystem.ReadAllTextAsync(this, token);
+        => _fileSystem.ReadAllTextAsync(this, token);
 
-    /// <summary>
-    /// Writes the specified byte array to the path.
-    /// </summary>
-    /// <param name="data">The array to write.</param>
+    /// <inheritdoc cref="IFileSystem.WriteAllBytesAsync"/>
+    [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.WriteAllBytesAsync)} directly.")]
     public Task WriteAllBytesAsync(byte[] data)
-        => FileSystem.WriteAllBytesAsync(this, data);
+        => _fileSystem.WriteAllBytesAsync(this, data);
 }

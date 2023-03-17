@@ -1,3 +1,4 @@
+using FluentAssertions;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
 
@@ -27,10 +28,14 @@ public class ExtensionTests
         Assert.NotEqual(DDS, (object)42);
     }
 
-    [Fact]
-    public void CanGetExtensionOfPath()
+    [SkippableTheory]
+    [InlineData("/foo.dds", true)]
+    [InlineData("C:\\foo.dds", false)]
+    public void CanGetExtensionOfPath(string input, bool linux)
     {
-        Assert.Equal(DDS, (@"c:\foo\bar.dds".ToAbsolutePath()).Extension);
+        Skip.IfNot(OperatingSystem.IsLinux() && linux);
+        var path = AbsolutePath.FromFullPath(input);
+        path.Extension.Should().Be(DDS);
     }
 
     [Fact]

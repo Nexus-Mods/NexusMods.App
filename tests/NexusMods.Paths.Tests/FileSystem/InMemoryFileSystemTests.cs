@@ -15,11 +15,158 @@ public class InMemoryFileSystemTests
     }
 
     [Theory, AutoFileSystem]
-    public void Test_GetFileEntry_MissingFile(InMemoryFileSystem fs,
-        AbsolutePath path)
+    public void Test_GetFileEntry_MissingFile(InMemoryFileSystem fs, AbsolutePath path)
     {
         var entry = fs.GetFileEntry(path);
         entry.Path.Should().Be(path);
+    }
+
+    [Theory, AutoFileSystem]
+    public void Test_EnumerateFiles(
+        InMemoryFileSystem fs,
+        AbsolutePath parentDirectory,
+        string fileName1,
+        string fileName2,
+        string subDirectoryName1)
+    {
+        var subDirectory1 = parentDirectory.CombineUnchecked(subDirectoryName1);
+
+        var file1 = parentDirectory.CombineUnchecked(fileName1);
+        var file2 = subDirectory1.CombineUnchecked(fileName2);
+
+        fs.AddDirectory(parentDirectory);
+        fs.AddDirectory(subDirectory1);
+        fs.AddEmptyFile(file1);
+        fs.AddEmptyFile(file2);
+
+        fs.EnumerateFiles(parentDirectory, recursive: false)
+            .Should()
+            .OnlyContain(path => path == file1);
+    }
+
+    [Theory, AutoFileSystem]
+    public void Test_EnumerateFiles_Recursive(
+        InMemoryFileSystem fs,
+        AbsolutePath parentDirectory,
+        string fileName1,
+        string fileName2,
+        string fileName3,
+        string subDirectoryName1,
+        string subDirectoryName2)
+    {
+        var subDirectory1 = parentDirectory.CombineUnchecked(subDirectoryName1);
+        var subDirectory2 = parentDirectory.CombineUnchecked(subDirectoryName2);
+
+        var file1 = parentDirectory.CombineUnchecked(fileName1);
+        var file2 = subDirectory1.CombineUnchecked(fileName2);
+        var file3 = subDirectory2.CombineUnchecked(fileName3);
+
+        fs.AddDirectory(parentDirectory);
+        fs.AddDirectory(subDirectory1);
+        fs.AddDirectory(subDirectory2);
+        fs.AddEmptyFile(file1);
+        fs.AddEmptyFile(file2);
+        fs.AddEmptyFile(file3);
+
+        fs.EnumerateFiles(parentDirectory)
+            .Should()
+            .OnlyContain(path => path == file1 || path == file2 || path == file3);
+    }
+
+    [Theory, AutoFileSystem]
+    public void Test_EnumerateDirectories(
+        InMemoryFileSystem fs,
+        AbsolutePath parentDirectory,
+        string subDirectoryName1,
+        string subDirectoryName2,
+        string subDirectoryName3)
+    {
+        var subDirectory1 = parentDirectory.CombineUnchecked(subDirectoryName1);
+        var subDirectory2 = parentDirectory.CombineUnchecked(subDirectoryName2);
+        var subDirectory3 = subDirectory1.CombineUnchecked(subDirectoryName3);
+
+        fs.AddDirectory(parentDirectory);
+        fs.AddDirectory(subDirectory1);
+        fs.AddDirectory(subDirectory2);
+        fs.AddDirectory(subDirectory3);
+
+        fs.EnumerateDirectories(parentDirectory, recursive:false)
+            .Should()
+            .OnlyContain(path => path == subDirectory1 || path == subDirectory2);
+    }
+
+    [Theory, AutoFileSystem]
+    public void Test_EnumerateDirectories_Recursive(
+        InMemoryFileSystem fs,
+        AbsolutePath parentDirectory,
+        string subDirectoryName1,
+        string subDirectoryName2,
+        string subDirectoryName3)
+    {
+        var subDirectory1 = parentDirectory.CombineUnchecked(subDirectoryName1);
+        var subDirectory2 = parentDirectory.CombineUnchecked(subDirectoryName2);
+        var subDirectory3 = subDirectory1.CombineUnchecked(subDirectoryName3);
+
+        fs.AddDirectory(parentDirectory);
+        fs.AddDirectory(subDirectory1);
+        fs.AddDirectory(subDirectory2);
+        fs.AddDirectory(subDirectory3);
+
+        fs.EnumerateDirectories(parentDirectory)
+            .Should()
+            .OnlyContain(path => path == subDirectory1 || path == subDirectory2 || path == subDirectory3);
+    }
+
+    [Theory, AutoFileSystem]
+    public void Test_EnumerateFilesEntries(
+        InMemoryFileSystem fs,
+        AbsolutePath parentDirectory,
+        string fileName1,
+        string fileName2,
+        string subDirectoryName1)
+    {
+        var subDirectory1 = parentDirectory.CombineUnchecked(subDirectoryName1);
+
+        var file1 = parentDirectory.CombineUnchecked(fileName1);
+        var file2 = subDirectory1.CombineUnchecked(fileName2);
+
+        fs.AddDirectory(parentDirectory);
+        fs.AddDirectory(subDirectory1);
+        fs.AddEmptyFile(file1);
+        fs.AddEmptyFile(file2);
+
+        fs.EnumerateFileEntries(parentDirectory, recursive: false)
+            .Should()
+            .OnlyContain(x => x.Path == file1);
+    }
+
+    [Theory, AutoFileSystem]
+    public void Test_EnumerateFilesEntries_Recursive(
+        InMemoryFileSystem fs,
+        AbsolutePath parentDirectory,
+        string fileName1,
+        string fileName2,
+        string fileName3,
+        string subDirectoryName1,
+        string subDirectoryName2)
+    {
+        var subDirectory1 = parentDirectory.CombineUnchecked(subDirectoryName1);
+        var subDirectory2 = parentDirectory.CombineUnchecked(subDirectoryName2);
+
+        var file1 = parentDirectory.CombineUnchecked(fileName1);
+        var file2 = subDirectory1.CombineUnchecked(fileName2);
+        var file3 = subDirectory2.CombineUnchecked(fileName3);
+
+        fs.AddDirectory(parentDirectory);
+        fs.AddDirectory(subDirectory1);
+        fs.AddDirectory(subDirectory2);
+        fs.AddEmptyFile(file1);
+        fs.AddEmptyFile(file2);
+        fs.AddEmptyFile(file3);
+
+        fs.EnumerateFileEntries(parentDirectory)
+            .Should()
+            .OnlyContain(x => x.Path == file1 || x.Path == file2 || x.Path == file3);
     }
 
     [Theory, AutoFileSystem]
