@@ -17,16 +17,14 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
 internal sealed class MountAndBlade2BannerlordModInstaller : IModInstaller
 {
-    public MountAndBlade2BannerlordModInstaller(LauncherManagerFactory launcherManagerFactory, IDataStore store)
+    public MountAndBlade2BannerlordModInstaller(LauncherManagerFactory launcherManagerFactory)
     {
         _launcherManagerFactory = launcherManagerFactory;
-        _store = store;
     }
 
     private static readonly RelativePath ModFolder = Constants.ModulesFolder.ToRelativePath();
     private static readonly RelativePath SubModuleFile = Constants.SubModuleName.ToRelativePath();
     private readonly LauncherManagerFactory _launcherManagerFactory;
-    private readonly IDataStore _store;
 
     // TODO: We had in mind creating optional mod types (Framework, Gameplay, Assets, etc) that we potentially could map to priorities
     public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)

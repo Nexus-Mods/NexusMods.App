@@ -26,7 +26,7 @@ internal sealed partial class LauncherManagerNexusMods : LauncherManagerHandler
         RegisterCallbacks(
             loadLoadOrder: null!, // TODO:
             saveLoadOrder: null!, // TODO:
-            sendNotification:  SendNotificationDelegate,
+            sendNotification: SendNotificationDelegate,
             sendDialog: SendDialogDelegate,
             setGameParameters: (executable, parameters) => ExecutableParameters = string.Join(" ", parameters),
             getInstallPath: () => installationPath,
@@ -64,18 +64,18 @@ internal sealed partial class LauncherManagerNexusMods : LauncherManagerHandler
         switch (type)
         {
             case NotificationType.Hint:
-            {
-                //HintManager.ShowHint(translatedMessage);
-                cts.Cancel();
-                break;
-            }
+                {
+                    //HintManager.ShowHint(translatedMessage);
+                    cts.Cancel();
+                    break;
+                }
             case NotificationType.Info:
-            {
-                // TODO:
-                //HintManager.ShowHint(translatedMessage);
-                cts.Cancel();
-                break;
-            }
+                {
+                    // TODO:
+                    //HintManager.ShowHint(translatedMessage);
+                    cts.Cancel();
+                    break;
+                }
             default:
                 //MessageBox.Show(translatedMessage);
                 cts.Cancel();
@@ -94,47 +94,47 @@ internal sealed partial class LauncherManagerNexusMods : LauncherManagerHandler
         switch (type)
         {
             case DialogType.Warning:
-            {
-                var split = message.Split(new[] { "--CONTENT-SPLIT--" }, StringSplitOptions.RemoveEmptyEntries);
-                /*
-                using var okButton = new TaskDialogButton(ButtonType.Yes);
-                using var cancelButton = new TaskDialogButton(ButtonType.No);
-                using var dialog = new TaskDialog
                 {
-                    MainIcon = TaskDialogIcon.Warning,
-                    WindowTitle = new BUTRTextObject(title).ToString(),
-                    MainInstruction = split[0],
-                    Content = split.Length > 1 ? split[1] : string.Empty,
-                    Buttons = { okButton, cancelButton },
-                    CenterParent = true,
-                    AllowDialogCancellation = true,
-                };
-                onResult(dialog.ShowDialog() == okButton ? "true" : "false");
-                */
-                return;
-            }
+                    var split = message.Split(new[] { "--CONTENT-SPLIT--" }, StringSplitOptions.RemoveEmptyEntries);
+                    /*
+                    using var okButton = new TaskDialogButton(ButtonType.Yes);
+                    using var cancelButton = new TaskDialogButton(ButtonType.No);
+                    using var dialog = new TaskDialog
+                    {
+                        MainIcon = TaskDialogIcon.Warning,
+                        WindowTitle = new BUTRTextObject(title).ToString(),
+                        MainInstruction = split[0],
+                        Content = split.Length > 1 ? split[1] : string.Empty,
+                        Buttons = { okButton, cancelButton },
+                        CenterParent = true,
+                        AllowDialogCancellation = true,
+                    };
+                    onResult(dialog.ShowDialog() == okButton ? "true" : "false");
+                    */
+                    return;
+                }
             case DialogType.FileOpen:
-            {
-                _window.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
                 {
-                    Title = title,
-                    FileTypeFilter = filters.Select(x => new FilePickerFileType(x.Name) { Patterns = x.Extensions }).ToArray(),
-                    AllowMultiple = false
-                }).ContinueWith(x => onResult(x.Result.Count < 1 ? string.Empty : x.Result[0].Path.ToString()));
-                return;
-            }
+                    _window.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+                    {
+                        Title = title,
+                        FileTypeFilter = filters.Select(x => new FilePickerFileType(x.Name) { Patterns = x.Extensions }).ToArray(),
+                        AllowMultiple = false
+                    }).ContinueWith(x => onResult(x.Result.Count < 1 ? string.Empty : x.Result[0].Path.ToString()));
+                    return;
+                }
             case DialogType.FileSave:
-            {
-                var fileName = message;
-                _window.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
                 {
-                    Title = title,
-                    FileTypeChoices = filters.Select(x => new FilePickerFileType(x.Name) { Patterns = x.Extensions }).ToArray(),
-                    SuggestedFileName = fileName,
-                    ShowOverwritePrompt = true
-                }).ContinueWith(x => onResult(x.Result is null ? string.Empty : x.Result.Path.ToString()));
-                return;
-            }
+                    var fileName = message;
+                    _window.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+                    {
+                        Title = title,
+                        FileTypeChoices = filters.Select(x => new FilePickerFileType(x.Name) { Patterns = x.Extensions }).ToArray(),
+                        SuggestedFileName = fileName,
+                        ShowOverwritePrompt = true
+                    }).ContinueWith(x => onResult(x.Result is null ? string.Empty : x.Result.Path.ToString()));
+                    return;
+                }
         }
     }
 
