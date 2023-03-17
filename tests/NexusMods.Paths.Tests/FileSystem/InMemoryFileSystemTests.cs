@@ -1,6 +1,6 @@
 using System.Text;
 using FluentAssertions;
-using NexusMods.Paths.Tests.AutoData;
+using NexusMods.Paths.TestingHelpers;
 
 namespace NexusMods.Paths.Tests.FileSystem;
 
