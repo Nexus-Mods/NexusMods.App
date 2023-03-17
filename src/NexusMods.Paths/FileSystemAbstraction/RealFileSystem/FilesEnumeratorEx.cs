@@ -20,16 +20,16 @@ internal sealed class FilesEnumeratorEx : FileSystemEnumerator<FilesEnumeratorEx
         _options = options;
     }
 
-    protected override void OnDirectoryFinished(ReadOnlySpan<char> directory) => _currentDirectory = null;
+    protected override void OnDirectoryFinished(ReadOnlySpan<char> directory)
+        => _currentDirectory = null;
 
-    protected override bool ShouldIncludeEntry(ref FileSystemEntry entry) =>
-       EnumeratorHelpers.MatchesPattern(_pattern, entry.FileName, _options.MatchType);
+    protected override bool ShouldIncludeEntry(ref FileSystemEntry entry)
+        => EnumeratorHelpers.MatchesPattern(_pattern, entry.FileName, _options.MatchType);
 
     protected override FilesEnumeratorExEntry TransformEntry(ref FileSystemEntry entry)
     {
         _currentDirectory ??= entry.Directory.ToString();
-        return new(entry.FileName.ToString(), Size.FromLong(entry.Length), entry.LastWriteTimeUtc.DateTime,
-            entry.IsDirectory);
+        return new FilesEnumeratorExEntry(entry.FileName.ToString(), Size.From(entry.Length), entry.LastWriteTimeUtc.DateTime, entry.IsDirectory);
     }
 }
 
