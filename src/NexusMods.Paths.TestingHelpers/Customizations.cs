@@ -19,13 +19,16 @@ public static class Customizations
     /// </list>
     /// </summary>
     /// <param name="fixture">The provided <see cref="Fixture"/> to use.</param>
-    public static void AddFileSystemCustomizations(this Fixture fixture)
+    /// <param name="useSharedFileSystem">Use a shared file system for the entire fixture.</param>
+    public static void AddFileSystemCustomizations(this Fixture fixture, bool useSharedFileSystem = true)
     {
+        var sharedFileSystem = useSharedFileSystem ? new InMemoryFileSystem() : null;
+
         fixture.Customize<InMemoryFileSystem>(composer =>
-            composer.FromFactory(() => new InMemoryFileSystem()));
+            composer.FromFactory(() => sharedFileSystem ?? new InMemoryFileSystem()));
 
         fixture.Customize<IFileSystem>(composer =>
-            composer.FromFactory(() => new InMemoryFileSystem()));
+            composer.FromFactory(() => sharedFileSystem ?? new InMemoryFileSystem()));
 
         fixture.Customize<AbsolutePath>(composer =>
             composer.FromFactory<IFileSystem, string>((fs, path) =>

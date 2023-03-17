@@ -14,11 +14,12 @@ public class AutoFileSystemAttribute : AutoDataAttribute
     /// <summary>
     /// Constructor.
     /// </summary>
-    public AutoFileSystemAttribute() : base(() =>
+    /// <param name="useSharedFileSystem">Use a shared file system for the entire test.</param>
+    public AutoFileSystemAttribute(bool useSharedFileSystem = true) : base(() =>
     {
         var ret = new Fixture();
 
-        ret.AddFileSystemCustomizations();
+        ret.AddFileSystemCustomizations(useSharedFileSystem);
 
         return ret;
     }) { }
