@@ -1,4 +1,4 @@
-﻿using Avalonia.ReactiveUI;
+using Avalonia.ReactiveUI;
 
 namespace NexusMods.App.UI.RightContent;
 

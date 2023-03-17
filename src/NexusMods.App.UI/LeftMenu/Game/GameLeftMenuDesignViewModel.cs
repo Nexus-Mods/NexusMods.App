@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Icons;
 using NexusMods.App.UI.LeftMenu.Items;
@@ -11,7 +11,9 @@ namespace NexusMods.App.UI.LeftMenu.Game;
 public class GameLeftMenuDesignViewModel : AViewModel<IGameLeftMenuViewModel>, IGameLeftMenuViewModel
 {
     [Reactive]
-    public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items { get;
+    public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items
+    {
+        get;
         set;
     }
 

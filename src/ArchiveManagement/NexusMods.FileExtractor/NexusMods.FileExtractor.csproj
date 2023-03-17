@@ -15,7 +15,7 @@
 
     <ItemGroup>
         <PackageReference Include="CliWrap" Version="3.6.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0-preview.1.23110.8" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -43,7 +43,7 @@
 
       <None Update="build\NexusMods.FileExtractor.targets">
           <Pack>true</Pack>
-          <PackagePath>build</PackagePath>
+          <PackagePath>build\NexusMods.FileExtractor.targets</PackagePath>
       </None>
     </ItemGroup>
 

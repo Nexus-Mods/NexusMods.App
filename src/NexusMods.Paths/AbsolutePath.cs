@@ -214,7 +214,7 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         if (left.DangerousGetReferenceAt(left.Length - 1) == PathSeparatorForInternalOperations)
             return string.Concat(left, right);
 
-        ReadOnlySpan<char> separatorCharSpan = stackalloc char[1]{ PathSeparatorForInternalOperations };
+        ReadOnlySpan<char> separatorCharSpan = stackalloc char[1] { PathSeparatorForInternalOperations };
         return string.Concat(left, separatorCharSpan, right);
     }
 
@@ -358,7 +358,7 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         ReadOnlySpan<char> splitSpan;
         while ((splitSpan = SplitDir(remainingPath)) != remainingPath)
         {
-            path = JoinPathComponents(path,FindFileOrDirectoryCasing(path, splitSpan));
+            path = JoinPathComponents(path, FindFileOrDirectoryCasing(path, splitSpan));
             remainingPath = remainingPath[(splitSpan.Length + 1)..];
         }
 

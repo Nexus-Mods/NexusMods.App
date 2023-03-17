@@ -14,11 +14,10 @@ namespace NexusMods.Networking.NexusWebApi.Tests;
 public class OAuth2MessageFactoryTests
 {
     private OAuth2MessageFactory _factory;
-    private OAuth _auth;
     private Mock<IDataStore> _store;
     private Mock<HttpMessageHandler> _handler;
 
-    public OAuth2MessageFactoryTests(ILogger<OAuth> logger, IMessageConsumer<NXMUrlMessage> consumer)
+    public OAuth2MessageFactoryTests(ILogger<OAuth2MessageFactoryTests> logger, IMessageConsumer<NXMUrlMessage> consumer)
     {
         _handler = new Mock<HttpMessageHandler>();
         var httpClient = new HttpClient(_handler.Object);
@@ -26,8 +25,8 @@ public class OAuth2MessageFactoryTests
         var os = new Mock<IOSInterop>();
         _store = new Mock<IDataStore>();
 
-        _auth = new OAuth(logger.As<ILogger<OAuth>>(), httpClient, idGen.Object, os.Object, consumer);
-        _factory = new OAuth2MessageFactory(logger.As<ILogger<OAuth2MessageFactory>>(), _store.Object, _auth);
+        var auth = new OAuth(logger.As<ILogger<OAuth>>(), httpClient, idGen.Object, os.Object, consumer);
+        _factory = new OAuth2MessageFactory(_store.Object, auth);
     }
 
     [Fact()]
@@ -84,8 +83,8 @@ public class OAuth2MessageFactoryTests
         var ex = new HttpRequestException("Token has expired", null, HttpStatusCode.Unauthorized);
         var res = await _factory.HandleError(msg, ex, CancellationToken.None);
         res.Should().NotBeNull();
-        res.Headers.Authorization!.Should().NotBeNull();
-        res!.Headers.Authorization!.ToString().Should().Be("Bearer refreshed_access_token");
+        res!.Headers.Authorization!.Should().NotBeNull();
+        res.Headers.Authorization!.ToString().Should().Be("Bearer refreshed_access_token");
     }
 
     private JwtTokenReply RefreshToken

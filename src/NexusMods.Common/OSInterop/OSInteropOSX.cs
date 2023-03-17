@@ -5,6 +5,7 @@ namespace NexusMods.Common.OSInterop;
 /// <summary>
 /// OS interoperation for MacOS
 /// </summary>
+// ReSharper disable once InconsistentNaming
 public class OSInteropOSX : IOSInterop
 {
     private readonly IProcessFactory _processFactory;
@@ -18,7 +19,7 @@ public class OSInteropOSX : IOSInterop
     }
 
     /// <inheritdoc/>
-    public async Task OpenURL(string url, CancellationToken cancellationToken = default)
+    public async Task OpenUrl(string url, CancellationToken cancellationToken = default)
     {
         var command = Cli.Wrap("open").WithArguments(url);
         await _processFactory.ExecuteAsync(command, cancellationToken);

@@ -1,8 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <!-- NuGet Package Shared Details -->
-    <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
-
     <ItemGroup>
       <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
     </ItemGroup>

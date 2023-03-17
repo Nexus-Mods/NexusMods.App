@@ -1,4 +1,4 @@
-﻿using System.Windows.Input;
+using System.Windows.Input;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.RightContent.Home;

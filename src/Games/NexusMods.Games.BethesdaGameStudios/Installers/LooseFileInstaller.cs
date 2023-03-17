@@ -15,11 +15,9 @@ namespace NexusMods.Games.BethesdaGameStudios.Installers;
 public class LooseFileInstaller : IModInstaller
 {
     private (RelativePath Prefix, FileType Type)[] _prefixes;
-    private readonly IDataStore _store;
 
-    public LooseFileInstaller(IDataStore store)
+    public LooseFileInstaller()
     {
-        _store = store;
         _prefixes = new[]
         {
             ("meshes".ToRelativePath(), FileType.NIF),

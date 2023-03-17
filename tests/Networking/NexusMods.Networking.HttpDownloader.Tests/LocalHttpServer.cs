@@ -8,19 +8,18 @@ public class LocalHttpServer : IDisposable
     private readonly ILogger<LocalHttpServer> _logger;
     private readonly HttpListener _listener;
     private readonly string _prefix;
-    private readonly Task _loopTask;
 
     public LocalHttpServer(ILogger<LocalHttpServer> logger)
     {
         _logger = logger;
         (_listener, _prefix) = CreateNewListener();
         _listener.Start();
-        _loopTask = StartLoop();
+        StartLoop();
     }
 
-    private Task StartLoop()
+    private void StartLoop()
     {
-        return Task.Run(async () =>
+        Task.Run(async () =>
         {
             while (_listener.IsListening)
             {

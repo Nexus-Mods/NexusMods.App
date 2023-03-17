@@ -1,3 +1,5 @@
+using JetBrains.Annotations;
+
 namespace NexusMods.Paths;
 
 public partial class InMemoryFileSystem
@@ -6,6 +8,7 @@ public partial class InMemoryFileSystem
     {
         public AbsolutePath Path { get; }
 
+        [PublicAPI]
         public InMemoryDirectoryEntry ParentDirectory { get; }
 
         public Dictionary<RelativePath, InMemoryFileEntry> Files { get; } = new();

@@ -29,6 +29,9 @@ public class SqliteIPC : IDisposable
     private readonly CancellationTokenSource _shutdownToken;
     private readonly ILogger<SqliteIPC> _logger;
 
+    /// <summary>
+    /// Allows you to subscribe to newly incoming IPC messages.
+    /// </summary>
     public IObservable<(string Queue, byte[] Message)> Messages => _subject;
 
     /// <summary>
@@ -85,6 +88,8 @@ public class SqliteIPC : IDisposable
         while (!shutdownTokenToken.IsCancellationRequested)
         {
             lastId = ProcessMessages(lastId);
+
+            // TODO: Bug, FileInfo is a cached field.
             var lastEdit = _storePath.FileInfo;
 
             var elapsed = DateTime.UtcNow;
@@ -161,7 +166,7 @@ public class SqliteIPC : IDisposable
     {
         try
         {
-            _logger.LogTrace("Sending {Bytes} byte message to queue {Queue}", Size.From(message.Length), queue);
+            _logger.LogTrace("Sending {Bytes} byte message to queue {Queue}", Size.FromLong(message.Length), queue);
             using var cmd = new SQLiteCommand(
                 "INSERT INTO Ipc (Queue, Data, TimeStamp) VALUES (@queue, @data, @timestamp);",
                 _conn);

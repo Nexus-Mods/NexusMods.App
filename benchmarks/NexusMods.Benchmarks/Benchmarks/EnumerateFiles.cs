@@ -38,16 +38,16 @@ public class EnumerateFiles : IBenchmark
         return result;
     }
 
-    // [Benchmark]
-    // public AbsolutePath EnumerateDirectories_New()
-    // {
-    //     var paths = FilePath.EnumerateDirectories();
-    //     AbsolutePath result = default;
-    //     foreach (var path in paths)
-    //         result = path;
-    //
-    //     return result;
-    // }
+    [Benchmark]
+    public AbsolutePath EnumerateDirectories_New()
+    {
+        var paths = FileSystem.Shared.EnumerateDirectories(FilePath);
+        AbsolutePath result = default;
+        foreach (var path in paths)
+            result = path;
+
+        return result;
+    }
 
     [Benchmark]
     public AbsolutePath EnumerateDirectories_Old()

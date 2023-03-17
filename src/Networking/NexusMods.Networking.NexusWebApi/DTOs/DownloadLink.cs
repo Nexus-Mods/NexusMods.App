@@ -22,6 +22,7 @@ public class DownloadLink : IJsonArraySerializable<DownloadLink>
     /// For deserialization only. Please use <see cref="ShortName"/>.
     /// </summary>
     [JsonPropertyName("short_name")]
+    // ReSharper disable once InconsistentNaming
     public string _ShortName { get; set; } = null!;
 
     /// <summary>

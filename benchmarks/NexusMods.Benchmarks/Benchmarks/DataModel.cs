@@ -63,7 +63,7 @@ public class DataStoreBenchmark : IBenchmark, IDisposable
         {
             Id = ModFileId.New(),
             From = _fromPutPath,
-            Size = Size.From(1024),
+            Size = Size.FromLong(1024),
             Hash = Hash.From(42),
             To = new GamePath(GameFolderType.Game, "test.txt")
         };
@@ -95,7 +95,7 @@ public class DataStoreBenchmark : IBenchmark, IDisposable
         {
             Id = ModFileId.New(),
             From = _fromPutPath,
-            Size = Size.From(1024),
+            Size = Size.FromLong(1024),
             Hash = Hash.From(42),
             To = new GamePath(GameFolderType.Game, "test.txt")
         };

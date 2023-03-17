@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Media;
@@ -14,7 +14,7 @@ namespace NexusMods.App.UI;
 
 public static class Initializers
 {
-    public static readonly ICommand ICommand  = ReactiveCommand.Create(() => { });
+    public static readonly ICommand ICommand = ReactiveCommand.Create(() => { });
     public static readonly IImage IImage = new WriteableBitmap(new PixelSize(16, 16), new Vector(96, 96), PixelFormat.Rgba8888, AlphaFormat.Opaque);
     public static readonly ILeftMenuViewModel ILeftMenuViewModel = new HomeLeftMenuDesignViewModel();
     public static readonly IRightContentViewModel IRightContent = new PlaceholderDesignViewModel();

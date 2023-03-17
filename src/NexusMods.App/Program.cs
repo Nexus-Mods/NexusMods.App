@@ -24,7 +24,7 @@ public class Program
         var host = BuildHost();
 
         _logger = host.Services.GetRequiredService<ILogger<Program>>();
-        TaskScheduler.UnobservedTaskException += (sender, e) =>
+        TaskScheduler.UnobservedTaskException += (_, e) =>
         {
             _logger.LogError(e.Exception, "Unobserved task exception");
             e.SetObserved();
@@ -93,7 +93,7 @@ public class Program
     /// <summary>
     /// Don't Delete this method. It's used by the Avalonia Designer.
     /// </summary>
-    /// <returns></returns>
+    // ReSharper disable once UnusedMember.Local
     private static AppBuilder BuildAvaloniaApp()
     {
         var host = BuildHost();

@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using NexusMods.DataModel.Abstractions;
@@ -9,7 +10,7 @@ namespace NexusMods.Games.RedEngine.FileAnalyzers;
 public class RedModInfoAnalyzer : IFileAnalyzer
 {
     public IEnumerable<FileType> FileTypes => new[] { FileType.JSON };
-    public async IAsyncEnumerable<IFileAnalysisData> AnalyzeAsync(Stream stream, CancellationToken ct = default)
+    public async IAsyncEnumerable<IFileAnalysisData> AnalyzeAsync(Stream stream, [EnumeratorCancellation] CancellationToken ct = default)
     {
         InfoJson? info;
         try
@@ -34,5 +35,6 @@ internal class InfoJson
 [JsonName("NexusMods.Games.RedEngine.FileAnalyzers.RedModInfo")]
 public record RedModInfo : IFileAnalysisData
 {
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public required string Name { get; init; }
 }

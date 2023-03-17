@@ -31,7 +31,7 @@ public interface IFileEntry
     /// <summary>
     /// Gets or sets the creation time of the current file.
     /// </summary>
-    DateTime CreationTime { get; set;  }
+    DateTime CreationTime { get; set; }
 
     /// <summary>
     /// Gets or sets a value that determines if the current file is read only.

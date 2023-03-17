@@ -27,12 +27,12 @@ public readonly partial struct Size :
     /// <summary>
     /// A size that represents 'zero'.
     /// </summary>
-    public static readonly Size Zero = From(0);
+    public static readonly Size Zero = FromLong(0);
 
     /// <summary>
     /// A size that represents 'one'.
     /// </summary>
-    public static readonly Size One = From(1);
+    public static readonly Size One = FromLong(1);
 
     /// <inheritdoc />
     public static Size MultiplicativeIdentity => One;
@@ -43,27 +43,27 @@ public readonly partial struct Size :
     /// <summary>
     /// Converts a long to a Size object.
     /// </summary>
-    public static Size From(long value) => From((ulong)value);
+    public static Size FromLong(long value) => From((ulong)value);
 
     /// <summary>
     /// Represents a size of 1 KiB. (1024 bytes)
     /// </summary>
-    public static Size KB => From(1024);
+    public static Size KB => FromLong(1024);
 
     /// <summary>
     /// Represents a size of 1 MiB. (1024^2 bytes)
     /// </summary>
-    public static Size MB => From(1024 * 1024);
+    public static Size MB => FromLong(1024 * 1024);
 
     /// <summary>
     /// Represents a size of 1 GiB. (1024^3 bytes)
     /// </summary>
-    public static Size GB => From(1024 * 1024 * 1024);
+    public static Size GB => FromLong(1024 * 1024 * 1024);
 
     /// <summary>
     /// Represents a size of 1 TiB. (1024^4 bytes)
     /// </summary>
-    public static Size TB => From(1024L * 1024 * 1024 * 1024);
+    public static Size TB => FromLong(1024L * 1024 * 1024 * 1024);
 
     /// <inheritdoc />
     public static Size operator /(Size left, double right) => From((ulong)(left._value / right));

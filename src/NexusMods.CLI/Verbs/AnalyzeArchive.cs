@@ -33,7 +33,7 @@ public class AnalyzeArchive : AVerb<AbsolutePath>
         {
             var results = await _renderer.WithProgress(token, async () =>
             {
-                var file = await _archiveContentsCache.AnalyzeFile(inputFile, token) as AnalyzedArchive;
+                var file = await _archiveContentsCache.AnalyzeFileAsync(inputFile, token) as AnalyzedArchive;
                 if (file == null) return Array.Empty<object[]>();
                 return file.Contents.Select(kv =>
                 {

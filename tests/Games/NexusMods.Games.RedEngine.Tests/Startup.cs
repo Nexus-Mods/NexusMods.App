@@ -27,13 +27,13 @@ public class Startup
                  .AddSingleton<HttpClient>()
                  .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
                  .AddDataModel(KnownFolders.EntryFolder.CombineUnchecked("DataModel").CombineUnchecked(Guid.NewGuid().ToString()))
-                 .AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(s =>
+                 .AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(_ =>
             new Resource<FileContentsCache, Size>("File Analysis"))
-                 .AddAllSingleton<IResource, IResource<IExtractor, Size>>(s =>
+                 .AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ =>
             new Resource<IExtractor, Size>("File Extraction"))
                  .AddFileExtractors()
 
-                 .AddSingleton<TemporaryFileManager>(s =>
+                 .AddSingleton<TemporaryFileManager>(_ =>
             new TemporaryFileManager(KnownFolders.EntryFolder.CombineUnchecked("tempFiles")))
                  .Validate();
     }

@@ -6,7 +6,7 @@ namespace NexusMods.StandardGameLocators.TestHelpers;
 
 public class ListFilesTool : ITool
 {
-    public IEnumerable<GameDomain> Domains => new GameDomain[] { GameDomain.From("stubbed-game") };
+    public IEnumerable<GameDomain> Domains => new[] { GameDomain.From("stubbed-game") };
 
     public async Task Execute(Loadout loadout)
     {

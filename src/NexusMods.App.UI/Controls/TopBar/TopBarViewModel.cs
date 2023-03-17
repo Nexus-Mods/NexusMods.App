@@ -36,7 +36,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
                 .WhereNotNull()
                 .SelectMany(LoadImage)
                 .WhereNotNull()
-                .Subscribe(x => Avatar = x!)
+                .Subscribe(x => Avatar = x)
                 .DisposeWith(d);
         });
 
@@ -82,7 +82,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 
     [Reactive] public ReactiveCommand<Unit, Unit> LoginCommand { get; set; }
 
-    [Reactive] public ReactiveCommand<Unit, Unit> LogoutCommand { get; set; } = ReactiveCommand.Create(() => { });
+    [Reactive] public ReactiveCommand<Unit, Unit> LogoutCommand { get; set; }
 
     [Reactive]
     public ReactiveCommand<Unit, Unit> MinimizeCommand { get; set; } = ReactiveCommand.Create(() => { });

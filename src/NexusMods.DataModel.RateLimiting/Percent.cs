@@ -9,7 +9,7 @@ public readonly struct Percent : IComparable, IEquatable<Percent>
     /// <summary>
     /// A pre-determined value that represents a value of 100 percent.
     /// </summary>
-    public static readonly Percent One  = new(1d);
+    public static readonly Percent One = new(1d);
 
     /// <summary>
     /// A pre-determined value that represents a value of 0 percent.

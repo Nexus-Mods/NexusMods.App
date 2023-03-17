@@ -12,6 +12,9 @@ using NexusMods.DataModel.Games;
 
 namespace NexusMods.StandardGameLocators;
 
+/// <summary>
+/// Adds services tied to this library to your Dependency Injector container.
+/// </summary>
 public static class Services
 {
     /// <summary>
@@ -40,10 +43,13 @@ public static class Services
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
+            // Suppress: 'Supported only on windows', throws incorrectly due to lambda.
+#pragma warning disable CA1416
             services.AddSingleton<AHandler<EADesktopGame, string>>(_ => new EADesktopHandler());
             services.AddSingleton<AHandler<EGSGame, string>>(_ => new EGSHandler());
             services.AddSingleton<AHandler<GOGGame, long>>(_ => new GOGHandler());
             services.AddSingleton<AHandler<OriginGame, string>>(_ => new OriginHandler());
+#pragma warning restore CA1416
         }
 
         return services;
@@ -53,7 +59,10 @@ public static class Services
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
+            // Suppress: 'Supported only on windows', throws incorrectly due to lambda.
+#pragma warning disable CA1416
             services.AddSingleton<AHandler<SteamGame, int>, SteamHandler>(_ => new SteamHandler(new WindowsRegistry()));
+#pragma warning restore CA1416
         }
         else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {

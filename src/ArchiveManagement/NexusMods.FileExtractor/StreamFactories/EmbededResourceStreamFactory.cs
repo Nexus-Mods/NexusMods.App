@@ -44,7 +44,7 @@ public class EmbededResourceStreamFactory<T> : IStreamFactory
             using var info = typeof(T).Assembly.GetManifestResourceStream(_path);
             if (info == null)
                 throw new MissingManifestResourceException($"Could not find {_path}");
-            return Size.From(info.Length);
+            return Size.FromLong(info.Length);
         }
     }
 

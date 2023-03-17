@@ -332,7 +332,7 @@ public class InMemoryFileSystemTests
         fs.FileExists(source).Should().BeFalse();
         fs.FileExists(dest).Should().BeTrue();
 
-        fs.GetFileEntry(dest).Size.Should().Be(Size.From(contents.Length));
+        fs.GetFileEntry(dest).Size.Should().Be(Size.FromLong(contents.Length));
     }
 
     [Theory, AutoFileSystem]
@@ -370,6 +370,6 @@ public class InMemoryFileSystemTests
         fs.FileExists(source).Should().BeFalse();
         fs.FileExists(dest).Should().BeTrue();
 
-        fs.GetFileEntry(dest).Size.Should().Be(Size.From(contents.Length));
+        fs.GetFileEntry(dest).Size.Should().Be(Size.FromLong(contents.Length));
     }
 }

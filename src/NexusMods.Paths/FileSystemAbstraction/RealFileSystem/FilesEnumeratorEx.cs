@@ -9,6 +9,7 @@ internal sealed class FilesEnumeratorEx : FileSystemEnumerator<FilesEnumeratorEx
     public string CurrentDirectory => _currentDirectory ?? _startDirectory;
 
     private readonly string _startDirectory;
+
     private readonly string _pattern;
     private readonly EnumerationOptions _options;
 
