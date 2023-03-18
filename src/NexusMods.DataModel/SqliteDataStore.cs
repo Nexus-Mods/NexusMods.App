@@ -169,7 +169,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         if (!reader.Read())
             return null;
 
-        // TODO: This is horribly inefficient, .GetStream allocates a 4096 buffer internally.
+        // TODO: This is horribly inefficient, .GetStream allocates a 4096 buffer internally. https://github.com/Nexus-Mods/NexusMods.App/issues/214
         var blob = reader.GetStream(0);
         var value = (T?)JsonSerializer.Deserialize<Entity>(blob, _jsonOptions.Value);
         if (value == null) return null;
@@ -205,7 +205,7 @@ public class SqliteDataStore : IDataStore, IDisposable
 
         while (reader.Read())
         {
-            // TODO: This is horribly inefficient, .GetStream allocates a 4096 buffer internally.
+            // TODO: This is horribly inefficient, .GetStream allocates a 4096 buffer internally. https://github.com/Nexus-Mods/NexusMods.App/issues/214
             var blob = reader.GetStream(0);
             var bytes = new byte[blob.Length];
             // Suppressed because MemoryStream.
@@ -325,7 +325,7 @@ public class SqliteDataStore : IDataStore, IDisposable
                 yield break;
             }
 
-            // TODO: This is horribly inefficient, .GetStream allocates a 4096 buffer internally.
+            // TODO: This is horribly inefficient, .GetStream allocates a 4096 buffer internally. https://github.com/Nexus-Mods/NexusMods.App/issues/214
             var blob = reader.GetStream(1);
             var value = JsonSerializer.Deserialize<Entity>(blob, _jsonOptions.Value);
             if (value is T tc)
@@ -391,7 +391,7 @@ internal static class SqlExtensions
 {
     public static IId GetId(this SQLiteDataReader reader, EntityCategory ent, int column)
     {
-        // TODO: This is horribly inefficient, .GetStream allocates a 4096 buffer internally.
+        // TODO: This is horribly inefficient, .GetStream allocates a 4096 buffer internally. https://github.com/Nexus-Mods/NexusMods.App/issues/214
         var blob = reader.GetStream(column);
         var bytes = new byte[blob.Length];
         // ReSharper disable once MustUseReturnValue

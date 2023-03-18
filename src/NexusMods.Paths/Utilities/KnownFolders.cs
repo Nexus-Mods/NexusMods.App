@@ -7,11 +7,11 @@ namespace NexusMods.Paths.Utilities;
 /// </summary>
 public static class KnownFolders
 {
-    // TODO: We need to detect Proton/Wine for Linux and adjust these paths based on the target game(s).
+    // TODO: We need to detect Proton/Wine for Linux and adjust these paths based on the target game(s). Relevant Epic: https://github.com/Nexus-Mods/NexusMods.App/issues/148
 
     /// <summary>
-    /// Gets the directory this program's DLL resolver uses to probe for DLLs.  
-    /// This is usually the same as <see cref="CurrentDirectory"/>.  
+    /// Gets the directory this program's DLL resolver uses to probe for DLLs.
+    /// This is usually the same as <see cref="CurrentDirectory"/>.
     /// </summary>
     public static AbsolutePath EntryFolder => AppContext.BaseDirectory.ToAbsolutePath();
 
@@ -21,7 +21,7 @@ public static class KnownFolders
     public static AbsolutePath CurrentDirectory => Environment.CurrentDirectory.ToAbsolutePath();
 
     /// <summary>
-    /// Path to the `Documents` folder 
+    /// Path to the `Documents` folder
     /// </summary>
     public static AbsolutePath Documents => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).ToAbsolutePath();
 

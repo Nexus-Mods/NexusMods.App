@@ -89,7 +89,7 @@ public class SqliteIPC : IDisposable
         {
             lastId = ProcessMessages(lastId);
 
-            // TODO: Bug, FileInfo is a cached field.
+            // TODO: Bug, FileInfo is a cached field. https://github.com/Nexus-Mods/NexusMods.App/issues/199
             var lastEdit = _storePath.FileInfo;
 
             var elapsed = DateTime.UtcNow;

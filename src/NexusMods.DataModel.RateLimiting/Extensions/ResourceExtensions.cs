@@ -47,10 +47,10 @@ public static class ResourceExtensions
         token ??= CancellationToken.None;
 
         var allFiles = roots.SelectMany(f => f.EnumerateFileEntries()).OrderBy(x => x.Size).ToList();
+
+        // TODO: Can we dedupe this? https://github.com/Nexus-Mods/NexusMods.App/issues/211
         var tasks = new List<Task<List<TItem>>>();
         var maxJobs = resource.MaxJobs;
-
-        // TODO: Can we dedupe this?
 
         // The idea here is we partition the files into maxJobs slices.
         // Then, as a means of thread balancing the workload,
@@ -60,7 +60,6 @@ public static class ResourceExtensions
 
             using var job = await resource.BeginAsync(jobName, totalSize, token.Value);
             var list = new List<TItem>();
-
             foreach (var itm in allFiles.GetEveryXItem(i, maxJobs))
             {
                 list.Add(await fn(job, itm));
@@ -93,19 +92,19 @@ public static class ResourceExtensions
         string jobName = "Processing Files")
     {
         token ??= CancellationToken.None;
+        var allFiles = src.OrderByDescending(sizeFn).ToList();
 
-        var asList = src.OrderByDescending(sizeFn).ToList();
         var tasks = new List<Task<List<TItem>>>();
         var maxJobs = resource.MaxJobs;
 
         tasks.AddRange(Enumerable.Range(0, maxJobs).Select(i => Task.Run(async () =>
         {
-            var totalSize = asList.GetEveryXItem(i, maxJobs)
+            var totalSize = allFiles.GetEveryXItem(i, maxJobs)
                 .Aggregate(Size.Zero, (acc, x) => acc + sizeFn(x));
 
             using var job = await resource.BeginAsync(jobName, totalSize, token.Value);
             var list = new List<TItem>();
-            foreach (var itm in asList.GetEveryXItem(i, maxJobs))
+            foreach (var itm in allFiles.GetEveryXItem(i, maxJobs))
             {
                 await fn(job, itm);
             }

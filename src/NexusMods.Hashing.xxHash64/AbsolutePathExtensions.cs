@@ -3,7 +3,7 @@ using NexusMods.Paths;
 
 namespace NexusMods.Hashing.xxHash64;
 
-// TODO: Paths library doesn't have an actual dependency on RateLimiting; but requires access to job(s) for reporting. We should probably decouple libraries that don't have strict dependencies on other libraries at some point.
+// TODO: Paths library doesn't have an actual dependency on RateLimiting; but requires access to job(s) for reporting. We should probably decouple libraries that don't have strict dependencies on other libraries at some point. https://github.com/Nexus-Mods/NexusMods.App/issues/208
 
 /// <summary>
 /// Extensions tied to <see cref="AbsolutePath"/>(s).

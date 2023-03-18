@@ -180,7 +180,7 @@ public record HashedEntry(AbsolutePath Path, Hash Hash, DateTime LastModified, S
 /// <param name="Size">Size of the file in bytes.</param>
 public readonly record struct FileHashCacheEntry(DateTime LastModified, Hash Hash, Size Size)
 {
-    // TODO: SliceFast here, with only one size check for safety
+    // TODO: SliceFast here, with only one size check for safety https://github.com/Nexus-Mods/NexusMods.App/issues/214
 
     /// <summary>
     /// Deserializes the given entry from a span of bytes.

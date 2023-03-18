@@ -6,8 +6,6 @@ namespace NexusMods.Common;
 // ReSharper disable once InconsistentNaming
 public class IDGenerator : IIDGenerator
 {
-    // TODO: Remove this if dead code later.
-
     /// <inheritdoc/>
     public string UUIDv4()
     {

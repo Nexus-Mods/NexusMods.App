@@ -17,7 +17,7 @@ public readonly struct HashRelativePath : IPath, IEquatable<HashRelativePath>, I
     /// </summary>
     public readonly Hash Hash;
 
-    // TODO: This needs rewritten for new path system.
+    // TODO: This needs rewritten for new path system. https://github.com/Nexus-Mods/NexusMods.App/issues/210
 
     /// <summary>
     /// Path to the item within the archive marked by <see cref="Hash"/>.
