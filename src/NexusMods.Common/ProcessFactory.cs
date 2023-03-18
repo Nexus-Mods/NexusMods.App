@@ -7,6 +7,7 @@ namespace NexusMods.Common;
 /// </summary>
 public class ProcessFactory : IProcessFactory
 {
+    /// <inheritdoc />
     public async Task<CommandResult> ExecuteAsync(Command command,
         CancellationToken cancellationToken = default)
     {

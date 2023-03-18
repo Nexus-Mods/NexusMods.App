@@ -1,5 +1,5 @@
 ﻿<reactiveUi:ReactiveUserControl
-    d:DesignHeight="450"
+    d:DesignHeight="300"
     d:DesignWidth="800"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.RightContent.FoundGamesView"
@@ -13,7 +13,11 @@
     <UserControl.DataContext>
         <rightContent:FoundGamesDesignViewModel />
     </UserControl.DataContext>
-    <ItemsControl x:Name="FoundGamesItemsControl">
+    <ItemsControl
+        Background="#0AFFFFFF"
+        CornerRadius="8"
+        Padding="20"
+        x:Name="FoundGamesItemsControl">
         <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
                 <WrapPanel />
@@ -22,11 +26,12 @@
         <ItemsControl.ItemTemplate>
             <DataTemplate>
                 <reactiveUi:ViewModelViewHost
-                    Height="220"
-                    Margin="20"
+                    Height="238"
+                    Margin="0"
                     ViewModel="{Binding .}"
-                    Width="180" />
+                    Width="192" />
             </DataTemplate>
         </ItemsControl.ItemTemplate>
     </ItemsControl>
+
 </reactiveUi:ReactiveUserControl>

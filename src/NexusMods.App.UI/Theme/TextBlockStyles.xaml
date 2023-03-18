@@ -3,7 +3,7 @@
     <Style Selector="TextBlock.Small">
         <Setter Property="FontSize" Value="10" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
-        <Setter Property="FontFamily" Value="{DynamicResource FontPrimary}" />
+        <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="LineHeight" Value="15" />
         <Setter Property="LetterSpacing" Value="1" />
@@ -17,7 +17,7 @@
     <Style Selector="TextBlock.H1">
         <Setter Property="FontSize" Value="20" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
-        <Setter Property="FontFamily" Value="{DynamicResource FontPrimary}" />
+        <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="LineHeight" Value="20" />
         <Setter Property="LetterSpacing" Value="1" />
@@ -30,7 +30,7 @@
     <Style Selector="TextBlock.TopTitle">
         <Setter Property="FontSize" Value="12" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
-        <Setter Property="FontFamily" Value="{DynamicResource FontPrimary}" />
+        <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
         <Setter Property="FontWeight" Value="600" />
         <Setter Property="LineHeight" Value="16.5" />
         <Setter Property="LetterSpacing" Value="0.6" />
@@ -40,17 +40,35 @@
     </Style>
 
     <Style Selector="TextBlock.Body2RobotoRegular">
-        <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
+        <Setter Property="FontFamily" Value="{DynamicResource FontSecondaryRegular}" />
         <Setter Property="FontWeight" Value="400" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="LineHeight" Value="21" />
     </Style>
 
     <Style Selector="TextBlock.Subheading">
-        <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
+        <Setter Property="FontFamily" Value="{DynamicResource FontSecondaryBold}" />
         <Setter Property="FontWeight" Value="700" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="LineHeight" Value="16.41" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+
+    <Style Selector="TextBlock.H5MontserratSemi">
+        <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
+        <Setter Property="FontWeight" Value="600" />
+        <Setter Property="FontSize" Value="24" />
+        <Setter Property="LineHeight" Value="33" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="TextBlock.CaptionMontserratSemi">
+        <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
+        <Setter Property="FontWeight" Value="600" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="LineHeight" Value="16.5" />
+        <Setter Property="LetterSpacing" Value="0.6" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
     </Style>
 

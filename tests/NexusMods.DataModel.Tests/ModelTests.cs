@@ -10,7 +10,7 @@ using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
-using NexusMods.StandardGameLocators.TestHelpers;
+using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
 namespace NexusMods.DataModel.Tests;
 
@@ -30,7 +30,7 @@ public class ModelTests : ADataModelTest<ModelTests>
             To = new GamePath(GameFolderType.Game, "foo/bar.pez"),
             From = new HashRelativePath(Hash.Zero, RelativePath.Empty),
             Hash = (Hash)0x42L,
-            Size = Size.From(44L)
+            Size = Size.FromLong(44L)
         };
         file.EnsurePersisted(DataStore);
         file.DataStoreId.Should().NotBeNull();
@@ -43,11 +43,11 @@ public class ModelTests : ADataModelTest<ModelTests>
     {
         var name = Guid.NewGuid().ToString();
         var loadout = await LoadoutManager.ManageGameAsync(Install, name);
-        await loadout.InstallModAsync(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
-        await loadout.InstallModAsync(DATA_ZIP_LZMA, "", CancellationToken.None);
+        await loadout.InstallModAsync(Data7ZLzma2, "Mod1", CancellationToken.None);
+        await loadout.InstallModAsync(DataZipLzma, "", CancellationToken.None);
 
         loadout.Value.Mods.Count.Should().Be(3);
-        loadout.Value.Mods.Values.Sum(m => m.Files.Count).Should().Be(DATA_NAMES.Length * 2 + StubbedGame.DATA_NAMES.Length);
+        loadout.Value.Mods.Values.Sum(m => m.Files.Count).Should().Be(DataNames.Length * 2 + StubbedGame.DATA_NAMES.Length);
 
     }
 
@@ -55,8 +55,8 @@ public class ModelTests : ADataModelTest<ModelTests>
     public async Task RenamingAListDoesntChangeOldIds()
     {
         var loadout = await LoadoutManager.ManageGameAsync(Install, Guid.NewGuid().ToString());
-        var id1 = await loadout.InstallModAsync(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
-        var id2 = await loadout.InstallModAsync(DATA_ZIP_LZMA, "Mod2", CancellationToken.None);
+        var id1 = await loadout.InstallModAsync(Data7ZLzma2, "Mod1", CancellationToken.None);
+        var id2 = await loadout.InstallModAsync(DataZipLzma, "Mod2", CancellationToken.None);
 
         id1.Should().NotBe(id2);
         id1.Should().BeEquivalentTo(id1);
@@ -80,8 +80,8 @@ public class ModelTests : ADataModelTest<ModelTests>
     public async Task CanExportAndImportLoadouts()
     {
         var loadout = await LoadoutManager.ManageGameAsync(Install, Guid.NewGuid().ToString());
-        var id1 = await loadout.InstallModAsync(DATA_7Z_LZMA2, "Mod1", CancellationToken.None);
-        var id2 = await loadout.InstallModAsync(DATA_ZIP_LZMA, "Mod2", CancellationToken.None);
+        await loadout.InstallModAsync(Data7ZLzma2, "Mod1", CancellationToken.None);
+        await loadout.InstallModAsync(DataZipLzma, "Mod2", CancellationToken.None);
 
         var tempFile = TemporaryFileManager.CreateFile(KnownExtensions.Zip);
         await loadout.ExportToAsync(tempFile, CancellationToken.None);

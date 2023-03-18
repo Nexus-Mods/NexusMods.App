@@ -9,8 +9,8 @@ using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
 using NexusMods.App.UI.LeftMenu;
+using NexusMods.App.UI.LeftMenu.Game;
 using NexusMods.App.UI.LeftMenu.Home;
-using NexusMods.App.UI.ViewModels;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Loadouts;
@@ -21,56 +21,50 @@ namespace NexusMods.App.UI.Controls.Spine;
 
 public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 {
-    private readonly IDataStore _dataStore;
-
     public IIconButtonViewModel Home { get; }
 
     public IIconButtonViewModel Add { get; }
 
-    private ReadOnlyObservableCollection<IImageButtonViewModel> _games;
+    private ReadOnlyObservableCollection<IImageButtonViewModel> _games =
+        Initializers.ReadOnlyObservableCollection<IImageButtonViewModel>();
     public ReadOnlyObservableCollection<IImageButtonViewModel> Games => _games;
 
     public Subject<SpineButtonAction> Activations { get; } = new();
 
     [Reactive]
-    public ILeftMenuViewModel LeftMenu { get; set; }
+    public ILeftMenuViewModel LeftMenu { get; set; } =
+        Initializers.ILeftMenuViewModel;
 
     private readonly Subject<SpineButtonAction> _actions = new();
     private readonly ILogger<SpineViewModel> _logger;
-    private readonly IServiceProvider _provider;
-    private readonly Root<LoadoutRegistry> _root;
-    private readonly IHomeLeftMenuViewModel _homeLeftMenuViewModel;
     public IObservable<SpineButtonAction> Actions => _actions;
 
     public SpineViewModel(ILogger<SpineViewModel> logger, IDataStore dataStore,
         IIconButtonViewModel addButtonViewModel,
         IIconButtonViewModel homeButtonViewModel,
         IHomeLeftMenuViewModel homeLeftMenuViewModel,
+        IGameLeftMenuViewModel gameLeftMenuViewModel,
         IServiceProvider provider)
     {
         _logger = logger;
-        _dataStore = dataStore;
-        _provider = provider;
-
-        _homeLeftMenuViewModel = homeLeftMenuViewModel;
 
         Home = homeButtonViewModel;
         Add = addButtonViewModel;
 
-        _root = new Root<LoadoutRegistry>(RootType.Loadouts, dataStore);
+        Root<LoadoutRegistry> root = new(RootType.Loadouts, dataStore);
 
 
         this.WhenActivated(disposables =>
         {
-            _root.Changes
-                .StartWith(_dataStore.Get<LoadoutRegistry>(_dataStore.GetRoot(RootType.Loadouts) ?? IdEmpty.Empty, true))
-                .Where(registry => registry != null)
-                .SelectMany(registry => registry!.Lists.Select(lst => lst.Value.Installation.Game).Distinct())
+            root.Changes
+                .StartWith(dataStore.Get<LoadoutRegistry>(dataStore.GetRoot(RootType.Loadouts) ?? IdEmpty.Empty, true))
+                .WhereNotNull()
+                .SelectMany(registry => registry.Lists.Select(lst => lst.Value.Installation.Game).Distinct())
                 .ToObservableChangeSet(x => x.Domain)
                 .Transform(game =>
                 {
                     using var iconStream = game.Icon.GetStreamAsync().Result;
-                    var vm = _provider.GetRequiredService<IImageButtonViewModel>();
+                    var vm = provider.GetRequiredService<IImageButtonViewModel>();
                     vm.Name = game.Name;
                     vm.Image = Bitmap.DecodeToWidth(iconStream, 48);
                     vm.IsActive = false;
@@ -79,6 +73,8 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                     {
                         _logger.LogTrace("Game {Game} selected", game);
                         _actions.OnNext(new SpineButtonAction(Type.Game, game));
+                        gameLeftMenuViewModel.Game = game;
+                        LeftMenu = gameLeftMenuViewModel;
                     });
                     return vm;
                 })
@@ -91,7 +87,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
             {
                 _logger.LogTrace("Home selected");
                 _actions.OnNext(new SpineButtonAction(Type.Home));
-                LeftMenu = _homeLeftMenuViewModel;
+                LeftMenu = homeLeftMenuViewModel;
             });
 
             Add.Click = ReactiveCommand.Create(() =>

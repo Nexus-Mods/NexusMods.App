@@ -26,13 +26,17 @@ public class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
+        Locator.CurrentMutable.UnregisterCurrent(typeof(IViewLocator));
+        Locator.CurrentMutable.Register(() => _provider.GetRequiredService<InjectedViewLocator>(), typeof(IViewLocator));
+
+        var loggerFactory = _provider.GetRequiredService<ILoggerFactory>();
+        Locator.CurrentMutable.UseMicrosoftExtensionsLoggingWithWrappingFullLogger(loggerFactory);
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            Locator.CurrentMutable.UnregisterCurrent(typeof(IViewLocator));
-            Locator.CurrentMutable.Register(() => _provider.GetRequiredService<InjectedViewLocator>(), typeof(IViewLocator));
 
-            var loggerFactory = _provider.GetRequiredService<ILoggerFactory>();
-            Locator.CurrentMutable.UseMicrosoftExtensionsLoggingWithWrappingFullLogger(loggerFactory);
+
+
 
 
             var reactiveWindow = _provider.GetRequiredService<MainWindow>();

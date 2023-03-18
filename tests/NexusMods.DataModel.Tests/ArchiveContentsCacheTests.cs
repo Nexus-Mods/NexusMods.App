@@ -18,7 +18,7 @@ public class ArchiveContentsCacheTests : ADataModelTest<ArchiveContentsCacheTest
     [Fact]
     public async Task CanAnalyzeArchives()
     {
-        var analyzed = (AnalyzedArchive)await ArchiveContentsCache.AnalyzeFile(DATA_ZIP_LZMA, CancellationToken.None);
+        var analyzed = (AnalyzedArchive)await ArchiveContentsCache.AnalyzeFileAsync(DataZipLzma, CancellationToken.None);
 
         analyzed.Contents.Count.Should().Be(3);
         analyzed.Hash.Should().Be((Hash)0x706F72D12A82892DL);

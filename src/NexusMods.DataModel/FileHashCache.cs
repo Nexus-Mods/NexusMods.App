@@ -3,6 +3,7 @@ using System.Text;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.RateLimiting;
+using NexusMods.DataModel.RateLimiting.Extensions;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
@@ -94,19 +95,19 @@ public class FileHashCache
     {
         token ??= CancellationToken.None;
 
-        var result = _limiter.ForEachFile(paths, async (job, entry) =>
+        var result = _limiter.ForEachFileAsync(paths, async (job, entry) =>
         {
             if (TryGetCached(entry.Path, out var found))
             {
-                if (found.Size == entry.Size && found.LastModified == entry.LastModified)
+                if (found.Size == entry.Size && found.LastModified == entry.LastWriteTime)
                 {
                     job.ReportNoWait(entry.Size);
                     return new HashedEntry(entry, found.Hash);
                 }
             }
 
-            var hashed = await entry.Path.XxHash64(token, job);
-            PutCachedAsync(entry.Path, new FileHashCacheEntry(entry.LastModified, hashed, entry.Size));
+            var hashed = await entry.Path.XxHash64Async(token, job);
+            PutCachedAsync(entry.Path, new FileHashCacheEntry(entry.LastWriteTime, hashed, entry.Size));
             return new HashedEntry(entry, hashed);
         }, token, "Hashing Files");
 
@@ -127,7 +128,7 @@ public class FileHashCache
     public async ValueTask<HashedEntry> IndexFileAsync(AbsolutePath file, CancellationToken? token = null)
     {
         var info = file.FileInfo;
-        var size = Size.From(info.Length);
+        var size = info.Size;
         if (TryGetCached(file, out var found))
         {
             if (found.Size == size && found.LastModified == info.LastWriteTimeUtc)
@@ -136,8 +137,8 @@ public class FileHashCache
             }
         }
 
-        using var job = await _limiter.Begin($"Hashing {file.FileName}", size, token ?? CancellationToken.None);
-        var hashed = await file.XxHash64(token, job);
+        using var job = await _limiter.BeginAsync($"Hashing {file.FileName}", size, token ?? CancellationToken.None);
+        var hashed = await file.XxHash64Async(token, job);
         PutCachedAsync(file, new FileHashCacheEntry(info.LastWriteTimeUtc, hashed, size));
         return new HashedEntry(file, hashed, info.LastWriteTimeUtc, size);
     }
@@ -161,14 +162,14 @@ public class FileHashCache
 /// <param name="Hash">The hash of the file.</param>
 /// <param name="LastModified">The last time the entry was modified on disk.</param>
 /// <param name="Size">Size of the file in bytes.</param>
-public record HashedEntry(AbsolutePath Path, Hash Hash, DateTime LastModified, Size Size) : FileEntry(Path, Size, LastModified)
+public record HashedEntry(AbsolutePath Path, Hash Hash, DateTime LastModified, Size Size)
 {
     /// <summary>
     /// Creates a hashed entry from an existing file entry obtained through a file search.
     /// </summary>
     /// <param name="fe">File entry to obtain the hashed entry from.</param>
     /// <param name="hash">The hash to create the entry from.</param>
-    public HashedEntry(FileEntry fe, Hash hash) : this(fe.Path, hash, fe.LastModified, fe.Size) { }
+    public HashedEntry(IFileEntry fe, Hash hash) : this(fe.Path, hash, fe.LastWriteTime, fe.Size) { }
 }
 
 /// <summary>
@@ -190,7 +191,7 @@ public readonly record struct FileHashCacheEntry(DateTime LastModified, Hash Has
         var date = BinaryPrimitives.ReadInt64BigEndian(span);
         var hash = BinaryPrimitives.ReadUInt64BigEndian(span[8..]);
         var size = BinaryPrimitives.ReadInt64BigEndian(span[16..]);
-        return new FileHashCacheEntry(DateTime.FromFileTimeUtc(date), Hash.FromULong(hash), Size.From(size));
+        return new FileHashCacheEntry(DateTime.FromFileTimeUtc(date), Hash.FromULong(hash), Size.FromLong(size));
     }
 
     /// <summary>

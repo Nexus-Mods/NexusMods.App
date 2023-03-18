@@ -4,22 +4,44 @@ using NexusMods.Paths;
 namespace NexusMods.Networking.HttpDownloader;
 
 /// <summary>
-/// Represents a HTTP downloader
+/// Represents a HTTP downloader implementation.
 /// </summary>
 public interface IHttpDownloader
 {
     /// <summary>
-    /// Download the file specified by the given uris and save it to the given destination. Returns the hash of the downloaded file.
-    /// If multiple source are provided, they are assumed to be mirrors, and the downloader is free to load balance between them.
-    /// They are assumed to be in order of preference, with the first being the most preferred.
+    /// Download the file specified by the given requests and save it to the
+    /// given destination. Returns the hash of the downloaded file.
+    /// If multiple source are provided, they are assumed to be mirrors,
+    /// and the downloader is free to load balance between them.
+    ///
+    /// They are assumed to be in order of preference, with the first being
+    /// the most preferred.
     /// </summary>
-    /// <param name="sources"></param>
-    /// <param name="destination"></param>
-    /// <param name="token"></param>
+    /// <param name="sources">Locations to download from.</param>
+    /// <param name="destination">Where the file will be saved to.</param>
+    /// <param name="size">
+    ///     Size of the file being saved. Used for tracking progress, might not always be known.
+    /// </param>
+    /// <param name="token">Allows you to cancel the saving operation.</param>
     /// <returns></returns>
-    public Task<Hash> Download(IReadOnlyList<HttpRequestMessage> sources, AbsolutePath destination, Size? size = null, CancellationToken token = default);
+    public Task<Hash> DownloadAsync(IReadOnlyList<HttpRequestMessage> sources, AbsolutePath destination, Size? size = null, CancellationToken token = default);
 
-    public Task<Hash> Download(IEnumerable<Uri> sources, AbsolutePath destination, Size? size = null,
-        CancellationToken token = default) =>
-        Download(sources.Select(u => new HttpRequestMessage(HttpMethod.Get, u)).ToArray(), destination, size, token);
+    /// <summary>
+    /// Download the file specified by the given uris and save it to the
+    /// given destination. Returns the hash of the downloaded file.
+    /// If multiple source are provided, they are assumed to be mirrors,
+    /// and the downloader is free to load balance between them.
+    ///
+    /// They are assumed to be in order of preference, with the first being
+    /// the most preferred.
+    /// </summary>
+    /// <param name="sources">Locations to download from.</param>
+    /// <param name="destination">Where the file will be saved to.</param>
+    /// <param name="size">
+    ///     Size of the file being saved. Used for tracking progress, might not always be known.
+    /// </param>
+    /// <param name="token">Allows you to cancel the saving operation.</param>
+    /// <returns></returns>
+    public Task<Hash> DownloadAsync(IEnumerable<Uri> sources, AbsolutePath destination, Size? size = null, CancellationToken token = default) =>
+        DownloadAsync(sources.Select(u => new HttpRequestMessage(HttpMethod.Get, u)).ToArray(), destination, size, token);
 }

@@ -9,28 +9,28 @@ using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
-using NexusMods.StandardGameLocators.TestHelpers;
+using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 using Xunit.DependencyInjection;
+// ReSharper disable StaticMemberInGenericType
 
 namespace NexusMods.DataModel.Tests.Harness;
 
 public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 {
-    public static readonly AbsolutePath DATA_ZIP_LZMA = KnownFolders.EntryFolder.CombineUnchecked(@"Resources\data_zip_lzma.zip");
-    public static readonly AbsolutePath DATA_7Z_LZMA2 = KnownFolders.EntryFolder.CombineUnchecked(@"Resources\data_7zip_lzma2.7z");
+    public static readonly AbsolutePath DataZipLzma = KnownFolders.EntryFolder.CombineUnchecked(@"Resources\data_zip_lzma.zip");
+    public static readonly AbsolutePath Data7ZLzma2 = KnownFolders.EntryFolder.CombineUnchecked(@"Resources\data_7zip_lzma2.7z");
 
-    public static readonly RelativePath[] DATA_NAMES = new[]
+    public static readonly RelativePath[] DataNames = new[]
     {
         "rootFile.txt",
         "folder1/folder1file.txt",
         "deepFolder/deepFolder2/deepFolder3/deepFolder4/deepFile.txt"
     }.Select(t => t.ToRelativePath()).ToArray();
 
-    public static readonly Dictionary<RelativePath, (Hash Hash, Size Size)> DATA_CONTENTS = DATA_NAMES
+    public static readonly Dictionary<RelativePath, (Hash Hash, Size Size)> DataContents = DataNames
         .ToDictionary(d => d,
-            d => (d.FileName.ToString().XxHash64(), Size.From(d.FileName.ToString().Length)));
+            d => (d.FileName.ToString().XxHash64AsUtf8(), Size.FromLong(d.FileName.ToString().Length)));
 
-    private readonly IServiceProvider _provider;
     protected readonly TemporaryFileManager TemporaryFileManager;
     protected readonly IServiceProvider ServiceProvider;
     protected readonly FileContentsCache ArchiveContentsCache;
@@ -41,8 +41,8 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
     protected readonly IGame Game;
     protected readonly GameInstallation Install;
-    protected LoadoutMarker? BaseList;
-    protected readonly ILogger<T> _logger;
+    protected LoadoutMarker BaseList = null!; // set via InitializeAsync
+    protected readonly ILogger<T> Logger;
     private readonly IHost _host;
 
     protected CancellationToken Token = CancellationToken.None;
@@ -53,23 +53,22 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         _host = Host.CreateDefaultBuilder(Environment.GetCommandLineArgs())
             .ConfigureServices((_, service) => startup.ConfigureServices(service))
             .Build();
-        _provider = _host.Services;
-        ArchiveContentsCache = _provider.GetRequiredService<FileContentsCache>();
-        ArchiveManager = _provider.GetRequiredService<ArchiveManager>();
-        LoadoutManager = _provider.GetRequiredService<LoadoutManager>();
-        FileHashCache = _provider.GetRequiredService<FileHashCache>();
-        DataStore = _provider.GetRequiredService<IDataStore>();
-        _logger = _provider.GetRequiredService<ILogger<T>>();
-        TemporaryFileManager = _provider.GetRequiredService<TemporaryFileManager>();
+        var provider1 = _host.Services;
+        ArchiveContentsCache = provider1.GetRequiredService<FileContentsCache>();
+        ArchiveManager = provider1.GetRequiredService<ArchiveManager>();
+        LoadoutManager = provider1.GetRequiredService<LoadoutManager>();
+        FileHashCache = provider1.GetRequiredService<FileHashCache>();
+        DataStore = provider1.GetRequiredService<IDataStore>();
+        Logger = provider1.GetRequiredService<ILogger<T>>();
+        TemporaryFileManager = provider1.GetRequiredService<TemporaryFileManager>();
         ServiceProvider = provider;
 
-        Game = _provider.GetRequiredService<StubbedGame>();
+        Game = provider1.GetRequiredService<StubbedGame>();
         Install = Game.Installations.First();
 
-        startup.Configure(_provider.GetRequiredService<ILoggerFactory>(), provider.GetRequiredService<ITestOutputHelperAccessor>());
+        startup.Configure(provider1.GetRequiredService<ILoggerFactory>(), provider.GetRequiredService<ITestOutputHelperAccessor>());
 
     }
-
 
     public void Dispose()
     {
@@ -78,10 +77,10 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        await ArchiveContentsCache.AnalyzeFile(DATA_ZIP_LZMA, Token);
-        await ArchiveContentsCache.AnalyzeFile(DATA_7Z_LZMA2, Token);
-        await ArchiveManager.ArchiveFileAsync(DATA_ZIP_LZMA, Token);
-        await ArchiveManager.ArchiveFileAsync(DATA_7Z_LZMA2, Token);
+        await ArchiveContentsCache.AnalyzeFileAsync(DataZipLzma, Token);
+        await ArchiveContentsCache.AnalyzeFileAsync(Data7ZLzma2, Token);
+        await ArchiveManager.ArchiveFileAsync(DataZipLzma, Token);
+        await ArchiveManager.ArchiveFileAsync(Data7ZLzma2, Token);
 
         BaseList = await LoadoutManager.ManageGameAsync(Install, "BaseList", CancellationToken.None);
     }

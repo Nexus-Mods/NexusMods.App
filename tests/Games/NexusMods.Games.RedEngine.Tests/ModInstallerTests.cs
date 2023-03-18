@@ -16,8 +16,10 @@ namespace NexusMods.Games.RedEngine.Tests;
 [Trait("RequiresNetworking", "True")]
 public class ModInstallerTests
 {
-    private readonly LoadoutManager _manager;
+    // ReSharper disable once NotAccessedField.Local
     private readonly GameInstallation _installation;
+
+    private readonly LoadoutManager _manager;
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly Client _nexusClient;
     private readonly IHttpDownloader _httpDownloader;
@@ -63,7 +65,7 @@ public class ModInstallerTests
         var uris = await _nexusClient.DownloadLinks(GameDomain.Cyberpunk2077, modId, fileId);
 
         var file = _temporaryFileManager.CreateFile();
-        var downloadHash = await _httpDownloader.Download(uris.Data.Select(u => new HttpRequestMessage(HttpMethod.Get, u.Uri)).ToArray(), file);
+        var downloadHash = await _httpDownloader.DownloadAsync(uris.Data.Select(u => new HttpRequestMessage(HttpMethod.Get, u.Uri)).ToArray(), file);
         downloadHash.Should().Be(hash);
         return file.Path;
     }

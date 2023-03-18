@@ -4,10 +4,9 @@ using NexusMods.Common.OSInterop;
 
 namespace NexusMods.Common.Tests;
 
+// ReSharper disable once InconsistentNaming
 public class OSInteropTests
 {
-    // Disabled as we don't do processes this way with
-    /*
     [Fact]
     public async Task UsesExplorerOnWindows()
     {
@@ -15,15 +14,15 @@ public class OSInteropTests
         var mockFactory = new Mock<IProcessFactory>();
 
         var os = new OSInteropWindows(mockFactory.Object);
-        await os.OpenURL(url);
+        await os.OpenUrl(url);
 
         mockFactory.Verify(f => f.ExecuteAsync(
             It.Is<Command>(command =>
-                command.TargetFilePath == "explorer.exe" &&
-                command.Arguments == url),
+                command.TargetFilePath == "cmd.exe" &&
+                command.Arguments == $@"/c start """" ""{url}"""),
             It.IsAny<CancellationToken>()
         ), Times.Once);
-    }*/
+    }
 
     [Fact]
     public async Task UsesXDGOpenOnLinux()
@@ -32,7 +31,7 @@ public class OSInteropTests
         var mockFactory = new Mock<IProcessFactory>();
 
         var os = new OSInteropLinux(mockFactory.Object);
-        await os.OpenURL(url);
+        await os.OpenUrl(url);
 
         mockFactory.Verify(f => f.ExecuteAsync(
             It.Is<Command>(command =>
@@ -49,7 +48,7 @@ public class OSInteropTests
         var mockFactory = new Mock<IProcessFactory>();
 
         var os = new OSInteropOSX(mockFactory.Object);
-        await os.OpenURL(url);
+        await os.OpenUrl(url);
 
         mockFactory.Verify(f => f.ExecuteAsync(
             It.Is<Command>(command =>

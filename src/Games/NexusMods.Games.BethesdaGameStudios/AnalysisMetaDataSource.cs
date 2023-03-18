@@ -12,7 +12,10 @@ public class AnalysisMetaDataSource : IFileMetadataSource
     public IEnumerable<Extension> Extensions => new[] { new Extension(".esp"), new Extension(".esm"), new Extension(".esl") };
     public IEnumerable<FileType> FileTypes => new[] { FileType.TES4 };
     public IEnumerable<GameDomain> Games => new[] { SkyrimSpecialEdition.StaticDomain };
-    public async IAsyncEnumerable<IModFileMetadata> GetMetadata(Loadout loadout, Mod mod, AModFile file,
+
+#pragma warning disable CS1998
+    public async IAsyncEnumerable<IModFileMetadata> GetMetadataAsync(Loadout loadout, Mod mod, AModFile file,
+#pragma warning restore CS1998
         AnalyzedFile analyzedFile)
     {
         yield return new AnalysisSortData()

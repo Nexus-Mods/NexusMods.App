@@ -1,5 +1,8 @@
 namespace NexusMods.DataModel.Abstractions;
 
+/// <summary>
+/// Extension methods related to the processing of entities.
+/// </summary>
 public static class EntityExtensions
 {
     /// <summary>

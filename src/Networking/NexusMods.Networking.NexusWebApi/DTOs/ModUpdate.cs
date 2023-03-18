@@ -5,7 +5,7 @@ using NexusMods.Networking.NexusWebApi.Types;
 
 
 // 👇 Suppress uninitialised variables. Currently Nexus has mostly read-only API and we expect server to return the data.
-#pragma warning disable CS8618 
+#pragma warning disable CS8618
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 namespace NexusMods.Networking.NexusWebApi.DTOs;
@@ -20,6 +20,7 @@ public class ModUpdate : IJsonArraySerializable<ModUpdate>
     /// For deserialization only, please use <see cref="ModId"/>.
     /// </summary>
     [JsonPropertyName("mod_id")]
+    // ReSharper disable once InconsistentNaming
     public ulong _ModId { get; set; }
 
     /// <summary>

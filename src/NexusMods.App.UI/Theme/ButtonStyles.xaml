@@ -27,9 +27,10 @@
     </Style>
 
     <Style Selector="Button.Rounded icons|Icon">
-        <Setter Property="Width" Value="20" />
-        <Setter Property="Height" Value="20" />
-        <Setter Property="Margin" Value="10, 0, 0, 0" />
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="Width" Value="22" />
+        <Setter Property="Height" Value="22" />
+        <Setter Property="Margin" Value="8, 0, 0, 0" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="HorizontalAlignment" Value="Left" />
     </Style>
@@ -49,8 +50,8 @@
     <Style Selector="Button">
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Margin" Value="0 0" />
-        <Setter Property="Padding" Value="16, 5" />
         <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="Height" Value="34" />
     </Style>
 
     <!--  Disable the scaling found in Fluent buttons  -->
@@ -59,13 +60,15 @@
     </Style>
 
     <Style Selector="Button TextBlock">
-        <Setter Property="FontFamily" Value="{DynamicResource FontPrimary}" />
+        <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
         <Setter Property="FontWeight" Value="600" />
         <Setter Property="LineHeight" Value="14" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="LetterSpacing" Value="0.7" />
-        <Setter Property="Margin" Value="5" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="Margin" Value="6, 0" />
     </Style>
 
     <Style Selector="Button.Primary">
@@ -89,10 +92,11 @@
 
     <Style Selector="Button icons|Icon">
         <Setter Property="FontSize" Value="16" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
     </Style>
 
     <Style Selector="Button.PrimaryOutline">
-        <Setter Property="Background" Value="{DynamicResource BrandSecondary}" />
+        <Setter Property="Background" Value="{DynamicResource BackgroundPrimaryBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="BorderBrush" Value="{DynamicResource BrandPrimaryBrush}" />
         <Setter Property="Padding" Value="16, 4" />

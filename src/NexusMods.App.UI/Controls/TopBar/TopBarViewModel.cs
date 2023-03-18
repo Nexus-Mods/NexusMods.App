@@ -3,9 +3,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using Avalonia.Platform;
 using Microsoft.Extensions.Logging;
-using NexusMods.App.UI.ViewModels;
 using NexusMods.Networking.NexusWebApi;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -16,7 +14,6 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 {
     private readonly LoginManager _loginManager;
     private readonly ILogger<TopBarViewModel> _logger;
-    private readonly IAssetLoader _assets;
 
     public TopBarViewModel(ILogger<TopBarViewModel> logger, LoginManager loginManager)
     {
@@ -36,16 +33,18 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
                 .DisposeWith(d);
 
             _loginManager.Avatar
-                .Where(a => a != null)
+                .WhereNotNull()
                 .SelectMany(LoadImage)
+                .WhereNotNull()
                 .Subscribe(x => Avatar = x)
                 .DisposeWith(d);
         });
 
     }
 
-    private async Task<IImage?> LoadImage(Uri uri)
+    private async Task<IImage?> LoadImage(Uri? uri)
     {
+        if (uri == null) return null;
         try
         {
             var client = new HttpClient();
@@ -54,7 +53,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed to load image: {uri}", uri);
+            _logger.LogError(e, "Failed to load image: {Uri}", uri);
             return null;
         }
     }
@@ -79,12 +78,11 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
     [Reactive]
     public bool IsPremium { get; set; }
 
-    [Reactive]
-    public IImage Avatar { get; set; }
+    [Reactive] public IImage Avatar { get; set; } = Initializers.IImage;
 
     [Reactive] public ReactiveCommand<Unit, Unit> LoginCommand { get; set; }
 
-    [Reactive] public ReactiveCommand<Unit, Unit> LogoutCommand { get; set; } = ReactiveCommand.Create(() => { });
+    [Reactive] public ReactiveCommand<Unit, Unit> LogoutCommand { get; set; }
 
     [Reactive]
     public ReactiveCommand<Unit, Unit> MinimizeCommand { get; set; } = ReactiveCommand.Create(() => { });

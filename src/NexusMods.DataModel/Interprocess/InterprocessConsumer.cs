@@ -23,8 +23,10 @@ public class InterprocessConsumer<T> : IMessageConsumer<T> where T : IMessage
         _sqliteIpc = sqliteIpc;
     }
 
+    /// <summary>
+    ///
+    /// </summary>
     public IObservable<T> Messages => _sqliteIpc.Messages
         .Where(msg => msg.Queue == _queueName)
         .Select(msg => (T)T.Read(msg.Message));
-
 }

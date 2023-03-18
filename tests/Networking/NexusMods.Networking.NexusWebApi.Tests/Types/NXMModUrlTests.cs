@@ -1,11 +1,13 @@
-using NexusMods.DataModel.Games;
 using FluentAssertions;
+using NexusMods.DataModel.Games;
+using NexusMods.Networking.NexusWebApi.Types;
 
-namespace NexusMods.Networking.NexusWebApi.Types.Tests;
+namespace NexusMods.Networking.NexusWebApi.Tests.Types;
 
+// ReSharper disable once InconsistentNaming
 public class NXMModUrlTests
 {
-    [Fact()]
+    [Fact]
     public void CanParseBasicModUrls()
     {
         var parsed = NXMUrl.Parse("nxm://skyrim/mods/123/files/456");
@@ -18,7 +20,7 @@ public class NXMModUrlTests
         parsed.User.Should().BeNull();
     }
 
-    [Fact()]
+    [Fact]
     public void CanParsePersonalizedModUrls()
     {
         var parsed = NXMUrl.Parse("nxm://skyrim/mods/123/files/456?key=key&expires=1676541088&user_id=12345");
@@ -29,7 +31,7 @@ public class NXMModUrlTests
         parsed.User!.Value.Value.Should().Be(12345);
     }
 
-    [Fact()]
+    [Fact]
     public void CanParseCollectionUrls()
     {
         var parsed = NXMUrl.Parse("nxm://skyrim/collections/slug/revisions/42");
@@ -39,7 +41,7 @@ public class NXMModUrlTests
         parsed.Collection.Revision.Value.Should().Be(42u);
     }
 
-    [Fact()]
+    [Fact]
     public void CanParseOAuthUrls()
     {
         var parsed = NXMUrl.Parse("nxm://oauth/callback?code=code&state=state");
@@ -48,14 +50,14 @@ public class NXMModUrlTests
         parsed.OAuth.State.Should().Be("state");
     }
 
-    [Fact()]
+    [Fact]
     public void ToleratesUnknownParameters()
     {
         var parsed = NXMUrl.Parse("nxm://skyrim/mods/123/files/456?whatdis=value");
         parsed.Should().NotBeNull();
     }
 
-    [Theory()]
+    [Theory]
     [InlineData("notnxm://skyrim/mods/123/files/456")]
     [InlineData("nxm://skyrim/invalid/123/files/456")]
     [InlineData("nxm://skyrim/mods/notanumber/files/456")]

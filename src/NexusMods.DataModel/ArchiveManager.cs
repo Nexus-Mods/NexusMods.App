@@ -52,7 +52,7 @@ public class ArchiveManager
         {
             await using var tmpFile = tmpName.Create();
             await using var src = path.Read();
-            hash = await src.HashingCopy(tmpFile, token, job);
+            hash = await src.HashingCopyAsync(tmpFile, token, job);
         }
         var finalName = folder.CombineUnchecked(NameForHash(hash));
         if (!finalName.FileExists)
@@ -125,7 +125,7 @@ public class ArchiveManager
     public HashSet<Hash> AllArchives()
     {
         return _locations.SelectMany(e => e.EnumerateFiles(KnownExtensions.Ra))
-            .Select(a => Hash.FromHex(a.FileNameWithoutExtension))
+            .Select(a => Hash.FromHex(a.GetFileNameWithoutExtension()))
             .ToHashSet();
     }
 

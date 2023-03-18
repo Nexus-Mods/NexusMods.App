@@ -17,7 +17,7 @@ namespace NexusMods.FileExtractor.Extractors;
 /// Abstracts the 7-zip archive extractor.
 /// </summary>
 /// <remarks>
-///     Uses the 7z binary for each native platform under the hood.  
+///     Uses the 7z binary for each native platform under the hood.
 ///     We chose this tradeoff due to a lack of decent cross platform option and
 ///     reportedly possible AVs on invalid archives.
 /// </remarks>
@@ -53,14 +53,14 @@ public class SevenZipExtractor : IExtractor
     /// <inheritdoc />
     public async Task ExtractAllAsync(IStreamFactory sFn, AbsolutePath destination, CancellationToken token)
     {
-        using var job = await _limiter.Begin($"[${nameof(ExtractAllAsync)}] Extracting {sFn.Name.FileName}", sFn.Size, token);
+        using var job = await _limiter.BeginAsync($"[${nameof(ExtractAllAsync)}] Extracting {sFn.Name.FileName}", sFn.Size, token);
         await ExtractAllAsync_Impl(sFn, destination, token, job);
     }
 
     /// <inheritdoc />
     public async Task<IDictionary<RelativePath, T>> ForEachEntryAsync<T>(IStreamFactory sFn, Func<RelativePath, IStreamFactory, ValueTask<T>> func, CancellationToken token)
     {
-        using var job = await _limiter.Begin($"[${nameof(ForEachEntryAsync)}] Extracting {sFn.Name.FileName}", sFn.Size, token);
+        using var job = await _limiter.BeginAsync($"[${nameof(ForEachEntryAsync)}] Extracting {sFn.Name.FileName}", sFn.Size, token);
         await using var dest = _manager.CreateFolder();
         await ExtractAllAsync_Impl(sFn, dest, token, job);
 
@@ -83,7 +83,7 @@ public class SevenZipExtractor : IExtractor
     /// <inheritdoc />
     public Priority DeterminePriority(IEnumerable<FileType> signatures)
     {
-        // Yes this is O(n*m) but the search space (should) be very small. 
+        // Yes this is O(n*m) but the search space (should) be very small.
         // 'signatures' should usually be only 1 element :)
         if ((from supported in SupportedSignatures
              from sig in signatures
@@ -118,7 +118,7 @@ public class SevenZipExtractor : IExtractor
             _logger.LogDebug("Extracting {Source}", source.FileName);
             var process = Cli.Wrap(ExePath);
 
-            var totalSize = source.Length;
+            var totalSize = source.FileInfo.Size;
             var lastPercent = 0;
             job.Size = totalSize;
 

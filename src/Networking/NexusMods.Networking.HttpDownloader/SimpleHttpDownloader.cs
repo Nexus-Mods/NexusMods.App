@@ -5,12 +5,21 @@ using NexusMods.Paths;
 
 namespace NexusMods.Networking.HttpDownloader;
 
+/// <summary>
+/// A simple implementation of <see cref="IHttpDownloader"/> used for diagnostic
+/// purposes, or as a fallback.
+/// </summary>
 public class SimpleHttpDownloader : IHttpDownloader
 {
     private readonly ILogger<SimpleHttpDownloader> _logger;
     private readonly HttpClient _client;
     private readonly IResource<IHttpDownloader, Size> _limiter;
 
+    /// <summary/>
+    /// <param name="logger">Logger for the download operations.</param>
+    /// <param name="client">The client which will be used to issue download requests.</param>
+    /// <param name="limiter">Limiter for the concurrent jobs we can run at once.</param>
+    /// <remarks>This constructor is usually called from DI container.</remarks>
     public SimpleHttpDownloader(ILogger<SimpleHttpDownloader> logger, HttpClient client,
         IResource<IHttpDownloader, Size> limiter)
     {
@@ -19,13 +28,12 @@ public class SimpleHttpDownloader : IHttpDownloader
         _limiter = limiter;
     }
 
-    public async Task<Hash> Download(IReadOnlyList<HttpRequestMessage> sources, AbsolutePath destination, Size? size, CancellationToken token)
+    /// <inheritdoc />
+    public async Task<Hash> DownloadAsync(IReadOnlyList<HttpRequestMessage> sources, AbsolutePath destination, Size? size, CancellationToken token)
     {
         foreach (var source in sources)
         {
-            //_logger.LogDebug("Downloading {Source} to {Destination}", source.RequestUri, destination);
-
-            using var job = await _limiter.Begin($"Downloading {destination.FileName}", size ?? Size.One, token);
+            using var job = await _limiter.BeginAsync($"Downloading {destination.FileName}", size ?? Size.One, token);
             var response = await _client.SendAsync(source, HttpCompletionOption.ResponseHeadersRead, token);
 
             if (!response.IsSuccessStatusCode)
@@ -34,11 +42,11 @@ public class SimpleHttpDownloader : IHttpDownloader
                 continue;
             }
 
-            job.Size = size ?? Size.From(response.Content.Headers.ContentLength ?? 1);
+            job.Size = size ?? Size.FromLong(response.Content.Headers.ContentLength ?? 1);
 
             await using var stream = await response.Content.ReadAsStreamAsync(token);
             await using var file = destination.Create();
-            return await stream.HashingCopy(file, token, job);
+            return await stream.HashingCopyAsync(file, token, job);
         }
 
         throw new Exception($"Could not download {destination.FileName}");

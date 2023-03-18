@@ -98,6 +98,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".solutionItems", ".solution
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.MountAndBlade2Bannerlord.Tests", "tests\Games\NexusMods.Games.MountAndBlade2Bannerlord.Tests\NexusMods.Games.MountAndBlade2Bannerlord.Tests.csproj", "{3F9EDF61-D38C-4478-B0C8-824ED2E6188A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Paths.TestingHelpers", "src\NexusMods.Paths.TestingHelpers\NexusMods.Paths.TestingHelpers.csproj", "{F9107626-3380-4472-B17F-D5B54C5CEB2D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -249,6 +250,10 @@ Global
 		{3F9EDF61-D38C-4478-B0C8-824ED2E6188A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F9EDF61-D38C-4478-B0C8-824ED2E6188A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F9EDF61-D38C-4478-B0C8-824ED2E6188A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9107626-3380-4472-B17F-D5B54C5CEB2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9107626-3380-4472-B17F-D5B54C5CEB2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9107626-3380-4472-B17F-D5B54C5CEB2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9107626-3380-4472-B17F-D5B54C5CEB2D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -282,6 +287,7 @@ Global
 		{CB61A764-B3BB-42C0-8CDB-DBE57FB80DF5} = {98448149-E44A-42E5-852D-B12C9D8AAABD}
 		{D8F96987-B284-414D-A1D3-B89C86C3DD67} = {B95A2142-2872-4FFD-BAB2-596373401461}
 		{3F9EDF61-D38C-4478-B0C8-824ED2E6188A} = {B95A2142-2872-4FFD-BAB2-596373401461}
+		{F9107626-3380-4472-B17F-D5B54C5CEB2D} = {B93AF89E-9ED7-4FD0-B58E-688AA178AB53}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F9F8352-34DD-42C0-8564-EE9AF34A3501}

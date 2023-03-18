@@ -27,7 +27,7 @@ public class SerializerTests
 
         json.Should().Contain("\"$type\":\"BasicClass\"", "data is serialized with a type hint");
 
-        var data = JsonSerializer.Deserialize<BasicClass>(json, opts);
+        var data = JsonSerializer.Deserialize<BasicClass>(json, opts)!;
 
         data.SomeString.Should().Be("One", "SomeString should be deserialized");
         data.SomeOtherString.Should().Be(null, "SomeOtherString has a JsonIgnore attribute");
@@ -69,7 +69,7 @@ public class SerializerTests
 
         json.Should().Contain("\"$type\":\"BasicClass\"", "data is serialized with a type hint");
 
-        var data = (BasicClass)JsonSerializer.Deserialize<IInterface>(json, opts);
+        var data = (BasicClass)JsonSerializer.Deserialize<IInterface>(json, opts)!;
 
         data.SomeString.Should().Be("One", "SomeString should be deserialized");
         data.SomeOtherString.Should().Be(null, "SomeOtherString has a JsonIgnore attribute");
@@ -178,7 +178,7 @@ public class SerializerTests
     public class EnumClass
     {
         public string SomeString { get; set; } = null!;
-        public MyEnum[] SomeEnum { get; set; }
+        public MyEnum[] SomeEnum { get; set; } = Array.Empty<MyEnum>();
     }
     public enum MyEnum
     {
@@ -193,10 +193,8 @@ public class SerializerTests
         public int SomeInt { get; set; }
 
         [JsonInjected]
-        public ITypeFinder TypeFinder { get; set; }
+        public ITypeFinder? TypeFinder { get; set; }
     }
-
-
 
     public interface IInterface
     {
@@ -205,31 +203,33 @@ public class SerializerTests
 
     public abstract class ABase : IInterface
     {
-        public required string BaseString { get; init; }
+        public required string BaseString { get; init; } = "";
     }
 
     [JsonName("BasicClass")]
     public class BasicClass : ABase
     {
-        public string SomeString { get; set; }
+        public string SomeString { get; set; } = "";
 
         [JsonIgnore]
-        public string SomeOtherString { get; set; }
+        public string? SomeOtherString { get; set; }
     }
 
     [JsonName("ClassWithInts")]
     public class AdvancedClass : ABase
     {
         public int SomeInt { get; set; }
-        public List<int> ListOfInts { get; set; }
-        public BasicClass SubClass { get; set; }
+        // ReSharper disable once CollectionNeverQueried.Global
+        public List<int> ListOfInts { get; set; } = new();
+        public BasicClass SubClass { get; set; } = new() { BaseString = "" };
     }
 
     [JsonName("NestedGeneric")]
     public class NestedGeneric
     {
         public int SomeInt { get; set; }
-        public ImmutableHashSet<IGeneric<int, string>> SomeSet { get; set; }
+
+        public ImmutableHashSet<IGeneric<int, string>> SomeSet { get; set; } = ImmutableHashSet.Create<IGeneric<int, string>>();
     }
 
     public interface IGeneric<T1, T2>
@@ -251,6 +251,7 @@ public class SerializerTests
     {
         public required T1 T1Val { get; init; }
         public required T2 T2Val { get; init; }
+        // ReSharper disable once UnusedAutoPropertyAccessor.Global
         public required int T3Val { get; init; }
     }
 }

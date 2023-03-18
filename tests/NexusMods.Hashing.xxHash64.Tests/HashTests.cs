@@ -18,7 +18,7 @@ public class HashTests
 
         Hash.FromHex("DEADBEEFDECAFBAD").Should().Be(hash);
 
-        Hash.FromLong((long)_knownHash).Should().Be(_knownHash);
+        Hash.FromLong(_knownHash).Should().Be(_knownHash);
         Hash.FromULong((ulong)_knownHash).Should().Be(_knownHash);
         _knownHash.ToString().Should().Be("0x" + _knownHash.ToHex());
     }
@@ -45,7 +45,7 @@ public class HashTests
     [Fact]
     public void CanHashStrings()
     {
-        _knownString.XxHash64()
+        _knownString.XxHash64AsUtf8()
             .Should().Be(_knownHash);
     }
 
@@ -54,7 +54,7 @@ public class HashTests
     {
         var file = KnownFolders.CurrentDirectory.CombineUnchecked($"tempFile{Guid.NewGuid()}");
         await file.WriteAllTextAsync(_knownString);
-        (await file.XxHash64()).Should().Be(_knownHash);
+        (await file.XxHash64Async()).Should().Be(_knownHash);
     }
 
     [Fact]
@@ -67,7 +67,7 @@ public class HashTests
             emptyArray[x] = (byte)(x % 256);
         }
         await file.WriteAllBytesAsync(emptyArray);
-        (await file.XxHash64()).Should().NotBe(Hash.FromULong(0xf4c92be058f432d0));
+        (await file.XxHash64Async()).Should().NotBe(Hash.FromULong(0xf4c92be058f432d0));
         file.Delete();
     }
 }

@@ -27,6 +27,7 @@ where T : AGame
         _logger = logger;
     }
 
+    /// <inheritdoc />
     public IEnumerable<GameDomain> Domains => new[] { _game.Domain };
 
     /// <inheritdoc />

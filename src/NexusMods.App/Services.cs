@@ -14,6 +14,7 @@ using NexusMods.Games.Reshade;
 using NexusMods.Games.TestHarness;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
+using NexusMods.Paths;
 using NexusMods.StandardGameLocators;
 
 namespace NexusMods.App;
@@ -30,6 +31,7 @@ public static class Services
     public static IServiceCollection AddApp(this IServiceCollection services, bool addStandardGameLocators = true)
     {
         services.AddCLI()
+            .AddFileSystem()
             .AddUI()
             .AddFileExtractors()
             .AddDataModel()

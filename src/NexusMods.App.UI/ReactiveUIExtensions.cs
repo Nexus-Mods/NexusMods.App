@@ -5,7 +5,7 @@ using ReactiveUI;
 
 namespace NexusMods.App.UI;
 
-public static class ReactiveUIExtensions
+public static class ReactiveUiExtensions
 {
 
     /// <summary>
@@ -25,11 +25,11 @@ public static class ReactiveUIExtensions
     /// <param name="observable"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static IObservable<T> OffUI<T>(this IObservable<T> observable)
+    public static IObservable<T> OffUi<T>(this IObservable<T> observable)
     {
         return observable.ObserveOn(TaskPoolScheduler.Default);
     }
-    public static IDisposable BindToUI<TValue, TTarget, TTValue>(
+    public static IDisposable BindToUi<TValue, TTarget, TTValue>(
         this IObservable<TValue> @this,
         TTarget? target,
         Expression<Func<TTarget, TTValue?>> property,

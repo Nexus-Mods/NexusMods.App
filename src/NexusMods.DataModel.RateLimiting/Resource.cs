@@ -1,28 +1,48 @@
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Numerics;
 using System.Threading.Channels;
 
 namespace NexusMods.DataModel.RateLimiting;
 
+/// <summary>
+/// Standard implementation for an individual 'resource'. Using this class you can
+/// create jobs and report info about them. The methods may delay returning based on the current
+/// rate limits of the resource.
+/// </summary>
+/// <typeparam name="TResource">A marker for the service owning this limiter</typeparam>
+/// <typeparam name="TUnit">The unit of measurement of job size</typeparam>
 public class Resource<TResource, TUnit> : IResource<TResource, TUnit>
     where TUnit : IAdditionOperators<TUnit, TUnit, TUnit>,
     IAdditiveIdentity<TUnit, TUnit>, IDivisionOperators<TUnit, TUnit, double>,
     IEqualityOperators<TUnit, TUnit, bool>
 {
-    private Channel<PendingReport> _channel;
-    private SemaphoreSlim _semaphore;
+    private readonly Channel<PendingReport> _channel;
+    private readonly SemaphoreSlim _semaphore;
     private readonly ConcurrentDictionary<ulong, Job<TResource, TUnit>> _tasks;
     private ulong _nextId;
     private TUnit _totalUsed;
-    private readonly ValueTask _starterTask;
+
+    /// <inheritdoc />
     public IEnumerable<IJob> Jobs => _tasks.Values;
 
-    public Resource(string humanName) : this(humanName, 0, TUnit.AdditiveIdentity)
-    {
+    /// <summary>
+    /// Creates a new resource using the default settings.
+    /// </summary>
+    /// <param name="humanName">Human friendly name for this resource.</param>
+    /// <remarks>
+    /// Default settings limit max jobs to CPU threads and no throughput limit.
+    /// </remarks>
+    public Resource(string humanName) : this(humanName, 0, TUnit.AdditiveIdentity) { }
 
-    }
-
+    /// <summary>
+    /// Creates a new resource using the default settings.
+    /// </summary>
+    /// <param name="humanName">Human friendly name for this resource.</param>
+    /// <param name="maxJobs">Maximum number of simultaneous jobs being ran.</param>
+    /// <param name="maxThroughput">Maximum throughput.</param>
+    /// <remarks>
+    /// Default settings limit max jobs to CPU threads and no throughput limit.
+    /// </remarks>
     public Resource(string humanName, int maxJobs, TUnit maxThroughput)
     {
         Name = humanName;
@@ -32,14 +52,28 @@ public class Resource<TResource, TUnit> : IResource<TResource, TUnit>
         _channel = Channel.CreateBounded<PendingReport>(10);
         _tasks = new ConcurrentDictionary<ulong, Job<TResource, TUnit>>();
         _totalUsed = TUnit.AdditiveIdentity;
-        _starterTask = StartTask(CancellationToken.None);
+        _ = StartTask(CancellationToken.None);
     }
 
+    /// <inheritdoc />
     public int MaxJobs { get; set; }
+
+    /// <inheritdoc />
     public TUnit MaxThroughput { get; set; }
+
+    /// <inheritdoc />
     public string Name { get; }
 
-    public async ValueTask<IJob<TResource, TUnit>> Begin(string jobTitle, TUnit size, CancellationToken token)
+    // TODO: Optimize this by removing LINQ and calculating both counts at once. Iterating a dictionary's elements is already slow; doing it twice is oof.
+
+    /// <inheritdoc />
+    public StatusReport<TUnit> StatusReport =>
+        new(_tasks.Count(t => t.Value.Started),
+            _tasks.Count(t => !t.Value.Started),
+            _totalUsed);
+
+    /// <inheritdoc />
+    public async ValueTask<IJob<TResource, TUnit>> BeginAsync(string jobTitle, TUnit size, CancellationToken token)
     {
         var id = Interlocked.Increment(ref _nextId);
         var job = new Job<TResource, TUnit>
@@ -50,28 +84,29 @@ public class Resource<TResource, TUnit> : IResource<TResource, TUnit>
             Current = TUnit.AdditiveIdentity,
             TypedResource = this
         };
+
         _tasks.TryAdd(id, job);
         await _semaphore.WaitAsync(token);
         job.Started = true;
         return job;
     }
 
+    /// <inheritdoc />
     public void ReportNoWait(Job<TResource, TUnit> job, TUnit processedSize)
     {
         job.Current += processedSize;
-        lock (this)
-        {
-            _totalUsed += processedSize;
-        }
+        IncrementTotalUsed(processedSize);
     }
 
+    /// <inheritdoc />
     public void Finish(IJob<TResource, TUnit> job)
     {
         _semaphore.Release();
         _tasks.TryRemove(job.Id, out _);
     }
 
-    public async ValueTask Report(Job<TResource, TUnit> job, TUnit size, CancellationToken token)
+    /// <inheritdoc />
+    public async ValueTask ReportAsync(Job<TResource, TUnit> job, TUnit size, CancellationToken token)
     {
         var tcs = new TaskCompletionSource();
         await _channel.Writer.WriteAsync(new PendingReport
@@ -83,44 +118,39 @@ public class Resource<TResource, TUnit> : IResource<TResource, TUnit>
         await tcs.Task;
     }
 
-    public StatusReport<TUnit> StatusReport =>
-        new(_tasks.Count(t => t.Value.Started),
-            _tasks.Count(t => !t.Value.Started),
-            _totalUsed);
-
     private async ValueTask StartTask(CancellationToken token)
     {
-        var sw = new Stopwatch();
-        sw.Start();
-
         await foreach (var item in _channel.Reader.ReadAllAsync(token))
         {
-            lock (this)
-            {
-                _totalUsed += item.Size;
-            }
+            IncrementTotalUsed(item.Size);
             if (MaxThroughput == TUnit.AdditiveIdentity)
             {
                 item.Result.TrySetResult();
-                sw.Restart();
                 continue;
             }
 
             var span = TimeSpan.FromSeconds(item.Size / MaxThroughput);
-
-
             await Task.Delay(span, token);
-
-            sw.Restart();
-
             item.Result.TrySetResult();
         }
     }
 
+    private void IncrementTotalUsed(TUnit size)
+    {
+        lock (this)
+            _totalUsed += size;
+    }
+
     private struct PendingReport
     {
+        // ReSharper disable once UnusedAutoPropertyAccessor.Local
         public Job<TResource, TUnit> Job { get; set; }
         public TUnit Size { get; init; }
+
+        /// <summary>
+        /// Result of the reported task. Once this is complete, calling thread
+        /// which reported the task can resume.
+        /// </summary>
         public TaskCompletionSource Result { get; init; }
     }
 }

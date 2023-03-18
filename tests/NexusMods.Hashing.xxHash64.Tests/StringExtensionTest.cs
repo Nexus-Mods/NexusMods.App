@@ -9,6 +9,5 @@ public class StringExtensionTest
     {
         var arr = new byte[] { 0xDE, 0xAD, 0xBE, 0xEF };
         ((ReadOnlySpan<byte>)arr.AsSpan()).ToHex().Should().Be("DEADBEEF");
-
     }
 }

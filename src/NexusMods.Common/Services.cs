@@ -1,7 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Runtime.InteropServices;
-using System.Text;
 using NexusMods.Common.OSInterop;
+
+#if DEBUG
+using System.Text;
+#endif
 
 namespace NexusMods.Common;
 

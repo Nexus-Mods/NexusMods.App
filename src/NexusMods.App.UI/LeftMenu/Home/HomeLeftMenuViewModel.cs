@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 using NexusMods.App.UI.Icons;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.RightContent;
-using NexusMods.App.UI.ViewModels;
+using NexusMods.App.UI.RightContent.MyGames;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -13,17 +13,22 @@ public class HomeLeftMenuViewModel : AViewModel<IHomeLeftMenuViewModel>, IHomeLe
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items { get; }
 
     [Reactive]
-    public IRightContent RightContent { get; set; }
+    public IRightContentViewModel RightContent { get; set; } =
+        Initializers.IRightContent;
 
-    public HomeLeftMenuViewModel(IFoundGamesViewModel foundGamesViewModel)
+    public HomeLeftMenuViewModel(IMyGamesViewModel myGamesViewModel, IFoundGamesViewModel foundGamesViewModel)
     {
         var items = new ILeftMenuItemViewModel[]
         {
-            new IconViewModel { Name = "Newsfeed", Icon = IconType.News },
+            new IconViewModel { Name = "Newsfeed", Icon = IconType.News, Activate = ReactiveCommand.Create(
+                () =>
+                {
+                    RightContent = Initializers.IRightContent;
+                })},
             new IconViewModel { Name = "My Games", Icon = IconType.Bookmark, Activate = ReactiveCommand.Create(
                 () =>
                 {
-                    RightContent = foundGamesViewModel;
+                    RightContent = myGamesViewModel;
                 }) },
             new IconViewModel { Name = "Browse Games", Icon = IconType.Game, Activate = ReactiveCommand.Create(
                 () =>

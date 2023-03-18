@@ -12,16 +12,18 @@ using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Games.TestHarness;
 
+// TODO: Make this code not dead.
+
 public class RecentModsTest
 {
-
     private readonly Client _client;
     private readonly ILogger _logger;
     private readonly IDataStore _store;
     private readonly IGame _game;
-    private readonly AbsolutePath _downloadedFilesLocation;
     private readonly IHttpDownloader _downloader;
     private readonly TimeSpan _updateDelay;
+    private AbsolutePath _downloadedFilesLocation;
+
     public IEnumerable<(NexusModFile FileInfo, AbsolutePath Path)> GameRecords => _gameRecords
         .Select(p => (p, _downloadedFilesLocation.CombineChecked($"{_game.Domain}_{p.ModId}_{p.FileId}")));
 
@@ -41,7 +43,7 @@ public class RecentModsTest
 
     public async Task Generate()
     {
-        var previousRecords = NexusModFile.LoadAll(_store, _game.Domain);
+        var previousRecords = NexusModFile.LoadAll(_store, _game.Domain).ToArray();
         if (previousRecords.Any(p => DateTime.UtcNow - p.LastUpdated < _updateDelay))
         {
             _logger.LogInformation("Skipping update of {Game} popular mods", _game.Name);
@@ -59,10 +61,7 @@ public class RecentModsTest
                 var modFiles = await _client.ModFiles(_game.Domain, mod.ModId);
                 files.AddRange(modFiles.Data.Files.Where(f => f.CategoryId == 1).Select(f => (mod.ModId, f)));
             }
-            catch (HttpRequestException)
-            {
-                continue;
-            }
+            catch (HttpRequestException) { }
         }
         _logger.LogInformation("Found {Count} files totaling {Size}", files.Count, files.Sum(f => f.File.SizeInBytes));
 
@@ -82,7 +81,7 @@ public class RecentModsTest
             var fileLocation = _downloadedFilesLocation.CombineUnchecked($"{_game.Domain}_{record.ModId}_{record.FileId}");
             var tempFileLocation = _downloadedFilesLocation.CombineUnchecked($"{_game.Domain}_{record.ModId}_{record.FileId}.temp");
             var urls = await _client.DownloadLinks(_game.Domain, record.ModId, record.FileId);
-            var hash = await _downloader.Download(urls.Data.Select(u => new HttpRequestMessage(HttpMethod.Get, u.Uri)).ToList(),
+            var hash = await _downloader.DownloadAsync(urls.Data.Select(u => new HttpRequestMessage(HttpMethod.Get, u.Uri)).ToList(),
                 tempFileLocation);
 
             await tempFileLocation.MoveToAsync(fileLocation);

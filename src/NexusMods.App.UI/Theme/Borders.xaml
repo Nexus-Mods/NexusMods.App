@@ -1,0 +1,11 @@
+﻿<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style Selector="Border.HighlightedArea">
+        <Setter Property="Background" Value="{DynamicResource StatusInfoTransparentBrush}" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="BorderBrush" Value="{DynamicResource StatusInfoBrush}" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="BoxShadow" Value="inset 0 0 8 #1079f9" />
+    </Style>
+
+
+</Styles>

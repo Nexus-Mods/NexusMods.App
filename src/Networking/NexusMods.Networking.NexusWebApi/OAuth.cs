@@ -53,14 +53,16 @@ public struct JwtTokenReply
 /// nxm url message used in IPC. The oauth callback will spawn a new instance of NMA
 /// that then needs to send the token back to the "main" process that made the request
 /// </summary>
-public struct NXMUrlMessage : IMessage
+// ReSharper disable once InconsistentNaming
+public readonly struct NXMUrlMessage : IMessage
 {
     /// <summary>
     /// the actual url
     /// </summary>
     public NXMUrl Value { get; init; }
+
     /// <inheritdoc/>
-    public static int MaxSize { get { return 16 * 1024; } }
+    public static int MaxSize => 16 * 1024;
 
     /// <inheritdoc/>
     public static IMessage Read(ReadOnlySpan<byte> buffer)
@@ -83,11 +85,11 @@ public struct NXMUrlMessage : IMessage
 /// </summary>
 public class OAuth
 {
-    private static string OAuthUrl = "https://users.nexusmods.com/oauth";
+    private const string OAuthUrl = "https://users.nexusmods.com/oauth";
     // the redirect url has to explicitly be permitted by the server so we can't change
     // this without consulting the backend team
-    private static string OAuthRedirectURL = "nxm://oauth/callback";
-    private static string OAuthClientId = "vortex";
+    private const string OAuthRedirectUrl = "nxm://oauth/callback";
+    private const string OAuthClientId = "vortex";
 
     private readonly ILogger<OAuth> _logger;
     private readonly HttpClient _http;
@@ -133,7 +135,7 @@ public class OAuth
 
         _logger.LogInformation("Opening browser for NexusMods OAuth2 authorization request");
         // see https://www.rfc-editor.org/rfc/rfc7636#section-4.3
-        await _os.OpenURL(GenerateAuthorizeUrl(challenge, state), cancel);
+        await _os.OpenUrl(GenerateAuthorizeUrl(challenge, state), cancel);
         var code = await codeTask;
 
         _logger.LogInformation("Received OAuth2 authorization code, requesting token");
@@ -168,7 +170,7 @@ public class OAuth
         var request = new Dictionary<string, string> {
             { "grant_type", "authorization_code" },
             { "client_id", OAuthClientId },
-            { "redirect_uri", OAuthRedirectURL },
+            { "redirect_uri", OAuthRedirectUrl },
             { "code", code },
             { "code_verifier", verifier }
         };
@@ -196,7 +198,7 @@ public class OAuth
             { "scope", "public" },
             { "code_challenge_method", "S256" },
             { "client_id", OAuthClientId },
-            { "redirect_uri",  OAuthRedirectURL },
+            { "redirect_uri",  OAuthRedirectUrl },
             { "code_challenge", SanitizeBase64(challenge) },
             { "state", state },
         };

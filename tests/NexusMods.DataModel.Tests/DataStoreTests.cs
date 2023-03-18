@@ -50,6 +50,7 @@ public class DataStoreTests
     }
 
     [Fact]
+    // ReSharper disable once InconsistentNaming
     public void CanStoreLargeEntitiesInDB()
     {
         var files = Enumerable.Range(0, 1024).Select(idx => new FromArchive
@@ -57,7 +58,7 @@ public class DataStoreTests
             Id = ModFileId.New(),
             From = new HashRelativePath((Hash)(ulong)idx, $"{idx}.file".ToRelativePath()),
             Hash = (Hash)(ulong)idx,
-            Size = Size.From(idx),
+            Size = Size.FromLong(idx),
             To = new GamePath(GameFolderType.Game, $"{idx}.file"),
         }).WithPersist(DataStore)
             .ToList();
@@ -83,7 +84,6 @@ public class DataStoreTests
     [Fact]
     public async Task CanGetRootUpdates()
     {
-        var src = new List<IId>();
         var destQ = new ConcurrentQueue<IId>();
 
         using var _ = DataStore.RootChanges.Subscribe(c => destQ.Enqueue(c.To));
@@ -98,7 +98,6 @@ public class DataStoreTests
             BinaryPrimitives.WriteUInt32BigEndian(bytes, (uint)itm);
             DataStore.PutRaw(newId, bytes);
             DataStore.PutRoot(RootType.Tests, oldId, newId).Should().BeTrue();
-            src.Add(newId);
             oldId = newId;
         }
 
