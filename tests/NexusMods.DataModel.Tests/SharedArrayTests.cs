@@ -31,15 +31,16 @@ public class SharedArrayTests
         {
             threads[i] = new Thread(() =>
             {
+                using var innerArray = new SharedArray(_file, arraySize);
                 for (ulong loop = 0; loop < iterations; loop++)
                 {
                     for (var idx = 0; idx < arraySize; idx++)
                     {
-                        var oldValue = array.Get(idx);
+                        var oldValue = innerArray.Get(idx);
                         var newValue = oldValue + 1;
-                        while (!array.CompareAndSwap(idx, oldValue, newValue))
+                        while (!innerArray.CompareAndSwap(idx, oldValue, newValue))
                         {
-                            oldValue = array.Get(idx);
+                            oldValue = innerArray.Get(idx);
                             newValue = oldValue + 1;
                         }
                     }
