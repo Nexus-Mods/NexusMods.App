@@ -31,7 +31,7 @@ public class Startup
             new Resource<FileContentsCache, Size>("File Analysis"))
                  .AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ =>
             new Resource<IExtractor, Size>("File Extraction"))
-                 .AddFileExtractors()
+                 .AddFileExtractors(new FileExtractorSettings())
 
                  .AddSingleton<TemporaryFileManager>(_ =>
             new TemporaryFileManager(KnownFolders.EntryFolder.CombineUnchecked("tempFiles")))

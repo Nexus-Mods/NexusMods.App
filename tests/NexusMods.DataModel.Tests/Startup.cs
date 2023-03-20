@@ -24,7 +24,7 @@ public class Startup
                  .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                  .AddStandardGameLocators(false)
                  .AddSingleton<TemporaryFileManager>(_ => new TemporaryFileManager(prefix.CombineUnchecked("tempFiles")))
-                 .AddFileExtractors()
+                 .AddFileExtractors(new FileExtractorSettings())
                  .AddStubbedGameLocators()
 
                  .AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(_ =>

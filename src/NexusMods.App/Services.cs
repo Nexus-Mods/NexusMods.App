@@ -29,6 +29,7 @@ public static class Services
 
     public static IServiceCollection AddApp(this IServiceCollection services, bool addStandardGameLocators = true)
     {
+        // TODO: Add File Extractor Here
         services.AddCLI()
             .AddFileSystem()
             .AddUI()
