@@ -13,7 +13,7 @@ namespace NexusMods.Games.BethesdaGameStudios;
 [JsonName("BethesdaGameStudios.PluginFile")]
 public record PluginFile : AGeneratedFile
 {
-    private static RelativePath[] DefaultOrdering = new string[]
+    private static RelativePath[] _defaultOrdering = new[]
     {
         "Skyrim.esm",
         "Update.esm",
@@ -62,7 +62,7 @@ public record PluginFile : AGeneratedFile
 
     private IEnumerable<ISortRule<ModRuleTuple, RelativePath>> GenerateRules(ModRuleTuple[] modFiles, AModFile aModFile)
     {
-        var defaultIdx = DefaultOrdering.IndexOf(aModFile.To.FileName);
+        var defaultIdx = _defaultOrdering.IndexOf(aModFile.To.FileName);
         switch (defaultIdx)
         {
             case 0:
@@ -72,12 +72,12 @@ public record PluginFile : AGeneratedFile
                 {
                     for (var i = 0; i < defaultIdx; i++)
                     {
-                        yield return new After<ModRuleTuple, RelativePath>(DefaultOrdering[i]);
+                        yield return new After<ModRuleTuple, RelativePath>(_defaultOrdering[i]);
                     }
 
                     foreach (var itm in modFiles)
                     {
-                        if (DefaultOrdering.Contains(itm.Mod.To.FileName)) continue;
+                        if (_defaultOrdering.Contains(itm.Mod.To.FileName)) continue;
                         yield return new Before<ModRuleTuple, RelativePath>(itm.Mod.To.FileName);
                     }
 
@@ -115,7 +115,7 @@ public record PluginFile : AGeneratedFile
         var ms = new MemoryStream();
         await GenerateAsync(ms, loadout, flattenedList, ct);
         ms.Position = 0;
-        return (Size.From(ms.Length), await ms.XxHash64Async(token: ct));
+        return (Size.FromLong(ms.Length), await ms.XxHash64Async(token: ct));
     }
 
     private struct ModRuleTuple

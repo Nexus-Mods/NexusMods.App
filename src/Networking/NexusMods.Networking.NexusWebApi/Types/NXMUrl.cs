@@ -4,8 +4,9 @@ using System.Collections.Specialized;
 namespace NexusMods.Networking.NexusWebApi.Types;
 
 /// <summary>
-/// type of url 
+/// type of url
 /// </summary>
+// ReSharper disable once InconsistentNaming
 public enum NXMUrlType : byte
 {
     /// <summary>
@@ -25,12 +26,13 @@ public enum NXMUrlType : byte
 /// <summary>
 /// parsed url of nxm:// protocol, used in multiple ways for the site communicating with clients
 /// </summary>
+// ReSharper disable once InconsistentNaming
 public class NXMUrl
 {
     /// <summary>
     /// url type
     /// </summary>
-    public NXMUrlType UrlType { get; init; }
+    public NXMUrlType UrlType { get; protected init; }
 
     /// <summary>
     /// if applicable, the time the url becomes invalid
@@ -39,7 +41,7 @@ public class NXMUrl
     {
         get
         {
-            var expires = _query?.Get("expires");
+            var expires = Query.Get("expires");
             return expires != null ? DateTime.UnixEpoch.AddSeconds(ulong.Parse(expires)) : null;
         }
     }
@@ -52,7 +54,7 @@ public class NXMUrl
     {
         get
         {
-            var user = _query?.Get("user_id");
+            var user = Query.Get("user_id");
             return user != null ? UserId.From(ulong.Parse(user)) : null;
         }
     }
@@ -65,7 +67,7 @@ public class NXMUrl
     {
         get
         {
-            var key = _query?.Get("key");
+            var key = Query.Get("key");
             return key != null ? NXMKey.From(key) : null;
         }
     }
@@ -73,7 +75,7 @@ public class NXMUrl
     /// <summary>
     /// parsed query arguments in the url (everything after the ? in the url)
     /// </summary>
-    protected NameValueCollection _query = new NameValueCollection();
+    protected NameValueCollection Query = new();
 
     /// <summary>
     /// parse a nxm:// url
@@ -113,20 +115,14 @@ public class NXMUrl
             throw new ArgumentException($"invalid url \"{input}\"");
         }
 
-        result._query = System.Web.HttpUtility.ParseQueryString(parsed.Query);
+        result.Query = System.Web.HttpUtility.ParseQueryString(parsed.Query);
         return result;
     }
 
     /// <summary>
     /// the (re-)assembled query string of the url
     /// </summary>
-    protected string QueryString
-    {
-        get
-        {
-            return string.Join("&", _query.AllKeys.Select(key => $"{key}={_query[key]}"));
-        }
-    }
+    protected string QueryString => string.Join("&", Query.AllKeys.Select(key => $"{key}={Query[key]}"));
 
     /// <summary>
     /// safe cast to the specialized mod url type
@@ -136,9 +132,8 @@ public class NXMUrl
         get
         {
             if (UrlType != NXMUrlType.Mod)
-            {
                 throw new ArgumentException("not a mod url");
-            }
+
             return (NXMModUrl)this;
         }
     }
@@ -151,9 +146,8 @@ public class NXMUrl
         get
         {
             if (UrlType != NXMUrlType.Collection)
-            {
                 throw new ArgumentException("not a collection url");
-            }
+
             return (NXMCollectionUrl)this;
         }
     }
@@ -166,9 +160,8 @@ public class NXMUrl
         get
         {
             if (UrlType != NXMUrlType.OAuth)
-            {
                 throw new ArgumentException("not an oauth callback url");
-            }
+
             return (NXMOAuthUrl)this;
         }
     }
@@ -178,6 +171,7 @@ public class NXMUrl
 /// <summary>
 /// specialized variant of NXMUrl for mod urls
 /// </summary>
+// ReSharper disable once InconsistentNaming
 public class NXMModUrl : NXMUrl
 {
     /// <summary>
@@ -229,6 +223,7 @@ public class NXMModUrl : NXMUrl
 /// <summary>
 /// specialized variant of NXMUrl for collecton links
 /// </summary>
+// ReSharper disable once InconsistentNaming
 public class NXMCollectionUrl : NXMUrl
 {
     /// <summary>
@@ -280,30 +275,20 @@ public class NXMCollectionUrl : NXMUrl
 /// <summary>
 /// specialized variant of NXMUrl for oauth callback links
 /// </summary>
+// ReSharper disable once IdentifierTypo
+// ReSharper disable once InconsistentNaming
 public class NXMOAuthUrl : NXMUrl
 {
     /// <summary>
     /// a code. This gets used in another request to get at the actual authorization code
     /// </summary>
-    public string? Code
-    {
-        get
-        {
-            return _query?.Get("code");
-        }
-    }
+    public string? Code => Query.Get("code");
 
     /// <summary>
     /// this is a random id we generated when initially creating the request, it allows us to
     /// match the respons to the initial request we made
     /// </summary>
-    public string? State
-    {
-        get
-        {
-            return _query?.Get("state");
-        }
-    }
+    public string? State => Query.Get("state");
 
     /// <summary>
     /// constructor
@@ -313,16 +298,11 @@ public class NXMOAuthUrl : NXMUrl
     {
         UrlType = NXMUrlType.OAuth;
         if ((uri.Segments.Length != 2) || (uri.Segments[1] != "callback"))
-        {
             throw new ArgumentException($"invalid nxm url \"{uri}\"");
-        }
     }
 
     /// <summary>
     /// serialize the url
     /// </summary>
-    public override string ToString()
-    {
-        return $"nxm://oauth/callback?{QueryString}";
-    }
+    public override string ToString() => $"nxm://oauth/callback?{QueryString}";
 }

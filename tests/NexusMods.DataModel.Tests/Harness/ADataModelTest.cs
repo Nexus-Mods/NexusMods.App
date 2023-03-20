@@ -9,7 +9,7 @@ using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
-using NexusMods.StandardGameLocators.TestHelpers;
+using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 using Xunit.DependencyInjection;
 // ReSharper disable StaticMemberInGenericType
 
@@ -29,7 +29,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
     public static readonly Dictionary<RelativePath, (Hash Hash, Size Size)> DataContents = DataNames
         .ToDictionary(d => d,
-            d => (d.FileName.ToString().XxHash64AsUtf8(), Size.From(d.FileName.ToString().Length)));
+            d => (d.FileName.ToString().XxHash64AsUtf8(), Size.FromLong(d.FileName.ToString().Length)));
 
     protected readonly TemporaryFileManager TemporaryFileManager;
     protected readonly IServiceProvider ServiceProvider;
@@ -77,8 +77,8 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        await ArchiveContentsCache.AnalyzeFile(DataZipLzma, Token);
-        await ArchiveContentsCache.AnalyzeFile(Data7ZLzma2, Token);
+        await ArchiveContentsCache.AnalyzeFileAsync(DataZipLzma, Token);
+        await ArchiveContentsCache.AnalyzeFileAsync(Data7ZLzma2, Token);
         await ArchiveManager.ArchiveFileAsync(DataZipLzma, Token);
         await ArchiveManager.ArchiveFileAsync(Data7ZLzma2, Token);
 

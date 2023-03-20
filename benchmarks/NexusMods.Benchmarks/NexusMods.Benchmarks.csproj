@@ -11,7 +11,7 @@
     
     <ItemGroup>
       <PackageReference Include="BenchmarkDotNet" Version="0.13.5" />
-      <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0-preview.1.23110.8" />
+      <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
     </ItemGroup>
     
     <ItemGroup>

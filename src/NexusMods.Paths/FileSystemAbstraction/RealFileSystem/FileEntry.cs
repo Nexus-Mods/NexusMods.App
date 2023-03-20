@@ -16,7 +16,7 @@ public partial class FileSystem
         public AbsolutePath Path => _path;
 
         /// <inheritdoc/>
-        public Size Size => Size.From(GetFileInfo().Length);
+        public Size Size => Size.FromLong(GetFileInfo().Length);
 
         /// <inheritdoc/>
         public DateTime LastWriteTime

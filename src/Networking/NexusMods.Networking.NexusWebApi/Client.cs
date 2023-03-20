@@ -57,8 +57,8 @@ public class Client
     /// Generates download links for a given game.
     /// </summary>
     /// <param name="domain">
-    ///     Unique, human friendly name for the game used in URLs. e.g. 'skyrim'  
-    ///     You can find this in <see cref="GameInfo.DomainName"/>.       
+    ///     Unique, human friendly name for the game used in URLs. e.g. 'skyrim'
+    ///     You can find this in <see cref="GameInfo.DomainName"/>.
     /// </param>
     /// <param name="modId">
     ///    An individual identifier for the mod. Unique per game.
@@ -82,8 +82,8 @@ public class Client
     /// Retrieves a list of all recently updated mods within a specified time period.
     /// </summary>
     /// <param name="domain">
-    ///     Unique, human friendly name for the game used in URLs. e.g. 'skyrim'  
-    ///     You can find this in <see cref="GameInfo.DomainName"/>.       
+    ///     Unique, human friendly name for the game used in URLs. e.g. 'skyrim'
+    ///     You can find this in <see cref="GameInfo.DomainName"/>.
     /// </param>
     /// <param name="time">Time-frame within which to search for updates.</param>
     /// <param name="token">Token used to cancel the task.</param>
@@ -108,8 +108,8 @@ public class Client
     /// Returns all of the downloadable files associated with a mod.
     /// </summary>
     /// <param name="domain">
-    ///     Unique, human friendly name for the game used in URLs. e.g. 'skyrim'  
-    ///     You can find this in <see cref="GameInfo.DomainName"/>.       
+    ///     Unique, human friendly name for the game used in URLs. e.g. 'skyrim'
+    ///     You can find this in <see cref="GameInfo.DomainName"/>.
     /// </param>
     /// <param name="modId">
     ///    An individual identifier for the mod. Unique per game.
@@ -157,12 +157,10 @@ public class Client
             var newMessage = await _factory.HandleError(message, ex, token);
             if (newMessage != null)
             {
-                return await SendAsync<T>(newMessage, typeInfo, token);
+                return await SendAsync(newMessage, typeInfo, token);
             }
-            else
-            {
-                throw;
-            }
+
+            throw;
         }
     }
 
@@ -187,7 +185,7 @@ public class Client
         Day,
 
         /// <summary>
-        /// Searches the past 7 days. 
+        /// Searches the past 7 days.
         /// </summary>
         Week,
 

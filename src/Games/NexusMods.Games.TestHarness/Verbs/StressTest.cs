@@ -1,10 +1,8 @@
 using Microsoft.Extensions.Logging;
 using NexusMods.CLI;
 using NexusMods.CLI.DataOutputs;
-using NexusMods.DataModel;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
@@ -18,19 +16,16 @@ namespace NexusMods.Games.TestHarness.Verbs;
 public class StressTest : AVerb<IGame, AbsolutePath, AbsolutePath>
 {
     private readonly IRenderer _renderer;
-    private readonly IServiceProvider _provider;
     private readonly Client _client;
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly IHttpDownloader _downloader;
 
-    public StressTest(ILogger<StressTest> logger, Configurator configurator, IServiceProvider provider,
-        LoadoutManager loadoutManager, FileContentsCache fileContentsCache, Client client,
+    public StressTest(ILogger<StressTest> logger, Configurator configurator,
+        LoadoutManager loadoutManager, Client client,
         TemporaryFileManager temporaryFileManager, IHttpDownloader downloader)
     {
         _downloader = downloader;
-        _fileContentsCache = fileContentsCache;
         _renderer = configurator.Renderer;
-        _provider = provider;
         _loadoutManager = loadoutManager;
         _logger = logger;
         _client = client;
@@ -48,12 +43,6 @@ public class StressTest : AVerb<IGame, AbsolutePath, AbsolutePath>
 
     private readonly LoadoutManager _loadoutManager;
     private readonly ILogger<StressTest> _logger;
-    private readonly FileContentsCache _fileContentsCache;
-
-    private HashSet<FileType> _skippedTypes = new()
-    {
-        FileType.PDF
-    };
 
     public async Task<int> Run(IGame game, AbsolutePath loadout, AbsolutePath output, CancellationToken token)
     {
@@ -90,7 +79,7 @@ public class StressTest : AVerb<IGame, AbsolutePath, AbsolutePath>
                     var cts = new CancellationTokenSource();
                     cts.CancelAfter(TimeSpan.FromMinutes(20));
 
-                    hash = await _downloader.Download(urls.Data.Select(d => d.Uri), tmpPath, token: cts.Token);
+                    hash = await _downloader.DownloadAsync(urls.Data.Select(d => d.Uri), tmpPath, token: cts.Token);
 
                     _logger.LogInformation("Installing {ModId} {FileId} {FileName} - {Size}", mod.ModId, file.FileId,
                         file.FileName, file.SizeInBytes);

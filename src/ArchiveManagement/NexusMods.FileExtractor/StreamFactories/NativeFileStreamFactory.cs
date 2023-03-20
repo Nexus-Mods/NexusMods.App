@@ -12,7 +12,7 @@ public class NativeFileStreamFactory : IStreamFactory
     private DateTime? _lastModifiedCache;
 
     /// <inheritdoc />
-    public Size Size => _file.Length;
+    public Size Size => _file.FileInfo.Size;
 
     /// <inheritdoc />
     public IPath Name => _file;
@@ -32,7 +32,7 @@ public class NativeFileStreamFactory : IStreamFactory
     {
         get
         {
-            _lastModifiedCache ??= _file.LastWriteTimeUtc;
+            _lastModifiedCache ??= _file.FileInfo.LastWriteTimeUtc;
             return _lastModifiedCache.Value;
         }
     }

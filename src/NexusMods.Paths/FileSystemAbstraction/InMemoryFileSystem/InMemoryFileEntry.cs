@@ -11,7 +11,7 @@ public partial class InMemoryFileSystem
 
         public AbsolutePath Path { get; }
 
-        public Size Size => Size.From(Contents.Length);
+        public Size Size => Size.FromLong(Contents.Length);
 
         public DateTime LastWriteTime { get; set; }
 

@@ -11,6 +11,7 @@ using NexusMods.Common.OSInterop;
 
 namespace NexusMods.Networking.NexusWebApi.Tests;
 
+// TODO: Is this dead code?
 public class DelegatingHandlerStub : DelegatingHandler
 {
     private readonly Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> _handlerFunc;
@@ -38,13 +39,13 @@ public class DelegatingHandlerStub : DelegatingHandler
 public class OAuthTests
 {
     private readonly ILogger<OAuth> _logger;
-    private readonly IOSInterop _os;
     private readonly IMessageProducer<NXMUrlMessage> _producer;
     private readonly IMessageConsumer<NXMUrlMessage> _consumer;
-    public OAuthTests(ILogger<OAuth> logger, IOSInterop os, IMessageProducer<NXMUrlMessage> producer, IMessageConsumer<NXMUrlMessage> consumer)
+
+    // ReSharper disable once ContextualLoggerProblem
+    public OAuthTests(ILogger<OAuth> logger, IMessageProducer<NXMUrlMessage> producer, IMessageConsumer<NXMUrlMessage> consumer)
     {
         _logger = logger;
-        _os = os;
         _producer = producer;
         _consumer = consumer;
     }
@@ -81,7 +82,7 @@ public class OAuthTests
 
         #region Verification
         idGen.Verify(_ => _.UUIDv4(), Times.Exactly(2));
-        os.Verify(_ => _.OpenURL(ExpectedAuthURL, It.IsAny<CancellationToken>()), Times.Once);
+        os.Verify(_ => _.OpenUrl(ExpectedAuthURL, It.IsAny<CancellationToken>()), Times.Once);
         result.Should().BeEquivalentTo(ReplyToken);
         #endregion
     }
@@ -115,7 +116,7 @@ public class OAuthTests
 
         #region Verification
         idGen.Verify(_ => _.UUIDv4(), Times.Never);
-        os.Verify(_ => _.OpenURL(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+        os.Verify(_ => _.OpenUrl(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
         token.Should().BeEquivalentTo(ReplyToken);
         #endregion
     }
@@ -148,7 +149,7 @@ public class OAuthTests
         var tokenTask = call.Should().ThrowAsync<JsonException>();
 
         await _producer.Write(new NXMUrlMessage { Value = NXMUrl.Parse($"nxm://oauth/callback?state={stateId}&code=code") }, CancellationToken.None);
-        var result = await tokenTask;
+        await tokenTask;
         #endregion
     }
 
@@ -165,7 +166,7 @@ public class OAuthTests
         idGen.Setup(_ => _.UUIDv4()).Returns(stateId);
 
         var os = new Mock<IOSInterop>();
-        var cts = new CancellationTokenSource(); ;
+        var cts = new CancellationTokenSource();
         #endregion
 
         #region Execution
@@ -177,27 +178,17 @@ public class OAuthTests
         #endregion
     }
 
-    private JwtTokenReply ReplyToken
-    {
-        get
+    private JwtTokenReply ReplyToken =>
+        new()
         {
-            return new JwtTokenReply
-            {
-                AccessToken = "access_token",
-                RefreshToken = "refresh_token",
-                Scope = "public",
-                Type = "Bearer",
-                CreatedAt = 1677143380,
-                ExpiresIn = 21600,
-            };
-        }
-    }
+            AccessToken = "access_token",
+            RefreshToken = "refresh_token",
+            Scope = "public",
+            Type = "Bearer",
+            CreatedAt = 1677143380,
+            ExpiresIn = 21600,
+        };
 
-    private string ExpectedAuthURL
-    {
-        get
-        {
-            return "https://users.nexusmods.com/oauth/authorize?response_type=code&scope=public&code_challenge_method=S256&client_id=vortex&redirect_uri=nxm%3A%2F%2Foauth%2Fcallback&code_challenge=-pSOp5xdZffKD0gc1lb5JALgN_ZtE9X573ib3yS8BT4&state=00000000-0000-0000-0000-000000000000";
-        }
-    }
+    // ReSharper disable once InconsistentNaming
+    private string ExpectedAuthURL => "https://users.nexusmods.com/oauth/authorize?response_type=code&scope=public&code_challenge_method=S256&client_id=vortex&redirect_uri=nxm%3A%2F%2Foauth%2Fcallback&code_challenge=-pSOp5xdZffKD0gc1lb5JALgN_ZtE9X573ib3yS8BT4&state=00000000-0000-0000-0000-000000000000";
 }

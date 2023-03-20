@@ -57,9 +57,6 @@ indent_size = 4
 indent_style = space
 tab_width = 4
 
-# CS1591: Missing XML comment for publicly visible type or member
-dotnet_diagnostic.cs1591.severity = suggestion
-
 # CS4014: Task not awaited
 dotnet_diagnostic.cs4014.severity = error
 

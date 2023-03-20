@@ -19,7 +19,7 @@ public static class ResourceExtensions
     /// <typeparam name="TItem">Type of item returned from user function.</typeparam>
     /// <returns></returns>
     public static IAsyncEnumerable<TItem> ForEachFileAsync<TResource, TItem>(this IResource<TResource, Size> resource,
-        AbsolutePath root, Func<IJob<Size>, FileEntry, ValueTask<TItem>> fn,
+        AbsolutePath root, Func<IJob<Size>, IFileEntry, ValueTask<TItem>> fn,
         CancellationToken? token = null, string jobName = "Processing Files")
     {
         return ForEachFileAsync(resource, new[] { root }, fn, token, jobName);
@@ -41,13 +41,13 @@ public static class ResourceExtensions
     ///    will only get results once a slice [group] of files are finished processing.
     /// </remarks>
     public static async IAsyncEnumerable<TItem> ForEachFileAsync<TResource, TItem>(this IResource<TResource, Size> resource,
-        IEnumerable<AbsolutePath> roots, Func<IJob<Size>, FileEntry, ValueTask<TItem>> fn,
+        IEnumerable<AbsolutePath> roots, Func<IJob<Size>, IFileEntry, ValueTask<TItem>> fn,
         CancellationToken? token = null, string jobName = "Processing Files")
     {
         token ??= CancellationToken.None;
 
         var allFiles = roots.SelectMany(f => f.EnumerateFileEntries()).OrderBy(x => x.Size).ToList();
-        var tasks   = new List<Task<List<TItem>>>();
+        var tasks = new List<Task<List<TItem>>>();
         var maxJobs = resource.MaxJobs;
 
         // TODO: Can we dedupe this?
@@ -69,8 +69,8 @@ public static class ResourceExtensions
         })));
 
         foreach (var result in tasks)
-        foreach (var itm in (await result))
-            yield return itm;
+            foreach (var itm in (await result))
+                yield return itm;
     }
 
     /// <summary>

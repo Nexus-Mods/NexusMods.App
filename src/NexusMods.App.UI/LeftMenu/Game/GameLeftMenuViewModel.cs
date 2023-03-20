@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
@@ -45,9 +45,9 @@ public class GameLeftMenuViewModel : AViewModel<IGameLeftMenuViewModel>, IGameLe
                 .Select(_ => dataStore.GetRoot(RootType.Loadouts))
                 .StartWith(dataStore.GetRoot(RootType.Loadouts))
                 .WhereNotNull()
-                .Select(id => dataStore.Get<LoadoutRegistry>(id!, true))
+                .Select(id => dataStore.Get<LoadoutRegistry>(id, true))
                 .WhereNotNull()
-                .Select(registry => registry!.Lists)
+                .Select(registry => registry.Lists)
                 .SelectMany(lists => lists.Values)
                 .ToObservableChangeSet(list => list.LoadoutId)
                 .Filter(gameFilterFn)

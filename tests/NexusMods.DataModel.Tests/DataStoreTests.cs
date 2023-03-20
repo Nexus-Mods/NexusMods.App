@@ -58,7 +58,7 @@ public class DataStoreTests
             Id = ModFileId.New(),
             From = new HashRelativePath((Hash)(ulong)idx, $"{idx}.file".ToRelativePath()),
             Hash = (Hash)(ulong)idx,
-            Size = Size.From(idx),
+            Size = Size.FromLong(idx),
             To = new GamePath(GameFolderType.Game, $"{idx}.file"),
         }).WithPersist(DataStore)
             .ToList();

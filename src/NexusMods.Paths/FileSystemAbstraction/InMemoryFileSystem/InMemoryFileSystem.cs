@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Text;
 using JetBrains.Annotations;
+using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Paths;
 
@@ -141,6 +142,56 @@ public partial class InMemoryFileSystem : BaseFileSystem
         var parentDirectory = InternalGetDirectoryEntry(path.Parent);
         var inMemoryDirectory = new InMemoryDirectoryEntry(path, (InMemoryDirectoryEntry)parentDirectory);
         return inMemoryDirectory;
+    }
+
+    /// <inheritdoc/>
+    protected override IEnumerable<AbsolutePath> InternalEnumerateFiles(AbsolutePath directory, string pattern, bool recursive)
+    {
+        return InternalEnumerateFileEntries(directory, pattern, recursive).Select(x => x.Path);
+    }
+
+    /// <inheritdoc/>
+    protected override IEnumerable<AbsolutePath> InternalEnumerateDirectories(AbsolutePath directory, string pattern, bool recursive)
+    {
+        if (!_directories.TryGetValue(directory, out var directoryEntry))
+            yield break;
+
+        foreach (var subDirectoryEntry in directoryEntry.Directories.Values)
+        {
+            if (!EnumeratorHelpers.MatchesPattern(pattern, subDirectoryEntry.Path.GetFullPath(), MatchType.Win32))
+                continue;
+
+            yield return subDirectoryEntry.Path;
+            if (!recursive) continue;
+
+            foreach (var subDirectoryPath in InternalEnumerateDirectories(subDirectoryEntry.Path, pattern, recursive))
+            {
+                yield return subDirectoryPath;
+            }
+        }
+    }
+
+    /// <inheritdoc/>
+    protected override IEnumerable<IFileEntry> InternalEnumerateFileEntries(AbsolutePath directory, string pattern, bool recursive)
+    {
+        if (!_directories.TryGetValue(directory, out var directoryEntry))
+            yield break;
+
+        foreach (var fileEntry in directoryEntry.Files.Values)
+        {
+            if (!EnumeratorHelpers.MatchesPattern(pattern, fileEntry.Path.GetFullPath(), MatchType.Win32))
+                continue;
+            yield return fileEntry;
+        }
+
+        if (!recursive) yield break;
+        foreach (var subDirectoryEntry in directoryEntry.Directories.Values)
+        {
+            foreach (var subDirectoryFileEntry in InternalEnumerateFileEntries(subDirectoryEntry.Path, pattern, recursive))
+            {
+                yield return subDirectoryFileEntry;
+            }
+        }
     }
 
     /// <inheritdoc/>

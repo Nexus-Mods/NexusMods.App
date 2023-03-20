@@ -1,6 +1,5 @@
-using AutoFixture.Xunit2;
 using FluentAssertions;
-using NexusMods.Paths.Tests.AutoData;
+using NexusMods.Paths.TestingHelpers;
 
 namespace NexusMods.Paths.Tests.FileSystem;
 

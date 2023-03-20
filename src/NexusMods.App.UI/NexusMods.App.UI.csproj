@@ -68,7 +68,7 @@
       <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0-preview5" />
       <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0-preview5" />
       <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview5" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0-preview.1.23110.8" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
       <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="6.5.0-preview5" />
       <PackageReference Include="ReactiveUI.Fody" Version="18.4.25" />
       <PackageReference Include="Splat.Microsoft.Extensions.Logging" Version="14.6.8" />

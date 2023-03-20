@@ -99,7 +99,7 @@ public class FileHashCache
         {
             if (TryGetCached(entry.Path, out var found))
             {
-                if (found.Size == entry.Size && found.LastModified == entry.LastModified)
+                if (found.Size == entry.Size && found.LastModified == entry.LastWriteTime)
                 {
                     job.ReportNoWait(entry.Size);
                     return new HashedEntry(entry, found.Hash);
@@ -107,7 +107,7 @@ public class FileHashCache
             }
 
             var hashed = await entry.Path.XxHash64Async(token, job);
-            PutCachedAsync(entry.Path, new FileHashCacheEntry(entry.LastModified, hashed, entry.Size));
+            PutCachedAsync(entry.Path, new FileHashCacheEntry(entry.LastWriteTime, hashed, entry.Size));
             return new HashedEntry(entry, hashed);
         }, token, "Hashing Files");
 
@@ -162,14 +162,14 @@ public class FileHashCache
 /// <param name="Hash">The hash of the file.</param>
 /// <param name="LastModified">The last time the entry was modified on disk.</param>
 /// <param name="Size">Size of the file in bytes.</param>
-public record HashedEntry(AbsolutePath Path, Hash Hash, DateTime LastModified, Size Size) : FileEntry(Path, Size, LastModified)
+public record HashedEntry(AbsolutePath Path, Hash Hash, DateTime LastModified, Size Size)
 {
     /// <summary>
     /// Creates a hashed entry from an existing file entry obtained through a file search.
     /// </summary>
     /// <param name="fe">File entry to obtain the hashed entry from.</param>
     /// <param name="hash">The hash to create the entry from.</param>
-    public HashedEntry(FileEntry fe, Hash hash) : this(fe.Path, hash, fe.LastModified, fe.Size) { }
+    public HashedEntry(IFileEntry fe, Hash hash) : this(fe.Path, hash, fe.LastWriteTime, fe.Size) { }
 }
 
 /// <summary>
@@ -191,7 +191,7 @@ public readonly record struct FileHashCacheEntry(DateTime LastModified, Hash Has
         var date = BinaryPrimitives.ReadInt64BigEndian(span);
         var hash = BinaryPrimitives.ReadUInt64BigEndian(span[8..]);
         var size = BinaryPrimitives.ReadInt64BigEndian(span[16..]);
-        return new FileHashCacheEntry(DateTime.FromFileTimeUtc(date), Hash.FromULong(hash), Size.From(size));
+        return new FileHashCacheEntry(DateTime.FromFileTimeUtc(date), Hash.FromULong(hash), Size.FromLong(size));
     }
 
     /// <summary>

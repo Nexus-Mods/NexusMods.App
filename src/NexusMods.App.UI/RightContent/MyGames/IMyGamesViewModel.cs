@@ -1,4 +1,4 @@
-﻿namespace NexusMods.App.UI.RightContent.MyGames;
+namespace NexusMods.App.UI.RightContent.MyGames;
 
 public interface IMyGamesViewModel : IRightContentViewModel
 {

@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using CliWrap;
 using CliWrap.Exceptions;
 using Microsoft.Extensions.Logging;
@@ -17,7 +17,7 @@ namespace NexusMods.FileExtractor.Extractors;
 /// Abstracts the 7-zip archive extractor.
 /// </summary>
 /// <remarks>
-///     Uses the 7z binary for each native platform under the hood.  
+///     Uses the 7z binary for each native platform under the hood.
 ///     We chose this tradeoff due to a lack of decent cross platform option and
 ///     reportedly possible AVs on invalid archives.
 /// </remarks>
@@ -83,7 +83,7 @@ public class SevenZipExtractor : IExtractor
     /// <inheritdoc />
     public Priority DeterminePriority(IEnumerable<FileType> signatures)
     {
-        // Yes this is O(n*m) but the search space (should) be very small. 
+        // Yes this is O(n*m) but the search space (should) be very small.
         // 'signatures' should usually be only 1 element :)
         if ((from supported in SupportedSignatures
              from sig in signatures
@@ -118,7 +118,7 @@ public class SevenZipExtractor : IExtractor
             _logger.LogDebug("Extracting {Source}", source.FileName);
             var process = Cli.Wrap(ExePath);
 
-            var totalSize = source.Length;
+            var totalSize = source.FileInfo.Size;
             var lastPercent = 0;
             job.Size = totalSize;
 

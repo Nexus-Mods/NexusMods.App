@@ -22,7 +22,7 @@ public class ProtocolRegistrationWindows : IProtocolRegistration
         using var key = GetClassKey(protocol);
         using var commandKey = GetCommandKey(key);
 
-        return Task.FromResult(commandKey is not null && ((string?)commandKey.GetValue("") ?? "").Contains(GetOwnExe()));
+        return Task.FromResult(((string?)commandKey.GetValue("") ?? "").Contains(GetOwnExe()));
     }
 
     /// <inheritdoc/>

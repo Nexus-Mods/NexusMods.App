@@ -24,7 +24,7 @@ public class HttpDownloaderTests
     {
         await using var path = _temporaryFileManager.CreateFile();
 
-        var resultHash = await _httpDownloader.Download(new[]
+        var resultHash = await _httpDownloader.DownloadAsync(new[]
         {
             "http://miami.nexus-cdn.com/100M",
             "http://la.nexus-cdn.com/100M",
@@ -41,7 +41,7 @@ public class HttpDownloaderTests
     {
         await using var path = _temporaryFileManager.CreateFile();
 
-        var resultHash = await _httpDownloader.Download(new[]
+        var resultHash = await _httpDownloader.DownloadAsync(new[]
         {
             new HttpRequestMessage(HttpMethod.Get, _localHttpServer.Uri + "hello")
         }, path);

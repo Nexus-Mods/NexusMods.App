@@ -10,18 +10,20 @@ namespace NexusMods.Games.RedEngine;
 
 public class RedModDeployTool : ITool
 {
+    private static readonly GamePath RedModPath = new(GameFolderType.Game, @"tools\redmod\bin\redmod.exe");
+
+    private readonly ILogger<RedModDeployTool> _logger;
+
     public RedModDeployTool(ILogger<RedModDeployTool> logger)
     {
         _logger = logger;
     }
-    public IEnumerable<GameDomain> Domains => new[] { Cyberpunk2077.StaticDomain };
 
-    private static readonly GamePath _redModPath = new(GameFolderType.Game, @"tools\redmod\bin\redmod.exe");
-    private readonly ILogger<RedModDeployTool> _logger;
+    public IEnumerable<GameDomain> Domains => new[] { Cyberpunk2077.StaticDomain };
 
     public async Task Execute(Loadout loadout)
     {
-        var exe = _redModPath.CombineChecked(loadout.Installation);
+        var exe = RedModPath.CombineChecked(loadout.Installation);
 
         var stdOutBuffer = new StringBuilder();
         var stdErrBuffer = new StringBuilder();
@@ -37,7 +39,7 @@ public class RedModDeployTool : ITool
 
         if (result.ExitCode != 0)
         {
-            _logger.LogError("RedMod Deploy failed with exit code {ExitCode}", result);
+            _logger.LogError("RedMod Deploy failed with exit code {ExitCode}", result.ToString());
         }
     }
 
