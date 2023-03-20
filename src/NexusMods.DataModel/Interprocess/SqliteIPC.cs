@@ -20,7 +20,7 @@ public class SqliteIPC : IDisposable
     private static readonly TimeSpan CleanupInterval = TimeSpan.FromMinutes(10); // Cleanup every 10 minutes
     private static readonly int CleanupJitter = 2000; // Jitter cleanup by up to 2 second
     private static readonly TimeSpan ShortPollInterval = TimeSpan.FromMilliseconds(100); // Poll every 100ms
-    private static readonly TimeSpan LongPollInterval = TimeSpan.FromSeconds(1000); // Poll every 10s
+    private static readonly TimeSpan LongPollInterval = TimeSpan.FromSeconds(10); // Poll every 10s
 
     private readonly AbsolutePath _storePath;
     private readonly SQLiteConnection _conn;

@@ -57,7 +57,10 @@ public class InterprocessTests
             await _producer.Write(new Message { Value = i }, CancellationToken.None);
         }
 
-        await Task.Delay(10000);
+        while (dest.Count < src.Count)
+        {
+            await Task.Delay(100);
+        }
 
         // Dest is in a stack, so we'll reverse the src to make sure it all worked
         lock (dest)
