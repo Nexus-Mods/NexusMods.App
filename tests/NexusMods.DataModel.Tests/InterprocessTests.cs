@@ -1,6 +1,9 @@
 using System.Buffers.Binary;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Interprocess;
+using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Tests;
 
@@ -27,11 +30,12 @@ public class InterprocessTests
         }
     }
 
-    public InterprocessTests(SqliteIPC ipc, IMessageProducer<Message> producer, IMessageConsumer<Message> consumer)
+    public InterprocessTests(TemporaryFileManager fileManager, IServiceProvider serviceProvider)
     {
-        _ipc = ipc;
-        _producer = producer;
-        _consumer = consumer;
+        var file = fileManager.CreateFile();
+        _ipc = new SqliteIPC(serviceProvider.GetRequiredService<ILogger<SqliteIPC>>(), file);
+        _producer = new InterprocessProducer<Message>(_ipc);
+        _consumer = new InterprocessConsumer<Message>(_ipc);
     }
 
     [Fact]
