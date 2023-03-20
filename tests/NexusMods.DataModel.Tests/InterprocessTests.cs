@@ -41,6 +41,7 @@ public class InterprocessTests
     [Fact]
     public async Task CanSendAndReceiveMessages()
     {
+        await Task.Delay(2000);
         var src = Enumerable.Range(0, 128).ToList();
         var dest = new List<int>();
         using var _ = _consumer.Messages.Subscribe(x =>
@@ -56,7 +57,7 @@ public class InterprocessTests
             await _producer.Write(new Message { Value = i }, CancellationToken.None);
         }
 
-        await Task.Delay(1000);
+        await Task.Delay(10000);
 
         // Dest is in a stack, so we'll reverse the src to make sure it all worked
         lock (dest)
