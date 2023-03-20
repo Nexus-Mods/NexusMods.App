@@ -16,6 +16,7 @@ public unsafe class SharedArray : IDisposable
     private Stream _stream;
     private MemoryMappedFile _mmapFile;
     private MemoryMappedViewAccessor _view;
+    private readonly string _name;
 
     public SharedArray(AbsolutePath path, int itemCount)
     {
@@ -48,14 +49,16 @@ public unsafe class SharedArray : IDisposable
             }
         }
 
+        _name = path.GetFullPath().ToLower().XxHash64AsUtf8().ToHex();
         _stream = path.Open(FileMode.Open, FileAccess.ReadWrite);
-        _mmapFile = MemoryMappedFile.CreateFromFile((FileStream)_stream,
+        /*_mmapFile = MemoryMappedFile.CreateFromFile((FileStream)_stream,
             path.GetFullPath().ToLower().XxHash64AsUtf8().ToHex(),
             _totalSize,
             MemoryMappedFileAccess.ReadWrite,
             HandleInheritability.Inheritable,
             false);
-
+*/
+        _mmapFile = MemoryMappedFile.CreateOrOpen(_name, _totalSize);
         _view = _mmapFile.CreateViewAccessor(0, _totalSize, MemoryMappedFileAccess.ReadWrite);
     }
 
