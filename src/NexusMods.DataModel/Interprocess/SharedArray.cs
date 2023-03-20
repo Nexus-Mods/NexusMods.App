@@ -51,14 +51,20 @@ public unsafe class SharedArray : IDisposable
 
         _name = path.GetFullPath().ToLower().XxHash64AsUtf8().ToHex();
         _stream = path.Open(FileMode.Open, FileAccess.ReadWrite);
-        /*_mmapFile = MemoryMappedFile.CreateFromFile((FileStream)_stream,
-            path.GetFullPath().ToLower().XxHash64AsUtf8().ToHex(),
+
+        #if !WINDOWS
+        // On non-Windows platforms we can use the standard MemoryMappedFile API
+        _mmapFile = MemoryMappedFile.CreateFromFile((FileStream)_stream,
+            null,
             _totalSize,
             MemoryMappedFileAccess.ReadWrite,
             HandleInheritability.Inheritable,
             false);
-*/
+        #else
+        // On Windows we have to use this Windows-only API because Win32 freaks out
+        // if you try to open a file that's already open.
         _mmapFile = MemoryMappedFile.CreateOrOpen(_name, _totalSize);
+        #endif
         _view = _mmapFile.CreateViewAccessor(0, _totalSize, MemoryMappedFileAccess.ReadWrite);
     }
 

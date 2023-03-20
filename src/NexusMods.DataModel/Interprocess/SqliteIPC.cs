@@ -49,7 +49,7 @@ public class SqliteIPC : IDisposable
         var connectionString = string.Intern($"Data Source={_storePath}");
         _conn = new SQLiteConnection(connectionString);
         _conn.Open();
-        _syncPath = storePath.WithExtension(new Extension(".sync"));
+        _syncPath = storePath.AppendExtension(new Extension(".sync"));
         _syncArray = new SharedArray(_syncPath, 2);
 
         EnsureTables();
