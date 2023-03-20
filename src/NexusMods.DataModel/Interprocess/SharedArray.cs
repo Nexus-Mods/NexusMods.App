@@ -1,6 +1,4 @@
 ﻿using System.IO.MemoryMappedFiles;
-using System.Runtime.InteropServices;
-using Microsoft.Win32.SafeHandles;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
