@@ -2,6 +2,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Media.Imaging;
 using Avalonia.ReactiveUI;
+using NexusMods.App.UI.Extensions;
 using ReactiveUI;
 using SkiaSharp;
 
@@ -16,12 +17,14 @@ public partial class GameWidget : ReactiveUserControl<IGameWidgetViewModel>
         {
             this.Bind(ViewModel, vm => vm.Image, v => v.GameImage.Source)
                 .DisposeWith(d);
+
             this.WhenAnyValue(view => view.ViewModel!.Image)
                 .WhereNotNull()
                 .OffUi()
-                .Select(img => BlurImage((IBitmap)img))
+                .Select(img => BlurAvaloniaImage((IBitmap)img))
                 .BindToUi(this, view => view.BlurryImage.Source)
                 .DisposeWith(d);
+
             this.Bind(ViewModel, vm => vm.Name, v => v.NameTextBlock.Text)
                 .DisposeWith(d);
 
@@ -30,34 +33,16 @@ public partial class GameWidget : ReactiveUserControl<IGameWidgetViewModel>
         });
     }
 
-    private IBitmap BlurImage(IBitmap image)
+    private IBitmap BlurAvaloniaImage(IBitmap image)
     {
+        if (image is WriteableBitmap writeable)
+            return writeable.ToSkiaImage().BlurImage().ToAvaloniaImage();
+
+        // Slow fallback.
         var ms = new MemoryStream();
         image.Save(ms);
         ms.Position = 0;
-        var skiaImage = SKImage.FromEncodedData(ms);
-
-        var skiaInfo = new SKImageInfo(skiaImage.Width, skiaImage.Height);
-        var renderTarget = SKImage.Create(skiaInfo);
-        var bitmap = SKBitmap.FromImage(renderTarget);
-
-        using (var canvas = new SKCanvas(bitmap))
-        {
-            using (var paint = new SKPaint())
-            {
-                paint.ImageFilter = SKImageFilter.CreateBlur(100, 100);
-                var src =
-                    SKRect.Create(0, 0, skiaImage.Width, skiaImage.Height);
-                //var dest = SKRect.Create(-(skiaImage.Width / 2), -(skiaImage.Height / 2), skiaImage.Width * 2, skiaImage.Height * 2);
-                canvas.DrawImage(skiaImage, src, src, paint);
-            }
-        }
-
-        var finalImage = new MemoryStream();
-        bitmap.Encode(finalImage, SKEncodedImageFormat.Png, 100);
-        finalImage.Position = 0;
-        var finalIImage = new Bitmap(finalImage);
-        return finalIImage;
+        return SKImage.FromEncodedData(ms).BlurImage().ToAvaloniaImage();
     }
 }
 
