@@ -20,7 +20,16 @@ public interface IInterprocessJobManager
     /// <param name="job"></param>
     void EndJob(JobId job);
 
+    /// <summary>
+    /// Update the progress of a given job, this will be eventually reflected
+    /// in any other processes that are tracking the job.
+    /// </summary>
+    /// <param name="jobId"></param>
+    /// <param name="value"></param>
     void UpdateProgress(JobId jobId, Percent value);
 
+    /// <summary>
+    /// All jobs that are currently being tracked on this machine.
+    /// </summary>
     IObservable<IChangeSet<IInterprocessJob,JobId>> Jobs { get; }
 }
