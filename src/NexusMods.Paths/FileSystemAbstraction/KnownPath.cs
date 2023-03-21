@@ -26,6 +26,11 @@ public enum KnownPath
     CurrentDirectory,
 
     /// <summary>
+    /// The current user's temporary folder.
+    /// </summary>
+    TempDirectory,
+
+    /// <summary>
     /// The user's profile folder.
     /// </summary>
     /// <remarks>

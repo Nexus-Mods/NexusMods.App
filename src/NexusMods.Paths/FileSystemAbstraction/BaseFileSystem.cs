@@ -57,6 +57,7 @@ public abstract class BaseFileSystem : IFileSystem
         {
             KnownPath.EntryDirectory => FromFullPath(AppContext.BaseDirectory),
             KnownPath.CurrentDirectory => FromFullPath(Environment.CurrentDirectory),
+            KnownPath.TempDirectory => FromFullPath(Path.GetTempPath()),
             KnownPath.HomeDirectory => FromFullPath(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)),
             KnownPath.MyDocumentsDirectory => FromFullPath(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)),
             KnownPath.MyGamesDirectory => FromDirectoryAndFileName(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games"),
