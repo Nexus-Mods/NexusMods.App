@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Media.Imaging;
 using Avalonia.Skia;
 using SkiaSharp;
@@ -30,7 +29,7 @@ public static class SkiaAvaloniaExtensions
     /// </summary>
     /// <param name="bitmap">The bitmap to convert to Avalonia.</param>
     /// <returns>The blurred image.</returns>
-    public static unsafe IBitmap ToAvaloniaImage(this SKBitmap bitmap)
+    public static IBitmap ToAvaloniaImage(this SKBitmap bitmap)
     {
         // This is annoying, we convert to Avalonia for Avalonia to convert it back to Skia
         // but I can't find any docs on how to convert from Skia to Avalonia AT ALL,
@@ -44,9 +43,6 @@ public static class SkiaAvaloniaExtensions
             throw new Exception("Not Supported Pixel Format");
 
         // Note: Don't use the other constructor, it does a copyBlock per stride/row, for some reason.
-        var result = new WriteableBitmap(pixelSize, SkiaPlatform.DefaultDpi, pixelFormat.Value, alphaFormat);
-        using var locked = result.Lock();
-        Unsafe.CopyBlock(locked.Address.ToPointer(), bitmap.GetPixels().ToPointer(), (uint)bitmap.ByteCount);
-        return result;
+        return new Bitmap(pixelFormat.Value, alphaFormat, bitmap.GetPixels(), pixelSize, SkiaPlatform.DefaultDpi, bitmap.RowBytes);
     }
 }
