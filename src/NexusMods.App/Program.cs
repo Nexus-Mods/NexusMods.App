@@ -1,7 +1,9 @@
 using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
 using System.Reactive;
+using System.Text.Json;
 using Avalonia;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -53,19 +55,27 @@ public class Program
 
     private static IHost BuildHost()
     {
-        var config = new AppConfig();
+        // I'm not 100% sure how to wire this up to cleanly pass settings
+        // to ConfigureLogging; since the DI container isn't built until the host is.
+        AppConfig config = new AppConfig();
         var host = Host.CreateDefaultBuilder(Environment.GetCommandLineArgs())
-            .ConfigureLogging(builder => AddLogging(builder, config.LoggingSettings))
-            .ConfigureServices((_, services) =>
-                services.AddApp(config)
-                    .Validate())
+            .ConfigureServices((context, services) =>
+            {
+                // Bind the AppSettings class to the configuration and register it as a singleton service
+                // Question to Reviewers: Should this be moved to AddApp?
+                context.Configuration.Bind(config);
+                services.AddSingleton(config);
+                services.AddApp(config).Validate();
+            })
+            .ConfigureLogging((_, builder) => AddLogging(builder, config.LoggingSettings))
             .Build();
+
         return host;
     }
 
     static void AddLogging(ILoggingBuilder loggingBuilder, ILoggingSettings settings)
     {
-        var config = new NLog.Config.LoggingConfiguration();
+        var config   = new NLog.Config.LoggingConfiguration();
 
         var fileTarget = new FileTarget("file")
         {

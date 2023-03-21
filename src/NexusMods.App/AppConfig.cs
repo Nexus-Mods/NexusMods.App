@@ -11,10 +11,10 @@ namespace NexusMods.App;
 /// </summary>
 public class AppConfig
 {
-    public IDataModelSettings DataModelSettings { get; set; } = new DataModelSettings();
-    public IFileExtractorSettings FileExtractorSettings { get; set; } = new FileExtractorSettings();
-    public IHttpDownloaderSettings HttpDownloaderSettings { get; set; } = new HttpDownloaderSettings();
-    public ILoggingSettings LoggingSettings { get; set; } = new LoggingSettings();
+    public DataModelSettings DataModelSettings { get; set; } = new();
+    public FileExtractorSettings FileExtractorSettings { get; set; } = new();
+    public HttpDownloaderSettings HttpDownloaderSettings { get; set; } = new();
+    public LoggingSettings LoggingSettings { get; set; } = new();
 }
 
 public interface ILoggingSettings
