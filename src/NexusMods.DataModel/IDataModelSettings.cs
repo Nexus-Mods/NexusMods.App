@@ -1,12 +1,11 @@
 ﻿using JetBrains.Annotations;
-using NexusMods.FileExtractor;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 
 namespace NexusMods.DataModel;
 
 /// <summary>
-/// Settings for the file extractor.
+/// Settings for the data model.
 /// </summary>
 [PublicAPI]
 public interface IDataModelSettings
@@ -47,7 +46,7 @@ public interface IDataModelSettings
 }
 
 /// <summary>
-/// Default implementation of <see cref="IFileExtractorSettings"/> for reference.
+/// Default implementation of <see cref="IDataModelSettings"/> for reference.
 /// </summary>
 [PublicAPI]
 public class DataModelSettings : IDataModelSettings

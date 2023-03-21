@@ -29,9 +29,12 @@ public static class Services
     /// as the default <see cref="IHttpDownloader"/> implementation.
     /// </summary>
     /// <param name="services">Your DI container collection builder.</param>
-    public static IServiceCollection AddAdvancedHttpDownloader(this IServiceCollection services)
+    /// <param name="settings">Settings for the HTTP downloader.</param>
+    public static IServiceCollection AddAdvancedHttpDownloader(this IServiceCollection services, IHttpDownloaderSettings? settings = null)
     {
-        return services.AddSingleton<IHttpDownloader, AdvancedHttpDownloader>()
+        settings ??= new HttpDownloaderSettings();
+        return services.AddSingleton(settings)
+            .AddSingleton<IHttpDownloader, AdvancedHttpDownloader>()
             .AddVerb<DownloadUri>()
             .AddAllSingleton<IResource, IResource<IHttpDownloader, Size>>(_ => new Resource<IHttpDownloader, Size>("Downloads"));
     }
