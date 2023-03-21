@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Reactive;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Media;
@@ -18,6 +19,9 @@ public static class Initializers
     public static readonly IImage IImage = new WriteableBitmap(new PixelSize(16, 16), new Vector(96, 96), PixelFormat.Rgba8888, AlphaFormat.Opaque);
     public static readonly ILeftMenuViewModel ILeftMenuViewModel = new HomeLeftMenuDesignViewModel();
     public static readonly IRightContentViewModel IRightContent = new PlaceholderDesignViewModel();
+
+    public static readonly ReactiveCommand<Unit, Unit> ReactiveCommandUnitUnit =
+        ReactiveCommand.Create(() => { });
 
     public static ReadOnlyObservableCollection<T> ReadOnlyObservableCollection<T>()
     {

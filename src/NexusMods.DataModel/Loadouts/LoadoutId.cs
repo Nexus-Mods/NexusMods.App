@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.Hashing.xxHash64;
 using Vogen;
@@ -55,5 +56,26 @@ public readonly partial struct LoadoutId : ICreatable<LoadoutId>
     public static LoadoutId Create()
     {
         return From(Guid.NewGuid());
+    }
+
+    /// <summary>
+    /// Converts the loadout ID to a byte array.
+    /// </summary>
+    /// <returns></returns>
+    public byte[] ToArray()
+    {
+        Span<byte> span = stackalloc byte[16];
+        _value.TryWriteBytes(span);
+        return span.ToArray();
+    }
+
+    /// <summary>
+    /// Returns a new loadout ID from the given byte array.
+    /// </summary>
+    /// <param name="bytes"></param>
+    /// <returns></returns>
+    public static LoadoutId From(byte[] bytes)
+    {
+        return From(new Guid(bytes));
     }
 }

@@ -1,6 +1,7 @@
 using System.Buffers.Binary;
 using System.Text.Json.Serialization;
 using NexusMods.DataModel.JsonConverters;
+using NexusMods.DataModel.RateLimiting;
 
 namespace NexusMods.DataModel.Abstractions.Ids;
 
@@ -105,6 +106,17 @@ public interface IId
     {
         span[0] = (byte)Category;
         ToSpan(span[1..]);
+    }
+
+    /// <summary>
+    /// Helper function to convert the current ID to a byte array tagged with the category.
+    /// </summary>
+    /// <returns></returns>
+    public byte[] ToTaggedBytes()
+    {
+        var bytes = new byte[SpanSize + 1];
+        ToTaggedSpan(bytes);
+        return bytes;
     }
 
     /// <summary>
