@@ -53,26 +53,26 @@ public class Program
 
     private static IHost BuildHost()
     {
+        var config = new AppConfig();
         var host = Host.CreateDefaultBuilder(Environment.GetCommandLineArgs())
-            .ConfigureLogging(AddLogging)
+            .ConfigureLogging(builder => AddLogging(builder, config.LoggingSettings))
             .ConfigureServices((_, services) =>
-                services.AddApp()
+                services.AddApp(config)
                     .Validate())
             .Build();
         return host;
     }
 
-
-    static void AddLogging(ILoggingBuilder loggingBuilder)
+    static void AddLogging(ILoggingBuilder loggingBuilder, ILoggingSettings settings)
     {
         var config = new NLog.Config.LoggingConfiguration();
 
         var fileTarget = new FileTarget("file")
         {
-            FileName = @"c:\tmp\logs\nexusmods.app.current.log",
-            ArchiveFileName = @"c:\tmp\logs\nexusmods.app.{##}.log",
+            FileName = settings.FilePath,
+            ArchiveFileName = settings.ArchiveFilePath,
             ArchiveOldFileOnStartup = true,
-            MaxArchiveFiles = 10,
+            MaxArchiveFiles = settings.MaxArchivedFiles,
             Layout = "${processtime} [${level:uppercase=true}] (${logger}) ${message:withexception=true}",
             Header = "############ Nexus Mods App log file - ${longdate} ############"
         };

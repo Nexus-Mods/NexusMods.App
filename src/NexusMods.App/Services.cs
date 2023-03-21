@@ -27,14 +27,17 @@ public static class Services
         return services;
     }
 
-    public static IServiceCollection AddApp(this IServiceCollection services, bool addStandardGameLocators = true)
+    public static IServiceCollection AddApp(this IServiceCollection services,
+        AppConfig? config = null, bool addStandardGameLocators = true)
     {
+        config ??= new AppConfig();
+
         // TODO: Add File Extractor Here
         services.AddCLI()
             .AddFileSystem()
             .AddUI()
-            .AddFileExtractors()
-            .AddDataModel()
+            .AddFileExtractors(config.FileExtractorSettings)
+            .AddDataModel(config.DataModelSettings)
             .AddBethesdaGameStudios()
             .AddRedEngineGames()
             .AddGenericGameSupport()
@@ -42,7 +45,7 @@ public static class Services
             .AddDarkestDungeon()
             .AddRenderers()
             .AddNexusWebApi()
-            .AddAdvancedHttpDownloader()
+            .AddAdvancedHttpDownloader(config.HttpDownloaderSettings)
             .AddTestHarness()
             .AddSingleton<HttpClient>()
             .AddCommon();
