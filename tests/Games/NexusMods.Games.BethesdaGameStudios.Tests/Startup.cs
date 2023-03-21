@@ -17,12 +17,14 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
+        var prefix = KnownFolders.EntryFolder.CombineUnchecked("DataModel")
+            .CombineUnchecked(Guid.NewGuid().ToString());
+
         services.AddUniversalGameLocator<SkyrimSpecialEdition>(new Version("1.6.659.0"))
                 .AddBethesdaGameStudios()
 
                 .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
-                .AddDataModel(KnownFolders.EntryFolder.CombineUnchecked("DataModel")
-                    .CombineUnchecked(Guid.NewGuid().ToString()))
+                .AddDataModel(new DataModelSettings(prefix))
                 .AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(_ =>
                     new Resource<FileContentsCache, Size>("File Analysis"))
                 .AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ =>

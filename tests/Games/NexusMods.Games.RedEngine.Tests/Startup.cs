@@ -19,6 +19,7 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection container)
     {
+        var prefix = KnownFolders.EntryFolder.CombineUnchecked("DataModel").CombineUnchecked(Guid.NewGuid().ToString());
         container.AddUniversalGameLocator<Cyberpunk2077>(new Version("1.61"))
                  .AddRedEngineGames()
                  .AddNexusWebApi(true)
@@ -26,7 +27,7 @@ public class Startup
 
                  .AddSingleton<HttpClient>()
                  .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
-                 .AddDataModel(KnownFolders.EntryFolder.CombineUnchecked("DataModel").CombineUnchecked(Guid.NewGuid().ToString()))
+                 .AddDataModel(new DataModelSettings(prefix))
                  .AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(_ =>
             new Resource<FileContentsCache, Size>("File Analysis"))
                  .AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ =>
