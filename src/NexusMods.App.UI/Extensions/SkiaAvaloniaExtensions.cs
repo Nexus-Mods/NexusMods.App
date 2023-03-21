@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using Avalonia.Skia;
 using SkiaSharp;
 
@@ -11,7 +12,7 @@ namespace NexusMods.App.UI.Extensions;
 public static class SkiaAvaloniaExtensions
 {
     /// <summary>
-    /// Converts a Skia image to an avalonia image.
+    /// Converts an Avalonia writeable bitmap to a Skia image.
     /// </summary>
     /// <param name="writeable">The bitmap to convert to Avalonia.</param>
     /// <returns>The blurred image.</returns>
@@ -20,6 +21,25 @@ public static class SkiaAvaloniaExtensions
         // See: ToAvaloniaImage
         using var locked = writeable.Lock();
         var size = writeable.PixelSize;
+        var imageInfo = new SKImageInfo(size.Width, size.Height, locked.Format.ToSkColorType());
+        return SKImage.FromPixels(imageInfo, locked.Address);
+    }
+
+    /// <summary>
+    /// Converts an Avalonia bitmap to a Skia image.
+    /// </summary>
+    /// <param name="bitmap">The bitmap to convert to Avalonia.</param>
+    /// <returns>The blurred image.</returns>
+    public static SKImage ToSkiaImage(this Bitmap bitmap)
+    {
+        // See: ToAvaloniaImage
+        if (bitmap.Format == null ||
+            bitmap.PlatformImpl.Item is not IReadableBitmapImpl readable ||
+            bitmap.Format != readable.Format)
+            throw new Exception("Not supported for this bitmap type.");
+
+        using var locked = readable.Lock();
+        var size = bitmap.PixelSize;
         var imageInfo = new SKImageInfo(size.Width, size.Height, locked.Format.ToSkColorType());
         return SKImage.FromPixels(imageInfo, locked.Address);
     }

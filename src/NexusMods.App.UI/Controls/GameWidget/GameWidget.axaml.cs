@@ -38,6 +38,9 @@ public partial class GameWidget : ReactiveUserControl<IGameWidgetViewModel>
         if (image is WriteableBitmap writeable)
             return writeable.ToSkiaImage().BlurImage().ToAvaloniaImage();
 
+        if (image is Bitmap bitmap)
+            return bitmap.ToSkiaImage().BlurImage().ToAvaloniaImage();
+
         // Slow fallback.
         var ms = new MemoryStream();
         image.Save(ms);

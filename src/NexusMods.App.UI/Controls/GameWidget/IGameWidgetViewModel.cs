@@ -11,7 +11,7 @@ public interface IGameWidgetViewModel : IViewModelInterface
     public string Name { get; }
 
     /// <summary>
-    /// Please assign <see cref="WriteableBitmap"/> if possible; for faster image blur.
+    /// Please assign <see cref="WriteableBitmap"/> or <see cref="Bitmap"/> if possible; for faster image blur.
     /// </summary>
     public IImage Image { get; }
 
