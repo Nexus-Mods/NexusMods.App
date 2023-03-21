@@ -1,6 +1,9 @@
 using System.Buffers.Binary;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Interprocess;
+using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Tests;
 
@@ -27,16 +30,18 @@ public class InterprocessTests
         }
     }
 
-    public InterprocessTests(SqliteIPC ipc, IMessageProducer<Message> producer, IMessageConsumer<Message> consumer)
+    public InterprocessTests(TemporaryFileManager fileManager, IServiceProvider serviceProvider)
     {
-        _ipc = ipc;
-        _producer = producer;
-        _consumer = consumer;
+        var file = fileManager.CreateFile();
+        _ipc = new SqliteIPC(serviceProvider.GetRequiredService<ILogger<SqliteIPC>>(), file);
+        _producer = new InterprocessProducer<Message>(_ipc);
+        _consumer = new InterprocessConsumer<Message>(_ipc);
     }
 
     [Fact]
     public async Task CanSendAndReceiveMessages()
     {
+        await Task.Delay(2000);
         var src = Enumerable.Range(0, 128).ToList();
         var dest = new List<int>();
         using var _ = _consumer.Messages.Subscribe(x =>
@@ -52,7 +57,10 @@ public class InterprocessTests
             await _producer.Write(new Message { Value = i }, CancellationToken.None);
         }
 
-        await Task.Delay(1000);
+        while (dest.Count < src.Count)
+        {
+            await Task.Delay(100);
+        }
 
         // Dest is in a stack, so we'll reverse the src to make sure it all worked
         lock (dest)

@@ -28,6 +28,8 @@ public class SqliteIPC : IDisposable
     private readonly Subject<(string Queue, byte[] Message)> _subject = new();
     private readonly CancellationTokenSource _shutdownToken;
     private readonly ILogger<SqliteIPC> _logger;
+    private readonly AbsolutePath _syncPath;
+    private readonly SharedArray _syncArray;
 
     /// <summary>
     /// Allows you to subscribe to newly incoming IPC messages.
@@ -47,6 +49,8 @@ public class SqliteIPC : IDisposable
         var connectionString = string.Intern($"Data Source={_storePath}");
         _conn = new SQLiteConnection(connectionString);
         _conn.Open();
+        _syncPath = storePath.AppendExtension(new Extension(".sync"));
+        _syncArray = new SharedArray(_syncPath, 2);
 
         EnsureTables();
 
@@ -89,23 +93,16 @@ public class SqliteIPC : IDisposable
         {
             lastId = ProcessMessages(lastId);
 
-            // TODO: Bug, FileInfo is a cached field.
-            var lastEdit = _storePath.FileInfo;
-
             var elapsed = DateTime.UtcNow;
             while (!shutdownTokenToken.IsCancellationRequested)
             {
-                var currentEdit = _storePath.FileInfo;
-                if (currentEdit.Size != lastEdit.Size || currentEdit.LastWriteTimeUtc != lastEdit.LastWriteTimeUtc)
-                {
+                if (lastId < (long)_syncArray.Get(0))
                     break;
-                }
+
                 await Task.Delay(ShortPollInterval, shutdownTokenToken);
 
                 if (DateTime.UtcNow - elapsed > LongPollInterval)
-                {
                     break;
-                }
             }
         }
     }
@@ -175,6 +172,17 @@ public class SqliteIPC : IDisposable
             cmd.Parameters.AddWithValue("@timestamp",
                 DateTime.UtcNow.ToFileTimeUtc());
             cmd.ExecuteNonQuery();
+            var lastId = (ulong)cmd.Connection.LastInsertRowId;
+            var prevId = _syncArray.Get(0);
+            while (true)
+            {
+                if (prevId >= lastId)
+                    break;
+                if (_syncArray.CompareAndSwap(0, prevId, lastId))
+                    break;
+                prevId = _syncArray.Get(0);
+            }
+
         }
         catch (Exception ex)
         {
@@ -191,5 +199,6 @@ public class SqliteIPC : IDisposable
         _shutdownToken.Cancel();
         _conn.Dispose();
         _subject.Dispose();
+        _syncArray.Dispose();
     }
 }
