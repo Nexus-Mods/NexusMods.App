@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Interprocess;
+using NexusMods.DataModel.Interprocess.Jobs;
 using NexusMods.DataModel.Interprocess.Messages;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
@@ -56,7 +57,7 @@ public static class Services
         coll.AddSingleton<FileHashCache>();
         coll.AddSingleton<FileContentsCache>();
 
-        coll.AddSingleton(s => new SqliteIPC(
+        coll.AddAllSingleton<IInterprocessJobManager, SqliteIPC>(s => new SqliteIPC(
             s.GetRequiredService<ILogger<SqliteIPC>>(),
             baseFolder.Value.CombineUnchecked("DataModel_IPC.sqlite")));
         coll.AddSingleton(typeof(IMessageConsumer<>), typeof(InterprocessConsumer<>));

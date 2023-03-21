@@ -12,6 +12,7 @@ using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.RightContent;
 using NexusMods.App.UI.RightContent.Home;
 using NexusMods.App.UI.RightContent.MyGames;
+using NexusMods.App.UI.Routing;
 using NexusMods.App.UI.Windows;
 using ImageButton = NexusMods.App.UI.Controls.Spine.Buttons.Image.ImageButton;
 
@@ -23,6 +24,9 @@ public static class Services
     public static IServiceCollection AddUI(this IServiceCollection c)
     {
         return c.AddTransient<MainWindow>()
+
+            // Services
+            .AddSingleton<IRouter, ReactiveMessageRouter>()
             // View Models
             .AddTransient<MainWindowViewModel>()
 

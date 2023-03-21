@@ -2,6 +2,8 @@ using System.Collections.ObjectModel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.Controls.GameWidget;
 using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.Routing;
+using NexusMods.App.UI.Routing.Messages;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using ReactiveUI;
@@ -13,8 +15,11 @@ public class FoundGamesViewModel : AViewModel<IFoundGamesViewModel>, IFoundGames
 {
     private readonly LoadoutManager _loadoutManager;
     private readonly IServiceProvider _provider;
-    public FoundGamesViewModel(IServiceProvider provider, LoadoutManager loadoutManager)
+    private readonly IRouter _router;
+
+    public FoundGamesViewModel(IServiceProvider provider, LoadoutManager loadoutManager, IRouter router)
     {
+        _router = router;
         _loadoutManager = loadoutManager;
         _provider = provider;
 
@@ -26,7 +31,8 @@ public class FoundGamesViewModel : AViewModel<IFoundGamesViewModel>, IFoundGames
     private async Task ManageGame(GameInstallation installation)
     {
         var name = _loadoutManager.FindName(installation);
-        var _ = await _loadoutManager.ManageGameAsync(installation, name);
+        var marker = await _loadoutManager.ManageGameAsync(installation, name, earlyReturn:true);
+        _router.NavigateTo(new NavigateToLoadout(marker.Value));
     }
 
     [Reactive]

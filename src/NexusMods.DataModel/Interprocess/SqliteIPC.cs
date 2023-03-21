@@ -1,6 +1,10 @@
 using System.Data.SQLite;
 using System.Reactive.Subjects;
+using DynamicData;
 using Microsoft.Extensions.Logging;
+using NexusMods.DataModel.Interprocess.Jobs;
+using NexusMods.DataModel.Interprocess.Messages;
+using NexusMods.DataModel.RateLimiting;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Interprocess;
@@ -14,7 +18,7 @@ namespace NexusMods.DataModel.Interprocess;
 /// without having to run a SQL query every second.
 /// </summary>
 // ReSharper disable once InconsistentNaming
-public class SqliteIPC : IDisposable
+public class SqliteIPC : IDisposable, IInterprocessJobManager
 {
     private static readonly TimeSpan RetentionTime = TimeSpan.FromSeconds(10); // Keep messages for 10 seconds
     private static readonly TimeSpan CleanupInterval = TimeSpan.FromMinutes(10); // Cleanup every 10 minutes
@@ -31,10 +35,13 @@ public class SqliteIPC : IDisposable
     private readonly AbsolutePath _syncPath;
     private readonly SharedArray _syncArray;
 
+    private SourceCache<IInterprocessJob, JobId> _jobs = new(x => x.JobId);
+
     /// <summary>
     /// Allows you to subscribe to newly incoming IPC messages.
     /// </summary>
     public IObservable<(string Queue, byte[] Message)> Messages => _subject;
+    public IObservable<IChangeSet<IInterprocessJob, JobId>> Jobs => _jobs.Connect();
 
     /// <summary>
     /// DI Constructor
@@ -89,15 +96,25 @@ public class SqliteIPC : IDisposable
 
     private async Task ReaderLoop(long lastId, CancellationToken shutdownTokenToken)
     {
+        var lastJobTimestamp = (long)_syncArray.Get(1);
         while (!shutdownTokenToken.IsCancellationRequested)
         {
             lastId = ProcessMessages(lastId);
+
+            ProcessJobs();
 
             var elapsed = DateTime.UtcNow;
             while (!shutdownTokenToken.IsCancellationRequested)
             {
                 if (lastId < (long)_syncArray.Get(0))
                     break;
+
+                var jobTimeStamp = (long)_syncArray.Get(1);
+                if (jobTimeStamp > lastJobTimestamp)
+                {
+                    lastJobTimestamp = jobTimeStamp;
+                    break;
+                }
 
                 await Task.Delay(ShortPollInterval, shutdownTokenToken);
 
@@ -152,6 +169,77 @@ public class SqliteIPC : IDisposable
     {
         using var cmd = new SQLiteCommand("CREATE TABLE IF NOT EXISTS Ipc (Id INTEGER PRIMARY KEY AUTOINCREMENT, Queue VARCHAR, Data BLOB, TimeStamp INTEGER)", _conn);
         cmd.ExecuteNonQuery();
+
+        using var cmd2 = new SQLiteCommand("CREATE TABLE IF NOT EXISTS Jobs " +
+                                           "(JobId BLOB PRIMARY KEY, " +
+                                           "ProcessId INTEGER, " +
+                                           "Progress REAL, " +
+                                           "Description TEXT," +
+                                           "JobType TEXT," +
+                                           "StartTime INTEGER," +
+                                           "Data BLOB)", _conn);
+        cmd2.ExecuteNonQuery();
+    }
+
+
+
+    private void ProcessJobs()
+    {
+        try
+        {
+            _logger.LogTrace("Processing jobs");
+            using var cmd = new SQLiteCommand(
+                "SELECT JobId, ProcessId, Progress, Description, JobType, StartTime, Data FROM Jobs",
+                _conn);
+            var reader = cmd.ExecuteReader();
+
+            var seen = new HashSet<JobId>();
+            _jobs.Edit(editable =>
+            {
+                while (reader.Read())
+                {
+                    var idSize = reader.GetBytes(0, 0, null, 0, 0);
+                    var idBytes = new byte[idSize];
+                    reader.GetBytes(0, 0, idBytes, 0, idBytes.Length);
+
+                    var jobId = JobId.From(new Guid(idBytes));
+
+                    var progress = new Percent(reader.GetDouble(2));
+
+                    seen.Add(jobId);
+                    var item = editable.Lookup(jobId);
+                    if (item.HasValue)
+                    {
+                        if (item.Value.Progress != progress)
+                            item.Value.Progress = progress;
+                        continue;
+                    }
+
+                    var processId = ProcessId.From((uint)reader.GetInt64(1));
+                    var description = reader.GetString(3);
+                    var jobType = Enum.Parse<JobType>(reader.GetString(4));
+                    var startTime =
+                        DateTime.FromFileTimeUtc(reader.GetInt64(5));
+                    var size = reader.GetBytes(6, 0, null, 0, 0);
+                    var bytes = new byte[size];
+                    reader.GetBytes(6, 0, bytes, 0, bytes.Length);
+
+                    var newJob = new InterprocessJob(jobId, this, jobType,
+                        processId, description, bytes, startTime, progress);
+                    editable.AddOrUpdate(newJob);
+                }
+
+                foreach (var key in editable.Keys)
+                {
+                    if (!seen.Contains(key))
+                        editable.Remove(key);
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to process jobs");
+        }
     }
 
     /// <summary>
@@ -200,5 +288,67 @@ public class SqliteIPC : IDisposable
         _conn.Dispose();
         _subject.Dispose();
         _syncArray.Dispose();
+    }
+
+    public void CreateJob(IInterprocessJob job)
+    {
+        try
+        {
+            _logger.LogInformation("Creating job {JobId} of type {JobType}", job.JobId, job.GetType().Name);
+            using var cmd = new SQLiteCommand(
+                "INSERT INTO Jobs (JobId, ProcessId, Progress, Description, JobType, StartTime, Data) " +
+                "VALUES (@jobId, @processId, @progress, @description, @jobType, @startTime, @data);", _conn);
+            cmd.Parameters.AddWithValue("@jobId", job.JobId.Value.ToByteArray());
+            cmd.Parameters.AddWithValue("@processId", job.ProcessId.Value);
+            cmd.Parameters.AddWithValue("@progress", job.Progress.Value);
+            cmd.Parameters.AddWithValue("@description", job.Description);
+            cmd.Parameters.AddWithValue("@jobType", job.JobType.ToString());
+            cmd.Parameters.AddWithValue("@startTime", job.StartTime.ToFileTimeUtc());
+            cmd.Parameters.AddWithValue("@data", job.Data);
+            cmd.ExecuteNonQuery();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to create job {JobId} of type {JobType}", job.JobId, job.GetType().Name);
+        }
+
+        UpdateJobTimestamp();
+    }
+
+    private void UpdateJobTimestamp()
+    {
+        var prevTimeStamp = _syncArray.Get(1);
+        while (true)
+        {
+            if (_syncArray.CompareAndSwap(1, prevTimeStamp, (ulong)DateTime.UtcNow.ToFileTimeUtc()))
+                break;
+            prevTimeStamp = _syncArray.Get(1);
+        }
+    }
+
+    public void EndJob(JobId job)
+    {
+        _logger.LogInformation("Deleting job {JobId}", job);
+        {
+            using var cmd = new SQLiteCommand(
+                "DELETE FROM Jobs WHERE JobId = @jobId", _conn);
+            cmd.Parameters.AddWithValue("@jobId", job.Value);
+            cmd.ExecuteNonQuery();
+        }
+        UpdateJobTimestamp();
+
+    }
+
+    public void UpdateProgress(JobId jobId, Percent value)
+    {
+        _logger.LogTrace("Updating job {JobId} progress to {Percent}", jobId, value);
+        {
+            using var cmd = new SQLiteCommand(
+                "UPDATE Jobs SET Progress = @progress WHERE JobId = @jobId", _conn);
+            cmd.Parameters.AddWithValue("@progress", value.Value);
+            cmd.Parameters.AddWithValue("@jobId", jobId.Value);
+            cmd.ExecuteNonQuery();
+        }
+        UpdateJobTimestamp();
     }
 }

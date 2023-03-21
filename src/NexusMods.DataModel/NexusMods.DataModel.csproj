@@ -13,6 +13,7 @@
 
     <ItemGroup>
         <PackageReference Include="BitFaster.Caching" Version="2.1.1" />
+        <PackageReference Include="DynamicData" Version="7.13.1" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
         <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.3.1" />
