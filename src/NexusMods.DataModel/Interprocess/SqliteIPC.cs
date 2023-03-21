@@ -96,6 +96,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
 
     private async Task ReaderLoop(long lastId, CancellationToken shutdownTokenToken)
     {
+        var lastJobTimestamp = (long)_syncArray.Get(1);
         while (!shutdownTokenToken.IsCancellationRequested)
         {
             lastId = ProcessMessages(lastId);
@@ -107,6 +108,13 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
             {
                 if (lastId < (long)_syncArray.Get(0))
                     break;
+
+                var jobTimeStamp = (long)_syncArray.Get(1);
+                if (jobTimeStamp > lastJobTimestamp)
+                {
+                    lastJobTimestamp = jobTimeStamp;
+                    break;
+                }
 
                 await Task.Delay(ShortPollInterval, shutdownTokenToken);
 
@@ -303,25 +311,44 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         {
             _logger.LogError(ex, "Failed to create job {JobId} of type {JobType}", job.JobId, job.GetType().Name);
         }
+
+        UpdateJobTimestamp();
+    }
+
+    private void UpdateJobTimestamp()
+    {
+        var prevTimeStamp = _syncArray.Get(1);
+        while (true)
+        {
+            if (_syncArray.CompareAndSwap(1, prevTimeStamp, (ulong)DateTime.UtcNow.ToFileTimeUtc()))
+                break;
+            prevTimeStamp = _syncArray.Get(1);
+        }
     }
 
     public void EndJob(JobId job)
     {
         _logger.LogInformation("Deleting job {JobId}", job);
-        using var cmd = new SQLiteCommand(
-            "DELETE FROM Jobs WHERE JobId = @jobId", _conn);
-        cmd.Parameters.AddWithValue("@jobId", job.Value);
-        cmd.ExecuteNonQuery();
+        {
+            using var cmd = new SQLiteCommand(
+                "DELETE FROM Jobs WHERE JobId = @jobId", _conn);
+            cmd.Parameters.AddWithValue("@jobId", job.Value);
+            cmd.ExecuteNonQuery();
+        }
+        UpdateJobTimestamp();
 
     }
 
     public void UpdateProgress(JobId jobId, Percent value)
     {
         _logger.LogTrace("Updating job {JobId} progress to {Percent}", jobId, value);
-        using var cmd = new SQLiteCommand(
-            "UPDATE Jobs SET Progress = @progress WHERE JobId = @jobId", _conn);
-        cmd.Parameters.AddWithValue("@progress", value.Value);
-        cmd.Parameters.AddWithValue("@jobId", jobId.Value);
-        cmd.ExecuteNonQuery();
+        {
+            using var cmd = new SQLiteCommand(
+                "UPDATE Jobs SET Progress = @progress WHERE JobId = @jobId", _conn);
+            cmd.Parameters.AddWithValue("@progress", value.Value);
+            cmd.Parameters.AddWithValue("@jobId", jobId.Value);
+            cmd.ExecuteNonQuery();
+        }
+        UpdateJobTimestamp();
     }
 }

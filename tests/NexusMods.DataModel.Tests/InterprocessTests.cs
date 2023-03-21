@@ -43,13 +43,12 @@ public class InterprocessTests
         _ipc = new SqliteIPC(serviceProvider.GetRequiredService<ILogger<SqliteIPC>>(), file);
         _producer = new InterprocessProducer<Message>(_ipc);
         _consumer = new InterprocessConsumer<Message>(_ipc);
-        _jobManager = jobManager;
+        _jobManager = _ipc;
     }
 
     [Fact]
     public async Task CanSendAndReceiveMessages()
     {
-        await Task.Delay(2000);
         var src = Enumerable.Range(0, 128).ToList();
         var dest = new List<int>();
         using var _ = _consumer.Messages.Subscribe(x =>
