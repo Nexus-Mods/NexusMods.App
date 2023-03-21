@@ -11,10 +11,9 @@ namespace NexusMods.DataModel.Interprocess;
 public unsafe class SharedArray : IDisposable
 {
     private readonly int _totalSize;
-    private Stream _stream;
-    private MemoryMappedFile _mmapFile;
-    private MemoryMappedViewAccessor _view;
-    private readonly string _name;
+    private readonly Stream _stream;
+    private readonly MemoryMappedFile _mmapFile;
+    private readonly MemoryMappedViewAccessor _view;
 
     public SharedArray(AbsolutePath path, int itemCount)
     {
@@ -47,7 +46,7 @@ public unsafe class SharedArray : IDisposable
             }
         }
 
-        _name = path.GetFullPath().ToLower().XxHash64AsUtf8().ToHex();
+
         _stream = path.Open(FileMode.Open, FileAccess.ReadWrite);
 
         #if !WINDOWS
@@ -59,9 +58,10 @@ public unsafe class SharedArray : IDisposable
             HandleInheritability.Inheritable,
             false);
         #else
+        var name = path.GetFullPath().ToLower().XxHash64AsUtf8().ToHex();
         // On Windows we have to use this Windows-only API because Win32 freaks out
         // if you try to open a file that's already open.
-        _mmapFile = MemoryMappedFile.CreateOrOpen(_name, _totalSize);
+        _mmapFile = MemoryMappedFile.CreateOrOpen(name, _totalSize);
         #endif
         _view = _mmapFile.CreateViewAccessor(0, _totalSize, MemoryMappedFileAccess.ReadWrite);
     }
@@ -69,7 +69,7 @@ public unsafe class SharedArray : IDisposable
     /// <summary>
     /// Get the value at the given index
     /// </summary>
-    /// <param name="idx"></param>
+    /// <param name="idx">item index to get</param>
     /// <returns></returns>
     public ulong Get(int idx)
     {
@@ -87,9 +87,9 @@ public unsafe class SharedArray : IDisposable
     /// Set the value at the given index to the given value if the current value is the expected value.
     /// Returns true if the value was set, false otherwise.
     /// </summary>
-    /// <param name="idx"></param>
-    /// <param name="expected"></param>
-    /// <param name="value"></param>
+    /// <param name="idx">item index into the array</param>
+    /// <param name="expected">the expected value</param>
+    /// <param name="value">the value to replace it with</param>
     /// <returns></returns>
     public bool CompareAndSwap(int idx, ulong expected, ulong value)
     {
