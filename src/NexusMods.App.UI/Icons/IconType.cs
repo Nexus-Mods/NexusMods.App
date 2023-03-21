@@ -15,4 +15,10 @@ public enum IconType
 
     [MaterialName("mdi-chevron-right")]
     ChevronRight,
+
+    [MaterialName("mdi-play")]
+    Play,
+
+    [MaterialName("mdi-timer-sand-empty")]
+    HourglassEmpty
 }
