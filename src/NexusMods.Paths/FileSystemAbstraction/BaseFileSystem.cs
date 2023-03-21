@@ -51,6 +51,22 @@ public abstract class BaseFileSystem : IFileSystem
         Dictionary<AbsolutePath, AbsolutePath> pathMappings);
 
     /// <inheritdoc/>
+    public virtual AbsolutePath GetKnownPath(KnownPath knownPath)
+    {
+        var path = knownPath switch
+        {
+            KnownPath.EntryDirectory => FromFullPath(AppContext.BaseDirectory),
+            KnownPath.CurrentDirectory => FromFullPath(Environment.CurrentDirectory),
+            KnownPath.HomeDirectory => FromFullPath(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)),
+            KnownPath.MyDocumentsDirectory => FromFullPath(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)),
+            KnownPath.MyGamesDirectory => FromDirectoryAndFileName(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games"),
+            _ => throw new ArgumentOutOfRangeException(nameof(knownPath), knownPath, null)
+        };
+
+        return GetMappedPath(path);
+    }
+
+    /// <inheritdoc/>
     public AbsolutePath FromFullPath(string fullPath)
         => AbsolutePath.FromFullPath(fullPath, this);
 
