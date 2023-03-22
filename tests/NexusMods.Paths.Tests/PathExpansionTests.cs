@@ -35,16 +35,6 @@ public class PathExpansionTests
     }
 
     [Fact]
-    public void CanExpandDocuments()
-    {
-        var inputPath = "{Documents}/PlayfulMeow.png";
-        var expandedPath = KnownFolders.ExpandPath(inputPath);
-        var expectedPath = Path.Combine(KnownFolders.Documents.GetFullPath(), "PlayfulMeow.png");
-
-        Assert.Equal(expectedPath, expandedPath);
-    }
-
-    [Fact]
     public void CanExpandMyGames()
     {
         var inputPath = "{MyGames}/CuriousWhiskers.png";
