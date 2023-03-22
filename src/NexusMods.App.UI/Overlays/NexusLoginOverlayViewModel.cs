@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Input;
@@ -19,19 +20,24 @@ public class NexusLoginOverlayViewModel : AViewModel<INexusLoginOverlayViewModel
     {
         _compositeDisposable = new CompositeDisposable();
 
-        var uris = jobManager.Jobs
+        var currentJob = jobManager.Jobs
             .QueryWhenChanged(q =>
-                q.Items.FirstOrDefault(j => j.JobType == JobType.NexusLogin)
-                    ?.PayloadAsUri);
+                q.Items.FirstOrDefault(j => j.JobType == JobType.NexusLogin));
 
-        uris.WhereNotNull()
+        currentJob.WhereNotNull()
+            .Select(job => job.PayloadAsUri)
             .BindToUi(this, vm => vm.Uri)
             .DisposeWith(_compositeDisposable);
 
-        uris.Select(uri => uri != null)
+        currentJob.Select(job => job != null)
             .BindToUi(this, vm => vm.IsActive)
             .DisposeWith(_compositeDisposable);
 
+        currentJob
+            .WhereNotNull()
+            .Select(job => ReactiveCommand.Create(() => jobManager.EndJob(job.JobId)))
+            .BindToUi(this, vm => vm.Cancel)
+            .DisposeWith(_compositeDisposable);
     }
 
     [Reactive]
