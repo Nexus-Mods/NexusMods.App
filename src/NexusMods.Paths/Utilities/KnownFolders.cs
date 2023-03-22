@@ -5,34 +5,22 @@ namespace NexusMods.Paths.Utilities;
 /// <summary>
 /// Contains a listing of known ahead of time folders for easy access.
 /// </summary>
+[Obsolete($"This class is obsolete, use IFileSystem.{nameof(IFileSystem.GetKnownPath)}")]
 public static class KnownFolders
 {
-    // TODO: We need to detect Proton/Wine for Linux and adjust these paths based on the target game(s). Relevant Epic: https://github.com/Nexus-Mods/NexusMods.App/issues/148
+    /// <inheritdoc cref="KnownPath.EntryDirectory"/>
+    [Obsolete($"This property is obsolete, use IFileSystem.{nameof(IFileSystem.GetKnownPath)} directly.")]
+    public static AbsolutePath EntryFolder => FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory);
 
-    /// <summary>
-    /// Gets the directory this program's DLL resolver uses to probe for DLLs.
-    /// This is usually the same as <see cref="CurrentDirectory"/>.
-    /// </summary>
-    public static AbsolutePath EntryFolder => AppContext.BaseDirectory.ToAbsolutePath();
+    /// <inheritdoc cref="KnownPath.CurrentDirectory"/>
+    [Obsolete($"This property is obsolete, use IFileSystem.{nameof(IFileSystem.GetKnownPath)} directly.")]
+    public static AbsolutePath CurrentDirectory => FileSystem.Shared.GetKnownPath(KnownPath.CurrentDirectory);
 
-    /// <summary>
-    /// Gets the current working directory of the application.
-    /// </summary>
-    public static AbsolutePath CurrentDirectory => Environment.CurrentDirectory.ToAbsolutePath();
+    /// <inheritdoc cref="KnownPath.MyGamesDirectory"/>
+    [Obsolete($"This property is obsolete, use IFileSystem.{nameof(IFileSystem.GetKnownPath)} directly.")]
+    public static AbsolutePath MyGames => FileSystem.Shared.GetKnownPath(KnownPath.MyGamesDirectory);
 
-    /// <summary>
-    /// Path to the `Documents` folder
-    /// </summary>
-    public static AbsolutePath Documents => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).ToAbsolutePath();
-
-    /// <summary>
-    /// Path to the 'My Games' folder; present only on Windows.
-    /// </summary>
-    public static AbsolutePath MyGames => Documents.CombineUnchecked("My Games");
-
-    /// <summary>
-    /// Path to the user's profile.
-    /// On *nix this will usually be home/userNameHere and Windows C:\Users\userNameHere.
-    /// </summary>
-    public static AbsolutePath HomeFolder => Environment.GetFolderPath(Environment.SpecialFolder.UserProfile).ToAbsolutePath();
+    /// <inheritdoc cref="KnownPath.HomeDirectory"/>
+    [Obsolete($"This property is obsolete, use IFileSystem.{nameof(IFileSystem.GetKnownPath)} directly.")]
+    public static AbsolutePath HomeFolder => FileSystem.Shared.GetKnownPath(KnownPath.HomeDirectory);
 }
