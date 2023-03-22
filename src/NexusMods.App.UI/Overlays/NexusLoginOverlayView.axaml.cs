@@ -1,4 +1,5 @@
 ﻿using System.Reactive.Disposables;
+using Avalonia;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
@@ -13,8 +14,7 @@ public partial class NexusLoginOverlayView : ReactiveUserControl<INexusLoginOver
         {
             CopyButton.Command = ReactiveCommand.CreateFromTask(async () =>
             {
-                // TODO: copy to clipboard cross platform
-
+                await Application.Current!.Clipboard!.SetTextAsync(ViewModel!.Uri.ToString());
             });
 
             this.BindCommand(ViewModel, vm => vm.Cancel, v => v.CancelButton)

@@ -19,9 +19,9 @@ public class NexusLoginOverlayViewModel : AViewModel<INexusLoginOverlayViewModel
     {
         _compositeDisposable = new CompositeDisposable();
 
-        var uris = jobManager.Jobs.ToCollection()
-            .Select(g =>
-                g.FirstOrDefault(j => j.JobType == JobType.NexusLogin)
+        var uris = jobManager.Jobs
+            .QueryWhenChanged(q =>
+                q.Items.FirstOrDefault(j => j.JobType == JobType.NexusLogin)
                     ?.PayloadAsUri);
 
         uris.WhereNotNull()
@@ -40,6 +40,7 @@ public class NexusLoginOverlayViewModel : AViewModel<INexusLoginOverlayViewModel
     [Reactive]
     public Uri Uri { get; set; } = new("https://www.nexusmods.com");
 
+    [Reactive]
     public bool IsActive { get; set; }
 
     public void Dispose()

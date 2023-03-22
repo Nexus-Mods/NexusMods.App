@@ -240,12 +240,14 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
 
                 foreach (var key in editable.Keys)
                 {
-                    if (!seen.Contains(key))
-                    {
-                        _logger.LogTrace("Removing job {JobId}", key);
-                        editable.Remove(key);
-                    }
+                    if (seen.Contains(key))
+                        continue;
+
+                    _logger.LogTrace("Removing job {JobId}", key);
+                    editable.Remove(key);
                 }
+                editable.Refresh();
+                _logger.LogTrace("Done Processing");
             });
         }
         catch (Exception ex)
