@@ -35,12 +35,12 @@ public class NexusLoginOverlayViewModel : AViewModel<INexusLoginOverlayViewModel
     }
 
     [Reactive]
-    public ICommand Cancel { get; } = Initializers.ICommand;
+    public ICommand Cancel { get; set; } = Initializers.ICommand;
 
     [Reactive]
-    public Uri Uri { get; } = new("https://www.nexusmods.com");
+    public Uri Uri { get; set; } = new("https://www.nexusmods.com");
 
-    public bool IsActive { get; }
+    public bool IsActive { get; set; }
 
     public void Dispose()
     {

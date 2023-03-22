@@ -82,7 +82,7 @@ public class InterprocessJob : IInterprocessJob
     {
         JobId = jobId;
         _manager = manager;
-        JobType = JobType;
+        JobType = jobType;
         ProcessId = processId;
         Description = description;
         Data = bytes;

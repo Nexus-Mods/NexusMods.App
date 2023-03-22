@@ -9,6 +9,7 @@ using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.LeftMenu.Game;
 using NexusMods.App.UI.LeftMenu.Home;
 using NexusMods.App.UI.LeftMenu.Items;
+using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.RightContent;
 using NexusMods.App.UI.RightContent.Home;
 using NexusMods.App.UI.RightContent.MyGames;
@@ -43,6 +44,7 @@ public static class Services
             .AddViewModel<LaunchButtonViewModel, ILaunchButtonViewModel>()
             .AddViewModel<GameLeftMenuViewModel, IGameLeftMenuViewModel>()
             .AddViewModel<PlaceholderDesignViewModel, IPlaceholderViewModel>()
+            .AddViewModel<NexusLoginOverlayViewModel, INexusLoginOverlayViewModel>()
 
             // Views
             .AddView<GameWidget, IGameWidgetViewModel>()
@@ -59,6 +61,7 @@ public static class Services
             .AddView<LaunchButtonView, ILaunchButtonViewModel>()
             .AddView<GameLeftMenuView, IGameLeftMenuViewModel>()
             .AddView<PlaceholderView, IPlaceholderViewModel>()
+            .AddView<NexusLoginOverlayView, INexusLoginOverlayViewModel>()
 
             // Other
             .AddSingleton<InjectedViewLocator>()

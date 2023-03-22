@@ -2,7 +2,7 @@
 
 namespace NexusMods.App.UI.Overlays;
 
-public interface INexusLoginOverlayViewModel : IViewModelInterface
+public interface INexusLoginOverlayViewModel : IOverlayViewModel
 {
     public ICommand Cancel { get; }
     public Uri Uri { get; }

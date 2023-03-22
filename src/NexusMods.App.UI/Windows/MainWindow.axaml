@@ -36,8 +36,11 @@
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             ZIndex="1"
-            x:Name="Overlay">
-            <overlays:NexusLoginOverlayView HorizontalAlignment="Center" VerticalAlignment="Center" />
+            x:Name="OverlayBorder">
+            <reactiveUi:ViewModelViewHost
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                x:Name="OverlayViewHost" />
         </Border>
 
         <reactiveUi:ViewModelViewHost
