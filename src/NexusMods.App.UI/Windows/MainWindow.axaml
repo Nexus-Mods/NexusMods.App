@@ -12,6 +12,7 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:overlays="clr-namespace:NexusMods.App.UI.Overlays"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:windows="clr-namespace:NexusMods.App.UI.Windows"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
@@ -26,6 +27,19 @@
     </Design.DataContext>
 
     <Grid ColumnDefinitions="72, 216, *" RowDefinitions="62, *">
+        <Border
+            Background="#CC2A2C2B"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            ZIndex="1"
+            x:Name="Overlay">
+            <overlays:NexusLoginOverlayView HorizontalAlignment="Center" VerticalAlignment="Center" />
+        </Border>
+
         <reactiveUi:ViewModelViewHost
             Grid.Column="0"
             Grid.ColumnSpan="3"

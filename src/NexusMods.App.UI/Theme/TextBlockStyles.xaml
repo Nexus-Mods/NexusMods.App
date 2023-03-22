@@ -44,6 +44,7 @@
         <Setter Property="FontWeight" Value="400" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="LineHeight" Value="21" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
     </Style>
 
     <Style Selector="TextBlock.Subheading">
@@ -69,6 +70,16 @@
         <Setter Property="FontSize" Value="12" />
         <Setter Property="LineHeight" Value="16.5" />
         <Setter Property="LetterSpacing" Value="0.6" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+
+    <Style Selector="TextBlock.ButtonMontserratSemi">
+        <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
+        <Setter Property="FontWeight" Value="600" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="LineHeight" Value="14" />
+        <Setter Property="LetterSpacing" Value="0.7" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
     </Style>
 

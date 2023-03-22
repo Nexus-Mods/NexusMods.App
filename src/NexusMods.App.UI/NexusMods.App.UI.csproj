@@ -53,6 +53,8 @@
     <AvaloniaResource Include="Fonts\Regular\Roboto-Regular.ttf" />
     <None Remove="Fonts\SemiBold\Montserrat-SemiBold.ttf" />
     <AvaloniaResource Include="Fonts\SemiBold\Montserrat-SemiBold.ttf" />
+    <None Remove="Theme\SelectableTextBlock.xaml" />
+    <AvaloniaResource Include="Theme\SelectableTextBlock.xaml" />
   </ItemGroup>
 
   <ItemGroup>
