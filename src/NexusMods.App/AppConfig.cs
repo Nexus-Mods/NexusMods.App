@@ -24,7 +24,6 @@ public class AppConfig
             - {EntryFolder} : Directory this program's DLL resolver uses to probe for DLLs.
             - {CurrentDirectory} : Current Directory/PWD.
             - {HomeFolder} : User's home folder.
-            - {Documents} : User's home folder.
 
             - These monikers are case insensitive, and implemented inside paths library.
 

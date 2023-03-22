@@ -16,6 +16,13 @@ public interface IFileSystem
     IFileSystem CreateOverlayFileSystem(Dictionary<AbsolutePath, AbsolutePath> pathMappings);
 
     /// <summary>
+    /// Returns a known path.
+    /// </summary>
+    /// <param name="knownPath"></param>
+    /// <returns></returns>
+    AbsolutePath GetKnownPath(KnownPath knownPath);
+
+    /// <summary>
     /// Creates a new <see cref="AbsolutePath"/> from a full path.
     /// </summary>
     /// <param name="fullPath">Full path</param>
