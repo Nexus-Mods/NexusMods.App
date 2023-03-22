@@ -95,4 +95,23 @@ public class DataModelSettings : IDataModelSettings
             baseDirectory.CombineUnchecked(ArchivesFileName).GetFullPath()
         };
     }
+
+    /// <summary>
+    /// Expands any user provided paths; and ensures default settings in case of placeholders.
+    /// </summary>
+    public void Sanitize()
+    {
+        DataStoreFilePath = KnownFolders.ExpandPath(DataStoreFilePath);
+        IpcDataStoreFilePath = KnownFolders.ExpandPath(IpcDataStoreFilePath);
+        for (var x = 0; x < ArchiveLocations.Length; x++)
+            ArchiveLocations[x] = KnownFolders.ExpandPath(ArchiveLocations[x]);
+
+        MaxHashingJobs = MaxHashingJobs < 0 ? Environment.ProcessorCount : MaxHashingJobs;
+        LoadoutDeploymentJobs = LoadoutDeploymentJobs < 0 ? Environment.ProcessorCount : LoadoutDeploymentJobs;
+        MaxHashingThroughputBytesPerSecond = MaxHashingThroughputBytesPerSecond <= 0 ? 0 : MaxHashingThroughputBytesPerSecond;
+
+        // Deduplicate: This is necessary in case user has duplicates, or the MSFT configuration
+        //              binder inserts a duplicate.
+        ArchiveLocations = ArchiveLocations.Distinct().ToArray();
+    }
 }

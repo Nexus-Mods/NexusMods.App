@@ -25,4 +25,12 @@ public class FileExtractorSettings : IFileExtractorSettings
 
     /// <inheritdoc />
     public string TempFolderLocation { get; set; } = KnownFolders.EntryFolder.CombineUnchecked("Temp").GetFullPath();
+
+    /// <summary>
+    /// Expands any user provided paths; and ensures default settings in case of placeholders.
+    /// </summary>
+    public void Sanitize()
+    {
+        TempFolderLocation = KnownFolders.ExpandPath(TempFolderLocation);
+    }
 }

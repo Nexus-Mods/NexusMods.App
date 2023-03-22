@@ -64,6 +64,7 @@ public class Program
                 // Bind the AppSettings class to the configuration and register it as a singleton service
                 // Question to Reviewers: Should this be moved to AddApp?
                 context.Configuration.Bind(config);
+                config.Sanitize();
                 services.AddSingleton(config);
                 services.AddApp(config).Validate();
             })

@@ -49,4 +49,15 @@ public class HttpDownloaderSettings : IHttpDownloaderSettings
 
     /// <inheritdoc />
     public double CancelSpeedFraction { get; set; } = 0.66;
+
+    /// <summary>
+    /// Expands any user provided paths; and ensures default settings in case of placeholders.
+    /// </summary>
+    public void Sanitize()
+    {
+        ChunkCount = ChunkCount <= 0 ? 4 : ChunkCount;
+        WriteQueueLength = WriteQueueLength <= 0 ? 16 : WriteQueueLength;
+        MinCancelAge = MinCancelAge <= 0 ? 500 : MinCancelAge;
+        CancelSpeedFraction = CancelSpeedFraction <= 0 ? 0.66 : CancelSpeedFraction;
+    }
 }
