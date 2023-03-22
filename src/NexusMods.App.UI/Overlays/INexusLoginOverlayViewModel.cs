@@ -6,4 +6,5 @@ public interface INexusLoginOverlayViewModel : IViewModelInterface
 {
     public ICommand Cancel { get; }
     public Uri Uri { get; }
+    public bool IsActive { get; }
 }

@@ -5,5 +5,10 @@ public enum JobType
     /// <summary>
     /// The game's files are being indexed the loadout is being created.
     /// </summary>
-    ManageGame
+    ManageGame,
+
+    /// <summary>
+    /// The app is currently trying to log into the Nexus
+    /// </summary>
+    NexusLogin,
 }
