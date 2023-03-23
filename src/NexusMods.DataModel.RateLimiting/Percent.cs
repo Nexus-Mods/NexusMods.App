@@ -1,3 +1,5 @@
+using NexusMods.Paths.Extensions;
+
 namespace NexusMods.DataModel.RateLimiting;
 
 /// <summary>
@@ -23,7 +25,7 @@ public readonly struct Percent : IComparable, IEquatable<Percent>
 
     private Percent(double d, bool check)
     {
-        // TODO: ThrowHelper this exception throw out.
+        // TODO: ThrowHelper this exception throw out. https://github.com/Nexus-Mods/NexusMods.App/issues/214
         if (!check || InRange(d))
             Value = d;
         else
@@ -151,7 +153,7 @@ public readonly struct Percent : IComparable, IEquatable<Percent>
     /// <returns></returns>
     public static bool TryParse(string str, out Percent p)
     {
-        // TODO: This will not parse a value like 3.33%, as `TryParse` will not accept % suffix. We should probably also use culture specific % sign.
+        // TODO: This will not parse a value like 3.33%, as `TryParse` will not accept % suffix. https://github.com/Nexus-Mods/NexusMods.App/issues/209
         if (double.TryParse(str, out var d))
         {
             d /= 100;

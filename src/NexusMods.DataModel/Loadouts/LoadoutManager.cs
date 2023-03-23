@@ -295,10 +295,10 @@ public class LoadoutManager
         return _tools[game];
     }
 
-    // TODO: Should probably provide this API for already grouped elements.
+    // TODO: Should probably provide this API for already grouped elements. https://github.com/Nexus-Mods/NexusMods.App/issues/211
 
     /// <summary>
-    /// Replaces existing files for a given mod within the loadout/data store.
+    /// Replaces existing files for given mod(s) within the loadout/data store.
     /// Files to be replaced are matched using their <see cref="GamePath"/>(s).
     /// </summary>
     /// <param name="id">ID of the loadout to replace files in.</param>

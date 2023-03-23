@@ -3,7 +3,7 @@ using NexusMods.Paths;
 
 namespace NexusMods.CLI.Verbs;
 
-// TODO: We don't have an import loadout option.
+// TODO: We don't have an import loadout option. https://github.com/Nexus-Mods/NexusMods.App/issues/205
 
 // ReSharper disable once ClassNeverInstantiated.Global
 public class ExportLoadout : AVerb<LoadoutMarker, AbsolutePath>

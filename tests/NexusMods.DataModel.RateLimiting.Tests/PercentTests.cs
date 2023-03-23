@@ -69,7 +69,6 @@ public class PercentTests
         Percent.CreateClamped(0.33333).ToString(3).Should().Be("33.333%");
         Percent.TryParse("3.33", out var parsed).Should().BeTrue();
         parsed.Value.Should().Be(0.0333);
-
     }
 
     [Fact]

@@ -66,7 +66,6 @@ public class ArchiveManager
     /// <param name="hash">The hash of the file to be opened.</param>
     public Stream OpenRead(Hash hash)
     {
-        // TODO: This could be faster by eliding the check of whether the file already exists in PathFor, since exception is thrown if it can't open handle, making check redundant.
         return PathFor(hash).Open(FileMode.Open, FileAccess.Read, FileShare.Read);
     }
 
@@ -89,7 +88,7 @@ public class ArchiveManager
     /// <param name="hash">The hash to determine if exists in any of the locations.</param>
     public bool HaveArchive(Hash hash)
     {
-        // TODO: Provide location of found file as 'out' parameter.
+        // TODO: Provide location of found file as 'out' parameter. https://github.com/Nexus-Mods/NexusMods.App/issues/206#issue-1629712277
         var rel = NameForHash(hash);
         return _locations.Any(r => r.CombineUnchecked(rel).FileExists);
     }
@@ -153,7 +152,7 @@ public class ArchiveManager
         }, token);
     }
 
-    // TODO: This is likely an oversight/bug. I will handle this during the 2nd pass which includes perf stuff.
+    // TODO: Ability to select location for archiving. https://github.com/Nexus-Mods/NexusMods.App/issues/213
     // ReSharper disable once UnusedParameter.Local
     private AbsolutePath SelectLocation(AbsolutePath path)
     {

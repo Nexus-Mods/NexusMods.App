@@ -49,7 +49,7 @@ where TUnit : IAdditionOperators<TUnit, TUnit, TUnit>, IDivisionOperators<TUnit,
     /// <inheritdoc />
     public TUnit? Size { get; set; }
 
-    // TODO: Add finalizer here.
+    // TODO: Add finalizer here. https://github.com/Nexus-Mods/NexusMods.App/issues/211
 
     /// <inheritdoc />
     public void Dispose()

@@ -401,7 +401,6 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         return new RelativePath(thisFullPath.SliceFast(otherFullPath.Length + 1).ToString());
     }
 
-
     /// <summary>
     /// Returns true if this path is a child of the specified path.
     /// </summary>

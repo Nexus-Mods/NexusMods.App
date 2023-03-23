@@ -9,7 +9,7 @@ namespace NexusMods.DataModel.Abstractions;
 /// </summary>
 public interface IDataStore
 {
-    // TODO: There's some potential perf wins here by devirtualising the ID(s).
+    // TODO: There's some potential perf wins here by devirtualising the ID(s). Low priority. More important optimisations to be done at time of writing.
 
     /// <summary>
     /// Places an individual entity inside the data store.

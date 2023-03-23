@@ -43,7 +43,7 @@ public sealed class InterprocessProducer<T> : IMessageProducer<T>, IDisposable w
     /// <returns></returns>
     private void WriteInner(T message)
     {
-        // TODO: SliceFast here.
+        // TODO: SliceFast here. https://github.com/Nexus-Mods/NexusMods.App/issues/214
         Span<byte> buffer = stackalloc byte[T.MaxSize];
         var used = message.Write(buffer);
         _sqliteIpc.Send(_queueName, buffer[..used]);
