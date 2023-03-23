@@ -19,7 +19,7 @@ public class OSInteropWindows : IOSInterop
     }
 
     /// <inheritdoc/>
-    public async Task OpenUrl(string url, CancellationToken cancellationToken = default)
+    public async Task OpenUrl(Uri url, CancellationToken cancellationToken = default)
     {
         // cmd /c start "" "https://google.com"
         var command = Cli.Wrap("cmd.exe").WithArguments($@"/c start """" ""{url}""");

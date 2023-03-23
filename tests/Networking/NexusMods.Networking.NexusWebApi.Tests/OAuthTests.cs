@@ -8,6 +8,7 @@ using NexusMods.Networking.NexusWebApi.Types;
 using System.Text.Json;
 using FluentAssertions;
 using NexusMods.Common.OSInterop;
+using NexusMods.DataModel.Interprocess.Jobs;
 
 namespace NexusMods.Networking.NexusWebApi.Tests;
 
@@ -41,13 +42,18 @@ public class OAuthTests
     private readonly ILogger<OAuth> _logger;
     private readonly IMessageProducer<NXMUrlMessage> _producer;
     private readonly IMessageConsumer<NXMUrlMessage> _consumer;
+    private readonly IInterprocessJobManager _jobManager;
 
     // ReSharper disable once ContextualLoggerProblem
-    public OAuthTests(ILogger<OAuth> logger, IMessageProducer<NXMUrlMessage> producer, IMessageConsumer<NXMUrlMessage> consumer)
+    public OAuthTests(ILogger<OAuth> logger,
+        IMessageProducer<NXMUrlMessage> producer,
+        IMessageConsumer<NXMUrlMessage> consumer,
+        IInterprocessJobManager jobManager)
     {
         _logger = logger;
         _producer = producer;
         _consumer = consumer;
+        _jobManager = jobManager;
     }
 
     [Fact]
@@ -73,7 +79,7 @@ public class OAuthTests
         #endregion
 
         #region Execution
-        var oauth = new OAuth(_logger, httpClient, idGen.Object, os.Object, _consumer);
+        var oauth = new OAuth(_logger, httpClient, idGen.Object, os.Object, _consumer, _jobManager);
         var tokenTask = oauth.AuthorizeRequest(CancellationToken.None);
 
         await _producer.Write(new NXMUrlMessage { Value = NXMUrl.Parse($"nxm://oauth/callback?state={stateId}&code=code") }, CancellationToken.None);
@@ -110,13 +116,13 @@ public class OAuthTests
         #endregion
 
         #region Execution
-        var oauth = new OAuth(_logger, httpClient, idGen.Object, os.Object, _consumer);
+        var oauth = new OAuth(_logger, httpClient, idGen.Object, os.Object, _consumer, _jobManager);
         var token = await oauth.RefreshToken("refresh_token", CancellationToken.None);
         #endregion
 
         #region Verification
         idGen.Verify(_ => _.UUIDv4(), Times.Never);
-        os.Verify(_ => _.OpenUrl(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+        os.Verify(_ => _.OpenUrl(It.IsAny<Uri>(), It.IsAny<CancellationToken>()), Times.Never);
         token.Should().BeEquivalentTo(ReplyToken);
         #endregion
     }
@@ -144,7 +150,7 @@ public class OAuthTests
         #endregion
 
         #region Execution
-        var oauth = new OAuth(_logger, httpClient, idGen.Object, os.Object, _consumer);
+        var oauth = new OAuth(_logger, httpClient, idGen.Object, os.Object, _consumer, _jobManager);
         Func<Task> call = () => oauth.AuthorizeRequest(CancellationToken.None);
         var tokenTask = call.Should().ThrowAsync<JsonException>();
 
@@ -170,7 +176,7 @@ public class OAuthTests
         #endregion
 
         #region Execution
-        var oauth = new OAuth(_logger, httpClient, idGen.Object, os.Object, _consumer);
+        var oauth = new OAuth(_logger, httpClient, idGen.Object, os.Object, _consumer, _jobManager);
         Func<Task> call = () => oauth.AuthorizeRequest(cts.Token);
         var task = call.Should().ThrowAsync<OperationCanceledException>();
         cts.Cancel();
@@ -190,5 +196,5 @@ public class OAuthTests
         };
 
     // ReSharper disable once InconsistentNaming
-    private string ExpectedAuthURL => "https://users.nexusmods.com/oauth/authorize?response_type=code&scope=public&code_challenge_method=S256&client_id=vortex&redirect_uri=nxm%3A%2F%2Foauth%2Fcallback&code_challenge=-pSOp5xdZffKD0gc1lb5JALgN_ZtE9X573ib3yS8BT4&state=00000000-0000-0000-0000-000000000000";
+    private readonly Uri ExpectedAuthURL = new("https://users.nexusmods.com/oauth/authorize?response_type=code&scope=public&code_challenge_method=S256&client_id=vortex&redirect_uri=nxm%3A%2F%2Foauth%2Fcallback&code_challenge=-pSOp5xdZffKD0gc1lb5JALgN_ZtE9X573ib3yS8BT4&state=00000000-0000-0000-0000-000000000000");
 }

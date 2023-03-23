@@ -1,15 +1,17 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Style Selector="TextBox">
-        <Setter Property="FontSize" Value="15" />
+    <Style Selector="TextBox.Bare">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="LineHeight" Value="21" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
         <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
-        <Setter Property="FontWeight" Value="Regular" />
-        <Setter Property="LineHeight" Value="24" />
-        <Setter Property="LetterSpacing" Value="1" />
+        <Setter Property="FontWeight" Value="400" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="TextWrapping" Value="Wrap" />
-        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="BorderBrush" Value="#00FFFFFF" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="Background" Value="#01FFFFFF" />
     </Style>
 </Styles>

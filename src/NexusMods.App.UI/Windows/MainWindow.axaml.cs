@@ -48,6 +48,15 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
             this.WhenAnyValue(view => view.ViewModel!.LeftMenu)
                 .BindTo(this, view => view.LeftMenuViewModelHost.ViewModel)
                 .DisposeWith(disposables);
+
+            this.WhenAnyValue(view => view.ViewModel!.OverlayContent)
+                .BindTo(this, view => view.OverlayViewHost.ViewModel)
+                .DisposeWith(disposables);
+            this.WhenAnyValue(view => view.ViewModel!.OverlayContent)
+                .Select(content => content != null)
+                .BindTo(this, view => view.OverlayBorder.IsVisible)
+                .DisposeWith(disposables);
+
         });
     }
 

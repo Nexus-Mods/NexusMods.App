@@ -10,7 +10,7 @@ public class OSInteropTests
     [Fact]
     public async Task UsesExplorerOnWindows()
     {
-        const string url = "foobar://test";
+        var url = new Uri("foobar://test");
         var mockFactory = new Mock<IProcessFactory>();
 
         var os = new OSInteropWindows(mockFactory.Object);
@@ -27,7 +27,7 @@ public class OSInteropTests
     [Fact]
     public async Task UsesXDGOpenOnLinux()
     {
-        const string url = "foobar://test";
+        var url = new Uri("foobar://test");
         var mockFactory = new Mock<IProcessFactory>();
 
         var os = new OSInteropLinux(mockFactory.Object);
@@ -36,7 +36,7 @@ public class OSInteropTests
         mockFactory.Verify(f => f.ExecuteAsync(
             It.Is<Command>(command =>
                 command.TargetFilePath == "xdg-open" &&
-                command.Arguments == url),
+                command.Arguments == url.ToString()),
             It.IsAny<CancellationToken>()
         ), Times.Once);
     }
@@ -44,7 +44,7 @@ public class OSInteropTests
     [Fact]
     public async Task UsesOpenOnOSX()
     {
-        const string url = "foobar://test";
+        var url = new Uri("foobar://test");
         var mockFactory = new Mock<IProcessFactory>();
 
         var os = new OSInteropOSX(mockFactory.Object);
@@ -53,7 +53,7 @@ public class OSInteropTests
         mockFactory.Verify(f => f.ExecuteAsync(
             It.Is<Command>(command =>
                 command.TargetFilePath == "open" &&
-                command.Arguments == url),
+                command.Arguments == url.ToString()),
             It.IsAny<CancellationToken>()
         ), Times.Once);
     }

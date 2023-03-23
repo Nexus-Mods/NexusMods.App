@@ -1,4 +1,4 @@
-namespace NexusMods.Common.OSInterop;
+﻿namespace NexusMods.Common.OSInterop;
 
 /// <summary>
 /// abstractions for functionality that has no platform independent implementation in .NET
@@ -11,5 +11,5 @@ public interface IOSInterop
     /// </summary>
     /// <param name="url">url to open</param>
     /// <param name="cancellationToken">Cancellation token</param>
-    Task OpenUrl(string url, CancellationToken cancellationToken = default);
+    Task OpenUrl(Uri url, CancellationToken cancellationToken = default);
 }
