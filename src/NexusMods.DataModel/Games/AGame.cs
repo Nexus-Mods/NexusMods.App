@@ -43,7 +43,6 @@ public abstract class AGame : IGame
         return Array.Empty<AModFile>();
     }
 
-    // TODO: Probably don't throw, just use nullable w/ null when no icon is available.
     /// <inheritdoc />
     public virtual IStreamFactory Icon => throw new NotImplementedException("No icon provided for this game.");
 

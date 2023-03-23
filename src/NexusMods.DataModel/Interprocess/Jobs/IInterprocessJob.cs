@@ -42,6 +42,11 @@ public interface IInterprocessJob : INotifyPropertyChanged, IDisposable
     IId PayloadAsId { get; }
 
     /// <summary>
+    /// Returns the payload as a Uri (utf-8 encoded string)
+    /// </summary>
+    Uri PayloadAsUri { get; }
+
+    /// <summary>
     /// Returns the payload as a <see cref="ILoadoutId"/>. This is only valid if the payload
     /// </summary>
     LoadoutId LoadoutId { get; }

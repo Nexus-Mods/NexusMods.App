@@ -29,6 +29,12 @@
         <Setter Property="Height" Value="24" />
     </Style>
 
+    <Style Selector="Button.BareIcon.Small /template/ icons|Icon">
+        <Setter Property="Foreground" Value="#FFFFFF" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Height" Value="14" />
+    </Style>
+
     <Style Selector="Button.BareIcon.Cog /template/ icons|Icon">
         <Setter Property="Value" Value="mdi-cog" />
     </Style>
@@ -56,6 +62,11 @@
 
     <Style Selector="Button.BareIcon.KeyboardArrowDown /template/ icons|Icon">
         <Setter Property="Value" Value="mdi-chevron-down" />
+    </Style>
+
+
+    <Style Selector="Button.BareIcon.Copy /template/ icons|Icon">
+        <Setter Property="Value" Value="mdi-content-copy" />
     </Style>
 
 

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
+using System.Text;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Interprocess.Messages;
 using NexusMods.DataModel.Loadouts;
@@ -15,6 +16,11 @@ public class InterprocessJob : IInterprocessJob
 {
     private readonly IInterprocessJobManager _manager;
     private Percent _progress;
+    /// <summary>
+    /// True if this instance is the "owning" instance of the job, where disposing
+    /// the instance will auto-close the job
+    /// </summary>
+    private readonly bool _isOwner = true;
 
     /// <summary>
     /// Create a new job, where the payload is a <see cref="IId"/>.
@@ -25,6 +31,18 @@ public class InterprocessJob : IInterprocessJob
     /// <param name="description"></param>
     public InterprocessJob(JobType jobType, IInterprocessJobManager manager, IId payload, string description) :
         this(jobType, manager, payload.ToTaggedBytes(), description)
+    {
+    }
+
+    /// <summary>
+    /// Create a new job, where the payload is a <see cref="Uri"/>.
+    /// </summary>
+    /// <param name="jobType"></param>
+    /// <param name="manager"></param>
+    /// <param name="payload"></param>
+    /// <param name="description"></param>
+    public InterprocessJob(JobType jobType, IInterprocessJobManager manager, Uri payload, string description) :
+        this(jobType, manager, Encoding.UTF8.GetBytes(payload.ToString()), description)
     {
     }
 
@@ -64,12 +82,13 @@ public class InterprocessJob : IInterprocessJob
     {
         JobId = jobId;
         _manager = manager;
-        JobType = JobType;
+        JobType = jobType;
         ProcessId = processId;
         Description = description;
         Data = bytes;
         StartTime = startTime;
         _progress = progress;
+        _isOwner = false;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -108,12 +127,15 @@ public class InterprocessJob : IInterprocessJob
     public IId PayloadAsId => IId.FromTaggedSpan(Data);
 
     /// <inheritdoc />
+    public Uri PayloadAsUri => new (Encoding.UTF8.GetString(Data));
+
+    /// <inheritdoc />
     public LoadoutId LoadoutId => LoadoutId.From(Data);
 
     public void Dispose()
     {
         // If the process that created the job is still running, end the job.
-        if (Environment.ProcessId == ProcessId.Value)
+        if (_isOwner)
             _manager.EndJob(JobId);
     }
 }

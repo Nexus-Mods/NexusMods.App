@@ -46,6 +46,9 @@
         <Color x:Key="ThemeBackgroundColor">#101010</Color>
         <SolidColorBrush Color="{DynamicResource ThemeBackgroundColor}" x:Key="ThemeBackgroundBrush" />
 
+        <Color x:Key="BackgroundSecondaryColor">#101010</Color>
+        <SolidColorBrush Color="{DynamicResource BackgroundSecondaryColor}" x:Key="BackgroundSecondaryBrush" />
+
         <Color x:Key="TransparentColor">#00FFFFFF</Color>
         <SolidColorBrush Color="{DynamicResource TransparentColor}" x:Key="TransparentBrush" />
 
@@ -54,6 +57,9 @@
 
         <Color x:Key="StructuralBorderColor">#2DFFFFFF</Color>
         <SolidColorBrush Color="{DynamicResource StructuralBorderColor}" x:Key="StructuralBorderBrush" />
+
+        <Color x:Key="BorderContainerColor">#3C3F44</Color>
+        <SolidColorBrush Color="{DynamicResource BorderContainerColor}" x:Key="BorderContainerBrush" />
 
         <Color x:Key="StatusInfo">#388FFA</Color>
         <Color x:Key="StatusInfoTransparent">#0C388FFA</Color>

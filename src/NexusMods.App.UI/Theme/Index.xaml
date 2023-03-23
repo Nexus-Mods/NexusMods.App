@@ -4,6 +4,7 @@
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/Borders.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/DataGridStyles.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/LabelStyles.xaml" />
+    <StyleInclude Source="avares://NexusMods.App.UI/Theme/SelectableTextBlock.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/TextBlockStyles.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/ToggleSwitchStyles.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/WindowStyles.xaml" />

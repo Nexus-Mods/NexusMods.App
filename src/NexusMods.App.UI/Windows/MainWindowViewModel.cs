@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.TopBar;
 using NexusMods.App.UI.LeftMenu;
+using NexusMods.App.UI.Overlays;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -12,10 +13,14 @@ namespace NexusMods.App.UI.Windows;
 
 public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
 {
-    public MainWindowViewModel(ILogger<MainWindowViewModel> logger, ISpineViewModel spineViewModel, ITopBarViewModel topBarViewModel)
+    private readonly INexusLoginOverlayViewModel _nexusOverlayViewModel;
+
+    public MainWindowViewModel(ILogger<MainWindowViewModel> logger, ISpineViewModel spineViewModel, ITopBarViewModel topBarViewModel,
+        INexusLoginOverlayViewModel nexusOverlayViewModel)
     {
         TopBar = topBarViewModel;
         Spine = spineViewModel;
+        _nexusOverlayViewModel = nexusOverlayViewModel;
 
         // Only show controls in Windows since we can remove the chrome on that platform
         TopBar.ShowWindowControls = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
@@ -24,6 +29,11 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
         {
             Spine.Actions
                 .Subscribe(HandleSpineAction)
+                .DisposeWith(d);
+
+            this.WhenAnyValue(vm => vm._nexusOverlayViewModel.IsActive)
+                .Select(active => active ? _nexusOverlayViewModel : null)
+                .BindTo(this, vm => vm.OverlayContent)
                 .DisposeWith(d);
 
             this.WhenAnyValue(vm => vm.Spine.LeftMenu)
@@ -64,4 +74,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
 
     [Reactive]
     public ITopBarViewModel TopBar { get; set; }
+
+    [Reactive]
+    public IOverlayViewModel? OverlayContent { get; set; }
 }

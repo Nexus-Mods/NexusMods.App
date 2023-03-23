@@ -1,4 +1,5 @@
 using System.Data.SQLite;
+using System.Diagnostics;
 using System.Reactive.Subjects;
 using DynamicData;
 using Microsoft.Extensions.Logging;
@@ -92,6 +93,20 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
             _conn);
         cmd.Parameters.AddWithValue("@timestamp", oldTime.ToFileTimeUtc());
         await cmd.ExecuteNonQueryAsync(token);
+
+        foreach (var job in _jobs.Items)
+        {
+            try
+            {
+                Process.GetProcessById((int)job.ProcessId.Value);
+            }
+            catch (ArgumentException _)
+            {
+                _logger.LogInformation("Removing job {JobId} because the process {ProcessId} no longer exists", job.JobId, job.ProcessId);
+                EndJob(job.JobId);
+            }
+        }
+        UpdateJobTimestamp();
     }
 
     private async Task ReaderLoop(long lastId, CancellationToken shutdownTokenToken)
@@ -100,7 +115,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         while (!shutdownTokenToken.IsCancellationRequested)
         {
             lastId = ProcessMessages(lastId);
-
+            
             ProcessJobs();
 
             var elapsed = DateTime.UtcNow;
@@ -127,13 +142,13 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
     private long GetStartId()
     {
         using var cmd = new SQLiteCommand(
-            "SELECT MAX(Id) FROM Ipc WHERE TimeStamp >= @current", _conn);
+            "SELECT MAX(Id) FROM Ipc", _conn);
         // Subtract 1 second to ensure we don't miss any messages that were written in the last second.
         cmd.Parameters.AddWithValue("@current", DateTime.UtcNow.ToFileTimeUtc());
         var reader = cmd.ExecuteReader();
         while (reader.Read())
         {
-            return reader.IsDBNull(0) ? 0L : reader.GetInt64(0);
+            return reader.IsDBNull(0) ? (long)_syncArray.Get(0) : reader.GetInt64(0);
         }
 
         return 0L;
@@ -212,9 +227,11 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
                     {
                         if (item.Value.Progress != progress)
                             item.Value.Progress = progress;
+                        _logger.LogTrace("Job {JobId} progress is {Progress}", jobId, progress);
                         continue;
                     }
 
+                    _logger.LogTrace("Found new job {JobId}", jobId);
                     var processId = ProcessId.From((uint)reader.GetInt64(1));
                     var description = reader.GetString(3);
                     var jobType = Enum.Parse<JobType>(reader.GetString(4));
@@ -231,9 +248,13 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
 
                 foreach (var key in editable.Keys)
                 {
-                    if (!seen.Contains(key))
-                        editable.Remove(key);
+                    if (seen.Contains(key))
+                        continue;
+
+                    _logger.LogTrace("Removing job {JobId}", key);
+                    editable.Remove(key);
                 }
+                _logger.LogTrace("Done Processing");
             });
         }
         catch (Exception ex)
