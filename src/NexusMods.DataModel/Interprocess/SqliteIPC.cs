@@ -254,7 +254,6 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
                     _logger.LogTrace("Removing job {JobId}", key);
                     editable.Remove(key);
                 }
-                editable.Refresh();
                 _logger.LogTrace("Done Processing");
             });
         }
