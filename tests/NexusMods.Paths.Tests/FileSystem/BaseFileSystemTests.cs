@@ -35,7 +35,6 @@ public class BaseFileSystemTests
     [SkippableTheory, AutoFileSystem]
     public async Task Test_ReadAllBytesAsync(InMemoryFileSystem fs, AbsolutePath path, byte[] contents)
     {
-        Skip.IfNot(OperatingSystem.IsLinux());
         fs.AddFile(path, contents);
         var result = await fs.ReadAllBytesAsync(path);
         result.Should().BeEquivalentTo(contents);
@@ -44,9 +43,23 @@ public class BaseFileSystemTests
     [SkippableTheory, AutoFileSystem]
     public async Task Test_ReadAllTextAsync(InMemoryFileSystem fs, AbsolutePath path, string contents)
     {
-        Skip.IfNot(OperatingSystem.IsLinux());
         fs.AddFile(path, contents);
         var result = await fs.ReadAllTextAsync(path);
         result.Should().BeEquivalentTo(contents);
+    }
+
+    [SkippableTheory]
+    [InlineData("C:\\", "/c")]
+    [InlineData("C:\\foo\\bar", "/c/foo/bar")]
+    public void Test_ConvertCrossPlatformPath(string input, string output)
+    {
+        Skip.IfNot(OperatingSystem.IsLinux());
+
+        var fs = new InMemoryFileSystem().CreateOverlayFileSystem(
+            new Dictionary<AbsolutePath, AbsolutePath>(),
+            true);
+
+        var path = fs.FromFullPath(input);
+        path.GetFullPath().Should().Be(output);
     }
 }

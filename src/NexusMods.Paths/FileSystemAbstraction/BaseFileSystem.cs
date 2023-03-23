@@ -14,6 +14,7 @@ namespace NexusMods.Paths;
 public abstract class BaseFileSystem : IFileSystem
 {
     private readonly Dictionary<AbsolutePath, AbsolutePath> _pathMappings = new();
+    private readonly bool _hasPathMappings;
     private readonly bool _convertCrossPlatformPaths;
 
     /// <summary>
@@ -31,11 +32,15 @@ public abstract class BaseFileSystem : IFileSystem
         bool convertCrossPlatformPaths)
     {
         _pathMappings = pathMappings;
+        _hasPathMappings = _pathMappings.Any();
         _convertCrossPlatformPaths = convertCrossPlatformPaths;
     }
 
     internal AbsolutePath GetMappedPath(AbsolutePath originalPath)
     {
+        // fast exit
+        if (!_hasPathMappings) return originalPath;
+
         // direct mapping
         if (_pathMappings.TryGetValue(originalPath, out var mappedPath))
             return mappedPath;
