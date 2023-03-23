@@ -94,10 +94,18 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         cmd.Parameters.AddWithValue("@timestamp", oldTime.ToFileTimeUtc());
         await cmd.ExecuteNonQueryAsync(token);
 
-
-        await using var cmd2 = new SQLiteCommand("DELETE FROM Jobs WHERE ProcessID NOT IN (@pids)", _conn);
-        cmd2.Parameters.AddWithValue("@pids", Process.GetProcesses().Select(x => x.Id).ToArray());
-        await cmd2.ExecuteNonQueryAsync(token);
+        foreach (var job in _jobs.Items)
+        {
+            try
+            {
+                Process.GetProcessById((int)job.ProcessId.Value);
+            }
+            catch (ArgumentException _)
+            {
+                _logger.LogInformation("Removing job {JobId} because the process {ProcessId} no longer exists", job.JobId, job.ProcessId);
+                EndJob(job.JobId);
+            }
+        }
         UpdateJobTimestamp();
     }
 
