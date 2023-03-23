@@ -10,7 +10,7 @@ namespace NexusMods.DataModel.Interprocess.Messages;
 /// </summary>
 public struct IdUpdated : IMessage
 {
-    // TODO: SkipLocalsInit here.
+    // TODO: SkipLocalsInit here. https://github.com/Nexus-Mods/NexusMods.App/issues/214
 
     /// <summary>
     /// The ID being inserted into the database.

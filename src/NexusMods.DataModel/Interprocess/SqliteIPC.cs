@@ -100,7 +100,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         while (!shutdownTokenToken.IsCancellationRequested)
         {
             lastId = ProcessMessages(lastId);
-
+            
             ProcessJobs();
 
             var elapsed = DateTime.UtcNow;

@@ -64,7 +64,7 @@ public class Resource<TResource, TUnit> : IResource<TResource, TUnit>
     /// <inheritdoc />
     public string Name { get; }
 
-    // TODO: Optimize this by removing LINQ and calculating both counts at once. Iterating a dictionary's elements is already slow; doing it twice is oof.
+    // TODO: Optimize this by removing LINQ and calculating both counts at once. Iterating a dictionary's elements is already slow; doing it twice is oof. https://github.com/Nexus-Mods/NexusMods.App/issues/214
 
     /// <inheritdoc />
     public StatusReport<TUnit> StatusReport =>

@@ -28,8 +28,6 @@ public class ModUpdate : IJsonArraySerializable<ModUpdate>
     /// </summary>
     public ModId ModId => ModId.From(_ModId);
 
-    // TODO: This is only referenced from test harness (right now). I think this might be incorrectly defined; since API returns timestamps; which shouldn't deserialize here.
-
     /// <summary>
     /// The last time a file on the mod page was updated.
     /// </summary>
