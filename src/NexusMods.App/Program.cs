@@ -57,7 +57,7 @@ public class Program
     {
         // I'm not 100% sure how to wire this up to cleanly pass settings
         // to ConfigureLogging; since the DI container isn't built until the host is.
-        AppConfig config = new AppConfig();
+        var config = new AppConfig();
         var host = Host.CreateDefaultBuilder(Environment.GetCommandLineArgs())
             .ConfigureServices(services =>
             {
