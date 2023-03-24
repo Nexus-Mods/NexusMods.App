@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 
 namespace NexusMods.FileExtractor;
@@ -12,7 +13,7 @@ public interface IFileExtractorSettings
     /// <summary>
     /// Location of where the temporary folder will be stored.
     /// </summary>
-    public string TempFolderLocation { get; }
+    public ConfigurationPath TempFolderLocation { get; }
 }
 
 /// <summary>
@@ -24,13 +25,5 @@ public class FileExtractorSettings : IFileExtractorSettings
     // Note: We can't serialize AbsolutePath because it contains more fields than expected. Just hope user sets correct paths and pray for the best.
 
     /// <inheritdoc />
-    public string TempFolderLocation { get; set; } = KnownFolders.EntryFolder.CombineUnchecked("Temp").GetFullPath();
-
-    /// <summary>
-    /// Expands any user provided paths; and ensures default settings in case of placeholders.
-    /// </summary>
-    public void Sanitize()
-    {
-        TempFolderLocation = KnownFolders.ExpandPath(TempFolderLocation);
-    }
+    public ConfigurationPath TempFolderLocation { get; set; } = KnownFolders.EntryFolder.CombineUnchecked("Temp").GetFullPath();
 }

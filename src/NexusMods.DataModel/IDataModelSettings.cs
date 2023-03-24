@@ -13,18 +13,18 @@ public interface IDataModelSettings
     /// <summary>
     /// Path of the file which contains the backing data store or database.
     /// </summary>
-    public string DataStoreFilePath { get; }
+    public ConfigurationPath DataStoreFilePath { get; }
 
     /// <summary>
     /// Path of the file which contains the backing data store or database
     /// used for inter process communication.
     /// </summary>
-    public string IpcDataStoreFilePath { get; }
+    public ConfigurationPath IpcDataStoreFilePath { get; }
 
     /// <summary>
     /// Preconfigured locations [full paths] where mod archives can/will be stored.
     /// </summary>
-    public string[] ArchiveLocations { get; }
+    public ConfigurationPath[] ArchiveLocations { get; }
 
     /// <summary>
     /// Maximum number of simultaneous hashing jobs.
@@ -59,13 +59,13 @@ public class DataModelSettings : IDataModelSettings
     private static AbsolutePath DefaultBaseFolder => KnownFolders.EntryFolder;
 
     /// <inheritdoc />
-    public string DataStoreFilePath { get; set; }
+    public ConfigurationPath DataStoreFilePath { get; set; }
 
     /// <inheritdoc />
-    public string IpcDataStoreFilePath { get; set; }
+    public ConfigurationPath IpcDataStoreFilePath { get; set; }
 
     /// <inheritdoc />
-    public string[] ArchiveLocations { get; set; }
+    public ConfigurationPath[] ArchiveLocations { get; set; }
 
     /// <inheritdoc />
     public int MaxHashingJobs { get; set; } = Environment.ProcessorCount;
@@ -92,7 +92,7 @@ public class DataModelSettings : IDataModelSettings
         IpcDataStoreFilePath = baseDirectory.CombineUnchecked(DataModelIpcFileName).GetFullPath();
         ArchiveLocations = new[]
         {
-            baseDirectory.CombineUnchecked(ArchivesFileName).GetFullPath()
+            (ConfigurationPath)baseDirectory.CombineUnchecked(ArchivesFileName).GetFullPath()
         };
     }
 
@@ -101,11 +101,6 @@ public class DataModelSettings : IDataModelSettings
     /// </summary>
     public void Sanitize()
     {
-        DataStoreFilePath = KnownFolders.ExpandPath(DataStoreFilePath);
-        IpcDataStoreFilePath = KnownFolders.ExpandPath(IpcDataStoreFilePath);
-        for (var x = 0; x < ArchiveLocations.Length; x++)
-            ArchiveLocations[x] = KnownFolders.ExpandPath(ArchiveLocations[x]);
-
         MaxHashingJobs = MaxHashingJobs < 0 ? Environment.ProcessorCount : MaxHashingJobs;
         LoadoutDeploymentJobs = LoadoutDeploymentJobs < 0 ? Environment.ProcessorCount : LoadoutDeploymentJobs;
         MaxHashingThroughputBytesPerSecond = MaxHashingThroughputBytesPerSecond <= 0 ? 0 : MaxHashingThroughputBytesPerSecond;

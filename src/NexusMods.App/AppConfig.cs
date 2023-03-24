@@ -45,7 +45,6 @@ public class AppConfig
     public void Sanitize()
     {
         DataModelSettings.Sanitize();
-        FileExtractorSettings.Sanitize();
         HttpDownloaderSettings.Sanitize();
         LoggingSettings.Sanitize();
     }
@@ -56,12 +55,12 @@ public interface ILoggingSettings
     /// <summary>
     /// Path where the log files will be saved to.
     /// </summary>
-    public string FilePath { get; }
+    public ConfigurationPath FilePath { get; }
 
     /// <summary>
     /// Path to historical log files, with templated element e.g. 'PATH_TO_FILE/nexusmods.app.{##}.log'
     /// </summary>
-    public string ArchiveFilePath { get; }
+    public ConfigurationPath ArchiveFilePath { get; }
 
     /// <summary>
     /// Number of previous log files to store.
@@ -76,10 +75,10 @@ public class LoggingSettings : ILoggingSettings
     private static AbsolutePath DefaultBaseFolder => KnownFolders.EntryFolder;
 
     /// <inheritdoc/>
-    public string FilePath { get; set; }
+    public ConfigurationPath FilePath { get; set; }
 
     /// <inheritdoc/>
-    public string ArchiveFilePath { get; set; }
+    public ConfigurationPath ArchiveFilePath { get; set; }
 
     /// <inheritdoc/>
     public int MaxArchivedFiles { get; set; }
@@ -106,8 +105,6 @@ public class LoggingSettings : ILoggingSettings
     /// </summary>
     public void Sanitize()
     {
-        FilePath = KnownFolders.ExpandPath(FilePath);
-        ArchiveFilePath = KnownFolders.ExpandPath(ArchiveFilePath);
         MaxArchivedFiles = MaxArchivedFiles < 0 ? 10 : MaxArchivedFiles;
     }
 }

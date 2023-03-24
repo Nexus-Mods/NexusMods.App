@@ -3,13 +3,13 @@ using System.CommandLine.Parsing;
 using System.Reactive;
 using System.Text.Json;
 using Avalonia;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.UI;
 using NexusMods.CLI;
 using NexusMods.Common;
+using NexusMods.Paths;
 using NLog.Extensions.Logging;
 using NLog.Targets;
 using ReactiveUI;
@@ -59,11 +59,15 @@ public class Program
         // to ConfigureLogging; since the DI container isn't built until the host is.
         AppConfig config = new AppConfig();
         var host = Host.CreateDefaultBuilder(Environment.GetCommandLineArgs())
-            .ConfigureServices((context, services) =>
+            .ConfigureServices(services =>
             {
                 // Bind the AppSettings class to the configuration and register it as a singleton service
                 // Question to Reviewers: Should this be moved to AddApp?
-                context.Configuration.Bind(config);
+                var appFolder = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory);
+                var configJson = File.ReadAllText(appFolder.CombineUnchecked("AppConfig.json").GetFullPath());
+
+                // Note: suppressed because invalid config will throw.
+                config = JsonSerializer.Deserialize<AppConfig>(configJson)!;
                 config.Sanitize();
                 services.AddSingleton(config);
                 services.AddApp(config).Validate();
@@ -80,8 +84,8 @@ public class Program
 
         var fileTarget = new FileTarget("file")
         {
-            FileName = settings.FilePath,
-            ArchiveFileName = settings.ArchiveFilePath,
+            FileName = settings.FilePath.GetFullPath(),
+            ArchiveFileName = settings.ArchiveFilePath.GetFullPath(),
             ArchiveOldFileOnStartup = true,
             MaxArchiveFiles = settings.MaxArchivedFiles,
             Layout = "${processtime} [${level:uppercase=true}] (${logger}) ${message:withexception=true}",
