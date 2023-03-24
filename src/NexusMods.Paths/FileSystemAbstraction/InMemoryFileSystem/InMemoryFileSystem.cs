@@ -19,9 +19,11 @@ public partial class InMemoryFileSystem : BaseFileSystem
     /// <summary>
     /// Constructor.
     /// </summary>
-    public InMemoryFileSystem() : this(new Dictionary<AbsolutePath, AbsolutePath>()) { }
+    public InMemoryFileSystem() : this(new Dictionary<AbsolutePath, AbsolutePath>(), false) { }
 
-    private InMemoryFileSystem(Dictionary<AbsolutePath, AbsolutePath> pathMappings) : base(pathMappings)
+    private InMemoryFileSystem(
+        Dictionary<AbsolutePath, AbsolutePath> pathMappings,
+        bool convertCrossPlatformPaths) : base(pathMappings, convertCrossPlatformPaths)
     {
         _rootDirectory = new InMemoryDirectoryEntry(
             AbsolutePath.FromFullPath(OperatingSystem.IsWindows() ? "C:\\" : "/"),
@@ -121,8 +123,10 @@ public partial class InMemoryFileSystem : BaseFileSystem
     #region Implementation
 
     /// <inheritdoc/>
-    public override IFileSystem CreateOverlayFileSystem(Dictionary<AbsolutePath, AbsolutePath> pathMappings)
-        => new InMemoryFileSystem(pathMappings);
+    public override IFileSystem CreateOverlayFileSystem(
+        Dictionary<AbsolutePath, AbsolutePath> pathMappings,
+        bool convertCrossPlatformPaths = false)
+        => new InMemoryFileSystem(pathMappings, convertCrossPlatformPaths);
 
     /// <inheritdoc/>
     protected override IFileEntry InternalGetFileEntry(AbsolutePath path)

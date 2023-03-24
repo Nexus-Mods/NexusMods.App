@@ -60,6 +60,12 @@ tab_width = 4
 # CS4014: Task not awaited
 dotnet_diagnostic.cs4014.severity = error
 
+# CS8509: Missing switch case for named enum value
+dotnet_diagnostic.CS8509.severity = error
+
+# CS824: Missing switch case for unnamed enum value
+dotnet_diagnostic.CS8524.severity = none
+
 [{*.yaml,*.yml}]
 indent_style = space
 indent_size = 2
