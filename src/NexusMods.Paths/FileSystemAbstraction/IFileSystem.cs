@@ -12,8 +12,23 @@ public interface IFileSystem
     /// Creates a new <see cref="FileSystem"/> that allows for path mapping.
     /// </summary>
     /// <param name="pathMappings">Path mappings</param>
+    /// <param name="convertCrossPlatformPaths">
+    /// If true, this will convert
+    /// Windows paths to Linux paths: <c>C:\foo\bar</c> will become
+    /// <c>/c/foo/bar</c>. This should not be used by default, and
+    /// is only useful for mapping Windows paths into Linux, eg: for Wine.
+    /// </param>
     /// <returns></returns>
-    IFileSystem CreateOverlayFileSystem(Dictionary<AbsolutePath, AbsolutePath> pathMappings);
+    IFileSystem CreateOverlayFileSystem(
+        Dictionary<AbsolutePath, AbsolutePath> pathMappings,
+        bool convertCrossPlatformPaths = false);
+
+    /// <summary>
+    /// Returns a known path.
+    /// </summary>
+    /// <param name="knownPath"></param>
+    /// <returns></returns>
+    AbsolutePath GetKnownPath(KnownPath knownPath);
 
     /// <summary>
     /// Creates a new <see cref="AbsolutePath"/> from a full path.

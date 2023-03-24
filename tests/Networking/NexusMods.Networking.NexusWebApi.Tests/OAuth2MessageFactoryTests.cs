@@ -8,6 +8,7 @@ using FluentAssertions;
 using Moq.Protected;
 using System.Text.Json;
 using NexusMods.Common.OSInterop;
+using NexusMods.DataModel.Interprocess.Jobs;
 
 namespace NexusMods.Networking.NexusWebApi.Tests;
 
@@ -17,7 +18,9 @@ public class OAuth2MessageFactoryTests
     private Mock<IDataStore> _store;
     private Mock<HttpMessageHandler> _handler;
 
-    public OAuth2MessageFactoryTests(ILogger<OAuth2MessageFactoryTests> logger, IMessageConsumer<NXMUrlMessage> consumer)
+    public OAuth2MessageFactoryTests(ILogger<OAuth2MessageFactoryTests> logger,
+        IMessageConsumer<NXMUrlMessage> consumer,
+        IInterprocessJobManager jobManager)
     {
         _handler = new Mock<HttpMessageHandler>();
         var httpClient = new HttpClient(_handler.Object);
@@ -25,11 +28,11 @@ public class OAuth2MessageFactoryTests
         var os = new Mock<IOSInterop>();
         _store = new Mock<IDataStore>();
 
-        var auth = new OAuth(logger.As<ILogger<OAuth>>(), httpClient, idGen.Object, os.Object, consumer);
+        var auth = new OAuth(logger.As<ILogger<OAuth>>(), httpClient, idGen.Object, os.Object, consumer, jobManager);
         _factory = new OAuth2MessageFactory(_store.Object, auth);
     }
 
-    [Fact()]
+    [Fact]
     public async void AddsHeaderToRequest()
     {
         _store.Setup(_ => _.Get<JWTTokenEntity>(JWTTokenEntity.StoreId, false)).Returns(() => new JWTTokenEntity

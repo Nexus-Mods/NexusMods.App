@@ -12,7 +12,7 @@ public static class StringExtensions
 {
     private static readonly char[] HexLookup = "0123456789ABCDEF".ToArray();
 
-    // TODO: I can elide bounds checks here, let me do it later - Sew
+    // TODO: I can elide bounds checks here, let me do it later - Sew https://github.com/Nexus-Mods/NexusMods.App/issues/214
 
     /// <summary>
     /// Converts the given bytes to a hexadecimal string.
@@ -59,7 +59,7 @@ public static class StringExtensions
     /// <param name="bytes">The bytes for the hex string.</param>
     public static void FromHex(this ReadOnlySpan<char> hex, Span<byte> bytes)
     {
-        // TODO: Speed this up. The BCL's version is slow because it has to account for many possible format; while ours is made by us and should be clear.
+        // TODO: Speed this up. The BCL's version is slow because it has to account for many possible format; while ours is made by us and should be clear. https://github.com/Nexus-Mods/NexusMods.App/issues/214
         for (var i = 0; i < bytes.Length; i++)
         {
             var hexOffset = i * 2;

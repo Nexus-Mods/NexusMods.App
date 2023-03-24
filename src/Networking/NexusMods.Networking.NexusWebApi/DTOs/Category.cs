@@ -6,7 +6,7 @@ using NexusMods.Networking.NexusWebApi.DTOs.Interfaces;
 namespace NexusMods.Networking.NexusWebApi.DTOs;
 
 // 👇 Suppress uninitialised variables. Currently Nexus has mostly read-only API and we expect server to return the data.
-#pragma warning disable CS8618 
+#pragma warning disable CS8618
 
 /// <summary>
 /// Mod categories. Unique per game.
@@ -27,14 +27,14 @@ public class Category : IJsonSerializable<Category>
     [JsonPropertyName("name")]
     public string Name { get; set; }
 
-    // TODO: Convenient way to handle this.
+    // TODO: Convenient way to handle this. [Note: Whether we will pick on this up is unknown; depends on state of GraphQL API down the road]
 
     /// <summary>
     /// Category which owns this category.
     /// </summary>
     /// <remarks>
     ///    This field can either be represented as a <see cref="CategoryId"/> of another category or
-    ///    'false' if there is no parent. 
+    ///    'false' if there is no parent.
     /// </remarks>
     [JsonPropertyName("parent_category")]
     public object ParentCategory { get; set; }

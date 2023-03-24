@@ -5,7 +5,7 @@ namespace NexusMods.DataModel.RateLimiting.Extensions;
 /// </summary>
 public static class CollectionExtensions
 {
-    // TODO: This can be span-ified.
+    // TODO: This can be span-ified. https://github.com/Nexus-Mods/NexusMods.App/issues/214
 
     /// <summary>
     /// Retrieves every Xth item from a collection.

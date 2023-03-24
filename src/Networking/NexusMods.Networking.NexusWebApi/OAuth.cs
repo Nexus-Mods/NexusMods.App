@@ -1,4 +1,4 @@
-using System.Reactive.Linq;
+﻿using System.Reactive.Linq;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Interprocess;
@@ -8,6 +8,8 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using NexusMods.Common.OSInterop;
+using NexusMods.DataModel.Interprocess.Jobs;
+using NexusMods.DataModel.Interprocess.Messages;
 
 
 namespace NexusMods.Networking.NexusWebApi;
@@ -96,16 +98,20 @@ public class OAuth
     private readonly IOSInterop _os;
     private readonly IIDGenerator _idGen;
     private readonly IMessageConsumer<NXMUrlMessage> _nxmUrlMessages;
+    private readonly IInterprocessJobManager _jobManager;
 
     /// <summary>
     /// constructor
     /// </summary>
-    public OAuth(ILogger<OAuth> logger, HttpClient http, IIDGenerator idGen, IOSInterop os, IMessageConsumer<NXMUrlMessage> nxmUrlMessages)
+    public OAuth(ILogger<OAuth> logger, HttpClient http, IIDGenerator idGen,
+        IOSInterop os, IMessageConsumer<NXMUrlMessage> nxmUrlMessages,
+        IInterprocessJobManager jobManager)
     {
         _logger = logger;
         _http = http;
         _os = os;
         _idGen = idGen;
+        _jobManager = jobManager;
         _nxmUrlMessages = nxmUrlMessages;
     }
 
@@ -134,13 +140,21 @@ public class OAuth
             .FirstAsync(cancel);
 
         _logger.LogInformation("Opening browser for NexusMods OAuth2 authorization request");
+        var url = GenerateAuthorizeUrl(challenge, state);
+        using var job = CreateJob(url);
         // see https://www.rfc-editor.org/rfc/rfc7636#section-4.3
-        await _os.OpenUrl(GenerateAuthorizeUrl(challenge, state), cancel);
+        await _os.OpenUrl(url, cancel);
         var code = await codeTask;
 
         _logger.LogInformation("Received OAuth2 authorization code, requesting token");
         return await AuthorizeToken(verifier, code, cancel);
 
+    }
+
+    private IInterprocessJob CreateJob(Uri url)
+    {
+        return new InterprocessJob(JobType.NexusLogin, _jobManager,
+            url, "Logging into the Nexus");
     }
 
     /// <summary>
@@ -190,7 +204,7 @@ public class OAuth
             .TrimEnd('=');
     }
 
-    private string GenerateAuthorizeUrl(string challenge, string state)
+    private Uri GenerateAuthorizeUrl(string challenge, string state)
     {
         var request = new Dictionary<string, string>
         {
@@ -202,7 +216,7 @@ public class OAuth
             { "code_challenge", SanitizeBase64(challenge) },
             { "state", state },
         };
-        return $"{OAuthUrl}/authorize?{StringifyRequest(request)}";
+        return new Uri($"{OAuthUrl}/authorize?{StringifyRequest(request)}");
     }
 
     private string StringifyRequest(IDictionary<string, string> input)

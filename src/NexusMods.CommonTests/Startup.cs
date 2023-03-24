@@ -9,7 +9,7 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection container)
     {
-
+        container.AddSkippableFactSupport();
     }
 
     public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>

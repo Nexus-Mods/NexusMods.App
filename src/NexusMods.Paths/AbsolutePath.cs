@@ -88,7 +88,7 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         // path is not rooted
         var rootLength = GetRootLength(span);
         if (rootLength == 0)
-            throw new ArgumentException("The provided path is not rooted.", nameof(fullPath));
+            throw new ArgumentException($"The provided path is not rooted: {fullPath}", nameof(fullPath));
 
         // path is only the root directory
         if (span.Length == rootLength)
@@ -400,7 +400,6 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
 
         return new RelativePath(thisFullPath.SliceFast(otherFullPath.Length + 1).ToString());
     }
-
 
     /// <summary>
     /// Returns true if this path is a child of the specified path.

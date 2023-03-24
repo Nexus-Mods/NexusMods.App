@@ -4,12 +4,14 @@ using System.Data.SQLite;
 using System.Reactive.Linq;
 using System.Text.Json;
 using BitFaster.Caching.Lru;
+using DynamicData;
 using NexusMods.DataModel.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Attributes;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Interprocess;
+using NexusMods.DataModel.Interprocess.Jobs;
 using NexusMods.DataModel.Interprocess.Messages;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -169,7 +171,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         if (!reader.Read())
             return null;
 
-        // TODO: This is horribly inefficient, .GetStream allocates a 4096 buffer internally.
+        // TODO: This is horribly inefficient, .GetStream allocates a 4096 buffer internally. https://github.com/Nexus-Mods/NexusMods.App/issues/214
         var blob = reader.GetStream(0);
         var value = (T?)JsonSerializer.Deserialize<Entity>(blob, _jsonOptions.Value);
         if (value == null) return null;
@@ -205,7 +207,7 @@ public class SqliteDataStore : IDataStore, IDisposable
 
         while (reader.Read())
         {
-            // TODO: This is horribly inefficient, .GetStream allocates a 4096 buffer internally.
+            // TODO: This is horribly inefficient, .GetStream allocates a 4096 buffer internally. https://github.com/Nexus-Mods/NexusMods.App/issues/214
             var blob = reader.GetStream(0);
             var bytes = new byte[blob.Length];
             // Suppressed because MemoryStream.
@@ -325,7 +327,7 @@ public class SqliteDataStore : IDataStore, IDisposable
                 yield break;
             }
 
-            // TODO: This is horribly inefficient, .GetStream allocates a 4096 buffer internally.
+            // TODO: This is horribly inefficient, .GetStream allocates a 4096 buffer internally. https://github.com/Nexus-Mods/NexusMods.App/issues/214
             var blob = reader.GetStream(1);
             var value = JsonSerializer.Deserialize<Entity>(blob, _jsonOptions.Value);
             if (value is T tc)
@@ -391,7 +393,7 @@ internal static class SqlExtensions
 {
     public static IId GetId(this SQLiteDataReader reader, EntityCategory ent, int column)
     {
-        // TODO: This is horribly inefficient, .GetStream allocates a 4096 buffer internally.
+        // TODO: This is horribly inefficient, .GetStream allocates a 4096 buffer internally. https://github.com/Nexus-Mods/NexusMods.App/issues/214
         var blob = reader.GetStream(column);
         var bytes = new byte[blob.Length];
         // ReSharper disable once MustUseReturnValue
