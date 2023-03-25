@@ -39,10 +39,10 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 .Subscribe(_ => WindowState = WindowState.Minimized)
                 .DisposeWith(disposables);
 
-            this.WhenAnyValue(view => view.ViewModel!.TopBar.MaximizeCommand.IsExecuting)
+            this.WhenAnyValue(view => view.ViewModel!.TopBar.ToggleMaximizeCommand.IsExecuting)
                 .SelectMany(e => e)
                 .Where(e => e)
-                .Subscribe(_ => WindowState = WindowState.Maximized)
+                .Subscribe(_ => WindowState = WindowState == WindowState.Normal ? WindowState.Maximized : WindowState.Normal)
                 .DisposeWith(disposables);
 
             this.WhenAnyValue(view => view.ViewModel!.LeftMenu)
