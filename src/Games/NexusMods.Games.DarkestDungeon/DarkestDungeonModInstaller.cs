@@ -28,7 +28,7 @@ public class DarkestDungeonModInstaller : IModInstaller
 
     public Task<IEnumerable<AModFile>> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken cancel)
     {
-        var modFolder = files.Keys.First(m => m.FileName == ModFilesTxt).Parent;
+        var modFolder = files.Keys.First(m => m.FileName == _modFilesTxt).Parent;
         IEnumerable<AModFile> res = files.Where(f => f.Key.InFolder(modFolder))
             .Select(f =>
             new FromArchive

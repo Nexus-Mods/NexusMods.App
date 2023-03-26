@@ -239,7 +239,7 @@ public class LoadoutManager
         if (installer == default)
             throw new Exception($"No Installer found for {path}");
 
-        var contents = await installer.Installer.Install(loadout.Value.Installation, analyzed.Hash, archive.Contents, token)
+        var contents = (await installer.Installer.Install(loadout.Value.Installation, analyzed.Hash, archive.Contents, token))
             .WithPersist(Store);
 
         name = string.IsNullOrWhiteSpace(name) ? path.FileName : name;

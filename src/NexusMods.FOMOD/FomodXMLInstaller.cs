@@ -67,7 +67,7 @@ public class FomodXMLInstaller : IModInstaller
         await mod.Initialize(true);
         var executor = _scriptType.CreateExecutor(mod, _delegates);
         string dataPath = "";
-        var installScript = _scriptType.LoadScript(await tmpFolder.Path.Join("fomod", "ModuleConfig.xml").ReadAllTextAsync(cancel), false);
+        var installScript = _scriptType.LoadScript(await AbsolutePath.FromFullPath(Path.Join(tmpFolder.Path.ToString(), "fomod", "ModuleConfig.xml")).ReadAllTextAsync(cancel), false);
         IList<Instruction> instructions = await executor.Execute(installScript, dataPath, null);
 
         var errors = instructions.Where(_ => _.type == "error");
@@ -143,7 +143,6 @@ public class FomodXMLInstaller : IModInstaller
                 From = new HashRelativePath(srcArchive, (RelativePath)instruction.source),
                 Hash = file.Value.Hash,
                 Size = file.Value.Size,
-                Store = _store
             };
         });
     }
@@ -154,7 +153,6 @@ public class FomodXMLInstaller : IModInstaller
         {
             Id = ModFileId.New(),
             To = new GamePath(GameFolderType.Game, instruction.destination),
-            Store = _store
         });
     }
 
