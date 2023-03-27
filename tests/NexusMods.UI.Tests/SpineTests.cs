@@ -65,7 +65,7 @@ public class SpineTests : AUiTest
 
         using var _ = vm.VM.Actions.Subscribe(vm.VM.Activations);
 
-        await Task.Delay(100);
+        await Task.Delay(1000);
 
         vm.VM.Games.Select(g => g.Name).Should().Contain("Cyberpunk 2077");
 

@@ -11,7 +11,7 @@ public sealed class InterprocessProducer<T> : IMessageProducer<T>, IDisposable w
     /// <summary>
     /// Creates a producer capable of sending messages across process boundaries.
     /// </summary>
-    /// <param name="sqliteIpc">Provides access to SQLite based IPC implementation.</param>
+    /// <param name="sqliteIpc">Provides access to Sqlite based IPC implementation.</param>
     /// <remarks>
     ///    This method is usually called from DI container, not by user directly.
     /// </remarks>
