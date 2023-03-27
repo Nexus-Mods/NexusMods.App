@@ -144,14 +144,14 @@ public class SqliteDataStore : IDataStore, IDisposable
         JsonSerializer.Serialize(ms, value, _jsonOptions.Value);
         var msBytes = ms.ToArray();
         var hash = new XxHash64Algorithm(0).HashBytes(msBytes);
-        var idBytes = new byte[8];
-        BinaryPrimitives.WriteUInt64BigEndian(idBytes, hash);
-        cmd.Parameters.AddWithValue("@id", idBytes);
+        var id = new Id64(value.Category, hash);
+
+        cmd.Parameters.AddWithValueUntagged("@id", id);
         cmd.Parameters.AddWithValue("@data", msBytes);
 
         cmd.ExecuteNonQuery();
 
-        var id = new Id64(value.Category, hash);
+
         if (!_immutableFields[id.Category])
             _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
         return id;
@@ -164,9 +164,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         using var cmd = conn.Value.CreateCommand();
         cmd.CommandText = _putStatements[value.Category];
 
-        Span<byte> idSpan = stackalloc byte[id.SpanSize];
-        id.ToSpan(idSpan);
-        cmd.Parameters.AddWithValue("@id", idSpan.ToArray());
+        cmd.Parameters.AddWithValueUntagged("@id", id);
         var ms = new MemoryStream();
         JsonSerializer.Serialize(ms, value, _jsonOptions.Value);
         ms.Position = 0;
@@ -186,16 +184,13 @@ public class SqliteDataStore : IDataStore, IDisposable
         using var conn = _pool.RentDisposable();
         using var cmd = conn.Value.CreateCommand();
         cmd.CommandText = _getStatements[id.Category];
-        var idBytes = new byte[id.SpanSize];
-        id.ToSpan(idBytes.AsSpan());
-        cmd.Parameters.AddWithValue("@id", idBytes);
+
+        cmd.Parameters.AddWithValueUntagged("@id", id);
         using var reader = cmd.ExecuteReader();
         if (!reader.Read())
             return null;
 
-        // TODO: This is horribly inefficient, .GetStream allocates a 4096 buffer internally. https://github.com/Nexus-Mods/NexusMods.App/issues/214
-        var blob = reader.GetStream(0);
-        var value = (T?)JsonSerializer.Deserialize<Entity>(blob, _jsonOptions.Value);
+        var value = (T?)JsonSerializer.Deserialize<Entity>(reader.GetBlob(0), _jsonOptions.Value);
         if (value == null) return null;
         value.DataStoreId = id;
 
@@ -233,13 +228,7 @@ public class SqliteDataStore : IDataStore, IDisposable
 
         while (reader.Read())
         {
-            // TODO: This is horribly inefficient, .GetStream allocates a 4096 buffer internally. https://github.com/Nexus-Mods/NexusMods.App/issues/214
-            var blob = reader.GetStream(0);
-            var bytes = new byte[blob.Length];
-            // Suppressed because MemoryStream.
-            // ReSharper disable once MustUseReturnValue
-            blob.Read(bytes, 0, bytes.Length);
-            return IId.FromTaggedSpan(bytes);
+            return reader.GetId(0);
         }
 
         return null;
@@ -251,17 +240,10 @@ public class SqliteDataStore : IDataStore, IDisposable
         using var conn = _pool.RentDisposable();
         using var cmd = conn.Value.CreateCommand();
         cmd.CommandText = _getStatements[id.Category];
-        var idBytes = new byte[id.SpanSize];
-        id.ToSpan(idBytes.AsSpan());
-        cmd.Parameters.AddWithValue("@id", idBytes);
-        using var reader = cmd.ExecuteReader();
-        if (!reader.Read())
-            return null;
 
-        var size = reader.GetBytes(0, 0, null, 0, 0);
-        var bytes = new byte[size];
-        reader.GetBytes(0, 0, bytes, 0, bytes.Length);
-        return bytes;
+        cmd.Parameters.AddWithValueUntagged("@id", id);
+        using var reader = cmd.ExecuteReader();
+        return !reader.Read() ? null : reader.GetBlob(0).ToArray();
     }
 
     /// <inheritdoc />
@@ -270,9 +252,8 @@ public class SqliteDataStore : IDataStore, IDisposable
         using var conn = _pool.RentDisposable();
         using var cmd = conn.Value.CreateCommand();
         cmd.CommandText = _putStatements[id.Category];
-        var idBytes = new byte[id.SpanSize];
-        id.ToSpan(idBytes.AsSpan());
-        cmd.Parameters.AddWithValue("@id", idBytes);
+
+        cmd.Parameters.AddWithValueUntagged("@id", id);
         cmd.Parameters.AddWithValue("@data", val.ToArray());
         cmd.ExecuteNonQuery();
 
@@ -287,9 +268,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         using var conn = _pool.RentDisposable();
         using var cmd = conn.Value.CreateCommand();
         cmd.CommandText = _deleteStatements[id.Category];
-        var idBytes = new byte[id.SpanSize];
-        id.ToSpan(idBytes.AsSpan());
-        cmd.Parameters.AddWithValue("@id", idBytes);
+        cmd.Parameters.AddWithValueUntagged("@id", id);
         cmd.ExecuteNonQuery();
 
         if (!_immutableFields[id.Category])
@@ -322,9 +301,7 @@ public class SqliteDataStore : IDataStore, IDisposable
                     await using var cmd = conn.Value.CreateCommand();
                     cmd.CommandText = _putStatements[id.Category];
 
-                    var idBytes = new byte[id.SpanSize];
-                    id.ToSpan(idBytes.AsSpan());
-                    cmd.Parameters.AddWithValue("@id", idBytes);
+                    cmd.Parameters.AddWithValueUntagged("@id", id);
                     cmd.Parameters.AddWithValue("@data", val);
                     await cmd.ExecuteNonQueryAsync(token);
                     processed++;
@@ -353,9 +330,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         using var cmd = conn.Value.CreateCommand();
         cmd.CommandText = _prefixStatements[prefix.Category];
 
-        var idBytes = new byte[prefix.SpanSize];
-        prefix.ToSpan(idBytes.AsSpan());
-        cmd.Parameters.AddWithValue("@prefix", idBytes);
+        cmd.Parameters.AddWithValueUntagged("@prefix", prefix);
         using var reader = cmd.ExecuteReader();
         while (reader.Read())
         {
@@ -365,14 +340,11 @@ public class SqliteDataStore : IDataStore, IDisposable
                 yield break;
             }
 
-            // TODO: This is horribly inefficient, .GetStream allocates a 4096 buffer internally. https://github.com/Nexus-Mods/NexusMods.App/issues/214
-            var blob = reader.GetStream(1);
-            var value = JsonSerializer.Deserialize<Entity>(blob, _jsonOptions.Value);
-            if (value is T tc)
-            {
-                value.DataStoreId = id;
-                yield return tc;
-            }
+            var value = JsonSerializer.Deserialize<Entity>(reader.GetBlob(1), _jsonOptions.Value);
+            if (value is not T tc) continue;
+
+            value.DataStoreId = id;
+            yield return tc;
         }
     }
 
@@ -425,18 +397,5 @@ public class SqliteDataStore : IDataStore, IDisposable
         _enqueuerTcs.Dispose();
         if (_pool is IDisposable disposable)
             disposable.Dispose();
-    }
-}
-
-internal static class SqlExtensions
-{
-    public static IId GetId(this SqliteDataReader reader, EntityCategory ent, int column)
-    {
-        // TODO: This is horribly inefficient, .GetStream allocates a 4096 buffer internally. https://github.com/Nexus-Mods/NexusMods.App/issues/214
-        var blob = reader.GetStream(column);
-        var bytes = new byte[blob.Length];
-        // ReSharper disable once MustUseReturnValue
-        blob.Read(bytes, 0, bytes.Length);
-        return IId.FromSpan(ent, bytes);
     }
 }
