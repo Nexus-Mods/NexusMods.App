@@ -1,6 +1,7 @@
 using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
 using System.Reactive;
+using System.Text.Json;
 using Avalonia;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.App.UI;
 using NexusMods.CLI;
 using NexusMods.Common;
+using NexusMods.Paths;
 using NLog.Extensions.Logging;
 using NLog.Targets;
 using ReactiveUI;
@@ -53,26 +55,39 @@ public class Program
 
     private static IHost BuildHost()
     {
+        // I'm not 100% sure how to wire this up to cleanly pass settings
+        // to ConfigureLogging; since the DI container isn't built until the host is.
+        var config = new AppConfig();
         var host = Host.CreateDefaultBuilder(Environment.GetCommandLineArgs())
-            .ConfigureLogging(AddLogging)
-            .ConfigureServices((_, services) =>
-                services.AddApp()
-                    .Validate())
+            .ConfigureServices(services =>
+            {
+                // Bind the AppSettings class to the configuration and register it as a singleton service
+                // Question to Reviewers: Should this be moved to AddApp?
+                var appFolder = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory);
+                var configJson = File.ReadAllText(appFolder.CombineUnchecked("AppConfig.json").GetFullPath());
+
+                // Note: suppressed because invalid config will throw.
+                config = JsonSerializer.Deserialize<AppConfig>(configJson)!;
+                config.Sanitize();
+                services.AddSingleton(config);
+                services.AddApp(config).Validate();
+            })
+            .ConfigureLogging((_, builder) => AddLogging(builder, config.LoggingSettings))
             .Build();
+
         return host;
     }
 
-
-    static void AddLogging(ILoggingBuilder loggingBuilder)
+    static void AddLogging(ILoggingBuilder loggingBuilder, ILoggingSettings settings)
     {
-        var config = new NLog.Config.LoggingConfiguration();
+        var config   = new NLog.Config.LoggingConfiguration();
 
         var fileTarget = new FileTarget("file")
         {
-            FileName = @"c:\tmp\logs\nexusmods.app.current.log",
-            ArchiveFileName = @"c:\tmp\logs\nexusmods.app.{##}.log",
+            FileName = settings.FilePath.GetFullPath(),
+            ArchiveFileName = settings.ArchiveFilePath.GetFullPath(),
             ArchiveOldFileOnStartup = true,
-            MaxArchiveFiles = 10,
+            MaxArchiveFiles = settings.MaxArchivedFiles,
             Layout = "${processtime} [${level:uppercase=true}] (${logger}) ${message:withexception=true}",
             Header = "############ Nexus Mods App log file - ${longdate} ############"
         };
