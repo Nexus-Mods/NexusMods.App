@@ -1,0 +1,60 @@
+﻿<!-- TODO: Integrate -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://qconsulting.ca/fo3/ModConfig5.0.xsd">
+    <moduleName>Install Files - Test</moduleName>
+
+    <installSteps order="Explicit">
+
+
+
+        <installStep name="Step 1">
+            <optionalFileGroups>
+
+
+                <group name="Group 1" type="SelectAll">
+                    <plugins order="Explicit">
+
+                        <plugin name="Step 1 Group 1 Plugin 1">
+                            <description>First Plugin</description>
+                            <files><file source="g1p1f1.esp" destination="g1p1f1.out.esp"/></files>
+                            <typeDescriptor><type name="Optional"/></typeDescriptor>
+                        </plugin>
+
+                    </plugins>
+                </group>
+
+
+            </optionalFileGroups>
+        </installStep>
+
+
+
+        <installStep name="Step 2">
+            <optionalFileGroups>
+
+
+                <group name="Group 1" type="SelectExactlyOne">
+                    <plugins order="Explicit">
+
+                        <plugin name="Step 2 Group 1 Plugin 1">
+                            <description>First Plugin</description>
+                            <files> <file source="g2p1f1.esp" destination="g2p1f1.out.esp"/> </files>
+                            <typeDescriptor><type name="Optional"/></typeDescriptor>
+                        </plugin>
+
+                        <plugin name="Step 2 Group 1 Plugin 2">
+                            <description>Second Plugin</description>
+                            <files> <file source="g2p2f1.esp" destination="g2p2f1.out.esp"/> </files>
+                            <typeDescriptor><type name="Optional"/></typeDescriptor>
+                        </plugin>
+
+                    </plugins>
+                </group>
+
+
+            </optionalFileGroups>
+        </installStep>
+
+
+
+    </installSteps>
+</config>

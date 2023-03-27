@@ -1,0 +1,49 @@
+﻿<!-- TODO: Integrate -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://qconsulting.ca/fo3/ModConfig5.0.xsd">
+    <moduleName>Conflicting - Flags Test</moduleName>
+
+    <installSteps order="Explicit">
+
+        <installStep name="Only Page">
+            <optionalFileGroups order="Explicit">
+
+
+                <group name="Group 1" type="SelectAll">
+                    <plugins order="Explicit">
+
+                        <plugin name="Initial">
+                            <description>This option should be already selected by the FOMOD</description>
+                            <conditionFlags>
+                                <flag name="Test Flag">Initial Value 1</flag>
+                                <flag name="Test Flag">Initial Value 2</flag>
+                            </conditionFlags>
+                            <typeDescriptor>
+                                <type name="Required"/>
+                            </typeDescriptor>
+                        </plugin>
+
+                    </plugins>
+                </group>
+
+
+                <group name="Group 2" type="SelectAny">
+                    <plugins order="Explicit">
+
+                        <plugin name="Overwrite">
+                            <description>This option should be manually selected later</description>
+                            <conditionFlags>
+                                <flag name="Test Flag">Some Other Value</flag>
+                            </conditionFlags>
+                            <typeDescriptor><type name="Optional"/></typeDescriptor>
+                        </plugin>
+
+                    </plugins>
+                </group>
+
+
+            </optionalFileGroups>
+        </installStep>
+
+    </installSteps>
+
+</config>

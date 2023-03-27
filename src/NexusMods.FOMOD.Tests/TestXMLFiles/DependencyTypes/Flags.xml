@@ -1,0 +1,49 @@
+﻿<!-- TODO: Integrate -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://qconsulting.ca/fo3/ModConfig5.0.xsd">
+    <moduleName>Flags - Dependency Test</moduleName>
+
+    <installSteps order="Explicit">
+
+        <installStep name="Only Page">
+            <optionalFileGroups order="Explicit">
+
+
+                <group name="" type="SelectAny">
+                    <plugins>
+
+                        <plugin name="Select Me!">
+                            <description/>
+                            <conditionFlags>
+                                <flag name="Test Flag">arbritraty value</flag>
+                            </conditionFlags>
+                            <typeDescriptor><type name="Required" /></typeDescriptor>
+                        </plugin>
+
+                    </plugins>
+                </group>
+
+
+            </optionalFileGroups>
+        </installStep>
+
+    </installSteps>
+
+
+
+
+    <conditionalFileInstalls><patterns>
+
+
+        <pattern>
+            <dependencies>
+                <flagDependency flag="Test Flag" value="arbritraty value" />
+            </dependencies>
+
+            <files>
+                <file source="Pass.txt" />
+            </files>
+        </pattern>
+
+
+    </patterns></conditionalFileInstalls>
+</config>

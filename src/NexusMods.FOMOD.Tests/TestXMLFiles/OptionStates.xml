@@ -1,0 +1,214 @@
+﻿<!-- TODO: Integrate -->
+<config xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://qconsulting.ca/fo3/ModConfig5.0.xsd">
+    <moduleName>Option States - Test</moduleName>
+    <installSteps order="Explicit">
+        <installStep name="The Parent of Chaos">
+            <optionalFileGroups order="Explicit">
+                <group name="Allow Any Selections (SelectAny)" type="SelectAny">
+                    <plugins order="Explicit">
+                        <plugin name="Not Useable">
+                            <description>Should be forcibly unselected and visibly disabled; a user cannot select this option</description>
+                            <files/>
+                            <typeDescriptor>
+                                <type name="NotUsable"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="Could Be Useable">
+                            <description>Should should display a visible warning indicator and, in the UI, show a "this option might not work" warning before selecting</description>
+                            <files/>
+                            <typeDescriptor>
+                                <type name="CouldBeUsable"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="Optional (Normal)">
+                            <description>No special behavior here!</description>
+                            <files/>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="Recommended">
+                            <description>Should be automatically selected but can be deselected</description>
+                            <files/>
+                            <typeDescriptor>
+                                <type name="Recommended"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="Required">
+                            <description>Should be forcibly selected and visibly disabled; a user cannot unselect this option</description>
+                            <files/>
+                            <typeDescriptor>
+                                <type name="Required"/>
+                            </typeDescriptor>
+                        </plugin>
+                    </plugins>
+                </group>
+                <group name="Require One or No Selections (SelectAtMostOne)" type="SelectAtMostOne">
+                    <plugins order="Explicit">
+                        <plugin name="Not Useable">
+                            <description>Should be forcibly unselected and visibly disabled; a user cannot select this option</description>
+                            <files/>
+                            <typeDescriptor>
+                                <type name="NotUsable"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="Could Be Useable">
+                            <description>Should should display a visible warning indicator and, in the UI, show a "this option might not work" warning before selecting</description>
+                            <files/>
+                            <typeDescriptor>
+                                <type name="CouldBeUsable"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="Optional (Normal)">
+                            <description>No special behavior here!</description>
+                            <files/>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="Recommended">
+                            <description>Should be automatically selected but can be deselected
+
+Because this option is inside a SelectAtMostOne group, this option should be disregarded in favor of the Required option.</description>
+                            <files/>
+                            <typeDescriptor>
+                                <type name="Recommended"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="Required">
+                            <description>Should be forcibly selected and visibly disabled; a user cannot unselect this option
+
+It could be argued that, since a "Required" option exists in a SelectAtMostOne group, it might be ideal to lock the entire group</description>
+                            <files/>
+                            <typeDescriptor>
+                                <type name="Required"/>
+                            </typeDescriptor>
+                        </plugin>
+                    </plugins>
+                </group>
+                <group name="Require Exactly One Selection (SelectExactlyOne)" type="SelectExactlyOne">
+                    <plugins order="Explicit">
+                        <plugin name="Not Useable">
+                            <description>Should be forcibly unselected and visibly disabled; a user cannot select this option</description>
+                            <files/>
+                            <typeDescriptor>
+                                <type name="NotUsable"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="Could Be Useable">
+                            <description>Should should display a visible warning indicator and, in the UI, show a "this option might not work" warning before selecting</description>
+                            <files/>
+                            <typeDescriptor>
+                                <type name="CouldBeUsable"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="Optional (Normal)">
+                            <description>No special behavior here!</description>
+                            <files/>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="Recommended">
+                            <description>Should be automatically selected but can be deselected
+
+Because this option is inside a SelectExactlyOne group, this option should be disregarded in favor of the Required option.</description>
+                            <files/>
+                            <typeDescriptor>
+                                <type name="Recommended"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="Required">
+                            <description>Should be forcibly selected and visibly disabled; a user cannot unselect this option
+
+It could be argued that, since a "Required" option exists in a SelectExactlyOne group, it might be ideal to lock the entire group</description>
+                            <files/>
+                            <typeDescriptor>
+                                <type name="Required"/>
+                            </typeDescriptor>
+                        </plugin>
+                    </plugins>
+                </group>
+                <group name="Require At Least One Selection (SelectAtLeastOne)" type="SelectAtLeastOne">
+                    <plugins order="Explicit">
+                        <plugin name="Not Useable">
+                            <description>Should be forcibly unselected and visibly disabled; a user cannot select this option</description>
+                            <files/>
+                            <typeDescriptor>
+                                <type name="NotUsable"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="Could Be Useable">
+                            <description>Should should display a visible warning indicator and, in the UI, show a "this option might not work" warning before selecting</description>
+                            <files/>
+                            <typeDescriptor>
+                                <type name="CouldBeUsable"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="Optional (Normal)">
+                            <description>No special behavior here!</description>
+                            <files/>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="Recommended">
+                            <description>Should be automatically selected but can be deselected</description>
+                            <files/>
+                            <typeDescriptor>
+                                <type name="Recommended"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="Required">
+                            <description>Should be forcibly selected and visibly disabled; a user cannot unselect this option</description>
+                            <files/>
+                            <typeDescriptor>
+                                <type name="Required"/>
+                            </typeDescriptor>
+                        </plugin>
+                    </plugins>
+                </group>
+                <group name="Force-Select Everything (SelectAll)" type="SelectAll">
+                    <plugins order="Explicit">
+                        <plugin name="Not Useable">
+                                    <!-- TODO: Look into how existing mod managers handle this case -->
+                            <description>TODO: look into how existing mod managers handle this case</description>
+                            <files/>
+                            <typeDescriptor>
+                                <type name="NotUsable"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="Could Be Useable">
+                            <description>Should behave as Required</description>
+                            <files/>
+                            <typeDescriptor>
+                                <type name="CouldBeUsable"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="Optional (Normal)">
+                            <description>Should behave as Required</description>
+                            <files/>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="Recommended">
+                            <description>Should behave as Required</description>
+                            <files/>
+                            <typeDescriptor>
+                                <type name="Recommended"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="Required">
+                            <description>As with every other option in this group, this should be forcibly selected and visibly disabled; a user cannot unselect this option</description>
+                            <files/>
+                            <typeDescriptor>
+                                <type name="Required"/>
+                            </typeDescriptor>
+                        </plugin>
+                    </plugins>
+                </group>
+            </optionalFileGroups>
+        </installStep>
+    </installSteps>
+</config>

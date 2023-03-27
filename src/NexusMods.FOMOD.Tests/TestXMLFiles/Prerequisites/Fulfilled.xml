@@ -1,0 +1,31 @@
+<!-- TODO: Integrate -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://qconsulting.ca/fo3/ModConfig5.0.xsd">
+    <moduleName>Prerequisites - Test</moduleName>
+    <moduleDependencies>
+        <fommDependency version="0.0.0" />
+    </moduleDependencies>
+
+    <installSteps order="Explicit">
+
+        <installStep name="Only Page">
+            <optionalFileGroups order="Explicit">
+
+
+                <group name="" type="SelectAny">
+                    <plugins>
+
+                        <plugin name="Don't Select Me!">
+                            <description/>
+                            <files/>
+                            <typeDescriptor><type name="NotUsable" /></typeDescriptor>
+                        </plugin>
+
+                    </plugins>
+                </group>
+
+
+            </optionalFileGroups>
+        </installStep>
+
+    </installSteps>
+</config>

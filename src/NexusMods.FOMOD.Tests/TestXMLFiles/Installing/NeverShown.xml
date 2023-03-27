@@ -1,0 +1,100 @@
+<!-- TODO: Integrate -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://qconsulting.ca/fo3/ModConfig5.0.xsd">
+
+    <moduleName>Never-Shown Options - Install Test</moduleName>
+
+    <installSteps order="Explicit">
+
+
+
+
+
+
+        <installStep name="I Has Name!">
+            <optionalFileGroups order="Explicit">
+
+
+
+                <group name="IGNORE ME" type="SelectAll">
+                    <plugins>
+
+                        <plugin name="IGNORE ME">
+                            <description>IGNORE ME</description>
+                            <conditionFlags>
+                                <flag name="true">true</flag>
+                            </conditionFlags>
+                            <typeDescriptor><type name="Required" /></typeDescriptor>
+                        </plugin>
+
+                    </plugins>
+                </group>
+
+
+
+            </optionalFileGroups>
+        </installStep>
+
+
+
+
+
+
+        <installStep name="NEVER SHOWN!">
+            <visible>
+                <flagDependency flag="true" value="false" />
+            </visible>
+            <optionalFileGroups>
+
+
+
+                <group name="NEVER SHOWN GROUP" type="SelectAny">
+                    <plugins>
+
+
+                        <plugin name="Not Usable">
+                            <description>Not Usable</description>
+                            <files>
+                                <file installIfUsable="true" source="InstallIfUsable/Option_NotShown_NotUsable" destination="InstallIfUsable/Option_NotShown_NotUsable" />
+                                <file source="Option_NotShown_NotUsable" destination="Option_NotShown_NotUsable"/>
+                            </files>
+                            <typeDescriptor><type name="NotUsable" /></typeDescriptor>
+                        </plugin>
+
+
+                        <plugin name="Required">
+                            <description>Required</description>
+                            <files>
+                                <file installIfUsable="true" source="InstallIfUsable/Option_NotShown_Required" destination="InstallIfUsable/Option_NotShown_Required" />
+                                <file source="Option_NotShown_Required" destination="Option_NotShown_Required"/>
+                            </files>
+                            <typeDescriptor><type name="Required" /></typeDescriptor>
+                        </plugin>
+
+
+                        <plugin name="Optional">
+                            <description>Optional</description>
+                            <files>
+                                <file installIfUsable="true" source="InstallIfUsable/Option_NotShown_Optional" destination="InstallIfUsable/Option_NotShown_Optional" />
+                                <file source="Option_NotShown_Optional" destination="Option_NotShown_Optional"/>
+                            </files>
+                            <typeDescriptor><type name="Optional" /></typeDescriptor>
+                        </plugin>
+
+
+                    </plugins>
+                </group>
+
+
+
+            </optionalFileGroups>
+        </installStep>
+
+
+
+
+
+
+    </installSteps>
+
+
+</config>

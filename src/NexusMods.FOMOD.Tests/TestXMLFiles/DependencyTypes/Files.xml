@@ -1,0 +1,144 @@
+﻿<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://qconsulting.ca/fo3/ModConfig5.0.xsd">
+    <moduleName>File States - Dependency Test</moduleName>
+
+    <installSteps order="Explicit">
+
+        <installStep name="Only Page">
+            <optionalFileGroups order="Explicit">
+
+
+                <group name="" type="SelectAny">
+                    <plugins>
+
+                        <plugin name="Don't Select Me!">
+                            <description/>
+                            <files/>
+                            <typeDescriptor><type name="NotUsable" /></typeDescriptor>
+                        </plugin>
+
+                    </plugins>
+                </group>
+
+
+            </optionalFileGroups>
+        </installStep>
+
+    </installSteps>
+
+
+
+
+    <conditionalFileInstalls><patterns>
+
+
+
+
+        <!-- Active Plugin -->
+
+        <pattern>
+            <dependencies>
+                <fileDependency file="Active.esp" state="Active" />
+            </dependencies>
+
+            <files>
+                <file source="pass/Active.txt" />
+            </files>
+        </pattern>
+
+
+        <pattern>
+            <dependencies>
+                <fileDependency file="Active.esp" state="Missing" />
+            </dependencies>
+
+            <files>
+                <file source="fail/Active/Missing.txt" />
+            </files>
+        </pattern>
+
+
+        <pattern>
+            <dependencies>
+                <fileDependency file="Active.esp" state="Inactive" />
+            </dependencies>
+
+            <files>
+                <file source="fail/Active/Inactive.txt" />
+            </files>
+        </pattern>
+
+
+
+
+        <!-- Inactive Plugin -->
+
+        <pattern>
+            <dependencies>
+                <fileDependency file="Inactive.esp" state="Inactive" />
+            </dependencies>
+
+            <files>
+                <file source="pass/Inactive.txt" />
+            </files>
+        </pattern>
+
+
+        <pattern>
+            <dependencies>
+                <fileDependency file="Inactive.esp" state="Missing" />
+            </dependencies>
+
+            <files>
+                <file source="fail/Inactive/Missing.txt" />
+            </files>
+        </pattern>
+
+
+        <pattern>
+            <dependencies>
+                <fileDependency file="Inactive.esp" state="Active" />
+            </dependencies>
+
+            <files>
+                <file source="fail/Inactive/Active.txt" />
+            </files>
+        </pattern>
+
+
+
+
+        <!-- Missing Plugin -->
+
+        <pattern>
+            <dependencies>
+                <fileDependency file="Missing.esp" state="Missing" />
+            </dependencies>
+
+            <files>
+                <file source="pass/Missing.txt" />
+            </files>
+        </pattern>
+
+        <pattern>
+            <dependencies>
+                <fileDependency file="Missing.esp" state="Inactive" />
+            </dependencies>
+
+            <files>
+                <file source="fail/Missing/Inactive.txt" />
+            </files>
+        </pattern>
+
+        <pattern>
+            <dependencies>
+                <fileDependency file="Missing.esp" state="Active" />
+            </dependencies>
+
+            <files>
+                <file source="fail/Missing/Active.txt" />
+            </files>
+        </pattern>
+
+
+    </patterns></conditionalFileInstalls>
+</config>

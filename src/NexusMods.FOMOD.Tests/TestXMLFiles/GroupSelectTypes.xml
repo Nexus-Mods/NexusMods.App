@@ -1,0 +1,205 @@
+﻿<!-- TODO: Integrate -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://qconsulting.ca/fo3/ModConfig5.0.xsd">
+    <moduleName>Group Select Type - Test</moduleName>
+    <installSteps order="Explicit">
+        <installStep name="The Parent of Chaos">
+            <optionalFileGroups order="Explicit">
+                <group name="Allow Any Selections (SelectAny)" type="SelectAny">
+                    <plugins order="Explicit">
+                        <plugin name="">
+                            <description/>
+                            <files> <file source="SelectAny/01" /> </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="">
+                            <description/>
+                            <files> <file source="SelectAny/02" /> </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="">
+                            <description/>
+                            <files> <file source="SelectAny/03" /> </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="">
+                            <description/>
+                            <files> <file source="SelectAny/04" /> </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="">
+                            <description/>
+                            <files> <file source="SelectAny/05" /> </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                        </plugin>
+                    </plugins>
+                </group>
+                <group name="Require One or No Selections (SelectAtMostOne)" type="SelectAtMostOne">
+                    <plugins order="Explicit">
+                        <plugin name="">
+                            <description/>
+                            <files> <file source="SelectAtMostOne/01" /> </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="">
+                            <description/>
+                            <files> <file source="SelectAtMostOne/02" /> </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="">
+                            <description/>
+                            <files> <file source="SelectAtMostOne/03" /> </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="">
+                            <description/>
+                            <files> <file source="SelectAtMostOne/04" /> </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="">
+                            <description/>
+                            <files> <file source="SelectAtMostOne/05" /> </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                        </plugin>
+                    </plugins>
+                </group>
+                <group name="Require Exactly One Selection (SelectExactlyOne)" type="SelectExactlyOne">
+                    <plugins order="Explicit">
+                        <plugin name="">
+                            <description/>
+                            <files> <file source="SelectExactlyOne/01" /> </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="">
+                            <description/>
+                            <files> <file source="SelectExactlyOne/02" /> </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="">
+                            <description/>
+                            <files> <file source="SelectExactlyOne/03" /> </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="">
+                            <description/>
+                            <files> <file source="SelectExactlyOne/04" /> </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="">
+                            <description/>
+                            <files> <file source="SelectExactlyOne/05" /> </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                        </plugin>
+                    </plugins>
+                </group>
+                <group name="Require At Least One Selection (SelectAtLeastOne)" type="SelectAtLeastOne">
+                    <plugins order="Explicit">
+                        <plugin name="">
+                            <description/>
+                            <files> <file source="SelectAtLeastOne/01" /> </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="">
+                            <description/>
+                            <files> <file source="SelectAtLeastOne/02" /> </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="">
+                            <description/>
+                            <files> <file source="SelectAtLeastOne/03" /> </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="">
+                            <description/>
+                            <files> <file source="SelectAtLeastOne/04" /> </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="">
+                            <description/>
+                            <files> <file source="SelectAtLeastOne/05" /> </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                        </plugin>
+                    </plugins>
+                </group>
+                <group name="Force-Select Everything (SelectAll)" type="SelectAll">
+                    <plugins order="Explicit">
+                        <plugin name="">
+                            <description/>
+                            <files> <file source="SelectAll/01" /> </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="">
+                            <description/>
+                            <files> <file source="SelectAll/02" /> </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="">
+                            <description/>
+                            <files> <file source="SelectAll/03" /> </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="">
+                            <description/>
+                            <files> <file source="SelectAll/04" /> </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                        </plugin>
+                        <plugin name="">
+                            <description/>
+                            <files> <file source="SelectAll/05" /> </files>
+                            <typeDescriptor>
+                                <type name="Optional"/>
+                            </typeDescriptor>
+                        </plugin>
+                    </plugins>
+                </group>
+            </optionalFileGroups>
+        </installStep>
+    </installSteps>
+</config>

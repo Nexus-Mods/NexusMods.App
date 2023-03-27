@@ -1,0 +1,17 @@
+﻿<!-- TODO: Integrate -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://qconsulting.ca/fo3/ModConfig5.0.xsd">
+    <moduleName>Empty Group - Broken Schema Test</moduleName>
+
+    <installSteps order="Explicit">
+
+        <installStep name="Only Page">
+            <optionalFileGroups order="Explicit">
+
+                <group/>
+
+            </optionalFileGroups>
+        </installStep>
+
+
+    </installSteps>
+</config>

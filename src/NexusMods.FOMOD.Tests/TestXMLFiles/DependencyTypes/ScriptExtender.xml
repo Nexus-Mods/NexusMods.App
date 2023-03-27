@@ -1,0 +1,58 @@
+﻿<!-- TODO: Integrate -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://qconsulting.ca/fo3/ModConfig5.0.xsd">
+    <moduleName>Script Extender Version - Dependency Test</moduleName>
+
+    <installSteps order="Explicit">
+
+        <installStep name="Only Page">
+            <optionalFileGroups order="Explicit">
+
+
+                <group name="" type="SelectAny">
+                    <plugins>
+
+                        <plugin name="Don't Select Me!">
+                            <description/>
+                            <files/>
+                            <typeDescriptor><type name="NotUsable" /></typeDescriptor>
+                        </plugin>
+
+                    </plugins>
+                </group>
+
+
+            </optionalFileGroups>
+        </installStep>
+
+    </installSteps>
+
+
+
+
+    <conditionalFileInstalls><patterns>
+
+
+        <pattern>
+            <dependencies>
+                <foseDependency version="1.0.0" />
+            </dependencies>
+
+            <files>
+                <file source="Pass.txt" />
+            </files>
+        </pattern>
+
+
+        <pattern>
+            <dependencies>
+                <foseDependency version="2.0.0" />
+            </dependencies>
+
+            <files>
+                <file source="Fail.txt" />
+            </files>
+        </pattern>
+
+
+    </patterns></conditionalFileInstalls>
+</config>

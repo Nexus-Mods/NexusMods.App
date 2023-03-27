@@ -1,0 +1,6 @@
+﻿<!-- TODO: Integrate -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://qconsulting.ca/fo3/ModConfig5.0.xsd">
+    <moduleName>No Steps - Broken Schema Test</moduleName>
+
+    <installSteps/>
+</config>

@@ -1,0 +1,177 @@
+<!-- TODO: Integrate -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://qconsulting.ca/fo3/ModConfig5.0.xsd">
+
+    <moduleName>InstallIfUsable - Install Test</moduleName>
+
+    <requiredInstallFiles>
+        <file installIfUsable="true" source="InstallIfUsable/RequiredInstall" destination="InstallIfUsable/RequiredInstall"/>
+    </requiredInstallFiles>
+
+    <installSteps order="Explicit">
+
+
+
+
+
+
+        <installStep name="I Has Name!">
+            <optionalFileGroups order="Explicit">
+
+
+
+                <group name="IGNORE ME" type="SelectAll">
+                    <plugins>
+
+                        <plugin name="IGNORE ME">
+                            <description>IGNORE ME</description>
+                            <conditionFlags>
+                                <flag name="true">true</flag>
+                            </conditionFlags>
+                            <typeDescriptor><type name="Required" /></typeDescriptor>
+                        </plugin>
+
+                    </plugins>
+                </group>
+
+
+
+                <group name="Actual Options" type="SelectAny">
+                    <plugins>
+
+                        <plugin name="Could Be Usable">
+                            <description>Could Be Usable</description>
+                            <files>
+                                <file installIfUsable="true" source="InstallIfUsable/Option_CouldBeUsable" destination="InstallIfUsable/Option_CouldBeUsable" />
+                            </files>
+                            <typeDescriptor><type name="CouldBeUsable" /></typeDescriptor>
+                        </plugin>
+
+                        <plugin name="Not Usable">
+                            <description>Not Usable</description>
+                            <files>
+                                <file installIfUsable="true" source="InstallIfUsable/Option_NotUsable" destination="InstallIfUsable/Option_NotUsable" />
+                            </files>
+                            <typeDescriptor><type name="NotUsable" /></typeDescriptor>
+                        </plugin>
+
+                        <plugin name="Not Usable To Optional">
+                            <description>Not Usable To Optional</description>
+                            <files>
+                                <file installIfUsable="true" source="InstallIfUsable/Option_NotUsableToOptional" destination="InstallIfUsable/Option_NotUsableToOptional" />
+                            </files>
+                            <typeDescriptor>
+                                <dependencyType> <defaultType name="NotUsable" /> <patterns> <pattern>
+                                    <dependencies> <flagDependency flag="true" value="true" /> </dependencies>
+                                    <type name="Optional" />
+                                </pattern> </patterns> </dependencyType>
+                            </typeDescriptor>
+                        </plugin>
+
+                        <plugin name="Optional">
+                            <description>Optional</description>
+                            <files>
+                                <file installIfUsable="true" source="InstallIfUsable/Option_Optional" destination="InstallIfUsable/Option_Optional" />
+                            </files>
+                            <typeDescriptor><type name="Optional" /></typeDescriptor>
+                        </plugin>
+
+                    </plugins>
+                </group>
+
+
+
+            </optionalFileGroups>
+        </installStep>
+
+
+
+
+
+
+        <installStep name="NEVER SHOWN!">
+            <visible>
+                <flagDependency flag="true" value="false" />
+            </visible>
+            <optionalFileGroups>
+
+
+
+                <group name="NEVER SHOWN GROUP" type="SelectAny">
+                    <plugins>
+
+
+                        <plugin name="Not Usable">
+                            <description>Not Usable</description>
+                            <files>
+                                <file installIfUsable="true" source="InstallIfUsable/Option_NotShown_NotUsable" destination="InstallIfUsable/Option_NotShown_NotUsable" />
+                                <file source="Option_NotShown_NotUsable" destination="Option_NotShown_NotUsable"/>
+                            </files>
+                            <typeDescriptor><type name="NotUsable" /></typeDescriptor>
+                        </plugin>
+
+
+                        <plugin name="Required">
+                            <description>Required</description>
+                            <files>
+                                <file installIfUsable="true" source="InstallIfUsable/Option_NotShown_Required" destination="InstallIfUsable/Option_NotShown_Required" />
+                                <file source="Option_NotShown_Required" destination="Option_NotShown_Required"/>
+                            </files>
+                            <typeDescriptor><type name="Required" /></typeDescriptor>
+                        </plugin>
+
+
+                        <plugin name="Optional">
+                            <description>Optional</description>
+                            <files>
+                                <file installIfUsable="true" source="InstallIfUsable/Option_NotShown_Optional" destination="InstallIfUsable/Option_NotShown_Optional" />
+                                <file source="Option_NotShown_Optional" destination="Option_NotShown_Optional"/>
+                            </files>
+                            <typeDescriptor><type name="Optional" /></typeDescriptor>
+                        </plugin>
+
+
+                    </plugins>
+                </group>
+
+
+
+            </optionalFileGroups>
+        </installStep>
+
+
+
+
+
+
+    </installSteps>
+
+
+    <conditionalFileInstalls>
+        <patterns>
+
+
+            <pattern>
+                <dependencies>
+                    <flagDependency flag="true" value="true" />
+                </dependencies>
+                <files>
+                    <file installIfUsable="true" source="InstallIfUsable/ConditionalInstall_Fulfilled" destination="InstallIfUsable/ConditionalInstall_Fulfilled" />
+                </files>
+            </pattern>
+
+
+            <pattern>
+                <dependencies>
+                    <flagDependency flag="true" value="false" />
+                </dependencies>
+                <files>
+                    <file installIfUsable="true" source="InstallIfUsable/ConditionalInstall_NotFulfilled" destination="InstallIfUsable/ConditionalInstall_NotFulfilled" />
+                </files>
+            </pattern>
+
+
+        </patterns>
+    </conditionalFileInstalls>
+
+
+</config>
