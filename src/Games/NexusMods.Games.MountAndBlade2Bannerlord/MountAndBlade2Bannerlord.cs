@@ -15,6 +15,7 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
     public static readonly GameDomain StaticDomain = GameDomain.From("mountandblade2bannerlord");
     public static string DisplayName => "Mount & Blade II: Bannerlord";
 
+    private readonly IFileSystem _fileSystem;
     private readonly IEnumerable<IGameLocator> _gameLocators;
     private readonly LauncherManagerFactory _launcherManagerFactory;
     private IReadOnlyCollection<GameInstallation>? _installations;
@@ -24,8 +25,9 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
     public IEnumerable<string> EpicCatalogItemId => new[] { "Chickadee" };
     public IEnumerable<string> XboxIds => new[] { "TaleWorldsEntertainment.MountBladeIIBannerlord" };
 
-    public MountAndBlade2Bannerlord(IEnumerable<IGameLocator> gameLocators, LauncherManagerFactory launcherManagerFactory) : base(gameLocators)
+    public MountAndBlade2Bannerlord(IFileSystem fileSystem, IEnumerable<IGameLocator> gameLocators, LauncherManagerFactory launcherManagerFactory) : base(gameLocators)
     {
+        _fileSystem = fileSystem;
         _gameLocators = gameLocators;
         _launcherManagerFactory = launcherManagerFactory;
     }
@@ -71,7 +73,7 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
     protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(IGameLocator locator, GameLocatorResult installation)
     {
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);
-        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Saves, KnownFolders.Documents.CombineChecked(@"Mount and Blade II Bannerlord\Game Saves"));
-        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Preferences, KnownFolders.Documents.CombineChecked(@"Mount and Blade II Bannerlord\Configs"));
+        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Saves, _fileSystem.GetKnownPath(KnownPath.MyDocumentsDirectory).CombineChecked(@"Mount and Blade II Bannerlord\Game Saves"));
+        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Preferences, _fileSystem.GetKnownPath(KnownPath.MyDocumentsDirectory).CombineChecked(@"Mount and Blade II Bannerlord\Configs"));
     }
 }

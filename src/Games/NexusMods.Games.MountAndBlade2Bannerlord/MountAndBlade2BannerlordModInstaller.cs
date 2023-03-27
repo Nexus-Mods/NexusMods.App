@@ -64,7 +64,7 @@ internal sealed class MountAndBlade2BannerlordModInstaller : IModInstaller
                     new ModuleIdMetadata
                     {
                         ModuleId = instruction.ModuleId
-                    }
+                    },
                 }.ToImmutableHashSet()
             };
         });
