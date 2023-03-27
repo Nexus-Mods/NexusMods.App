@@ -24,11 +24,15 @@ public partial class FileSystem : BaseFileSystem
 
     #region Implementation
 
-    internal FileSystem(Dictionary<AbsolutePath, AbsolutePath> pathMappings) : base(pathMappings) { }
+    internal FileSystem(
+        Dictionary<AbsolutePath, AbsolutePath> pathMappings,
+        bool convertCrossPlatformPaths) : base(pathMappings, convertCrossPlatformPaths) { }
 
     /// <inheritdoc/>
-    public override IFileSystem CreateOverlayFileSystem(Dictionary<AbsolutePath, AbsolutePath> pathMappings)
-        => new FileSystem(pathMappings);
+    public override IFileSystem CreateOverlayFileSystem(
+        Dictionary<AbsolutePath, AbsolutePath> pathMappings,
+        bool convertCrossPlatformPaths = false)
+        => new FileSystem(pathMappings, convertCrossPlatformPaths);
 
     /// <inheritdoc/>
     protected override IFileEntry InternalGetFileEntry(AbsolutePath path)

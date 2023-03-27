@@ -1,5 +1,8 @@
+using System.Diagnostics;
 using System.Text;
 using JetBrains.Annotations;
+using NexusMods.Paths.Extensions;
+using NexusMods.Paths.HighPerformance.CommunityToolkit;
 
 namespace NexusMods.Paths;
 
@@ -11,6 +14,8 @@ namespace NexusMods.Paths;
 public abstract class BaseFileSystem : IFileSystem
 {
     private readonly Dictionary<AbsolutePath, AbsolutePath> _pathMappings = new();
+    private readonly bool _hasPathMappings;
+    private readonly bool _convertCrossPlatformPaths;
 
     /// <summary>
     /// Constructor.
@@ -21,16 +26,28 @@ public abstract class BaseFileSystem : IFileSystem
     /// Constructor that accepts path mappings.
     /// </summary>
     /// <param name="pathMappings"></param>
-    protected BaseFileSystem(Dictionary<AbsolutePath, AbsolutePath> pathMappings)
+    /// <param name="convertCrossPlatformPaths"></param>
+    protected BaseFileSystem(
+        Dictionary<AbsolutePath, AbsolutePath> pathMappings,
+        bool convertCrossPlatformPaths)
     {
         _pathMappings = pathMappings;
+        _hasPathMappings = _pathMappings.Any();
+        _convertCrossPlatformPaths = convertCrossPlatformPaths;
     }
 
     internal AbsolutePath GetMappedPath(AbsolutePath originalPath)
     {
+        // fast exit
+        if (!_hasPathMappings) return originalPath;
+
         // direct mapping
         if (_pathMappings.TryGetValue(originalPath, out var mappedPath))
             return mappedPath;
+
+        // check if the path has already been mapped
+        if (_pathMappings.FirstOrDefault(kv => originalPath.InFolder(kv.Value)).Key != default)
+            return originalPath;
 
         // indirect mapping via parent directory
         var (originalParentDirectory, newParentDirectory) = _pathMappings
@@ -44,24 +61,55 @@ public abstract class BaseFileSystem : IFileSystem
         return newPath;
     }
 
+    private string ConvertCrossPlatformPath(string input)
+    {
+        if (!OperatingSystem.IsLinux()) return input;
+        if (!_convertCrossPlatformPaths) return input;
+        if (input.Length < 3) return input;
+        var inputSpan = input.AsSpan();
+        if (inputSpan.DangerousGetReferenceAt(1) != ':') return input;
+
+        var result = string.Create(
+            input.Length,
+            input,
+            (span, s) =>
+            {
+                // C:\foo\bar -> /c/foo/bar
+                var inputSpan = s.AsSpan();
+
+                span[0] = '/';
+                span[1] = char.ToLower(inputSpan.DangerousGetReferenceAt(0));
+                inputSpan.SliceFast(2).CopyTo(span.SliceFast(2));
+                span.Replace('\\', '/', span);
+            });
+
+        return result;
+    }
+
     #region IFileStream Implementation
 
     /// <inheritdoc/>
     public abstract IFileSystem CreateOverlayFileSystem(
-        Dictionary<AbsolutePath, AbsolutePath> pathMappings);
+        Dictionary<AbsolutePath, AbsolutePath> pathMappings,
+        bool convertCrossPlatformPaths = false);
 
     /// <inheritdoc/>
     public virtual AbsolutePath GetKnownPath(KnownPath knownPath)
     {
+        Debug.Assert(Enum.IsDefined(knownPath));
+
+        // NOTE(erri120): if you change this method, make sure to update the docs in the KnownPath enum.
         var path = knownPath switch
         {
             KnownPath.EntryDirectory => FromFullPath(AppContext.BaseDirectory),
             KnownPath.CurrentDirectory => FromFullPath(Environment.CurrentDirectory),
+            KnownPath.CommonApplicationDataDirectory => FromFullPath(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)),
             KnownPath.TempDirectory => FromFullPath(Path.GetTempPath()),
             KnownPath.HomeDirectory => FromFullPath(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)),
+            KnownPath.ApplicationDataDirectory => FromFullPath(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)),
+            KnownPath.LocalApplicationDataDirectory => FromFullPath(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)),
             KnownPath.MyDocumentsDirectory => FromFullPath(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)),
             KnownPath.MyGamesDirectory => FromDirectoryAndFileName(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games"),
-            _ => throw new ArgumentOutOfRangeException(nameof(knownPath), knownPath, null)
         };
 
         return GetMappedPath(path);
@@ -69,11 +117,11 @@ public abstract class BaseFileSystem : IFileSystem
 
     /// <inheritdoc/>
     public AbsolutePath FromFullPath(string fullPath)
-        => AbsolutePath.FromFullPath(fullPath, this);
+        => GetMappedPath(AbsolutePath.FromFullPath(ConvertCrossPlatformPath(fullPath), this));
 
     /// <inheritdoc/>
     public AbsolutePath FromDirectoryAndFileName(string directoryPath, string fullPath)
-        => AbsolutePath.FromDirectoryAndFileName(directoryPath, fullPath, this);
+        => GetMappedPath(AbsolutePath.FromDirectoryAndFileName(ConvertCrossPlatformPath(directoryPath), fullPath, this));
 
     /// <inheritdoc/>
     public IFileEntry GetFileEntry(AbsolutePath path)
