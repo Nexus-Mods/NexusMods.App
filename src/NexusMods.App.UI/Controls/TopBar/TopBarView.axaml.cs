@@ -48,7 +48,7 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
                 .DisposeWith(d);
             this.BindCommand(ViewModel, vm => vm.MinimizeCommand, v => v.WindowMinimizeButton)
                 .DisposeWith(d);
-            this.BindCommand(ViewModel, vm => vm.MaximizeCommand, v => v.WindowMaximizeButton)
+            this.BindCommand(ViewModel, vm => vm.ToggleMaximizeCommand, v => v.WindowMaximizeButton)
                 .DisposeWith(d);
 
             this.WhenAnyValue(view => view.ViewModel!.ShowWindowControls)

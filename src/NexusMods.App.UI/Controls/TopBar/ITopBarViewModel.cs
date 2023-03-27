@@ -15,6 +15,6 @@ public interface ITopBarViewModel : IViewModelInterface
     public ReactiveCommand<Unit, Unit> LogoutCommand { get; }
 
     public ReactiveCommand<Unit, Unit> MinimizeCommand { get; }
-    public ReactiveCommand<Unit, Unit> MaximizeCommand { get; }
+    public ReactiveCommand<Unit, Unit> ToggleMaximizeCommand { get; }
     public ReactiveCommand<Unit, Unit> CloseCommand { get; }
 }
