@@ -78,4 +78,33 @@ public readonly partial struct LoadoutId : ICreatable<LoadoutId>
     {
         return From(new Guid(bytes));
     }
+
+    /// <summary>
+    /// Convert a 128bit id to a loadout id.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public static LoadoutId From(IId id)
+    {
+        Span<byte> span = stackalloc byte[16];
+        id.ToSpan(span);
+        return From(span);
+    }
+
+    /// <summary>
+    /// Convert a 16 byte span to a loadout id.
+    /// </summary>
+    /// <param name="span"></param>
+    /// <returns></returns>
+    public static LoadoutId From(ReadOnlySpan<byte> span)
+    {
+        return From(new Guid(span));
+    }
+
+    public IId ToEntityId(EntityCategory category)
+    {
+        Span<byte> span = stackalloc byte[16];
+        _value.TryWriteBytes(span);
+        return IId.FromSpan(category, span);
+    }
 }

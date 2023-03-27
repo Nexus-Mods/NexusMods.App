@@ -17,7 +17,7 @@ public class RootId : AId
     }
 
     /// <inheritdoc />
-    public override EntityCategory Category => EntityCategory.Roots;
+    public override EntityCategory Category => EntityCategory.LoadoutRoots;
 
     /// <inheritdoc />
     public override bool Equals(IId? other)

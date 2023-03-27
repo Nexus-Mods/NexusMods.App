@@ -31,6 +31,8 @@ public class SqliteDataStore : IDataStore, IDisposable
     private readonly Lazy<JsonSerializerOptions> _jsonOptions;
     private readonly Dictionary<EntityCategory, string> _prefixStatements;
     private readonly Dictionary<EntityCategory, string> _deleteStatements;
+    private readonly Dictionary<EntityCategory,string> _allIdsStatements;
+
     private readonly ConcurrentLru<IId, Entity> _cache;
     private readonly IMessageProducer<RootChange> _rootChangeProducer;
     private readonly IMessageConsumer<RootChange> _rootChangeConsumer;
@@ -63,6 +65,7 @@ public class SqliteDataStore : IDataStore, IDisposable
 
         _getStatements = new Dictionary<EntityCategory, string>();
         _putStatements = new Dictionary<EntityCategory, string>();
+        _allIdsStatements = new Dictionary<EntityCategory, string>();
         _casStatements = new Dictionary<EntityCategory, string>();
         _prefixStatements = new Dictionary<EntityCategory, string>();
         _deleteStatements = new Dictionary<EntityCategory, string>();
@@ -120,6 +123,7 @@ public class SqliteDataStore : IDataStore, IDisposable
                 $"SELECT Data FROM [{table}] WHERE Id = @id";
             _putStatements[table] =
                 $"INSERT OR REPLACE INTO [{table}] (Id, Data) VALUES (@id, @data)";
+            _allIdsStatements[table] = $"SELECT Id FROM [{table}]";
             _casStatements[table] =
                 $"UPDATE [{table}] SET Data = @newData WHERE Data = @oldData AND Id = @id RETURNING *;";
             _prefixStatements[table] =
@@ -198,40 +202,6 @@ public class SqliteDataStore : IDataStore, IDisposable
             _cache.AddOrUpdate(id, value);
 
         return value;
-    }
-
-    /// <inheritdoc />
-    public bool PutRoot(RootType type, IId oldId, IId newId)
-    {
-        using var conn = _pool.RentDisposable();
-        using var cmd = conn.Value.CreateCommand();
-        cmd.CommandText = _putStatements[EntityCategory.Roots];
-        cmd.Parameters.AddWithValue("@id", (byte)type);
-        var newData = new byte[newId.SpanSize + 1];
-        newId.ToTaggedSpan(newData.AsSpan());
-        cmd.Parameters.AddWithValue("@data", newData);
-
-        cmd.ExecuteNonQuery();
-
-        _pendingRootChanges.Enqueue(new RootChange { Type = type, From = oldId, To = newId });
-        return true;
-    }
-
-    /// <inheritdoc />
-    public IId? GetRoot(RootType type)
-    {
-        using var conn = _pool.RentDisposable();
-        using var cmd = conn.Value.CreateCommand();
-        cmd.CommandText = _getStatements[EntityCategory.Roots];
-        cmd.Parameters.AddWithValue("@id", (byte)type);
-        using var reader = cmd.ExecuteReader();
-
-        while (reader.Read())
-        {
-            return reader.GetId(0);
-        }
-
-        return null;
     }
 
     /// <inheritdoc />
@@ -353,6 +323,20 @@ public class SqliteDataStore : IDataStore, IDisposable
 
     /// <inheritdoc />
     public IObservable<IId> IdChanges => _idPutConsumer.Messages.SelectMany(WaitTillPutReady);
+
+    /// <inheritdoc />
+    public IEnumerable<IId> AllIds(EntityCategory category)
+    {
+        using var conn = _pool.RentDisposable();
+        using var cmd = conn.Value.CreateCommand();
+        cmd.CommandText = _allIdsStatements[category];
+        var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            yield return reader.GetId(category, 0);
+        }
+    }
+
     /// <summary>
     /// Sometimes we may get a change notification before the underlying Sqlite database has actually updated the value.
     /// So we wait a bit to make sure the value is actually there before we forward the change.

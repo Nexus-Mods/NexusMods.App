@@ -37,27 +37,6 @@ public interface IDataStore
     T? Get<T>(IId id, bool canCache = false) where T : Entity;
 
     /// <summary>
-    /// Sets a new root for the given item back into the data store.
-    /// </summary>
-    /// <param name="type">Type of root to be placed.</param>
-    /// <param name="oldId">
-    ///    Old ID for the root; this ID will no longer be referenced
-    ///    and considered 'dead' and one day reclaimed.
-    /// </param>
-    /// <param name="newId">
-    ///    New ID to use for the root.
-    /// </param>
-    /// <returns>True if the operation succeeded, else false.</returns>
-    bool PutRoot(RootType type, IId oldId, IId newId);
-
-    /// <summary>
-    /// Retrieves a root for a given type of item stored in the data store.
-    /// </summary>
-    /// <param name="type">Type of root to place in the data store.</param>
-    /// <returns>Unique identifier of the root element in the data store.</returns>
-    IId? GetRoot(RootType type);
-
-    /// <summary>
     /// Retrieves the raw data for an item with the given ID.
     /// </summary>
     /// <param name="id">Identifier for the item.</param>
@@ -93,14 +72,14 @@ public interface IDataStore
     IEnumerable<T> GetByPrefix<T>(IId prefix) where T : Entity;
 
     /// <summary>
-    /// Allows you to subscribe to notifications for when new roots are set
-    /// within this data store.
-    /// </summary>
-    IObservable<RootChange> RootChanges { get; }
-
-    /// <summary>
     /// Allows you to subscribe to notifications for when the ID of an element
     /// is changed.
     /// </summary>
     IObservable<IId> IdChanges { get; }
+
+    /// <summary>
+    /// Returns all the IDs for a given Entity type.
+    /// </summary>
+    /// <returns></returns>
+    IEnumerable<IId> AllIds(EntityCategory category);
 }
