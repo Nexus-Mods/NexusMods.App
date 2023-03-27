@@ -25,4 +25,10 @@
         <PackageReference Include="NLog.Extensions.Logging" Version="5.2.2" />
         <PackageReference Include="Spectre.Console" Version="0.46.1-preview.0.7" />
     </ItemGroup>
+
+    <ItemGroup>
+      <None Update="AppConfig.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
 </Project>

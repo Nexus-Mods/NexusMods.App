@@ -6,7 +6,7 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection container)
     {
-        container.AddFileExtractors();
+        container.AddFileExtractors(new FileExtractorSettings());
     }
 }
 

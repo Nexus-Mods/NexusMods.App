@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace NexusMods.Paths.Utilities;
 
 /// <summary>
@@ -27,6 +29,12 @@ public class ThrowHelpers
     /// Throws <see cref="InsufficientMemoryException"/>.
     /// </summary>
     public static void InsufficientMemoryException(string message) => throw new InsufficientMemoryException(message);
+
+    /// <summary>
+    /// Throws <see cref="JsonException"/>(s).
+    /// </summary>
+    /// <param name="message">The message to throw.</param>
+    public static void JsonException(string message) => throw new JsonException(message);
 }
 
 /// <inheritdoc />

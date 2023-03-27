@@ -15,7 +15,7 @@ public class Startup
         services.AddStandardGameLocators(false)
                 .AddStubbedGameLocators()
                 .AddDataModel()
-                .AddFileExtractors()
+                .AddFileExtractors(new FileExtractorSettings())
                 .AddCLI()
                 .AddAllScoped<IRenderer, LoggingRenderer>()
                 .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))

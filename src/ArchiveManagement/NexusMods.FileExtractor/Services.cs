@@ -15,12 +15,15 @@ public static class Services
     /// Adds file extraction related services to the provided DI container.
     /// </summary>
     /// <param name="coll">Service collection to register.</param>
+    /// <param name="settings">Settings for the extractor.</param>
     /// <returns>Service collection passed as parameter.</returns>
-    public static IServiceCollection AddFileExtractors(this IServiceCollection coll)
+    public static IServiceCollection AddFileExtractors(this IServiceCollection coll, IFileExtractorSettings? settings = null)
     {
+        settings ??= new FileExtractorSettings();
+        coll.AddSingleton(settings);
         coll.AddSingleton<FileExtractor>();
         coll.AddSingleton<IExtractor, SevenZipExtractor>();
-        coll.TryAddSingleton<TemporaryFileManager>();
+        coll.TryAddSingleton<TemporaryFileManager, TemporaryFileManagerEx>();
         coll.TryAddSingleton<IResource<IExtractor, Size>>(_ => new Resource<IExtractor, Size>("File Extraction"));
         return coll;
     }

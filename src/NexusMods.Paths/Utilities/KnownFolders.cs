@@ -23,4 +23,22 @@ public static class KnownFolders
     /// <inheritdoc cref="KnownPath.HomeDirectory"/>
     [Obsolete($"This property is obsolete, use IFileSystem.{nameof(IFileSystem.GetKnownPath)} directly.")]
     public static AbsolutePath HomeFolder => FileSystem.Shared.GetKnownPath(KnownPath.HomeDirectory);
+
+    /// <summary>
+    /// Accepts a given path and expands it using known monikers for various folders.
+    /// </summary>
+    /// <param name="inputPath">The path to expand.</param>
+    /// <returns>New, expanded path.</returns>
+    /// <remarks>
+    ///    Not optimised, originally intended for use in configs.
+    ///    Do not use in hot paths.
+    /// </remarks>
+    public static string ExpandPath(string inputPath)
+    {
+        inputPath = inputPath.Replace("{EntryFolder}", EntryFolder.GetFullPath(), StringComparison.OrdinalIgnoreCase);
+        inputPath = inputPath.Replace("{CurrentDirectory}", CurrentDirectory.GetFullPath(), StringComparison.OrdinalIgnoreCase);
+        inputPath = inputPath.Replace("{HomeFolder}", HomeFolder.GetFullPath(), StringComparison.OrdinalIgnoreCase);
+        inputPath = inputPath.Replace("{MyGames}", MyGames.GetFullPath(), StringComparison.OrdinalIgnoreCase);
+        return Path.GetFullPath(inputPath);
+    }
 }
