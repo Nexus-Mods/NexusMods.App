@@ -63,6 +63,16 @@ public abstract class BaseFileSystem : IFileSystem
 
     private string ConvertCrossPlatformPath(string input)
     {
+        // NOTE(erri120): This method is required for
+        // Windows (Wine) -> Linux (native) path mappings to work correctly.
+        // This works on the assumption that the input is a fully rooted
+        // Windows-drive path, eg: "C:\\foo\\bar" or "D:\\baz.txt" and
+        // converts that input into a fully rooted Linux path, where
+        // the first path component after the root directory is the
+        // drive letter, eg: "C:\\foo\\bar" -> "/c/foo/bar"
+        // This enables path mappings to map "/c" to something else, like
+        // "/opt/wine/drive_c"
+
         if (!OperatingSystem.IsLinux()) return input;
         if (!_convertCrossPlatformPaths) return input;
         if (input.Length < 3) return input;
