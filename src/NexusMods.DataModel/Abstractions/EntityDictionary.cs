@@ -222,4 +222,9 @@ public struct EntityDictionary<TK, TV> :
         val = default;
         return false;
     }
+
+    public IId GetValueId(TK modId)
+    {
+        return _coll[modId];
+    }
 }

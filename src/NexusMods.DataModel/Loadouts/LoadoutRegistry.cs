@@ -1,3 +1,4 @@
+using System.Reactive.Linq;
 using DynamicData;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
@@ -123,7 +124,32 @@ public class LoadoutRegistry
                 .Select(LoadoutId.From);
     }
 
-    public IObservable<IChangeSet<LoadoutId>>
+    /// <summary>
+    /// An observable of all the revisions of a given LoadoutId
+    /// </summary>
+    /// <param name="loadoutId"></param>
+    /// <returns></returns>
+    public IObservable<IId> Revisions(LoadoutId loadoutId)
+    {
+        var dbId = loadoutId.ToEntityId(EntityCategory.TestData);
+        return _store.IdChanges
+            .Where(id => id == dbId)
+            .StartWith(IId.FromTaggedSpan(_store.GetRaw(dbId)))
+            .Select(id => IId.FromTaggedSpan(_store.GetRaw(id)));
+    }
+
+    /// <summary>
+    /// An observable of all the revisions of a given loadout and mod
+    /// </summary>
+    /// <param name="loadoutId"></param>
+    /// <param name="modId"></param>
+    /// <returns></returns>
+    public IObservable<IId> Revisions(LoadoutId loadoutId, ModId modId)
+    {
+        return Revisions(loadoutId)
+            .Select(id => _store.Get<Loadout>(id)!.Mods.GetValueId(modId));
+
+    }
 
 
 }
