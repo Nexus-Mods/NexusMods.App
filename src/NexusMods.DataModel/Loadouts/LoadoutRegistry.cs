@@ -76,13 +76,21 @@ public class LoadoutRegistry
         Alter(loadoutId, commitMessage, loadout =>
         {
             var existingMod = loadout.Mods.TryGetValue(modId, out var mod) ? mod : null;
+
+            if (existingMod == null)
+            {
+                existingMod = new Mod()
+                {
+                    Id = ModId.New(),
+                    Name = "",
+                    Files = EntityDictionary<ModFileId, AModFile>.Empty(_store)
+                };
+            }
+
             var newMod = alterfn(existingMod);
             if (newMod == null)
             {
-                if (existingMod != null)
-                {
-                    return loadout with { Mods = loadout.Mods.Without(modId) };
-                }
+                return loadout with { Mods = loadout.Mods.Without(modId) };
             }
             else
             {
@@ -94,6 +102,17 @@ public class LoadoutRegistry
     }
 
     /// <summary>
+    /// Gets the id of the loadout with the given loadout id.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public IId? GetId(LoadoutId id)
+    {
+        var bytes = _store.GetRaw(id.ToEntityId(EntityCategory.LoadoutRoots));
+        return bytes == null ? null : IId.FromTaggedSpan(bytes);
+    }
+
+    /// <summary>
     /// Gets the loadout with the given id.
     /// </summary>
     /// <param name="id"></param>
@@ -101,13 +120,7 @@ public class LoadoutRegistry
     /// <exception cref="InvalidOperationException"></exception>
     public Loadout? Get(LoadoutId id)
     {
-        var loadoutRoot = _store.GetRaw(id.ToEntityId(EntityCategory.LoadoutRoots));
-        if (loadoutRoot == null)
-        {
-            throw new InvalidOperationException($"Loadout {id} does not exist");
-        }
-
-        return _store.Get<Loadout>(IId.FromTaggedSpan(loadoutRoot));
+        return _store.Get<Loadout>(GetId(id)!);
     }
 
     /// <summary>
@@ -142,15 +155,6 @@ public class LoadoutRegistry
             .Select(id => Get(id)!);
     }
 
-    public IObservable<IChangeSet<LoadoutId, IId>> Loadouts()
-    {
-        return _store.IdChanges
-            .Where(change => change.Category == EntityCategory.LoadoutRoots)
-            .Select(_ => AllLoadoutIds().ToList())
-            .StartWith(AllLoadoutIds().ToList())
-            .ToObservableChangeSet();
-    }
-
     /// <summary>
     /// An observable of all the revisions of a given LoadoutId
     /// </summary>
@@ -177,6 +181,4 @@ public class LoadoutRegistry
             .Select(id => _store.Get<Loadout>(id)!.Mods.GetValueId(modId));
 
     }
-
-
 }

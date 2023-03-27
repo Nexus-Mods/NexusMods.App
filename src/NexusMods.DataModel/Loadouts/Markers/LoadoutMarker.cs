@@ -15,12 +15,11 @@ using NexusMods.Paths;
 namespace NexusMods.DataModel.Loadouts.Markers;
 
 /// <summary>
-/// Represents the state of a loadout at a specific point in the immutable
-/// tree of loadout changes [basically commits].<br/><br/>
-///
-/// For more details consider reading <see cref="IMarker{T}"/>
+/// Represents a mutable marker of a loadout. Operations on this class
+/// may mutate a loadout, which will then cause a "rebase" of this marker
+/// on the new loadoutID.
 /// </summary>
-public class LoadoutMarker : IMarker<Loadout>
+public readonly struct LoadoutMarker
 {
     private readonly LoadoutManager _manager;
     private readonly LoadoutId _id;
@@ -37,21 +36,12 @@ public class LoadoutMarker : IMarker<Loadout>
     /// <summary>
     /// Gets the state of the loadout represented by the current ID.
     /// </summary>
-    public Loadout Value => _manager.Get(_id);
+    public Loadout Value => _manager.Registry.Get(_id)!;
 
     /// <summary>
     /// Gets the currently recognised tools for the game in this loadout.
     /// </summary>
     public IEnumerable<ITool> Tools => _manager.Tools(Value.Installation.Game.Domain);
-
-    /// <summary>
-    /// Makes changes to this loadout.
-    /// </summary>
-    /// <param name="f">Function which performs the changes on the loadout.</param>
-    /// <remarks>
-    ///    Alias for <see cref="LoadoutManager.Alter"/>
-    /// </remarks>
-    public void Alter(Func<Loadout, Loadout> f) => _manager.Alter(_id, f);
 
     /// <summary>
     /// Installs a mod to a loadout with a given ID.
@@ -77,7 +67,7 @@ public class LoadoutMarker : IMarker<Loadout>
     /// </summary>
     public IEnumerable<(AModFile File, Mod Mod)> FlattenList()
     {
-        var list = _manager.Get(_id);
+        var list = _manager.Registry.Get(_id)!;
         var projected = new Dictionary<GamePath, (AModFile File, Mod Mod)>();
         var mods = Sorter.SortWithEnumerable(list.Mods.Values, i => i.Id, m => m.SortRules);
         foreach (var mod in mods)
@@ -116,7 +106,7 @@ public class LoadoutMarker : IMarker<Loadout>
     /// <param name="token">Returned token used for cancellation.</param>
     public async Task<IEnumerable<(AModFile File, Mod Mod)>> GenerateFilesAsync(IReadOnlyCollection<(AModFile File, Mod Mod)> flattenedList, CancellationToken token = default)
     {
-        var loadout = _manager.Get(_id);
+        var loadout = _manager.Registry.Get(_id)!;
         var generated = new List<(AModFile, Mod)>();
         var response = new List<(AModFile, Mod)>();
         foreach (var (file, mod) in flattenedList)
@@ -148,7 +138,7 @@ public class LoadoutMarker : IMarker<Loadout>
     {
         var steps = new List<IApplyStep>();
 
-        var list = _manager.Get(_id);
+        var list = _manager.Registry.Get(_id)!;
         var gameFolders = list.Installation.Locations;
         var srcFilesTask = _manager.FileHashCache
             .IndexFoldersAsync(list.Installation.Locations.Values, token)
@@ -237,13 +227,15 @@ public class LoadoutMarker : IMarker<Loadout>
     /// <exception cref="Exception">Some error occurred.</exception>
     public async Task ApplyAsync(ApplyPlan plan, CancellationToken token = default)
     {
-        var loadout = _manager.Get(_id);
+        var loadout = _manager.Registry.Get(_id)!;
 
-        await _manager.Limiter.ForEachAsync(plan.Steps.OfType<BackupFile>().GroupBy(b => b.Hash),
+        LoadoutManager manager = _manager;
+
+        await manager.Limiter.ForEachAsync(plan.Steps.OfType<BackupFile>().GroupBy(b => b.Hash),
             i => i.First().Size,
             async (j, itm) =>
             {
-                var hash = await _manager.ArchiveManager.ArchiveFileAsync(itm.First().To, token, j);
+                var hash = await manager.ArchiveManager.ArchiveFileAsync(itm.First().To, token, j);
                 if (hash != itm.Key)
                     throw new Exception("Archived file did not match expected hash");
             }, token);
@@ -260,11 +252,11 @@ public class LoadoutMarker : IMarker<Loadout>
             .Where(f => f.From is not null)
             .GroupBy(f => f.From!.From.Hash);
 
-        await _manager.Limiter.ForEachAsync(fromArchive, x => x.Aggregate(Size.Zero, (acc, f) => acc + f.Step.Size),
+        await manager.Limiter.ForEachAsync(fromArchive, x => x.Aggregate(Size.Zero, (acc, f) => acc + f.Step.Size),
             async (job, group) =>
             {
                 var byPath = group.ToLookup(x => x.From!.From.Parts.First());
-                await _manager.ArchiveManager.ExtractAsync(group.Key, byPath.Select(e => e.Key),
+                await manager.ArchiveManager.ExtractAsync(group.Key, byPath.Select(e => e.Key),
                     async (path, sFn) =>
                     {
                         foreach (var entry in byPath[path])
@@ -304,7 +296,7 @@ public class LoadoutMarker : IMarker<Loadout>
     /// <exception cref="NotImplementedException"></exception>
     public async IAsyncEnumerable<IApplyStep> MakeIngestionPlanAsync(Func<HashedEntry, Mod> modMapper, [EnumeratorCancellation] CancellationToken token)
     {
-        var list = _manager.Get(_id);
+        var list = _manager.Registry.Get(_id)!;
         var gameFolders = list.Installation.Locations;
         var srcFilesTask = _manager.FileHashCache
             .IndexFoldersAsync(list.Installation.Locations.Values, token)
@@ -407,11 +399,12 @@ public class LoadoutMarker : IMarker<Loadout>
     /// <exception cref="Exception">Some error occurred.</exception>
     public async Task ApplyIngest(HashSet<IApplyStep> steps, CancellationToken token)
     {
-        await _manager.Limiter.ForEachAsync(steps.OfType<BackupFile>().GroupBy(b => b.Hash),
+        var manager = _manager;
+        await manager.Limiter.ForEachAsync(steps.OfType<BackupFile>().GroupBy(b => b.Hash),
             i => i.First().Size,
             async (j, itm) =>
             {
-                var hash = await _manager.ArchiveManager.ArchiveFileAsync(itm.First().To, token, j);
+                var hash = await manager.ArchiveManager.ArchiveFileAsync(itm.First().To, token, j);
                 if (hash != itm.Key)
                     throw new Exception("Archived file did not match expected hash");
             }, token);
@@ -442,7 +435,7 @@ public class LoadoutMarker : IMarker<Loadout>
                         loadout = loadout.AlterFiles(x => x.To == gamePath ? null : x);
                         break;
                     case IntegrateFile t:
-                        var sourceArchive = _manager.ArchiveManager.ArchivesThatContain(t.Hash).First();
+                        var sourceArchive = manager.ArchiveManager.ArchivesThatContain(t.Hash).First();
                         loadout = loadout.Alter(t.Mod.Id, m => m with
                         {
                             Files = m.Files.With(new FromArchive
@@ -464,18 +457,9 @@ public class LoadoutMarker : IMarker<Loadout>
             return loadout;
         }
 
-        _manager.Alter(_id, ApplyLoadout);
+        _manager.Registry.Alter(_id, "Ingested changes from game folders", ApplyLoadout);
     }
 
-    /// <summary>
-    /// Makes a change to the current loadout.
-    /// </summary>
-    /// <param name="mod">The mod to make changes to.</param>
-    /// <param name="fn">A function which makes changes to a given mod.</param>
-    public void Alter(ModId mod, Func<Mod, Mod?> fn)
-    {
-        _manager.Alter(_id, l => l.Alter(mod, fn));
-    }
 
     /// <summary>
     /// Adds a known mod to the given loadout.
@@ -483,7 +467,7 @@ public class LoadoutMarker : IMarker<Loadout>
     /// <param name="newMod">The mod to add to the loadout.</param>
     public void Add(Mod newMod)
     {
-        _manager.Alter(_id, l => l.Add(newMod));
+        _manager.Registry.Alter(_id, $"Added mod: {newMod.Name}", l => l.Add(newMod));
     }
 
     /// <summary>
@@ -535,5 +519,15 @@ public class LoadoutMarker : IMarker<Loadout>
         /// The steps taken to deploy the collection.
         /// </summary>
         public required IReadOnlyList<IApplyStep> Steps { get; init; }
+    }
+
+    /// <summary>
+    /// Alter the loadout.
+    /// </summary>
+    /// <param name="changeMessage"></param>
+    /// <param name="func"></param>
+    public void Alter(string changeMessage, Func<Loadout, Loadout> func)
+    {
+        _manager.Registry.Alter(_id, changeMessage, func);
     }
 }
