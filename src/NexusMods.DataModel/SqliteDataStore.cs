@@ -34,9 +34,6 @@ public class SqliteDataStore : IDataStore, IDisposable
     private readonly Dictionary<EntityCategory,string> _allIdsStatements;
 
     private readonly ConcurrentLru<IId, Entity> _cache;
-    private readonly IMessageProducer<RootChange> _rootChangeProducer;
-    private readonly IMessageConsumer<RootChange> _rootChangeConsumer;
-    private readonly ConcurrentQueue<RootChange> _pendingRootChanges = new();
     private readonly ConcurrentQueue<IdUpdated> _pendingIdPuts = new();
     private readonly CancellationTokenSource _enqueuerTcs;
     private readonly ILogger<SqliteDataStore> _logger;
@@ -49,13 +46,9 @@ public class SqliteDataStore : IDataStore, IDisposable
     /// <param name="logger">Logs events.</param>
     /// <param name="path">Location of the database.</param>
     /// <param name="provider">Dependency injection container.</param>
-    /// <param name="rootChangeProducer">Producer of changes to <see cref="Root{TRoot}"/>s</param>
-    /// <param name="rootChangeConsumer">Consumer of changes to <see cref="Root{TRoot}"/>s</param>
     /// <param name="idPutProducer">Producer of events for updated IDs.</param>
     /// <param name="idPutConsumer">Consumer of events for updated IDs.</param>
     public SqliteDataStore(ILogger<SqliteDataStore> logger, AbsolutePath path, IServiceProvider provider,
-        IMessageProducer<RootChange> rootChangeProducer,
-        IMessageConsumer<RootChange> rootChangeConsumer,
         IMessageProducer<IdUpdated> idPutProducer,
         IMessageConsumer<IdUpdated> idPutConsumer)
     {
@@ -74,8 +67,6 @@ public class SqliteDataStore : IDataStore, IDisposable
 
         _jsonOptions = new Lazy<JsonSerializerOptions>(provider.GetRequiredService<JsonSerializerOptions>);
         _cache = new ConcurrentLru<IId, Entity>(1000);
-        _rootChangeProducer = rootChangeProducer;
-        _rootChangeConsumer = rootChangeConsumer;
         _idPutProducer = idPutProducer;
         _idPutConsumer = idPutConsumer;
 
@@ -90,11 +81,6 @@ public class SqliteDataStore : IDataStore, IDisposable
             if (_pendingIdPuts.TryDequeue(out var put))
             {
                 await _idPutProducer.Write(put, _enqueuerTcs.Token);
-                continue;
-            }
-            if (_pendingRootChanges.TryDequeue(out var change))
-            {
-                await _rootChangeProducer.Write(change, _enqueuerTcs.Token);
                 continue;
             }
             await Task.Delay(100);
@@ -319,9 +305,6 @@ public class SqliteDataStore : IDataStore, IDisposable
     }
 
     /// <inheritdoc />
-    public IObservable<RootChange> RootChanges => _rootChangeConsumer.Messages.SelectMany(WaitTillRootReady);
-
-    /// <inheritdoc />
     public IObservable<IId> IdChanges => _idPutConsumer.Messages.SelectMany(WaitTillPutReady);
 
     /// <inheritdoc />
@@ -335,25 +318,6 @@ public class SqliteDataStore : IDataStore, IDisposable
         {
             yield return reader.GetId(category, 0);
         }
-    }
-
-    /// <summary>
-    /// Sometimes we may get a change notification before the underlying Sqlite database has actually updated the value.
-    /// So we wait a bit to make sure the value is actually there before we forward the change.
-    /// </summary>
-    /// <param name="change"></param>
-    /// <returns></returns>
-    private async Task<RootChange> WaitTillRootReady(RootChange change)
-    {
-        var maxCycles = 0;
-        while (GetRaw(change.To) == null && maxCycles < 10)
-        {
-            _logger.LogDebug("Waiting for root change {To} to be ready", change.To);
-            await Task.Delay(100);
-            maxCycles++;
-        }
-        _logger.LogDebug("Root change {To} is ready", change.To);
-        return change;
     }
 
     /// <summary>

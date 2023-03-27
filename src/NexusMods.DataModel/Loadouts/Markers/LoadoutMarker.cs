@@ -45,11 +45,6 @@ public class LoadoutMarker : IMarker<Loadout>
     public IEnumerable<ITool> Tools => _manager.Tools(Value.Installation.Game.Domain);
 
     /// <summary>
-    /// Allows you to subscribe to changes made in this loadout.
-    /// </summary>
-    public IObservable<Loadout> Changes => _manager.Changes.Select(c => c.Lists[_id]);
-
-    /// <summary>
     /// Makes changes to this loadout.
     /// </summary>
     /// <param name="f">Function which performs the changes on the loadout.</param>

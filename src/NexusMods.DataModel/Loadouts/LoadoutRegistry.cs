@@ -43,6 +43,14 @@ public class LoadoutRegistry
         }
 
         var newLoadout = alterFn(loadout ?? Loadout.Empty(_store));
+
+        newLoadout = newLoadout with
+        {
+            LastModified = DateTime.UtcNow,
+            ChangeMessage = commitMessage,
+            PreviousVersion = new EntityLink<Loadout>(loadout?.DataStoreId ?? IdEmpty.Empty, _store)
+        };
+
         newLoadout.EnsurePersisted(_store);
 
         Span<byte> span = stackalloc byte[newLoadout.DataStoreId.SpanSize + 1];
@@ -118,19 +126,29 @@ public class LoadoutRegistry
     /// Returns all loadout ids.
     /// </summary>
     /// <returns></returns>
-    public IEnumerable<LoadoutId> All()
+    public IEnumerable<LoadoutId> AllLoadoutIds()
     {
         return _store.AllIds(EntityCategory.LoadoutRoots)
                 .Select(LoadoutId.From);
+    }
+
+    /// <summary>
+    /// Returns all loadouts.
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerable<Loadout> AllLoadouts()
+    {
+        return AllLoadoutIds()
+            .Select(id => Get(id)!);
     }
 
     public IObservable<IChangeSet<LoadoutId, IId>> Loadouts()
     {
         return _store.IdChanges
             .Where(change => change.Category == EntityCategory.LoadoutRoots)
-            .Select(_ => All().ToList())
-            .StartWith(All().ToList())
-            .ToObservableChangeSet()
+            .Select(_ => AllLoadoutIds().ToList())
+            .StartWith(AllLoadoutIds().ToList())
+            .ToObservableChangeSet();
     }
 
     /// <summary>

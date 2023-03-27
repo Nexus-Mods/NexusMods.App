@@ -238,38 +238,6 @@ public class LoadoutManager
     }
 
     /// <summary>
-    /// Makes changes to the loadout with a given ID.
-    /// </summary>
-    /// <param name="id">The ID of the loadout to change.</param>
-    /// <param name="func">Function which performs the changes on the loadout.</param>
-    /// <param name="changeMessage">Commit message tied to the change.</param>
-    public void Alter(LoadoutId id, Func<Loadout, Loadout> func, string changeMessage = "")
-    {
-        _root.Alter(r =>
-        {
-            var previousList = r.Lists[id];
-            var newList = func(previousList)
-                with
-            {
-                LastModified = DateTime.UtcNow,
-                ChangeMessage = changeMessage,
-                PreviousVersion = new EntityLink<Loadout>(previousList.DataStoreId, Store)
-            };
-            return r with { Lists = r.Lists.With(newList.LoadoutId, newList) };
-        });
-    }
-
-    /// <summary>
-    /// Retrieves a loadout with a given ID.
-    /// </summary>
-    /// <param name="id">ID of the loadout to retrieve.</param>
-    /// <returns>The loadout to get.</returns>
-    public Loadout Get(LoadoutId id)
-    {
-        return _root.Value.Lists[id];
-    }
-
-    /// <summary>
     /// Returns the available tools for a game.
     /// </summary>
     /// <param name="game">The game to get the tools for.</param>
@@ -300,7 +268,7 @@ public class LoadoutManager
         var byMod = items.GroupBy(x => x.Mod, x => x.File)
             .ToDictionary(x => x.Key);
 
-        Alter(id, l =>
+        Registry.Alter(id, message, l =>
         {
             return l with
             {
@@ -320,7 +288,7 @@ public class LoadoutManager
                     };
                 })
             };
-        }, message);
+        });
     }
 
     // TODO: These methods have hardcoded paths [below]; those should be replaced with shared constants.
@@ -336,7 +304,7 @@ public class LoadoutManager
     /// <remarks></remarks>
     public async Task ExportToAsync(LoadoutId id, AbsolutePath output, CancellationToken token)
     {
-        var loadout = Get(id);
+        var loadout = Registry.Get(id)!;
 
         if (output.FileExists)
             output.Delete();
@@ -388,7 +356,7 @@ public class LoadoutManager
     /// <param name="path">Location of the file to import from.</param>
     /// <param name="token">Cancel operation with this.</param>
     /// <remarks></remarks>
-    public async Task<LoadoutMarker> ImportFromAsync(AbsolutePath path, CancellationToken token = default)
+    public async Task<Loadout> ImportFromAsync(AbsolutePath path, CancellationToken token = default)
     {
         async ValueTask<(IId, byte[])> ProcessEntry(ZipArchiveEntry entry)
         {
@@ -414,8 +382,8 @@ public class LoadoutManager
         var loadout = Store.Get<Loadout>(rootId);
         if (loadout == null)
             throw new Exception("Loadout not found after loading data store, the loadout may be corrupt");
-        _root.Alter(r => r with { Lists = r.Lists.With(loadout.LoadoutId, loadout) });
-        return new LoadoutMarker(this, loadout.LoadoutId);
+        Registry.Alter(loadout.LoadoutId, "Loadout Imported from backup",  _ => loadout);
+        return loadout;
     }
 
     /// <summary>
@@ -426,10 +394,11 @@ public class LoadoutManager
     /// <returns></returns>
     public string FindName(GameInstallation installation)
     {
+        var names = Registry.AllLoadouts().Select(l => l.Name).ToHashSet();
         for (var i = 1; i < 1000; i++)
         {
             var name = $"My Loadout {i}";
-            if (_root.Value.Lists.All(l => l.Value.Name != name))
+            if (!names.Contains(name))
                 return name;
         }
 

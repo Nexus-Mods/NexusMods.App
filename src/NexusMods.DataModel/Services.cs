@@ -44,8 +44,6 @@ public static class Services
         coll.AddSingleton<IDataStore>(s => new SqliteDataStore(
             s.GetRequiredService<ILogger<SqliteDataStore>>(),
             settings.DataStoreFilePath.ToAbsolutePath(), s,
-            s.GetRequiredService<IMessageProducer<RootChange>>(),
-            s.GetRequiredService<IMessageConsumer<RootChange>>(),
             s.GetRequiredService<IMessageProducer<IdUpdated>>(),
             s.GetRequiredService<IMessageConsumer<IdUpdated>>()));
         coll.AddSingleton(s => new ArchiveManager(settings.ArchiveLocations.Select(x => x.ToAbsolutePath()),
