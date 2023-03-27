@@ -1,8 +1,10 @@
-using System.Data.SQLite;
 using System.Diagnostics;
 using System.Reactive.Subjects;
 using DynamicData;
+using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.ObjectPool;
+using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Interprocess.Jobs;
 using NexusMods.DataModel.Interprocess.Messages;
 using NexusMods.DataModel.RateLimiting;
@@ -11,8 +13,8 @@ using NexusMods.Paths;
 namespace NexusMods.DataModel.Interprocess;
 
 /// <summary>
-/// Fairly simple interprocess communication system using SQLite. This is not intended to be a high performance system,
-/// but rather a simple way to communicate between processes. Messages are stored in a SQLite database and read by a
+/// Fairly simple interprocess communication system using Sqlite. This is not intended to be a high performance system,
+/// but rather a simple way to communicate between processes. Messages are stored in a Sqlite database and read by a
 /// worker task. The worker task will read all messages from the database, poll for new messages. The worker will pause
 /// periodically and check the file size and last modified time of the database file. If it detects that the file has
 /// changed, it will re-poll the database for new messages. This method of polling allows for fairly simple change detection
@@ -28,8 +30,6 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
     private static readonly TimeSpan LongPollInterval = TimeSpan.FromSeconds(10); // Poll every 10s
 
     private readonly AbsolutePath _storePath;
-    private readonly SQLiteConnection _conn;
-
     private readonly Subject<(string Queue, byte[] Message)> _subject = new();
     private readonly CancellationTokenSource _shutdownToken;
     private readonly ILogger<SqliteIPC> _logger;
@@ -37,6 +37,8 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
     private readonly SharedArray _syncArray;
 
     private SourceCache<IInterprocessJob, JobId> _jobs = new(x => x.JobId);
+    private readonly ObjectPool<SqliteConnection> _pool;
+
 
     /// <summary>
     /// Allows you to subscribe to newly incoming IPC messages.
@@ -55,10 +57,11 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         _storePath = storePath;
 
         var connectionString = string.Intern($"Data Source={_storePath}");
-        _conn = new SQLiteConnection(connectionString);
-        _conn.Open();
+
         _syncPath = storePath.AppendExtension(new Extension(".sync"));
         _syncArray = new SharedArray(_syncPath, 2);
+
+        _pool = ObjectPool.Create(new ConnectionPoolPolicy(connectionString));
 
         EnsureTables();
 
@@ -88,9 +91,11 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         var oldTime = DateTime.UtcNow - RetentionTime;
 
         _logger.LogTrace("Cleaning up old IPC messages");
-        await using var cmd = new SQLiteCommand(
-            "DELETE from Ipc WHERE TimeStamp < @timestamp",
-            _conn);
+
+        using var conn = _pool.RentDisposable();
+        await using var cmd = conn.Value.CreateCommand();
+        cmd.CommandText = "DELETE from Ipc WHERE TimeStamp < @timestamp";
+
         cmd.Parameters.AddWithValue("@timestamp", oldTime.ToFileTimeUtc());
         await cmd.ExecuteNonQueryAsync(token);
 
@@ -115,7 +120,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         while (!shutdownTokenToken.IsCancellationRequested)
         {
             lastId = ProcessMessages(lastId);
-            
+
             ProcessJobs();
 
             var elapsed = DateTime.UtcNow;
@@ -141,8 +146,9 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
 
     private long GetStartId()
     {
-        using var cmd = new SQLiteCommand(
-            "SELECT MAX(Id) FROM Ipc", _conn);
+        using var conn = _pool.RentDisposable();
+        using var cmd = conn.Value.CreateCommand();
+        cmd.CommandText = "SELECT MAX(Id) FROM Ipc";
         // Subtract 1 second to ensure we don't miss any messages that were written in the last second.
         cmd.Parameters.AddWithValue("@current", DateTime.UtcNow.ToFileTimeUtc());
         var reader = cmd.ExecuteReader();
@@ -158,8 +164,9 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
     {
         try
         {
-            using var cmd = new SQLiteCommand(
-                "SELECT Id, Queue, Data FROM Ipc WHERE Id > @lastId", _conn);
+            using var conn = _pool.RentDisposable();
+            using var cmd = conn.Value.CreateCommand();
+            cmd.CommandText = "SELECT Id, Queue, Data FROM Ipc WHERE Id > @lastId";
             cmd.Parameters.AddWithValue("@lastId", lastId);
             var reader = cmd.ExecuteReader();
             while (reader.Read())
@@ -182,17 +189,19 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
 
     private void EnsureTables()
     {
-        using var cmd = new SQLiteCommand("CREATE TABLE IF NOT EXISTS Ipc (Id INTEGER PRIMARY KEY AUTOINCREMENT, Queue VARCHAR, Data BLOB, TimeStamp INTEGER)", _conn);
+        using var conn = _pool.RentDisposable();
+        using (var pragma = conn.Value.CreateCommand())
+        {
+            pragma.CommandText = "PRAGMA journal_mode = WAL";
+            pragma.ExecuteNonQuery();
+        }
+
+        using var cmd = conn.Value.CreateCommand();
+        cmd.CommandText = "CREATE TABLE IF NOT EXISTS Ipc (Id INTEGER PRIMARY KEY AUTOINCREMENT, Queue VARCHAR, Data BLOB, TimeStamp INTEGER)";
         cmd.ExecuteNonQuery();
 
-        using var cmd2 = new SQLiteCommand("CREATE TABLE IF NOT EXISTS Jobs " +
-                                           "(JobId BLOB PRIMARY KEY, " +
-                                           "ProcessId INTEGER, " +
-                                           "Progress REAL, " +
-                                           "Description TEXT," +
-                                           "JobType TEXT," +
-                                           "StartTime INTEGER," +
-                                           "Data BLOB)", _conn);
+        using var cmd2 = conn.Value.CreateCommand();
+        cmd2.CommandText = "CREATE TABLE IF NOT EXISTS Jobs (JobId BLOB PRIMARY KEY, ProcessId INTEGER, Progress REAL, Description TEXT, JobType TEXT, StartTime INTEGER, Data BLOB)";
         cmd2.ExecuteNonQuery();
     }
 
@@ -203,9 +212,9 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         try
         {
             _logger.LogTrace("Processing jobs");
-            using var cmd = new SQLiteCommand(
-                "SELECT JobId, ProcessId, Progress, Description, JobType, StartTime, Data FROM Jobs",
-                _conn);
+            using var conn = _pool.RentDisposable();
+            using var cmd = conn.Value.CreateCommand();
+            cmd.CommandText = "SELECT JobId, ProcessId, Progress, Description, JobType, StartTime, Data FROM Jobs";
             var reader = cmd.ExecuteReader();
 
             var seen = new HashSet<JobId>();
@@ -273,15 +282,14 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         try
         {
             _logger.LogTrace("Sending {Bytes} byte message to queue {Queue}", Size.FromLong(message.Length), queue);
-            using var cmd = new SQLiteCommand(
-                "INSERT INTO Ipc (Queue, Data, TimeStamp) VALUES (@queue, @data, @timestamp);",
-                _conn);
+            using var conn = _pool.RentDisposable();
+            using var cmd = conn.Value.CreateCommand();
+            cmd.CommandText = "INSERT INTO Ipc (Queue, Data, TimeStamp) VALUES (@queue, @data, @timestamp); SELECT last_insert_rowid();";
             cmd.Parameters.AddWithValue("@queue", queue);
             cmd.Parameters.AddWithValue("@data", message.ToArray());
             cmd.Parameters.AddWithValue("@timestamp",
                 DateTime.UtcNow.ToFileTimeUtc());
-            cmd.ExecuteNonQuery();
-            var lastId = (ulong)cmd.Connection.LastInsertRowId;
+            var lastId = (ulong)((long?)cmd.ExecuteScalar()!).Value;
             var prevId = _syncArray.Get(0);
             while (true)
             {
@@ -306,9 +314,10 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
     public void Dispose()
     {
         _shutdownToken.Cancel();
-        _conn.Dispose();
         _subject.Dispose();
         _syncArray.Dispose();
+        if (_pool is IDisposable disposable)
+            disposable.Dispose();
     }
 
     public void CreateJob(IInterprocessJob job)
@@ -316,9 +325,11 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         try
         {
             _logger.LogInformation("Creating job {JobId} of type {JobType}", job.JobId, job.GetType().Name);
-            using var cmd = new SQLiteCommand(
-                "INSERT INTO Jobs (JobId, ProcessId, Progress, Description, JobType, StartTime, Data) " +
-                "VALUES (@jobId, @processId, @progress, @description, @jobType, @startTime, @data);", _conn);
+            using var conn = _pool.RentDisposable();
+            using var cmd = conn.Value.CreateCommand();
+            cmd.CommandText = "INSERT INTO Jobs (JobId, ProcessId, Progress, Description, JobType, StartTime, Data) " +
+                              "VALUES (@jobId, @processId, @progress, @description, @jobType, @startTime, @data);";
+
             cmd.Parameters.AddWithValue("@jobId", job.JobId.Value.ToByteArray());
             cmd.Parameters.AddWithValue("@processId", job.ProcessId.Value);
             cmd.Parameters.AddWithValue("@progress", job.Progress.Value);
@@ -351,9 +362,10 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
     {
         _logger.LogInformation("Deleting job {JobId}", job);
         {
-            using var cmd = new SQLiteCommand(
-                "DELETE FROM Jobs WHERE JobId = @jobId", _conn);
-            cmd.Parameters.AddWithValue("@jobId", job.Value);
+            using var conn = _pool.RentDisposable();
+            using var cmd = conn.Value.CreateCommand();
+            cmd.CommandText = "DELETE FROM Jobs WHERE JobId = @jobId";
+            cmd.Parameters.AddWithValue("@jobId", job.Value.ToByteArray());
             cmd.ExecuteNonQuery();
         }
         UpdateJobTimestamp();
@@ -364,10 +376,11 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
     {
         _logger.LogTrace("Updating job {JobId} progress to {Percent}", jobId, value);
         {
-            using var cmd = new SQLiteCommand(
-                "UPDATE Jobs SET Progress = @progress WHERE JobId = @jobId", _conn);
+            using var conn = _pool.RentDisposable();
+            using var cmd = conn.Value.CreateCommand();
+            cmd.CommandText = "UPDATE Jobs SET Progress = @progress WHERE JobId = @jobId";
             cmd.Parameters.AddWithValue("@progress", value.Value);
-            cmd.Parameters.AddWithValue("@jobId", jobId.Value);
+            cmd.Parameters.AddWithValue("@jobId", jobId.Value.ToByteArray());
             cmd.ExecuteNonQuery();
         }
         UpdateJobTimestamp();

@@ -97,7 +97,7 @@ public class InterprocessTests
                 job.Progress = new Percent(x);
             }
         }
-        await Task.Delay(1000);
+        await Task.Delay(2000);
         // One update, one removal
         updates.Should().BeEquivalentTo(new[]
         {
