@@ -124,6 +124,15 @@ public class LoadoutRegistry
                 .Select(LoadoutId.From);
     }
 
+    public IObservable<IChangeSet<LoadoutId, IId>> Loadouts()
+    {
+        return _store.IdChanges
+            .Where(change => change.Category == EntityCategory.LoadoutRoots)
+            .Select(_ => All().ToList())
+            .StartWith(All().ToList())
+            .ToObservableChangeSet()
+    }
+
     /// <summary>
     /// An observable of all the revisions of a given LoadoutId
     /// </summary>

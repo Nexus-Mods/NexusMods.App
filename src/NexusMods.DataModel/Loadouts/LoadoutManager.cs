@@ -40,7 +40,6 @@ public class LoadoutManager
 
     private readonly ILogger<LoadoutManager> _logger;
 
-    private readonly Root<LoadoutRegistry> _root;
     private readonly IModInstaller[] _installers;
     private readonly FileContentsCache _analyzer;
     private readonly IEnumerable<IFileMetadataSource> _metadataSources;
@@ -52,6 +51,7 @@ public class LoadoutManager
     ///    This item is usually constructed using dependency injection (DI).
     /// </remarks>
     public LoadoutManager(ILogger<LoadoutManager> logger,
+        LoadoutRegistry registry,
         IResource<LoadoutManager, Size> limiter,
         ArchiveManager archiveManager,
         IEnumerable<IFileMetadataSource> metadataSources,
@@ -64,11 +64,11 @@ public class LoadoutManager
     {
         FileHashCache = fileHashCache;
         ArchiveManager = archiveManager;
+        Registry = registry;
         _logger = logger;
         Limiter = limiter;
         Store = store;
         _jobManager = jobManager;
-        _root = new Root<LoadoutRegistry>(RootType.Loadouts, store);
         _metadataSources = metadataSources;
         _installers = installers.ToArray();
         _analyzer = analyzer;
@@ -77,45 +77,21 @@ public class LoadoutManager
     }
 
     /// <summary>
+    /// The loadout registry used by this manager
+    /// </summary>
+    public LoadoutRegistry Registry { get; }
+
+    /// <summary>
     /// Limits the number of concurrent jobs/threads [to not completely hog CPU]
     /// when needed.
     /// </summary>
     public IResource<LoadoutManager, Size> Limiter { get; set; }
 
     /// <summary>
-    /// A list of all changes to the loadouts.
-    ///
-    /// Values here are published outside of the locking
-    /// semantics and may thus be received out-of-order of a large number of
-    /// updates are happening and once from multiple threads.
-    ///
-    /// See <see cref="Root{TRoot}.Changes"/> for more info.
-    /// </summary>
-    public IObservable<LoadoutRegistry> Changes => _root.Changes;
-
-    /// <summary>
-    /// Returns a list of all currently user registered loadouts.
-    /// </summary>
-    public IEnumerable<LoadoutMarker> AllLoadouts => _root.Value.Lists.Values.Select(m => new LoadoutMarker(this, m.LoadoutId));
-
-    /// <summary>
     /// Returns the data store.
     /// </summary>
     public IDataStore Store { get; }
 
-    /// <summary>
-    /// Clones this loadout manager, used for operations analogous to `git rebase`.
-    /// </summary>
-    /// <param name="store">Data store to which we write to.</param>
-    /// <remarks>
-    ///    For now this just clones the current object; the actual rebase
-    ///    functionality might not yet quite be here.
-    /// </remarks>
-    public LoadoutManager Rebase(SqliteDataStore store)
-    {
-        return new LoadoutManager(_logger, Limiter, ArchiveManager, _metadataSources, store, FileHashCache, _installers,
-            _analyzer, _tools.SelectMany(f => f), _jobManager);
-    }
 
     /// <summary>
     /// Brings a game instance/installation under management of the Nexus app
@@ -130,7 +106,7 @@ public class LoadoutManager
     /// In the context of the Nexus app 'Manage Game' effectively means 'Add Game to App'; we call it
     /// 'Manage Game' because it effectively means putting the game files under our control.
     /// </remarks>
-    public async Task<LoadoutMarker> ManageGameAsync(GameInstallation installation, string name = "", CancellationToken token = default, bool earlyReturn = false)
+    public async Task<LoadoutId> ManageGameAsync(GameInstallation installation, string name = "", CancellationToken token = default, bool earlyReturn = false)
     {
         _logger.LogInformation("Indexing game files");
 
@@ -142,30 +118,37 @@ public class LoadoutManager
             SortRules = ImmutableList<ISortRule<Mod, ModId>>.Empty.Add(new First<Mod, ModId>())
         }.WithPersist(Store);
 
-        var n = Loadout.Empty(Store) with
-        {
-            Installation = installation,
-            Name = name,
-            Mods = new EntityDictionary<ModId, Mod>(Store, new[] { new KeyValuePair<ModId, IId>(mod.Id, mod.DataStoreId) })
-        };
+        var loadoutId = LoadoutId.Create();
 
-        n.WithPersist(Store);
+        var loadout = Registry.Alter(loadoutId, $"Manage {installation.Game.Name}",
+            l =>
+            {
+                return l with
+                {
+                    Installation = installation,
+                    Name = name,
+                    Mods = new EntityDictionary<ModId, Mod>(Store,
+                        new[]
+                        {
+                            new KeyValuePair<ModId, IId>(mod.Id,
+                                mod.DataStoreId)
+                        })
+                };
+            });
+        _logger.LogInformation("Loadout {Name} {Id} created", name, loadoutId);
 
-        _root.Alter(r => r with { Lists = r.Lists.With(n.LoadoutId, n) });
-        _logger.LogInformation("Loadout {Name} {Id} created", name, n.LoadoutId);
-
-        var managementJob = new InterprocessJob(JobType.ManageGame, _jobManager, n.LoadoutId,
+        var managementJob = new InterprocessJob(JobType.ManageGame, _jobManager, loadoutId,
                 $"Analyzing game files for {installation.Game.Name}");
-        var indexTask = Task.Run(() => IndexAndAddGameFiles(installation, token, n, mod, managementJob), token);
+        var indexTask = Task.Run(() => IndexAndAddGameFiles(installation, token, loadout, mod, managementJob), token);
 
         if (!earlyReturn)
             await indexTask;
 
-        return new LoadoutMarker(this, n.LoadoutId);
+        return loadoutId;
     }
 
     private async Task IndexAndAddGameFiles(GameInstallation installation,
-        CancellationToken token, Loadout n, Mod mod, IInterprocessJob managementJob)
+        CancellationToken token, Loadout loadout, Mod mod, IInterprocessJob managementJob)
     {
         // So we release this after the job is done.
         using var _ = managementJob;
@@ -191,7 +174,7 @@ public class LoadoutManager
                 }.WithPersist(Store);
 
                 var metaData =
-                    await GetMetadata(n, mod, file, analysis).ToHashSetAsync();
+                    await GetMetadata(loadout, mod, file, analysis).ToHashSetAsync();
                 gameFiles.Add(
                     file with { Metadata = metaData.ToImmutableHashSet() });
             }
@@ -199,9 +182,9 @@ public class LoadoutManager
 
         managementJob.Progress = new Percent(0.5);
         gameFiles.AddRange(installation.Game.GetGameFiles(installation, Store));
-        var marker = new LoadoutMarker(this, n.LoadoutId);
-        marker.Alter(mod.Id,
-            m => m with { Files = m.Files.With(gameFiles, f => f.Id) });
+
+        Registry.Alter(loadout.LoadoutId, mod.Id, "Add game files",
+            m => m! with { Files = m.Files.With(gameFiles, f => f.Id) });
 
     }
 
