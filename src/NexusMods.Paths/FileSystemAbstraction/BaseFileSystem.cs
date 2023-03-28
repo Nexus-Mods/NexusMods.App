@@ -108,12 +108,23 @@ public abstract class BaseFileSystem : IFileSystem
     {
         Debug.Assert(Enum.IsDefined(knownPath));
 
+        AbsolutePath ThisOrDefault(string fullPath)
+        {
+            return string.IsNullOrWhiteSpace(fullPath) ? default : FromFullPath(fullPath);
+        }
+
         // NOTE(erri120): if you change this method, make sure to update the docs in the KnownPath enum.
         var path = knownPath switch
         {
             KnownPath.EntryDirectory => FromFullPath(AppContext.BaseDirectory),
             KnownPath.CurrentDirectory => FromFullPath(Environment.CurrentDirectory),
+
             KnownPath.CommonApplicationDataDirectory => FromFullPath(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)),
+            KnownPath.ProgramFilesDirectory => ThisOrDefault(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)),
+            KnownPath.ProgramFilesX86Directory => ThisOrDefault(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)),
+            KnownPath.CommonProgramFilesDirectory => ThisOrDefault(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFiles)),
+            KnownPath.CommonProgramFilesX86Directory => ThisOrDefault(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86)),
+
             KnownPath.TempDirectory => FromFullPath(Path.GetTempPath()),
             KnownPath.HomeDirectory => FromFullPath(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)),
             KnownPath.ApplicationDataDirectory => FromFullPath(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)),
