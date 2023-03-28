@@ -92,7 +92,6 @@ public class LoadoutManager
     /// </summary>
     public IDataStore Store { get; }
 
-
     /// <summary>
     /// Brings a game instance/installation under management of the Nexus app
     /// such that it is tracked file-wise under a loadout.

@@ -44,7 +44,9 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     private readonly IGameLeftMenuViewModel _gameLeftMenuViewModel;
     public IObservable<SpineButtonAction> Actions => _actions;
 
-    public SpineViewModel(ILogger<SpineViewModel> logger, IDataStore dataStore,
+    public SpineViewModel(ILogger<SpineViewModel> logger,
+        LoadoutRegistry loadoutRegistry,
+        IDataStore dataStore,
         IIconButtonViewModel addButtonViewModel,
         IIconButtonViewModel homeButtonViewModel,
         IHomeLeftMenuViewModel homeLeftMenuViewModel,
@@ -67,7 +69,10 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 .Subscribe(HandleMessage)
                 .DisposeWith(disposables);
 
-            dataStore.ObservableManagedGames()
+            loadoutRegistry.LoadoutChanges
+                .Transform(id => dataStore.Get<Loadout>(id));
+
+            loadoutRegistry.Games
                 .Transform(game =>
                 {
                     using var iconStream = game.Icon.GetStreamAsync().Result;

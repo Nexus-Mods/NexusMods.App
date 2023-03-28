@@ -1,19 +1,37 @@
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
-using NexusMods.DataModel.JsonConverters;
+using System.Reactive.Disposables;
+using DynamicData.PLinq;
+using NexusMods.DataModel.Games;
 
 namespace NexusMods.DataModel.Loadouts;
 
 /// <summary>
 /// Provides the main entry point for listing, modifying and updating loadouts.
 /// </summary>
-public class LoadoutRegistry
+public class LoadoutRegistry : IDisposable
 {
     private readonly ILogger<LoadoutRegistry> _logger;
     private readonly IDataStore _store;
+    private SourceCache<IId, LoadoutId> _cache;
+
+    /// <summary>
+    /// All the loadoutIds and their current root entity IDs
+    /// </summary>
+    public IObservable<IChangeSet<IId,LoadoutId>> LoadoutChanges => _cache.Connect();
+
+    public IObservable<IChangeSet<Loadout, LoadoutId>> Loadouts =>
+        LoadoutChanges.Transform(id => _store.Get<Loadout>(id)!);
+
+    public IObservable<IDistinctChangeSet<IGame>> Games =>
+        Loadouts
+            .DistinctValues(d => d.Installation.Game);
+
+    private readonly CompositeDisposable _compositeDisposable;
 
     /// <summary>
     /// DI constructor.
@@ -24,6 +42,31 @@ public class LoadoutRegistry
     {
         _logger = logger;
         _store = store;
+        _compositeDisposable = new CompositeDisposable();
+
+        _cache = new SourceCache<IId, LoadoutId>(_ => throw new NotImplementedException());
+        _cache.Edit(x =>
+        {
+            foreach (var loadoutId in AllLoadoutIds())
+            {
+                var id = GetId(loadoutId);
+                x.AddOrUpdate(id!, loadoutId);
+            }
+        });
+
+        var dispose =_store.IdChanges
+            .Where(c => c.Category == EntityCategory.LoadoutRoots)
+            .Select(LoadoutId.From)
+            .Subscribe(loadoutId =>
+            {
+                _cache.Edit(x =>
+                {
+                    var id = GetId(loadoutId);
+                    x.AddOrUpdate(id!, loadoutId);
+                });
+            });
+        _compositeDisposable.Add(dispose);
+
     }
 
     /// <summary>
@@ -156,6 +199,7 @@ public class LoadoutRegistry
                 .Select(LoadoutId.From);
     }
 
+
     /// <summary>
     /// Returns all loadouts.
     /// </summary>
@@ -191,5 +235,11 @@ public class LoadoutRegistry
         return Revisions(loadoutId)
             .Select(id => _store.Get<Loadout>(id)!.Mods.GetValueId(modId));
 
+    }
+
+    public void Dispose()
+    {
+        _cache.Dispose();
+        _compositeDisposable.Dispose();
     }
 }
