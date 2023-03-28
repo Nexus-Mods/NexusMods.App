@@ -11,14 +11,14 @@ public class LoadoutMarkerParser : IOptionParser<LoadoutMarker>
 
     public LoadoutMarker Parse(string input, OptionDefinition<LoadoutMarker> definition)
     {
-        return _manager.AllLoadouts.First(m =>
-            m.Value.Name.Equals(input, StringComparison.InvariantCultureIgnoreCase));
+        var loadout = _manager.Registry.GetByName(input);
+        return new LoadoutMarker(_manager, loadout!.LoadoutId);
     }
 
     public IEnumerable<string> GetOptions(string input)
     {
-        var byName = _manager.AllLoadouts
-            .Where(l => l.Value.Name.Contains(input, StringComparison.InvariantCultureIgnoreCase));
-        return byName.Select(t => t.Value.Name);
+        var byName = _manager.Registry.AllLoadouts()
+            .Where(l => l.Name.Contains(input, StringComparison.InvariantCultureIgnoreCase));
+        return byName.Select(t => t.Name);
     }
 }

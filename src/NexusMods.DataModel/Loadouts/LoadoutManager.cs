@@ -358,7 +358,7 @@ public class LoadoutManager
     /// <param name="path">Location of the file to import from.</param>
     /// <param name="token">Cancel operation with this.</param>
     /// <remarks></remarks>
-    public async Task<Loadout> ImportFromAsync(AbsolutePath path, CancellationToken token = default)
+    public async Task<LoadoutMarker> ImportFromAsync(AbsolutePath path, CancellationToken token = default)
     {
         async ValueTask<(IId, byte[])> ProcessEntry(ZipArchiveEntry entry)
         {
@@ -385,7 +385,7 @@ public class LoadoutManager
         if (loadout == null)
             throw new Exception("Loadout not found after loading data store, the loadout may be corrupt");
         Registry.Alter(loadout.LoadoutId, "Loadout Imported from backup",  _ => loadout);
-        return loadout;
+        return new LoadoutMarker(this, loadout.LoadoutId);
     }
 
     /// <summary>

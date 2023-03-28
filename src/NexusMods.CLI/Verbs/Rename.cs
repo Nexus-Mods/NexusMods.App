@@ -18,7 +18,7 @@ public class Rename : AVerb<Loadout, string>
 
     public Task<int> Run(Loadout loadout, string name, CancellationToken token)
     {
-        _manager.Alter(loadout.LoadoutId, _ => loadout, $"Renamed {loadout.DataStoreId} to {name}");
+        _manager.Registry.Alter(loadout.LoadoutId, $"Renamed {loadout.DataStoreId} to {name}", _ => loadout);
         return Task.FromResult(0);
     }
 }

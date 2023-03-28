@@ -25,6 +25,7 @@ public static class DataStoreExtensions
             .Select(rootChange => rootChange.To)
             .StartWith(store.GetRoot(RootType.Loadouts))
             .WhereNotNull()
+
             .Throttle(ThrottleRate)
             .Select(id => store.Get<LoadoutRegistry>(id, true))
             .WhereNotNull()

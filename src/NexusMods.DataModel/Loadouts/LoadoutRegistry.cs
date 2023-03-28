@@ -124,6 +124,17 @@ public class LoadoutRegistry
     }
 
     /// <summary>
+    /// Finds the loadout with the given name (case insensitive).
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
+    public Loadout? GetByName(string name)
+    {
+        return AllLoadouts().First(l =>
+            l.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    /// <summary>
     /// Gets the mod with the given id from the given loadout.
     /// </summary>
     /// <param name="loadoutId"></param>
