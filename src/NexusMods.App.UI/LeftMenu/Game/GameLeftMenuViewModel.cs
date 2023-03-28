@@ -59,6 +59,7 @@ public class GameLeftMenuViewModel : AViewModel<IGameLeftMenuViewModel>, IGameLe
                     });
                     return (ILeftMenuItemViewModel)vm;
                 })
+                .OnUI()
                 .Bind(out _items)
                 .Subscribe()
                 .DisposeWith(d);

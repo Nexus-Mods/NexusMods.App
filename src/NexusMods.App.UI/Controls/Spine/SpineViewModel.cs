@@ -69,9 +69,6 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 .Subscribe(HandleMessage)
                 .DisposeWith(disposables);
 
-            loadoutRegistry.LoadoutChanges
-                .Transform(id => dataStore.Get<Loadout>(id));
-
             loadoutRegistry.Games
                 .Transform(game =>
                 {
