@@ -46,8 +46,6 @@ public class DataStoreBenchmark : IBenchmark, IDisposable
         _dataStore = new SqliteDataStore(
             provider.GetRequiredService<ILogger<SqliteDataStore>>(),
             _temporaryFileManager.CreateFile(KnownExtensions.Sqlite).Path, provider,
-            provider.GetRequiredService<IMessageProducer<RootChange>>(),
-            provider.GetRequiredService<IMessageConsumer<RootChange>>(),
         provider.GetRequiredService<IMessageProducer<IdUpdated>>(),
         provider.GetRequiredService<IMessageConsumer<IdUpdated>>());
 

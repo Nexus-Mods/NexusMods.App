@@ -37,7 +37,7 @@ public enum EntityCategory
     /// Represents roots/starting points of immutable lists.
     /// For more details, have a look at <a href="https://github.com/Nexus-Mods/NexusMods.App/blob/main/docs/ImmutableModlists.md">Immutable Mod Lists.</a>
     /// </summary>
-    Roots,
+    LoadoutRoots,
 
     /// <summary>
     /// Used to store file hash entries.<br/>

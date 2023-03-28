@@ -44,8 +44,6 @@ public static class Services
         coll.AddSingleton<IDataStore>(s => new SqliteDataStore(
             s.GetRequiredService<ILogger<SqliteDataStore>>(),
             settings.DataStoreFilePath.ToAbsolutePath(), s,
-            s.GetRequiredService<IMessageProducer<RootChange>>(),
-            s.GetRequiredService<IMessageConsumer<RootChange>>(),
             s.GetRequiredService<IMessageProducer<IdUpdated>>(),
             s.GetRequiredService<IMessageConsumer<IdUpdated>>()));
         coll.AddSingleton(s => new ArchiveManager(settings.ArchiveLocations.Select(x => x.ToAbsolutePath()),
@@ -54,6 +52,7 @@ public static class Services
         coll.AddAllSingleton<IResource, IResource<FileHashCache, Size>>(_ => new Resource<FileHashCache, Size>("File Hashing", settings.MaxHashingJobs, Size.FromLong(settings.MaxHashingThroughputBytesPerSecond)));
         coll.AddAllSingleton<IResource, IResource<LoadoutManager, Size>>(_ => new Resource<LoadoutManager, Size>("Load Order Management", settings.LoadoutDeploymentJobs, Size.Zero));
         coll.AddSingleton<LoadoutManager>();
+        coll.AddSingleton<LoadoutRegistry>();
         coll.AddSingleton<FileHashCache>();
         coll.AddSingleton<FileContentsCache>();
 

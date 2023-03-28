@@ -30,7 +30,7 @@ public class GameLeftMenuViewModel : AViewModel<IGameLeftMenuViewModel>, IGameLe
     [Reactive]
     public IRightContentViewModel RightContent { get; set; } = Initializers.IRightContent;
 
-    public GameLeftMenuViewModel(ILogger<GameLeftMenuViewModel> logger, IDataStore dataStore, ILaunchButtonViewModel launchButton, IServiceProvider provider)
+    public GameLeftMenuViewModel(ILogger<GameLeftMenuViewModel> logger, LoadoutRegistry loadoutRegistry, ILaunchButtonViewModel launchButton, IServiceProvider provider)
     {
         LaunchButton = launchButton;
 
@@ -44,7 +44,7 @@ public class GameLeftMenuViewModel : AViewModel<IGameLeftMenuViewModel>, IGameLe
                 .BindTo(launchButton, vm => vm.Game)
                 .DisposeWith(d);
 
-            dataStore.ObservableLoadouts()
+            loadoutRegistry.Loadouts
                 .Filter(gameFilterFn)
                 .SortBy(list => list.Name)
                 .Transform(loadout =>
@@ -59,6 +59,7 @@ public class GameLeftMenuViewModel : AViewModel<IGameLeftMenuViewModel>, IGameLe
                     });
                     return (ILeftMenuItemViewModel)vm;
                 })
+                .OnUI()
                 .Bind(out _items)
                 .Subscribe()
                 .DisposeWith(d);

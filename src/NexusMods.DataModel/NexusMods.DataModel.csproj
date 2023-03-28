@@ -23,4 +23,8 @@
         <PackageReference Include="System.Reactive" Version="5.0.0" />
         <PackageReference Include="Vogen" Version="3.0.12" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Loadouts\Extensions" />
+    </ItemGroup>
 </Project>

@@ -1,27 +1,245 @@
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using DynamicData;
+using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.JsonConverters;
+using NexusMods.DataModel.Abstractions.Ids;
+using System.Reactive.Disposables;
+using DynamicData.PLinq;
+using NexusMods.DataModel.Games;
 
 namespace NexusMods.DataModel.Loadouts;
 
 /// <summary>
-/// The <see cref="Root{TRoot}"/> for all loadouts (profiles/mod lists) stored
-/// within the application. Any mod not accessible through this registry is subject
-/// to potential removal from the data store.
+/// Provides the main entry point for listing, modifying and updating loadouts.
 /// </summary>
-[JsonName("LoadoutRegistry")]
-public record LoadoutRegistry : Entity, IEmptyWithDataStore<LoadoutRegistry>
+public class LoadoutRegistry : IDisposable
 {
+    private readonly ILogger<LoadoutRegistry> _logger;
+    private readonly IDataStore _store;
+    private SourceCache<IId, LoadoutId> _cache;
+
     /// <summary>
-    /// A map of known loadouts (groups of installed mods) with their respective IDs.
+    /// All the loadoutIds and their current root entity IDs
     /// </summary>
-    public required EntityDictionary<LoadoutId, Loadout> Lists { get; init; }
+    public IObservable<IChangeSet<IId,LoadoutId>> LoadoutChanges => _cache.Connect();
 
-    /// <inheritdoc />
-    public override EntityCategory Category => EntityCategory.Loadouts;
+    public IObservable<IChangeSet<Loadout, LoadoutId>> Loadouts =>
+        LoadoutChanges.Transform(id => _store.Get<Loadout>(id)!);
 
-    /// <inheritdoc />
-    public static LoadoutRegistry Empty(IDataStore store) => new()
+    public IObservable<IDistinctChangeSet<IGame>> Games =>
+        Loadouts
+            .DistinctValues(d => d.Installation.Game);
+
+    private readonly CompositeDisposable _compositeDisposable;
+
+    /// <summary>
+    /// DI constructor.
+    /// </summary>
+    /// <param name="logger"></param>
+    /// <param name="store"></param>
+    public LoadoutRegistry(ILogger<LoadoutRegistry> logger, IDataStore store)
     {
-        Lists = EntityDictionary<LoadoutId, Loadout>.Empty(store)
-    };
+        _logger = logger;
+        _store = store;
+        _compositeDisposable = new CompositeDisposable();
+
+        _cache = new SourceCache<IId, LoadoutId>(_ => throw new NotImplementedException());
+        _cache.Edit(x =>
+        {
+            foreach (var loadoutId in AllLoadoutIds())
+            {
+                var id = GetId(loadoutId);
+                x.AddOrUpdate(id!, loadoutId);
+            }
+        });
+
+        var dispose =_store.IdChanges
+            .Where(c => c.Category == EntityCategory.LoadoutRoots)
+            .Select(LoadoutId.From)
+            .Subscribe(loadoutId =>
+            {
+                _cache.Edit(x =>
+                {
+                    var id = GetId(loadoutId);
+                    x.AddOrUpdate(id!, loadoutId);
+                });
+            });
+        _compositeDisposable.Add(dispose);
+
+    }
+
+    /// <summary>
+    /// Alters the loadout with the given id. If the loadout does not exist, it is created.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="commitMessage"></param>
+    /// <param name="alterFn"></param>
+    /// <returns></returns>
+    public Loadout Alter(LoadoutId id, string commitMessage, Func<Loadout, Loadout> alterFn)
+    {
+        var loadoutRoot = _store.GetRaw(id.ToEntityId(EntityCategory.LoadoutRoots));
+        Loadout? loadout = null;
+        if (loadoutRoot != null)
+        {
+            loadout = _store.Get<Loadout>(IId.FromTaggedSpan(loadoutRoot));
+        }
+
+        var newLoadout = alterFn(loadout ?? Loadout.Empty(_store));
+
+        newLoadout = newLoadout with
+        {
+            LastModified = DateTime.UtcNow,
+            ChangeMessage = commitMessage,
+            PreviousVersion = new EntityLink<Loadout>(loadout?.DataStoreId ?? IdEmpty.Empty, _store)
+        };
+
+        newLoadout.EnsurePersisted(_store);
+
+        Span<byte> span = stackalloc byte[newLoadout.DataStoreId.SpanSize + 1];
+        newLoadout.DataStoreId.ToTaggedSpan(span);
+        // TODO: Make this atomic
+        _store.PutRaw(id.ToEntityId(EntityCategory.LoadoutRoots), span);
+
+        _logger.LogInformation("Loadout {LoadoutId} altered: {CommitMessage}", id, commitMessage);
+
+        return newLoadout;
+    }
+
+    /// <summary>
+    /// Alters the mod with the given id in the loadout with the given id. If the alter
+    /// function returns null, the mod is removed from the loadout.
+    /// </summary>
+    /// <param name="loadoutId"></param>
+    /// <param name="modId"></param>
+    /// <param name="commitMessage"></param>
+    /// <param name="alterfn"></param>
+    public void Alter(LoadoutId loadoutId, ModId modId, string commitMessage, Func<Mod?, Mod?> alterfn)
+    {
+        Alter(loadoutId, commitMessage, loadout =>
+        {
+            var existingMod = loadout.Mods.TryGetValue(modId, out var mod) ? mod : null;
+
+            if (existingMod == null)
+            {
+                existingMod = new Mod()
+                {
+                    Id = ModId.New(),
+                    Name = "",
+                    Files = EntityDictionary<ModFileId, AModFile>.Empty(_store)
+                };
+            }
+
+            var newMod = alterfn(existingMod);
+            if (newMod == null)
+            {
+                return loadout with { Mods = loadout.Mods.Without(modId) };
+            }
+            else
+            {
+                return loadout with { Mods = loadout.Mods.With(modId, newMod) };
+            }
+            return loadout;
+        });
+
+    }
+
+    /// <summary>
+    /// Gets the id of the loadout with the given loadout id.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public IId? GetId(LoadoutId id)
+    {
+        var bytes = _store.GetRaw(id.ToEntityId(EntityCategory.LoadoutRoots));
+        return bytes == null ? null : IId.FromTaggedSpan(bytes);
+    }
+
+    /// <summary>
+    /// Gets the loadout with the given id.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    public Loadout? Get(LoadoutId id)
+    {
+        return _store.Get<Loadout>(GetId(id)!);
+    }
+
+    /// <summary>
+    /// Finds the loadout with the given name (case insensitive).
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
+    public Loadout? GetByName(string name)
+    {
+        return AllLoadouts().First(l =>
+            l.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    /// <summary>
+    /// Gets the mod with the given id from the given loadout.
+    /// </summary>
+    /// <param name="loadoutId"></param>
+    /// <param name="modId"></param>
+    /// <returns></returns>
+    public Mod? Get(LoadoutId loadoutId, ModId modId)
+    {
+        var loadout = Get(loadoutId);
+        return loadout?.Mods[modId];
+    }
+
+    /// <summary>
+    /// Returns all loadout ids.
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerable<LoadoutId> AllLoadoutIds()
+    {
+        return _store.AllIds(EntityCategory.LoadoutRoots)
+                .Select(LoadoutId.From);
+    }
+
+
+    /// <summary>
+    /// Returns all loadouts.
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerable<Loadout> AllLoadouts()
+    {
+        return AllLoadoutIds()
+            .Select(id => Get(id)!);
+    }
+
+    /// <summary>
+    /// An observable of all the revisions of a given LoadoutId
+    /// </summary>
+    /// <param name="loadoutId"></param>
+    /// <returns></returns>
+    public IObservable<IId> Revisions(LoadoutId loadoutId)
+    {
+        var dbId = loadoutId.ToEntityId(EntityCategory.TestData);
+        return _store.IdChanges
+            .Where(id => id == dbId)
+            .StartWith(IId.FromTaggedSpan(_store.GetRaw(dbId)))
+            .Select(id => IId.FromTaggedSpan(_store.GetRaw(id)));
+    }
+
+    /// <summary>
+    /// An observable of all the revisions of a given loadout and mod
+    /// </summary>
+    /// <param name="loadoutId"></param>
+    /// <param name="modId"></param>
+    /// <returns></returns>
+    public IObservable<IId> Revisions(LoadoutId loadoutId, ModId modId)
+    {
+        return Revisions(loadoutId)
+            .Select(id => _store.Get<Loadout>(id)!.Mods.GetValueId(modId));
+
+    }
+
+    public void Dispose()
+    {
+        _cache.Dispose();
+        _compositeDisposable.Dispose();
+    }
 }

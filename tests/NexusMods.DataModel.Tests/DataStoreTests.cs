@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -40,16 +41,6 @@ public class DataStoreTests
     }
 
     [Fact]
-    public void CanPutAndGetRoots()
-    {
-        var id = new Id64(EntityCategory.Loadouts, 42L);
-        DataStore.GetRoot(RootType.Tests).Should().BeNull();
-
-        DataStore.PutRoot(RootType.Tests, IdEmpty.Empty, id).Should().BeTrue();
-        DataStore.GetRoot(RootType.Tests).Should().Be(id);
-    }
-
-    [Fact]
     // ReSharper disable once InconsistentNaming
     public void CanStoreLargeEntitiesInDB()
     {
@@ -79,38 +70,5 @@ public class DataStoreTests
         {
             modLoaded!.Files[itm.Id].Should().Be(itm);
         }
-    }
-
-    [Fact]
-    public async Task CanGetRootUpdates()
-    {
-        var destQ = new ConcurrentQueue<IId>();
-
-        using var _ = DataStore.RootChanges.Subscribe(c => destQ.Enqueue(c.To));
-
-        var oldId = DataStore.GetRoot(RootType.Tests) ?? IdEmpty.Empty;
-
-        var bytes = new byte[4];
-
-        foreach (var itm in Enumerable.Range(0, 128))
-        {
-            var newId = new Id64(EntityCategory.TestData, (ulong)itm);
-            BinaryPrimitives.WriteUInt32BigEndian(bytes, (uint)itm);
-            DataStore.PutRaw(newId, bytes);
-            DataStore.PutRoot(RootType.Tests, oldId, newId).Should().BeTrue();
-            oldId = newId;
-        }
-
-        var attempts = 0;
-        while (destQ.IsEmpty && attempts < 1000)
-        {
-            _logger.LogInformation("Waiting for changes...");
-            await Task.Delay(200);
-            attempts++;
-        }
-
-        // Cant' be exact about this test because other things being tested may be generating changes
-        var dest = destQ.ToList();
-        dest.Should().NotBeEmpty();
     }
 }
