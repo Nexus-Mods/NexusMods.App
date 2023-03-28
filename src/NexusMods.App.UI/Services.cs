@@ -46,7 +46,7 @@ public static class Services
             .AddViewModel<GameLeftMenuViewModel, IGameLeftMenuViewModel>()
             .AddViewModel<PlaceholderDesignViewModel, IPlaceholderViewModel>()
             .AddViewModel<NexusLoginOverlayViewModel, INexusLoginOverlayViewModel>()
-            .AddViewModel<ModeNameDesignViewModel, IModNameViewModel>()
+            .AddViewModel<ModNameDesignViewModel, IModNameViewModel>()
 
             // Views
             .AddView<GameWidget, IGameWidgetViewModel>()

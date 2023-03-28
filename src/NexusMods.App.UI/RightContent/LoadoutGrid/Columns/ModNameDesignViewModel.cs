@@ -6,7 +6,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 
-public class ModeNameDesignViewModel : AViewModel<IModNameViewModel>, IModNameViewModel
+public class ModNameDesignViewModel : AViewModel<IModNameViewModel>, IModNameViewModel
 {
     public ModId Row { get; set; } =
         ModId.From(new Guid("00000000-0000-0000-0000-000000000001"));
@@ -14,7 +14,7 @@ public class ModeNameDesignViewModel : AViewModel<IModNameViewModel>, IModNameVi
     [Reactive]
     public string Name { get; set; } = "";
 
-    public ModeNameDesignViewModel()
+    public ModNameDesignViewModel()
     {
         this.WhenActivated(d =>
         {

@@ -47,7 +47,7 @@ public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>, ILo
         {
             x.AddOrUpdate(new DataGridDesignViewModelColumn<IModNameViewModel, ModId>(modId => new ModNameView
             {
-                ViewModel = new ModeNameDesignViewModel { Row = modId }
+                ViewModel = new ModNameDesignViewModel { Row = modId }
             })
             {
                 Header = "New Name"
