@@ -1,6 +1,6 @@
 ﻿<reactiveUi:ReactiveUserControl
-    d:DesignHeight="450"
-    d:DesignWidth="800"
+    d:DesignHeight="30"
+    d:DesignWidth="120"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModEnabledView"
     x:TypeArguments="columns:IModEnabledViewModel"
@@ -13,6 +13,13 @@
     <Design.DataContext>
         <columns:ModEnabledDesignViewModel />
     </Design.DataContext>
-    Welcome to Avalonia!
+    <ToggleSwitch x:Name="EnabledToggleSwitch">
+        <ToggleSwitch.OnContent>
+            <ContentControl></ContentControl>
+        </ToggleSwitch.OnContent>
+        <ToggleSwitch.OffContent>
+            <ContentControl></ContentControl>
+        </ToggleSwitch.OffContent>
+    </ToggleSwitch>
 </reactiveUi:ReactiveUserControl>
 

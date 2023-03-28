@@ -45,14 +45,20 @@ public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>, ILo
                 x => throw new NotImplementedException());
         _columns.Edit(x =>
         {
-            x.AddOrUpdate(new DataGridDesignViewModelColumn<IModNameViewModel, ModId>(modId => new ModNameView
+            x.AddOrUpdate(new DataGridDesignViewModelColumn<IModNameViewModel, IId>(modId => new ModNameView
             {
                 ViewModel = new ModNameDesignViewModel { Row = modId }
             })
             {
                 Header = "New Name"
             }, ColumnType.Name);
-            x.AddOrUpdate(new DataGridTextColumn { Header = "Enabled" }, ColumnType.Enabled);
+            x.AddOrUpdate(new DataGridDesignViewModelColumn<IModEnabledViewModel, IId>(modId => new ModEnabledView
+            {
+                ViewModel = new ModEnabledDesignViewModel() { Row = modId }
+            })
+            {
+                Header = "New Enabled"
+            }, ColumnType.Enabled);
         });
 
         this.WhenActivated(d =>

@@ -1,5 +1,7 @@
 ﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Loadouts;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -8,8 +10,7 @@ namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 
 public class ModNameDesignViewModel : AViewModel<IModNameViewModel>, IModNameViewModel
 {
-    public ModId Row { get; set; } =
-        ModId.From(new Guid("00000000-0000-0000-0000-000000000001"));
+    public IId Row { get; set; } = new Id64(EntityCategory.TestData, 1);
 
     [Reactive]
     public string Name { get; set; } = "";

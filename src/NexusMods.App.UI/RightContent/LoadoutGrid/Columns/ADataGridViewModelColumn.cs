@@ -11,6 +11,7 @@ public abstract class ADataGridViewModelColumn<TVmType, TRowType> : DataGridColu
 
     public ADataGridViewModelColumn()
     {
+        IsReadOnly = true;
     }
 
     protected override Control GenerateEditingElement(DataGridCell cell, object dataItem,

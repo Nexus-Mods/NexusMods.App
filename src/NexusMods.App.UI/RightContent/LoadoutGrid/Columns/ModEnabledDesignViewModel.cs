@@ -1,4 +1,6 @@
 ﻿using System.Windows.Input;
+using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Loadouts;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -7,7 +9,7 @@ namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 
 public class ModEnabledDesignViewModel : AViewModel<IModEnabledViewModel>, IModEnabledViewModel
 {
-    public ModId Row { get; set; }
+    public IId Row { get; set; } = new Id64(EntityCategory.TestData, 1);
 
     [Reactive]
     public bool Enabled { get; set; }
