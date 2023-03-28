@@ -26,6 +26,10 @@ public interface IFileSystem
     /// <summary>
     /// Returns a known path.
     /// </summary>
+    /// <remarks>
+    /// The return value can be <c>default</c>, if <see cref="KnownPath"/>
+    /// is invalid on the current platform.
+    /// </remarks>
     /// <param name="knownPath"></param>
     /// <returns></returns>
     AbsolutePath GetKnownPath(KnownPath knownPath);
