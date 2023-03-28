@@ -74,6 +74,7 @@
       <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="6.5.0-preview5" />
       <PackageReference Include="ReactiveUI.Fody" Version="18.4.25" />
       <PackageReference Include="Splat.Microsoft.Extensions.Logging" Version="14.6.8" />
+      <PackageReference Include="System.Reactive" Version="5.0.0" />
       <PackageReference Include="XamlNameReferenceGenerator" Version="1.6.1" />
   </ItemGroup>
 
