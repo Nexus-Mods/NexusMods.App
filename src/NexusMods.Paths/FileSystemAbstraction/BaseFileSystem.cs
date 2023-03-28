@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text;
 using JetBrains.Annotations;
 using NexusMods.Paths.Extensions;
@@ -134,6 +135,53 @@ public abstract class BaseFileSystem : IFileSystem
         };
 
         return GetMappedPath(path);
+    }
+
+    /// <summary>
+    /// Returns a dictionary with the required path mappings for Wine.
+    /// </summary>
+    /// <param name="fileSystem"></param>
+    /// <param name="rootDirectory"></param>
+    /// <param name="newHomeDirectory"></param>
+    /// <returns></returns>
+    public static Dictionary<AbsolutePath, AbsolutePath> CreateWinePathMappings(
+        IFileSystem fileSystem, AbsolutePath rootDirectory, AbsolutePath newHomeDirectory)
+    {
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            throw new PlatformNotSupportedException();
+
+        var pathMappings = new Dictionary<AbsolutePath, AbsolutePath>
+        {
+            { fileSystem.FromFullPath("/c"), rootDirectory },
+        };
+
+        var knownPaths = Enum.GetValues<KnownPath>();
+        foreach (var knownPath in knownPaths)
+        {
+            var originalPath = fileSystem.GetKnownPath(knownPath);
+            var newPath = knownPath switch
+            {
+                KnownPath.EntryDirectory => originalPath,
+                KnownPath.CurrentDirectory => originalPath,
+
+                KnownPath.CommonApplicationDataDirectory => rootDirectory.CombineUnchecked("ProgramData"),
+                KnownPath.ProgramFilesDirectory => rootDirectory.CombineUnchecked("Program Files"),
+                KnownPath.ProgramFilesX86Directory => rootDirectory.CombineUnchecked("Program Files (x86)"),
+                KnownPath.CommonProgramFilesDirectory => rootDirectory.CombineUnchecked("Program Files/Common Files"),
+                KnownPath.CommonProgramFilesX86Directory => rootDirectory.CombineUnchecked("Program Files (x86)/Common Files"),
+
+                KnownPath.HomeDirectory => newHomeDirectory,
+                KnownPath.MyDocumentsDirectory => newHomeDirectory.CombineUnchecked("Documents"),
+                KnownPath.MyGamesDirectory => newHomeDirectory.CombineUnchecked("Documents/My Games"),
+                KnownPath.LocalApplicationDataDirectory => newHomeDirectory.CombineUnchecked("AppData/Local"),
+                KnownPath.ApplicationDataDirectory => newHomeDirectory.CombineUnchecked("AppData/Roaming"),
+                KnownPath.TempDirectory => newHomeDirectory.CombineUnchecked("AppData/Local/Temp"),
+            };
+
+            pathMappings[originalPath] = newPath;
+        }
+
+        return pathMappings;
     }
 
     /// <inheritdoc/>
