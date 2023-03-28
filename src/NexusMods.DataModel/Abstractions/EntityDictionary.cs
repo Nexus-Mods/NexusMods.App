@@ -223,6 +223,11 @@ public struct EntityDictionary<TK, TV> :
         return false;
     }
 
+    /// <summary>
+    /// Gets the value id for a given key.
+    /// </summary>
+    /// <param name="modId"></param>
+    /// <returns></returns>
     public IId GetValueId(TK modId)
     {
         return _coll[modId];

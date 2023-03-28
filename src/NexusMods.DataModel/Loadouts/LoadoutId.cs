@@ -101,6 +101,11 @@ public readonly partial struct LoadoutId : ICreatable<LoadoutId>
         return From(new Guid(span));
     }
 
+    /// <summary>
+    /// Converts the loadout ID to an entity ID.
+    /// </summary>
+    /// <param name="category"></param>
+    /// <returns></returns>
     public IId ToEntityId(EntityCategory category)
     {
         Span<byte> span = stackalloc byte[16];
