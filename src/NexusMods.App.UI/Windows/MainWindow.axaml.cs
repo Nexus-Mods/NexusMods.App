@@ -1,5 +1,6 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
@@ -11,6 +12,10 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     public MainWindow()
     {
         InitializeComponent();
+
+        #if DEBUG
+        this.AttachDevTools();
+        #endif
 
         this.WhenActivated(disposables =>
         {

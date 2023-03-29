@@ -51,35 +51,35 @@ public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>, ILo
                 ViewModel = new ModNameDesignViewModel { Row = modId }
             })
             {
-                Header = "Name"
+                Header = "MOD NAME"
             }, ColumnType.Name);
             x.AddOrUpdate(new DataGridDesignViewModelColumn<IModVersionViewModel, ModCursor>(modId => new ModVersionView()
             {
                 ViewModel = new ModVersionDesignViewModel() { Row = modId }
             })
             {
-                Header = "Version"
+                Header = "VERSION"
             }, ColumnType.Version);
             x.AddOrUpdate(new DataGridDesignViewModelColumn<IModCategoryViewModel, ModCursor>(modId => new ModCategoryView()
             {
                 ViewModel = new ModCategoryDesignViewModel() { Row = modId }
             })
             {
-                Header = "Category"
+                Header = "CATEGORY"
             }, ColumnType.Category);
             x.AddOrUpdate(new DataGridDesignViewModelColumn<IModInstalledViewModel, ModCursor>(modId => new ModInstalledView
             {
                 ViewModel = new ModInstalledDesignViewModel { Row = modId }
             })
             {
-                Header = "Installed"
+                Header = "INSTALLED"
             }, ColumnType.Installed);
             x.AddOrUpdate(new DataGridDesignViewModelColumn<IModEnabledViewModel, ModCursor>(modId => new ModEnabledView
             {
                 ViewModel = new ModEnabledDesignViewModel { Row = modId }
             })
             {
-                Header = "New Enabled"
+                Header = "Enabled"
             }, ColumnType.Enabled);
         });
 
