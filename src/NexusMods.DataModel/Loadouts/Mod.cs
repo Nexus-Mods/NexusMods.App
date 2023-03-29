@@ -60,5 +60,5 @@ public record Mod : Entity, IHasEntityId<ModId>
     /// <summary>
     /// Date and time when the mod was installed.
     /// </summary>
-    public DateTime Installed { get; set; } = DateTime.MinValue;
+    public DateTime Installed { get; set; } = DateTime.UtcNow;
 }
