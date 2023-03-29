@@ -12,6 +12,7 @@ public interface IFileSystem
     /// Creates a new <see cref="FileSystem"/> that allows for path mapping.
     /// </summary>
     /// <param name="pathMappings">Path mappings</param>
+    /// <param name="knownPathMappings">Mappings for <see cref="KnownPath"/></param>
     /// <param name="convertCrossPlatformPaths">
     /// If true, this will convert
     /// Windows paths to Linux paths: <c>C:\foo\bar</c> will become
@@ -21,6 +22,7 @@ public interface IFileSystem
     /// <returns></returns>
     IFileSystem CreateOverlayFileSystem(
         Dictionary<AbsolutePath, AbsolutePath> pathMappings,
+        Dictionary<KnownPath, AbsolutePath> knownPathMappings,
         bool convertCrossPlatformPaths = false);
 
     /// <summary>
