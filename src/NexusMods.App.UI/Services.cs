@@ -67,6 +67,7 @@ public static class Services
             .AddView<ModNameView, IModNameViewModel>()
             .AddView<ModInstalledView, IModInstalledViewModel>()
             .AddView<ModVersionView, IModVersionViewModel>()
+            .AddView<ModCategoryView, IModCategoryViewModel>()
 
             // Other
             .AddSingleton<InjectedViewLocator>()

@@ -8,7 +8,7 @@ using NexusMods.DataModel.Loadouts.Cursors;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid;
 
-public interface ILoadoutGridViewModel : IViewModelInterface
+public interface ILoadoutGridViewModel : IRightContentViewModel
 {
     public ReadOnlyObservableCollection<ModCursor> Mods { get; }
     public LoadoutId Loadout { get; set; }

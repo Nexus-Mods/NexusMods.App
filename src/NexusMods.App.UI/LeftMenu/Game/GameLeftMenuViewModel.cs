@@ -8,6 +8,7 @@ using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Icons;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.RightContent;
+using NexusMods.App.UI.RightContent.LoadoutGrid;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
@@ -30,7 +31,9 @@ public class GameLeftMenuViewModel : AViewModel<IGameLeftMenuViewModel>, IGameLe
     [Reactive]
     public IRightContentViewModel RightContent { get; set; } = Initializers.IRightContent;
 
-    public GameLeftMenuViewModel(ILogger<GameLeftMenuViewModel> logger, LoadoutRegistry loadoutRegistry, ILaunchButtonViewModel launchButton, IServiceProvider provider)
+    public GameLeftMenuViewModel(ILogger<GameLeftMenuViewModel> logger, LoadoutRegistry loadoutRegistry, ILaunchButtonViewModel launchButton,
+        ILoadoutGridViewModel loadoutGridViewModel,
+        IServiceProvider provider)
     {
         LaunchButton = launchButton;
 
@@ -56,6 +59,8 @@ public class GameLeftMenuViewModel : AViewModel<IGameLeftMenuViewModel>, IGameLe
                     {
                         logger.LogDebug("Loadout {LoadoutId} selected",
                             loadout.LoadoutId);
+                        loadoutGridViewModel.Loadout = loadout.LoadoutId;
+                        RightContent = loadoutGridViewModel;
                     });
                     return (ILeftMenuItemViewModel)vm;
                 })

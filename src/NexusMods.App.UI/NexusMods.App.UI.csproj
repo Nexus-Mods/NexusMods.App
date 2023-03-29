@@ -116,7 +116,7 @@
     <Compile Update="RightContent\LoadoutGrid\Columns\ModEnabledViewModel.cs">
       <DependentUpon>IModEnabledViewModel.cs</DependentUpon>
     </Compile>
-    <Compile Update="RightContent\LoadoutGrid\Columns\ModCategoryDeignViewModel.cs">
+    <Compile Update="RightContent\LoadoutGrid\Columns\ModCategoryDesignViewModel.cs">
       <DependentUpon>IModCategoryViewModel.cs</DependentUpon>
     </Compile>
     <Compile Update="RightContent\LoadoutGrid\Columns\ModNameViewModel.cs">

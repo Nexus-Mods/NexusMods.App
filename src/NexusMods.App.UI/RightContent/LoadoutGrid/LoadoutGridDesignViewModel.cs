@@ -51,7 +51,7 @@ public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>, ILo
                 ViewModel = new ModNameDesignViewModel { Row = modId }
             })
             {
-                Header = "New Name"
+                Header = "Name"
             }, ColumnType.Name);
             x.AddOrUpdate(new DataGridDesignViewModelColumn<IModVersionViewModel, ModCursor>(modId => new ModVersionView()
             {
@@ -60,6 +60,13 @@ public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>, ILo
             {
                 Header = "Version"
             }, ColumnType.Version);
+            x.AddOrUpdate(new DataGridDesignViewModelColumn<IModCategoryViewModel, ModCursor>(modId => new ModCategoryView()
+            {
+                ViewModel = new ModCategoryDesignViewModel() { Row = modId }
+            })
+            {
+                Header = "Category"
+            }, ColumnType.Category);
             x.AddOrUpdate(new DataGridDesignViewModelColumn<IModInstalledViewModel, ModCursor>(modId => new ModInstalledView
             {
                 ViewModel = new ModInstalledDesignViewModel { Row = modId }
