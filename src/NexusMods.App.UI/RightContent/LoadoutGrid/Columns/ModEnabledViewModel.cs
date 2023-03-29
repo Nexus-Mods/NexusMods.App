@@ -6,14 +6,19 @@ using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 
 public class ModEnabledViewModel : AViewModel<IModEnabledViewModel>, IModEnabledViewModel
 {
     public ModCursor Row { get; set; } = Initializers.ModCursor;
-    public bool Enabled { get; } = false;
-    public ICommand ToggleEnabledCommand { get; } = Initializers.ICommand;
+
+    [Reactive]
+    public bool Enabled { get; set; } = false;
+
+    [Reactive]
+    public ICommand ToggleEnabledCommand { get; set; }
 
     public ModEnabledViewModel(LoadoutRegistry loadoutRegistry, IDataStore store)
     {

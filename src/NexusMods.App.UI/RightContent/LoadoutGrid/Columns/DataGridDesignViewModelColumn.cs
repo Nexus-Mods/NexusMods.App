@@ -12,6 +12,7 @@ public class DataGridDesignViewModelColumn<TVm, TRow> : ADataGridViewModelColumn
 
     }
 
+
     protected override Control GenerateElement(DataGridCell cell, object dataItem)
     {
         try

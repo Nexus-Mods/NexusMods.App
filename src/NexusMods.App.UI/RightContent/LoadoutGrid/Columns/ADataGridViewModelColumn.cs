@@ -19,24 +19,6 @@ public abstract class ADataGridViewModelColumn<TVmType, TRowType> : DataGridColu
     {
         throw new NotImplementedException();
     }
-
-    /*
-    protected override Control GenerateElement(DataGridCell cell, object dataItem)
-    {
-        var vm = _provider.GetService<TVmType>();
-        if (vm == null)
-            return new TextBlock { Text = $"No column VM found for {typeof(TVmType)}" };
-        vm!.Row = (TRowType)dataItem;
-
-        var view = _locator.ResolveView(vm);
-        if (view == null)
-            return new TextBlock { Text = $"No column view found for VM {typeof(TVmType)}" };
-
-        view.ViewModel = vm;
-        return (Control)view;
-    }
-    */
-
     protected override object PrepareCellForEdit(Control editingElement,
         RoutedEventArgs editingEventArgs)
     {

@@ -56,6 +56,8 @@ public interface IId
     /// <param name="span">The span to convert back.</param>
     public static IId FromTaggedSpan(ReadOnlySpan<byte> span)
     {
+        if (span.Length == 0) return IdEmpty.Empty;
+
         var tag = (EntityCategory)span[0];
 
         switch (span.Length)

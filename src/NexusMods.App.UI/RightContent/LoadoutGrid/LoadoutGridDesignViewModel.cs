@@ -60,7 +60,7 @@ public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>, ILo
             {
                 Header = "VERSION"
             }, ColumnType.Version);
-            x.AddOrUpdate(new DataGridDesignViewModelColumn<IModCategoryViewModel, ModCursor>(modId => new ModCategoryView()
+            x.AddOrUpdate(new DataGridDesignViewModelColumn<IModCategoryViewModel, ModCursor>(modId => new ModCategoryView
             {
                 ViewModel = new ModCategoryDesignViewModel() { Row = modId }
             })

@@ -129,6 +129,12 @@
     <Compile Update="RightContent\LoadoutGrid\Columns\ModVersionDesignViewModel.cs">
       <DependentUpon>IModVersionViewModel.cs</DependentUpon>
     </Compile>
+    <Compile Update="RightContent\LoadoutGrid\LoadoutGridDesignViewModel.cs">
+      <DependentUpon>ILoadoutGridViewModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="RightContent\LoadoutGrid\LoadoutGridViewModel.cs">
+      <DependentUpon>ILoadoutGridViewModel.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
