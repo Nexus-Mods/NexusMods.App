@@ -211,6 +211,30 @@ public abstract class BaseFileSystem : IFileSystem
         => InternalGetDirectoryEntry(GetMappedPath(path));
 
     /// <inheritdoc/>
+    public IEnumerable<AbsolutePath> EnumerateRootDirectories()
+    {
+        if (!OperatingSystem.IsLinux() && !OperatingSystem.IsWindows())
+            throw new PlatformNotSupportedException();
+
+        if (OperatingSystem.IsLinux())
+            yield return FromFullPath("/");
+
+        // go through the valid drive letters on Windows
+        // or on Linux with cross platform path conversion enabled, in case
+        // the current file system is an overlay file system for Wine
+        if (OperatingSystem.IsWindows() || (OperatingSystem.IsLinux() && _convertCrossPlatformPaths))
+        {
+            for (var i = (uint)'A'; i <= 'Z'; i++)
+            {
+                var driveLetter = (char)i;
+                var path = FromFullPath($"{driveLetter}:\\");
+                if (DirectoryExists(path))
+                    yield return path;
+            }
+        }
+    }
+
+    /// <inheritdoc/>
     public IEnumerable<AbsolutePath> EnumerateFiles(AbsolutePath directory, string pattern = "*", bool recursive = true)
         => InternalEnumerateFiles(GetMappedPath(directory), pattern, recursive);
 

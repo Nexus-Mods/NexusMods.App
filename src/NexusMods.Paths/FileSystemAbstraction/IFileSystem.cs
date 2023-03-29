@@ -66,6 +66,15 @@ public interface IFileSystem
     IDirectoryEntry GetDirectoryEntry(AbsolutePath path);
 
     /// <summary>
+    /// Enumerates through the root directories. On Windows, this method will
+    /// return all existing root directories using a list of valid drive letters,
+    /// eg: "C:\\", "M:\\", "T:\\".
+    /// On Linux, this method will return "/".
+    /// </summary>
+    /// <returns></returns>
+    IEnumerable<AbsolutePath> EnumerateRootDirectories();
+
+    /// <summary>
     /// Enumerates through all files present in the directory that match the
     /// provided pattern.
     /// </summary>

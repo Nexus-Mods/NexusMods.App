@@ -79,6 +79,18 @@ public partial class InMemoryFileSystem : BaseFileSystem
     public void AddDirectory(AbsolutePath path)
         => GetOrAddDirectory(path);
 
+    /// <summary>
+    /// Adds multiple directories to the in-memory file system.
+    /// </summary>
+    /// <param name="paths">Paths to the directories</param>
+    public void AddDirectories([InstantHandle] IEnumerable<AbsolutePath> paths)
+    {
+        foreach (var path in paths)
+        {
+            GetOrAddDirectory(path);
+        }
+    }
+
     private InMemoryDirectoryEntry GetOrAddDirectory(AbsolutePath path)
     {
         if (!path.InFolder(_rootDirectory.Path))

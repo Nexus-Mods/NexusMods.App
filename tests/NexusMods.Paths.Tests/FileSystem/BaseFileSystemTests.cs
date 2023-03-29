@@ -88,4 +88,79 @@ public class BaseFileSystemTests
             actualPath.Should().Be(expectedPath);
         }
     }
+
+    [SkippableTheory, AutoFileSystem]
+    public void Test_EnumerateRootDirectories_Windows(InMemoryFileSystem fs)
+    {
+        Skip.IfNot(OperatingSystem.IsWindows());
+
+        var expectedRootDirectories = Enumerable
+            .Range('A', 'Z' - 'A')
+            .Select(iDriveLetter =>
+            {
+                var driveLetter = (char)iDriveLetter;
+                var path = fs.FromFullPath($"{driveLetter}:\\");
+                fs.AddDirectory(path);
+                return path;
+            })
+            .ToArray();
+
+        var actualRootDirectories = fs
+            .EnumerateRootDirectories()
+            .ToArray();
+
+        actualRootDirectories.Should().BeEquivalentTo(expectedRootDirectories);
+    }
+
+    [SkippableTheory, AutoFileSystem]
+    public void Test_EnumerateRootDirectories_Linux(InMemoryFileSystem fs)
+    {
+        Skip.IfNot(OperatingSystem.IsLinux());
+
+        var rootDirectory = fs.FromFullPath("/");
+        var expectedRootDirectories = new[] { rootDirectory };
+        var actualRootDirectories = fs
+            .EnumerateRootDirectories()
+            .ToArray();
+
+        actualRootDirectories.Should().BeEquivalentTo(expectedRootDirectories);
+    }
+
+    [SkippableTheory, AutoFileSystem]
+    public void Test_EnumerateRootDirectories_WithCrossPlatformPathMappings(InMemoryFileSystem fs)
+    {
+        Skip.IfNot(OperatingSystem.IsLinux());
+
+        var rootDirectory = fs.FromFullPath("/");
+
+        var pathMappings = Enumerable.Range('a', 'z' - 'a')
+            .Select(iDriveLetter =>
+            {
+                var driveLetter = (char)iDriveLetter;
+                var originalPath = fs.FromDirectoryAndFileName("/", driveLetter.ToString());
+                var newPath = rootDirectory.CombineUnchecked(Guid.NewGuid().ToString("D"));
+                return (originalPath, newPath);
+            }).ToDictionary(x => x.originalPath, x => x.newPath);
+
+        var overlayFileSystem = fs.CreateOverlayFileSystem(
+            pathMappings,
+            new Dictionary<KnownPath, AbsolutePath>(),
+            convertCrossPlatformPaths: true);
+
+        var expectedRootDirectories = pathMappings
+            .Select(kv => kv.Value)
+            .Append(rootDirectory)
+            .ToArray();
+
+        foreach (var expectedRootDirectory in expectedRootDirectories)
+        {
+            overlayFileSystem.CreateDirectory(expectedRootDirectory);
+        }
+
+        var actualRootDirectories = overlayFileSystem
+            .EnumerateRootDirectories()
+            .ToArray();
+
+        actualRootDirectories.Should().BeEquivalentTo(expectedRootDirectories);
+    }
 }
