@@ -7,6 +7,7 @@ using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using Hash = NexusMods.Hashing.xxHash64.Hash;
 
 namespace NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
@@ -25,7 +26,12 @@ public class StubbedGameInstaller : IModInstaller
         return installation.Game is StubbedGame ? Common.Priority.Normal : Common.Priority.None;
     }
 
-    public IEnumerable<AModFile> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
+    public ValueTask<IEnumerable<AModFile>> InstallAsync(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken token)
+    {
+        return ValueTask.FromResult(InstallImpl(srcArchive, files));
+    }
+
+    private IEnumerable<AModFile> InstallImpl(Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
         foreach (var (key, value) in files)
         {

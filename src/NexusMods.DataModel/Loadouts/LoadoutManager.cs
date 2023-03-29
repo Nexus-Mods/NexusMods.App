@@ -239,7 +239,8 @@ public class LoadoutManager
         if (installer == default)
             throw new Exception($"No Installer found for {path}");
 
-        var contents = installer.Installer.Install(loadout.Value.Installation, analyzed.Hash, archive.Contents)
+        var cts = new CancellationTokenSource();
+        var contents = (await installer.Installer.InstallAsync(loadout.Value.Installation, analyzed.Hash, archive.Contents, cts.Token))
             .WithPersist(Store);
 
         name = string.IsNullOrWhiteSpace(name) ? path.FileName : name;

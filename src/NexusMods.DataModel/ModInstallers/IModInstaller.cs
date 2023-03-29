@@ -30,6 +30,7 @@ public interface IModInstaller
     /// <param name="installation">The game installation to push files out to.</param>
     /// <param name="srcArchiveHash">Hash of the source archive.</param>
     /// <param name="files">Files present in the archive.</param>
+    /// <param name="token">Allows you to cancel the operation.</param>
     /// <returns>A list of files to deploy.</returns>
-    public IEnumerable<AModFile> Install(GameInstallation installation, Hash srcArchiveHash, EntityDictionary<RelativePath, AnalyzedFile> files);
+    public ValueTask<IEnumerable<AModFile>> InstallAsync(GameInstallation installation, Hash srcArchiveHash, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken token);
 }

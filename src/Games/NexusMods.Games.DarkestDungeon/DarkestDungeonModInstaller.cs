@@ -26,7 +26,13 @@ public class DarkestDungeonModInstaller : IModInstaller
             : Common.Priority.None;
     }
 
-    public IEnumerable<AModFile> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
+    public ValueTask<IEnumerable<AModFile>> InstallAsync(GameInstallation installation, Hash srcArchiveHash,
+        EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken token)
+    {
+        return ValueTask.FromResult(InstallImpl(srcArchiveHash, files));
+    }
+
+    private IEnumerable<AModFile> InstallImpl(Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
         var modFolder = files.Keys.First(m => m.FileName == _modFilesTxt).Parent;
         return files.Where(f => f.Key.InFolder(modFolder))

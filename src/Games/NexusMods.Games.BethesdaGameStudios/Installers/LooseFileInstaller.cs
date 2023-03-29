@@ -49,7 +49,7 @@ public class LooseFileInstaller : IModInstaller
                select (kv.Key, kv.Value);
     }
 
-    public IEnumerable<AModFile> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
+    public async ValueTask<IEnumerable<AModFile>> InstallAsync(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken token)
     {
         return FilterFiles(files)
             .Select(file =>

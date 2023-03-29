@@ -148,7 +148,6 @@ public class FileContentsCache
             }
         }
 
-
         AnalyzedFile? file = null;
 
         if (await _extractor.CanExtract(sFn))
@@ -167,7 +166,6 @@ public class FileContentsCache
         if (parent != Hash.Zero)
             EnsureReverseIndex(hash, parent, parentPath);
 
-
         return file;
     }
 
@@ -176,7 +174,6 @@ public class FileContentsCache
     {
         try
         {
-            AnalyzedFile file;
             await using var tmpFolder = _manager.CreateFolder();
             List<KeyValuePair<RelativePath, IId>> children;
             {
@@ -198,7 +195,8 @@ public class FileContentsCache
                     .SelectAsync(a => KeyValuePair.Create(a.Path.RelativeTo(tmpFolder.Path), a.Results.DataStoreId))
                     .ToListAsync();
             }
-            file = new AnalyzedArchive
+
+            var file = new AnalyzedArchive
             {
                 Hash = hash,
                 Size = sFn.Size,
@@ -206,6 +204,7 @@ public class FileContentsCache
                 AnalysisData = analysisData.ToImmutableList(),
                 Contents = new EntityDictionary<RelativePath, AnalyzedFile>(_store, children)
             };
+
             return file;
         }
         catch (Exception ex)

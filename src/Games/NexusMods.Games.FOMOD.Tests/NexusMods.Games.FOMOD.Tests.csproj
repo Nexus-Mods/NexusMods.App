@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    
+    <ItemGroup>
+      <ProjectReference Include="..\..\NexusMods.App\NexusMods.App.csproj" />
+      <ProjectReference Include="..\..\NexusMods.Paths.TestingHelpers\NexusMods.Paths.TestingHelpers.csproj" />
+      <ProjectReference Include="..\NexusMods.Games.FOMOD\NexusMods.Games.FOMOD.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Update="FluentAssertions" Version="6.10.0" />
+        <PackageReference Update="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+        <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.5.0" />
+        <PackageReference Include="FluentAssertions" Version="6.10.0" />
+        <PackageReference Include="Moq" Version="4.18.4" />
+        <PackageReference Include="Xunit.DependencyInjection" Version="8.7.0" />
+        <PackageReference Include="Xunit.DependencyInjection.Logging" Version="8.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="TestCases\**">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+</Project>
