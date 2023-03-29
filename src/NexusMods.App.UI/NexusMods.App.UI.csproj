@@ -70,6 +70,7 @@
       <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0-preview5" />
       <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0-preview5" />
       <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview5" />
+      <PackageReference Include="Humanizer" Version="2.14.1" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
       <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="6.5.0-preview5" />
       <PackageReference Include="ReactiveUI.Fody" Version="18.4.25" />
@@ -99,6 +100,33 @@
     <Compile Update="Windows\MainWindow.axaml.cs">
       <DependentUpon>MainWindow.axaml</DependentUpon>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="RightContent\LoadoutGrid\Columns\ModEnabledDesignViewModel.cs">
+      <DependentUpon>IModEnabledViewModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="RightContent\LoadoutGrid\Columns\ModNameDesignViewModel.cs">
+      <DependentUpon>IModNameViewModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="RightContent\FoundGamesViewModel.cs">
+      <DependentUpon>IFoundGamesViewModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="RightContent\FoundGamesDesignViewModel.cs">
+      <DependentUpon>IFoundGamesViewModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="RightContent\LoadoutGrid\Columns\ModEnabledViewModel.cs">
+      <DependentUpon>IModEnabledViewModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="RightContent\LoadoutGrid\Columns\ModCategoryDeignViewModel.cs">
+      <DependentUpon>IModCategoryViewModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="RightContent\LoadoutGrid\Columns\ModNameViewModel.cs">
+      <DependentUpon>IModNameViewModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="RightContent\LoadoutGrid\Columns\ModInstalledDesignViewModel.cs">
+      <DependentUpon>IModInstalledViewModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="RightContent\LoadoutGrid\Columns\ModVersionDesignViewModel.cs">
+      <DependentUpon>IModVersionViewModel.cs</DependentUpon>
     </Compile>
   </ItemGroup>
 

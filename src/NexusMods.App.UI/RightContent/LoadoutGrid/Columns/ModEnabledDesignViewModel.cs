@@ -2,6 +2,7 @@
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.Cursors;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -9,7 +10,7 @@ namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 
 public class ModEnabledDesignViewModel : AViewModel<IModEnabledViewModel>, IModEnabledViewModel
 {
-    public IId Row { get; set; } = new Id64(EntityCategory.TestData, 1);
+    public ModCursor Row { get; set; } = Initializers.ModCursor;
 
     [Reactive]
     public bool Enabled { get; set; }

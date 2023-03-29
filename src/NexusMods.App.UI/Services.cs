@@ -65,6 +65,8 @@ public static class Services
             .AddView<PlaceholderView, IPlaceholderViewModel>()
             .AddView<NexusLoginOverlayView, INexusLoginOverlayViewModel>()
             .AddView<ModNameView, IModNameViewModel>()
+            .AddView<ModInstalledView, IModInstalledViewModel>()
+            .AddView<ModVersionView, IModVersionViewModel>()
 
             // Other
             .AddSingleton<InjectedViewLocator>()

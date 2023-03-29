@@ -7,6 +7,7 @@ using NexusMods.DataModel.Abstractions.Ids;
 using System.Reactive.Disposables;
 using DynamicData.PLinq;
 using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Loadouts.Cursors;
 
 namespace NexusMods.DataModel.Loadouts;
 
@@ -145,6 +146,17 @@ public class LoadoutRegistry : IDisposable
     }
 
     /// <summary>
+    /// Alters the mod pointed to by the cursor. If the alter function returns null, the mod is removed from the loadout.
+    /// </summary>
+    /// <param name="cursor"></param>
+    /// <param name="commitMessage"></param>
+    /// <param name="alterFn"></param>
+    public void Alter(ModCursor cursor, string commitMessage, Func<Mod?, Mod?> alterFn)
+    {
+        Alter(cursor.LoadoutId, cursor.ModId, commitMessage, alterFn);
+    }
+
+    /// <summary>
     /// Gets the id of the loadout with the given loadout id.
     /// </summary>
     /// <param name="id"></param>
@@ -164,6 +176,16 @@ public class LoadoutRegistry : IDisposable
     public Loadout? Get(LoadoutId id)
     {
         return _store.Get<Loadout>(GetId(id)!);
+    }
+
+    /// <summary>
+    /// Gets the mod pointed to by the cursor.
+    /// </summary>
+    /// <param name="cursor"></param>
+    /// <returns></returns>
+    public Mod? Get(ModCursor cursor)
+    {
+        return Get(cursor.LoadoutId, cursor.ModId);
     }
 
     /// <summary>
@@ -235,6 +257,16 @@ public class LoadoutRegistry : IDisposable
         return Revisions(loadoutId)
             .Select(id => _store.Get<Loadout>(id)!.Mods.GetValueId(modId));
 
+    }
+
+    /// <summary>
+    /// Gets the revisions of a given cursor
+    /// </summary>
+    /// <param name="cursor"></param>
+    /// <returns></returns>
+    public IObservable<IId> Revisions(ModCursor cursor)
+    {
+        return Revisions(cursor.LoadoutId, cursor.ModId);
     }
 
     public void Dispose()

@@ -3,5 +3,7 @@
 public enum ColumnType
 {
     Name,
+    Version,
+    Installed,
     Enabled
 }

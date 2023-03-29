@@ -34,6 +34,11 @@ public record Mod : Entity, IHasEntityId<ModId>
     /// </summary>
     public required string Name { get; init; } = string.Empty;
 
+    /// <summary>
+    /// True if the mod is enabled, false otherwise.
+    /// </summary>
+    public bool Enabled { get; init; } = false;
+
     /// <inheritdoc />
     public override EntityCategory Category => EntityCategory.Loadouts;
 

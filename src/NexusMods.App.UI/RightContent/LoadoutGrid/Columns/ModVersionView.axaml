@@ -1,9 +1,9 @@
 ﻿<reactiveUi:ReactiveUserControl
     d:DesignHeight="44"
-    d:DesignWidth="400"
+    d:DesignWidth="200"
     mc:Ignorable="d"
-    x:Class="NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModNameView"
-    x:TypeArguments="columns:IModNameViewModel"
+    x:Class="NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModVersionView"
+    x:TypeArguments="columns:IModVersionViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:columns="clr-namespace:NexusMods.App.UI.RightContent.LoadoutGrid.Columns"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -11,11 +11,11 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.DataContext>
-        <columns:ModNameDesignViewModel />
+        <columns:ModVersionDesignViewModel />
     </Design.DataContext>
     <TextBlock
         Classes="Body2RobotoRegular"
         VerticalAlignment="Center"
-        x:Name="NameTextBox" />
+        x:Name="VersionTextBlock" />
 </reactiveUi:ReactiveUserControl>
 

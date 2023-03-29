@@ -24,4 +24,8 @@
     <Style Selector="DataGridCell:selected">
         <Setter Property="BorderThickness" Value="1" />
     </Style>
+
+    <Style Selector="DataGridCell /template/ Rectangle">
+        <Setter Property="IsVisible" Value="False" />
+    </Style>
 </Styles>
