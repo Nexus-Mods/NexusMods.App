@@ -25,11 +25,9 @@ public class LooseFileInstaller : IModInstaller
         };
         _prefixes = _prefixes.Concat(_prefixes.Select(p => (_dataFolder.Join(p.Prefix), p.Type)))
             .ToArray();
-
     }
 
     private RelativePath _dataFolder = "Data".ToRelativePath();
-
 
     public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
@@ -49,7 +47,7 @@ public class LooseFileInstaller : IModInstaller
                select (kv.Key, kv.Value);
     }
 
-    public async ValueTask<IEnumerable<AModFile>> InstallAsync(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken token)
+    public IEnumerable<AModFile> GetFilesToExtract(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
         return FilterFiles(files)
             .Select(file =>

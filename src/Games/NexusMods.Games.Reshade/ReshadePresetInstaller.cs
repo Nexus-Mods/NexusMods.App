@@ -56,13 +56,8 @@ public class ReshadePresetInstaller : IModInstaller
         return Common.Priority.Low;
     }
 
-    public ValueTask<IEnumerable<AModFile>> InstallAsync(GameInstallation installation, Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken token)
-    {
-        return ValueTask.FromResult(InstallImpl(installation, srcArchiveHash, files));
-    }
-
-    private IEnumerable<AModFile> InstallImpl(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
+    public IEnumerable<AModFile> GetFilesToExtract(GameInstallation installation, Hash srcArchiveHash,
+        EntityDictionary<RelativePath, AnalyzedFile> files)
     {
         var game = installation.Game as AGame;
         var folder = game!.PrimaryFile.Path;
@@ -72,7 +67,7 @@ public class ReshadePresetInstaller : IModInstaller
             {
                 Id = ModFileId.New(),
                 To = new GamePath(GameFolderType.Game, folder.Join(file.Key.FileName)),
-                From = new HashRelativePath(srcArchive, file.Key),
+                From = new HashRelativePath(srcArchiveHash, file.Key),
                 Hash = file.Value.Hash,
                 Size = file.Value.Size
             };

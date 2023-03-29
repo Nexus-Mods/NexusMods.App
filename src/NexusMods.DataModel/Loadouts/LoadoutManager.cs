@@ -240,7 +240,7 @@ public class LoadoutManager
             throw new Exception($"No Installer found for {path}");
 
         var cts = new CancellationTokenSource();
-        var contents = (await installer.Installer.InstallAsync(loadout.Value.Installation, analyzed.Hash, archive.Contents, cts.Token))
+        var contents = (installer.Installer.GetFilesToExtract(loadout.Value.Installation, analyzed.Hash, archive.Contents))
             .WithPersist(Store);
 
         name = string.IsNullOrWhiteSpace(name) ? path.FileName : name;

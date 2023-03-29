@@ -22,12 +22,7 @@ public class RedModInstaller : IModInstaller
         return files.Any(IsInfoJson) ? Common.Priority.High : Common.Priority.None;
     }
 
-    public ValueTask<IEnumerable<AModFile>> InstallAsync(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken token)
-    {
-        return ValueTask.FromResult(InstallImpl(srcArchive, files));
-    }
-
-    public IEnumerable<AModFile> InstallImpl(Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
+    public IEnumerable<AModFile> GetFilesToExtract(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
         foreach (var infoJson in files.Where(IsInfoJson))
         {

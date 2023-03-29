@@ -33,7 +33,7 @@ public class FomodXmlInstaller : IModInstaller
         _extractor = extractor;
     }
 
-    public async ValueTask<IEnumerable<AModFile>> InstallAsync(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken token)
+    public IEnumerable<AModFile> GetFilesToExtract(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
         var filePaths = files.Select(_ => (string)_.Key).ToList();
 

@@ -97,7 +97,7 @@ public class FomodXmlInstallerTests
     {
         SetupInstallerScriptFromFile("SimpleInstaller.xml", fileSystem);
 
-        var installedFiles = await _installer.InstallAsync(_gameInstallation, Hash.Zero, _files, CancellationToken.None);
+        var installedFiles = _installer.GetFilesToExtract(_gameInstallation, Hash.Zero, _files, CancellationToken.None);
 
         installedFiles.Count().Should().Be(2);
         installedFiles.ElementAt(0).To.FileName.Should().Be((RelativePath)"g1p1f1.out.esp");
@@ -109,7 +109,7 @@ public class FomodXmlInstallerTests
     {
         SetupInstallerScriptFromFile("SimpleInstaller.xml", fileSystem);
 
-        var installedFiles = await _installer.InstallAsync(_gameInstallation, Hash.Zero, _files, CancellationToken.None);
+        var installedFiles = _installer.GetFilesToExtract(_gameInstallation, Hash.Zero, _files, CancellationToken.None);
 
         installedFiles.Count().Should().Be(3);
 
