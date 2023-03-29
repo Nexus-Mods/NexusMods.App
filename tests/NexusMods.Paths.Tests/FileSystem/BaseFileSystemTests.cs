@@ -94,18 +94,31 @@ public class BaseFileSystemTests
     {
         Skip.IfNot(OperatingSystem.IsWindows());
 
-        var expectedRootDirectories = Enumerable
-            .Range('A', 'Z' - 'A')
+        var rootDirectory = fs.FromFullPath("C:\\");
+        var pathMappings = Enumerable.Range('A', 'Z' - 'A')
             .Select(iDriveLetter =>
             {
                 var driveLetter = (char)iDriveLetter;
-                var path = fs.FromFullPath($"{driveLetter}:\\");
-                fs.AddDirectory(path);
-                return path;
-            })
+                var originalPath = fs.FromFullPath($"{driveLetter}:\\");
+                var newPath = rootDirectory.CombineUnchecked(Guid.NewGuid().ToString("D"));
+                return (originalPath, newPath);
+            }).ToDictionary(x => x.originalPath, x => x.newPath);
+
+        var overlayFileSystem = fs.CreateOverlayFileSystem(
+            pathMappings,
+            new Dictionary<KnownPath, AbsolutePath>(),
+            convertCrossPlatformPaths: false);
+
+        var expectedRootDirectories = pathMappings
+            .Select(kv => kv.Value)
             .ToArray();
 
-        var actualRootDirectories = fs
+        foreach (var expectedRootDirectory in expectedRootDirectories)
+        {
+            overlayFileSystem.CreateDirectory(expectedRootDirectory);
+        }
+
+        var actualRootDirectories = overlayFileSystem
             .EnumerateRootDirectories()
             .ToArray();
 
