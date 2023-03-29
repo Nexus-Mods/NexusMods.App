@@ -21,7 +21,7 @@ public class ModEnabledDesignViewModel : AViewModel<IModEnabledViewModel>, IModE
         ToggleEnabledCommand = ReactiveCommand.CreateFromTask(async () =>
         {
             // Bit of a delay to show simulate the roundtrip to the datastore
-            await Task.Delay(1000);
+            await Task.Delay(2000);
             Enabled = !Enabled;
         });
     }

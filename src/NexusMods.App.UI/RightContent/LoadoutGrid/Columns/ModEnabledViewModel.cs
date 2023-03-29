@@ -12,6 +12,7 @@ namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 
 public class ModEnabledViewModel : AViewModel<IModEnabledViewModel>, IModEnabledViewModel
 {
+    [Reactive]
     public ModCursor Row { get; set; } = Initializers.ModCursor;
 
     [Reactive]

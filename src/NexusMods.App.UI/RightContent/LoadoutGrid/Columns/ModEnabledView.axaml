@@ -13,12 +13,12 @@
     <Design.DataContext>
         <columns:ModEnabledDesignViewModel />
     </Design.DataContext>
-    <ToggleSwitch x:Name="EnabledToggleSwitch">
+    <ToggleSwitch ZIndex="2" x:Name="EnabledToggleSwitch">
         <ToggleSwitch.OnContent>
-            <ContentControl></ContentControl>
+            <ContentControl />
         </ToggleSwitch.OnContent>
         <ToggleSwitch.OffContent>
-            <ContentControl></ContentControl>
+            <ContentControl />
         </ToggleSwitch.OffContent>
     </ToggleSwitch>
 </reactiveUi:ReactiveUserControl>

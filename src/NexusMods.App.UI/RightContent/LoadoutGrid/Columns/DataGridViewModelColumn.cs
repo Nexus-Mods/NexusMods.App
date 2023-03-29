@@ -1,4 +1,5 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 
@@ -27,6 +28,9 @@ public class DataGridViewModelColumn<TVm, TRow> : ADataGridViewModelColumn<TVm, 
             return new TextBlock { Text = $"No column view found for VM {typeof(TVm)}" };
 
         view.ViewModel = vm;
+        if (view is StyledElement styled)
+            styled.DataContext = vm;
+
         return (Control)view;
     }
 }

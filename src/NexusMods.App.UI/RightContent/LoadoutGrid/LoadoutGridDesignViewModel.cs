@@ -76,7 +76,7 @@ public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>, ILo
             }, ColumnType.Installed);
             x.AddOrUpdate(new DataGridDesignViewModelColumn<IModEnabledViewModel, ModCursor>(modId => new ModEnabledView
             {
-                ViewModel = new ModEnabledDesignViewModel { Row = modId }
+                DataContext = new ModEnabledDesignViewModel { Row = modId }
             })
             {
                 Header = "Enabled"

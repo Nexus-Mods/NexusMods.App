@@ -6,6 +6,7 @@ using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using System.Reactive.Disposables;
 using DynamicData.PLinq;
+using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts.Cursors;
 
@@ -255,8 +256,8 @@ public class LoadoutRegistry : IDisposable
     public IObservable<IId> Revisions(LoadoutId loadoutId, ModId modId)
     {
         return Revisions(loadoutId)
-            .Select(id => _store.Get<Loadout>(id)!.Mods.GetValueId(modId));
-
+            .Select(id => _store.Get<Loadout>(id)?.Mods.GetValueId(modId) ?? null)
+            .NotNull();
     }
 
     /// <summary>
