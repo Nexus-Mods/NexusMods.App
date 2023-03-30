@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
+using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
 using Noggog;
@@ -36,7 +37,8 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
             new SourceCache<IDataGridColumnFactory, ColumnType>(
                 x => throw new NotImplementedException());
 
-        _mods = new ReadOnlyObservableCollection<ModCursor>(new ObservableCollection<ModCursor>());
+        _mods = new ReadOnlyObservableCollection<ModCursor>(
+            new ObservableCollection<ModCursor>());
 
         var nameColumn = provider.GetRequiredService<DataGridColumnFactory<IModNameViewModel, ModCursor>>();
         nameColumn.Header = "MOD NAME";
@@ -67,9 +69,8 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
             this.WhenAnyValue(vm => vm.Loadout)
                 .Select(loadoutRegistry.Get)
                 .Where(loadout => loadout != null)
-                .Select(loadout => loadout!.Mods.Keys.Select(modId =>
-                    new ModCursor(loadout.LoadoutId, modId)))
-                .ToObservableChangeSet(cursor => cursor.ModId)
+                .Select(loadout => loadout!.Mods.Values.Select(m => new ModCursor(loadout.LoadoutId, m.Id)))
+                .ToDiffedChangeSet(cur => cur.ModId, cur => cur)
                 .Bind(out _mods)
                 .Subscribe()
                 .DisposeWith(d);

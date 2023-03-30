@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Immutable;
 using System.Text.Json.Serialization;
+using DynamicData;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
@@ -24,6 +25,11 @@ public struct EntityDictionary<TK, TV> :
 
     private readonly ImmutableDictionary<TK, IId> _coll;
     private readonly IDataStore _store;
+
+    /// <summary>
+    /// The data store that this dictionary is backed by.
+    /// </summary>
+    public IDataStore Store => _store;
 
     /// <summary>
     /// Initializes a dictionary of entities backing.
@@ -231,5 +237,29 @@ public struct EntityDictionary<TK, TV> :
     public IId GetValueId(TK modId)
     {
         return _coll[modId];
+    }
+
+    public IChangeSet<IId,TK> Diff(EntityDictionary<TK,TV> old)
+    {
+        var changes = new ChangeSet<IId,TK>();
+        foreach (var (key, id) in _coll)
+        {
+            if (!old._coll.TryGetValue(key, out var oldId))
+            {
+                changes.Add(new Change<IId, TK>(ChangeReason.Add, key, id));
+                continue;
+            }
+
+            if (!id.Equals(oldId))
+                changes.Add(new Change<IId, TK>(ChangeReason.Update, key, id));
+        }
+
+        foreach (var (key, id) in old._coll)
+        {
+            if (!_coll.ContainsKey(key))
+                changes.Add(new Change<IId, TK>(ChangeReason.Remove, key, id));
+        }
+
+        return changes;
     }
 }
