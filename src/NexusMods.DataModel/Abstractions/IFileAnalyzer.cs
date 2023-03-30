@@ -34,12 +34,12 @@ public struct FileAnalyzerInfo
     /// <summary>
     /// Name of the file being analyzed.
     /// </summary>
-    public string FileName;
+    public string FileName { get; init; }
 
     /// <summary>
     /// Provides access to the underlying file.
     /// </summary>
-    public Stream Stream;
+    public Stream Stream { get; init; }
 
     /// <summary>
     /// Path to the extracted parent archive.

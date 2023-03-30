@@ -7,6 +7,7 @@ using NexusMods.DataModel;
 using NexusMods.FileExtractor;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.DarkestDungeon;
+using NexusMods.Games.FOMOD;
 using NexusMods.Games.Generic;
 using NexusMods.Games.RedEngine;
 using NexusMods.Games.Reshade;
@@ -45,6 +46,7 @@ public static class Services
             .AddDarkestDungeon()
             .AddRenderers()
             .AddNexusWebApi()
+            .AddFomod()
             .AddAdvancedHttpDownloader(config.HttpDownloaderSettings)
             .AddTestHarness()
             .AddSingleton<HttpClient>()

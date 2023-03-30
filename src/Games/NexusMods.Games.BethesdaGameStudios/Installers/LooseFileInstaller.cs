@@ -47,7 +47,12 @@ public class LooseFileInstaller : IModInstaller
                select (kv.Key, kv.Value);
     }
 
-    public IEnumerable<AModFile> GetFilesToExtract(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
+    public ValueTask<IEnumerable<AModFile>> GetFilesToExtractAsync(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken ct = default)
+    {
+        return ValueTask.FromResult(GetFilesToExtractImpl(srcArchive, files));
+    }
+
+    private IEnumerable<AModFile> GetFilesToExtractImpl(Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
         return FilterFiles(files)
             .Select(file =>

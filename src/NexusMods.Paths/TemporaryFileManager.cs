@@ -11,6 +11,8 @@ public class TemporaryFileManager : IDisposable, IAsyncDisposable
     private readonly AbsolutePath _basePath;
     private readonly bool _deleteOnDispose;
 
+    // TODO: For unit tests we should inject IFileSystem here.
+
     /// <summary>
     /// Utility for creating temporary folder and files to be later disposed.
     /// </summary>
@@ -94,7 +96,7 @@ public class TemporaryFileManager : IDisposable, IAsyncDisposable
 }
 
 /// <summary>
-/// A path that is (optionally) deleted when disposed. 
+/// A path that is (optionally) deleted when disposed.
 /// </summary>
 /// <remarks>
 ///    If the owner <see cref="TemporaryFileManager"/> is disposed; this path should be disposed too.

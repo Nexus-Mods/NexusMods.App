@@ -30,7 +30,12 @@ public class FolderlessModInstaller : IModInstaller
         return Common.Priority.None;
     }
 
-    public IEnumerable<AModFile> GetFilesToExtract(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
+    public ValueTask<IEnumerable<AModFile>> GetFilesToExtractAsync(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken ct)
+    {
+        return ValueTask.FromResult(GetFilesToExtractImpl(srcArchive, files));
+    }
+
+    private IEnumerable<AModFile> GetFilesToExtractImpl(Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
         foreach (var (path, file) in files)
         {

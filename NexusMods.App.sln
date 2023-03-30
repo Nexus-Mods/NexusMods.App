@@ -99,7 +99,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Paths.TestingHelp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.FOMOD", "src\Games\NexusMods.Games.FOMOD\NexusMods.Games.FOMOD.csproj", "{B43A31B2-1F08-4D8E-9C45-48015FBA983E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.FOMOD.Tests", "src\Games\NexusMods.Games.FOMOD.Tests\NexusMods.Games.FOMOD.Tests.csproj", "{678D0CB7-EA46-4DF2-8C91-E77EA2270C48}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.FOMOD.Tests", "tests\Games\NexusMods.Games.FOMOD.Tests\NexusMods.Games.FOMOD.Tests.csproj", "{678D0CB7-EA46-4DF2-8C91-E77EA2270C48}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

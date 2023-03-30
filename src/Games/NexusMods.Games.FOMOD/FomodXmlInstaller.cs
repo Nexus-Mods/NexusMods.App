@@ -33,31 +33,40 @@ public class FomodXmlInstaller : IModInstaller
         _extractor = extractor;
     }
 
-    public IEnumerable<AModFile> GetFilesToExtract(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
+    public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
-        var filePaths = files.Select(_ => (string)_.Key).ToList();
+        var hasScript = files.ContainsKey(FomodConstants.XmlConfigRelativePath);
+        return hasScript ? Common.Priority.High : Common.Priority.None;
+    }
 
+    public async ValueTask<IEnumerable<AModFile>> GetFilesToExtractAsync(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken token)
+    {
         // the component dealing with fomods is built to support all kinds of mods, including those without a script.
         // for those cases, stop patterns can be way more complex to deduce the intended installation structure. In our case, where
         // we only intend to support xml scripted fomods, this should be good enough
         var stopPattern = new List<string> { "fomod" };
 
-        var found = _store.Get<AnalyzedFile>(new Id64(EntityCategory.FileAnalysis, (ulong)srcArchive));
-        if (found is not AnalyzedArchive)
-            throw new Exception($"$[{nameof(FomodXmlInstaller)}] expected installation to be on an archive");
+        if (!files.TryGetValue(FomodConstants.XmlConfigRelativePath, out var analyzedFile))
+            throw new Exception($"$[{nameof(FomodXmlInstaller)}] XML not found. This should never be true and is indicative of a bug.");
 
-        await using var tmpFolder = _tmpFiles.CreateFolder();
+        var analyzerInfo = analyzedFile.AnalysisData.OfType<FomodAnalyzerInfo>().First();
 
-        // @todo redundant, the archive analyzation already extracted the archive but then immediately deleted the files, that
-        //   needs to be changed to support any installer that needs to access file content
-        await _extractor.ExtractAllAsync(found.SourcePath, tmpFolder);
+        // TODO: We have enough data cached to extract just what we need for the script to run;
+        // it would be ideal to not have to extract anything; but for now we have to treat fomod on
+        // as a 'black box'. This black box cannot run XMLs from memory yet; unfortunately.
 
-        var mod = new Mod(filePaths, stopPattern, "fomod/ModuleConfig.xml", tmpFolder.Path.ToString(), _scriptType);
-        await mod.Initialize(true);
+        // Specifically, based on my reading of the code, for some FOMODs,
+        await using var fomodFolder = _tmpFiles.CreateFolder();
+        await analyzerInfo.DumpToFileSystemAsync(fomodFolder);
+
+        // Setup mod, exclude script path so it doesn't get picked up and thus double read from disk
+        var modFiles = files.Keys.Select(x => x.ToString()).ToList();
+        var mod = new Mod(modFiles, stopPattern, FomodConstants.XmlConfigRelativePath, fomodFolder.Path.ToString(), _scriptType);
+        await mod.Initialize(false); // <= Need to change API to be able to set Prefix to maybe run without extracting
+
         var executor = _scriptType.CreateExecutor(mod, _delegates);
-        const string dataPath = "";
-        var installScript = _scriptType.LoadScript(await tmpFolder.Path.CombineChecked("fomod/ModuleConfig.xml").ReadAllTextAsync(token), false);
-        var instructions = await executor.Execute(installScript, dataPath, null);
+        var installScript = mod.InstallScript;
+        var instructions = await executor.Execute(installScript, "", null);
 
         var errors = instructions.Where(_ => _.type == "error");
         if (errors.Any())
@@ -66,21 +75,9 @@ public class FomodXmlInstaller : IModInstaller
         // I don't think this can happen on xml installers, afaik this would only happen on c# scripts that
         // try to directly change the plugin load order
         foreach (var warning in instructions.Where(_ => _.type == "unsupported"))
-        {
             _logger.LogWarning("Installer uses unsupported function: {}", warning.source);
-        }
 
         return InstructionsToModFiles(instructions, srcArchive, files);
-    }
-
-    public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
-    {
-        var hasScript = files.Any(kv =>
-            (kv.Key.Depth > 1)
-            && ((string)kv.Key.Parent.FileName).Equals("fomod", StringComparison.InvariantCultureIgnoreCase)
-            && ((string)kv.Key.FileName).Equals("ModuleConfig.xml", StringComparison.InvariantCultureIgnoreCase));
-
-        return hasScript ? Common.Priority.High : Common.Priority.None;
     }
 
     private IEnumerable<AModFile> InstructionsToModFiles(IEnumerable<Instruction> instructions, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
@@ -92,9 +89,7 @@ public class FomodXmlInstaller : IModInstaller
 
         var result = new List<AModFile>();
         foreach (var type in groupedInstructions)
-        {
             result.AddRange(ConvertInstructions(type.Value, srcArchive, files));
-        }
 
         return result;
     }
