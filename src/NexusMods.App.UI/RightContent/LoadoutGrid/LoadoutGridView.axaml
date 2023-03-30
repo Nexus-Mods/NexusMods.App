@@ -13,6 +13,6 @@
     <Design.DataContext>
         <loadoutGrid:LoadoutGridDesignViewModel />
     </Design.DataContext>
-    <DataGrid x:Name="ModsDataGrid" />
+    <DataGrid Margin="24,16" x:Name="ModsDataGrid" />
 </reactiveUi:ReactiveUserControl>
 
