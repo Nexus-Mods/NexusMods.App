@@ -34,6 +34,7 @@ public static class Services
             // View Models
             .AddTransient<MainWindowViewModel>()
             .AddTransient(typeof(DataGridViewModelColumn<,>))
+            .AddTransient(typeof(DataGridColumnFactory<,>))
             .AddSingleton<IViewLocator, InjectedViewLocator>()
 
             .AddViewModel<FoundGamesViewModel, IFoundGamesViewModel>()

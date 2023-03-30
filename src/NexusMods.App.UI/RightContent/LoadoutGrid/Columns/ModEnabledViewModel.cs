@@ -26,7 +26,7 @@ public class ModEnabledViewModel : AViewModel<IModEnabledViewModel>, IModEnabled
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.Row)
-                .SelectMany(cursor => loadoutRegistry.Revisions(cursor.LoadoutId))
+                .SelectMany(loadoutRegistry.Revisions)
                 .Select(id => store.Get<Mod>(id))
                 .WhereNotNull()
                 .Select(mod => mod.Enabled)

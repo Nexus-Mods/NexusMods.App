@@ -24,7 +24,7 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
                 {
                     ModsDataGrid.Columns.Clear();
                     foreach (var column in columns)
-                        ModsDataGrid.Columns.Add(column);
+                        ModsDataGrid.Columns.Add(column.Generate());
                 })
                 .DisposeWith(d);
         });

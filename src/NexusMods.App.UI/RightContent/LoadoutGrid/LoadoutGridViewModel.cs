@@ -9,21 +9,23 @@ using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
 using Noggog;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid;
 
 public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutGridViewModel
 {
 
+    [Reactive]
     public LoadoutId Loadout { get; set; }
 
     private ReadOnlyObservableCollection<ModCursor> _mods;
     public ReadOnlyObservableCollection<ModCursor> Mods => _mods;
 
 
-    private readonly SourceCache<DataGridColumn,ColumnType> _columns;
-    private ReadOnlyObservableCollection<DataGridColumn> _filteredColumns = new(new ObservableCollection<DataGridColumn>());
-    public ReadOnlyObservableCollection<DataGridColumn> Columns => _filteredColumns;
+    private readonly SourceCache<IDataGridColumnFactory,ColumnType> _columns;
+    private ReadOnlyObservableCollection<IDataGridColumnFactory> _filteredColumns = new(new ObservableCollection<IDataGridColumnFactory>());
+    public ReadOnlyObservableCollection<IDataGridColumnFactory> Columns => _filteredColumns;
 
     public LoadoutGridViewModel(IServiceProvider provider, LoadoutRegistry loadoutRegistry,
         IModNameViewModel nameViewModel, IModCategoryViewModel categoryViewModel,
@@ -31,24 +33,24 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
         IModVersionViewModel versionViewModel)
     {
         _columns =
-            new SourceCache<DataGridColumn, ColumnType>(
+            new SourceCache<IDataGridColumnFactory, ColumnType>(
                 x => throw new NotImplementedException());
 
         _mods = new ReadOnlyObservableCollection<ModCursor>(new ObservableCollection<ModCursor>());
 
-        var nameColumn = provider.GetRequiredService<DataGridViewModelColumn<IModNameViewModel, ModCursor>>();
+        var nameColumn = provider.GetRequiredService<DataGridColumnFactory<IModNameViewModel, ModCursor>>();
         nameColumn.Header = "MOD NAME";
 
-        var categoryColumn = provider.GetRequiredService<DataGridViewModelColumn<IModCategoryViewModel, ModCursor>>();
+        var categoryColumn = provider.GetRequiredService<DataGridColumnFactory<IModCategoryViewModel, ModCursor>>();
         categoryColumn.Header = "CATEGORY";
 
-        var installedColumn = provider.GetRequiredService<DataGridViewModelColumn<IModInstalledViewModel, ModCursor>>();
+        var installedColumn = provider.GetRequiredService<DataGridColumnFactory<IModInstalledViewModel, ModCursor>>();
         installedColumn.Header = "INSTALLED";
 
-        var enabledColumn = provider.GetRequiredService<DataGridViewModelColumn<IModEnabledViewModel, ModCursor>>();
+        var enabledColumn = provider.GetRequiredService<DataGridColumnFactory<IModEnabledViewModel, ModCursor>>();
         enabledColumn.Header = "ENABLED";
 
-        var versionColumn = provider.GetRequiredService<DataGridViewModelColumn<IModVersionViewModel, ModCursor>>();
+        var versionColumn = provider.GetRequiredService<DataGridColumnFactory<IModVersionViewModel, ModCursor>>();
         versionColumn.Header = "VERSION";
 
         _columns.Edit(x =>
