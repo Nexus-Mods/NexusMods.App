@@ -15,6 +15,8 @@ namespace NexusMods.Paths;
 public abstract class BaseFileSystem : IFileSystem
 {
     private readonly Dictionary<AbsolutePath, AbsolutePath> _pathMappings = new();
+    private readonly Dictionary<KnownPath, AbsolutePath> _knownPathMappings = new();
+
     private readonly bool _hasPathMappings;
     private readonly bool _convertCrossPlatformPaths;
 
@@ -27,12 +29,15 @@ public abstract class BaseFileSystem : IFileSystem
     /// Constructor that accepts path mappings.
     /// </summary>
     /// <param name="pathMappings"></param>
+    /// <param name="knownPathMappings"></param>
     /// <param name="convertCrossPlatformPaths"></param>
     protected BaseFileSystem(
         Dictionary<AbsolutePath, AbsolutePath> pathMappings,
+        Dictionary<KnownPath, AbsolutePath> knownPathMappings,
         bool convertCrossPlatformPaths)
     {
         _pathMappings = pathMappings;
+        _knownPathMappings = knownPathMappings;
         _hasPathMappings = _pathMappings.Any();
         _convertCrossPlatformPaths = convertCrossPlatformPaths;
     }
@@ -102,12 +107,16 @@ public abstract class BaseFileSystem : IFileSystem
     /// <inheritdoc/>
     public abstract IFileSystem CreateOverlayFileSystem(
         Dictionary<AbsolutePath, AbsolutePath> pathMappings,
+        Dictionary<KnownPath, AbsolutePath> knownPathMappings,
         bool convertCrossPlatformPaths = false);
 
     /// <inheritdoc/>
     public virtual AbsolutePath GetKnownPath(KnownPath knownPath)
     {
         Debug.Assert(Enum.IsDefined(knownPath));
+
+        if (_knownPathMappings.TryGetValue(knownPath, out var mappedPath))
+            return mappedPath;
 
         AbsolutePath ThisOrDefault(string fullPath)
         {
@@ -134,17 +143,17 @@ public abstract class BaseFileSystem : IFileSystem
             KnownPath.MyGamesDirectory => FromDirectoryAndFileName(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games"),
         };
 
-        return GetMappedPath(path);
+        return path;
     }
 
     /// <summary>
-    /// Returns a dictionary with the required path mappings for Wine.
+    /// Returns a dictionary with the required path mappings and <see cref="KnownPath"/> mappings for Wine.
     /// </summary>
     /// <param name="fileSystem"></param>
     /// <param name="rootDirectory"></param>
     /// <param name="newHomeDirectory"></param>
     /// <returns></returns>
-    public static Dictionary<AbsolutePath, AbsolutePath> CreateWinePathMappings(
+    public static (Dictionary<AbsolutePath, AbsolutePath> pathMappings, Dictionary<KnownPath, AbsolutePath> knownPathMappings) CreateWinePathMappings(
         IFileSystem fileSystem, AbsolutePath rootDirectory, AbsolutePath newHomeDirectory)
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
@@ -156,6 +165,7 @@ public abstract class BaseFileSystem : IFileSystem
         };
 
         var knownPaths = Enum.GetValues<KnownPath>();
+        var knownPathMappings = new Dictionary<KnownPath, AbsolutePath>(knownPaths.Length);
         foreach (var knownPath in knownPaths)
         {
             var originalPath = fileSystem.GetKnownPath(knownPath);
@@ -178,10 +188,10 @@ public abstract class BaseFileSystem : IFileSystem
                 KnownPath.TempDirectory => newHomeDirectory.CombineUnchecked("AppData/Local/Temp"),
             };
 
-            pathMappings[originalPath] = newPath;
+            knownPathMappings[knownPath] = newPath;
         }
 
-        return pathMappings;
+        return (pathMappings, knownPathMappings);
     }
 
     /// <inheritdoc/>
@@ -199,6 +209,30 @@ public abstract class BaseFileSystem : IFileSystem
     /// <inheritdoc/>
     public IDirectoryEntry GetDirectoryEntry(AbsolutePath path)
         => InternalGetDirectoryEntry(GetMappedPath(path));
+
+    /// <inheritdoc/>
+    public IEnumerable<AbsolutePath> EnumerateRootDirectories()
+    {
+        if (!OperatingSystem.IsLinux() && !OperatingSystem.IsWindows())
+            throw new PlatformNotSupportedException();
+
+        if (OperatingSystem.IsLinux())
+            yield return FromFullPath("/");
+
+        // go through the valid drive letters on Windows
+        // or on Linux with cross platform path conversion enabled, in case
+        // the current file system is an overlay file system for Wine
+        if (OperatingSystem.IsWindows() || (OperatingSystem.IsLinux() && _convertCrossPlatformPaths))
+        {
+            for (var i = (uint)'A'; i <= 'Z'; i++)
+            {
+                var driveLetter = (char)i;
+                var path = FromFullPath($"{driveLetter}:\\");
+                if (DirectoryExists(path))
+                    yield return path;
+            }
+        }
+    }
 
     /// <inheritdoc/>
     public IEnumerable<AbsolutePath> EnumerateFiles(AbsolutePath directory, string pattern = "*", bool recursive = true)

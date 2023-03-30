@@ -12,6 +12,7 @@ public interface IFileSystem
     /// Creates a new <see cref="FileSystem"/> that allows for path mapping.
     /// </summary>
     /// <param name="pathMappings">Path mappings</param>
+    /// <param name="knownPathMappings">Mappings for <see cref="KnownPath"/></param>
     /// <param name="convertCrossPlatformPaths">
     /// If true, this will convert
     /// Windows paths to Linux paths: <c>C:\foo\bar</c> will become
@@ -21,6 +22,7 @@ public interface IFileSystem
     /// <returns></returns>
     IFileSystem CreateOverlayFileSystem(
         Dictionary<AbsolutePath, AbsolutePath> pathMappings,
+        Dictionary<KnownPath, AbsolutePath> knownPathMappings,
         bool convertCrossPlatformPaths = false);
 
     /// <summary>
@@ -62,6 +64,15 @@ public interface IFileSystem
     /// <param name="path"></param>
     /// <returns></returns>
     IDirectoryEntry GetDirectoryEntry(AbsolutePath path);
+
+    /// <summary>
+    /// Enumerates through the root directories. On Windows, this method will
+    /// return all existing root directories using a list of valid drive letters,
+    /// eg: "C:\\", "M:\\", "T:\\".
+    /// On Linux, this method will return "/".
+    /// </summary>
+    /// <returns></returns>
+    IEnumerable<AbsolutePath> EnumerateRootDirectories();
 
     /// <summary>
     /// Enumerates through all files present in the directory that match the

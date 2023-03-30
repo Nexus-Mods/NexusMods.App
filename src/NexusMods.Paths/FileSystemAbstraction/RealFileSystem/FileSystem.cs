@@ -26,13 +26,15 @@ public partial class FileSystem : BaseFileSystem
 
     internal FileSystem(
         Dictionary<AbsolutePath, AbsolutePath> pathMappings,
-        bool convertCrossPlatformPaths) : base(pathMappings, convertCrossPlatformPaths) { }
+        Dictionary<KnownPath, AbsolutePath> knownPathMappings,
+        bool convertCrossPlatformPaths) : base(pathMappings, knownPathMappings, convertCrossPlatformPaths) { }
 
     /// <inheritdoc/>
     public override IFileSystem CreateOverlayFileSystem(
         Dictionary<AbsolutePath, AbsolutePath> pathMappings,
+        Dictionary<KnownPath, AbsolutePath> knownPathMappings,
         bool convertCrossPlatformPaths = false)
-        => new FileSystem(pathMappings, convertCrossPlatformPaths);
+        => new FileSystem(pathMappings, knownPathMappings, convertCrossPlatformPaths);
 
     /// <inheritdoc/>
     protected override IFileEntry InternalGetFileEntry(AbsolutePath path)
