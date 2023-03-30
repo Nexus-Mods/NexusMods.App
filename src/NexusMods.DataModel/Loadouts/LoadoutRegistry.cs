@@ -243,6 +243,7 @@ public class LoadoutRegistry : IDisposable
         var rootId = loadoutId.ToEntityId(EntityCategory.LoadoutRoots);
         return _store.IdChanges
             .Where(id => id.Equals(rootId))
+            .Select(id => IId.FromTaggedSpan(_store.GetRaw(id)))
             .StartWith(IId.FromTaggedSpan(_store.GetRaw(rootId)));
     }
 
