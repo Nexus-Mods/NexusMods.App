@@ -9,7 +9,6 @@ public class DataGridDesignViewModelColumn<TVm, TRow> : ADataGridViewModelColumn
     public DataGridDesignViewModelColumn(Func<TRow, IViewFor<TVm>> ctor)
     {
         _ctor = ctor;
-
     }
 
 
@@ -23,5 +22,10 @@ public class DataGridDesignViewModelColumn<TVm, TRow> : ADataGridViewModelColumn
         {
             return new TextBox() { Text = ex.ToString() };
         }
+    }
+
+    protected override int Compare(TRow rowType, TRow rowType1)
+    {
+        return 0;
     }
 }

@@ -33,4 +33,9 @@ public class DataGridViewModelColumn<TVm, TRow> : ADataGridViewModelColumn<TVm, 
 
         return (Control)view;
     }
+
+    protected override int Compare(TRow rowType, TRow rowType1)
+    {
+        return 0;
+    }
 }
