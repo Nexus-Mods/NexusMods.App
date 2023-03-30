@@ -11,10 +11,12 @@
 
     <Style Selector="DataGridColumnHeader:sortascending /template/ Path#SortIcon">
         <Setter Property="Fill" Value="{DynamicResource BrandWhite}" />
+        <Setter Property="Data" Value="{DynamicResource DataGridSortIconAscendingPath}" />
     </Style>
 
     <Style Selector="DataGridColumnHeader:sortdescending /template/ Path#SortIcon">
         <Setter Property="Fill" Value="{DynamicResource BrandWhite}" />
+        <Setter Property="Data" Value="{DynamicResource DataGridSortIconDescendingPath}" />
     </Style>
 
     <Style Selector="DataGridColumnHeader TextBlock">
