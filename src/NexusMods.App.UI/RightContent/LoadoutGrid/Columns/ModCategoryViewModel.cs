@@ -9,8 +9,7 @@ namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 
 public class ModCategoryViewModel : AViewModel<IModCategoryViewModel>, IModCategoryViewModel
 {
-    [Reactive]
-    public ModCursor Row { get; set; }
+    [Reactive] public ModCursor Row { get; set; } = Initializers.ModCursor;
 
     [Reactive] public string Category { get; set; } = "";
 

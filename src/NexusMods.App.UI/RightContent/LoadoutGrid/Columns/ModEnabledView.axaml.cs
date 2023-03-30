@@ -1,9 +1,6 @@
 ﻿using System.Reactive.Disposables;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
+using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
-using Noggog;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
@@ -19,10 +16,19 @@ public partial class ModEnabledView : ReactiveUserControl<IModEnabledViewModel>
             this.WhenAnyValue(view => view.ViewModel!.Enabled)
                 .BindToUi(this, view => view.EnabledToggleSwitch.IsChecked)
                 .DisposeWith(d);
-            this.BindCommand(ViewModel, vm => vm.ToggleEnabledCommand,
-                    view => view.EnabledToggleSwitch)
-                .DisposeWith(d);
 
+            void HandleToggleSwitchCheckedChanged(object? sender, RoutedEventArgs e)
+            {
+                ViewModel!.ToggleEnabledCommand.Execute(null);
+            }
+
+            EnabledToggleSwitch.IsCheckedChanged +=
+                HandleToggleSwitchCheckedChanged;
+            d.Add(Disposable.Create(() =>
+            {
+                EnabledToggleSwitch.IsCheckedChanged -=
+                    HandleToggleSwitchCheckedChanged;
+            }));
         });
     }
 }

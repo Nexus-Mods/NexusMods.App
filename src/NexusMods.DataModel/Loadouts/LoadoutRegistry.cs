@@ -240,11 +240,10 @@ public class LoadoutRegistry : IDisposable
     /// <returns></returns>
     public IObservable<IId> Revisions(LoadoutId loadoutId)
     {
-        var dbId = loadoutId.ToEntityId(EntityCategory.TestData);
+        var rootId = loadoutId.ToEntityId(EntityCategory.LoadoutRoots);
         return _store.IdChanges
-            .Where(id => id == dbId)
-            .StartWith(IId.FromTaggedSpan(_store.GetRaw(dbId)))
-            .Select(id => IId.FromTaggedSpan(_store.GetRaw(id)));
+            .Where(id => id.Equals(rootId))
+            .StartWith(IId.FromTaggedSpan(_store.GetRaw(rootId)));
     }
 
     /// <summary>
