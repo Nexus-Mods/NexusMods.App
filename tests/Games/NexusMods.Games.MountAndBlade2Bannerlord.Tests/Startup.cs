@@ -17,12 +17,14 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
+        var prefix = KnownFolders.EntryFolder.CombineUnchecked("DataModel")
+            .CombineUnchecked(Guid.NewGuid().ToString());
+
         services.AddUniversalGameLocator<MountAndBlade2Bannerlord>(new Version("1.0.0.0"))
                 .AddMountAndBladeBannerlord()
 
                 .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
-                .AddDataModel(KnownFolders.EntryFolder.CombineUnchecked("DataModel")
-                    .CombineUnchecked(Guid.NewGuid().ToString()))
+                .AddDataModel(new DataModelSettings(prefix))
                 .AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(s =>
                     new Resource<FileContentsCache, Size>("File Analysis"))
                 .AddAllSingleton<IResource, IResource<IExtractor, Size>>(s =>
