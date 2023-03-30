@@ -58,6 +58,108 @@ public enum KnownPath
     CommonApplicationDataDirectory,
 
     /// <summary>
+    /// The program files directory.
+    /// <list type="table">
+    ///     <listheader>
+    ///         <term>OS</term>
+    ///         <description>Path</description>
+    ///     </listheader>
+    ///     <item>
+    ///         <term>Windows</term>
+    ///         <description>
+    ///             (CSIDL_PROGRAM_FILES) Program Files folder for the current process architecture
+    ///             <c>%ProgramFiles%</c> (<c>%SystemDrive%\Program Files</c>)
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <term>Linux</term>
+    ///         <description>This folder doesn't exist on Linux!</description>
+    ///     </item>
+    /// </list>
+    /// </summary>
+    /// <remarks>
+    /// <see cref="BaseFileSystem"/> uses <see cref="Environment.GetFolderPath(System.Environment.SpecialFolder)"/>
+    /// with <see cref="Environment.SpecialFolder.ProgramFiles"/> to get this value.
+    /// </remarks>
+    ProgramFilesDirectory,
+
+    /// <summary>
+    /// The 32 bit Program Files directory.
+    /// <list type="table">
+    ///     <listheader>
+    ///         <term>OS</term>
+    ///         <description>Path</description>
+    ///     </listheader>
+    ///     <item>
+    ///         <term>Windows</term>
+    ///         <description>
+    ///             (CSIDL_PROGRAM_FILESX86) 32 bit Program Files folder (available to both 32/64 bit processes)
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <term>Linux</term>
+    ///         <description>This folder doesn't exist on Linux!</description>
+    ///     </item>
+    /// </list>
+    /// </summary>
+    /// <remarks>
+    /// <see cref="BaseFileSystem"/> uses <see cref="Environment.GetFolderPath(System.Environment.SpecialFolder)"/>
+    /// with <see cref="Environment.SpecialFolder.ProgramFilesX86"/> to get this value.
+    /// </remarks>
+    ProgramFilesX86Directory,
+
+    /// <summary>
+    /// The directory for components that are shared across applications.
+    /// <list type="table">
+    ///     <listheader>
+    ///         <term>OS</term>
+    ///         <description>Path</description>
+    ///     </listheader>
+    ///     <item>
+    ///         <term>Windows</term>
+    ///         <description>
+    ///             (CSIDL_PROGRAM_FILES_COMMON) Common Program Files folder for the current process architecture
+    ///             <c>%ProgramFiles%\Common Files</c>
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <term>Linux</term>
+    ///         <description>This folder doesn't exist on Linux!</description>
+    ///     </item>
+    /// </list>
+    /// </summary>
+    /// <remarks>
+    /// <see cref="BaseFileSystem"/> uses <see cref="Environment.GetFolderPath(System.Environment.SpecialFolder)"/>
+    /// with <see cref="Environment.SpecialFolder.CommonProgramFiles"/> to get this value.
+    /// </remarks>
+    CommonProgramFilesDirectory,
+
+    /// <summary>
+    /// The directory for components that are shared across applications.
+    /// <list type="table">
+    ///     <listheader>
+    ///         <term>OS</term>
+    ///         <description>Path</description>
+    ///     </listheader>
+    ///     <item>
+    ///         <term>Windows</term>
+    ///         <description>
+    ///             (CSIDL_PROGRAM_FILES_COMMONX86) Common 32 bit Program Files folder (available to both 32/64 bit processes)
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <term>Linux</term>
+    ///         <description>This folder doesn't exist on Linux!</description>
+    ///     </item>
+    /// </list>
+    /// </summary>
+    /// <remarks>
+    /// <see cref="BaseFileSystem"/> uses <see cref="Environment.GetFolderPath(System.Environment.SpecialFolder)"/>
+    /// with <see cref="Environment.SpecialFolder.CommonProgramFilesX86"/> to get this value.
+    /// </remarks>
+    CommonProgramFilesX86Directory,
+
+    /// <summary>
     /// The current user's temporary folder. On Linux:
     /// <list type="number">
     ///     <item>The path specified by the <c>TMPDIR</c> environment variable.</item>

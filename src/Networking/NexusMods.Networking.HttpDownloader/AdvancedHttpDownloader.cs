@@ -57,36 +57,38 @@ namespace NexusMods.Networking.HttpDownloader
         private readonly HttpClient _client;
         private readonly IResource<IHttpDownloader, Size> _limiter;
 
+        // These parameters don't need any kind of user tuning; thus are left non-configurable.
         private const int MiB = 1024 * 1024;
-        // how many chunks to start initially. Higher numbers lead to more server load
-        private const int ChunkCount = 4;
-        // how many blocks can be queued to be written to disk. If this is too low, temporary disk slowdown could lead to
-        // worse download speed as the disk throttles the download threads. If this is high, consistently slow disk
-        // (NAS, external drives) or extremely fast internet would lead to high memory usage.
-        private const int WriteQueueLength = ChunkCount * 4;
-        // minimum age in milliseconds of a download before it may be canceled for being slow
-        private const int MinCancelAge = 500;
-        // the relative speed compared to the fastest chunk below which a chunk may be canceled
-        private const double CancelSpeedFraction = 0.66;
         private const int ReadBlockSize = 1 * MiB;
         private const int InitChunkSize = ReadBlockSize;
 
+        // see IHttpDownloaderSettings for docs about these
+        private readonly int _chunkCount;
+        private readonly int _writeQueueLength;
+        private readonly int _minCancelAge;
+        private readonly double _cancelSpeedFraction;
+
         // the shared pool is capped at 1MB (2^20 bytes) per buffer so if larger blocks are desired, use a custom pool
-#pragma warning disable CS0162
-        // ReSharper disable once HeuristicUnreachableCode
-        private readonly ArrayPool<byte> _bufferPool = (ReadBlockSize <= 1 * MiB)
-            ? ArrayPool<byte>.Shared
-            : ArrayPool<byte>.Create(ReadBlockSize, WriteQueueLength * 2);
-#pragma warning restore CS0162
+        private readonly ArrayPool<byte> _bufferPool;
 
         /// <summary>
         /// Constructor
         /// </summary>
-        public AdvancedHttpDownloader(ILogger<AdvancedHttpDownloader> logger, HttpClient client, IResource<IHttpDownloader, Size> limiter)
+        public AdvancedHttpDownloader(ILogger<AdvancedHttpDownloader> logger, HttpClient client, IResource<IHttpDownloader, Size> limiter, IHttpDownloaderSettings settings)
         {
             _logger = logger;
             _client = client;
             _limiter = limiter;
+            _chunkCount = settings.ChunkCount;
+            _writeQueueLength = settings.WriteQueueLength;
+            _minCancelAge = settings.MinCancelAge;
+            _cancelSpeedFraction = settings.CancelSpeedFraction;
+#pragma warning disable CS0162
+            // ReSharper disable once HeuristicUnreachableCode
+            _bufferPool = (ReadBlockSize <= 1 * MiB)
+                ? ArrayPool<byte>.Shared
+                : ArrayPool<byte>.Create(ReadBlockSize, _writeQueueLength * 2);
+#pragma warning restore CS0162
         }
 
         /// <inheritdoc />
@@ -98,7 +100,7 @@ namespace NexusMods.Networking.HttpDownloader
             state.Sources = sources.Select((source, idx) => new Source { Request = source, Priority = idx }).ToArray();
             state.Destination = destination;
 
-            var writeQueue = Channel.CreateBounded<WriteOrder>(WriteQueueLength);
+            var writeQueue = Channel.CreateBounded<WriteOrder>(_writeQueueLength);
 
             var fileWriter = FileWriterTask(state, writeQueue.Reader, primaryJob, cancel);
 
@@ -273,7 +275,7 @@ namespace NexusMods.Networking.HttpDownloader
         private bool IsDownloadSlow(ChunkState chunk, double referenceSpeed)
         {
             var now = DateTime.Now;
-            if ((now - chunk.Started).TotalMilliseconds < MinCancelAge)
+            if ((now - chunk.Started).TotalMilliseconds < _minCancelAge)
             {
                 // don't cancel downloads that were only just started
                 return false;
@@ -284,7 +286,7 @@ namespace NexusMods.Networking.HttpDownloader
                 return false;
             }
 
-            return chunk.BytesPerSecond < referenceSpeed * CancelSpeedFraction;
+            return chunk.BytesPerSecond < referenceSpeed * _cancelSpeedFraction;
         }
 
         private ChunkState? FindSlowChunk(IEnumerable<ChunkState> chunks, Source source, double speed)
@@ -431,10 +433,10 @@ namespace NexusMods.Networking.HttpDownloader
             {
                 // TODO chunking strategy? Currently uses fixed chunk count, variable size (like Vortex)
                 var remainingSize = download.TotalSize - initChunk.Size;
-                var chunkSize = (long)MathF.Ceiling((float)remainingSize / ChunkCount);
+                var chunkSize = (long)MathF.Ceiling((float)remainingSize / _chunkCount);
 
                 var curOffset = initChunk.Size;
-                for (var i = 0; i < ChunkCount; ++i)
+                for (var i = 0; i < _chunkCount; ++i)
                 {
                     if (curOffset >= download.TotalSize)
                     {

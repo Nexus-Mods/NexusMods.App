@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Text.Json.Serialization;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.JsonConverters;
+using NexusMods.DataModel.Loadouts;
 
 #pragma warning disable CS8604
 
@@ -202,5 +203,33 @@ public struct EntityDictionary<TK, TV> :
     {
         foreach (var id in _coll.Values)
             yield return _store.Get<TV>(id)!;
+    }
+
+    /// <summary>
+    /// Tries to get a value from the dictionary.
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="val"></param>
+    /// <returns></returns>
+    public bool TryGetValue(TK key, out TV? val)
+    {
+        if (_coll.TryGetValue(key, out var id))
+        {
+            val = _store.Get<TV>(id);
+            return true;
+        }
+
+        val = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Gets the value id for a given key.
+    /// </summary>
+    /// <param name="modId"></param>
+    /// <returns></returns>
+    public IId GetValueId(TK modId)
+    {
+        return _coll[modId];
     }
 }

@@ -136,22 +136,6 @@ public interface IId
     }
 
     /// <summary>
-    /// Creates an ID from an existing span of bytes.
-    /// </summary>
-    /// <param name="category">The category associated with this span.</param>
-    /// <param name="bytes">The bytes from which the ID is obtained back from.</param>
-    /// <returns>ID converted back from the Span.</returns>
-    static IId FromSpan(RootType category, byte[] bytes)
-    {
-        return category switch
-        {
-            RootType.Loadouts => FromSpan(EntityCategory.Loadouts, bytes),
-            RootType.Tests => FromSpan(EntityCategory.TestData, bytes),
-            _ => throw new ArgumentOutOfRangeException(nameof(category), category, null)
-        };
-    }
-
-    /// <summary>
     /// Creates an unique ID for the given category.
     /// </summary>
     /// <param name="category">The category to create the ID for.</param>

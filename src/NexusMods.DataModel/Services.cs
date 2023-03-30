@@ -13,6 +13,7 @@ using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
 
 namespace NexusMods.DataModel;
@@ -24,11 +25,10 @@ public static class Services
     /// Adds all services related to the <see cref="DataModel"/> to your dependency
     /// injection container.
     /// </summary>
-    public static IServiceCollection AddDataModel(this IServiceCollection coll, AbsolutePath? baseFolder = null)
+    public static IServiceCollection AddDataModel(this IServiceCollection coll, IDataModelSettings? settings = null)
     {
-        baseFolder ??= KnownFolders.EntryFolder;
-        baseFolder.Value.CreateDirectory();
-
+        settings ??= new DataModelSettings();
+        coll.AddSingleton(settings);
         coll.AddSingleton<JsonConverter, RelativePathConverter>();
         coll.AddSingleton<JsonConverter, GamePathConverter>();
         coll.AddSingleton<JsonConverter, DateTimeConverter>();
@@ -43,23 +43,22 @@ public static class Services
 
         coll.AddSingleton<IDataStore>(s => new SqliteDataStore(
             s.GetRequiredService<ILogger<SqliteDataStore>>(),
-            baseFolder.Value.CombineUnchecked("DataModel.sqlite"), s,
-            s.GetRequiredService<IMessageProducer<RootChange>>(),
-            s.GetRequiredService<IMessageConsumer<RootChange>>(),
+            settings.DataStoreFilePath.ToAbsolutePath(), s,
             s.GetRequiredService<IMessageProducer<IdUpdated>>(),
             s.GetRequiredService<IMessageConsumer<IdUpdated>>()));
-        coll.AddSingleton(s => new ArchiveManager(new[] { baseFolder.Value.CombineUnchecked("Archives") },
+        coll.AddSingleton(s => new ArchiveManager(settings.ArchiveLocations.Select(x => x.ToAbsolutePath()),
             s.GetRequiredService<FileExtractor.FileExtractor>(),
             s.GetRequiredService<FileContentsCache>()));
-        coll.AddAllSingleton<IResource, IResource<FileHashCache, Size>>(_ => new Resource<FileHashCache, Size>("File Hashing", Environment.ProcessorCount, Size.Zero));
-        coll.AddAllSingleton<IResource, IResource<LoadoutManager, Size>>(_ => new Resource<LoadoutManager, Size>("Load Order Management", Environment.ProcessorCount, Size.Zero));
+        coll.AddAllSingleton<IResource, IResource<FileHashCache, Size>>(_ => new Resource<FileHashCache, Size>("File Hashing", settings.MaxHashingJobs, Size.FromLong(settings.MaxHashingThroughputBytesPerSecond)));
+        coll.AddAllSingleton<IResource, IResource<LoadoutManager, Size>>(_ => new Resource<LoadoutManager, Size>("Load Order Management", settings.LoadoutDeploymentJobs, Size.Zero));
         coll.AddSingleton<LoadoutManager>();
+        coll.AddSingleton<LoadoutRegistry>();
         coll.AddSingleton<FileHashCache>();
         coll.AddSingleton<FileContentsCache>();
 
         coll.AddAllSingleton<IInterprocessJobManager, SqliteIPC>(s => new SqliteIPC(
             s.GetRequiredService<ILogger<SqliteIPC>>(),
-            baseFolder.Value.CombineUnchecked("DataModel_IPC.sqlite")));
+            settings.IpcDataStoreFilePath.ToAbsolutePath()));
         coll.AddSingleton(typeof(IMessageConsumer<>), typeof(InterprocessConsumer<>));
         coll.AddSingleton(typeof(IMessageProducer<>), typeof(InterprocessProducer<>));
 

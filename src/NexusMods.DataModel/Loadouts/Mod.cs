@@ -32,7 +32,7 @@ public record Mod : Entity, IHasEntityId<ModId>
     /// <summary>
     /// Name of the mod in question.
     /// </summary>
-    public required string Name { get; init; }
+    public required string Name { get; init; } = string.Empty;
 
     /// <inheritdoc />
     public override EntityCategory Category => EntityCategory.Loadouts;

@@ -40,7 +40,6 @@ public class LoadoutManager
 
     private readonly ILogger<LoadoutManager> _logger;
 
-    private readonly Root<LoadoutRegistry> _root;
     private readonly IModInstaller[] _installers;
     private readonly FileContentsCache _analyzer;
     private readonly IEnumerable<IFileMetadataSource> _metadataSources;
@@ -52,6 +51,7 @@ public class LoadoutManager
     ///    This item is usually constructed using dependency injection (DI).
     /// </remarks>
     public LoadoutManager(ILogger<LoadoutManager> logger,
+        LoadoutRegistry registry,
         IResource<LoadoutManager, Size> limiter,
         ArchiveManager archiveManager,
         IEnumerable<IFileMetadataSource> metadataSources,
@@ -64,11 +64,11 @@ public class LoadoutManager
     {
         FileHashCache = fileHashCache;
         ArchiveManager = archiveManager;
+        Registry = registry;
         _logger = logger;
         Limiter = limiter;
         Store = store;
         _jobManager = jobManager;
-        _root = new Root<LoadoutRegistry>(RootType.Loadouts, store);
         _metadataSources = metadataSources;
         _installers = installers.ToArray();
         _analyzer = analyzer;
@@ -77,45 +77,20 @@ public class LoadoutManager
     }
 
     /// <summary>
+    /// The loadout registry used by this manager
+    /// </summary>
+    public LoadoutRegistry Registry { get; }
+
+    /// <summary>
     /// Limits the number of concurrent jobs/threads [to not completely hog CPU]
     /// when needed.
     /// </summary>
     public IResource<LoadoutManager, Size> Limiter { get; set; }
 
     /// <summary>
-    /// A list of all changes to the loadouts.
-    ///
-    /// Values here are published outside of the locking
-    /// semantics and may thus be received out-of-order of a large number of
-    /// updates are happening and once from multiple threads.
-    ///
-    /// See <see cref="Root{TRoot}.Changes"/> for more info.
-    /// </summary>
-    public IObservable<LoadoutRegistry> Changes => _root.Changes;
-
-    /// <summary>
-    /// Returns a list of all currently user registered loadouts.
-    /// </summary>
-    public IEnumerable<LoadoutMarker> AllLoadouts => _root.Value.Lists.Values.Select(m => new LoadoutMarker(this, m.LoadoutId));
-
-    /// <summary>
     /// Returns the data store.
     /// </summary>
     public IDataStore Store { get; }
-
-    /// <summary>
-    /// Clones this loadout manager, used for operations analogous to `git rebase`.
-    /// </summary>
-    /// <param name="store">Data store to which we write to.</param>
-    /// <remarks>
-    ///    For now this just clones the current object; the actual rebase
-    ///    functionality might not yet quite be here.
-    /// </remarks>
-    public LoadoutManager Rebase(SqliteDataStore store)
-    {
-        return new LoadoutManager(_logger, Limiter, ArchiveManager, _metadataSources, store, FileHashCache, _installers,
-            _analyzer, _tools.SelectMany(f => f), _jobManager);
-    }
 
     /// <summary>
     /// Brings a game instance/installation under management of the Nexus app
@@ -142,30 +117,39 @@ public class LoadoutManager
             SortRules = ImmutableList<ISortRule<Mod, ModId>>.Empty.Add(new First<Mod, ModId>())
         }.WithPersist(Store);
 
-        var n = Loadout.Empty(Store) with
-        {
-            Installation = installation,
-            Name = name,
-            Mods = new EntityDictionary<ModId, Mod>(Store, new[] { new KeyValuePair<ModId, IId>(mod.Id, mod.DataStoreId) })
-        };
+        var loadoutId = LoadoutId.Create();
 
-        n.WithPersist(Store);
+        var loadout = Registry.Alter(loadoutId, $"Manage {installation.Game.Name}",
+            l =>
+            {
+                return l with
+                {
+                    LoadoutId = loadoutId,
+                    Installation = installation,
+                    Name = name,
+                    Mods = new EntityDictionary<ModId, Mod>(Store,
+                        new[]
+                        {
+                            new KeyValuePair<ModId, IId>(mod.Id,
+                                mod.DataStoreId)
+                        })
+                };
+            });
 
-        _root.Alter(r => r with { Lists = r.Lists.With(n.LoadoutId, n) });
-        _logger.LogInformation("Loadout {Name} {Id} created", name, n.LoadoutId);
+        _logger.LogInformation("Loadout {Name} {Id} created", name, loadoutId);
 
-        var managementJob = new InterprocessJob(JobType.ManageGame, _jobManager, n.LoadoutId,
+        var managementJob = new InterprocessJob(JobType.ManageGame, _jobManager, loadoutId,
                 $"Analyzing game files for {installation.Game.Name}");
-        var indexTask = Task.Run(() => IndexAndAddGameFiles(installation, token, n, mod, managementJob), token);
+        var indexTask = Task.Run(() => IndexAndAddGameFiles(installation, token, loadout, mod, managementJob), token);
 
         if (!earlyReturn)
             await indexTask;
 
-        return new LoadoutMarker(this, n.LoadoutId);
+        return new LoadoutMarker(this, loadoutId);
     }
 
     private async Task IndexAndAddGameFiles(GameInstallation installation,
-        CancellationToken token, Loadout n, Mod mod, IInterprocessJob managementJob)
+        CancellationToken token, Loadout loadout, Mod mod, IInterprocessJob managementJob)
     {
         // So we release this after the job is done.
         using var _ = managementJob;
@@ -191,7 +175,7 @@ public class LoadoutManager
                 }.WithPersist(Store);
 
                 var metaData =
-                    await GetMetadata(n, mod, file, analysis).ToHashSetAsync();
+                    await GetMetadata(loadout, mod, file, analysis).ToHashSetAsync();
                 gameFiles.Add(
                     file with { Metadata = metaData.ToImmutableHashSet() });
             }
@@ -199,9 +183,9 @@ public class LoadoutManager
 
         managementJob.Progress = new Percent(0.5);
         gameFiles.AddRange(installation.Game.GetGameFiles(installation, Store));
-        var marker = new LoadoutMarker(this, n.LoadoutId);
-        marker.Alter(mod.Id,
-            m => m with { Files = m.Files.With(gameFiles, f => f.Id) });
+
+        Registry.Alter(loadout.LoadoutId, mod.Id, "Add game files",
+            m => m! with { Files = m.Files.With(gameFiles, f => f.Id) });
 
     }
 
@@ -255,38 +239,6 @@ public class LoadoutManager
     }
 
     /// <summary>
-    /// Makes changes to the loadout with a given ID.
-    /// </summary>
-    /// <param name="id">The ID of the loadout to change.</param>
-    /// <param name="func">Function which performs the changes on the loadout.</param>
-    /// <param name="changeMessage">Commit message tied to the change.</param>
-    public void Alter(LoadoutId id, Func<Loadout, Loadout> func, string changeMessage = "")
-    {
-        _root.Alter(r =>
-        {
-            var previousList = r.Lists[id];
-            var newList = func(previousList)
-                with
-            {
-                LastModified = DateTime.UtcNow,
-                ChangeMessage = changeMessage,
-                PreviousVersion = new EntityLink<Loadout>(previousList.DataStoreId, Store)
-            };
-            return r with { Lists = r.Lists.With(newList.LoadoutId, newList) };
-        });
-    }
-
-    /// <summary>
-    /// Retrieves a loadout with a given ID.
-    /// </summary>
-    /// <param name="id">ID of the loadout to retrieve.</param>
-    /// <returns>The loadout to get.</returns>
-    public Loadout Get(LoadoutId id)
-    {
-        return _root.Value.Lists[id];
-    }
-
-    /// <summary>
     /// Returns the available tools for a game.
     /// </summary>
     /// <param name="game">The game to get the tools for.</param>
@@ -317,7 +269,7 @@ public class LoadoutManager
         var byMod = items.GroupBy(x => x.Mod, x => x.File)
             .ToDictionary(x => x.Key);
 
-        Alter(id, l =>
+        Registry.Alter(id, message, l =>
         {
             return l with
             {
@@ -337,7 +289,7 @@ public class LoadoutManager
                     };
                 })
             };
-        }, message);
+        });
     }
 
     // TODO: These methods have hardcoded paths [below]; those should be replaced with shared constants.
@@ -353,7 +305,7 @@ public class LoadoutManager
     /// <remarks></remarks>
     public async Task ExportToAsync(LoadoutId id, AbsolutePath output, CancellationToken token)
     {
-        var loadout = Get(id);
+        var loadout = Registry.Get(id)!;
 
         if (output.FileExists)
             output.Delete();
@@ -431,7 +383,7 @@ public class LoadoutManager
         var loadout = Store.Get<Loadout>(rootId);
         if (loadout == null)
             throw new Exception("Loadout not found after loading data store, the loadout may be corrupt");
-        _root.Alter(r => r with { Lists = r.Lists.With(loadout.LoadoutId, loadout) });
+        Registry.Alter(loadout.LoadoutId, "Loadout Imported from backup",  _ => loadout);
         return new LoadoutMarker(this, loadout.LoadoutId);
     }
 
@@ -443,10 +395,11 @@ public class LoadoutManager
     /// <returns></returns>
     public string FindName(GameInstallation installation)
     {
+        var names = Registry.AllLoadouts().Select(l => l.Name).ToHashSet();
         for (var i = 1; i < 1000; i++)
         {
             var name = $"My Loadout {i}";
-            if (_root.Value.Lists.All(l => l.Value.Name != name))
+            if (!names.Contains(name))
                 return name;
         }
 
