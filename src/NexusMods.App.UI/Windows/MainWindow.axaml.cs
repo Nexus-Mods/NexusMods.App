@@ -2,6 +2,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
@@ -65,8 +66,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         });
     }
 
-    // ReSharper disable once UnusedParameter.Local
-    /* TODO - find out why this is broken in Avalonia 0.11 - preview 5
+
     private void PointerPressed_Handler(object? sender, PointerPressedEventArgs e)
     {
         if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
@@ -74,5 +74,4 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
             BeginMoveDrag(e);
         }
     }
-    */
 }
