@@ -9,6 +9,14 @@
         <Setter Property="Padding" Value="16, 0, 0, 0" />
     </Style>
 
+    <Style Selector="DataGridColumnHeader:sortascending /template/ Path#SortIcon">
+        <Setter Property="Fill" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="DataGridColumnHeader:sortdescending /template/ Path#SortIcon">
+        <Setter Property="Fill" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
     <Style Selector="DataGridColumnHeader TextBlock">
         <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
