@@ -8,24 +8,34 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 
-public class ModNameViewModel : AViewModel<IModNameViewModel>, IModNameViewModel
+public class ModNameViewModel : AViewModel<IModNameViewModel>, IModNameViewModel, IComparableColumn<ModCursor>
 {
+    private readonly LoadoutRegistry _loadoutRegistry;
+
     [Reactive]
     public ModCursor Row { get; set; } = Initializers.ModCursor;
 
     [Reactive]
     public string Name { get; set; } = "";
 
-    public ModNameViewModel(LoadoutRegistry registry, IDataStore store)
+    public ModNameViewModel(LoadoutRegistry loadoutRegistry, IDataStore store)
     {
+        _loadoutRegistry = loadoutRegistry;
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.Row)
-                .SelectMany(registry.Revisions)
+                .SelectMany(loadoutRegistry.Revisions)
                 .Select(id => store.Get<Mod>(id))
                 .Select(m => m?.Name ?? "")
                 .BindToUi(this, vm => vm.Name)
                 .DisposeWith(d);
         });
+    }
+
+    public int Compare(ModCursor a, ModCursor b)
+    {
+        var aEnt = _loadoutRegistry.Get(a);
+        var bEnt = _loadoutRegistry.Get(b);
+        return string.Compare(aEnt?.Name ?? "", bEnt?.Name ?? "", StringComparison.Ordinal);
     }
 }

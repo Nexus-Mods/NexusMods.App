@@ -1,4 +1,5 @@
-﻿using Avalonia;
+﻿using System.Collections;
+using Avalonia;
 using Avalonia.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
@@ -14,6 +15,21 @@ public class DataGridViewModelColumn<TVm, TRow> : ADataGridViewModelColumn<TVm, 
     {
         _provider = provider;
         _locator = locator;
+        CustomSortComparer = CreateComparer();
+    }
+
+    private IComparer CreateComparer()
+    {
+        var vm = _provider.GetRequiredService<TVm>();
+
+        if (vm is not IComparableColumn<TRow> cVm) return Comparer<object?>.Create((a, b) => 0);
+        return Comparer<object?>.Create((a, b) =>
+        {
+            if (a == null && b == null) return 0;
+            if (a == null) return -1;
+            if (b == null) return 1;
+            return cVm.Compare((TRow)a, (TRow)b);
+        });
     }
 
     protected override Control GenerateElement(DataGridCell cell, object dataItem)
@@ -31,11 +47,8 @@ public class DataGridViewModelColumn<TVm, TRow> : ADataGridViewModelColumn<TVm, 
         if (view is StyledElement styled)
             styled.DataContext = vm;
 
-        return (Control)view;
-    }
+        cell.Content = (Control)view;
 
-    protected override int Compare(TRow rowType, TRow rowType1)
-    {
-        return 0;
+        return (Control)view;
     }
 }

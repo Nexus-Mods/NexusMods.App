@@ -15,24 +15,7 @@ public abstract class ADataGridViewModelColumn<TVmType, TRowType> : DataGridColu
         CanUserSort = true;
         CanUserReorder = true;
         CanUserResize = true;
-        CustomSortComparer = new Comparer(this);
     }
-
-    private class Comparer : IComparer
-    {
-        private readonly ADataGridViewModelColumn<TVmType,TRowType> _column;
-        public Comparer(ADataGridViewModelColumn<TVmType, TRowType> column)
-        {
-            _column = column;
-        }
-
-        public int Compare(object? x, object? y)
-        {
-            return _column.Compare((TRowType)x!, (TRowType)y!);
-        }
-    }
-
-    protected abstract int Compare(TRowType rowType, TRowType rowType1);
 
     protected override Control GenerateEditingElement(DataGridCell cell, object dataItem,
         out ICellEditBinding binding)
