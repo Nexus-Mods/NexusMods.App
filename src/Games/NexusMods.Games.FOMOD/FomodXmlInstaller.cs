@@ -49,7 +49,9 @@ public class FomodXmlInstaller : IModInstaller
         if (!files.TryGetValue(FomodConstants.XmlConfigRelativePath, out var analyzedFile))
             throw new Exception($"$[{nameof(FomodXmlInstaller)}] XML not found. This should never be true and is indicative of a bug.");
 
-        var analyzerInfo = analyzedFile.AnalysisData.OfType<FomodAnalyzerInfo>().First();
+        var analyzerInfo = analyzedFile.AnalysisData.OfType<FomodAnalyzerInfo>().FirstOrDefault();
+        if (analyzerInfo == default)
+            return Array.Empty<AModFile>(); // <= invalid FOMOD, so no analyzer info dumped
 
         // TODO: We have enough data cached to extract just what we need for the script to run;
         // it would be ideal to not have to extract anything; but for now we have to treat fomod on

@@ -133,6 +133,60 @@ public class FomodXmlInstallerTests : IDisposable
         installedFiles.ElementAt(2).To.FileName.Should().Be("g2p2f1.out.esp".ToRelativePath());
     }
 
+    #region Tests for Broken FOMODs. Don't install them, don't throw. Only log. No-Op
+
+    [Fact]
+    public async Task Broken_WithEmptyGroup()
+    {
+        using var testData = await SetupTestFromDirectoryAsync("Broken-EmptyGroup");
+        var installedFiles = await testData.GetFilesToExtractAsync();
+        installedFiles.Count().Should().Be(0);
+    }
+
+    [Fact]
+    public async Task Broken_WithEmptyOption()
+    {
+        using var testData = await SetupTestFromDirectoryAsync("Broken-EmptyOption");
+        var installedFiles = await testData.GetFilesToExtractAsync();
+        installedFiles.Count().Should().Be(0);
+    }
+
+    [Fact]
+    public async Task Broken_WithEmptyStep()
+    {
+        using var testData = await SetupTestFromDirectoryAsync("Broken-EmptyStep");
+        var installedFiles = await testData.GetFilesToExtractAsync();
+        installedFiles.Count().Should().Be(0);
+    }
+
+    [Fact]
+    public async Task Broken_WithoutSteps()
+    {
+        using var testData = await SetupTestFromDirectoryAsync("Broken-NoSteps");
+        var installedFiles = await testData.GetFilesToExtractAsync();
+        installedFiles.Count().Should().Be(0);
+    }
+
+    [Fact]
+    public async Task Broken_WithoutModuleName()
+    {
+        using var testData = await SetupTestFromDirectoryAsync("Broken-NoModuleName");
+        var installedFiles = await testData.GetFilesToExtractAsync();
+        installedFiles.Count().Should().Be(0);
+    }
+
+    // TODO: Implement Dependencies for FOMODs
+    /*
+    [Fact]
+    public async Task Broken_DependencyOnFiles()
+    {
+        using var testData = await SetupTestFromDirectoryAsync("DependencyOnFiles");
+        var installedFiles = await testData.GetFilesToExtractAsync();
+        installedFiles.Count().Should().Be(0);
+    }
+    */
+    #endregion
+
     // Note: I'm not mocking here so I can double up the tests as integration tests.
     // it would also be annoying to mock every one given the number of test cases
     // and different configurations with different sets of files we have.
