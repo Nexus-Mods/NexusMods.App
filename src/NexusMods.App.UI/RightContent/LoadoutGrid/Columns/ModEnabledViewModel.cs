@@ -31,7 +31,7 @@ public class ModEnabledViewModel : AViewModel<IModEnabledViewModel>, IModEnabled
         {
             this.WhenAnyValue(vm => vm.Row)
                 .SelectMany(loadoutRegistry.Revisions)
-                .Select(id => store.Get<Mod>(id))
+                .Select(id => store.Get<Mod>(id, true))
                 .WhereNotNull()
                 .Select(mod => mod.Enabled)
                 .BindToUi(this, vm => vm.Enabled)

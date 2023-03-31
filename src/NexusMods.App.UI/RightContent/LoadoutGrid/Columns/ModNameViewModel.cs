@@ -25,7 +25,7 @@ public class ModNameViewModel : AViewModel<IModNameViewModel>, IModNameViewModel
         {
             this.WhenAnyValue(vm => vm.Row)
                 .SelectMany(loadoutRegistry.Revisions)
-                .Select(id => store.Get<Mod>(id))
+                .Select(id => store.Get<Mod>(id, true))
                 .Select(m => m?.Name ?? "")
                 .BindToUi(this, vm => vm.Name)
                 .DisposeWith(d);

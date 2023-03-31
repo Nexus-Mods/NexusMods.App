@@ -25,7 +25,7 @@ public class ModInstalledViewModel : AViewModel<IModInstalledViewModel>, IModIns
         {
             this.WhenAnyValue(vm => vm.Row)
                 .SelectMany(loadoutRegistry.Revisions)
-                .Select(id => store.Get<Mod>(id))
+                .Select(id => store.Get<Mod>(id, true))
                 .WhereNotNull()
                 .Select(mod => mod.Installed)
                 .BindToUi(this, vm => vm.Installed)

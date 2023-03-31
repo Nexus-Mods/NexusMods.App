@@ -22,7 +22,7 @@ public class ModCategoryViewModel : AViewModel<IModCategoryViewModel>, IModCateg
         {
             this.WhenAnyValue(vm => vm.Row)
                 .SelectMany(loadoutRegistry.Revisions)
-                .Select(id => store.Get<Mod>(id))
+                .Select(id => store.Get<Mod>(id, true))
                 .WhereNotNull()
                 .Select(revision => revision.ModCategory)
                 .BindToUi(this, vm => vm.Category)

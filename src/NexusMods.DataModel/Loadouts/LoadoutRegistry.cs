@@ -27,7 +27,7 @@ public class LoadoutRegistry : IDisposable
     public IObservable<IChangeSet<IId,LoadoutId>> LoadoutChanges => _cache.Connect();
 
     public IObservable<IChangeSet<Loadout, LoadoutId>> Loadouts =>
-        LoadoutChanges.Transform(id => _store.Get<Loadout>(id)!);
+        LoadoutChanges.Transform(id => _store.Get<Loadout>(id, true)!);
 
     public IObservable<IDistinctChangeSet<IGame>> Games =>
         Loadouts
@@ -84,7 +84,7 @@ public class LoadoutRegistry : IDisposable
         Loadout? loadout = null;
         if (loadoutRoot != null)
         {
-            loadout = _store.Get<Loadout>(IId.FromTaggedSpan(loadoutRoot));
+            loadout = _store.Get<Loadout>(IId.FromTaggedSpan(loadoutRoot), true);
         }
 
         var newLoadout = alterFn(loadout ?? Loadout.Empty(_store));
@@ -176,7 +176,7 @@ public class LoadoutRegistry : IDisposable
     /// <exception cref="InvalidOperationException"></exception>
     public Loadout? Get(LoadoutId id)
     {
-        return _store.Get<Loadout>(GetId(id)!);
+        return _store.Get<Loadout>(GetId(id)!, true);
     }
 
     /// <summary>
@@ -256,7 +256,7 @@ public class LoadoutRegistry : IDisposable
     public IObservable<IId> Revisions(LoadoutId loadoutId, ModId modId)
     {
         return Revisions(loadoutId)
-            .Select(id => _store.Get<Loadout>(id)?.Mods.GetValueId(modId) ?? null)
+            .Select(id => _store.Get<Loadout>(id, true)?.Mods.GetValueId(modId) ?? null)
             .NotNull();
     }
 
