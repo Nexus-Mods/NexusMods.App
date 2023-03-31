@@ -3,6 +3,11 @@ using ReactiveUI;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 
+/// <summary>
+/// Datagrid column factory that creates a column that uses a design-time view model.
+/// </summary>
+/// <typeparam name="TVm"></typeparam>
+/// <typeparam name="TRow"></typeparam>
 public class DataGridColumnDesignFactory<TVm, TRow> : IDataGridColumnFactory where TVm : class, IColumnViewModel<TRow>
 {
     private readonly Func<TRow,IViewFor<TVm>> _ctor;

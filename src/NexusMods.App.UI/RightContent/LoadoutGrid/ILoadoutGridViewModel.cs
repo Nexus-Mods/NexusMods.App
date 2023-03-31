@@ -1,14 +1,13 @@
 ﻿using System.Collections.ObjectModel;
-using Avalonia.Controls;
-using DynamicData;
-using DynamicData.Binding;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
-using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid;
 
+/// <summary>
+/// View model for the loadout grid.
+/// </summary>
 public interface ILoadoutGridViewModel : IRightContentViewModel
 {
     public ReadOnlyObservableCollection<ModCursor> Mods { get; }

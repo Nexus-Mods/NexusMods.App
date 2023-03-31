@@ -5,6 +5,9 @@ using NexusMods.DataModel.Loadouts.Cursors;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 
+/// <summary>
+/// Displays the enabled state of a mod and a command to toggle it.
+/// </summary>
 public interface IModEnabledViewModel : IColumnViewModel<ModCursor>
 {
     public bool Enabled { get; }

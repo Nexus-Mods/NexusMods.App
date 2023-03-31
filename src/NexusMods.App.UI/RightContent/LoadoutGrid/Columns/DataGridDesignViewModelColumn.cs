@@ -3,6 +3,11 @@ using ReactiveUI;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 
+/// <summary>
+/// DataGridColumn for use in design-time.
+/// </summary>
+/// <typeparam name="TVm"></typeparam>
+/// <typeparam name="TRow"></typeparam>
 public class DataGridDesignViewModelColumn<TVm, TRow> : ADataGridViewModelColumn<TVm, TRow> where TVm : class, IColumnViewModel<TRow> {
     private readonly Func<TRow,IViewFor<TVm>> _ctor;
 

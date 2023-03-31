@@ -7,16 +7,22 @@ using ReactiveUI;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 
+/// <summary>
+/// Abstract base
+/// </summary>
+/// <typeparam name="TVmType"></typeparam>
+/// <typeparam name="TRowType"></typeparam>
 public abstract class ADataGridViewModelColumn<TVmType, TRowType> : DataGridTemplateColumn where TVmType : IColumnViewModel<TRowType>
 {
+    /// <summary>
+    /// Default constructor, sets the column to sortable, reorderable, and resizable and read-only.
+    /// </summary>
     public ADataGridViewModelColumn()
     {
         IsReadOnly = true;
         CanUserSort = true;
         CanUserReorder = true;
         CanUserResize = true;
-
-
     }
 
     protected override void RefreshCellContent(Control element, string propertyName)

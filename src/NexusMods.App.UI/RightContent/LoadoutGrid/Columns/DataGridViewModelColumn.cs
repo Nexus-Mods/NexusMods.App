@@ -6,6 +6,12 @@ using ReactiveUI;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 
+/// <summary>
+/// A data grid column that uses a view model to generate the content through the
+/// IViewLocator service.
+/// </summary>
+/// <typeparam name="TVm"></typeparam>
+/// <typeparam name="TRow"></typeparam>
 public class DataGridViewModelColumn<TVm, TRow> : ADataGridViewModelColumn<TVm, TRow> where TVm : IColumnViewModel<TRow> {
     private readonly IServiceProvider _provider;
     private readonly IViewLocator _locator;
