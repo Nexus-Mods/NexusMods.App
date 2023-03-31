@@ -56,7 +56,7 @@ public class FomodXmlInstaller : IModInstaller
         // Setup mod, exclude script path so it doesn't get picked up and thus double read from disk
         var modFiles = files.Keys.Select(x => x.ToString()).ToList();
         var mod = new Mod(modFiles, stopPattern, FomodConstants.XmlConfigRelativePath, string.Empty, _scriptType);
-        await mod.InitializeWithoutLoadingScript(); // <= Need to change API to be able to set Prefix to maybe run without extracting
+        await mod.InitializeWithoutLoadingScript();
 
         var executor = _scriptType.CreateExecutor(mod, _delegates);
         var installScript = _scriptType.LoadScript(analyzerInfo.XmlScript, true);
