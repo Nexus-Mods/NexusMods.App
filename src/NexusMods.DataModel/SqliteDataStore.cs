@@ -41,6 +41,7 @@ public class SqliteDataStore : IDataStore, IDisposable
     private readonly IMessageConsumer<IdUpdated> _idPutConsumer;
     private readonly Dictionary<EntityCategory, bool> _immutableFields;
     private readonly ObjectPool<SqliteConnection> _pool;
+    private readonly ConnectionPoolPolicy _poolPolicy;
 
     /// <summary/>
     /// <param name="logger">Logs events.</param>
@@ -54,7 +55,8 @@ public class SqliteDataStore : IDataStore, IDisposable
     {
         _logger = logger;
         var connectionString = string.Intern($"Data Source={path}");
-        _pool = ObjectPool.Create(new ConnectionPoolPolicy(connectionString));
+        _poolPolicy = new ConnectionPoolPolicy(connectionString);
+        _pool = ObjectPool.Create(_poolPolicy);
 
         _getStatements = new Dictionary<EntityCategory, string>();
         _putStatements = new Dictionary<EntityCategory, string>();
@@ -346,5 +348,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         _enqueuerTcs.Dispose();
         if (_pool is IDisposable disposable)
             disposable.Dispose();
+
+        _poolPolicy.Dispose();
     }
 }
