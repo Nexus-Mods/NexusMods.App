@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using FomodInstaller.Scripting.XmlScript;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.JsonConverters;
@@ -104,6 +105,8 @@ public record FomodAnalyzerInfo : IFileAnalysisData
 
     public record struct FomodAnalyzerImage(string Path, byte[] Image);
 
+    // Keeping in case this is ever needed. We can remove this once all FOMOD stuff is done.
+    [PublicAPI]
     public async Task DumpToFileSystemAsync(TemporaryPath fomodFolder)
     {
         var fs = FileSystem.Shared;

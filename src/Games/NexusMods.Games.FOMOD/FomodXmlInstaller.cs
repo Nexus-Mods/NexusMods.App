@@ -57,17 +57,13 @@ public class FomodXmlInstaller : IModInstaller
         // it would be ideal to not have to extract anything; but for now we have to treat fomod on
         // as a 'black box'. This black box cannot run XMLs from memory yet; unfortunately.
 
-        // Specifically, based on my reading of the code, for some FOMODs,
-        await using var fomodFolder = _tmpFiles.CreateFolder();
-        await analyzerInfo.DumpToFileSystemAsync(fomodFolder);
-
         // Setup mod, exclude script path so it doesn't get picked up and thus double read from disk
         var modFiles = files.Keys.Select(x => x.ToString()).ToList();
-        var mod = new Mod(modFiles, stopPattern, FomodConstants.XmlConfigRelativePath, fomodFolder.Path.ToString(), _scriptType);
-        await mod.Initialize(false); // <= Need to change API to be able to set Prefix to maybe run without extracting
+        var mod = new Mod(modFiles, stopPattern, FomodConstants.XmlConfigRelativePath, string.Empty, _scriptType);
+        await mod.InitializeWithoutLoadingScript(); // <= Need to change API to be able to set Prefix to maybe run without extracting
 
         var executor = _scriptType.CreateExecutor(mod, _delegates);
-        var installScript = mod.InstallScript;
+        var installScript = _scriptType.LoadScript(analyzerInfo.XmlScript, true);
         var instructions = await executor.Execute(installScript, "", null);
 
         var errors = instructions.Where(_ => _.type == "error");
