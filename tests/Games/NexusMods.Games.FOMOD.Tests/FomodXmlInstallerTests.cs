@@ -197,8 +197,6 @@ public class FomodXmlInstallerTests : IDisposable
         var dataStore = new SqliteDataStore(
             _serviceProvider.GetRequiredService<ILogger<SqliteDataStore>>(),
             tmpFile.Path, _serviceProvider,
-            _serviceProvider.GetRequiredService<IMessageProducer<RootChange>>(),
-            _serviceProvider.GetRequiredService<IMessageConsumer<RootChange>>(),
             _serviceProvider.GetRequiredService<IMessageProducer<IdUpdated>>(),
             _serviceProvider.GetRequiredService<IMessageConsumer<IdUpdated>>());
 

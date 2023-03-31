@@ -232,24 +232,6 @@ public struct EntityDictionary<TK, TV> :
     }
 
     /// <summary>
-    /// Tries to get a value from the dictionary.
-    /// </summary>
-    /// <param name="key"></param>
-    /// <param name="val"></param>
-    /// <returns></returns>
-    public bool TryGetValue(TK key, out TV? val)
-    {
-        if (_coll.TryGetValue(key, out var id))
-        {
-            val = _store.Get<TV>(id);
-            return true;
-        }
-
-        val = default;
-        return false;
-    }
-
-    /// <summary>
     /// Gets the value id for a given key.
     /// </summary>
     /// <param name="modId"></param>
