@@ -5,6 +5,7 @@ using Avalonia.Data;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.Templates;
 using Avalonia.ReactiveUI;
+using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid;
@@ -26,7 +27,11 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
                 {
                     ModsDataGrid.Columns.Clear();
                     foreach (var column in columns)
-                        ModsDataGrid.Columns.Add(column.Generate());
+                    {
+                        var generatedColumn = column.Generate();
+                        generatedColumn.Header = column.Type.GenerateHeader();
+                        ModsDataGrid.Columns.Add(generatedColumn);
+                    }
                 })
                 .DisposeWith(d);
         });

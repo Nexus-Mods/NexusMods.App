@@ -1,4 +1,8 @@
-﻿namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
+﻿using Avalonia.Controls;
+using Avalonia.Layout;
+using Projektanker.Icons.Avalonia;
+
+namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 
 /// <summary>
 /// Interface for view models that are used in a column, each one is bound to a row,
@@ -8,4 +12,6 @@
 public interface IColumnViewModel<TRow> : IViewModelInterface
 {
     public TRow Row { get; set; }
+
+    public static virtual ColumnType Type { get; }
 }

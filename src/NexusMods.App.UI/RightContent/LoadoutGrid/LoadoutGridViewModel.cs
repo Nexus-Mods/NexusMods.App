@@ -11,6 +11,7 @@ using NexusMods.DataModel.Loadouts.Cursors;
 using Noggog;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using Type = NexusMods.App.UI.Controls.Spine.Type;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid;
 
@@ -40,20 +41,18 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
         _mods = new ReadOnlyObservableCollection<ModCursor>(
             new ObservableCollection<ModCursor>());
 
-        var nameColumn = provider.GetRequiredService<DataGridColumnFactory<IModNameViewModel, ModCursor>>();
-        nameColumn.Header = "MOD NAME";
-
+        var nameColumn = provider
+            .GetRequiredService<
+                DataGridColumnFactory<IModNameViewModel, ModCursor>>();
+        nameColumn.Type = ColumnType.Name;
         var categoryColumn = provider.GetRequiredService<DataGridColumnFactory<IModCategoryViewModel, ModCursor>>();
-        categoryColumn.Header = "CATEGORY";
-
+        categoryColumn.Type = ColumnType.Category;
         var installedColumn = provider.GetRequiredService<DataGridColumnFactory<IModInstalledViewModel, ModCursor>>();
-        installedColumn.Header = "INSTALLED";
-
+        installedColumn.Type = ColumnType.Installed;
         var enabledColumn = provider.GetRequiredService<DataGridColumnFactory<IModEnabledViewModel, ModCursor>>();
-        enabledColumn.Header = "ENABLED";
-
+        enabledColumn.Type = ColumnType.Enabled;
         var versionColumn = provider.GetRequiredService<DataGridColumnFactory<IModVersionViewModel, ModCursor>>();
-        versionColumn.Header = "VERSION";
+        versionColumn.Type = ColumnType.Version;
 
         _columns.Edit(x =>
         {

@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Mutagen.Bethesda.Skyrim;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 
@@ -14,4 +15,9 @@ public interface IDataGridColumnFactory
     /// </summary>
     /// <returns></returns>
     DataGridColumn Generate();
+
+    /// <summary>
+    /// The type of the column.
+    /// </summary>
+    ColumnType Type { get; }
 }

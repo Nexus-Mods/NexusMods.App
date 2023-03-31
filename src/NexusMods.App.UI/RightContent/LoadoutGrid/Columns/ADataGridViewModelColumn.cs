@@ -2,7 +2,9 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Utils;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
 using Microsoft.Extensions.DependencyInjection;
+using Projektanker.Icons.Avalonia;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns;

@@ -11,17 +11,25 @@ using ReactiveUI;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid;
 
-public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutGridViewModel
+public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>,
+    ILoadoutGridViewModel
 {
     private readonly SourceCache<ModCursor, ModId> _mods;
-    private ReadOnlyObservableCollection<ModCursor> _filteredMods = new(new ObservableCollection<ModCursor>());
+
+    private ReadOnlyObservableCollection<ModCursor> _filteredMods =
+        new(new ObservableCollection<ModCursor>());
+
     public ReadOnlyObservableCollection<ModCursor> Mods => _filteredMods;
     public LoadoutId Loadout { get; set; } = Initializers.LoadoutId;
 
     private readonly SourceCache<IDataGridColumnFactory, ColumnType> _columns;
-    private ReadOnlyObservableCollection<IDataGridColumnFactory> _filteredColumns = new(new ObservableCollection<IDataGridColumnFactory>());
 
-    public ReadOnlyObservableCollection<IDataGridColumnFactory> Columns => _filteredColumns;
+    private ReadOnlyObservableCollection<IDataGridColumnFactory>
+        _filteredColumns =
+            new(new ObservableCollection<IDataGridColumnFactory>());
+
+    public ReadOnlyObservableCollection<IDataGridColumnFactory> Columns =>
+        _filteredColumns;
 
     public LoadoutGridDesignViewModel()
     {
@@ -30,15 +38,24 @@ public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>, ILo
                 x => x.ModId);
         _mods.Edit(x =>
         {
-            x.AddOrUpdate(new ModCursor(Loadout, ModId.From(new Guid("00000000-0000-0000-0000-000000000001"))));
-            x.AddOrUpdate(new ModCursor(Loadout, ModId.From(new Guid("00000000-0000-0000-0000-000000000002"))));
-            x.AddOrUpdate(new ModCursor(Loadout, ModId.From(new Guid("00000000-0000-0000-0000-000000000003"))));
-            x.AddOrUpdate(new ModCursor(Loadout, ModId.From(new Guid("00000000-0000-0000-0000-000000000004"))));
-            x.AddOrUpdate(new ModCursor(Loadout, ModId.From(new Guid("00000000-0000-0000-0000-000000000005"))));
-            x.AddOrUpdate(new ModCursor(Loadout, ModId.From(new Guid("00000000-0000-0000-0000-000000000006"))));
-            x.AddOrUpdate(new ModCursor(Loadout, ModId.From(new Guid("00000000-0000-0000-0000-000000000007"))));
-            x.AddOrUpdate(new ModCursor(Loadout, ModId.From(new Guid("00000000-0000-0000-0000-000000000008"))));
-            x.AddOrUpdate(new ModCursor(Loadout, ModId.From(new Guid("00000000-0000-0000-0000-000000000009"))));
+            x.AddOrUpdate(new ModCursor(Loadout,
+                ModId.From(new Guid("00000000-0000-0000-0000-000000000001"))));
+            x.AddOrUpdate(new ModCursor(Loadout,
+                ModId.From(new Guid("00000000-0000-0000-0000-000000000002"))));
+            x.AddOrUpdate(new ModCursor(Loadout,
+                ModId.From(new Guid("00000000-0000-0000-0000-000000000003"))));
+            x.AddOrUpdate(new ModCursor(Loadout,
+                ModId.From(new Guid("00000000-0000-0000-0000-000000000004"))));
+            x.AddOrUpdate(new ModCursor(Loadout,
+                ModId.From(new Guid("00000000-0000-0000-0000-000000000005"))));
+            x.AddOrUpdate(new ModCursor(Loadout,
+                ModId.From(new Guid("00000000-0000-0000-0000-000000000006"))));
+            x.AddOrUpdate(new ModCursor(Loadout,
+                ModId.From(new Guid("00000000-0000-0000-0000-000000000007"))));
+            x.AddOrUpdate(new ModCursor(Loadout,
+                ModId.From(new Guid("00000000-0000-0000-0000-000000000008"))));
+            x.AddOrUpdate(new ModCursor(Loadout,
+                ModId.From(new Guid("00000000-0000-0000-0000-000000000009"))));
         });
 
         _columns =
@@ -46,41 +63,36 @@ public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>, ILo
                 x => throw new NotImplementedException());
         _columns.Edit(x =>
         {
-            x.AddOrUpdate(new DataGridColumnDesignFactory<IModNameViewModel, ModCursor>(modId => new ModNameView
-            {
-                ViewModel = new ModNameDesignViewModel { Row = modId }
-            })
-            {
-                Header = "MOD NAME"
-            }, ColumnType.Name);
-            x.AddOrUpdate(new DataGridColumnDesignFactory<IModVersionViewModel, ModCursor>(modId => new ModVersionView()
-            {
-                ViewModel = new ModVersionDesignViewModel() { Row = modId }
-            })
-            {
-                Header = "VERSION"
-            }, ColumnType.Version);
-            x.AddOrUpdate(new DataGridColumnDesignFactory<IModCategoryViewModel, ModCursor>(modId => new ModCategoryView
-            {
-                ViewModel = new ModCategoryDesignViewModel() { Row = modId }
-            })
-            {
-                Header = "CATEGORY"
-            }, ColumnType.Category);
-            x.AddOrUpdate(new DataGridColumnDesignFactory<IModInstalledViewModel, ModCursor>(modId => new ModInstalledView
-            {
-                ViewModel = new ModInstalledDesignViewModel { Row = modId }
-            })
-            {
-                Header = "INSTALLED"
-            }, ColumnType.Installed);
-            x.AddOrUpdate(new DataGridColumnDesignFactory<IModEnabledViewModel, ModCursor>(modId => new ModEnabledView
-            {
-                DataContext = new ModEnabledDesignViewModel { Row = modId }
-            })
-            {
-                Header = "Enabled"
-            }, ColumnType.Enabled);
+            x.AddOrUpdate(
+                new DataGridColumnDesignFactory<IModNameViewModel, ModCursor>(
+                    modId => new ModNameView
+                    {
+                        ViewModel = new ModNameDesignViewModel { Row = modId }
+                    }, ColumnType.Name));
+            x.AddOrUpdate(
+                new DataGridColumnDesignFactory<IModVersionViewModel,
+                    ModCursor>(modId => new ModVersionView()
+                {
+                    ViewModel = new ModVersionDesignViewModel() { Row = modId }
+                }, ColumnType.Version));
+            x.AddOrUpdate(
+                new DataGridColumnDesignFactory<IModCategoryViewModel,
+                    ModCursor>(modId => new ModCategoryView
+                {
+                    ViewModel = new ModCategoryDesignViewModel() { Row = modId }
+                }, ColumnType.Category));
+            x.AddOrUpdate(
+                new DataGridColumnDesignFactory<IModInstalledViewModel,
+                    ModCursor>(modId => new ModInstalledView
+                {
+                    ViewModel = new ModInstalledDesignViewModel { Row = modId }
+                }, ColumnType.Installed));
+            x.AddOrUpdate(
+                new DataGridColumnDesignFactory<IModEnabledViewModel,
+                    ModCursor>(modId => new ModEnabledView
+                {
+                    DataContext = new ModEnabledDesignViewModel { Row = modId }
+                }, ColumnType.Enabled));
         });
 
         this.WhenActivated(d =>

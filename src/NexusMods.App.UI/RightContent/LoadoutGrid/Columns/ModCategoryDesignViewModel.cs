@@ -6,4 +6,6 @@ public class ModCategoryDesignViewModel : AViewModel<IModCategoryViewModel>, IMo
 {
     public ModCursor Row { get; set; }
     public string Category { get; } = "Some Category";
+
+    public static ColumnType Type => ColumnType.Category;
 }
