@@ -53,10 +53,6 @@ public class FomodXmlInstaller : IModInstaller
         if (analyzerInfo == default)
             return Array.Empty<AModFile>(); // <= invalid FOMOD, so no analyzer info dumped
 
-        // TODO: We have enough data cached to extract just what we need for the script to run;
-        // it would be ideal to not have to extract anything; but for now we have to treat fomod on
-        // as a 'black box'. This black box cannot run XMLs from memory yet; unfortunately.
-
         // Setup mod, exclude script path so it doesn't get picked up and thus double read from disk
         var modFiles = files.Keys.Select(x => x.ToString()).ToList();
         var mod = new Mod(modFiles, stopPattern, FomodConstants.XmlConfigRelativePath, string.Empty, _scriptType);
