@@ -23,7 +23,6 @@ public abstract class ADataGridViewModelColumn<TVmType, TRowType> : DataGridTemp
     {
         IsReadOnly = true;
         CanUserSort = true;
-        CanUserReorder = true;
         CanUserResize = true;
     }
 
