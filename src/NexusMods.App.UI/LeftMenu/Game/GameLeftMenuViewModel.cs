@@ -8,7 +8,7 @@ using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Icons;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.RightContent;
-using NexusMods.DataModel.Abstractions;
+using NexusMods.App.UI.RightContent.LoadoutGrid;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using ReactiveUI;
@@ -21,6 +21,9 @@ public class GameLeftMenuViewModel : AViewModel<IGameLeftMenuViewModel>, IGameLe
     private ReadOnlyObservableCollection<ILeftMenuItemViewModel> _items =
         new(Array.Empty<ILeftMenuItemViewModel>().ToObservableCollection());
 
+    private readonly ILogger<GameLeftMenuViewModel> _logger;
+    private readonly ILoadoutGridViewModel _loadoutGridViewModel;
+
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items => _items;
 
     [Reactive]
@@ -30,8 +33,12 @@ public class GameLeftMenuViewModel : AViewModel<IGameLeftMenuViewModel>, IGameLe
     [Reactive]
     public IRightContentViewModel RightContent { get; set; } = Initializers.IRightContent;
 
-    public GameLeftMenuViewModel(ILogger<GameLeftMenuViewModel> logger, LoadoutRegistry loadoutRegistry, ILaunchButtonViewModel launchButton, IServiceProvider provider)
+    public GameLeftMenuViewModel(ILogger<GameLeftMenuViewModel> logger, LoadoutRegistry loadoutRegistry, ILaunchButtonViewModel launchButton,
+        ILoadoutGridViewModel loadoutGridViewModel,
+        IServiceProvider provider)
     {
+        _logger = logger;
+        _loadoutGridViewModel = loadoutGridViewModel;
         LaunchButton = launchButton;
 
         this.WhenActivated(d =>
@@ -44,6 +51,19 @@ public class GameLeftMenuViewModel : AViewModel<IGameLeftMenuViewModel>, IGameLe
                 .BindTo(launchButton, vm => vm.Game)
                 .DisposeWith(d);
 
+            this.WhenAnyValue(vm => vm.Game)
+                .Subscribe(game =>
+                {
+                    var result = loadoutRegistry.AllLoadouts()
+                        .Where(l => l.Installation.Game.Domain == game.Domain)
+                        .OrderBy(d => d.Name,
+                            StringComparer.CurrentCultureIgnoreCase)
+                        .FirstOrDefault();
+                    if (result != null)
+                        SelectLoadout(result);
+                })
+                .DisposeWith(d);
+
             loadoutRegistry.Loadouts
                 .Filter(gameFilterFn)
                 .SortBy(list => list.Name)
@@ -54,8 +74,7 @@ public class GameLeftMenuViewModel : AViewModel<IGameLeftMenuViewModel>, IGameLe
                     vm.Name = loadout.Name;
                     vm.Activate = ReactiveCommand.Create(() =>
                     {
-                        logger.LogDebug("Loadout {LoadoutId} selected",
-                            loadout.LoadoutId);
+                        SelectLoadout(loadout);
                     });
                     return (ILeftMenuItemViewModel)vm;
                 })
@@ -64,5 +83,12 @@ public class GameLeftMenuViewModel : AViewModel<IGameLeftMenuViewModel>, IGameLe
                 .Subscribe()
                 .DisposeWith(d);
         });
+    }
+
+    private void SelectLoadout(Loadout loadout)
+    {
+        _logger.LogDebug("Loadout {LoadoutId} selected", loadout.LoadoutId);
+        _loadoutGridViewModel.Loadout = loadout.LoadoutId;
+        RightContent = _loadoutGridViewModel;
     }
 }

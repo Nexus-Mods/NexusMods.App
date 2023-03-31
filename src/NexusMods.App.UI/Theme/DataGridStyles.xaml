@@ -1,16 +1,34 @@
-﻿<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+﻿<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:drawing="clr-namespace:System.Drawing;assembly=System.Drawing.Common"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
 
     <Style Selector="DataGrid">
-        <Setter Property="Background" Value="{DynamicResource BrandSecondaryBrush}" />
+        <Setter Property="Background" Value="{DynamicResource TransparentBrush}" />
     </Style>
     <Style Selector="DataGridColumnHeader">
-        <Setter Property="Background" Value="{DynamicResource BrandSecondaryBrush}" />
+        <Setter Property="Background" Value="{DynamicResource TransparentBrush}" />
+        <Setter Property="Padding" Value="16, 0, 0, 0" />
+    </Style>
+
+    <Style Selector="DataGridColumnHeader:sortascending /template/ Path#SortIcon">
+        <Setter Property="Fill" Value="{DynamicResource BrandWhite}" />
+        <Setter Property="Data" Value="{DynamicResource DataGridSortIconAscendingPath}" />
+    </Style>
+
+    <Style Selector="DataGridColumnHeader:sortdescending /template/ Path#SortIcon">
+        <Setter Property="Fill" Value="{DynamicResource BrandWhite}" />
+        <Setter Property="Data" Value="{DynamicResource DataGridSortIconDescendingPath}" />
+    </Style>
+
+    <Style Selector="DataGridColumnHeader TextBlock">
         <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
         <Setter Property="FontWeight" Value="600" />
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="Margin" Value="5" />
+        <Setter Property="FontSize" Value="10" />
+        <Setter Property="LineHeight" Value="15" />
+        <Setter Property="LetterSpacing" Value="1" />
     </Style>
 
     <Style Selector="DataGridRow:selected Rectangle#BackgroundRectangle">
@@ -18,10 +36,15 @@
     </Style>
 
     <Style Selector="DataGridCell">
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Height" Value="44" />
         <Setter Property="Margin" Value="0" />
+        <Setter Property="Padding" Value="16, 0, 0, 0" />
     </Style>
     <Style Selector="DataGridCell:selected">
-        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+
+    <Style Selector="DataGridCell /template/ Rectangle">
+        <Setter Property="IsVisible" Value="False" />
     </Style>
 </Styles>

@@ -6,7 +6,9 @@ using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using System.Reactive.Disposables;
 using DynamicData.PLinq;
+using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Loadouts.Cursors;
 
 namespace NexusMods.DataModel.Loadouts;
 
@@ -25,7 +27,7 @@ public class LoadoutRegistry : IDisposable
     public IObservable<IChangeSet<IId,LoadoutId>> LoadoutChanges => _cache.Connect();
 
     public IObservable<IChangeSet<Loadout, LoadoutId>> Loadouts =>
-        LoadoutChanges.Transform(id => _store.Get<Loadout>(id)!);
+        LoadoutChanges.Transform(id => _store.Get<Loadout>(id, true)!);
 
     public IObservable<IDistinctChangeSet<IGame>> Games =>
         Loadouts
@@ -82,7 +84,7 @@ public class LoadoutRegistry : IDisposable
         Loadout? loadout = null;
         if (loadoutRoot != null)
         {
-            loadout = _store.Get<Loadout>(IId.FromTaggedSpan(loadoutRoot));
+            loadout = _store.Get<Loadout>(IId.FromTaggedSpan(loadoutRoot), true);
         }
 
         var newLoadout = alterFn(loadout ?? Loadout.Empty(_store));
@@ -145,6 +147,17 @@ public class LoadoutRegistry : IDisposable
     }
 
     /// <summary>
+    /// Alters the mod pointed to by the cursor. If the alter function returns null, the mod is removed from the loadout.
+    /// </summary>
+    /// <param name="cursor"></param>
+    /// <param name="commitMessage"></param>
+    /// <param name="alterFn"></param>
+    public void Alter(ModCursor cursor, string commitMessage, Func<Mod?, Mod?> alterFn)
+    {
+        Alter(cursor.LoadoutId, cursor.ModId, commitMessage, alterFn);
+    }
+
+    /// <summary>
     /// Gets the id of the loadout with the given loadout id.
     /// </summary>
     /// <param name="id"></param>
@@ -163,7 +176,17 @@ public class LoadoutRegistry : IDisposable
     /// <exception cref="InvalidOperationException"></exception>
     public Loadout? Get(LoadoutId id)
     {
-        return _store.Get<Loadout>(GetId(id)!);
+        return _store.Get<Loadout>(GetId(id)!, true);
+    }
+
+    /// <summary>
+    /// Gets the mod pointed to by the cursor.
+    /// </summary>
+    /// <param name="cursor"></param>
+    /// <returns></returns>
+    public Mod? Get(ModCursor cursor)
+    {
+        return Get(cursor.LoadoutId, cursor.ModId);
     }
 
     /// <summary>
@@ -217,11 +240,11 @@ public class LoadoutRegistry : IDisposable
     /// <returns></returns>
     public IObservable<IId> Revisions(LoadoutId loadoutId)
     {
-        var dbId = loadoutId.ToEntityId(EntityCategory.TestData);
+        var rootId = loadoutId.ToEntityId(EntityCategory.LoadoutRoots);
         return _store.IdChanges
-            .Where(id => id == dbId)
-            .StartWith(IId.FromTaggedSpan(_store.GetRaw(dbId)))
-            .Select(id => IId.FromTaggedSpan(_store.GetRaw(id)));
+            .Where(id => id.Equals(rootId))
+            .Select(id => IId.FromTaggedSpan(_store.GetRaw(id)))
+            .StartWith(IId.FromTaggedSpan(_store.GetRaw(rootId)));
     }
 
     /// <summary>
@@ -233,8 +256,18 @@ public class LoadoutRegistry : IDisposable
     public IObservable<IId> Revisions(LoadoutId loadoutId, ModId modId)
     {
         return Revisions(loadoutId)
-            .Select(id => _store.Get<Loadout>(id)!.Mods.GetValueId(modId));
+            .Select(id => _store.Get<Loadout>(id, true)?.Mods.GetValueId(modId) ?? null)
+            .NotNull();
+    }
 
+    /// <summary>
+    /// Gets the revisions of a given cursor
+    /// </summary>
+    /// <param name="cursor"></param>
+    /// <returns></returns>
+    public IObservable<IId> Revisions(ModCursor cursor)
+    {
+        return Revisions(cursor.LoadoutId, cursor.ModId);
     }
 
     public void Dispose()
