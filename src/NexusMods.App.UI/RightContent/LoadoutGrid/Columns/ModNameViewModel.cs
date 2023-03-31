@@ -29,6 +29,7 @@ public class ModNameViewModel : AViewModel<IModNameViewModel>, IModNameViewModel
                 .Select(m => m?.Name ?? "")
                 .BindToUi(this, vm => vm.Name)
                 .DisposeWith(d);
+
         });
     }
 

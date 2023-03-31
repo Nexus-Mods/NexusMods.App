@@ -1,7 +1,9 @@
 ﻿using System.Reactive.Disposables;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Data;
 using Avalonia.Markup.Xaml;
+using Avalonia.Markup.Xaml.Templates;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 

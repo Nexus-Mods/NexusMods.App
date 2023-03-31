@@ -7,7 +7,7 @@ using ReactiveUI;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 
-public abstract class ADataGridViewModelColumn<TVmType, TRowType> : DataGridColumn where TVmType : IColumnViewModel<TRowType>
+public abstract class ADataGridViewModelColumn<TVmType, TRowType> : DataGridTemplateColumn where TVmType : IColumnViewModel<TRowType>
 {
     public ADataGridViewModelColumn()
     {
@@ -15,6 +15,17 @@ public abstract class ADataGridViewModelColumn<TVmType, TRowType> : DataGridColu
         CanUserSort = true;
         CanUserReorder = true;
         CanUserResize = true;
+
+
+    }
+
+    protected override void RefreshCellContent(Control element, string propertyName)
+    {
+        var cell = element.Parent as DataGridCell;
+        if (propertyName == nameof(CellTemplate) && cell is not null)
+        {
+            cell.Content = GenerateElement(cell, cell.DataContext);
+        }
     }
 
     protected override Control GenerateEditingElement(DataGridCell cell, object dataItem,
