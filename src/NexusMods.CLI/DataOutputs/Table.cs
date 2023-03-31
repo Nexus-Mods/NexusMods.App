@@ -5,4 +5,5 @@ namespace NexusMods.CLI.DataOutputs;
 /// </summary>
 /// <param name="Columns"></param>
 /// <param name="Rows"></param>
-public record Table(IReadOnlyCollection<string> Columns, IEnumerable<IEnumerable<object>> Rows);
+/// <param name="Title"></param>
+public record Table(IReadOnlyCollection<string> Columns, IEnumerable<IEnumerable<object>> Rows, string? Title = null);

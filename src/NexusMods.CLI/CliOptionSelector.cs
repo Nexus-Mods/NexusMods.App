@@ -38,10 +38,10 @@ public class CliOptionSelector : IOptionSelector
                 if (idx != null)
                     current[idx.Value].Type = ToggleState(current[idx.Value].Type);
 
-                _renderer.Render(TableOfOptions(current));
+                _renderer.Render(TableOfOptions(current, query));
             }
         }
-        return Task.FromResult(current.Where(_ => _.Type == OptionState.Selected || _.Type == OptionState.Required).Select(_ => _.Id));
+        return Task.FromResult(current.Where(_ => _.Type is OptionState.Selected or OptionState.Required).Select(_ => _.Id));
     }
 
     public Task<Tuple<TGroupId, IEnumerable<TOptionId>>?> RequestMultipleChoices<TGroupId, TOptionId>(IEnumerable<ChoiceGroup<TGroupId, TOptionId>> groups)
@@ -49,19 +49,23 @@ public class CliOptionSelector : IOptionSelector
         var selectedGroupIdx = -1;
         Tuple<TGroupId, IEnumerable<TOptionId>>? result = null;
         IList<Option<TOptionId>>? selectedGroup = null;
+        string selectedGroupName = "";
         var groupsArr = groups.ToArray();
 
         while (true)
         {
-            RenderOptions(groupsArr, selectedGroup);
+            RenderOptions(groupsArr, selectedGroup, selectedGroupName);
             var input = GetUserInput();
 
             if (selectedGroupIdx < 0)
             {
                 selectedGroupIdx = ParseNumericalUserInput(input, groupsArr.Length) ?? selectedGroupIdx;
-                selectedGroup = selectedGroupIdx >= 0
-                    ? groupsArr.ElementAt(selectedGroupIdx).Options.ToList()
-                    : null;
+                if (selectedGroupIdx >= 0)
+                {
+                    var group = groupsArr.ElementAt(selectedGroupIdx);
+                    selectedGroup = group.Options.ToList();
+                    selectedGroupName = group.Query;
+                }
             }
             else
             {
@@ -76,8 +80,6 @@ public class CliOptionSelector : IOptionSelector
         }
         return Task.FromResult(result);
     }
-
-
 
     private static void UpdatedSelectedGroup<TGroupId, TOptionId>(ref IList<Option<TOptionId>>? selectedGroup,
                                                            IEnumerable<ChoiceGroup<TGroupId, TOptionId>> groups,
@@ -154,14 +156,17 @@ public class CliOptionSelector : IOptionSelector
         return null;
     }
 
-    private void RenderOptions<TGroupId, TOptionId>(IEnumerable<ChoiceGroup<TGroupId, TOptionId>> groups, IList<Option<TOptionId>>? selectedGroup)
+    private void RenderOptions<TGroupId, TOptionId>(
+        IEnumerable<ChoiceGroup<TGroupId, TOptionId>> groups,
+        IList<Option<TOptionId>>? selectedGroup, string selectedGroupName)
     {
         _renderer.Render(selectedGroup == null
             ? TableOfGroups(groups)
-            : TableOfOptions(selectedGroup));
+            : TableOfOptions(selectedGroup, selectedGroupName));
     }
 
-    private Table TableOfOptions<TOptionId>(IEnumerable<Option<TOptionId>> current)
+    private Table TableOfOptions<TOptionId>(
+        IEnumerable<Option<TOptionId>> current, string selectedGroupName)
     {
         var row = new List<object[]>();
         var key = 1;
@@ -169,7 +174,7 @@ public class CliOptionSelector : IOptionSelector
             row.Add(new object[] { key++, RenderOptionState(item.Type), item.Name, item.Description ?? "" });
 
         row.Add(TableOfOptionsFooter);
-        return new Table(TableOfOptionsHeaders, row);
+        return new Table(TableOfOptionsHeaders, row, selectedGroupName);
     }
 
     private static Table TableOfGroups<TGroupId, TOptionId>(IEnumerable<ChoiceGroup<TGroupId, TOptionId>> groups)
@@ -180,7 +185,7 @@ public class CliOptionSelector : IOptionSelector
             row.Add(new object[] { key++, item.Query });
 
         row.Add(TableOfGroupsFooter);
-        return new Table(TableOfGroupsHeaders, row);
+        return new Table(TableOfGroupsHeaders, row, "Select a Group");
     }
 
     private static OptionState ToggleState(OptionState old)

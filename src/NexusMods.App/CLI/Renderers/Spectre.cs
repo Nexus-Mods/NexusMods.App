@@ -130,8 +130,10 @@ public class Spectre : IRenderer
 
     private Task RenderTable(NexusMods.CLI.DataOutputs.Table table)
     {
-
         var ot = new Table();
+        if (!string.IsNullOrEmpty(table.Title))
+            ot.Title = new TableTitle(table.Title);
+
         foreach (var column in table.Columns)
             ot.AddColumn(new TableColumn(new Text(column, new Style(foreground: NexusColor))));
 
