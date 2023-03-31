@@ -20,7 +20,6 @@ public class ModelTests : ADataModelTest<ModelTests>
     public ModelTests(IServiceProvider provider) : base(provider)
     {
     }
-
     [Fact]
     public void CanCreateModFile()
     {
@@ -68,7 +67,7 @@ public class ModelTests : ADataModelTest<ModelTests>
         var history = loadout.History().Select(h => h.DataStoreId).ToArray();
         history.Length.Should().Be(4);
 
-        LoadoutManager.Alter(loadout.Value.LoadoutId, l => l.PreviousVersion.Value);
+        LoadoutManager.Registry.Alter(loadout.Value.LoadoutId, "Test Update", l => l.PreviousVersion.Value);
 
         var newHistory = loadout.History().Select(h => h.DataStoreId).ToArray();
 
@@ -121,7 +120,7 @@ public class ModelTests : ADataModelTest<ModelTests>
 
         }
 
-        loadout.Alter(l => l with { Mods = new EntityDictionary<ModId, Mod>(DataStore) });
+        loadout.Alter("Test Update", l => l with { Mods = new EntityDictionary<ModId, Mod>(DataStore) });
         loadout.Value.Mods.Should().BeEmpty("All mods are removed");
 
         await LoadoutManager.ImportFromAsync(tempFile, CancellationToken.None);

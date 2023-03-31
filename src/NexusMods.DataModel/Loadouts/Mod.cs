@@ -30,9 +30,24 @@ public record Mod : Entity, IHasEntityId<ModId>
     public required EntityDictionary<ModFileId, AModFile> Files { get; init; }
 
     /// <summary>
+    /// Category of the mod
+    /// </summary>
+    public string ModCategory { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Version of the mod
+    /// </summary>
+    public string Version { get; set; } = string.Empty;
+
+    /// <summary>
     /// Name of the mod in question.
     /// </summary>
-    public required string Name { get; init; }
+    public required string Name { get; init; } = string.Empty;
+
+    /// <summary>
+    /// True if the mod is enabled, false otherwise.
+    /// </summary>
+    public bool Enabled { get; init; } = false;
 
     /// <inheritdoc />
     public override EntityCategory Category => EntityCategory.Loadouts;
@@ -41,4 +56,9 @@ public record Mod : Entity, IHasEntityId<ModId>
     /// Defines the individual sorting rules applied to a game.
     /// </summary>
     public ImmutableList<ISortRule<Mod, ModId>> SortRules { get; init; } = ImmutableList<ISortRule<Mod, ModId>>.Empty;
+
+    /// <summary>
+    /// Date and time when the mod was installed.
+    /// </summary>
+    public DateTime Installed { get; set; } = DateTime.UtcNow;
 }

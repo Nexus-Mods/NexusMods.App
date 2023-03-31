@@ -23,13 +23,13 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
 
     [Reactive] public string Label { get; set; } = "Launch";
 
-    public LaunchButtonViewModel(IInterprocessJobManager manager, IDataStore store)
+    public LaunchButtonViewModel(IInterprocessJobManager manager, LoadoutRegistry loadoutRegistry)
     {
         this.WhenActivated(d =>
         {
             var gameFilter = this.WhenAnyValue(vm => vm.Game)
                 .Select(game => (Func<Loadout, bool>) (loadout => loadout.Installation.Game.Domain == game.Domain));
-            var loadOuts = store.ObservableLoadouts()
+            var loadOuts = loadoutRegistry.Loadouts
                 .Filter(gameFilter);
 
             var validJobs = manager.Jobs

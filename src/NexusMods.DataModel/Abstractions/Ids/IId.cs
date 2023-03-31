@@ -56,6 +56,8 @@ public interface IId
     /// <param name="span">The span to convert back.</param>
     public static IId FromTaggedSpan(ReadOnlySpan<byte> span)
     {
+        if (span.Length == 0) return IdEmpty.Empty;
+
         var tag = (EntityCategory)span[0];
 
         switch (span.Length)
@@ -133,22 +135,6 @@ public interface IId
         Span<byte> prefixSpan = stackalloc byte[prefix.SpanSize + 1];
         prefix.ToTaggedSpan(prefixSpan);
         return ourSpan.StartsWith(prefixSpan);
-    }
-
-    /// <summary>
-    /// Creates an ID from an existing span of bytes.
-    /// </summary>
-    /// <param name="category">The category associated with this span.</param>
-    /// <param name="bytes">The bytes from which the ID is obtained back from.</param>
-    /// <returns>ID converted back from the Span.</returns>
-    static IId FromSpan(RootType category, byte[] bytes)
-    {
-        return category switch
-        {
-            RootType.Loadouts => FromSpan(EntityCategory.Loadouts, bytes),
-            RootType.Tests => FromSpan(EntityCategory.TestData, bytes),
-            _ => throw new ArgumentOutOfRangeException(nameof(category), category, null)
-        };
     }
 
     /// <summary>

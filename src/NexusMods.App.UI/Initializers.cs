@@ -8,6 +8,8 @@ using Avalonia.Platform;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.LeftMenu.Home;
 using NexusMods.App.UI.RightContent;
+using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.Cursors;
 using ReactiveUI;
 // ReSharper disable InconsistentNaming
 
@@ -22,6 +24,12 @@ public static class Initializers
 
     public static readonly ReactiveCommand<Unit, Unit> ReactiveCommandUnitUnit =
         ReactiveCommand.Create(() => { });
+
+    public static readonly ModCursor ModCursor = new(LoadoutId,
+        ModId.From(new Guid("00000000-0000-0000-0000-000000000002")));
+
+    public static LoadoutId LoadoutId =
+        LoadoutId.From(new Guid("00000000-0000-0000-0000-000000000001"));
 
     public static ReadOnlyObservableCollection<T> ReadOnlyObservableCollection<T>()
     {
