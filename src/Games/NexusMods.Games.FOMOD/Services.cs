@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using FomodInstaller.Interface;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
@@ -18,6 +19,7 @@ public static class Services
         services.AddAllSingleton<IFileAnalyzer, FomodAnalyzer>();
         services.AddAllSingleton<IModInstaller, FomodXmlInstaller>();
         services.AddAllSingleton<ITypeFinder, TypeFinder>();
+        services.AddAllSingleton<ICoreDelegates, InstallerDelegates>();
         return services;
     }
 }

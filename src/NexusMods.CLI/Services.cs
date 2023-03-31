@@ -11,6 +11,7 @@ using NexusMods.FileExtractor.Extractors;
 using NexusMods.Paths;
 using System.Runtime.InteropServices;
 using NexusMods.Common.ProtocolRegistration;
+using NexusMods.Common.UserInput;
 
 namespace NexusMods.CLI;
 
@@ -27,6 +28,9 @@ public static class Services
         services.AddSingleton<IOptionParser<Version>, VersionParser>();
         services.AddSingleton<IOptionParser<Loadout>, LoadoutParser>();
         services.AddSingleton<IOptionParser<ITool>, ToolParser>();
+        services.AddSingleton<IOptionSelector, CliOptionSelector>();
+        services.AddSingleton<TemporaryFileManager>();
+
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             services.AddSingleton<IProtocolRegistration, ProtocolRegistrationWindows>();
