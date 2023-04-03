@@ -1,75 +1,53 @@
+using System.Globalization;
 using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Paths;
 
 /// <summary>
-/// Utility for creating temporary folder and files to be later disposed.<br/>
-/// Example Usage: `using var manager = new TemporaryFileManager()`.
+/// Utility for creating temporary folder and files to be later disposed.
 /// </summary>
-public class TemporaryFileManager : IDisposable, IAsyncDisposable
+public class TemporaryFileManager : IDisposable
 {
+    private readonly IFileSystem _fileSystem;
     private readonly AbsolutePath _basePath;
     private readonly bool _deleteOnDispose;
 
     // TODO: For unit tests we should inject IFileSystem here.
 
     /// <summary>
-    /// Utility for creating temporary folder and files to be later disposed.
+    /// Constructor.
     /// </summary>
-    public TemporaryFileManager() : this(KnownFolders.EntryFolder.CombineUnchecked("temp")) { }
-
-    /// <summary>
-    /// Utility for creating temporary folder and files to be later disposed.
-    /// </summary>
-    /// <param name="basePath">Path inside which the temporary data will be stored.</param>
-    /// <param name="deleteOnDispose">True if all the paths should be deleted on disposal, else false.</param>
-    public TemporaryFileManager(AbsolutePath basePath = default, bool deleteOnDispose = true)
+    /// <param name="fileSystem"><see cref="IFileSystem"/> implementation to use.</param>
+    /// <param name="basePath">Base directory to use for temporary files. If <c>default</c>, a sub-directory inside <see cref="KnownPath.TempDirectory"/> will be used.</param>
+    /// <param name="deleteOnDispose">If <c>true</c>, all files inside <paramref name="basePath"/> will be deleted when disposed.</param>
+    public TemporaryFileManager(IFileSystem fileSystem, AbsolutePath basePath = default, bool deleteOnDispose = true)
     {
-        if (basePath.Equals(default))
-            basePath = KnownFolders.EntryFolder.CombineUnchecked("temp");
-
+        _fileSystem = fileSystem;
+        _basePath = basePath == default
+            ? _fileSystem
+                .GetKnownPath(KnownPath.TempDirectory)
+                .CombineUnchecked($"NexusMods.App-{Guid.NewGuid().ToString("D", CultureInfo.InvariantCulture)}")
+            : basePath;
         _deleteOnDispose = deleteOnDispose;
-        _basePath = basePath;
-        _basePath.CreateDirectory();
+
+        _fileSystem.CreateDirectory(_basePath);
     }
 
     /// <inheritdoc />
     public void Dispose()
     {
-        _ = Dispose_Impl(false).Preserve();
+        Dispose_Impl();
         GC.SuppressFinalize(this);
     }
 
-    /// <inheritdoc />
-    public async ValueTask DisposeAsync()
+    private void Dispose_Impl()
     {
-        await Dispose_Impl(true);
-        GC.SuppressFinalize(this);
-    }
+        if (!_deleteOnDispose) return;
 
-    private async ValueTask Dispose_Impl(bool waitAsync)
-    {
-        if (!_deleteOnDispose)
+        if (!_fileSystem.DirectoryExists(_basePath))
             return;
 
-        for (var retries = 0; retries < 10; retries++)
-        {
-            try
-            {
-                if (!_basePath.DirectoryExists())
-                    return;
-
-                _basePath.DeleteDirectory();
-                return;
-            }
-            catch (IOException)
-            {
-                if (!waitAsync)
-                    Thread.Sleep(1000);
-                else
-                    await Task.Delay(1000);
-            }
-        }
+        _fileSystem.DeleteDirectory(_basePath, true);
     }
 
     /// <summary>
@@ -81,7 +59,7 @@ public class TemporaryFileManager : IDisposable, IAsyncDisposable
         if (path.Extension != default)
             path = path.AppendExtension(ext ?? KnownExtensions.Tmp);
 
-        return new TemporaryPath(path, deleteOnDispose);
+        return new TemporaryPath(_fileSystem, path, deleteOnDispose);
     }
 
     /// <summary>
@@ -90,8 +68,8 @@ public class TemporaryFileManager : IDisposable, IAsyncDisposable
     public TemporaryPath CreateFolder(string prefix = "", bool deleteOnDispose = true)
     {
         var path = _basePath.CombineUnchecked(prefix + Guid.NewGuid());
-        path.CreateDirectory();
-        return new TemporaryPath(path, deleteOnDispose);
+        _fileSystem.CreateDirectory(path);
+        return new TemporaryPath(_fileSystem, path, deleteOnDispose);
     }
 }
 
@@ -103,41 +81,44 @@ public class TemporaryFileManager : IDisposable, IAsyncDisposable
 /// </remarks>
 public readonly struct TemporaryPath : IDisposable, IAsyncDisposable
 {
+    private readonly IFileSystem _fileSystem;
+    private readonly bool _deleteOnDispose;
+
     /// <summary>
     /// Full path to the temporary location.
     /// </summary>
-    public AbsolutePath Path { get; }
-
-    /// <summary>
-    /// True if deleted on dispose, else false.
-    /// </summary>
-    private bool DeleteOnDispose { get; }
+    public readonly AbsolutePath Path;
 
     /// <summary>
     /// Represents a temporary folder or file that should be deleted upon disposal.
     /// </summary>
+    /// <param name="fileSystem"><see cref="IFileSystem"/> implementation to use.</param>
     /// <param name="path">Full path to the item.</param>
     /// <param name="deleteOnDispose">True to delete when disposed, else false</param>
-    public TemporaryPath(AbsolutePath path, bool deleteOnDispose = true)
+    public TemporaryPath(IFileSystem fileSystem, AbsolutePath path, bool deleteOnDispose = true)
     {
+        _fileSystem = fileSystem;
+        _deleteOnDispose = deleteOnDispose;
         Path = path;
-        DeleteOnDispose = deleteOnDispose;
     }
 
     /// <inheritdoc />
     public void Dispose()
     {
-        if (DeleteOnDispose)
-            Path.Delete();
+        Dispose_Impl();
     }
 
     /// <inheritdoc />
     public ValueTask DisposeAsync()
     {
-        if (DeleteOnDispose)
-            Path.Delete();
-
+        Dispose_Impl();
         return ValueTask.CompletedTask;
+    }
+
+    private void Dispose_Impl()
+    {
+        if (_deleteOnDispose && _fileSystem.FileExists(Path))
+            _fileSystem.DeleteFile(Path);
     }
 
     /// <inheritdoc />
