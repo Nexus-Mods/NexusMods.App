@@ -91,6 +91,9 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
     /// <param name="token"></param>
     public async Task CleanupOnce(CancellationToken token)
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteIPC));
+
         var oldTime = DateTime.UtcNow - RetentionTime;
 
         _logger.LogTrace("Cleaning up old IPC messages");
@@ -165,6 +168,9 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
 
     private long ProcessMessages(long lastId)
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteIPC));
+
         try
         {
             using var conn = _pool.RentDisposable();
@@ -281,6 +287,9 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
     /// <param name="message"></param>
     public void Send(string queue, ReadOnlySpan<byte> message)
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteIPC));
+
         try
         {
             _logger.LogTrace("Sending {Bytes} byte message to queue {Queue}", Size.FromLong(message.Length), queue);
