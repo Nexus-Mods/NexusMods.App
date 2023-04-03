@@ -15,6 +15,8 @@ public unsafe class SharedArray : IDisposable
     private readonly MemoryMappedFile _mmapFile;
     private readonly MemoryMappedViewAccessor _view;
 
+    private bool _isDisposed;
+
     public SharedArray(AbsolutePath path, int itemCount)
     {
         _totalSize = itemCount * sizeof(ulong);
@@ -73,6 +75,9 @@ public unsafe class SharedArray : IDisposable
     /// <returns></returns>
     public ulong Get(int idx)
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SharedArray));
+
 #if DEBUG
         if (idx < 0 || idx >= _totalSize / sizeof(ulong))
         {
@@ -93,6 +98,9 @@ public unsafe class SharedArray : IDisposable
     /// <returns></returns>
     public bool CompareAndSwap(int idx, ulong expected, ulong value)
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SharedArray));
+
 #if DEBUG
         if (idx < 0 || idx >= _totalSize / sizeof(ulong))
         {
@@ -116,6 +124,8 @@ public unsafe class SharedArray : IDisposable
     /// <inheritdoc />
     public void Dispose()
     {
+        _isDisposed = true;
+
         _view.Dispose();
         _mmapFile.Dispose();
         _stream.Dispose();
