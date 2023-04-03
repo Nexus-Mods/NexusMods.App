@@ -33,26 +33,6 @@ public class TemporaryFileManager : IDisposable
         _fileSystem.CreateDirectory(_basePath);
     }
 
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        if (_isDisposed) return;
-        _isDisposed = true;
-
-        Dispose_Impl();
-        GC.SuppressFinalize(this);
-    }
-
-    private void Dispose_Impl()
-    {
-        if (!_deleteOnDispose) return;
-
-        if (!_fileSystem.DirectoryExists(_basePath))
-            return;
-
-        _fileSystem.DeleteDirectory(_basePath, true);
-    }
-
     /// <summary>
     /// Returns a new temporary file, that is (optionally) deleted when disposed.
     /// </summary>
@@ -79,6 +59,34 @@ public class TemporaryFileManager : IDisposable
         var path = _basePath.CombineUnchecked(prefix + Guid.NewGuid());
         _fileSystem.CreateDirectory(path);
         return new TemporaryPath(_fileSystem, path, deleteOnDispose);
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Releases the unmanaged resources and optionally releases the managed resources.
+    /// </summary>
+    /// <param name="disposing">
+    /// <c>true</c> to release both managed and unmanaged resources;
+    /// <c>false</c> to release only unmanaged resources.
+    /// </param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_isDisposed) return;
+        if (disposing)
+        {
+            if (_deleteOnDispose)
+            {
+                _fileSystem.DeleteDirectory(_basePath, recursive: true);
+            }
+        }
+
+        _isDisposed = true;
     }
 }
 
