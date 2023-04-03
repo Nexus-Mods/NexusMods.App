@@ -18,8 +18,8 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection container)
     {
-        var prefix = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory)
-            .CombineUnchecked("tempTestData")
+        var prefix = FileSystem.Shared.GetKnownPath(KnownPath.TempDirectory)
+            .CombineUnchecked(typeof(Startup).FullName ?? "NexusMods.DataModel.Tests")
             .CombineUnchecked(Guid.NewGuid().ToString());
 
         container
