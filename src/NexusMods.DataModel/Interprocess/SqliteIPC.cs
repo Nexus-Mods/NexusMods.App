@@ -409,8 +409,11 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
             _shutdownToken.Cancel();
             _subject.Dispose();
             _syncArray.Dispose();
+            _jobs.Dispose();
+
             if (_pool is IDisposable disposable)
                 disposable.Dispose();
+            _poolPolicy.Dispose();
         }
 
         _isDisposed = true;
