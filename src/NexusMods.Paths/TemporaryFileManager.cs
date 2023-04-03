@@ -12,7 +12,7 @@ public class TemporaryFileManager : IDisposable
     private readonly AbsolutePath _basePath;
     private readonly bool _deleteOnDispose;
 
-    // TODO: For unit tests we should inject IFileSystem here.
+    private bool _isDisposed;
 
     /// <summary>
     /// Constructor.
@@ -36,6 +36,9 @@ public class TemporaryFileManager : IDisposable
     /// <inheritdoc />
     public void Dispose()
     {
+        if (_isDisposed) return;
+        _isDisposed = true;
+
         Dispose_Impl();
         GC.SuppressFinalize(this);
     }
@@ -55,6 +58,9 @@ public class TemporaryFileManager : IDisposable
     /// </summary>
     public TemporaryPath CreateFile(Extension? ext = default, bool deleteOnDispose = true)
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(TemporaryFileManager));
+
         var path = _basePath.CombineUnchecked(Guid.NewGuid().ToString());
         if (path.Extension != default)
             path = path.AppendExtension(ext ?? KnownExtensions.Tmp);
@@ -67,6 +73,9 @@ public class TemporaryFileManager : IDisposable
     /// </summary>
     public TemporaryPath CreateFolder(string prefix = "", bool deleteOnDispose = true)
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(TemporaryFileManager));
+
         var path = _basePath.CombineUnchecked(prefix + Guid.NewGuid());
         _fileSystem.CreateDirectory(path);
         return new TemporaryPath(_fileSystem, path, deleteOnDispose);
