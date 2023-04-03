@@ -24,6 +24,8 @@ namespace NexusMods.DataModel;
 /// </summary>
 public class SqliteDataStore : IDataStore, IDisposable
 {
+    private bool _isDisposed;
+
     private readonly Dictionary<EntityCategory, string> _getStatements;
     private readonly Dictionary<EntityCategory, string> _putStatements;
     // ReSharper disable once CollectionNeverQueried.Local
@@ -55,6 +57,7 @@ public class SqliteDataStore : IDataStore, IDisposable
     {
         _logger = logger;
         var connectionString = string.Intern($"Data Source={path}");
+
         _poolPolicy = new ConnectionPoolPolicy(connectionString);
         _pool = ObjectPool.Create(_poolPolicy);
 
@@ -345,10 +348,27 @@ public class SqliteDataStore : IDataStore, IDisposable
     /// <inheritdoc />
     public void Dispose()
     {
-        _enqueuerTcs.Dispose();
-        if (_pool is IDisposable disposable)
-            disposable.Dispose();
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
-        _poolPolicy.Dispose();
+    /// <summary>
+    /// Releases the unmanaged resources and optionally releases the managed resources.
+    /// </summary>
+    /// <param name="disposing">
+    /// <c>true</c> to release both managed and unmanaged resources;
+    /// <c>false</c> to release only unmanaged resources.
+    /// </param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_isDisposed) return;
+        if (disposing)
+        {
+            _enqueuerTcs.Dispose();
+            if (_pool is IDisposable disposable)
+                disposable.Dispose();
+            _poolPolicy.Dispose();
+        }
+        _isDisposed = true;
     }
 }
