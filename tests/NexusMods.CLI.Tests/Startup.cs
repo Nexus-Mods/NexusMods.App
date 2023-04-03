@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
+using NexusMods.Paths;
 using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
 
@@ -14,6 +15,8 @@ public class Startup
     {
         services.AddStandardGameLocators(false)
                 .AddStubbedGameLocators()
+                .AddFileSystem()
+                .AddSingleton<TemporaryFileManager>()
                 .AddDataModel()
                 .AddFileExtractors(new FileExtractorSettings())
                 .AddCLI()
