@@ -133,7 +133,7 @@ public partial class FileSystem : BaseFileSystem
                 if (attempts > 10)
                     throw;
 
-                Thread.Sleep(100);
+                Thread.Sleep(1000);
                 attempts++;
                 goto TopParent;
             }
