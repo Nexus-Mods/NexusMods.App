@@ -202,9 +202,6 @@ public class FomodXmlInstallerTests : IDisposable
 
         var installer = new FomodXmlInstaller(
             _serviceProvider.GetRequiredService<ILogger<FomodXmlInstaller>>(),
-            dataStore,
-            _serviceProvider.GetRequiredService<TemporaryFileManager>(),
-            _serviceProvider.GetRequiredService<FileExtractor.FileExtractor>(),
             _coreDelegates
         );
 

@@ -18,19 +18,13 @@ namespace NexusMods.Games.FOMOD;
 public class FomodXmlInstaller : IModInstaller
 {
     private readonly ICoreDelegates _delegates;
-    private readonly IDataStore _store;
     private readonly XmlScriptType _scriptType = new();
-    private readonly TemporaryFileManager _tmpFiles;
-    private readonly FileExtractor.FileExtractor _extractor;
     private readonly ILogger<FomodXmlInstaller> _logger;
 
-    public FomodXmlInstaller(ILogger<FomodXmlInstaller> logger, IDataStore store, TemporaryFileManager tmpFiles, FileExtractor.FileExtractor extractor, ICoreDelegates coreDelegates)
+    public FomodXmlInstaller(ILogger<FomodXmlInstaller> logger, ICoreDelegates coreDelegates)
     {
         _delegates = coreDelegates;
-        _store = store;
         _logger = logger;
-        _tmpFiles = tmpFiles;
-        _extractor = extractor;
     }
 
     public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
