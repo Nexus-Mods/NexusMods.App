@@ -310,23 +310,6 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
     }
 
 
-    /// <summary>
-    /// Dispose of the IPC connection.
-    /// </summary>
-    public void Dispose()
-    {
-        if (_isDisposed) return;
-        _isDisposed = true;
-
-        _shutdownToken.Cancel();
-        _subject.Dispose();
-        _syncArray.Dispose();
-        _poolPolicy.Dispose();
-        _jobs.Dispose();
-        if (_pool is IDisposable disposable)
-            disposable.Dispose();
-    }
-
     public void CreateJob(IInterprocessJob job)
     {
         if (_isDisposed)
@@ -400,5 +383,36 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
             cmd.ExecuteNonQuery();
         }
         UpdateJobTimestamp();
+    }
+
+    /// <summary>
+    /// Dispose of the IPC connection.
+    /// </summary>
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Releases the unmanaged resources and optionally releases the managed resources.
+    /// </summary>
+    /// <param name="disposing">
+    /// <c>true</c> to release both managed and unmanaged resources;
+    /// <c>false</c> to release only unmanaged resources.
+    /// </param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_isDisposed) return;
+        if (disposing)
+        {
+            _shutdownToken.Cancel();
+            _subject.Dispose();
+            _syncArray.Dispose();
+            if (_pool is IDisposable disposable)
+                disposable.Dispose();
+        }
+
+        _isDisposed = true;
     }
 }

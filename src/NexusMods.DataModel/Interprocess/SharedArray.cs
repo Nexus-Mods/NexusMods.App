@@ -124,10 +124,27 @@ public unsafe class SharedArray : IDisposable
     /// <inheritdoc />
     public void Dispose()
     {
-        _isDisposed = true;
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
-        _view.Dispose();
-        _mmapFile.Dispose();
-        _stream.Dispose();
+    /// <summary>
+    /// Releases the unmanaged resources and optionally releases the managed resources.
+    /// </summary>
+    /// <param name="disposing">
+    /// <c>true</c> to release both managed and unmanaged resources;
+    /// <c>false</c> to release only unmanaged resources.
+    /// </param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_isDisposed) return;
+        if (disposing)
+        {
+            _view.Dispose();
+            _mmapFile.Dispose();
+            _stream.Dispose();
+        }
+
+        _isDisposed = true;
     }
 }
