@@ -23,21 +23,19 @@ public class Startup
             .CombineUnchecked("tempTestData")
             .CombineUnchecked(Guid.NewGuid().ToString());
 
-        container.AddFileSystem().AddDataModel(new DataModelSettings(prefix))
-                 .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
-                 .AddStandardGameLocators(false)
-                 .AddSingleton<TemporaryFileManager>(_ => new TemporaryFileManager(FileSystem.Shared, prefix.CombineUnchecked("tempFiles")))
-                 .AddFileExtractors(new FileExtractorSettings())
-                 .AddStubbedGameLocators()
-
-                 .AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(_ =>
-            new Resource<FileContentsCache, Size>("File Analysis"))
-                 .AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ =>
-            new Resource<IExtractor, Size>("File Extraction"))
-                 .AddSingleton<IFileAnalyzer, ArchiveContentsCacheTests.MutatingFileAnalyzer>()
-
-                 .AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Startup).Assembly))
-                 .Validate();
+        container
+            .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
+            .AddFileSystem()
+            .AddSingleton<TemporaryFileManager>()
+            .AddDataModel(new DataModelSettings(prefix))
+            .AddStandardGameLocators(false)
+            .AddFileExtractors(new FileExtractorSettings())
+            .AddStubbedGameLocators()
+            .AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(_ => new Resource<FileContentsCache, Size>("File Analysis"))
+            .AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ => new Resource<IExtractor, Size>("File Extraction"))
+            .AddSingleton<IFileAnalyzer, ArchiveContentsCacheTests.MutatingFileAnalyzer>()
+            .AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Startup).Assembly))
+            .Validate();
     }
 
     public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>
