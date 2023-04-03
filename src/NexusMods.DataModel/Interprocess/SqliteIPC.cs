@@ -40,6 +40,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
     private readonly ObjectPool<SqliteConnection> _pool;
     private readonly ConnectionPoolPolicy _poolPolicy;
 
+    private bool _isDisposed;
 
     /// <summary>
     /// Allows you to subscribe to newly incoming IPC messages.
@@ -314,6 +315,9 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
     /// </summary>
     public void Dispose()
     {
+        if (_isDisposed) return;
+        _isDisposed = true;
+
         _shutdownToken.Cancel();
         _subject.Dispose();
         _syncArray.Dispose();
@@ -325,6 +329,9 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
 
     public void CreateJob(IInterprocessJob job)
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteIPC));
+
         try
         {
             _logger.LogInformation("Creating job {JobId} of type {JobType}", job.JobId, job.GetType().Name);
@@ -363,6 +370,9 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
 
     public void EndJob(JobId job)
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(TemporaryFileManager));
+
         _logger.LogInformation("Deleting job {JobId}", job);
         {
             using var conn = _pool.RentDisposable();
@@ -377,6 +387,9 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
 
     public void UpdateProgress(JobId jobId, Percent value)
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(TemporaryFileManager));
+
         _logger.LogTrace("Updating job {JobId} progress to {Percent}", jobId, value);
         {
             using var conn = _pool.RentDisposable();
