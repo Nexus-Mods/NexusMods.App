@@ -132,6 +132,9 @@ public class SqliteDataStore : IDataStore, IDisposable
     /// <inheritdoc />
     public IId Put<T>(T value) where T : Entity
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteDataStore));
+
         using var conn = _pool.RentDisposable();
         using var cmd = conn.Value.CreateCommand();
         cmd.CommandText = _putStatements[value.Category];
@@ -155,6 +158,9 @@ public class SqliteDataStore : IDataStore, IDisposable
     /// <inheritdoc />
     public void Put<T>(IId id, T value) where T : Entity
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteDataStore));
+
         using var conn = _pool.RentDisposable();
         using var cmd = conn.Value.CreateCommand();
         cmd.CommandText = _putStatements[value.Category];
@@ -173,6 +179,9 @@ public class SqliteDataStore : IDataStore, IDisposable
     /// <inheritdoc />
     public T? Get<T>(IId id, bool canCache) where T : Entity
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteDataStore));
+
         if (canCache && _cache.TryGet(id, out var cached))
             return (T)cached;
 
@@ -199,6 +208,9 @@ public class SqliteDataStore : IDataStore, IDisposable
     /// <inheritdoc />
     public byte[]? GetRaw(IId id)
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteDataStore));
+
         using var conn = _pool.RentDisposable();
         using var cmd = conn.Value.CreateCommand();
         cmd.CommandText = _getStatements[id.Category];
@@ -211,6 +223,9 @@ public class SqliteDataStore : IDataStore, IDisposable
     /// <inheritdoc />
     public void PutRaw(IId id, ReadOnlySpan<byte> val)
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteDataStore));
+
         using var conn = _pool.RentDisposable();
         using var cmd = conn.Value.CreateCommand();
         cmd.CommandText = _putStatements[id.Category];
@@ -227,6 +242,9 @@ public class SqliteDataStore : IDataStore, IDisposable
     /// <inheritdoc />
     public void Delete(IId id)
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteDataStore));
+
         using var conn = _pool.RentDisposable();
         using var cmd = conn.Value.CreateCommand();
         cmd.CommandText = _deleteStatements[id.Category];
@@ -240,6 +258,9 @@ public class SqliteDataStore : IDataStore, IDisposable
     /// <inheritdoc />
     public async Task<long> PutRaw(IAsyncEnumerable<(IId Key, byte[] Value)> kvs, CancellationToken token = default)
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteDataStore));
+
         var iterator = kvs.GetAsyncEnumerator(token);
         var processed = 0;
         var totalLoaded = 0L;
@@ -288,6 +309,9 @@ public class SqliteDataStore : IDataStore, IDisposable
     /// <inheritdoc />
     public IEnumerable<T> GetByPrefix<T>(IId prefix) where T : Entity
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteDataStore));
+
         using var conn = _pool.RentDisposable();
         using var cmd = conn.Value.CreateCommand();
         cmd.CommandText = _prefixStatements[prefix.Category];
@@ -316,6 +340,9 @@ public class SqliteDataStore : IDataStore, IDisposable
     /// <inheritdoc />
     public IEnumerable<IId> AllIds(EntityCategory category)
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteDataStore));
+
         using var conn = _pool.RentDisposable();
         using var cmd = conn.Value.CreateCommand();
         cmd.CommandText = _allIdsStatements[category];
