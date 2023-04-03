@@ -19,12 +19,14 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection container)
     {
-        var prefix = KnownFolders.EntryFolder.CombineUnchecked("tempTestData").CombineUnchecked(Guid.NewGuid().ToString());
+        var prefix = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory)
+            .CombineUnchecked("tempTestData")
+            .CombineUnchecked(Guid.NewGuid().ToString());
 
         container.AddFileSystem().AddDataModel(new DataModelSettings(prefix))
                  .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                  .AddStandardGameLocators(false)
-                 .AddSingleton<TemporaryFileManager>(_ => new TemporaryFileManager(prefix.CombineUnchecked("tempFiles")))
+                 .AddSingleton<TemporaryFileManager>(_ => new TemporaryFileManager(FileSystem.Shared, prefix.CombineUnchecked("tempFiles")))
                  .AddFileExtractors(new FileExtractorSettings())
                  .AddStubbedGameLocators()
 

@@ -16,6 +16,7 @@ public class Startup
         services.AddStandardGameLocators(false)
                 .AddStubbedGameLocators()
                 .AddFileSystem()
+                .AddSingleton<TemporaryFileManager>()
                 .AddDataModel()
                 .AddFileExtractors(new FileExtractorSettings())
                 .AddCLI()
