@@ -18,7 +18,7 @@ using Xunit;
 
 namespace NexusMods.Games.FOMOD.Tests;
 
-public class FomodXmlInstallerTests : IDisposable
+public class FomodXmlInstallerTests
 {
     private TemporaryFileManager _tmpFileManager;
     private ICoreDelegates _coreDelegates;
@@ -33,8 +33,6 @@ public class FomodXmlInstallerTests : IDisposable
         _tmpFileManager = tmpFileManager;
         _coreDelegates = coreDelegates;
     }
-
-    public void Dispose() => _tmpFileManager.Dispose();
 
     [Fact]
     public async Task WillIgnoreIfMissingScript()
