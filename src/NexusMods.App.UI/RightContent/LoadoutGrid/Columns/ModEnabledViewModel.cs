@@ -21,7 +21,13 @@ public class ModEnabledViewModel : AViewModel<IModEnabledViewModel>, IModEnabled
     public bool Enabled { get; set; } = false;
 
     [Reactive]
+    public ModStatus Status { get; set; } = ModStatus.Installed;
+
+    [Reactive]
     public ICommand ToggleEnabledCommand { get; set; }
+
+    [Reactive]
+    public ICommand DeleteModCommand { get; set; }
 
     public ModEnabledViewModel(LoadoutRegistry loadoutRegistry, IDataStore store)
     {
@@ -30,11 +36,15 @@ public class ModEnabledViewModel : AViewModel<IModEnabledViewModel>, IModEnabled
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.Row)
-                .SelectMany(loadoutRegistry.Revisions)
-                .Select(id => store.Get<Mod>(id, true))
-                .WhereNotNull()
+                .SelectMany(loadoutRegistry.RevisionsAsMods)
                 .Select(mod => mod.Enabled)
                 .BindToUi(this, vm => vm.Enabled)
+                .DisposeWith(d);
+
+            this.WhenAnyValue(vm => vm.Row)
+                .SelectMany(loadoutRegistry.RevisionsAsMods)
+                .Select(mod => mod.Status)
+                .BindTo(this, vm => vm.Status)
                 .DisposeWith(d);
         });
         ToggleEnabledCommand = ReactiveCommand.Create(() =>
@@ -48,6 +58,11 @@ public class ModEnabledViewModel : AViewModel<IModEnabledViewModel>, IModEnabled
             loadoutRegistry.Alter(Row,
                 $"Setting {mod.Name} from {oldState} to {newState}",
                 mod => mod! with { Enabled = !mod?.Enabled ?? false });
+        });
+        DeleteModCommand = ReactiveCommand.Create(() =>
+        {
+            var mod = loadoutRegistry.Get(Row)!;
+            loadoutRegistry.Alter(Row, $"Deleting mod {mod.Name}", _ => null);
         });
     }
 

@@ -1,11 +1,13 @@
 ﻿<reactiveUi:ReactiveUserControl
     d:DesignHeight="30"
-    d:DesignWidth="120"
+    d:DesignWidth="50"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModEnabledView"
     x:TypeArguments="columns:IModEnabledViewModel"
     xmlns="https://github.com/avaloniaui"
+    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
     xmlns:columns="clr-namespace:NexusMods.App.UI.RightContent.LoadoutGrid.Columns"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
@@ -13,13 +15,22 @@
     <Design.DataContext>
         <columns:ModEnabledDesignViewModel />
     </Design.DataContext>
-    <ToggleSwitch ZIndex="2" x:Name="EnabledToggleSwitch">
-        <ToggleSwitch.OnContent>
-            <ContentControl />
-        </ToggleSwitch.OnContent>
-        <ToggleSwitch.OffContent>
-            <ContentControl />
-        </ToggleSwitch.OffContent>
-    </ToggleSwitch>
+    <Grid>
+        <ToggleSwitch HorizontalAlignment="Center" x:Name="EnabledToggleSwitch">
+            <ToggleSwitch.OnContent>
+                <ContentControl />
+            </ToggleSwitch.OnContent>
+            <ToggleSwitch.OffContent>
+                <ContentControl />
+            </ToggleSwitch.OffContent>
+        </ToggleSwitch>
+        <controls:ProgressRing HorizontalAlignment="Center" x:Name="InstallingProgressRing" />
+        <Button
+            Classes="Invisible"
+            HorizontalAlignment="Center"
+            x:Name="DeleteButton">
+            <avalonia:Icon Foreground="{DynamicResource BrandWhite}" Value="mdi-close" />
+        </Button>
+    </Grid>
 </reactiveUi:ReactiveUserControl>
 

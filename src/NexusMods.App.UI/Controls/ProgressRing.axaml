@@ -1,0 +1,38 @@
+﻿<UserControl
+    d:DesignHeight="24"
+    d:DesignWidth="24"
+    mc:Ignorable="d"
+    x:Class="NexusMods.App.UI.Controls.ProgressRing"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Styles>
+        <Style Selector="Arc">
+            <Style.Animations>
+                <Animation Duration="0:0:1" IterationCount="INFINITE">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="StartAngle" Value="0" />
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="StartAngle" Value="360" />
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+    </UserControl.Styles>
+    <Grid>
+        <Ellipse
+            Height="24"
+            Stroke="#3c3f44"
+            StrokeThickness="2.8"
+            Width="24" />
+        <Arc
+            Height="24"
+            Stroke="#D98F40"
+            StrokeThickness="2."
+            SweepAngle="135"
+            Width="24" />
+    </Grid>
+</UserControl>
+

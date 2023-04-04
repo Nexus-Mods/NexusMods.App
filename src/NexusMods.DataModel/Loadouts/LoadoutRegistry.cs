@@ -282,6 +282,13 @@ public class LoadoutRegistry : IDisposable
         return Revisions(cursor.LoadoutId, cursor.ModId);
     }
 
+    public IObservable<Mod> RevisionsAsMods(ModCursor cursor)
+    {
+        return Revisions(cursor)
+            .Select(id => _store.Get<Mod>(id, true))
+            .NotNull();
+    }
+
     public void Dispose()
     {
         _cache.Dispose();

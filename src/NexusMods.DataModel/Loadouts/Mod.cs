@@ -58,6 +58,11 @@ public record Mod : Entity, IHasEntityId<ModId>
     public ImmutableList<ISortRule<Mod, ModId>> SortRules { get; init; } = ImmutableList<ISortRule<Mod, ModId>>.Empty;
 
     /// <summary>
+    /// The install status of the mod.
+    /// </summary>
+    public ModStatus Status { get; init; } = ModStatus.Installed;
+
+    /// <summary>
     /// Date and time when the mod was installed.
     /// </summary>
     public DateTime Installed { get; set; } = DateTime.UtcNow;
