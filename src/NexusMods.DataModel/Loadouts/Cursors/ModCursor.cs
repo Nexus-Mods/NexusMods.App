@@ -26,7 +26,7 @@ public readonly record struct ModCursor(LoadoutId LoadoutId, ModId ModId) : IMes
     public static IMessage Read(ReadOnlySpan<byte> buffer)
     {
         var loadoutId = LoadoutId.From(buffer.SliceFast(0, 16));
-        var modId = Loadouts.ModId.From(new Guid(buffer.SliceFast(16, 16)));
+        var modId = ModId.From(new Guid(buffer.SliceFast(16, 16)));
         return new ModCursor(loadoutId, modId);
     }
 }

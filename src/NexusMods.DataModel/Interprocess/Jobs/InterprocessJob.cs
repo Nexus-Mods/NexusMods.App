@@ -75,7 +75,7 @@ public class InterprocessJob : IInterprocessJob
     {
         Span<byte> data = stackalloc byte[T.MaxSize];
         var used = payload.Write(data);
-        var payloadArray = data.SliceFast(used).ToArray();
+        var payloadArray = data.SliceFast(0, used).ToArray();
         return new InterprocessJob(jobType, manager, payloadArray, description);
     }
 

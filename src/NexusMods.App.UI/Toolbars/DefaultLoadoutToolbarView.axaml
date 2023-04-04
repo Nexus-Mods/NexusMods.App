@@ -31,15 +31,14 @@
             Grid.Column="1"
             Margin="0,0,24,0"
             x:Name="AddModButton">
-            <Grid ColumnDefinitions="Auto, Auto">
-                <avalonia:Icon Grid.Column="0" Value="mdi-plus-circle-outline" />
+            <StackPanel Orientation="Horizontal">
+                <avalonia:Icon Value="mdi-plus-circle-outline" />
                 <TextBlock
                     Foreground="{DynamicResource BrandWhite}"
-                    Grid.Column="1"
                     HorizontalAlignment="Right"
                     Text="Add Mod"
                     VerticalAlignment="Center" />
-            </Grid>
+            </StackPanel>
         </Button>
     </Grid>
 </reactiveUi:ReactiveUserControl>

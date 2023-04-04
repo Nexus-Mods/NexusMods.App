@@ -246,12 +246,11 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
                     var jobType = Enum.Parse<JobType>(reader.GetString(4));
                     var startTime =
                         DateTime.FromFileTimeUtc(reader.GetInt64(5));
-                    var size = reader.GetBytes(6, 0, null, 0, 0);
-                    var bytes = new byte[size];
-                    reader.GetBytes(6, 0, bytes, 0, bytes.Length);
+
+                    var bytes = reader.GetBlob(6);
 
                     var newJob = new InterprocessJob(jobId, this, jobType,
-                        processId, description, bytes, startTime, progress);
+                        processId, description, bytes.ToArray(), startTime, progress);
                     editable.AddOrUpdate(newJob);
                 }
 

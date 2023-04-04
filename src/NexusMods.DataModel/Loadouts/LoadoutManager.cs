@@ -113,6 +113,7 @@ public class LoadoutManager
         var mod = new Mod
         {
             Id = ModId.New(),
+            Status = ModStatus.Installing,
             Name = $"{installation.Game.Name} Files",
             Files = new EntityDictionary<ModFileId, AModFile>(Store),
             Version = installation.Version.ToString(),
@@ -139,9 +140,11 @@ public class LoadoutManager
                 };
             });
 
+        var cursor = new ModCursor(loadoutId, mod.Id);
+
         _logger.LogInformation("Loadout {Name} {Id} created", name, loadoutId);
 
-        var managementJob = new InterprocessJob(JobType.ManageGame, _jobManager, loadoutId,
+        var managementJob = InterprocessJob.Create(JobType.AddMod, _jobManager, cursor,
                 $"Analyzing game files for {installation.Game.Name}");
         var indexTask = Task.Run(() => IndexAndAddGameFiles(installation, token, loadout, mod, managementJob), token);
 
@@ -188,7 +191,13 @@ public class LoadoutManager
         gameFiles.AddRange(installation.Game.GetGameFiles(installation, Store));
 
         Registry.Alter(loadout.LoadoutId, mod.Id, "Add game files",
-            m => m! with { Files = m.Files.With(gameFiles, f => f.Id) });
+            m => m! with
+            {
+                Status = ModStatus.Installed,
+                Enabled = true,
+                Installed = DateTime.UtcNow,
+                Files = m.Files.With(gameFiles, f => f.Id)
+            });
 
     }
 
@@ -274,6 +283,7 @@ public class LoadoutManager
                 {
                     Name = name,
                     Status = ModStatus.Installed,
+                    Enabled = true,
                     Files = new EntityDictionary<ModFileId, AModFile>(Store,
                         contents.Select(c =>
                             new KeyValuePair<ModFileId, IId>(c.Id,
