@@ -62,7 +62,7 @@ public class FileContentsCache
         var found = _store.Get<AnalyzedFile>(new Id64(EntityCategory.FileAnalysis, (ulong)entry.Hash));
         if (found != null) return found;
 
-        var result = await AnalyzeFileInnerAsync(new NativeFileStreamFactory(path), token);
+        var result = await AnalyzeFileInnerAsync(new NativeFileStreamFactory(path), path.FileName, token);
         result.EnsurePersisted(_store);
         return result;
     }
@@ -91,12 +91,12 @@ public class FileContentsCache
         return _store.Get<AnalyzedFile>(new Id64(EntityCategory.FileAnalysis, (ulong)hash));
     }
 
-    private Task<AnalyzedFile> AnalyzeFileInnerAsync(IStreamFactory sFn, CancellationToken token = default)
+    private Task<AnalyzedFile> AnalyzeFileInnerAsync(IStreamFactory sFn, string fileName, CancellationToken token = default)
     {
-        return AnalyzeFileInnerAsync(sFn, token, 0, Hash.Zero, default);
+        return AnalyzeFileInnerAsync(sFn, token, 0, Hash.Zero, null, default, fileName);
     }
 
-    private async Task<AnalyzedFile> AnalyzeFileInnerAsync(IStreamFactory sFn, CancellationToken token, int level, Hash parent, RelativePath parentPath)
+    private async Task<AnalyzedFile> AnalyzeFileInnerAsync(IStreamFactory sFn, CancellationToken token, int level, Hash parent, TemporaryPath? parentArchivePath, RelativePath parentPath, string fileName)
     {
         Hash hash;
         List<FileType> sigs;
@@ -120,9 +120,9 @@ public class FileContentsCache
                 hash = await hashStream.XxHash64Async(token);
             }
 
-
             var found = _store.Get<Entity>(new Id64(EntityCategory.FileAnalysis, (ulong)hash));
-            if (found is AnalyzedFile af) return af;
+            if (found is AnalyzedFile af)
+                return af;
 
             hashStream.Position = 0;
             sigs = (await _sigs.MatchesAsync(hashStream)).ToList();
@@ -137,7 +137,13 @@ public class FileContentsCache
                     hashStream.Position = 0;
                     try
                     {
-                        await foreach (var data in analyzer.AnalyzeAsync(hashStream, token))
+                        await foreach (var data in analyzer.AnalyzeAsync(new FileAnalyzerInfo()
+                                       {
+                                           RelativePath = parentPath,
+                                           FileName = fileName,
+                                           ParentArchive = parentArchivePath,
+                                           Stream = hashStream
+                                       }, token))
                             analysisData.Add(data);
                     }
                     catch (Exception e)
@@ -147,7 +153,6 @@ public class FileContentsCache
                 }
             }
         }
-
 
         AnalyzedFile? file = null;
 
@@ -167,7 +172,6 @@ public class FileContentsCache
         if (parent != Hash.Zero)
             EnsureReverseIndex(hash, parent, parentPath);
 
-
         return file;
     }
 
@@ -176,7 +180,6 @@ public class FileContentsCache
     {
         try
         {
-            AnalyzedFile file;
             await using var tmpFolder = _manager.CreateFolder();
             List<KeyValuePair<RelativePath, IId>> children;
             {
@@ -186,9 +189,11 @@ public class FileContentsCache
                         {
                             // ReSharper disable once AccessToDisposedClosure
                             var relPath = entry.Path.RelativeTo(tmpFolder.Path);
+
+                            // ReSharper disable once AccessToDisposedClosure
                             var analysisRecord = await AnalyzeFileInnerAsync(
                                 new NativeFileStreamFactory(entry.Path), token,
-                                level + 1, hash, relPath);
+                                level + 1, hash, tmpFolder, relPath, relPath.FileName);
                             analysisRecord.WithPersist(_store);
                             return (entry.Path,
                                 Results: analysisRecord);
@@ -198,7 +203,8 @@ public class FileContentsCache
                     .SelectAsync(a => KeyValuePair.Create(a.Path.RelativeTo(tmpFolder.Path), a.Results.DataStoreId))
                     .ToListAsync();
             }
-            file = new AnalyzedArchive
+
+            var file = new AnalyzedArchive
             {
                 Hash = hash,
                 Size = sFn.Size,
@@ -206,6 +212,7 @@ public class FileContentsCache
                 AnalysisData = analysisData.ToImmutableList(),
                 Contents = new EntityDictionary<RelativePath, AnalyzedFile>(_store, children)
             };
+
             return file;
         }
         catch (Exception ex)

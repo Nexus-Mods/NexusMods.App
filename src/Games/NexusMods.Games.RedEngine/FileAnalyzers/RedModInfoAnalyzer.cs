@@ -4,25 +4,27 @@ using System.Text.Json.Serialization;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.FileExtractor.FileSignatures;
+using NexusMods.Paths;
 
 namespace NexusMods.Games.RedEngine.FileAnalyzers;
 
 public class RedModInfoAnalyzer : IFileAnalyzer
 {
     public IEnumerable<FileType> FileTypes => new[] { FileType.JSON };
-    public async IAsyncEnumerable<IFileAnalysisData> AnalyzeAsync(Stream stream, [EnumeratorCancellation] CancellationToken ct = default)
+    public async IAsyncEnumerable<IFileAnalysisData> AnalyzeAsync(FileAnalyzerInfo info, [EnumeratorCancellation] CancellationToken ct = default)
     {
-        InfoJson? info;
+        // TODO: We can probably check by fileName here before blindly deserializing - Sewer.
+        InfoJson? jsonInfo;
         try
         {
-            info = await JsonSerializer.DeserializeAsync<InfoJson>(stream, cancellationToken: ct);
+            jsonInfo = await JsonSerializer.DeserializeAsync<InfoJson>(info.Stream, cancellationToken: ct);
         }
         catch (JsonException)
         {
             yield break;
         }
-        if (info != null)
-            yield return new RedModInfo { Name = info.Name };
+        if (jsonInfo != null)
+            yield return new RedModInfo { Name = jsonInfo.Name };
     }
 }
 

@@ -25,11 +25,12 @@ public interface IModInstaller
     public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files);
 
     /// <summary>
-    /// Determines which files to deploy and pushes them out to FileSystem.
+    /// Determines which files are to be deployed and pushed out to game directory.
     /// </summary>
     /// <param name="installation">The game installation to push files out to.</param>
     /// <param name="srcArchiveHash">Hash of the source archive.</param>
     /// <param name="files">Files present in the archive.</param>
+    /// <param name="ct">Allows you to cancel the operation prematurely.</param>
     /// <returns>A list of files to deploy.</returns>
-    public IEnumerable<AModFile> Install(GameInstallation installation, Hash srcArchiveHash, EntityDictionary<RelativePath, AnalyzedFile> files);
+    public ValueTask<IEnumerable<AModFile>> GetFilesToExtractAsync(GameInstallation installation, Hash srcArchiveHash, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken ct = default);
 }
