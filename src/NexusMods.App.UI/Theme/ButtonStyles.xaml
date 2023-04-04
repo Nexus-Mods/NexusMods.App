@@ -253,27 +253,29 @@
 
     <Style Selector="Button.Toolbar">
         <Setter Property="Background" Value="{DynamicResource TransparentBrush}" />
+        <Setter Property="Padding" Value="6" />
+        <Setter Property="Height" Value="32" />
     </Style>
-
 
     <Style Selector="Button.Toolbar:pressed">
         <Setter Property="Background" Value="{DynamicResource BackgroundTertiaryBrush}" />
     </Style>
 
-    <Style Selector="Button.Toolbar /template/ ContentPresenter#PART_ContentPresenter icons|Icon">
+    <Style Selector="Button.Toolbar icons|Icon">
         <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
-        <Setter Property="Width" Value="16.67" />
-        <Setter Property="Height" Value="16.67" />
-        <Setter Property="Margin" Value="17.67, 0, 5.67, 0" />
+        <Setter Property="Width" Value="20" />
+        <Setter Property="Height" Value="20" />
     </Style>
 
-    <Style Selector="Button.Toolbar /template/ ContentPresenter#PART_ContentPresenter TextBlock">
+    <Style Selector="Button.Toolbar  TextBlock">
         <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontWeight" Value="400" />
-        <Setter Property="LineHeight" Value="20" />
+        <Setter Property="Margin" Value="24, 0, 0, 0" />
     </Style>
 
 </Styles>

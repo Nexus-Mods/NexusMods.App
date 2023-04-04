@@ -27,18 +27,14 @@
             x:Name="CaptionText" />
 
         <Button
-            Classes="Invisible"
+            Classes="Toolbar"
             Grid.Column="1"
             Margin="0,0,24,0"
             x:Name="AddModButton">
-            <StackPanel Orientation="Horizontal">
-                <avalonia:Icon Value="mdi-plus-circle-outline" />
-                <TextBlock
-                    Foreground="{DynamicResource BrandWhite}"
-                    HorizontalAlignment="Right"
-                    Text="Add Mod"
-                    VerticalAlignment="Center" />
-            </StackPanel>
+            <Grid>
+                <avalonia:Icon Grid.Column="0" Value="mdi-plus-circle-outline" />
+                <TextBlock Grid.Column="0" Text="Add Mod" />
+            </Grid>
         </Button>
     </Grid>
 </reactiveUi:ReactiveUserControl>
