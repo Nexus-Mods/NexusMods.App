@@ -3,7 +3,7 @@
     d:DesignWidth="992"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Toolbars.DefaultLoadoutToolbarView"
-    x:TypeArguments="toolbars:IDefaultLoadoutToolBarViewModel"
+    x:TypeArguments="toolbars:IDefaultLoadoutToolbarViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -11,6 +11,9 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:toolbars="clr-namespace:NexusMods.App.UI.Toolbars"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.DataContext>
+        <toolbars:DefaultLoadoutToolbarDesignViewModel />
+    </Design.DataContext>
     <Grid
         Background="{DynamicResource BackgroundSecondaryColor}"
         ColumnDefinitions="*, Auto"
@@ -19,10 +22,15 @@
         <TextBlock
             Classes="ToolbarCaptionMontserratSemi"
             Grid.Column="0"
-            Text="NEWSFEED"
-            VerticalAlignment="Center" />
+            Margin="24,0,0,0"
+            VerticalAlignment="Center"
+            x:Name="CaptionText" />
 
-        <Button Grid.Column="1">
+        <Button
+            Classes="Invisible"
+            Grid.Column="1"
+            Margin="0,0,24,0"
+            x:Name="AddModButton">
             <Grid ColumnDefinitions="Auto, Auto">
                 <avalonia:Icon Grid.Column="0" Value="mdi-plus-circle-outline" />
                 <TextBlock

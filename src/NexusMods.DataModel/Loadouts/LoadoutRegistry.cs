@@ -248,6 +248,18 @@ public class LoadoutRegistry : IDisposable
     }
 
     /// <summary>
+    /// Same as Revisions, but returns the loadouts instead of the ids.
+    /// </summary>
+    /// <param name="loadoutId"></param>
+    /// <returns></returns>
+    public IObservable<Loadout> RevisionsAsLoadouts(LoadoutId loadoutId)
+    {
+        return Revisions(loadoutId)
+            .Select(id => _store.Get<Loadout>(id, true)!)
+            .NotNull();
+    }
+
+    /// <summary>
     /// An observable of all the revisions of a given loadout and mod
     /// </summary>
     /// <param name="loadoutId"></param>

@@ -13,6 +13,7 @@
 
     <Style Selector="Button.Invisible:pressed">
         <Setter Property="Background" Value="Transparent" />
+        <Setter Property="RenderTransform" Value="scale(0.9)" />
     </Style>
 
     <!--  End invisible button  -->

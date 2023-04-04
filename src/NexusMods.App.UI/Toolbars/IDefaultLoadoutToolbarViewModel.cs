@@ -2,11 +2,11 @@
 
 namespace NexusMods.App.UI.Toolbars;
 
-public interface IDefaultLoadoutToolBarViewModel : ILoadoutToolbarViewModel
+public interface IDefaultLoadoutToolbarViewModel : ILoadoutToolbarViewModel
 {
     /// <summary>
     /// Starts the installation of a mod from the given path.
     /// </summary>
     /// <param name="path"></param>
-    public void StartManualModInstall(AbsolutePath path);
+    public Task StartManualModInstall(string path);
 }

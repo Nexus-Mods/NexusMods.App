@@ -223,7 +223,10 @@ public class LoadoutManager
             .FirstOrDefault();
 
         if (installer == default)
+        {
+            _logger.LogError("No Installer found for {Path}", path);
             throw new Exception($"No Installer found for {path}");
+        }
 
         var contents = installer.Installer.Install(loadout.Value.Installation, analyzed.Hash, archive.Contents)
             .WithPersist(Store);
