@@ -33,7 +33,7 @@ public partial class ModEnabledView : ReactiveUserControl<IModEnabledViewModel>
 
             void HandleToggleSwitchCheckedChanged(object? sender, RoutedEventArgs e)
             {
-                ViewModel!.ToggleEnabledCommand.Execute(null);
+                ViewModel!.ToggleEnabledCommand.Execute(EnabledToggleSwitch.IsChecked);
             }
 
             EnabledToggleSwitch.IsCheckedChanged +=

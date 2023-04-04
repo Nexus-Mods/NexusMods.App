@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using System.Reactive;
+using System.Windows.Input;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Loadouts;
@@ -21,11 +22,12 @@ public class ModEnabledDesignViewModel : AViewModel<IModEnabledViewModel>, IModE
 
     public ModEnabledDesignViewModel()
     {
-        ToggleEnabledCommand = ReactiveCommand.CreateFromTask(async () =>
+        ToggleEnabledCommand = ReactiveCommand.CreateFromTask<bool, Unit>(async state =>
         {
             // Bit of a delay to show simulate the roundtrip to the datastore
             await Task.Delay(2000);
-            Enabled = !Enabled;
+            Enabled = state;
+            return Unit.Default;
         });
 
         DeleteModCommand = ReactiveCommand.CreateFromTask(async () =>

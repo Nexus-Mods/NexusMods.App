@@ -1,4 +1,5 @@
-﻿using System.Reactive.Disposables;
+﻿using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using NexusMods.DataModel.Abstractions;
@@ -47,17 +48,22 @@ public class ModEnabledViewModel : AViewModel<IModEnabledViewModel>, IModEnabled
                 .BindTo(this, vm => vm.Status)
                 .DisposeWith(d);
         });
-        ToggleEnabledCommand = ReactiveCommand.Create(() =>
+        ToggleEnabledCommand = ReactiveCommand.Create<bool, Unit>(enabled =>
         {
             var mod = loadoutRegistry.Get(Row);
-            if (mod is null) return;
+            if (mod is null) return Unit.Default;
 
             var oldState = mod.Enabled ? "Enabled" : "Disabled";
             var newState = !mod.Enabled ? "Enabled" : "Disabled";
 
             loadoutRegistry.Alter(Row,
                 $"Setting {mod.Name} from {oldState} to {newState}",
-                mod => mod! with { Enabled = !mod?.Enabled ?? false });
+                mod =>
+                {
+                    if (mod?.Enabled == Enabled) return mod;
+                    return mod! with { Enabled = enabled };
+                });
+            return Unit.Default;
         });
         DeleteModCommand = ReactiveCommand.Create(() =>
         {
