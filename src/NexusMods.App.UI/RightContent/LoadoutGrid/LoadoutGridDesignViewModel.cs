@@ -88,13 +88,13 @@ public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>,
                 new DataGridColumnDesignFactory<IModInstalledViewModel,
                     ModCursor>(modId => new ModInstalledView
                 {
-                    ViewModel = new ModInstalledDesignViewModel { Row = modId }
+                    ViewModel = new ModInstalledDesignViewModel { Row = modId, Status = ModStatus.Failed}
                 }, ColumnType.Installed));
             x.AddOrUpdate(
                 new DataGridColumnDesignFactory<IModEnabledViewModel,
                     ModCursor>(modId => new ModEnabledView
                 {
-                    DataContext = new ModEnabledDesignViewModel { Row = modId }
+                    ViewModel = new ModEnabledDesignViewModel { Row = modId, Status = ModStatus.Installing}
                 }, ColumnType.Enabled));
         });
 
