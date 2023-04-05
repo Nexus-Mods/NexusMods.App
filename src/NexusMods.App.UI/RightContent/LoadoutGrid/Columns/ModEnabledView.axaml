@@ -1,0 +1,25 @@
+﻿<reactiveUi:ReactiveUserControl
+    d:DesignHeight="30"
+    d:DesignWidth="120"
+    mc:Ignorable="d"
+    x:Class="NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModEnabledView"
+    x:TypeArguments="columns:IModEnabledViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:columns="clr-namespace:NexusMods.App.UI.RightContent.LoadoutGrid.Columns"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.DataContext>
+        <columns:ModEnabledDesignViewModel />
+    </Design.DataContext>
+    <ToggleSwitch ZIndex="2" x:Name="EnabledToggleSwitch">
+        <ToggleSwitch.OnContent>
+            <ContentControl />
+        </ToggleSwitch.OnContent>
+        <ToggleSwitch.OffContent>
+            <ContentControl />
+        </ToggleSwitch.OffContent>
+    </ToggleSwitch>
+</reactiveUi:ReactiveUserControl>
+

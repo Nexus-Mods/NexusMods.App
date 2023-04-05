@@ -22,7 +22,9 @@ public class SignatureChecker
         HashSet<FileType> types1 = new(types);
         _signatures = Definitions.Signatures.Where(row => types1.Contains(row.Item1))
             .OrderByDescending(x => x.Item2.Length).ToArray();
-        _buffer = new byte[_signatures[0].Item2.Length];
+
+        _buffer = _signatures.Length > 0 ? new byte[_signatures[0].Item2.Length]
+                                         : Array.Empty<byte>();
     }
 
     /// <summary>
@@ -45,7 +47,7 @@ public class SignatureChecker
     }
 
     /// <summary>
-    /// Performs a lookup of the extension against the known extensions 
+    /// Performs a lookup of the extension against the known extensions
     /// </summary>
     /// <param name="extension">The file extension to validate.</param>
     /// <param name="fileType">The file type used.</param>

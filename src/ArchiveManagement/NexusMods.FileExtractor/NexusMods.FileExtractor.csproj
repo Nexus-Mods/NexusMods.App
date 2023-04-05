@@ -49,11 +49,11 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Update="FileSignatures\Signatures.cs">
-            <AutoGen>True</AutoGen>
-            <DesignTime>True</DesignTime>
-            <DependentUpon>Signatures.tt</DependentUpon>
-        </Compile>
+      <Compile Update="FileSignatures\Signatures.cs">
+        <AutoGen>True</AutoGen>
+        <DesignTime>True</DesignTime>
+        <DependentUpon>Signatures.tt</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <!-- Non-NuGet Only -->

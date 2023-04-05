@@ -7,6 +7,7 @@ using NexusMods.DataModel;
 using NexusMods.FileExtractor;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.DarkestDungeon;
+using NexusMods.Games.FOMOD;
 using NexusMods.Games.Generic;
 using NexusMods.Games.MountAndBlade2Bannerlord;
 using NexusMods.Games.RedEngine;
@@ -43,6 +44,7 @@ public static class Services
             .AddRedEngineGames()
             .AddGenericGameSupport()
             .AddReshade()
+            .AddFomod()
             .AddDarkestDungeon()
             .AddMountAndBladeBannerlord()
             .AddRenderers()

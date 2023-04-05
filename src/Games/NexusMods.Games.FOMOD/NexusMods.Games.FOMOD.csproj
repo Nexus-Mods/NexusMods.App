@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FomodInstaller.Interface" Version="1.1.0" />
+      <PackageReference Include="FomodInstaller.Scripting.XmlScript" Version="1.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="NexusMods.Games.FOMOD.Tests" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="Assets\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Assets" />
+    </ItemGroup>
+
+</Project>

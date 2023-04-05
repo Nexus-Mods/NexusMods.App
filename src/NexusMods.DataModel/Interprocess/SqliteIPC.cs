@@ -38,6 +38,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
 
     private SourceCache<IInterprocessJob, JobId> _jobs = new(x => x.JobId);
     private readonly ObjectPool<SqliteConnection> _pool;
+    private readonly ConnectionPoolPolicy _poolPolicy;
 
 
     /// <summary>
@@ -61,7 +62,8 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         _syncPath = storePath.AppendExtension(new Extension(".sync"));
         _syncArray = new SharedArray(_syncPath, 2);
 
-        _pool = ObjectPool.Create(new ConnectionPoolPolicy(connectionString));
+        _poolPolicy = new ConnectionPoolPolicy(connectionString);
+        _pool = ObjectPool.Create(_poolPolicy);
 
         EnsureTables();
 
@@ -316,6 +318,8 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         _shutdownToken.Cancel();
         _subject.Dispose();
         _syncArray.Dispose();
+        _poolPolicy.Dispose();
+        _jobs.Dispose();
         if (_pool is IDisposable disposable)
             disposable.Dispose();
     }

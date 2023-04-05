@@ -71,7 +71,12 @@ public class SimpleOverlayModInstaller : IModInstaller
         }
     }
 
-    public IEnumerable<AModFile> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
+    public ValueTask<IEnumerable<AModFile>> GetFilesToExtractAsync(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken ct = default)
+    {
+        return ValueTask.FromResult(GetFilesToExtractImpl(srcArchive, files));
+    }
+
+    private IEnumerable<AModFile> GetFilesToExtractImpl(Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
         var root = RootFolder(files).First();
         var filtered = files.Where(f => !Helpers.IgnoreExtensions.Contains(f.Key.Extension));

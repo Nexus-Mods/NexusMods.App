@@ -17,7 +17,6 @@ namespace NexusMods.Games.RedEngine.ModInstallers;
 /// </summary>
 public class FolderlessModInstaller : IModInstaller
 {
-
     public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
         if (!installation.Is<Cyberpunk2077>())
@@ -31,7 +30,12 @@ public class FolderlessModInstaller : IModInstaller
         return Common.Priority.None;
     }
 
-    public IEnumerable<AModFile> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
+    public ValueTask<IEnumerable<AModFile>> GetFilesToExtractAsync(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken ct)
+    {
+        return ValueTask.FromResult(GetFilesToExtractImpl(srcArchive, files));
+    }
+
+    private IEnumerable<AModFile> GetFilesToExtractImpl(Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
         foreach (var (path, file) in files)
         {

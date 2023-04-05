@@ -83,12 +83,12 @@ public class Spectre : IRenderer
                             ProgressTask newTask;
                             if (job is IJob<Paths.Size> sj)
                             {
-                                newTask = ctx.AddTask(job.Description, true, (ulong)sj.Size);
+                                newTask = ctx.AddTask(Sanitize(job.Description), true, (ulong)sj.Size);
                                 newTask.Increment((ulong)sj.Current);
                             }
                             else
                             {
-                                newTask = ctx.AddTask(job.Description, true, 1.0d);
+                                newTask = ctx.AddTask(Sanitize(job.Description), true, 1.0d);
                                 newTask.Increment((double)job.Progress);
                             }
                             tasks[(job.Resource, job.Id)] = newTask;
@@ -116,6 +116,11 @@ public class Spectre : IRenderer
         return await tcs.Task;
     }
 
+    private string Sanitize(string jobDescription)
+    {
+        return jobDescription.Replace("[", "[[").Replace("]", "]]");
+    }
+
     public async Task Render<T>(T o)
     {
         switch (o)
@@ -130,8 +135,10 @@ public class Spectre : IRenderer
 
     private Task RenderTable(NexusMods.CLI.DataOutputs.Table table)
     {
-
         var ot = new Table();
+        if (!string.IsNullOrEmpty(table.Title))
+            ot.Title = new TableTitle(table.Title);
+
         foreach (var column in table.Columns)
             ot.AddColumn(new TableColumn(new Text(column, new Style(foreground: NexusColor))));
 

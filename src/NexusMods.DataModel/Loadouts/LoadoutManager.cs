@@ -27,6 +27,16 @@ namespace NexusMods.DataModel.Loadouts;
 public class LoadoutManager
 {
     /// <summary>
+    /// Name of the root zip entry.
+    /// </summary>
+    public const string ZipRootName = "root";
+
+    /// <summary>
+    /// Name of the zip entry folder containing all entities.
+    /// </summary>
+    public const string ZipEntitiesName = "entities";
+
+    /// <summary>
     /// Provides access to a cache of file hashes for quick and easy access.
     /// This is used to speed up deployment [apply and ingest].
     /// </summary>
@@ -112,8 +122,10 @@ public class LoadoutManager
         var mod = new Mod
         {
             Id = ModId.New(),
-            Name = "Game Files",
+            Name = $"{installation.Game.Name} Files",
             Files = new EntityDictionary<ModFileId, AModFile>(Store),
+            Version = installation.Version.ToString(),
+            ModCategory = "Game Files",
             SortRules = ImmutableList<ISortRule<Mod, ModId>>.Empty.Add(new First<Mod, ModId>())
         }.WithPersist(Store);
 
@@ -223,7 +235,8 @@ public class LoadoutManager
         if (installer == default)
             throw new Exception($"No Installer found for {path}");
 
-        var contents = installer.Installer.Install(loadout.Value.Installation, analyzed.Hash, archive.Contents)
+        var cts = new CancellationTokenSource();
+        var contents = (await installer.Installer.GetFilesToExtractAsync(loadout.Value.Installation, analyzed.Hash, archive.Contents, cts.Token))
             .WithPersist(Store);
 
         name = string.IsNullOrWhiteSpace(name) ? path.FileName : name;
@@ -292,9 +305,6 @@ public class LoadoutManager
         });
     }
 
-    // TODO: These methods have hardcoded paths [below]; those should be replaced with shared constants.
-    // TODO: A path below in zip has explicit backslash; this goes against standard, might break with Linux archiving utils; check at some point.
-
     /// <summary>
     /// Exports the contents of this loadout to a given directory.
     /// Exported loadout is zipped up.
@@ -343,11 +353,11 @@ public class LoadoutManager
             var data = Store.GetRaw(entityId);
             if (data == null) continue;
 
-            await using var entry = zip.CreateEntry("entities\\" + entityId.TaggedSpanHex, CompressionLevel.Optimal).Open();
+            await using var entry = zip.CreateEntry($"{ZipEntitiesName}/" + entityId.TaggedSpanHex, CompressionLevel.Optimal).Open();
             await entry.WriteAsync(data, token);
         }
 
-        await using var rootEntry = zip.CreateEntry("root", CompressionLevel.Optimal).Open();
+        await using var rootEntry = zip.CreateEntry(ZipRootName, CompressionLevel.Optimal).Open();
         await rootEntry.WriteAsync(Encoding.UTF8.GetBytes(loadout.DataStoreId.TaggedSpanHex), token);
     }
 
@@ -369,7 +379,7 @@ public class LoadoutManager
         }
 
         using var zip = ZipFile.Open(path.ToString(), ZipArchiveMode.Read);
-        var entityFolder = "entities".ToRelativePath();
+        var entityFolder = ZipEntitiesName.ToRelativePath();
 
         var entries = zip.Entries.Where(p => p.FullName.ToRelativePath().InFolder(entityFolder))
             .SelectAsync(ProcessEntry);
@@ -377,7 +387,7 @@ public class LoadoutManager
         var loaded = await Store.PutRaw(entries, token);
         _logger.LogDebug("Loaded {Count} entities", loaded);
 
-        await using var root = zip.GetEntry("root")!.Open();
+        await using var root = zip.GetEntry(ZipRootName)!.Open();
         var rootId = IId.FromTaggedSpan(Convert.FromHexString(await root.ReadAllTextAsync(token)));
 
         var loadout = Store.Get<Loadout>(rootId);

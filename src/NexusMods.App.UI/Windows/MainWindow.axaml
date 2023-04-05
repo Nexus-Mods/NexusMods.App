@@ -1,7 +1,4 @@
 <reactiveUi:ReactiveWindow
-    ExtendClientAreaChromeHints="NoChrome"
-    ExtendClientAreaTitleBarHeightHint="0"
-    ExtendClientAreaToDecorationsHint="True"
     Icon="/Assets/nexus-logo.ico"
     Title="Nexus Mods App"
     d:DesignHeight="450"

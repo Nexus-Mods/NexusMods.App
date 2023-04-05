@@ -1,3 +1,4 @@
 ﻿Ini Configuration File, INI, .ini
 Text File, TXT, .txt
 JSON File, JSON, .json
+XML File, XML, .xml
