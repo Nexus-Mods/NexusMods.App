@@ -26,7 +26,7 @@ flowchart TD
 
 Game setup starts with SKSE doing DLL Injection into suspended process; calling Init, and unsuspending.
 
-In some cases behaviour of engine behaviour needs to be augmented ahead of SKSE loading. In those cases the `preloader` dll hijacking stub is used.
+In some cases behaviour of engine needs to be augmented ahead of SKSE loading. In those cases the `preloader` dll hijacking stub is used.
 
 For our purposes; no special functionality/integration is required here we can simply push files out to game directory; run `skse_loader64.exe` and call it a day.
 
