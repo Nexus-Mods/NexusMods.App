@@ -282,6 +282,13 @@ public class LoadoutRegistry : IDisposable
         return Revisions(cursor.LoadoutId, cursor.ModId);
     }
 
+    /// <summary>
+    /// Returns the current and future revisions for a mod pointed
+    /// to by the cursor. Same as Revisions, but returns the mods
+    /// instead of the ids.
+    /// </summary>
+    /// <param name="cursor"></param>
+    /// <returns></returns>
     public IObservable<Mod> RevisionsAsMods(ModCursor cursor)
     {
         return Revisions(cursor)
