@@ -1,13 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <!-- NuGet Package Shared Details -->
-  <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
-
   <PropertyGroup>
     <!-- Game mod is a end-level project,  -->
     <NoWarn>$(NoWarn);CS1591;</NoWarn>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
     <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />

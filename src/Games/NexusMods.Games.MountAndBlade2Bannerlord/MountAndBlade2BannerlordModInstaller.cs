@@ -39,16 +39,14 @@ internal sealed class MountAndBlade2BannerlordModInstaller : IModInstaller
             : Common.Priority.None;
     }
 
-    public IEnumerable<AModFile> Install(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
+    public ValueTask<IEnumerable<AModFile>> GetFilesToExtractAsync(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken ct = default)
     {
-        if (!installation.Is<MountAndBlade2Bannerlord>()) return Enumerable.Empty<AModFile>();
-
         var modFolder = files.Keys.First(m => m.FileName == SubModuleFile).Parent;
 
         var launcherManager = _launcherManagerFactory.Get(installation);
         var result = launcherManager.InstallModuleContent(files.Select(x => x.Key.ToString()).ToArray(), modFolder.ToString());
         var moduleInfos = result.Instructions.OfType<ModuleInfoInstallInstruction>().Select(x => x.ModuleInfo);
-        return result.Instructions.OfType<CopyInstallInstruction>().Select(instruction =>
+        return ValueTask.FromResult<IEnumerable<AModFile>>(result.Instructions.OfType<CopyInstallInstruction>().Select(instruction =>
         {
             var relativePath = instruction.Source.ToRelativePath();
             var file = files[relativePath];
@@ -67,6 +65,6 @@ internal sealed class MountAndBlade2BannerlordModInstaller : IModInstaller
                     },
                 }.ToImmutableHashSet()
             };
-        });
+        }));
     }
 }

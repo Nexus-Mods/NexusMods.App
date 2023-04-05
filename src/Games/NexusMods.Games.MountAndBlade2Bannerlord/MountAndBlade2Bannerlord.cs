@@ -2,7 +2,6 @@ using NexusMods.Common;
 using NexusMods.DataModel.Games;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Paths;
-using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
 

@@ -13,6 +13,5 @@ namespace NexusMods.DataModel.Games;
 /// </remarks>
 [ValueObject<string>]
 [Instance("Cyberpunk2077", "cyberpunk2077")]
-[Instance("MountAndBlade2Bannerlord", "mountandblade2bannerlord")]
 // ReSharper disable once PartialTypeWithSinglePart
 public partial struct GameDomain { }
