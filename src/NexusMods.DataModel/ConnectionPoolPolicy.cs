@@ -9,9 +9,11 @@ namespace NexusMods.DataModel;
 /// since the pool automatically disposes of the connection when it is no longer
 /// needed we don't need to do that here.
 /// </summary>
-public class ConnectionPoolPolicy : IPooledObjectPolicy<SqliteConnection>
+public class ConnectionPoolPolicy : IPooledObjectPolicy<SqliteConnection>, IDisposable
 {
     private readonly string _connectionString;
+
+    private List<SqliteConnection> _connections = new();
 
     /// <summary>
     /// Constructor that takes the connection string used when creating new connections
@@ -27,6 +29,7 @@ public class ConnectionPoolPolicy : IPooledObjectPolicy<SqliteConnection>
     {
         var conn = new SqliteConnection(_connectionString);
         conn.Open();
+        _connections.Add(conn);
         return conn;
     }
 
@@ -34,5 +37,17 @@ public class ConnectionPoolPolicy : IPooledObjectPolicy<SqliteConnection>
     public bool Return(SqliteConnection obj)
     {
         return true;
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        foreach (var conn in _connections)
+        {
+            conn.Close();
+            conn.Dispose();
+        }
+
+        SqliteConnection.ClearAllPools();
     }
 }

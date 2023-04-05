@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 using DynamicData;
 using NexusMods.DataModel.Abstractions.Ids;
@@ -134,6 +135,25 @@ public struct EntityDictionary<TK, TV> :
         return _coll.ContainsKey(val);
     }
 
+    /// <summary>
+    /// Gets the value associated with the specified key.
+    /// </summary>
+    /// <param name="val">The key whose value will be retrieved.</param>
+    /// <param name="value">When this method returns, contains the value associated with the specified key,
+    /// if the key is found; otherwise, contains the default value for the type of the value parameter.
+    /// This parameter is passed uninitialized.</param>
+    /// <returns>True if the object that implements the dictionary contains an element with the specified key; otherwise, false.</returns>
+    public bool TryGetValue(TK val, [MaybeNullWhen(false)] out TV value)
+    {
+        var containsKey = ContainsKey(val);
+        value = default;
+        if (!containsKey)
+            return false;
+
+        value = this[val];
+        return containsKey;
+    }
+
     /// <inheritdoc />
     public static EntityDictionary<TK, TV> Empty(IDataStore store) => new(store);
 
@@ -209,24 +229,6 @@ public struct EntityDictionary<TK, TV> :
     {
         foreach (var id in _coll.Values)
             yield return _store.Get<TV>(id)!;
-    }
-
-    /// <summary>
-    /// Tries to get a value from the dictionary.
-    /// </summary>
-    /// <param name="key"></param>
-    /// <param name="val"></param>
-    /// <returns></returns>
-    public bool TryGetValue(TK key, out TV? val)
-    {
-        if (_coll.TryGetValue(key, out var id))
-        {
-            val = _store.Get<TV>(id);
-            return true;
-        }
-
-        val = default;
-        return false;
     }
 
     /// <summary>
