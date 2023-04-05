@@ -34,11 +34,6 @@ public class App : Application
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-
-
-
-
-
             var reactiveWindow = _provider.GetRequiredService<MainWindow>();
             reactiveWindow.ViewModel = _provider.GetRequiredService<MainWindowViewModel>();
             desktop.MainWindow = reactiveWindow;
