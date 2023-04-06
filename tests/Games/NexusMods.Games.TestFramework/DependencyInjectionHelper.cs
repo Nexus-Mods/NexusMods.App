@@ -11,6 +11,9 @@ using NexusMods.Paths;
 
 namespace NexusMods.Games.TestFramework;
 
+/// <summary>
+/// Helper functions for dealing with dependency injection.
+/// </summary>
 public static class DependencyInjectionHelper
 {
     /// <summary>
@@ -45,5 +48,32 @@ public static class DependencyInjectionHelper
             .AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ => new Resource<IExtractor, Size>("File Extraction for tests"))
             .AddAllSingleton<IResource, IResource<FileHashCache, Size>>(_ => new Resource<FileHashCache, Size>("Hash Cache for tests"))
             .AddFileExtractors();
+    }
+
+    /// <summary>
+    /// Finds an implementation <typeparamref name="TImplementation"/> of
+    /// <typeparamref name="TInterface"/> inside the provided DI container.
+    /// </summary>
+    /// <param name="serviceProvider"></param>
+    /// <typeparam name="TImplementation"></typeparam>
+    /// <typeparam name="TInterface"></typeparam>
+    /// <returns></returns>
+    /// <exception cref="Exception">Thrown when the implementation hasn't been registered in the DI container.</exception>
+    public static TImplementation FindImplementationInContainer<TImplementation, TInterface>(this IServiceProvider serviceProvider)
+    {
+        var service = serviceProvider.GetService(typeof(TImplementation));
+        if (service is TImplementation implementation) return implementation;
+
+        var implementations = serviceProvider.GetServices(typeof(TInterface));
+        if (implementations is null)
+            throw new Exception($"{typeof(TImplementation)} is not registered in the DI container!");
+
+        var validImplementations = implementations.OfType<TImplementation>();
+        var validImplementation = validImplementations.FirstOrDefault();
+
+        if (validImplementation is null)
+            throw new Exception($"{typeof(TImplementation)} is not registered in the DI container!");
+
+        return validImplementation;
     }
 }
