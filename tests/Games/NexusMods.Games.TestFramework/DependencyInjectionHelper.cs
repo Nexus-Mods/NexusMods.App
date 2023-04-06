@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
@@ -14,6 +15,7 @@ namespace NexusMods.Games.TestFramework;
 /// <summary>
 /// Helper functions for dealing with dependency injection.
 /// </summary>
+[PublicAPI]
 public static class DependencyInjectionHelper
 {
     /// <summary>

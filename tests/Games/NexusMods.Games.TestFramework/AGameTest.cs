@@ -1,4 +1,6 @@
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Markers;
@@ -11,6 +13,7 @@ using ModId = NexusMods.Networking.NexusWebApi.Types.ModId;
 
 namespace NexusMods.Games.TestFramework;
 
+[PublicAPI]
 public abstract class AGameTest<TGame> where TGame : AGame
 {
     protected readonly IServiceProvider ServiceProvider;
@@ -19,6 +22,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
 
     protected readonly TemporaryFileManager TemporaryFileManager;
     protected readonly LoadoutManager LoadoutManager;
+    protected readonly IDataStore DataStore;
 
     protected readonly Client NexusClient;
     protected readonly IHttpDownloader HttpDownloader;
@@ -31,6 +35,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
 
         TemporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
         LoadoutManager = serviceProvider.GetRequiredService<LoadoutManager>();
+        DataStore = serviceProvider.GetRequiredService<IDataStore>();
 
         NexusClient = serviceProvider.GetRequiredService<Client>();
         HttpDownloader = serviceProvider.GetRequiredService<IHttpDownloader>();
