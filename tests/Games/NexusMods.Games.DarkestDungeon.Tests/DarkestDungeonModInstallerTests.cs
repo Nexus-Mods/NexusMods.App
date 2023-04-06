@@ -1,26 +1,48 @@
+using System.Text;
 using FluentAssertions;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.NexusWebApi.Types;
+using NexusMods.Paths;
 
 namespace NexusMods.Games.DarkestDungeon.Tests;
 
-[Trait("RequiresNetworking", "True")]
 public class DarkestDungeonModInstallerTests : AModInstallerTest<DarkestDungeon, DarkestDungeonModInstaller>
 {
     public DarkestDungeonModInstallerTests(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
     [Fact]
-    public async Task Test_ModInstaller()
+    [Trait("RequiresNetworking", "True")]
+    public async Task Test_WithRealMod()
     {
         // Marvin Seo's Lamia Class Mod: Lamia Main File (Version 1.03)
-        var (file, hash) = await DownloadModAsync(Game.Domain, ModId.From(501), FileId.From(2705));
+        var (file, hash) = await DownloadMod(Game.Domain, ModId.From(501), FileId.From(2705));
         hash.Should().Be(Hash.From(0x34C32E580205FC36));
 
         await using (file)
         {
             var filesToExtract = await GetFilesToExtractFromInstaller(file.Path);
             filesToExtract.Should().HaveCount(181);
+            filesToExtract.Should().AllSatisfy(x => x.To.Path.StartsWith("mods"));
+        }
+    }
+
+    [Fact]
+    public async Task Test_WithFakeMod()
+    {
+        var testFiles = new Dictionary<RelativePath, byte[]>();
+        testFiles["archive/modfiles.txt"] = Array.Empty<byte>();
+        testFiles["archive/foo"] = Array.Empty<byte>();
+        testFiles["archive/bar"] = Array.Empty<byte>();
+
+        var file = await CreateTestArchive(testFiles);
+        await using (file)
+        {
+            var filesToExtract = await GetFilesToExtractFromInstaller(file.Path);
+            filesToExtract.Should().HaveCount(3);
+            filesToExtract.Should().AllSatisfy(x => x.To.Path.StartsWith("mods"));
+            filesToExtract.Should().Contain(x => x.To.FileName == "foo");
+            filesToExtract.Should().Contain(x => x.To.FileName == "bar");
         }
     }
 }

@@ -1,5 +1,7 @@
+using System.IO.Compression;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
@@ -20,8 +22,10 @@ public abstract class AGameTest<TGame> where TGame : AGame
     protected readonly TGame Game;
     protected readonly GameInstallation GameInstallation;
 
+    protected readonly IFileSystem FileSystem;
     protected readonly TemporaryFileManager TemporaryFileManager;
     protected readonly LoadoutManager LoadoutManager;
+    protected readonly FileContentsCache FileContentsCache;
     protected readonly IDataStore DataStore;
 
     protected readonly Client NexusClient;
@@ -33,8 +37,10 @@ public abstract class AGameTest<TGame> where TGame : AGame
         Game = serviceProvider.FindImplementationInContainer<TGame, IGame>();
         GameInstallation = Game.Installations.First();
 
+        FileSystem = serviceProvider.GetRequiredService<IFileSystem>();
         TemporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
         LoadoutManager = serviceProvider.GetRequiredService<LoadoutManager>();
+        FileContentsCache = serviceProvider.GetRequiredService<FileContentsCache>();
         DataStore = serviceProvider.GetRequiredService<IDataStore>();
 
         NexusClient = serviceProvider.GetRequiredService<Client>();
@@ -58,7 +64,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// <param name="modId"></param>
     /// <param name="fileId"></param>
     /// <returns></returns>
-    protected async Task<(TemporaryPath file, Hash downloadHash)> DownloadModAsync(GameDomain gameDomain, ModId modId, FileId fileId)
+    protected async Task<(TemporaryPath file, Hash downloadHash)> DownloadMod(GameDomain gameDomain, ModId modId, FileId fileId)
     {
         var links = await NexusClient.DownloadLinks(gameDomain, modId, fileId);
         var file = TemporaryFileManager.CreateFile();
@@ -78,9 +84,30 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// <param name="path"></param>
     /// <param name="modName"></param>
     /// <returns></returns>
-    protected async Task<Mod> InstallModIntoLoadoutAsync(LoadoutMarker loadout, AbsolutePath path, string? modName = null)
+    protected async Task<Mod> InstallModIntoLoadout(LoadoutMarker loadout, AbsolutePath path, string? modName = null)
     {
         var modId = await loadout.InstallModAsync(path, modName ?? Guid.NewGuid().ToString("N"));
         return loadout.Value.Mods[modId];
+    }
+
+    protected async Task<TemporaryPath> CreateTestArchive(IDictionary<RelativePath, byte[]> filesToZip)
+    {
+        var file = TemporaryFileManager.CreateFile();
+
+        await using var stream = FileSystem.OpenFile(file.Path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
+        using (var zipArchive = new ZipArchive(stream, ZipArchiveMode.Create))
+        {
+            foreach (var kv in filesToZip)
+            {
+                var (path, contents) = kv;
+
+                var entry = zipArchive.CreateEntry(path.Path, CompressionLevel.Fastest);
+                await using var entryStream = entry.Open();
+                await using var ms = new MemoryStream(contents);
+                await ms.CopyToAsync(entryStream);
+            }
+        }
+
+        return file;
     }
 }

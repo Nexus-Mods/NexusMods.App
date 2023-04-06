@@ -19,7 +19,6 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
 {
     protected readonly TModInstaller ModInstaller;
 
-    protected readonly FileContentsCache FileContentsCache;
 
     /// <summary>
     /// Constructor.
@@ -27,8 +26,6 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     protected AModInstallerTest(IServiceProvider serviceProvider) : base(serviceProvider)
     {
         ModInstaller = serviceProvider.FindImplementationInContainer<TModInstaller, IModInstaller>();
-
-        FileContentsCache = serviceProvider.GetRequiredService<FileContentsCache>();
     }
 
     /// <summary>
@@ -52,7 +49,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
             analyzedFile.Hash,
             analyzedArchive.Contents);
 
-        return contents.ToArray();
+        return contents.WithPersist(DataStore).ToArray();
     }
 
     /// <summary>
