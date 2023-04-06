@@ -25,7 +25,8 @@ public partial class DefaultLoadoutToolbarView : ReactiveUserControl<IDefaultLoa
         });
     }
 
-    public async Task AddMod()
+
+    private async Task AddMod()
     {
         var provider = TopLevel.GetTopLevel(this)!.StorageProvider;
         var options =

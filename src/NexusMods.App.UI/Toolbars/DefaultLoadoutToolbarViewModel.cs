@@ -39,9 +39,10 @@ public class DefaultLoadoutToolbarViewModel : AViewModel<IDefaultLoadoutToolbarV
     }
 
 
+    /// <inheritdoc />
     public async Task StartManualModInstall(string path)
     {
-        var file = AbsolutePath.FromFullPath(path, _fileSystem);
+        var file = _fileSystem.FromFullPath(path);
         if (!_fileSystem.FileExists(file))
         {
             _logger.LogError("File {File} does not exist, not installing mod",

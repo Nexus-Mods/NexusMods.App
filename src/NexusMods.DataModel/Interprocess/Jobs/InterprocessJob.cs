@@ -73,10 +73,21 @@ public class InterprocessJob : IInterprocessJob
     public static InterprocessJob Create<T>(JobType jobType, IInterprocessJobManager manager, T payload, string description)
         where T : IMessage
     {
-        Span<byte> data = stackalloc byte[T.MaxSize];
-        var used = payload.Write(data);
-        var payloadArray = data.SliceFast(0, used).ToArray();
-        return new InterprocessJob(jobType, manager, payloadArray, description);
+        if (T.MaxSize <= 512)
+        {
+            Span<byte> data = stackalloc byte[T.MaxSize];
+            var used = payload.Write(data);
+            var payloadArray = data.SliceFast(0, used).ToArray();
+            return new InterprocessJob(jobType, manager, payloadArray,
+                description);
+        }
+        else
+        {
+            var payloadArray = new byte[T.MaxSize];
+            var used = payload.Write(payloadArray);
+            return new InterprocessJob(jobType, manager, payloadArray.AsSpan().SliceFast(0, used).ToArray(),
+                description);
+        }
     }
 
     /// <summary>
