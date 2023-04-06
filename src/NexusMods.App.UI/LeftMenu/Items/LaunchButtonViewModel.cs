@@ -5,10 +5,12 @@ using System.Windows.Input;
 using DynamicData;
 using DynamicData.Aggregation;
 using NexusMods.App.UI.Extensions;
+using NexusMods.CLI.Verbs;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Interprocess.Jobs;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.Cursors;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -33,12 +35,11 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
                 .Filter(gameFilter);
 
             var validJobs = manager.Jobs
-                .Filter(job => job.JobType == JobType.ManageGame);
+                .Select(v => v)
+                .Filter(job => job.JobType == JobType.AddMod);
 
-            var joined = loadOuts.LeftJoin(validJobs, job => job.LoadoutId,
-                (loadout, job) => (loadout, RunningJob : job.HasValue ));
-
-            var canExecute = joined
+            var canExecute = loadOuts.LeftJoin(validJobs, job => job.PayloadAsIMessage<ModCursor>().LoadoutId,
+                (loadout, job) => (loadout, RunningJob : job.HasValue ))
                 .Filter(row => !row.RunningJob)
                 .IsNotEmpty()
                 .OnUI();

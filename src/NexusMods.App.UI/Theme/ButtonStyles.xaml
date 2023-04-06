@@ -13,6 +13,7 @@
 
     <Style Selector="Button.Invisible:pressed">
         <Setter Property="Background" Value="Transparent" />
+        <Setter Property="RenderTransform" Value="scale(0.9)" />
     </Style>
 
     <!--  End invisible button  -->
@@ -248,6 +249,35 @@
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="Margin" Value="13.5, 13.25, 9.5, 13.25" />
+    </Style>
+
+    <Style Selector="Button.Toolbar">
+        <Setter Property="Background" Value="{DynamicResource TransparentBrush}" />
+        <Setter Property="Height" Value="32" />
+        <Setter Property="Padding" Value="0" />
+    </Style>
+
+    <Style Selector="Button.Toolbar:pressed">
+        <Setter Property="Background" Value="{DynamicResource BackgroundTertiaryBrush}" />
+    </Style>
+
+    <Style Selector="Button.Toolbar StackPanel">
+        <Setter Property="Orientation" Value="Horizontal" />
+        <Setter Property="Spacing" Value="4" />
+        <Setter Property="Margin" Value="6" />
+    </Style>
+
+    <Style Selector="Button.Toolbar icons|Icon">
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+        <Setter Property="Width" Value="20" />
+        <Setter Property="Height" Value="20" />
+    </Style>
+
+    <Style Selector="Button.Toolbar TextBlock">
+        <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="400" />
+        <Setter Property="Margin" Value="0" />
     </Style>
 
 </Styles>

@@ -11,4 +11,9 @@ public enum JobType
     /// The app is currently trying to log into the Nexus
     /// </summary>
     NexusLogin,
+
+    /// <summary>
+    /// The app is currently adding a mod to the loadout.
+    /// </summary>
+    AddMod,
 }

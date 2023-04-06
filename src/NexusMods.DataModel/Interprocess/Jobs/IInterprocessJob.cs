@@ -50,4 +50,15 @@ public interface IInterprocessJob : INotifyPropertyChanged, IDisposable
     /// Returns the payload as a <see cref="ILoadoutId"/>. This is only valid if the payload
     /// </summary>
     LoadoutId LoadoutId { get; }
+
+    /// <summary>
+    /// Returns the payload as a <see cref="IMessage"/>. This is only valid if the payload is a <see cref="IMessage"/>
+    /// of the specified type.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public T PayloadAsIMessage<T>() where T : IMessage, new()
+    {
+        return (T)T.Read(Data);
+    }
 }

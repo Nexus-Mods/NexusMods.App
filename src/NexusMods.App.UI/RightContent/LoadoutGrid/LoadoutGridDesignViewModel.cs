@@ -3,6 +3,7 @@ using System.Reactive.Disposables;
 using Avalonia.Controls;
 using DynamicData;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
+using NexusMods.App.UI.Toolbars;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Loadouts;
@@ -19,6 +20,8 @@ public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>,
     private ReadOnlyObservableCollection<ModCursor> _filteredMods =
         new(new ObservableCollection<ModCursor>());
 
+    public ILoadoutToolbarViewModel Toolbar =>
+        new DefaultLoadoutToolbarDesignViewModel();
     public ReadOnlyObservableCollection<ModCursor> Mods => _filteredMods;
     public LoadoutId Loadout { get; set; } = Initializers.LoadoutId;
 
@@ -85,13 +88,13 @@ public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>,
                 new DataGridColumnDesignFactory<IModInstalledViewModel,
                     ModCursor>(modId => new ModInstalledView
                 {
-                    ViewModel = new ModInstalledDesignViewModel { Row = modId }
+                    ViewModel = new ModInstalledDesignViewModel { Row = modId, Status = ModStatus.Failed}
                 }, ColumnType.Installed));
             x.AddOrUpdate(
                 new DataGridColumnDesignFactory<IModEnabledViewModel,
                     ModCursor>(modId => new ModEnabledView
                 {
-                    DataContext = new ModEnabledDesignViewModel { Row = modId }
+                    ViewModel = new ModEnabledDesignViewModel { Row = modId, Status = ModStatus.Installing}
                 }, ColumnType.Enabled));
         });
 
