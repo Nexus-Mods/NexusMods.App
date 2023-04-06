@@ -17,6 +17,7 @@ public class Startup
                 .AddApp(addStandardGameLocators: false)
                 .AddSingleton<AvaloniaApp>()
                 .AddSingleton<AppHelper>()
+                .AddTransient<HostWindowViewModel>()
                 .Validate();
     }
 

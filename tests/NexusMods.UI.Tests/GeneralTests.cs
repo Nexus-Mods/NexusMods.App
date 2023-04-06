@@ -2,6 +2,7 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
 using Microsoft.Extensions.Hosting.Internal;
+using NexusMods.App.UI.Controls.Spine;
 
 namespace NexusMods.UI.Tests;
 
@@ -15,9 +16,12 @@ public class GeneralTests
     }
 
     [Fact]
-    public void CanOpenTheMainAppWindow()
+    public async Task CanOpenTheMainAppWindow()
     {
-        Thread.Sleep(1);
+        await using var host = await _helper.MakeHost<Spine, ISpineViewModel>();
+
+
+        var window = host.Window;
 
 
 

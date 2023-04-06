@@ -23,9 +23,11 @@ public class AppHelper : IDisposable
 {
     private readonly AppBuilder _app;
     private bool _disposed;
+    private readonly IServiceProvider _serviceProvider;
 
     public AppHelper(IServiceProvider serviceProvider)
     {
+        _serviceProvider = serviceProvider;
         var tcs = new TaskCompletionSource<SynchronizationContext>();
         var thread = new Thread(() =>
         {
@@ -74,6 +76,27 @@ public class AppHelper : IDisposable
 
     public void Dispose()
     {
-        Dispatcher.UIThread.Post(() => { ApplicationLifetime!.MainWindow!.Close();});
+        ApplicationLifetime!.Shutdown();
+    }
+
+    public async Task<HostedControl<TView, TVm>> MakeHost<TView, TVm>()
+        where TView : IViewFor<TVm> where TVm : class, IViewModelInterface
+    {
+        return await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            var vm = _serviceProvider
+                .GetRequiredService<HostWindowViewModel>();
+            vm.Content = _serviceProvider.GetRequiredService<TVm>();
+            var window = new HostWindow
+            {
+                ViewModel = vm
+            };
+            window.Show();
+            return new HostedControl<TView, TVm>()
+            {
+                ViewModel = (TVm)vm.Content,
+                Window = window
+            };
+        });
     }
 }
