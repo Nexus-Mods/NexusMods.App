@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using System.Text;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.DataModel;
@@ -90,6 +91,12 @@ public abstract class AGameTest<TGame> where TGame : AGame
         return loadout.Value.Mods[modId];
     }
 
+    /// <summary>
+    /// Creates a ZIP archive using <see cref="ZipArchive"/> and returns the
+    /// <see cref="TemporaryPath"/> to it.
+    /// </summary>
+    /// <param name="filesToZip"></param>
+    /// <returns></returns>
     protected async Task<TemporaryPath> CreateTestArchive(IDictionary<RelativePath, byte[]> filesToZip)
     {
         var file = TemporaryFileManager.CreateFile();
@@ -110,4 +117,14 @@ public abstract class AGameTest<TGame> where TGame : AGame
 
         return file;
     }
+
+    protected async Task<TemporaryPath> CreateTestFile(byte[] contents, Extension? extension)
+    {
+        var file = TemporaryFileManager.CreateFile(extension);
+        await FileSystem.WriteAllBytesAsync(file.Path, contents);
+        return file;
+    }
+
+    protected Task<TemporaryPath> CreateTestFile(string contents, Extension? extension, Encoding? encoding = null)
+        => CreateTestFile((encoding ?? Encoding.UTF8).GetBytes(contents), extension);
 }

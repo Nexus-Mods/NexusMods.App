@@ -19,7 +19,6 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
 {
     protected readonly TModInstaller ModInstaller;
 
-
     /// <summary>
     /// Constructor.
     /// </summary>
