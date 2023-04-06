@@ -7,5 +7,5 @@ namespace NexusMods.FileExtractor;
 /// </summary>
 internal class TemporaryFileManagerEx : TemporaryFileManager
 {
-    public TemporaryFileManagerEx(IFileExtractorSettings settings) : base(AbsolutePath.FromFullPath(settings.TempFolderLocation)) { }
+    public TemporaryFileManagerEx(IFileExtractorSettings settings) : base(FileSystem.Shared.FromFullPath(settings.TempFolderLocation)) { }
 }

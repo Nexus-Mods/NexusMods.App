@@ -6,7 +6,7 @@ using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.DependencyInjection;
 using Xunit.DependencyInjection.Logging;
 
-namespace NexusMods.Games.RedEngine.Tests;
+namespace NexusMods.Games.DarkestDungeon.Tests;
 
 public class Startup
 {
@@ -14,12 +14,12 @@ public class Startup
     {
         container
             .AddDefaultServicesForTesting()
-            .AddUniversalGameLocator<Cyberpunk2077>(new Version("1.61"))
-            .AddRedEngineGames()
+            .AddUniversalGameLocator<DarkestDungeon>(new Version())
+            .AddDarkestDungeon()
             .Validate();
     }
 
+    // ReSharper disable once UnusedMember.Global
     public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>
-        loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(accessor, delegate { return true; }));
+        loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(accessor, delegate { return true;}));
 }
-

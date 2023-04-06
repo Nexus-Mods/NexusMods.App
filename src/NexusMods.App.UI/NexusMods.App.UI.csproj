@@ -144,6 +144,12 @@
     <Compile Update="RightContent\LoadoutGrid\Columns\ModCategoryViewModel.cs">
       <DependentUpon>IModCategoryViewModel.cs</DependentUpon>
     </Compile>
+    <Compile Update="Toolbars\DefaultLoadoutToolbarDesignViewModel.cs">
+      <DependentUpon>IDefaultLoadoutToolbarViewModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Toolbars\DefaultLoadoutToolbarViewModel.cs">
+      <DependentUpon>IDefaultLoadoutToolbarViewModel.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

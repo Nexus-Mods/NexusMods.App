@@ -1,10 +1,13 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
+using System.Dynamic;
 using System.Text;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Interprocess.Messages;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.Cursors;
 using NexusMods.DataModel.RateLimiting;
+using NexusMods.Paths.Extensions;
 
 namespace NexusMods.DataModel.Interprocess.Jobs;
 
@@ -56,6 +59,35 @@ public class InterprocessJob : IInterprocessJob
     public InterprocessJob(JobType jobType, IInterprocessJobManager manager, LoadoutId payload, string description) :
         this(jobType, manager, payload.ToArray(), description)
     {
+    }
+
+    /// <summary>
+    /// Create a new job, where the payload is a IMessage
+    /// </summary>
+    /// <param name="jobType"></param>
+    /// <param name="manager"></param>
+    /// <param name="payload"></param>
+    /// <param name="description"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public static InterprocessJob Create<T>(JobType jobType, IInterprocessJobManager manager, T payload, string description)
+        where T : IMessage
+    {
+        if (T.MaxSize <= 512)
+        {
+            Span<byte> data = stackalloc byte[T.MaxSize];
+            var used = payload.Write(data);
+            var payloadArray = data.SliceFast(0, used).ToArray();
+            return new InterprocessJob(jobType, manager, payloadArray,
+                description);
+        }
+        else
+        {
+            var payloadArray = new byte[T.MaxSize];
+            var used = payload.Write(payloadArray);
+            return new InterprocessJob(jobType, manager, payloadArray.AsSpan().SliceFast(0, used).ToArray(),
+                description);
+        }
     }
 
     /// <summary>
@@ -131,6 +163,12 @@ public class InterprocessJob : IInterprocessJob
 
     /// <inheritdoc />
     public LoadoutId LoadoutId => LoadoutId.From(Data);
+
+    /// <inheritdoc />
+    public T PayloadAsIMessage<T>() where T : IMessage, new()
+    {
+        return (T)T.Read(Data);
+    }
 
     public void Dispose()
     {

@@ -248,6 +248,18 @@ public class LoadoutRegistry : IDisposable
     }
 
     /// <summary>
+    /// Same as Revisions, but returns the loadouts instead of the ids.
+    /// </summary>
+    /// <param name="loadoutId"></param>
+    /// <returns></returns>
+    public IObservable<Loadout> RevisionsAsLoadouts(LoadoutId loadoutId)
+    {
+        return Revisions(loadoutId)
+            .Select(id => _store.Get<Loadout>(id, true)!)
+            .NotNull();
+    }
+
+    /// <summary>
     /// An observable of all the revisions of a given loadout and mod
     /// </summary>
     /// <param name="loadoutId"></param>
@@ -268,6 +280,20 @@ public class LoadoutRegistry : IDisposable
     public IObservable<IId> Revisions(ModCursor cursor)
     {
         return Revisions(cursor.LoadoutId, cursor.ModId);
+    }
+
+    /// <summary>
+    /// Returns the current and future revisions for a mod pointed
+    /// to by the cursor. Same as Revisions, but returns the mods
+    /// instead of the ids.
+    /// </summary>
+    /// <param name="cursor"></param>
+    /// <returns></returns>
+    public IObservable<Mod> RevisionsAsMods(ModCursor cursor)
+    {
+        return Revisions(cursor)
+            .Select(id => _store.Get<Mod>(id, true))
+            .NotNull();
     }
 
     public void Dispose()

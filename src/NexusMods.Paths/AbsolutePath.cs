@@ -61,27 +61,10 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         _fileSystem = fileSystem ?? FileSystem.Shared;
     }
 
-    /// <summary>
-    /// Create a new <see cref="AbsolutePath"/> from a directory path and a
-    /// file name.
-    /// </summary>
-    /// <param name="directoryPath"></param>
-    /// <param name="fileName"></param>
-    /// <param name="fileSystem"></param>
-    /// <returns></returns>
-    public static AbsolutePath FromDirectoryAndFileName(string directoryPath, string fileName, IFileSystem? fileSystem = null)
+    internal static AbsolutePath FromDirectoryAndFileName(string directoryPath, string fileName, IFileSystem? fileSystem = null)
         => new(directoryPath, fileName, fileSystem);
 
-    /// <summary>
-    /// Create a new <see cref="AbsolutePath"/> from an existing full path.
-    /// </summary>
-    /// <param name="fullPath"></param>
-    /// <param name="fileSystem"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentException">
-    /// The given <paramref name="fullPath"/> is not rooted.
-    /// </exception>
-    public static AbsolutePath FromFullPath(string fullPath, IFileSystem? fileSystem = null)
+    internal static AbsolutePath FromFullPath(string fullPath, IFileSystem? fileSystem = null)
     {
         var span = fullPath.AsSpan();
 

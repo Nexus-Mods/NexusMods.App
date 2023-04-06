@@ -236,9 +236,9 @@ public struct EntityDictionary<TK, TV> :
     /// </summary>
     /// <param name="modId"></param>
     /// <returns></returns>
-    public IId GetValueId(TK modId)
+    public IId? GetValueId(TK modId)
     {
-        return _coll[modId];
+        return _coll.TryGetValue(modId, out var value) ? value : null;
     }
 
     public IChangeSet<IId,TK> Diff(EntityDictionary<TK,TV> old)
