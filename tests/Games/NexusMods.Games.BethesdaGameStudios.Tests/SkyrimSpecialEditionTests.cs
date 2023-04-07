@@ -1,36 +1,27 @@
 using System.Text;
 using FluentAssertions;
-using NexusMods.DataModel.Loadouts;
+using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Games.BethesdaGameStudios.Tests;
 
-public class SkyrimSpecialEditionTests
+public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
 {
-    private readonly SkyrimSpecialEdition _game;
-    private readonly LoadoutManager _manager;
-
-    public SkyrimSpecialEditionTests(SkyrimSpecialEdition game,
-        LoadoutManager manager)
-    {
-        _game = game;
-        _manager = manager;
-    }
+    public SkyrimSpecialEditionTests(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
     [Fact]
     public void CanFindGames()
     {
-        _game.Name.Should().Be("Skyrim Special Edition");
-        _game.Domain.Should().Be(SkyrimSpecialEdition.StaticDomain);
-        _game.Installations.Count().Should().BeGreaterThan(0);
+        Game.Name.Should().Be("Skyrim Special Edition");
+        Game.Domain.Should().Be(SkyrimSpecialEdition.StaticDomain);
+        Game.Installations.Count().Should().BeGreaterThan(0);
     }
 
     [Fact]
     public async Task CanLoadLoadout()
     {
-        var loadout = await _manager.ImportFromAsync(KnownFolders.EntryFolder.CombineUnchecked(@"Resources\skyrim_1.6.659.0.zip"));
+        var loadout = await LoadoutManager.ImportFromAsync(FileSystem.GetKnownPath(KnownPath.EntryDirectory).CombineUnchecked(@"Resources\skyrim_1.6.659.0.zip"));
         loadout.Value.Mods.Values.Select(m => m.Name).Should().Contain("Game Files");
         var gameFiles = loadout.Value.Mods.Values.First(m => m.Name == "Game Files");
         gameFiles.Files.Count.Should().BeGreaterThan(0);
@@ -44,7 +35,7 @@ public class SkyrimSpecialEditionTests
     [Fact]
     public async Task CanGeneratePluginsFile()
     {
-        var loadout = await _manager.ImportFromAsync(KnownFolders.EntryFolder.CombineUnchecked(@"Resources\skyrim_1.6.659.0.zip"));
+        var loadout = await LoadoutManager.ImportFromAsync(FileSystem.GetKnownPath(KnownPath.EntryDirectory).CombineUnchecked(@"Resources\skyrim_1.6.659.0.zip"));
         loadout.Value.Mods.Values.Select(m => m.Name).Should().Contain("Game Files");
         var gameFiles = loadout.Value.Mods.Values.First(m => m.Name == "Game Files");
         gameFiles.Files.Count.Should().BeGreaterThan(0);
