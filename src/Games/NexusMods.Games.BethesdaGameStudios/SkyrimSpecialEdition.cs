@@ -12,6 +12,8 @@ namespace NexusMods.Games.BethesdaGameStudios;
 
 public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame
 {
+    private readonly IFileSystem _fileSystem;
+
     // ReSharper disable InconsistentNaming
     public static Extension ESL = new(".esl");
     public static Extension ESM = new(".esm");
@@ -25,8 +27,9 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame
     public override GamePath PrimaryFile => new(GameFolderType.Game, "SkyrimSE.exe");
 
 
-    public SkyrimSpecialEdition(IEnumerable<IGameLocator> gameLocators) : base(gameLocators)
+    public SkyrimSpecialEdition(IEnumerable<IGameLocator> gameLocators, IFileSystem fileSystem) : base(gameLocators)
     {
+        _fileSystem = fileSystem;
     }
 
     protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(IGameLocator locator, GameLocatorResult installation)
@@ -34,8 +37,8 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame
         yield return new(GameFolderType.Game, installation.Path);
         var appData = locator switch
         {
-            GogLocator => KnownFolders.MyGames.CombineUnchecked("Skyrim Special Edition GOG"),
-            _ => KnownFolders.MyGames.CombineUnchecked("Skyrim Special Edition"),
+            GogLocator => _fileSystem.GetKnownPath(KnownPath.MyGamesDirectory).CombineUnchecked("Skyrim Special Edition GOG"),
+            _ => _fileSystem.GetKnownPath(KnownPath.MyGamesDirectory).CombineUnchecked("Skyrim Special Edition"),
         };
         yield return new(GameFolderType.AppData, appData);
     }
