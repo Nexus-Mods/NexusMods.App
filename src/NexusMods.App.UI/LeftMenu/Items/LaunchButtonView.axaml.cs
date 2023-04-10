@@ -14,7 +14,8 @@ public partial class LaunchButtonView : ReactiveUserControl<ILaunchButtonViewMod
         InitializeComponent();
         this.WhenActivated(d =>
         {
-            this.BindCommand(ViewModel, vm => vm.Command, v => v.LaunchButton)
+            this.WhenAnyValue(view => view.ViewModel!.Command)
+                .BindToUi(this, view => view.LaunchButton.Command)
                 .DisposeWith(d);
 
             this.Bind(ViewModel, vm => vm.Label, v => v.LaunchText.Text)
@@ -25,7 +26,7 @@ public partial class LaunchButtonView : ReactiveUserControl<ILaunchButtonViewMod
                 .Select(canExecute =>
                     canExecute ? IconType.Play : IconType.HourglassEmpty)
                 .Select(icon => icon.ToMaterialUiName())
-                .BindTo(this, view => view.LaunchIcon.Value)
+                .BindToUi(this, view => view.LaunchIcon.Value)
                 .DisposeWith(d);
         });
     }

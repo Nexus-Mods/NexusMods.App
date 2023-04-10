@@ -1,12 +1,18 @@
 ﻿using System.Reactive;
 using NexusMods.DataModel.Games;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.LeftMenu.Items;
 
 public class LaunchButtonDesignViewModel : AViewModel<ILaunchButtonViewModel>, ILaunchButtonViewModel
 {
+    [Reactive]
     public IGame Game { get; set; } = GameInstallation.Empty.Game;
-    public ReactiveCommand<Unit, Unit> Command { get; } = Initializers.ReactiveCommandUnitUnit;
-    public string Label { get; } = "Launch";
+    
+    [Reactive]
+    public ReactiveCommand<Unit, Unit> Command { get; set; } = Initializers.ReactiveCommandUnitUnit;
+    
+    [Reactive]
+    public string Label { get; set; } = "Launch";
 }

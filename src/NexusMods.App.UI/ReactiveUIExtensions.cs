@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Windows.Input;
 using ReactiveUI;
 
 namespace NexusMods.App.UI;
@@ -37,5 +38,6 @@ public static class ReactiveUiExtensions
         IBindingTypeConverter? vmToViewConverterOverride = null)
         where TTarget : class =>
         @this.OnUI().BindTo(target, property, conversionHint, vmToViewConverterOverride);
+
 
 }

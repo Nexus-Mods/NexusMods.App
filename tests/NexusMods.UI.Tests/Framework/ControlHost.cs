@@ -27,7 +27,17 @@ public class ControlHost<TView, TVm, TInterface> : IAsyncDisposable
             Window.Hide();
         });
     }
-
+    
+    public async Task OnUi(Func<Task> action)
+    {
+        await Dispatcher.UIThread.InvokeAsync(action);
+        await Flush();
+    }
+    public async Task Flush()
+    {
+        await Dispatcher.UIThread.InvokeAsync(() => { });
+    }
+    
     public async Task<T> GetViewControl<T>(string launchbutton) where T : Control
     {
         return await Dispatcher.UIThread.InvokeAsync(() =>

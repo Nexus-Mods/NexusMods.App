@@ -78,7 +78,7 @@ public class AvaloniaApp : IDisposable
 
         tcs.Task.Wait();
     }
-    
+
     public async Task<ControlHost<TView, TVm, TInterface>> GetControl<TView, TVm, TInterface>()
         where TView : ReactiveUserControl<TInterface>, new()
         where TInterface : class, IViewModelInterface
