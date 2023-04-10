@@ -1,28 +1,42 @@
-﻿using Avalonia;
-using Avalonia.Controls.ApplicationLifetimes;
+﻿using Avalonia.Controls;
+using Avalonia.Headless;
+using Avalonia.ReactiveUI;
 using Avalonia.Threading;
-using Microsoft.Extensions.Hosting.Internal;
-using NexusMods.App.UI.Controls.Spine;
+using FluentAssertions;
+using NexusMods.App.UI.LeftMenu.Game;
+using NexusMods.App.UI.Windows;
+using NexusMods.DataModel.Loadouts;
+using NexusMods.Paths;
+using NexusMods.UI.Tests.Framework;
 
 namespace NexusMods.UI.Tests;
 
 public class GeneralTests
 {
-    private readonly AppHelper _helper;
+    private readonly AvaloniaApp _app;
+    private readonly IFileSystem _fileSystem;
+    private readonly LoadoutManager _loadoutManager;
+    private readonly IGameLeftMenuViewModel _vm;
 
-    public GeneralTests(AppHelper helper)
+    public GeneralTests(AvaloniaApp helper,
+        IFileSystem fileSystem, LoadoutManager loadoutManager, IGameLeftMenuViewModel viewModel)
     {
-        _helper = helper;
+        _fileSystem = fileSystem;
+        _loadoutManager = loadoutManager;
+        _app = helper;
+        _vm = viewModel;
     }
 
     [Fact]
     public async Task CanOpenTheMainAppWindow()
     {
-        await using var host = await _helper.MakeHost<Spine, ISpineViewModel>();
 
-
-        var window = host.Window;
-
+        await using var host =
+            await _app.GetControl<GameLeftMenuView, GameLeftMenuDesignViewModel,
+                IGameLeftMenuViewModel>();
+        var btn = host.GetViewControl<Button>("LaunchButton");
+        btn.Should().NotBeNull();
+        host.ViewModel.LaunchButton.Should().NotBeNull();
 
 
     }
