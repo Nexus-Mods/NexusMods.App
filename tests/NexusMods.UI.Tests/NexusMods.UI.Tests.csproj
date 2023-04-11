@@ -12,7 +12,6 @@
         <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.5.0" />
         <PackageReference Update="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
         <PackageReference Include="Avalonia.Headless" Version="11.0.0-preview6" />
-        <PackageReference Include="Avalonia.Remote.Protocol" Version="11.0.0-preview6" />
     </ItemGroup>
 
     <ItemGroup>

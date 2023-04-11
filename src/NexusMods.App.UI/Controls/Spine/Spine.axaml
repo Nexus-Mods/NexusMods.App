@@ -14,10 +14,7 @@
         <spine:SpineDesignViewModel />
     </Design.DataContext>
     <StackPanel Margin="0,20">
-        <reactiveUi:ViewModelViewHost
-            ViewContract="Home"
-            x:FieldModifier="public"
-            x:Name="Home" />
+        <reactiveUi:ViewModelViewHost ViewContract="Home" x:Name="Home" />
         <Border
             BorderBrush="{DynamicResource StructuralBorderBrush}"
             BorderThickness="0,2,0,0"
