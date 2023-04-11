@@ -57,7 +57,7 @@ public record SMAPIManifest : IFileAnalysisData
     /// <summary>
     /// The minimum SMAPI version required by this mod (if any).
     /// </summary>
-    public required Version MinimumApiVersion { get; init; }
+    public Version? MinimumApiVersion { get; init; }
 
     /// <summary>
     /// The other mods that must be loaded before this mod.

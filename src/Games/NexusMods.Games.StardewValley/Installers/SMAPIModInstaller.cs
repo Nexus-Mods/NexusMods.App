@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
@@ -19,22 +20,25 @@ namespace NexusMods.Games.StardewValley.Installers;
 /// </summary>
 public class SMAPIModInstaller : IModInstaller
 {
-    private static RelativePath ModsFolder = "Mods".ToRelativePath();
+    private static readonly RelativePath ModsFolder = "Mods".ToRelativePath();
+    private static readonly RelativePath ManifestFile = "manifest.json".ToRelativePath();
 
-    private static KeyValuePair<RelativePath, AnalyzedFile>? GetManifestFile(
-        EntityDictionary<RelativePath, AnalyzedFile> files)
+    private static bool TryGetManifestFile(
+        EntityDictionary<RelativePath, AnalyzedFile> files,
+        out KeyValuePair<RelativePath, AnalyzedFile> manifestFile)
     {
-        return files.FirstOrDefault(kv =>
-            kv.Key.FileName.Equals("manifest.json") &&
-            kv.Value.AnalysisData.Any(x => x is SMAPIManifest));
+        return files.TryGetFirst(kv =>
+                kv.Key.FileName.Equals(ManifestFile) &&
+                kv.Value.AnalysisData.Any(x => x is SMAPIManifest),
+            out manifestFile);
     }
 
     public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
         if (!installation.Is<StardewValley>()) return Common.Priority.None;
-
-        var manifestFile = GetManifestFile(files);
-        return manifestFile is null ? Common.Priority.None : Common.Priority.Highest;
+        return TryGetManifestFile(files, out _)
+            ? Common.Priority.Highest
+            : Common.Priority.None;
     }
 
     public ValueTask<IEnumerable<AModFile>> GetFilesToExtractAsync(GameInstallation installation,
@@ -48,18 +52,28 @@ public class SMAPIModInstaller : IModInstaller
         Hash srcArchiveHash,
         EntityDictionary<RelativePath, AnalyzedFile> files)
     {
-        return files.Select(kv =>
+        if (!TryGetManifestFile(files, out var manifestFile))
+            throw new UnreachableException($"{nameof(SMAPIModInstaller)} should guarantee with {nameof(Priority)} that {nameof(GetFilesToExtractAsync)} is never called for archives that don't have a manifest file.");
+
+        var parent = manifestFile.Key.Parent;
+
+        foreach (var kv in files)
         {
             var (path, file) = kv;
-            return new FromArchive
+            if (!path.InFolder(parent)) continue;
+            var to = new GamePath(
+                GameFolderType.Game,
+                ModsFolder.Join(path.DropFirst(parent.Depth))
+            );
+
+            yield return new FromArchive
             {
                 Size = file.Size,
                 Hash = file.Hash,
                 Id = ModFileId.New(),
                 From = new HashRelativePath(srcArchiveHash, path),
-                To = new GamePath(GameFolderType.Game, ModsFolder.Join(path)),
+                To = to
             };
-        });
-
+        }
     }
 }

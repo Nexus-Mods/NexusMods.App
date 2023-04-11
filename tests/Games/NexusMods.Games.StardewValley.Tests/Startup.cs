@@ -5,6 +5,7 @@ using NexusMods.DataModel;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.FileExtractor;
 using NexusMods.FileExtractor.Extractors;
+using NexusMods.Games.TestFramework;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
@@ -17,16 +18,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection container)
     {
         container
-            .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
-            .AddFileSystem()
-            .AddSingleton<TemporaryFileManager>()
-            .AddSingleton<HttpClient>()
-            .AddNexusWebApi(true)
-            .AddHttpDownloader()
-            .AddDataModel(new DataModelSettings())
-            .AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(_ => new Resource<FileContentsCache, Size>("File Analysis"))
-            .AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ => new Resource<IExtractor, Size>("File Extraction"))
-            .AddFileExtractors()
+            .AddDefaultServicesForTesting()
             .AddUniversalGameLocator<StardewValley>(new Version(1, 0))
             .AddStardewValley()
             .Validate();

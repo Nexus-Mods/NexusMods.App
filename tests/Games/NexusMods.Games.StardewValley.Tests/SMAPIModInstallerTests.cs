@@ -3,6 +3,8 @@ using FluentAssertions;
 using NexusMods.Common;
 using NexusMods.Games.StardewValley.Installers;
 using NexusMods.Games.TestFramework;
+using NexusMods.Hashing.xxHash64;
+using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.StardewValley.Tests;
@@ -70,5 +72,23 @@ public class SMAPIModInstallerTests : AModInstallerTest<StardewValley, SMAPIModI
         filesToExtract.Should().HaveCount(2);
         filesToExtract.Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/manifest.json"));
         filesToExtract.Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/baz"));
+    }
+
+    [Fact]
+    [Trait("RequiresNetworking", "True")]
+    public async Task Test_InstallMod()
+    {
+        var loadout = await CreateLoadout();
+
+        // NPC Map Locations 2.11.3 (https://www.nexusmods.com/stardewvalley/mods/239)
+        var (path, hash) = await DownloadMod(GameInstallation.Game.Domain, ModId.From(239), FileId.From(68865));
+        await using (path)
+        {
+            hash.Should().Be(Hash.From(0x59112FD2E58BD042));
+
+            var mod = await InstallModWithInstaller(loadout, path.Path);
+            mod.Files.Should().NotBeEmpty();
+            mod.Files.Should().AllSatisfy(kv => kv.Value.To.Path.StartsWith("Mods/NPCMapLocations"));
+        }
     }
 }
