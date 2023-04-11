@@ -19,6 +19,8 @@ Modding is done via [Stardew Modding API](https://smapi.io/), or _SMAPI_ for sho
 
 The shell script only checks if the current macOS version is supported and launches the game.
 
+Saves are located inside the AppData folder (`%AppData%` on Windows, `~/.config` on Linux) under `StardewValley/Saves`. SMAPI puts the saves inside `StardewValley/.smapi` instead (this has changed in [`3.2`](https://github.com/Pathoschild/SMAPI/blob/9763bc7484e29cbc9e7f37c61121d794e6720e75/src/SMAPI.Installer/InteractiveInstaller.cs#L358), the previous location was `StardewValley/Saves/.smapi`).
+
 ## Mod Formats
 
 ### C# Mods
