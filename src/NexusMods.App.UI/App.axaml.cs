@@ -18,9 +18,7 @@ public class App : Application
     {
         _provider = provider;
     }
-
-    public bool ShowMainWindow { get; set; } = true;
-
+    
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -34,7 +32,7 @@ public class App : Application
         var loggerFactory = _provider.GetRequiredService<ILoggerFactory>();
         Locator.CurrentMutable.UseMicrosoftExtensionsLoggingWithWrappingFullLogger(loggerFactory);
 
-        if (ShowMainWindow && ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             var reactiveWindow = _provider.GetRequiredService<MainWindow>();
             reactiveWindow.ViewModel = _provider.GetRequiredService<MainWindowViewModel>();
