@@ -115,6 +115,7 @@ Each supported platform has a shell script that launches the installer inside `i
 1) `install.dat` is a ZIP archive and all files inside will be extracted to the game folder
 2) on Linux and macOS: the original game launcher gets replaced with `unix-launcher.sh`, which was extracted from `install.dat`. The installer also runs `chmod` to mark the file as executable.
 3) `Stardew Valley.deps.json` from the game folder gets copied to `StardewModdingAPI.deps.json` (required to resolve native DLLs)
+4) Windows only: SMAPI comes with it's own executable `StardewModdingAPI.exe` which must be used to launch the game. The [wiki](https://stardewvalleywiki.com/Modding:Installing_SMAPI_on_Windows#Configure_your_game_client) has instructions to configure the game client correctly.
 
 The `install.dat` ZIP archive contains the following files:
 
