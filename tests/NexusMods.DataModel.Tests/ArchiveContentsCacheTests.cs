@@ -43,17 +43,21 @@ public class ArchiveContentsCacheTests : ADataModelTest<ArchiveContentsCacheTest
         var data = analyzed.AnalysisData.OfType<MutatingFileAnalysisData>()
             .FirstOrDefault();
         data.Should().NotBeNull();
-        
+
         data!.Revision.Should().Be(_revision, "before the file was indexed");
         _revision = 44;
-        
+        var oldSig = ArchiveContentsCache.AnalyzersSignature;
+        ArchiveContentsCache.RecalculateAnalyzerSignature();
+        ArchiveContentsCache.AnalyzersSignature.Should().NotBe(oldSig, "an analyzer changed its revision");
+
+
         analyzed = await ArchiveContentsCache.AnalyzeFileAsync(DataTest, CancellationToken.None);
         data = analyzed.AnalysisData.OfType<MutatingFileAnalysisData>()
             .FirstOrDefault();
         data.Should().NotBeNull();
         data!.Revision.Should().Be(_revision, "the file was reindexed");
 
-        
+
     }
 
 

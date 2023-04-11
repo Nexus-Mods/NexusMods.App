@@ -30,7 +30,7 @@ public class FileContentsCache
     private readonly IDataStore _store;
     private readonly FileHashCache _fileHashCache;
     private readonly ILookup<FileType, IFileAnalyzer> _analyzers;
-    private readonly Hash _analyzersSignature;
+    public Hash AnalyzersSignature { get; private set; }
 
     /// <summary/>
     /// <remarks>Called from DI container.</remarks>
@@ -49,9 +49,15 @@ public class FileContentsCache
         _sigs = new SignatureChecker(Enum.GetValues<FileType>());
         _analyzers = analyzers.SelectMany(a => a.FileTypes.Select(t => (Type: t, Analyzer: a)))
             .ToLookup(k => k.Type, v => v.Analyzer);
-        _analyzersSignature = MakeAnalyzerSignature(analyzers);
+        AnalyzersSignature = MakeAnalyzerSignature(analyzers);
         _store = dataStore;
         _fileHashCache = hashCache;
+    }
+
+    public void RecalculateAnalyzerSignature()
+    {
+        AnalyzersSignature =
+            MakeAnalyzerSignature(_analyzers.SelectMany(x => x).Distinct());
     }
 
     /// <summary>
@@ -64,7 +70,7 @@ public class FileContentsCache
     {
         var entry = await _fileHashCache.IndexFileAsync(path, token);
         var found = _store.Get<AnalyzedFile>(new Id64(EntityCategory.FileAnalysis, (ulong)entry.Hash));
-        if (found != null && found.AnalyzersHash == _analyzersSignature) 
+        if (found != null && found.AnalyzersHash == AnalyzersSignature)
             return found;
 
         var result = await AnalyzeFileInnerAsync(new NativeFileStreamFactory(path), path.FileName, token);
@@ -131,9 +137,9 @@ public class FileContentsCache
 
             if (parentPath != default && SignatureChecker.TryGetFileType(parentPath.Extension, out var type))
                 sigs.Add(type);
-            
+
             var found = _store.Get<Entity>(new Id64(EntityCategory.FileAnalysis, (ulong)hash));
-            if (found is AnalyzedFile af && af.AnalyzersHash == _analyzersSignature)
+            if (found is AnalyzedFile af && af.AnalyzersHash == AnalyzersSignature)
                 return af;
 
             hashStream.Position = 0;
@@ -173,7 +179,7 @@ public class FileContentsCache
         file ??= new AnalyzedFile
         {
             Hash = hash,
-            AnalyzersHash = _analyzersSignature,
+            AnalyzersHash = AnalyzersSignature,
             Size = sFn.Size,
             FileTypes = sigs.ToArray(),
             AnalysisData = analysisData.ToImmutableList()
@@ -184,7 +190,7 @@ public class FileContentsCache
 
         return file;
     }
-    
+
     private Hash MakeAnalyzerSignature(IEnumerable<IFileAnalyzer> analyzers)
     {
         var algo = new XxHash64Algorithm(0);
@@ -194,6 +200,7 @@ public class FileContentsCache
         foreach (var analyzer in analyzers.OrderBy(a => a.Id.Analyzer))
         {
             analyzer.Id.Analyzer.TryWriteBytes(buffer);
+            BinaryPrimitives.WriteUInt32BigEndian(buffer.SliceFast(16), analyzer.Id.Revision);
             algo.TransformByteGroupsInternal(buffer);
         }
 
@@ -232,7 +239,7 @@ public class FileContentsCache
             var file = new AnalyzedArchive
             {
                 Hash = hash,
-                AnalyzersHash = _analyzersSignature,
+                AnalyzersHash = AnalyzersSignature,
                 Size = sFn.Size,
                 FileTypes = sigs.ToArray(),
                 AnalysisData = analysisData.ToImmutableList(),
