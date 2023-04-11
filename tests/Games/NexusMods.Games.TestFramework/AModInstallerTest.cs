@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
@@ -28,24 +29,35 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     }
 
     /// <summary>
+    /// Runs the <typeparamref name="TModInstaller"/> and returns the priority
+    /// for the given archive.
+    /// </summary>
+    /// <param name="path">Path to the archive to extract.</param>
+    /// <returns></returns>
+    protected async Task<Priority> GetPriorityFromInstaller(AbsolutePath path)
+    {
+        var analyzedArchive = await AnalyzeArchive(path);
+
+        var priority = ModInstaller.Priority(
+            GameInstallation,
+            analyzedArchive.Contents);
+
+        return priority;
+    }
+
+    /// <summary>
     /// Runs the <typeparamref name="TModInstaller"/> and returns a list of files
     /// to extract from the provided archive.
     /// </summary>
     /// <param name="path">Path to the archive to extract.</param>
     /// <returns></returns>
-    /// <exception cref="NotImplementedException">The file at the provided path is not an archive.</exception>
     protected async Task<AModFile[]> GetFilesToExtractFromInstaller(AbsolutePath path)
     {
-        var analyzedFile = await FileContentsCache.AnalyzeFileAsync(path);
-        if (analyzedFile is not AnalyzedArchive analyzedArchive)
-        {
-            // see LoadoutManager.InstallModAsync
-            throw new NotImplementedException();
-        }
+        var analyzedArchive = await AnalyzeArchive(path);
 
         var contents = await ModInstaller.GetFilesToExtractAsync(
             GameInstallation,
-            analyzedFile.Hash,
+            analyzedArchive.Hash,
             analyzedArchive.Contents);
 
         return contents.WithPersist(DataStore).ToArray();

@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Markers;
@@ -32,6 +33,10 @@ public abstract class AGameTest<TGame> where TGame : AGame
     protected readonly Client NexusClient;
     protected readonly IHttpDownloader HttpDownloader;
 
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    /// <param name="serviceProvider"></param>
     protected AGameTest(IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
@@ -89,6 +94,30 @@ public abstract class AGameTest<TGame> where TGame : AGame
     {
         var modId = await loadout.InstallModAsync(path, modName ?? Guid.NewGuid().ToString("N"));
         return loadout.Value.Mods[modId];
+    }
+
+    /// <summary>
+    /// Analyzes a file using the <see cref="NexusMods.DataModel.FileContentsCache"/>.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    protected async Task<AnalyzedFile> AnalyzeFile(AbsolutePath path)
+    {
+        return await FileContentsCache.AnalyzeFileAsync(path);
+    }
+
+    /// <summary>
+    /// Analyzes a file as an archive using the <see cref="NexusMods.DataModel.FileContentsCache"/>.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException">The provided file is not an archive.</exception>
+    protected async Task<AnalyzedArchive> AnalyzeArchive(AbsolutePath path)
+    {
+        var analyzedFile = await AnalyzeFile(path);
+        if (analyzedFile is AnalyzedArchive analyzedArchive)
+            return analyzedArchive;
+        throw new ArgumentException($"File at {path} is not an archive!", nameof(path));
     }
 
     /// <summary>
