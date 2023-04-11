@@ -1,10 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
-    
     <PropertyGroup>
         <XunitStartupAssembly>NexusMods.Games.BethesdaGameStudios.Tests</XunitStartupAssembly>
     </PropertyGroup>
-    
+
     <ItemGroup>
         <ProjectReference Include="..\..\..\src\Games\NexusMods.Games.BethesdaGameStudios\NexusMods.Games.BethesdaGameStudios.csproj" />
         <ProjectReference Include="..\..\..\src\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj" />
