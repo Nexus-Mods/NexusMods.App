@@ -43,6 +43,7 @@ public class SMAPIInstallerTests : AModInstallerTest<StardewValley, SMAPIInstall
     }
 
     [Fact]
+    [Trait("RequiresNetworking", "True")]
     public async Task Test_GetFilesToExtract()
     {
         var loadout = await CreateLoadout();
