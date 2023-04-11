@@ -11,6 +11,8 @@ namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 public interface IModEnabledViewModel : IColumnViewModel<ModCursor>
 {
     public bool Enabled { get; }
+    public ModStatus Status { get; }
 
     public ICommand ToggleEnabledCommand { get; }
+    public ICommand DeleteModCommand { get; }
 }

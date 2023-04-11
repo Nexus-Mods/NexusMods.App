@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
+using NexusMods.App.UI.Toolbars;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
@@ -22,6 +23,8 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
     public LoadoutId Loadout { get; set; }
 
     private ReadOnlyObservableCollection<ModCursor> _mods;
+
+    public ILoadoutToolbarViewModel Toolbar { get; }
     public ReadOnlyObservableCollection<ModCursor> Mods => _mods;
 
 
@@ -30,10 +33,9 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
     public ReadOnlyObservableCollection<IDataGridColumnFactory> Columns => _filteredColumns;
 
     public LoadoutGridViewModel(IServiceProvider provider, LoadoutRegistry loadoutRegistry,
-        IModNameViewModel nameViewModel, IModCategoryViewModel categoryViewModel,
-        IModInstalledViewModel modInstalledViewModel, IModEnabledViewModel modEnabledViewModel,
-        IModVersionViewModel versionViewModel)
+        IDefaultLoadoutToolbarViewModel defaultToolbar)
     {
+        Toolbar = defaultToolbar;
         _columns =
             new SourceCache<IDataGridColumnFactory, ColumnType>(
                 x => throw new NotImplementedException());
@@ -66,12 +68,16 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.Loadout)
-                .Select(loadoutRegistry.Get)
-                .Where(loadout => loadout != null)
+                .SelectMany(loadoutRegistry.RevisionsAsLoadouts)
                 .Select(loadout => loadout!.Mods.Values.Select(m => new ModCursor(loadout.LoadoutId, m.Id)))
+                .OnUI()
                 .ToDiffedChangeSet(cur => cur.ModId, cur => cur)
                 .Bind(out _mods)
                 .Subscribe()
+                .DisposeWith(d);
+
+            this.WhenAnyValue(vm => vm.Loadout)
+                .BindToUi(this, vm => vm.Toolbar.LoadoutId)
                 .DisposeWith(d);
 
             _columns.Connect()

@@ -58,7 +58,6 @@ public readonly struct LoadoutMarker
     /// </remarks>
     public async Task<ModId> InstallModAsync(AbsolutePath file, string name, CancellationToken token = default)
     {
-        await _manager.ArchiveManager.ArchiveFileAsync(file, token);
         return (await _manager.InstallModAsync(_id, file, name, token)).ModId;
     }
 
