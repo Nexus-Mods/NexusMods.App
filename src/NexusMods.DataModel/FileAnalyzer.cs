@@ -1,3 +1,4 @@
+using System.Buffers.Binary;
 using System.Collections.Immutable;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
@@ -11,6 +12,7 @@ using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
 
 namespace NexusMods.DataModel;
 
@@ -28,6 +30,7 @@ public class FileContentsCache
     private readonly IDataStore _store;
     private readonly FileHashCache _fileHashCache;
     private readonly ILookup<FileType, IFileAnalyzer> _analyzers;
+    private readonly Hash _analyzersSignature;
 
     /// <summary/>
     /// <remarks>Called from DI container.</remarks>
@@ -46,6 +49,7 @@ public class FileContentsCache
         _sigs = new SignatureChecker(Enum.GetValues<FileType>());
         _analyzers = analyzers.SelectMany(a => a.FileTypes.Select(t => (Type: t, Analyzer: a)))
             .ToLookup(k => k.Type, v => v.Analyzer);
+        _analyzersSignature = MakeAnalyzerSignature(analyzers);
         _store = dataStore;
         _fileHashCache = hashCache;
     }
@@ -60,7 +64,8 @@ public class FileContentsCache
     {
         var entry = await _fileHashCache.IndexFileAsync(path, token);
         var found = _store.Get<AnalyzedFile>(new Id64(EntityCategory.FileAnalysis, (ulong)entry.Hash));
-        if (found != null) return found;
+        if (found != null && found.AnalyzersHash == _analyzersSignature) 
+            return found;
 
         var result = await AnalyzeFileInnerAsync(new NativeFileStreamFactory(path), path.FileName, token);
         result.EnsurePersisted(_store);
@@ -99,6 +104,7 @@ public class FileContentsCache
     private async Task<AnalyzedFile> AnalyzeFileInnerAsync(IStreamFactory sFn, CancellationToken token, int level, Hash parent, TemporaryPath? parentArchivePath, RelativePath parentPath, string fileName)
     {
         Hash hash;
+        Hash analyzerHash;
         List<FileType> sigs;
         var analysisData = new List<IFileAnalysisData>();
         {
@@ -120,15 +126,18 @@ public class FileContentsCache
                 hash = await hashStream.XxHash64Async(token);
             }
 
-            var found = _store.Get<Entity>(new Id64(EntityCategory.FileAnalysis, (ulong)hash));
-            if (found is AnalyzedFile af)
-                return af;
-
             hashStream.Position = 0;
             sigs = (await _sigs.MatchesAsync(hashStream)).ToList();
 
             if (parentPath != default && SignatureChecker.TryGetFileType(parentPath.Extension, out var type))
                 sigs.Add(type);
+            
+            var found = _store.Get<Entity>(new Id64(EntityCategory.FileAnalysis, (ulong)hash));
+            if (found is AnalyzedFile af && af.AnalyzersHash == _analyzersSignature)
+                return af;
+
+            hashStream.Position = 0;
+
 
             foreach (var sig in sigs)
             {
@@ -164,6 +173,7 @@ public class FileContentsCache
         file ??= new AnalyzedFile
         {
             Hash = hash,
+            AnalyzersHash = _analyzersSignature,
             Size = sFn.Size,
             FileTypes = sigs.ToArray(),
             AnalysisData = analysisData.ToImmutableList()
@@ -173,6 +183,21 @@ public class FileContentsCache
             EnsureReverseIndex(hash, parent, parentPath);
 
         return file;
+    }
+    
+    private Hash MakeAnalyzerSignature(IEnumerable<IFileAnalyzer> analyzers)
+    {
+        var algo = new XxHash64Algorithm(0);
+        // We have to hash blocks in at least 32 bytes at a time. We'll waste a bit of space here
+        // but at least we don't have to allocate a MemoryStream and pour the data into it.
+        Span<byte> buffer = stackalloc byte[32];
+        foreach (var analyzer in analyzers.OrderBy(a => a.Id.Analyzer))
+        {
+            analyzer.Id.Analyzer.TryWriteBytes(buffer);
+            algo.TransformByteGroupsInternal(buffer);
+        }
+
+        return Hash.FromULong(algo.FinalizeHashValueInternal(Span<byte>.Empty));
     }
 
     private async Task<AnalyzedFile?> AnalyzeArchiveInnerAsync(IStreamFactory sFn, int level, Hash hash, List<FileType> sigs,
@@ -207,6 +232,7 @@ public class FileContentsCache
             var file = new AnalyzedArchive
             {
                 Hash = hash,
+                AnalyzersHash = _analyzersSignature,
                 Size = sFn.Size,
                 FileTypes = sigs.ToArray(),
                 AnalysisData = analysisData.ToImmutableList(),
