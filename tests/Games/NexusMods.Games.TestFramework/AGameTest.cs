@@ -97,16 +97,6 @@ public abstract class AGameTest<TGame> where TGame : AGame
     }
 
     /// <summary>
-    /// Analyzes a file using the <see cref="NexusMods.DataModel.FileContentsCache"/>.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <returns></returns>
-    protected async Task<AnalyzedFile> AnalyzeFile(AbsolutePath path)
-    {
-        return await FileContentsCache.AnalyzeFileAsync(path);
-    }
-
-    /// <summary>
     /// Analyzes a file as an archive using the <see cref="NexusMods.DataModel.FileContentsCache"/>.
     /// </summary>
     /// <param name="path"></param>
@@ -114,7 +104,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// <exception cref="ArgumentException">The provided file is not an archive.</exception>
     protected async Task<AnalyzedArchive> AnalyzeArchive(AbsolutePath path)
     {
-        var analyzedFile = await AnalyzeFile(path);
+        var analyzedFile = await FileContentsCache.AnalyzeFileAsync(path);
         if (analyzedFile is AnalyzedArchive analyzedArchive)
             return analyzedArchive;
         throw new ArgumentException($"File at {path} is not an archive!", nameof(path));
@@ -146,6 +136,19 @@ public abstract class AGameTest<TGame> where TGame : AGame
 
         return file;
     }
+
+    protected async Task<TemporaryPath> CreateTestFile(string fileName, byte[] contents)
+    {
+        var folder = TemporaryFileManager.CreateFolder();
+        var path = folder.Path.CombineUnchecked(fileName);
+        var file = new TemporaryPath(path);
+
+        await FileSystem.WriteAllBytesAsync(path, contents);
+        return file;
+    }
+
+    protected Task<TemporaryPath> CreateTestFile(string fileName, string contents, Encoding? encoding = null)
+        => CreateTestFile(fileName, (encoding ?? Encoding.UTF8).GetBytes(contents));
 
     protected async Task<TemporaryPath> CreateTestFile(byte[] contents, Extension? extension)
     {

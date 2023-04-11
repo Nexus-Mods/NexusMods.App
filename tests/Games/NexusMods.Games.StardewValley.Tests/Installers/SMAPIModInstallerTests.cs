@@ -7,7 +7,7 @@ using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
 
-namespace NexusMods.Games.StardewValley.Tests;
+namespace NexusMods.Games.StardewValley.Tests.Installers;
 
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 public class SMAPIModInstallerTests : AModInstallerTest<StardewValley, SMAPIModInstaller>
