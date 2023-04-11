@@ -1,21 +1,18 @@
-﻿using System.Reactive.Linq;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Headless;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using NexusMods.App.UI;
 using NexusMods.App.UI.Windows;
-using Projektanker.Icons.Avalonia;
-using Projektanker.Icons.Avalonia.MaterialDesign;
-using ReactiveUI;
 
 namespace NexusMods.UI.Tests.Framework;
 
+/// <summary>
+/// Takes care of lifecycle of the Avalonia app in a test state
+/// </summary>
 public class AvaloniaApp : IDisposable
 {
     private readonly IServiceProvider _provider;
@@ -29,7 +26,7 @@ public class AvaloniaApp : IDisposable
         Setup();
     }
 
-    public void Stop()
+    private void Stop()
     {
         var app = GetApp();
         if (app is IDisposable disposable)
@@ -42,7 +39,7 @@ public class AvaloniaApp : IDisposable
 
     public static MainWindow GetMainWindow() => (MainWindow) GetApp().MainWindow;
 
-    public static IClassicDesktopStyleApplicationLifetime GetApp() =>
+    private static IClassicDesktopStyleApplicationLifetime GetApp() =>
         (IClassicDesktopStyleApplicationLifetime) Application.Current.ApplicationLifetime;
 
     private AppBuilder BuildAvaloniaApp()
@@ -79,6 +76,15 @@ public class AvaloniaApp : IDisposable
         tcs.Task.Wait();
     }
 
+    /// <summary>
+    /// Returns a control host that can be used to interact with the control. The VM
+    /// in this case is the design time VM, so it will not be connected to any services
+    /// this way the control can be tested in isolation.
+    /// </summary>
+    /// <typeparam name="TView">The view to construct</typeparam>
+    /// <typeparam name="TVm">The VM instance to use when constructing the view (should be the Design variant)</typeparam>
+    /// <typeparam name="TInterface">The VM interface expected by the view and view model</typeparam>
+    /// <returns></returns>
     public async Task<ControlHost<TView, TVm, TInterface>> GetControl<TView, TVm, TInterface>()
         where TView : ReactiveUserControl<TInterface>, new()
         where TInterface : class, IViewModelInterface
@@ -113,6 +119,7 @@ public class AvaloniaApp : IDisposable
         return host;
     }
 
+    
     public void Dispose()
     {
         if (_disposed) return;
