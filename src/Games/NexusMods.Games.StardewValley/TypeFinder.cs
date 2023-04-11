@@ -14,6 +14,5 @@ public class TypeFinder : ITypeFinder
     {
         typeof(SMAPIManifest),
         typeof(SMAPIManifestDependency),
-        typeof(SMAPIDependencies)
     };
 }

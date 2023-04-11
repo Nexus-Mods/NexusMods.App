@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
@@ -10,6 +12,8 @@ using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers;
+using Xunit.DependencyInjection;
+using Xunit.DependencyInjection.Logging;
 
 namespace NexusMods.Games.StardewValley.Tests;
 
@@ -17,10 +21,19 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection container)
     {
+        var gameFiles = new Dictionary<RelativePath, byte[]>
+        {
+            { "Stardew Valley.deps.json", "{}"u8.ToArray() }
+        };
+
         container
             .AddDefaultServicesForTesting()
-            .AddUniversalGameLocator<StardewValley>(new Version(1, 0))
+            .AddUniversalGameLocator<StardewValley>(new Version(1, 0), gameFiles)
             .AddStardewValley()
             .Validate();
     }
+
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
+    public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor)
+        => loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(accessor, delegate { return true; }));
 }
