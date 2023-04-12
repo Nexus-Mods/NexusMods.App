@@ -94,7 +94,7 @@ Mods
 │  ├─ Mod C
 ```
 
-This grouping is completely optional and has no functional difference to a flat directory structure. SMAPI supports this nesting to help manual modding.
+This grouping is completely optional and has no functional difference to a flat directory structure. SMAPI supports this nesting to help manual modding. Additionally, mods like [SVE](https://www.nexusmods.com/stardewvalley/mods/3753) which use multiple content pack frameworks, come with grouped mods for easier management.
 
 If a mod doesn't have any special uninstall instructions (likely game related), the mod folder can just be deleted. A folder can also be _disabled_ by adding a dot in front of the folder name: `.Mod A`. Folders starting with a dot are ignored by SMAPI.
 
