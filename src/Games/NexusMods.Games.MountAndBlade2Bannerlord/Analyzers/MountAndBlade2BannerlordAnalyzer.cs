@@ -5,6 +5,7 @@ using Bannerlord.ModuleManager;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Paths;
@@ -22,6 +23,7 @@ public class MountAndBlade2BannerlordAnalyzer : IFileAnalyzer
         _fileSystem = fileSystem;
     }
 
+    public FileAnalyzerId Id { get; } = FileAnalyzerId.New("dce08909-ff0d-4b1b-9d2b-f2144563cf9f", 1);
     public IEnumerable<FileType> FileTypes { get; } = new[] { FileType.XML };
 
     public async IAsyncEnumerable<IFileAnalysisData> AnalyzeAsync(FileAnalyzerInfo info, [EnumeratorCancellation] CancellationToken ct = default)
