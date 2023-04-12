@@ -42,6 +42,20 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
     public RelativePath Parent => new(PathHelpers.GetDirectoryName(Path) ?? "");
 
     /// <summary>
+    /// Returns the topmost parent of the relative path.
+    /// </summary>
+    public RelativePath TopParent
+    {
+        get
+        {
+            var span = Path.AsSpan();
+            var index = Math.Max(span.IndexOf('/'), span.IndexOf('\\'));
+            return index == -1 ? this : new RelativePath(span.SliceFast(0, index).ToString());
+        } 
+        
+    }
+
+    /// <summary>
     /// Creates a relative path given a string.
     /// </summary>
     /// <param name="path">The relative path to use.</param>
@@ -125,6 +139,8 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
     /// <param name="numDirectories">Number of directories to drop.</param>
     public RelativePath DropFirst(int numDirectories = 1)
     {
+        if (numDirectories == 0) return this;
+        
         // Normalize first
         var thisCopy = Path.Length <= 512 ? stackalloc char[Path.Length] : GC.AllocateUninitializedArray<char>(Path.Length);
         Path.CopyTo(thisCopy);

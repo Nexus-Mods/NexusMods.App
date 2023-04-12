@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using System.Text;
+using FluentAssertions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.DataModel;
@@ -25,6 +26,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
 
     protected readonly IFileSystem FileSystem;
     protected readonly TemporaryFileManager TemporaryFileManager;
+    protected readonly ArchiveManager ArchiveManager;
     protected readonly LoadoutManager LoadoutManager;
     protected readonly FileContentsCache FileContentsCache;
     protected readonly IDataStore DataStore;
@@ -39,6 +41,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
         GameInstallation = Game.Installations.First();
 
         FileSystem = serviceProvider.GetRequiredService<IFileSystem>();
+        ArchiveManager = serviceProvider.GetRequiredService<ArchiveManager>();
         TemporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
         LoadoutManager = serviceProvider.GetRequiredService<LoadoutManager>();
         FileContentsCache = serviceProvider.GetRequiredService<FileContentsCache>();
@@ -76,6 +79,18 @@ public abstract class AGameTest<TGame> where TGame : AGame
         );
 
         return (file, downloadHash);
+    }
+    
+    
+    public async Task<AbsolutePath> DownloadAndCacheMod(GameDomain gameDomain, ModId modId, FileId fileId, Hash hash)
+    {
+        // TODO: Change HaveArchive to output file path, otherwise end users might see tests, copy this code and do it inefficiently. https://github.com/Nexus-Mods/NexusMods.App/issues/206
+        if (ArchiveManager.HaveArchive(hash))
+            return ArchiveManager.PathFor(hash);
+
+        var (file, downloadHash) = await DownloadMod(gameDomain, modId, fileId);
+        downloadHash.Should().Be(hash);
+        return file.Path;
     }
 
     /// <summary>
