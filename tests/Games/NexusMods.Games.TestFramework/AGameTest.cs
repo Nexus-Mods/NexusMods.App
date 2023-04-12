@@ -81,15 +81,26 @@ public abstract class AGameTest<TGame> where TGame : AGame
         return (file, downloadHash);
     }
     
-    
+    /// <summary>
+    /// Downloads a mod and caches it in the <see cref="ArchiveManager"/> so future
+    /// requests for the same file will be served from the cache. Compares the
+    /// hash of the downloaded file with the expected hash and throws an exception
+    /// if they don't match.
+    /// </summary>
+    /// <param name="gameDomain"></param>
+    /// <param name="modId"></param>
+    /// <param name="fileId"></param>
+    /// <param name="hash"></param>
+    /// <returns></returns>
     public async Task<AbsolutePath> DownloadAndCacheMod(GameDomain gameDomain, ModId modId, FileId fileId, Hash hash)
     {
-        // TODO: Change HaveArchive to output file path, otherwise end users might see tests, copy this code and do it inefficiently. https://github.com/Nexus-Mods/NexusMods.App/issues/206
-        if (ArchiveManager.HaveArchive(hash))
-            return ArchiveManager.PathFor(hash);
+        if (ArchiveManager.TryGetPathFor(hash, out var path))
+            return path;
 
         var (file, downloadHash) = await DownloadMod(gameDomain, modId, fileId);
         downloadHash.Should().Be(hash);
+        
+        await ArchiveManager.ArchiveFileAsync(file.Path);
         return file.Path;
     }
 
