@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using JetBrains.Annotations;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.FileExtractor.FileSignatures;
 // ReSharper disable StringLiteralTypo
@@ -16,6 +17,8 @@ namespace NexusMods.Games.StardewValley.Analyzers;
 /// </summary>
 public class SMAPIManifestAnalyzer : IFileAnalyzer
 {
+    public FileAnalyzerId Id => FileAnalyzerId.New("f917e906-d28a-472d-b6e5-e7d2c61c60e4", 0);
+
     public IEnumerable<FileType> FileTypes => new[] { FileType.JSON };
 
     public async IAsyncEnumerable<IFileAnalysisData> AnalyzeAsync(FileAnalyzerInfo info, [EnumeratorCancellation] CancellationToken token = default)
