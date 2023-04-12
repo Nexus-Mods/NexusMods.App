@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.FileExtractor;
@@ -31,6 +32,7 @@ public class Startup
             new Resource<FileContentsCache, Size>("File Analysis"))
                  .AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ =>
             new Resource<IExtractor, Size>("File Extraction"))
+                 .AddSingleton<IFileAnalyzer, ArchiveContentsCacheTests.MutatingFileAnalyzer>()
 
                  .AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Startup).Assembly))
                  .Validate();

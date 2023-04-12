@@ -37,6 +37,10 @@ namespace NexusMods.FileExtractor.FileSignatures {
             /// </summary>
              JSON,
                 /// <summary>
+                /// Test files
+                /// </summary>
+                 JustTest,
+                            /// <summary>
                 /// Morrowind BSA
                 /// </summary>
                  MorrowindBSA,
@@ -169,6 +173,9 @@ namespace NexusMods.FileExtractor.FileSignatures {
 
                 // Cyberpunk Appearance Preset
         (FileType. Cyberpunk2077AppearancePreset, new byte[] {0x4c, 0x6f, 0x63, 0x4b, 0x65, 0x79, 0x23}),
+
+                // Test files
+        (FileType. JustTest, new byte[] {0x4A, 0x55, 0x53, 0x54, 0x54, 0x45, 0x53, 0x54}),
 
         
     };
