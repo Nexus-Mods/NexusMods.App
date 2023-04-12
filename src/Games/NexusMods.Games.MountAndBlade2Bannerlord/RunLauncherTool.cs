@@ -24,16 +24,16 @@ public class RunLauncherTool : ITool
         if (loadout.Installation.Game is not MountAndBlade2Bannerlord mountAndBladeBannerlord) return;
 
         var hasXbox = false; // TODO:
-        var hasBLSE = loadout.HasModuleId("Bannerlord.BLSE");
-        var hasBUTRLoader = loadout.HasModuleId("Bannerlord.BUTRLoader");
+        var hasBLSE = loadout.HasInstalledFile("Bannerlord.BLSE.Shared.dll");
+        var hasBUTRLoader = loadout.HasInstalledFile("Bannerlord.BUTRLoader.dll");
 
         var program = hasBLSE
             ? hasBUTRLoader
-                ? mountAndBladeBannerlord.BLSELauncherExFile.CombineChecked(loadout.Installation.Locations[GameFolderType.Game])
-                : mountAndBladeBannerlord.BLSELauncherFile.CombineChecked(loadout.Installation.Locations[GameFolderType.Game])
+                ? mountAndBladeBannerlord.GetBLSELauncherExFile(loadout.Installation).CombineChecked(loadout.Installation.Locations[GameFolderType.Game])
+                : mountAndBladeBannerlord.GetBLSELauncherFile(loadout.Installation).CombineChecked(loadout.Installation.Locations[GameFolderType.Game])
             : hasXbox
-                ? mountAndBladeBannerlord.PrimaryXboxFile.CombineChecked(loadout.Installation.Locations[GameFolderType.Game])
-                : mountAndBladeBannerlord.PrimaryFile.CombineChecked(loadout.Installation.Locations[GameFolderType.Game]);
+                ? mountAndBladeBannerlord.GetPrimaryXboxFile(loadout.Installation).CombineChecked(loadout.Installation.Locations[GameFolderType.Game])
+                : mountAndBladeBannerlord.GetPrimaryFile(loadout.Installation).CombineChecked(loadout.Installation.Locations[GameFolderType.Game]);
         _logger.LogInformation("Running {Program}", program);
 
         var psi = new ProcessStartInfo(program.ToString())

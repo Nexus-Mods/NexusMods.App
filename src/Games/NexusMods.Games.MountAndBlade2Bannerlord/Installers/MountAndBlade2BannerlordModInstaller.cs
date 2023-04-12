@@ -1,5 +1,3 @@
-using System.Collections.Immutable;
-using Bannerlord.LauncherManager;
 using Bannerlord.LauncherManager.Models;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
@@ -22,8 +20,6 @@ internal sealed class MountAndBlade2BannerlordModInstaller : IModInstaller
         _launcherManagerFactory = launcherManagerFactory;
     }
 
-    private static readonly RelativePath ModFolder = Constants.ModulesFolder.ToRelativePath();
-    private static readonly RelativePath SubModuleFile = Constants.SubModuleName.ToRelativePath();
     private readonly LauncherManagerFactory _launcherManagerFactory;
 
     // TODO: We had in mind creating optional mod types (Framework, Gameplay, Assets, etc) that we potentially could map to priorities
@@ -41,30 +37,51 @@ internal sealed class MountAndBlade2BannerlordModInstaller : IModInstaller
 
     public ValueTask<IEnumerable<AModFile>> GetFilesToExtractAsync(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken ct = default)
     {
-        var modFolder = files.Keys.First(m => m.FileName == SubModuleFile).Parent;
+        var filesToExtract = new List<AModFile>();
+
+        var moduleInfos = files
+            .Select(x => x.Value.AnalysisData.OfType<MountAndBlade2BannerlordModuleInfo>().FirstOrDefault() is { } data ? new ModuleInfoExtendedWithPath(data.ModuleInfo, x.Key.Path) : null)
+            .OfType<ModuleInfoExtendedWithPath>()
+            .ToArray();
 
         var launcherManager = _launcherManagerFactory.Get(installation);
-        var result = launcherManager.InstallModuleContent(files.Select(x => x.Key.ToString()).ToArray(), modFolder.ToString());
-        var moduleInfos = result.Instructions.OfType<ModuleInfoInstallInstruction>().Select(x => x.ModuleInfo);
-        return ValueTask.FromResult<IEnumerable<AModFile>>(result.Instructions.OfType<CopyInstallInstruction>().Select(instruction =>
+        // InstallModuleContent will only install mods if the ModuleInfoExtendedWithPath for a mod was provided
+        var result = launcherManager.InstallModuleContent(files.Select(x => x.Key.ToString()).ToArray(), moduleInfos);
+        filesToExtract.AddRange(result.Instructions.OfType<CopyInstallInstruction>().Select(instruction =>
         {
             var relativePath = instruction.Source.ToRelativePath();
             var file = files[relativePath];
             return new FromArchive
             {
                 Id = ModFileId.New(),
-                To = new GamePath(GameFolderType.Game, ModFolder.Join(relativePath)),
+                To = new GamePath(GameFolderType.Game, MountAndBlade2BannerlordConstants.ModFolder.Join(relativePath)),
                 From = new HashRelativePath(srcArchive, relativePath),
                 Hash = file.Hash,
                 Size = file.Size,
-                Metadata = new IModFileMetadata[]
+                Metadata =
                 {
-                    new ModuleIdMetadata
-                    {
-                        ModuleId = instruction.ModuleId
-                    },
-                }.ToImmutableHashSet()
+                    new ModuleIdMetadata { ModuleId = instruction.ModuleId },
+                    new OriginalPathMetadata { OriginalRelativePath = relativePath.Path }
+                }
             };
         }));
+
+        if (filesToExtract.Count == 0) // Not a valid Bannerlord Module - install in root folder the content
+        {
+            filesToExtract.AddRange(files.Select(kv =>
+            {
+                var (path, file) = kv;
+                return new FromArchive
+                {
+                    Id = ModFileId.New(),
+                    To = new GamePath(GameFolderType.Game, path),
+                    From = new HashRelativePath(srcArchive, path),
+                    Hash = file.Hash,
+                    Size = file.Size,
+                };
+            }));
+        }
+
+        return ValueTask.FromResult<IEnumerable<AModFile>>(filesToExtract);
     }
 }

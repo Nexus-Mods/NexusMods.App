@@ -26,12 +26,12 @@ public class RunStandaloneTool : ITool
         if (loadout.Installation.Game is not MountAndBlade2Bannerlord mountAndBladeBannerlord) return;
 
         var hasXbox = false; // TODO:
-        var hasBLSE = loadout.HasModuleId("Bannerlord.BLSE");
+        var hasBLSE = loadout.HasInstalledFile("Bannerlord.BLSE.Shared.dll");
         if (hasXbox && !hasBLSE) return; // Not supported.
 
         var program = hasBLSE
-            ? mountAndBladeBannerlord.BLSEStandaloneFile.CombineChecked(loadout.Installation.Locations[GameFolderType.Game])
-            : mountAndBladeBannerlord.PrimaryStandaloneFile.CombineChecked(loadout.Installation.Locations[GameFolderType.Game]);
+            ? mountAndBladeBannerlord.GetBLSEStandaloneFile(loadout.Installation).CombineChecked(loadout.Installation.Locations[GameFolderType.Game])
+            : mountAndBladeBannerlord.GetPrimaryStandaloneFile(loadout.Installation).CombineChecked(loadout.Installation.Locations[GameFolderType.Game]);
         _logger.LogInformation("Running {Program}", program);
 
         var launcherManager = _launcherManagerFactory.Get(loadout.Installation);

@@ -1,6 +1,8 @@
+using Bannerlord.LauncherManager;
 using NexusMods.Common;
 using NexusMods.DataModel.Games;
 using NexusMods.FileExtractor.StreamFactories;
+using NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
@@ -33,14 +35,18 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
 
     public override string Name => DisplayName;
     public override GameDomain Domain => StaticDomain;
-    public override GamePath PrimaryFile => new(GameFolderType.Game, @"bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.Launcher.exe");
-    public GamePath PrimaryXboxFile => new(GameFolderType.Game, @"bin\Win64_Shipping_Client\Launcher.Native.exe");
-    public GamePath PrimaryStandaloneFile => new(GameFolderType.Game, @"bin\Win64_Shipping_Client\Bannerlord.exe");
 
-    public GamePath BLSEStandaloneFile => new(GameFolderType.Game, @"bin\Win64_Shipping_Client\Bannerlord.BLSE.Standalone.exe");
-    public GamePath BLSELauncherFile => new(GameFolderType.Game, @"bin\Win64_Shipping_Client\Bannerlord.BLSE.Launcher.exe");
+    // TODO:
+    public override GamePath PrimaryFile { get; }
 
-    public GamePath BLSELauncherExFile => new(GameFolderType.Game, @"bin\Win64_Shipping_Client\Bannerlord.BLSE.LauncherEx.exe");
+    public GamePath GetPrimaryFile(GameInstallation installation) => new(GameFolderType.Game, @$"bin\{installation.GetConfiguration(_launcherManagerFactory)}\TaleWorlds.MountAndBlade.Launcher.exe");
+    public GamePath GetPrimaryXboxFile(GameInstallation installation) => new(GameFolderType.Game, @$"bin\{installation.GetConfiguration(_launcherManagerFactory)}\Launcher.Native.exe");
+    public GamePath GetPrimaryStandaloneFile(GameInstallation installation) => new(GameFolderType.Game, @$"bin\{installation.GetConfiguration(_launcherManagerFactory)}\{Constants.BannerlordExecutable}");
+
+    public GamePath GetBLSEStandaloneFile(GameInstallation installation) => new(GameFolderType.Game, @$"bin\{installation.GetConfiguration(_launcherManagerFactory)}\{Constants.BLSEExecutable}");
+    public GamePath GetBLSELauncherFile(GameInstallation installation) => new(GameFolderType.Game, @$"bin\{installation.GetConfiguration(_launcherManagerFactory)}\Bannerlord.BLSE.Launcher.exe");
+
+    public GamePath GetBLSELauncherExFile(GameInstallation installation) => new(GameFolderType.Game, @$"bin\{installation.GetConfiguration(_launcherManagerFactory)}\Bannerlord.BLSE.LauncherEx.exe");
 
     public override IStreamFactory Icon =>
         new EmbededResourceStreamFactory<MountAndBlade2Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.MountAndBlade2Bannerlord.icon.jpg");
@@ -55,7 +61,7 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
             if (_installations != null) return _installations;
             _installations = _gameLocators.SelectMany(locator => locator.Find(this), (locator, installation) =>
                 {
-                    var launcherManagerHandler = _launcherManagerFactory.Get(installation.Path.ToString());
+                    var launcherManagerHandler = _launcherManagerFactory.Get(installation);
                     return new GameInstallation
                     {
                         Game = this,

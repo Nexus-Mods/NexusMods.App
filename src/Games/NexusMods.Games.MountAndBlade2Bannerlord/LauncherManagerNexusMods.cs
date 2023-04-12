@@ -18,7 +18,7 @@ internal sealed partial class LauncherManagerNexusMods : LauncherManagerHandler
 
     public string ExecutableParameters { get; private set; } = string.Empty;
 
-    public LauncherManagerNexusMods(ILogger<LauncherManagerNexusMods> logger, string installationPath)
+    public LauncherManagerNexusMods(ILogger<LauncherManagerNexusMods> logger, string installationPath, GameStore store)
     {
         _logger = logger;
         _installationPath = installationPath;
@@ -34,11 +34,13 @@ internal sealed partial class LauncherManagerNexusMods : LauncherManagerHandler
             writeFileContent: WriteFileContentDelegate,
             readDirectoryFileList: Directory.GetFiles,
             readDirectoryList: Directory.GetDirectories,
+            getAllModuleViewModels: null!, // TODO:
             getModuleViewModels: null!, // TODO:
             setModuleViewModels: null!, // TODO:
             getOptions: null!, // TODO:
             getState: null! // TODO:
         );
+        SetGameStore(store);
     }
 
     public void SetCurrentWindow(Window window)

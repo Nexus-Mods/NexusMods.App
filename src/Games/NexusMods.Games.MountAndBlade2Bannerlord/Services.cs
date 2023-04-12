@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.ModInstallers;
 
@@ -11,6 +12,7 @@ public static class Services
         services.AddSingleton<MountAndBlade2Bannerlord>();
         services.AddSingleton<IGame, MountAndBlade2Bannerlord>(sp => sp.GetRequiredService<MountAndBlade2Bannerlord>());
         services.AddSingleton<IModInstaller, MountAndBlade2BannerlordModInstaller>();
+        services.AddSingleton<IFileAnalyzer, MountAndBlade2BannerlordAnalyzer>();
         services.AddSingleton<LauncherManagerFactory>();
         services.AddSingleton<ITool, RunStandaloneTool>();
         services.AddSingleton<ITool, RunLauncherTool>();
