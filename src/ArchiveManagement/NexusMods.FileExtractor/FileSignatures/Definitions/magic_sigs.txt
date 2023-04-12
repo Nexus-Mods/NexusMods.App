@@ -17,3 +17,4 @@ Creation Engine Plugin, 54 45 53 34, CreationEnginePlugin
 TES4 Plugin, 54 45 53 34, TES4
 PDF file,25 50 44 46,PDF|FDF,Word processing suite,0,25 25 45 4F 46
 Cyberpunk Appearance Preset, 4c 6f 63 4b 65 79 23, Cyberpunk2077AppearancePreset
+Test files, 4A 55 53 54 54 45 53 54, JustTest
