@@ -10,6 +10,8 @@
 
 Stardew Valley uses .NET 5 and [MonoGame](https://github.com/MonoGame/MonoGame), which is an open-source implementation of the discontinued [XNA Framework](https://en.wikipedia.org/wiki/Microsoft_XNA). MonoGame, and Stardew Valley to that extend, is fully cross-platform and runs natively on desktop (Windows/Linux/macOS), on the phone (Android/iOS) and on the console (PS4/PS5/Xbox using UWP and XDK/Nintendo Switch).
 
+Note: Stardew Valley has a `compatability` branch for 32-bit systems, which uses XNA and isn't moddable.
+
 Modding is done via [Stardew Modding API](https://smapi.io/), or _SMAPI_ for short. SMAPI is an [open-source](https://github.com/Pathoschild/SMAPI) modding framework and is supported on [Windows](https://stardewvalleywiki.com/Modding:Installing_SMAPI_on_Windows), [Linux](https://stardewvalleywiki.com/Modding:Installing_SMAPI_on_Linux) ([Steam Deck](https://stardewvalleywiki.com/Modding:Installing_SMAPI_on_Mac)), [macOS](https://stardewvalleywiki.com/Modding:Installing_SMAPI_on_Mac) and [Android](https://stardewvalleywiki.com/Modding:Installing_SMAPI_on_Android) (experimental at best).
 
 ## Game Files
@@ -19,7 +21,9 @@ Modding is done via [Stardew Modding API](https://smapi.io/), or _SMAPI_ for sho
 
 The shell script only checks if the current macOS version is supported and launches the game.
 
-Saves are located inside the AppData folder (`%AppData%` on Windows, `~/.config` on Linux) under `StardewValley/Saves`. SMAPI puts the saves inside `StardewValley/.smapi` instead (this has changed in [`3.2`](https://github.com/Pathoschild/SMAPI/blob/9763bc7484e29cbc9e7f37c61121d794e6720e75/src/SMAPI.Installer/InteractiveInstaller.cs#L358), the previous location was `StardewValley/Saves/.smapi`).
+Saves are located inside the AppData folder (`%AppData%` on Windows, `~/.config` on Linux) under `StardewValley/Saves`.
+
+Additional, SMAPI puts global data files inside the AppData folder under `StardewValley/.smapi/mod-data/{modId}/{key}.json` ([Source](https://github.com/Pathoschild/SMAPI/blob/8d600e226960a81636137d9bf286c69ab39066ed/src/SMAPI/Framework/ModHelpers/DataHelper.cs#L163-L169)).
 
 ## Mod Formats
 

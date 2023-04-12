@@ -65,11 +65,11 @@ public class StardewValley : AGame, ISteamGame, IGogGame
             stardewValleyAppDataPath.CombineUnchecked("Saves")
         );
 
-        // TODO: SMAPI saves
-        //yield return new KeyValuePair<GameFolderType, AbsolutePath>(
-        //    GameFolderType.Saves,
-        //    stardewValleyAppDataPath.CombineUnchecked(".smapi")
-        //);
+        // global data files (https://github.com/Pathoschild/SMAPI/blob/8d600e226960a81636137d9bf286c69ab39066ed/src/SMAPI/Framework/ModHelpers/DataHelper.cs#L163-L169)
+        yield return new KeyValuePair<GameFolderType, AbsolutePath>(
+            GameFolderType.AppData,
+            stardewValleyAppDataPath.CombineUnchecked(".smapi")
+        );
     }
 
     public override IStreamFactory Icon => new EmbededResourceStreamFactory<StardewValley>("NexusMods.Games.StardewValley.Resources.icon.png");
