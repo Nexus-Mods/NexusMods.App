@@ -52,6 +52,7 @@ public class GameLeftMenuViewModel : AViewModel<IGameLeftMenuViewModel>, IGameLe
                 .DisposeWith(d);
 
             this.WhenAnyValue(vm => vm.Game)
+                .WhereNotNull()
                 .Subscribe(game =>
                 {
                     var result = loadoutRegistry.AllLoadouts()

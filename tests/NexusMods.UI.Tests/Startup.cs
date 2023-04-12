@@ -4,6 +4,7 @@ using NexusMods.App;
 using NexusMods.Common;
 using NexusMods.Games.RedEngine;
 using NexusMods.StandardGameLocators.TestHelpers;
+using NexusMods.UI.Tests.Framework;
 using Xunit.DependencyInjection;
 using Xunit.DependencyInjection.Logging;
 

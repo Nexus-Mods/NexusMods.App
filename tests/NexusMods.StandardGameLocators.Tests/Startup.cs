@@ -12,11 +12,13 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection container)
     {
-        container.AddStandardGameLocators(false)
-                 .AddSingleton<TemporaryFileManager>()
-                 .AddStubbedGameLocators()
-                 .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
-                 .Validate();
+        container
+            .AddStandardGameLocators(false)
+            .AddSingleton<IFileSystem, InMemoryFileSystem>()
+            .AddSingleton<TemporaryFileManager>()
+            .AddStubbedGameLocators()
+            .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
+            .Validate();
     }
 
     public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>

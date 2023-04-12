@@ -18,22 +18,22 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection container)
     {
-        var prefix = KnownFolders.EntryFolder.CombineUnchecked("tempTestData").CombineUnchecked(Guid.NewGuid().ToString());
+        var prefix = FileSystem.Shared.GetKnownPath(KnownPath.TempDirectory)
+            .CombineUnchecked(typeof(Startup).FullName ?? "NexusMods.DataModel.Tests")
+            .CombineUnchecked(Guid.NewGuid().ToString());
 
-        container.AddDataModel(new DataModelSettings(prefix))
-                 .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
-                 .AddStandardGameLocators(false)
-                 .AddSingleton<TemporaryFileManager>(_ => new TemporaryFileManager(prefix.CombineUnchecked("tempFiles")))
-                 .AddFileExtractors(new FileExtractorSettings())
-                 .AddStubbedGameLocators()
-
-                 .AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(_ =>
-            new Resource<FileContentsCache, Size>("File Analysis"))
-                 .AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ =>
-            new Resource<IExtractor, Size>("File Extraction"))
-
-                 .AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Startup).Assembly))
-                 .Validate();
+        container
+            .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
+            .AddFileSystem()
+            .AddSingleton<TemporaryFileManager>()
+            .AddDataModel(new DataModelSettings(prefix))
+            .AddStandardGameLocators(false)
+            .AddFileExtractors(new FileExtractorSettings())
+            .AddStubbedGameLocators()
+            .AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(_ => new Resource<FileContentsCache, Size>("File Analysis"))
+            .AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ => new Resource<IExtractor, Size>("File Extraction"))
+            .AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Startup).Assembly))
+            .Validate();
     }
 
     public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>

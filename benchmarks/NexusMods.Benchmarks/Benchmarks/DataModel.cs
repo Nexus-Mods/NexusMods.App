@@ -33,7 +33,7 @@ public class DataStoreBenchmark : IBenchmark, IDisposable
 
     public DataStoreBenchmark()
     {
-        _temporaryFileManager = new TemporaryFileManager();
+        _temporaryFileManager = new TemporaryFileManager(FileSystem.Shared);
         var host = Host.CreateDefaultBuilder()
             .ConfigureServices((_, services) =>
             {

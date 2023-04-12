@@ -12,7 +12,7 @@ public static class ObjectPoolExtensions
     /// <returns></returns>
     public static ObjectPoolDisposable<T> RentDisposable<T>(this ObjectPool<T> pool) where T : class
     {
-        return new(pool.Get(), pool);
+        return new ObjectPoolDisposable<T>(pool.Get(), pool);
     }
 
 }
@@ -23,17 +23,38 @@ public static class ObjectPoolExtensions
 /// <typeparam name="T"></typeparam>
 public struct ObjectPoolDisposable<T> : IDisposable where T : class
 {
-    private readonly ObjectPool<T> _pool;
-    public T Value { get; }
+    private bool _isDisposed;
 
+    private readonly ObjectPool<T> _pool;
+    private T _value;
+
+    public T Value
+    {
+        get
+        {
+            if (_isDisposed)
+                throw new ObjectDisposedException(typeof(ObjectPoolDisposable<>).Name);
+            return _value;
+        }
+    }
+
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="pool"></param>
     public ObjectPoolDisposable(T value, ObjectPool<T> pool)
     {
-        Value = value;
+        _value = value;
         _pool = pool;
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
+        if (_isDisposed) return;
         _pool.Return(Value);
+        _value = null!;
+        _isDisposed = true;
     }
 }
