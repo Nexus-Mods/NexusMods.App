@@ -11,6 +11,7 @@ using NexusMods.Games.FOMOD;
 using NexusMods.Games.Generic;
 using NexusMods.Games.RedEngine;
 using NexusMods.Games.Reshade;
+using NexusMods.Games.Sifu;
 using NexusMods.Games.TestHarness;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
@@ -45,6 +46,7 @@ public static class Services
             .AddReshade()
             .AddFomod()
             .AddDarkestDungeon()
+            .AddSifu()
             .AddRenderers()
             .AddNexusWebApi()
             .AddAdvancedHttpDownloader(config.HttpDownloaderSettings)
