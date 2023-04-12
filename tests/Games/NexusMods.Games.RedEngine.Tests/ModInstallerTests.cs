@@ -45,8 +45,8 @@ public class ModInstallerTests
     public async Task CanCreateLoadout(string name, ModId modId, FileId fileId, Hash hash, int fileCount)
     {
         var loadout = await _manager.ImportFromAsync(KnownFolders.EntryFolder.CombineUnchecked(@"Resources\cyberpunk2077.1.61.zip"));
-        loadout.Value.Mods.Values.Select(m => m.Name).Should().Contain("Game Files");
-        var gameFiles = loadout.Value.Mods.Values.First(m => m.Name == "Game Files");
+        loadout.Value.Mods.Values.Select(m => m.Name).Should().Contain(Mod.GameFilesCategory);
+        var gameFiles = loadout.Value.Mods.Values.First(m => m.Name == Mod.GameFilesCategory);
         gameFiles.Files.Count.Should().BeGreaterThan(0);
 
         var file = await Download(modId, fileId, hash);

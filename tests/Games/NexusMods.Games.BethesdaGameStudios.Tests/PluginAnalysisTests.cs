@@ -10,15 +10,15 @@ using NexusMods.Paths.Utilities;
 namespace NexusMods.Games.BethesdaGameStudios.Tests;
 
 [Trait("RequiresGameInstalls", "True")] // Technically this doesn't require the game, but the DI system does for the other tests
-public class FileAnalysisTests : AFileAnalyzerTest<SkyrimSpecialEdition, PluginAnalyzer>
+public class PluginAnalysisTests : AFileAnalyzerTest<SkyrimSpecialEdition, PluginAnalyzer>
 {
     private readonly AbsolutePath _plugin1;
     private readonly AbsolutePath _plugin2;
 
-    public FileAnalysisTests(IFileSystem fileSystem, IServiceProvider serviceProvider) : base(serviceProvider)
+    public PluginAnalysisTests(IFileSystem fileSystem, IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _plugin1 = fileSystem.GetKnownPath(KnownPath.EntryDirectory).CombineUnchecked("Resources").CombineUnchecked("testfile1.esp");
-        _plugin2 = fileSystem.GetKnownPath(KnownPath.EntryDirectory).CombineUnchecked("Resources").CombineUnchecked("testfile2.esl");
+        _plugin1 = BethesdaTestHelpers.GetAssetsPath(fileSystem).CombineUnchecked("testfile1.esp");
+        _plugin2 = BethesdaTestHelpers.GetAssetsPath(fileSystem).CombineUnchecked("testfile2.esl");
     }
 
     [Fact]

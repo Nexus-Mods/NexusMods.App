@@ -23,6 +23,7 @@ public class LooseFileInstaller : IModInstaller
             ("meshes".ToRelativePath(), FileType.NIF),
             ("textures".ToRelativePath(), FileType.DDS)
         };
+
         _prefixes = _prefixes.Concat(_prefixes.Select(p => (_dataFolder.Join(p.Prefix), p.Type)))
             .ToArray();
     }
