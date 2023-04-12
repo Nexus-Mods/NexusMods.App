@@ -18,6 +18,9 @@ public class GogLocator : AGameLocator<GOGGame, long, IGogGame>
     }
 
     /// <inheritdoc />
+    protected override GameStore Store => GameStore.GOG;
+
+    /// <inheritdoc />
     protected override IEnumerable<long> Ids(IGogGame game) => game.GogIds;
 
     /// <inheritdoc />

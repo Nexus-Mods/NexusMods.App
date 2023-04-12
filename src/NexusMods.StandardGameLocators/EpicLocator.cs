@@ -18,6 +18,9 @@ public class EpicLocator : AGameLocator<EGSGame, string, IEpicGame>
     }
 
     /// <inheritdoc />
+    protected override GameStore Store => GameStore.EGS;
+
+    /// <inheritdoc />
     protected override IEnumerable<string> Ids(IEpicGame game) => game.EpicCatalogItemId;
 
     /// <inheritdoc />

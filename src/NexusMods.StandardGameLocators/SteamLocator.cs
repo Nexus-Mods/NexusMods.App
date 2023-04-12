@@ -18,6 +18,9 @@ public class SteamLocator : AGameLocator<SteamGame, int, ISteamGame>
     }
 
     /// <inheritdoc />
+    protected override GameStore Store => GameStore.Steam;
+
+    /// <inheritdoc />
     protected override IEnumerable<int> Ids(ISteamGame game) => game.SteamIds;
 
     /// <inheritdoc />

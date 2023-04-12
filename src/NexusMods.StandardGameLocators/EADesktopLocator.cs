@@ -19,6 +19,9 @@ public class EADesktopLocator : AGameLocator<EADesktopGame, string, IEADesktopGa
     }
 
     /// <inheritdoc />
+    protected override GameStore Store => GameStore.EADesktop;
+
+    /// <inheritdoc />
     protected override IEnumerable<string> Ids(IEADesktopGame game) => game.EADesktopSoftwareIDs;
 
     /// <inheritdoc />

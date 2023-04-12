@@ -41,6 +41,6 @@ public class BasicTests
     [Fact]
     public void CanConvertToString()
     {
-        Assert.Equal("Stubbed Game v0.0.0.0", _steamInstall.ToString());
+        Assert.Equal("Stubbed Game v0.0.0.0 (Unknown)", _steamInstall.ToString());
     }
 }
