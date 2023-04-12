@@ -118,12 +118,7 @@ SMAPI installer
 
 Each supported platform has a shell script that launches the installer inside `internal/{os}`. The installer can update, install and uninstall SMAPI, but for our use-case, we just need the installation part:
 
-1) `install.dat` is a ZIP archive and all files inside will be extracted to the game folder
-2) on Linux and macOS: the original game launcher gets replaced with `unix-launcher.sh`, which was extracted from `install.dat`. The installer also runs `chmod` to mark the file as executable.
-3) `Stardew Valley.deps.json` from the game folder gets copied to `StardewModdingAPI.deps.json` (required to resolve native DLLs)
-4) Windows only: SMAPI comes with it's own executable `StardewModdingAPI.exe` which must be used to launch the game. The [wiki](https://stardewvalleywiki.com/Modding:Installing_SMAPI_on_Windows#Configure_your_game_client) has instructions to configure the game client correctly.
-
-The `install.dat` ZIP archive contains the following files:
+The `install.dat` file is a ZIP archive containing all files that need to be extracted to the game folder. `install.dat` contains the following files:
 
 ```text
 install.dat
@@ -136,6 +131,12 @@ install.dat
 ```
 
 Windows also has `StardewModdingAPI.exe` and Linux and macOS have `unix-launcher.sh` and `StardewModdingAPI` instead.
+
+Regardless of platform, similarly to Bethesda Script Extenders, SMAPI comes with it's own loader executable called `StardewModdingAPI.exe` (Windows) or `StardewModdingAPI` (Unix). The installer also copies `Stardew Valley.deps.json` from the game folder to `StardewModdingAPI.deps.json`, so that native DLLs resolve properly. The following steps are dependent on platform and store front:
+
+- Linux and macOS: `unix-launcher.sh` from `install.dat` replaces the original game launcher script `StardewValley`
+- Windows (Steam and GOG): `StardewModdingAPI.exe` can be launched directly. Alternatively, [Steam](https://stardewvalleywiki.com/Modding:Installing_SMAPI_on_Windows#Steam) and [GOG Galaxy](https://stardewvalleywiki.com/Modding:Installing_SMAPI_on_Windows#GOG_Galaxy) can be configured to launch `StardewModdingAPI.exe` instead of the original game executable `Stardew Valley.exe`. This is only needed if you want achievements and playtime tracking to work.
+- Windows ([Xbox Game Pass](https://stardewvalleywiki.com/Modding:Installing_SMAPI_on_Windows#Xbox_app)): the original game executable `Stardew Valley.exe` has to be replaced with `StardewModdingAPI.exe` for mods to work.
 
 ## Additional Notes
 
