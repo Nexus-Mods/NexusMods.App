@@ -1,0 +1,40 @@
+﻿<reactiveUi:ReactiveUserControl
+    d:DesignHeight="52"
+    d:DesignWidth="992"
+    mc:Ignorable="d"
+    x:Class="NexusMods.App.UI.Toolbars.DefaultLoadoutToolbarView"
+    x:TypeArguments="toolbars:IDefaultLoadoutToolbarViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:toolbars="clr-namespace:NexusMods.App.UI.Toolbars"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.DataContext>
+        <toolbars:DefaultLoadoutToolbarDesignViewModel />
+    </Design.DataContext>
+    <Grid
+        Background="{DynamicResource BackgroundSecondaryColor}"
+        ColumnDefinitions="*, Auto"
+        Height="52">
+
+        <TextBlock
+            Classes="ToolbarCaptionMontserratSemi"
+            Grid.Column="0"
+            Margin="24,0,0,0"
+            VerticalAlignment="Center"
+            x:Name="CaptionText" />
+
+        <Button
+            Classes="Toolbar"
+            Grid.Column="1"
+            Margin="0,0,24,0"
+            x:Name="AddModButton">
+            <StackPanel>
+                <avalonia:Icon Value="mdi-plus-circle-outline" />
+                <TextBlock Text="Add Mod" />
+            </StackPanel>
+        </Button>
+    </Grid>
+</reactiveUi:ReactiveUserControl>

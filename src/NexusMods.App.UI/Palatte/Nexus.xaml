@@ -47,7 +47,7 @@
         <Color x:Key="ThemeBackgroundColor">#101010</Color>
         <SolidColorBrush Color="{DynamicResource ThemeBackgroundColor}" x:Key="ThemeBackgroundBrush" />
 
-        <Color x:Key="BackgroundSecondaryColor">#101010</Color>
+        <Color x:Key="BackgroundSecondaryColor">#181818</Color>
         <SolidColorBrush Color="{DynamicResource BackgroundSecondaryColor}" x:Key="BackgroundSecondaryBrush" />
 
         <Color x:Key="TransparentColor">#00FFFFFF</Color>

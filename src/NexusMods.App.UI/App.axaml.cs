@@ -18,7 +18,7 @@ public class App : Application
     {
         _provider = provider;
     }
-
+    
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -34,11 +34,6 @@ public class App : Application
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-
-
-
-
-
             var reactiveWindow = _provider.GetRequiredService<MainWindow>();
             reactiveWindow.ViewModel = _provider.GetRequiredService<MainWindowViewModel>();
             desktop.MainWindow = reactiveWindow;

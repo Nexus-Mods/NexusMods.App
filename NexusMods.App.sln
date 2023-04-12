@@ -104,6 +104,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.FOMOD", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.FOMOD.Tests", "tests\Games\NexusMods.Games.FOMOD.Tests\NexusMods.Games.FOMOD.Tests.csproj", "{678D0CB7-EA46-4DF2-8C91-E77EA2270C48}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.TestFramework", "tests\Games\NexusMods.Games.TestFramework\NexusMods.Games.TestFramework.csproj", "{F9332FAE-1B43-413B-BEA0-780694B77310}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.DarkestDungeon.Tests", "tests\Games\NexusMods.Games.DarkestDungeon.Tests\NexusMods.Games.DarkestDungeon.Tests.csproj", "{3DBB08FF-9542-4086-890B-253572C11CFA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -266,6 +270,14 @@ Global
 		{678D0CB7-EA46-4DF2-8C91-E77EA2270C48}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{678D0CB7-EA46-4DF2-8C91-E77EA2270C48}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{678D0CB7-EA46-4DF2-8C91-E77EA2270C48}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9332FAE-1B43-413B-BEA0-780694B77310}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9332FAE-1B43-413B-BEA0-780694B77310}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9332FAE-1B43-413B-BEA0-780694B77310}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9332FAE-1B43-413B-BEA0-780694B77310}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DBB08FF-9542-4086-890B-253572C11CFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DBB08FF-9542-4086-890B-253572C11CFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DBB08FF-9542-4086-890B-253572C11CFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DBB08FF-9542-4086-890B-253572C11CFA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -302,6 +314,8 @@ Global
 		{F9107626-3380-4472-B17F-D5B54C5CEB2D} = {B93AF89E-9ED7-4FD0-B58E-688AA178AB53}
 		{B43A31B2-1F08-4D8E-9C45-48015FBA983E} = {B95A2142-2872-4FFD-BAB2-596373401461}
 		{678D0CB7-EA46-4DF2-8C91-E77EA2270C48} = {B95A2142-2872-4FFD-BAB2-596373401461}
+		{F9332FAE-1B43-413B-BEA0-780694B77310} = {B95A2142-2872-4FFD-BAB2-596373401461}
+		{3DBB08FF-9542-4086-890B-253572C11CFA} = {B95A2142-2872-4FFD-BAB2-596373401461}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F9F8352-34DD-42C0-8564-EE9AF34A3501}

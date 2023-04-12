@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
     <PropertyGroup>
         <XunitStartupAssembly>NexusMods.Games.FOMOD.Tests</XunitStartupAssembly>
     </PropertyGroup>
@@ -8,16 +7,7 @@
       <ProjectReference Include="..\..\..\src\Games\NexusMods.Games.FOMOD\NexusMods.Games.FOMOD.csproj" />
       <ProjectReference Include="..\..\..\src\NexusMods.App\NexusMods.App.csproj" />
       <ProjectReference Include="..\..\..\src\NexusMods.Paths.TestingHelpers\NexusMods.Paths.TestingHelpers.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Update="FluentAssertions" Version="6.10.0" />
-        <PackageReference Update="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
-        <PackageReference Include="FluentAssertions" Version="6.10.0" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
-        <PackageReference Include="Moq" Version="4.18.4" />
-        <PackageReference Include="Xunit.DependencyInjection" Version="8.7.0" />
-        <PackageReference Include="Xunit.DependencyInjection.Logging" Version="8.0.1" />
+      <ProjectReference Include="..\NexusMods.Games.TestFramework\NexusMods.Games.TestFramework.csproj" />
     </ItemGroup>
 
     <ItemGroup>

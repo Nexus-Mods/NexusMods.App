@@ -17,6 +17,10 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
         InitializeComponent();
         this.WhenActivated(d =>
         {
+            this.WhenAnyValue(view => view.ViewModel!.Toolbar)
+                .BindToUi(this, view => view.ToolbarViewHost.ViewModel)
+                .DisposeWith(d);
+
             this.WhenAnyValue(view => view.ViewModel!.Mods)
                 .BindToUi(this, view => view.ModsDataGrid.Items)
                 .DisposeWith(d);
