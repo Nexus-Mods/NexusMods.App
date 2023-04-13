@@ -1,6 +1,7 @@
 using NexusMods.CLI;
 using NexusMods.DataModel.RateLimiting;
 using Spectre.Console;
+using Spectre.Console.Rendering;
 
 namespace NexusMods.App.CLI.Renderers;
 
@@ -144,8 +145,10 @@ public class Spectre : IRenderer
 
         foreach (var row in table.Rows)
         {
-            ot.AddRow(row.Select(r => r.ToString()).ToArray()!);
+            var columns = row.Select(r => (IRenderable)new Text(r.ToString() ?? string.Empty));
+            ot.AddRow(columns);
         }
+
         AnsiConsole.Write(ot);
         return Task.CompletedTask;
     }
