@@ -7,7 +7,10 @@ namespace NexusMods.Paths;
 /// </summary>
 public readonly struct Extension : IEquatable<Extension>
 {
-    private static readonly Extension None = new("");
+    /// <summary>
+    /// Use when no extension is available or specified.
+    /// </summary>
+    public static readonly Extension None = new("");
 
     /// <summary>
     /// Length of this extension.
