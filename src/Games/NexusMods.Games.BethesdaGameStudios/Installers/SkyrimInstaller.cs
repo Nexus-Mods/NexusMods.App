@@ -7,11 +7,12 @@ using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Games.BethesdaGameStudios.Installers;
 
 /// <summary>
-/// Installs Skyrim files found outside of BSAs.
+/// Installs Skyrim files; both plugins and loose files.
 /// </summary>
 /// <remarks>
 ///    This installer allows mods which use the following formats (where {Root} is archive root):
@@ -19,15 +20,19 @@ namespace NexusMods.Games.BethesdaGameStudios.Installers;
 ///    - {Root}/Data
 ///    - {Root}
 ///
-///    Where after specified path you have 'meshes' and 'textures' folders.
+///    Inside these folders, you can either have .esp, .esm, .esl or 'meshes' and 'textures' folders.
 ///    {AnyFolderName} allows only 1 level of nesting.
 /// </remarks>
-public class LooseFileInstaller : IModInstaller
+public class SkyrimInstaller : IModInstaller
 {
     private const string MeshesFolderName = "meshes";
     private const string TexturesFolderName = "textures";
     private const string MeshExtension = ".nif";
     private const string TextureExtension = ".dds";
+    private const string EspExtension = ".esp";
+    private const string EslExtension = ".esl";
+    private const string EsmExtension = ".esm";
+    private const string BsaExtension = ".bsa";
 
     public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
@@ -45,15 +50,15 @@ public class LooseFileInstaller : IModInstaller
 
             // Check in subfolder first
             var separatorIndex = path.GetFirstDirectorySeparatorIndex(out _);
-            if (separatorIndex + 1 < rawPath.Length)
+            if (separatorIndex != -1 && (separatorIndex + 1) < rawPath.Length)
             {
                 var subDirectory = rawPath.AsSpan(separatorIndex + 1);
                 if (AssertPathForPriority(subDirectory))
-                    return Common.Priority.High;
+                    return Common.Priority.Normal;
             }
 
             if (AssertPathForPriority(rawPath))
-                return Common.Priority.High;
+                return Common.Priority.Normal;
         }
 
         return Common.Priority.None;
@@ -100,11 +105,11 @@ public class LooseFileInstaller : IModInstaller
 
             // Check in subfolder first
             var separatorIndex = path.GetFirstDirectorySeparatorIndex(out _);
-            if (separatorIndex + 1 < rawPath.Length)
+            if (separatorIndex != -1 && (separatorIndex + 1) < rawPath.Length)
             {
                 var subDirectory = rawPath.AsSpan(separatorIndex + 1);
                 if (AssertFolderForExtract(subDirectory))
-                    return rawPath.AsSpan(separatorIndex);
+                    return rawPath.AsSpan(0, separatorIndex);
             }
 
             if (AssertFolderForExtract(rawPath))
@@ -124,6 +129,22 @@ public class LooseFileInstaller : IModInstaller
             relativePath.EndsWith(TextureExtension, StringComparison.OrdinalIgnoreCase))
             return true;
 
+        // Has plugins in current directory.
+        if (PathHelpers.PathHasSubdirectory(relativePath)) 
+            return false;
+        
+        if (relativePath.EndsWith(EsmExtension, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (relativePath.EndsWith(EspExtension, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (relativePath.EndsWith(EslExtension, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (relativePath.EndsWith(BsaExtension, StringComparison.OrdinalIgnoreCase))
+            return true;
+
         return false;
     }
 
@@ -135,6 +156,22 @@ public class LooseFileInstaller : IModInstaller
         if (relativePath.StartsWith(TexturesFolderName, StringComparison.OrdinalIgnoreCase))
             return true;
 
+        // Check for plugins, subdirectory and extension check here should be sufficient.
+        if (PathHelpers.PathHasSubdirectory(relativePath)) 
+            return false;
+        
+        if (relativePath.EndsWith(EsmExtension, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (relativePath.EndsWith(EspExtension, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (relativePath.EndsWith(EslExtension, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (relativePath.EndsWith(BsaExtension, StringComparison.OrdinalIgnoreCase))
+            return true;
+        
         return false;
     }
 }

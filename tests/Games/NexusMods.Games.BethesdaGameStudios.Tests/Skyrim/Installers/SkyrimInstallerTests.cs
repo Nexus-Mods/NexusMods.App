@@ -1,18 +1,19 @@
-﻿using NexusMods.DataModel.Loadouts.ModFiles;
+﻿using FluentAssertions;
+using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.BethesdaGameStudios.Tests.Skyrim.Installers;
 
 /// <summary>
-/// Tests for the loose file installer.
+/// Tests for the Skyrim installer.
 /// </summary>
-public class LooseFileInstallerTests : AGameTest<SkyrimSpecialEdition>
+public class SkyrimInstallerTests : AGameTest<SkyrimSpecialEdition>
 {
     private readonly TestModDownloader _downloader;
     private readonly IFileSystem _realFs;
 
-    public LooseFileInstallerTests(IServiceProvider serviceProvider, TestModDownloader downloader, IFileSystem realFs) : base(serviceProvider)
+    public SkyrimInstallerTests(IServiceProvider serviceProvider, TestModDownloader downloader, IFileSystem realFs) : base(serviceProvider)
     {
         _downloader = downloader;
         _realFs = realFs;
@@ -29,14 +30,41 @@ public class LooseFileInstallerTests : AGameTest<SkyrimSpecialEdition>
     [Fact]
     public async Task InstallMod_WithMisnamedDataFolder() => await TestLooseFileCommon("DataFolderWithDifferentName");
 
+    [Fact]
+    public async Task InstallMod_WithBsa() => await TestLooseFileCommon("HasBsa");
+
+    [Fact]
+    public async Task InstallMod_WithBsaInSubfolder() => await TestLooseFileCommon("HasBsa_InSubfolder");
+
+    [Fact]
+    public async Task InstallMod_WithEsl() => await TestLooseFileCommon("HasEsl");
+
+    [Fact]
+    public async Task InstallMod_WithEslInSubfolder() => await TestLooseFileCommon("HasEsl_InSubfolder");
+
+    [Fact]
+    public async Task InstallMod_WithEsm() => await TestLooseFileCommon("HasEsm");
+
+    [Fact]
+    public async Task InstallMod_WithEsmInSubfolder() => await TestLooseFileCommon("HasEsm_InSubfolder");
+
+    [Fact]
+    public async Task InstallMod_WithEsp() => await TestLooseFileCommon("HasEsp");
+
+    [Fact]
+    public async Task InstallMod_WithEspInSubfolder() => await TestLooseFileCommon("HasEsp_InSubfolder");
+
     private async Task TestLooseFileCommon(string folderName)
     {
+        // TODO: Technically these tests don't cover where the file is sourced from, some code could be added here to do this.
         var loadout = await LoadoutManager.ImportSkyrimSELoadoutAsync(_realFs);
         var path = BethesdaTestHelpers.GetDownloadableModFolder(_realFs, folderName);
         var downloaded = await _downloader.DownloadFromManifestAsync(path, _realFs);
 
         var installedId = await loadout.InstallModAsync(downloaded.Path, downloaded.Manifest.Name);
         var files = loadout.Value.Mods[installedId].Files;
+        files.Count.Should().BeGreaterThan(0);
+        
         foreach (var file in files)
         {
             if (file.Value is FromArchive fromArchive)

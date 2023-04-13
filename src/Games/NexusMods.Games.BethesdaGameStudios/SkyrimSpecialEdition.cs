@@ -5,7 +5,6 @@ using NexusMods.DataModel.Loadouts;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using NexusMods.Paths.Utilities;
 using NexusMods.StandardGameLocators;
 
 namespace NexusMods.Games.BethesdaGameStudios;

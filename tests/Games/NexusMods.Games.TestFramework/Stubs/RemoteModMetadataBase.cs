@@ -23,7 +23,7 @@ public class RemoteModMetadataBase
     /// <summary>
     /// User friendly name for this mod.
     /// </summary>
-    public string Name { get; set; }
+    public string Name { get; set; } = "";
 
     /// <summary>
     /// Deserializes a file at the given location.

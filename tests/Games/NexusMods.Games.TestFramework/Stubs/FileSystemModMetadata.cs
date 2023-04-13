@@ -11,7 +11,7 @@ public class FileSystemModMetadata : RemoteModMetadataBase
     /// <summary>
     /// Path to the archive file relative to the folder the JSON is contained in.
     /// </summary>
-    public string FilePath { get; set; }
+    public string FilePath { get; set; } = "";
 
     /// <summary>
     /// This field is set at deserialization time.

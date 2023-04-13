@@ -196,20 +196,7 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
     ///    Returns true if separator is forward slash, else backslash.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int GetFirstDirectorySeparatorIndex(out bool isFrontSlash)
-    {
-        var frontIdx = Path.IndexOf('/');
-        var backIdx = Path.IndexOf('\\');
-
-        if (frontIdx > backIdx && frontIdx >= 0)
-        {
-            isFrontSlash = true;
-            return frontIdx;
-        }
-
-        isFrontSlash = false;
-        return backIdx;
-    }
+    public int GetFirstDirectorySeparatorIndex(out bool isFrontSlash) => PathHelpers.GetFirstDirectorySeparatorIndex(Path, out isFrontSlash);
 
     /// <summary>
     /// Returns a path relative to the sub-path specified.

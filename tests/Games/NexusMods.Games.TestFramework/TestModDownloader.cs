@@ -30,6 +30,8 @@ public class TestModDownloader
     /// </summary>
     /// <param name="modFolder">Folder containing the manifest.</param>
     /// <param name="targetFs">FileSystem to write to.</param>
+    /// <param name="token">Allows you to cancel the operation.</param>
+    /// <returns>Downloaded item inside the provided FileSystem.</returns>
     public async Task<DownloadedItem> DownloadFromManifestAsync(AbsolutePath modFolder, IFileSystem targetFs, CancellationToken token = default)
     {
         var manifestFile = modFolder.CombineUnchecked("manifest.json");

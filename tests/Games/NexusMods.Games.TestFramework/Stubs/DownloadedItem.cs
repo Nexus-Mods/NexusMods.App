@@ -41,7 +41,7 @@ public class DownloadedItem : IDisposable
             return;
 
         _disposed = true;
-        _manager?.Dispose();
+        _manager.Dispose();
         Path.Dispose();
         GC.SuppressFinalize(this);
     }
