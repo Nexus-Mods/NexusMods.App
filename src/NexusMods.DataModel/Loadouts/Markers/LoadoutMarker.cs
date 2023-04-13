@@ -254,7 +254,7 @@ public readonly struct LoadoutMarker
         await manager.Limiter.ForEachAsync(fromArchive, x => x.Aggregate(Size.Zero, (acc, f) => acc + f.Step.Size),
             async (job, group) =>
             {
-                var byPath = group.ToLookup(x => x.From!.From.Parts.First());
+                var byPath = group.ToLookup(x => x.From!.From.RelativePath);
                 await manager.ArchiveManager.ExtractAsync(group.Key, byPath.Select(e => e.Key),
                     async (path, sFn) =>
                     {
@@ -422,7 +422,7 @@ public readonly struct LoadoutMarker
                             Files = m.Files.With(new FromArchive
                             {
                                 Id = ModFileId.New(),
-                                From = new HashRelativePath(add.Hash),
+                                From = new HashRelativePath(add.Hash, default),
                                 Hash = add.Hash,
                                 Size = add.Size,
                                 To = gamePath
