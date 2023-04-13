@@ -1,6 +1,6 @@
-﻿using NexusMods.Games.TestFramework;
+﻿using NexusMods.DataModel.Loadouts.ModFiles;
+using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
-using NexusMods.Paths.TestingHelpers;
 
 namespace NexusMods.Games.BethesdaGameStudios.Tests.Skyrim.Installers;
 
@@ -18,13 +18,36 @@ public class LooseFileInstallerTests : AGameTest<SkyrimSpecialEdition>
         _realFs = realFs;
     }
 
-    [Theory, AutoFileSystem]
-    public async Task InstallMod_WithDataFolderAsync(InMemoryFileSystem fs)
+    // TODO: Use memory filesystem. We currently cannot do this because install code is not yet transitioned to IFileSystem; that said rest is a-ok!.
+
+    [Fact]
+    public async Task InstallMod_WithRootAtDataFolder() => await TestLooseFileCommon("RootedAtDataFolder");
+
+    [Fact]
+    public async Task InstallMod_WithRootAtGameFolder() => await TestLooseFileCommon("RootedAtGameFolder");
+
+    [Fact]
+    public async Task InstallMod_WithMisnamedDataFolder() => await TestLooseFileCommon("DataFolderWithDifferentName");
+
+    private async Task TestLooseFileCommon(string folderName)
     {
         var loadout = await LoadoutManager.ImportSkyrimSELoadoutAsync(_realFs);
-        var path = BethesdaTestHelpers.GetDownloadableModFolder(_realFs, "RootedAtDataFolder");
-        var files = await _downloader.DownloadFromManifestAsync(path, fs);
+        var path = BethesdaTestHelpers.GetDownloadableModFolder(_realFs, folderName);
+        var downloaded = await _downloader.DownloadFromManifestAsync(path, _realFs);
 
-        var a = 5;
+        var installedId = await loadout.InstallModAsync(downloaded.Path, downloaded.Manifest.Name);
+        var files = loadout.Value.Mods[installedId].Files;
+        foreach (var file in files)
+        {
+            if (file.Value is FromArchive fromArchive)
+            {
+                if (!fromArchive.To.Path.StartsWith("Data"))
+                    Assert.Fail("Loose files should target data folder.");
+
+                continue;
+            }
+
+            Assert.Fail("File should be recognised as from archive.");
+        }
     }
 }

@@ -75,4 +75,21 @@ public class UtilityTests
     {
         Assert.Throws<PathException>(() => path.ToRelativePath().DropFirst(directories));
     }
+
+    [SkippableTheory]
+    [InlineData(@"foo", @"foo/", false)]
+    [InlineData(@"foo", @"foo/bar/baz", false)]
+    [InlineData(@"foo", @"foo/bar", false)]
+    [InlineData(@"foo", @"foo\", false)]
+    [InlineData(@"foo", @"foo\bar\baz", false)]
+    [InlineData(@"foo", @"foo\bar", false)]
+    public void TopParent(string expected, string item, bool linux)
+    {
+        Skip.If(linux && !OperatingSystem.IsLinux());
+
+        var path = item.ToRelativePath();
+        path.TopParent
+            .Should()
+            .Be(expected);
+    }
 }

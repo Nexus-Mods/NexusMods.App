@@ -5,47 +5,58 @@ using NexusMods.DataModel.Games;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
-using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
 
 namespace NexusMods.Games.BethesdaGameStudios.Installers;
 
+/// <summary>
+/// Installs Skyrim files found outside of BSAs.
+/// </summary>
+/// <remarks>
+///    This installer allows mods which use the following formats (where {Root} is archive root):
+///    - {Root}/{AnyFolderName}
+///    - {Root}/Data
+///    - {Root}
+///
+///    Where after specified path you have 'meshes' and 'textures' folders.
+///    {AnyFolderName} allows only 1 level of nesting.
+/// </remarks>
 public class LooseFileInstaller : IModInstaller
 {
-    private (RelativePath Prefix, FileType Type)[] _prefixes;
-
-    public LooseFileInstaller()
-    {
-        _prefixes = new[]
-        {
-            ("meshes".ToRelativePath(), FileType.NIF),
-            ("textures".ToRelativePath(), FileType.DDS)
-        };
-
-        _prefixes = _prefixes.Concat(_prefixes.Select(p => (_dataFolder.Join(p.Prefix), p.Type)))
-            .ToArray();
-    }
-
-    private RelativePath _dataFolder = "Data".ToRelativePath();
+    private const string MeshesFolderName = "meshes";
+    private const string TexturesFolderName = "textures";
+    private const string MeshExtension = ".nif";
+    private const string TextureExtension = ".dds";
 
     public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
         if (installation.Game is not SkyrimSpecialEdition)
             return Common.Priority.None;
 
-        return FilterFiles(files).Any()
-            ? Common.Priority.Normal
-            : Common.Priority.None;
-    }
+        // Determine one of the following:
+        // - There is a 'meshes' folder with NIF file.
+        // - There is a 'textures' folder with DDS file.
+        // - There is a folder (max 1 level deep) with either of the following cases.
+        foreach (var file in files)
+        {
+            var path = file.Key;
+            var rawPath = file.Key.Path;
 
-    private IEnumerable<(RelativePath Path, AnalyzedFile Entry)> FilterFiles(EntityDictionary<RelativePath, AnalyzedFile> files)
-    {
-        return from kv in files
-               from prefix in _prefixes
-               where kv.Key.InFolder(prefix.Prefix)
-               select (kv.Key, kv.Value);
+            // Check in subfolder first
+            var separatorIndex = path.GetFirstDirectorySeparatorIndex(out _);
+            if (separatorIndex + 1 < rawPath.Length)
+            {
+                var subDirectory = rawPath.AsSpan(separatorIndex + 1);
+                if (AssertPathForPriority(subDirectory))
+                    return Common.Priority.High;
+            }
+
+            if (AssertPathForPriority(rawPath))
+                return Common.Priority.High;
+        }
+
+        return Common.Priority.None;
     }
 
     public ValueTask<IEnumerable<AModFile>> GetFilesToExtractAsync(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken ct = default)
@@ -55,21 +66,75 @@ public class LooseFileInstaller : IModInstaller
 
     private IEnumerable<AModFile> GetFilesToExtractImpl(Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
-        return FilterFiles(files)
-            .Select(file =>
-            {
-                var outFile = file.Path;
-                if (!file.Path.InFolder(_dataFolder))
-                    outFile = _dataFolder.Join(file.Path);
+        var prefix = FindFolderPrefixForExtract(files).ToString();
+        foreach (var file in files)
+        {
+            if (prefix.Length > 0 && !file.Key.StartsWith(prefix))
+                continue;
 
-                return new FromArchive
-                {
-                    Id = ModFileId.New(),
-                    From = new HashRelativePath(srcArchive, file.Path),
-                    To = new GamePath(GameFolderType.Game, outFile),
-                    Hash = file.Entry.Hash,
-                    Size = file.Entry.Size
-                };
-            });
+            var trimmedPath = file.Key.Path.AsSpan(prefix.Length);
+            yield return new FromArchive
+            {
+                Id = ModFileId.New(),
+                From = new HashRelativePath(srcArchive, file.Key),
+                To = new GamePath(GameFolderType.Game, $"Data{Path.DirectorySeparatorChar}{trimmedPath}"),
+                Hash = file.Value.Hash,
+                Size = file.Value.Size
+            };
+        }
+    }
+
+    private static ReadOnlySpan<char> FindFolderPrefixForExtract(EntityDictionary<RelativePath, AnalyzedFile> files)
+    {
+        // Note: We already determined in priority testing that this is something
+        // we want to extract, so just find the folder with meshes/textures subfolders
+        // and roll with that.
+
+        // Normally we could cache this stuff between priority and extract but there's
+        // no guarantee functions will be ran in that order and another file wouldn't be
+        // checked somewhere in the middle for example.
+        foreach (var file in files)
+        {
+            var path = file.Key;
+            var rawPath = file.Key.Path;
+
+            // Check in subfolder first
+            var separatorIndex = path.GetFirstDirectorySeparatorIndex(out _);
+            if (separatorIndex + 1 < rawPath.Length)
+            {
+                var subDirectory = rawPath.AsSpan(separatorIndex + 1);
+                if (AssertFolderForExtract(subDirectory))
+                    return rawPath.AsSpan(separatorIndex);
+            }
+
+            if (AssertFolderForExtract(rawPath))
+                return "";
+        }
+
+        throw new Exception("Possible bug in code, this should never throw.");
+    }
+
+    private static bool AssertPathForPriority(ReadOnlySpan<char> relativePath)
+    {
+        if (relativePath.StartsWith(MeshesFolderName, StringComparison.OrdinalIgnoreCase) &&
+            relativePath.EndsWith(MeshExtension, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (relativePath.StartsWith(TexturesFolderName, StringComparison.OrdinalIgnoreCase) &&
+            relativePath.EndsWith(TextureExtension, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    }
+
+    private static bool AssertFolderForExtract(ReadOnlySpan<char> relativePath)
+    {
+        if (relativePath.StartsWith(MeshesFolderName, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (relativePath.StartsWith(TexturesFolderName, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
     }
 }

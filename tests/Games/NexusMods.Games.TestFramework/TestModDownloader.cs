@@ -47,9 +47,9 @@ public class TestModDownloader
     public async Task<DownloadedItem> DownloadAsync(RemoteModMetadataBase meta, IFileSystem targetFs, CancellationToken token = default)
     {
         var manager = new TemporaryFileManager(targetFs);
-        var tempFolder = manager.CreateFolder();
-        await DownloadAsync(meta, targetFs, tempFolder.Path, token);
-        return new DownloadedItem(manager, tempFolder, targetFs);
+        var tempFile = manager.CreateFile();
+        await DownloadAsync(meta, targetFs, tempFile.Path, token);
+        return new DownloadedItem(manager, tempFile, targetFs, meta);
     }
 
     /// <summary>

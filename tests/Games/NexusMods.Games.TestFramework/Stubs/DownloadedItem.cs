@@ -17,15 +17,21 @@ public class DownloadedItem : IDisposable
     /// </summary>
     public IFileSystem FileSystem { get; }
 
+    /// <summary>
+    /// Manifest associated with this item.
+    /// </summary>
+    public RemoteModMetadataBase Manifest { get; }
+
     private readonly TemporaryFileManager _manager;
     private bool _disposed;
 
     public DownloadedItem(TemporaryFileManager manager, TemporaryPath path,
-        IFileSystem fileSystem)
+        IFileSystem fileSystem, RemoteModMetadataBase manifest)
     {
         _manager = manager;
         Path = path;
         FileSystem = fileSystem;
+        Manifest = manifest;
     }
 
     /// <inheritdoc />

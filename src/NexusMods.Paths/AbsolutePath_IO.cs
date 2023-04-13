@@ -27,6 +27,11 @@ public readonly partial struct AbsolutePath
             if (OperatingSystem.IsLinux() && index == 0)
                 return FromFullPath(DirectorySeparatorCharStr);
 
+            // e.g. C:\
+            // Windows drive letters can only have 1 character/letter.
+            if (OperatingSystem.IsWindows() && index == 2)
+                index++;
+
             var path = thisFullPath[..index];
             return FromDirectoryAndFileName(path.ToString(), "", _fileSystem);
         }
