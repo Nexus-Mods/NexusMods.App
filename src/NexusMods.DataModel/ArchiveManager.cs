@@ -127,7 +127,7 @@ public class ArchiveManager
     public IEnumerable<HashRelativePath> ArchivesThatContain(Hash hash)
     {
         if (HaveArchive(hash))
-            return new[] { new HashRelativePath(hash, Array.Empty<RelativePath>()) };
+            return new[] { new HashRelativePath(hash, default) };
 
         return _contentsCache.ArchivesThatContain(hash).Select(r => new HashRelativePath(r.Parent, r.Path));
     }
