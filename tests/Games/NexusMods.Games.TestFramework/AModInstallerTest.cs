@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using FluentAssertions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -75,32 +76,93 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     /// <param name="files"></param>
     /// <returns></returns>
     protected EntityDictionary<RelativePath, AnalyzedFile> BuildArchiveDescription(
-        params (ulong Hash, string Name)[] files)
+        IEnumerable<ModInstallerExampleFile> files)
     {
         var description = new EntityDictionary<RelativePath, AnalyzedFile>(DataStore);
-        var items = new List<KeyValuePair<RelativePath, AnalyzedFile>>();
-        foreach (var (hash, name) in files)
-        {
-            items.Add(KeyValuePair.Create(name.ToRelativePath(), new AnalyzedFile()
+        var items = files.Select(file => 
+                KeyValuePair.Create(file.Name.ToRelativePath(), 
+            new AnalyzedFile
             {
                 AnalyzersHash = Hash.Zero,
-                FileTypes = Array.Empty<FileType>(),
-                Hash = Hash.From(hash),
+                FileTypes = file.Filetypes,
+                Hash = Hash.From(file.Hash),
                 Size = Size.From(4),
+                AnalysisData = file.AnalysisData.ToImmutableList()
             }));
-        }
         return description.With(items);
     }
 
     /// <summary>
     /// Helper method to build the archive description and run the installer returning
-    /// the metadata of the files to extract.
+    /// the metadata of the files to extract. Assumes all files do not have any
+    /// FileTypes assigned.
+    /// </summary>
+    /// <param name="expectedPriority"></param>
+    /// <param name="files"></param>
+    /// <returns></returns>
+    protected Task<IEnumerable<(ulong Hash, GameFolderType FolderType, string Path)>> BuildAndInstall(Priority expectedPriority, 
+        params (ulong Hash, string Name)[] files)
+    {
+        return BuildAndInstall(expectedPriority, files.Select(f => 
+            new ModInstallerExampleFile()
+            {
+                Name = f.Name,
+                Hash = f.Hash,
+                Filetypes = Array.Empty<FileType>()
+            }
+        ));
+    }
+    
+    /// <summary>
+    /// Helper method to build the archive description and run the installer returning
+    /// the metadata of the files to extract. Assumes all files do not have a single
+    /// IFileAnalysisData assigned.
+    /// </summary>
+    /// <param name="expectedPriority"></param>
+    /// <param name="files"></param>
+    /// <returns></returns>
+    protected Task<IEnumerable<(ulong Hash, GameFolderType FolderType, string Path)>> BuildAndInstall(Priority expectedPriority, 
+        params (ulong Hash, string Name, IFileAnalysisData? Data)[] files)
+    {
+        return BuildAndInstall(expectedPriority, files.Select(f => 
+            new ModInstallerExampleFile()
+            {
+                Name = f.Name,
+                Hash = f.Hash,
+                AnalysisData = f.Data == null ? Array.Empty<IFileAnalysisData>() : new[] {f.Data}
+            }
+        ));
+    }
+    
+    /// <summary>
+    /// Helper method to build the archive description and run the installer returning
+    /// the metadata of the files to extract. Assumes all files do not have a single
+    /// FileType assigned.
+    /// </summary>
+    /// <param name="expectedPriority"></param>
+    /// <param name="files"></param>
+    /// <returns></returns>
+    protected Task<IEnumerable<(ulong Hash, GameFolderType FolderType, string Path)>> BuildAndInstall(Priority expectedPriority, 
+        params (ulong Hash, string Name, FileType FileType)[] files)
+    {
+        return BuildAndInstall(expectedPriority, files.Select(f => new ModInstallerExampleFile()
+        {
+           Name = f.Name,
+           Hash = f.Hash,
+           Filetypes = new[] {f.FileType}
+        }));
+    }
+    
+    /// <summary>
+    /// Helper method to build the archive description and run the installer returning
+    /// the metadata of the files to extract. Supplied FileTypes are assigned to the
+    /// generated AnalyzedFile instances.
     /// </summary>
     /// <param name="expectedPriority"></param>
     /// <param name="files"></param>
     /// <returns></returns>
     protected async Task<IEnumerable<(ulong Hash, GameFolderType FolderType, string Path)>>
-        BuildAndInstall(Priority expectedPriority, params (ulong Hash, string Name)[] files)
+        BuildAndInstall(Priority expectedPriority, IEnumerable<ModInstallerExampleFile> files)
     {
         var description = BuildArchiveDescription(files);
         
