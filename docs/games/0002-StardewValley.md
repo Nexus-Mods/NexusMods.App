@@ -4,7 +4,7 @@
 
 - [Steam](https://store.steampowered.com/app/413150/Stardew_Valley/): `413150`
 - [GOG](https://www.gog.com/game/stardew_valley): `1453375253`
-- [Xbox Game Pass](https://www.xbox.com/en-US/games/store/p/9MWR1NC6VQ6L): `UNKNOWN`
+- [Xbox Game Pass](https://www.xbox.com/en-US/games/store/p/9MWR1NC6VQ6L): `ConcernedApe.StardewValleyPC`
 
 ## Engine and Mod Support
 

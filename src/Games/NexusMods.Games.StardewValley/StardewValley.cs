@@ -14,6 +14,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame
 
     public IEnumerable<int> SteamIds => new[] { 413150 };
     public IEnumerable<long> GogIds => new long[] { 1453375253 };
+    // TODO: XboxId = "ConcernedApe.StardewValleyPC"
 
     public override string Name => "Stardew Valley";
 
