@@ -1,6 +1,6 @@
 ﻿using NexusMods.Paths;
 
-namespace NexusMods.Games.TestFramework.Stubs;
+namespace NexusMods.Games.TestFramework.Downloader;
 
 /// <summary>
 /// Represents an item downloaded for purpose of unit testing.

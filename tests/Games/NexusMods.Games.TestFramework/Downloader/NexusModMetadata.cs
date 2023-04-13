@@ -1,7 +1,7 @@
 ﻿using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.NexusWebApi.Types;
 
-namespace NexusMods.Games.TestFramework.Stubs;
+namespace NexusMods.Games.TestFramework.Downloader;
 
 /// <summary>
 /// Metadata for a remote mod.

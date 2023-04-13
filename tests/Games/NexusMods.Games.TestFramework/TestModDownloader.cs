@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
-using NexusMods.Games.TestFramework.Stubs;
+using NexusMods.Games.TestFramework.Downloader;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;

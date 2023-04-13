@@ -2,7 +2,7 @@
 using System.Text.Json.Serialization;
 using NexusMods.Paths;
 
-namespace NexusMods.Games.TestFramework.Stubs;
+namespace NexusMods.Games.TestFramework.Downloader;
 
 /// <summary>
 /// Base class for remotely downloaded mods.
