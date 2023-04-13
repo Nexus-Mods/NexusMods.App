@@ -1,0 +1,69 @@
+﻿<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <Design.PreviewWith>
+        <StackPanel Orientation="Vertical" Spacing="4">
+            <Button Classes="Pill Light">
+                <StackPanel>
+                    <TextBlock Text="LABEL"></TextBlock>
+                </StackPanel>
+            </Button>
+            <Button Classes="Pill Light">
+                <StackPanel>
+                    <icons:Icon Value="mdi-star"/> 
+                    <TextBlock Text="LABEL"></TextBlock>
+                </StackPanel>
+            </Button>
+            
+        </StackPanel>
+    </Design.PreviewWith>
+    
+    <Style Selector="Button.Pill">
+        <Setter Property="Height" Value="16"></Setter>
+        <Setter Property="Margin" Value="0"></Setter>
+        <Setter Property="Padding" Value="0"></Setter>
+        <Setter Property="CornerRadius" Value="12"></Setter>
+    </Style>
+    
+    <Style Selector="Button.Pill StackPanel">
+        <Setter Property="Orientation" Value="Horizontal"></Setter>
+        <Setter Property="Spacing" Value="4"></Setter>
+        <Setter Property="Margin" Value="6, 0"></Setter>
+    </Style>
+    
+    <Style Selector="Button.Pill.Light">
+        <Setter Property="Background" Value="{DynamicResource BrandWhite}"></Setter>
+    </Style>
+    
+    <Style Selector="Button.Pill.Light:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="#AAAAAA"></Setter>
+    </Style>
+    
+    <Style Selector="Button.Pill TextBlock">
+        <Setter Property="FontFamily" Value="{DynamicResource FontPrimaryBold}"></Setter>
+        <Setter Property="FontSize" Value="10"></Setter>
+        <Setter Property="FontWeight" Value="700"></Setter>
+        <Setter Property="LetterSpacing" Value="0.25"></Setter>
+        <Setter Property="LineHeight" Value="12"></Setter>
+        <Setter Property="Margin" Value="0"></Setter>
+    </Style>
+    
+    <Style Selector="Button.Pill.Light TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource BackgroundPrimary}"></Setter>
+    </Style>
+    
+    <Style Selector="Button.Pill icons|Icon">
+        <Setter Property="FontSize" Value="10"></Setter>
+        <Setter Property="Width" Value="10"></Setter>
+        <Setter Property="Height" Value="10"></Setter>
+    </Style>
+    
+    <Style Selector="Button.Pill.Light icons|Icon">
+        <Setter Property="Foreground" Value="{DynamicResource BackgroundPrimary}"></Setter>
+    </Style>
+    
+    
+
+</Styles>

@@ -2,6 +2,14 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <Design.PreviewWith>
+        <StackPanel Spacing="5">
+            <Button Classes="Avatar">
+                <Image Source="avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png"></Image>
+            </Button>
+        </StackPanel>
+    </Design.PreviewWith>
 
     <!--  Invisible button  -->
     <Style Selector="Button.Invisible">
@@ -245,6 +253,7 @@
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="HorizontalAlignment" Value="Left" />
     </Style>
+    
     <Style Selector="Button.Menu Svg">
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="HorizontalAlignment" Value="Center" />
@@ -279,5 +288,84 @@
         <Setter Property="FontWeight" Value="400" />
         <Setter Property="Margin" Value="0" />
     </Style>
+
+    <!-- Styling Rework --> 
+    <Style Selector="Button.Standard">
+        <Setter Property="Height" Value="32" />
+        <Setter Property="Padding" Value="0" />
+    </Style>
+    
+    <Style Selector="Button.Standard StackPanel">
+        <Setter Property="Orientation" Value="Horizontal" />
+        <Setter Property="Spacing" Value="4" />
+        <Setter Property="Margin" Value="16, 6" />
+    </Style>
+    
+    <Style Selector="Button.Standard icons|Icon">
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+        <Setter Property="Width" Value="20" />
+        <Setter Property="Height" Value="20" />
+    </Style>
+
+    <Style Selector="Button.Standard TextBlock">
+        <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="600" />
+        <Setter Property="LetterSpacing" Value="0.7" />
+        <Setter Property="Margin" Value="0" />
+    </Style>
+
+
+    <Style Selector="Button.Primary">
+        <Setter Property="Background" Value="{DynamicResource BrandPrimaryBrush}" />
+    </Style>
+
+    <Style Selector="Button.Primary:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BrandPrimaryLighterBrush}" />
+    </Style>
+
+    <Style Selector="Button.Primary:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BrandPrimaryDarkerBrush}" />
+    </Style>
+
+    <Style Selector="Button.Primary:disabled /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BrandPrimaryBrush}" />
+        <Setter Property="Opacity" Value="40" />
+    </Style>
+    
+    <Style Selector="Button.Action">
+        <Setter Property="Background" Value="{DynamicResource Transparent}"></Setter>
+        <Setter Property="Width" Value="40"></Setter>
+        <Setter Property="Height" Value="40"></Setter>
+    </Style>
+    
+    <Style Selector="Button.Action icons|Icon">
+        <Setter Property="Foreground" Value="#DADADA"></Setter>
+        <Setter Property="FontSize" Value="20"></Setter>
+        <Setter Property="Width" Value="20"></Setter>
+        <Setter Property="Height" Value="20"></Setter>
+    </Style>
+    
+    <!-- Avatar Button -->
+    <Style Selector="Button.Avatar">
+        <Setter Property="Background" Value="{DynamicResource Transparent}"></Setter>
+        <Setter Property="Width" Value="30"></Setter>
+        <Setter Property="Height" Value="30"></Setter>
+        <Setter Property="Margin" Value="0"></Setter>
+        <Setter Property="Padding" Value="0"></Setter>
+        <Setter Property="CornerRadius" Value="15"></Setter>
+        
+    </Style>
+    
+    <Style Selector="Button.Avatar Image">
+        <Setter Property="Width" Value="30"></Setter>
+        <Setter Property="Height" Value="30"></Setter>
+        <Setter Property="Clip">
+            <EllipseGeometry Rect="0, 0, 30, 30" />
+        </Setter>
+    </Style>
+
+    
+    <!-- End of Styling Rework -->
 
 </Styles>

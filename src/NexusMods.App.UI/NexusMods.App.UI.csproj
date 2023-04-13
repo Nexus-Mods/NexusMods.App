@@ -55,6 +55,12 @@
     <AvaloniaResource Include="Fonts\SemiBold\Montserrat-SemiBold.ttf" />
     <None Remove="Theme\SelectableTextBlock.xaml" />
     <AvaloniaResource Include="Theme\SelectableTextBlock.xaml" />
+    <None Remove="Theme\StackPanelStyles.xaml" />
+    <AvaloniaResource Include="Theme\StackPanelStyles.xaml" />
+    <None Remove="Theme\PillStyles.xaml" />
+    <AvaloniaResource Include="Theme\PillStyles.xaml" />
+    <None Remove="Theme\IconStyles.xaml" />
+    <AvaloniaResource Include="Theme\IconStyles.xaml" />
   </ItemGroup>
 
   <ItemGroup>
