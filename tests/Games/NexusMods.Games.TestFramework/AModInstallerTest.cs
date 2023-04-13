@@ -119,7 +119,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
 
         var contents =
             await ModInstaller.GetFilesToExtractAsync(GameInstallation, Hash.From(0xDEADBEEF), description);
-        return contents.OfType<AStaticModFile>().Select(m => (m.Hash.Value, m.To.Type, m.To.Path.ToString()));
+        return contents.OfType<AStaticModFile>().Select(m => (m.Hash.Value, m.To.Type, m.To.Path.ToString().Replace("\\", "/")));
     }
 
     /// <summary>
