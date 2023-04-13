@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using JetBrains.Annotations;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
 
@@ -81,6 +82,7 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
     /// </summary>
     /// <param name="other">The path to append.</param>
     /// <returns>Combinations of both paths.</returns>
+    [Pure]
     public RelativePath Join(RelativePath other)
     {
         return new RelativePath(string.Concat(Path, DetermineDirectorySeparatorString(), other.Path));
@@ -140,7 +142,7 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
     public RelativePath DropFirst(int numDirectories = 1)
     {
         if (numDirectories == 0) return this;
-        
+
         // Normalize first
         var thisCopy = Path.Length <= 512 ? stackalloc char[Path.Length] : GC.AllocateUninitializedArray<char>(Path.Length);
         Path.CopyTo(thisCopy);

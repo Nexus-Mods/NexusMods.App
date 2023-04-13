@@ -1,14 +1,26 @@
-﻿using NexusMods.Paths;
+using NexusMods.Paths;
 #pragma warning disable CS1591 // missing XML documentation
 // ReSharper disable All
 namespace NexusMods.FileExtractor.FileSignatures {
 
     public enum FileType 
-    {                /// <summary>
+    {            /// <summary>
+            /// Windows Batch File
+            /// </summary>
+             BAT,
+                /// <summary>
                 /// Bethesda Tar
                 /// </summary>
                  BTAR,
-                            /// <summary>
+                        /// <summary>
+            /// Windows Command File
+            /// </summary>
+             CMD,
+            /// <summary>
+            /// OSX Command File
+            /// </summary>
+             COMMAND,
+                /// <summary>
                 /// Creation Engine Plugin
                 /// </summary>
                  CreationEnginePlugin,
@@ -36,7 +48,11 @@ namespace NexusMods.FileExtractor.FileSignatures {
                 /// NetImmerse File Format
                 /// </summary>
                  NIF,
-                            /// <summary>
+                        /// <summary>
+            /// Unix Shell Script
+            /// </summary>
+             SH,
+                /// <summary>
                 /// TES4 Plugin
                 /// </summary>
                  TES4,
@@ -176,6 +192,18 @@ namespace NexusMods.FileExtractor.FileSignatures {
 
                 // XML File
         (FileType.XML, new Extension(".xml")),
+
+                // Unix Shell Script
+        (FileType.SH, new Extension(".sh")),
+
+                // Windows Batch File
+        (FileType.BAT, new Extension(".bat")),
+
+                // Windows Command File
+        (FileType.CMD, new Extension(".cmd")),
+
+                // OSX Command File
+        (FileType.COMMAND, new Extension(".command")),
 
         
     };

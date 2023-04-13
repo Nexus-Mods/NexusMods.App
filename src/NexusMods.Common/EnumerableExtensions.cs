@@ -7,6 +7,24 @@ namespace NexusMods.Common;
 public static class EnumerableExtensions
 {
     /// <summary>
+    /// <see cref="Enumerable.FirstOrDefault{TSource}(System.Collections.Generic.IEnumerable{TSource})"/>
+    /// in a try-get style. This is helpful for value types like structs that have a non-null default value.
+    /// </summary>
+    /// <returns></returns>
+    public static bool TryGetFirst<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate, out T? value)
+    {
+        foreach (var item in enumerable)
+        {
+            if (!predicate(item)) continue;
+            value = item;
+            return true;
+        }
+
+        value = default;
+        return false;
+    }
+
+    /// <summary>
     /// Transforms a <see cref="IEnumerable{T}"/> into a <see cref="IAsyncEnumerable{TOut}"/> via a transform function
     /// </summary>
     /// <param name="coll">The collection to apply the operation on.</param>

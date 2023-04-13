@@ -51,6 +51,7 @@ public class LoadoutManager
 
     private readonly ILogger<LoadoutManager> _logger;
 
+    private readonly IFileSystem _fileSystem;
     private readonly IModInstaller[] _installers;
     private readonly FileContentsCache _analyzer;
     private readonly IEnumerable<IFileMetadataSource> _metadataSources;
@@ -62,6 +63,7 @@ public class LoadoutManager
     ///    This item is usually constructed using dependency injection (DI).
     /// </remarks>
     public LoadoutManager(ILogger<LoadoutManager> logger,
+        IFileSystem fileSystem,
         LoadoutRegistry registry,
         IResource<LoadoutManager, Size> limiter,
         ArchiveManager archiveManager,
@@ -77,6 +79,7 @@ public class LoadoutManager
         ArchiveManager = archiveManager;
         Registry = registry;
         _logger = logger;
+        _fileSystem = fileSystem;
         Limiter = limiter;
         Store = store;
         _jobManager = jobManager;
@@ -177,6 +180,8 @@ public class LoadoutManager
 
         foreach (var (type, path) in installation.Locations)
         {
+            if (!_fileSystem.DirectoryExists(path)) continue;
+
             await foreach (var result in FileHashCache.IndexFolderAsync(path, token)
                                .WithCancellation(token))
             {
