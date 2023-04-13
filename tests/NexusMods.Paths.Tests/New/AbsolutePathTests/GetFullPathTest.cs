@@ -29,7 +29,7 @@ public class GetFullPathTests
     [InlineData("C:\\foo", false)]
     public void GetFullPath_WithInsufficientBuffer(string input, bool linux)
     {
-        Skip.If(linux && !OperatingSystem.IsLinux());
+        Skip.If(linux != OperatingSystem.IsLinux());
 
         var path = AbsolutePath.FromFullPath(input);
         var insufficientLength = path.GetFullPathLength() - 1;
@@ -45,7 +45,7 @@ public class GetFullPathTests
 
     private static void AssertGetFullPath(string expected, string directory, string fileName, bool linux)
     {
-        Skip.If(linux && !OperatingSystem.IsLinux());
+        Skip.If(linux != OperatingSystem.IsLinux());
         var path = AbsolutePath.FromDirectoryAndFileName(directory, fileName);
 
         // GetFullPath

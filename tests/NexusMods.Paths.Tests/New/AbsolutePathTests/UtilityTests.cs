@@ -14,7 +14,7 @@ public class UtilityTests
     [InlineData("C:\\foo", "C:\\foo\\bar", false)]
     public void InFolder(string parent, string child, bool linux)
     {
-        Skip.If(linux && !OperatingSystem.IsLinux());
+        Skip.If(linux != OperatingSystem.IsLinux());
 
         var parentPath = AbsolutePath.FromFullPath(parent);
         var childPath = AbsolutePath.FromFullPath(child);
@@ -31,7 +31,7 @@ public class UtilityTests
     [InlineData("bar", "C:\\foo", "C:\\foo\\bar", false)]
     public void RelativeTo(string expected, string parent, string child, bool linux)
     {
-        Skip.If(linux && !OperatingSystem.IsLinux());
+        Skip.If(linux != OperatingSystem.IsLinux());
 
         var childPath = AbsolutePath.FromFullPath(child);
         var parentPath = AbsolutePath.FromFullPath(parent);
@@ -50,7 +50,7 @@ public class UtilityTests
     [InlineData("C:\\", "C:\\foo\\bar", false)]
     public void TopParent(string expected, string item, bool linux)
     {
-        Skip.If(linux && !OperatingSystem.IsLinux());
+        Skip.If(linux != OperatingSystem.IsLinux());
 
         var path = AbsolutePath.FromFullPath(item);
 
@@ -69,7 +69,7 @@ public class UtilityTests
     [InlineData("foo", false, false)]
     public void Test_IsRootDirectory(string input, bool expected, bool linux)
     {
-        Skip.If(linux && !OperatingSystem.IsLinux());
+        Skip.If(linux != OperatingSystem.IsLinux());
         AbsolutePath.IsRootDirectory(input).Should().Be(expected);
     }
 }

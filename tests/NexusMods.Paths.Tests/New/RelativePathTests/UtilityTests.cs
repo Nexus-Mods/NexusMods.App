@@ -85,7 +85,7 @@ public class UtilityTests
     [InlineData(@"foo", @"foo\bar", false)]
     public void TopParent(string expected, string item, bool linux)
     {
-        Skip.If(linux && !OperatingSystem.IsLinux());
+        Skip.If(linux != OperatingSystem.IsLinux());
 
         var path = item.ToRelativePath();
         path.TopParent
