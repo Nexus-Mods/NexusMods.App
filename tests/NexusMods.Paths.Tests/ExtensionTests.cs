@@ -32,7 +32,7 @@ public class ExtensionTests
     [InlineData("C:\\foo.dds", false)]
     public void CanGetExtensionOfPath(string input, bool linux)
     {
-        Skip.IfNot(OperatingSystem.IsLinux() && linux);
+        Skip.If(linux && !OperatingSystem.IsLinux());
         var path = AbsolutePath.FromFullPath(input);
         path.Extension.Should().Be(DDS);
     }

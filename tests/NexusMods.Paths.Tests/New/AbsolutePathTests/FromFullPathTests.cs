@@ -18,7 +18,7 @@ public class FromFullPathTests
     public void Test_FromFullPath(string input, string expectedFullPath,
         string? expectedDirectory, string expectedFileName, bool linux)
     {
-        Skip.IfNot(OperatingSystem.IsLinux() && linux);
+        Skip.If(linux && !OperatingSystem.IsLinux());
         var path = AbsolutePath.FromFullPath(input);
         path.GetFullPath().Should().Be(expectedFullPath);
         path.Directory.Should().Be(expectedDirectory);
