@@ -147,17 +147,16 @@ public abstract class AGameTest<TGame> where TGame : AGame
         var file = TemporaryFileManager.CreateFile();
 
         await using var stream = FileSystem.OpenFile(file.Path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
-        using (var zipArchive = new ZipArchive(stream, ZipArchiveMode.Create))
+        using var zipArchive = new ZipArchive(stream, ZipArchiveMode.Create);
+        
+        foreach (var kv in filesToZip)
         {
-            foreach (var kv in filesToZip)
-            {
-                var (path, contents) = kv;
+            var (path, contents) = kv;
 
-                var entry = zipArchive.CreateEntry(path.Path, CompressionLevel.Fastest);
-                await using var entryStream = entry.Open();
-                await using var ms = new MemoryStream(contents);
-                await ms.CopyToAsync(entryStream);
-            }
+            var entry = zipArchive.CreateEntry(path.Path, CompressionLevel.Fastest);
+            await using var entryStream = entry.Open();
+            await using var ms = new MemoryStream(contents);
+            await ms.CopyToAsync(entryStream);
         }
 
         return file;

@@ -6,6 +6,7 @@
 
     <ItemGroup>
       <PackageReference Include="CliWrap" Version="3.6.0" />
+      <PackageReference Include="FsCheck.Xunit" Version="2.16.5" />
     </ItemGroup>
 
     <ItemGroup>

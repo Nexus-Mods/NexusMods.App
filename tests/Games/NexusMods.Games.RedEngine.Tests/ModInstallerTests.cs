@@ -23,9 +23,6 @@ public class ModInstallerTests : AGameTest<Cyberpunk2077>
             loadout.Value.Installation.Game.Domain, modId, fileId, hash);
         var mod = await InstallModIntoLoadout(loadout, downloaded);
 
-        var lines = mod.Files.Values.Select(f => $"@\"{f.To.Path}\",").Order();
-        await File.WriteAllLinesAsync($@"c:\tmp\{name}.txt", lines);
-
         mod.Files.Values.Select(file => file.To)
             .Should()
             .BeEquivalentTo(files, opt => opt.WithoutStrictOrdering());
