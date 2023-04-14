@@ -10,7 +10,7 @@ using NexusMods.DataModel.JsonConverters;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Paths;
 
-namespace NexusMods.Games.MountAndBlade2Bannerlord;
+namespace NexusMods.Games.MountAndBlade2Bannerlord.Analyzers;
 
 public class MountAndBlade2BannerlordAnalyzer : IFileAnalyzer
 {

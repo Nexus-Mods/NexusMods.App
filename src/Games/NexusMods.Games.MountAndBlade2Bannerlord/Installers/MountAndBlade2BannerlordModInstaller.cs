@@ -1,17 +1,20 @@
+using System.Collections.Immutable;
 using Bannerlord.LauncherManager.Models;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Games;
-using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
+using NexusMods.DataModel.ModInstallers;
+using NexusMods.Games.MountAndBlade2Bannerlord.Analyzers;
 using NexusMods.Games.MountAndBlade2Bannerlord.Loadouts;
+using NexusMods.Games.MountAndBlade2Bannerlord.Services;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 
-namespace NexusMods.Games.MountAndBlade2Bannerlord;
+namespace NexusMods.Games.MountAndBlade2Bannerlord.Installers;
 
 internal sealed class MountAndBlade2BannerlordModInstaller : IModInstaller
 {
@@ -58,11 +61,11 @@ internal sealed class MountAndBlade2BannerlordModInstaller : IModInstaller
                 From = new HashRelativePath(srcArchive, relativePath),
                 Hash = file.Hash,
                 Size = file.Size,
-                Metadata =
+                Metadata = ImmutableHashSet.CreateRange<IModFileMetadata>(new List<IModFileMetadata>
                 {
                     new ModuleIdMetadata { ModuleId = instruction.ModuleId },
                     new OriginalPathMetadata { OriginalRelativePath = relativePath.Path }
-                }
+                })
             };
         }));
 

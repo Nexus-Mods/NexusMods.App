@@ -16,8 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources\MountAndBlade2Bannerlord\game_image.jpg" />
-    <EmbeddedResource Include="Resources\MountAndBlade2Bannerlord\icon.jpg" />
+    <EmbeddedResource Include="Resources\game_image.jpg" />
+    <EmbeddedResource Include="Resources\icon.jpg" />
   </ItemGroup>
 
 </Project>

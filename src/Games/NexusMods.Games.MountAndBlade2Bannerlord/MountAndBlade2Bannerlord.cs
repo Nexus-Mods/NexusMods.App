@@ -1,8 +1,7 @@
-using Bannerlord.LauncherManager;
 using NexusMods.Common;
 using NexusMods.DataModel.Games;
 using NexusMods.FileExtractor.StreamFactories;
-using NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
+using NexusMods.Games.MountAndBlade2Bannerlord.Services;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
@@ -39,20 +38,11 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
     // TODO:
     public override GamePath PrimaryFile { get; }
 
-    public GamePath GetPrimaryFile(GameInstallation installation) => new(GameFolderType.Game, @$"bin\{installation.GetConfiguration(_launcherManagerFactory)}\TaleWorlds.MountAndBlade.Launcher.exe");
-    public GamePath GetPrimaryXboxFile(GameInstallation installation) => new(GameFolderType.Game, @$"bin\{installation.GetConfiguration(_launcherManagerFactory)}\Launcher.Native.exe");
-    public GamePath GetPrimaryStandaloneFile(GameInstallation installation) => new(GameFolderType.Game, @$"bin\{installation.GetConfiguration(_launcherManagerFactory)}\{Constants.BannerlordExecutable}");
-
-    public GamePath GetBLSEStandaloneFile(GameInstallation installation) => new(GameFolderType.Game, @$"bin\{installation.GetConfiguration(_launcherManagerFactory)}\{Constants.BLSEExecutable}");
-    public GamePath GetBLSELauncherFile(GameInstallation installation) => new(GameFolderType.Game, @$"bin\{installation.GetConfiguration(_launcherManagerFactory)}\Bannerlord.BLSE.Launcher.exe");
-
-    public GamePath GetBLSELauncherExFile(GameInstallation installation) => new(GameFolderType.Game, @$"bin\{installation.GetConfiguration(_launcherManagerFactory)}\Bannerlord.BLSE.LauncherEx.exe");
-
     public override IStreamFactory Icon =>
-        new EmbededResourceStreamFactory<MountAndBlade2Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.MountAndBlade2Bannerlord.icon.jpg");
+        new EmbededResourceStreamFactory<MountAndBlade2Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.icon.jpg");
 
     public override IStreamFactory GameImage =>
-        new EmbededResourceStreamFactory<MountAndBlade2Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.MountAndBlade2Bannerlord.game_image.jpg");
+        new EmbededResourceStreamFactory<MountAndBlade2Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.game_image.jpg");
 
     public override IEnumerable<GameInstallation> Installations
     {

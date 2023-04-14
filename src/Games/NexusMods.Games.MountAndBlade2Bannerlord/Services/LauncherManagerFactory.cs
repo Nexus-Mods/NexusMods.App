@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
 using NexusMods.Paths;
 
-namespace NexusMods.Games.MountAndBlade2Bannerlord;
+namespace NexusMods.Games.MountAndBlade2Bannerlord.Services;
 
 public sealed class LauncherManagerFactory
 {

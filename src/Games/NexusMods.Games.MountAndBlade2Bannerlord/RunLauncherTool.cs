@@ -3,37 +3,41 @@ using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
-using NexusMods.Paths;
+using NexusMods.Games.MountAndBlade2Bannerlord.Services;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
 public class RunLauncherTool : ITool
 {
     private readonly ILogger _logger;
+    private readonly GamePathProvierFactory _gamePathProvierFactory;
 
     public string Name => $"Run Launcher for {MountAndBlade2Bannerlord.DisplayName}";
     public IEnumerable<GameDomain> Domains => new[] { MountAndBlade2Bannerlord.StaticDomain };
 
-    public RunLauncherTool(ILogger<RunLauncherTool> logger)
+    public RunLauncherTool(ILogger<RunLauncherTool> logger, GamePathProvierFactory gamePathProvierFactory)
     {
         _logger = logger;
+        _gamePathProvierFactory = gamePathProvierFactory;
     }
 
     public async Task Execute(Loadout loadout)
     {
-        if (loadout.Installation.Game is not MountAndBlade2Bannerlord mountAndBladeBannerlord) return;
+        if (!loadout.Installation.Is<MountAndBlade2Bannerlord>()) return;
 
-        var hasXbox = false; // TODO:
+        var gamePathProvider = _gamePathProvierFactory.Create(loadout.Installation);
+
+        var isXbox = false; // TODO: From PR #265
+        var useVanillaLauncher = false; //TODO: From Options
         var hasBLSE = loadout.HasInstalledFile("Bannerlord.BLSE.Shared.dll");
-        var hasBUTRLoader = loadout.HasInstalledFile("Bannerlord.BUTRLoader.dll");
 
         var program = hasBLSE
-            ? hasBUTRLoader
-                ? mountAndBladeBannerlord.GetBLSELauncherExFile(loadout.Installation).CombineChecked(loadout.Installation.Locations[GameFolderType.Game])
-                : mountAndBladeBannerlord.GetBLSELauncherFile(loadout.Installation).CombineChecked(loadout.Installation.Locations[GameFolderType.Game])
-            : hasXbox
-                ? mountAndBladeBannerlord.GetPrimaryXboxFile(loadout.Installation).CombineChecked(loadout.Installation.Locations[GameFolderType.Game])
-                : mountAndBladeBannerlord.GetPrimaryFile(loadout.Installation).CombineChecked(loadout.Installation.Locations[GameFolderType.Game]);
+            ? useVanillaLauncher
+                ? gamePathProvider.BLSELauncherFile
+                : gamePathProvider.BLSELauncherExFile
+            : isXbox
+                ? gamePathProvider.PrimaryXboxFile
+                : gamePathProvider.PrimaryFile;
         _logger.LogInformation("Running {Program}", program);
 
         var psi = new ProcessStartInfo(program.ToString())

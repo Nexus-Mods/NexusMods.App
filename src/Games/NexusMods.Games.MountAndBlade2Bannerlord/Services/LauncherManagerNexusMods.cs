@@ -6,7 +6,7 @@ using Bannerlord.LauncherManager.Localization;
 using Bannerlord.LauncherManager.Models;
 using Microsoft.Extensions.Logging;
 
-namespace NexusMods.Games.MountAndBlade2Bannerlord;
+namespace NexusMods.Games.MountAndBlade2Bannerlord.Services;
 
 internal sealed partial class LauncherManagerNexusMods : LauncherManagerHandler
 {
