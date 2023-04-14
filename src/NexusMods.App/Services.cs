@@ -12,6 +12,7 @@ using NexusMods.Games.Generic;
 using NexusMods.Games.MountAndBlade2Bannerlord;
 using NexusMods.Games.RedEngine;
 using NexusMods.Games.Reshade;
+using NexusMods.Games.StardewValley;
 using NexusMods.Games.TestHarness;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
@@ -46,6 +47,7 @@ public static class Services
             .AddReshade()
             .AddFomod()
             .AddDarkestDungeon()
+            .AddStardewValley()
             .AddMountAndBladeBannerlord()
             .AddRenderers()
             .AddNexusWebApi()

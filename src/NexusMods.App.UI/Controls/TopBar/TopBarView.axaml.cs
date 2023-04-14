@@ -43,31 +43,8 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
                 .Select(e => e)
                 .BindToUi(avatar, v => v.Source)
                 .DisposeWith(d);
-
-            this.BindCommand(ViewModel, vm => vm.CloseCommand, v => v.WindowCloseButton)
-                .DisposeWith(d);
-            this.BindCommand(ViewModel, vm => vm.MinimizeCommand, v => v.WindowMinimizeButton)
-                .DisposeWith(d);
-            this.BindCommand(ViewModel, vm => vm.ToggleMaximizeCommand, v => v.WindowMaximizeButton)
-                .DisposeWith(d);
-
-            this.WhenAnyValue(view => view.ViewModel!.ShowWindowControls)
-                .Subscribe(SetShowWindowControls)
-                .DisposeWith(d);
+            
         });
     }
 
-    public void SetShowWindowControls(bool shouldShow)
-    {
-        if (shouldShow)
-        {
-            MainGrid.ColumnDefinitions.Last().Width = GridLength.Auto;
-            WindowControlsBorder.IsVisible = true;
-        }
-        else
-        {
-            MainGrid.ColumnDefinitions.Last().Width = new GridLength(0);
-            WindowControlsBorder.IsVisible = false;
-        }
-    }
 }

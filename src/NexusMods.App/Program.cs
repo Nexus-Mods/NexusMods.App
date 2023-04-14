@@ -80,7 +80,7 @@ public class Program
 
     static void AddLogging(ILoggingBuilder loggingBuilder, ILoggingSettings settings)
     {
-        var config   = new NLog.Config.LoggingConfiguration();
+        var config = new NLog.Config.LoggingConfiguration();
 
         var fileTarget = new FileTarget("file")
         {
@@ -100,9 +100,25 @@ public class Program
         config.AddRuleForAllLevels(fileTarget);
         config.AddRuleForAllLevels(consoleTarget);
 
+        // NOTE(erri120): RemoveLoggerFactoryFilter prevents
+        // the global minimum level to take effect.
+        // https://github.com/Nexus-Mods/NexusMods.App/issues/250
+        var options = new NLogProviderOptions
+        {
+            RemoveLoggerFactoryFilter = false
+        };
+
         loggingBuilder.ClearProviders();
+#if DEBUG
+        loggingBuilder.SetMinimumLevel(LogLevel.Debug);
+#if TRACE
+        loggingBuilder.SetMinimumLevel(LogLevel.Trace);
+#endif
+#else
         loggingBuilder.SetMinimumLevel(LogLevel.Information);
-        loggingBuilder.AddNLog(config);
+#endif
+
+        loggingBuilder.AddNLog(config, options);
     }
 
     /// <summary>
