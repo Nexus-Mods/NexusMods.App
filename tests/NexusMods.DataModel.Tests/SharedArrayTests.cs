@@ -4,18 +4,15 @@ using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Tests;
 
-public class SharedArrayTests
+public class SharedArrayTests : IDisposable
 {
-    private readonly TemporaryFileManager _temporaryFileManager;
     private readonly TemporaryPath _file;
 
     private const int ThreadCount = 16;
 
     public SharedArrayTests(TemporaryFileManager temporaryFileManager)
     {
-        _temporaryFileManager = temporaryFileManager;
-
-        _file = _temporaryFileManager.CreateFile();
+        _file = temporaryFileManager.CreateFile();
     }
 
     [Fact]
@@ -62,5 +59,10 @@ public class SharedArrayTests
         {
             array.Get(1).Should().Be(ThreadCount * iterations);
         }
+    }
+
+    public void Dispose()
+    {
+        _file.Dispose();
     }
 }
