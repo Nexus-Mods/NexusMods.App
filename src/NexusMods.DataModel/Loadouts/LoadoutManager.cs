@@ -119,7 +119,10 @@ public class LoadoutManager
     /// In the context of the Nexus app 'Manage Game' effectively means 'Add Game to App'; we call it
     /// 'Manage Game' because it effectively means putting the game files under our control.
     /// </remarks>
-    public async Task<LoadoutMarker> ManageGameAsync(GameInstallation installation, string name = "", CancellationToken token = default, bool earlyReturn = false)
+    public async Task<LoadoutMarker> ManageGameAsync(GameInstallation installation, string name = "", 
+        CancellationToken token = default, 
+        bool indexGameFiles = true,
+        bool earlyReturn = false)
     {
         _logger.LogInformation("Indexing game files");
 
@@ -159,10 +162,17 @@ public class LoadoutManager
 
         var managementJob = InterprocessJob.Create(JobType.AddMod, _jobManager, cursor,
                 $"Analyzing game files for {installation.Game.Name}");
-        var indexTask = Task.Run(() => IndexAndAddGameFiles(installation, token, loadout, mod, managementJob), token);
 
-        if (!earlyReturn)
-            await indexTask;
+        if (indexGameFiles)
+        {
+            var indexTask =
+                Task.Run(
+                    () => IndexAndAddGameFiles(installation, token, loadout,
+                        mod, managementJob), token);
+
+            if (!earlyReturn)
+                await indexTask;
+        }
 
         return new LoadoutMarker(this, loadoutId);
     }

@@ -18,7 +18,7 @@ public class ModInstallerTests : AGameTest<Cyberpunk2077>
     public async Task CanCreateLoadout(string name, ModId modId, FileId fileId,
         Hash hash, IEnumerable<GamePath> files)
     {
-        var loadout = await CreateLoadout();
+        var loadout = await CreateLoadout(indexGameFiles:false);
         var downloaded = await DownloadAndCacheMod(
             loadout.Value.Installation.Game.Domain, modId, fileId, hash);
         var mod = await InstallModIntoLoadout(loadout, downloaded);
@@ -117,12 +117,12 @@ public class ModInstallerTests : AGameTest<Cyberpunk2077>
             "Tarnished Pack", ModId.From(6072), FileId.From(31953),
             Hash.From(0x0AAFB35F889500BD), new[]
             {
-                @"archive\pc\mod\\WINGDEER_FemV_HAIR_TARNISHED1_no1.archive",
-                @"archive\pc\mod\\WINGDEER_FemV_HAIR_TARNISHED2_no1.archive",
-                @"archive\pc\mod\\WINGDEER_FemV_HAIR_TARNISHED3_no1.archive",
-                @"archive\pc\mod\\WINGDEER_FemV_HAIR_TARNISHED4_no1.archive",
-                @"archive\pc\mod\\WINGDEER_FemV_HAIR_TARNISHED5_no1.archive",
-                @"archive\pc\mod\\WINGDEER_FemV_HAIR_TARNISHED6_no1.archive"
+                @"archive\pc\mod\WINGDEER_FemV_HAIR_TARNISHED1_no1.archive",
+                @"archive\pc\mod\WINGDEER_FemV_HAIR_TARNISHED2_no1.archive",
+                @"archive\pc\mod\WINGDEER_FemV_HAIR_TARNISHED3_no1.archive",
+                @"archive\pc\mod\WINGDEER_FemV_HAIR_TARNISHED4_no1.archive",
+                @"archive\pc\mod\WINGDEER_FemV_HAIR_TARNISHED5_no1.archive",
+                @"archive\pc\mod\WINGDEER_FemV_HAIR_TARNISHED6_no1.archive"
             }.Select(p => new GamePath(GameFolderType.Game, p))
         },
         new object[]
@@ -148,21 +148,21 @@ public class ModInstallerTests : AGameTest<Cyberpunk2077>
             "Hair BUNS PACK", ModId.From(6072), FileId.From(31979),
             Hash.From(0xAFEABDAF2B38E408), new[]
             {
-                @"archive\pc\mod\\#WINGDEER_FemV_Hair_ALEXA_NO37.archive",
-                @"archive\pc\mod\\#WINGDEER_FemV_HAIR_BunsBunsBuns_NO28.archive",
-                @"archive\pc\mod\\#WINGDEER_FemV_HAIR_CINDY_NO35.archive",
-                @"archive\pc\mod\\#WINGDEER_FemV_HAIR_RUTHsHalfBun1.2_NO1.archive",
-                @"archive\pc\mod\\#WINGDEER_FemV_HAIR_RUTHsHalfBun3.2_NO1.archive",
-                @"archive\pc\mod\\#WINGDEER_FemV_lilbun_NO33.archive",
-                @"archive\pc\mod\\WINGDEER_FemV_bunClaudetteBangs_no37.archive",
-                @"archive\pc\mod\\WINGDEER_FemV_bunClaudetteBangs_NOchopstick_no37.archive",
-                @"archive\pc\mod\\WINGDEER_FemV_bunNOstrands_no37.archive",
-                @"archive\pc\mod\\WINGDEER_FemV_bunNOstrands_NOchopsticks_no37.archive",
-                @"archive\pc\mod\\WINGDEER_FemV_bunwEveBangs_no37.archive",
-                @"archive\pc\mod\\WINGDEER_FemV_bunwEveBangs_NOchopstick_no37.archive",
-                @"archive\pc\mod\\WINGDEER_FemV_bunwStrands_no37.archive",
-                @"archive\pc\mod\\WINGDEER_FemV_bunwStrands_NOchopstick_no37.archive",
-                @"archive\pc\mod\\WINGDEER_FemV_ChopsticBun_no28.archive"
+                @"archive\pc\mod\#WINGDEER_FemV_Hair_ALEXA_NO37.archive",
+                @"archive\pc\mod\#WINGDEER_FemV_HAIR_BunsBunsBuns_NO28.archive",
+                @"archive\pc\mod\#WINGDEER_FemV_HAIR_CINDY_NO35.archive",
+                @"archive\pc\mod\#WINGDEER_FemV_HAIR_RUTHsHalfBun1.2_NO1.archive",
+                @"archive\pc\mod\#WINGDEER_FemV_HAIR_RUTHsHalfBun3.2_NO1.archive",
+                @"archive\pc\mod\#WINGDEER_FemV_lilbun_NO33.archive",
+                @"archive\pc\mod\WINGDEER_FemV_bunClaudetteBangs_no37.archive",
+                @"archive\pc\mod\WINGDEER_FemV_bunClaudetteBangs_NOchopstick_no37.archive",
+                @"archive\pc\mod\WINGDEER_FemV_bunNOstrands_no37.archive",
+                @"archive\pc\mod\WINGDEER_FemV_bunNOstrands_NOchopsticks_no37.archive",
+                @"archive\pc\mod\WINGDEER_FemV_bunwEveBangs_no37.archive",
+                @"archive\pc\mod\WINGDEER_FemV_bunwEveBangs_NOchopstick_no37.archive",
+                @"archive\pc\mod\WINGDEER_FemV_bunwStrands_no37.archive",
+                @"archive\pc\mod\WINGDEER_FemV_bunwStrands_NOchopstick_no37.archive",
+                @"archive\pc\mod\WINGDEER_FemV_ChopsticBun_no28.archive"
             }.Select(p => new GamePath(GameFolderType.Game, p))
         },
         new object[]

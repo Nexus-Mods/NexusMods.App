@@ -60,9 +60,9 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// Creates a new loadout and returns the <see cref="LoadoutMarker"/> of it.
     /// </summary>
     /// <returns></returns>
-    protected async Task<LoadoutMarker> CreateLoadout()
+    protected async Task<LoadoutMarker> CreateLoadout(bool indexGameFiles = true)
     {
-        var loadout = await LoadoutManager.ManageGameAsync(GameInstallation, Guid.NewGuid().ToString("N"));
+        var loadout = await LoadoutManager.ManageGameAsync(GameInstallation, Guid.NewGuid().ToString("N"), indexGameFiles: indexGameFiles);
         return loadout;
     }
 
