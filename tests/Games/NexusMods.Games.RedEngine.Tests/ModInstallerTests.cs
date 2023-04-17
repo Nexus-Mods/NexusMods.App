@@ -49,25 +49,31 @@ public class ModInstallerTests
         var gameFiles = loadout.Value.Mods.Values.First(m => m.Name == "Game Files");
         gameFiles.Files.Count.Should().BeGreaterThan(0);
 
-        var file = await Download(modId, fileId, hash);
-        var installedId = await loadout.InstallModAsync(file, name);
+        DataModel.Loadouts.ModId installedId;
+        // TODO: Change HaveArchive to output file path, otherwise end users might see tests, copy this code and do it inefficiently. https://github.com/Nexus-Mods/NexusMods.App/issues/206
+        if (_archiveManager.HaveArchive(hash))
+        {
+            installedId = await loadout.InstallModAsync(_archiveManager.PathFor(hash), name);
+        }
+        else
+        {
+            await using var file = await Download(modId, fileId, hash);
+            installedId = await loadout.InstallModAsync(file.Path, name);
+        }
+
         loadout.Value.Mods[installedId].Files.Count.Should().Be(fileCount);
 
     }
 
-    private async Task<AbsolutePath> Download(ModId modId, FileId fileId, Hash hash)
+    private async Task<TemporaryPath> Download(ModId modId, FileId fileId, Hash hash)
     {
-        // TODO: Change HaveArchive to output file path, otherwise end users might see tests, copy this code and do it inefficiently. https://github.com/Nexus-Mods/NexusMods.App/issues/206
-        if (_archiveManager.HaveArchive(hash))
-            return _archiveManager.PathFor(hash);
-
         _logger.LogInformation("Downloading {ModId} {FileId} {Hash}", modId, fileId, hash);
         var uris = await _nexusClient.DownloadLinks(GameDomain.Cyberpunk2077, modId, fileId);
 
         var file = _temporaryFileManager.CreateFile();
         var downloadHash = await _httpDownloader.DownloadAsync(uris.Data.Select(u => new HttpRequestMessage(HttpMethod.Get, u.Uri)).ToArray(), file);
         downloadHash.Should().Be(hash);
-        return file.Path;
+        return file;
     }
 
     public static IEnumerable<object[]> TestFiles => new[]

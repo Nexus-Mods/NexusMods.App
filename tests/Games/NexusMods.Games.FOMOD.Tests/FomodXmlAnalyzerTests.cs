@@ -27,7 +27,7 @@ public class FomodXmlAnalyzerTests
             Stream = result.stream,
             FileName = result.path.FileName,
             RelativePath = result.path.RelativeTo(parentArchive),
-            ParentArchive = new TemporaryPath(parentArchive, false)
+            ParentArchive = new TemporaryPath(FileSystem.Shared, parentArchive, false)
         });
 
         (await results.CountAsync()).Should().Be(1);
@@ -42,7 +42,7 @@ public class FomodXmlAnalyzerTests
         {
             Stream = result.stream,
             FileName = result.path.FileName,
-            ParentArchive = new TemporaryPath(parentArchive, false)
+            ParentArchive = new TemporaryPath(FileSystem.Shared, parentArchive, false)
         });
 
         (await results.CountAsync()).Should().Be(0);
@@ -73,7 +73,7 @@ public class FomodXmlAnalyzerTests
             Stream = result.stream,
             FileName = result.path.FileName,
             RelativePath = result.path.RelativeTo(parentArchive),
-            ParentArchive = new TemporaryPath(parentArchive, false)
+            ParentArchive = new TemporaryPath(FileSystem.Shared, parentArchive, false)
         });
 
         var items = await results.ToArrayAsync();
@@ -98,7 +98,7 @@ public class FomodXmlAnalyzerTests
             Stream = result.stream,
             FileName = result.path.FileName,
             RelativePath = result.path.RelativeTo(parentArchive),
-            ParentArchive = new TemporaryPath(parentArchive, false)
+            ParentArchive = new TemporaryPath(FileSystem.Shared, parentArchive, false)
         });
 
         var items = await results.ToArrayAsync();

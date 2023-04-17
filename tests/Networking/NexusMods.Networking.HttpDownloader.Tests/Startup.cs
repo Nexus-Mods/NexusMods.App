@@ -14,6 +14,7 @@ public class Startup
         container.AddAdvancedHttpDownloader()
                  .AddSingleton<SimpleHttpDownloader>()
                  .AddSingleton<AdvancedHttpDownloader>()
+                 .AddFileSystem()
                  .AddSingleton<TemporaryFileManager>()
                  .AddSingleton<HttpClient>()
                  .AddSingleton<LocalHttpServer>()

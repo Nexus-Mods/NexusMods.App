@@ -215,16 +215,59 @@ public partial class InMemoryFileSystem : BaseFileSystem
     /// <inheritdoc/>
     protected override Stream InternalOpenFile(AbsolutePath path, FileMode mode, FileAccess access, FileShare share)
     {
-        // TODO: support more file modes
-        if (mode != FileMode.Open)
-            throw new NotImplementedException();
+        if (access == FileAccess.Read && mode != FileMode.Open && mode != FileMode.OpenOrCreate)
+        {
+            throw new ArgumentException($"Access can't be Read with mode {mode}", nameof(access));
+        }
 
-        if (!_files.TryGetValue(path, out var inMemoryFile))
+        InMemoryFileEntry? inMemoryFileEntry;
+        switch (mode)
+        {
+            case FileMode.Open:
+            {
+                _files.TryGetValue(path, out inMemoryFileEntry);
+                break;
+            }
+            case FileMode.Create:
+            {
+                if (!_files.TryGetValue(path, out inMemoryFileEntry))
+                    inMemoryFileEntry = InternalAddFile(path, Array.Empty<byte>());
+                else
+                    inMemoryFileEntry.SetContents(Array.Empty<byte>());
+                break;
+            }
+            case FileMode.CreateNew:
+            {
+                if (_files.ContainsKey(path))
+                    throw new IOException($"{FileMode.CreateNew} can't be used if the file already exists!");
+                inMemoryFileEntry = InternalAddFile(path, Array.Empty<byte>());
+                break;
+            }
+            case FileMode.OpenOrCreate:
+            {
+                if (!_files.TryGetValue(path, out inMemoryFileEntry))
+                    inMemoryFileEntry = InternalAddFile(path, Array.Empty<byte>());
+                break;
+            }
+            case FileMode.Truncate:
+            {
+                if (_files.TryGetValue(path, out inMemoryFileEntry))
+                    inMemoryFileEntry.SetContents(Array.Empty<byte>());
+                break;
+            }
+            case FileMode.Append:
+            default: throw new NotImplementedException();
+        }
+
+        if (inMemoryFileEntry is null)
             throw new FileNotFoundException("File does not exist!", path.FileName);
 
-        var fileContents = inMemoryFile.Contents;
-        var ms = new MemoryStream(fileContents, 0, fileContents.Length, access.HasFlag(FileAccess.Write));
-        return ms;
+        return access switch
+        {
+            FileAccess.Read => inMemoryFileEntry.CreateReadStream(),
+            FileAccess.Write => inMemoryFileEntry.CreateWriteStream(),
+            FileAccess.ReadWrite => inMemoryFileEntry.CreateReadWriteStream(),
+        };
     }
 
     /// <inheritdoc/>
@@ -291,11 +334,11 @@ public partial class InMemoryFileSystem : BaseFileSystem
             if (!overwrite)
                 throw new IOException($"Destination file at {dest} already exist!");
 
-            destFile.Contents = sourceFile.Contents;
+            destFile.SetContents(sourceFile.GetContents());
         }
         else
         {
-            destFile = InternalAddFile(dest, sourceFile.Contents);
+            destFile = InternalAddFile(dest, sourceFile.GetContents());
         }
 
         destFile.CreationTime = sourceFile.CreationTime;

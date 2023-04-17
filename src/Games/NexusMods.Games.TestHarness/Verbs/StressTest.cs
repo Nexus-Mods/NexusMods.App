@@ -74,7 +74,7 @@ public class StressTest : AVerb<IGame, AbsolutePath, AbsolutePath>
                         file.FileName, file.SizeInBytes);
 
                     var urls = await _client.DownloadLinks(game.Domain, mod.ModId, file.FileId, token);
-                    var tmpPath = _temporaryFileManager.CreateFile();
+                    await using var tmpPath = _temporaryFileManager.CreateFile();
 
                     var cts = new CancellationTokenSource();
                     cts.CancelAfter(TimeSpan.FromMinutes(20));
