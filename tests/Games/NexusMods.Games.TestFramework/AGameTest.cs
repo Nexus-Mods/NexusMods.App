@@ -166,7 +166,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     {
         var folder = TemporaryFileManager.CreateFolder();
         var path = folder.Path.CombineUnchecked(fileName);
-        var file = new TemporaryPath(path);
+        var file = new TemporaryPath(FileSystem, path);
 
         await FileSystem.WriteAllBytesAsync(path, contents);
         return file;

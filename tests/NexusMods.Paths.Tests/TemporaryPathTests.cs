@@ -1,46 +1,33 @@
 using FluentAssertions;
-using NexusMods.Paths.Extensions;
-using NexusMods.Paths.Utilities;
+using NexusMods.Paths.TestingHelpers;
 
 namespace NexusMods.Paths.Tests;
 
-public class TemporaryPathTests : IDisposable
+public class TemporaryPathTests
 {
-    private readonly TemporaryFileManager _manager;
-
-    public TemporaryPathTests()
+    [Theory, AutoFileSystem]
+    public void FilesAreInBaseDirectory(InMemoryFileSystem fs, TemporaryFileManager manager)
     {
-        _manager = new TemporaryFileManager(KnownFolders.CurrentDirectory.CombineUnchecked($"baseTmp{Path.DirectorySeparatorChar}{Guid.NewGuid().ToString()}"));
+        using var path = manager.CreateFile();
+        path.Path.InFolder(fs.GetKnownPath(KnownPath.TempDirectory)).Should().BeTrue();
     }
 
-    [Fact]
-    public async Task FilesAreInBaseDirectory()
+    [Theory, AutoFileSystem]
+    public async Task FilesAreDeletedWhenFlagged(InMemoryFileSystem fs, TemporaryFileManager manager)
     {
-        await using var path = _manager.CreateFile();
-        path.Path.Parent.Parent.FileName.Should().Be("baseTmp".ToRelativePath());
-    }
+        var deletedPath = manager.CreateFile();
+        await fs.WriteAllTextAsync(deletedPath, "File A");
 
-    [Fact]
-    public async Task FilesAreDeletedWhenFlagged()
-    {
-        var deletedPath = _manager.CreateFile();
-        await deletedPath.Path.WriteAllTextAsync("File A");
+        var notDeletedPath = manager.CreateFile(deleteOnDispose: false);
+        await fs.WriteAllTextAsync(notDeletedPath, "File B");
 
-        var notDeletedPath = _manager.CreateFile(deleteOnDispose: false);
-        await notDeletedPath.Path.WriteAllTextAsync("File B");
-
-        deletedPath.Path.FileExists.Should().BeTrue();
-        notDeletedPath.Path.FileExists.Should().BeTrue();
+        fs.FileExists(deletedPath).Should().BeTrue();
+        fs.FileExists(notDeletedPath).Should().BeTrue();
 
         await deletedPath.DisposeAsync();
         await notDeletedPath.DisposeAsync();
 
-        deletedPath.Path.FileExists.Should().BeFalse();
-        notDeletedPath.Path.FileExists.Should().BeTrue();
-    }
-
-    public void Dispose()
-    {
-        _manager.Dispose();
+        fs.FileExists(deletedPath).Should().BeFalse();
+        fs.FileExists(notDeletedPath).Should().BeTrue();
     }
 }

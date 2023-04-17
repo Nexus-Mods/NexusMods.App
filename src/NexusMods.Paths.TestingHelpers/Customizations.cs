@@ -16,6 +16,7 @@ public static class Customizations
     ///     <item><see cref="InMemoryFileSystem"/></item>
     ///     <item><see cref="AbsolutePath"/></item>
     ///     <item><see cref="RelativePath"/></item>
+    ///     <item><see cref="TemporaryFileManager"/></item>
     /// </list>
     /// </summary>
     /// <param name="fixture">The provided <see cref="Fixture"/> to use.</param>
@@ -41,5 +42,8 @@ public static class Customizations
 
         fixture.Customize<RelativePath>(composer =>
             composer.FromFactory<string>(path => new RelativePath(path)));
+
+        fixture.Customize<TemporaryFileManager>(composer =>
+            composer.FromFactory<IFileSystem>(fs => new TemporaryFileManager(fs)));
     }
 }
