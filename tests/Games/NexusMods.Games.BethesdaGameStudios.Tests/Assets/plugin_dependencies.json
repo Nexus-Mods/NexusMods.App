@@ -1,0 +1,503 @@
+{
+  "Dawnguard.esm": [
+    "Skyrim.esm",
+    "Update.esm"
+  ],
+  "Dragonborn.esm": [
+    "Skyrim.esm",
+    "Update.esm"
+  ],
+  "HearthFires.esm": [
+    "Skyrim.esm",
+    "Update.esm"
+  ],
+  "Skyrim.esm": [],
+  "Update.esm": [
+    "Skyrim.esm"
+  ],
+  "ccAFDSSE001-DweSanctuary.esm": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccASVSSE001-ALMSIVI.esm": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE001-Fish.esm": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE002-ExoticArrows.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE003-Zombies.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE004-RuinsEdge.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE005-Goldbrand.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm"
+  ],
+  "ccBGSSSE006-StendarsHammer.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm"
+  ],
+  "ccBGSSSE007-Chrysamere.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE008-Wraithguard.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE010-PetDwarvenArmoredMudcrab.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE011-HrsArmrElvn.esl": [
+    "Skyrim.esm",
+    "Update.esm"
+  ],
+  "ccBGSSSE012-HrsArmrStl.esl": [
+    "Skyrim.esm",
+    "Update.esm"
+  ],
+  "ccBGSSSE013-Dawnfang.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE014-SpellPack01.esl": [
+    "Skyrim.esm",
+    "Update.esm"
+  ],
+  "ccBGSSSE016-Umbra.esm": [
+    "Skyrim.esm",
+    "Update.esm"
+  ],
+  "ccBGSSSE018-Shadowrend.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm"
+  ],
+  "ccBGSSSE019-StaffofSheogorath.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE020-GrayCowl.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE021-LordsMail.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE025-AdvDSGS.esm": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE031-AdvCyrus.esm": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE034-MntUni.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE035-PetNHound.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE036-PetBWolf.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE037-Curios.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE038-BowofShadows.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE040-AdvObGobs.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE041-NetchLeather.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE043-CrossElv.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm"
+  ],
+  "ccBGSSSE045-Hasedoki.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE050-BA_Daedric.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE051-BA_DaedricMail.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE052-BA_Iron.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE053-BA_Leather.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE054-BA_Orcish.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE055-BA_OrcishScaled.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE056-BA_Silver.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE057-BA_Stalhrim.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE058-BA_Steel.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE059-BA_Dragonplate.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE060-BA_Dragonscale.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE061-BA_Dwarven.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE062-BA_DwarvenMail.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE063-BA_Ebony.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE064-BA_Elven.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE066-Staves.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE067-DaedInv.esm": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE068-Bloodfall.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccBGSSSE069-Contest.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccCBHSSE001-Gaunt.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccEDHSSE001-NorJewel.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccEDHSSE002-SplKntSet.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccEDHSSE003-Redguard.esl": [
+    "Skyrim.esm",
+    "Update.esm"
+  ],
+  "ccEEJSSE001-Hstead.esm": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccEEJSSE002-Tower.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccEEJSSE003-Hollow.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccEEJSSE004-Hall.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccEEJSSE005-Cave.esm": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccFFBSSE001-ImperialDragon.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccFFBSSE002-CrossbowPack.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccFSVSSE001-Backpacks.esl": [
+    "Skyrim.esm",
+    "Update.esm"
+  ],
+  "ccKRTSSE001_Altar.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccMTYSSE001-KnightsOfTheNine.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccMTYSSE002-VE.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccPEWSSE002-ArmsOfChaos.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccQDRSSE001-SurvivalMode.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccQDRSSE002-Firewood.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccRMSSSE001-NecroHouse.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccTWBSSE001-PuzzleDungeon.esm": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccVSVSSE001-Winter.esl": [
+    "Skyrim.esm",
+    "Update.esm"
+  ],
+  "ccVSVSSE002-Pets.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ],
+  "ccVSVSSE003-NecroArts.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "Dragonborn.esm"
+  ],
+  "ccVSVSSE004-BeAFarmer.esl": [
+    "Skyrim.esm",
+    "Update.esm",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Dragonborn.esm"
+  ]
+}

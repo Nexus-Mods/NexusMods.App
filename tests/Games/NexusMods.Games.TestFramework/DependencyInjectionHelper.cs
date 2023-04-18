@@ -43,6 +43,7 @@ public static class DependencyInjectionHelper
             .AddFileSystem()
             .AddSingleton<TemporaryFileManager>()
             .AddSingleton<HttpClient>()
+            .AddSingleton<TestModDownloader>()
             .AddNexusWebApi(true)
             .AddHttpDownloader()
             .AddDataModel(new DataModelSettings())

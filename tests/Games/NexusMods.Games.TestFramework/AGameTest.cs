@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using System.Text;
+using FluentAssertions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.DataModel;
@@ -26,7 +27,9 @@ public abstract class AGameTest<TGame> where TGame : AGame
 
     protected readonly IFileSystem FileSystem;
     protected readonly TemporaryFileManager TemporaryFileManager;
+    protected readonly ArchiveManager ArchiveManager;
     protected readonly LoadoutManager LoadoutManager;
+    protected readonly LoadoutRegistry LoadoutRegistry;
     protected readonly FileContentsCache FileContentsCache;
     protected readonly IDataStore DataStore;
 
@@ -44,8 +47,10 @@ public abstract class AGameTest<TGame> where TGame : AGame
         GameInstallation = Game.Installations.First();
 
         FileSystem = serviceProvider.GetRequiredService<IFileSystem>();
+        ArchiveManager = serviceProvider.GetRequiredService<ArchiveManager>();
         TemporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
         LoadoutManager = serviceProvider.GetRequiredService<LoadoutManager>();
+        LoadoutRegistry = serviceProvider.GetRequiredService<LoadoutRegistry>();
         FileContentsCache = serviceProvider.GetRequiredService<FileContentsCache>();
         DataStore = serviceProvider.GetRequiredService<IDataStore>();
 
@@ -57,9 +62,9 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// Creates a new loadout and returns the <see cref="LoadoutMarker"/> of it.
     /// </summary>
     /// <returns></returns>
-    protected async Task<LoadoutMarker> CreateLoadout()
+    protected async Task<LoadoutMarker> CreateLoadout(bool indexGameFiles = true)
     {
-        var loadout = await LoadoutManager.ManageGameAsync(GameInstallation, Guid.NewGuid().ToString("N"));
+        var loadout = await LoadoutManager.ManageGameAsync(GameInstallation, Guid.NewGuid().ToString("N"), indexGameFiles: indexGameFiles);
         return loadout;
     }
 
@@ -81,6 +86,29 @@ public abstract class AGameTest<TGame> where TGame : AGame
         );
 
         return (file, downloadHash);
+    }
+    
+    /// <summary>
+    /// Downloads a mod and caches it in the <see cref="ArchiveManager"/> so future
+    /// requests for the same file will be served from the cache. Compares the
+    /// hash of the downloaded file with the expected hash and throws an exception
+    /// if they don't match.
+    /// </summary>
+    /// <param name="gameDomain"></param>
+    /// <param name="modId"></param>
+    /// <param name="fileId"></param>
+    /// <param name="hash"></param>
+    /// <returns></returns>
+    public async Task<AbsolutePath> DownloadAndCacheMod(GameDomain gameDomain, ModId modId, FileId fileId, Hash hash)
+    {
+        if (ArchiveManager.TryGetPathFor(hash, out var path))
+            return path;
+
+        var (file, downloadHash) = await DownloadMod(gameDomain, modId, fileId);
+        downloadHash.Should().Be(hash);
+        
+        await ArchiveManager.ArchiveFileAsync(file.Path);
+        return file.Path;
     }
 
     /// <summary>
@@ -121,17 +149,16 @@ public abstract class AGameTest<TGame> where TGame : AGame
         var file = TemporaryFileManager.CreateFile();
 
         await using var stream = FileSystem.OpenFile(file.Path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
-        using (var zipArchive = new ZipArchive(stream, ZipArchiveMode.Create))
+        using var zipArchive = new ZipArchive(stream, ZipArchiveMode.Create);
+        
+        foreach (var kv in filesToZip)
         {
-            foreach (var kv in filesToZip)
-            {
-                var (path, contents) = kv;
+            var (path, contents) = kv;
 
-                var entry = zipArchive.CreateEntry(path.Path, CompressionLevel.Fastest);
-                await using var entryStream = entry.Open();
-                await using var ms = new MemoryStream(contents);
-                await ms.CopyToAsync(entryStream);
-            }
+            var entry = zipArchive.CreateEntry(path.Path, CompressionLevel.Fastest);
+            await using var entryStream = entry.Open();
+            await using var ms = new MemoryStream(contents);
+            await ms.CopyToAsync(entryStream);
         }
 
         return file;
@@ -141,7 +168,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     {
         var folder = TemporaryFileManager.CreateFolder();
         var path = folder.Path.CombineUnchecked(fileName);
-        var file = new TemporaryPath(path);
+        var file = new TemporaryPath(FileSystem, path);
 
         await FileSystem.WriteAllBytesAsync(path, contents);
         return file;

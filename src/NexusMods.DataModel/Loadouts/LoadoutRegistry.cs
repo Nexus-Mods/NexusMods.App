@@ -17,6 +17,8 @@ namespace NexusMods.DataModel.Loadouts;
 /// </summary>
 public class LoadoutRegistry : IDisposable
 {
+    private bool _isDisposed;
+
     private readonly ILogger<LoadoutRegistry> _logger;
     private readonly IDataStore _store;
     private SourceCache<IId, LoadoutId> _cache;
@@ -296,9 +298,29 @@ public class LoadoutRegistry : IDisposable
             .NotNull();
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
-        _cache.Dispose();
-        _compositeDisposable.Dispose();
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Releases the unmanaged resources and optionally releases the managed resources.
+    /// </summary>
+    /// <param name="disposing">
+    /// <c>true</c> to release both managed and unmanaged resources;
+    /// <c>false</c> to release only unmanaged resources.
+    /// </param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_isDisposed) return;
+        if (disposing)
+        {
+            _cache.Dispose();
+            _compositeDisposable.Dispose();
+        }
+
+        _isDisposed = true;
     }
 }

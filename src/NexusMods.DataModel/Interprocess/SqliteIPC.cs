@@ -40,6 +40,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
     private readonly ObjectPool<SqliteConnection> _pool;
     private readonly ConnectionPoolPolicy _poolPolicy;
 
+    private bool _isDisposed;
 
     /// <summary>
     /// Allows you to subscribe to newly incoming IPC messages.
@@ -90,6 +91,9 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
     /// <param name="token"></param>
     public async Task CleanupOnce(CancellationToken token)
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteIPC));
+
         var oldTime = DateTime.UtcNow - RetentionTime;
 
         _logger.LogTrace("Cleaning up old IPC messages");
@@ -164,6 +168,9 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
 
     private long ProcessMessages(long lastId)
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteIPC));
+
         try
         {
             using var conn = _pool.RentDisposable();
@@ -280,6 +287,9 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
     /// <param name="message"></param>
     public void Send(string queue, ReadOnlySpan<byte> message)
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteIPC));
+
         try
         {
             _logger.LogTrace("Sending {Bytes} byte message to queue {Queue}", Size.FromLong(message.Length), queue);
@@ -309,22 +319,11 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
     }
 
 
-    /// <summary>
-    /// Dispose of the IPC connection.
-    /// </summary>
-    public void Dispose()
-    {
-        _shutdownToken.Cancel();
-        _subject.Dispose();
-        _syncArray.Dispose();
-        _poolPolicy.Dispose();
-        _jobs.Dispose();
-        if (_pool is IDisposable disposable)
-            disposable.Dispose();
-    }
-
     public void CreateJob(IInterprocessJob job)
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteIPC));
+
         try
         {
             _logger.LogInformation("Creating job {JobId} of type {JobType}", job.JobId, job.GetType().Name);
@@ -363,6 +362,9 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
 
     public void EndJob(JobId job)
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(TemporaryFileManager));
+
         _logger.LogInformation("Deleting job {JobId}", job);
         {
             using var conn = _pool.RentDisposable();
@@ -377,6 +379,9 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
 
     public void UpdateProgress(JobId jobId, Percent value)
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(TemporaryFileManager));
+
         _logger.LogTrace("Updating job {JobId} progress to {Percent}", jobId, value);
         {
             using var conn = _pool.RentDisposable();
@@ -387,5 +392,39 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
             cmd.ExecuteNonQuery();
         }
         UpdateJobTimestamp();
+    }
+
+    /// <summary>
+    /// Dispose of the IPC connection.
+    /// </summary>
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Releases the unmanaged resources and optionally releases the managed resources.
+    /// </summary>
+    /// <param name="disposing">
+    /// <c>true</c> to release both managed and unmanaged resources;
+    /// <c>false</c> to release only unmanaged resources.
+    /// </param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_isDisposed) return;
+        if (disposing)
+        {
+            _shutdownToken.Cancel();
+            _subject.Dispose();
+            _syncArray.Dispose();
+            _jobs.Dispose();
+
+            if (_pool is IDisposable disposable)
+                disposable.Dispose();
+            _poolPolicy.Dispose();
+        }
+
+        _isDisposed = true;
     }
 }

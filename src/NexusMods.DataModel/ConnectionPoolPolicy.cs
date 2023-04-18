@@ -1,6 +1,5 @@
 ﻿using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.ObjectPool;
-using NexusMods.Paths;
 
 namespace NexusMods.DataModel;
 
@@ -13,6 +12,7 @@ public class ConnectionPoolPolicy : IPooledObjectPolicy<SqliteConnection>, IDisp
 {
     private readonly string _connectionString;
 
+    private bool _isDisposed;
     private List<SqliteConnection> _connections = new();
 
     /// <summary>
@@ -42,12 +42,31 @@ public class ConnectionPoolPolicy : IPooledObjectPolicy<SqliteConnection>, IDisp
     /// <inheritdoc />
     public void Dispose()
     {
-        foreach (var conn in _connections)
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Releases the unmanaged resources and optionally releases the managed resources.
+    /// </summary>
+    /// <param name="disposing">
+    /// <c>true</c> to release both managed and unmanaged resources;
+    /// <c>false</c> to release only unmanaged resources.
+    /// </param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_isDisposed) return;
+        if (disposing)
         {
-            conn.Close();
-            conn.Dispose();
+            foreach (var connection in _connections)
+            {
+                connection.Close();
+                connection.Dispose();
+            }
+
+            SqliteConnection.ClearAllPools();
         }
 
-        SqliteConnection.ClearAllPools();
+        _isDisposed = true;
     }
 }

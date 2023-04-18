@@ -38,7 +38,7 @@ public class CombineCheckedTest
         string expectedFullPath, string expectedDirectory,
         string expectedFileName, bool linux)
     {
-        Skip.IfNot(OperatingSystem.IsLinux() && linux);
+        Skip.If(linux != OperatingSystem.IsLinux());
         var absolutePath = AbsolutePath.FromFullPath(left);
         var relativePath = new RelativePath(right);
 
@@ -59,7 +59,7 @@ public class CombineCheckedTest
         string expectedFullPath, string expectedDirectory,
         string expectedFileName, bool linux)
     {
-        Skip.IfNot(OperatingSystem.IsLinux() && linux);
+        Skip.If(linux != OperatingSystem.IsLinux());
         var absolutePath = AbsolutePath.FromFullPath(left);
         var relativePath = new RelativePath(right);
 

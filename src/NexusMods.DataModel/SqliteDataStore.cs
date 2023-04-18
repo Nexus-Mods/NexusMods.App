@@ -24,6 +24,8 @@ namespace NexusMods.DataModel;
 /// </summary>
 public class SqliteDataStore : IDataStore, IDisposable
 {
+    private bool _isDisposed;
+
     private readonly Dictionary<EntityCategory, string> _getStatements;
     private readonly Dictionary<EntityCategory, string> _putStatements;
     // ReSharper disable once CollectionNeverQueried.Local
@@ -55,6 +57,7 @@ public class SqliteDataStore : IDataStore, IDisposable
     {
         _logger = logger;
         var connectionString = string.Intern($"Data Source={path}");
+
         _poolPolicy = new ConnectionPoolPolicy(connectionString);
         _pool = ObjectPool.Create(_poolPolicy);
 
@@ -129,6 +132,9 @@ public class SqliteDataStore : IDataStore, IDisposable
     /// <inheritdoc />
     public IId Put<T>(T value) where T : Entity
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteDataStore));
+
         using var conn = _pool.RentDisposable();
         using var cmd = conn.Value.CreateCommand();
         cmd.CommandText = _putStatements[value.Category];
@@ -152,6 +158,9 @@ public class SqliteDataStore : IDataStore, IDisposable
     /// <inheritdoc />
     public void Put<T>(IId id, T value) where T : Entity
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteDataStore));
+
         using var conn = _pool.RentDisposable();
         using var cmd = conn.Value.CreateCommand();
         cmd.CommandText = _putStatements[value.Category];
@@ -170,6 +179,9 @@ public class SqliteDataStore : IDataStore, IDisposable
     /// <inheritdoc />
     public T? Get<T>(IId id, bool canCache) where T : Entity
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteDataStore));
+
         if (canCache && _cache.TryGet(id, out var cached))
             return (T)cached;
 
@@ -196,6 +208,9 @@ public class SqliteDataStore : IDataStore, IDisposable
     /// <inheritdoc />
     public byte[]? GetRaw(IId id)
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteDataStore));
+
         using var conn = _pool.RentDisposable();
         using var cmd = conn.Value.CreateCommand();
         cmd.CommandText = _getStatements[id.Category];
@@ -208,6 +223,9 @@ public class SqliteDataStore : IDataStore, IDisposable
     /// <inheritdoc />
     public void PutRaw(IId id, ReadOnlySpan<byte> val)
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteDataStore));
+
         using var conn = _pool.RentDisposable();
         using var cmd = conn.Value.CreateCommand();
         cmd.CommandText = _putStatements[id.Category];
@@ -224,6 +242,9 @@ public class SqliteDataStore : IDataStore, IDisposable
     /// <inheritdoc />
     public void Delete(IId id)
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteDataStore));
+
         using var conn = _pool.RentDisposable();
         using var cmd = conn.Value.CreateCommand();
         cmd.CommandText = _deleteStatements[id.Category];
@@ -237,6 +258,9 @@ public class SqliteDataStore : IDataStore, IDisposable
     /// <inheritdoc />
     public async Task<long> PutRaw(IAsyncEnumerable<(IId Key, byte[] Value)> kvs, CancellationToken token = default)
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteDataStore));
+
         var iterator = kvs.GetAsyncEnumerator(token);
         var processed = 0;
         var totalLoaded = 0L;
@@ -285,6 +309,9 @@ public class SqliteDataStore : IDataStore, IDisposable
     /// <inheritdoc />
     public IEnumerable<T> GetByPrefix<T>(IId prefix) where T : Entity
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteDataStore));
+
         using var conn = _pool.RentDisposable();
         using var cmd = conn.Value.CreateCommand();
         cmd.CommandText = _prefixStatements[prefix.Category];
@@ -313,6 +340,9 @@ public class SqliteDataStore : IDataStore, IDisposable
     /// <inheritdoc />
     public IEnumerable<IId> AllIds(EntityCategory category)
     {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteDataStore));
+
         using var conn = _pool.RentDisposable();
         using var cmd = conn.Value.CreateCommand();
         cmd.CommandText = _allIdsStatements[category];
@@ -345,10 +375,27 @@ public class SqliteDataStore : IDataStore, IDisposable
     /// <inheritdoc />
     public void Dispose()
     {
-        _enqueuerTcs.Dispose();
-        if (_pool is IDisposable disposable)
-            disposable.Dispose();
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
-        _poolPolicy.Dispose();
+    /// <summary>
+    /// Releases the unmanaged resources and optionally releases the managed resources.
+    /// </summary>
+    /// <param name="disposing">
+    /// <c>true</c> to release both managed and unmanaged resources;
+    /// <c>false</c> to release only unmanaged resources.
+    /// </param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_isDisposed) return;
+        if (disposing)
+        {
+            _enqueuerTcs.Dispose();
+            if (_pool is IDisposable disposable)
+                disposable.Dispose();
+            _poolPolicy.Dispose();
+        }
+        _isDisposed = true;
     }
 }
