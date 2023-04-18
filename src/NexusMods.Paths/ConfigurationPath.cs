@@ -27,14 +27,17 @@ public struct ConfigurationPath : IEquatable<ConfigurationPath>
     /// Raw, unmodified path.
     /// </summary>
     public string RawPath { get; set; }
+    
+    public IFileSystem FileSystem { get;}
 
     /// <summary>
     /// Creates a new configuration path.
     /// </summary>
     /// <param name="rawPath">Raw path which can include expansion monikers.</param>
-    public ConfigurationPath(string rawPath)
+    public ConfigurationPath(string rawPath, IFileSystem fileSystem)
     {
         RawPath = rawPath;
+        FileSystem = fileSystem;
     }
 
     /// <summary>
@@ -48,18 +51,8 @@ public struct ConfigurationPath : IEquatable<ConfigurationPath>
     /// <summary>
     /// Converts the current string to an absolute path.
     /// </summary>
-    public AbsolutePath ToAbsolutePath() => AbsolutePath.FromFullPath(GetFullPath());
-
-    /// <summary>
-    /// Implicit conversion from string, for convenience.
-    /// </summary>
-    public static implicit operator ConfigurationPath(string c) => new(c);
-
-    /// <summary>
-    /// Implicit conversion to string, for convenience.
-    /// </summary>
-    public static implicit operator string(ConfigurationPath c) => c.GetFullPath();
-
+    public AbsolutePath ToAbsolutePath() => AbsolutePath.FromFullPath(GetFullPath(), FileSystem);
+    
     /// <inheritdoc />
     public bool Equals(ConfigurationPath other) => RawPath == other.RawPath;
 
@@ -75,6 +68,13 @@ public struct ConfigurationPath : IEquatable<ConfigurationPath>
 /// </summary>
 public class ConfigurationPathJsonConverter : JsonConverter<ConfigurationPath>
 {
+    private readonly IFileSystem _fileSystem;
+
+    public ConfigurationPathJsonConverter(IFileSystem fileSystem)
+    {
+        _fileSystem = fileSystem;
+    }
+    
     /// <inheritdoc />
     public override ConfigurationPath Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
@@ -82,7 +82,7 @@ public class ConfigurationPathJsonConverter : JsonConverter<ConfigurationPath>
             ThrowHelpers.JsonException("Expected a string value for ConfigurationPath.");
 
         var rawPath = reader.GetString();
-        return new ConfigurationPath(rawPath!);
+        return new ConfigurationPath(rawPath!, _fileSystem);
     }
 
     /// <inheritdoc />

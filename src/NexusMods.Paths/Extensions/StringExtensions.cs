@@ -57,7 +57,7 @@ public static class StringExtensions
     /// Converts an existing path represented as a string to a <see cref="AbsolutePath"/>.
     /// Use scarcely. Absolute paths should only come from OS.
     /// </summary>
-    public static AbsolutePath ToAbsolutePath(this string s) => AbsolutePath.FromFullPath(s);
+    public static AbsolutePath ToAbsolutePath(this string s, IFileSystem fileSystem) => AbsolutePath.FromFullPath(s, fileSystem);
     #endregion
 
     /// <summary>
