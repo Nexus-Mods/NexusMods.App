@@ -223,6 +223,15 @@ public interface IFileSystem
     Task WriteAllTextAsync(AbsolutePath path, string text, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Writes all text to a file using UTF-8 encoding.
+    /// </summary>
+    /// <param name="path">Path to the file.</param>
+    /// <param name="text">Text to write to the file.</param>
+    /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
+    /// <returns></returns>
+    void WriteAllText(AbsolutePath path, string text);
+
+    /// <summary>
     /// Writes all lines of text to a file using UTF-8 encoding.
     /// </summary>
     /// <param name="path">Path to the file.</param>
@@ -230,4 +239,6 @@ public interface IFileSystem
     /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
     /// <returns></returns>
     Task WriteAllLinesAsync(AbsolutePath path, [InstantHandle(RequireAwait = true)] IEnumerable<string> lines, CancellationToken cancellationToken = default);
+
+
 }

@@ -84,7 +84,7 @@ public class StubbedGame : IEADesktopGame, IEpicGame, IOriginGame, ISteamGame, I
     {
         path.Parent.CreateDirectory();
         if (path.FileExists) return;
-        _fileSystem.WriteAllTextAsync(path, path.FileName).Wait();
+        _fileSystem.WriteAllText(path, path.FileName);
     }
 
     public IEnumerable<int> SteamIds => new[] { 42 };
