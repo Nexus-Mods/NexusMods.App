@@ -2,6 +2,7 @@ using FluentAssertions;
 using Microsoft.VisualBasic.FileIO;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
+using FileSystem = NexusMods.Paths.FileSystem;
 
 namespace NexusMods.Hashing.xxHash64.Tests;
 
@@ -9,11 +10,11 @@ public class HashTests
 {
     private static string _knownString = "Something clever should go here";
     private static Hash _knownHash = Hash.FromHex("F4C92BE058F432D0");
-    private readonly InMemoryFileSystem _fileSystem;
+    private readonly IFileSystem _fileSystem;
 
     public HashTests()
     {
-        _fileSystem = new InMemoryFileSystem();
+        _fileSystem = FileSystem.Shared;
     }
 
     [Fact]
