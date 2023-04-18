@@ -104,7 +104,7 @@ public class ArchiveManager
         var rel = NameForHash(hash);
         path = _locations.Select(r => r.CombineUnchecked(rel))
             .FirstOrDefault(r => r.FileExists);
-        return path != null;
+        return path != default;
     }
 
     /// <summary>

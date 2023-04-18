@@ -412,7 +412,12 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     public static bool operator !=(AbsolutePath lhs, AbsolutePath rhs) => !(lhs == rhs);
 
     /// <inheritdoc />
-    public override string ToString() => GetFullPath();
+    public override string ToString()
+    {
+        if (this == default)
+            return "<default>";
+        return GetFullPath();
+    }
 
     #region Equals & GetHashCode
     // Implementation Note:
