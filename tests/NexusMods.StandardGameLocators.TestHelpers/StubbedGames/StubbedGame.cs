@@ -30,10 +30,13 @@ public class StubbedGame : IEADesktopGame, IEpicGame, IOriginGame, ISteamGame, I
         .ToDictionary(d => d,
             d => (d.FileName.ToString().XxHash64AsUtf8(), Size.FromLong(d.FileName.ToString().Length)));
 
-    public StubbedGame(ILogger<StubbedGame> logger, IEnumerable<IGameLocator> locators)
+    private readonly IFileSystem _fileSystem;
+
+    public StubbedGame(ILogger<StubbedGame> logger, IEnumerable<IGameLocator> locators, IFileSystem fileSystem)
     {
         _logger = logger;
         _locators = locators;
+        _fileSystem = fileSystem;
     }
 
     public IEnumerable<GameInstallation> Installations
@@ -81,7 +84,7 @@ public class StubbedGame : IEADesktopGame, IEpicGame, IOriginGame, ISteamGame, I
     {
         path.Parent.CreateDirectory();
         if (path.FileExists) return;
-        File.WriteAllText(path.ToString(), path.FileName);
+        _fileSystem.WriteAllTextAsync(path, path.FileName).Wait();
     }
 
     public IEnumerable<int> SteamIds => new[] { 42 };

@@ -39,6 +39,16 @@ public struct ConfigurationPath : IEquatable<ConfigurationPath>
         RawPath = rawPath;
         FileSystem = fileSystem;
     }
+    
+    /// <summary>
+    /// Creates a new configuration path.
+    /// </summary>
+    /// <param name="rawPath">Raw path which can include expansion monikers.</param>
+    public ConfigurationPath(AbsolutePath path)
+    {
+        RawPath = path.GetFullPath();
+        FileSystem = path.FileSystem;
+    }
 
     /// <summary>
     /// Retrieves the full path behind this configuration parameter.

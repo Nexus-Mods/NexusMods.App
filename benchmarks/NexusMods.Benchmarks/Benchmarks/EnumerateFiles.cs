@@ -9,9 +9,21 @@ namespace NexusMods.Benchmarks.Benchmarks;
 [BenchmarkInfo("File Enumeration", "Tests the performance of fetching all files from a directory.")]
 public class EnumerateFiles : IBenchmark
 {
+    private readonly IFileSystem _fileSystem;
+
+    public EnumerateFiles()
+    {
+        _fileSystem = FileSystem.Shared;
+        FilePath = AbsolutePath.FromFullPath(
+            Directory.GetParent(
+                    Environment.GetFolderPath(Environment.SpecialFolder
+                        .SystemX86))!
+                .FullName, _fileSystem);
+    }
+    
     // Placeholder path that'll probably work for people using Windows.
     // Point this at your games' directory.
-    public AbsolutePath FilePath { get; } = AbsolutePath.FromFullPath(Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.SystemX86))!.FullName);
+    public AbsolutePath FilePath { get; }
 
     // Note: Tests are written using 'foreach' to provide more accurate memory measurements
     //       ToArray leads to extra allocation.
@@ -86,6 +98,7 @@ public class EnumerateFiles : IBenchmark
 
     private struct OriginalImplementation
     {
+        
         public static IEnumerable<AbsolutePath> EnumerateFiles(AbsolutePath path, string pattern = "*", bool recursive = true)
         {
             return Directory.EnumerateFiles(path.GetFullPath(), pattern,
@@ -95,7 +108,7 @@ public class EnumerateFiles : IBenchmark
                         RecurseSubdirectories = recursive,
                         MatchType = MatchType.Win32
                     })
-                .Select(file => file.ToAbsolutePath());
+                .Select(file => file.ToAbsolutePath(FileSystem.Shared));
         }
 
         public static IEnumerable<AbsolutePath> EnumerateDirectories(AbsolutePath path, bool recursive = true)
@@ -110,7 +123,7 @@ public class EnumerateFiles : IBenchmark
                         RecurseSubdirectories = recursive,
                         MatchType = MatchType.Win32
                     })
-                .Select(p => p.ToAbsolutePath());
+                .Select(p => p.ToAbsolutePath(FileSystem.Shared));
         }
 
         // public static IEnumerable<FileEntry> EnumerateFileEntries(AbsolutePath path, string pattern = "*",

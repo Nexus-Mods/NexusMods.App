@@ -88,11 +88,11 @@ public class DataModelSettings : IDataModelSettings
     public DataModelSettings(AbsolutePath baseDirectory)
     {
         FileSystem.Shared.CreateDirectory(baseDirectory);
-        DataStoreFilePath = baseDirectory.CombineUnchecked(DataModelFileName).GetFullPath();
-        IpcDataStoreFilePath = baseDirectory.CombineUnchecked(DataModelIpcFileName).GetFullPath();
+        DataStoreFilePath = new ConfigurationPath(baseDirectory.CombineUnchecked(DataModelFileName));
+        IpcDataStoreFilePath = new ConfigurationPath(baseDirectory.CombineUnchecked(DataModelIpcFileName));
         ArchiveLocations = new[]
         {
-            (ConfigurationPath)baseDirectory.CombineUnchecked(ArchivesFileName).GetFullPath()
+            new ConfigurationPath(baseDirectory.CombineUnchecked(ArchivesFileName))
         };
     }
 
