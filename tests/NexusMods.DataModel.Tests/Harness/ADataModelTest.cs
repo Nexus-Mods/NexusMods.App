@@ -20,6 +20,9 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     public static readonly AbsolutePath DataZipLzma = KnownFolders.EntryFolder.CombineUnchecked(@"Resources\data_zip_lzma.zip");
     public static readonly AbsolutePath Data7ZLzma2 = KnownFolders.EntryFolder.CombineUnchecked(@"Resources\data_7zip_lzma2.7z");
 
+    public static readonly AbsolutePath DataTest =
+        KnownFolders.EntryFolder.CombineUnchecked(@"Resources\data.test");
+
     public static readonly RelativePath[] DataNames = new[]
     {
         "rootFile.txt",

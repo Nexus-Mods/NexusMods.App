@@ -1,0 +1,39 @@
+﻿<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <Design.PreviewWith>
+        <WrapPanel>
+            <WrapPanel.Styles>
+                <Style Selector="icons|Icon">
+                    <Setter Property="FontSize" Value="20"></Setter>
+                    <Setter Property="Foreground" Value="White"></Setter>
+                    <Setter Property="Margin" Value="2"></Setter>
+                </Style>
+            </WrapPanel.Styles>
+            <icons:Icon Classes="Bell"></icons:Icon>
+            <icons:Icon Classes="Cog"></icons:Icon>
+            <icons:Icon Classes="Help"></icons:Icon>
+            <icons:Icon Classes="Star"></icons:Icon>
+        </WrapPanel>
+    </Design.PreviewWith>
+    
+    <Style Selector="icons|Icon.Bell">
+        <Setter Property="Value" Value="mdi-bell"></Setter>
+    </Style>
+
+    <Style Selector="icons|Icon.Cog">
+        <Setter Property="Value" Value="mdi-cog" />
+    </Style>
+
+    <Style Selector="icons|Icon.Help">
+        <Setter Property="Value" Value="mdi-help-circle-outline" />
+    </Style>
+    
+    <Style Selector="icons|Icon.Star">
+        <Setter Property="Value" Value="mdi-star"></Setter>
+    </Style>
+    
+
+</Styles>

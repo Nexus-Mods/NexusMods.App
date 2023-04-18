@@ -16,6 +16,12 @@
       <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.5.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Resources\data.test">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 
     <Target Name="CopyResources" AfterTargets="PostBuildEvent">
         <ItemGroup>

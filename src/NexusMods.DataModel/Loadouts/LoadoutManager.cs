@@ -51,6 +51,7 @@ public class LoadoutManager
 
     private readonly ILogger<LoadoutManager> _logger;
 
+    private readonly IFileSystem _fileSystem;
     private readonly IModInstaller[] _installers;
     private readonly FileContentsCache _analyzer;
     private readonly IEnumerable<IFileMetadataSource> _metadataSources;
@@ -62,6 +63,7 @@ public class LoadoutManager
     ///    This item is usually constructed using dependency injection (DI).
     /// </remarks>
     public LoadoutManager(ILogger<LoadoutManager> logger,
+        IFileSystem fileSystem,
         LoadoutRegistry registry,
         IResource<LoadoutManager, Size> limiter,
         ArchiveManager archiveManager,
@@ -77,6 +79,7 @@ public class LoadoutManager
         ArchiveManager = archiveManager;
         Registry = registry;
         _logger = logger;
+        _fileSystem = fileSystem;
         Limiter = limiter;
         Store = store;
         _jobManager = jobManager;
@@ -116,7 +119,10 @@ public class LoadoutManager
     /// In the context of the Nexus app 'Manage Game' effectively means 'Add Game to App'; we call it
     /// 'Manage Game' because it effectively means putting the game files under our control.
     /// </remarks>
-    public async Task<LoadoutMarker> ManageGameAsync(GameInstallation installation, string name = "", CancellationToken token = default, bool earlyReturn = false)
+    public async Task<LoadoutMarker> ManageGameAsync(GameInstallation installation, string name = "", 
+        CancellationToken token = default, 
+        bool indexGameFiles = true,
+        bool earlyReturn = false)
     {
         _logger.LogInformation("Indexing game files");
 
@@ -156,10 +162,17 @@ public class LoadoutManager
 
         var managementJob = InterprocessJob.Create(JobType.AddMod, _jobManager, cursor,
                 $"Analyzing game files for {installation.Game.Name}");
-        var indexTask = Task.Run(() => IndexAndAddGameFiles(installation, token, loadout, mod, managementJob), token);
 
-        if (!earlyReturn)
-            await indexTask;
+        if (indexGameFiles)
+        {
+            var indexTask =
+                Task.Run(
+                    () => IndexAndAddGameFiles(installation, token, loadout,
+                        mod, managementJob), token);
+
+            if (!earlyReturn)
+                await indexTask;
+        }
 
         return new LoadoutMarker(this, loadoutId);
     }
@@ -177,6 +190,8 @@ public class LoadoutManager
 
         foreach (var (type, path) in installation.Locations)
         {
+            if (!_fileSystem.DirectoryExists(path)) continue;
+
             await foreach (var result in FileHashCache.IndexFolderAsync(path, token)
                                .WithCancellation(token))
             {

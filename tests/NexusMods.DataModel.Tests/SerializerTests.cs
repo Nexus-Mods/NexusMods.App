@@ -138,6 +138,29 @@ public class SerializerTests
 
         data.Should().BeEquivalentTo(row);
     }
+    
+    [Fact]
+    public void CanSerializeCollectionOfInterfaces()
+    {
+        var opts = new JsonSerializerOptions();
+        opts.Converters.Add(new AbstractClassConverterFactory<IGeneric<int, string>>(_provider));
+        opts.Converters.Add(new ConcreteConverterGenerator<NestedGeneric>(_provider));
+        
+        var row = new Specific<int, ImmutableList<IGeneric<int, string>>>()
+        {
+            T1Val = 42, 
+            T2Val = new List<IGeneric<int, string>>
+            {
+                new Specific<int, string> {T1Val = 22, T2Val = "test"}
+            }.ToImmutableList()
+        };
+        
+        var json = JsonSerializer.Serialize(row, opts);
+
+        var data = JsonSerializer.Deserialize<Specific<int, ImmutableList<IGeneric<int, string>>>>(json, opts);
+
+        data.Should().BeEquivalentTo(row);
+    }
 
     [Fact]
     public void CanInjectProperties()
@@ -151,8 +174,9 @@ public class SerializerTests
 
         var data2 = JsonSerializer.Deserialize<InjectableClass>(json, opts)!;
         data2.TypeFinder.Should().NotBeNull("because the type finder was injected");
-
     }
+    
+    
 
     [Fact]
     public void CanSerializeEnums()
@@ -173,6 +197,8 @@ public class SerializerTests
 
         data2.Should().BeEquivalentTo(data);
     }
+
+
 
     [JsonName("EnumClass")]
     public class EnumClass

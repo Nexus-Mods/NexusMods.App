@@ -116,6 +116,19 @@ public struct EntityDictionary<TK, TV> :
     }
 
     /// <summary>
+    /// Adds a group of values to the collection.
+    /// </summary>
+    /// <param name="items"></param>
+    /// <returns></returns>
+    public EntityDictionary<TK, TV> With(IEnumerable<KeyValuePair<TK, TV>> items)
+    {
+        var builder = _coll.ToBuilder();
+        foreach (var (k, v) in items)
+            builder[k] = v.WithPersist(_store).DataStoreId;
+        return new EntityDictionary<TK, TV>(_store, builder.ToImmutable());
+    }
+
+    /// <summary>
     /// Removes a key from the collection; returning a new dictionary.
     /// </summary>
     /// <param name="key">The key to remove.</param>

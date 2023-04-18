@@ -92,6 +92,20 @@ public class ArchiveManager
         var rel = NameForHash(hash);
         return _locations.Any(r => r.CombineUnchecked(rel).FileExists);
     }
+    
+    /// <summary>
+    /// Determines if a given archive is stored by the manager, and returns the path if it is.
+    /// </summary>
+    /// <param name="hash"></param>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public bool TryGetPathFor(Hash hash, out AbsolutePath path)
+    {
+        var rel = NameForHash(hash);
+        path = _locations.Select(r => r.CombineUnchecked(rel))
+            .FirstOrDefault(r => r.FileExists);
+        return path != null;
+    }
 
     /// <summary>
     /// Returns true if the given hash is managed, or any archive that contains this file is managed
@@ -113,7 +127,7 @@ public class ArchiveManager
     public IEnumerable<HashRelativePath> ArchivesThatContain(Hash hash)
     {
         if (HaveArchive(hash))
-            return new[] { new HashRelativePath(hash, Array.Empty<RelativePath>()) };
+            return new[] { new HashRelativePath(hash, default) };
 
         return _contentsCache.ArchivesThatContain(hash).Select(r => new HashRelativePath(r.Parent, r.Path));
     }

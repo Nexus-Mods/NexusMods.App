@@ -3,6 +3,7 @@ using FomodInstaller.Scripting.XmlScript;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Paths;
@@ -12,6 +13,8 @@ namespace NexusMods.Games.FOMOD;
 
 public class FomodAnalyzer : IFileAnalyzer
 {
+    public FileAnalyzerId Id { get; } = FileAnalyzerId.New("e5dcce84-ad7c-4882-8873-4f6a2e45a279", 1);
+
     private readonly ILogger<FomodAnalyzer> _logger;
     private readonly IFileSystem _fileSystem;
 

@@ -16,46 +16,22 @@
     <Design.DataContext>
         <topBar:TopBarDesignViewModel ShowWindowControls="True" />
     </Design.DataContext>
-    <UserControl.Styles>
-        <Style Selector="Button.BareIcon /template/ avalonia|Icon">
-            <Setter Property="Foreground" Value="#DADADA" />
-            <Setter Property="Width" Value="20" />
-            <Setter Property="Height" Value="20" />
-            <Setter Property="FontSize" Value="20" />
-        </Style>
-
-        <Style Selector="Button.BareIcon">
-            <Setter Property="Width" Value="40" />
-            <Setter Property="Height" Value="40" />
-        </Style>
-
-        <Style Selector="Grid.WindowControls Button.BareIcon /template/ avalonia|Icon">
-            <Setter Property="FontSize" Value="10" />
-        </Style>
-
-        <Style Selector="Grid.WindowControls Button.BareIcon">
-            <Setter Property="Width" Value="30" />
-            <Setter Property="Height" Value="30" />
-        </Style>
-    </UserControl.Styles>
-
-    <Grid ColumnDefinitions="Auto, Auto, *, Auto, Auto, 3, Auto" x:Name="MainGrid">
+    
+    <Grid ColumnDefinitions="163, Auto, *, Auto, Auto" x:Name="MainGrid">
         <Svg
             Grid.Column="0"
             Grid.Row="0"
-            Height="34"
-            HorizontalAlignment="Left"
-            Margin="12,10"
+            Height="30"
+            HorizontalAlignment="Center"
             Path="avares://NexusMods.App.UI/Assets/nexus-logo-with-text.svg"
-            VerticalAlignment="Center"
-            Width="100" />
-
-        <pills:Premium
-            Grid.Column="1"
-            Grid.Row="0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Center"
-            x:Name="Premium" />
+            VerticalAlignment="Center"/>
+        
+        <Button Classes="Pill Light" Grid.Column="1" Grid.Row="0" x:Name="Premium">
+            <StackPanel>
+                <avalonia:Icon Classes="Star" />
+                <TextBlock Text="PREMIUM"></TextBlock>
+            </StackPanel>
+        </Button>
 
         <Border
             BorderBrush="{DynamicResource StructuralBorderBrush}"
@@ -81,84 +57,47 @@
             </StackPanel>
         </Border>
 
-        <StackPanel Grid.Column="3" Orientation="Horizontal">
-            <Button Classes="BareIcon Help" />
-            <Button Classes="BareIcon Cog" />
+        <StackPanel Grid.Column="3" Classes="TopBarActions">
+            <Button Classes="Action">
+                <avalonia:Icon Classes="Help" /> 
+            </Button>
+            <Button Classes="Action">
+                <avalonia:Icon Classes="Cog"></avalonia:Icon>
+            </Button>
+            <Button
+                Classes="Standard Primary"
+                x:Name="LoginButton">
+                <StackPanel>
+                    <TextBlock>LOG IN</TextBlock>
+                </StackPanel>
+            </Button>
         </StackPanel>
 
-        <Button
-            Classes="Primary"
-            Grid.Column="4"
-            Height="34"
-            Margin="16,0,16,0"
-            x:Name="LoginButton">
-            <TextBlock Height="20">LOG IN</TextBlock>
-        </Button>
+
 
         <Border
             BorderBrush="{DynamicResource StructuralBorderBrush}"
             BorderThickness="1,0,0,0"
             Grid.Column="4"
             x:Name="UserPanel">
-            <Grid ColumnDefinitions="71, 35, 35" Width="142">
+            <StackPanel Orientation="Horizontal" Spacing="16" Margin="16, 0">
                 <Button
-                    Classes="BareIcon Bell"
+                    Classes="Action"
                     Grid.Column="0"
-                    HorizontalAlignment="Center" />
-                <Button
+                    HorizontalAlignment="Center">
+                    <avalonia:Icon Classes="Bell" />
+                </Button>
+                <Button Classes="Avatar"
                     Grid.Column="1"
                     HorizontalAlignment="Center"
                     x:Name="UserButton">
-                    <Button.Template>
-                        <ControlTemplate>
-                            <Image
-                                Height="30"
-                                Width="30"
-                                x:Name="AvatarImage">
-                                <Image.Clip>
-                                    <EllipseGeometry Rect="0, 0, 30, 30" />
-                                </Image.Clip>
-                            </Image>
-                        </ControlTemplate>
-                    </Button.Template>
+                    <Image
+                        Height="30"
+                        Width="30"
+                        x:Name="AvatarImage">
+                    </Image>
                 </Button>
-                <Button
-                    Classes="BareIcon KeyboardArrowDown"
-                    Grid.Column="2"
-                    HorizontalAlignment="Left" />
-            </Grid>
-        </Border>
-
-        <Border
-            x:Name="WindowControlsBorder"
-            BorderBrush="{DynamicResource StructuralBorderBrush}"
-            BorderThickness="1,0,0,0"
-            Grid.Column="6">
-            <Grid
-                Classes="WindowControls"
-                ColumnDefinitions="*, *, *"
-                HorizontalAlignment="Right"
-                Width="160">
-
-                <Button
-                    Classes="BareIcon WindowMinimize"
-                    Grid.Column="0"
-                    HorizontalAlignment="Center"
-                    Padding="11"
-                    x:Name="WindowMinimizeButton" />
-                <Button
-                    Classes="BareIcon WindowMaximize"
-                    Grid.Column="1"
-                    HorizontalAlignment="Center"
-                    Padding="11"
-                    x:Name="WindowMaximizeButton" />
-                <Button
-                    Classes="BareIcon WindowClose"
-                    Grid.Column="2"
-                    HorizontalAlignment="Center"
-                    Padding="11"
-                    x:Name="WindowCloseButton" />
-            </Grid>
+            </StackPanel>
         </Border>
     </Grid>
 </reactiveUi:ReactiveUserControl>

@@ -13,8 +13,9 @@ using NexusMods.DataModel.RateLimiting;
 
 namespace NexusMods.DataModel.Tests;
 
-public class InterprocessTests
+public class InterprocessTests : IDisposable
 {
+    private readonly TemporaryPath _sqliteFile;
     private readonly IMessageProducer<Message> _producer;
     private readonly IMessageConsumer<Message> _consumer;
     private readonly SqliteIPC _ipc;
@@ -39,8 +40,8 @@ public class InterprocessTests
 
     public InterprocessTests(TemporaryFileManager fileManager, IServiceProvider serviceProvider)
     {
-        var file = fileManager.CreateFile();
-        _ipc = new SqliteIPC(serviceProvider.GetRequiredService<ILogger<SqliteIPC>>(), file);
+        _sqliteFile = fileManager.CreateFile();
+        _ipc = new SqliteIPC(serviceProvider.GetRequiredService<ILogger<SqliteIPC>>(), _sqliteFile.Path);
         _producer = new InterprocessProducer<Message>(_ipc);
         _consumer = new InterprocessConsumer<Message>(_ipc);
         _jobManager = _ipc;
@@ -112,4 +113,9 @@ public class InterprocessTests
         await _ipc.CleanupOnce(CancellationToken.None);
     }
 
+    public void Dispose()
+    {
+        _ipc.Dispose();
+        _sqliteFile.Dispose();
+    }
 }

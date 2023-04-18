@@ -8,7 +8,7 @@ public class TemporaryPathTests
     [Theory, AutoFileSystem]
     public void FilesAreInBaseDirectory(InMemoryFileSystem fs, TemporaryFileManager manager)
     {
-        var path = manager.CreateFile();
+        using var path = manager.CreateFile();
         path.Path.InFolder(fs.GetKnownPath(KnownPath.TempDirectory)).Should().BeTrue();
     }
 
