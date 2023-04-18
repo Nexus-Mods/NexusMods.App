@@ -29,7 +29,7 @@ public abstract class AGame : IGame
     /// <summary>
     /// The path to the main executable file for the game.
     /// </summary>
-    public abstract GamePath PrimaryFile { get; }
+    public abstract GamePath GetPrimaryFile(GameStore store);
 
     /// <summary>
     /// Returns a list of installations for this game.
@@ -51,7 +51,7 @@ public abstract class AGame : IGame
 
     private Version GetVersion(GameLocatorResult installation)
     {
-        var fvi = PrimaryFile.CombineChecked(installation.Path).FileInfo.GetFileVersionInfo();
+        var fvi = GetPrimaryFile(installation.Store).CombineChecked(installation.Path).FileInfo.GetFileVersionInfo();
         return fvi.ProductVersion;
     }
 
