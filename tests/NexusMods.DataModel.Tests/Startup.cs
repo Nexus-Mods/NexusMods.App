@@ -32,8 +32,7 @@ public class Startup
             .AddFileExtractors(new FileExtractorSettings())
             .AddStubbedGameLocators()
             .AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(_ => new Resource<FileContentsCache, Size>("File Analysis"))
-            .AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ => new Resource<IExtractor, Size>("File Extraction"))
-            .AddSingleton<IFileAnalyzer, ArchiveContentsCacheTests.MutatingFileAnalyzer>()
+            .AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ => new Resource<IExtractor, Size>("File Extraction")).AddSingleton<IFileAnalyzer, ArchiveContentsCacheTests.MutatingFileAnalyzer>()
             .AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Startup).Assembly))
             .Validate();
     }

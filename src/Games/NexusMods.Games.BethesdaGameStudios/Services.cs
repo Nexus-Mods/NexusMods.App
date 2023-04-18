@@ -12,7 +12,7 @@ public static class Services
 {
     public static IServiceCollection AddBethesdaGameStudios(this IServiceCollection services)
     {
-        services.AddAllSingleton<IModInstaller, LooseFileInstaller>();
+        services.AddAllSingleton<IModInstaller, SkyrimInstaller>();
         services.AddAllSingleton<IGame, SkyrimSpecialEdition>();
         services.AddAllSingleton<IFileAnalyzer, PluginAnalyzer>();
         services.AddAllSingleton<ITypeFinder, TypeFinder>();

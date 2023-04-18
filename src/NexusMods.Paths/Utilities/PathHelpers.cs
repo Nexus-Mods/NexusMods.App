@@ -108,6 +108,43 @@ public static class PathHelpers
         return end >= 0 ? path.Substring(0, end) : null;
     }
 
+    /// <summary>
+    /// Determines the directory separator character used in this relative path between '\' and '/'.
+    /// </summary>
+    /// <param name="path">The path to get separator index from.</param>
+    /// <param name="isFrontSlash">True if front slash is the separator, else back slash.</param>
+    /// <returns>
+    ///    Returns true if separator is forward slash, else backslash.
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int GetFirstDirectorySeparatorIndex(ReadOnlySpan<char> path, out bool isFrontSlash)
+    {
+        var frontIdx = path.IndexOf('/');
+        var backIdx = path.IndexOf('\\');
+
+        if (frontIdx > backIdx && frontIdx >= 0)
+        {
+            isFrontSlash = true;
+            return frontIdx;
+        }
+
+        isFrontSlash = false;
+        return backIdx;
+    }
+    
+    /// <summary>
+    /// Returns true if a given path (using either '/' or '\' separator) has a subdirectory.
+    /// </summary>
+    /// <param name="path">The path to get subdirectory from.</param>
+    /// <returns>
+    ///    Returns true if subdirectory exists, else false.
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool PathHasSubdirectory(ReadOnlySpan<char> path)
+    {
+        return GetFirstDirectorySeparatorIndex(path, out _) >= 0;
+    }
+
     private static int GetRootLength(ReadOnlySpan<char> path)
     {
         return path.Length > 0 && IsDirectorySeparator(path[0]) ? 1 : 0;

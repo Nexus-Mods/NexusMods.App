@@ -29,6 +29,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     protected readonly TemporaryFileManager TemporaryFileManager;
     protected readonly ArchiveManager ArchiveManager;
     protected readonly LoadoutManager LoadoutManager;
+    protected readonly LoadoutRegistry LoadoutRegistry;
     protected readonly FileContentsCache FileContentsCache;
     protected readonly IDataStore DataStore;
 
@@ -49,6 +50,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
         ArchiveManager = serviceProvider.GetRequiredService<ArchiveManager>();
         TemporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
         LoadoutManager = serviceProvider.GetRequiredService<LoadoutManager>();
+        LoadoutRegistry = serviceProvider.GetRequiredService<LoadoutRegistry>();
         FileContentsCache = serviceProvider.GetRequiredService<FileContentsCache>();
         DataStore = serviceProvider.GetRequiredService<IDataStore>();
 

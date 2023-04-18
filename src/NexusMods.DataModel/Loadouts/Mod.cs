@@ -20,6 +20,11 @@ namespace NexusMods.DataModel.Loadouts;
 public record Mod : Entity, IHasEntityId<ModId>
 {
     /// <summary>
+    /// Category used for 'Game Files'.
+    /// </summary>
+    public const string GameFilesCategory = "Game Files";
+
+    /// <summary>
     /// A unique identifier for this mod within the loadout.
     /// </summary>
     public required ModId Id { get; init; }

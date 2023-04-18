@@ -43,19 +43,13 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
     public RelativePath Parent => new(PathHelpers.GetDirectoryName(Path) ?? "");
 
     /// <summary>
-    /// Returns the topmost parent of the relative path.
+    /// Obtains the name of the first folder stored in this path.
     /// </summary>
-    public RelativePath TopParent
-    {
-        get
-        {
-            var span = Path.AsSpan();
-            var index = Math.Max(span.IndexOf('/'), span.IndexOf('\\'));
-            return index == -1 ? this : new RelativePath(span.SliceFast(0, index).ToString());
-        } 
-        
-    }
-
+    /// <remarks>
+    ///    This will return empty string if there are no child directories.
+    /// </remarks>
+    public RelativePath TopParent => Path[..Math.Max(GetFirstDirectorySeparatorIndex(out _), 0)];
+    
     /// <summary>
     /// Creates a relative path given a string.
     /// </summary>
@@ -194,14 +188,19 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
     /// </returns>
     public bool IsDirectorySeparatorFrontSlash()
     {
-        var frontIdx = Path.IndexOf('/');
-        var backIdx = Path.IndexOf('\\');
-
-        if (frontIdx > backIdx && frontIdx >= 0)
-            return true;
-
-        return false;
+        GetFirstDirectorySeparatorIndex(out var result);
+        return result;
     }
+
+    /// <summary>
+    /// Determines the directory separator character used in this relative path between '\' and '/'.
+    /// </summary>
+    /// <param name="isFrontSlash">True if front slash is the separator, else back slash.</param>
+    /// <returns>
+    ///    Returns true if separator is forward slash, else backslash.
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public int GetFirstDirectorySeparatorIndex(out bool isFrontSlash) => PathHelpers.GetFirstDirectorySeparatorIndex(Path, out isFrontSlash);
 
     /// <summary>
     /// Returns a path relative to the sub-path specified.
