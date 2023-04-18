@@ -5,11 +5,9 @@ namespace NexusMods.Paths;
 public readonly partial struct AbsolutePath
 {
     /// <inheritdoc cref="IFileSystem.GetFileEntry"/>
-    [Obsolete($"This property is obsolete. Use IFileSystem.{nameof(IFileSystem.GetFileEntry)} directly.")]
     public IFileEntry FileInfo => FileSystem.GetFileEntry(this);
 
     /// <inheritdoc cref="IFileSystem.FileExists"/>
-    [Obsolete($"This property is obsolete. Use IFileSystem.{nameof(IFileSystem.FileExists)} directly.")]
     public bool FileExists => FileSystem.FileExists(this);
 
     /// <summary>
@@ -38,20 +36,16 @@ public readonly partial struct AbsolutePath
     }
 
     /// <inheritdoc cref="IFileSystem.OpenFile"/>
-    [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.OpenFile)} directly.")]
     public Stream Open(FileMode mode, FileAccess access = FileAccess.Read, FileShare share = FileShare.ReadWrite)
         => FileSystem.OpenFile(this, mode, access, share);
 
     /// <inheritdoc cref="IFileSystem.ReadFile"/>
-    [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.ReadFile)} directly.")]
     public Stream Read() => FileSystem.ReadFile(this);
 
     /// <inheritdoc cref="IFileSystem.CreateFile"/>
-    [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.CreateFile)} directly.")]
     public Stream Create() => FileSystem.CreateFile(this);
 
     /// <inheritdoc cref="IFileSystem.DeleteFile"/>
-    [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.DeleteFile)} directly.")]
     public void Delete() => FileSystem.DeleteFile(this);
 
     /// <summary>
@@ -99,49 +93,39 @@ public readonly partial struct AbsolutePath
     }
 
     /// <inheritdoc cref="IFileSystem.CreateDirectory"/>
-    [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.CreateDirectory)} directly.")]
     public void CreateDirectory() => FileSystem.CreateDirectory(this);
 
     /// <inheritdoc cref="IFileSystem.DirectoryExists"/>
-    [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.DirectoryExists)} directly.")]
     public bool DirectoryExists() => FileSystem.DirectoryExists(this);
 
     /// <inheritdoc cref="IFileSystem.DeleteDirectory"/>
-    [Obsolete($"This method is obsolete. Use IFileSystem.${nameof(IFileSystem.DeleteDirectory)} directly.")]
     public void DeleteDirectory(bool recursive = false) => FileSystem.DeleteDirectory(this, recursive);
 
     /// <inheritdoc cref="IFileSystem.EnumerateFiles"/>
-    [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.EnumerateFiles)} directly.")]
     public IEnumerable<AbsolutePath> EnumerateFiles(string pattern = "*", bool recursive = true)
         => FileSystem.EnumerateFiles(this, pattern, recursive);
 
     /// <inheritdoc cref="IFileSystem.EnumerateFileEntries"/>
-    [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.EnumerateFileEntries)} directly.")]
     public IEnumerable<IFileEntry> EnumerateFileEntries(string pattern = "*", bool recursive = true)
         => FileSystem.EnumerateFileEntries(this, pattern, recursive);
 
     /// <inheritdoc cref="IFileSystem.EnumerateFiles"/>
-    [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.EnumerateFiles)} directly.")]
     public IEnumerable<AbsolutePath> EnumerateFiles(Extension pattern, bool recursive = true)
         => EnumerateFiles("*" + pattern, recursive);
 
     /// <inheritdoc cref="IFileSystem.WriteAllTextAsync"/>
-    [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.WriteAllTextAsync)} directly.")]
     public Task WriteAllTextAsync(string text, CancellationToken token = default)
         => FileSystem.WriteAllTextAsync(this, text, token);
 
     /// <inheritdoc cref="IFileSystem.WriteAllLinesAsync"/>
-    [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.WriteAllLinesAsync)} directly.")]
     public Task WriteAllLinesAsync([InstantHandle(RequireAwait = true)] IEnumerable<string> lines, CancellationToken token = default)
         => FileSystem.WriteAllLinesAsync(this, lines, token);
 
     /// <inheritdoc cref="IFileSystem.ReadAllTextAsync"/>
-    [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.ReadAllTextAsync)} directly.")]
     public Task<string> ReadAllTextAsync(CancellationToken token = default)
         => FileSystem.ReadAllTextAsync(this, token);
 
     /// <inheritdoc cref="IFileSystem.WriteAllBytesAsync"/>
-    [Obsolete($"This method is obsolete. Use IFileSystem.{nameof(IFileSystem.WriteAllBytesAsync)} directly.")]
     public Task WriteAllBytesAsync(byte[] data)
         => FileSystem.WriteAllBytesAsync(this, data);
 }

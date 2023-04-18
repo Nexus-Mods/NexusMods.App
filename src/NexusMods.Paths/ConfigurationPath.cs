@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using JetBrains.Annotations;
+using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Paths;
@@ -53,7 +54,7 @@ public struct ConfigurationPath : IEquatable<ConfigurationPath>
     /// <summary>
     /// Retrieves the full path behind this configuration parameter.
     /// </summary>
-    public string GetFullPath() => KnownFolders.ExpandPath(RawPath);
+    public string GetFullPath() => FileSystem.ExpandKnownFoldersPath(RawPath);
 
     /// <inheritdoc />
     public override string ToString() => GetFullPath();

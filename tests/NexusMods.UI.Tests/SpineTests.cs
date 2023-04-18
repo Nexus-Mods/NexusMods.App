@@ -2,6 +2,7 @@ using FluentAssertions;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 using Type = NexusMods.App.UI.Controls.Spine.Type;
 
@@ -61,7 +62,8 @@ public class SpineTests : AUiTest
         }
 
         using var vm = GetActivatedViewModel<ISpineViewModel>();
-        await _loadoutManager.ImportFromAsync(KnownFolders.EntryFolder.CombineUnchecked(@"Resources\cyberpunk2077.1.61.zip"));
+        await _loadoutManager.ImportFromAsync(FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory)
+            .CombineUnchecked(@"Resources\cyberpunk2077.1.61.zip"));
 
         using var _ = vm.VM.Actions.Subscribe(vm.VM.Activations);
 

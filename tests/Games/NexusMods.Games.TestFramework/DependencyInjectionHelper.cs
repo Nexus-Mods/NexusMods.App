@@ -46,7 +46,7 @@ public static class DependencyInjectionHelper
             .AddSingleton<TestModDownloader>()
             .AddNexusWebApi(true)
             .AddHttpDownloader()
-            .AddDataModel(new DataModelSettings())
+            .AddDataModel()
             .AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(_ => new Resource<FileContentsCache, Size>("File Analysis for tests"))
             .AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ => new Resource<IExtractor, Size>("File Extraction for tests"))
             .AddAllSingleton<IResource, IResource<FileHashCache, Size>>(_ => new Resource<FileHashCache, Size>("Hash Cache for tests"))

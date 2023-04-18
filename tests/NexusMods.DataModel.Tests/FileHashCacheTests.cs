@@ -2,6 +2,7 @@ using FluentAssertions;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Hashing.xxHash64;
+using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 
 namespace NexusMods.DataModel.Tests;
@@ -15,7 +16,8 @@ public class FileHashCacheTests : ADataModelTest<FileHashCacheTests>
     [Fact]
     public async Task CanGetHashOfSingleFile()
     {
-        var file = KnownFolders.CurrentDirectory.CombineUnchecked(Guid.NewGuid().ToString()).AppendExtension(KnownExtensions.Tmp);
+        var file = FileSystem.GetKnownPath(KnownPath.CurrentDirectory)
+            .CombineUnchecked(Guid.NewGuid().ToString()).AppendExtension(KnownExtensions.Tmp);
         await file.WriteAllTextAsync("Test data here");
 
         var hash = await FileHashCache.IndexFileAsync(file);
@@ -28,7 +30,7 @@ public class FileHashCacheTests : ADataModelTest<FileHashCacheTests>
     [Fact]
     public async Task CanHashFolder()
     {
-        var folder = KnownFolders.CurrentDirectory.CombineUnchecked("tempData");
+        var folder = FileSystem.GetKnownPath(KnownPath.CurrentDirectory).CombineUnchecked("tempData");
         var file = folder.CombineUnchecked(Guid.NewGuid().ToString()).AppendExtension(KnownExtensions.Tmp);
         file.Parent.CreateDirectory();
         await file.WriteAllTextAsync("Test data here");

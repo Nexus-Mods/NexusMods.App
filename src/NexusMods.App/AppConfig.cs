@@ -16,6 +16,7 @@ public class AppConfig
     public AppConfig()
     {
         _fileSystem = FileSystem.Shared;
+        DataModelSettings = new DataModelSettings(_fileSystem);
         FileExtractorSettings = new FileExtractorSettings(_fileSystem);
         LoggingSettings = new LoggingSettings(_fileSystem);
     }
@@ -42,7 +43,7 @@ public class AppConfig
         Individual settings objects must implement a `Sanitize` function to ensure these rules.
     */
 
-    public DataModelSettings DataModelSettings { get; set; } = new();
+    public DataModelSettings DataModelSettings { get; set; }
     public FileExtractorSettings FileExtractorSettings { get; set; }
     public HttpDownloaderSettings HttpDownloaderSettings { get; set; } = new();
     public LoggingSettings LoggingSettings { get; set; }

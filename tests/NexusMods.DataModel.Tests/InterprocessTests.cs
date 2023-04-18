@@ -41,7 +41,7 @@ public class InterprocessTests : IDisposable
     public InterprocessTests(TemporaryFileManager fileManager, IServiceProvider serviceProvider)
     {
         _sqliteFile = fileManager.CreateFile();
-        _ipc = new SqliteIPC(serviceProvider.GetRequiredService<ILogger<SqliteIPC>>(), _sqliteFile.Path);
+        _ipc = new SqliteIPC(serviceProvider.GetRequiredService<ILogger<SqliteIPC>>(), serviceProvider.GetRequiredService<IDataModelSettings>());
         _producer = new InterprocessProducer<Message>(_ipc);
         _consumer = new InterprocessConsumer<Message>(_ipc);
         _jobManager = _ipc;

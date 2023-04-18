@@ -52,15 +52,15 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
     /// DI Constructor
     /// </summary>
     /// <param name="logger">Allows for logging of messages.</param>
-    /// <param name="storePath">Physical location on disk where the IPC database is stored.</param>
-    public SqliteIPC(ILogger<SqliteIPC> logger, AbsolutePath storePath)
+    /// <param name="settings">Datamodel settings.</param>
+    public SqliteIPC(ILogger<SqliteIPC> logger, IDataModelSettings settings)
     {
         _logger = logger;
-        _storePath = storePath;
+        _storePath = settings.IpcDataStoreFilePath.ToAbsolutePath();
 
         var connectionString = string.Intern($"Data Source={_storePath}");
 
-        _syncPath = storePath.AppendExtension(new Extension(".sync"));
+        _syncPath = _storePath.AppendExtension(new Extension(".sync"));
         _syncArray = new SharedArray(_syncPath, 2);
 
         _poolPolicy = new ConnectionPoolPolicy(connectionString);

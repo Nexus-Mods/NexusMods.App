@@ -13,7 +13,7 @@ public class ExtractArchive : AVerbTest
     [Fact]
     public async Task CanExtractArchive()
     {
-        var file1 = KnownFolders.EntryFolder.CombineUnchecked(@"Resources\data_7zip_lzma2.7z");
+        var file1 = Data7ZipLZMA2.CombineUnchecked(@"Resources\data_7zip_lzma2.7z");
         await using var folder = TemporaryFileManager.CreateFolder();
 
         await RunNoBanner("extract-archive", "-i", file1.ToString(), "-o", folder.Path.ToString());

@@ -1,4 +1,6 @@
 using FluentAssertions;
+using Microsoft.VisualBasic.FileIO;
+using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Hashing.xxHash64.Tests;
@@ -7,6 +9,12 @@ public class HashTests
 {
     private static string _knownString = "Something clever should go here";
     private static Hash _knownHash = Hash.FromHex("F4C92BE058F432D0");
+    private readonly InMemoryFileSystem _fileSystem;
+
+    public HashTests()
+    {
+        _fileSystem = new InMemoryFileSystem();
+    }
 
     [Fact]
     public void CanConvertHashBetweenFormats()
@@ -52,7 +60,7 @@ public class HashTests
     [Fact]
     public async Task CanHashFile()
     {
-        var file = KnownFolders.CurrentDirectory.CombineUnchecked($"tempFile{Guid.NewGuid()}");
+        var file = _fileSystem.GetKnownPath(KnownPath.CurrentDirectory).CombineUnchecked($"tempFile{Guid.NewGuid()}");
         await file.WriteAllTextAsync(_knownString);
         (await file.XxHash64Async()).Should().Be(_knownHash);
     }
@@ -60,7 +68,7 @@ public class HashTests
     [Fact]
     public async Task CanHashLargeFile()
     {
-        var file = KnownFolders.CurrentDirectory.CombineUnchecked($"tempFile{Guid.NewGuid()}");
+        var file = _fileSystem.GetKnownPath(KnownPath.CurrentDirectory).CombineUnchecked($"tempFile{Guid.NewGuid()}");
         var emptyArray = new byte[1024 * 1024 * 10];
         for (var x = 0; x < emptyArray.Length; x++)
         {
