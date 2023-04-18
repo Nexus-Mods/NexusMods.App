@@ -57,7 +57,7 @@ public class SkyrimInstallerTests : AGameTest<SkyrimSpecialEdition>
     private async Task TestLooseFileCommon(string folderName)
     {
         // TODO: Technically these tests don't cover where the file is sourced from, some code could be added here to do this.
-        var loadout = await LoadoutManager.ImportSkyrimSELoadoutAsync(_realFs);
+        var loadout = await CreateLoadout(indexGameFiles: false);
         var path = BethesdaTestHelpers.GetDownloadableModFolder(_realFs, folderName);
         var downloaded = await _downloader.DownloadFromManifestAsync(path, _realFs);
 

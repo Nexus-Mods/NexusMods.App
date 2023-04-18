@@ -9,13 +9,6 @@ public static class BethesdaTestHelpers
     /// <summary>
     /// Returns location of the 'Resources' folder.
     /// </summary>
-    // ReSharper disable once InconsistentNaming
-    public static async Task<LoadoutMarker> ImportSkyrimSELoadoutAsync(this LoadoutManager manager, IFileSystem fs) =>
-        await manager.ImportFromAsync(GetAsset(fs, "skyrim_1.6.659.0.zip"));
-
-    /// <summary>
-    /// Returns location of the 'Resources' folder.
-    /// </summary>
     public static AbsolutePath GetDownloadableModFolder(IFileSystem fs, string folderName) =>
         GetAssetsPath(fs).CombineUnchecked("DownloadableMods").CombineUnchecked(folderName);
 

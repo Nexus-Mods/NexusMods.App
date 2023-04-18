@@ -113,6 +113,7 @@ public class LoadoutManager
     /// <param name="installation">Instance of the game on disk to newly manage.</param>
     /// <param name="name">Name of the newly created loadout.</param>
     /// <param name="token">Allows for cancelling the operation.</param>
+    /// <param name="indexGameFiles">If false, will only add generated files and an otherwise empty mod, won't index or add files from the game folder. Useful for making faster tests that do not rely on game files directly</param>
     /// <param name="earlyReturn">If true, the function will return as soon as possible running indexing operations in the background, default is` false`</param>
     /// <returns></returns>
     /// <remarks>
@@ -163,22 +164,19 @@ public class LoadoutManager
         var managementJob = InterprocessJob.Create(JobType.AddMod, _jobManager, cursor,
                 $"Analyzing game files for {installation.Game.Name}");
 
-        if (indexGameFiles)
-        {
-            var indexTask =
-                Task.Run(
-                    () => IndexAndAddGameFiles(installation, token, loadout,
-                        mod, managementJob), token);
+        var indexTask =
+            Task.Run(
+                () => IndexAndAddGameFiles(installation, token, loadout,
+                    mod, managementJob, indexGameFiles), token);
 
-            if (!earlyReturn)
-                await indexTask;
-        }
+        if (!earlyReturn)
+            await indexTask;
 
         return new LoadoutMarker(this, loadoutId);
     }
 
     private async Task IndexAndAddGameFiles(GameInstallation installation,
-        CancellationToken token, Loadout loadout, Mod mod, IInterprocessJob managementJob)
+        CancellationToken token, Loadout loadout, Mod mod, IInterprocessJob managementJob, bool indexGameFiles)
     {
         // So we release this after the job is done.
         using var _ = managementJob;
@@ -188,27 +186,33 @@ public class LoadoutManager
 
         managementJob.Progress = new Percent(0.0);
 
-        foreach (var (type, path) in installation.Locations)
+        if (indexGameFiles)
         {
-            if (!_fileSystem.DirectoryExists(path)) continue;
-
-            await foreach (var result in FileHashCache.IndexFolderAsync(path, token)
-                               .WithCancellation(token))
+            foreach (var (type, path) in installation.Locations)
             {
-                var analysis = await _analyzer.AnalyzeFileAsync(result.Path, token);
-                var file = new GameFile
-                {
-                    Id = ModFileId.New(),
-                    To = new GamePath(type, result.Path.RelativeTo(path)),
-                    Installation = installation,
-                    Hash = result.Hash,
-                    Size = result.Size
-                }.WithPersist(Store);
+                if (!_fileSystem.DirectoryExists(path)) continue;
 
-                var metaData =
-                    await GetMetadata(loadout, mod, file, analysis).ToHashSetAsync();
-                gameFiles.Add(
-                    file with { Metadata = metaData.ToImmutableHashSet() });
+                await foreach (var result in FileHashCache
+                                   .IndexFolderAsync(path, token)
+                                   .WithCancellation(token))
+                {
+                    var analysis =
+                        await _analyzer.AnalyzeFileAsync(result.Path, token);
+                    var file = new GameFile
+                    {
+                        Id = ModFileId.New(),
+                        To = new GamePath(type, result.Path.RelativeTo(path)),
+                        Installation = installation,
+                        Hash = result.Hash,
+                        Size = result.Size
+                    }.WithPersist(Store);
+
+                    var metaData =
+                        await GetMetadata(loadout, mod, file, analysis)
+                            .ToHashSetAsync();
+                    gameFiles.Add(
+                        file with { Metadata = metaData.ToImmutableHashSet() });
+                }
             }
         }
 

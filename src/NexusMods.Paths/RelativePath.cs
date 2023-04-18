@@ -49,21 +49,7 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
     ///    This will return empty string if there are no child directories.
     /// </remarks>
     public RelativePath TopParent => Path[..Math.Max(GetFirstDirectorySeparatorIndex(out _), 0)];
-
-    /// <summary>
-    /// Returns the topmost parent of the relative path.
-    /// </summary>
-    public RelativePath TopParent
-    {
-        get
-        {
-            var span = Path.AsSpan();
-            var index = Math.Max(span.IndexOf('/'), span.IndexOf('\\'));
-            return index == -1 ? this : new RelativePath(span.SliceFast(0, index).ToString());
-        } 
-        
-    }
-
+    
     /// <summary>
     /// Creates a relative path given a string.
     /// </summary>

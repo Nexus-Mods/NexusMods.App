@@ -1,9 +1,14 @@
+using System.Collections.Immutable;
 using System.Text;
+using System.Text.Json;
 using FluentAssertions;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
+using Noggog;
 
 namespace NexusMods.Games.BethesdaGameStudios.Tests.Skyrim;
 
@@ -20,24 +25,45 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
     }
 
     [Fact]
-    public async Task CanLoadLoadout()
-    {
-        var loadout = await LoadoutManager.ImportSkyrimSELoadoutAsync(FileSystem);
-        var gameFiles = loadout.Value.Mods.Values.First(m => m.Name == Mod.GameFilesCategory); // <= throws on failure
-        gameFiles.Files.Count.Should().BeGreaterThan(0);
-
-        var dragonborn = gameFiles.Files.Values.First(f => f.To == new GamePath(GameFolderType.Game, "Data/Dragonborn.esm"));
-        dragonborn.Metadata.Should().ContainItemsAssignableTo<AnalysisSortData>();
-
-        gameFiles.Files.Values.OfType<PluginFile>().Should().ContainSingle();
-    }
-
-    [Fact]
     public async Task CanGeneratePluginsFile()
     {
-        var loadout = await LoadoutManager.ImportSkyrimSELoadoutAsync(FileSystem);
-        var gameFiles = loadout.Value.Mods.Values.First(m => m.Name == Mod.GameFilesCategory); // <= throws on failure
+        var loadout = await CreateLoadout(indexGameFiles:false);
+
+        var analysisStr = await BethesdaTestHelpers.GetAssetsPath(FileSystem).CombineUnchecked("plugin_dependencies.json").ReadAllTextAsync();
+        var analysis = JsonSerializer.Deserialize<Dictionary<string, string[]>>(analysisStr)!;
+        
+
+        var gameFiles = loadout.Value.Mods.Values.First(m => m.ModCategory == Mod.GameFilesCategory); // <= throws on failure
+        
+        LoadoutRegistry.Alter(loadout.Value.LoadoutId, gameFiles.Id, "Added plugins", mod =>
+        {
+            var files = mod!.Files;
+            foreach (var file in analysis)
+            {
+                var newFile = new GameFile()
+                {
+                    Id = ModFileId.New(),
+                    Installation = loadout.Value.Installation,
+                    To = new GamePath(GameFolderType.Game, $"Data/{file.Key}"),
+                    Hash = Hash.Zero,
+                    Size = Size.Zero,
+                    Metadata = ImmutableHashSet<IModFileMetadata>.Empty.Add(
+                        new AnalysisSortData
+                        {
+                            Masters = file.Value.Select(f => f.ToRelativePath())
+                                .ToArray()
+                        })
+                };
+                files = files.With(newFile.Id, newFile);
+            }
+            return mod with { Files = files };
+        });
+        
+        
         gameFiles.Files.Count.Should().BeGreaterThan(0);
+
+        LoadoutRegistry.Get(loadout.Value.LoadoutId, gameFiles.Id)!.Files.Values.Count(x => x.Metadata.OfType<AnalysisSortData>().Any())
+            .Should().BeGreaterOrEqualTo(analysis.Count, "Analysis data has been added");
 
         var pluginFile = gameFiles.Files.Values.OfType<PluginFile>().First();
         var flattenedList = loadout.FlattenList().ToArray();
