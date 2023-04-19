@@ -29,14 +29,15 @@ public class RecentModsTest
 
     private List<NexusModFile> _gameRecords = new();
 
-    protected RecentModsTest(ILogger logger, Client client, IDataStore store, IGame game, IHttpDownloader downloader)
+    protected RecentModsTest(ILogger logger, Client client, IDataStore store, IGame game, IHttpDownloader downloader, IFileSystem fileSystem)
     {
         _store = store;
         _logger = logger;
         _client = client;
         _game = game;
         _downloader = downloader;
-        _downloadedFilesLocation = KnownFolders.EntryFolder.CombineUnchecked("DownloadedTestHarnessFiles");
+        _downloadedFilesLocation = fileSystem.GetKnownPath(KnownPath.EntryDirectory)
+            .CombineUnchecked("DownloadedTestHarnessFiles");
         _downloadedFilesLocation.CreateDirectory();
         _updateDelay = TimeSpan.FromDays(1);
     }
@@ -92,14 +93,5 @@ public class RecentModsTest
         }
 
         _gameRecords = NexusModFile.LoadAll(_store, _game.Domain).ToList();
-    }
-
-    public static RecentModsTest Create(IServiceProvider provider, IGame game)
-    {
-        return new RecentModsTest(provider.GetRequiredService<ILogger<RecentModsTest>>(),
-            provider.GetRequiredService<Client>(),
-            provider.GetRequiredService<IDataStore>(),
-            game,
-            provider.GetRequiredService<IHttpDownloader>());
     }
 }

@@ -9,21 +9,23 @@ namespace NexusMods.Games.RedEngine;
 public class Cyberpunk2077 : AGame, ISteamGame, IGogGame, IEpicGame
 {
     public static readonly GameDomain StaticDomain = GameDomain.From("cyberpunk2077");
+    private readonly IFileSystem _fileSystem;
 
-    public Cyberpunk2077(IEnumerable<IGameLocator> gameLocators) : base(gameLocators)
+    public Cyberpunk2077(IEnumerable<IGameLocator> gameLocators, IFileSystem fileSystem) : base(gameLocators)
     {
+        _fileSystem = fileSystem;
     }
 
     public override string Name => "Cyberpunk 2077";
     public override GameDomain Domain => StaticDomain;
-    public override GamePath PrimaryFile => new(GameFolderType.Game, @"bin\x64\Cyberpunk2077.exe");
+    public override GamePath GetPrimaryFile(GameStore store) => new(GameFolderType.Game, @"bin\x64\Cyberpunk2077.exe");
     protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(IGameLocator locator, GameLocatorResult installation)
     {
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Saves,
-            KnownFolders.HomeFolder.CombineUnchecked(@"Saved Games\CD Projekt Red\Cyberpunk 2077"));
+            _fileSystem.GetKnownPath(KnownPath.HomeDirectory).CombineUnchecked(@"Saved Games\CD Projekt Red\Cyberpunk 2077"));
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.AppData,
-            KnownFolders.HomeFolder.CombineUnchecked(@"AppData\Local\CD Projekt Red\Cyberpunk 2077"));
+            _fileSystem.GetKnownPath(KnownPath.HomeDirectory).CombineUnchecked(@"AppData\Local\CD Projekt Red\Cyberpunk 2077"));
     }
 
     public IEnumerable<int> SteamIds => new[] { 1091500 };

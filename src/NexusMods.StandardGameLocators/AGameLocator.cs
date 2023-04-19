@@ -1,5 +1,6 @@
 using GameFinder.Common;
 using GameFinder.StoreHandlers.Steam;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
 using NexusMods.Paths;
@@ -12,20 +13,23 @@ namespace NexusMods.StandardGameLocators;
 /// <typeparam name="TGameType">The underlying game type library which maps to the <see cref="GameFinder"/> library. e.g. <see cref="SteamGame"/>.</typeparam>
 /// <typeparam name="TId">Unique identifier used by the store for the games.</typeparam>
 /// <typeparam name="TGame">Implementation of <see cref="IGame"/> such as <see cref="ISteamGame"/> that allows us to retrieve info about the game.</typeparam>
-public abstract class AGameLocator<TGameType, TId, TGame> : IGameLocator where TGameType : class
-    where TGame : IGame
+public abstract class AGameLocator<TGameType, TId, TGame, TParent> : IGameLocator where TGameType : class
+    where TGame : IGame 
+    where TParent : AGameLocator<TGameType, TId, TGame, TParent>
 {
     private readonly ILogger _logger;
     private readonly AHandler<TGameType, TId> _handler;
     private IDictionary<TId, TGameType>? _cachedGames;
+    protected readonly IFileSystem FileSystem;
 
     /// <summary/>
     /// <param name="logger">Allows you to log results.</param>
     /// <param name="handler">Common interface for store handlers.</param>
-    protected AGameLocator(ILogger logger, AHandler<TGameType, TId> handler)
+    protected AGameLocator(IServiceProvider provider)
     {
-        _logger = logger;
-        _handler = handler;
+        _logger = provider.GetRequiredService<ILogger<TParent>>();
+        _handler = provider.GetRequiredService<AHandler<TGameType, TId>>();
+        FileSystem = provider.GetRequiredService<IFileSystem>();
     }
 
     /// <summary>
@@ -53,9 +57,14 @@ public abstract class AGameLocator<TGameType, TId, TGame> : IGameLocator where T
         foreach (var id in Ids(tg))
         {
             if (!_cachedGames.TryGetValue(id, out var found)) continue;
-            yield return new GameLocatorResult(Path(found));
+            yield return new GameLocatorResult(Path(found), Store);
         }
     }
+
+    /// <summary>
+    /// The <see cref="GameStore"/> associated with this <see cref="IGameLocator"/>.
+    /// </summary>
+    protected abstract GameStore Store { get; }
 
     /// <summary>
     /// Returns all unique identifiers for this game.

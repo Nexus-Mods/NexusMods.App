@@ -30,10 +30,15 @@ public class GameInstallation
     public static GameInstallation Empty => new();
 
     /// <summary>
+    /// The <see cref="GameStore"/> which was used to install the game.
+    /// </summary>
+    public GameStore Store { get; init; } = GameStore.Unknown;
+
+    /// <summary>
     /// Returns the game name and version as
     /// </summary>
     /// <returns></returns>
-    public override string ToString() => $"{Game.Name} v{Version}";
+    public override string ToString() => $"{Game.Name} v{Version} ({Store.Value})";
 
     /// <summary>
     /// Converts a <see cref="AbsolutePath"/> to a <see cref="GamePath"/> assuming the path exists under a game path.

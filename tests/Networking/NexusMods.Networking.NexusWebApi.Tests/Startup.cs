@@ -19,6 +19,7 @@ public class Startup
         var mockOsInterop = new Mock<IOSInterop>();
 
         services
+            .AddFileSystem()
             .AddSingleton<HttpClient>()
             .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
             .AddHttpDownloader()

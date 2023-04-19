@@ -5,11 +5,19 @@ namespace NexusMods.Paths.Tests;
 
 public class ExtensionTests
 {
+
+    private readonly InMemoryFileSystem _fileSystem;
+    public ExtensionTests()
+    {
+        _fileSystem = new InMemoryFileSystem();
+    }
+    
     // ReSharper disable InconsistentNaming
     public static Extension DDS = new(".DDS");
     public static Extension Dds = new(".Dds");
     public static Extension DDS2 = new(".DDS");
     public static Extension EMPTY = new("");
+
     // ReSharper restore InconsistentNaming
 
     [Fact]
@@ -33,7 +41,7 @@ public class ExtensionTests
     public void CanGetExtensionOfPath(string input, bool linux)
     {
         Skip.If(linux != OperatingSystem.IsLinux());
-        var path = AbsolutePath.FromFullPath(input);
+        var path = AbsolutePath.FromFullPath(input, _fileSystem);
         path.Extension.Should().Be(DDS);
     }
 

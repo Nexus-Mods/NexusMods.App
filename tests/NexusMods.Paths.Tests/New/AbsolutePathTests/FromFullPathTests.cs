@@ -4,6 +4,13 @@ namespace NexusMods.Paths.Tests.New.AbsolutePathTests;
 
 public class FromFullPathTests
 {
+    private readonly InMemoryFileSystem _fileSystem;
+
+    public FromFullPathTests()
+    {
+        _fileSystem = new InMemoryFileSystem();
+    }
+    
     [SkippableTheory]
     [InlineData("/", "/", "/", "", true)]
     [InlineData("/foo", "/foo", "/", "foo", true)]
@@ -19,7 +26,7 @@ public class FromFullPathTests
         string? expectedDirectory, string expectedFileName, bool linux)
     {
         Skip.If(linux != OperatingSystem.IsLinux());
-        var path = AbsolutePath.FromFullPath(input);
+        var path = AbsolutePath.FromFullPath(input, _fileSystem);
         path.GetFullPath().Should().Be(expectedFullPath);
         path.Directory.Should().Be(expectedDirectory);
         path.FileName.Should().Be(expectedFileName);
@@ -29,7 +36,7 @@ public class FromFullPathTests
     [InlineData("foo")]
     public void Test_ShouldError_NotRootedPath(string input)
     {
-        Action act = () => AbsolutePath.FromFullPath(input);
+        Action act = () => AbsolutePath.FromFullPath(input, _fileSystem);
 
         act.Should().Throw<ArgumentException>();
     }

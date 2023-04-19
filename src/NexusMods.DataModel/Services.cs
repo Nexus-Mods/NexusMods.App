@@ -25,10 +25,19 @@ public static class Services
     /// Adds all services related to the <see cref="DataModel"/> to your dependency
     /// injection container.
     /// </summary>
-    public static IServiceCollection AddDataModel(this IServiceCollection coll, IDataModelSettings? settings = null)
+    public static IServiceCollection AddDataModel(this IServiceCollection coll,
+        IDataModelSettings? settings = null)
     {
-        settings ??= new DataModelSettings();
-        coll.AddSingleton(settings);
+        if (settings == null)
+            coll.AddSingleton<IDataModelSettings, DataModelSettings>();
+        else
+            coll.AddSingleton(settings);
+
+        IDataModelSettings Settings(IServiceProvider provider)
+        {
+            return provider.GetRequiredService<IDataModelSettings>();
+        }
+
         coll.AddSingleton<JsonConverter, RelativePathConverter>();
         coll.AddSingleton<JsonConverter, GamePathConverter>();
         coll.AddSingleton<JsonConverter, DateTimeConverter>();
@@ -41,32 +50,37 @@ public static class Services
         coll.AddSingleton<JsonConverter, EntityLinkConverterFactory>();
         coll.AddSingleton(typeof(EntityLinkConverter<>));
 
-        coll.AddSingleton<IDataStore>(s => new SqliteDataStore(
-            s.GetRequiredService<ILogger<SqliteDataStore>>(),
-            settings.DataStoreFilePath.ToAbsolutePath(), s,
-            s.GetRequiredService<IMessageProducer<IdUpdated>>(),
-            s.GetRequiredService<IMessageConsumer<IdUpdated>>()));
-        coll.AddSingleton(s => new ArchiveManager(settings.ArchiveLocations.Select(x => x.ToAbsolutePath()),
-            s.GetRequiredService<FileExtractor.FileExtractor>(),
-            s.GetRequiredService<FileContentsCache>()));
-        coll.AddAllSingleton<IResource, IResource<FileHashCache, Size>>(_ => new Resource<FileHashCache, Size>("File Hashing", settings.MaxHashingJobs, Size.FromLong(settings.MaxHashingThroughputBytesPerSecond)));
-        coll.AddAllSingleton<IResource, IResource<LoadoutManager, Size>>(_ => new Resource<LoadoutManager, Size>("Load Order Management", settings.LoadoutDeploymentJobs, Size.Zero));
+        coll.AddSingleton<IDataStore, SqliteDataStore>();
+        coll.AddSingleton<ArchiveManager>();
+        coll.AddAllSingleton<IResource, IResource<FileHashCache, Size>>(s =>
+            new Resource<FileHashCache, Size>("File Hashing",
+                Settings(s).MaxHashingJobs,
+                Size.FromLong(Settings(s).MaxHashingThroughputBytesPerSecond)));
+        
+        coll.AddAllSingleton<IResource, IResource<LoadoutManager, Size>>(s =>
+            new Resource<LoadoutManager, Size>("Load Order Management",
+                Settings(s).LoadoutDeploymentJobs, Size.Zero));
         coll.AddSingleton<LoadoutManager>();
         coll.AddSingleton<LoadoutRegistry>();
         coll.AddSingleton<FileHashCache>();
         coll.AddSingleton<FileContentsCache>();
 
-        coll.AddAllSingleton<IInterprocessJobManager, SqliteIPC>(s => new SqliteIPC(
-            s.GetRequiredService<ILogger<SqliteIPC>>(),
-            settings.IpcDataStoreFilePath.ToAbsolutePath()));
-        coll.AddSingleton(typeof(IMessageConsumer<>), typeof(InterprocessConsumer<>));
-        coll.AddSingleton(typeof(IMessageProducer<>), typeof(InterprocessProducer<>));
+        coll.AddAllSingleton<IInterprocessJobManager, SqliteIPC>();
+        coll.AddSingleton(typeof(IMessageConsumer<>),
+            typeof(InterprocessConsumer<>));
+        coll.AddSingleton(typeof(IMessageProducer<>),
+            typeof(InterprocessProducer<>));
 
-        coll.AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Services).Assembly));
-        coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<Entity>>();
-        coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<ISortRule<Mod, ModId>>>();
-        coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<IModFileMetadata>>();
-        coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<IFileAnalysisData>>();
+        coll.AddSingleton<ITypeFinder>(_ =>
+            new AssemblyTypeFinder(typeof(Services).Assembly));
+        coll.AddSingleton<JsonConverter,
+            AbstractClassConverterFactory<Entity>>();
+        coll.AddSingleton<JsonConverter,
+            AbstractClassConverterFactory<ISortRule<Mod, ModId>>>();
+        coll.AddSingleton<JsonConverter,
+            AbstractClassConverterFactory<IModFileMetadata>>();
+        coll.AddSingleton<JsonConverter,
+            AbstractClassConverterFactory<IFileAnalysisData>>();
 
         coll.AddSingleton(s =>
         {
@@ -78,5 +92,4 @@ public static class Services
         });
         return coll;
     }
-
 }

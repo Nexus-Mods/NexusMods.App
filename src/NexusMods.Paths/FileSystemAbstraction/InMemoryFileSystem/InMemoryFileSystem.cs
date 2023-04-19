@@ -27,7 +27,7 @@ public partial class InMemoryFileSystem : BaseFileSystem
         bool convertCrossPlatformPaths) : base(pathMappings, knownPathMappings, convertCrossPlatformPaths)
     {
         _rootDirectory = new InMemoryDirectoryEntry(
-            AbsolutePath.FromFullPath(OperatingSystem.IsWindows() ? "C:\\" : "/"),
+            AbsolutePath.FromFullPath(OperatingSystem.IsWindows() ? "C:\\" : "/", this),
             null!);
 
         _directories[_rootDirectory.Path] = _rootDirectory;

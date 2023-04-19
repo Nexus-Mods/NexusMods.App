@@ -39,8 +39,7 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// <summary>
     /// The <see cref="IFileSystem"/> implementation used by the IO methods.
     /// </summary>
-    [Obsolete("This will be phased out once all references to the AbsolutePath IO methods are replaced with direct calls to IFileSystem.")]
-    private readonly IFileSystem _fileSystem;
+    public IFileSystem FileSystem { get; init; }
 
     /// <inheritdoc />
     public Extension Extension => Extension.FromPath(FileName);
@@ -51,20 +50,20 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// <summary>
     /// Gets the parent directory, i.e. navigates one folder up.
     /// </summary>
-    public AbsolutePath Parent => FromFullPath(Directory, _fileSystem);
+    public AbsolutePath Parent => FromFullPath(Directory, FileSystem);
 
-    internal AbsolutePath(string directory, string fileName, IFileSystem? fileSystem)
+    internal AbsolutePath(string directory, string fileName, IFileSystem fileSystem)
     {
         Directory = directory;
         FileName = fileName;
 
-        _fileSystem = fileSystem ?? FileSystem.Shared;
+        FileSystem = fileSystem;
     }
 
-    internal static AbsolutePath FromDirectoryAndFileName(string directoryPath, string fileName, IFileSystem? fileSystem = null)
+    internal static AbsolutePath FromDirectoryAndFileName(string directoryPath, string fileName, IFileSystem fileSystem)
         => new(directoryPath, fileName, fileSystem);
 
-    internal static AbsolutePath FromFullPath(string fullPath, IFileSystem? fileSystem = null)
+    internal static AbsolutePath FromFullPath(string fullPath, IFileSystem fileSystem)
     {
         var span = fullPath.AsSpan();
 
@@ -116,7 +115,7 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// </remarks>
     /// <param name="ext">The extension to append.</param>
     public AbsolutePath AppendExtension(Extension ext)
-        => FromDirectoryAndFileName(Directory, FileName + ext, _fileSystem);
+        => FromDirectoryAndFileName(Directory, FileName + ext, FileSystem);
 
     /// <summary>
     /// Creates a new <see cref="AbsolutePath"/> from the current one, replacing
@@ -128,7 +127,7 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// </remarks>
     /// <param name="ext">The extension to replace.</param>
     public AbsolutePath ReplaceExtension(Extension ext)
-        => FromDirectoryAndFileName(Directory, FileName.ReplaceExtension(ext), _fileSystem);
+        => FromDirectoryAndFileName(Directory, FileName.ReplaceExtension(ext), FileSystem);
 
     /// <summary>
     /// Returns true if the given directory is a root directory on the current
@@ -295,7 +294,7 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
             relativeSpan = relativeSpan.SliceFast(1);
 
         var newPath = JoinPathComponents(GetFullPath(), relativeSpan);
-        return FromFullPath(newPath, _fileSystem);
+        return FromFullPath(newPath, FileSystem);
     }
 
     /// <summary>
@@ -331,7 +330,7 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
             relativeSpan = relativeSpan.SliceFast(1);
 
         // Now walk the directories.
-        return FromFullPath(AppendChecked(GetFullPath(), relativeSpan), _fileSystem);
+        return FromFullPath(AppendChecked(GetFullPath(), relativeSpan), FileSystem);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -413,7 +412,12 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     public static bool operator !=(AbsolutePath lhs, AbsolutePath rhs) => !(lhs == rhs);
 
     /// <inheritdoc />
-    public override string ToString() => GetFullPath();
+    public override string ToString()
+    {
+        if (this == default)
+            return "<default>";
+        return GetFullPath();
+    }
 
     #region Equals & GetHashCode
     // Implementation Note:

@@ -17,16 +17,12 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame
 
     public override string Name => "Darkest Dungeon";
     public override GameDomain Domain => GameDomain.From("darkestdungeon");
-    public override GamePath PrimaryFile
+
+    public override GamePath GetPrimaryFile(GameStore store)
     {
-        get
-        {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            {
-                return new(GameFolderType.Game, @"_linuxnosteam\darkest.bin.x86_64");
-            }
-            return new(GameFolderType.Game, @"_windowsnosteam\Darkest.exe");
-        }
+        return RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
+            ? new GamePath(GameFolderType.Game, @"_linuxnosteam\darkest.bin.x86_64")
+            : new GamePath(GameFolderType.Game, @"_windowsnosteam\Darkest.exe");
     }
 
     protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(IGameLocator locator, GameLocatorResult installation)

@@ -10,16 +10,19 @@ namespace NexusMods.StandardGameLocators;
 /// <summary>
 /// Finds games managed by the Epic Games Launcher.
 /// </summary>
-public class EpicLocator : AGameLocator<EGSGame, string, IEpicGame>
+public class EpicLocator : AGameLocator<EGSGame, string, IEpicGame, EpicLocator>
 {
     /// <inheritdoc />
-    public EpicLocator(ILogger<EpicLocator> logger, AHandler<EGSGame, string> handler) : base(logger, handler)
+    public EpicLocator(IServiceProvider provider) : base(provider)
     {
     }
+
+    /// <inheritdoc />
+    protected override GameStore Store => GameStore.EGS;
 
     /// <inheritdoc />
     protected override IEnumerable<string> Ids(IEpicGame game) => game.EpicCatalogItemId;
 
     /// <inheritdoc />
-    protected override AbsolutePath Path(EGSGame record) => record.InstallLocation.ToAbsolutePath();
+    protected override AbsolutePath Path(EGSGame record) => record.InstallLocation.ToAbsolutePath(FileSystem);
 }

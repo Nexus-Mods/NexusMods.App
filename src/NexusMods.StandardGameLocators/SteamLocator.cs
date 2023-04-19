@@ -10,16 +10,19 @@ namespace NexusMods.StandardGameLocators;
 /// <summary>
 /// Finds games managed by 'Steam'.
 /// </summary>
-public class SteamLocator : AGameLocator<SteamGame, int, ISteamGame>
+public class SteamLocator : AGameLocator<SteamGame, int, ISteamGame, SteamLocator>
 {
     /// <inheritdoc />
-    public SteamLocator(ILogger<SteamLocator> logger, AHandler<SteamGame, int> handler) : base(logger, handler)
+    public SteamLocator(IServiceProvider provider) : base(provider)
     {
     }
+
+    /// <inheritdoc />
+    protected override GameStore Store => GameStore.Steam;
 
     /// <inheritdoc />
     protected override IEnumerable<int> Ids(ISteamGame game) => game.SteamIds;
 
     /// <inheritdoc />
-    protected override AbsolutePath Path(SteamGame record) => record.Path.ToAbsolutePath();
+    protected override AbsolutePath Path(SteamGame record) => record.Path.ToAbsolutePath(FileSystem);
 }

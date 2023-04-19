@@ -1,54 +1,36 @@
-﻿using NexusMods.Paths.Utilities;
+﻿using FluentAssertions;
+using NexusMods.Paths.Extensions;
+using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Paths.Tests;
 
 public class PathExpansionTests
 {
-    [Fact]
-    public void CanExpandEntryFolder()
-    {
-        var inputPath = "{EntryFolder}/FluffyKitten.png";
-        var expandedPath = KnownFolders.ExpandPath(inputPath);
-        var expectedPath = Path.Combine(KnownFolders.EntryFolder.GetFullPath(), "FluffyKitten.png");
+    private readonly InMemoryFileSystem _fileSystem;
 
-        Assert.Equal(expectedPath, expandedPath);
+    public PathExpansionTests()
+    {
+        _fileSystem = new InMemoryFileSystem();
     }
-
-    [Fact]
-    public void CanExpandCurrentDirectory()
+    
+    [Theory]
+    [InlineData("{EntryFolder}/FluffyKitten.png", KnownPath.EntryDirectory, "FluffyKitten.png")]
+    [InlineData("{CurrentDirectory}/AdorableWhiskers.png", KnownPath.CurrentDirectory, "AdorableWhiskers.png")]
+    [InlineData("{HomeFolder}/CuddlyFurball.png", KnownPath.HomeDirectory, "CuddlyFurball.png")]
+    [InlineData("{MyGames}/CuriousWhiskers.png", KnownPath.MyGamesDirectory, "CuriousWhiskers.png")]
+    public void CanExpandKnownFolder(string inputPath, KnownPath knownPath, string expectedPath)
     {
-        var inputPath = "{CurrentDirectory}/AdorableWhiskers.png";
-        var expandedPath = KnownFolders.ExpandPath(inputPath);
-        var expectedPath = Path.Combine(KnownFolders.CurrentDirectory.GetFullPath(), "AdorableWhiskers.png");
+        var expandedPath = _fileSystem.ExpandKnownFoldersPath(inputPath);
+        var expectedFullPath = Path.Combine(_fileSystem.GetKnownPath(knownPath).GetFullPath(), expectedPath);
 
-        Assert.Equal(expectedPath, expandedPath);
-    }
-
-    [Fact]
-    public void CanExpandHomeFolder()
-    {
-        var inputPath = "{HomeFolder}/CuddlyFurball.png";
-        var expandedPath = KnownFolders.ExpandPath(inputPath);
-        var expectedPath = Path.Combine(KnownFolders.HomeFolder.GetFullPath(), "CuddlyFurball.png");
-
-        Assert.Equal(expectedPath, expandedPath);
-    }
-
-    [Fact]
-    public void CanExpandMyGames()
-    {
-        var inputPath = "{MyGames}/CuriousWhiskers.png";
-        var expandedPath = KnownFolders.ExpandPath(inputPath);
-        var expectedPath = Path.Combine(KnownFolders.MyGames.GetFullPath(), "CuriousWhiskers.png");
-
-        Assert.Equal(expectedPath, expandedPath);
+        expandedPath.Should().Be(expectedFullPath);
     }
 
     [Fact]
     public void CanExpandPath_WithNoPlaceholder()
     {
         var inputPath = "AdorableMeow.png";
-        var expandedPath = KnownFolders.ExpandPath(inputPath);
+        var expandedPath = _fileSystem.ExpandKnownFoldersPath(inputPath);
         var expectedPath = Path.GetFullPath(inputPath);
 
         Assert.Equal(expectedPath, expandedPath);
@@ -58,7 +40,7 @@ public class PathExpansionTests
     public void CanExpandPath_WithInvalidPlaceholder()
     {
         var inputPath = "{InvalidPlaceholder}/AdorableMeow.png";
-        var expandedPath = KnownFolders.ExpandPath(inputPath);
+        var expandedPath = _fileSystem.ExpandKnownFoldersPath(inputPath);
         var expectedPath = Path.GetFullPath(inputPath);
 
         Assert.Equal(expectedPath, expandedPath);

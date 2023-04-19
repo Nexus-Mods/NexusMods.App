@@ -5,6 +5,12 @@ namespace NexusMods.Paths.Tests;
 
 public class GamePathTests
 {
+    private readonly InMemoryFileSystem _fileSystem;
+
+    public GamePathTests()
+    {
+        _fileSystem = new InMemoryFileSystem();
+    }
 
     [Fact]
     public void CanComparePaths()
@@ -55,7 +61,7 @@ public class GamePathTests
     [Fact]
     public void CanGetPathRelativeTo()
     {
-        var baseFolder = KnownFolders.CurrentDirectory;
+        var baseFolder = _fileSystem.GetKnownPath(KnownPath.CurrentDirectory);
         var pathA = new GamePath(GameFolderType.Game, "foo/bar");
         Assert.Equal(baseFolder.CombineChecked("foo/bar"), pathA.CombineChecked(baseFolder));
     }

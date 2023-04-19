@@ -47,16 +47,16 @@ public class SqliteDataStore : IDataStore, IDisposable
 
     /// <summary/>
     /// <param name="logger">Logs events.</param>
-    /// <param name="path">Location of the database.</param>
+    /// <param name="settings">Datamodel settings</param>
     /// <param name="provider">Dependency injection container.</param>
     /// <param name="idPutProducer">Producer of events for updated IDs.</param>
     /// <param name="idPutConsumer">Consumer of events for updated IDs.</param>
-    public SqliteDataStore(ILogger<SqliteDataStore> logger, AbsolutePath path, IServiceProvider provider,
+    public SqliteDataStore(ILogger<SqliteDataStore> logger, IDataModelSettings settings, IServiceProvider provider,
         IMessageProducer<IdUpdated> idPutProducer,
         IMessageConsumer<IdUpdated> idPutConsumer)
     {
         _logger = logger;
-        var connectionString = string.Intern($"Data Source={path}");
+        var connectionString = string.Intern($"Data Source={settings.DataStoreFilePath}");
 
         _poolPolicy = new ConnectionPoolPolicy(connectionString);
         _pool = ObjectPool.Create(_poolPolicy);

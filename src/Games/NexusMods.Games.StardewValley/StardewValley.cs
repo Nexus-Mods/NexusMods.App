@@ -26,37 +26,40 @@ public class StardewValley : AGame, ISteamGame, IGogGame
         _fileSystem = fileSystem;
     }
 
-    public override GamePath PrimaryFile
+    public override GamePath GetPrimaryFile(GameStore store)
     {
-        get
+        // "StardewValley" is a wrapper shell script that launches the "Stardew Valley" binary
+        // on OSX, it's used to check the .NET version, on Linux it just launches the game
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
-            // "StardewValley" is a wrapper shell script that launches the "Stardew Valley" binary
-            // on OSX, it's used to check the .NET version, on Linux it just launches the game
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            {
-                return new GamePath(GameFolderType.Game, "StardewValley");
-            }
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            {
-                return new GamePath(GameFolderType.Game,"Contents/MacOS/StardewValley");
-            }
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                // TODO: SMAPI adds StardewModdingAPI.exe, which should be launched instead
-                // TODO: SMAPI for Xbox Game Pass replaces "Stardew Valley.exe" instead
-                return new GamePath(GameFolderType.Game, "Stardew Valley.exe");
-            }
-
-            throw new PlatformNotSupportedException();
+            return new GamePath(GameFolderType.Game, "StardewValley");
         }
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            return new GamePath(GameFolderType.Game,"Contents/MacOS/StardewValley");
+        }
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            return store == GameStore.XboxGamePass
+                ? new GamePath(GameFolderType.Game, "Stardew Valley.exe")
+                : new GamePath(GameFolderType.Game, "StardewModdingAPI.exe");
+        }
+
+        throw new PlatformNotSupportedException();
     }
 
     protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(IGameLocator locator, GameLocatorResult installation)
     {
-        // TODO: for Xbox Game Pass: actual game files are inside a "Content" folder
-        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);
+        if (installation.Store == GameStore.XboxGamePass)
+        {
+            yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path.CombineChecked("Content"));
+        }
+        else
+        {
+            yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);
+        }
 
         var stardewValleyAppDataPath = _fileSystem
             .GetKnownPath(KnownPath.ApplicationDataDirectory)

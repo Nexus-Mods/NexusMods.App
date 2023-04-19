@@ -63,7 +63,7 @@ public class FomodAnalyzer : IFileAnalyzer
                 byte[] bytes;
                 try
                 {
-                    bytes = await _fileSystem.ReadAllBytesAsync(path, ct);
+                    bytes = await path.ReadAllBytesAsync(ct);
                 }
                 catch (FileNotFoundException)
                 {
@@ -96,7 +96,8 @@ public class FomodAnalyzer : IFileAnalyzer
 
     internal async Task<byte[]> GetPlaceholderImage(CancellationToken ct = default)
     {
-        return await _fileSystem.ReadAllBytesAsync(_fileSystem.GetKnownPath(KnownPath.EntryDirectory).CombineChecked("Assets/InvalidImagePlaceholder.png"), ct);
+        return await _fileSystem.GetKnownPath(KnownPath.EntryDirectory).CombineChecked("Assets/InvalidImagePlaceholder.png")
+            .ReadAllBytesAsync(ct);
     }
 }
 
