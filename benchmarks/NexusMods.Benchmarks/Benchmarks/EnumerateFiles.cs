@@ -14,11 +14,7 @@ public class EnumerateFiles : IBenchmark
     public EnumerateFiles()
     {
         _fileSystem = FileSystem.Shared;
-        FilePath = AbsolutePath.FromFullPath(
-            Directory.GetParent(
-                    Environment.GetFolderPath(Environment.SpecialFolder
-                        .SystemX86))!
-                .FullName, _fileSystem);
+        FilePath = _fileSystem.GetKnownPath(KnownPath.ApplicationDataDirectory);
     }
     
     // Placeholder path that'll probably work for people using Windows.
