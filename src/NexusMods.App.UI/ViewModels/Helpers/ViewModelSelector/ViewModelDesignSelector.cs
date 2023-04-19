@@ -1,4 +1,5 @@
 ﻿using System.Reactive.Linq;
+using System.Windows.Input;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -43,5 +44,10 @@ public class ViewModelDesignSelector<TEnum, TVmType> : AViewModel<IViewModelSele
     {
         return this.WhenAnyValue(vm => vm.Current)
             .Select(val => val.Equals(current));
+    }
+    
+    public ICommand CommandFor(TEnum current)
+    {
+        return ReactiveCommand.Create(() => Set(current));
     }
 }

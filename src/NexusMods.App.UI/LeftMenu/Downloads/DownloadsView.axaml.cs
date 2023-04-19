@@ -22,6 +22,10 @@ public partial class DownloadsView : ReactiveUserControl<IDownloadsViewModel>
             ViewModel!.IsActive(Options.History)
                 .BindToActive(HistoryButton)
                 .DisposeWith(d);
+
+            InProgressButton.Command = ViewModel.CommandFor(Options.InProgress);
+            CompletedButton.Command = ViewModel.CommandFor(Options.Completed);
+            HistoryButton.Command = ViewModel.CommandFor(Options.History);
         });
 
 

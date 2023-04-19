@@ -1,4 +1,6 @@
-﻿namespace NexusMods.App.UI.ViewModels.Helpers.ViewModelSelector;
+﻿using System.Windows.Input;
+
+namespace NexusMods.App.UI.ViewModels.Helpers.ViewModelSelector;
 
 public interface IViewModelSelector<TEnum, TVmType> where TEnum : Enum where TVmType : class, IViewModelInterface
 {
@@ -25,4 +27,11 @@ public interface IViewModelSelector<TEnum, TVmType> where TEnum : Enum where TVm
     /// <param name="current"></param>
     /// <returns></returns>
     public IObservable<bool> IsActive(TEnum current);
+
+    /// <summary>
+    /// Get the command for the button that selects the given ViewModel
+    /// </summary>
+    /// <param name="current"></param>
+    /// <returns></returns>
+    public ICommand CommandFor(TEnum current);
 }

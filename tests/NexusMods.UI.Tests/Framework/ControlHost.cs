@@ -1,4 +1,5 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia.Automation.Peers;
+using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
 using NexusMods.App.UI;
@@ -80,5 +81,19 @@ public class ControlHost<TView, TVm, TInterface> : IAsyncDisposable
             var btn = View.GetControl<T>(launchbutton);
             return btn;
         });
+    }
+
+    /// <summary>
+    /// Clicks the button in a way that fires all the proper UI events
+    /// </summary>
+    /// <param name="button"></param>
+    public async Task Click(Button button)
+    {
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            var peer = new ButtonAutomationPeer(button);
+            peer.Invoke();
+        });
+        await Flush();
     }
 }
