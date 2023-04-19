@@ -50,10 +50,10 @@ public class SMAPIModInstallerTests : AModInstallerTest<StardewValley, SMAPIModI
 
         await using var path = await CreateTestArchive(testFiles);
 
-        var filesToExtract = await GetFilesToExtractFromInstaller(path);
-        filesToExtract.Should().HaveCount(2);
-        filesToExtract.Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/manifest.json"));
-        filesToExtract.Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/foo"));
+        var (_, modFiles) = await GetModWithFilesFromInstaller(path);
+        modFiles.Should().HaveCount(2);
+        modFiles.Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/manifest.json"));
+        modFiles.Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/foo"));
     }
 
     [Fact]
@@ -68,10 +68,10 @@ public class SMAPIModInstallerTests : AModInstallerTest<StardewValley, SMAPIModI
 
         await using var path = await CreateTestArchive(testFiles);
 
-        var filesToExtract = await GetFilesToExtractFromInstaller(path);
-        filesToExtract.Should().HaveCount(2);
-        filesToExtract.Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/manifest.json"));
-        filesToExtract.Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/baz"));
+        var (_, modFiles) = await GetModWithFilesFromInstaller(path);
+        modFiles.Should().HaveCount(2);
+        modFiles.Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/manifest.json"));
+        modFiles.Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/baz"));
     }
 
     [Fact]
@@ -86,7 +86,7 @@ public class SMAPIModInstallerTests : AModInstallerTest<StardewValley, SMAPIModI
         {
             hash.Should().Be(Hash.From(0x59112FD2E58BD042));
 
-            var mod = await InstallModWithInstaller(loadout, path.Path);
+            var mod = await InstallModFromArchiveIntoLoadout(loadout, path);
             mod.Files.Should().NotBeEmpty();
             mod.Files.Should().AllSatisfy(kv => kv.Value.To.Path.StartsWith("Mods/NPCMapLocations"));
         }
