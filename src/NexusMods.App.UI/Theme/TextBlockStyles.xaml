@@ -90,6 +90,4 @@
         <Setter Property="LineHeight" Value="24.75" />
         <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryColor}" />
     </Style>
-
-
 </Styles>

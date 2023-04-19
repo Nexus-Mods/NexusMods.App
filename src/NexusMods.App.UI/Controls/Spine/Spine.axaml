@@ -32,6 +32,7 @@
             </ItemsControl.ItemsPanel>
         </ItemsControl>
         <reactiveUi:ViewModelViewHost ViewContract="Add" x:Name="Add" />
+        <reactiveUi:ViewModelViewHost ViewContract="Home" x:Name="Download" />
     </StackPanel>
 
 </reactiveUi:ReactiveUserControl>

@@ -8,6 +8,18 @@
             <Button Classes="Avatar">
                 <Image Source="avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png"></Image>
             </Button>
+            <Button Classes="LeftMenuItem">
+                <StackPanel>
+                    <icons:Icon Classes="ProgressDownload"/>
+                    <TextBlock Text="Label Goes Here"></TextBlock>
+                </StackPanel>
+            </Button>
+            <Button Classes="LeftMenuItem Active">
+                <StackPanel>
+                    <icons:Icon Classes="ProgressDownload"/>
+                    <TextBlock Text="Label Goes Here"></TextBlock>
+                </StackPanel>
+            </Button>
         </StackPanel>
     </Design.PreviewWith>
 
@@ -364,6 +376,47 @@
             <EllipseGeometry Rect="0, 0, 30, 30" />
         </Setter>
     </Style>
+    
+    <!-- Left Menu Item -->
+    
+    <Style Selector="Button.LeftMenuItem">
+        <Setter Property="Height" Value="40" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="CornerRadius" Value="4"></Setter>
+        <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
+        <Setter Property="Background" Value="{DynamicResource Transparent}"></Setter>
+        
+    </Style>
+
+    <Style Selector="Button.LeftMenuItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BrandSecondaryLighter}"></Setter>
+    </Style>
+    
+    <Style Selector="Button.LeftMenuItem.Active /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BackgroundTertiaryColor}"></Setter>
+    </Style>
+    
+    <Style Selector="Button.LeftMenuItem StackPanel">
+        <Setter Property="Orientation" Value="Horizontal" />
+        <Setter Property="Spacing" Value="4" />
+        <Setter Property="Margin" Value="9, 12" />
+    </Style>
+    
+    <Style Selector="Button.LeftMenuItem icons|Icon">
+        <Setter Property="Foreground" Value="{DynamicResource OffWhiteTextColor}" />
+        <Setter Property="Width" Value="20" />
+        <Setter Property="Height" Value="20" />
+    </Style>
+
+    <Style Selector="Button.LeftMenuItem TextBlock">
+        <Setter Property="FontFamily" Value="{DynamicResource FontSecondaryBold}" />
+        <Setter Property="Foreground" Value="{DynamicResource OffWhiteTextColor}"></Setter>
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="700" />
+        <Setter Property="LineHeight" Value="16.41"></Setter>
+        <Setter Property="Margin" Value="0" />
+    </Style>
+
 
     
     <!-- End of Styling Rework -->

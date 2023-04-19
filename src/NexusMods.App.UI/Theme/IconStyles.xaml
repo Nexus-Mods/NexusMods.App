@@ -13,8 +13,11 @@
                 </Style>
             </WrapPanel.Styles>
             <icons:Icon Classes="Bell"></icons:Icon>
+            <icons:Icon Classes="CheckUnderline"></icons:Icon>
             <icons:Icon Classes="Cog"></icons:Icon>
             <icons:Icon Classes="Help"></icons:Icon>
+            <icons:Icon Classes="History"></icons:Icon>
+            <icons:Icon Classes="ProgressDownload"></icons:Icon>
             <icons:Icon Classes="Star"></icons:Icon>
         </WrapPanel>
     </Design.PreviewWith>
@@ -23,6 +26,10 @@
         <Setter Property="Value" Value="mdi-bell"></Setter>
     </Style>
 
+    <Style Selector="icons|Icon.CheckUnderline">
+        <Setter Property="Value" Value="mdi-check-underline" />
+    </Style>
+    
     <Style Selector="icons|Icon.Cog">
         <Setter Property="Value" Value="mdi-cog" />
     </Style>
@@ -31,9 +38,15 @@
         <Setter Property="Value" Value="mdi-help-circle-outline" />
     </Style>
     
+    <Style Selector="icons|Icon.History">
+        <Setter Property="Value" Value="mdi-history" />
+    </Style>
+    
+    <Style Selector="icons|Icon.ProgressDownload">
+        <Setter Property="Value" Value="mdi-progress-download"></Setter>
+    </Style>
+    
     <Style Selector="icons|Icon.Star">
         <Setter Property="Value" Value="mdi-star"></Setter>
     </Style>
-    
-
 </Styles>

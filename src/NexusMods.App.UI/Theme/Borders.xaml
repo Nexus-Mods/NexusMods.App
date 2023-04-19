@@ -1,10 +1,33 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Design.PreviewWith>
+        <StackPanel>
+            <Border Classes="LeftPaneTitle">
+                <TextBlock Text="TITLE"></TextBlock>
+            </Border>
+        </StackPanel>
+    </Design.PreviewWith>
+    
     <Style Selector="Border.HighlightedArea">
         <Setter Property="Background" Value="{DynamicResource StatusInfoTransparentBrush}" />
         <Setter Property="CornerRadius" Value="8" />
         <Setter Property="BorderBrush" Value="{DynamicResource StatusInfoBrush}" />
         <Setter Property="BorderThickness" Value="2" />
         <Setter Property="BoxShadow" Value="inset 0 0 8 #1079f9" />
+    </Style>
+    
+    <Style Selector="Border.LeftPaneTitle">
+        <Setter Property="Background" Value="{DynamicResource BrandSecondaryDarker}"></Setter>
+        <Setter Property="Padding" Value="24, 13.5"></Setter>
+        <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
+    </Style>
+    
+    <Style Selector="Border.LeftPaneTitle TextBlock">
+        <Setter Property="FontFamily" Value="{DynamicResource FontPrimaryBold}" />
+        <Setter Property="FontSize" Value="18"></Setter>
+        <Setter Property="LineHeight" Value="25"></Setter>
+        <Setter Property="FontWeight" Value="600"></Setter>
+        <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryColor}"></Setter>
     </Style>
 
 

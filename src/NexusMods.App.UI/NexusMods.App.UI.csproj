@@ -61,6 +61,8 @@
     <AvaloniaResource Include="Theme\PillStyles.xaml" />
     <None Remove="Theme\IconStyles.xaml" />
     <AvaloniaResource Include="Theme\IconStyles.xaml" />
+    <None Remove="Fonts\Bold\Roboto-Bold.ttf" />
+    <AvaloniaResource Include="Fonts\Bold\Roboto-Bold.ttf" />
   </ItemGroup>
 
   <ItemGroup>
