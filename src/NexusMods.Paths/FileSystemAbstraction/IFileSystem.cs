@@ -227,7 +227,6 @@ public interface IFileSystem
     /// </summary>
     /// <param name="path">Path to the file.</param>
     /// <param name="text">Text to write to the file.</param>
-    /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
     /// <returns></returns>
     void WriteAllText(AbsolutePath path, string text);
 
