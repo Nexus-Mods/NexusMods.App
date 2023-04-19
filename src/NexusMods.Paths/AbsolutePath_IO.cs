@@ -128,4 +128,8 @@ public readonly partial struct AbsolutePath
     /// <inheritdoc cref="IFileSystem.WriteAllBytesAsync"/>
     public Task WriteAllBytesAsync(byte[] data)
         => FileSystem.WriteAllBytesAsync(this, data);
+    
+    /// <inheritdoc cref="IFileSystem.ReadAllBytesAsync"/>
+    public Task<byte[]> ReadAllBytesAsync(CancellationToken token = default)
+        => FileSystem.ReadAllBytesAsync(this, token);
 }
