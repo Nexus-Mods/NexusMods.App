@@ -170,7 +170,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
         var path = folder.Path.CombineUnchecked(fileName);
         var file = new TemporaryPath(FileSystem, path);
 
-        await FileSystem.WriteAllBytesAsync(path, contents);
+        await path.WriteAllBytesAsync(contents);
         return file;
     }
 
@@ -180,7 +180,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     protected async Task<TemporaryPath> CreateTestFile(byte[] contents, Extension? extension)
     {
         var file = TemporaryFileManager.CreateFile(extension);
-        await FileSystem.WriteAllBytesAsync(file.Path, contents);
+        await file.Path.WriteAllBytesAsync(contents);
         return file;
     }
 

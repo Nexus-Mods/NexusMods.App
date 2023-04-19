@@ -11,6 +11,15 @@ namespace NexusMods.App;
 /// </summary>
 public class AppConfig
 {
+    private readonly IFileSystem _fileSystem;
+
+    public AppConfig()
+    {
+        _fileSystem = FileSystem.Shared;
+        DataModelSettings = new DataModelSettings(_fileSystem);
+        FileExtractorSettings = new FileExtractorSettings(_fileSystem);
+        LoggingSettings = new LoggingSettings(_fileSystem);
+    }
     /*
         Default Value Rules:
 
@@ -34,10 +43,10 @@ public class AppConfig
         Individual settings objects must implement a `Sanitize` function to ensure these rules.
     */
 
-    public DataModelSettings DataModelSettings { get; set; } = new();
-    public FileExtractorSettings FileExtractorSettings { get; set; } = new();
+    public DataModelSettings DataModelSettings { get; set; }
+    public FileExtractorSettings FileExtractorSettings { get; set; }
     public HttpDownloaderSettings HttpDownloaderSettings { get; set; } = new();
-    public LoggingSettings LoggingSettings { get; set; } = new();
+    public LoggingSettings LoggingSettings { get; set; }
 
     /// <summary>
     /// Sanitizes the config; e.g.
@@ -72,8 +81,7 @@ public class LoggingSettings : ILoggingSettings
 {
     private const string LogFileName = "nexusmods.app.current.log";
     private const string LogFileNameTemplate = "nexusmods.app.{##}.log";
-    private static AbsolutePath DefaultBaseFolder => KnownFolders.EntryFolder;
-
+    
     /// <inheritdoc/>
     public ConfigurationPath FilePath { get; set; }
 
@@ -84,19 +92,15 @@ public class LoggingSettings : ILoggingSettings
     public int MaxArchivedFiles { get; set; }
 
     /// <summary>
-    /// Creates the default datamodel settings with a given base directory.
-    /// </summary>
-    public LoggingSettings() : this(DefaultBaseFolder) { }
-
-    /// <summary>
-    /// Creates the default logger settings with a specified base directory to store the log files in.
+    /// Creates the default logger with logs stored in the entry directory.
     /// </summary>
     /// <param name="baseDirectory">The base directory to use.</param>
-    public LoggingSettings(AbsolutePath baseDirectory)
+    public LoggingSettings(IFileSystem fileSystem)
     {
-        FileSystem.Shared.CreateDirectory(baseDirectory);
-        FilePath = baseDirectory.CombineUnchecked(LogFileName).GetFullPath();
-        ArchiveFilePath = baseDirectory.CombineUnchecked(LogFileNameTemplate).GetFullPath();
+        var baseFolder = fileSystem.GetKnownPath(KnownPath.EntryDirectory);
+        baseFolder.CreateDirectory();
+        FilePath = new ConfigurationPath(baseFolder.CombineUnchecked(LogFileName));
+        ArchiveFilePath = new ConfigurationPath(baseFolder.CombineUnchecked(LogFileNameTemplate));
         MaxArchivedFiles = 10;
     }
 

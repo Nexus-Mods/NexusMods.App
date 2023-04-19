@@ -29,7 +29,7 @@ public class Startup
             .AddSingleton<TemporaryFileManager>()
             .AddDataModel(new DataModelSettings(prefix))
             .AddStandardGameLocators(false)
-            .AddFileExtractors(new FileExtractorSettings())
+            .AddFileExtractors()
             .AddStubbedGameLocators()
             .AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(_ => new Resource<FileContentsCache, Size>("File Analysis"))
             .AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ => new Resource<IExtractor, Size>("File Extraction")).AddSingleton<IFileAnalyzer, ArchiveContentsCacheTests.MutatingFileAnalyzer>()

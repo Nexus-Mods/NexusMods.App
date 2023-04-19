@@ -36,7 +36,7 @@ public class AFileAnalyzerTest<TGame, TFileAnalyzer> : AGameTest<TGame>
     /// <returns></returns>
     protected async Task<IFileAnalysisData[]> AnalyzeFile(AbsolutePath path)
     {
-        await using var stream = FileSystem.ReadFile(path);
+        await using var stream = path.Read();
 
         var asyncEnumerable = FileAnalyzer.AnalyzeAsync(new FileAnalyzerInfo
         {

@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 
@@ -56,7 +57,6 @@ public class DataModelSettings : IDataModelSettings
     private const string DataModelFileName = "DataModel.sqlite";
     private const string DataModelIpcFileName = "DataModel_IPC.sqlite";
     private const string ArchivesFileName = "Archives";
-    private static AbsolutePath DefaultBaseFolder => KnownFolders.EntryFolder;
 
     /// <inheritdoc />
     public ConfigurationPath DataStoreFilePath { get; set; }
@@ -79,7 +79,7 @@ public class DataModelSettings : IDataModelSettings
     /// <summary>
     /// Creates the default datamodel settings with a given base directory.
     /// </summary>
-    public DataModelSettings() : this(DefaultBaseFolder) { }
+    public DataModelSettings(IFileSystem s) : this(s.GetKnownPath(KnownPath.EntryDirectory).CombineUnchecked("DataModel")) { }
 
     /// <summary>
     /// Creates the default datamodel settings with a given base directory.
@@ -87,12 +87,12 @@ public class DataModelSettings : IDataModelSettings
     /// <param name="baseDirectory">The base directory to use.</param>
     public DataModelSettings(AbsolutePath baseDirectory)
     {
-        FileSystem.Shared.CreateDirectory(baseDirectory);
-        DataStoreFilePath = baseDirectory.CombineUnchecked(DataModelFileName).GetFullPath();
-        IpcDataStoreFilePath = baseDirectory.CombineUnchecked(DataModelIpcFileName).GetFullPath();
+        baseDirectory.CreateDirectory();
+        DataStoreFilePath = new ConfigurationPath(baseDirectory.CombineUnchecked(DataModelFileName));
+        IpcDataStoreFilePath = new ConfigurationPath(baseDirectory.CombineUnchecked(DataModelIpcFileName));
         ArchiveLocations = new[]
         {
-            (ConfigurationPath)baseDirectory.CombineUnchecked(ArchivesFileName).GetFullPath()
+            new ConfigurationPath(baseDirectory.CombineUnchecked(ArchivesFileName))
         };
     }
 
