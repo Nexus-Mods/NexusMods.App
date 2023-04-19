@@ -20,7 +20,7 @@ public readonly struct GamePathProvier
     public GamePath PrimaryXboxFile() => FromMainBin("Launcher.Native.exe");
     public GamePath PrimaryStandaloneFile() => FromMainBin(Constants.BannerlordExecutable);
 
-    public GamePath BLSEStandaloneFile() => FromMainBin(Constants.BLSEExecutable);
+    public GamePath BLSEStandaloneFile() => FromMainBin("Bannerlord.BLSE.Standalone.exe");
     public GamePath BLSELauncherFile() => FromMainBin("Bannerlord.BLSE.Launcher.exe");
 
     public GamePath BLSELauncherExFile() => FromMainBin("Bannerlord.BLSE.LauncherEx.exe");

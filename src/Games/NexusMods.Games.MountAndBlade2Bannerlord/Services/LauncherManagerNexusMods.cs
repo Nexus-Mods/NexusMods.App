@@ -32,8 +32,8 @@ internal sealed partial class LauncherManagerNexusMods : LauncherManagerHandler
             getInstallPath: () => installationPath,
             readFileContent: ReadFileContentDelegate,
             writeFileContent: WriteFileContentDelegate,
-            readDirectoryFileList: Directory.GetFiles,
-            readDirectoryList: Directory.GetDirectories,
+            readDirectoryFileList: s => Directory.Exists(s) ? Directory.GetFiles(s) : null,
+            readDirectoryList: s => Directory.Exists(s) ? Directory.GetDirectories(s) : null,
             getAllModuleViewModels: null!, // TODO:
             getModuleViewModels: null!, // TODO:
             setModuleViewModels: null!, // TODO:
