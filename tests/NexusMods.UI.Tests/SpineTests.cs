@@ -4,6 +4,7 @@ using NexusMods.App.UI.Controls.Spine;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Games.RedEngine;
+using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 using Type = NexusMods.App.UI.Controls.Spine.Type;
 

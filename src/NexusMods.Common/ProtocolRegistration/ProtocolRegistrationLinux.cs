@@ -1,6 +1,7 @@
 using System.Runtime.Versioning;
 using System.Text;
 using CliWrap;
+using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Common.ProtocolRegistration;
@@ -14,14 +15,17 @@ public class ProtocolRegistrationLinux : IProtocolRegistration
     private const string BaseId = "nexusmods-app";
 
     private readonly IProcessFactory _processFactory;
+    private readonly IFileSystem _fileSystem;
 
     /// <summary>
     /// Constructor.
     /// </summary>
     /// <param name="processFactory"></param>
-    public ProtocolRegistrationLinux(IProcessFactory processFactory)
+    /// <param name="fileSystem"></param>
+    public ProtocolRegistrationLinux(IProcessFactory processFactory, IFileSystem fileSystem)
     {
         _processFactory = processFactory;
+        _fileSystem = fileSystem;
     }
 
     /// <inheritdoc/>
@@ -38,7 +42,7 @@ public class ProtocolRegistrationLinux : IProtocolRegistration
     /// <inheritdoc/>
     public async Task<string?> Register(string protocol, string friendlyName, string commandLine)
     {
-        var applicationsFolder = KnownFolders.HomeFolder
+        var applicationsFolder = _fileSystem.GetKnownPath(KnownPath.HomeDirectory)
             .CombineChecked(".local/share/applications");
 
         applicationsFolder.CreateDirectory();

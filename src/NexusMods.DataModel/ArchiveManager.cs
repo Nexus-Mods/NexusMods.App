@@ -19,13 +19,13 @@ public class ArchiveManager
     private readonly FileContentsCache _contentsCache;
 
     /// <summary/>
-    /// <param name="locations">Locations to 'Archive' folders where we store our data.</param>
+    /// <param name="settings">Datamodel Settings</param>
     /// <param name="fileExtractor">Utility for extracting archives.</param>
     /// <param name="contentsCache">Cache of internal archive contents.</param>
     /// <remarks>Consider creating this class from DI.</remarks>
-    public ArchiveManager(IEnumerable<AbsolutePath> locations, FileExtractor.FileExtractor fileExtractor, FileContentsCache contentsCache)
+    public ArchiveManager(IDataModelSettings settings, FileExtractor.FileExtractor fileExtractor, FileContentsCache contentsCache)
     {
-        _locations = locations.ToHashSet();
+        _locations = settings.ArchiveLocations.Select(p => p.ToAbsolutePath()).ToHashSet();
         _contentsCache = contentsCache;
         _fileExtractor = fileExtractor;
         foreach (var folder in _locations)
@@ -104,7 +104,7 @@ public class ArchiveManager
         var rel = NameForHash(hash);
         path = _locations.Select(r => r.CombineUnchecked(rel))
             .FirstOrDefault(r => r.FileExists);
-        return path != null;
+        return path != default;
     }
 
     /// <summary>

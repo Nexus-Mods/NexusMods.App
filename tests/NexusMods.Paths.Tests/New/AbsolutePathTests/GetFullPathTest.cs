@@ -4,6 +4,13 @@ namespace NexusMods.Paths.Tests.New.AbsolutePathTests;
 
 public class GetFullPathTests
 {
+    private readonly InMemoryFileSystem _fileSystem;
+
+    public GetFullPathTests()
+    {
+        _fileSystem = new InMemoryFileSystem();
+    }
+    
     [SkippableTheory]
     [InlineData("/", "/", "", true)]
     [InlineData("/foo", "/", "foo", true)]
@@ -31,7 +38,7 @@ public class GetFullPathTests
     {
         Skip.If(linux != OperatingSystem.IsLinux());
 
-        var path = AbsolutePath.FromFullPath(input);
+        var path = AbsolutePath.FromFullPath(input, _fileSystem);
         var insufficientLength = path.GetFullPathLength() - 1;
 
         path.Invoking(x =>
@@ -43,10 +50,10 @@ public class GetFullPathTests
             .Throw<ArgumentException>();
     }
 
-    private static void AssertGetFullPath(string expected, string directory, string fileName, bool linux)
+    private void AssertGetFullPath(string expected, string directory, string fileName, bool linux)
     {
         Skip.If(linux != OperatingSystem.IsLinux());
-        var path = AbsolutePath.FromDirectoryAndFileName(directory, fileName);
+        var path = AbsolutePath.FromDirectoryAndFileName(directory, fileName, _fileSystem);
 
         // GetFullPath
         path.GetFullPath().Should().Be(expected);

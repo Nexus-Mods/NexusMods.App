@@ -314,6 +314,13 @@ public abstract class BaseFileSystem : IFileSystem
     }
 
     /// <inheritdoc/>
+    public void WriteAllText(AbsolutePath path, string text)
+    {
+        using var fs = CreateFile(path);
+        fs.Write(Encoding.UTF8.GetBytes(text));
+    }
+
+    /// <inheritdoc/>
     public async Task WriteAllLinesAsync(AbsolutePath path, [InstantHandle(RequireAwait = true)] IEnumerable<string> lines, CancellationToken cancellationToken = default)
     {
         await using var fs = CreateFile(path);

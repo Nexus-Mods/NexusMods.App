@@ -9,7 +9,7 @@ namespace NexusMods.CLI.Tests.VerbTests;
 public abstract class AVerbTest
 {
     // ReSharper disable InconsistentNaming
-    protected static AbsolutePath Data7ZipLZMA2 => KnownFolders.EntryFolder.CombineUnchecked(@"Resources\data_7zip_lzma2.7z");
+    protected AbsolutePath Data7ZipLZMA2 => FileSystem.GetKnownPath(KnownPath.EntryDirectory).CombineUnchecked(@"Resources\data_7zip_lzma2.7z");
     // ReSharper restore InconsistentNaming
 
     private List<object> LastLog { get; set; } = new();
@@ -17,10 +17,13 @@ public abstract class AVerbTest
     protected readonly TemporaryFileManager TemporaryFileManager;
     private readonly IServiceProvider _provider;
 
+    protected readonly IFileSystem FileSystem;
+
     protected AVerbTest(TemporaryFileManager temporaryFileManager, IServiceProvider provider)
     {
         _provider = provider;
         TemporaryFileManager = temporaryFileManager;
+        FileSystem = provider.GetRequiredService<IFileSystem>();
     }
 
     protected async Task RunNoBanner(params string[] args)

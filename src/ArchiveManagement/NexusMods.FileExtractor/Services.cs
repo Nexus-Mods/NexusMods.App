@@ -19,8 +19,10 @@ public static class Services
     /// <returns>Service collection passed as parameter.</returns>
     public static IServiceCollection AddFileExtractors(this IServiceCollection coll, IFileExtractorSettings? settings = null)
     {
-        settings ??= new FileExtractorSettings();
-        coll.AddSingleton(settings);
+        if (settings == null) 
+            coll.AddSingleton<IFileExtractorSettings, FileExtractorSettings>();
+        else 
+            coll.AddSingleton(settings);
         coll.AddSingleton<FileExtractor>();
         coll.AddSingleton<IExtractor, SevenZipExtractor>();
         coll.TryAddSingleton<TemporaryFileManager, TemporaryFileManagerEx>();

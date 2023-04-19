@@ -7,6 +7,13 @@ namespace NexusMods.Paths.Tests.New.AbsolutePathTests;
 /// </summary>
 public class UtilityTests
 {
+    private readonly InMemoryFileSystem _fileSystem;
+
+    public UtilityTests()
+    {
+        _fileSystem = new InMemoryFileSystem();
+    }
+    
     [SkippableTheory]
     [InlineData("/", "/foo", true)]
     [InlineData("/foo", "/foo/bar", true)]
@@ -16,8 +23,8 @@ public class UtilityTests
     {
         Skip.If(linux != OperatingSystem.IsLinux());
 
-        var parentPath = AbsolutePath.FromFullPath(parent);
-        var childPath = AbsolutePath.FromFullPath(child);
+        var parentPath = AbsolutePath.FromFullPath(parent, _fileSystem);
+        var childPath = AbsolutePath.FromFullPath(child, _fileSystem);
 
         childPath.InFolder(parentPath).Should().BeTrue();
     }
@@ -33,8 +40,8 @@ public class UtilityTests
     {
         Skip.If(linux != OperatingSystem.IsLinux());
 
-        var childPath = AbsolutePath.FromFullPath(child);
-        var parentPath = AbsolutePath.FromFullPath(parent);
+        var childPath = AbsolutePath.FromFullPath(child, _fileSystem);
+        var parentPath = AbsolutePath.FromFullPath(parent, _fileSystem);
 
         childPath
             .RelativeTo(parentPath)
@@ -52,7 +59,7 @@ public class UtilityTests
     {
         Skip.If(linux != OperatingSystem.IsLinux());
 
-        var path = AbsolutePath.FromFullPath(item);
+        var path = AbsolutePath.FromFullPath(item, _fileSystem);
 
         path.TopParent.GetFullPath()
             .Should()

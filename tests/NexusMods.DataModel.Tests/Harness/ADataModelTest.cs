@@ -17,11 +17,11 @@ namespace NexusMods.DataModel.Tests.Harness;
 
 public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 {
-    public static readonly AbsolutePath DataZipLzma = KnownFolders.EntryFolder.CombineUnchecked(@"Resources\data_zip_lzma.zip");
-    public static readonly AbsolutePath Data7ZLzma2 = KnownFolders.EntryFolder.CombineUnchecked(@"Resources\data_7zip_lzma2.7z");
+    public AbsolutePath DataZipLzma => FileSystem.GetKnownPath(KnownPath.EntryDirectory).CombineUnchecked(@"Resources\data_zip_lzma.zip");
+    public AbsolutePath Data7ZLzma2 => FileSystem.GetKnownPath(KnownPath.EntryDirectory).CombineUnchecked(@"Resources\data_7zip_lzma2.7z");
 
-    public static readonly AbsolutePath DataTest =
-        KnownFolders.EntryFolder.CombineUnchecked(@"Resources\data.test");
+    public AbsolutePath DataTest =>
+        FileSystem.GetKnownPath(KnownPath.EntryDirectory).CombineUnchecked(@"Resources\data.test");
 
     public static readonly RelativePath[] DataNames = new[]
     {
@@ -40,6 +40,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected readonly ArchiveManager ArchiveManager;
     protected readonly LoadoutManager LoadoutManager;
     protected readonly FileHashCache FileHashCache;
+    protected readonly IFileSystem FileSystem;
     protected readonly IDataStore DataStore;
 
     protected readonly IGame Game;
@@ -61,6 +62,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         ArchiveManager = provider1.GetRequiredService<ArchiveManager>();
         LoadoutManager = provider1.GetRequiredService<LoadoutManager>();
         FileHashCache = provider1.GetRequiredService<FileHashCache>();
+        FileSystem = provider1.GetRequiredService<IFileSystem>();
         DataStore = provider1.GetRequiredService<IDataStore>();
         Logger = provider1.GetRequiredService<ILogger<T>>();
         TemporaryFileManager = provider1.GetRequiredService<TemporaryFileManager>();

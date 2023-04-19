@@ -194,7 +194,8 @@ public class FomodXmlInstallerTests
 
         var dataStore = new SqliteDataStore(
             _serviceProvider.GetRequiredService<ILogger<SqliteDataStore>>(),
-            tmpFile.Path, _serviceProvider,
+            new DataModelSettings(FileSystem.Shared), 
+            _serviceProvider,
             _serviceProvider.GetRequiredService<IMessageProducer<IdUpdated>>(),
             _serviceProvider.GetRequiredService<IMessageConsumer<IdUpdated>>());
 

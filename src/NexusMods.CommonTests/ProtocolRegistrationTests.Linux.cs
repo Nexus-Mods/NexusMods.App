@@ -1,6 +1,7 @@
 using System.Runtime.Versioning;
 using FluentAssertions;
 using NexusMods.Common.ProtocolRegistration;
+using NexusMods.Paths;
 
 namespace NexusMods.Common.Tests;
 
@@ -18,7 +19,7 @@ public class ProtocolRegistrationTests
             StandardOutput = "yes\n"
         };
 
-        var protocolRegistration = new ProtocolRegistrationLinux(processFactory);
+        var protocolRegistration = new ProtocolRegistrationLinux(processFactory, FileSystem.Shared);
         var res = await protocolRegistration.IsSelfHandler(protocol);
         res.Should().BeTrue();
     }
@@ -35,7 +36,7 @@ public class ProtocolRegistrationTests
             StandardOutput = "no\n"
         };
 
-        var protocolRegistration = new ProtocolRegistrationLinux(processFactory);
+        var protocolRegistration = new ProtocolRegistrationLinux(processFactory, FileSystem.Shared);
         var res = await protocolRegistration.IsSelfHandler(protocol);
         res.Should().BeFalse();
     }

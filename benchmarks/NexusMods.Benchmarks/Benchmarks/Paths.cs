@@ -19,14 +19,14 @@ public class Paths : IBenchmark
         var longPath = @"c:\" + string.Join(@"\", Enumerable.Range(0, 20).Select(x => $"path_{x}"));
         var shortestPath = @"c:\foo";
         _shortPath = @"c:\foo\bar\baz";
-        _nexusShortPath = _shortPath.ToAbsolutePath();
+        _nexusShortPath = _shortPath.ToAbsolutePath(FileSystem.Shared);
         var cPath = @"c:\";
 
         _paths = new[] { longPath, _shortPath, shortestPath, cPath };
     }
 
     public IEnumerable<(string StringPath, AbsolutePath AbsolutePath)> AllPaths =>
-        _paths.Select(p => (p, p.ToAbsolutePath()));
+        _paths.Select(p => (p, p.ToAbsolutePath(FileSystem.Shared)));
 
     [ParamsSource(nameof(AllPaths))]
     // ReSharper disable once UnusedAutoPropertyAccessor.Global

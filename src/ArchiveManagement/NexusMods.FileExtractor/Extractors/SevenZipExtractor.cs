@@ -29,7 +29,7 @@ public class SevenZipExtractor : IExtractor
 
     private static readonly FileType[] SupportedTypesCached = { FileType._7Z, FileType.RAR_NEW, FileType.RAR_OLD, FileType.ZIP };
     private static readonly Extension[] SupportedExtensionsCached = { KnownExtensions._7z, KnownExtensions.Rar, KnownExtensions.Zip, KnownExtensions._7zip };
-    private static readonly string ExePath = KnownFolders.EntryFolder.CombineChecked(GetExeLocation().ToRelativePath()).ToString();
+    private readonly string _exePath;
 
     /// <inheritdoc />
     public FileType[] SupportedSignatures => SupportedTypesCached;
@@ -43,11 +43,13 @@ public class SevenZipExtractor : IExtractor
     /// <param name="logger">Provides logger support. Use <see cref="NullLogger.Instance"/> if you don't want logging.</param>
     /// <param name="fileManager">Manager that can be used to create temporary folders.</param>
     /// <param name="limiter">Limits CPU core usage depending on our use case.</param>
-    public SevenZipExtractor(ILogger<SevenZipExtractor> logger, TemporaryFileManager fileManager, IResource<IExtractor, Size> limiter)
+    public SevenZipExtractor(ILogger<SevenZipExtractor> logger, TemporaryFileManager fileManager, IResource<IExtractor, Size> limiter, IFileSystem fileSystem)
     {
         _logger = logger;
         _manager = fileManager;
         _limiter = limiter;
+        _exePath = fileSystem.GetKnownPath(KnownPath.EntryDirectory)
+            .CombineChecked(GetExeLocation().ToRelativePath()).ToString();
     }
 
     /// <inheritdoc />
@@ -116,7 +118,7 @@ public class SevenZipExtractor : IExtractor
             }
 
             _logger.LogDebug("Extracting {Source}", source.FileName);
-            var process = Cli.Wrap(ExePath);
+            var process = Cli.Wrap(_exePath);
 
             var totalSize = source.FileInfo.Size;
             var lastPercent = 0;
