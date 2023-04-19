@@ -112,16 +112,47 @@ public abstract class AGameTest<TGame> where TGame : AGame
     }
 
     /// <summary>
-    /// Installs a mod into the loadout and returns the <see cref="Mod"/> of it.
+    /// Installs the mods from the archive into the loadout.
     /// </summary>
     /// <param name="loadout"></param>
-    /// <param name="path"></param>
-    /// <param name="modName"></param>
+    /// <param name="archivePath"></param>
+    /// <param name="defaultModName"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    protected async Task<Mod> InstallModIntoLoadout(LoadoutMarker loadout, AbsolutePath path, string? modName = null)
+    protected async Task<Mod[]> InstallModsFromArchiveIntoLoadout(
+        LoadoutMarker loadout,
+        AbsolutePath archivePath,
+        string? defaultModName = null,
+        CancellationToken cancellationToken = default)
     {
-        var modId = await loadout.InstallModAsync(path, modName ?? Guid.NewGuid().ToString("N"));
-        return loadout.Value.Mods[modId];
+        var modIds = await loadout.InstallModsFromArchiveAsync(archivePath, default, cancellationToken);
+        return modIds.Select(id => loadout.Value.Mods[id]).ToArray();
+    }
+
+    /// <summary>
+    /// Installs a single mod from the archive into the loadout. This calls
+    /// <see cref="InstallModsFromArchiveIntoLoadout"/> and asserts only one mod
+    /// exists in the archive.
+    /// </summary>
+    /// <param name="loadout"></param>
+    /// <param name="archivePath"></param>
+    /// <param name="defaultModName"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    protected async Task<Mod> InstallModFromArchiveIntoLoadout(
+        LoadoutMarker loadout,
+        AbsolutePath archivePath,
+        string? defaultModName = null,
+        CancellationToken cancellationToken = default)
+    {
+        var mods = await InstallModsFromArchiveIntoLoadout(
+            loadout,
+            archivePath,
+            defaultModName,
+            cancellationToken);
+
+        mods.Should().ContainSingle();
+        return mods.First();
     }
 
     /// <summary>
