@@ -21,9 +21,9 @@ public class DarkestDungeonModInstallerTests : AModInstallerTest<DarkestDungeon,
 
         await using (file)
         {
-            var filesToExtract = await GetFilesToExtractFromInstaller(file.Path);
-            filesToExtract.Should().HaveCount(181);
-            filesToExtract.Should().AllSatisfy(x => x.To.Path.StartsWith("mods"));
+            var (_, modFiles) = await GetModWithFilesFromInstaller(file.Path);
+            modFiles.Should().HaveCount(181);
+            modFiles.Should().AllSatisfy(x => x.To.Path.StartsWith("mods"));
         }
     }
 
@@ -38,11 +38,11 @@ public class DarkestDungeonModInstallerTests : AModInstallerTest<DarkestDungeon,
         var file = await CreateTestArchive(testFiles);
         await using (file)
         {
-            var filesToExtract = await GetFilesToExtractFromInstaller(file.Path);
-            filesToExtract.Should().HaveCount(3);
-            filesToExtract.Should().AllSatisfy(x => x.To.Path.StartsWith("mods"));
-            filesToExtract.Should().Contain(x => x.To.FileName == "foo");
-            filesToExtract.Should().Contain(x => x.To.FileName == "bar");
+            var (_, modFiles) = await GetModWithFilesFromInstaller(file.Path);
+            modFiles.Should().HaveCount(3);
+            modFiles.Should().AllSatisfy(x => x.To.Path.StartsWith("mods"));
+            modFiles.Should().Contain(x => x.To.FileName == "foo");
+            modFiles.Should().Contain(x => x.To.FileName == "bar");
         }
     }
 }
