@@ -26,6 +26,12 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
         plan.Steps.OfType<CopyFile>().Count().Should().Be(3);
 
         await mainList.ApplyAsync(plan, CancellationToken.None);
+        
+        var gameFolder = Install.Locations[GameFolderType.Game];
+        foreach (var file in DataNames)
+        {
+            gameFolder.CombineUnchecked(file).FileExists.Should().BeTrue("File has been applied");
+        }
 
         var newPlan = await mainList.MakeApplyPlanAsync();
         newPlan.Steps.Count.Should().Be(0);

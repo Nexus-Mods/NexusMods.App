@@ -2,14 +2,16 @@ using System.Runtime.CompilerServices;
 using Mutagen.Bethesda.Plugins;
 using Mutagen.Bethesda.Skyrim;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.FileExtractor.FileSignatures;
-using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 
 namespace NexusMods.Games.BethesdaGameStudios;
 
 public class PluginAnalyzer : IFileAnalyzer
 {
+    public FileAnalyzerId Id { get; } = FileAnalyzerId.New("9c673a4f-064f-4b1e-83e3-4bf0454575cd", 1);
+
     public IEnumerable<FileType> FileTypes => new[] { FileType.TES4 };
 
 #pragma warning disable CS1998

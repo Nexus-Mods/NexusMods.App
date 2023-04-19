@@ -82,7 +82,7 @@ public class ModelTests : ADataModelTest<ModelTests>
         await loadout.InstallModAsync(Data7ZLzma2, "Mod1", CancellationToken.None);
         await loadout.InstallModAsync(DataZipLzma, "Mod2", CancellationToken.None);
 
-        var tempFile = TemporaryFileManager.CreateFile(KnownExtensions.Zip);
+        await using var tempFile = TemporaryFileManager.CreateFile(KnownExtensions.Zip);
         await loadout.ExportToAsync(tempFile, CancellationToken.None);
 
         {

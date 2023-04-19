@@ -13,6 +13,21 @@ public partial class FileSystem : BaseFileSystem
     /// </summary>
     public static readonly IFileSystem Shared = new FileSystem();
 
+    private static readonly TimeSpan DefaultTimeout;
+
+    static FileSystem()
+    {
+        // Windows CI has horrible IO performance
+        if (OperatingSystem.IsWindows() && Environment.GetEnvironmentVariable("CI") == "true")
+        {
+            DefaultTimeout = TimeSpan.FromSeconds(3);
+        }
+        else
+        {
+            DefaultTimeout = TimeSpan.FromMilliseconds(1000);
+        }
+    }
+
     private static EnumerationOptions GetSearchOptions(bool recursive) => new()
     {
         AttributesToSkip = 0,
@@ -107,7 +122,10 @@ public partial class FileSystem : BaseFileSystem
         {
             var isEmpty = EnumerateFiles(path, recursive: false).Any() ||
                           EnumerateDirectories(path, recursive: false).Any();
-            if (!isEmpty) return;
+            if (!isEmpty)
+            {
+                throw new IOException($"The directory {fullPath} is not empty and {nameof(recursive)} is set to {recursive}");
+            }
         }
 
         foreach (var subDirectories in Directory.GetDirectories(fullPath))
@@ -128,12 +146,12 @@ public partial class FileSystem : BaseFileSystem
             {
                 Directory.Delete(fullPath, true);
             }
-            catch (IOException)
+            catch (IOException ioException)
             {
                 if (attempts > 10)
-                    throw;
+                    throw new Exception($"Unable to delete directory {fullPath} after {attempts} attempts\n{ioException}", ioException);
 
-                Thread.Sleep(100);
+                Thread.Sleep(DefaultTimeout);
                 attempts++;
                 goto TopParent;
             }

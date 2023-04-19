@@ -1,71 +1,84 @@
+using System.Collections.Immutable;
 using System.Text;
+using System.Text.Json;
 using FluentAssertions;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.ModFiles;
+using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using NexusMods.Paths.Utilities;
+using NexusMods.Paths.Extensions;
+using Noggog;
 
-namespace NexusMods.Games.BethesdaGameStudios.Tests;
+namespace NexusMods.Games.BethesdaGameStudios.Tests.Skyrim;
 
-public class SkyrimSpecialEditionTests
+public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
 {
-    private readonly SkyrimSpecialEdition _game;
-    private readonly LoadoutManager _manager;
-
-    public SkyrimSpecialEditionTests(SkyrimSpecialEdition game,
-        LoadoutManager manager)
-    {
-        _game = game;
-        _manager = manager;
-    }
+    public SkyrimSpecialEditionTests(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
     [Fact]
     public void CanFindGames()
     {
-        _game.Name.Should().Be("Skyrim Special Edition");
-        _game.Domain.Should().Be(SkyrimSpecialEdition.StaticDomain);
-        _game.Installations.Count().Should().BeGreaterThan(0);
-    }
-
-    [Fact]
-    public async Task CanLoadLoadout()
-    {
-        var loadout = await _manager.ImportFromAsync(KnownFolders.EntryFolder.CombineUnchecked(@"Resources\skyrim_1.6.659.0.zip"));
-        loadout.Value.Mods.Values.Select(m => m.Name).Should().Contain("Game Files");
-        var gameFiles = loadout.Value.Mods.Values.First(m => m.Name == "Game Files");
-        gameFiles.Files.Count.Should().BeGreaterThan(0);
-
-        var dragonborn = gameFiles.Files.Values.First(f => f.To == new GamePath(GameFolderType.Game, "Data/Dragonborn.esm"));
-        dragonborn.Metadata.Should().ContainItemsAssignableTo<AnalysisSortData>();
-
-        gameFiles.Files.Values.OfType<PluginFile>().Should().ContainSingle();
+        Game.Name.Should().Be("Skyrim Special Edition");
+        Game.Domain.Should().Be(SkyrimSpecialEdition.StaticDomain);
+        Game.Installations.Count().Should().BeGreaterThan(0);
     }
 
     [Fact]
     public async Task CanGeneratePluginsFile()
     {
-        var loadout = await _manager.ImportFromAsync(KnownFolders.EntryFolder.CombineUnchecked(@"Resources\skyrim_1.6.659.0.zip"));
-        loadout.Value.Mods.Values.Select(m => m.Name).Should().Contain("Game Files");
-        var gameFiles = loadout.Value.Mods.Values.First(m => m.Name == "Game Files");
+        var loadout = await CreateLoadout(indexGameFiles:false);
+
+        var analysisStr = await BethesdaTestHelpers.GetAssetsPath(FileSystem).CombineUnchecked("plugin_dependencies.json").ReadAllTextAsync();
+        var analysis = JsonSerializer.Deserialize<Dictionary<string, string[]>>(analysisStr)!;
+        
+
+        var gameFiles = loadout.Value.Mods.Values.First(m => m.ModCategory == Mod.GameFilesCategory); // <= throws on failure
+        
+        LoadoutRegistry.Alter(loadout.Value.LoadoutId, gameFiles.Id, "Added plugins", mod =>
+        {
+            var files = mod!.Files;
+            foreach (var file in analysis)
+            {
+                var newFile = new GameFile()
+                {
+                    Id = ModFileId.New(),
+                    Installation = loadout.Value.Installation,
+                    To = new GamePath(GameFolderType.Game, $"Data/{file.Key}"),
+                    Hash = Hash.Zero,
+                    Size = Size.Zero,
+                    Metadata = ImmutableHashSet<IModFileMetadata>.Empty.Add(
+                        new AnalysisSortData
+                        {
+                            Masters = file.Value.Select(f => f.ToRelativePath())
+                                .ToArray()
+                        })
+                };
+                files = files.With(newFile.Id, newFile);
+            }
+            return mod with { Files = files };
+        });
+        
+        
         gameFiles.Files.Count.Should().BeGreaterThan(0);
 
-        var pluginFile = gameFiles.Files.Values.OfType<PluginFile>().First();
+        LoadoutRegistry.Get(loadout.Value.LoadoutId, gameFiles.Id)!.Files.Values.Count(x => x.Metadata.OfType<AnalysisSortData>().Any())
+            .Should().BeGreaterOrEqualTo(analysis.Count, "Analysis data has been added");
 
+        var pluginFile = gameFiles.Files.Values.OfType<PluginFile>().First();
         var flattenedList = loadout.FlattenList().ToArray();
 
         using var ms = new MemoryStream();
         await pluginFile.GenerateAsync(ms, loadout.Value, flattenedList);
 
         ms.Position = 0;
-
         var (size, hash) = await pluginFile.GetMetadataAsync(loadout.Value, flattenedList);
 
         size.Should().Be(Size.FromLong(ms.Length));
         (await ms.XxHash64Async()).Should().Be(hash);
+        var results = Encoding.UTF8.GetString(ms.ToArray()).Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
 
-        var results = Encoding.UTF8.GetString(ms.ToArray())
-            .Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
-
+        // CC = Creation Club
         if (results.Length == 9)
         {
             // Skyrim SE without CC downloads

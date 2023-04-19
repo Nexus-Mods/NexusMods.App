@@ -32,7 +32,7 @@ public class DataStoreTests
         {
             Id = ModFileId.New(),
             Hash = Hash.Zero,
-            From = new HashRelativePath((Hash)42L, Array.Empty<RelativePath>()),
+            From = new HashRelativePath((Hash)42L, default),
             Size = (Size)42L,
             To = new GamePath(GameFolderType.Game, "test.foo")
         }.WithPersist(DataStore);

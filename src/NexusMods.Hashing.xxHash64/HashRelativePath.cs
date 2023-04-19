@@ -17,85 +17,59 @@ public readonly struct HashRelativePath : IPath, IEquatable<HashRelativePath>, I
     /// </summary>
     public readonly Hash Hash;
 
-    // TODO: This needs rewritten for new path system. https://github.com/Nexus-Mods/NexusMods.App/issues/210
-
     /// <summary>
     /// Path to the item within the archive marked by <see cref="Hash"/>.
     /// </summary>
-    public readonly RelativePath[] Parts;
+    public readonly RelativePath RelativePath;
 
     /// <inheritdoc />
-    public Extension Extension => Parts.Length > 0
-       ? Parts[^1].Extension
-       : throw new InvalidOperationException("No path in HashRelativePath");
+    public Extension Extension => RelativePath.Extension;
 
     /// <inheritdoc />
-    public RelativePath FileName => Parts.Length > 0
-        ? Parts[^1].FileName
-        : throw new InvalidOperationException("No path in HashRelativePath");
+    public RelativePath FileName => RelativePath.FileName;
 
     /// <summary/>
     /// <param name="basePath">Base path.</param>
-    /// <param name="parts">The individual parts that make up the overall product.</param>
-    public HashRelativePath(Hash basePath, params RelativePath[] parts)
+    /// <param name="relativePath">The individual parts that make up the overall product.</param>
+    public HashRelativePath(Hash basePath, RelativePath relativePath)
     {
         Hash = basePath;
-        Parts = parts;
+        RelativePath = relativePath;
     }
 
     /// <inheritdoc />
-    public override string ToString()
-    {
-        return Hash + "|" + string.Join("|", Parts);
-    }
+    public override string ToString() => $"{Hash}|{RelativePath}";
+
 
     /// <inheritdoc />
-    public override bool Equals(object? obj)
+    public override bool Equals(object? obj) => obj is HashRelativePath other && Equals(other);
+
+    /// <inheritdoc />
+    public bool Equals(HashRelativePath other)
     {
-        return obj is HashRelativePath path && Equals(path);
+        return Hash.Equals(other.Hash) && RelativePath.Equals(other.RelativePath);
     }
 
     /// <inheritdoc />
     public override int GetHashCode()
     {
-        return Parts.Aggregate(Hash.GetHashCode(), (i, path) => i ^ path.GetHashCode());
-    }
-
-    /// <inheritdoc />
-    public bool Equals(HashRelativePath other)
-    {
-        if (other.Parts.Length != Parts.Length)
-            return false;
-
-        if (other.Hash != Hash)
-            return false;
-
-        return ArrayExtensions.AreEqual(Parts, 0, other.Parts, 0, Parts.Length);
-    }
-
-    /// <inheritdoc />
-    public int CompareTo(HashRelativePath other)
-    {
-        var init = Hash.CompareTo(other.Hash);
-        if (init != 0)
-            return init;
-
-        return ArrayExtensions.Compare(Parts, other.Parts);
+        return HashCode.Combine(Hash, RelativePath);
     }
 
     #region Operators
 #pragma warning disable CS1591
-    public static bool operator ==(HashRelativePath a, HashRelativePath b)
-    {
-        return a.Equals(b);
-    }
+    public static bool operator ==(HashRelativePath a, HashRelativePath b) => a.Equals(b);
 
-    public static bool operator !=(HashRelativePath a, HashRelativePath b)
-    {
-        return !a.Equals(b);
-    }
+    public static bool operator !=(HashRelativePath a, HashRelativePath b) => !a.Equals(b);
 #pragma warning restore CS1591
     #endregion
+
+    public int CompareTo(HashRelativePath other)
+    {
+        var hashComparison = Hash.CompareTo(other.Hash);
+        if (hashComparison != 0) return hashComparison;
+        return RelativePath.CompareTo(other.RelativePath);
+    }
 }
 
 /// <inheritdoc />
@@ -106,19 +80,16 @@ public class HashRelativePathConverter : JsonConverter<HashRelativePath>
     {
         if (reader.TokenType != JsonTokenType.StartArray)
             throw new JsonException("Expected array start");
+
         reader.Read();
 
         var hash = reader.GetUInt64();
         reader.Read();
 
-        var lst = new List<RelativePath>();
-        while (reader.TokenType != JsonTokenType.EndArray)
-        {
-            lst.Add(reader.GetString()!.ToRelativePath());
-            reader.Read();
-        }
+        var relativePath = reader.GetString()!.ToRelativePath();
+        reader.Read();
 
-        return new HashRelativePath(Hash.FromULong(hash), lst.ToArray());
+        return new HashRelativePath(Hash.FromULong(hash), relativePath);
     }
 
     /// <inheritdoc />
@@ -126,8 +97,7 @@ public class HashRelativePathConverter : JsonConverter<HashRelativePath>
     {
         writer.WriteStartArray();
         writer.WriteNumberValue((ulong)value.Hash);
-        foreach (var itm in value.Parts)
-            JsonSerializer.Serialize(writer, itm, options);
+        writer.WriteStringValue(value.RelativePath.ToString());
         writer.WriteEndArray();
     }
 }

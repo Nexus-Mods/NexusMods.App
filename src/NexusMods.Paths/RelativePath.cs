@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using JetBrains.Annotations;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
 
@@ -42,6 +43,14 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
     public RelativePath Parent => new(PathHelpers.GetDirectoryName(Path) ?? "");
 
     /// <summary>
+    /// Obtains the name of the first folder stored in this path.
+    /// </summary>
+    /// <remarks>
+    ///    This will return empty string if there are no child directories.
+    /// </remarks>
+    public RelativePath TopParent => Path[..Math.Max(GetFirstDirectorySeparatorIndex(out _), 0)];
+    
+    /// <summary>
     /// Creates a relative path given a string.
     /// </summary>
     /// <param name="path">The relative path to use.</param>
@@ -67,6 +76,7 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
     /// </summary>
     /// <param name="other">The path to append.</param>
     /// <returns>Combinations of both paths.</returns>
+    [Pure]
     public RelativePath Join(RelativePath other)
     {
         return new RelativePath(string.Concat(Path, DetermineDirectorySeparatorString(), other.Path));
@@ -125,6 +135,8 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
     /// <param name="numDirectories">Number of directories to drop.</param>
     public RelativePath DropFirst(int numDirectories = 1)
     {
+        if (numDirectories == 0) return this;
+
         // Normalize first
         var thisCopy = Path.Length <= 512 ? stackalloc char[Path.Length] : GC.AllocateUninitializedArray<char>(Path.Length);
         Path.CopyTo(thisCopy);
@@ -176,14 +188,19 @@ public struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<Relati
     /// </returns>
     public bool IsDirectorySeparatorFrontSlash()
     {
-        var frontIdx = Path.IndexOf('/');
-        var backIdx = Path.IndexOf('\\');
-
-        if (frontIdx > backIdx && frontIdx >= 0)
-            return true;
-
-        return false;
+        GetFirstDirectorySeparatorIndex(out var result);
+        return result;
     }
+
+    /// <summary>
+    /// Determines the directory separator character used in this relative path between '\' and '/'.
+    /// </summary>
+    /// <param name="isFrontSlash">True if front slash is the separator, else back slash.</param>
+    /// <returns>
+    ///    Returns true if separator is forward slash, else backslash.
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public int GetFirstDirectorySeparatorIndex(out bool isFrontSlash) => PathHelpers.GetFirstDirectorySeparatorIndex(Path, out isFrontSlash);
 
     /// <summary>
     /// Returns a path relative to the sub-path specified.
