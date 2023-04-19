@@ -15,6 +15,7 @@ using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
 using Xunit;
+using Mod = NexusMods.DataModel.Loadouts.Mod;
 
 namespace NexusMods.Games.FOMOD.Tests;
 
@@ -200,6 +201,7 @@ public class FomodXmlInstallerTests
             _serviceProvider.GetRequiredService<IMessageConsumer<IdUpdated>>());
 
         var installer = new FomodXmlInstaller(
+            _serviceProvider.GetRequiredService<IDataStore>(),
             _serviceProvider.GetRequiredService<ILogger<FomodXmlInstaller>>(),
             _coreDelegates
         );
@@ -222,13 +224,30 @@ public class FomodXmlInstallerTests
         if (analyzed is not AnalyzedArchive archive)
             throw new Exception("FOMOD was not registered as archive.");
 
-        return new TestState(installer, tmpFile, archive, dataStore);
+        var baseMod = new Mod
+        {
+            Name = string.Empty,
+            Files = new EntityDictionary<ModFileId, AModFile>(),
+            Id = ModId.New()
+        };
+
+        return new TestState(installer, baseMod, tmpFile, archive, dataStore);
     }
 
-    private record TestState(FomodXmlInstaller Installer, TemporaryPath DataStorePath, AnalyzedArchive AnalysisResults, SqliteDataStore DataStore) : IDisposable
+    private record TestState(FomodXmlInstaller Installer, Mod BaseMod, TemporaryPath DataStorePath, AnalyzedArchive AnalysisResults, SqliteDataStore DataStore) : IDisposable
     {
         public Priority GetPriority() => Installer.Priority(new GameInstallation(), AnalysisResults.Contents);
-        public ValueTask<IEnumerable<AModFile>> GetFilesToExtractAsync() => Installer.GetFilesToExtractAsync(new GameInstallation(), AnalysisResults.Hash, AnalysisResults.Contents, default);
+        public async ValueTask<IEnumerable<AModFile>> GetFilesToExtractAsync()
+        {
+            var mods = (await Installer.GetModsAsync(
+                new GameInstallation(),
+                BaseMod,
+                AnalysisResults.Hash,
+                AnalysisResults.Contents)).ToArray();
+
+            mods.Should().ContainSingle();
+            return mods.First().Files.Values.ToArray();
+        }
 
         public void Dispose()
         {
