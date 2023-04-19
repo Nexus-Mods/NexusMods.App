@@ -1,6 +1,7 @@
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -15,43 +16,61 @@ namespace NexusMods.Games.RedEngine.ModInstallers;
 
 public class AppearancePreset : IModInstaller
 {
-    public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
-    {
-        if (!installation.Is<Cyberpunk2077>()) return Common.Priority.None;
-
-        if (files.All(f => Helpers.IgnoreExtensions.Contains(f.Key.Extension) ||
-                           (f.Value.FileTypes.Contains(FileType.Cyberpunk2077AppearancePreset) &&
-                            f.Key.Extension == KnownExtensions.Preset)))
-            return Common.Priority.Normal;
-
-        return Common.Priority.None;
-    }
-
-    private RelativePath[] _paths = {
+    private static readonly RelativePath[] Paths = {
         @"bin\x64\plugins\cyber_engine_tweaks\mods\AppearanceChangeUnlocker\character-preset\female".ToRelativePath(),
         @"bin\x64\plugins\cyber_engine_tweaks\mods\AppearanceChangeUnlocker\character-preset\male".ToRelativePath()
     };
 
-    public ValueTask<IEnumerable<AModFile>> GetFilesToExtractAsync(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken ct = default)
+    private readonly IDataStore _dataStore;
+
+    public AppearancePreset(IDataStore dataStore)
     {
-        return ValueTask.FromResult(GetFilesToExtractImpl(srcArchive, files));
+        _dataStore = dataStore;
     }
 
-    private IEnumerable<AModFile> GetFilesToExtractImpl(Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
+    public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
-        foreach (var (path, file) in files.Where(f => f.Key.Extension == KnownExtensions.Preset))
-        {
-            foreach (var relPath in _paths)
+        if (!installation.Is<Cyberpunk2077>()) return Common.Priority.None;
+
+        return files.All(f => Helpers.IgnoreExtensions.Contains(f.Key.Extension) || (f.Value.FileTypes.Contains(FileType.Cyberpunk2077AppearancePreset) && f.Key.Extension == KnownExtensions.Preset))
+            ? Common.Priority.Normal
+            : Common.Priority.None;
+    }
+
+    public ValueTask<IEnumerable<Mod>> GetModsAsync(
+        GameInstallation gameInstallation,
+        Mod baseMod,
+        Hash srcArchiveHash,
+        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
+        CancellationToken cancellationToken = default)
+    {
+        return ValueTask.FromResult(GetMods(baseMod, srcArchiveHash, archiveFiles));
+    }
+
+    private IEnumerable<Mod> GetMods(
+        Mod baseMod,
+        Hash srcArchiveHash,
+        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
+    {
+        var modFiles = archiveFiles
+            .Where(kv => kv.Key.Extension == KnownExtensions.Preset)
+            .SelectMany(kv =>
             {
-                yield return new FromArchive
+                var (path, file) = kv;
+
+                return Paths.Select(relPath => new FromArchive
                 {
                     Id = ModFileId.New(),
-                    From = new HashRelativePath(srcArchive, path),
-                    To = new GamePath(GameFolderType.Game, relPath.Join(path.FileName)),
+                    From = new HashRelativePath(srcArchiveHash, path),
+                    To = new GamePath(GameFolderType.Game, relPath.Join(path)),
                     Hash = file.Hash,
                     Size = file.Size
-                };
-            }
-        }
+                });
+            });
+
+        yield return baseMod with
+        {
+            Files = modFiles.ToEntityDictionary(_dataStore)
+        };
     }
 }
