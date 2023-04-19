@@ -162,7 +162,7 @@ public class LoadoutManager
         _logger.LogInformation("Loadout {Name} {Id} created", name, loadoutId);
 
         var managementJob = InterprocessJob.Create(JobType.AddMod, _jobManager, cursor,
-                $"Analyzing game files for {installation.Game.Name}");
+            $"Analyzing game files for {installation.Game.Name}");
 
         var indexTask =
             Task.Run(
@@ -231,105 +231,132 @@ public class LoadoutManager
     }
 
     /// <summary>
-    /// Installs a mod to a loadout with a given ID.
+    /// Installs the mods found in the archive to the loadout.
     /// </summary>
-    /// <param name="loadoutId">Index of the loadout to install a mod to.</param>
-    /// <param name="path">Path of the archive to install.</param>
-    /// <param name="name">Name of the mod being installed.</param>
-    /// <param name="token">Allows you to cancel the operation.</param>
+    /// <param name="loadoutId">Id of the loadout to install the mods to.</param>
+    /// <param name="archivePath">Archive to analyze and install the mods from.</param>
+    /// <param name="defaultModName">Default name of the mod. This is optional and can be overwritten by the installers.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns></returns>
-    /// <remarks>
-    ///    In the context of NMA, 'install' currently means, analyze archives and
-    ///    run archive through installers.
-    ///    For more details, consider reading <a href="https://github.com/Nexus-Mods/NexusMods.App/blob/main/docs/AddingAGame.md#mod-installation">Adding a Game</a>.
-    /// </remarks>
-    /// <exception cref="Exception">No supported installer.</exception>
-    public async Task<(LoadoutMarker Loadout, ModId ModId)> InstallModAsync(LoadoutId loadoutId, AbsolutePath path, string name, CancellationToken token = default)
+    /// <exception cref="NotSupportedException"></exception>
+    /// <exception cref="NotImplementedException"></exception>
+    public async Task<(LoadoutMarker Loadout, ModId[] ModIds)> InstallModsFromArchiveAsync(
+        LoadoutId loadoutId,
+        AbsolutePath archivePath,
+        string? defaultModName = null,
+        CancellationToken cancellationToken = default)
     {
         // Get the loadout and create the mod so we can use it in the job.
         var loadout = GetLoadout(loadoutId);
-        var newMod = new Mod
+
+        var baseMod = new Mod
         {
             Id = ModId.New(),
-            Name = name,
+            Name = string.IsNullOrWhiteSpace(defaultModName) ? archivePath.FileName : defaultModName,
             Files = new EntityDictionary<ModFileId, AModFile>(Store),
             Status = ModStatus.Installing
         };
-        var cursor = new ModCursor { LoadoutId = loadoutId, ModId = newMod.Id };
-        loadout.Add(newMod);
+
+        var cursor = new ModCursor { LoadoutId = loadoutId, ModId = baseMod.Id };
+        loadout.Add(baseMod);
 
         try
         {
 
             // Create the job so the UI can show progress.
-            using var job = InterprocessJob.Create(JobType.AddMod, _jobManager,
-                cursor, $"Installing {name} to {loadoutId}");
+            using var job = InterprocessJob.Create(JobType.AddMod, _jobManager, cursor, $"Installing {archivePath} to {loadoutId}");
 
             // Step 1: Archive the archive.
-            await ArchiveManager.ArchiveFileAsync(path, token);
+            await ArchiveManager.ArchiveFileAsync(archivePath, cancellationToken);
             job.Progress = new Percent(0.25);
 
             // Step 2: Analyze the archive.
-            var analyzed = await _analyzer.AnalyzeFileAsync(path, token);
+            var analyzed = await _analyzer.AnalyzeFileAsync(archivePath, cancellationToken);
             if (analyzed is not AnalyzedArchive archive)
             {
                 var types = string.Join(", ", analyzed.FileTypes);
-                throw new Exception(
-                    $"Only archives are supported at the moment. {path} is not an archive. Types: {types}");
+                throw new NotSupportedException($"Only archives are supported at the moment. {archivePath} is not an archive. Types: {types}");
             }
-
 
             job.Progress = new Percent(0.50);
 
             // Step 3: Run the archive through the installers.
             var installer = _installers
-                .Select(i => (Installer: i,
-                    Priority: i.Priority(loadout.Value.Installation,
-                        archive.Contents)))
+                .Select(i => (Installer: i, Priority: i.Priority(loadout.Value.Installation, archive.Contents)))
                 .Where(p => p.Priority != Priority.None)
                 .OrderBy(p => p.Priority)
                 .FirstOrDefault();
 
             if (installer == default)
             {
-                _logger.LogError("No Installer found for {Path}", path);
-                Registry.Alter(cursor, $"Failed to install mod {path}",
-                    m => m! with { Status = ModStatus.Failed });
-                throw new Exception($"No Installer found for {path}");
+                _logger.LogError("No Installer found for {Path}", archivePath);
+                Registry.Alter(cursor, $"Failed to install mod {archivePath}",m => m! with { Status = ModStatus.Failed });
+                throw new NotSupportedException($"No Installer found for {archivePath}");
             }
 
-            // Step 4: Install the mod.
-            var contents = (await installer.Installer.GetFilesToExtractAsync(
-                    loadout.Value.Installation, analyzed.Hash, archive.Contents, token))
-                .WithPersist(Store);
+            // Step 4: Install the mods.
+            var mods = (await installer.Installer.GetModsAsync(
+                    loadout.Value.Installation,
+                    baseMod,
+                    analyzed.Hash,
+                    archive.Contents,
+                    cancellationToken))
+                .WithPersist(Store)
+                .ToArray();
 
-            name = string.IsNullOrWhiteSpace(name) ? path.FileName : name;
             job.Progress = new Percent(0.75);
 
             // Step 5: Add the mod to the loadout.
-            Registry.Alter(cursor,
-                $"Adding mod files to {name}",
-                mod => mod! with
+            AModMetadata? modMetadata = mods.Length > 1
+                ? new GroupMetadata
                 {
-                    Name = name,
-                    Status = ModStatus.Installed,
-                    Enabled = true,
-                    Files = new EntityDictionary<ModFileId, AModFile>(Store,
-                        contents.Select(c =>
-                            new KeyValuePair<ModFileId, IId>(c.Id,
-                                c.DataStoreId)))
-                });
+                    Id = GroupId.New(),
+                    CreationReason = GroupCreationReason.MultipleModsOneArchive
+                }
+                : null;
+
+            if (mods.Length == 0)
+            {
+                Registry.Alter(cursor, $"Failed to install mod {archivePath}", m => m! with { Status = ModStatus.Failed});
+                throw new NotImplementedException($"The installer returned 0 mods for {archivePath}");
+            }
+
+            foreach (var mod in mods)
+            {
+                mod.Metadata = modMetadata;
+
+                if (mod.Id == baseMod.Id)
+                {
+                    Registry.Alter(
+                        cursor,
+                        $"Adding mod files to {baseMod.Name}",
+                        x => x! with
+                        {
+                            Status = ModStatus.Installed,
+                            Enabled = true,
+                            Name = mod.Name,
+                            Files = mod.Files,
+                            Metadata = mod.Metadata
+                        });
+                }
+                else
+                {
+                    loadout.Add(mod);
+                }
+            }
+
             job.Progress = Percent.One;
 
-            return (loadout, newMod.Id);
+            return (loadout, mods.Select(x => x.Id).ToArray());
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to install mod {Path}", path);
-            Registry.Alter(cursor, $"Failed to install {name}", mod => mod! with
+            _logger.LogError(ex, "Failed to install mod {Path}", archivePath);
+            Registry.Alter(cursor, $"Failed to install {archivePath}", mod => mod! with
             {
                 Status = ModStatus.Failed
             });
+
             throw;
         }
     }
