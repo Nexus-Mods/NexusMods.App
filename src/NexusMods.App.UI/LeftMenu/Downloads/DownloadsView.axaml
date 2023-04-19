@@ -29,7 +29,7 @@
                     <TextBlock Text="Completed"></TextBlock>
                 </StackPanel>
             </Button>
-            <Button x:Name="DownloadHistoryButton" Classes="LeftMenuItem">
+            <Button x:Name="HistoryButton" Classes="LeftMenuItem">
                 <StackPanel Orientation="Horizontal">
                     <avalonia:Icon Classes="History"/>
                     <TextBlock Text="Download history"></TextBlock>

@@ -1,19 +1,30 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
+﻿using System.Reactive.Disposables;
+using Avalonia.ReactiveUI;
+using NexusMods.App.UI.Extensions;
+using ReactiveUI;
 
 namespace NexusMods.App.UI.LeftMenu.Downloads;
 
-public partial class DownloadsView : UserControl
+public partial class DownloadsView : ReactiveUserControl<IDownloadsViewModel>
 {
     public DownloadsView()
     {
         InitializeComponent();
-    }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
+        this.WhenActivated(d =>
+        {
+            ViewModel!.IsActive(Options.InProgress)
+                .BindToActive(InProgressButton)
+                .DisposeWith(d);
+            ViewModel!.IsActive(Options.Completed)
+                .BindToActive(CompletedButton)
+                .DisposeWith(d);
+            ViewModel!.IsActive(Options.History)
+                .BindToActive(HistoryButton)
+                .DisposeWith(d);
+        });
+
+
     }
 }
 

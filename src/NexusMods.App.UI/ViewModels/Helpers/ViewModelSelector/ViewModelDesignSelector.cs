@@ -4,15 +4,15 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.ViewModels.Helpers.ViewModelSelector;
 
-public class ViewModelDesignSelector<TEnum, TVmType> : AViewModel<IViewModelSelector<TEnum, TVmType>>, IViewModelSelector<TEnum, TVmType> 
-    where TVmType : class, IViewModelInterface 
+public class ViewModelDesignSelector<TEnum, TVmType> : AViewModel<IViewModelSelector<TEnum, TVmType>>, IViewModelSelector<TEnum, TVmType>
+    where TVmType : class, IViewModelInterface
     where TEnum : struct, Enum {
     private static readonly Dictionary<TEnum,Type> Mappings;
     private readonly Dictionary<TEnum,TVmType> _instances;
 
     [Reactive]
     public TEnum Current { get; set; }
-    
+
     [Reactive]
     public TVmType ViewModel { get; set; }
 
@@ -21,13 +21,13 @@ public class ViewModelDesignSelector<TEnum, TVmType> : AViewModel<IViewModelSele
         Mappings = AViewModelAttribute.GetAttributes<TEnum>();
     }
 
-    public ViewModelDesignSelector(IEnumerable<TVmType> vms)
+    public ViewModelDesignSelector(params TVmType[] vms)
     {
         _instances = vms.ToDictionary(GetKeyForVm);
         Current = _instances.First().Key;
         ViewModel = _instances.First().Value;
     }
-    
+
     private static TEnum GetKeyForVm(TVmType vm)
     {
         return Mappings.First(pair => vm.GetType().IsAssignableTo(pair.Value)).Key;

@@ -15,23 +15,23 @@ namespace NexusMods.UI.Tests.Framework;
 public class ControlHost<TView, TVm, TInterface> : IAsyncDisposable
     where TView : ReactiveUserControl<TInterface>
     where TInterface : class, IViewModelInterface
-    where TVm : AViewModel<TInterface> 
+    where TVm : TInterface
 {
     /// <summary>
     /// The view control that is being tested.
     /// </summary>
     public TView View { get; init; }
-    
+
     /// <summary>
     /// The view model backing the view
     /// </summary>
     public TVm ViewModel { get; init; }
-    
+
     /// <summary>
     /// The window that hosts the view
     /// </summary>
     public Window Window { get; init; }
-    
+
     /// <summary>
     /// The app that hosts the window
     /// </summary>
@@ -48,7 +48,7 @@ public class ControlHost<TView, TVm, TInterface> : IAsyncDisposable
             Window.Hide();
         });
     }
-    
+
     /// <summary>
     /// Executes an action on the UI thread and waits for it to complete.
     /// </summary>
@@ -58,7 +58,7 @@ public class ControlHost<TView, TVm, TInterface> : IAsyncDisposable
         await Dispatcher.UIThread.InvokeAsync(action);
         await Flush();
     }
-    
+
     /// <summary>
     /// Insures that all pending UI actions have been completed.
     /// </summary>
@@ -66,7 +66,7 @@ public class ControlHost<TView, TVm, TInterface> : IAsyncDisposable
     {
         await Dispatcher.UIThread.InvokeAsync(() => { });
     }
-    
+
     /// <summary>
     /// Searches for a control of type T with the given name in the view.
     /// </summary>

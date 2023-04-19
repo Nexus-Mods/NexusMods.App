@@ -58,7 +58,7 @@ public class AvaloniaApp : IDisposable
             {
                 BuildAvaloniaApp()
                     .SetupWithoutStarting();
-                
+
                 tcs.SetResult();
                 Dispatcher.UIThread.MainLoop(CancellationToken.None);
             }
@@ -88,7 +88,7 @@ public class AvaloniaApp : IDisposable
     public async Task<ControlHost<TView, TVm, TInterface>> GetControl<TView, TVm, TInterface>()
         where TView : ReactiveUserControl<TInterface>, new()
         where TInterface : class, IViewModelInterface
-        where TVm : AViewModel<TInterface>, new()
+        where TVm : TInterface, new()
     {
         var tcs = new TaskCompletionSource<bool>();
         var (waitHandle, host) = await Dispatcher.UIThread.InvokeAsync(() =>
@@ -115,11 +115,11 @@ public class AvaloniaApp : IDisposable
 
         await tcs.Task;
         waitHandle.Dispose();
-        
+
         return host;
     }
 
-    
+
     public void Dispose()
     {
         if (_disposed) return;

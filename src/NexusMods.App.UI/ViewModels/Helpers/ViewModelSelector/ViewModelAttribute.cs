@@ -3,9 +3,9 @@
 namespace NexusMods.App.UI.ViewModels.Helpers.ViewModelSelector;
 
 public abstract class AViewModelAttribute : Attribute
-{ 
+{
     public abstract Type ViewModelType { get; }
-    
+
     public static Dictionary<TEnum, Type> GetAttributes<TEnum>() where TEnum : struct, Enum
     {
         var values = new Dictionary<TEnum, Type>();
@@ -27,12 +27,12 @@ public abstract class AViewModelAttribute : Attribute
     }
 }
 
-[AttributeUsage(AttributeTargets.Enum, AllowMultiple = false)]
+[AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
 public class ViewModelAttribute<T> : AViewModelAttribute where T : IViewModelInterface
 {
     public override Type ViewModelType => typeof(T);
 
-    
+
 
 
 }

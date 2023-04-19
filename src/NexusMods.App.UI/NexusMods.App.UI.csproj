@@ -158,6 +158,15 @@
     <Compile Update="Toolbars\DefaultLoadoutToolbarViewModel.cs">
       <DependentUpon>IDefaultLoadoutToolbarViewModel.cs</DependentUpon>
     </Compile>
+    <Compile Update="RightContent\Downloads\CompletedDesignViewModel.cs">
+      <DependentUpon>ICompletedViewModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="RightContent\Downloads\HistoryDesignViewModel.cs">
+      <DependentUpon>IHistoryViewModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="RightContent\Downloads\InProgressDesignViewModel.cs">
+      <DependentUpon>IInProgressViewModel.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
