@@ -6,25 +6,12 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\..\src\Games\NexusMods.Games.MountAndBlade2Bannerlord\NexusMods.Games.MountAndBlade2Bannerlord.csproj" />
-        <ProjectReference Include="..\..\..\src\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj" />
-        <ProjectReference Include="..\..\NexusMods.StandardGameLocators.TestHelpers\NexusMods.StandardGameLocators.TestHelpers.csproj" />
+        <ProjectReference Include="..\NexusMods.Games.TestFramework\NexusMods.Games.TestFramework.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Update="FluentAssertions" Version="6.10.0" />
-        <PackageReference Update="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0-preview.1.23110.8" />
-        <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.5.0" />
+        <None Update="Assets\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Resources" />
-    </ItemGroup>
-
-    <Target Name="CopyResources" AfterTargets="PostBuildEvent">
-        <ItemGroup>
-            <_Resources Include="Resources\**" />
-        </ItemGroup>
-
-        <Copy SourceFiles="@(_Resources)" DestinationFolder="$(TargetDir)\Resources" />
-    </Target>
 </Project>

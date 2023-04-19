@@ -2,6 +2,7 @@ using NexusMods.Common;
 using NexusMods.DataModel.Games;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Games.MountAndBlade2Bannerlord.Services;
+using NexusMods.Games.MountAndBlade2Bannerlord.Utils;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
@@ -35,8 +36,7 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
     public override string Name => DisplayName;
     public override GameDomain Domain => StaticDomain;
 
-    // TODO:
-    public override GamePath PrimaryFile { get; }
+    public override GamePath GetPrimaryFile(GameStore store) => GamePathProvier.FromStore(store).PrimaryFile();
 
     public override IStreamFactory Icon =>
         new EmbededResourceStreamFactory<MountAndBlade2Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.icon.jpg");

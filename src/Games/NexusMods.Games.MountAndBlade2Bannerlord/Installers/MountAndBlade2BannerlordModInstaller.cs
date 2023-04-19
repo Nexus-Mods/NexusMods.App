@@ -16,7 +16,7 @@ using NexusMods.Paths.Extensions;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Installers;
 
-internal sealed class MountAndBlade2BannerlordModInstaller : IModInstaller
+public sealed class MountAndBlade2BannerlordModInstaller : IModInstaller
 {
     public MountAndBlade2BannerlordModInstaller(LauncherManagerFactory launcherManagerFactory)
     {

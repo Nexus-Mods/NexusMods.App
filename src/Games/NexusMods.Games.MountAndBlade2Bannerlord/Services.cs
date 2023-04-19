@@ -15,7 +15,6 @@ public static class ServicesExtensions
     public static IServiceCollection AddMountAndBladeBannerlord(this IServiceCollection services)
     {
         services.AddSingleton<LauncherManagerFactory>();
-        services.AddSingleton<GamePathProvierFactory>();
 
         services.AddAllSingleton<IGame, MountAndBlade2Bannerlord>();
         services.AddSingleton<IModInstaller, MountAndBlade2BannerlordModInstaller>();

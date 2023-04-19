@@ -4,22 +4,21 @@ using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
 using NexusMods.Games.MountAndBlade2Bannerlord.Services;
+using NexusMods.Games.MountAndBlade2Bannerlord.Utils;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
 public class RunStandaloneTool : ITool
 {
     private readonly ILogger _logger;
-    private readonly GamePathProvierFactory _gamePathProvierFactory;
     private readonly LauncherManagerFactory _launcherManagerFactory;
 
     public string Name => $"Run {MountAndBlade2Bannerlord.DisplayName}";
     public IEnumerable<GameDomain> Domains => new[] { MountAndBlade2Bannerlord.StaticDomain };
 
-    public RunStandaloneTool(ILogger<RunStandaloneTool> logger, GamePathProvierFactory gamePathProvierFactory, LauncherManagerFactory launcherManagerFactory)
+    public RunStandaloneTool(ILogger<RunStandaloneTool> logger, LauncherManagerFactory launcherManagerFactory)
     {
         _logger = logger;
-        _gamePathProvierFactory = gamePathProvierFactory;
         _launcherManagerFactory = launcherManagerFactory;
     }
 
@@ -27,15 +26,15 @@ public class RunStandaloneTool : ITool
     {
         if (!loadout.Installation.Is<MountAndBlade2Bannerlord>()) return;
 
-        var gamePathProvider = _gamePathProvierFactory.Create(loadout.Installation);
+        var gamePathProvider = GamePathProvier.FromStore(loadout.Installation.Store);
 
-        var isXbox = false; // TODO: From PR #265
+        var isXbox = loadout.Installation.Store == GameStore.XboxGamePass;
         var hasBLSE = loadout.HasInstalledFile("Bannerlord.BLSE.Shared.dll");
         if (isXbox && !hasBLSE) return; // Not supported.
 
         var program = hasBLSE
-            ? gamePathProvider.BLSEStandaloneFile
-            : gamePathProvider.PrimaryStandaloneFile;
+            ? gamePathProvider.BLSEStandaloneFile()
+            : gamePathProvider.PrimaryStandaloneFile();
         _logger.LogInformation("Running {Program}", program);
 
         var launcherManager = _launcherManagerFactory.Get(loadout.Installation);

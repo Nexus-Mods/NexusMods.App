@@ -1,8 +1,11 @@
 using System.Collections.Concurrent;
-using Bannerlord.LauncherManager.Models;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
+using NexusMods.Games.MountAndBlade2Bannerlord.Utils;
 using NexusMods.Paths;
+
+using GameStore = NexusMods.DataModel.Games.GameStore;
+using GameStoreTW = Bannerlord.LauncherManager.Models.GameStore;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Services;
 
@@ -18,26 +21,24 @@ public sealed class LauncherManagerFactory
 
     internal LauncherManagerNexusMods Get(GameInstallation installation)
     {
-        // TODO:
-        var store = GameStore.Steam;
+        var store = Converter.ToGameStoreTW(installation.Store);
         return _instances.GetOrAdd(installation.Locations[GameFolderType.Game].ToString(),
             static (installationPath, tuple) => ValueFactory(tuple._loggerFactory, installationPath, tuple.store), (_loggerFactory, store));
     }
     internal LauncherManagerNexusMods Get(GameLocatorResult gameLocator)
     {
-        // TODO:
-        var store = GameStore.Steam;
+        var store = Converter.ToGameStoreTW(gameLocator.Store);
         return _instances.GetOrAdd(gameLocator.Path.ToString(),
             static (installationPath, tuple) => ValueFactory(tuple._loggerFactory, installationPath, tuple.store), (_loggerFactory, store));
     }
 
-    internal LauncherManagerNexusMods Get(string installationPath, GameStore store)
+    internal LauncherManagerNexusMods Get(string installationPath, GameStoreTW store)
     {
         return _instances.GetOrAdd(installationPath,
             static (installationPath, tuple) => ValueFactory(tuple._loggerFactory, installationPath, tuple.store), (_loggerFactory, store));
     }
 
-    private static LauncherManagerNexusMods ValueFactory(ILoggerFactory loggerFactory, string installationPath, GameStore store)
+    private static LauncherManagerNexusMods ValueFactory(ILoggerFactory loggerFactory, string installationPath, GameStoreTW store)
     {
         return new LauncherManagerNexusMods(loggerFactory.CreateLogger<LauncherManagerNexusMods>(), installationPath, store);
     }

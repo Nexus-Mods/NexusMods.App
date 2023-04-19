@@ -1,12 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
-using NexusMods.DataModel;
-using NexusMods.DataModel.RateLimiting;
-using NexusMods.FileExtractor;
-using NexusMods.FileExtractor.Extractors;
-using NexusMods.Paths;
-using NexusMods.Paths.Utilities;
+using NexusMods.Games.TestFramework;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.DependencyInjection;
 using Xunit.DependencyInjection.Logging;
@@ -17,27 +12,15 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        var prefix = KnownFolders.EntryFolder.CombineUnchecked("DataModel")
-            .CombineUnchecked(Guid.NewGuid().ToString());
-
-        services.AddUniversalGameLocator<MountAndBlade2Bannerlord>(new Version("1.0.0.0"))
-                .AddMountAndBladeBannerlord()
-
-                .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
-                .AddDataModel(new DataModelSettings(prefix))
-                .AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(s =>
-                    new Resource<FileContentsCache, Size>("File Analysis"))
-                .AddAllSingleton<IResource, IResource<IExtractor, Size>>(s =>
-                    new Resource<IExtractor, Size>("File Extraction"))
-                .AddFileExtractors()
-
-                .AddSingleton<TemporaryFileManager>(s =>
-                    new TemporaryFileManager(
-                        KnownFolders.EntryFolder.CombineUnchecked("tempFiles")))
-                .Validate();
+        services
+            .AddDefaultServicesForTesting()
+            .AddUniversalGameLocator<MountAndBlade2Bannerlord>(new Version("1.0.0.0"))
+            .AddMountAndBladeBannerlord()
+            .Validate();
     }
 
+    // ReSharper disable once UnusedMember.Global
     public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>
-        loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(accessor, delegate { return true; }));
+        loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(accessor, delegate { return true;}));
 }
 
