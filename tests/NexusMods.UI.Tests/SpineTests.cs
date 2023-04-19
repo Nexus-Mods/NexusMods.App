@@ -1,7 +1,9 @@
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.Games.RedEngine;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 using Type = NexusMods.App.UI.Controls.Spine.Type;
@@ -13,10 +15,12 @@ namespace NexusMods.UI.Tests;
 public class SpineTests : AUiTest
 {
     private readonly LoadoutManager _loadoutManager;
+    private readonly IGame _game;
 
     public SpineTests(LoadoutManager loadoutManager, IServiceProvider provider) : base(provider)
     {
         _loadoutManager = loadoutManager;
+        _game = provider.GetRequiredService<Cyberpunk2077>();
     }
 
     [Fact]
@@ -62,8 +66,7 @@ public class SpineTests : AUiTest
         }
 
         using var vm = GetActivatedViewModel<ISpineViewModel>();
-        await _loadoutManager.ImportFromAsync(FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory)
-            .CombineUnchecked(@"Resources\cyberpunk2077.1.61.zip"));
+        await _loadoutManager.ManageGameAsync(_game.Installations.First(), "Cyberpunk 2077");
 
         using var _ = vm.VM.Actions.Subscribe(vm.VM.Activations);
 

@@ -57,9 +57,14 @@ public abstract class AGameLocator<TGameType, TId, TGame, TParent> : IGameLocato
         foreach (var id in Ids(tg))
         {
             if (!_cachedGames.TryGetValue(id, out var found)) continue;
-            yield return new GameLocatorResult(Path(found));
+            yield return new GameLocatorResult(Path(found), Store);
         }
     }
+
+    /// <summary>
+    /// The <see cref="GameStore"/> associated with this <see cref="IGameLocator"/>.
+    /// </summary>
+    protected abstract GameStore Store { get; }
 
     /// <summary>
     /// Returns all unique identifiers for this game.

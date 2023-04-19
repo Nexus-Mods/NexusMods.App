@@ -36,7 +36,7 @@ where T : AGame
     /// <inheritdoc />
     public async Task Execute(Loadout loadout)
     {
-        var program = _game.PrimaryFile.CombineChecked(loadout.Installation.Locations[GameFolderType.Game]);
+        var program = _game.GetPrimaryFile(loadout.Installation.Store).CombineChecked(loadout.Installation.Locations[GameFolderType.Game]);
         _logger.LogInformation("Running {Program}", program);
 
         // TODO: use IProcessFactory

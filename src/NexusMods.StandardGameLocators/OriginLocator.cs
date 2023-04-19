@@ -18,6 +18,9 @@ public class OriginLocator : AGameLocator<OriginGame, string, IOriginGame, Origi
     }
 
     /// <inheritdoc />
+    protected override GameStore Store => GameStore.Origin;
+
+    /// <inheritdoc />
     protected override IEnumerable<string> Ids(IOriginGame game) => game.OriginGameIds;
 
     /// <inheritdoc />

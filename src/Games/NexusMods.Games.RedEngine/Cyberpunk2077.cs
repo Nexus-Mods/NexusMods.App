@@ -18,7 +18,7 @@ public class Cyberpunk2077 : AGame, ISteamGame, IGogGame, IEpicGame
 
     public override string Name => "Cyberpunk 2077";
     public override GameDomain Domain => StaticDomain;
-    public override GamePath PrimaryFile => new(GameFolderType.Game, @"bin\x64\Cyberpunk2077.exe");
+    public override GamePath GetPrimaryFile(GameStore store) => new(GameFolderType.Game, @"bin\x64\Cyberpunk2077.exe");
     protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(IGameLocator locator, GameLocatorResult installation)
     {
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);

@@ -7,13 +7,14 @@ namespace NexusMods.DataModel.JsonConverters;
 /// <inheritdoc />
 public class GameInstallationConverter : JsonConverter<GameInstallation>
 {
-    private readonly Dictionary<(GameDomain Slug, Version Version), GameInstallation> _games;
+    private readonly Dictionary<(GameDomain Slug, Version Version, GameStore Store), GameInstallation> _games;
 
     /// <inheritdoc />
     public GameInstallationConverter(IEnumerable<IGame> games)
     {
-        _games = games.SelectMany(g => g.Installations.Select(i => (Slug: g.Domain, Install: i)))
-            .ToDictionary(r => (r.Slug, r.Install.Version), r => r.Install);
+        _games = games
+            .SelectMany(g => g.Installations.Select(i => (Slug: g.Domain, Install: i)))
+            .ToDictionary(r => (r.Slug, r.Install.Version, r.Install.Store), r => r.Install);
     }
 
     /// <inheritdoc />
@@ -27,8 +28,10 @@ public class GameInstallationConverter : JsonConverter<GameInstallation>
         reader.Read();
         var version = JsonSerializer.Deserialize<Version>(ref reader, options)!;
         reader.Read();
+        var store = GameStore.From(reader.GetString());
+        reader.Read();
 
-        if (_games.TryGetValue((slug, version), out var found))
+        if (_games.TryGetValue((slug, version, store), out var found))
             return found;
 
         return new UnknownGame(slug, version).Installations.First();
@@ -40,6 +43,7 @@ public class GameInstallationConverter : JsonConverter<GameInstallation>
         writer.WriteStartArray();
         writer.WriteStringValue(value.Game.Domain.Value);
         JsonSerializer.Serialize(writer, value.Version, options);
+        writer.WriteStringValue(value.Store.Value);
         writer.WriteEndArray();
     }
 }

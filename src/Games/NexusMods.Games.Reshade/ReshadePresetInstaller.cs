@@ -66,7 +66,7 @@ public class ReshadePresetInstaller : IModInstaller
         EntityDictionary<RelativePath, AnalyzedFile> files)
     {
         var game = installation.Game as AGame;
-        var folder = game!.PrimaryFile.Path;
+        var folder = game!.GetPrimaryFile(installation.Store).Path;
         foreach (var file in files.Where(f => !_ignoreFiles.Contains(f.Key.FileName)))
         {
             yield return new FromArchive

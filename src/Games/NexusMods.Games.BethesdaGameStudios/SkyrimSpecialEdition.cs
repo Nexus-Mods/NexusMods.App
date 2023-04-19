@@ -23,7 +23,7 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame
     public static GameDomain StaticDomain => GameDomain.From("skyrimspecialedition");
     public override string Name => "Skyrim Special Edition";
     public override GameDomain Domain => StaticDomain;
-    public override GamePath PrimaryFile => new(GameFolderType.Game, "SkyrimSE.exe");
+    public override GamePath GetPrimaryFile(GameStore store) => new(GameFolderType.Game, "SkyrimSE.exe");
 
     public SkyrimSpecialEdition(IEnumerable<IGameLocator> gameLocators, IFileSystem fileSystem) : base(gameLocators)
     {
