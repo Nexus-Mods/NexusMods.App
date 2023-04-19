@@ -1,6 +1,7 @@
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -15,17 +16,26 @@ namespace NexusMods.Games.Reshade;
 
 public class ReshadePresetInstaller : IModInstaller
 {
-    private static HashSet<RelativePath> _ignoreFiles = new[]
+    private static readonly HashSet<RelativePath> IgnoreFiles = new[]
+        {
+            "readme.txt",
+            "installation.txt",
+            "license.txt"
+        }
+        .Select(t => t.ToRelativePath())
+        .ToHashSet();
+
+    private readonly IDataStore _dataStore;
+
+    public ReshadePresetInstaller(IDataStore dataStore)
     {
-        "readme.txt",
-        "installation.txt",
-        "license.txt"
-    }.Select(t => t.ToRelativePath())
-     .ToHashSet();
+        _dataStore = dataStore;
+    }
 
     public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
-        var filtered = files.Where(f => !_ignoreFiles.Contains(f.Key.FileName))
+        var filtered = files
+            .Where(f => !IgnoreFiles.Contains(f.Key.FileName))
             .ToList();
 
         // We have to be able to find the game's executable
@@ -56,27 +66,41 @@ public class ReshadePresetInstaller : IModInstaller
         return Common.Priority.Low;
     }
 
-    public ValueTask<IEnumerable<AModFile>> GetFilesToExtractAsync(GameInstallation installation, Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken ct = default)
+    public ValueTask<IEnumerable<Mod>> GetModsAsync(
+        GameInstallation gameInstallation,
+        Mod baseMod,
+        Hash srcArchiveHash,
+        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
+        CancellationToken cancellationToken = default)
     {
-        return ValueTask.FromResult(GetFilesToExtractImpl(installation, srcArchiveHash, files));
+        return ValueTask.FromResult(GetMods(baseMod, srcArchiveHash, archiveFiles));
     }
 
-    private IEnumerable<AModFile> GetFilesToExtractImpl(GameInstallation installation, Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> files)
+    private IEnumerable<Mod> GetMods(
+        Mod baseMod,
+        Hash srcArchiveHash,
+        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        var game = installation.Game as AGame;
-        var folder = game!.GetPrimaryFile(installation.Store).Path;
-        foreach (var file in files.Where(f => !_ignoreFiles.Contains(f.Key.FileName)))
-        {
-            yield return new FromArchive
+
+        var modFiles = archiveFiles
+            .Where(kv => !IgnoreFiles.Contains(kv.Key.FileName))
+            .Select(kv =>
             {
-                Id = ModFileId.New(),
-                To = new GamePath(GameFolderType.Game, folder.Join(file.Key.FileName)),
-                From = new HashRelativePath(srcArchiveHash, file.Key),
-                Hash = file.Value.Hash,
-                Size = file.Value.Size
-            };
-        }
+                var (path, file) = kv;
+
+                return new FromArchive
+                {
+                    Id = ModFileId.New(),
+                    From = new HashRelativePath(srcArchiveHash, path),
+                    To = new GamePath(GameFolderType.Game, path.FileName),
+                    Hash = file.Hash,
+                    Size = file.Size
+                };
+            });
+
+        yield return baseMod with
+        {
+            Files = modFiles.ToEntityDictionary(_dataStore)
+        };
     }
 }
