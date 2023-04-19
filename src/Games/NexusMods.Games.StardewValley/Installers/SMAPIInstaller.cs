@@ -4,6 +4,7 @@ using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -29,10 +30,12 @@ public class SMAPIInstaller : IModInstaller
     private static readonly RelativePath WindowsFolder = "windows".ToRelativePath();
     private static readonly RelativePath MacOSFolder = "macOS".ToRelativePath();
 
+    private readonly IDataStore _dataStore;
     private readonly FileHashCache _fileHashCache;
 
     public SMAPIInstaller(IDataStore dataStore, FileHashCache fileHashCache)
     {
+        _dataStore = dataStore;
         _fileHashCache = fileHashCache;
     }
 
@@ -64,19 +67,26 @@ public class SMAPIInstaller : IModInstaller
             : Common.Priority.None;
     }
 
-    public ValueTask<IEnumerable<AModFile>> GetFilesToExtractAsync(GameInstallation installation,
-        Hash srcArchiveHash, EntityDictionary<RelativePath, AnalyzedFile> files,
-        CancellationToken ct = default)
+    public ValueTask<IEnumerable<Mod>> GetModsAsync(
+        GameInstallation gameInstallation,
+        Mod baseMod,
+        Hash srcArchiveHash,
+        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
+        CancellationToken cancellationToken = default)
     {
-        return ValueTask.FromResult(GetFilesToExtract(installation, files));
+        return ValueTask.FromResult(GetMods(gameInstallation, baseMod, srcArchiveHash, archiveFiles));
     }
 
-    private IEnumerable<AModFile> GetFilesToExtract(
-        GameInstallation installation,
-        EntityDictionary<RelativePath, AnalyzedFile> files)
+    private IEnumerable<Mod> GetMods(
+        GameInstallation gameInstallation,
+        Mod baseMod,
+        Hash srcArchiveHash,
+        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        var installDataFiles = GetInstallDataFiles(files);
-        if (installDataFiles.Length != 3) throw new UnreachableException($"{nameof(SMAPIInstaller)} should guarantee with {nameof(Priority)} that {nameof(GetInstallDataFiles)} returns 3 files when called from {nameof(GetFilesToExtractAsync)} but it has {installDataFiles.Length} files instead!");
+        var modFiles = new List<AModFile>();
+
+        var installDataFiles = GetInstallDataFiles(archiveFiles);
+        if (installDataFiles.Length != 3) throw new UnreachableException($"{nameof(SMAPIInstaller)} should guarantee with {nameof(Priority)} that {nameof(GetInstallDataFiles)} returns 3 files when called from {nameof(GetModsAsync)} but it has {installDataFiles.Length} files instead!");
 
         KeyValuePair<RelativePath, AnalyzedFile> installDataFile;
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
@@ -98,7 +108,7 @@ public class SMAPIInstaller : IModInstaller
         if (file is not AnalyzedArchive archive)
             throw new UnreachableException($"{nameof(AnalyzedFile)} that has the file type {nameof(FileType.ZIP)} is not a {nameof(AnalyzedArchive)}");
 
-        var gameFolderPath = installation.Locations
+        var gameFolderPath = gameInstallation.Locations
             .First(x => x.Key == GameFolderType.Game).Value;
 
         var archiveContents = archive.Contents;
@@ -127,13 +137,18 @@ public class SMAPIInstaller : IModInstaller
         if (!_fileHashCache.TryGetCached(gameDepsFilePath, out var gameDepsFileCache))
             throw new NotImplementedException($"Game file {gameFolderPath} was not found in cache!");
 
-        yield return new GameFile
+        modFiles.Add(new GameFile
         {
             Hash = gameDepsFileCache.Hash,
             Size = gameDepsFileCache.Size,
             Id = ModFileId.New(),
-            Installation = installation,
+            Installation = gameInstallation,
             To = new GamePath(GameFolderType.Game, "StardewModdingAPI.deps.json")
+        });
+
+        yield return baseMod with
+        {
+            Files = modFiles.ToEntityDictionary(_dataStore)
         };
     }
 }
