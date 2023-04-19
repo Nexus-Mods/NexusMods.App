@@ -1,6 +1,7 @@
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -14,7 +15,16 @@ namespace NexusMods.Games.RedEngine.ModInstallers;
 
 public class RedModInstaller : IModInstaller
 {
-    private static RelativePath _infoJson = "info.json".ToRelativePath();
+    private static readonly RelativePath InfoJson = "info.json".ToRelativePath();
+    private static readonly RelativePath Mods = "mods".ToRelativePath();
+
+    private readonly IDataStore _dataStore;
+
+    public RedModInstaller(IDataStore dataStore)
+    {
+        _dataStore = dataStore;
+    }
+
     public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
         if (!installation.Is<Cyberpunk2077>()) return Common.Priority.None;
@@ -22,33 +32,53 @@ public class RedModInstaller : IModInstaller
         return files.Any(IsInfoJson) ? Common.Priority.High : Common.Priority.None;
     }
 
-    public ValueTask<IEnumerable<AModFile>> GetFilesToExtractAsync(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken ct = default)
+    private static bool IsInfoJson(KeyValuePair<RelativePath, AnalyzedFile> file)
     {
-        return ValueTask.FromResult(GetFilesToExtractImpl(srcArchive, files));
+        return file.Key.FileName == InfoJson && file.Value.AnalysisData.OfType<RedModInfo>().Any();
+    }
+    
+    public ValueTask<IEnumerable<Mod>> GetModsAsync(
+        GameInstallation gameInstallation,
+        Mod baseMod,
+        Hash srcArchiveHash,
+        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
+        CancellationToken cancellationToken = default)
+    {
+        return ValueTask.FromResult(GetMods(baseMod, srcArchiveHash, archiveFiles));
     }
 
-    private IEnumerable<AModFile> GetFilesToExtractImpl(Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
+    private IEnumerable<Mod> GetMods(
+        Mod baseMod,
+        Hash srcArchiveHash,
+        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        foreach (var infoJson in files.Where(IsInfoJson))
-        {
-            var parent = infoJson.Key.Parent;
-            var parentName = parent.FileName;
-            foreach (var (path, file) in files.Where(f => f.Key.InFolder(parent)))
+        var modFiles = archiveFiles
+            .Where(IsInfoJson)
+            .SelectMany(infoJson =>
             {
-                yield return new FromArchive
-                {
-                    Id = ModFileId.New(),
-                    From = new HashRelativePath(srcArchive, path),
-                    To = new GamePath(GameFolderType.Game, @"mods".ToRelativePath().Join(parentName).Join(path.RelativeTo(parent))),
-                    Hash = file.Hash,
-                    Size = file.Size
-                };
-            }
-        }
-    }
+                var parent = infoJson.Key.Parent;
+                var parentName = parent.FileName;
 
-    private bool IsInfoJson(KeyValuePair<RelativePath, AnalyzedFile> file)
-    {
-        return file.Key.FileName == _infoJson && file.Value.AnalysisData.OfType<RedModInfo>().Any();
+                return archiveFiles
+                    .Where(kv => kv.Key.InFolder(parent))
+                    .Select(kv =>
+                    {
+                        var (path, file) = kv;
+
+                        return new FromArchive
+                        {
+                            Id = ModFileId.New(),
+                            From = new HashRelativePath(srcArchiveHash, path),
+                            To = new GamePath(GameFolderType.Game, Mods.Join(parentName).Join(path.RelativeTo(parent))),
+                            Hash = file.Hash,
+                            Size = file.Size
+                        };
+                    });
+            });
+
+        yield return baseMod with
+        {
+            Files = modFiles.ToEntityDictionary(_dataStore)
+        };
     }
 }
