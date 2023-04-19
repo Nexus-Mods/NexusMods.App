@@ -2,6 +2,7 @@ using System.Diagnostics;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -23,6 +24,13 @@ public class SMAPIModInstaller : IModInstaller
     private static readonly RelativePath ModsFolder = "Mods".ToRelativePath();
     private static readonly RelativePath ManifestFile = "manifest.json".ToRelativePath();
 
+    private readonly IDataStore _dataStore;
+
+    public SMAPIModInstaller(IDataStore dataStore)
+    {
+        _dataStore = dataStore;
+    }
+
     private static bool TryGetManifestFile(
         EntityDictionary<RelativePath, AnalyzedFile> files,
         out KeyValuePair<RelativePath, AnalyzedFile> manifestFile)
@@ -41,39 +49,47 @@ public class SMAPIModInstaller : IModInstaller
             : Common.Priority.None;
     }
 
-    public ValueTask<IEnumerable<AModFile>> GetFilesToExtractAsync(GameInstallation installation,
-        Hash srcArchiveHash, EntityDictionary<RelativePath, AnalyzedFile> files,
-        CancellationToken ct = default)
+    public ValueTask<IEnumerable<Mod>> GetModsAsync(
+        GameInstallation gameInstallation,
+        Mod baseMod,
+        Hash srcArchiveHash,
+        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
+        CancellationToken cancellationToken = default)
     {
-        return ValueTask.FromResult(GetFilesToExtract(srcArchiveHash, files));
+        return ValueTask.FromResult(GetMods(baseMod, srcArchiveHash, archiveFiles));
     }
 
-    private static IEnumerable<AModFile> GetFilesToExtract(
+    private IEnumerable<Mod> GetMods(
+        Mod baseMod,
         Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> files)
+        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        if (!TryGetManifestFile(files, out var manifestFile))
-            throw new UnreachableException($"{nameof(SMAPIModInstaller)} should guarantee with {nameof(Priority)} that {nameof(GetFilesToExtractAsync)} is never called for archives that don't have a manifest file.");
+        // TODO: update this installer to work with multiple manifests and return multiple mods
+
+        if (!TryGetManifestFile(archiveFiles, out var manifestFile))
+            throw new UnreachableException($"{nameof(SMAPIModInstaller)} should guarantee with {nameof(Priority)} that {nameof(GetModsAsync)} is never called for archives that don't have a manifest file.");
 
         var parent = manifestFile.Key.Parent;
 
-        foreach (var kv in files)
-        {
-            var (path, file) = kv;
-            if (!path.InFolder(parent)) continue;
-            var to = new GamePath(
-                GameFolderType.Game,
-                ModsFolder.Join(path.DropFirst(parent.Depth))
-            );
-
-            yield return new FromArchive
+        var modFiles = archiveFiles
+            .Where(kv => kv.Key.InFolder(parent))
+            .Select(kv =>
             {
-                Size = file.Size,
-                Hash = file.Hash,
-                Id = ModFileId.New(),
-                From = new HashRelativePath(srcArchiveHash, path),
-                To = to
-            };
-        }
+                var (path, file) = kv;
+
+                return new FromArchive
+                {
+                    Id = ModFileId.New(),
+                    From = new HashRelativePath(srcArchiveHash, path),
+                    To = new GamePath(GameFolderType.Game, ModsFolder.Join(path.DropFirst(parent.Depth))),
+                    Hash = file.Hash,
+                    Size = file.Size
+                };
+            });
+
+        yield return baseMod with
+        {
+            Files = modFiles.ToEntityDictionary(_dataStore)
+        };
     }
 }
