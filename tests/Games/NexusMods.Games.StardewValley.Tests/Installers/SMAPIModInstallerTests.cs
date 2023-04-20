@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using NexusMods.Common;
+using NexusMods.DataModel;
 using NexusMods.Games.StardewValley.Installers;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash64;
@@ -89,6 +90,35 @@ public class SMAPIModInstallerTests : AModInstallerTest<StardewValley, SMAPIModI
             var mod = await InstallModFromArchiveIntoLoadout(loadout, path);
             mod.Files.Should().NotBeEmpty();
             mod.Files.Should().AllSatisfy(kv => kv.Value.To.Path.StartsWith("Mods/NPCMapLocations"));
+        }
+    }
+
+    [Fact]
+    [Trait("RequiresNetworking", "True")]
+    public async Task Test_MultipleModsOneArchive()
+    {
+        var loadout = await CreateLoadout();
+
+        // Raised Garden Beds 1.0.5 (https://www.nexusmods.com/stardewvalley/mods/5305)
+        var (path, hash) = await DownloadMod(GameInstallation.Game.Domain, ModId.From(5305), FileId.From(68056));
+        await using (path)
+        {
+            hash.Should().Be(Hash.From(0xCBE810C4B0C82C7A));
+
+            // var mods = await GetModsFromInstaller(path);
+            var mods = await InstallModsFromArchiveIntoLoadout(loadout, path);
+            mods
+                .Should().HaveCount(3)
+                .And.AllSatisfy(x =>
+                {
+                    // x.Metadata.Should().BeOfType<GroupMetadata>();
+                    x.Version.Should().Be("1.0.5");
+                })
+                .And.Satisfy(
+                    x => x.Name == "Raised Garden Beds",
+                    x => x.Name == "[CP] Raised Garden Beds Translation: English",
+                    x => x.Name == "[RGB] Raised Garden Beds"
+                );
         }
     }
 }
