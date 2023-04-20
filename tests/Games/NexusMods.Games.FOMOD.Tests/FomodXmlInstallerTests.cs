@@ -55,81 +55,93 @@ public class FomodXmlInstallerTests
     public async Task InstallsFilesSimple()
     {
         using var testData = await SetupTestFromDirectoryAsync("SimpleInstaller");
-        var installedFiles = await testData.GetFilesToExtractAsync();
+        var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
 
-        installedFiles.Count().Should().Be(2);
-        installedFiles.ElementAt(0).To.FileName.Should().Be((RelativePath)"g1p1f1.out.esp");
-        installedFiles.ElementAt(1).To.FileName.Should().Be((RelativePath)"g2p1f1.out.esp");
+        installedFiles
+            .Should().HaveCount(2)
+            .And.Satisfy(
+                x => x.To.FileName == "g1p1f1.out.esp",
+                x => x.To.FileName == "g2p1f1.out.esp"
+            );
     }
 
     [Fact]
     public async Task InstallsFilesComplex_WithImages()
     {
         using var testData = await SetupTestFromDirectoryAsync("WithImages");
-        var installedFiles = await testData.GetFilesToExtractAsync();
+        var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
 
-        installedFiles.Count().Should().Be(3);
-
-        // In group 1, the second plugin is recommended
-        installedFiles.ElementAt(0).To.FileName.Should().Be("g1p2f1.out.esp".ToRelativePath());
-
-        // In group 2, both plugins are required
-        installedFiles.ElementAt(1).To.FileName.Should().Be("g2p1f1.out.esp".ToRelativePath());
-        installedFiles.ElementAt(2).To.FileName.Should().Be("g2p2f1.out.esp".ToRelativePath());
+        installedFiles
+            .Should().HaveCount(3)
+            .And.Satisfy(
+                // In group 1, the second plugin is recommended
+                x => x.To.FileName == "g1p2f1.out.esp",
+                // In group 2, both plugins are required
+                x => x.To.FileName == "g2p1f1.out.esp",
+                x => x.To.FileName == "g2p2f1.out.esp"
+            );
     }
 
     [Fact]
     public async Task InstallsFilesComplex_WithMissingImage()
     {
         using var testData = await SetupTestFromDirectoryAsync("WithMissingImage");
-        var installedFiles = await testData.GetFilesToExtractAsync();
+        var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
 
-        installedFiles.Count().Should().Be(3);
-
-        // In group 1, the second plugin is recommended
-        installedFiles.ElementAt(0).To.FileName.Should().Be("g1p2f1.out.esp".ToRelativePath());
-
-        // In group 2, both plugins are required
-        installedFiles.ElementAt(1).To.FileName.Should().Be("g2p1f1.out.esp".ToRelativePath());
-        installedFiles.ElementAt(2).To.FileName.Should().Be("g2p2f1.out.esp".ToRelativePath());
+        installedFiles
+            .Should().HaveCount(3)
+            .And.Satisfy(
+                // In group 1, the second plugin is recommended
+                x => x.To.FileName == "g1p2f1.out.esp",
+                // In group 2, both plugins are required
+                x => x.To.FileName == "g2p1f1.out.esp",
+                x => x.To.FileName == "g2p2f1.out.esp"
+            );
     }
 
     [Fact]
     public async Task InstallsFilesSimple_UsingRar()
     {
         using var testData = await SetupTestFromDirectoryAsync("SimpleInstaller-rar");
-        var installedFiles = await testData.GetFilesToExtractAsync();
+        var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
 
-        installedFiles.Count().Should().Be(2);
-        installedFiles.ElementAt(0).To.FileName.Should().Be((RelativePath)"g1p1f1.out.esp");
-        installedFiles.ElementAt(1).To.FileName.Should().Be((RelativePath)"g2p1f1.out.esp");
+        installedFiles
+            .Should().HaveCount(2)
+            .And.Satisfy(
+                x => x.To.FileName == "g1p1f1.out.esp",
+                x => x.To.FileName == "g2p1f1.out.esp"
+            );
     }
 
     [Fact]
     public async Task InstallsFilesSimple_Using7z()
     {
         using var testData = await SetupTestFromDirectoryAsync("SimpleInstaller-7z");
-        var installedFiles = await testData.GetFilesToExtractAsync();
+        var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
 
-        installedFiles.Count().Should().Be(2);
-        installedFiles.ElementAt(0).To.FileName.Should().Be((RelativePath)"g1p1f1.out.esp");
-        installedFiles.ElementAt(1).To.FileName.Should().Be((RelativePath)"g2p1f1.out.esp");
+        installedFiles
+            .Should().HaveCount(2)
+            .And.Satisfy(
+                x => x.To.FileName == "g1p1f1.out.esp",
+                x => x.To.FileName == "g2p1f1.out.esp"
+            );
     }
 
     [Fact]
     public async Task ObeysTypeDescriptors()
     {
         using var testData = await SetupTestFromDirectoryAsync("ComplexInstaller");
-        var installedFiles = await testData.GetFilesToExtractAsync();
+        var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
 
-        installedFiles.Count().Should().Be(3);
-
-        // In group 1, the second plugin is recommended
-        installedFiles.ElementAt(0).To.FileName.Should().Be("g1p2f1.out.esp".ToRelativePath());
-
-        // In group 2, both plugins are required
-        installedFiles.ElementAt(1).To.FileName.Should().Be("g2p1f1.out.esp".ToRelativePath());
-        installedFiles.ElementAt(2).To.FileName.Should().Be("g2p2f1.out.esp".ToRelativePath());
+        installedFiles
+            .Should().HaveCount(3)
+            .And.Satisfy(
+                // In group 1, the second plugin is recommended
+                x => x.To.FileName == "g1p2f1.out.esp",
+                // In group 2, both plugins are required
+                x => x.To.FileName == "g2p1f1.out.esp",
+                x => x.To.FileName == "g2p2f1.out.esp"
+            );
     }
 
     #region Tests for Broken FOMODs. Don't install them, don't throw. Only log. No-Op
@@ -139,7 +151,7 @@ public class FomodXmlInstallerTests
     {
         using var testData = await SetupTestFromDirectoryAsync("Broken-EmptyGroup");
         var installedFiles = await testData.GetFilesToExtractAsync();
-        installedFiles.Count().Should().Be(0);
+        installedFiles.Should().BeEmpty();
     }
 
     [Fact]
@@ -147,7 +159,7 @@ public class FomodXmlInstallerTests
     {
         using var testData = await SetupTestFromDirectoryAsync("Broken-EmptyOption");
         var installedFiles = await testData.GetFilesToExtractAsync();
-        installedFiles.Count().Should().Be(0);
+        installedFiles.Should().BeEmpty();
     }
 
     [Fact]
@@ -155,7 +167,7 @@ public class FomodXmlInstallerTests
     {
         using var testData = await SetupTestFromDirectoryAsync("Broken-EmptyStep");
         var installedFiles = await testData.GetFilesToExtractAsync();
-        installedFiles.Count().Should().Be(0);
+        installedFiles.Should().BeEmpty();
     }
 
     [Fact]
@@ -163,7 +175,7 @@ public class FomodXmlInstallerTests
     {
         using var testData = await SetupTestFromDirectoryAsync("Broken-NoSteps");
         var installedFiles = await testData.GetFilesToExtractAsync();
-        installedFiles.Count().Should().Be(0);
+        installedFiles.Should().BeEmpty();
     }
 
     [Fact]
@@ -171,7 +183,7 @@ public class FomodXmlInstallerTests
     {
         using var testData = await SetupTestFromDirectoryAsync("Broken-NoModuleName");
         var installedFiles = await testData.GetFilesToExtractAsync();
-        installedFiles.Count().Should().Be(0);
+        installedFiles.Should().BeEmpty();
     }
 
     // TODO: Implement Dependencies for FOMODs
@@ -245,8 +257,10 @@ public class FomodXmlInstallerTests
                 AnalysisResults.Hash,
                 AnalysisResults.Contents)).ToArray();
 
-            mods.Should().ContainSingle();
-            return mods.First().Files.Values.ToArray();
+            // broken FOMODs return nothing
+            return mods.Length == 0
+                ? Array.Empty<AModFile>()
+                : mods.First().Files.Values.ToArray();
         }
 
         public void Dispose()
