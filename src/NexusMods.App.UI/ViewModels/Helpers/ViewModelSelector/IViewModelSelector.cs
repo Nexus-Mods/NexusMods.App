@@ -2,6 +2,11 @@
 
 namespace NexusMods.App.UI.ViewModels.Helpers.ViewModelSelector;
 
+/// <summary>
+/// A View model that can select between multiple ViewModels based on an Enum
+/// </summary>
+/// <typeparam name="TEnum"></typeparam>
+/// <typeparam name="TVmType"></typeparam>
 public interface IViewModelSelector<TEnum, TVmType> where TEnum : Enum where TVmType : class, IViewModelInterface
 {
     /// <summary>
@@ -12,7 +17,7 @@ public interface IViewModelSelector<TEnum, TVmType> where TEnum : Enum where TVm
     /// <summary>
     /// The currently selected ViewModel
     /// </summary>
-    public TVmType ViewModel { get; }
+    public TVmType CurrentViewModel { get; }
     
     /// <summary>
     /// Select a ViewModel

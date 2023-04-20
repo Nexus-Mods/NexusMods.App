@@ -51,8 +51,8 @@ public class DownloadsViewTests : IAsyncLifetime
         {
             await _host.Click(option.Control);
             _host.ViewModel.Current.Should().Be(option.Option, "value was set in the View Model");
-            _host.ViewModel.ViewModel.Should().NotBeNull("the view model should be set");
-            _host.ViewModel.ViewModel.Should().BeAssignableTo(option.Type, "the view model should be the correct type");
+            _host.ViewModel.CurrentViewModel.Should().NotBeNull("the view model should be set");
+            _host.ViewModel.CurrentViewModel.Should().BeAssignableTo(option.Type, "the view model should be the correct type");
         }
 
     }

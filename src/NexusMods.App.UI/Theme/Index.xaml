@@ -6,6 +6,7 @@
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/GridStyles.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/IconStyles.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/LabelStyles.xaml" />
+    <StyleInclude Source="avares://NexusMods.App.UI/Theme/MainWindow.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/PillStyles.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/SelectableTextBlock.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/StackPanelStyles.xaml" />

@@ -5,51 +5,29 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.ViewModels.Helpers.ViewModelSelector;
 
+/// <summary>
+/// ViewModelSelector for design time, this switches between hardcoded view models.
+/// </summary>
+/// <typeparam name="TEnum"></typeparam>
+/// <typeparam name="TVmType"></typeparam>
+/// <typeparam name="TBase"></typeparam>
 public class ViewModelDesignSelector<TEnum, TVmType, TBase> : 
-    AViewModel<TBase>, 
-    IViewModelSelector<TEnum, TVmType>
+    AViewModelSelector<TEnum, TVmType, TBase>
     where TVmType : class, IViewModelInterface
     where TEnum : struct, Enum {
     private static readonly Dictionary<TEnum,Type> Mappings;
-    private readonly Dictionary<TEnum,TVmType> _instances;
-
-    [Reactive]
-    public TEnum Current { get; set; }
-
-    [Reactive]
-    public TVmType ViewModel { get; set; }
 
     static ViewModelDesignSelector()
     {
         Mappings = AViewModelAttribute.GetAttributes<TEnum>();
     }
 
-    public ViewModelDesignSelector(params TVmType[] vms)
+    protected ViewModelDesignSelector(params TVmType[] vms) : base(vms.ToDictionary(GetKeyForVm))
     {
-        _instances = vms.ToDictionary(GetKeyForVm);
-        Current = _instances.First().Key;
-        ViewModel = _instances.First().Value;
     }
-
+    
     private static TEnum GetKeyForVm(TVmType vm)
     {
         return Mappings.First(pair => vm.GetType().IsAssignableTo(pair.Value)).Key;
-    }
-
-    public void Set(TEnum current)
-    {
-        ViewModel = _instances[current];
-        Current = current;
-    }
-
-    public IObservable<bool> IsActive(TEnum current)
-    {
-        return this.WhenAnyValue(vm => vm.Current)
-            .Select(val => val.Equals(current));
-    }
-    
-    public ICommand CommandFor(TEnum current)
-    {
-        return ReactiveCommand.Create(() => Set(current));
     }
 }

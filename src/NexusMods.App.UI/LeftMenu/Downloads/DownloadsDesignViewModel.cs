@@ -23,7 +23,7 @@ public class DownloadsDesignViewModel : ViewModelDesignSelector<Options, IRightC
     {
         this.WhenActivated(d =>
         {
-            this.WhenAnyValue(vm => vm.ViewModel)
+            this.WhenAnyValue(vm => vm.CurrentViewModel)
                 .BindTo(this, vm => vm.RightContent)
                 .DisposeWith(d);
         });

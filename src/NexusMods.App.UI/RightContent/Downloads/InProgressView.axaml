@@ -36,6 +36,12 @@
                             <TextBlock Text="Pause all"></TextBlock>
                         </StackPanel>
                     </Button>
+                    <Line />
+                    <Button x:Name="SettingsButton">
+                        <StackPanel>
+                            <avalonia:Icon Classes="Cog" />
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
             </Grid>
         </Border>

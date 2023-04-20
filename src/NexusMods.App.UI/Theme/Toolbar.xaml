@@ -30,6 +30,7 @@
     <Style Selector="Border.Toolbar">
         <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
         <Setter Property="Height" Value="52"></Setter>
+        <Setter Property="Background" Value="{DynamicResource BackgroundSecondaryDarkerColor}"></Setter>
     </Style>
     <Style Selector="Border.Toolbar > Grid">
         <Setter Property="Margin" Value="24, 0"></Setter>

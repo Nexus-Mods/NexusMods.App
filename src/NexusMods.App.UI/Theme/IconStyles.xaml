@@ -14,6 +14,7 @@
             </WrapPanel.Styles>
             <icons:Icon Classes="Bell"></icons:Icon>
             <icons:Icon Classes="CheckUnderline"></icons:Icon>
+            <icons:Icon Classes="ClearAll"></icons:Icon>
             <icons:Icon Classes="Cog"></icons:Icon>
             <icons:Icon Classes="Help"></icons:Icon>
             <icons:Icon Classes="History"></icons:Icon>
@@ -37,6 +38,10 @@
         <Setter Property="Value" Value="mdi-cog" />
     </Style>
 
+    <Style Selector="icons|Icon.ClearAll">
+        <Setter Property="Value" Value="mdi-notification-clear-all" />
+    </Style>
+    
     <Style Selector="icons|Icon.Help">
         <Setter Property="Value" Value="mdi-help-circle-outline" />
     </Style>
