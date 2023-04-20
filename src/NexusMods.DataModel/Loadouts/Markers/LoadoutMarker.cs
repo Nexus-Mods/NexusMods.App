@@ -467,6 +467,15 @@ public readonly struct LoadoutMarker
     }
 
     /// <summary>
+    /// Removes a known mod from the given loadout.
+    /// </summary>
+    /// <param name="oldMod">The mod to remove from the loadout.</param>
+    public void Remove(Mod oldMod)
+    {
+        _manager.Registry.Alter(_id, $"Remove mod: {oldMod.Name}", l => l.Remove(oldMod));
+    }
+
+    /// <summary>
     /// Runs the given tool, integrating the results into the loadout
     /// </summary>
     /// <param name="tool"></param>

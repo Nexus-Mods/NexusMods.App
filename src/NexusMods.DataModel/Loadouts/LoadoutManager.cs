@@ -346,14 +346,15 @@ public class LoadoutManager
                 {
                     loadout.Add(mod with
                     {
-                        Status = ModStatus.Installed
+                        Status = ModStatus.Installed,
+                        Enabled = true,
                     });
                 }
             }
 
             if (!modIds.Contains(baseMod.Id))
             {
-                // TODO: the installer returned new unique mods, what should happen with the base mod?
+                loadout.Remove(baseMod);
             }
 
             job.Progress = Percent.One;
