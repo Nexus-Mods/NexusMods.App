@@ -6,4 +6,4 @@ namespace NexusMods.DataModel.Loadouts;
 /// Represents metadata for a <see cref="Mod"/>.
 /// </summary>
 [PublicAPI]
-public abstract record AModMetadata { }
+public abstract record AModMetadata;

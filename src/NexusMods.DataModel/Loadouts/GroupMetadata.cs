@@ -1,12 +1,13 @@
 using JetBrains.Annotations;
-using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.JsonConverters;
 
-namespace NexusMods.DataModel;
+namespace NexusMods.DataModel.Loadouts;
 
 /// <summary>
 /// Represents metadata that groups multiple <see cref="Mod"/> entities together.
 /// </summary>
 [PublicAPI]
+[JsonName("NexusMods.DataModel.GroupMetadata")]
 public record GroupMetadata : AModMetadata
 {
     /// <summary>

@@ -10,7 +10,7 @@ namespace NexusMods.DataModel;
 /// </summary>
 [PublicAPI]
 [ValueObject<Guid>(conversions: Conversions.None)]
-[JsonConverter(typeof(ModIdConverter))]
+[JsonConverter(typeof(GroupIdConverter))]
 public readonly partial struct GroupId
 {
     /// <summary>

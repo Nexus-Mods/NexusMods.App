@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.IO.Compression;
 using System.Text;
 using Microsoft.Extensions.Logging;
@@ -262,7 +263,6 @@ public class LoadoutManager
 
         try
         {
-
             // Create the job so the UI can show progress.
             using var job = InterprocessJob.Create(JobType.AddMod, _jobManager, cursor, $"Installing {archivePath} to {loadoutId}");
 
@@ -321,6 +321,9 @@ public class LoadoutManager
                 throw new NotImplementedException($"The installer returned 0 mods for {archivePath}");
             }
 
+            var modIds = mods.Select(mod => mod.Id).ToHashSet();
+            Debug.Assert(modIds.Count == mods.Length, $"The installer {installer.Installer.GetType()} returned mods with non-unique ids.");
+
             foreach (var mod in mods)
             {
                 mod.Metadata = modMetadata;
@@ -341,8 +344,16 @@ public class LoadoutManager
                 }
                 else
                 {
-                    loadout.Add(mod);
+                    loadout.Add(mod with
+                    {
+                        Status = ModStatus.Installed
+                    });
                 }
+            }
+
+            if (!modIds.Contains(baseMod.Id))
+            {
+                // TODO: the installer returned new unique mods, what should happen with the base mod?
             }
 
             job.Progress = Percent.One;

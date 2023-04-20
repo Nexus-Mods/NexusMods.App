@@ -2,11 +2,13 @@ using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using NexusMods.Common;
 using NexusMods.DataModel;
+using NexusMods.DataModel.Loadouts;
 using NexusMods.Games.StardewValley.Installers;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
+using ModId = NexusMods.Networking.NexusWebApi.Types.ModId;
 
 namespace NexusMods.Games.StardewValley.Tests.Installers;
 
@@ -111,7 +113,7 @@ public class SMAPIModInstallerTests : AModInstallerTest<StardewValley, SMAPIModI
                 .Should().HaveCount(3)
                 .And.AllSatisfy(x =>
                 {
-                    // x.Metadata.Should().BeOfType<GroupMetadata>();
+                    x.Metadata.Should().BeOfType<GroupMetadata>();
                     x.Version.Should().Be("1.0.5");
                 })
                 .And.Satisfy(
