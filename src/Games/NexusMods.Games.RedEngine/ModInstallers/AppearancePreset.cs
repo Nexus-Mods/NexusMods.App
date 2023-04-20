@@ -30,11 +30,11 @@ public class AppearancePreset : IModInstaller
 
     public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        if (!installation.Is<Cyberpunk2077>()) return Common.Priority.None;
+        if (!installation.Is<Cyberpunk2077>()) return Priority.None;
 
         return archiveFiles.All(f => Helpers.IgnoreExtensions.Contains(f.Key.Extension) || (f.Value.FileTypes.Contains(FileType.Cyberpunk2077AppearancePreset) && f.Key.Extension == KnownExtensions.Preset))
-            ? Common.Priority.Normal
-            : Common.Priority.None;
+            ? Priority.Normal
+            : Priority.None;
     }
 
     public ValueTask<IEnumerable<Mod>> GetModsAsync(

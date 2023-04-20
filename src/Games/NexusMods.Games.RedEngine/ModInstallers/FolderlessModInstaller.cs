@@ -29,11 +29,11 @@ public class FolderlessModInstaller : IModInstaller
 
     public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        if (!installation.Is<Cyberpunk2077>()) return Common.Priority.None;
+        if (!installation.Is<Cyberpunk2077>()) return Priority.None;
 
         return archiveFiles.All(f => Helpers.IgnoreExtensions.Contains(f.Key.Extension) || f.Key.Extension == KnownExtensions.Archive)
-            ? Common.Priority.Low
-            : Common.Priority.None;
+            ? Priority.Low
+            : Priority.None;
     }
 
     public ValueTask<IEnumerable<Mod>> GetModsAsync(

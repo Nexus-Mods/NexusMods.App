@@ -27,11 +27,11 @@ public class DarkestDungeonModInstaller : IModInstaller
     public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
         if (installation.Game is not DarkestDungeon)
-            return Common.Priority.None;
+            return Priority.None;
 
         return archiveFiles.Keys.Any(f => f.FileName == ModFilesTxt)
-            ? Common.Priority.Normal
-            : Common.Priority.None;
+            ? Priority.Normal
+            : Priority.None;
     }
 
     public ValueTask<IEnumerable<Mod>> GetModsAsync(

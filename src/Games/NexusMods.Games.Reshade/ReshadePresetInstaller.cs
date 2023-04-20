@@ -40,11 +40,11 @@ public class ReshadePresetInstaller : IModInstaller
 
         // We have to be able to find the game's executable
         if (installation.Game is not AGame)
-            return Common.Priority.None;
+            return Priority.None;
 
         // We only support ini files for now
         if (!filtered.All(f => f.Value.FileTypes.Contains(FileType.INI)))
-            return Common.Priority.None;
+            return Priority.None;
 
         // Get all the ini data
         var iniData = filtered
@@ -57,13 +57,13 @@ public class ReshadePresetInstaller : IModInstaller
 
         // All the files must have ini data
         if (iniData.Count != filtered.Count)
-            return Common.Priority.None;
+            return Priority.None;
 
         // All the files must have a section that ends with .fx marking them as likely a reshade preset
         if (!iniData.All(f => f.Sections.All(x => x.EndsWith(".fx", StringComparison.CurrentCultureIgnoreCase))))
-            return Common.Priority.None;
+            return Priority.None;
 
-        return Common.Priority.Low;
+        return Priority.Low;
     }
 
     public ValueTask<IEnumerable<Mod>> GetModsAsync(

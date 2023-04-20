@@ -49,10 +49,10 @@ public class SMAPIModInstaller : IModInstaller
 
     public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        if (!installation.Is<StardewValley>()) return Common.Priority.None;
+        if (!installation.Is<StardewValley>()) return Priority.None;
         return GetManifestFiles(archiveFiles).Any()
-            ? Common.Priority.Highest
-            : Common.Priority.None;
+            ? Priority.Highest
+            : Priority.None;
     }
 
     public ValueTask<IEnumerable<Mod>> GetModsAsync(

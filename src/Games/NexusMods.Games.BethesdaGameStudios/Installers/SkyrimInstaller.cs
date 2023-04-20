@@ -48,7 +48,7 @@ public class SkyrimInstaller : IModInstaller
     public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
         if (installation.Game is not SkyrimSpecialEdition)
-            return Common.Priority.None;
+            return Priority.None;
 
         // Determine one of the following:
         // - There is a 'meshes' folder with NIF file.
@@ -65,14 +65,14 @@ public class SkyrimInstaller : IModInstaller
             {
                 var subDirectory = rawPath.AsSpan(separatorIndex + 1);
                 if (AssertPathForPriority(subDirectory))
-                    return Common.Priority.Normal;
+                    return Priority.Normal;
             }
 
             if (AssertPathForPriority(rawPath))
-                return Common.Priority.Normal;
+                return Priority.Normal;
         }
 
-        return Common.Priority.None;
+        return Priority.None;
     }
 
     public ValueTask<IEnumerable<Mod>> GetModsAsync(

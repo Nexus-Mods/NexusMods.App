@@ -27,9 +27,9 @@ public class RedModInstaller : IModInstaller
 
     public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        if (!installation.Is<Cyberpunk2077>()) return Common.Priority.None;
+        if (!installation.Is<Cyberpunk2077>()) return Priority.None;
 
-        return archiveFiles.Any(IsInfoJson) ? Common.Priority.High : Common.Priority.None;
+        return archiveFiles.Any(IsInfoJson) ? Priority.High : Priority.None;
     }
 
     private static bool IsInfoJson(KeyValuePair<RelativePath, AnalyzedFile> file)

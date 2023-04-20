@@ -23,7 +23,7 @@ public class StubbedGameInstaller : IModInstaller
 
     public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        return installation.Game is StubbedGame ? Common.Priority.Normal : Common.Priority.None;
+        return installation.Game is StubbedGame ? Priority.Normal : Priority.None;
     }
 
     public ValueTask<IEnumerable<Mod>> GetModsAsync(

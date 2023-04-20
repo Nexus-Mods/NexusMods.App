@@ -33,7 +33,7 @@ public class FomodXmlInstaller : IModInstaller
     public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
         var hasScript = archiveFiles.ContainsKey(FomodConstants.XmlConfigRelativePath);
-        return hasScript ? Common.Priority.High : Common.Priority.None;
+        return hasScript ? Priority.High : Priority.None;
     }
 
     public async ValueTask<IEnumerable<DataModel.Loadouts.Mod>> GetModsAsync(

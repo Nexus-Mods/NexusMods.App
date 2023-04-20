@@ -27,8 +27,8 @@ public class SifuModInstaller : IModInstaller
     public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
         return installation.Game is Sifu && ContainsUEModFile(archiveFiles)
-            ? Common.Priority.Normal
-            : Common.Priority.None;
+            ? Priority.Normal
+            : Priority.None;
     }
 
     private static bool ContainsUEModFile(EntityDictionary<RelativePath, AnalyzedFile> files)

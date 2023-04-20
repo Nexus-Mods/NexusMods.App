@@ -17,5 +17,5 @@ public readonly partial struct GroupId
     /// Creates a new <see cref="GroupId"/> from a unique <see cref="Guid"/>.
     /// </summary>
     /// <returns></returns>
-    public static GroupId New() => GroupId.From(Guid.NewGuid());
+    public static GroupId New() => From(Guid.NewGuid());
 }
