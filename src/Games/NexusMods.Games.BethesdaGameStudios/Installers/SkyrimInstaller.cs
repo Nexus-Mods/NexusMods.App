@@ -91,10 +91,8 @@ public class SkyrimInstaller : IModInstaller
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
         var prefix = FindFolderPrefixForExtract(archiveFiles).ToString();
-        if (prefix.Length > 0) throw new NotImplementedException();
-
         var modFiles = archiveFiles
-            .Where(kv => kv.Key.StartsWith(prefix))
+            .Where(kv => prefix.Length <= 0 || kv.Key.StartsWith(prefix))
             .Select(kv =>
             {
                 var (path, file) = kv;
