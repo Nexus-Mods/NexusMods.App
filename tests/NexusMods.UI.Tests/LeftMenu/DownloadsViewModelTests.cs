@@ -26,12 +26,12 @@ public class DownloadsViewModelTests : AVmTest<IDownloadsViewModel>
             if (check == current)
             {
                 Vm.Current.Should().Be(check);
-                Vm.CurrentViewModel.Should().BeAssignableTo(mappings[check]);
+                Vm.RightContent.Should().BeAssignableTo(mappings[check]);
             }
             else
             {
                 Vm.Current.Should().NotBe(check);
-                Vm.CurrentViewModel.Should().NotBeAssignableTo(mappings[check]);
+                Vm.RightContent.Should().NotBeAssignableTo(mappings[check]);
             }
         }
         
