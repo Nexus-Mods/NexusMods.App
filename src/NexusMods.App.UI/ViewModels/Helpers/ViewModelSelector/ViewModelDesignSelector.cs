@@ -5,7 +5,9 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.ViewModels.Helpers.ViewModelSelector;
 
-public class ViewModelDesignSelector<TEnum, TVmType> : AViewModel<IViewModelSelector<TEnum, TVmType>>, IViewModelSelector<TEnum, TVmType>
+public class ViewModelDesignSelector<TEnum, TVmType, TBase> : 
+    AViewModel<TBase>, 
+    IViewModelSelector<TEnum, TVmType>
     where TVmType : class, IViewModelInterface
     where TEnum : struct, Enum {
     private static readonly Dictionary<TEnum,Type> Mappings;

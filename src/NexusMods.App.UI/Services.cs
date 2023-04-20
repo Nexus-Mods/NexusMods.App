@@ -6,6 +6,7 @@ using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
 using NexusMods.App.UI.Controls.TopBar;
 using NexusMods.App.UI.LeftMenu;
+using NexusMods.App.UI.LeftMenu.Downloads;
 using NexusMods.App.UI.LeftMenu.Game;
 using NexusMods.App.UI.LeftMenu.Home;
 using NexusMods.App.UI.LeftMenu.Items;
@@ -59,6 +60,7 @@ public static class Services
             .AddViewModel<ModEnabledViewModel, IModEnabledViewModel>()
             .AddViewModel<LoadoutGridViewModel, ILoadoutGridViewModel>()
             .AddViewModel<DefaultLoadoutToolbarViewModel, IDefaultLoadoutToolbarViewModel>()
+            .AddViewModel<DownloadsDesignViewModel, IDownloadsViewModel>()
 
             // Views
             .AddView<GameWidget, IGameWidgetViewModel>()
@@ -83,6 +85,7 @@ public static class Services
             .AddView<ModCategoryView, IModCategoryViewModel>()
             .AddView<ModEnabledView, IModEnabledViewModel>()
             .AddView<DefaultLoadoutToolbarView, IDefaultLoadoutToolbarViewModel>()
+            .AddView<DownloadsView, IDownloadsViewModel>()
 
             // Other
             .AddSingleton<InjectedViewLocator>()

@@ -111,6 +111,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
             {
                 _logger.LogTrace("Download selected");
                 _actions.OnNext(new SpineButtonAction(Type.Download));
+                LeftMenu = downloadsViewModel;
             });
 
             Activations.Subscribe(HandleActivation)

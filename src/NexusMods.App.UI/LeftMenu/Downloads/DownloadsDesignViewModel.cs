@@ -5,7 +5,7 @@ using NexusMods.App.UI.ViewModels.Helpers.ViewModelSelector;
 
 namespace NexusMods.App.UI.LeftMenu.Downloads;
 
-public class DownloadsDesignViewModel : ViewModelDesignSelector<Options, IRightContentViewModel>, IDownloadsViewModel
+public class DownloadsDesignViewModel : ViewModelDesignSelector<Options, IRightContentViewModel, IDownloadsViewModel>, IDownloadsViewModel
 {
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items { get; } =
         Initializers.ReadOnlyObservableCollection<ILeftMenuItemViewModel>();
