@@ -31,20 +31,26 @@ public class SMAPIModInstaller : IModInstaller
         _dataStore = dataStore;
     }
 
-    private static bool TryGetManifestFile(
-        EntityDictionary<RelativePath, AnalyzedFile> files,
-        out KeyValuePair<RelativePath, AnalyzedFile> manifestFile)
+    private static IEnumerable<KeyValuePair<RelativePath, AnalyzedFile>> GetManifestFiles(
+        EntityDictionary<RelativePath, AnalyzedFile> files)
     {
-        return files.TryGetFirst(kv =>
-                kv.Key.FileName.Equals(ManifestFile) &&
-                kv.Value.AnalysisData.Any(x => x is SMAPIManifest),
-            out manifestFile);
+        return files.Where(kv =>
+        {
+            var (path, file) = kv;
+
+            if (!path.FileName.Equals(ManifestFile)) return false;
+            var manifest = file.AnalysisData
+                .OfType<SMAPIManifest>()
+                .FirstOrDefault();
+
+            return manifest is not null;
+        });
     }
 
     public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
         if (!installation.Is<StardewValley>()) return Common.Priority.None;
-        return TryGetManifestFile(files, out _)
+        return GetManifestFiles(files).Any()
             ? Common.Priority.Highest
             : Common.Priority.None;
     }
@@ -64,32 +70,45 @@ public class SMAPIModInstaller : IModInstaller
         Hash srcArchiveHash,
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        // TODO: update this installer to work with multiple manifests and return multiple mods
+        var manifestFiles = GetManifestFiles(archiveFiles).ToArray();
+        if (!manifestFiles.Any())
+            throw new UnreachableException($"{nameof(SMAPIModInstaller)} should guarantee with {nameof(Priority)} that {nameof(GetModsAsync)} is never called for archives that don't have a SMAPI manifest file.");
 
-        if (!TryGetManifestFile(archiveFiles, out var manifestFile))
-            throw new UnreachableException($"{nameof(SMAPIModInstaller)} should guarantee with {nameof(Priority)} that {nameof(GetModsAsync)} is never called for archives that don't have a manifest file.");
-
-        var parent = manifestFile.Key.Parent;
-
-        var modFiles = archiveFiles
-            .Where(kv => kv.Key.InFolder(parent))
-            .Select(kv =>
+        var mods = manifestFiles
+            .Select(manifestFile =>
             {
-                var (path, file) = kv;
+                var parent = manifestFile.Key.Parent;
+                var manifest = manifestFile.Value.AnalysisData
+                    .OfType<SMAPIManifest>()
+                    .FirstOrDefault();
 
-                return new FromArchive
+                if (manifest is null) throw new UnreachableException();
+
+                var modFiles = archiveFiles
+                    .Where(kv => kv.Key.InFolder(parent))
+                    .Select(kv =>
+                    {
+                        var (path, file) = kv;
+
+                        return new FromArchive
+                        {
+                            Id = ModFileId.New(),
+                            From = new HashRelativePath(srcArchiveHash, path),
+                            To = new GamePath(GameFolderType.Game, ModsFolder.Join(path.DropFirst(parent.Depth))),
+                            Hash = file.Hash,
+                            Size = file.Size
+                        };
+                    });
+
+                return baseMod with
                 {
-                    Id = ModFileId.New(),
-                    From = new HashRelativePath(srcArchiveHash, path),
-                    To = new GamePath(GameFolderType.Game, ModsFolder.Join(path.DropFirst(parent.Depth))),
-                    Hash = file.Hash,
-                    Size = file.Size
+                    Id = ModId.New(),
+                    Files = modFiles.ToEntityDictionary(_dataStore),
+                    Name = manifest.Name,
+                    Version = manifest.Version.ToString()
                 };
             });
 
-        yield return baseMod with
-        {
-            Files = modFiles.ToEntityDictionary(_dataStore)
-        };
+        return mods;
     }
 }
