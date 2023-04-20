@@ -240,6 +240,37 @@ public class SqliteDataStore : IDataStore, IDisposable
     }
 
     /// <inheritdoc />
+    public bool CompareAndSwap(IId id, ReadOnlySpan<byte> val, ReadOnlySpan<byte> expected)
+    {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteDataStore));
+
+        using var conn = _pool.RentDisposable();
+        using var transaction = conn.Value.BeginTransaction();
+
+        using (var cmd = conn.Value.CreateCommand())
+        {
+            cmd.CommandText = _getStatements[id.Category];
+            cmd.Parameters.AddWithValueUntagged("@id", id);
+            using var reader = cmd.ExecuteReader();
+            if (reader.Read() && !reader.GetBlob(0).SequenceEqual(expected))
+                return false;
+        }
+
+        using (var cmd = conn.Value.CreateCommand()) {
+            cmd.CommandText = _putStatements[id.Category];
+            cmd.Parameters.AddWithValueUntagged("@id", id);
+            cmd.Parameters.AddWithValue("@data", val.ToArray());
+            cmd.ExecuteNonQuery();
+            transaction.Commit();
+        }
+        
+        if (!_immutableFields[id.Category])
+            _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
+        return true;
+    }
+
+    /// <inheritdoc />
     public void Delete(IId id)
     {
         if (_isDisposed)

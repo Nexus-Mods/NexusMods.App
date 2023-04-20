@@ -33,11 +33,48 @@ public class DataStoreTests
             Id = ModFileId.New(),
             Hash = Hash.Zero,
             From = new HashRelativePath((Hash)42L, default),
-            Size = (Size)42L,
+            Size = Size.From(42L),
             To = new GamePath(GameFolderType.Game, "test.foo")
         }.WithPersist(DataStore);
         foo.DataStoreId.ToString().Should().NotBeEmpty();
         DataStore.Get<FromArchive>(foo.DataStoreId).Should().NotBeNull();
+    }
+
+    [Fact]
+    public void CompareAndSwapIsAtomic()
+    {
+        const int numThreads = 10;
+        const ulong numTimes = 100;
+        var id = new Id64(EntityCategory.TestData, 0xDEADBEEF);
+        var threads = Enumerable.Range(0, numThreads)
+            .Select(r => new Thread(() =>
+            {
+                Span<byte> buffer = stackalloc byte[8];
+                for (ulong i = 0; i < numTimes; i++)
+                {
+                Retry:
+                    var oldBuff = DataStore.GetRaw(id);
+                    var oldVal = oldBuff == null ? 0 : BinaryPrimitives.ReadUInt64LittleEndian(oldBuff);
+                    BinaryPrimitives.WriteUInt64LittleEndian(buffer, oldVal + 1);
+                    if (!DataStore.CompareAndSwap(id, buffer, oldBuff))
+                    {
+                        goto Retry;
+                    }
+                }
+            }))
+            .ToArray();
+        
+        foreach(var thread in threads)
+        {
+            thread.Start();
+        }
+        foreach(var thread in threads)
+        {
+            thread.Join();
+        }
+        var oldBuff = DataStore.GetRaw(id);
+        var oldVal = BinaryPrimitives.ReadUInt64LittleEndian(oldBuff);
+        oldVal.Should().Be(numTimes * numThreads, "the CAS operation should be atomic");
     }
 
     [Fact]
