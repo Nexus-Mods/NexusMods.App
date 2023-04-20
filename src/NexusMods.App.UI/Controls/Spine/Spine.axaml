@@ -13,26 +13,30 @@
     <Design.DataContext>
         <spine:SpineDesignViewModel />
     </Design.DataContext>
-    <StackPanel Margin="0,20">
-        <reactiveUi:ViewModelViewHost ViewContract="Home" x:Name="Home" />
-        <Border
-            BorderBrush="{DynamicResource StructuralBorderBrush}"
-            BorderThickness="0,2,0,0"
-            Margin="0,16"
-            Width="48" />
+    <Grid RowDefinitions="*, Auto"  Margin="0,20">
+        <StackPanel Grid.Row="0">
+            <reactiveUi:ViewModelViewHost ViewContract="Home" x:Name="Home" />
+            <Border
+                BorderBrush="{DynamicResource StructuralBorderBrush}"
+                BorderThickness="0,2,0,0"
+                Margin="0,16"
+                Width="48" />
 
-        <ItemsControl
-            Margin="0"
-            Padding="0"
-            x:Name="Games">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-        </ItemsControl>
-        <reactiveUi:ViewModelViewHost ViewContract="Add" x:Name="Add" />
-        <reactiveUi:ViewModelViewHost ViewContract="Home" x:Name="Download" />
-    </StackPanel>
+            <ItemsControl
+                Margin="0"
+                Padding="0"
+                x:Name="Games">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+            <reactiveUi:ViewModelViewHost ViewContract="Add" x:Name="Add" />
+
+        </StackPanel>
+        <reactiveUi:ViewModelViewHost Grid.Row="1" ViewContract="Download"
+                                      x:Name="Download" />
+    </Grid>
 
 </reactiveUi:ReactiveUserControl>
