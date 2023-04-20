@@ -21,7 +21,7 @@ public class StubbedGameInstaller : IModInstaller
         _dataStore = store;
     }
 
-    public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
+    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
         return installation.Game is StubbedGame ? Common.Priority.Normal : Common.Priority.None;
     }

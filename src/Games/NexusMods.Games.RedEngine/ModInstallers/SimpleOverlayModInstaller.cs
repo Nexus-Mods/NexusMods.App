@@ -32,11 +32,11 @@ public class SimpleOverlayModInstaller : IModInstaller
         _dataStore = dataStore;
     }
 
-    public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
+    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
         if (!installation.Is<Cyberpunk2077>()) return Common.Priority.None;
 
-        var sets = RootFolder(files);
+        var sets = RootFolder(archiveFiles);
         return sets.Count != 1 ? Common.Priority.None : Common.Priority.Normal;
     }
 

@@ -32,9 +32,9 @@ public class ReshadePresetInstaller : IModInstaller
         _dataStore = dataStore;
     }
 
-    public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
+    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        var filtered = files
+        var filtered = archiveFiles
             .Where(f => !IgnoreFiles.Contains(f.Key.FileName))
             .ToList();
 

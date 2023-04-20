@@ -22,9 +22,9 @@ public interface IModInstaller
     /// will be used to deploy an archive.
     /// </summary>
     /// <param name="installation">The installation of the game to use.</param>
-    /// <param name="files">All of the files within an archive.</param>
+    /// <param name="archiveFiles">All of the files within an archive.</param>
     /// <returns>Priority.</returns>
-    public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files);
+    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles);
 
     /// <summary>
     /// Finds all mods inside the provided archive.

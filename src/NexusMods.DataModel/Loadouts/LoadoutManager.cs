@@ -282,7 +282,7 @@ public class LoadoutManager
 
             // Step 3: Run the archive through the installers.
             var installer = _installers
-                .Select(i => (Installer: i, Priority: i.Priority(loadout.Value.Installation, archive.Contents)))
+                .Select(i => (Installer: i, Priority: i.GetPriority(loadout.Value.Installation, archive.Contents)))
                 .Where(p => p.Priority != Priority.None)
                 .OrderBy(p => p.Priority)
                 .FirstOrDefault();

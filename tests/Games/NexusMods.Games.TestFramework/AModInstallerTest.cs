@@ -40,7 +40,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     {
         var analyzedArchive = await AnalyzeArchive(path);
 
-        var priority = ModInstaller.Priority(
+        var priority = ModInstaller.GetPriority(
             GameInstallation,
             analyzedArchive.Contents);
 
@@ -228,7 +228,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     {
         var description = BuildArchiveDescription(files);
         
-        var priority = ModInstaller.Priority(GameInstallation, description);
+        var priority = ModInstaller.GetPriority(GameInstallation, description);
 
         if (expectedPriority == Priority.None)
         {

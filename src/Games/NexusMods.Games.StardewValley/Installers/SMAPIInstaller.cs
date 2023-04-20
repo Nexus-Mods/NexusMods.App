@@ -57,11 +57,11 @@ public class SMAPIInstaller : IModInstaller
         return installDataFiles;
     }
 
-    public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
+    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
         if (!installation.Is<StardewValley>()) return Common.Priority.None;
 
-        var installDataFiles = GetInstallDataFiles(files);
+        var installDataFiles = GetInstallDataFiles(archiveFiles);
         return installDataFiles.Length == 3
             ? Common.Priority.Highest
             : Common.Priority.None;
@@ -86,7 +86,7 @@ public class SMAPIInstaller : IModInstaller
         var modFiles = new List<AModFile>();
 
         var installDataFiles = GetInstallDataFiles(archiveFiles);
-        if (installDataFiles.Length != 3) throw new UnreachableException($"{nameof(SMAPIInstaller)} should guarantee with {nameof(Priority)} that {nameof(GetInstallDataFiles)} returns 3 files when called from {nameof(GetModsAsync)} but it has {installDataFiles.Length} files instead!");
+        if (installDataFiles.Length != 3) throw new UnreachableException($"{nameof(SMAPIInstaller)} should guarantee with {nameof(GetPriority)} that {nameof(GetInstallDataFiles)} returns 3 files when called from {nameof(GetModsAsync)} but it has {installDataFiles.Length} files instead!");
 
         KeyValuePair<RelativePath, AnalyzedFile> installDataFile;
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))

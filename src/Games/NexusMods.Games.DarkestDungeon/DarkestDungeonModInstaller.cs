@@ -24,12 +24,12 @@ public class DarkestDungeonModInstaller : IModInstaller
         _dataStore = dataStore;
     }
     
-    public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
+    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
         if (installation.Game is not DarkestDungeon)
             return Common.Priority.None;
 
-        return files.Keys.Any(f => f.FileName == ModFilesTxt)
+        return archiveFiles.Keys.Any(f => f.FileName == ModFilesTxt)
             ? Common.Priority.Normal
             : Common.Priority.None;
     }

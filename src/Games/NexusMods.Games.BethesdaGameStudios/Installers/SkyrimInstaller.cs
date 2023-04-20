@@ -45,7 +45,7 @@ public class SkyrimInstaller : IModInstaller
         _dataStore = dataStore;
     }
 
-    public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
+    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
         if (installation.Game is not SkyrimSpecialEdition)
             return Common.Priority.None;
@@ -54,7 +54,7 @@ public class SkyrimInstaller : IModInstaller
         // - There is a 'meshes' folder with NIF file.
         // - There is a 'textures' folder with DDS file.
         // - There is a folder (max 1 level deep) with either of the following cases.
-        foreach (var file in files)
+        foreach (var file in archiveFiles)
         {
             var path = file.Key;
             var rawPath = file.Key.Path;

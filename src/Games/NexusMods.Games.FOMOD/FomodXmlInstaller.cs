@@ -30,9 +30,9 @@ public class FomodXmlInstaller : IModInstaller
         _logger = logger;
     }
 
-    public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
+    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        var hasScript = files.ContainsKey(FomodConstants.XmlConfigRelativePath);
+        var hasScript = archiveFiles.ContainsKey(FomodConstants.XmlConfigRelativePath);
         return hasScript ? Common.Priority.High : Common.Priority.None;
     }
 

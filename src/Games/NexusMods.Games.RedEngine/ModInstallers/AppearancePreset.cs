@@ -28,11 +28,11 @@ public class AppearancePreset : IModInstaller
         _dataStore = dataStore;
     }
 
-    public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
+    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
         if (!installation.Is<Cyberpunk2077>()) return Common.Priority.None;
 
-        return files.All(f => Helpers.IgnoreExtensions.Contains(f.Key.Extension) || (f.Value.FileTypes.Contains(FileType.Cyberpunk2077AppearancePreset) && f.Key.Extension == KnownExtensions.Preset))
+        return archiveFiles.All(f => Helpers.IgnoreExtensions.Contains(f.Key.Extension) || (f.Value.FileTypes.Contains(FileType.Cyberpunk2077AppearancePreset) && f.Key.Extension == KnownExtensions.Preset))
             ? Common.Priority.Normal
             : Common.Priority.None;
     }

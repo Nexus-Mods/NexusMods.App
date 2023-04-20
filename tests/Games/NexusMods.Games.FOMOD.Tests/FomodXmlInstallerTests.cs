@@ -248,7 +248,7 @@ public class FomodXmlInstallerTests
 
     private record TestState(FomodXmlInstaller Installer, Mod BaseMod, TemporaryPath DataStorePath, AnalyzedArchive AnalysisResults, SqliteDataStore DataStore) : IDisposable
     {
-        public Priority GetPriority() => Installer.Priority(new GameInstallation(), AnalysisResults.Contents);
+        public Priority GetPriority() => Installer.GetPriority(new GameInstallation(), AnalysisResults.Contents);
         public async ValueTask<IEnumerable<AModFile>> GetFilesToExtractAsync()
         {
             var mods = (await Installer.GetModsAsync(
