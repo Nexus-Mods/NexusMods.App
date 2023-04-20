@@ -5,25 +5,23 @@ using GameStore = NexusMods.DataModel.Games.GameStore;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Utils;
 
-public readonly struct GamePathProvier
+public static class GamePathProvier
 {
-    public static GamePathProvier FromStore(GameStore store) => new(store);
-
-    private readonly string _configuration;
-
-    private GamePathProvier(GameStore store)
-    {
-        _configuration = LauncherManagerHandler.GetConfigurationByPlatform(LauncherManagerHandler.FromStore(Converter.ToGameStoreTW(store)));
-    }
+    private static string GetConfiguration(GameStore store) =>
+        LauncherManagerHandler.GetConfigurationByPlatform(LauncherManagerHandler.FromStore(Converter.ToGameStoreTW(store)));
     
-    public GamePath PrimaryFile() => FromMainBin("TaleWorlds.MountAndBlade.Launcher.exe");
-    public GamePath PrimaryXboxFile() => FromMainBin("Launcher.Native.exe");
-    public GamePath PrimaryStandaloneFile() => FromMainBin(Constants.BannerlordExecutable);
+    public static GamePath PrimaryLauncherFile(GameStore store) =>
+        new(GameFolderType.Game, Path.Combine("bin", GetConfiguration(store)).ToRelativePath().Join("TaleWorlds.MountAndBlade.Launcher.exe"));
+    public static GamePath PrimaryXboxLauncherFile(GameStore store) =>
+        new(GameFolderType.Game, Path.Combine("bin", GetConfiguration(store)).ToRelativePath().Join("Launcher.Native.exe"));
+    public static GamePath PrimaryStandaloneFile(GameStore store) =>
+        new(GameFolderType.Game, Path.Combine("bin", GetConfiguration(store)).ToRelativePath().Join(Constants.BannerlordExecutable));
 
-    public GamePath BLSEStandaloneFile() => FromMainBin("Bannerlord.BLSE.Standalone.exe");
-    public GamePath BLSELauncherFile() => FromMainBin("Bannerlord.BLSE.Launcher.exe");
+    public static GamePath BLSEStandaloneFile(GameStore store) =>
+        new(GameFolderType.Game, Path.Combine("bin", GetConfiguration(store)).ToRelativePath().Join("Bannerlord.BLSE.Standalone.exe"));
+    public static GamePath BLSELauncherFile(GameStore store) =>
+        new(GameFolderType.Game, Path.Combine("bin", GetConfiguration(store)).ToRelativePath().Join("Bannerlord.BLSE.Launcher.exe"));
 
-    public GamePath BLSELauncherExFile() => FromMainBin("Bannerlord.BLSE.LauncherEx.exe");
-
-    private GamePath FromMainBin(RelativePath toJoin) => new(GameFolderType.Game, Path.Combine("bin", _configuration).ToRelativePath().Join(toJoin));
+    public static GamePath BLSELauncherExFile(GameStore store) =>
+        new(GameFolderType.Game, Path.Combine("bin", GetConfiguration(store)).ToRelativePath().Join("Bannerlord.BLSE.LauncherEx.exe"));
 }

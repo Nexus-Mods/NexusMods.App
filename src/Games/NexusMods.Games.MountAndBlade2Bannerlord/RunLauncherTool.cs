@@ -3,7 +3,8 @@ using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
-using NexusMods.Games.MountAndBlade2Bannerlord.Utils;
+
+using static NexusMods.Games.MountAndBlade2Bannerlord.Utils.GamePathProvier;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
@@ -23,19 +24,21 @@ public class RunLauncherTool : ITool
     {
         if (!loadout.Installation.Is<MountAndBlade2Bannerlord>()) return;
 
-        var gamePathProvider = GamePathProvier.FromStore(loadout.Installation.Store);
-
-        var isXbox = loadout.Installation.Store == GameStore.XboxGamePass;
-        var useVanillaLauncher = false; //TODO: From Options
+        var store = loadout.Installation.Store;
+        var isXbox = store == GameStore.XboxGamePass;
+        var useVanillaLauncher = false; // TODO: From Options
         var hasBLSE = loadout.HasInstalledFile("Bannerlord.BLSE.Shared.dll");
+        if (isXbox && !hasBLSE) return; // Not supported.
 
-        var program = hasBLSE
-            ? useVanillaLauncher
-                ? gamePathProvider.BLSELauncherFile()
-                : gamePathProvider.BLSELauncherExFile()
-            : isXbox
-                ? gamePathProvider.PrimaryXboxFile()
-                : gamePathProvider.PrimaryFile();
+        var blseExecutable = useVanillaLauncher
+            ? BLSELauncherFile(store)
+            : BLSELauncherExFile(store);
+
+        var program = isXbox
+            ? blseExecutable
+            : hasBLSE
+                ? blseExecutable
+                : PrimaryLauncherFile(store);
         _logger.LogInformation("Running {Program}", program);
 
         var psi = new ProcessStartInfo(program.ToString())

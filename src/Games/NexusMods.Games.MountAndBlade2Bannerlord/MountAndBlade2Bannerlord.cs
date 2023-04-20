@@ -36,7 +36,7 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
     public override string Name => DisplayName;
     public override GameDomain Domain => StaticDomain;
 
-    public override GamePath GetPrimaryFile(GameStore store) => GamePathProvier.FromStore(store).PrimaryFile();
+    public override GamePath GetPrimaryFile(GameStore store) => GamePathProvier.PrimaryLauncherFile(store);
 
     public override IStreamFactory Icon =>
         new EmbededResourceStreamFactory<MountAndBlade2Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.icon.jpg");
