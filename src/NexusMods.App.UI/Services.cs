@@ -18,7 +18,6 @@ using NexusMods.App.UI.RightContent.LoadoutGrid;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 using NexusMods.App.UI.RightContent.MyGames;
 using NexusMods.App.UI.Routing;
-using NexusMods.App.UI.Toolbars;
 using NexusMods.App.UI.Windows;
 using ReactiveUI;
 using ImageButton = NexusMods.App.UI.Controls.Spine.Buttons.Image.ImageButton;
@@ -41,7 +40,6 @@ public static class Services
             .AddSingleton<IViewLocator, InjectedViewLocator>()
 
             .AddViewModel<CompletedViewModel, ICompletedViewModel>()
-            .AddViewModel<DefaultLoadoutToolbarViewModel, IDefaultLoadoutToolbarViewModel>()
             .AddViewModel<DownloadsViewModel, IDownloadsViewModel>()
             .AddViewModel<FoundGamesViewModel, IFoundGamesViewModel>()
             .AddViewModel<GameLeftMenuViewModel, IGameLeftMenuViewModel>()
@@ -68,7 +66,6 @@ public static class Services
 
             // Views
             .AddView<CompletedView, ICompletedViewModel>()
-            .AddView<DefaultLoadoutToolbarView, IDefaultLoadoutToolbarViewModel>()
             .AddView<DownloadsView, IDownloadsViewModel>()
             .AddView<FoundGamesView, IFoundGamesViewModel>()
             .AddView<GameLeftMenuView, IGameLeftMenuViewModel>()

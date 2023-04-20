@@ -9,19 +9,31 @@
     xmlns:loadoutGrid="clr-namespace:NexusMods.App.UI.RightContent.LoadoutGrid"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia">
     <Design.DataContext>
         <loadoutGrid:LoadoutGridDesignViewModel />
     </Design.DataContext>
-    <Grid RowDefinitions="Auto, *">
-        <reactiveUi:ViewModelViewHost Grid.Row="0" x:Name="ToolbarViewHost" />
+    <StackPanel>
+        <Border Classes="Toolbar">
+            <Grid ColumnDefinitions="*, Auto">
+                <TextBlock Grid.Column="0" Text="" x:Name="ModlistNameText"></TextBlock>
+                <StackPanel Grid.Column="1">
+                    <Button x:Name="AddModButton">
+                        <StackPanel>
+                            <avalonia:Icon Classes="PlusCircleOutline" />
+                            <TextBlock Text="Add Mod"></TextBlock>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
         <DataGrid
             CanUserReorderColumns="True"
             CanUserResizeColumns="True"
             CanUserSortColumns="True"
-            Grid.Row="1"
             Margin="24,16"
             x:Name="ModsDataGrid" />
-    </Grid>
+    </StackPanel>
 </reactiveUi:ReactiveUserControl>
 

@@ -18,6 +18,7 @@
             <icons:Icon Classes="Cog"></icons:Icon>
             <icons:Icon Classes="Help"></icons:Icon>
             <icons:Icon Classes="History"></icons:Icon>
+            <icons:Icon Classes="PlusCircleOutline"></icons:Icon>
             <icons:Icon Classes="ProgressDownload"></icons:Icon>
             <icons:Icon Classes="PauseCircleOutline"></icons:Icon>
             <icons:Icon Classes="PauseCircleFilled"></icons:Icon>
@@ -49,7 +50,9 @@
     <Style Selector="icons|Icon.History">
         <Setter Property="Value" Value="mdi-history" />
     </Style>
-    
+    <Style Selector="icons|Icon.PlusCircleOutline">
+        <Setter Property="Value" Value="mdi-plus-circle-outline"></Setter>
+    </Style>
     <Style Selector="icons|Icon.ProgressDownload">
         <Setter Property="Value" Value="mdi-progress-download"></Setter>
     </Style>
