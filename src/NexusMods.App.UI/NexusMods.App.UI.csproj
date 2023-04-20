@@ -63,6 +63,10 @@
     <AvaloniaResource Include="Theme\IconStyles.xaml" />
     <None Remove="Fonts\Bold\Roboto-Bold.ttf" />
     <AvaloniaResource Include="Fonts\Bold\Roboto-Bold.ttf" />
+    <None Remove="Theme\GridStyles.xaml" />
+    <AvaloniaResource Include="Theme\GridStyles.xaml" />
+    <None Remove="Theme\Toolbar.xaml" />
+    <AvaloniaResource Include="Theme\Toolbar.xaml" />
   </ItemGroup>
 
   <ItemGroup>

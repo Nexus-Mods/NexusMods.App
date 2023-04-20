@@ -3,6 +3,7 @@
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/BareIcons.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/Borders.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/DataGridStyles.xaml" />
+    <StyleInclude Source="avares://NexusMods.App.UI/Theme/GridStyles.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/IconStyles.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/LabelStyles.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/PillStyles.xaml" />
@@ -10,6 +11,7 @@
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/StackPanelStyles.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/TextBlockStyles.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/ToggleSwitchStyles.xaml" />
+    <StyleInclude Source="avares://NexusMods.App.UI/Theme/Toolbar.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/WindowStyles.xaml" />
 
 </Styles>

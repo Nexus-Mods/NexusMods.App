@@ -18,6 +18,9 @@
             <icons:Icon Classes="Help"></icons:Icon>
             <icons:Icon Classes="History"></icons:Icon>
             <icons:Icon Classes="ProgressDownload"></icons:Icon>
+            <icons:Icon Classes="PauseCircleOutline"></icons:Icon>
+            <icons:Icon Classes="PauseCircleFilled"></icons:Icon>
+            <icons:Icon Classes="RemoveCircleOutline"></icons:Icon>
             <icons:Icon Classes="Star"></icons:Icon>
         </WrapPanel>
     </Design.PreviewWith>
@@ -44,6 +47,18 @@
     
     <Style Selector="icons|Icon.ProgressDownload">
         <Setter Property="Value" Value="mdi-progress-download"></Setter>
+    </Style>
+    
+    <Style Selector="icons|Icon.PauseCircleOutline">
+        <Setter Property="Value" Value="mdi-pause-circle-outline"></Setter>
+    </Style>
+    
+    <Style Selector="icons|Icon.PauseCircleFilled">
+        <Setter Property="Value" Value="mdi-pause-circle"></Setter>
+    </Style>
+    
+    <Style Selector="icons|Icon.RemoveCircleOutline">
+        <Setter Property="Value" Value="mdi-minus-circle-outline"></Setter>
     </Style>
     
     <Style Selector="icons|Icon.Star">

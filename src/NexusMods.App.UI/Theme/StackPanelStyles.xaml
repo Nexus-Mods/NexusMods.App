@@ -8,6 +8,12 @@
         <Setter Property="Margin" Value="16, 0"></Setter>
     </Style>
     
+    <Style Selector="StackPanel.Toolbar">
+        <Setter Property="Orientation" Value="Horizontal" />
+        <Setter Property="Spacing" Value="16"></Setter>
+        <Setter Property="Margin" Value="16, 0"></Setter>
+    </Style>
+    
     <Style Selector="StackPanel.LeftPaneButtonList">
         <Setter Property="Spacing" Value="4"></Setter>
         <Setter Property="Margin" Value="16"></Setter>
