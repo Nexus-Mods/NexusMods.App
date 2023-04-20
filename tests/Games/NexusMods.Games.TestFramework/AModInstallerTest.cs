@@ -72,7 +72,9 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
             baseMod,
             analyzedArchive.Hash,
             analyzedArchive.Contents,
-            cancellationToken)).ToArray();
+            cancellationToken))
+            .WithPersist(DataStore)
+            .ToArray();
 
         mods.Should().NotBeEmpty();
         return mods;
