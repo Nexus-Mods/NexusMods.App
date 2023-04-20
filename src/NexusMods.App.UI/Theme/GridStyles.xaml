@@ -15,12 +15,4 @@
             </Grid>
         </StackPanel>
     </Design.PreviewWith>
-    
-    <Style Selector="Grid.Toolbar">
-        <Setter Property="Height" Value="52"></Setter>
-        <Setter Property="Background" Value="{DynamicResource BrandSecondaryDarker}"></Setter>
-    </Style>
-    
-    
-    
 </Styles>
