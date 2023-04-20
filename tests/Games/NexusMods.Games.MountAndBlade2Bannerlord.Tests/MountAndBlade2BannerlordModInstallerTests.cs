@@ -54,7 +54,27 @@ public class MountAndBlade2BannerlordModInstallerTests : AModInstallerTest<Mount
 
     [Fact]
     [Trait("RequiresNetworking", "True")]
-    public async Task Test_WithRealMod()
+    public async Task Test_WithBLSE()
+    {
+        // Bannerlord Software Extender (BLSE): Bannerlord Software Extender (BLSE) Main File (Version 1.3.6)
+        var (file, hash) = await DownloadMod(Game.Domain, ModId.From(1), FileId.From(34698));
+        hash.Should().Be(Hash.From(0xC1245FC63807C47C));
+
+        await using (file)
+        {
+            var filesToExtract = await GetFilesToExtractFromInstaller(file.Path);
+            filesToExtract.Should().HaveCount(11);
+            filesToExtract.Should().AllSatisfy(x => x.To.Path.StartsWith("bin"));
+            filesToExtract.Should().Contain(x => x.To.FileName == "Bannerlord.BLSE.Shared.dll");
+            filesToExtract.Should().Contain(x => x.To.FileName == "Bannerlord.BLSE.Standalone.exe");
+            filesToExtract.Should().Contain(x => x.To.FileName == "Bannerlord.BLSE.Launcher.exe");
+            filesToExtract.Should().Contain(x => x.To.FileName == "Bannerlord.BLSE.LauncherEx.exe");
+        }
+    }
+    
+    [Fact]
+    [Trait("RequiresNetworking", "True")]
+    public async Task Test_WithStandardMod()
     {
         // Harmony: Harmony Main File (Version 2.3.0)
         var (file, hash) = await DownloadMod(Game.Domain, ModId.From(2006), FileId.From(34666));
