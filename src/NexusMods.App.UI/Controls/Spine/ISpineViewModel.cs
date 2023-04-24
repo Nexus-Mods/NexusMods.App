@@ -17,6 +17,11 @@ public interface ISpineViewModel : IViewModelInterface
     /// Add Button
     /// </summary>
     public IIconButtonViewModel Add { get; }
+    
+    /// <summary>
+    /// Download Button
+    /// </summary>
+    public IIconButtonViewModel Downloads { get; }
 
     /// <summary>
     /// Game Buttons

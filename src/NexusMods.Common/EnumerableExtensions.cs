@@ -53,6 +53,18 @@ public static class EnumerableExtensions
 
         return dict;
     }
+    
+    /// <summary>
+    /// Reduces a <see cref="IEnumerable{T}"/> of <see cref="KeyValuePair{TKey,TValue}"/> into a <see cref="Dictionary{TKey,TValue}"/>.
+    /// </summary>
+    /// <param name="coll">The collection to apply the operation on.</param>
+    /// <typeparam name="TKey">Type of key used.</typeparam>
+    /// <typeparam name="TValue">Type of value used.</typeparam>
+    public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> coll)
+        where TKey : notnull
+    {
+        return coll.ToDictionary(itm => itm.Key, itm => itm.Value);
+    }
 
     /// <summary>
     /// Transforms a IAsyncEnumerable into a dictionary creating keys with a key selector

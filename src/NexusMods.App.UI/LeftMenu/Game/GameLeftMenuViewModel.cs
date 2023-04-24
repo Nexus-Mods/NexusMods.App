@@ -89,7 +89,7 @@ public class GameLeftMenuViewModel : AViewModel<IGameLeftMenuViewModel>, IGameLe
     private void SelectLoadout(Loadout loadout)
     {
         _logger.LogDebug("Loadout {LoadoutId} selected", loadout.LoadoutId);
-        _loadoutGridViewModel.Loadout = loadout.LoadoutId;
+        _loadoutGridViewModel.LoadoutId = loadout.LoadoutId;
         RightContent = _loadoutGridViewModel;
     }
 }

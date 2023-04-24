@@ -18,6 +18,8 @@ public partial class Spine : ReactiveUserControl<ISpineViewModel>
                 .DisposeWith(disposables);
             this.OneWayBind(ViewModel, vm => vm.Add, v => v.Add.ViewModel)
                 .DisposeWith(disposables);
+            this.OneWayBind(ViewModel, vm => vm.Downloads, v => v.Download.ViewModel)
+                .DisposeWith(disposables);
         });
     }
 }

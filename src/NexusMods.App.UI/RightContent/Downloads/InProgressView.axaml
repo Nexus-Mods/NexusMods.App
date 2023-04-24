@@ -1,0 +1,49 @@
+﻿<reactiveUi:ReactiveUserControl
+    x:TypeArguments="downloads:IInProgressViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:downloads="clr-namespace:NexusMods.App.UI.RightContent.Downloads"
+    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="NexusMods.App.UI.RightContent.Downloads.InProgressView">
+    <Design.DataContext>
+        <downloads:InProgressDesignViewModel></downloads:InProgressDesignViewModel>
+    </Design.DataContext>
+    <StackPanel>
+        <Border Classes="Toolbar">
+            <Grid ColumnDefinitions="*, Auto">
+                <TextBlock Grid.Column="0" Text="IN PROGRESS"></TextBlock>
+                <StackPanel Grid.Column="1">
+                    <Button x:Name="CancelButton">
+                        <StackPanel>
+                            <avalonia:Icon Classes="RemoveCircleOutline" />
+                            <TextBlock Text="Cancel"></TextBlock>
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="PauseButton">
+                        <StackPanel>
+                            <avalonia:Icon Classes="PauseCircleOutline" />
+                            <TextBlock Text="Pause"></TextBlock>
+                        </StackPanel>
+                    </Button>
+                    <Line />
+                    <Button x:Name="PauseAllButton">
+                        <StackPanel>
+                            <avalonia:Icon Classes="PauseCircleFilled" />
+                            <TextBlock Text="Pause all"></TextBlock>
+                        </StackPanel>
+                    </Button>
+                    <Line />
+                    <Button x:Name="SettingsButton">
+                        <StackPanel>
+                            <avalonia:Icon Classes="Cog" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </StackPanel>
+</reactiveUi:ReactiveUserControl>
