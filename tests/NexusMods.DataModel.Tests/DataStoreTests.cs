@@ -1,11 +1,9 @@
 using System.Buffers.Binary;
-using System.Collections.Concurrent;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -43,7 +41,7 @@ public class DataStoreTests
     [Fact]
     public void CompareAndSwapIsAtomic()
     {
-        const int numThreads = 10;
+        var numThreads = Math.Min(10, Environment.ProcessorCount * 2);
         const ulong numTimes = 100;
         var id = new Id64(EntityCategory.TestData, 0xDEADBEEF);
         var threads = Enumerable.Range(0, numThreads)
@@ -74,7 +72,7 @@ public class DataStoreTests
         }
         var oldBuff = DataStore.GetRaw(id);
         var oldVal = BinaryPrimitives.ReadUInt64LittleEndian(oldBuff);
-        oldVal.Should().Be(numTimes * numThreads, "the CAS operation should be atomic");
+        oldVal.Should().Be(numTimes * (ulong)numThreads, "the CAS operation should be atomic");
     }
 
     [Fact]
