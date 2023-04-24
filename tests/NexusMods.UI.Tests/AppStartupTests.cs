@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 
 namespace NexusMods.UI.Tests;
 
@@ -10,6 +9,6 @@ public class AppStartupTests
     public void CanBuildHost()
     {
         var host = App.Program.BuildHost();
-        host.Should().NotBeNull();
+        App.UI.Startup.BuildAvaloniaApp(host.Services).Should().NotBeNull();
     }
 }
