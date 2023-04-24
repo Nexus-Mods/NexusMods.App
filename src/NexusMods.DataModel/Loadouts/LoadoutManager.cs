@@ -295,14 +295,20 @@ public class LoadoutManager
             }
 
             // Step 4: Install the mods.
-            var mods = (await installer.Installer.GetModsAsync(
-                    loadout.Value.Installation,
-                    baseMod,
-                    analyzed.Hash,
-                    archive.Contents,
-                    cancellationToken))
-                .WithPersist(Store)
-                .ToArray();
+            var results = await installer.Installer.GetModsAsync(
+                loadout.Value.Installation,
+                baseMod.Id,
+                analyzed.Hash,
+                archive.Contents,
+                cancellationToken);
+
+            var mods = results.Select(result => new Mod
+            {
+                Id = result.Id,
+                Files = result.Files.ToEntityDictionary(Store),
+                Name = result.Name ?? baseMod.Name,
+                Version = result.Version ?? baseMod.Version,
+            }).WithPersist(Store).ToArray();
 
             job.Progress = new Percent(0.75);
 

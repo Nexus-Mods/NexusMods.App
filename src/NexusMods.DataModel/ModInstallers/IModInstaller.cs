@@ -30,14 +30,14 @@ public interface IModInstaller
     /// Finds all mods inside the provided archive.
     /// </summary>
     /// <param name="gameInstallation">The game installation.</param>
-    /// <param name="baseMod">The base mod.</param>
+    /// <param name="baseModId">The base mod id.</param>
     /// <param name="srcArchiveHash">Hash of the source archive.</param>
     /// <param name="archiveFiles">Files from the archive.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns></returns>
-    public ValueTask<IEnumerable<Mod>> GetModsAsync(
+    public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
-        Mod baseMod,
+        ModId baseModId,
         Hash srcArchiveHash,
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
         CancellationToken cancellationToken = default);

@@ -24,13 +24,6 @@ public class SMAPIModInstaller : IModInstaller
     private static readonly RelativePath ModsFolder = "Mods".ToRelativePath();
     private static readonly RelativePath ManifestFile = "manifest.json".ToRelativePath();
 
-    private readonly IDataStore _dataStore;
-
-    public SMAPIModInstaller(IDataStore dataStore)
-    {
-        _dataStore = dataStore;
-    }
-
     private static IEnumerable<KeyValuePair<RelativePath, AnalyzedFile>> GetManifestFiles(
         EntityDictionary<RelativePath, AnalyzedFile> files)
     {
@@ -55,18 +48,17 @@ public class SMAPIModInstaller : IModInstaller
             : Priority.None;
     }
 
-    public ValueTask<IEnumerable<Mod>> GetModsAsync(
+    public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
-        Mod baseMod,
+        ModId baseModId,
         Hash srcArchiveHash,
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
         CancellationToken cancellationToken = default)
     {
-        return ValueTask.FromResult(GetMods(baseMod, srcArchiveHash, archiveFiles));
+        return ValueTask.FromResult(GetMods(srcArchiveHash, archiveFiles));
     }
 
-    private IEnumerable<Mod> GetMods(
-        Mod baseMod,
+    private IEnumerable<ModInstallerResult> GetMods(
         Hash srcArchiveHash,
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
@@ -100,10 +92,10 @@ public class SMAPIModInstaller : IModInstaller
                         };
                     });
 
-                return baseMod with
+                return new ModInstallerResult
                 {
                     Id = ModId.New(),
-                    Files = modFiles.ToEntityDictionary(_dataStore),
+                    Files = modFiles,
                     Name = manifest.Name,
                     Version = manifest.Version.ToString()
                 };

@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -60,21 +61,20 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     {
         var analyzedArchive = await AnalyzeArchive(archivePath);
 
-        var baseMod = new Mod
-        {
-            Name = archivePath.FileName,
-            Files = new EntityDictionary<ModFileId, AModFile>(),
-            Id = ModId.New()
-        };
-
-        var mods = (await ModInstaller.GetModsAsync(
+        var results = await ModInstaller.GetModsAsync(
             GameInstallation,
-            baseMod,
+            ModId.New(),
             analyzedArchive.Hash,
             analyzedArchive.Contents,
-            cancellationToken))
-            .WithPersist(DataStore)
-            .ToArray();
+            cancellationToken);
+
+        var mods = results.Select(result => new Mod
+        {
+            Id = result.Id,
+            Files = result.Files.ToEntityDictionary(DataStore),
+            Name = result.Name ?? archivePath.FileName,
+            Version = result.Version ?? string.Empty,
+        }).WithPersist(DataStore).ToArray();
 
         mods.Should().NotBeEmpty();
         return mods;
@@ -238,21 +238,14 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
 
         priority.Should().Be(expectedPriority, "because the priority should be correct");
 
-        var baseMod = new Mod
-        {
-            Name = string.Empty,
-            Id = ModId.New(),
-            Files = new EntityDictionary<ModFileId, AModFile>()
-        };
-
         var mods = (await ModInstaller.GetModsAsync(
             GameInstallation,
-            baseMod,
+            ModId.New(),
             Hash.From(0xDEADBEEF),
             description)).ToArray();
 
         mods.Should().ContainSingle();
-        var contents = mods.First().Files.Values;
+        var contents = mods.First().Files;
         return contents.OfType<AStaticModFile>().Select(m => (m.Hash.Value, m.To.Type, m.To.Path.ToString().Replace("\\", "/")));
     }
 }

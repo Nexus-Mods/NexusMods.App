@@ -30,12 +30,10 @@ public class SMAPIInstaller : IModInstaller
     private static readonly RelativePath WindowsFolder = "windows".ToRelativePath();
     private static readonly RelativePath MacOSFolder = "macOS".ToRelativePath();
 
-    private readonly IDataStore _dataStore;
     private readonly FileHashCache _fileHashCache;
 
-    public SMAPIInstaller(IDataStore dataStore, FileHashCache fileHashCache)
+    public SMAPIInstaller(FileHashCache fileHashCache)
     {
-        _dataStore = dataStore;
         _fileHashCache = fileHashCache;
     }
 
@@ -67,19 +65,19 @@ public class SMAPIInstaller : IModInstaller
             : Priority.None;
     }
 
-    public ValueTask<IEnumerable<Mod>> GetModsAsync(
+    public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
-        Mod baseMod,
+        ModId baseModId,
         Hash srcArchiveHash,
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
         CancellationToken cancellationToken = default)
     {
-        return ValueTask.FromResult(GetMods(gameInstallation, baseMod, srcArchiveHash, archiveFiles));
+        return ValueTask.FromResult(GetMods(gameInstallation, baseModId, srcArchiveHash, archiveFiles));
     }
 
-    private IEnumerable<Mod> GetMods(
+    private IEnumerable<ModInstallerResult> GetMods(
         GameInstallation gameInstallation,
-        Mod baseMod,
+        ModId baseModId,
         Hash srcArchiveHash,
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
@@ -146,9 +144,11 @@ public class SMAPIInstaller : IModInstaller
             To = new GamePath(GameFolderType.Game, "StardewModdingAPI.deps.json")
         });
 
-        yield return baseMod with
+        // TODO: consider adding Name and Version
+        yield return new ModInstallerResult
         {
-            Files = modFiles.ToEntityDictionary(_dataStore)
+            Id = baseModId,
+            Files = modFiles
         };
     }
 }

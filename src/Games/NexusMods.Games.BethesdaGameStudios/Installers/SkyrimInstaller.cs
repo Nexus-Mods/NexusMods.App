@@ -38,13 +38,6 @@ public class SkyrimInstaller : IModInstaller
 
     private static readonly RelativePath Data = "Data".ToRelativePath();
 
-    private readonly IDataStore _dataStore;
-
-    public SkyrimInstaller(IDataStore dataStore)
-    {
-        _dataStore = dataStore;
-    }
-
     public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
         if (installation.Game is not SkyrimSpecialEdition)
@@ -75,18 +68,18 @@ public class SkyrimInstaller : IModInstaller
         return Priority.None;
     }
 
-    public ValueTask<IEnumerable<Mod>> GetModsAsync(
+    public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
-        Mod baseMod,
+        ModId baseModId,
         Hash srcArchiveHash,
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
         CancellationToken cancellationToken = default)
     {
-        return ValueTask.FromResult(GetMods(baseMod, srcArchiveHash, archiveFiles));
+        return ValueTask.FromResult(GetMods(baseModId, srcArchiveHash, archiveFiles));
     }
 
-    private IEnumerable<Mod> GetMods(
-        Mod baseMod,
+    private IEnumerable<ModInstallerResult> GetMods(
+        ModId baseModId,
         Hash srcArchiveHash,
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
@@ -108,9 +101,10 @@ public class SkyrimInstaller : IModInstaller
                 };
             });
 
-        yield return baseMod with
+        yield return new ModInstallerResult
         {
-            Files = modFiles.ToEntityDictionary(_dataStore)
+            Id = baseModId,
+            Files = modFiles
         };
     }
 

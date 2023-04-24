@@ -36,9 +36,9 @@ public class FomodXmlInstaller : IModInstaller
         return hasScript ? Priority.High : Priority.None;
     }
 
-    public async ValueTask<IEnumerable<DataModel.Loadouts.Mod>> GetModsAsync(
+    public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
-        DataModel.Loadouts.Mod baseMod,
+        ModId baseModId,
         Hash srcArchiveHash,
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
         CancellationToken cancellationToken = default)
@@ -53,7 +53,7 @@ public class FomodXmlInstaller : IModInstaller
 
         var analyzerInfo = analyzedFile.AnalysisData.OfType<FomodAnalyzerInfo>().FirstOrDefault();
         if (analyzerInfo == default)
-            return Array.Empty<DataModel.Loadouts.Mod>(); // <= invalid FOMOD, so no analyzer info dumped
+            return Array.Empty<ModInstallerResult>(); // <= invalid FOMOD, so no analyzer info dumped
 
         // Setup mod, exclude script path so it doesn't get picked up and thus double read from disk
         var modFiles = archiveFiles.Keys.Select(x => x.ToString()).ToList();
@@ -75,10 +75,10 @@ public class FomodXmlInstaller : IModInstaller
 
         return new[]
         {
-            baseMod with
+            new ModInstallerResult
             {
+                Id = baseModId,
                 Files = InstructionsToModFiles(instructions, srcArchiveHash, archiveFiles)
-                    .ToEntityDictionary(_dataStore)
             }
         };
     }

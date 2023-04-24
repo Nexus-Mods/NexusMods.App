@@ -26,18 +26,18 @@ public class StubbedGameInstaller : IModInstaller
         return installation.Game is StubbedGame ? Priority.Normal : Priority.None;
     }
 
-    public ValueTask<IEnumerable<Mod>> GetModsAsync(
+    public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
-        Mod baseMod,
+        ModId baseModId,
         Hash srcArchiveHash,
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
         CancellationToken cancellationToken = default)
     {
-        return ValueTask.FromResult(GetMods(baseMod, srcArchiveHash, archiveFiles));
+        return ValueTask.FromResult(GetMods(baseModId, srcArchiveHash, archiveFiles));
     }
 
-    private IEnumerable<Mod> GetMods(
-        Mod baseMod,
+    private IEnumerable<ModInstallerResult> GetMods(
+        ModId baseModId,
         Hash srcArchiveHash,
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
@@ -56,9 +56,10 @@ public class StubbedGameInstaller : IModInstaller
                 };
             });
 
-        yield return baseMod with
+        yield return new ModInstallerResult
         {
-            Files = modFiles.ToEntityDictionary(_dataStore)
+            Id = baseModId,
+            Files = modFiles
         };
     }
 }

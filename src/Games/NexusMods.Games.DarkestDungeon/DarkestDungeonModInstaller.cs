@@ -17,13 +17,6 @@ public class DarkestDungeonModInstaller : IModInstaller
     private static readonly RelativePath ModFilesTxt = "modfiles.txt".ToRelativePath();
     private static readonly RelativePath ModFolder = "mods".ToRelativePath();
 
-    private readonly IDataStore _dataStore;
-    
-    public DarkestDungeonModInstaller(IDataStore dataStore)
-    {
-        _dataStore = dataStore;
-    }
-    
     public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
         if (installation.Game is not DarkestDungeon)
@@ -34,18 +27,18 @@ public class DarkestDungeonModInstaller : IModInstaller
             : Priority.None;
     }
 
-    public ValueTask<IEnumerable<Mod>> GetModsAsync(
+    public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
-        Mod baseMod,
+        ModId baseModId,
         Hash srcArchiveHash,
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
         CancellationToken cancellationToken = default)
     {
-        return ValueTask.FromResult(GetMods(baseMod, srcArchiveHash, archiveFiles));
+        return ValueTask.FromResult(GetMods(baseModId, srcArchiveHash, archiveFiles));
     }
 
-    private IEnumerable<Mod> GetMods(
-        Mod baseMod,
+    private IEnumerable<ModInstallerResult> GetMods(
+        ModId baseModId,
         Hash srcArchiveHash,
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
@@ -69,9 +62,10 @@ public class DarkestDungeonModInstaller : IModInstaller
                 };
             });
 
-        yield return baseMod with
+        yield return new ModInstallerResult
         {
-            Files = modFiles.ToEntityDictionary(_dataStore)
+            Id = baseModId,
+            Files = modFiles
         };
     }
 }

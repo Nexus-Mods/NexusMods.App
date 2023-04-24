@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
@@ -12,17 +13,12 @@ using NexusMods.Paths.Extensions;
 
 namespace NexusMods.Games.Sifu;
 
+[SuppressMessage("ReSharper", "InconsistentNaming")]
+[SuppressMessage("ReSharper", "IdentifierTypo")]
 public class SifuModInstaller : IModInstaller
 {
     private static readonly Extension PakExt = new(".pak");
     private static readonly RelativePath ModsPath = @"Content\Paks\~mods".ToRelativePath();
-
-    private readonly IDataStore _dataStore;
-
-    public SifuModInstaller(IDataStore dataStore)
-    {
-        _dataStore = dataStore;
-    }
 
     public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
@@ -36,18 +32,18 @@ public class SifuModInstaller : IModInstaller
         return files.Any(kv => kv.Key.Extension == PakExt);
     }
 
-    public ValueTask<IEnumerable<Mod>> GetModsAsync(
+    public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
-        Mod baseMod,
+        ModId baseModId,
         Hash srcArchiveHash,
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
         CancellationToken cancellationToken = default)
     {
-        return ValueTask.FromResult(GetMods(baseMod, srcArchiveHash, archiveFiles));
+        return ValueTask.FromResult(GetMods(baseModId, srcArchiveHash, archiveFiles));
     }
 
-    private IEnumerable<Mod> GetMods(
-        Mod baseMod,
+    private IEnumerable<ModInstallerResult> GetMods(
+        ModId baseModId,
         Hash srcArchiveHash,
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
@@ -69,9 +65,10 @@ public class SifuModInstaller : IModInstaller
                 };
             });
 
-        yield return baseMod with
+        yield return new ModInstallerResult
         {
-            Files = modFiles.ToEntityDictionary(_dataStore)
+            Id = baseModId,
+            Files = modFiles
         };
     }
 }

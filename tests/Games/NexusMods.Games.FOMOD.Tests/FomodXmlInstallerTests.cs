@@ -236,31 +236,24 @@ public class FomodXmlInstallerTests
         if (analyzed is not AnalyzedArchive archive)
             throw new Exception("FOMOD was not registered as archive.");
 
-        var baseMod = new Mod
-        {
-            Name = string.Empty,
-            Files = new EntityDictionary<ModFileId, AModFile>(),
-            Id = ModId.New()
-        };
-
-        return new TestState(installer, baseMod, tmpFile, archive, dataStore);
+        return new TestState(installer, tmpFile, archive, dataStore);
     }
 
-    private record TestState(FomodXmlInstaller Installer, Mod BaseMod, TemporaryPath DataStorePath, AnalyzedArchive AnalysisResults, SqliteDataStore DataStore) : IDisposable
+    private record TestState(FomodXmlInstaller Installer, TemporaryPath DataStorePath, AnalyzedArchive AnalysisResults, SqliteDataStore DataStore) : IDisposable
     {
         public Priority GetPriority() => Installer.GetPriority(new GameInstallation(), AnalysisResults.Contents);
         public async ValueTask<IEnumerable<AModFile>> GetFilesToExtractAsync()
         {
             var mods = (await Installer.GetModsAsync(
                 new GameInstallation(),
-                BaseMod,
+                ModId.New(),
                 AnalysisResults.Hash,
                 AnalysisResults.Contents)).ToArray();
 
             // broken FOMODs return nothing
             return mods.Length == 0
                 ? Array.Empty<AModFile>()
-                : mods.First().Files.Values.ToArray();
+                : mods.First().Files.ToArray();
         }
 
         public void Dispose()
