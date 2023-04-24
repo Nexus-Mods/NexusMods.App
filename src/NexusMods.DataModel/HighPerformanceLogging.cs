@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Interprocess.Jobs;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Paths;
@@ -78,4 +79,29 @@ internal static partial class HighPerformanceLogging
         this ILogger logger,
         JobId jobId,
         Percent percent);
+
+    [LoggerMessage(
+        EventId = 0,
+        Level = LogLevel.Trace,
+        Message = "Getting {id} of type {type}")]
+    public static partial void GetIdOfType(
+        this ILogger logger,
+        IId id,
+        string type);
+
+    [LoggerMessage(
+        EventId = 0,
+        Level = LogLevel.Debug,
+        Message = "Waiting for write to {id} to complete")]
+    public static partial void WaitingForWriteToId(
+        this ILogger logger,
+        IId id);
+
+    [LoggerMessage(
+        EventId = 0,
+        Level = LogLevel.Trace,
+        Message = "Id {id} is updated")]
+    public static partial void IdIsUpdated(
+        this ILogger logger,
+        IId id);
 }
