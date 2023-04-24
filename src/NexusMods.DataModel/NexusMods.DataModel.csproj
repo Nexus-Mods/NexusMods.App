@@ -24,6 +24,15 @@
         <PackageReference Include="Vogen" Version="3.0.12" />
     </ItemGroup>
 
+    <PropertyGroup>
+        <!-- https://github.com/andrewlock/NetEscapades.EnumGenerators#embedding-the-attributes-in-your-project -->
+        <DefineConstants>$(DefineConstants);NETESCAPADES_ENUMGENERATORS_EMBED_ATTRIBUTES</DefineConstants>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="NetEscapades.EnumGenerators" Version="1.0.0-beta07" PrivateAssets="all" ExcludeAssets="compile;runtime" />
+    </ItemGroup>
+
     <ItemGroup>
       <Folder Include="Loadouts\Extensions" />
     </ItemGroup>
