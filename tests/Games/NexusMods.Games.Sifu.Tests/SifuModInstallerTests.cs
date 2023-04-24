@@ -1,10 +1,6 @@
-using System.Text;
 using FluentAssertions;
 using NexusMods.Games.TestFramework;
-using NexusMods.Hashing.xxHash64;
-using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
 
 namespace NexusMods.Games.Sifu.Tests;
 
@@ -24,11 +20,13 @@ public class SifuModInstallerTests : AModInstallerTest<Sifu, SifuModInstaller>
         var file = await CreateTestArchive(testFiles);
         await using (file)
         {
-            var filesToExtract = await GetFilesToExtractFromInstaller(file.Path);
-            filesToExtract.Should().HaveCount(2);
-            filesToExtract.Should().AllSatisfy(x => x.To.Path.StartsWith(@"Content\Paks\~mods"));
-            filesToExtract.Should().Contain(x => x.To.FileName == "foo.pak");
-            filesToExtract.Should().Contain(x => x.To.FileName == "foo.txt");
+            var (_, modFiles) = await GetModWithFilesFromInstaller(file);
+            modFiles
+                .Should().HaveCount(2)
+                .And.AllSatisfy(x => x.To.Path.StartsWith(@"Content\Paks\~mods"))
+                .And.Satisfy(
+                    x => x.To.FileName == "foo.pak",
+                    x => x.To.FileName == "foo.txt");
         }
     }
 
@@ -44,11 +42,13 @@ public class SifuModInstallerTests : AModInstallerTest<Sifu, SifuModInstaller>
         var file = await CreateTestArchive(testFiles);
         await using (file)
         {
-            var filesToExtract = await GetFilesToExtractFromInstaller(file.Path);
-            filesToExtract.Should().HaveCount(2);
-            filesToExtract.Should().AllSatisfy(x => x.To.Path.StartsWith(@"Content\Paks\~mods"));
-            filesToExtract.Should().Contain(x => x.To.FileName == "foo.pak");
-            filesToExtract.Should().Contain(x => x.To.FileName == "foo.txt");
+            var (_, modFiles) = await GetModWithFilesFromInstaller(file);
+            modFiles
+                .Should().HaveCount(2)
+                .And.AllSatisfy(x => x.To.Path.StartsWith(@"Content\Paks\~mods"))
+                .And.Satisfy(
+                    x => x.To.FileName == "foo.pak",
+                    x => x.To.FileName == "foo.txt");
         }
     }
 }

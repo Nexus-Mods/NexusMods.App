@@ -44,21 +44,18 @@ public readonly struct LoadoutMarker
     public IEnumerable<ITool> Tools => _manager.Tools(Value.Installation.Game.Domain);
 
     /// <summary>
-    /// Installs a mod to a loadout with a given ID.
+    /// Installs the mods found in the archive to the loadout.
     /// </summary>
-    /// <param name="file">Path of the file to be installed.</param>
-    /// <param name="name">Name of the mod being installed.</param>
-    /// <param name="token">Allows you to cancel the operation.</param>
-    /// <exception cref="Exception">No supported installer.</exception>
-    /// <returns>Unique identifier for the new mod.</returns>
-    /// <remarks>
-    ///    In the context of NMA, 'install' currently means, analyze archives and
-    ///    run archive through installers.
-    ///    For more details, consider reading <a href="https://github.com/Nexus-Mods/NexusMods.App/blob/main/docs/AddingAGame.md#mod-installation">Adding a Game</a>.
-    /// </remarks>
-    public async Task<ModId> InstallModAsync(AbsolutePath file, string name, CancellationToken token = default)
+    /// <param name="archivePath">Archive to analyze and install the mods from.</param>
+    /// <param name="defaultModName">Default name of the mod. This is optional and can be overwritten by the installers.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns></returns>
+    public async Task<ModId[]> InstallModsFromArchiveAsync(
+        AbsolutePath archivePath,
+        string? defaultModName = null,
+        CancellationToken cancellationToken = default)
     {
-        return (await _manager.InstallModAsync(_id, file, name, token)).ModId;
+        return (await _manager.InstallModsFromArchiveAsync(_id, archivePath, defaultModName, cancellationToken)).ModIds;
     }
 
     /// <summary>
@@ -467,6 +464,15 @@ public readonly struct LoadoutMarker
     public void Add(Mod newMod)
     {
         _manager.Registry.Alter(_id, $"Added mod: {newMod.Name}", l => l.Add(newMod));
+    }
+
+    /// <summary>
+    /// Removes a known mod from the given loadout.
+    /// </summary>
+    /// <param name="oldMod">The mod to remove from the loadout.</param>
+    public void Remove(Mod oldMod)
+    {
+        _manager.Registry.Alter(_id, $"Remove mod: {oldMod.Name}", l => l.Remove(oldMod));
     }
 
     /// <summary>

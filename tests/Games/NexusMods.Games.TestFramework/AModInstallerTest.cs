@@ -1,15 +1,12 @@
 using System.Collections.Immutable;
 using FluentAssertions;
 using JetBrains.Annotations;
-using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
-using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.FileSignatures;
@@ -44,29 +41,94 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     {
         var analyzedArchive = await AnalyzeArchive(path);
 
-        var priority = ModInstaller.Priority(
+        var priority = ModInstaller.GetPriority(
             GameInstallation,
             analyzedArchive.Contents);
 
         return priority;
     }
 
+
     /// <summary>
-    /// Runs the <typeparamref name="TModInstaller"/> and returns a list of files
-    /// to extract from the provided archive.
+    /// Runs <typeparamref name="TModInstaller"/> and returns all mods to be installed.
     /// </summary>
-    /// <param name="path">Path to the archive to extract.</param>
+    /// <param name="archivePath"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    protected async Task<AModFile[]> GetFilesToExtractFromInstaller(AbsolutePath path)
+    protected async Task<Mod[]> GetModsFromInstaller(
+        AbsolutePath archivePath,
+        CancellationToken cancellationToken = default)
     {
-        var analyzedArchive = await AnalyzeArchive(path);
+        var analyzedArchive = await AnalyzeArchive(archivePath);
 
-        var contents = await ModInstaller.GetFilesToExtractAsync(
+        var results = await ModInstaller.GetModsAsync(
             GameInstallation,
+            ModId.New(),
             analyzedArchive.Hash,
-            analyzedArchive.Contents);
+            analyzedArchive.Contents,
+            cancellationToken);
 
-        return contents.WithPersist(DataStore).ToArray();
+        var mods = results.Select(result => new Mod
+        {
+            Id = result.Id,
+            Files = result.Files.ToEntityDictionary(DataStore),
+            Name = result.Name ?? archivePath.FileName,
+            Version = result.Version ?? string.Empty,
+        }).WithPersist(DataStore).ToArray();
+
+        mods.Should().NotBeEmpty();
+        return mods;
+    }
+
+    /// <summary>
+    /// Runs <typeparamref name="TModInstaller"/> and returns the single mod
+    /// from the archive. This calls <see cref="GetModsFromInstaller"/> and
+    /// asserts that the installer only returns 1 mod.
+    /// </summary>
+    /// <param name="archivePath"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    protected async Task<Mod> GetModFromInstaller(
+        AbsolutePath archivePath,
+        CancellationToken cancellationToken = default)
+    {
+        var mods = await GetModsFromInstaller(archivePath, cancellationToken);
+        mods.Should().ContainSingle();
+        return mods.First();
+    }
+
+    /// <summary>
+    /// Runs <typeparamref name="TModInstaller"/> and returns all mods and files
+    /// from the archive in a dictionary. This uses <see cref="GetModsFromInstaller"/>.
+    /// </summary>
+    /// <param name="archivePath"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    protected async Task<Dictionary<Mod, AModFile[]>> GetModsWithFilesFromInstaller(
+        AbsolutePath archivePath,
+        CancellationToken cancellationToken = default)
+    {
+        var mods = await GetModsFromInstaller(archivePath, cancellationToken);
+        return mods.ToDictionary(mod => mod, mod => mod.Files.Values.ToArray());
+    }
+
+    /// <summary>
+    /// Runs <typeparamref name="TModInstaller"/> and returns the single mod and its
+    /// files from the archive. This uses <see cref="GetModsFromInstaller"/> and
+    /// asserts the installer only returned a single mod.
+    /// </summary>
+    /// <param name="archivePath"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    protected async Task<(Mod mod, AModFile[] modFiles)> GetModWithFilesFromInstaller(
+        AbsolutePath archivePath,
+        CancellationToken cancellationToken = default)
+    {
+        var mods = await GetModsFromInstaller(archivePath, cancellationToken);
+        mods.Should().ContainSingle();
+
+        var mod = mods.First();
+        return (mod, mod.Files.Values.ToArray());
     }
 
     /// <summary>
@@ -166,43 +228,24 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     {
         var description = BuildArchiveDescription(files);
         
-        var priority = ModInstaller.Priority(GameInstallation, description);
+        var priority = ModInstaller.GetPriority(GameInstallation, description);
 
         if (expectedPriority == Priority.None)
         {
-            priority.Should().Be(expectedPriority,
-                "because the installer doesn't support these files");
-            return Array
-                .Empty<(ulong Hash, GameFolderType FolderType, string Path)>();
-
+            priority.Should().Be(expectedPriority, "because the installer doesn't support these files");
+            return Array.Empty<(ulong Hash, GameFolderType FolderType, string Path)>();
         }
 
         priority.Should().Be(expectedPriority, "because the priority should be correct");
 
-        var contents =
-            await ModInstaller.GetFilesToExtractAsync(GameInstallation, Hash.From(0xDEADBEEF), description);
+        var mods = (await ModInstaller.GetModsAsync(
+            GameInstallation,
+            ModId.New(),
+            Hash.From(0xDEADBEEF),
+            description)).ToArray();
+
+        mods.Should().ContainSingle();
+        var contents = mods.First().Files;
         return contents.OfType<AStaticModFile>().Select(m => (m.Hash.Value, m.To.Type, m.To.Path.ToString().Replace("\\", "/")));
-    }
-
-    /// <summary>
-    /// Installs the archive at the provided path with the <typeparamref name="TModInstaller"/>
-    /// and returns the <see cref="Mod"/> of it.
-    /// </summary>
-    /// <param name="loadout"></param>
-    /// <param name="path"></param>
-    /// <returns></returns>
-    protected async Task<Mod> InstallModWithInstaller(LoadoutMarker loadout, AbsolutePath path)
-    {
-        var contents = await GetFilesToExtractFromInstaller(path);
-
-        var newMod = new Mod
-        {
-            Id = ModId.New(),
-            Name = path.FileName,
-            Files = new EntityDictionary<ModFileId, AModFile>(DataStore, contents.Select(c => new KeyValuePair<ModFileId, IId>(c.Id, c.DataStoreId)))
-        };
-
-        loadout.Add(newMod);
-        return newMod;
     }
 }
