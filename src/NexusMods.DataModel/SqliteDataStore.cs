@@ -185,7 +185,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         if (canCache && _cache.TryGet(id, out var cached))
             return (T)cached;
 
-        _logger.LogTrace("Getting {Id} of type {Type}", id, typeof(T).Name);
+        _logger.GetIdOfType(id, typeof(T).Name);
         using var conn = _pool.RentDisposable();
         using var cmd = conn.Value.CreateCommand();
         cmd.CommandText = _getStatements[id.Category];
@@ -395,11 +395,12 @@ public class SqliteDataStore : IDataStore, IDisposable
         var maxCycles = 0;
         while (change.Type != IdUpdated.UpdateType.Delete && GetRaw(change.Id) == null && maxCycles < 10)
         {
-            _logger.LogDebug("Waiting for write to {Id} to complete", change.Id);
+            _logger.WaitingForWriteToId(change.Id);
             await Task.Delay(100);
             maxCycles++;
         }
-        _logger.LogTrace("Id {Id} is updated", change.Id);
+
+        _logger.IdIsUpdated(change.Id);
         return change.Id;
     }
 
