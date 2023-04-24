@@ -53,7 +53,7 @@ public class Program
         return 0;
     }
 
-    private static IHost BuildHost()
+    public static IHost BuildHost()
     {
         // I'm not 100% sure how to wire this up to cleanly pass settings
         // to ConfigureLogging; since the DI container isn't built until the host is.
@@ -67,10 +67,9 @@ public class Program
                 var configJson = File.ReadAllText(appFolder.CombineUnchecked("AppConfig.json").GetFullPath());
 
                 // Note: suppressed because invalid config will throw.
-                // TODO: Fix config serialization and re-add this
-                // config = JsonSerializer.Deserialize<AppConfig>(configJson)!;
-                // config.Sanitize();
-                // services.AddSingleton(config);
+                config = JsonSerializer.Deserialize<AppConfig>(configJson)!;
+                config.Sanitize();
+                services.AddSingleton(config);
                 services.AddApp(new AppConfig()).Validate();
             })
             .ConfigureLogging((_, builder) => AddLogging(builder, config.LoggingSettings))
