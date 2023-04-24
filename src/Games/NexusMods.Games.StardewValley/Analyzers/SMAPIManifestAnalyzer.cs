@@ -17,7 +17,7 @@ namespace NexusMods.Games.StardewValley.Analyzers;
 /// </summary>
 public class SMAPIManifestAnalyzer : IFileAnalyzer
 {
-    public FileAnalyzerId Id => FileAnalyzerId.New("f917e906-d28a-472d-b6e5-e7d2c61c60e4", 0);
+    public FileAnalyzerId Id => FileAnalyzerId.New("f917e906-d28a-472d-b6e5-e7d2c61c60e4", 1);
 
     public IEnumerable<FileType> FileTypes => new[] { FileType.JSON };
 
@@ -69,7 +69,8 @@ public record SMAPIManifest : IFileAnalysisData
 }
 
 /// <summary>
-/// https://github.com/Pathoschild/SMAPI/blob/9763bc7484e29cbc9e7f37c61121d794e6720e75/src/SMAPI.Toolkit.CoreInterfaces/IManifestDependency.cs#L4
+/// https://github.com/Pathoschild/SMAPI/blob/9763bc7484e29cbc9e7f37c61121d794e6720e75/src/SMAPI.Toolkit.CoreInterfaces/IManifestDependency.cs
+/// https://github.com/Pathoschild/SMAPI/blob/9763bc7484e29cbc9e7f37c61121d794e6720e75/src/SMAPI.Toolkit/Serialization/Models/ManifestDependency.cs
 /// </summary>
 [PublicAPI]
 [JsonName("NexusMods.Games.StardewValley.SMAPIManifestDependency")]
@@ -81,12 +82,13 @@ public record SMAPIManifestDependency
     public required string UniqueID { get; init; }
 
     /// <summary>
-    /// The minimum required version (if any).
+    /// The minimum required version. This property is optional.
     /// </summary>
     public Version? MinimumVersion { get; init; }
 
     /// <summary>
-    /// Whether the dependency must be installed to use the mod.
+    /// Whether the dependency must be installed to use the mod. This property is
+    /// optional and set to <c>true</c> by default (https://github.com/Pathoschild/SMAPI/blob/9763bc7484e29cbc9e7f37c61121d794e6720e75/src/SMAPI.Toolkit/Serialization/Models/ManifestDependency.cs#L29)
     /// </summary>
-    public required bool IsRequired { get; init; }
+    public bool IsRequired { get; init; } = true;
 }

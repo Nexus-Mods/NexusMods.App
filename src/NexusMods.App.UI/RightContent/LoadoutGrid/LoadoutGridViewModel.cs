@@ -44,7 +44,7 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
 
         var _ = Task.Run(async () =>
         {
-            await _loadoutManager.InstallModAsync(LoadoutId, file, file.FileName);
+            await _loadoutManager.InstallModsFromArchiveAsync(LoadoutId, file, file.FileName);
         });
     }
 

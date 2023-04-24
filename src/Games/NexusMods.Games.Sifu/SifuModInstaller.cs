@@ -1,7 +1,8 @@
-using Microsoft.Extensions.Logging;
+using System.Diagnostics.CodeAnalysis;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -9,51 +10,65 @@ using NexusMods.DataModel.ModInstallers;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NexusMods.Games.Sifu;
 
+[SuppressMessage("ReSharper", "InconsistentNaming")]
+[SuppressMessage("ReSharper", "IdentifierTypo")]
 public class SifuModInstaller : IModInstaller
 {
-    private Extension PAK_EXT = new Extension(".pak");
-    private RelativePath _modsPath = @"Content\Paks\~mods".ToRelativePath();
+    private static readonly Extension PakExt = new(".pak");
+    private static readonly RelativePath ModsPath = @"Content\Paks\~mods".ToRelativePath();
 
-    public ValueTask<IEnumerable<AModFile>> GetFilesToExtractAsync(GameInstallation installation, Hash srcArchiveHash, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken ct = default)
+    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        return ValueTask.FromResult(GetFilesToExtractSync(srcArchiveHash, files));
+        return installation.Game is Sifu && ContainsUEModFile(archiveFiles)
+            ? Priority.Normal
+            : Priority.None;
     }
 
-    public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
+    private static bool ContainsUEModFile(EntityDictionary<RelativePath, AnalyzedFile> files)
     {
-        return (installation.Game is Sifu) && ContainsUEModFile(files)
-            ? Common.Priority.Normal
-            : Common.Priority.None;
+        return files.Any(kv => kv.Key.Extension == PakExt);
     }
 
-    private bool ContainsUEModFile(EntityDictionary<RelativePath, AnalyzedFile> files)
+    public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
+        GameInstallation gameInstallation,
+        ModId baseModId,
+        Hash srcArchiveHash,
+        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
+        CancellationToken cancellationToken = default)
     {
-        return !files.FirstOrDefault(kv => kv.Key.Extension == PAK_EXT)
-            .Equals(default(KeyValuePair<RelativePath, AnalyzedFile>));
+        return ValueTask.FromResult(GetMods(baseModId, srcArchiveHash, archiveFiles));
     }
 
-    private IEnumerable<AModFile> GetFilesToExtractSync(Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
+    private IEnumerable<ModInstallerResult> GetMods(
+        ModId baseModId,
+        Hash srcArchiveHash,
+        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        var pakPath = files.Keys.First(filePath => filePath.FileName.Extension == PAK_EXT).Parent;
+        var pakPath = archiveFiles.Keys.First(filePath => filePath.FileName.Extension == PakExt).Parent;
 
-        return files
-            .Where(file => file.Key.InFolder(pakPath))
-            .Select(file =>
-                new FromArchive
+        var modFiles = archiveFiles
+            .Where(kv => kv.Key.InFolder(pakPath))
+            .Select(kv =>
+            {
+                var (path, file) = kv;
+
+                return new FromArchive
                 {
                     Id = ModFileId.New(),
-                    To = new GamePath(GameFolderType.Game, _modsPath.Join(file.Key.RelativeTo(pakPath))),
-                    From = new HashRelativePath(srcArchive, file.Key),
-                    Hash = file.Value.Hash,
-                    Size = file.Value.Size
-                });
+                    From = new HashRelativePath(srcArchiveHash, path),
+                    To = new GamePath(GameFolderType.Game, ModsPath.Join(path.RelativeTo(pakPath))),
+                    Hash = file.Hash,
+                    Size = file.Size
+                };
+            });
+
+        yield return new ModInstallerResult
+        {
+            Id = baseModId,
+            Files = modFiles
+        };
     }
 }

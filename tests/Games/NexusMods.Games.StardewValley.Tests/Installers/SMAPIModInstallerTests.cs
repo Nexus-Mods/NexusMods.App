@@ -1,11 +1,14 @@
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using NexusMods.Common;
+using NexusMods.DataModel;
+using NexusMods.DataModel.Loadouts;
 using NexusMods.Games.StardewValley.Installers;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
+using ModId = NexusMods.Networking.NexusWebApi.Types.ModId;
 
 namespace NexusMods.Games.StardewValley.Tests.Installers;
 
@@ -50,10 +53,10 @@ public class SMAPIModInstallerTests : AModInstallerTest<StardewValley, SMAPIModI
 
         await using var path = await CreateTestArchive(testFiles);
 
-        var filesToExtract = await GetFilesToExtractFromInstaller(path);
-        filesToExtract.Should().HaveCount(2);
-        filesToExtract.Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/manifest.json"));
-        filesToExtract.Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/foo"));
+        var (_, modFiles) = await GetModWithFilesFromInstaller(path);
+        modFiles.Should().HaveCount(2);
+        modFiles.Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/manifest.json"));
+        modFiles.Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/foo"));
     }
 
     [Fact]
@@ -68,10 +71,10 @@ public class SMAPIModInstallerTests : AModInstallerTest<StardewValley, SMAPIModI
 
         await using var path = await CreateTestArchive(testFiles);
 
-        var filesToExtract = await GetFilesToExtractFromInstaller(path);
-        filesToExtract.Should().HaveCount(2);
-        filesToExtract.Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/manifest.json"));
-        filesToExtract.Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/baz"));
+        var (_, modFiles) = await GetModWithFilesFromInstaller(path);
+        modFiles.Should().HaveCount(2);
+        modFiles.Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/manifest.json"));
+        modFiles.Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/baz"));
     }
 
     [Fact]
@@ -86,9 +89,38 @@ public class SMAPIModInstallerTests : AModInstallerTest<StardewValley, SMAPIModI
         {
             hash.Should().Be(Hash.From(0x59112FD2E58BD042));
 
-            var mod = await InstallModWithInstaller(loadout, path.Path);
+            var mod = await InstallModFromArchiveIntoLoadout(loadout, path);
             mod.Files.Should().NotBeEmpty();
             mod.Files.Should().AllSatisfy(kv => kv.Value.To.Path.StartsWith("Mods/NPCMapLocations"));
+        }
+    }
+
+    [Fact]
+    [Trait("RequiresNetworking", "True")]
+    public async Task Test_MultipleModsOneArchive()
+    {
+        var loadout = await CreateLoadout();
+
+        // Raised Garden Beds 1.0.5 (https://www.nexusmods.com/stardewvalley/mods/5305)
+        var (path, hash) = await DownloadMod(GameInstallation.Game.Domain, ModId.From(5305), FileId.From(68056));
+        await using (path)
+        {
+            hash.Should().Be(Hash.From(0xCBE810C4B0C82C7A));
+
+            // var mods = await GetModsFromInstaller(path);
+            var mods = await InstallModsFromArchiveIntoLoadout(loadout, path);
+            mods
+                .Should().HaveCount(3)
+                .And.AllSatisfy(x =>
+                {
+                    x.Metadata.Should().BeOfType<GroupMetadata>();
+                    x.Version.Should().Be("1.0.5");
+                })
+                .And.Satisfy(
+                    x => x.Name == "Raised Garden Beds",
+                    x => x.Name == "[CP] Raised Garden Beds Translation: English",
+                    x => x.Name == "[RGB] Raised Garden Beds"
+                );
         }
     }
 }

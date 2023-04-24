@@ -20,7 +20,7 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
     public async Task CanApplyGame()
     {
         var mainList = await LoadoutManager.ManageGameAsync(Install, "MainList", CancellationToken.None);
-        await mainList.InstallModAsync(DataZipLzma, "First Mod", CancellationToken.None);
+        await mainList.InstallModsFromArchiveAsync(DataZipLzma, "First Mod", CancellationToken.None);
 
         var plan = await mainList.MakeApplyPlanAsync();
         plan.Steps.OfType<CopyFile>().Count().Should().Be(3);
@@ -43,8 +43,8 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
     public async Task CanIntegrateChanges()
     {
         var mainList = await LoadoutManager.ManageGameAsync(Install, "MainList", Token);
-        await mainList.InstallModAsync(DataZipLzma, "First Mod", Token);
-        await mainList.InstallModAsync(Data7ZLzma2, "Second Mod", Token);
+        await mainList.InstallModsFromArchiveAsync(DataZipLzma, "First Mod", Token);
+        await mainList.InstallModsFromArchiveAsync(Data7ZLzma2, "Second Mod", Token);
 
         var originalPlan = await mainList.MakeApplyPlanAsync();
         originalPlan.Steps.OfType<CopyFile>().Count().Should().Be(3, "Files override each other");

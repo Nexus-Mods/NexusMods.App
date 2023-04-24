@@ -1,6 +1,7 @@
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -15,43 +16,55 @@ namespace NexusMods.Games.RedEngine.ModInstallers;
 
 public class AppearancePreset : IModInstaller
 {
-    public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
-    {
-        if (!installation.Is<Cyberpunk2077>()) return Common.Priority.None;
-
-        if (files.All(f => Helpers.IgnoreExtensions.Contains(f.Key.Extension) ||
-                           (f.Value.FileTypes.Contains(FileType.Cyberpunk2077AppearancePreset) &&
-                            f.Key.Extension == KnownExtensions.Preset)))
-            return Common.Priority.Normal;
-
-        return Common.Priority.None;
-    }
-
-    private RelativePath[] _paths = {
+    private static readonly RelativePath[] Paths = {
         @"bin\x64\plugins\cyber_engine_tweaks\mods\AppearanceChangeUnlocker\character-preset\female".ToRelativePath(),
         @"bin\x64\plugins\cyber_engine_tweaks\mods\AppearanceChangeUnlocker\character-preset\male".ToRelativePath()
     };
 
-    public ValueTask<IEnumerable<AModFile>> GetFilesToExtractAsync(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken ct = default)
+    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        return ValueTask.FromResult(GetFilesToExtractImpl(srcArchive, files));
+        if (!installation.Is<Cyberpunk2077>()) return Priority.None;
+
+        return archiveFiles.All(f => Helpers.IgnoreExtensions.Contains(f.Key.Extension) || (f.Value.FileTypes.Contains(FileType.Cyberpunk2077AppearancePreset) && f.Key.Extension == KnownExtensions.Preset))
+            ? Priority.Normal
+            : Priority.None;
     }
 
-    private IEnumerable<AModFile> GetFilesToExtractImpl(Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
+    public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
+        GameInstallation gameInstallation,
+        ModId baseModId,
+        Hash srcArchiveHash,
+        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
+        CancellationToken cancellationToken = default)
     {
-        foreach (var (path, file) in files.Where(f => f.Key.Extension == KnownExtensions.Preset))
-        {
-            foreach (var relPath in _paths)
+        return ValueTask.FromResult(GetMods(baseModId, srcArchiveHash, archiveFiles));
+    }
+
+    private IEnumerable<ModInstallerResult> GetMods(
+        ModId baseModId,
+        Hash srcArchiveHash,
+        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
+    {
+        var modFiles = archiveFiles
+            .Where(kv => kv.Key.Extension == KnownExtensions.Preset)
+            .SelectMany(kv =>
             {
-                yield return new FromArchive
+                var (path, file) = kv;
+
+                return Paths.Select(relPath => new FromArchive
                 {
                     Id = ModFileId.New(),
-                    From = new HashRelativePath(srcArchive, path),
-                    To = new GamePath(GameFolderType.Game, relPath.Join(path.FileName)),
+                    From = new HashRelativePath(srcArchiveHash, path),
+                    To = new GamePath(GameFolderType.Game, relPath.Join(path)),
                     Hash = file.Hash,
                     Size = file.Size
-                };
-            }
-        }
+                });
+            });
+
+        yield return new ModInstallerResult
+        {
+            Id = baseModId,
+            Files = modFiles
+        };
     }
 }

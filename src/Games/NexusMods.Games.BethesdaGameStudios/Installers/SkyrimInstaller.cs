@@ -1,12 +1,14 @@
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Games.BethesdaGameStudios.Installers;
@@ -34,16 +36,18 @@ public class SkyrimInstaller : IModInstaller
     private const string EsmExtension = ".esm";
     private const string BsaExtension = ".bsa";
 
-    public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
+    private static readonly RelativePath Data = "Data".ToRelativePath();
+
+    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
         if (installation.Game is not SkyrimSpecialEdition)
-            return Common.Priority.None;
+            return Priority.None;
 
         // Determine one of the following:
         // - There is a 'meshes' folder with NIF file.
         // - There is a 'textures' folder with DDS file.
         // - There is a folder (max 1 level deep) with either of the following cases.
-        foreach (var file in files)
+        foreach (var file in archiveFiles)
         {
             var path = file.Key;
             var rawPath = file.Key.Path;
@@ -54,39 +58,54 @@ public class SkyrimInstaller : IModInstaller
             {
                 var subDirectory = rawPath.AsSpan(separatorIndex + 1);
                 if (AssertPathForPriority(subDirectory))
-                    return Common.Priority.Normal;
+                    return Priority.Normal;
             }
 
             if (AssertPathForPriority(rawPath))
-                return Common.Priority.Normal;
+                return Priority.Normal;
         }
 
-        return Common.Priority.None;
+        return Priority.None;
     }
 
-    public ValueTask<IEnumerable<AModFile>> GetFilesToExtractAsync(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken ct = default)
+    public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
+        GameInstallation gameInstallation,
+        ModId baseModId,
+        Hash srcArchiveHash,
+        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
+        CancellationToken cancellationToken = default)
     {
-        return ValueTask.FromResult(GetFilesToExtractImpl(srcArchive, files));
+        return ValueTask.FromResult(GetMods(baseModId, srcArchiveHash, archiveFiles));
     }
 
-    private IEnumerable<AModFile> GetFilesToExtractImpl(Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
+    private IEnumerable<ModInstallerResult> GetMods(
+        ModId baseModId,
+        Hash srcArchiveHash,
+        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        var prefix = FindFolderPrefixForExtract(files).ToString();
-        foreach (var file in files)
-        {
-            if (prefix.Length > 0 && !file.Key.StartsWith(prefix))
-                continue;
-
-            var trimmedPath = file.Key.Path.AsSpan(prefix.Length);
-            yield return new FromArchive
+        var prefix = FindFolderPrefixForExtract(archiveFiles).ToString();
+        var modFiles = archiveFiles
+            .Where(kv => prefix.Length <= 0 || kv.Key.StartsWith(prefix))
+            .Select(kv =>
             {
-                Id = ModFileId.New(),
-                From = new HashRelativePath(srcArchive, file.Key),
-                To = new GamePath(GameFolderType.Game, $"Data{Path.DirectorySeparatorChar}{trimmedPath}"),
-                Hash = file.Value.Hash,
-                Size = file.Value.Size
-            };
-        }
+                var (path, file) = kv;
+                var trimmedPath = path.Path.AsSpan(prefix.Length);
+
+                return new FromArchive
+                {
+                    Id = ModFileId.New(),
+                    From = new HashRelativePath(srcArchiveHash, path),
+                    To = new GamePath(GameFolderType.Game, Data.Join(trimmedPath.ToString())),
+                    Hash = file.Hash,
+                    Size = file.Size
+                };
+            });
+
+        yield return new ModInstallerResult
+        {
+            Id = baseModId,
+            Files = modFiles
+        };
     }
 
     private static ReadOnlySpan<char> FindFolderPrefixForExtract(EntityDictionary<RelativePath, AnalyzedFile> files)
