@@ -15,13 +15,6 @@ public class ViewModelDesignSelector<TEnum, TVmType, TBase> :
     AViewModelSelector<TEnum, TVmType, TBase>
     where TVmType : class, IViewModelInterface
     where TEnum : struct, Enum {
-    private static readonly Dictionary<TEnum,Type> Mappings;
-
-    static ViewModelDesignSelector()
-    {
-        Mappings = AViewModelAttribute.GetAttributes<TEnum>();
-    }
-
     protected ViewModelDesignSelector(params TVmType[] vms) : base(vms.ToDictionary(GetKeyForVm))
     {
     }
