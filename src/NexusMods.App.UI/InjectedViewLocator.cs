@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -18,12 +19,13 @@ public class InjectedViewLocator : IViewLocator
         _method = GetType().GetMethod("ResolveViewInner", BindingFlags.NonPublic | BindingFlags.Instance)!;
     }
 
+    [SuppressMessage("ReSharper", "HeapView.PossibleBoxingAllocation", Justification = "Our ViewModels are always reference types.")]
     public IViewFor? ResolveView<T>(T? viewModel, string? contract = null)
     {
-        if (viewModel == null)
+        if (viewModel is null)
             return null;
 
-        _logger.LogDebug("Finding View for {ViewModel}", viewModel.GetType().FullName);
+        _logger.FindingView(viewModel.GetType().FullName ?? viewModel.GetType().ToString());
         try
         {
             if (viewModel is IViewModel vm)

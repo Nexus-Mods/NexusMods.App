@@ -220,7 +220,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
     {
         try
         {
-            _logger.LogTrace("Processing jobs");
+            _logger.ProcessingJobs();
             using var conn = _pool.RentDisposable();
             using var cmd = conn.Value.CreateCommand();
             cmd.CommandText = "SELECT JobId, ProcessId, Progress, Description, JobType, StartTime, Data FROM Jobs";
@@ -245,11 +245,12 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
                     {
                         if (item.Value.Progress != progress)
                             item.Value.Progress = progress;
-                        _logger.LogTrace("Job {JobId} progress is {Progress}", jobId, progress);
+
+                        _logger.JobProgress(jobId, progress);
                         continue;
                     }
 
-                    _logger.LogTrace("Found new job {JobId}", jobId);
+                    _logger.NewJob(jobId);
                     var processId = ProcessId.From((uint)reader.GetInt64(1));
                     var description = reader.GetString(3);
                     var jobType = Enum.Parse<JobType>(reader.GetString(4));
@@ -268,10 +269,11 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
                     if (seen.Contains(key))
                         continue;
 
-                    _logger.LogTrace("Removing job {JobId}", key);
+                    _logger.RemovingJob(key);
                     editable.Remove(key);
                 }
-                _logger.LogTrace("Done Processing");
+
+                _logger.DoneProcessing();
             });
         }
         catch (Exception ex)
@@ -292,14 +294,13 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
 
         try
         {
-            _logger.LogTrace("Sending {Bytes} byte message to queue {Queue}", Size.FromLong(message.Length), queue);
+            _logger.SendingByteMessageToQueue(Size.FromLong(message.Length), queue);
             using var conn = _pool.RentDisposable();
             using var cmd = conn.Value.CreateCommand();
             cmd.CommandText = "INSERT INTO Ipc (Queue, Data, TimeStamp) VALUES (@queue, @data, @timestamp); SELECT last_insert_rowid();";
             cmd.Parameters.AddWithValue("@queue", queue);
             cmd.Parameters.AddWithValue("@data", message.ToArray());
-            cmd.Parameters.AddWithValue("@timestamp",
-                DateTime.UtcNow.ToFileTimeUtc());
+            cmd.Parameters.AddWithValue("@timestamp",DateTime.UtcNow.ToFileTimeUtc());
             var lastId = (ulong)((long?)cmd.ExecuteScalar()!).Value;
             var prevId = _syncArray.Get(0);
             while (true)
@@ -326,7 +327,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
 
         try
         {
-            _logger.LogInformation("Creating job {JobId} of type {JobType}", job.JobId, job.GetType().Name);
+            _logger.CreatingJob(job.JobId, job.JobType);
             using var conn = _pool.RentDisposable();
             using var cmd = conn.Value.CreateCommand();
             cmd.CommandText = "INSERT INTO Jobs (JobId, ProcessId, Progress, Description, JobType, StartTime, Data) " +
@@ -365,7 +366,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         if (_isDisposed)
             throw new ObjectDisposedException(nameof(TemporaryFileManager));
 
-        _logger.LogInformation("Deleting job {JobId}", job);
+        _logger.DeletingJob(job);
         {
             using var conn = _pool.RentDisposable();
             using var cmd = conn.Value.CreateCommand();
@@ -382,7 +383,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         if (_isDisposed)
             throw new ObjectDisposedException(nameof(TemporaryFileManager));
 
-        _logger.LogTrace("Updating job {JobId} progress to {Percent}", jobId, value);
+        _logger.UpdatingJobProgress(jobId, value);
         {
             using var conn = _pool.RentDisposable();
             using var cmd = conn.Value.CreateCommand();
