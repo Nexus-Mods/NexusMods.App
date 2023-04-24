@@ -1,11 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
-using Avalonia.Controls;
 using DynamicData;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
-using NexusMods.App.UI.Toolbars;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
 using ReactiveUI;
@@ -20,19 +16,28 @@ public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>,
     private ReadOnlyObservableCollection<ModCursor> _filteredMods =
         new(new ObservableCollection<ModCursor>());
 
-    public ILoadoutToolbarViewModel Toolbar =>
-        new DefaultLoadoutToolbarDesignViewModel();
     public ReadOnlyObservableCollection<ModCursor> Mods => _filteredMods;
-    public LoadoutId Loadout { get; set; } = Initializers.LoadoutId;
+    public LoadoutId LoadoutId { get; set; } = Initializers.LoadoutId;
 
     private readonly SourceCache<IDataGridColumnFactory, ColumnType> _columns;
 
     private ReadOnlyObservableCollection<IDataGridColumnFactory>
         _filteredColumns =
             new(new ObservableCollection<IDataGridColumnFactory>());
+    
+    public string LoadoutName => "My Test Loadout";
 
     public ReadOnlyObservableCollection<IDataGridColumnFactory> Columns =>
         _filteredColumns;
+
+    public Task AddMod(string path)
+    {
+        _mods.Edit(x =>
+        {
+            x.AddOrUpdate(new ModCursor(LoadoutId, ModId.From(Guid.NewGuid())));
+        });
+        return Task.CompletedTask;
+    }
 
     public LoadoutGridDesignViewModel()
     {
@@ -41,23 +46,23 @@ public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>,
                 x => x.ModId);
         _mods.Edit(x =>
         {
-            x.AddOrUpdate(new ModCursor(Loadout,
+            x.AddOrUpdate(new ModCursor(LoadoutId,
                 ModId.From(new Guid("00000000-0000-0000-0000-000000000001"))));
-            x.AddOrUpdate(new ModCursor(Loadout,
+            x.AddOrUpdate(new ModCursor(LoadoutId,
                 ModId.From(new Guid("00000000-0000-0000-0000-000000000002"))));
-            x.AddOrUpdate(new ModCursor(Loadout,
+            x.AddOrUpdate(new ModCursor(LoadoutId,
                 ModId.From(new Guid("00000000-0000-0000-0000-000000000003"))));
-            x.AddOrUpdate(new ModCursor(Loadout,
+            x.AddOrUpdate(new ModCursor(LoadoutId,
                 ModId.From(new Guid("00000000-0000-0000-0000-000000000004"))));
-            x.AddOrUpdate(new ModCursor(Loadout,
+            x.AddOrUpdate(new ModCursor(LoadoutId,
                 ModId.From(new Guid("00000000-0000-0000-0000-000000000005"))));
-            x.AddOrUpdate(new ModCursor(Loadout,
+            x.AddOrUpdate(new ModCursor(LoadoutId,
                 ModId.From(new Guid("00000000-0000-0000-0000-000000000006"))));
-            x.AddOrUpdate(new ModCursor(Loadout,
+            x.AddOrUpdate(new ModCursor(LoadoutId,
                 ModId.From(new Guid("00000000-0000-0000-0000-000000000007"))));
-            x.AddOrUpdate(new ModCursor(Loadout,
+            x.AddOrUpdate(new ModCursor(LoadoutId,
                 ModId.From(new Guid("00000000-0000-0000-0000-000000000008"))));
-            x.AddOrUpdate(new ModCursor(Loadout,
+            x.AddOrUpdate(new ModCursor(LoadoutId,
                 ModId.From(new Guid("00000000-0000-0000-0000-000000000009"))));
         });
 

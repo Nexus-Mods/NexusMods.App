@@ -44,7 +44,7 @@
             Grid.Column="0"
             Grid.ColumnSpan="3"
             Grid.Row="0"
-            x:Name="TopBar" />
+            x:Name="TopBar"/>
 
         <reactiveUi:ViewModelViewHost
             Grid.Column="0"

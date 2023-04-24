@@ -35,7 +35,8 @@ public partial class IconButton : ReactiveUserControl<IIconButtonViewModel>, IVi
     public enum IconType
     {
         Home,
-        Add
+        Add,
+        Download
     }
 
     public IconButton()

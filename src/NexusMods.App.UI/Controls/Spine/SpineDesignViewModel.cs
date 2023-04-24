@@ -10,6 +10,7 @@ public class SpineDesignViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 {
     public IIconButtonViewModel Home { get; } = new IconButtonDesignViewModel();
     public IIconButtonViewModel Add { get; } = new IconButtonViewModel();
+    public IIconButtonViewModel Downloads { get; } = new IconButtonViewModel();
     public ReadOnlyObservableCollection<IImageButtonViewModel> Games { get; } =
         new(new ObservableCollection<IImageButtonViewModel>
     {

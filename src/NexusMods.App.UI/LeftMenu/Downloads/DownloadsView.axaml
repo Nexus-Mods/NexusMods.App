@@ -1,0 +1,40 @@
+﻿<reactiveUi:ReactiveUserControl x:TypeArguments="downloads:IDownloadsViewModel"
+                                xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:downloads="clr-namespace:NexusMods.App.UI.LeftMenu.Downloads"
+                                xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+                                mc:Ignorable="d" d:DesignWidth="287"
+                                d:DesignHeight="664"
+                                x:Class="NexusMods.App.UI.LeftMenu.Downloads.DownloadsView">
+    <Design.DataContext>
+        <downloads:DownloadsDesignViewModel></downloads:DownloadsDesignViewModel>
+    </Design.DataContext>
+    <StackPanel Classes="LeftPane">
+        <Border Classes="LeftPaneTitle">
+            <TextBlock Classes="LeftPaneTitle" Text="DOWNLOADS"></TextBlock>
+        </Border>
+        <StackPanel Classes="LeftPaneButtonList">
+            <Button x:Name="InProgressButton" Classes="LeftMenuItem">
+                <StackPanel Orientation="Horizontal">
+                    <avalonia:Icon Classes="ProgressDownload"/>
+                    <TextBlock Text="In progress"></TextBlock>
+                </StackPanel>
+            </Button>
+            <Button x:Name="CompletedButton" Classes="LeftMenuItem">
+                <StackPanel Orientation="Horizontal">
+                    <avalonia:Icon Classes="CheckUnderline"/>
+                    <TextBlock Text="Completed"></TextBlock>
+                </StackPanel>
+            </Button>
+            <Button x:Name="HistoryButton" Classes="LeftMenuItem">
+                <StackPanel Orientation="Horizontal">
+                    <avalonia:Icon Classes="History"/>
+                    <TextBlock Text="Download history"></TextBlock>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+    </StackPanel>
+</reactiveUi:ReactiveUserControl>
