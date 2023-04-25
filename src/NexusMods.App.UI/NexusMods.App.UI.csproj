@@ -67,6 +67,8 @@
         <AvaloniaResource Include="Theme\MainWindow.xaml" />
         <None Remove="Theme\ButtonStyles\Standard.xaml" />
         <AvaloniaResource Include="Theme\ButtonStyles\Standard.xaml" />
+        <None Remove="Theme\ProgressBar.xaml" />
+        <AvaloniaResource Include="Theme\ProgressBar.xaml" />
     </ItemGroup>
 
     <ItemGroup>
