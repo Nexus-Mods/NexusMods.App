@@ -90,6 +90,11 @@ public class LoggingSettings : ILoggingSettings
 
     /// <inheritdoc/>
     public int MaxArchivedFiles { get; set; }
+    
+    /// <summary>
+    /// Default constructor for serialization.
+    /// </summary>
+    public LoggingSettings() : this(FileSystem.Shared) {}
 
     /// <summary>
     /// Creates the default logger with logs stored in the entry directory.
