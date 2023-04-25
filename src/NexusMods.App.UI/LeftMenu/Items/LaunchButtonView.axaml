@@ -14,6 +14,7 @@
     <Grid>
         <ProgressBar Classes="LaunchButton" x:Name="ProgressBarControl" IsVisible="False" ShowProgressText="True"></ProgressBar> 
         <Button
+            IsVisible="True"
             Classes="Standard PrimaryOutlined"
             HorizontalAlignment="Stretch"
             x:Name="LaunchButton">
