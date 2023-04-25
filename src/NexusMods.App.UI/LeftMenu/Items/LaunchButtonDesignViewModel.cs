@@ -19,4 +19,26 @@ public class LaunchButtonDesignViewModel : AViewModel<ILaunchButtonViewModel>, I
 
     [Reactive]
     public Percent? Progress { get; set; }
+
+    public LaunchButtonDesignViewModel()
+    {
+        Command = ReactiveCommand.CreateFromTask(async () =>
+        {
+            Label = "PREPARING...";
+            Progress = Percent.Zero;
+            await Task.Delay(100);
+            for (var x = 0; x < 10; x++)
+            {
+
+                Progress = Percent.CreateClamped(0.1d + Progress!.Value.Value);
+                await Task.Delay(200);
+            }
+            
+            Label = "RUNNING...";
+            Progress = null;
+            await Task.Delay(1000);
+
+            Label = "Launch";
+        });
+    }
 }

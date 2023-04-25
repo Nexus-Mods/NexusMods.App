@@ -1,6 +1,6 @@
 ﻿<reactiveUi:ReactiveUserControl
     d:DesignHeight="36"
-    d:DesignWidth="200"
+    d:DesignWidth="184"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.LeftMenu.Items.LaunchButtonView"
     x:TypeArguments="items:ILaunchButtonViewModel"
