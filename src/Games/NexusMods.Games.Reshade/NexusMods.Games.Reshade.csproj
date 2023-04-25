@@ -1,8 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-    <!-- nullable warnings as errors -->
-    <Import Project="$([MSBuild]::GetPathOfFileAbove('NullableErrors.Build.props', '$(MSBuildThisFileDirectory)../'))" />
-
     <ItemGroup>
         <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
         <ProjectReference Include="..\NexusMods.Games.Generic\NexusMods.Games.Generic.csproj" />

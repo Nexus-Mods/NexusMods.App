@@ -6,7 +6,4 @@ namespace NexusMods.Networking.NexusWebApi.Types;
 /// Unique identifier for a given site user.
 /// </summary>
 [ValueObject<ulong>]
-public partial struct UserId
-{
-
-}
+public readonly partial struct UserId { }

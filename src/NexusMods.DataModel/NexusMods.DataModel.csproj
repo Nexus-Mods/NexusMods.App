@@ -2,9 +2,6 @@
     <!-- NuGet Package Shared Details -->
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
-    <!-- nullable warnings as errors -->
-    <Import Project="$([MSBuild]::GetPathOfFileAbove('NullableErrors.Build.props', '$(MSBuildThisFileDirectory)../'))" />
-
     <ItemGroup>
         <ProjectReference Include="..\ArchiveManagement\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj" />
         <ProjectReference Include="..\NexusMods.Hashing.xxHash64\NexusMods.Hashing.xxHash64.csproj" />
@@ -12,16 +9,16 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="BitFaster.Caching" Version="2.1.1" />
-        <PackageReference Include="DynamicData" Version="7.13.1" />
-        <PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.4" />
+        <PackageReference Include="BitFaster.Caching" Version="2.1.3" />
+        <PackageReference Include="DynamicData" Version="7.13.5" />
+        <PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.5" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
-        <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="7.0.4" />
-        <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.3.1" />
+        <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="7.0.5" />
+        <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.3.2" />
         <PackageReference Include="Sewer56.BitStream" Version="1.3.0" />
         <PackageReference Include="System.Reactive" Version="5.0.0" />
-        <PackageReference Include="Vogen" Version="3.0.12" />
+        <PackageReference Include="Vogen" Version="3.0.15" />
     </ItemGroup>
 
     <PropertyGroup>

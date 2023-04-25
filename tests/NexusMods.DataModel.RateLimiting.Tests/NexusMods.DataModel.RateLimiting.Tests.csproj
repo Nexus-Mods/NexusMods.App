@@ -1,17 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    
     <PropertyGroup>
         <EnableXunitDependencyInjectionDefaultTestFrameworkAttribute>false</EnableXunitDependencyInjectionDefaultTestFrameworkAttribute>
     </PropertyGroup>
     
     <ItemGroup>
-      <ProjectReference Include="..\..\src\NexusMods.DataModel.RateLimiting\NexusMods.DataModel.RateLimiting.csproj" />
+        <ProjectReference Include="..\..\src\NexusMods.DataModel.RateLimiting\NexusMods.DataModel.RateLimiting.csproj" />
     </ItemGroup>
-    
-    <ItemGroup>
-      <PackageReference Update="FluentAssertions" Version="6.10.0" />
-      <PackageReference Update="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
-      <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.5.0" />
-    </ItemGroup>
-
 </Project>

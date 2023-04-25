@@ -14,7 +14,7 @@ public class InstallerDelegates : ICoreDelegates
 
     public IUIDelegates ui { get; init; }
 
-    private IOptionSelector _inputHandler;
+    private IOptionSelector? _inputHandler;
 
     public InstallerDelegates(IOptionSelector optionSelector)
     {

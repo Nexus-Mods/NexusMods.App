@@ -7,7 +7,4 @@ namespace NexusMods.Networking.NexusWebApi.Types;
 /// </summary>
 [ValueObject<string>]
 // ReSharper disable once InconsistentNaming
-public partial struct CDNName
-{
-
-}
+public readonly partial struct CDNName { }
