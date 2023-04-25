@@ -21,17 +21,17 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup .NET Core SDK 7.0.x
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '7.0.x'
+      # - name: Setup .NET Core SDK 7.0.x
+      #  uses: actions/setup-dotnet@v3
+      #  with:
+      #    dotnet-version: '7.0.x'
           
-      - name: Set Permissions
-        if: runner.os != 'Windows'
-        run: chmod -R +x src/ArchiveManagement/NexusMods.FileExtractor/Extractors
+      # - name: Set Permissions
+      #  if: runner.os != 'Windows'
+      #  run: chmod -R +x src/ArchiveManagement/NexusMods.FileExtractor/Extractors
 
-      - name: Clean
-        run: dotnet clean
+      # - name: Clean
+      #  run: dotnet clean
       
       - name: Tests
         run: dotnet test --filter "RequiresNetworking!=True" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
