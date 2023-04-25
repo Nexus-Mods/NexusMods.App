@@ -4,19 +4,19 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\src\Games\NexusMods.Games.FOMOD\NexusMods.Games.FOMOD.csproj" />
-      <ProjectReference Include="..\..\..\src\NexusMods.App\NexusMods.App.csproj" />
-      <ProjectReference Include="..\..\..\src\NexusMods.Paths.TestingHelpers\NexusMods.Paths.TestingHelpers.csproj" />
-      <ProjectReference Include="..\NexusMods.Games.TestFramework\NexusMods.Games.TestFramework.csproj" />
+        <ProjectReference Include="..\..\..\src\Games\NexusMods.Games.FOMOD\NexusMods.Games.FOMOD.csproj" />
+        <ProjectReference Include="..\..\..\src\NexusMods.App\NexusMods.App.csproj" />
+        <ProjectReference Include="..\..\..\src\NexusMods.Paths.TestingHelpers\NexusMods.Paths.TestingHelpers.csproj" />
+        <ProjectReference Include="..\NexusMods.Games.TestFramework\NexusMods.Games.TestFramework.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="TestCases\**">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="TestCasesPacked\**">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-    </ItemGroup>
+        <None Update="TestCases\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
 
+        <None Update="TestCasesPacked\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 </Project>

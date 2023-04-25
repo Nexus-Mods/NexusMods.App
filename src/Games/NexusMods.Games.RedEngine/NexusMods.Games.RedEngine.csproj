@@ -1,18 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
     <ItemGroup>
-      <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+        <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="CliWrap" Version="3.6.0" />
+        <None Remove="Resources\Cyberpunk2077\icon.png" />
+        <EmbeddedResource Include="Resources\Cyberpunk2077\icon.png" />
+        <None Remove="Resources\Cyberpunk2077\game_image.jpg" />
+        <EmbeddedResource Include="Resources\Cyberpunk2077\game_image.jpg" />
     </ItemGroup>
-
-    <ItemGroup>
-      <None Remove="Resources\Cyberpunk2077\icon.png" />
-      <EmbeddedResource Include="Resources\Cyberpunk2077\icon.png" />
-      <None Remove="Resources\Cyberpunk2077\game_image.jpg" />
-      <EmbeddedResource Include="Resources\Cyberpunk2077\game_image.jpg" />
-    </ItemGroup>
-
 </Project>

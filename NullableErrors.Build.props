@@ -1,5 +1,0 @@
-<Project>
-    <PropertyGroup>
-        <WarningsAsErrors>Nullable</WarningsAsErrors>
-    </PropertyGroup>
-</Project>

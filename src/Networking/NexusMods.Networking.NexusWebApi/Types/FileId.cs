@@ -9,7 +9,4 @@ namespace NexusMods.Networking.NexusWebApi.Types;
 /// i.e. This ID might be used for another mod if you search for mods for another game.
 /// </summary>
 [ValueObject<ulong>]
-public partial struct FileId
-{
-
-}
+public readonly partial struct FileId { }

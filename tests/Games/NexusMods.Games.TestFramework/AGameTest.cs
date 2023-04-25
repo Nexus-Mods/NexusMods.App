@@ -43,8 +43,14 @@ public abstract class AGameTest<TGame> where TGame : AGame
     protected AGameTest(IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
+
         Game = serviceProvider.FindImplementationInContainer<TGame, IGame>();
-        GameInstallation = Game.Installations.First();
+
+        var gameInstallations = Game.Installations.ToArray();
+        gameInstallations.Should().NotBeEmpty("because the game has to be installed");
+
+        GameInstallation = gameInstallations.First();
+        GameInstallation.Game.Should().BeOfType<TGame>("because the game installation should be for the game we're testing");
 
         FileSystem = serviceProvider.GetRequiredService<IFileSystem>();
         ArchiveManager = serviceProvider.GetRequiredService<ArchiveManager>();

@@ -1,12 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
-      <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+        <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="FomodInstaller.Interface" Version="1.1.0" />
-      <PackageReference Include="FomodInstaller.Scripting.XmlScript" Version="1.0.0" />
+        <PackageReference Include="FomodInstaller.Interface" Version="1.2.0" />
+        <PackageReference Include="FomodInstaller.Scripting.XmlScript" Version="1.0.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -20,7 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Assets" />
+        <Folder Include="Assets" />
     </ItemGroup>
 
 </Project>

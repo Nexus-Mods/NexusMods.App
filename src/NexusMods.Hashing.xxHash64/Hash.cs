@@ -28,7 +28,7 @@ public readonly partial struct Hash
     /// <param name="argHash">The hash to use.</param>
     public static Hash FromLong(in long argHash)
     {
-        return new Hash(unchecked((ulong)argHash));
+        return From(unchecked((ulong)argHash));
     }
 
     /// <summary>
@@ -37,7 +37,7 @@ public readonly partial struct Hash
     /// <param name="argHash">The hash to use.</param>
     public static Hash FromULong(in ulong argHash)
     {
-        return new Hash(argHash);
+        return From(argHash);
     }
 
     /// <summary>
@@ -48,7 +48,7 @@ public readonly partial struct Hash
     {
         Span<byte> bytes = stackalloc byte[8];
         hash.FromHex(bytes);
-        return new Hash(BinaryPrimitives.ReadUInt64BigEndian(bytes));
+        return From(BinaryPrimitives.ReadUInt64BigEndian(bytes));
     }
 
     /// <summary>

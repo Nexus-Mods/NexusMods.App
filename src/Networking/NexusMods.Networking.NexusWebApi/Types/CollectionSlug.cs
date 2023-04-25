@@ -6,7 +6,4 @@ namespace NexusMods.Networking.NexusWebApi.Types;
 /// Unique identifier for a collection hosted on Nexus.
 /// </summary>
 [ValueObject<string>]
-public partial struct CollectionSlug
-{
-
-}
+public readonly partial struct CollectionSlug { }

@@ -1,8 +1,5 @@
 using FluentAssertions;
-using Microsoft.VisualBasic.FileIO;
 using NexusMods.Paths;
-using NexusMods.Paths.Utilities;
-using FileSystem = NexusMods.Paths.FileSystem;
 
 namespace NexusMods.Hashing.xxHash64.Tests;
 

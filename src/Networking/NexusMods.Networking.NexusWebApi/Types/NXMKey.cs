@@ -8,7 +8,4 @@ namespace NexusMods.Networking.NexusWebApi.Types;
 [ValueObject<string>]
 // ReSharper disable once InconsistentNaming
 // ReSharper disable once StructCanBeMadeReadOnly
-public partial struct NXMKey
-{
-
-}
+public readonly partial struct NXMKey { }

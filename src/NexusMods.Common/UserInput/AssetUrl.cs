@@ -7,7 +7,4 @@ namespace NexusMods.Common.UserInput;
 /// a URL to a remote resource.
 /// </summary>
 [ValueObject<string>]
-public partial class AssetUrl
-{
-
-}
+public readonly partial struct AssetUrl { }

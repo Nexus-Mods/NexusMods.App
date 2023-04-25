@@ -11,7 +11,7 @@ namespace NexusMods.DataModel.Loadouts;
 /// </summary>
 [ValueObject<Guid>(conversions: Conversions.None)]
 [JsonConverter(typeof(ModIdConverter))]
-public partial struct ModId
+public readonly partial struct ModId
 {
     /// <summary>
     /// Creates a new <see cref="ModId"/> with a unique GUID.

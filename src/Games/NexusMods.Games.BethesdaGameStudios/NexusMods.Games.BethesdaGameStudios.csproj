@@ -1,24 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-    <!-- nullable warnings as errors -->
-    <Import Project="$([MSBuild]::GetPathOfFileAbove('NullableErrors.Build.props', '$(MSBuildThisFileDirectory)../'))" />
-
     <ItemGroup>
-      <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
-      <ProjectReference Include="..\..\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj" />
+        <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+        <ProjectReference Include="..\..\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
-      <PackageReference Include="Mutagen.Bethesda.Skyrim" Version="0.41.0-pr002" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
+        <PackageReference Include="Mutagen.Bethesda.Skyrim" Version="0.41.0-pr002" />
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="Resources\SkyrimSpecialEdition\game_image.png" />
-      <EmbeddedResource Include="Resources\SkyrimSpecialEdition\game_image.png" />
-      <None Remove="Resources\SkyrimSpecialEdition\icon.jpg" />
-      <EmbeddedResource Include="Resources\SkyrimSpecialEdition\icon.jpg" />
+        <None Remove="Resources\SkyrimSpecialEdition\game_image.png" />
+        <EmbeddedResource Include="Resources\SkyrimSpecialEdition\game_image.png" />
+        <None Remove="Resources\SkyrimSpecialEdition\icon.jpg" />
+        <EmbeddedResource Include="Resources\SkyrimSpecialEdition\icon.jpg" />
     </ItemGroup>
-
 </Project>
