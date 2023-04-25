@@ -81,6 +81,18 @@ public class ConfigurationPathJsonConverter : JsonConverter<ConfigurationPath>
 {
     private readonly IFileSystem _fileSystem;
 
+    /// <summary>
+    /// Default constructor.
+    /// </summary>
+    public ConfigurationPathJsonConverter()
+    {
+        _fileSystem = FileSystem.Shared;
+    }
+    
+    /// <summary>
+    /// DI constructor.
+    /// </summary>
+    /// <param name="fileSystem"></param>
     public ConfigurationPathJsonConverter(IFileSystem fileSystem)
     {
         _fileSystem = fileSystem;
