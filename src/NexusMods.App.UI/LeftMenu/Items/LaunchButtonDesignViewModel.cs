@@ -14,10 +14,6 @@ public class LaunchButtonDesignViewModel : AViewModel<ILaunchButtonViewModel>, I
     [Reactive]
     public ReactiveCommand<Unit, Unit> Command { get; set; }
 
-    [Reactive] public bool IsEnabled { get; set; } = true;
-
-    [Reactive] public bool IsRunning { get; set; }
-
     [Reactive]
     public string Label { get; set; } = "LAUNCH";
 

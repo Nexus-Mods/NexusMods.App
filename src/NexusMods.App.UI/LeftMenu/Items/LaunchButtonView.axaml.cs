@@ -15,9 +15,12 @@ public partial class LaunchButtonView : ReactiveUserControl<ILaunchButtonViewMod
         this.WhenActivated(d =>
         {
             var isRunning =
-                this.WhenAnyValue(view => view.ViewModel!.IsRunning);
+                this.WhenAnyValue(view => view.ViewModel!.Command.CanExecute)
+                    .SelectMany(x => x)
+                    .Select(running => !running);
 
-            this.WhenAnyValue(view => view.ViewModel!.IsEnabled)
+            this.WhenAnyValue(view => view.ViewModel!.Command.CanExecute)
+                .SelectMany(x => x)
                 .BindToUi(this, view => view.LaunchButton.IsEnabled)
                 .DisposeWith(d);
 
