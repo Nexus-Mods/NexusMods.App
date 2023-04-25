@@ -15,32 +15,34 @@ public class AppearancePresetTests : AModInstallerTest<Cyberpunk2077, Appearance
     [Fact]
     public async Task PresetFilesAreInstalledCorrectly()
     {
+        var hash = NextHash();
         var files = await BuildAndInstall(Priority.Normal,
-            (1, "cool_choom.preset", FileType.Cyberpunk2077AppearancePreset));
+            (hash, "cool_choom.preset", FileType.Cyberpunk2077AppearancePreset));
 
         files.Should()
             .BeEquivalentTo(new[]
             {
-                (1, GameFolderType.Game, "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/female/cool_choom.preset"), 
-                (1, GameFolderType.Game, "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/male/cool_choom.preset")
+                (hash, GameFolderType.Game, "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/female/cool_choom.preset"), 
+                (hash, GameFolderType.Game, "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/male/cool_choom.preset")
             });
     }
     
     [Fact]
     public async Task DocumentationFilesAreIgnored()
     {
+        var hash = NextHash();
         var files = await BuildAndInstall(Priority.Normal,
-            (1, "cool_choom.preset", FileType.Cyberpunk2077AppearancePreset),
-            (2, "README.md", FileType.TXT),
-            (3, "README.txt", FileType.TXT),
-            (4, "README.md", FileType.TXT),
-            (5, "README.pdf", FileType.TXT));
+            (hash, "cool_choom.preset", FileType.Cyberpunk2077AppearancePreset),
+            (NextHash(), "README.md", FileType.TXT),
+            (NextHash(), "README.txt", FileType.TXT),
+            (NextHash(), "README.md", FileType.TXT),
+            (NextHash(), "README.pdf", FileType.TXT));
 
         files.Should()
             .BeEquivalentTo(new[]
             {
-                (1, GameFolderType.Game, "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/female/cool_choom.preset"), 
-                (1, GameFolderType.Game, "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/male/cool_choom.preset")
+                (hash, GameFolderType.Game, "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/female/cool_choom.preset"), 
+                (hash, GameFolderType.Game, "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/male/cool_choom.preset")
             });
     }
 
