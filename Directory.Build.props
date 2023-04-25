@@ -11,4 +11,9 @@
         -->
         <Deterministic>true</Deterministic>
     </PropertyGroup>
+
+    <PropertyGroup>
+        <!-- SYSLIB1006: Multiple logging methods cannot use the same event ID -->
+        <NoWarn>$(NoWarn);SYSLIB1006</NoWarn>
+    </PropertyGroup>
 </Project>
