@@ -3,7 +3,7 @@ using NexusMods.Games.MountAndBlade2Bannerlord.Loadouts;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
 
-public static class LoadoutExtensions
+internal static class LoadoutExtensions
 {
     public static bool HasModuleInstalled(this Loadout loadout, string moduleId)
     {

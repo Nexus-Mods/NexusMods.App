@@ -16,7 +16,7 @@ public class MountAndBlade2BannerlordModInstallerTests : AModInstallerTest<Mount
         xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/BUTR/Bannerlord.XmlSchemas/master/SubModule.xsd" >
   <Id value="Bannerlord.Harmony" />
   <Name value="Harmony" />
-  <Version value="v2.3.0.0" />
+  <Version value="v2.2.0.0" />
   <DefaultModule value="false" />
   <ModuleCategory value="Singleplayer" />
   <ModuleType value ="Community" />
@@ -62,13 +62,13 @@ public class MountAndBlade2BannerlordModInstallerTests : AModInstallerTest<Mount
 
         await using (file)
         {
-            var filesToExtract = await GetFilesToExtractFromInstaller(file.Path);
-            filesToExtract.Should().HaveCount(11);
-            filesToExtract.Should().AllSatisfy(x => x.To.Path.StartsWith("bin"));
-            filesToExtract.Should().Contain(x => x.To.FileName == "Bannerlord.BLSE.Shared.dll");
-            filesToExtract.Should().Contain(x => x.To.FileName == "Bannerlord.BLSE.Standalone.exe");
-            filesToExtract.Should().Contain(x => x.To.FileName == "Bannerlord.BLSE.Launcher.exe");
-            filesToExtract.Should().Contain(x => x.To.FileName == "Bannerlord.BLSE.LauncherEx.exe");
+            var (_, modFiles) = await GetModWithFilesFromInstaller(file.Path);
+            modFiles.Should().HaveCount(11);
+            modFiles.Should().AllSatisfy(x => x.To.Path.StartsWith("bin"));
+            modFiles.Should().Contain(x => x.To.FileName == "Bannerlord.BLSE.Shared.dll");
+            modFiles.Should().Contain(x => x.To.FileName == "Bannerlord.BLSE.Standalone.exe");
+            modFiles.Should().Contain(x => x.To.FileName == "Bannerlord.BLSE.Launcher.exe");
+            modFiles.Should().Contain(x => x.To.FileName == "Bannerlord.BLSE.LauncherEx.exe");
         }
     }
     
@@ -82,14 +82,45 @@ public class MountAndBlade2BannerlordModInstallerTests : AModInstallerTest<Mount
 
         await using (file)
         {
-            var filesToExtract = await GetFilesToExtractFromInstaller(file.Path);
-            filesToExtract.Should().HaveCount(49);
-            filesToExtract.Should().AllSatisfy(x => x.To.Path.StartsWith("Modules/Test"));
-            filesToExtract.Should().Contain(x => x.To.FileName == "Bannerlord.Harmony.dll");
-            filesToExtract.Should().Contain(x => x.To.FileName == "SubModule.xml");
+            var (mod, modFiles) = await GetModWithFilesFromInstaller(file.Path);
+            mod.Name.Should().BeEquivalentTo("Harmony");
+            mod.Version.Should().BeEquivalentTo("v2.3.0.0");
+            modFiles.Should().HaveCount(49);
+            modFiles.Should().AllSatisfy(x => x.To.Path.StartsWith("Modules/Test"));
+            modFiles.Should().Contain(x => x.To.FileName == "Bannerlord.Harmony.dll");
+            modFiles.Should().Contain(x => x.To.FileName == "SubModule.xml");
         }
     }
     
+    [Fact]
+    [Trait("RequiresNetworking", "True")]
+    public async Task Test_WithStandardModMultiple()
+    {
+        // Calradia at War (Custom Spawns): CalradiaAtWar For Bannerlord v1.1.0 - v1.1.1 - v1.1.2 Main File (Version 1.9.5)
+        var (file, hash) = await DownloadMod(Game.Domain, ModId.From(411), FileId.From(34610));
+        hash.Should().Be(Hash.From(0x356140A133B4217E));
+
+        await using (file)
+        {
+            var modsWithFiles = await GetModsWithFilesFromInstaller(file.Path);
+            var (mod1, mod1Files) = modsWithFiles.FirstOrDefault(x => x.Key.Name == "Custom Spawns API");
+            var (mod2, mod2Files) = modsWithFiles.FirstOrDefault(x => x.Key.Name == "Calradia At War");
+            
+            mod1.Name.Should().BeEquivalentTo("Custom Spawns API");
+            mod1.Version.Should().BeEquivalentTo("v1.9.5.0");
+            mod1Files.Should().HaveCount(8);
+            mod1Files.Should().AllSatisfy(x => x.To.Path.StartsWith("Modules/CustomSpawns"));
+            mod1Files.Should().Contain(x => x.To.FileName == "CustomSpawns.dll");
+            mod1Files.Should().Contain(x => x.To.FileName == "SubModule.xml");
+            
+            mod2.Name.Should().BeEquivalentTo("Calradia At War");
+            mod2.Version.Should().BeEquivalentTo("v1.9.1.0");
+            mod2Files.Should().HaveCount(20);
+            mod2Files.Should().AllSatisfy(x => x.To.Path.StartsWith("Modules/CalradiaAtWar"));
+            mod2Files.Should().Contain(x => x.To.FileName == "SubModule.xml");
+        }
+    }
+
     [Fact]
     public async Task Test_WithFakeMod()
     {
@@ -101,13 +132,15 @@ public class MountAndBlade2BannerlordModInstallerTests : AModInstallerTest<Mount
         var file = await CreateTestArchive(testFiles);
         await using (file)
         {
-            var filesToExtract = await GetFilesToExtractFromInstaller(file.Path);
-            filesToExtract.Should().HaveCount(3);
-            filesToExtract.Should().AllSatisfy(x => x.To.Path.StartsWith("Modules/Test"));
-            filesToExtract.Should().Contain(x => x.To.FileName == "Bannerlord.Harmony.dll");
-            filesToExtract.Should().Contain(x => x.To.FileName == "SubModule.xml");
+            var (mod, modFiles) = await GetModWithFilesFromInstaller(file.Path);
+            mod.Name.Should().BeEquivalentTo("Harmony");
+            mod.Version.Should().BeEquivalentTo("v2.2.0.0");
+            modFiles.Should().HaveCount(3);
+            modFiles.Should().AllSatisfy(x => x.To.Path.StartsWith("Modules/Test"));
+            modFiles.Should().Contain(x => x.To.FileName == "Bannerlord.Harmony.dll");
+            modFiles.Should().Contain(x => x.To.FileName == "SubModule.xml");
         }
-    }    
+    }
     [Fact]
     public async Task Test_WithFakeMod_WithModulesRoot()
     {
@@ -119,11 +152,13 @@ public class MountAndBlade2BannerlordModInstallerTests : AModInstallerTest<Mount
         var file = await CreateTestArchive(testFiles);
         await using (file)
         {
-            var filesToExtract = await GetFilesToExtractFromInstaller(file.Path);
-            filesToExtract.Should().HaveCount(3);
-            filesToExtract.Should().AllSatisfy(x => x.To.Path.StartsWith("Modules/Test"));
-            filesToExtract.Should().Contain(x => x.To.FileName == "Bannerlord.Harmony.dll");
-            filesToExtract.Should().Contain(x => x.To.FileName == "SubModule.xml");
+            var (mod, modFiles) = await GetModWithFilesFromInstaller(file.Path);
+            mod.Name.Should().BeEquivalentTo("Harmony");
+            mod.Version.Should().BeEquivalentTo("v2.2.0.0");
+            modFiles.Should().HaveCount(3);
+            modFiles.Should().AllSatisfy(x => x.To.Path.StartsWith("Modules/Test"));
+            modFiles.Should().Contain(x => x.To.FileName == "Bannerlord.Harmony.dll");
+            modFiles.Should().Contain(x => x.To.FileName == "SubModule.xml");
         }
     }
 }

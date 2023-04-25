@@ -19,20 +19,20 @@ public sealed class LauncherManagerFactory
         _loggerFactory = loggerFactory;
     }
 
-    internal LauncherManagerNexusMods Get(GameInstallation installation)
+    public LauncherManagerNexusMods Get(GameInstallation installation)
     {
         var store = Converter.ToGameStoreTW(installation.Store);
         return _instances.GetOrAdd(installation.Locations[GameFolderType.Game].ToString(),
             static (installationPath, tuple) => ValueFactory(tuple._loggerFactory, installationPath, tuple.store), (_loggerFactory, store));
     }
-    internal LauncherManagerNexusMods Get(GameLocatorResult gameLocator)
+    public LauncherManagerNexusMods Get(GameLocatorResult gameLocator)
     {
         var store = Converter.ToGameStoreTW(gameLocator.Store);
         return _instances.GetOrAdd(gameLocator.Path.ToString(),
             static (installationPath, tuple) => ValueFactory(tuple._loggerFactory, installationPath, tuple.store), (_loggerFactory, store));
     }
 
-    internal LauncherManagerNexusMods Get(string installationPath, GameStoreTW store)
+    public LauncherManagerNexusMods Get(string installationPath, GameStoreTW store)
     {
         return _instances.GetOrAdd(installationPath,
             static (installationPath, tuple) => ValueFactory(tuple._loggerFactory, installationPath, tuple.store), (_loggerFactory, store));

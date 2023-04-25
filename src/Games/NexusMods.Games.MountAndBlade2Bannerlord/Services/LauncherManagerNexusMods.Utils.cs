@@ -3,7 +3,7 @@ using FetchBannerlordVersion;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Services;
 
-internal sealed partial class LauncherManagerNexusMods
+partial class LauncherManagerNexusMods
 {
     public override string GetGameVersion()
     {
