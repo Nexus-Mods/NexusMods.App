@@ -12,7 +12,5 @@
         <None Update="Assets/**">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-
-        <PackageReference Include="Xunit.SkippableFact" Version="1.4.13" />
     </ItemGroup>
 </Project>

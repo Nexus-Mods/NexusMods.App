@@ -1,20 +1,25 @@
 <Project>
     <PropertyGroup>
         <Authors>Nexus Mods</Authors>
-        <PackageProjectUrl>https://github.com/Nexus-Mods/NexusMods.App</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/Nexus-Mods/NexusMods.App</RepositoryUrl>
-        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+
         <PackageIcon>Nexus-Icon.png</PackageIcon>
-        <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+        <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+
+        <PackageProjectUrl>https://github.com/Nexus-Mods/NexusMods.App</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/Nexus-Mods/NexusMods.App.git</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+        <!-- https://github.com/dotnet/sourcelink/tree/main/docs#publishrepositoryurl -->
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="$(MSBuildThisFileDirectory)LICENSE.md">
-            <Pack>True</Pack>
-            <PackagePath>/</PackagePath>
-        </None>
         <None Include="$(MSBuildThisFileDirectory)Nexus-Icon.png">
             <Pack>True</Pack>
             <PackagePath>/</PackagePath>

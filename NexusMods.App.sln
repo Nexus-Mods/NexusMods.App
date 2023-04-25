@@ -75,7 +75,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".solutionItems", ".solution
 		Directory.Build.props = Directory.Build.props
 		LICENSE.md = LICENSE.md
 		NuGet.Build.props = NuGet.Build.props
-		NullableErrors.Build.props = NullableErrors.Build.props
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -98,6 +97,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.StardewValley.Tests", "tests\Games\NexusMods.Games.StardewValley.Tests\NexusMods.Games.StardewValley.Tests.csproj", "{84C18EE7-86B5-4C1B-B467-93FED213C713}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E7BAE287-D505-4D6D-A090-665A64309B2D}"
+	ProjectSection(SolutionItems) = preProject
+		src\Directory.Build.props = src\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{52AF9D62-7D5B-4AD0-BA12-86F2AA67428B}"
 	ProjectSection(SolutionItems) = preProject

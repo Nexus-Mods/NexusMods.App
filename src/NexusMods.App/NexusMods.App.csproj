@@ -1,7 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    <!-- nullable warnings as errors -->
-    <Import Project="$([MSBuild]::GetPathOfFileAbove('NullableErrors.Build.props', '$(MSBuildThisFileDirectory)../'))" />
-
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <ApplicationIcon>nexus-logo.ico</ApplicationIcon>
@@ -30,8 +27,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="AppConfig.json">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+        <None Update="AppConfig.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 </Project>

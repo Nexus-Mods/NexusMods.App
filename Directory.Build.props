@@ -4,16 +4,25 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
 
-        <!-- 
-            This will be useful if we decide to ship delta updates with our application in the future.  
-            And for general validation reasons.  
-        -->
+    <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+        <!-- https://github.com/dotnet/sourcelink/tree/main/docs#continuousintegrationbuild -->
+        <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+
+        <!-- https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/code-generation#deterministic -->
         <Deterministic>true</Deterministic>
+
+        <!-- https://github.com/dotnet/sourcelink/tree/main/docs#deterministicsourcepaths -->
+        <DeterministicSourcePaths>true</DeterministicSourcePaths>
     </PropertyGroup>
 
     <PropertyGroup>
         <!-- SYSLIB1006: Multiple logging methods cannot use the same event ID -->
         <NoWarn>$(NoWarn);SYSLIB1006</NoWarn>
     </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="JetBrains.Annotations" Version="2022.3.1" PrivateAssets="all" />
+    </ItemGroup>
 </Project>
