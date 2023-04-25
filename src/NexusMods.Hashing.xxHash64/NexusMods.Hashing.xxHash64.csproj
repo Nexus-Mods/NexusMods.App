@@ -8,6 +8,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Vogen" Version="3.0.12" />
+        <PackageReference Include="Vogen" Version="3.0.15" />
     </ItemGroup>
 </Project>
