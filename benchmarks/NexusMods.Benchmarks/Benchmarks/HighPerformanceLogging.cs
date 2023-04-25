@@ -1,4 +1,5 @@
 using BenchmarkDotNet.Attributes;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.Benchmarks.Interfaces;
 
@@ -12,11 +13,11 @@ public class HighPerformanceLogging : IBenchmark
     public const string LoggingMessageWithValueTypes = "This uses value types: {a} and {b}";
 
     [Params(LogLevel.Trace, LogLevel.Information)]
-    public LogLevel MinimumLogLevel { get; set; }
+    public LogLevel MinimumLogLevel { get; [UsedImplicitly] set; }
 
-    private ILogger _logger;
-    private string _referenceA;
-    private string _referenceB;
+    private ILogger _logger = null!;
+    private string _referenceA = null!;
+    private string _referenceB = null!;
     private Guid _valueA;
     private Guid _valueB;
 

@@ -1,10 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
     <!-- NuGet Package Shared Details -->
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
-
-    <!-- nullable warnings as errors -->
-    <Import Project="$([MSBuild]::GetPathOfFileAbove('NullableErrors.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
     <ItemGroup>
         <ProjectReference Include="..\..\NexusMods.Common\NexusMods.Common.csproj" />
@@ -15,45 +11,43 @@
 
     <ItemGroup>
         <PackageReference Include="CliWrap" Version="3.6.0" />
-        <PackageReference Include="JetBrains.Annotations" Version="2022.3.1" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
     </ItemGroup>
 
     <ItemGroup>
+        <!-- Using .nupkg convention for auto extract. -->
+        <None Update="runtimes\win-x64\**">
+            <Pack>true</Pack>
+            <PackagePath>runtimes/win-x64</PackagePath>
+        </None>
 
-      <!-- Using .nupkg convention for auto extract. -->
-      <None Update="runtimes\win-x64\**">
-          <Pack>true</Pack>
-          <PackagePath>runtimes/win-x64</PackagePath>
-      </None>
+        <None Update="runtimes\osx-x64\**">
+            <Pack>true</Pack>
+            <PackagePath>runtimes/osx-x64</PackagePath>
+        </None>
 
-      <None Update="runtimes\osx-x64\**">
-          <Pack>true</Pack>
-          <PackagePath>runtimes/osx-x64</PackagePath>
-      </None>
+        <None Update="runtimes\linux-x64\**">
+            <Pack>true</Pack>
+            <PackagePath>runtimes/linux-x64</PackagePath>
+        </None>
 
-      <None Update="runtimes\linux-x64\**">
-          <Pack>true</Pack>
-          <PackagePath>runtimes/linux-x64</PackagePath>
-      </None>
+        <None Update="FileSignatures\Signatures.tt">
+            <Generator>TextTemplatingFileGenerator</Generator>
+            <LastGenOutput>Signatures.cs</LastGenOutput>
+        </None>
 
-      <None Update="FileSignatures\Signatures.tt">
-          <Generator>TextTemplatingFileGenerator</Generator>
-          <LastGenOutput>Signatures.cs</LastGenOutput>
-      </None>
-
-      <None Update="build\NexusMods.FileExtractor.targets">
-          <Pack>true</Pack>
-          <PackagePath>build\NexusMods.FileExtractor.targets</PackagePath>
-      </None>
+        <None Update="build\NexusMods.FileExtractor.targets">
+            <Pack>true</Pack>
+            <PackagePath>build\NexusMods.FileExtractor.targets</PackagePath>
+        </None>
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="FileSignatures\Signatures.cs">
-        <AutoGen>True</AutoGen>
-        <DesignTime>True</DesignTime>
-        <DependentUpon>Signatures.tt</DependentUpon>
-      </Compile>
+        <Compile Update="FileSignatures\Signatures.cs">
+            <AutoGen>True</AutoGen>
+            <DesignTime>True</DesignTime>
+            <DependentUpon>Signatures.tt</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <!-- Non-NuGet Only -->

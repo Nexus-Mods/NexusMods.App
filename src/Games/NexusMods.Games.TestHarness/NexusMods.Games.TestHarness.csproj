@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
     
     <ItemGroup>
-      <PackageReference Include="xunit.extensibility.core" Version="2.4.2" />
+        <PackageReference Include="xunit.extensibility.core" Version="2.4.2" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\src\Networking\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />
-      <ProjectReference Include="..\..\..\src\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
-      <ProjectReference Include="..\..\..\src\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+        <ProjectReference Include="..\..\..\src\Networking\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />
+        <ProjectReference Include="..\..\..\src\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
+        <ProjectReference Include="..\..\..\src\NexusMods.DataModel\NexusMods.DataModel.csproj" />
     </ItemGroup>
 
 </Project>

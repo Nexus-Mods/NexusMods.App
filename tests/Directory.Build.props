@@ -1,26 +1,50 @@
 <Project>
-    <!-- Import Common Props -->
     <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
-    
-    <!-- Test Specific Stuff -->
+
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
     <ItemGroup>
-        <PackageReference Include="FluentAssertions" Version="6.10.0" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0-preview.1.23110.8" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
-        <PackageReference Include="xunit" Version="2.4.2" />
-        <PackageReference Include="Xunit.DependencyInjection" Version="8.7.0" />
-        <PackageReference Include="Xunit.DependencyInjection.Logging" Version="8.0.1" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        <PackageReference Include="Moq" Version="4.18.4" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AutoFixture" Version="4.18.0" />
+        <PackageReference Include="AutoFixture.AutoMoq" Version="4.18.0" />
+        <PackageReference Include="AutoFixture.Xunit2" Version="4.18.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="FluentAssertions" Version="6.11.0" />
+        <PackageReference Include="FluentAssertions.OneOf" Version="0.0.5" />
+        <PackageReference Include="FluentAssertions.Analyzers" Version="0.17.2">
             <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="coverlet.collector" Version="3.2.0">
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="xunit" Version="2.4.2" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
             <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Xunit.SkippableFact" Version="1.4.13" />
+        <PackageReference Include="Xunit.DependencyInjection" Version="8.7.1" />
+        <PackageReference Include="Xunit.DependencyInjection.Logging" Version="8.0.1" />
+        <PackageReference Include="Xunit.DependencyInjection.SkippableFact" Version="8.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
+        <PackageReference Include="coverlet.collector" Version="3.2.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="coverlet.msbuild" Version="3.2.0">
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
     </ItemGroup>
 </Project>
