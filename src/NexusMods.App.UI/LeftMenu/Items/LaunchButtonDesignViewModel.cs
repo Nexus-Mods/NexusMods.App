@@ -1,5 +1,6 @@
 ﻿using System.Reactive;
 using NexusMods.DataModel.Games;
+using NexusMods.DataModel.RateLimiting;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -15,4 +16,7 @@ public class LaunchButtonDesignViewModel : AViewModel<ILaunchButtonViewModel>, I
     
     [Reactive]
     public string Label { get; set; } = "Launch";
+
+    [Reactive]
+    public Percent? Progress { get; set; }
 }

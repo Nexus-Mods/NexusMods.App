@@ -1,6 +1,6 @@
 using System.Reactive;
-using System.Windows.Input;
 using NexusMods.DataModel.Games;
+using NexusMods.DataModel.RateLimiting;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.LeftMenu.Items;
@@ -16,11 +16,12 @@ public interface ILaunchButtonViewModel : ILeftMenuItemViewModel
     /// <summary>
     /// The command to execute when the button is clicked.
     /// </summary>
-    public ReactiveCommand<Unit, Unit> Command { get; }
+    public ReactiveCommand<Unit, Unit> Command { get; set; }
 
     /// <summary>
     /// Text to display on the button.
     /// </summary>
     public string Label { get; }
+    public Percent? Progress { get; }
 
 }
