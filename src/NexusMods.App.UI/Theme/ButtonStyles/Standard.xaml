@@ -2,20 +2,88 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    
+
     <Design.PreviewWith>
-        <StackPanel Orientation="Horizontal" Spacing="24">
-            <StackPanel Orientation="Vertical" Spacing="8">
-                <Button>
+        <StackPanel Orientation="Horizontal" Spacing="38" Margin="24">
+            <StackPanel Orientation="Vertical" Spacing="18">
+                <Button Classes="Standard PrimaryOutlined">
+                    <StackPanel>
+                        <icons:Icon Classes="Play"/>
+                        <TextBlock Text="BUTTON"></TextBlock>
+                    </StackPanel>
+                </Button>
+                
+                <Button Classes="Standard PrimaryOutlined" IsEnabled="False">
                     <StackPanel>
                         <icons:Icon Classes="Play"/>
                         <TextBlock Text="BUTTON"></TextBlock>
                     </StackPanel>
                 </Button>
             </StackPanel>
+            
+            <StackPanel Orientation="Vertical" Spacing="18">
+                <Button Classes="Standard PrimaryOutlined">
+                    <StackPanel>
+                        <TextBlock Text="BUTTON"></TextBlock>
+                    </StackPanel>
+                </Button>
+                
+                <Button Classes="Standard PrimaryOutlined" IsEnabled="False">
+                    <StackPanel>
+                        <TextBlock Text="BUTTON"></TextBlock>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
         </StackPanel>
-        
     </Design.PreviewWith>
+    
+    <Style Selector="Button.Standard">
+        <Setter Property="CornerRadius" Value="4"></Setter>
+        <Setter Property="Height" Value="34"></Setter>
+        <Setter Property="Padding" Value="0"></Setter>
+        <Setter Property="BorderThickness" Value="1"></Setter>
+    </Style>
+    
+    <Style Selector="Button.Standard > StackPanel">
+        <Setter Property="Orientation" Value="Horizontal"></Setter>
+        <Setter Property="Spacing" Value="8"></Setter>
+        <Setter Property="Margin" Value="16,10"></Setter>
+    </Style>
+    
+    <Style Selector="Button.Standard > StackPanel > icons|Icon">
+        <Setter Property="Width" Value="24"></Setter>
+        <Setter Property="Height" Value="24"></Setter>
+    </Style>
+    
+    <Style Selector="Button.Standard > StackPanel > TextBlock">
+        <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}"></Setter>
+        <Setter Property="FontSize" Value="14"></Setter>
+        <Setter Property="FontWeight" Value="600"></Setter>
+        <Setter Property="LineHeight" Value="14"></Setter>
+        <Setter Property="LetterSpacing" Value="0.7"></Setter>
+    </Style>
+
+    <Style Selector="Button.Standard.PrimaryOutlined">
+        <Setter Property="Background" Value="{DynamicResource Transparent}"></Setter>
+        <Setter Property="BorderBrush" Value="{DynamicResource BrandPrimary}"></Setter>
+    </Style>
+    
+    <Style Selector="Button.Standard.PrimaryOutlined:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BrandSecondaryLighter}"></Setter>
+        <Setter Property="BorderBrush" Value="{DynamicResource BrandPrimaryLighter}"></Setter>
+    </Style>
+    
+    <Style Selector="Button.Standard:disabled">
+        <Setter Property="Opacity" Value="0.4"></Setter>
+    </Style>
+    
+    <Style Selector="Button.Standard.PrimaryOutlined > StackPanel > icons|Icon">
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}"></Setter>
+    </Style>
+
+    <Style Selector="Button.Standard.PrimaryOutlined > StackPanel > TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}"></Setter>
+    </Style>
 
 
 </Styles>

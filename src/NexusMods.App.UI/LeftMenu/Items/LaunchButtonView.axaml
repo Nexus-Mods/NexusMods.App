@@ -1,5 +1,5 @@
 ﻿<reactiveUi:ReactiveUserControl
-    d:DesignHeight="200"
+    d:DesignHeight="36"
     d:DesignWidth="200"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.LeftMenu.Items.LaunchButtonView"
@@ -12,9 +12,9 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Grid>
-        <ProgressBar x:Name="ProgressBarControl"></ProgressBar> 
+        <ProgressBar x:Name="ProgressBarControl" IsVisible="False"></ProgressBar> 
         <Button
-            Classes="LaunchButton PrimaryOutline"
+            Classes="Standard PrimaryOutlined"
             HorizontalAlignment="Stretch"
             x:Name="LaunchButton">
             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
