@@ -18,15 +18,34 @@ public partial class LaunchButtonView : ReactiveUserControl<ILaunchButtonViewMod
                 .BindToUi(this, view => view.LaunchButton.Command)
                 .DisposeWith(d);
 
-            this.Bind(ViewModel, vm => vm.Label, v => v.LaunchText.Text)
+            this.WhenAnyValue(view => view.ViewModel!.Command)
+                .SelectMany(cmd => cmd.IsExecuting)
+                .Select(ex => !ex)
+                .BindToUi(this, view => view.LaunchButton.IsVisible)
+                .DisposeWith(d);
+            
+            this.WhenAnyValue(view => view.ViewModel!.Command)
+                .SelectMany(cmd => cmd.IsExecuting)
+                .BindToUi(this, view => view.ProgressBarControl.IsVisible)
                 .DisposeWith(d);
 
-            this.WhenAnyValue(view => view.ViewModel!.Command)
-                .SelectMany(cmd => cmd.CanExecute)
-                .Select(canExecute =>
-                    canExecute ? IconType.Play : IconType.HourglassEmpty)
-                .Select(icon => icon.ToMaterialUiName())
-                .BindToUi(this, view => view.LaunchIcon.Value)
+            this.WhenAnyValue(view => view.ViewModel!.Progress)
+                .Select(p => p == null)
+                .BindToUi(this, view => view.ProgressBarControl.IsIndeterminate)
+                .DisposeWith(d);
+            
+            this.WhenAnyValue(view => view.ViewModel!.Progress)
+                .Where(p => p != null)
+                .Select(p => p!.Value.Value)
+                .BindToUi(this, view => view.ProgressBarControl.Value)
+                .DisposeWith(d);
+
+            this.WhenAnyValue(view => view.ViewModel!.Label)
+                .BindToUi(this, view => view.LaunchText.Text)
+                .DisposeWith(d);
+            
+            this.WhenAnyValue(view => view.ViewModel!.Label)
+                .BindToUi(this, view => view.ProgressBarControl.ProgressTextFormat)
                 .DisposeWith(d);
         });
     }
