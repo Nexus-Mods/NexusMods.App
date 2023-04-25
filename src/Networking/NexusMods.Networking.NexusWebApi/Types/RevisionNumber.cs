@@ -6,7 +6,4 @@ namespace NexusMods.Networking.NexusWebApi.Types;
 /// revision number (aka "version") of a revision. Only unique within one collection
 /// </summary>
 [ValueObject<ulong>]
-public partial struct RevisionNumber
-{
-
-}
+public readonly partial struct RevisionNumber { }

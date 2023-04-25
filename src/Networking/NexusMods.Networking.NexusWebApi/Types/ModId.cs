@@ -7,7 +7,4 @@ namespace NexusMods.Networking.NexusWebApi.Types;
 /// i.e. Each game has its own set of IDs and starts with 0.
 /// </summary>
 [ValueObject<ulong>]
-public partial struct ModId
-{
-
-}
+public readonly partial struct ModId { }

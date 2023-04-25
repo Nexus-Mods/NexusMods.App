@@ -6,7 +6,4 @@ namespace NexusMods.Networking.NexusWebApi.Types;
 /// Unique identifier for an individual game hosted on Nexus.
 /// </summary>
 [ValueObject<int>]
-public partial struct GameId
-{
-
-}
+public readonly partial struct GameId { }
