@@ -101,10 +101,12 @@ public class ArchiveManager
     /// <returns></returns>
     public bool TryGetPathFor(Hash hash, out AbsolutePath path)
     {
-        var rel = NameForHash(hash);
-        path = _locations.Select(r => r.CombineUnchecked(rel))
-            .FirstOrDefault(r => r.FileExists);
-        return path != default;
+        var relativePath = NameForHash(hash);
+        if (_locations.Select(x => x.CombineUnchecked(relativePath)).TryGetFirst(x => x.FileExists, out path))
+            return true;
+
+        path = default;
+        return false;
     }
 
     /// <summary>

@@ -1,6 +1,7 @@
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -13,36 +14,52 @@ namespace NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
 public class StubbedGameInstaller : IModInstaller
 {
-    // ReSharper disable once NotAccessedField.Local
-    private readonly IDataStore _store;
+    private readonly IDataStore _dataStore;
 
     public StubbedGameInstaller(IDataStore store)
     {
-        _store = store;
+        _dataStore = store;
     }
 
-    public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
+    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        return installation.Game is StubbedGame ? Common.Priority.Normal : Common.Priority.None;
+        return installation.Game is StubbedGame ? Priority.Normal : Priority.None;
     }
 
-    public ValueTask<IEnumerable<AModFile>> GetFilesToExtractAsync(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken ct = default)
+    public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
+        GameInstallation gameInstallation,
+        ModId baseModId,
+        Hash srcArchiveHash,
+        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
+        CancellationToken cancellationToken = default)
     {
-        return ValueTask.FromResult(GetFilesToExtractImpl(srcArchive, files));
+        return ValueTask.FromResult(GetMods(baseModId, srcArchiveHash, archiveFiles));
     }
 
-    private IEnumerable<AModFile> GetFilesToExtractImpl(Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
+    private IEnumerable<ModInstallerResult> GetMods(
+        ModId baseModId,
+        Hash srcArchiveHash,
+        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        foreach (var (key, value) in files)
-        {
-            yield return new FromArchive
+        var modFiles = archiveFiles
+            .Select(kv =>
             {
-                Id = ModFileId.New(),
-                From = new HashRelativePath(srcArchive, key),
-                To = new GamePath(GameFolderType.Game, key),
-                Hash = value.Hash,
-                Size = value.Size
-            };
-        }
+                var (path, file) = kv;
+
+                return new FromArchive
+                {
+                    Id = ModFileId.New(),
+                    From = new HashRelativePath(srcArchiveHash, path),
+                    To = new GamePath(GameFolderType.Game, path),
+                    Hash = file.Hash,
+                    Size = file.Size
+                };
+            });
+
+        yield return new ModInstallerResult
+        {
+            Id = baseModId,
+            Files = modFiles
+        };
     }
 }

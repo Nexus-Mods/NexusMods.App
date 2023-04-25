@@ -46,9 +46,15 @@
 
         <Color x:Key="ThemeBackgroundColor">#101010</Color>
         <SolidColorBrush Color="{DynamicResource ThemeBackgroundColor}" x:Key="ThemeBackgroundBrush" />
+        
+        <Color x:Key="BackgroundPrimaryColor">#101010</Color>
+        <SolidColorBrush Color="{DynamicResource BackgroundPrimaryColor}" x:Key="BackgroundPrimaryBrush" />
 
         <Color x:Key="BackgroundSecondaryColor">#181818</Color>
         <SolidColorBrush Color="{DynamicResource BackgroundSecondaryColor}" x:Key="BackgroundSecondaryBrush" />
+        
+        <Color x:Key="BackgroundSecondaryDarkerColor">#161717</Color>
+        <SolidColorBrush Color="{DynamicResource BackgroundSecondaryDarkerColor}" x:Key="BackgroundSecondaryDarker" />
 
         <Color x:Key="TransparentColor">#00FFFFFF</Color>
         <SolidColorBrush Color="{DynamicResource TransparentColor}" x:Key="TransparentBrush" />
@@ -80,9 +86,13 @@
         <FontFamily x:Key="FontPrimaryRegular">/Fonts/Regular#Montserrat</FontFamily>
         <FontFamily x:Key="FontPrimaryBold">/Fonts/Bold#Montserrat</FontFamily>
         <FontFamily x:Key="FontSecondary">/Fonts/Regular#Roboto</FontFamily>
+        <FontFamily x:Key="FontSecondaryBold">/Fonts/Bold#Roboto</FontFamily>
 
         <Color x:Key="FontDarkSecondaryColor">#AAAAAA</Color>
         <SolidColorBrush Color="{DynamicResource FontDarkSecondaryColor}" x:Key="FontDarkSecondaryBrush" />
+        
+        <Color x:Key="OffWhiteTextColor">#E2E2E2</Color>
+        <SolidColorBrush Color="{DynamicResource OffWhiteTextColor}" x:Key="OffWhiteTextBrush" />
 
 
         <SolidColorBrush Color="{DynamicResource BrandSecondaryLighter}" x:Key="DataGridCellFocusVisualPrimaryBrush" />

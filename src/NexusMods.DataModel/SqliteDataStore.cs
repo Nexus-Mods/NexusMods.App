@@ -185,7 +185,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         if (canCache && _cache.TryGet(id, out var cached))
             return (T)cached;
 
-        _logger.LogTrace("Getting {Id} of type {Type}", id, typeof(T).Name);
+        _logger.GetIdOfType(id, typeof(T).Name);
         using var conn = _pool.RentDisposable();
         using var cmd = conn.Value.CreateCommand();
         cmd.CommandText = _getStatements[id.Category];
@@ -237,6 +237,37 @@ public class SqliteDataStore : IDataStore, IDisposable
         if (!_immutableFields[id.Category])
             _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
 
+    }
+
+    /// <inheritdoc />
+    public bool CompareAndSwap(IId id, ReadOnlySpan<byte> val, ReadOnlySpan<byte> expected)
+    {
+        if (_isDisposed)
+            throw new ObjectDisposedException(nameof(SqliteDataStore));
+
+        using var conn = _pool.RentDisposable();
+        using var transaction = conn.Value.BeginTransaction();
+
+        using (var cmd = conn.Value.CreateCommand())
+        {
+            cmd.CommandText = _getStatements[id.Category];
+            cmd.Parameters.AddWithValueUntagged("@id", id);
+            using var reader = cmd.ExecuteReader();
+            if (reader.Read() && !reader.GetBlob(0).SequenceEqual(expected))
+                return false;
+        }
+
+        using (var cmd = conn.Value.CreateCommand()) {
+            cmd.CommandText = _putStatements[id.Category];
+            cmd.Parameters.AddWithValueUntagged("@id", id);
+            cmd.Parameters.AddWithValue("@data", val.ToArray());
+            cmd.ExecuteNonQuery();
+            transaction.Commit();
+        }
+        
+        if (!_immutableFields[id.Category])
+            _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
+        return true;
     }
 
     /// <inheritdoc />
@@ -364,11 +395,12 @@ public class SqliteDataStore : IDataStore, IDisposable
         var maxCycles = 0;
         while (change.Type != IdUpdated.UpdateType.Delete && GetRaw(change.Id) == null && maxCycles < 10)
         {
-            _logger.LogDebug("Waiting for write to {Id} to complete", change.Id);
+            _logger.WaitingForWriteToId(change.Id);
             await Task.Delay(100);
             maxCycles++;
         }
-        _logger.LogTrace("Id {Id} is updated", change.Id);
+
+        _logger.IdIsUpdated(change.Id);
         return change.Id;
     }
 

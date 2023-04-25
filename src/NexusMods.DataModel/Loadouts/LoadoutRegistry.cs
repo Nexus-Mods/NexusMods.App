@@ -82,7 +82,9 @@ public class LoadoutRegistry : IDisposable
     /// <returns></returns>
     public Loadout Alter(LoadoutId id, string commitMessage, Func<Loadout, Loadout> alterFn)
     {
-        var loadoutRoot = _store.GetRaw(id.ToEntityId(EntityCategory.LoadoutRoots));
+        var dbId = id.ToEntityId(EntityCategory.LoadoutRoots);
+        TryAgain:
+        var loadoutRoot = _store.GetRaw(dbId);
         Loadout? loadout = null;
         if (loadoutRoot != null)
         {
@@ -102,8 +104,10 @@ public class LoadoutRegistry : IDisposable
 
         Span<byte> span = stackalloc byte[newLoadout.DataStoreId.SpanSize + 1];
         newLoadout.DataStoreId.ToTaggedSpan(span);
-        // TODO: Make this atomic
-        _store.PutRaw(id.ToEntityId(EntityCategory.LoadoutRoots), span);
+        
+        
+        if (!_store.CompareAndSwap(dbId, span, loadoutRoot))
+            goto TryAgain;
 
         _logger.LogInformation("Loadout {LoadoutId} altered: {CommitMessage}", id, commitMessage);
 

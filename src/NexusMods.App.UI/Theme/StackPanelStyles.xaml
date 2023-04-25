@@ -7,4 +7,14 @@
         <Setter Property="Spacing" Value="16"></Setter>
         <Setter Property="Margin" Value="16, 0"></Setter>
     </Style>
+    
+    <Style Selector="StackPanel.LeftPaneButtonList">
+        <Setter Property="Spacing" Value="4"></Setter>
+        <Setter Property="Margin" Value="16"></Setter>
+        <Setter Property="Background" Value="{DynamicResource BackgroundPrimaryColor}"></Setter>
+    </Style>
+    
+    <Style Selector="StackPanel.LeftPane">
+        <Setter Property="Background" Value="{DynamicResource BackgroundPrimaryColor}"></Setter>
+    </Style>
 </Styles>

@@ -1,5 +1,5 @@
+using NetEscapades.EnumGenerators;
 using NexusMods.DataModel.Attributes;
-
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -15,6 +15,7 @@ namespace NexusMods.DataModel.Abstractions;
 /// <remarks>
 ///    Limited to 255 in our current implementation due to how we create IDs.
 /// </remarks>
+[EnumExtensions]
 public enum EntityCategory
 {
     /// <summary>

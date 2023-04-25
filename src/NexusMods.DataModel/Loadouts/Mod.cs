@@ -35,6 +35,11 @@ public record Mod : Entity, IHasEntityId<ModId>
     public required EntityDictionary<ModFileId, AModFile> Files { get; init; }
 
     /// <summary>
+    /// Metadata of the mod.
+    /// </summary>
+    public AModMetadata? Metadata { get; set; }
+
+    /// <summary>
     /// Category of the mod
     /// </summary>
     public string ModCategory { get; set; } = string.Empty;

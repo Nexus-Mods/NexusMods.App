@@ -1,6 +1,7 @@
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -13,28 +14,30 @@ namespace NexusMods.Games.RedEngine.ModInstallers;
 
 public class SimpleOverlayModInstaller : IModInstaller
 {
-    private static RelativePath[] _rootPaths = new[]
-    {
-        "bin/x64",
-        "engine",
-        "r6",
-        "red4ext",
-        "archive/pc/mod"
-    }.Select(x => x.ToRelativePath()).ToArray();
+    private static readonly RelativePath[] RootPaths = new[]
+        {
+            "bin/x64",
+            "engine",
+            "r6",
+            "red4ext",
+            "archive/pc/mod"
+        }
+        .Select(x => x.ToRelativePath())
+        .ToArray();
 
-    public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
+    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        if (!installation.Is<Cyberpunk2077>()) return Common.Priority.None;
+        if (!installation.Is<Cyberpunk2077>()) return Priority.None;
 
-        var sets = RootFolder(files);
-        return sets.Count != 1 ? Common.Priority.None : Common.Priority.Normal;
+        var sets = RootFolder(archiveFiles);
+        return sets.Count != 1 ? Priority.None : Priority.Normal;
     }
 
-    private HashSet<int> RootFolder(EntityDictionary<RelativePath, AnalyzedFile> files)
+    private static HashSet<int> RootFolder(EntityDictionary<RelativePath, AnalyzedFile> files)
     {
         var filtered = files.Where(f => !Helpers.IgnoreExtensions.Contains(f.Key.Extension));
 
-        var sets = filtered.Select(f => _rootPaths.SelectMany(root => GetOffsets(f.Key, root)).ToHashSet())
+        var sets = filtered.Select(f => RootPaths.SelectMany(root => GetOffsets(f.Key, root)).ToHashSet())
             .Aggregate((set, x) =>
             {
                 set.IntersectWith(x);
@@ -49,7 +52,7 @@ public class SimpleOverlayModInstaller : IModInstaller
     /// <param name="basePath"></param>
     /// <param name="subSection"></param>
     /// <returns></returns>
-    private IEnumerable<int> GetOffsets(RelativePath basePath, RelativePath subSection)
+    private static IEnumerable<int> GetOffsets(RelativePath basePath, RelativePath subSection)
     {
         var depth = 0;
         while (true)
@@ -71,26 +74,43 @@ public class SimpleOverlayModInstaller : IModInstaller
         }
     }
 
-    public ValueTask<IEnumerable<AModFile>> GetFilesToExtractAsync(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken ct = default)
+    public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
+        GameInstallation gameInstallation,
+        ModId baseModId,
+        Hash srcArchiveHash,
+        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
+        CancellationToken cancellationToken = default)
     {
-        return ValueTask.FromResult(GetFilesToExtractImpl(srcArchive, files));
+        return ValueTask.FromResult(GetMods(baseModId, srcArchiveHash, archiveFiles));
     }
 
-    private IEnumerable<AModFile> GetFilesToExtractImpl(Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
+    private IEnumerable<ModInstallerResult> GetMods(
+        ModId baseModId,
+        Hash srcArchiveHash,
+        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        var root = RootFolder(files).First();
-        var filtered = files.Where(f => !Helpers.IgnoreExtensions.Contains(f.Key.Extension));
+        var root = RootFolder(archiveFiles).First();
 
-        foreach (var (path, file) in filtered)
-        {
-            yield return new FromArchive()
+        var modFiles = archiveFiles
+            .Where(kv => !Helpers.IgnoreExtensions.Contains(kv.Key.Extension))
+            .Select(kv =>
             {
-                Id = ModFileId.New(),
-                From = new HashRelativePath(srcArchive, path),
-                To = new GamePath(GameFolderType.Game, path.DropFirst(root)),
-                Hash = file.Hash,
-                Size = file.Size
-            };
-        }
+                var (path, file) = kv;
+
+                return new FromArchive
+                {
+                    Id = ModFileId.New(),
+                    From = new HashRelativePath(srcArchiveHash, path),
+                    To = new GamePath(GameFolderType.Game, path.DropFirst(root)),
+                    Hash = file.Hash,
+                    Size = file.Size
+                };
+            });
+
+        yield return new ModInstallerResult
+        {
+            Id = baseModId,
+            Files = modFiles
+        };
     }
 }

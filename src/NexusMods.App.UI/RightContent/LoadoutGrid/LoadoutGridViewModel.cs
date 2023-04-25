@@ -1,41 +1,59 @@
 ﻿using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using Avalonia.Controls;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
-using NexusMods.App.UI.Toolbars;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
-using Noggog;
+using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Type = NexusMods.App.UI.Controls.Spine.Type;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid;
 
 public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutGridViewModel
 {
-
     [Reactive]
-    public LoadoutId Loadout { get; set; }
+    public LoadoutId LoadoutId { get; set; }
 
     private ReadOnlyObservableCollection<ModCursor> _mods;
-
-    public ILoadoutToolbarViewModel Toolbar { get; }
     public ReadOnlyObservableCollection<ModCursor> Mods => _mods;
 
 
     private readonly SourceCache<IDataGridColumnFactory,ColumnType> _columns;
     private ReadOnlyObservableCollection<IDataGridColumnFactory> _filteredColumns = new(new ObservableCollection<IDataGridColumnFactory>());
-    public ReadOnlyObservableCollection<IDataGridColumnFactory> Columns => _filteredColumns;
+    private readonly IFileSystem _fileSystem;
+    private readonly ILogger<LoadoutGridViewModel> _logger;
+    private readonly LoadoutManager _loadoutManager;
 
-    public LoadoutGridViewModel(IServiceProvider provider, LoadoutRegistry loadoutRegistry,
-        IDefaultLoadoutToolbarViewModel defaultToolbar)
+    [Reactive]
+    public string LoadoutName { get; set; } = "";
+    public ReadOnlyObservableCollection<IDataGridColumnFactory> Columns => _filteredColumns;
+    public async Task AddMod(string path)
     {
-        Toolbar = defaultToolbar;
+        var file = _fileSystem.FromFullPath(path);
+        if (!_fileSystem.FileExists(file))
+        {
+            _logger.LogError("File {File} does not exist, not installing mod",
+                file);
+            return;
+        }
+
+        var _ = Task.Run(async () =>
+        {
+            await _loadoutManager.InstallModsFromArchiveAsync(LoadoutId, file, file.FileName);
+        });
+    }
+
+    public LoadoutGridViewModel(ILogger<LoadoutGridViewModel> logger, IServiceProvider provider, LoadoutRegistry loadoutRegistry,
+        IFileSystem fileSystem, LoadoutManager loadoutManager)
+    {
+        _logger = logger;
+        _fileSystem = fileSystem;
+        _loadoutManager = loadoutManager;
         _columns =
             new SourceCache<IDataGridColumnFactory, ColumnType>(
                 x => throw new NotImplementedException());
@@ -67,7 +85,7 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
 
         this.WhenActivated(d =>
         {
-            this.WhenAnyValue(vm => vm.Loadout)
+            this.WhenAnyValue(vm => vm.LoadoutId)
                 .SelectMany(loadoutRegistry.RevisionsAsLoadouts)
                 .Select(loadout => loadout!.Mods.Values.Select(m => new ModCursor(loadout.LoadoutId, m.Id)))
                 .OnUI()
@@ -76,9 +94,10 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
                 .Subscribe()
                 .DisposeWith(d);
 
-            this.WhenAnyValue(vm => vm.Loadout)
-                .BindToUi(this, vm => vm.Toolbar.LoadoutId)
-                .DisposeWith(d);
+            this.WhenAnyValue(vm => vm.LoadoutId)
+                .SelectMany(loadoutRegistry.RevisionsAsLoadouts)
+                .Select(loadout => loadout.Name)
+                .BindTo(this, vm => vm.LoadoutName);
 
             _columns.Connect()
                 .Bind(out _filteredColumns)

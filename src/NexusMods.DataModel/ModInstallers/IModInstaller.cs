@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
@@ -12,6 +13,7 @@ namespace NexusMods.DataModel.ModInstallers;
 /// Game specific extension that provides support for the installation of mods
 /// (currently archives) to the game folder.
 /// </summary>
+[PublicAPI]
 public interface IModInstaller
 {
     /// <summary>
@@ -20,17 +22,23 @@ public interface IModInstaller
     /// will be used to deploy an archive.
     /// </summary>
     /// <param name="installation">The installation of the game to use.</param>
-    /// <param name="files">All of the files within an archive.</param>
+    /// <param name="archiveFiles">All of the files within an archive.</param>
     /// <returns>Priority.</returns>
-    public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files);
+    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles);
 
     /// <summary>
-    /// Determines which files are to be deployed and pushed out to game directory.
+    /// Finds all mods inside the provided archive.
     /// </summary>
-    /// <param name="installation">The game installation to push files out to.</param>
+    /// <param name="gameInstallation">The game installation.</param>
+    /// <param name="baseModId">The base mod id.</param>
     /// <param name="srcArchiveHash">Hash of the source archive.</param>
-    /// <param name="files">Files present in the archive.</param>
-    /// <param name="ct">Allows you to cancel the operation prematurely.</param>
-    /// <returns>A list of files to deploy.</returns>
-    public ValueTask<IEnumerable<AModFile>> GetFilesToExtractAsync(GameInstallation installation, Hash srcArchiveHash, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken ct = default);
+    /// <param name="archiveFiles">Files from the archive.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns></returns>
+    public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
+        GameInstallation gameInstallation,
+        ModId baseModId,
+        Hash srcArchiveHash,
+        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
+        CancellationToken cancellationToken = default);
 }

@@ -10,6 +10,7 @@ using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.LeftMenu;
+using NexusMods.App.UI.LeftMenu.Downloads;
 using NexusMods.App.UI.LeftMenu.Game;
 using NexusMods.App.UI.LeftMenu.Home;
 using NexusMods.App.UI.Routing;
@@ -28,6 +29,8 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     public IIconButtonViewModel Home { get; }
 
     public IIconButtonViewModel Add { get; }
+    
+    public IIconButtonViewModel Downloads { get; }
 
     private ReadOnlyObservableCollection<IImageButtonViewModel> _games =
         Initializers.ReadOnlyObservableCollection<IImageButtonViewModel>();
@@ -42,6 +45,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     private readonly Subject<SpineButtonAction> _actions = new();
     private readonly ILogger<SpineViewModel> _logger;
     private readonly IGameLeftMenuViewModel _gameLeftMenuViewModel;
+    private readonly IDownloadsViewModel _downloadsViewModel;
     public IObservable<SpineButtonAction> Actions => _actions;
 
     public SpineViewModel(ILogger<SpineViewModel> logger,
@@ -49,6 +53,8 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         IDataStore dataStore,
         IIconButtonViewModel addButtonViewModel,
         IIconButtonViewModel homeButtonViewModel,
+        IIconButtonViewModel downloadsButtonViewModel,
+        IDownloadsViewModel downloadsViewModel,
         IHomeLeftMenuViewModel homeLeftMenuViewModel,
         IGameLeftMenuViewModel gameLeftMenuViewModel,
         IRouter router,
@@ -58,7 +64,9 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
         Home = homeButtonViewModel;
         Add = addButtonViewModel;
+        Downloads = downloadsButtonViewModel;
 
+        _downloadsViewModel = downloadsViewModel;
         _gameLeftMenuViewModel = gameLeftMenuViewModel;
 
 
@@ -99,6 +107,13 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 _actions.OnNext(new SpineButtonAction(Type.Add));
             });
 
+            Downloads.Click = ReactiveCommand.Create(() =>
+            {
+                _logger.LogTrace("Download selected");
+                _actions.OnNext(new SpineButtonAction(Type.Download));
+                LeftMenu = downloadsViewModel;
+            });
+
             Activations.Subscribe(HandleActivation)
                 .DisposeWith(disposables);
         });
@@ -112,33 +127,67 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         LeftMenu = _gameLeftMenuViewModel;
     }
 
+    private void NavigateToDownloads()
+    {
+        _logger.LogTrace("Downloads selected");
+        _actions.OnNext(new SpineButtonAction(Type.Download));
+        LeftMenu = _downloadsViewModel;
+    }
+
     private void HandleMessage(IRoutingMessage message)
     {
-        if (message is NavigateToLoadout navigateToLoadout)
+        switch (message)
         {
-            NavigateToGame(navigateToLoadout.Game);
+            case NavigateToLoadout navigateToLoadout:
+                NavigateToGame(navigateToLoadout.Game);
+                break;
+            case NavigateToDownloads _:
+                NavigateToDownloads();
+                break;
         }
     }
 
     private void HandleActivation(SpineButtonAction action)
     {
         _logger.LogTrace("Activation {Action}", action);
-        if (action.Type == Type.Game)
+        switch (action.Type)
         {
-            Home.IsActive = false;
-            Add.IsActive = false;
-            foreach (var game in Games)
+            case Type.Game:
             {
-                game.IsActive = ReferenceEquals(game.Tag, action.Game);
+                Home.IsActive = false;
+                Add.IsActive = false;
+                Downloads.IsActive = false;
+                foreach (var game in Games)
+                {
+                    game.IsActive = ReferenceEquals(game.Tag, action.Game);
+                }
+
+                break;
             }
-        }
-        else
-        {
-            Home.IsActive = action.Type == Type.Home;
-            Add.IsActive = action.Type == Type.Add;
-            foreach (var game in Games)
+            case Type.Download:
             {
-                game.IsActive = false;
+                Home.IsActive = false;
+                Add.IsActive = false;
+                Downloads.IsActive = true;
+                foreach (var game in Games)
+                {
+                    game.IsActive = false;
+                }
+                break;
+            }
+            case Type.Home:
+            case Type.Add:
+            default:
+            {
+                Home.IsActive = action.Type == Type.Home;
+                Add.IsActive = action.Type == Type.Add;
+                Downloads.IsActive = false;
+                foreach (var game in Games)
+                {
+                    game.IsActive = false;
+                }
+
+                break;
             }
         }
     }

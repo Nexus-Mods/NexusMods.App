@@ -51,6 +51,19 @@ public interface IDataStore
     void PutRaw(IId key, ReadOnlySpan<byte> val);
 
     /// <summary>
+    /// Performs a compare and swap operation on the given key. If the expected
+    /// value matches the current value, the new value is set, and the method
+    /// returns true. If the expected value does not match the current value,
+    /// the new value is not set, and the method returns false. This method is
+    /// atomic.
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="val"></param>
+    /// <param name="expected"></param>
+    /// <returns></returns>
+    bool CompareAndSwap(IId key, ReadOnlySpan<byte> val, ReadOnlySpan<byte> expected);
+
+    /// <summary>
     /// Delete the value for the given id.
     /// </summary>
     /// <param name="id">Unique identifier for which to delete the value for.</param>

@@ -94,6 +94,19 @@ public record Loadout : Entity, IEmptyWithDataStore<Loadout>
     }
 
     /// <summary>
+    /// Remove an individual mod from this loadout, returning a new loadout.
+    /// </summary>
+    /// <param name="mod"></param>
+    /// <returns></returns>
+    public Loadout Remove(Mod mod)
+    {
+        return this with
+        {
+            Mods = Mods.Without(mod.Id)
+        };
+    }
+
+    /// <summary>
     /// Allows you to change individual files associated with a mod in this collection.
     /// </summary>
     /// <param name="func">Function used to change the files of a given mod.</param>

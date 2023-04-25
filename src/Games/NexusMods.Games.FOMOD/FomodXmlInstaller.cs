@@ -5,6 +5,7 @@ using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -17,38 +18,45 @@ namespace NexusMods.Games.FOMOD;
 
 public class FomodXmlInstaller : IModInstaller
 {
+    private readonly IDataStore _dataStore;
     private readonly ICoreDelegates _delegates;
     private readonly XmlScriptType _scriptType = new();
     private readonly ILogger<FomodXmlInstaller> _logger;
 
-    public FomodXmlInstaller(ILogger<FomodXmlInstaller> logger, ICoreDelegates coreDelegates)
+    public FomodXmlInstaller(IDataStore dataStore, ILogger<FomodXmlInstaller> logger, ICoreDelegates coreDelegates)
     {
+        _dataStore = dataStore;
         _delegates = coreDelegates;
         _logger = logger;
     }
 
-    public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
+    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        var hasScript = files.ContainsKey(FomodConstants.XmlConfigRelativePath);
-        return hasScript ? Common.Priority.High : Common.Priority.None;
+        var hasScript = archiveFiles.ContainsKey(FomodConstants.XmlConfigRelativePath);
+        return hasScript ? Priority.High : Priority.None;
     }
 
-    public async ValueTask<IEnumerable<AModFile>> GetFilesToExtractAsync(GameInstallation installation, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken token)
+    public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
+        GameInstallation gameInstallation,
+        ModId baseModId,
+        Hash srcArchiveHash,
+        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
+        CancellationToken cancellationToken = default)
     {
         // the component dealing with fomods is built to support all kinds of mods, including those without a script.
         // for those cases, stop patterns can be way more complex to deduce the intended installation structure. In our case, where
         // we only intend to support xml scripted fomods, this should be good enough
         var stopPattern = new List<string> { "fomod" };
 
-        if (!files.TryGetValue(FomodConstants.XmlConfigRelativePath, out var analyzedFile))
+        if (!archiveFiles.TryGetValue(FomodConstants.XmlConfigRelativePath, out var analyzedFile))
             throw new Exception($"$[{nameof(FomodXmlInstaller)}] XML not found. This should never be true and is indicative of a bug.");
 
         var analyzerInfo = analyzedFile.AnalysisData.OfType<FomodAnalyzerInfo>().FirstOrDefault();
         if (analyzerInfo == default)
-            return Array.Empty<AModFile>(); // <= invalid FOMOD, so no analyzer info dumped
+            return Array.Empty<ModInstallerResult>(); // <= invalid FOMOD, so no analyzer info dumped
 
         // Setup mod, exclude script path so it doesn't get picked up and thus double read from disk
-        var modFiles = files.Keys.Select(x => x.ToString()).ToList();
+        var modFiles = archiveFiles.Keys.Select(x => x.ToString()).ToList();
         var mod = new Mod(modFiles, stopPattern, FomodConstants.XmlConfigRelativePath, string.Empty, _scriptType);
         await mod.InitializeWithoutLoadingScript();
 
@@ -65,7 +73,14 @@ public class FomodXmlInstaller : IModInstaller
         foreach (var warning in instructions.Where(_ => _.type == "unsupported"))
             _logger.LogWarning("Installer uses unsupported function: {}", warning.source);
 
-        return InstructionsToModFiles(instructions, srcArchive, files);
+        return new[]
+        {
+            new ModInstallerResult
+            {
+                Id = baseModId,
+                Files = InstructionsToModFiles(instructions, srcArchiveHash, archiveFiles)
+            }
+        };
     }
 
     private IEnumerable<AModFile> InstructionsToModFiles(IEnumerable<Instruction> instructions, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)

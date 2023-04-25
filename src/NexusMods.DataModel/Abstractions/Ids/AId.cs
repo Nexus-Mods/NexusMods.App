@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace NexusMods.DataModel.Abstractions.Ids;
 
 /// <summary>
@@ -29,7 +31,7 @@ public abstract class AId : IId
     {
         Span<byte> span = stackalloc byte[SpanSize];
         ToSpan(span);
-        return $"{Category}-{Convert.ToHexString(span)}";
+        return $"{Category.ToStringFast()}-{Convert.ToHexString(span)}";
     }
 
     /// <summary>

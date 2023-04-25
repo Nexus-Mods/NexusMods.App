@@ -13,8 +13,16 @@
                 </Style>
             </WrapPanel.Styles>
             <icons:Icon Classes="Bell"></icons:Icon>
+            <icons:Icon Classes="CheckUnderline"></icons:Icon>
+            <icons:Icon Classes="ClearAll"></icons:Icon>
             <icons:Icon Classes="Cog"></icons:Icon>
             <icons:Icon Classes="Help"></icons:Icon>
+            <icons:Icon Classes="History"></icons:Icon>
+            <icons:Icon Classes="PlusCircleOutline"></icons:Icon>
+            <icons:Icon Classes="ProgressDownload"></icons:Icon>
+            <icons:Icon Classes="PauseCircleOutline"></icons:Icon>
+            <icons:Icon Classes="PauseCircleFilled"></icons:Icon>
+            <icons:Icon Classes="RemoveCircleOutline"></icons:Icon>
             <icons:Icon Classes="Star"></icons:Icon>
         </WrapPanel>
     </Design.PreviewWith>
@@ -23,17 +31,45 @@
         <Setter Property="Value" Value="mdi-bell"></Setter>
     </Style>
 
+    <Style Selector="icons|Icon.CheckUnderline">
+        <Setter Property="Value" Value="mdi-check-underline" />
+    </Style>
+    
     <Style Selector="icons|Icon.Cog">
         <Setter Property="Value" Value="mdi-cog" />
     </Style>
 
+    <Style Selector="icons|Icon.ClearAll">
+        <Setter Property="Value" Value="mdi-notification-clear-all" />
+    </Style>
+    
     <Style Selector="icons|Icon.Help">
         <Setter Property="Value" Value="mdi-help-circle-outline" />
+    </Style>
+    
+    <Style Selector="icons|Icon.History">
+        <Setter Property="Value" Value="mdi-history" />
+    </Style>
+    <Style Selector="icons|Icon.PlusCircleOutline">
+        <Setter Property="Value" Value="mdi-plus-circle-outline"></Setter>
+    </Style>
+    <Style Selector="icons|Icon.ProgressDownload">
+        <Setter Property="Value" Value="mdi-progress-download"></Setter>
+    </Style>
+    
+    <Style Selector="icons|Icon.PauseCircleOutline">
+        <Setter Property="Value" Value="mdi-pause-circle-outline"></Setter>
+    </Style>
+    
+    <Style Selector="icons|Icon.PauseCircleFilled">
+        <Setter Property="Value" Value="mdi-pause-circle"></Setter>
+    </Style>
+    
+    <Style Selector="icons|Icon.RemoveCircleOutline">
+        <Setter Property="Value" Value="mdi-minus-circle-outline"></Setter>
     </Style>
     
     <Style Selector="icons|Icon.Star">
         <Setter Property="Value" Value="mdi-star"></Setter>
     </Style>
-    
-
 </Styles>

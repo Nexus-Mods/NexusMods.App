@@ -61,8 +61,12 @@ public class SkyrimInstallerTests : AGameTest<SkyrimSpecialEdition>
         var path = BethesdaTestHelpers.GetDownloadableModFolder(_realFs, folderName);
         var downloaded = await _downloader.DownloadFromManifestAsync(path, _realFs);
 
-        var installedId = await loadout.InstallModAsync(downloaded.Path, downloaded.Manifest.Name);
-        var files = loadout.Value.Mods[installedId].Files;
+        var mod = await InstallModFromArchiveIntoLoadout(
+            loadout,
+            downloaded.Path,
+            downloaded.Manifest.Name);
+
+        var files = mod.Files;
         files.Count.Should().BeGreaterThan(0);
         
         foreach (var file in files)

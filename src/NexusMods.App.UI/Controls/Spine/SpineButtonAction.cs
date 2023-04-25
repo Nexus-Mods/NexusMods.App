@@ -6,7 +6,8 @@ public enum Type
 {
     Home,
     Game,
-    Add
+    Add,
+    Download
 }
 
 public record SpineButtonAction(Type Type, IGame? Game = null);

@@ -1,6 +1,7 @@
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Loadouts;
@@ -13,38 +14,58 @@ namespace NexusMods.Games.DarkestDungeon;
 
 public class DarkestDungeonModInstaller : IModInstaller
 {
-    private readonly RelativePath _modFilesTxt = "modfiles.txt".ToRelativePath();
-    private RelativePath _modFolder = "mods".ToRelativePath();
+    private static readonly RelativePath ModFilesTxt = "modfiles.txt".ToRelativePath();
+    private static readonly RelativePath ModFolder = "mods".ToRelativePath();
 
-    public Priority Priority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> files)
+    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
         if (installation.Game is not DarkestDungeon)
-            return Common.Priority.None;
+            return Priority.None;
 
-        return files.Keys.Any(f => f.FileName == _modFilesTxt)
-            ? Common.Priority.Normal
-            : Common.Priority.None;
+        return archiveFiles.Keys.Any(f => f.FileName == ModFilesTxt)
+            ? Priority.Normal
+            : Priority.None;
     }
 
-    public ValueTask<IEnumerable<AModFile>> GetFilesToExtractAsync(GameInstallation installation, Hash srcArchive,
-        EntityDictionary<RelativePath, AnalyzedFile> files, CancellationToken ct = default)
+    public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
+        GameInstallation gameInstallation,
+        ModId baseModId,
+        Hash srcArchiveHash,
+        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
+        CancellationToken cancellationToken = default)
     {
-        return ValueTask.FromResult(GetFilesToExtractImpl(srcArchive, files));
+        return ValueTask.FromResult(GetMods(baseModId, srcArchiveHash, archiveFiles));
     }
 
-    private IEnumerable<AModFile> GetFilesToExtractImpl(Hash srcArchive,
-        EntityDictionary<RelativePath, AnalyzedFile> files)
+    private IEnumerable<ModInstallerResult> GetMods(
+        ModId baseModId,
+        Hash srcArchiveHash,
+        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        var modFolder = files.Keys.First(m => m.FileName == _modFilesTxt).Parent;
-        return files.Where(f => f.Key.InFolder(modFolder))
-            .Select(f =>
-                new FromArchive
+        var modFolder = archiveFiles.Keys
+            .First(m => m.FileName == ModFilesTxt)
+            .Parent;
+
+        var modFiles = archiveFiles
+            .Where(kv => kv.Key.InFolder(modFolder))
+            .Select(kv =>
+            {
+                var (path, file) = kv;
+
+                return new FromArchive
                 {
                     Id = ModFileId.New(),
-                    To = new GamePath(GameFolderType.Game, _modFolder.Join(f.Key)),
-                    From = new HashRelativePath(srcArchive, f.Key),
-                    Hash = f.Value.Hash,
-                    Size = f.Value.Size
-                });
+                    From = new HashRelativePath(srcArchiveHash, path),
+                    To = new GamePath(GameFolderType.Game, ModFolder.Join(path)),
+                    Hash = file.Hash,
+                    Size = file.Size
+                };
+            });
+
+        yield return new ModInstallerResult
+        {
+            Id = baseModId,
+            Files = modFiles
+        };
     }
 }

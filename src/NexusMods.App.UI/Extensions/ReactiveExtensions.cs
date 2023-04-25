@@ -1,0 +1,43 @@
+﻿using Avalonia;
+using Avalonia.Controls;
+
+namespace NexusMods.App.UI.Extensions;
+
+public static class ReactiveExtensions
+{
+    /// <summary>
+    /// Applies the given class to the given control when a true value is observed
+    /// removes the class when a false value is observed.
+    /// </summary>
+    /// <param name="obs"></param>
+    /// <param name="target"></param>
+    /// <param name="classToApply"></param>
+    /// <typeparam name="TTarget"></typeparam>
+    /// <returns></returns>
+    public static IDisposable BindToClasses<TTarget>(this IObservable<bool> obs, TTarget target, string classToApply)
+        where TTarget : StyledElement
+    {
+        return obs
+            .OnUI()
+            .Subscribe(val =>
+        {
+            if (val)
+                target.Classes.Add(classToApply);
+            else
+                target.Classes.Remove(classToApply);
+        });
+    }
+
+    /// <summary>
+    /// Shorthand for applying "Active" to the given element when true is observed
+    /// </summary>
+    /// <param name="obs"></param>
+    /// <param name="target"></param>
+    /// <typeparam name="TTarget"></typeparam>
+    /// <returns></returns>
+    public static IDisposable BindToActive<TTarget>(this IObservable<bool> obs,
+        TTarget target) where TTarget : StyledElement
+    {
+        return obs.BindToClasses(target, "Active");
+    }
+}
