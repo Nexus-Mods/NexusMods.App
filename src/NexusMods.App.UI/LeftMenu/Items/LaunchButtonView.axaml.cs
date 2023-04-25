@@ -14,18 +14,28 @@ public partial class LaunchButtonView : ReactiveUserControl<ILaunchButtonViewMod
         InitializeComponent();
         this.WhenActivated(d =>
         {
+            var isRunning =
+                this.WhenAnyValue(view => view.ViewModel!.IsRunning);
+
+            this.WhenAnyValue(view => view.ViewModel!.IsEnabled)
+                .BindToUi(this, view => view.LaunchButton.IsEnabled)
+                .DisposeWith(d);
+
             this.WhenAnyValue(view => view.ViewModel!.Command)
                 .BindToUi(this, view => view.LaunchButton.Command)
                 .DisposeWith(d);
 
             this.WhenAnyValue(view => view.ViewModel!.Command)
                 .SelectMany(cmd => cmd.IsExecuting)
-                .Select(ex => !ex)
+                .CombineLatest(isRunning)
+                .Select(ex => ex is { First: false, Second: false })
                 .BindToUi(this, view => view.LaunchButton.IsVisible)
                 .DisposeWith(d);
-            
+
             this.WhenAnyValue(view => view.ViewModel!.Command)
                 .SelectMany(cmd => cmd.IsExecuting)
+                .CombineLatest(isRunning)
+                .Select(ex => ex.First || ex.Second)
                 .BindToUi(this, view => view.ProgressBarControl.IsVisible)
                 .DisposeWith(d);
 
@@ -33,7 +43,7 @@ public partial class LaunchButtonView : ReactiveUserControl<ILaunchButtonViewMod
                 .Select(p => p == null)
                 .BindToUi(this, view => view.ProgressBarControl.IsIndeterminate)
                 .DisposeWith(d);
-            
+
             this.WhenAnyValue(view => view.ViewModel!.Progress)
                 .Where(p => p != null)
                 .Select(p => p!.Value.Value)
@@ -43,7 +53,7 @@ public partial class LaunchButtonView : ReactiveUserControl<ILaunchButtonViewMod
             this.WhenAnyValue(view => view.ViewModel!.Label)
                 .BindToUi(this, view => view.LaunchText.Text)
                 .DisposeWith(d);
-            
+
             this.WhenAnyValue(view => view.ViewModel!.Label)
                 .BindToUi(this, view => view.ProgressBarControl.ProgressTextFormat)
                 .DisposeWith(d);

@@ -10,10 +10,14 @@ public class LaunchButtonDesignViewModel : AViewModel<ILaunchButtonViewModel>, I
 {
     [Reactive]
     public IGame Game { get; set; } = GameInstallation.Empty.Game;
-    
+
     [Reactive]
     public ReactiveCommand<Unit, Unit> Command { get; set; }
-    
+
+    [Reactive] public bool IsEnabled { get; set; } = true;
+
+    [Reactive] public bool IsRunning { get; set; }
+
     [Reactive]
     public string Label { get; set; } = "LAUNCH";
 
@@ -33,7 +37,7 @@ public class LaunchButtonDesignViewModel : AViewModel<ILaunchButtonViewModel>, I
                 Progress = Percent.CreateClamped(0.1d + Progress!.Value.Value);
                 await Task.Delay(200);
             }
-            
+
             Label = "RUNNING...";
             Progress = null;
             await Task.Delay(1000);

@@ -13,13 +13,13 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
     private Button? _button;
     private TextBlock? _text;
     private ProgressBar? _progressBar;
-    
+
     public LaunchButtonViewTests(IServiceProvider provider, AvaloniaApp app) : base(provider, app) { }
-    
+
     protected override async Task PostInitializeSetup()
     {
         await base.PostInitializeSetup();
-        
+
         _button = await GetControl<Button>("LaunchButton");
         _text = await GetControl<TextBlock>("LaunchText");
         _progressBar = await GetControl<ProgressBar>("ProgressBarControl");
@@ -30,13 +30,13 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
     {
         var clicked = false;
         ViewModel.Command = ReactiveCommand.Create<Unit, Unit>(_ =>
-        { 
+        {
             clicked = true;
             return Unit.Default;
         });
 
         clicked.Should().BeFalse();
-        
+
         await Host.Click(_button!);
         clicked.Should().BeTrue();
     }
@@ -52,7 +52,7 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
             _progressBar!.ProgressTextFormat.Should().Be(text);
         });
     }
-    
+
     [Fact]
     public async Task ProgressAffectsProgressBar()
     {
@@ -62,9 +62,9 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
             _progressBar!.IsIndeterminate.Should().BeFalse();
             _progressBar!.Value.Should().Be(0.25);
         });
-        
+
         ViewModel.Progress = null;
-        
+
         await Host.OnUi(async () =>
         {
             _progressBar!.IsIndeterminate.Should().BeTrue();
@@ -86,7 +86,7 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
             _button!.IsVisible.Should().BeTrue();
             _progressBar!.IsVisible.Should().BeFalse();
         });
-        
+
         await Host.Click(_button!);
 
         await Host.OnUi(async () =>
@@ -95,5 +95,36 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
             _progressBar!.IsVisible.Should().BeTrue();
         });
 
+        tcs.SetResult();
+    }
+
+    [Fact]
+    public async Task DisablingTheButtonShowsADisabledButton()
+    {
+        ViewModel.IsEnabled = false;
+        ViewModel.IsRunning = false;
+
+        await Host.OnUi(async () =>
+        {
+            _button!.IsVisible.Should().BeTrue();
+            _button!.IsEnabled.Should().BeFalse();
+            _progressBar!.IsVisible.Should().BeFalse();
+        });
+    }
+
+    [Fact]
+    public async Task IsRunningShouldShowTheProgressBar()
+    {
+        ViewModel.IsEnabled = false;
+        ViewModel.IsRunning = true;
+        ViewModel.Progress = null;
+
+        await Host.OnUi(async () =>
+        {
+            _button!.IsVisible.Should().BeFalse();
+            _button!.IsEnabled.Should().BeFalse();
+            _progressBar!.IsVisible.Should().BeTrue();
+            _progressBar!.IsIndeterminate.Should().BeTrue();
+        });
     }
 }

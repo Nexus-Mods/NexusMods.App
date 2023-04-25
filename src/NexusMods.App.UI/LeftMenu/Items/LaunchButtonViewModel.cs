@@ -24,8 +24,14 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
 
     [Reactive] public ReactiveCommand<Unit, Unit> Command { get; set; } = Initializers.ReactiveCommandUnitUnit;
 
+    [Reactive]
+    public bool IsEnabled { get; set; }
+
+    [Reactive]
+    public bool IsRunning { get; set; }
+
     [Reactive] public string Label { get; set; } = "Launch";
-    
+
     [Reactive]
     public Percent? Progress { get; set; }
 
