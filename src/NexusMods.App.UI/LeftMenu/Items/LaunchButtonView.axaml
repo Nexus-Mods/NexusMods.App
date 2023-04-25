@@ -11,8 +11,11 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.DataContext>
+        <items:LaunchButtonDesignViewModel />
+    </Design.DataContext>
     <Grid>
-        <ProgressBar Classes="LaunchButton" x:Name="ProgressBarControl" IsVisible="False" ShowProgressText="True"></ProgressBar> 
+        <ProgressBar Classes="LaunchButton" x:Name="ProgressBarControl" IsVisible="False" ShowProgressText="True" Minimum="0" Maximum="1"></ProgressBar> 
         <Button
             IsVisible="True"
             Classes="Standard PrimaryOutlined"
@@ -20,7 +23,7 @@
             x:Name="LaunchButton">
             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                 <avalonia:Icon Value="mdi-play" x:Name="LaunchIcon" />
-                <TextBlock Text="Launch" x:Name="LaunchText" />
+                <TextBlock x:Name="LaunchText" />
             </StackPanel>
         </Button>
     </Grid>

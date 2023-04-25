@@ -12,10 +12,10 @@ public class LaunchButtonDesignViewModel : AViewModel<ILaunchButtonViewModel>, I
     public IGame Game { get; set; } = GameInstallation.Empty.Game;
     
     [Reactive]
-    public ReactiveCommand<Unit, Unit> Command { get; set; } = Initializers.ReactiveCommandUnitUnit;
+    public ReactiveCommand<Unit, Unit> Command { get; set; }
     
     [Reactive]
-    public string Label { get; set; } = "Launch";
+    public string Label { get; set; } = "LAUNCH";
 
     [Reactive]
     public Percent? Progress { get; set; }
