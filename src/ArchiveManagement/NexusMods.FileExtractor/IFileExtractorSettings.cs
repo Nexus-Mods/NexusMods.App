@@ -24,6 +24,12 @@ public class FileExtractorSettings : IFileExtractorSettings
 {
     // Note: We can't serialize AbsolutePath because it contains more fields than expected. Just hope user sets correct paths and pray for the best.
     private readonly IFileSystem _fileSystem;
+    
+    
+    /// <summary>
+    /// Default constructor for serialization.
+    /// </summary>
+    public FileExtractorSettings() : this(FileSystem.Shared) {}
 
     /// <summary>
     /// Creates a default new instance of <see cref="FileExtractorSettings"/>.

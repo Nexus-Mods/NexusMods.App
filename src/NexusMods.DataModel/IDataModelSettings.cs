@@ -75,6 +75,11 @@ public class DataModelSettings : IDataModelSettings
 
     /// <inheritdoc />
     public long MaxHashingThroughputBytesPerSecond { get; set; } = 0;
+    
+    /// <summary>
+    /// Default constructor for serialization.
+    /// </summary>
+    public DataModelSettings() : this(FileSystem.Shared) { }
 
     /// <summary>
     /// Creates the default datamodel settings with a given base directory.
