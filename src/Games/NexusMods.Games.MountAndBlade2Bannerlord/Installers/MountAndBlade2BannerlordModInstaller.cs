@@ -20,7 +20,7 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord.Installers;
 public sealed class MountAndBlade2BannerlordModInstaller : IModInstaller
 {
     private readonly LauncherManagerFactory _launcherManagerFactory;
-    
+
     public MountAndBlade2BannerlordModInstaller(LauncherManagerFactory launcherManagerFactory)
     {
         _launcherManagerFactory = launcherManagerFactory;
@@ -37,41 +37,39 @@ public sealed class MountAndBlade2BannerlordModInstaller : IModInstaller
         return result.Supported ? Priority.Normal : Priority.None;
     }
 
-    public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(GameInstallation installation, ModId baseModId, Hash srcArchiveHash, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles, CancellationToken ct = default)
+    public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(GameInstallation installation, ModId baseModId, Hash srcHash, EntityDictionary<RelativePath, AnalyzedFile> files,
+        CancellationToken ct = default)
     {
-        static IEnumerable<KeyValuePair<RelativePath, AnalyzedFile>> GetModuleInfoFiles(EntityDictionary<RelativePath, AnalyzedFile> files)
+        static IEnumerable<KeyValuePair<RelativePath, AnalyzedFile>> GetModuleInfoFiles(EntityDictionary<RelativePath, AnalyzedFile> files) => files.Where(kv =>
         {
-            return files.Where(kv =>
-            {
-                var (path, file) = kv;
+            var (path, file) = kv;
 
-                if (!path.FileName.Equals(MountAndBlade2BannerlordConstants.SubModuleFile)) return false;
-                return file.AnalysisData.OfType<MountAndBlade2BannerlordModuleInfo>().FirstOrDefault() is { } moduleInfo;
-            });
-        }
+            if (!path.FileName.Equals(MountAndBlade2BannerlordConstants.SubModuleFile)) return false;
+            return file.AnalysisData.OfType<MountAndBlade2BannerlordModuleInfo>().FirstOrDefault() is { } moduleInfo;
+        });
 
         var launcherManager = _launcherManagerFactory.Get(installation);
-        
-        var moduleInfoFiles = GetModuleInfoFiles(archiveFiles).ToArray();
+
+        var moduleInfoFiles = GetModuleInfoFiles(files).ToArray();
         var mods = moduleInfoFiles.Select(moduleInfoFile =>
         {
             var parent = moduleInfoFile.Key.Parent;
             var moduleInfo = moduleInfoFile.Value.AnalysisData.OfType<MountAndBlade2BannerlordModuleInfo>().FirstOrDefault()?.ModuleInfo;
-            
+
             if (moduleInfo is null) throw new UnreachableException();
 
             var moduleInfoWithPath = new ModuleInfoExtendedWithPath(moduleInfo, moduleInfoFile.Key.Path);
             // InstallModuleContent will only install mods if the ModuleInfoExtendedWithPath for a mod was provided
-            var result = launcherManager.InstallModuleContent(archiveFiles.Where(kv => kv.Key.InFolder(parent)).Select(x => x.Key.ToString()).ToArray(), new[] { moduleInfoWithPath });
+            var result = launcherManager.InstallModuleContent(files.Where(kv => kv.Key.InFolder(parent)).Select(x => x.Key.ToString()).ToArray(), new[] { moduleInfoWithPath });
             var modFiles = result.Instructions.OfType<CopyInstallInstruction>().Select(instruction =>
             {
                 var relativePath = instruction.Source.ToRelativePath();
-                var file = archiveFiles[relativePath];
+                var file = files[relativePath];
                 return new FromArchive
                 {
                     Id = ModFileId.New(),
                     To = new GamePath(GameFolderType.Game, MountAndBlade2BannerlordConstants.ModFolder.Join(relativePath)),
-                    From = new HashRelativePath(srcArchiveHash, relativePath),
+                    From = new HashRelativePath(srcHash, relativePath),
                     Hash = file.Hash,
                     Size = file.Size,
                     Metadata = ImmutableHashSet.CreateRange<IModFileMetadata>(new List<IModFileMetadata>
@@ -89,17 +87,17 @@ public sealed class MountAndBlade2BannerlordModInstaller : IModInstaller
                 Version = moduleInfo.Version.ToString()
             };
         });
-        
+
         if (moduleInfoFiles.Length == 0) // Not a valid Bannerlord Module - install in root folder the content
         {
-            var modFiles = archiveFiles.Select(kv =>
+            var modFiles = files.Select(kv =>
             {
                 var (path, file) = kv;
                 return new FromArchive
                 {
                     Id = ModFileId.New(),
                     To = new GamePath(GameFolderType.Game, path),
-                    From = new HashRelativePath(srcArchiveHash, path),
+                    From = new HashRelativePath(srcHash, path),
                     Hash = file.Hash,
                     Size = file.Size,
                 };

@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using Bannerlord.ModuleManager;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Sorting.Rules;
@@ -19,5 +19,5 @@ public static class SortRulesUtils
         sortRulesBuilder.AddRange(moduleInfo.DependenciesLoadBeforeThisDistinct().Select(x => new Before<Mod, ModId>(GetModIdFromModuleId(x.Id))));
         sortRulesBuilder.AddRange(moduleInfo.DependenciesLoadBeforeThisDistinct().Select(x => new After<Mod, ModId>(GetModIdFromModuleId(x.Id))));
         return sortRulesBuilder.ToImmutable();
-    } 
+    }
 }

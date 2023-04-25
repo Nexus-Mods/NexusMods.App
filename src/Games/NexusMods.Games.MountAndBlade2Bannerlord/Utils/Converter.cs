@@ -1,4 +1,4 @@
-﻿using GameStore = NexusMods.DataModel.Games.GameStore;
+using GameStore = NexusMods.DataModel.Games.GameStore;
 using GameStoreTW = Bannerlord.LauncherManager.Models.GameStore;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Utils;

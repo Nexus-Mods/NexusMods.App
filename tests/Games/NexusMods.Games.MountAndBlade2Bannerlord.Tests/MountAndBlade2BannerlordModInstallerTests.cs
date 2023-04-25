@@ -49,7 +49,7 @@ public class MountAndBlade2BannerlordModInstallerTests : AModInstallerTest<Mount
   </SubModules>
 </Module>
 """;
-    
+
     public MountAndBlade2BannerlordModInstallerTests(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
     [Fact]
@@ -71,7 +71,7 @@ public class MountAndBlade2BannerlordModInstallerTests : AModInstallerTest<Mount
             modFiles.Should().Contain(x => x.To.FileName == "Bannerlord.BLSE.LauncherEx.exe");
         }
     }
-    
+
     [Fact]
     [Trait("RequiresNetworking", "True")]
     public async Task Test_WithStandardMod()
@@ -91,7 +91,7 @@ public class MountAndBlade2BannerlordModInstallerTests : AModInstallerTest<Mount
             modFiles.Should().Contain(x => x.To.FileName == "SubModule.xml");
         }
     }
-    
+
     [Fact]
     [Trait("RequiresNetworking", "True")]
     public async Task Test_WithStandardModMultiple()
@@ -105,14 +105,14 @@ public class MountAndBlade2BannerlordModInstallerTests : AModInstallerTest<Mount
             var modsWithFiles = await GetModsWithFilesFromInstaller(file.Path);
             var (mod1, mod1Files) = modsWithFiles.FirstOrDefault(x => x.Key.Name == "Custom Spawns API");
             var (mod2, mod2Files) = modsWithFiles.FirstOrDefault(x => x.Key.Name == "Calradia At War");
-            
+
             mod1.Name.Should().BeEquivalentTo("Custom Spawns API");
             mod1.Version.Should().BeEquivalentTo("v1.9.5.0");
             mod1Files.Should().HaveCount(8);
             mod1Files.Should().AllSatisfy(x => x.To.Path.StartsWith("Modules/CustomSpawns"));
             mod1Files.Should().Contain(x => x.To.FileName == "CustomSpawns.dll");
             mod1Files.Should().Contain(x => x.To.FileName == "SubModule.xml");
-            
+
             mod2.Name.Should().BeEquivalentTo("Calradia At War");
             mod2.Version.Should().BeEquivalentTo("v1.9.1.0");
             mod2Files.Should().HaveCount(20);

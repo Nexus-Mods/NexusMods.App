@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
-
 using static NexusMods.Games.MountAndBlade2Bannerlord.Utils.GamePathProvier;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
@@ -41,10 +40,7 @@ public class RunLauncherTool : ITool
                 : PrimaryLauncherFile(store);
         _logger.LogInformation("Running {Program}", program);
 
-        var psi = new ProcessStartInfo(program.ToString())
-        {
-
-        };
+        var psi = new ProcessStartInfo(program.ToString());
         var process = Process.Start(psi);
         if (process is null)
         {

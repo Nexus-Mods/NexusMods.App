@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
 using NexusMods.Games.MountAndBlade2Bannerlord.Utils;
 using NexusMods.Paths;
-
 using GameStore = NexusMods.DataModel.Games.GameStore;
 using GameStoreTW = Bannerlord.LauncherManager.Models.GameStore;
 
@@ -25,6 +24,7 @@ public sealed class LauncherManagerFactory
         return _instances.GetOrAdd(installation.Locations[GameFolderType.Game].ToString(),
             static (installationPath, tuple) => ValueFactory(tuple._loggerFactory, installationPath, tuple.store), (_loggerFactory, store));
     }
+
     public LauncherManagerNexusMods Get(GameLocatorResult gameLocator)
     {
         var store = Converter.ToGameStoreTW(gameLocator.Store);
