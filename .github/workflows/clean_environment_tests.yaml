@@ -10,11 +10,13 @@ jobs:
   build:
     
     name: Test ${{ matrix.project }} (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
+    runs-on: 
+       - self-hosted
+       - ${{ matrix.os }}
     
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest] # disable macos-latest for now
+        os: [Linux, Windows] # disable macos-latest for now
 
     steps:
       - uses: actions/checkout@v3
