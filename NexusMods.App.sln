@@ -67,8 +67,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Benchmarks", "ben
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.UI.Tests", "tests\NexusMods.UI.Tests\NexusMods.UI.Tests.csproj", "{643BE310-8A6C-405C-AAE5-E0A3A3298624}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Common.Tests", "src\NexusMods.CommonTests\NexusMods.Common.Tests.csproj", "{774EAA0D-268E-4A12-B8CC-7B22058A14A3}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".solutionItems", ".solutionItems", "{D9476FF9-B9A1-4C63-A58F-2E19BE356770}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -114,6 +112,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ArchiveManagement", "ArchiveManagement", "{02A589BE-50CA-4D29-BA99-81EEA2410F8D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", "{CF7454A5-0EBB-46E7-9A10-614380DB95D9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Common.Tests", "tests\NexusMods.Common.Tests\NexusMods.Common.Tests.csproj", "{FE0B804A-949E-44E7-9531-B16664ACEC01}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -249,10 +249,6 @@ Global
 		{643BE310-8A6C-405C-AAE5-E0A3A3298624}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{643BE310-8A6C-405C-AAE5-E0A3A3298624}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{643BE310-8A6C-405C-AAE5-E0A3A3298624}.Release|Any CPU.Build.0 = Release|Any CPU
-		{774EAA0D-268E-4A12-B8CC-7B22058A14A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{774EAA0D-268E-4A12-B8CC-7B22058A14A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{774EAA0D-268E-4A12-B8CC-7B22058A14A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{774EAA0D-268E-4A12-B8CC-7B22058A14A3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F9107626-3380-4472-B17F-D5B54C5CEB2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F9107626-3380-4472-B17F-D5B54C5CEB2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9107626-3380-4472-B17F-D5B54C5CEB2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -289,6 +285,10 @@ Global
 		{84C18EE7-86B5-4C1B-B467-93FED213C713}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84C18EE7-86B5-4C1B-B467-93FED213C713}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84C18EE7-86B5-4C1B-B467-93FED213C713}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE0B804A-949E-44E7-9531-B16664ACEC01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE0B804A-949E-44E7-9531-B16664ACEC01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE0B804A-949E-44E7-9531-B16664ACEC01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE0B804A-949E-44E7-9531-B16664ACEC01}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -340,7 +340,7 @@ Global
 		{02A589BE-50CA-4D29-BA99-81EEA2410F8D} = {E7BAE287-D505-4D6D-A090-665A64309B2D}
 		{83B2A024-0218-4F65-B75B-0102DAF38443} = {02A589BE-50CA-4D29-BA99-81EEA2410F8D}
 		{CB61A764-B3BB-42C0-8CDB-DBE57FB80DF5} = {CF7454A5-0EBB-46E7-9A10-614380DB95D9}
-		{774EAA0D-268E-4A12-B8CC-7B22058A14A3} = {E7BAE287-D505-4D6D-A090-665A64309B2D}
+		{FE0B804A-949E-44E7-9531-B16664ACEC01} = {52AF9D62-7D5B-4AD0-BA12-86F2AA67428B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F9F8352-34DD-42C0-8564-EE9AF34A3501}
