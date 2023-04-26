@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using DynamicData;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Interprocess.Messages;
 using NexusMods.DataModel.RateLimiting;
 
@@ -12,7 +13,12 @@ namespace NexusMods.DataModel.Interprocess.Jobs;
 /// </summary>
 public interface IInterprocessJobManager
 {
-    void CreateJob(IInterprocessJob job);
+    /// <summary>
+    /// Create a job with a payload of type <typeparamref name="T"/>.
+    /// </summary>
+    /// <param name="job"></param>
+    /// <typeparam name="T"></typeparam>
+    void CreateJob<T>(IInterprocessJob job) where T : Entity;
 
     /// <summary>
     /// Marks the job as completed and deletes it from the job manager.

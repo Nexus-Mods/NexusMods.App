@@ -1,4 +1,5 @@
 using System.Buffers.Binary;
+using System.Text.Json;
 using DynamicData;
 using DynamicData.PLinq;
 using FluentAssertions;
@@ -9,6 +10,7 @@ using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Interprocess;
 using NexusMods.Paths;
 using NexusMods.DataModel.Interprocess.Jobs;
+using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.RateLimiting;
 
 namespace NexusMods.DataModel.Tests;
@@ -38,10 +40,10 @@ public class InterprocessTests : IDisposable
         }
     }
 
-    public InterprocessTests(TemporaryFileManager fileManager, IServiceProvider serviceProvider)
+    public InterprocessTests(TemporaryFileManager fileManager, IServiceProvider serviceProvider, JsonSerializerOptions jsonSerializerOptions)
     {
         _sqliteFile = fileManager.CreateFile();
-        _ipc = new SqliteIPC(serviceProvider.GetRequiredService<ILogger<SqliteIPC>>(), serviceProvider.GetRequiredService<IDataModelSettings>());
+        _ipc = new SqliteIPC(serviceProvider.GetRequiredService<ILogger<SqliteIPC>>(), serviceProvider.GetRequiredService<IDataModelSettings>(), jsonSerializerOptions);
         _producer = new InterprocessProducer<Message>(_ipc);
         _consumer = new InterprocessConsumer<Message>(_ipc);
         _jobManager = _ipc;
@@ -75,14 +77,26 @@ public class InterprocessTests : IDisposable
             dest.Should().BeEquivalentTo(src, opt => opt.WithStrictOrdering());
     }
 
+    [JsonName(nameof(TestEntity))]
+    record TestEntity : Entity
+    {
+        
+        public int Value { get; init; }
+        
+        
+        public override EntityCategory Category =>
+            EntityCategory.InterprocessJob;
+    }
+    
     [Fact]
     public async Task CanCreateJobs()
     {
+
+        
         var updates = new HashSet<(int Adds, int Removes)>();
         var jobId = new Id64(EntityCategory.TestData, 42);
         _jobManager.Jobs
-            .Filter(job => job.JobType == JobType.ManageGame)
-            .Filter(job => job.PayloadAsId.Equals(jobId))
+            .Filter(job => job.Payload is TestEntity)
             .Subscribe(x =>
             {
                 lock (updates)
@@ -90,8 +104,7 @@ public class InterprocessTests : IDisposable
             });
 
         {
-            using var job = new InterprocessJob(JobType.ManageGame, _jobManager,
-                jobId, "Test");
+            using var job = InterprocessJob.Create(_jobManager, new TestEntity {Value = 128});
             for (var x = 0.0; x < 1; x += 0.1)
             {
                 await Task.Delay(10);

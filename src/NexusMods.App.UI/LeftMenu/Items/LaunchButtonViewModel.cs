@@ -31,16 +31,20 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
 
     public LaunchButtonViewModel(IInterprocessJobManager manager, LoadoutRegistry loadoutRegistry)
     {
+        /*
         this.WhenActivated(d =>
         {
             var gameFilter = this.WhenAnyValue(vm => vm.Game)
                 .Select(game => (Func<Loadout, bool>) (loadout => loadout.Installation.Game.Domain == game.Domain));
             var loadOuts = loadoutRegistry.Loadouts
                 .Filter(gameFilter);
-
             var validJobs = manager.Jobs
                 .Select(v => v)
                 .Filter(job => job.JobType == JobType.AddMod);
+
+            var managing = manager.Jobs
+                .Filter(job => job.JobType == JobType.ManageGame)
+                .LeftJoin();
 
             var canExecute = loadOuts.LeftJoin(validJobs, job => job.PayloadAsIMessage<ModCursor>().LoadoutId,
                 (loadout, job) => (loadout, RunningJob : job.HasValue ))
@@ -53,7 +57,8 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
                 .DisposeWith(d);
 
             Command = ReactiveCommand.Create(() => {}, canExecute);
-        });
 
+        });
+*/
     }
 }

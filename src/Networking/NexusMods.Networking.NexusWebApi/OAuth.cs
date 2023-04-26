@@ -153,8 +153,7 @@ public class OAuth
 
     private IInterprocessJob CreateJob(Uri url)
     {
-        return new InterprocessJob(JobType.NexusLogin, _jobManager,
-            url, "Logging into the Nexus");
+        return InterprocessJob.Create(_jobManager, new NexusLoginJob {Uri = url});
     }
 
     /// <summary>
