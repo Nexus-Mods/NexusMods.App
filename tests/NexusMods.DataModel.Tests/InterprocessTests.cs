@@ -91,10 +91,7 @@ public class InterprocessTests : IDisposable
     [Fact]
     public async Task CanCreateJobs()
     {
-
-        
         var updates = new HashSet<(int Adds, int Removes)>();
-        var jobId = new Id64(EntityCategory.TestData, 42);
         _jobManager.Jobs
             .Filter(job => job.Payload is TestEntity)
             .Subscribe(x =>

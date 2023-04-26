@@ -27,7 +27,7 @@ public class GameLeftMenuViewModel : AViewModel<IGameLeftMenuViewModel>, IGameLe
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items => _items;
 
     [Reactive]
-    public ILeftMenuItemViewModel LaunchButton { get; set; }
+    public ILaunchButtonViewModel LaunchButton { get; set; }
     [Reactive] public IGame Game { get; set; } = GameInstallation.Empty.Game;
 
     [Reactive]
@@ -46,10 +46,6 @@ public class GameLeftMenuViewModel : AViewModel<IGameLeftMenuViewModel>, IGameLe
             var gameFilterFn = this.WhenAnyValue(vm => vm.Game)
                 .Select<IGame, Func<Loadout, bool>>(game => loadout =>
                     loadout.Installation.Game.Domain == game.Domain);
-
-            this.WhenAnyValue(vm => vm.Game)
-                .BindTo(launchButton, vm => vm.Game)
-                .DisposeWith(d);
 
             this.WhenAnyValue(vm => vm.Game)
                 .WhereNotNull()
@@ -91,5 +87,6 @@ public class GameLeftMenuViewModel : AViewModel<IGameLeftMenuViewModel>, IGameLe
         _logger.LogDebug("Loadout {LoadoutId} selected", loadout.LoadoutId);
         _loadoutGridViewModel.LoadoutId = loadout.LoadoutId;
         RightContent = _loadoutGridViewModel;
+        LaunchButton.LoadoutId = loadout.LoadoutId;
     }
 }

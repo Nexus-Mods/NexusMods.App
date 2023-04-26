@@ -1,14 +1,17 @@
+using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using DynamicData;
 using DynamicData.Aggregation;
+using DynamicData.PLinq;
 using NexusMods.App.UI.Extensions;
 using NexusMods.CLI.Verbs;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Interprocess.Jobs;
+using NexusMods.DataModel.Interprocess.Messages;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
 using NexusMods.DataModel.RateLimiting;
@@ -20,7 +23,7 @@ namespace NexusMods.App.UI.LeftMenu.Items;
 public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunchButtonViewModel
 {
     [Reactive]
-    public IGame Game { get; set; } = GameInstallation.Empty.Game;
+    public LoadoutId LoadoutId { get; set; } = Initializers.LoadoutId;
 
     [Reactive] public ReactiveCommand<Unit, Unit> Command { get; set; } = Initializers.ReactiveCommandUnitUnit;
 
@@ -29,36 +32,28 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
     [Reactive]
     public Percent? Progress { get; set; }
 
+    private ReadOnlyObservableCollection<IInterprocessJob> _jobs = new(new ObservableCollection<IInterprocessJob>());
+
     public LaunchButtonViewModel(IInterprocessJobManager manager, LoadoutRegistry loadoutRegistry)
     {
-        /*
         this.WhenActivated(d =>
         {
-            var gameFilter = this.WhenAnyValue(vm => vm.Game)
-                .Select(game => (Func<Loadout, bool>) (loadout => loadout.Installation.Game.Domain == game.Domain));
-            var loadOuts = loadoutRegistry.Loadouts
-                .Filter(gameFilter);
-            var validJobs = manager.Jobs
-                .Select(v => v)
-                .Filter(job => job.JobType == JobType.AddMod);
 
-            var managing = manager.Jobs
-                .Filter(job => job.JobType == JobType.ManageGame)
-                .LeftJoin();
+            var lockedLoadouts = manager.Jobs
+                .Filter(m => m.Payload is ILoadoutJob);
+            
+            var selectedLoadoutFns = this.WhenAnyValue(vm => vm.LoadoutId)
+                .Select<LoadoutId, Func<IInterprocessJob, bool>>(loadoutId => job => loadoutId == ((ILoadoutJob)job.Payload).LoadoutId);
 
-            var canExecute = loadOuts.LeftJoin(validJobs, job => job.PayloadAsIMessage<ModCursor>().LoadoutId,
-                (loadout, job) => (loadout, RunningJob : job.HasValue ))
-                .Filter(row => !row.RunningJob)
-                .IsNotEmpty()
-                .OnUI();
-
-            canExecute.Select(exe => exe ? "Launch" : "Analyzing Files")
-                .BindTo(this, vm => vm.Label)
+            lockedLoadouts.Filter(selectedLoadoutFns)
+                .Bind(out _jobs)
+                .Subscribe()
                 .DisposeWith(d);
+            
+            var canExecute = _jobs.WhenAnyValue(coll => coll.Count, count => count == 0);
 
-            Command = ReactiveCommand.Create(() => {}, canExecute);
+            Command = ReactiveCommand.Create(() => {}, canExecute.OnUI());
 
         });
-*/
     }
 }

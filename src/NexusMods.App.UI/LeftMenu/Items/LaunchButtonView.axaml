@@ -14,8 +14,7 @@
     <Design.DataContext>
         <items:LaunchButtonDesignViewModel />
     </Design.DataContext>
-    <Grid>
-        <ProgressBar Classes="LaunchButton" x:Name="ProgressBarControl" IsVisible="False" ShowProgressText="True" Minimum="0" Maximum="1"></ProgressBar> 
+    <StackPanel Width="184">
         <Button
             IsVisible="True"
             Classes="Standard PrimaryOutlined"
@@ -26,6 +25,8 @@
                 <TextBlock x:Name="LaunchText" />
             </StackPanel>
         </Button>
-    </Grid>
+        <ProgressBar Classes="LaunchButton" x:Name="ProgressBarControl" IsVisible="False" ShowProgressText="True" Minimum="0" Maximum="1"
+                     HorizontalAlignment="Stretch"></ProgressBar> 
+    </StackPanel>
 </reactiveUi:ReactiveUserControl>
 

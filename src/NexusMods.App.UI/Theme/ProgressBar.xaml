@@ -16,6 +16,7 @@
         <Setter Property="Foreground" Value="{DynamicResource BrandPrimary}"></Setter>
         <Setter Property="BorderThickness" Value="1"></Setter>
         <Setter Property="BorderBrush" Value="{DynamicResource BrandPrimary}"></Setter>
+        <Setter Property="MinWidth" Value="100"></Setter>
     </Style>
     
     <Style Selector="ProgressBar.LaunchButton TextBlock">
