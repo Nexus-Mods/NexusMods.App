@@ -14,6 +14,7 @@ using NexusMods.DataModel.Interprocess.Jobs;
 using NexusMods.DataModel.Interprocess.Messages;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
+using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.RateLimiting;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -34,14 +35,20 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
 
     private ReadOnlyObservableCollection<IInterprocessJob> _jobs = new(new ObservableCollection<IInterprocessJob>());
 
-    public LaunchButtonViewModel(IInterprocessJobManager manager, LoadoutRegistry loadoutRegistry)
+    private readonly LoadoutRegistry _loadoutRegistry;
+    private readonly LoadoutManager _loadoutManager;
+
+    public LaunchButtonViewModel(IInterprocessJobManager manager, LoadoutRegistry loadoutRegistry, LoadoutManager loadoutManager)
     {
+        _loadoutManager = loadoutManager;
+        _loadoutRegistry = loadoutRegistry;
+
         this.WhenActivated(d =>
         {
 
             var lockedLoadouts = manager.Jobs
                 .Filter(m => m.Payload is ILoadoutJob);
-            
+
             var selectedLoadoutFns = this.WhenAnyValue(vm => vm.LoadoutId)
                 .Select<LoadoutId, Func<IInterprocessJob, bool>>(loadoutId => job => loadoutId == ((ILoadoutJob)job.Payload).LoadoutId);
 
@@ -49,11 +56,20 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
                 .Bind(out _jobs)
                 .Subscribe()
                 .DisposeWith(d);
-            
+
             var canExecute = _jobs.WhenAnyValue(coll => coll.Count, count => count == 0);
 
-            Command = ReactiveCommand.Create(() => {}, canExecute.OnUI());
+            Command = ReactiveCommand.CreateFromTask(LaunchGame, canExecute.OnUI());
 
         });
+    }
+
+    private async Task LaunchGame(CancellationToken token)
+    {
+        Label = "RUNNING...";
+        var marker = new LoadoutMarker(_loadoutManager, LoadoutId);
+        var tool = marker.Tools.OfType<IRunGameTool>().First();
+        await marker.Run(tool, token);
+        Label = "LAUNCH";
     }
 }
