@@ -14,6 +14,8 @@
         <Setter Property="ShowProgressText" Value="True"></Setter>
         <Setter Property="Height" Value="34"></Setter>
         <Setter Property="Foreground" Value="{DynamicResource BrandPrimary}"></Setter>
+        <Setter Property="BorderThickness" Value="1"></Setter>
+        <Setter Property="BorderBrush" Value="{DynamicResource BrandPrimary}"></Setter>
     </Style>
     
     <Style Selector="ProgressBar.LaunchButton TextBlock">

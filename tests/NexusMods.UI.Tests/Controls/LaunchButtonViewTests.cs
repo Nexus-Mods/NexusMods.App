@@ -1,4 +1,6 @@
 ﻿using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using Avalonia.Controls;
 using FluentAssertions;
 using NexusMods.App.UI.LeftMenu.Items;
@@ -99,31 +101,32 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
     }
 
     [Fact]
-    public async Task DisablingTheButtonShowsADisabledButton()
+    public async Task DisablingTheButtonShowsATheProgressBar()
     {
-        ViewModel.IsEnabled = false;
-        ViewModel.IsRunning = false;
-
-        await Host.OnUi(async () =>
-        {
-            _button!.IsVisible.Should().BeTrue();
-            _button!.IsEnabled.Should().BeFalse();
-            _progressBar!.IsVisible.Should().BeFalse();
-        });
-    }
-
-    [Fact]
-    public async Task IsRunningShouldShowTheProgressBar()
-    {
-        ViewModel.IsEnabled = false;
-        ViewModel.IsRunning = true;
-        ViewModel.Progress = null;
+        
+        var subject = new Subject<bool>();
+        ViewModel.Command = ReactiveCommand.Create(() => { }, subject.StartWith(false));
 
         await Host.OnUi(async () =>
         {
             _button!.IsVisible.Should().BeFalse();
             _button!.IsEnabled.Should().BeFalse();
             _progressBar!.IsVisible.Should().BeTrue();
+        });
+    }
+
+    [Fact]
+    public async Task EnabledCommandShouldShowEnabledButton()
+    {
+        var subject = new Subject<bool>();
+        ViewModel.Command = ReactiveCommand.Create(() => { }, subject.StartWith(true));
+        ViewModel.Progress = null;
+
+        await Host.OnUi(async () =>
+        {
+            _button!.IsVisible.Should().BeTrue();
+            _button!.IsEnabled.Should().BeTrue();
+            _progressBar!.IsVisible.Should().BeFalse();
             _progressBar!.IsIndeterminate.Should().BeTrue();
         });
     }
