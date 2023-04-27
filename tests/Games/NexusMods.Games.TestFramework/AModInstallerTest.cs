@@ -43,6 +43,24 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     }
 
     /// <summary>
+    /// Gets two auto-incrementing hashes so tests don't conflict with each other.
+    /// </summary>
+    /// <returns></returns>
+    protected (ulong, ulong) Next2Hash()
+    {
+        return (NextHash(), NextHash());
+    }
+    
+    /// <summary>
+    /// Gets three auto-incrementing hashes so tests don't conflict with each other.
+    /// </summary>
+    /// <returns></returns>
+    protected (ulong, ulong, ulong) Next3Hash()
+    {
+        return (NextHash(), NextHash(), NextHash());
+    }
+
+    /// <summary>
     /// Runs the <typeparamref name="TModInstaller"/> and returns the priority
     /// for the given archive.
     /// </summary>
