@@ -16,8 +16,7 @@ public class
     [Fact]
     public async Task ModsAreDetectedAndInstalled()
     {
-        var hash1 = NextHash();
-        var hash2 = NextHash();
+        var (hash1, hash2) = Next2Hash();
         
         var files = await BuildAndInstall(Priority.High,
             (hash1, "mymod/info.json", new RedModInfo { Name = "My Mod" }),
