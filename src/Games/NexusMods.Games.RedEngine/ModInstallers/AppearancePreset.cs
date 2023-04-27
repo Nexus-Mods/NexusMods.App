@@ -25,7 +25,9 @@ public class AppearancePreset : IModInstaller
     {
         if (!installation.Is<Cyberpunk2077>()) return Priority.None;
 
-        return archiveFiles.All(f => Helpers.IgnoreExtensions.Contains(f.Key.Extension) || (f.Value.FileTypes.Contains(FileType.Cyberpunk2077AppearancePreset) && f.Key.Extension == KnownExtensions.Preset))
+        return archiveFiles.All(f => Helpers.IgnoreExtensions.Contains(f.Key.Extension) || 
+                                     (f.Value.FileTypes.Contains(FileType.Cyberpunk2077AppearancePreset) &&
+                                      f.Key.Extension == KnownExtensions.Preset))
             ? Priority.Normal
             : Priority.None;
     }
