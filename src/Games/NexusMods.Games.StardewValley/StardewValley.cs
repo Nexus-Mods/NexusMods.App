@@ -37,13 +37,13 @@ public class StardewValley : AGame, ISteamGame, IGogGame
         // on OSX, it's used to check the .NET version, on Linux it just launches the game
         // for XboxGamePass, the original exe gets replaced during installation
         return _osInformation.MatchPlatform(
+            state: ref store,
             onWindows: (ref GameStore gameStore) =>
                 gameStore == GameStore.XboxGamePass
                     ? new GamePath(GameFolderType.Game, "Stardew Valley.exe")
                     : new GamePath(GameFolderType.Game, "StardewModdingAPI.exe"),
             onLinux: (ref GameStore _) => new GamePath(GameFolderType.Game, "StardewValley"),
-            onOSX: (ref GameStore _) => new GamePath(GameFolderType.Game, "Contents/MacOS/StardewValley"),
-            state: ref store
+            onOSX: (ref GameStore _) => new GamePath(GameFolderType.Game, "Contents/MacOS/StardewValley")
         );
     }
 

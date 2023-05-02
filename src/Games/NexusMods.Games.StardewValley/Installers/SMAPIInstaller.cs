@@ -89,10 +89,10 @@ public class SMAPIInstaller : IModInstaller
         if (installDataFiles.Length != 3) throw new UnreachableException($"{nameof(SMAPIInstaller)} should guarantee with {nameof(GetPriority)} that {nameof(GetInstallDataFiles)} returns 3 files when called from {nameof(GetModsAsync)} but it has {installDataFiles.Length} files instead!");
 
         var installDataFile = _osInformation.MatchPlatform(
+            state: ref installDataFiles,
             onWindows: (ref KeyValuePair<RelativePath, AnalyzedFile>[] dataFiles) => dataFiles.First(kv => kv.Key.Parent.FileName.Equals("windows")),
             onLinux: (ref KeyValuePair<RelativePath, AnalyzedFile>[] dataFiles) => dataFiles.First(kv => kv.Key.Parent.FileName.Equals("linux")),
-            onOSX: (ref KeyValuePair<RelativePath, AnalyzedFile>[] dataFiles) => dataFiles.First(kv => kv.Key.Parent.FileName.Equals("macOS")),
-            state: ref installDataFiles
+            onOSX: (ref KeyValuePair<RelativePath, AnalyzedFile>[] dataFiles) => dataFiles.First(kv => kv.Key.Parent.FileName.Equals("macOS"))
         );
 
         var (path, file) = installDataFile;

@@ -45,11 +45,14 @@ public interface IOSInformation
     /// <seealso cref="SwitchPlatform"/>
     /// <seealso cref="SwitchPlatform{TState}"/>
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = $"It's also named {nameof(OSPlatform.OSX)} in {nameof(OSPlatform)}")]
-    TOut MatchPlatform<TOut>(Func<TOut> onWindows, Func<TOut> onLinux, Func<TOut> onOSX)
+    TOut MatchPlatform<TOut>(
+        Func<TOut>? onWindows = null,
+        Func<TOut>? onLinux = null,
+        Func<TOut>? onOSX = null)
     {
-        if (IsWindows) return onWindows();
-        if (IsLinux) return onLinux();
-        if (IsOSX) return onOSX();
+        if (IsWindows) return onWindows is null ? throw CreatePlatformNotSupportedException() : onWindows();
+        if (IsLinux) return onLinux is null ? throw CreatePlatformNotSupportedException() : onLinux();
+        if (IsOSX) return onOSX is null ? throw CreatePlatformNotSupportedException() : onOSX();
         throw CreatePlatformNotSupportedException();
     }
 
@@ -70,14 +73,14 @@ public interface IOSInformation
     /// <seealso cref="SwitchPlatform{TState}"/>
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = $"It's also named {nameof(OSPlatform.OSX)} in {nameof(OSPlatform)}")]
     TOut MatchPlatform<TState, TOut>(
-        FuncRef<TState, TOut> onWindows,
-        FuncRef<TState, TOut> onLinux,
-        FuncRef<TState, TOut> onOSX,
-        ref TState state)
+        ref TState state,
+        FuncRef<TState, TOut>? onWindows = null,
+        FuncRef<TState, TOut>? onLinux = null,
+        FuncRef<TState, TOut>? onOSX = null)
     {
-        if (IsWindows) return onWindows(ref state);
-        if (IsLinux) return onLinux(ref state);
-        if (IsOSX) return onOSX(ref state);
+        if (IsWindows) return onWindows is null ? throw CreatePlatformNotSupportedException() : onWindows(ref state);
+        if (IsLinux) return onLinux is null ? throw CreatePlatformNotSupportedException() : onLinux(ref state);
+        if (IsOSX) return onOSX is null ? throw CreatePlatformNotSupportedException() : onOSX(ref state);
         throw CreatePlatformNotSupportedException();
     }
 
@@ -92,22 +95,34 @@ public interface IOSInformation
     /// <seealso cref="MatchPlatform{TOut}"/>
     /// <seealso cref="MatchPlatform{TState, TOut}"/>
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = $"It's also named {nameof(OSPlatform.OSX)} in {nameof(OSPlatform)}")]
-    void SwitchPlatform(Action onWindows, Action onLinux, Action onOSX)
+    void SwitchPlatform(
+        Action? onWindows = null,
+        Action? onLinux = null,
+        Action? onOSX = null)
     {
         if (IsWindows)
         {
+            if (onWindows is null)
+                throw CreatePlatformNotSupportedException();
+
             onWindows();
             return;
         }
 
         if (IsLinux)
         {
+            if (onLinux is null)
+                throw CreatePlatformNotSupportedException();
+
             onLinux();
             return;
         }
 
         if (IsOSX)
         {
+            if (onOSX is null)
+                throw CreatePlatformNotSupportedException();
+
             onOSX();
             return;
         }
@@ -130,25 +145,34 @@ public interface IOSInformation
     /// <seealso cref="MatchPlatform{TState, TOut}"/>
     [SuppressMessage("ReSharper", "InconsistentNaming", Justification = $"It's also named {nameof(OSPlatform.OSX)} in {nameof(OSPlatform)}")]
     void SwitchPlatform<TState>(
-        ActionRef<TState> onWindows,
-        ActionRef<TState> onLinux,
-        ActionRef<TState> onOSX,
-        ref TState state)
+        ref TState state,
+        ActionRef<TState>? onWindows = null,
+        ActionRef<TState>? onLinux = null,
+        ActionRef<TState>? onOSX = null)
     {
         if (IsWindows)
         {
+            if (onWindows is null)
+                throw CreatePlatformNotSupportedException();
+
             onWindows(ref state);
             return;
         }
 
         if (IsLinux)
         {
+            if (onLinux is null)
+                throw CreatePlatformNotSupportedException();
+
             onLinux(ref state);
             return;
         }
 
         if (IsOSX)
         {
+            if (onOSX is null)
+                throw CreatePlatformNotSupportedException();
+
             onOSX(ref state);
             return;
         }

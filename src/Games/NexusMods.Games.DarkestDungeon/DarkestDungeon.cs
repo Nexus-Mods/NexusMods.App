@@ -26,8 +26,7 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame
     {
         return _osInformation.MatchPlatform(
             onWindows: () => new GamePath(GameFolderType.Game, @"_windowsnosteam\Darkest.exe"),
-            onLinux: () => new GamePath(GameFolderType.Game, "_linuxnosteam/darkest.bin.x86_64"),
-            onOSX: () => throw _osInformation.CreatePlatformNotSupportedException()
+            onLinux: () => new GamePath(GameFolderType.Game, "_linuxnosteam/darkest.bin.x86_64")
         );
     }
 
