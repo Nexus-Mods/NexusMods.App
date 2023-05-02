@@ -4,7 +4,7 @@ root = true
 charset = utf-8
 insert_final_newline = true
 trim_trailing_whitespace = true
-max_line_length = 80
+max_line_length = 120
 
 # Microsoft .NET properties
 csharp_new_line_before_members_in_object_initializers = false
