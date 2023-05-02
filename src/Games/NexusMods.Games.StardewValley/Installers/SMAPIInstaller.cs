@@ -30,10 +30,12 @@ public class SMAPIInstaller : IModInstaller
     private static readonly RelativePath WindowsFolder = "windows".ToRelativePath();
     private static readonly RelativePath MacOSFolder = "macOS".ToRelativePath();
 
+    private readonly IOSInformation _osInformation;
     private readonly FileHashCache _fileHashCache;
 
-    public SMAPIInstaller(FileHashCache fileHashCache)
+    public SMAPIInstaller(IOSInformation osInformation, FileHashCache fileHashCache)
     {
+        _osInformation = osInformation;
         _fileHashCache = fileHashCache;
     }
 
@@ -86,21 +88,12 @@ public class SMAPIInstaller : IModInstaller
         var installDataFiles = GetInstallDataFiles(archiveFiles);
         if (installDataFiles.Length != 3) throw new UnreachableException($"{nameof(SMAPIInstaller)} should guarantee with {nameof(GetPriority)} that {nameof(GetInstallDataFiles)} returns 3 files when called from {nameof(GetModsAsync)} but it has {installDataFiles.Length} files instead!");
 
-        KeyValuePair<RelativePath, AnalyzedFile> installDataFile;
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-        {
-            installDataFile = installDataFiles.First(kv => kv.Key.Parent.FileName.Equals("linux"));
-        } else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-        {
-            installDataFile = installDataFiles.First(kv => kv.Key.Parent.FileName.Equals("macOS"));
-        } else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            installDataFile = installDataFiles.First(kv => kv.Key.Parent.FileName.Equals("windows"));
-        }
-        else
-        {
-            throw new PlatformNotSupportedException();
-        }
+        var installDataFile = _osInformation.MatchPlatform(
+            onWindows: (ref KeyValuePair<RelativePath, AnalyzedFile>[] dataFiles) => dataFiles.First(kv => kv.Key.Parent.FileName.Equals("windows")),
+            onLinux: (ref KeyValuePair<RelativePath, AnalyzedFile>[] dataFiles) => dataFiles.First(kv => kv.Key.Parent.FileName.Equals("linux")),
+            onOSX: (ref KeyValuePair<RelativePath, AnalyzedFile>[] dataFiles) => dataFiles.First(kv => kv.Key.Parent.FileName.Equals("macOS")),
+            state: ref installDataFiles
+        );
 
         var (path, file) = installDataFile;
         if (file is not AnalyzedArchive archive)
@@ -117,7 +110,7 @@ public class SMAPIInstaller : IModInstaller
         var basicFiles = archiveContents
             .Where(kv => !kv.Key.Equals("unix-launcher.sh")).ToArray();
 
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        if (_osInformation.IsLinux || _osInformation.IsOSX)
         {
             // TODO: Replace game launcher (StardewValley) with unix-launcher.sh by overwriting the game file
             // https://github.com/Pathoschild/SMAPI/blob/9763bc7484e29cbc9e7f37c61121d794e6720e75/src/SMAPI.Installer/InteractiveInstaller.cs#L386-L417

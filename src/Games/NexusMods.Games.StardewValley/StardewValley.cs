@@ -10,6 +10,7 @@ namespace NexusMods.Games.StardewValley;
 [UsedImplicitly]
 public class StardewValley : AGame, ISteamGame, IGogGame
 {
+    private readonly IOSInformation _osInformation;
     private readonly IFileSystem _fileSystem;
 
     public IEnumerable<int> SteamIds => new[] { 413150 };
@@ -21,8 +22,12 @@ public class StardewValley : AGame, ISteamGame, IGogGame
     public static GameDomain GameDomain => GameDomain.From("stardewvalley");
     public override GameDomain Domain => GameDomain;
 
-    public StardewValley(IFileSystem fileSystem, IEnumerable<IGameLocator> gameLocators) : base(gameLocators)
+    public StardewValley(
+        IOSInformation osInformation,
+        IFileSystem fileSystem,
+        IEnumerable<IGameLocator> gameLocators) : base(gameLocators)
     {
+        _osInformation = osInformation;
         _fileSystem = fileSystem;
     }
 
@@ -30,24 +35,16 @@ public class StardewValley : AGame, ISteamGame, IGogGame
     {
         // "StardewValley" is a wrapper shell script that launches the "Stardew Valley" binary
         // on OSX, it's used to check the .NET version, on Linux it just launches the game
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-        {
-            return new GamePath(GameFolderType.Game, "StardewValley");
-        }
-
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-        {
-            return new GamePath(GameFolderType.Game,"Contents/MacOS/StardewValley");
-        }
-
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            return store == GameStore.XboxGamePass
-                ? new GamePath(GameFolderType.Game, "Stardew Valley.exe")
-                : new GamePath(GameFolderType.Game, "StardewModdingAPI.exe");
-        }
-
-        throw new PlatformNotSupportedException();
+        // for XboxGamePass, the original exe gets replaced during installation
+        return _osInformation.MatchPlatform(
+            onWindows: (ref GameStore gameStore) =>
+                gameStore == GameStore.XboxGamePass
+                    ? new GamePath(GameFolderType.Game, "Stardew Valley.exe")
+                    : new GamePath(GameFolderType.Game, "StardewModdingAPI.exe"),
+            onLinux: (ref GameStore _) => new GamePath(GameFolderType.Game, "StardewValley"),
+            onOSX: (ref GameStore _) => new GamePath(GameFolderType.Game, "Contents/MacOS/StardewValley"),
+            state: ref store
+        );
     }
 
     protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(IGameLocator locator, GameLocatorResult installation)
