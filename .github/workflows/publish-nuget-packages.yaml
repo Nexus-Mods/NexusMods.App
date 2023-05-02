@@ -1,0 +1,34 @@
+name: Publish NuGet Packages
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Get Version
+      id: get-version
+      shell: pwsh
+      run: |
+        $version = [System.Version]::Parse("${{ github.ref_name }}".Replace('v', '')).ToString()
+        echo "version=$version" >> $env:GITHUB_OUTPUT
+        echo $version
+
+    - name: Print Debug Info
+      run: dotnet --info
+
+    - name: Pack
+      run: dotnet --pack -p:Version="${{ steps.get-version.outputs.version }}" -p:RepositoryCommit="${{ github.sha }}"
+
+    - name: Validate
+      shell: pwsh
+      run: ./scripts/validate-nupkgs.ps1
+
+    - name: Push to NuGet
+      run: dotnet nuget push **/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
