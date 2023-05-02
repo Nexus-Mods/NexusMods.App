@@ -1,3 +1,4 @@
+using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.DataModel.Games;
 
 namespace NexusMods.App.UI.LeftMenu.Game;
@@ -5,7 +6,7 @@ namespace NexusMods.App.UI.LeftMenu.Game;
 public interface IGameLeftMenuViewModel : ILeftMenuViewModel
 {
 
-    public ILeftMenuItemViewModel LaunchButton { get; }
+    public ILaunchButtonViewModel LaunchButton { get; }
     public IGame Game { get; set; }
 
 }

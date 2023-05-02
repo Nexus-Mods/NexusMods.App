@@ -5,11 +5,19 @@ using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Games;
 
+
+/// <summary>
+/// Marker interface for RunGameTool<T>
+/// </summary>
+public interface IRunGameTool : ITool
+{
+}
+
 /// <summary>
 /// A tool that launches the game, using first found installation.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public class RunGameTool<T> : ITool
+public class RunGameTool<T> : IRunGameTool
 where T : AGame
 {
     private readonly ILogger<RunGameTool<T>> _logger;

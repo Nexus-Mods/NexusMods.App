@@ -7,7 +7,7 @@
     <ItemGroup>
         <AvaloniaResource Include="Nexus.xaml" />
         <AvaloniaResource Include="Palatte\Nexus.xaml" />
-        <AvaloniaResource Include="Theme\ButtonStyles.xaml" />
+        <AvaloniaResource Include="Theme\ButtonStyles\Index.xaml" />
         <AvaloniaResource Include="Theme\CheckboxStyles.xaml" />
         <AvaloniaResource Include="Theme\DataGridStyles.xaml" />
         <AvaloniaResource Include="Theme\Index.xaml" />
@@ -65,6 +65,10 @@
         <AvaloniaResource Include="Theme\Toolbar.xaml" />
         <None Remove="Theme\MainWindow.xaml" />
         <AvaloniaResource Include="Theme\MainWindow.xaml" />
+        <None Remove="Theme\ButtonStyles\Standard.xaml" />
+        <AvaloniaResource Include="Theme\ButtonStyles\Standard.xaml" />
+        <None Remove="Theme\ProgressBar.xaml" />
+        <AvaloniaResource Include="Theme\ProgressBar.xaml" />
     </ItemGroup>
 
     <ItemGroup>

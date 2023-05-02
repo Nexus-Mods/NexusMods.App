@@ -7,6 +7,7 @@ using DynamicData;
 using DynamicData.Binding;
 using NexusMods.DataModel.Interprocess.Jobs;
 using NexusMods.DataModel.Interprocess.Messages;
+using NexusMods.Networking.NexusWebApi.Types;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -22,10 +23,10 @@ public class NexusLoginOverlayViewModel : AViewModel<INexusLoginOverlayViewModel
 
         var currentJob = jobManager.Jobs
             .QueryWhenChanged(q =>
-                q.Items.FirstOrDefault(j => j.JobType == JobType.NexusLogin));
+                q.Items.FirstOrDefault(j => j.Payload is NexusLoginJob));
 
         currentJob.WhereNotNull()
-            .Select(job => job.PayloadAsUri)
+            .Select(job => ((NexusLoginJob)job.Payload).Uri)
             .BindToUi(this, vm => vm.Uri)
             .DisposeWith(_compositeDisposable);
 

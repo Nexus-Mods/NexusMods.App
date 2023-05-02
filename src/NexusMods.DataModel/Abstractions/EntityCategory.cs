@@ -66,4 +66,9 @@ public enum EntityCategory
     /// Stores test information e.g. for mocking purposes.
     /// </summary>
     TestData,
+    
+    /// <summary>
+    /// This entity is used as part of the IPC job system.
+    /// </summary>
+    InterprocessJob,
 }
