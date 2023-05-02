@@ -1,0 +1,32 @@
+﻿<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <StackPanel Width="200" Spacing="8" Margin="8">
+            <ProgressBar Classes="LaunchButton" Minimum="0" Maximum="1" ProgressTextFormat="WAITING"></ProgressBar>
+            <ProgressBar Classes="LaunchButton" Minimum="0" Maximum="1" Value="0.75" ProgressTextFormat="PROCESSING..."></ProgressBar>
+            <ProgressBar Classes="LaunchButton" Minimum="0" Maximum="1" IsIndeterminate="True" ProgressTextFormat="RUNNING..."></ProgressBar>
+        </StackPanel>
+    </Design.PreviewWith>
+    
+    <Style Selector="ProgressBar.LaunchButton">
+        <Setter Property="ShowProgressText" Value="True"></Setter>
+        <Setter Property="Height" Value="34"></Setter>
+        <Setter Property="Foreground" Value="{DynamicResource BrandPrimary}"></Setter>
+        <Setter Property="BorderThickness" Value="1"></Setter>
+        <Setter Property="BorderBrush" Value="{DynamicResource BrandPrimary}"></Setter>
+        <Setter Property="MinWidth" Value="100"></Setter>
+    </Style>
+    
+    <Style Selector="ProgressBar.LaunchButton TextBlock">
+        <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}"></Setter>
+        <Setter Property="FontWeight" Value="600"></Setter>
+        <Setter Property="FontSize" Value="14"></Setter>
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}"></Setter>
+        <Setter Property="LineHeight" Value="14"></Setter>
+        <Setter Property="LetterSpacing" Value="0.7"></Setter>
+    </Style>
+
+
+</Styles>

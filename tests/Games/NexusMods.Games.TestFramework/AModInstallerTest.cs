@@ -39,7 +39,26 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     /// <returns></returns>
     protected ulong NextHash()
     {
-        return Interlocked.Decrement(ref nextHash);
+        return (ulong)Random.Shared.Next();
+        //return Interlocked.Decrement(ref nextHash);
+    }
+
+    /// <summary>
+    /// Gets two auto-incrementing hashes so tests don't conflict with each other.
+    /// </summary>
+    /// <returns></returns>
+    protected (ulong, ulong) Next2Hash()
+    {
+        return (NextHash(), NextHash());
+    }
+    
+    /// <summary>
+    /// Gets three auto-incrementing hashes so tests don't conflict with each other.
+    /// </summary>
+    /// <returns></returns>
+    protected (ulong, ulong, ulong) Next3Hash()
+    {
+        return (NextHash(), NextHash(), NextHash());
     }
 
     /// <summary>

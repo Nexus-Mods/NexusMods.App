@@ -1,6 +1,6 @@
 ﻿<reactiveUi:ReactiveUserControl
-    d:DesignHeight="200"
-    d:DesignWidth="200"
+    d:DesignHeight="36"
+    d:DesignWidth="184"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.LeftMenu.Items.LaunchButtonView"
     x:TypeArguments="items:ILaunchButtonViewModel"
@@ -11,14 +11,22 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Button
-        Classes="LaunchButton PrimaryOutline"
-        HorizontalAlignment="Stretch"
-        x:Name="LaunchButton">
-        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-            <avalonia:Icon Value="mdi-play" x:Name="LaunchIcon" />
-            <TextBlock Text="Launch" x:Name="LaunchText" />
-        </StackPanel>
-    </Button>
+    <Design.DataContext>
+        <items:LaunchButtonDesignViewModel />
+    </Design.DataContext>
+    <StackPanel Width="184">
+        <Button
+            IsVisible="True"
+            Classes="Standard PrimaryOutlined"
+            HorizontalAlignment="Stretch"
+            x:Name="LaunchButton">
+            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                <avalonia:Icon Value="mdi-play" x:Name="LaunchIcon" />
+                <TextBlock x:Name="LaunchText" />
+            </StackPanel>
+        </Button>
+        <ProgressBar Classes="LaunchButton" x:Name="ProgressBarControl" IsVisible="False" ShowProgressText="True" Minimum="0" Maximum="1"
+                     HorizontalAlignment="Stretch"></ProgressBar> 
+    </StackPanel>
 </reactiveUi:ReactiveUserControl>
 
