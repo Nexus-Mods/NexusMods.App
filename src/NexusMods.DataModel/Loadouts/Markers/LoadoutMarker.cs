@@ -61,11 +61,14 @@ public readonly struct LoadoutMarker
     /// <summary>
     /// Retrieves the list of all mods, sorts the mods and returns them as zipped tuples of (File, Mod).
     /// </summary>
-    public IEnumerable<(AModFile File, Mod Mod)> FlattenList()
+    public async ValueTask<IEnumerable<(AModFile File, Mod Mod)>> FlattenList(CancellationToken token = default)
     {
         var list = _manager.Registry.Get(_id)!;
         var projected = new Dictionary<GamePath, (AModFile File, Mod Mod)>();
-        var mods = Sorter.SortWithEnumerable(list.Mods.Values, i => i.Id, m => m.SortRules);
+        var mods =
+            await _manager.Transformers.BeforeSort(list.Mods.Values, list, token);
+        mods = Sorter.SortWithEnumerable(mods, i => i.Id, m => m.SortRules);
+        mods = await _manager.Transformers.AfterSort(mods, list, token);
         foreach (var mod in mods)
         {
             foreach (var file in mod.Files.Values)
@@ -73,6 +76,8 @@ public readonly struct LoadoutMarker
                 projected[file.To] = (file, mod);
             }
         }
+
+        projected = await _manager.Transformers.AfterFlattenAsync(projected, mods, list, token);
         return projected.Values;
     }
 
@@ -140,7 +145,7 @@ public readonly struct LoadoutMarker
             .IndexFoldersAsync(list.Installation.Locations.Values, token)
             .ToDictionary(x => x.Path);
 
-        var files = FlattenList().ToList();
+        var files = (await FlattenList(token)).ToList();
         files = (await GenerateFilesAsync(files, token)).ToList();
         var flattenedList = files.ToDictionary(d => d.File.To.CombineChecked(gameFolders[d.File.To.Type]));
 
@@ -298,7 +303,8 @@ public readonly struct LoadoutMarker
             .IndexFoldersAsync(list.Installation.Locations.Values, token)
             .ToDictionary(x => x.Path);
 
-        var flattenedList = FlattenList().ToDictionary(d => d.File.To.CombineChecked(gameFolders[d.File.To.Type]));
+        var flattenedList = (await FlattenList(token))
+            .ToDictionary(d => d.File.To.CombineChecked(gameFolders[d.File.To.Type]));
         var srcFiles = await srcFilesTask;
 
         foreach (var (absPath, (file, mod)) in flattenedList)

@@ -12,6 +12,7 @@ using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.Sorting.Rules;
+using NexusMods.DataModel.TransformerHooks;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
@@ -77,6 +78,9 @@ public static class Services
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<ISortRule<Mod, ModId>>>();
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<IModFileMetadata>>();
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<IFileAnalysisData>>();
+        
+        // Transformer Hooks
+        coll.AddSingleton<TransformerRegistry>();
 
         coll.AddSingleton(s =>
         {

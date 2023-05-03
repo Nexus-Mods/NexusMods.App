@@ -89,12 +89,12 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
         });
 
 
-        mainList.FlattenList().Count().Should().Be(7, "because no changes are applied yet");
+        (await mainList.FlattenList()).Count().Should().Be(7, "because no changes are applied yet");
 
         await mainList.ApplyIngest(ingestPlan, Token);
 
 
-        var flattened = mainList.FlattenList().ToDictionary(f => f.File.To);
+        var flattened = (await mainList.FlattenList(Token)).ToDictionary(f => f.File.To);
         flattened.Count.Should().Be(6, "Because we've deleted one file");
 
         mainList.Value.Mods.Values

@@ -17,6 +17,7 @@ using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.Sorting.Rules;
+using NexusMods.DataModel.TransformerHooks;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
@@ -43,6 +44,12 @@ public class LoadoutManager
     /// This is used to speed up deployment [apply and ingest].
     /// </summary>
     public readonly FileHashCache FileHashCache;
+
+
+    /// <summary>
+    /// Provides access to the transformer registry.
+    /// </summary>
+    public readonly TransformerRegistry Transformers;
 
     /// <summary>
     /// Provides lookup within the 'Archives' folder, for existing installed mods
@@ -74,11 +81,13 @@ public class LoadoutManager
         IEnumerable<IModInstaller> installers,
         FileContentsCache analyzer,
         IEnumerable<ITool> tools,
-        IInterprocessJobManager jobManager)
+        IInterprocessJobManager jobManager,
+        TransformerRegistry transformerRegistry)
     {
         FileHashCache = fileHashCache;
         ArchiveManager = archiveManager;
         Registry = registry;
+        Transformers = transformerRegistry;
         _logger = logger;
         _fileSystem = fileSystem;
         Limiter = limiter;
