@@ -23,7 +23,7 @@
         <windows:MainWindowViewModel />
     </Design.DataContext>
 
-    <Grid ColumnDefinitions="72, 216, *" RowDefinitions="62, *" x:Name="MainContent" x:FieldModifier="public">
+    <Grid ColumnDefinitions="72, 216, *" RowDefinitions="62, *">
         <Border
             Background="#CC2A2C2B"
             Grid.Column="0"
