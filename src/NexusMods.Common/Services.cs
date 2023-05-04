@@ -20,17 +20,24 @@ public static class Services
     // ReSharper disable once InconsistentNaming
     public static IServiceCollection AddCommon(this IServiceCollection services)
     {
-        services.AddSingleton<IIDGenerator, IDGenerator>()
+        services
+            .AddOSInformation()
+            .AddSingleton<IIDGenerator, IDGenerator>()
             .AddSingleton<IProcessFactory, ProcessFactory>();
 
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            services.AddSingleton<IOSInterop, OSInteropWindows>();
-        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            services.AddSingleton<IOSInterop, OSInteropLinux>();
-        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            services.AddSingleton<IOSInterop, OSInteropOSX>();
+        OSInformation.Shared.SwitchPlatform(
+            ref services,
+            onWindows: (ref IServiceCollection value) => value.AddSingleton<IOSInterop, OSInteropWindows>(),
+            onLinux: (ref IServiceCollection value) => value.AddSingleton<IOSInterop, OSInteropLinux>(),
+            onOSX: (ref IServiceCollection value) => value.AddSingleton<IOSInterop, OSInteropOSX>()
+        );
 
         return services;
+    }
+
+    public static IServiceCollection AddOSInformation(this IServiceCollection serviceCollection)
+    {
+        return serviceCollection.AddSingleton(OSInformation.Shared);
     }
 
     /// <summary>

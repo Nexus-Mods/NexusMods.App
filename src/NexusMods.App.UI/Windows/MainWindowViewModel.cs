@@ -6,6 +6,7 @@ using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.TopBar;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.Overlays;
+using NexusMods.Common;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -15,7 +16,11 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
 {
     private readonly INexusLoginOverlayViewModel _nexusOverlayViewModel;
 
-    public MainWindowViewModel(ILogger<MainWindowViewModel> logger, ISpineViewModel spineViewModel, ITopBarViewModel topBarViewModel,
+    public MainWindowViewModel(
+        ILogger<MainWindowViewModel> logger,
+        IOSInformation osInformation,
+        ISpineViewModel spineViewModel,
+        ITopBarViewModel topBarViewModel,
         INexusLoginOverlayViewModel nexusOverlayViewModel)
     {
         TopBar = topBarViewModel;
@@ -23,7 +28,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
         _nexusOverlayViewModel = nexusOverlayViewModel;
 
         // Only show controls in Windows since we can remove the chrome on that platform
-        TopBar.ShowWindowControls = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+        TopBar.ShowWindowControls = osInformation.IsWindows;
 
         this.WhenActivated(d =>
         {
