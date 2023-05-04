@@ -1,0 +1,24 @@
+﻿using Microsoft.Extensions.DependencyInjection;
+
+namespace NexusMods.DataModel.Extensions;
+
+/// <summary>
+/// Extension methods for <see cref="IServiceProvider"/>.
+/// </summary>
+public static class ServiceProviderExtensions
+{
+    
+    /// <summary>
+    /// Get all services of type <typeparamref name="T"/> and return them as an <see cref="IEnumerable{T}"/>,
+    /// but wrapped in a <see cref="Lazy{T}"/>. This is useful for services that may otherwise create
+    /// recursive dependencies.
+    /// </summary>
+    /// <param name="serviceProvider"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public static Lazy<IEnumerable<T>> GetServicesLazily<T>(this IServiceProvider serviceProvider)
+    {
+        return new Lazy<IEnumerable<T>>(serviceProvider.GetServices<T>);
+    }
+
+}

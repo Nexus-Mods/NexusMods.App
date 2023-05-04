@@ -13,6 +13,7 @@ using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.DataModel.TransformerHooks;
+using NexusMods.DataModel.TransformerHooks.Transformers;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
@@ -81,6 +82,7 @@ public static class Services
         
         // Transformer Hooks
         coll.AddSingleton<TransformerRegistry>();
+        coll.AddSingleton<IBeforeMakeApplyPlan, GenerateFiles>();
 
         coll.AddSingleton(s =>
         {

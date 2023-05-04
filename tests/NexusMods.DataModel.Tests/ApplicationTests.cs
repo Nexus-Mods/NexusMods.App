@@ -94,7 +94,7 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
         await mainList.ApplyIngest(ingestPlan, Token);
 
 
-        var flattened = (await mainList.FlattenList(Token)).ToDictionary(f => f.File.To);
+        var flattened = await mainList.FlattenList(Token);
         flattened.Count.Should().Be(6, "Because we've deleted one file");
 
         mainList.Value.Mods.Values

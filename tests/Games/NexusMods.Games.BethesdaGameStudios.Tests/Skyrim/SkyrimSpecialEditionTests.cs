@@ -66,13 +66,13 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
             .Should().BeGreaterOrEqualTo(analysis.Count, "Analysis data has been added");
 
         var pluginFile = gameFiles.Files.Values.OfType<PluginFile>().First();
-        var flattenedList = (await loadout.FlattenList()).ToArray();
+        var flattenedList = await loadout.FlattenList();
 
         using var ms = new MemoryStream();
-        await pluginFile.GenerateAsync(ms, loadout.Value, flattenedList);
+        await pluginFile.GenerateAsync(ms, loadout.Value, flattenedList.Values);
 
         ms.Position = 0;
-        var (size, hash) = await pluginFile.GetMetadataAsync(loadout.Value, flattenedList);
+        var (size, hash) = await pluginFile.GetMetadataAsync(loadout.Value, flattenedList.Values);
 
         size.Should().Be(Size.FromLong(ms.Length));
         (await ms.XxHash64Async()).Should().Be(hash);

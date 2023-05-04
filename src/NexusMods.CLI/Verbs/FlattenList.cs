@@ -18,7 +18,7 @@ public class FlattenList : AVerb<LoadoutMarker>
     public async Task<int> Run(LoadoutMarker loadout, CancellationToken token)
     {
         var rows = new List<object[]>();
-        foreach (var (file, mod) in await loadout.FlattenList(token))
+        foreach (var (file, mod) in (await loadout.FlattenList(token)).Values)
             rows.Add(new object[] { mod.Name, file.To });
 
         await _renderer.Render(new Table(new[] { "Mod", "To" }, rows));

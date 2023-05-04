@@ -61,7 +61,7 @@ public readonly struct LoadoutMarker
     /// <summary>
     /// Retrieves the list of all mods, sorts the mods and returns them as zipped tuples of (File, Mod).
     /// </summary>
-    public async ValueTask<IEnumerable<(AModFile File, Mod Mod)>> FlattenList(CancellationToken token = default)
+    public async ValueTask<Dictionary<GamePath, (AModFile File, Mod Mod)>> FlattenList(CancellationToken token = default)
     {
         var list = _manager.Registry.Get(_id)!;
         var projected = new Dictionary<GamePath, (AModFile File, Mod Mod)>();
@@ -78,7 +78,7 @@ public readonly struct LoadoutMarker
         }
 
         projected = await _manager.Transformers.AfterFlattenAsync(projected, mods, list, token);
-        return projected.Values;
+        return projected;
     }
 
     /// <summary>
@@ -145,9 +145,11 @@ public readonly struct LoadoutMarker
             .IndexFoldersAsync(list.Installation.Locations.Values, token)
             .ToDictionary(x => x.Path);
 
-        var files = (await FlattenList(token)).ToList();
-        files = (await GenerateFilesAsync(files, token)).ToList();
-        var flattenedList = files.ToDictionary(d => d.File.To.CombineChecked(gameFolders[d.File.To.Type]));
+        var files = await FlattenList(token);
+        files = await _manager.Transformers.BeforeMakeApplyPlan(files, list, token);
+        //files = (await GenerateFilesAsync(files, token)).ToList();
+        var flattenedList = files.Values
+            .ToDictionary(d => d.File.To.CombineChecked(gameFolders[d.File.To.Type]));
 
         var srcFiles = await srcFilesTask;
 
@@ -215,7 +217,7 @@ public readonly struct LoadoutMarker
 
         return new ApplyPlan
         {
-            Files = files,
+            Files = files.Values.ToList(),
             Steps = steps
         };
     }
@@ -304,6 +306,7 @@ public readonly struct LoadoutMarker
             .ToDictionary(x => x.Path);
 
         var flattenedList = (await FlattenList(token))
+            .Values
             .ToDictionary(d => d.File.To.CombineChecked(gameFolders[d.File.To.Type]));
         var srcFiles = await srcFilesTask;
 
