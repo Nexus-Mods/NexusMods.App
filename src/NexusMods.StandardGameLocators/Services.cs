@@ -8,6 +8,7 @@ using GameFinder.StoreHandlers.GOG;
 using GameFinder.StoreHandlers.Origin;
 using GameFinder.StoreHandlers.Steam;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Common;
 using NexusMods.DataModel.Games;
 
 namespace NexusMods.StandardGameLocators;
@@ -29,7 +30,7 @@ public static class Services
     {
         services.AddSingleton<IGameLocator, SteamLocator>();
 
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        if (OSInformation.Shared.IsWindows)
         {
             services.AddSingleton<IGameLocator, EADesktopLocator>();
             services.AddSingleton<IGameLocator, EpicLocator>();
@@ -41,9 +42,8 @@ public static class Services
 
         MaybeAddSteamHandler(services);
 
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        if (OSInformation.Shared.IsWindows)
         {
-            // Suppress: 'Supported only on windows', throws incorrectly due to lambda.
 #pragma warning disable CA1416
             services.AddSingleton<AHandler<EADesktopGame, string>>(_ => new EADesktopHandler());
             services.AddSingleton<AHandler<EGSGame, string>>(_ => new EGSHandler());
@@ -57,33 +57,25 @@ public static class Services
 
     private static void MaybeAddSteamHandler(IServiceCollection services)
     {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            // Suppress: 'Supported only on windows', throws incorrectly due to lambda.
-#pragma warning disable CA1416
-            services.AddSingleton<AHandler<SteamGame, int>, SteamHandler>(_ => new SteamHandler(new WindowsRegistry()));
-#pragma warning restore CA1416
-        }
-        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-        {
-            var steamPath = Environment.GetEnvironmentVariable(
-                "NMA_STEAM_PATH",
-                EnvironmentVariableTarget.Process);
+        OSInformation.Shared.SwitchPlatform(
+            ref services,
+            onWindows: (ref IServiceCollection value) => value.AddSingleton<AHandler<SteamGame, int>, SteamHandler>(_ => new SteamHandler(new WindowsRegistry())),
+            onLinux: (ref IServiceCollection value) =>
+            {
+                var steamPath = Environment.GetEnvironmentVariable(
+                    "NMA_STEAM_PATH",
+                    EnvironmentVariableTarget.Process
+                );
 
-            if (steamPath is null)
-            {
-                services.AddSingleton<AHandler<SteamGame, int>, SteamHandler>(_ =>
-                    new SteamHandler(new FileSystem(), null));
+                if (steamPath is null)
+                {
+                    value.AddSingleton<AHandler<SteamGame, int>, SteamHandler>(_ => new SteamHandler(new FileSystem(), null));
+                }
+                else
+                {
+                    value.AddSingleton<AHandler<SteamGame, int>, SteamHandler>(_ => new SteamHandler(steamPath, new FileSystem(), null));
+                }
             }
-            else
-            {
-                services.AddSingleton<AHandler<SteamGame, int>, SteamHandler>(_ =>
-                    new SteamHandler(steamPath, new FileSystem(), null));
-            }
-        }
-        else
-        {
-            throw new PlatformNotSupportedException("Steam is not supported on this platform");
-        }
+        );
     }
 }

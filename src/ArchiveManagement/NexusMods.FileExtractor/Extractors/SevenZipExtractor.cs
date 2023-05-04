@@ -27,6 +27,8 @@ public class SevenZipExtractor : IExtractor
     private readonly ILogger<SevenZipExtractor> _logger;
     private readonly IResource<IExtractor, Size> _limiter;
 
+    private static readonly IOSInformation OSInformation = Common.OSInformation.Shared;
+
     private static readonly FileType[] SupportedTypesCached = { FileType._7Z, FileType.RAR_NEW, FileType.RAR_OLD, FileType.ZIP };
     private static readonly Extension[] SupportedExtensionsCached = { KnownExtensions._7z, KnownExtensions.Rar, KnownExtensions.Zip, KnownExtensions._7zip };
     private readonly string _exePath;
@@ -160,16 +162,13 @@ public class SevenZipExtractor : IExtractor
 
     private static string GetExeLocation()
     {
-        var initialPath = "";
         if (RuntimeInformation.ProcessArchitecture != Architecture.X64)
             throw new NotSupportedException($"{nameof(NexusMods.FileExtractor)}'s {nameof(SevenZipExtractor)} only supports x64 processors.");
 
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            initialPath = @"runtimes\win-x64\native\7z.exe";
-        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            initialPath = @"runtimes\linux-x64\native\7zz";
-        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            initialPath = @"runtimes\osx-x64\native\7zz";
-        return initialPath;
+        return OSInformation.MatchPlatform(
+            onWindows: () => @"runtimes\win-x64\native\7z.exe",
+            onLinux: () => @"runtimes/linux-x64/native/7zz",
+            onOSX: () => "runtimes/osx-x64/native/7zz"
+        );
     }
 }
