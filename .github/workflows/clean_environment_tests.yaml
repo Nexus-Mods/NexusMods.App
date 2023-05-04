@@ -34,8 +34,8 @@ jobs:
       #  run: dotnet clean
       
       - name: Tests
-        run: dotnet test --filter "RequiresNetworking!=True" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
-      
+        run: dotnet test --filter "RequiresNetworking!=True" --collect:"XPlat Code Coverage;Format=opencover"
+
       - uses: codecov/codecov-action@v3
         with:
           flags: clean_environment_tests, ${{runner.os}}
