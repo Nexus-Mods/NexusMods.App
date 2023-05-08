@@ -24,7 +24,7 @@ jobs:
       run: dotnet --info
 
     - name: Pack
-      run: dotnet --pack -p:Version="${{ steps.get-version.outputs.version }}" -p:RepositoryCommit="${{ github.sha }}"
+      run: dotnet pack -p:Version="${{ steps.get-version.outputs.version }}" -p:RepositoryCommit="${{ github.sha }}"
 
     - name: Validate
       shell: pwsh
