@@ -1,13 +1,13 @@
 ﻿using NexusMods.DataModel.Loadouts;
 using NexusMods.Paths;
 
-namespace NexusMods.DataModel.TransformerHooks;
+namespace NexusMods.DataModel.TransformerHooks.BeforeMakeApplyPlan;
 
 /// <summary>
 /// Called after the flattening of mods into a single collection but before the
 /// creation of the apply plan.
 /// </summary>
-public interface IBeforeMakeApplyPlan
+public interface IBeforeMakeApplyPlan : IFileFilteringHook
 {
     /// <summary>
     /// This method is executed after the flattening of mods into a single collection but before the
@@ -18,6 +18,7 @@ public interface IBeforeMakeApplyPlan
     /// <param name="loadout"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    public ValueTask<Dictionary<GamePath, (AModFile File, Mod Mod)>> BeforeMakeApplyPlan(Dictionary<GamePath, (AModFile File, Mod Mod)> files, Loadout loadout, CancellationToken ct);
+    public ValueTask<Result> BeforeMakeApplyPlan(AModFile file, IReadOnlyDictionary<GamePath, (AModFile File, Mod Mod)> flattenedList,
+        Loadout loadout, CancellationToken ct);
     
 }

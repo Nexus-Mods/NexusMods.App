@@ -16,9 +16,17 @@ public static class ServiceProviderExtensions
     /// <param name="serviceProvider"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static Lazy<IEnumerable<T>> GetServicesLazily<T>(this IServiceProvider serviceProvider)
+    public static Lazy<IEnumerable<T>> GetServicesLazily<T>(this IServiceProvider serviceProvider, Func<T, bool>? filterFn)
     {
-        return new Lazy<IEnumerable<T>>(serviceProvider.GetServices<T>);
+        filterFn ??= _ => true;
+        return new Lazy<IEnumerable<T>>(() => serviceProvider.GetServices<T>().Where(filterFn));
+    }
+    
+    public static Lazy<ILookup<TK, TV>> GetIndexedServicesLazily<TV, TK>(this IServiceProvider serviceProvider, Func<TV, IEnumerable<TK>> keySelector)
+    {
+        return new Lazy<ILookup<TK, TV>>(() => serviceProvider.GetServices<TV>()
+            .SelectMany(x => keySelector(x).Select(y => (key: y, value: x)))
+            .ToLookup(kv => kv.key, kv => kv.value));
     }
 
 }

@@ -1,4 +1,6 @@
-﻿using NexusMods.DataModel.Loadouts;
+﻿using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.TransformerHooks.BeforeMakeApplyPlan;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
@@ -10,6 +12,9 @@ namespace NexusMods.DataModel.TransformerHooks.Transformers;
 public class GenerateFiles : IBeforeMakeApplyPlan
 {
     private readonly LoadoutManager _manager;
+    
+    public IEnumerable<GameDomain> GameDomains { get; } = new []{ }
+    public IEnumerable<GamePath> Files { get; }
 
     /// <summary>
     /// DI constructor.
@@ -39,5 +44,13 @@ public class GenerateFiles : IBeforeMakeApplyPlan
 
         _manager.ReplaceFiles(loadout.LoadoutId, generated, $"Generated {generated.Count} files");
         return files;
+    }
+
+
+
+    public ValueTask<Result> BeforeMakeApplyPlan(AModFile file, IReadOnlyDictionary<GamePath, (AModFile File, Mod Mod)> flattenedList,
+        Loadout loadout, CancellationToken ct)
+    {
+        throw new NotImplementedException();
     }
 }

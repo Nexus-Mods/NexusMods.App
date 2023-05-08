@@ -420,7 +420,7 @@ public class LoadoutManager
     ///
     ///    Does not add new files, only performs replacements.
     /// </remarks>
-    public void ReplaceFiles(LoadoutId id, List<(AModFile File, Mod Mod)> items, string message)
+    public void ReplaceFiles(LoadoutId id, IEnumerable<(AModFile File, ModId Mod)> items, string message)
     {
         var byMod = items.GroupBy(x => x.Mod, x => x.File)
             .ToDictionary(x => x.Key);
@@ -431,7 +431,7 @@ public class LoadoutManager
             {
                 Mods = l.Mods.Keep(m =>
                 {
-                    if (!byMod.TryGetValue(m, out var files))
+                    if (!byMod.TryGetValue(m.Id, out var files))
                         return m; // not one of our mods
 
                     // This mod matches with one of our own provided ones for replacement.

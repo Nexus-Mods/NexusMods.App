@@ -13,6 +13,7 @@ using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.DataModel.TransformerHooks;
+using NexusMods.DataModel.TransformerHooks.BeforeMakeApplyPlan;
 using NexusMods.DataModel.TransformerHooks.Transformers;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;

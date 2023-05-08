@@ -327,4 +327,29 @@ public class LoadoutRegistry : IDisposable
 
         _isDisposed = true;
     }
+
+    /// <summary>
+    /// Replaces the files in the loadout with the given files, as a single commit.
+    /// </summary>
+    /// <param name="commitMessage"></param>
+    /// <param name="id"></param>
+    /// <param name="changeList"></param>
+    public void Replace(string commitMessage, LoadoutId id, IEnumerable<(ModId ModId, ModFileId FileId, AModFile File)> changeList)
+    {
+        var indexed =
+            changeList.ToDictionary(x => (x.ModId, x.FileId), x => x.File);
+        Alter(id, commitMessage, loadout =>
+        {
+            return loadout with
+            {
+                Mods = loadout.Mods.Keep(mod =>
+                {
+                    return mod with { 
+                        Files = mod.Files.Keep(file => indexed.TryGetValue((mod.Id, file.Id), out var found) ? found : file)
+                        
+                    }; 
+                })
+            };
+        });
+    }
 }
