@@ -8,10 +8,11 @@ namespace NexusMods.UI.Tests;
 public class AEndToEndTest : IAsyncLifetime
 {
     private readonly AvaloniaApp _app;
-    
-    protected WindowHost? Host { get; private set; }
 
-    public AEndToEndTest(AvaloniaApp app)
+    protected WindowHost Host => _host!;
+    private WindowHost? _host;
+
+    protected AEndToEndTest(AvaloniaApp app)
     {
         _app = app;
 
@@ -19,11 +20,11 @@ public class AEndToEndTest : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        Host = await _app.GetMainWindow();
+        _host = await _app.GetMainWindow();
     }
 
     public async Task DisposeAsync()
     {
-        await Host!.DisposeAsync();
+        await Host.DisposeAsync();
     }
 }
