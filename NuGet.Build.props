@@ -1,5 +1,10 @@
 <Project>
     <PropertyGroup>
+        <!-- Overwrites IsPackable from global Directory.Build.props -->
+        <IsPackable>true</IsPackable>
+    </PropertyGroup>
+
+    <PropertyGroup>
         <Authors>Nexus Mods</Authors>
 
         <PackageIcon>Nexus-Icon.png</PackageIcon>

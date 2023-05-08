@@ -1,5 +1,4 @@
 ﻿using Avalonia.Controls;
-using Mutagen.Bethesda.Skyrim;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 
