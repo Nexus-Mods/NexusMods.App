@@ -12,8 +12,8 @@ public class EndToEndSanityTest : AEndToEndTest
     [Fact]
     public async Task CanGetControlsInTheMainWindow()
     {
-        await Host!.SnapShot();
-        var found = await Host!.Select<Button>("Button#LoginButton");
-        found.Count().Should().BeGreaterOrEqualTo(1);
+        await Host.SnapShot();
+        var found = await Host.Select<Button>("Button#LoginButton");
+        found.Should().HaveCountGreaterOrEqualTo(1);
     }
 }
