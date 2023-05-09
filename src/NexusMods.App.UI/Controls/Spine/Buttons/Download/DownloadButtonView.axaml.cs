@@ -23,7 +23,6 @@ public partial class DownloadButtonView : ReactiveUserControl<IDownloadButtonVie
                 .Select(p => p == null)
                 .BindToClasses(ParentButton, "Idle", "Progress")
                 .DisposeWith(d);
-
             
             this.WhenAnyValue(view => view.ViewModel!.IsActive)
                 .BindToActive(ParentButton)
