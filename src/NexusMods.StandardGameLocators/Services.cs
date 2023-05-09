@@ -7,6 +7,7 @@ using GameFinder.StoreHandlers.EGS;
 using GameFinder.StoreHandlers.GOG;
 using GameFinder.StoreHandlers.Origin;
 using GameFinder.StoreHandlers.Steam;
+using GameFinder.StoreHandlers.Xbox;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
 using NexusMods.DataModel.Games;
@@ -29,15 +30,20 @@ public static class Services
     public static IServiceCollection AddStandardGameLocators(this IServiceCollection services,
         bool registerConcreteLocators = true)
     {
-        services.AddSingleton<IGameLocator, SteamLocator>();
-
-        if (OSInformation.Shared.IsWindows)
-        {
-            services.AddSingleton<IGameLocator, EADesktopLocator>();
-            services.AddSingleton<IGameLocator, EpicLocator>();
-            services.AddSingleton<IGameLocator, GogLocator>();
-            services.AddSingleton<IGameLocator, OriginLocator>();
-        }
+        OSInformation.Shared.SwitchPlatform(
+            onWindows: () =>
+            {
+                services.AddSingleton<IGameLocator, SteamLocator>();
+                services.AddSingleton<IGameLocator, EADesktopLocator>();
+                services.AddSingleton<IGameLocator, EpicLocator>();
+                services.AddSingleton<IGameLocator, GogLocator>();
+                services.AddSingleton<IGameLocator, OriginLocator>();
+                services.AddSingleton<IGameLocator, XboxLocator>();
+            },
+            onLinux: () =>
+            {
+                services.AddSingleton<IGameLocator, SteamLocator>();
+            });
 
         if (!registerConcreteLocators) return services;
 
@@ -51,6 +57,7 @@ public static class Services
                 services.AddSingleton<AHandler<EGSGame, EGSGameId>>(provider => new EGSHandler(provider.GetRequiredService<IRegistry>(), provider.GetRequiredService<IFileSystem>()));
                 services.AddSingleton<AHandler<GOGGame, GOGGameId>>(provider => new GOGHandler(provider.GetRequiredService<IRegistry>(), provider.GetRequiredService<IFileSystem>()));
                 services.AddSingleton<AHandler<OriginGame, OriginGameId>>(provider => new OriginHandler(provider.GetRequiredService<IFileSystem>()));
+                services.AddSingleton<AHandler<XboxGame, XboxGameId>>(provider => new XboxHandler(provider.GetRequiredService<IFileSystem>()));
             },
             onLinux: () =>
             {

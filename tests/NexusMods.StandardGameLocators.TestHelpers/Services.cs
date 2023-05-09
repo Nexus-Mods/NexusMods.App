@@ -4,6 +4,7 @@ using GameFinder.StoreHandlers.EGS;
 using GameFinder.StoreHandlers.GOG;
 using GameFinder.StoreHandlers.Origin;
 using GameFinder.StoreHandlers.Steam;
+using GameFinder.StoreHandlers.Xbox;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
 using NexusMods.DataModel.Games;
@@ -45,6 +46,11 @@ public static class Services
             new StubbedGameLocator<SteamGame, SteamGameId>(s.GetRequiredService<TemporaryFileManager>(),
                 tfm => new SteamGame(SteamGameId.From( 42), "Stubbed Game", tfm.CreateFolder("steam_game").Path),
                 game => game.AppId));
+
+        coll.AddSingleton<AHandler<XboxGame, XboxGameId>>(s =>
+            new StubbedGameLocator<XboxGame, XboxGameId>(s.GetRequiredService<TemporaryFileManager>(),
+                tfm => new XboxGame(XboxGameId.From("xbox-game-id"), "Stubbed Game", tfm.CreateFolder("xbox_game").Path),
+                game => game.Id));
         return coll;
     }
 }
