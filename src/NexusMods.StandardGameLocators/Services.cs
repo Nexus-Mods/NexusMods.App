@@ -1,8 +1,8 @@
-using System.IO.Abstractions;
-using System.Runtime.InteropServices;
 using GameFinder.Common;
 using GameFinder.RegistryUtils;
 using GameFinder.StoreHandlers.EADesktop;
+using GameFinder.StoreHandlers.EADesktop.Crypto;
+using GameFinder.StoreHandlers.EADesktop.Crypto.Windows;
 using GameFinder.StoreHandlers.EGS;
 using GameFinder.StoreHandlers.GOG;
 using GameFinder.StoreHandlers.Origin;
@@ -10,6 +10,7 @@ using GameFinder.StoreHandlers.Steam;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
 using NexusMods.DataModel.Games;
+using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators;
 
@@ -40,42 +41,22 @@ public static class Services
 
         if (!registerConcreteLocators) return services;
 
-        MaybeAddSteamHandler(services);
-
-        if (OSInformation.Shared.IsWindows)
-        {
-#pragma warning disable CA1416
-            services.AddSingleton<AHandler<EADesktopGame, string>>(_ => new EADesktopHandler());
-            services.AddSingleton<AHandler<EGSGame, string>>(_ => new EGSHandler());
-            services.AddSingleton<AHandler<GOGGame, long>>(_ => new GOGHandler());
-            services.AddSingleton<AHandler<OriginGame, string>>(_ => new OriginHandler());
-#pragma warning restore CA1416
-        }
+        OSInformation.Shared.SwitchPlatform(
+            onWindows: () =>
+            {
+                services.AddSingleton(WindowsRegistry.Shared);
+                services.AddSingleton<IHardwareInfoProvider, HardwareInfoProvider>();
+                services.AddSingleton<AHandler<SteamGame, SteamGameId>>(provider => new SteamHandler(provider.GetRequiredService<IFileSystem>(), provider.GetRequiredService<IRegistry>()));
+                services.AddSingleton<AHandler<EADesktopGame, EADesktopGameId>>(provider => new EADesktopHandler(provider.GetRequiredService<IFileSystem>(), provider.GetRequiredService<IHardwareInfoProvider>()));
+                services.AddSingleton<AHandler<EGSGame, EGSGameId>>(provider => new EGSHandler(provider.GetRequiredService<IRegistry>(), provider.GetRequiredService<IFileSystem>()));
+                services.AddSingleton<AHandler<GOGGame, GOGGameId>>(provider => new GOGHandler(provider.GetRequiredService<IRegistry>(), provider.GetRequiredService<IFileSystem>()));
+                services.AddSingleton<AHandler<OriginGame, OriginGameId>>(provider => new OriginHandler(provider.GetRequiredService<IFileSystem>()));
+            },
+            onLinux: () =>
+            {
+                services.AddSingleton<AHandler<SteamGame, SteamGameId>>(provider => new SteamHandler(provider.GetRequiredService<IFileSystem>(), registry: null));
+            });
 
         return services;
-    }
-
-    private static void MaybeAddSteamHandler(IServiceCollection services)
-    {
-        OSInformation.Shared.SwitchPlatform(
-            ref services,
-            onWindows: (ref IServiceCollection value) => value.AddSingleton<AHandler<SteamGame, int>, SteamHandler>(_ => new SteamHandler(new WindowsRegistry())),
-            onLinux: (ref IServiceCollection value) =>
-            {
-                var steamPath = Environment.GetEnvironmentVariable(
-                    "NMA_STEAM_PATH",
-                    EnvironmentVariableTarget.Process
-                );
-
-                if (steamPath is null)
-                {
-                    value.AddSingleton<AHandler<SteamGame, int>, SteamHandler>(_ => new SteamHandler(new FileSystem(), null));
-                }
-                else
-                {
-                    value.AddSingleton<AHandler<SteamGame, int>, SteamHandler>(_ => new SteamHandler(steamPath, new FileSystem(), null));
-                }
-            }
-        );
     }
 }
