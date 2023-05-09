@@ -13,10 +13,10 @@ public class BasicTests
         _game = game;
     }
 
-    [SkippableFact]
+    [Fact]
     public void Test_Locators_Linux()
     {
-        Skip.If(!OperatingSystem.IsLinux());
+        if (!OperatingSystem.IsLinux()) return;
 
         _game.Installations.Should().SatisfyRespectively(
             steamInstallation =>
@@ -26,10 +26,10 @@ public class BasicTests
             });
     }
 
-    [SkippableFact]
+    [Fact]
     public void Test_Locators_Windows()
     {
-        Skip.If(!OperatingSystem.IsWindows());
+        if (!OperatingSystem.IsWindows()) return;
 
         _game.Installations.Should().SatisfyRespectively(
             eaInstallation =>
