@@ -9,7 +9,7 @@ using NexusMods.StandardGameLocators;
 
 namespace NexusMods.Games.BethesdaGameStudios;
 
-public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame
+public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame, IXboxGame
 {
     private readonly IFileSystem _fileSystem;
 
@@ -60,6 +60,8 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame
         1801825368, // The Elder Scrolls V: Skyrim Anniversary Edition AKA The Store Bundle
         1162721350 // Upgrade DLC
     };
+
+    public IEnumerable<string> XboxIds => new[] { "BethesdaSoftworks.SkyrimSE-PC" };
 
     public override IStreamFactory Icon =>
         new EmbededResourceStreamFactory<SkyrimSpecialEdition>("NexusMods.Games.BethesdaGameStudios.Resources.SkyrimSpecialEdition.icon.jpg");
