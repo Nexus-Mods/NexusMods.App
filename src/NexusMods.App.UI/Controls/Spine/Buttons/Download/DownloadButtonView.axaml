@@ -7,13 +7,22 @@
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:download="clr-namespace:NexusMods.App.UI.Controls.Spine.Buttons.Download"
+                                xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
                                 mc:Ignorable="d" d:DesignWidth="64" d:DesignHeight="64"
                                 x:Class="NexusMods.App.UI.Controls.Spine.Buttons.Download.DownloadButtonView">
     <Design.DataContext>
         <download:DownloadButtonDesignerViewModel/>
     </Design.DataContext>
-    <Button>
-        
+    <Button Classes="SpineDownloadButton Idle" x:Name="ParentButton">
+        <Grid>
+            <Border></Border>
+            <Arc x:Name="ProgressArc"></Arc>
+            <avalonia:Icon Classes="Download"/>
+            <StackPanel>
+                <TextBlock Text="48" Classes="Number" x:Name="NumberTextBlock"/>
+                <TextBlock Text="MINS" Classes="Units" x:Name="UnitsTextBlock"/>
+            </StackPanel>
+        </Grid>
     </Button>
 </reactiveUi:ReactiveUserControl>
 

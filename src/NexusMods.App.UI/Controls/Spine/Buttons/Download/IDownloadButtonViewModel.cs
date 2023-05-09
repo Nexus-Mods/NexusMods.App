@@ -20,5 +20,13 @@ public interface IDownloadButtonViewModel : IViewModelInterface
     /// </summary>
     public Percent? Progress { get; }
     
+    /// <summary>
+    /// Command to execute when the button is clicked
+    /// </summary>
     public ICommand Command { get; }
+    
+    /// <summary>
+    /// True when this spine button is active
+    /// </summary>
+    public bool IsActive { get; set; }
 }

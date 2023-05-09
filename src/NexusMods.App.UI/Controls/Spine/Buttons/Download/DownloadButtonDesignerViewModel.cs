@@ -1,15 +1,26 @@
 ﻿using System.Windows.Input;
 using NexusMods.DataModel.RateLimiting;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Controls.Spine.Buttons.Download;
 
 public class DownloadButtonDesignerViewModel : AViewModel<IDownloadButtonViewModel>, IDownloadButtonViewModel
 {
+    [Reactive]
     public float Number { get; set; } = 4.2f;
+    
+    [Reactive]
     public string Units { get; set; } = "MB/s";
+    
+    [Reactive]
     public Percent? Progress { get; set; }
-    public ICommand Command { get; }
+    
+    [Reactive]
+    public ICommand Command { get; set; }
+
+    [Reactive]
+    public bool IsActive { get; set; }
 
     public DownloadButtonDesignerViewModel()
     {
@@ -18,6 +29,7 @@ public class DownloadButtonDesignerViewModel : AViewModel<IDownloadButtonViewMod
 
     private async Task StartProgress()
     {
+        if (Progress != null) return;
         foreach (var i in Enumerable.Range(0, 100))
         {
             Progress = new Percent(i / 100d);
