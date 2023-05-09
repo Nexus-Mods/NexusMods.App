@@ -252,5 +252,6 @@
     <!-- End of Styling Rework -->
     
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/ButtonStyles/Standard.xaml" />
+    <StyleInclude Source="avares://NexusMods.App.UI/Theme/ButtonStyles/Spine/DownloadButton.xaml" />
 
 </Styles>
