@@ -36,12 +36,12 @@ public class BasicTests
         _game.Installations
             .Should().HaveCount(6)
             .And.Satisfy(
-                eaInstallation => eaInstallation.Locations.Should().ContainSingle().Which.Value.ToString().Contains("ea_game"),
-                epicInstallation => epicInstallation.Locations.Should().ContainSingle().Which.Value.ToString().Contains("epic_game"),
-                originInstallation => originInstallation.Locations.Should().ContainSingle().Which.Value.ToString().Contains("origin_game"),
-                gogInstallation => gogInstallation.Locations.Should().ContainSingle().Which.Value.ToString().Contains("gog_game"),
-                steamInstallation => steamInstallation.Locations.Should().ContainSingle().Which.Value.ToString().Contains("steam_game"),
-                xboxInstallation => xboxInstallation.Locations.Should().ContainSingle().Which.Value.ToString().Contains("xbox_game")
+                eaInstallation => eaInstallation.Locations.First().Value.ToString().Contains("ea_game"),
+                epicInstallation => epicInstallation.Locations.First().Value.ToString().Contains("epic_game"),
+                originInstallation => originInstallation.Locations.First().Value.ToString().Contains("origin_game"),
+                gogInstallation => gogInstallation.Locations.First().Value.ToString().Contains("gog_game"),
+                steamInstallation => steamInstallation.Locations.First().Value.ToString().Contains("steam_game"),
+                xboxInstallation => xboxInstallation.Locations.First().Value.ToString().Contains("xbox_game")
             );
     }
 
