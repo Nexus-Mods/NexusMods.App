@@ -89,6 +89,7 @@
         <Setter Property="Padding" Value="0"></Setter>
         <Setter Property="CornerRadius" Value="45"></Setter>
         <Setter Property="Background" Value="{DynamicResource Transparent}"></Setter>
+        <Setter Property="HorizontalAlignment" Value="Center"></Setter>
     </Style>
 
     <Style Selector="Button.SpineDownloadButton">

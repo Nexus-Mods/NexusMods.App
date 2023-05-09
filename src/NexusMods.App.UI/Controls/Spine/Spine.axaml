@@ -35,8 +35,7 @@
             <reactiveUi:ViewModelViewHost ViewContract="Add" x:Name="Add" />
 
         </StackPanel>
-        <reactiveUi:ViewModelViewHost Grid.Row="1" ViewContract="Download"
-                                      x:Name="Download" />
+        <reactiveUi:ViewModelViewHost Grid.Row="1" x:Name="Download" />
     </Grid>
 
 </reactiveUi:ReactiveUserControl>

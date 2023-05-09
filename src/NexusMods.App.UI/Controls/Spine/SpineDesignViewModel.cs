@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Subjects;
+using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
 using NexusMods.App.UI.LeftMenu;
@@ -10,7 +11,7 @@ public class SpineDesignViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 {
     public IIconButtonViewModel Home { get; } = new IconButtonDesignViewModel();
     public IIconButtonViewModel Add { get; } = new IconButtonViewModel();
-    public IIconButtonViewModel Downloads { get; } = new IconButtonViewModel();
+    public IDownloadButtonViewModel Downloads { get; } = new DownloadButtonDesignerViewModel();
     public ReadOnlyObservableCollection<IImageButtonViewModel> Games { get; } =
         new(new ObservableCollection<IImageButtonViewModel>
     {

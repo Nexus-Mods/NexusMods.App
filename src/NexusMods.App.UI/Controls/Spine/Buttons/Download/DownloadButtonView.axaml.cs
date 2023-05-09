@@ -15,7 +15,7 @@ public partial class DownloadButtonView : ReactiveUserControl<IDownloadButtonVie
 
         this.WhenActivated(d =>
         {
-            this.WhenAnyValue(view => view.ViewModel!.Command)
+            this.WhenAnyValue(view => view.ViewModel!.Click)
                 .BindToUi(this, view => view.ParentButton.Command)
                 .DisposeWith(d);
             

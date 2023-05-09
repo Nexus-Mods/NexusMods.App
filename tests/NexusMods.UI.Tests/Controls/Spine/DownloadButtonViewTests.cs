@@ -108,13 +108,13 @@ public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadBut
     public async Task ClickingTheButtonTriggersTheCommand()
     {
         var val = false;
-        ViewModel.Command = ReactiveCommand.Create(() => { val = true; });
+        ViewModel.Click = ReactiveCommand.Create(() => { val = true; });
         
         var button = await Host.GetViewControl<Button>("ParentButton");
 
         val.Should().BeFalse();
         await Host.Click(button);
         val.Should().BeTrue();
-        ViewModel.Command = ReactiveCommand.Create(() => { });
+        ViewModel.Click = ReactiveCommand.Create(() => { });
     }
 }

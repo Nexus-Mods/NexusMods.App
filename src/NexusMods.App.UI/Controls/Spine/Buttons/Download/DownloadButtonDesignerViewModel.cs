@@ -17,14 +17,14 @@ public class DownloadButtonDesignerViewModel : AViewModel<IDownloadButtonViewMod
     public Percent? Progress { get; set; }
     
     [Reactive]
-    public ICommand Command { get; set; }
+    public ICommand Click { get; set; }
 
     [Reactive]
     public bool IsActive { get; set; }
 
     public DownloadButtonDesignerViewModel()
     {
-        Command = ReactiveCommand.CreateFromTask(async () => StartProgress());
+        Click = ReactiveCommand.CreateFromTask(async () => StartProgress());
     }
 
     private async Task StartProgress()

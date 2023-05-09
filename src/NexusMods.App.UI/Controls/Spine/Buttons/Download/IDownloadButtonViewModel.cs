@@ -23,7 +23,7 @@ public interface IDownloadButtonViewModel : IViewModelInterface
     /// <summary>
     /// Command to execute when the button is clicked
     /// </summary>
-    public ICommand Command { get; }
+    public ICommand Click { get; set; }
     
     /// <summary>
     /// True when this spine button is active

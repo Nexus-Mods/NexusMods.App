@@ -201,6 +201,9 @@
         <Compile Update="Controls\Spine\Buttons\Download\DownloadButtonDesignerViewModel.cs">
           <DependentUpon>IDownloadButtonViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\Spine\Buttons\Download\DownloadButtonViewModel.cs">
+          <DependentUpon>IDownloadButtonViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
