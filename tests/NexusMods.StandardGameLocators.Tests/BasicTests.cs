@@ -33,49 +33,16 @@ public class BasicTests
     {
         if (!OperatingSystem.IsWindows()) return;
 
-        _game.Installations.Should().SatisfyRespectively(
-            eaInstallation =>
-            {
-                eaInstallation.Locations
-                    .Should().ContainSingle()
-                    .Which.Value
-                    .ToString().Should().Contain("ea_game");
-            },
-            epicInstallation =>
-            {
-                epicInstallation.Locations
-                    .Should().ContainSingle()
-                    .Which.Value
-                    .ToString().Should().Contain("epic_game");
-            },
-            originInstallation =>
-            {
-                originInstallation.Locations
-                    .Should().ContainSingle()
-                    .Which.Value
-                    .ToString().Should().Contain("origin_game");
-            },
-            gogInstallation =>
-            {
-                gogInstallation.Locations
-                    .Should().ContainSingle()
-                    .Which.Value
-                    .ToString().Should().Contain("gog_game");
-            },
-            steamInstallation =>
-            {
-                steamInstallation.Locations
-                    .Should().ContainSingle()
-                    .Which.Value
-                    .ToString().Should().Contain("steam_game");
-            },
-            xboxInstallation =>
-            {
-                xboxInstallation.Locations
-                    .Should().ContainSingle()
-                    .Which.Value
-                    .ToString().Should().Contain("xbox_game");
-            });
+        _game.Installations
+            .Should().HaveCount(6)
+            .And.Satisfy(
+                eaInstallation => eaInstallation.Locations.Should().ContainSingle().Which.Value.ToString().Contains("ea_game"),
+                epicInstallation => epicInstallation.Locations.Should().ContainSingle().Which.Value.ToString().Contains("epic_game"),
+                originInstallation => originInstallation.Locations.Should().ContainSingle().Which.Value.ToString().Contains("origin_game"),
+                gogInstallation => gogInstallation.Locations.Should().ContainSingle().Which.Value.ToString().Contains("gog_game"),
+                steamInstallation => steamInstallation.Locations.Should().ContainSingle().Which.Value.ToString().Contains("steam_game"),
+                xboxInstallation => xboxInstallation.Locations.Should().ContainSingle().Which.Value.ToString().Contains("xbox_game")
+            );
     }
 
     [Fact]
