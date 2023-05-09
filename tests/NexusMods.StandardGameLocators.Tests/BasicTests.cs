@@ -21,8 +21,10 @@ public class BasicTests
         _game.Installations.Should().SatisfyRespectively(
             steamInstallation =>
             {
-                steamInstallation.Locations.Should().ContainSingle(kv =>
-                    kv.Key == GameFolderType.Game && kv.Value.ToString().Contains("steam_game"));
+                steamInstallation.Locations
+                    .Should().ContainSingle()
+                    .Which.Value
+                    .ToString().Should().Contain("steam_game");
             });
     }
 
@@ -34,33 +36,45 @@ public class BasicTests
         _game.Installations.Should().SatisfyRespectively(
             eaInstallation =>
             {
-                eaInstallation.Locations.Should().ContainSingle(kv =>
-                    kv.Key == GameFolderType.Game && kv.Value.ToString().Contains("ea_game"));
+                eaInstallation.Locations
+                    .Should().ContainSingle()
+                    .Which.Value
+                    .ToString().Should().Contain("ea_game");
             },
             epicInstallation =>
             {
-                epicInstallation.Locations.Should().ContainSingle(kv =>
-                    kv.Key == GameFolderType.Game && kv.Value.ToString().Contains("epic_game"));
+                epicInstallation.Locations
+                    .Should().ContainSingle()
+                    .Which.Value
+                    .ToString().Should().Contain("epic_game");
             },
             originInstallation =>
             {
-                originInstallation.Locations.Should().ContainSingle(kv =>
-                    kv.Key == GameFolderType.Game && kv.Value.ToString().Contains("origin_game"));
+                originInstallation.Locations
+                    .Should().ContainSingle()
+                    .Which.Value
+                    .ToString().Should().Contain("origin_game");
             },
             gogInstallation =>
             {
-                gogInstallation.Locations.Should().ContainSingle(kv =>
-                    kv.Key == GameFolderType.Game && kv.Value.ToString().Contains("gog_game"));
+                gogInstallation.Locations
+                    .Should().ContainSingle()
+                    .Which.Value
+                    .ToString().Should().Contain("gog_game");
             },
             steamInstallation =>
             {
-                steamInstallation.Locations.Should().ContainSingle(kv =>
-                    kv.Key == GameFolderType.Game && kv.Value.ToString().Contains("steam_game"));
+                steamInstallation.Locations
+                    .Should().ContainSingle()
+                    .Which.Value
+                    .ToString().Should().Contain("steam_game");
             },
             xboxInstallation =>
             {
-                xboxInstallation.Locations.Should().ContainSingle(kv =>
-                    kv.Key == GameFolderType.Game && kv.Value.ToString().Contains("xbox_game"));
+                xboxInstallation.Locations
+                    .Should().ContainSingle()
+                    .Which.Value
+                    .ToString().Should().Contain("xbox_game");
             });
     }
 
