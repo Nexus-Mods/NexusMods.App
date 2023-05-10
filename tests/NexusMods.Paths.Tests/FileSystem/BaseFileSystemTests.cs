@@ -35,6 +35,23 @@ public class BaseFileSystemTests
     }
 
     [SkippableTheory, AutoFileSystem]
+    public void Test_PathMappings_SpecialCases(InMemoryFileSystem fs)
+    {
+        Skip.IfNot(OperatingSystem.IsLinux());
+
+        var overlayFileSystem = (BaseFileSystem)fs.CreateOverlayFileSystem(
+            new Dictionary<AbsolutePath, AbsolutePath>
+            {
+                { fs.FromFullPath("/c"), fs.FromFullPath("/foo") },
+                { fs.FromFullPath("/z"), fs.FromFullPath("/") },
+            },
+            new Dictionary<KnownPath, AbsolutePath>());
+
+        overlayFileSystem.GetMappedPath(fs.FromFullPath("/c/a")).Should().Be(fs.FromFullPath("/foo/a"));
+        overlayFileSystem.GetMappedPath(fs.FromFullPath("/z/a")).Should().Be(fs.FromFullPath("/a"));
+    }
+
+    [SkippableTheory, AutoFileSystem]
     public async Task Test_ReadAllBytesAsync(InMemoryFileSystem fs, AbsolutePath path, byte[] contents)
     {
         fs.AddFile(path, contents);
