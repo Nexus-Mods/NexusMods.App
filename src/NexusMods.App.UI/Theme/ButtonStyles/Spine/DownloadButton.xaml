@@ -1,0 +1,205 @@
+﻿<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <StackPanel Orientation="Horizontal" Width="600" Height="600" Margin="24" Spacing="8">
+            <StackPanel Orientation="Vertical" Spacing="8">
+                <Button Classes="SpineDownloadButton Idle">
+                    <Grid>
+                        <Border></Border>
+                        <Arc></Arc>
+                        <icons:Icon Classes="Download"/>
+                        <StackPanel>
+                            <TextBlock Text="8.6" Classes="Number"/>
+                            <TextBlock Text="MB/s" Classes="Units" />
+                        </StackPanel>
+                    </Grid>
+                </Button>
+                <Button Classes="SpineDownloadButton Idle Active">
+                    <Grid>
+                        <Border></Border>
+                        <Arc></Arc>
+                        <icons:Icon Classes="Download"/>
+                        <StackPanel>
+                            <TextBlock Text="8.6" Classes="Number"/>
+                            <TextBlock Text="MB/s" Classes="Units" />
+                        </StackPanel>
+                    </Grid>
+                </Button>
+            </StackPanel>
+            
+            <StackPanel Orientation="Vertical" Spacing="8">
+                <Button Classes="SpineDownloadButton Progress">
+                    <Grid>
+                        <Border></Border>
+                        <Arc SweepAngle="270"></Arc>
+                        <icons:Icon Classes="Download"/>
+                        <StackPanel>
+                            <TextBlock Text="18.6" Classes="Number"/>
+                            <TextBlock Text="MB/s" Classes="Units" />
+                        </StackPanel>
+                    </Grid>
+                </Button>
+                <Button Classes="SpineDownloadButton Progress Active">
+                    <Grid>
+                        <Border></Border>
+                        <Arc SweepAngle="90"></Arc>
+                        <icons:Icon Classes="Download"/>
+                        <StackPanel>
+                            <TextBlock Text="18.6" Classes="Number"/>
+                            <TextBlock Text="MB/s" Classes="Units" />
+                        </StackPanel>
+                    </Grid>
+                </Button>
+            </StackPanel>
+            
+            <StackPanel Orientation="Vertical" Spacing="8">
+                <Button Classes="SpineDownloadButton Progress">
+                    <Grid>
+                        <Border></Border>
+                        <Arc SweepAngle="180"></Arc>
+                        <icons:Icon Classes="Download"/>
+                        <StackPanel>
+                            <TextBlock Text="48" Classes="Number"/>
+                            <TextBlock Text="MINS" Classes="Units" />
+                        </StackPanel>
+                    </Grid>
+                </Button>
+                <Button Classes="SpineDownloadButton Progress Active">
+                    <Grid>
+                        <Border></Border>
+                        <Arc SweepAngle="90"></Arc>
+                        <icons:Icon Classes="Download"/>
+                        <StackPanel>
+                            <TextBlock Text="48" Classes="Number"/>
+                            <TextBlock Text="MINS" Classes="Units" />
+                        </StackPanel>
+                    </Grid>
+                </Button>
+            </StackPanel>
+  
+        </StackPanel>
+    </Design.PreviewWith>
+
+    <Style Selector="Button.SpineDownloadButton">
+        <Setter Property="Width" Value="58"></Setter>
+        <Setter Property="Height" Value="58"></Setter>
+        <Setter Property="Margin" Value="0"></Setter>
+        <Setter Property="Padding" Value="0"></Setter>
+        <Setter Property="CornerRadius" Value="45"></Setter>
+        <Setter Property="Background" Value="{DynamicResource Transparent}"></Setter>
+        <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+    </Style>
+
+    <Style Selector="Button.SpineDownloadButton">
+        <Setter Property="BorderThickness" Value="0"></Setter>
+        <Setter Property="BorderBrush" Value="{DynamicResource ContentSecondaryBrush}"></Setter>
+    </Style>
+    
+    <Style Selector="Button.SpineDownloadButton Border">
+        <Setter Property="Width" Value="48"></Setter>
+        <Setter Property="Height" Value="48"></Setter>
+        <Setter Property="BorderThickness" Value="1"></Setter>
+        <Setter Property="CornerRadius" Value="45"></Setter>
+        <Setter Property="BorderBrush" Value="{DynamicResource ContentSecondaryBrush}"></Setter>
+    </Style>
+    
+    <Style Selector="Button.SpineDownloadButton.Active.Idle Border">
+        <Setter Property="BorderThickness" Value="2"></Setter>
+        <Setter Property="CornerRadius" Value="45"></Setter>
+        <Setter Property="BorderBrush" Value="{DynamicResource BrandWhite}"></Setter>
+        <Setter Property="BoxShadow" Value="0 0 10 0 #66FFFFFF"></Setter>
+    </Style>
+    
+    <Style Selector="Button.SpineDownloadButton.Active.Progress Border">
+        <Setter Property="BorderThickness" Value="2"></Setter>
+        <Setter Property="CornerRadius" Value="45"></Setter>
+        <Setter Property="BorderBrush" Value="{DynamicResource BrandWhite}"></Setter>
+        <Setter Property="BoxShadow" Value="0 0 10 0 #66FFFFFF"></Setter>
+    </Style>
+    
+
+
+
+    <Style Selector="Button.SpineDownloadButton.Progress Border">
+        <Setter Property="BorderThickness" Value="3"></Setter>
+        <Setter Property="CornerRadius" Value="45"></Setter>
+    </Style>
+
+    
+    <Style Selector="Button.SpineDownloadButton.Progress Arc">
+        <Setter Property="Width" Value="48"></Setter>
+        <Setter Property="Height" Value="48"></Setter>
+        <Setter Property="StrokeThickness" Value="3"></Setter>
+        <Setter Property="StartAngle" Value="270"></Setter>
+        <Setter Property="Stroke" Value="{DynamicResource BrandAccent}"></Setter>
+    </Style>
+
+    <Style Selector="Button.SpineDownloadButton > Grid > StackPanel">
+        <Setter Property="Orientation" Value="Vertical"></Setter>
+        <Setter Property="Spacing" Value="0"></Setter>
+        <Setter Property="Margin" Value="0, 18"></Setter>
+    </Style>
+    
+    <Style Selector="Button.SpineDownloadButton icons|Icon">
+        <Setter Property="Width" Value="24"></Setter>
+        <Setter Property="Height" Value="24"></Setter>
+        <Setter Property="Margin" Value="12"></Setter>
+        <Setter Property="FontSize" Value="18"></Setter>
+        <Setter Property="Foreground" Value="{DynamicResource BrandGray}"></Setter>
+    </Style>
+    
+    <Style Selector="Button.SpineDownloadButton.Active icons|Icon">
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}"></Setter>
+    </Style>
+
+    <Style Selector="Button.SpineDownloadButton.Idle > Grid > icons|Icon">
+        <Setter Property="IsVisible" Value="True" />
+    </Style>
+    
+    <Style Selector="Button.SpineDownloadButton.Idle > Grid > StackPanel">
+        <Setter Property="IsVisible" Value="False" />
+    </Style>
+    
+    <Style Selector="Button.SpineDownloadButton.Progress > Grid > icons|Icon">
+        <Setter Property="IsVisible" Value="False" />
+    </Style>
+    
+    <Style Selector="Button.SpineDownloadButton.Progress > Grid > StackPanel">
+        <Setter Property="IsVisible" Value="True" />
+    </Style>
+    
+    <Style Selector="Button.SpineDownloadButton TextBlock">
+        <Setter Property="Margin" Value="0"></Setter>
+        <Setter Property="Padding" Value="0"></Setter>
+        <Setter Property="HorizontalAlignment" Value="Center"></Setter>
+        <Setter Property="TextAlignment" Value="Center"></Setter>
+        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+    </Style>
+    
+    <Style Selector="Button.SpineDownloadButton TextBlock.Number">
+        <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}"></Setter>
+        <Setter Property="FontSize" Value="10"></Setter>
+        <Setter Property="LineHeight" Value="15"></Setter>
+        <Setter Property="LetterSpacing" Value="1"></Setter>
+    </Style>
+
+    
+    <Style Selector="Button.SpineDownloadButton TextBlock.Units">
+        <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}"></Setter>
+        <Setter Property="FontSize" Value="6"></Setter>
+        <Setter Property="LineHeight" Value="15"></Setter>
+        <Setter Property="LetterSpacing" Value="1"></Setter>
+    </Style>
+    
+    <Style Selector="Button.SpineDownloadButton:pointerover Border">
+        <Setter Property="Background" Value="{DynamicResource BrandWhite30Percent}"></Setter>
+        <Setter Property="BorderBrush" Value="{DynamicResource BrandWhite}"></Setter>
+    </Style>
+
+    
+    <Style Selector="Button.SpineDownloadButton:pointerover icons|Icon">
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}"></Setter>
+    </Style>
+</Styles>

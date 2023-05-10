@@ -69,6 +69,8 @@
         <AvaloniaResource Include="Theme\ButtonStyles\Standard.xaml" />
         <None Remove="Theme\ProgressBar.xaml" />
         <AvaloniaResource Include="Theme\ProgressBar.xaml" />
+        <None Remove="Theme\ButtonStyles\Spine\DownloadButton.xaml" />
+        <AvaloniaResource Include="Theme\ButtonStyles\Spine\DownloadButton.xaml" />
     </ItemGroup>
 
     <ItemGroup>
@@ -189,6 +191,18 @@
         </Compile>
         <Compile Update="ViewModels\Helpers\ViewModelSelector\AViewModelSelector.cs">
             <DependentUpon>IViewModelSelector.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Spine\Buttons\Icon\IconButtonViewModel.cs">
+          <DependentUpon>IIconButtonViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Spine\Buttons\Icon\IconButtonDesignViewModel.cs">
+          <DependentUpon>IIconButtonViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Spine\Buttons\Download\DownloadButtonDesignerViewModel.cs">
+          <DependentUpon>IDownloadButtonViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Spine\Buttons\Download\DownloadButtonViewModel.cs">
+          <DependentUpon>IDownloadButtonViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

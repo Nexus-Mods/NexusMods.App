@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.Controls.GameWidget;
 using NexusMods.App.UI.Controls.Spine;
+using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
 using NexusMods.App.UI.Controls.TopBar;
@@ -63,6 +64,7 @@ public static class Services
             .AddViewModel<PlaceholderDesignViewModel, IPlaceholderViewModel>()
             .AddViewModel<SpineViewModel, ISpineViewModel>()
             .AddViewModel<TopBarViewModel, ITopBarViewModel>()
+            .AddViewModel<DownloadButtonViewModel, IDownloadButtonViewModel>()
 
             // Views
             .AddView<CompletedView, ICompletedViewModel>()
@@ -90,6 +92,7 @@ public static class Services
             .AddView<PlaceholderView, IPlaceholderViewModel>()
             .AddView<Spine, ISpineViewModel>()
             .AddView<TopBarView, ITopBarViewModel>()
+            .AddView<DownloadButtonView, IDownloadButtonViewModel>()
 
             // Other
             .AddSingleton<InjectedViewLocator>()
