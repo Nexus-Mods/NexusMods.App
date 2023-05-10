@@ -1,14 +1,13 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Avalonia.Media.Imaging;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
 using NexusMods.App.UI.Controls.Spine.Buttons.Image;
-using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.LeftMenu.Downloads;
 using NexusMods.App.UI.LeftMenu.Game;
@@ -16,7 +15,6 @@ using NexusMods.App.UI.LeftMenu.Home;
 using NexusMods.App.UI.Routing;
 using NexusMods.App.UI.Routing.Messages;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using ReactiveUI;
@@ -30,7 +28,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
     public IIconButtonViewModel Add { get; }
     
-    public IIconButtonViewModel Downloads { get; }
+    public IDownloadButtonViewModel Downloads { get; }
 
     private ReadOnlyObservableCollection<IImageButtonViewModel> _games =
         Initializers.ReadOnlyObservableCollection<IImageButtonViewModel>();
@@ -53,7 +51,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         IDataStore dataStore,
         IIconButtonViewModel addButtonViewModel,
         IIconButtonViewModel homeButtonViewModel,
-        IIconButtonViewModel downloadsButtonViewModel,
+        IDownloadButtonViewModel downloadsButtonViewModel,
         IDownloadsViewModel downloadsViewModel,
         IHomeLeftMenuViewModel homeLeftMenuViewModel,
         IGameLeftMenuViewModel gameLeftMenuViewModel,

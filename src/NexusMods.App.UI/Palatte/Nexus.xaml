@@ -3,6 +3,9 @@
         <Color x:Key="BrandPrimary">#D98F40</Color>
         <Color x:Key="BrandPrimaryLighter">#E0A362</Color>
         <Color x:Key="BrandPrimaryDarker">#C87B28</Color>
+        
+        <Color x:Key="BrandAccent">#388FFA</Color>
+        
 
         <SolidColorBrush Color="{DynamicResource BrandPrimary}" x:Key="BrandPrimaryBrush" />
         <SolidColorBrush Color="{DynamicResource BrandPrimaryLighter}" x:Key="BrandPrimaryLighterBrush" />
@@ -39,9 +42,14 @@
 
         <Color x:Key="BrandWhite">#FFFFFF</Color>
         <SolidColorBrush Color="{DynamicResource BrandWhite}" x:Key="BrandWhiteBrush" />
+        
+        <Color x:Key="BrandWhite30Percent">#4CFFFFFF</Color>
+        
         <Color x:Key="FontLightPrimary">#303030</Color>
         <Color x:Key="FontLightSecondary">#666666</Color>
         <Color x:Key="FontDarkPrimary">#FFFFFF</Color>
+
+        <Color x:Key="BrandGray">#DADADA</Color>
 
 
         <Color x:Key="ThemeBackgroundColor">#101010</Color>
