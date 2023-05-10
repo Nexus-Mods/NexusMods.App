@@ -30,15 +30,22 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame, IXboxGame
         _fileSystem = fileSystem;
     }
 
-    protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(IGameLocator locator, GameLocatorResult installation)
+    protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(
+        IFileSystem fileSystem,
+        IGameLocator locator,
+        GameLocatorResult installation)
     {
-        yield return new(GameFolderType.Game, installation.Path);
-        var appData = locator switch
-        {
-            GogLocator => _fileSystem.GetKnownPath(KnownPath.MyGamesDirectory).CombineUnchecked("Skyrim Special Edition GOG"),
-            _ => _fileSystem.GetKnownPath(KnownPath.MyGamesDirectory).CombineUnchecked("Skyrim Special Edition"),
-        };
-        yield return new(GameFolderType.AppData, appData);
+        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);
+
+        var appData = installation.Store == GameStore.GOG
+            ? fileSystem
+                .GetKnownPath(KnownPath.MyGamesDirectory)
+                .CombineUnchecked("Skyrim Special Edition GOG")
+            : fileSystem
+                .GetKnownPath(KnownPath.MyGamesDirectory)
+                .CombineUnchecked("Skyrim Special Edition");
+
+        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.AppData, appData);
     }
 
     public override IEnumerable<AModFile> GetGameFiles(GameInstallation installation, IDataStore store)

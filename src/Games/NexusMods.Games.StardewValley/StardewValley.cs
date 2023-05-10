@@ -47,7 +47,10 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
         );
     }
 
-    protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(IGameLocator locator, GameLocatorResult installation)
+    protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(
+        IFileSystem fileSystem,
+        IGameLocator locator,
+        GameLocatorResult installation)
     {
         if (installation.Store == GameStore.XboxGamePass)
         {
@@ -58,7 +61,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
             yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);
         }
 
-        var stardewValleyAppDataPath = _fileSystem
+        var stardewValleyAppDataPath = fileSystem
             .GetKnownPath(KnownPath.ApplicationDataDirectory)
             .CombineUnchecked("StardewValley");
 
