@@ -72,7 +72,16 @@ public class WineStoreHandlerWrapper
     /// <returns></returns>
     public IEnumerable<OneOf<IGame, ErrorMessage>> FindAllGamesInPrefix(AWinePrefix winePrefix)
     {
-        var wineRegistry = winePrefix.CreateRegistry(_fileSystem);
+        IRegistry wineRegistry;
+        try
+        {
+            wineRegistry = winePrefix.CreateRegistry(_fileSystem);
+        }
+        catch (Exception)
+        {
+            wineRegistry = new InMemoryRegistry();
+        }
+
         var wineFileSystem = winePrefix.CreateOverlayFileSystem(_fileSystem);
 
         foreach (var factory in _factories)

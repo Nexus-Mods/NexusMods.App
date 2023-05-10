@@ -5,6 +5,8 @@ using GameFinder.StoreHandlers.GOG;
 using GameFinder.StoreHandlers.Origin;
 using GameFinder.StoreHandlers.Steam;
 using GameFinder.StoreHandlers.Xbox;
+using GameFinder.Wine;
+using GameFinder.Wine.Bottles;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
 using NexusMods.DataModel.Games;
@@ -51,6 +53,29 @@ public static class Services
             new StubbedGameLocator<XboxGame, XboxGameId>(s.GetRequiredService<TemporaryFileManager>(),
                 tfm => new XboxGame(XboxGameId.From("xbox-game-id"), "Stubbed Game", tfm.CreateFolder("xbox_game").Path),
                 game => game.Id));
+
+        if (OSInformation.Shared.IsLinux)
+        {
+            coll.AddSingleton<IWinePrefixManager<WinePrefix>>(s =>
+                new StubbedWinePrefixManager<WinePrefix>(s.GetRequiredService<TemporaryFileManager>(),
+                    tfm => new WinePrefix
+                    {
+                        ConfigurationDirectory = tfm.CreateFolder("wine-prefix").Path,
+                    }));
+
+            coll.AddSingleton<IWinePrefixManager<BottlesWinePrefix>>(s =>
+                new StubbedWinePrefixManager<BottlesWinePrefix>(s.GetRequiredService<TemporaryFileManager>(),
+                    tfm => new BottlesWinePrefix
+                    {
+                        ConfigurationDirectory = tfm.CreateFolder("bottles-prefix").Path,
+                    }));
+
+            coll.AddSingleton<WineStoreHandlerWrapper>(s => new WineStoreHandlerWrapper(
+                s.GetRequiredService<IFileSystem>(),
+                new WineStoreHandlerWrapper.CreateHandler[] { },
+                new WineStoreHandlerWrapper.Matches[] { }));
+        }
+
         return coll;
     }
 }
