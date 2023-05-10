@@ -14,6 +14,7 @@ namespace NexusMods.StandardGameLocators;
 /// <typeparam name="TGameType">The underlying game type library which maps to the <see cref="GameFinder"/> library. e.g. <see cref="SteamGame"/>.</typeparam>
 /// <typeparam name="TId">Unique identifier used by the store for the games.</typeparam>
 /// <typeparam name="TGame">Implementation of <see cref="IGame"/> such as <see cref="ISteamGame"/> that allows us to retrieve info about the game.</typeparam>
+/// <typeparam name="TParent"></typeparam>
 public abstract class AGameLocator<TGameType, TId, TGame, TParent> : IGameLocator
     where TGame : IGame
     where TParent : AGameLocator<TGameType, TId, TGame, TParent>
@@ -25,6 +26,10 @@ public abstract class AGameLocator<TGameType, TId, TGame, TParent> : IGameLocato
     private readonly AHandler<TGameType, TId> _handler;
     private IReadOnlyDictionary<TId, TGameType>? _cachedGames;
 
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    /// <param name="provider"></param>
     protected AGameLocator(IServiceProvider provider)
     {
         _logger = provider.GetRequiredService<ILogger<TParent>>();

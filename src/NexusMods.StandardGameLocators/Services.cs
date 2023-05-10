@@ -8,6 +8,8 @@ using GameFinder.StoreHandlers.GOG;
 using GameFinder.StoreHandlers.Origin;
 using GameFinder.StoreHandlers.Steam;
 using GameFinder.StoreHandlers.Xbox;
+using GameFinder.Wine;
+using GameFinder.Wine.Bottles;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
 using NexusMods.DataModel.Games;
@@ -30,6 +32,8 @@ public static class Services
     public static IServiceCollection AddStandardGameLocators(this IServiceCollection services,
         bool registerConcreteLocators = true)
     {
+        // TODO: figure out the Proton-Wine situation
+
         OSInformation.Shared.SwitchPlatform(
             onWindows: () =>
             {
@@ -43,6 +47,9 @@ public static class Services
             onLinux: () =>
             {
                 services.AddSingleton<IGameLocator, SteamLocator>();
+
+                services.AddSingleton<IGameLocator, DefaultWineGameLocator>();
+                services.AddSingleton<IGameLocator, BottlesWineGameLocator>();
             });
 
         if (!registerConcreteLocators) return services;
@@ -50,8 +57,10 @@ public static class Services
         OSInformation.Shared.SwitchPlatform(
             onWindows: () =>
             {
+#pragma warning disable CA1416
                 services.AddSingleton(WindowsRegistry.Shared);
                 services.AddSingleton<IHardwareInfoProvider, HardwareInfoProvider>();
+#pragma warning restore CA1416
                 services.AddSingleton<AHandler<SteamGame, SteamGameId>>(provider => new SteamHandler(provider.GetRequiredService<IFileSystem>(), provider.GetRequiredService<IRegistry>()));
                 services.AddSingleton<AHandler<EADesktopGame, EADesktopGameId>>(provider => new EADesktopHandler(provider.GetRequiredService<IFileSystem>(), provider.GetRequiredService<IHardwareInfoProvider>()));
                 services.AddSingleton<AHandler<EGSGame, EGSGameId>>(provider => new EGSHandler(provider.GetRequiredService<IRegistry>(), provider.GetRequiredService<IFileSystem>()));
@@ -62,8 +71,51 @@ public static class Services
             onLinux: () =>
             {
                 services.AddSingleton<AHandler<SteamGame, SteamGameId>>(provider => new SteamHandler(provider.GetRequiredService<IFileSystem>(), registry: null));
+
+                services.AddSingleton<IWinePrefixManager<WinePrefix>>(provider => new DefaultWinePrefixManager(provider.GetRequiredService<IFileSystem>()));
+                services.AddSingleton<IWinePrefixManager<BottlesWinePrefix>>(provider => new BottlesWinePrefixManager(provider.GetRequiredService<IFileSystem>()));
+
+                services.AddSingleton(provider => new WineStoreHandlerWrapper(
+                    provider.GetRequiredService<IFileSystem>(),
+                    new WineStoreHandlerWrapper.CreateHandler[]
+                    {
+                        (_, wineRegistry, wineFileSystem) => new GOGHandler(wineRegistry, wineFileSystem),
+                        (_, wineRegistry, wineFileSystem) => new EGSHandler(wineRegistry, wineFileSystem),
+                        (_, _, wineFileSystem) => new OriginHandler(wineFileSystem),
+                    },
+                    new[]
+                    {
+                        CreateDelegateFor<GOGGame, IGogGame>(
+                            (foundGame, requestedGame) => requestedGame.GogIds.Any(x => foundGame.Id.Equals(x)),
+                            game => new GameLocatorResult(game.Path, GameStore.GOG)
+                        ),
+                        CreateDelegateFor<EGSGame, IEpicGame>(
+                            (foundGame, requestedGame) => requestedGame.EpicCatalogItemId.Any(x => foundGame.CatalogItemId.Equals(x)),
+                            game => new GameLocatorResult(game.InstallLocation, GameStore.EGS)
+                        ),
+                        CreateDelegateFor<OriginGame, IOriginGame>(
+                            (foundGame, requestedGame) => requestedGame.OriginGameIds.Any(x => foundGame.Id.Equals(x)),
+                            game => new GameLocatorResult(game.InstallPath, GameStore.Origin)
+                        ),
+                    }
+                ));
             });
 
         return services;
+    }
+
+    private static WineStoreHandlerWrapper.Matches CreateDelegateFor<TFoundGame, TRequestedGame>(
+        Func<TFoundGame, TRequestedGame, bool> matches,
+        Func<TFoundGame, GameLocatorResult> createResult)
+        where TFoundGame : GameFinder.Common.IGame
+        where TRequestedGame : DataModel.Games.IGame
+    {
+        return (foundGame, requestedGame) =>
+        {
+            if (foundGame is not TFoundGame typedFoundGame) return null;
+            if (requestedGame is not TRequestedGame typedRequestedGame) return null;
+            if (!matches(typedFoundGame, typedRequestedGame)) return null;
+            return createResult(typedFoundGame);
+        };
     }
 }
