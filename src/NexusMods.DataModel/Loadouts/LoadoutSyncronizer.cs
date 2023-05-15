@@ -1,5 +1,6 @@
 ﻿using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
@@ -85,7 +86,10 @@ public class LoadoutSyncronizer
                 }
 
                 var rules = await gen.GenerateSortRules(mod.Id, loadout).ToArrayAsync();
-                _modSortRulesFingerprintCache.Set(fingerprint, new CachedModSortRules { Rules = rules });
+                _modSortRulesFingerprintCache.Set(fingerprint, new CachedModSortRules
+                {
+                    Rules = rules
+                });
 
                 foreach (var genRule in rules)
                 {

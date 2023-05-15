@@ -2,6 +2,7 @@
 using FluentAssertions;
 using Moq;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
@@ -107,6 +108,14 @@ public class LoadoutSyncronizerTests : ADataModelTest<LoadoutSyncronizerTests>
 
         cache.Dict.Should().HaveCount(2);
 
+        cache.GetCount.Values.Should().AllBeEquivalentTo(1);
+        cache.SetCount.Values.Should().AllBeEquivalentTo(1);
+        
+        await syncronizer.SortMods(loadout.Value);
+        
+        cache.GetCount.Values.Should().AllBeEquivalentTo(2);
+        cache.SetCount.Values.Should().AllBeEquivalentTo(1);
+
     }
 
 
@@ -139,6 +148,7 @@ public class LoadoutSyncronizerTests : ADataModelTest<LoadoutSyncronizerTests>
         public Hash GetFingerprint(ModId self, Loadout input)
         {
             var fp = Fingerprinter.Create();
+            fp.Add(input.Mods[self].DataStoreId);
             foreach (var name in input.Mods.Values.Select(n => n.Name).Order())
             {
                 fp.Add(name);
@@ -162,8 +172,9 @@ public class LoadoutSyncronizerTests : ADataModelTest<LoadoutSyncronizerTests>
 
         public void Set(Hash hash, TValue value)
         {
+            value.DataStoreId = new Id64(EntityCategory.Fingerprints, hash.Value);
             Dict[hash] = value;
-            SetCount[hash] = GetCount.GetValueOrDefault(hash, 0) + 1;
+            SetCount[hash] = SetCount.GetValueOrDefault(hash, 0) + 1;
         }
     }
 
