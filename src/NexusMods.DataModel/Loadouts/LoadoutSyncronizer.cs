@@ -5,6 +5,7 @@ using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Sorting.Rules;
+using NexusMods.DataModel.TriggerFilter;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Loadouts;
@@ -14,11 +15,11 @@ namespace NexusMods.DataModel.Loadouts;
 /// </summary>
 public class LoadoutSyncronizer
 {
-    private readonly IDataStore _store;
+    private readonly IFingerprintCache<Mod,CachedModSortRules> _modSortRulesFingerprintCache;
 
-    public LoadoutSyncronizer(IDataStore store)
+    public LoadoutSyncronizer(IDataStore store, IFingerprintCache<Mod, CachedModSortRules> modSortRulesFingerprintCache)
     {
-        _store = store;
+        _modSortRulesFingerprintCache = modSortRulesFingerprintCache;
     }
     
     
@@ -75,8 +76,18 @@ public class LoadoutSyncronizer
         {
             if (rule is IGeneratedSortRule gen)
             {
-                // TODO: cache this based on the fingerprint
-                await foreach (var genRule in gen.GenerateSortRules(mod.Id, loadout))
+                var fingerprint = gen.TriggerFilter.GetFingerprint(mod.Id, loadout);
+                if (_modSortRulesFingerprintCache.TryGet(fingerprint, out var cached))
+                {
+                    foreach (var cachedRule in cached.Rules)
+                        yield return cachedRule;
+                    continue;
+                }
+                
+                var rules = await gen.GenerateSortRules(mod.Id, loadout).ToArrayAsync();
+                _modSortRulesFingerprintCache.Set(fingerprint, new CachedModSortRules { Rules = rules });
+                
+                foreach (var genRule in rules)
                 {
                     yield return genRule;
                 }

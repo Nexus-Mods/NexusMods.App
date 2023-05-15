@@ -13,6 +13,7 @@ using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.Sorting.Rules;
+using NexusMods.DataModel.TriggerFilter;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
@@ -57,6 +58,9 @@ public static class Services
             new Resource<FileHashCache, Size>("File Hashing",
                 Settings(s).MaxHashingJobs,
                 Size.FromLong(Settings(s).MaxHashingThroughputBytesPerSecond)));
+        
+        
+        coll.AddSingleton(typeof(IFingerprintCache<,>), typeof(DataStoreFingerprintCache<,>));
         
         coll.AddAllSingleton<IResource, IResource<LoadoutManager, Size>>(s =>
             new Resource<LoadoutManager, Size>("Load Order Management",

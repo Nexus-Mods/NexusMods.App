@@ -71,4 +71,9 @@ public enum EntityCategory
     /// This entity is used as part of the IPC job system.
     /// </summary>
     InterprocessJob,
+    
+    /// <summary>
+    /// Fingerprint cache data
+    /// </summary>
+    Fingerprints,
 }

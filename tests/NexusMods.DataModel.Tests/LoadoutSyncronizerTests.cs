@@ -9,6 +9,7 @@ using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.DataModel.TriggerFilter;
+using NexusMods.Hashing.xxHash64;
 using static System.String;
 
 namespace NexusMods.DataModel.Tests;
@@ -99,9 +100,9 @@ public class LoadoutSyncronizerTests : ADataModelTest<LoadoutSyncronizerTests>
     /// Example generated sort rule that sorts all mods alphabetically
     /// </summary>
     [JsonName("TestGeneratedSortRule")]
-    public class AlphabeticalSort : IGeneratedSortRule, ISortRule<Mod, ModId>
+    public class AlphabeticalSort : IGeneratedSortRule, ISortRule<Mod, ModId>, ITriggerFilter<ModId, Loadout>
     {
-        public ITriggerFilter<ModId, Loadout> TriggerFilter { get; }
+        public ITriggerFilter<ModId, Loadout> TriggerFilter => this;
         
         public async IAsyncEnumerable<ISortRule<Mod, ModId>> GenerateSortRules(ModId selfId, Loadout loadout)
         {
@@ -118,6 +119,16 @@ public class LoadoutSyncronizerTests : ADataModelTest<LoadoutSyncronizerTests>
                     yield return new After<Mod, ModId>(modId);
                 }
             }
+        }
+
+        public Hash GetFingerprint(ModId self, Loadout input)
+        {
+            var fp = Fingerprinter.Create();
+            foreach (var name in input.Mods.Values.Select(n => n.Name).Order())
+            {
+                fp.Add(name);
+            }
+            return fp.Digest();
         }
     }
 
