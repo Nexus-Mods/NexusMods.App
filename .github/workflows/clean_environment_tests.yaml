@@ -7,8 +7,15 @@ on:
     branches: [ main ]
 
 jobs:
+  draft:
+    if: github.event.type == 'pull_request' && github.event.pull_request.draft == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fails because it's a draft PR
+        run: exit 1
+
   build:
-    
+    if: github.ref == 'refs/heads/main' || github.event.pull_request.draft == false
     name: Test ${{ matrix.project }} (${{ matrix.os }})
     runs-on: 
        - self-hosted
