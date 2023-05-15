@@ -71,6 +71,27 @@ public class LoadoutSyncronizerTests : ADataModelTest<LoadoutSyncronizerTests>
             "Mod 9"
         }, opt => opt.WithStrictOrdering());
     }
+
+    [Fact]
+    public async Task StaticRulesAreConsidered()
+    {
+        var lastMod = new Mod()
+        {
+            Id = ModId.New(),
+            Name = "zz Last Mod",
+            Files = EntityDictionary<ModFileId, AModFile>.Empty(DataStore),
+            SortRules = new ISortRule<Mod, ModId>[]
+            {
+                new First<Mod, ModId>()
+            }.ToImmutableList()
+        };
+        
+        var loadout = await CreateTestLoadout();
+        loadout.Add(lastMod);
+        
+        await LoadoutSyncronizer.Invoking(_ => LoadoutSyncronizer.SortMods(loadout.Value))
+            .Should().ThrowAsync<InvalidOperationException>("rule conflicts with generated rules");
+    }
     
     
     
