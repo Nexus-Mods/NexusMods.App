@@ -1,9 +1,11 @@
 using System.Diagnostics;
 using System.Reactive.Subjects;
+using System.Text.Json;
 using DynamicData;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ObjectPool;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Interprocess.Jobs;
 using NexusMods.DataModel.Interprocess.Messages;
@@ -41,6 +43,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
     private readonly ConnectionPoolPolicy _poolPolicy;
 
     private bool _isDisposed;
+    private readonly JsonSerializerOptions _jsonSettings;
 
     /// <summary>
     /// Allows you to subscribe to newly incoming IPC messages.
@@ -53,7 +56,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
     /// </summary>
     /// <param name="logger">Allows for logging of messages.</param>
     /// <param name="settings">Datamodel settings.</param>
-    public SqliteIPC(ILogger<SqliteIPC> logger, IDataModelSettings settings)
+    public SqliteIPC(ILogger<SqliteIPC> logger, IDataModelSettings settings, JsonSerializerOptions jsonSettings)
     {
         _logger = logger;
         _storePath = settings.IpcDataStoreFilePath.ToAbsolutePath();
@@ -65,6 +68,8 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
 
         _poolPolicy = new ConnectionPoolPolicy(connectionString);
         _pool = ObjectPool.Create(_poolPolicy);
+
+        _jsonSettings = jsonSettings;
 
         EnsureTables();
 
@@ -210,7 +215,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         cmd.ExecuteNonQuery();
 
         using var cmd2 = conn.Value.CreateCommand();
-        cmd2.CommandText = "CREATE TABLE IF NOT EXISTS Jobs (JobId BLOB PRIMARY KEY, ProcessId INTEGER, Progress REAL, Description TEXT, JobType TEXT, StartTime INTEGER, Data BLOB)";
+        cmd2.CommandText = "CREATE TABLE IF NOT EXISTS Jobs (JobId BLOB PRIMARY KEY, ProcessId INTEGER, Progress REAL, StartTime INTEGER, Data BLOB)";
         cmd2.ExecuteNonQuery();
     }
 
@@ -223,7 +228,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
             _logger.ProcessingJobs();
             using var conn = _pool.RentDisposable();
             using var cmd = conn.Value.CreateCommand();
-            cmd.CommandText = "SELECT JobId, ProcessId, Progress, Description, JobType, StartTime, Data FROM Jobs";
+            cmd.CommandText = "SELECT JobId, ProcessId, Progress, StartTime, Data FROM Jobs";
             var reader = cmd.ExecuteReader();
 
             var seen = new HashSet<JobId>();
@@ -252,15 +257,14 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
 
                     _logger.NewJob(jobId);
                     var processId = ProcessId.From((uint)reader.GetInt64(1));
-                    var description = reader.GetString(3);
-                    var jobType = Enum.Parse<JobType>(reader.GetString(4));
                     var startTime =
-                        DateTime.FromFileTimeUtc(reader.GetInt64(5));
+                        DateTime.FromFileTimeUtc(reader.GetInt64(3));
 
-                    var bytes = reader.GetBlob(6);
+                    var entity =
+                        JsonSerializer.Deserialize<Entity>(reader.GetBlob(4),
+                            _jsonSettings)!;
 
-                    var newJob = new InterprocessJob(jobId, this, jobType,
-                        processId, description, bytes.ToArray(), startTime, progress);
+                    var newJob = new InterprocessJob(jobId, this, processId, startTime, progress, entity);
                     editable.AddOrUpdate(newJob);
                 }
 
@@ -319,27 +323,33 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         }
     }
 
-
-    public void CreateJob(IInterprocessJob job)
+    /// <summary>
+    /// Create a new job.
+    /// </summary>
+    /// <param name="job"></param>
+    /// <exception cref="ObjectDisposedException"></exception>
+    public void CreateJob<T>(IInterprocessJob job) where T : Entity
     {
         if (_isDisposed)
             throw new ObjectDisposedException(nameof(SqliteIPC));
 
         try
         {
-            _logger.CreatingJob(job.JobId, job.JobType);
+            _logger.CreatingJob(job.JobId, job.Payload.GetType());
             using var conn = _pool.RentDisposable();
             using var cmd = conn.Value.CreateCommand();
-            cmd.CommandText = "INSERT INTO Jobs (JobId, ProcessId, Progress, Description, JobType, StartTime, Data) " +
-                              "VALUES (@jobId, @processId, @progress, @description, @jobType, @startTime, @data);";
+            cmd.CommandText = "INSERT INTO Jobs (JobId, ProcessId, Progress, StartTime, Data) " +
+                              "VALUES (@jobId, @processId, @progress, @startTime, @data);";
 
             cmd.Parameters.AddWithValue("@jobId", job.JobId.Value.ToByteArray());
             cmd.Parameters.AddWithValue("@processId", job.ProcessId.Value);
             cmd.Parameters.AddWithValue("@progress", job.Progress.Value);
-            cmd.Parameters.AddWithValue("@description", job.Description);
-            cmd.Parameters.AddWithValue("@jobType", job.JobType.ToString());
             cmd.Parameters.AddWithValue("@startTime", job.StartTime.ToFileTimeUtc());
-            cmd.Parameters.AddWithValue("@data", job.Data);
+            
+            var ms = new MemoryStream();
+            JsonSerializer.Serialize(ms, (T)job.Payload, _jsonSettings);
+            ms.Position = 0;
+            cmd.Parameters.AddWithValue("@data", ms.ToArray());
             cmd.ExecuteNonQuery();
         }
         catch (Exception ex)

@@ -99,7 +99,7 @@ public class FileHashCache
         {
             if (TryGetCached(entry.Path, out var found))
             {
-                if (found.Size == entry.Size && found.LastModified == entry.LastWriteTime)
+                if (found.Size == entry.Size && found.LastModified == entry.LastWriteTimeUtc)
                 {
                     job.ReportNoWait(entry.Size);
                     return new HashedEntry(entry, found.Hash);
@@ -107,7 +107,7 @@ public class FileHashCache
             }
 
             var hashed = await entry.Path.XxHash64Async(token, job);
-            PutCachedAsync(entry.Path, new FileHashCacheEntry(entry.LastWriteTime, hashed, entry.Size));
+            PutCachedAsync(entry.Path, new FileHashCacheEntry(entry.LastWriteTimeUtc, hashed, entry.Size));
             return new HashedEntry(entry, hashed);
         }, token, "Hashing Files");
 

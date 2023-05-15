@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Interprocess.Jobs;
 using NexusMods.DataModel.RateLimiting;
@@ -61,7 +62,7 @@ internal static partial class HighPerformanceLogging
     public static partial void CreatingJob(
         this ILogger logger,
         JobId jobId,
-        JobType jobType);
+        Type jobType);
 
     [LoggerMessage(
         EventId = 0,

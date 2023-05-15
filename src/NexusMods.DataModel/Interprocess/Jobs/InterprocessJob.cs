@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Dynamic;
 using System.Text;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Interprocess.Messages;
 using NexusMods.DataModel.Loadouts;
@@ -24,43 +25,7 @@ public class InterprocessJob : IInterprocessJob
     /// the instance will auto-close the job
     /// </summary>
     private readonly bool _isOwner = true;
-
-    /// <summary>
-    /// Create a new job, where the payload is a <see cref="IId"/>.
-    /// </summary>
-    /// <param name="jobType"></param>
-    /// <param name="manager"></param>
-    /// <param name="payload"></param>
-    /// <param name="description"></param>
-    public InterprocessJob(JobType jobType, IInterprocessJobManager manager, IId payload, string description) :
-        this(jobType, manager, payload.ToTaggedBytes(), description)
-    {
-    }
-
-    /// <summary>
-    /// Create a new job, where the payload is a <see cref="Uri"/>.
-    /// </summary>
-    /// <param name="jobType"></param>
-    /// <param name="manager"></param>
-    /// <param name="payload"></param>
-    /// <param name="description"></param>
-    public InterprocessJob(JobType jobType, IInterprocessJobManager manager, Uri payload, string description) :
-        this(jobType, manager, Encoding.UTF8.GetBytes(payload.ToString()), description)
-    {
-    }
-
-    /// <summary>
-    /// Create a new job, where the payload is a <see cref="LoadoutId"/>.
-    /// </summary>
-    /// <param name="jobType"></param>
-    /// <param name="manager"></param>
-    /// <param name="payload"></param>
-    /// <param name="description"></param>
-    public InterprocessJob(JobType jobType, IInterprocessJobManager manager, LoadoutId payload, string description) :
-        this(jobType, manager, payload.ToArray(), description)
-    {
-    }
-
+    
     /// <summary>
     /// Create a new job, where the payload is a IMessage
     /// </summary>
@@ -70,24 +35,12 @@ public class InterprocessJob : IInterprocessJob
     /// <param name="description"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    public static InterprocessJob Create<T>(JobType jobType, IInterprocessJobManager manager, T payload, string description)
-        where T : IMessage
+    public static InterprocessJob Create<T>(IInterprocessJobManager manager, T payload)
+        where T : Entity
     {
-        if (T.MaxSize <= 512)
-        {
-            Span<byte> data = stackalloc byte[T.MaxSize];
-            var used = payload.Write(data);
-            var payloadArray = data.SliceFast(0, used).ToArray();
-            return new InterprocessJob(jobType, manager, payloadArray,
-                description);
-        }
-        else
-        {
-            var payloadArray = new byte[T.MaxSize];
-            var used = payload.Write(payloadArray);
-            return new InterprocessJob(jobType, manager, payloadArray.AsSpan().SliceFast(0, used).ToArray(),
-                description);
-        }
+        var job = new InterprocessJob(manager, payload);
+        manager.CreateJob<T>(job);
+        return job;
     }
 
     /// <summary>
@@ -97,27 +50,22 @@ public class InterprocessJob : IInterprocessJob
     /// <param name="manager"></param>
     /// <param name="payload"></param>
     /// <param name="description"></param>
-    private InterprocessJob(JobType jobType, IInterprocessJobManager manager, byte[] payload, string description)
+    private InterprocessJob(IInterprocessJobManager manager, Entity payload)
     {
         JobId = JobId.From(Guid.NewGuid());
-        JobType = jobType;
         _manager = manager;
-        Data = payload;
-        Description = description;
+        Payload = payload;
         StartTime = DateTime.UtcNow;
         ProcessId = ProcessId.From((uint)Environment.ProcessId);
         _progress = Percent.Zero;
-        _manager.CreateJob(this);
     }
 
-    internal InterprocessJob(JobId jobId, IInterprocessJobManager manager, JobType jobType, ProcessId processId, string description, byte[] bytes, DateTime startTime, Percent progress)
+    internal InterprocessJob(JobId jobId, IInterprocessJobManager manager, ProcessId processId, DateTime startTime, Percent progress, Entity payload)
     {
         JobId = jobId;
         _manager = manager;
-        JobType = jobType;
         ProcessId = processId;
-        Description = description;
-        Data = bytes;
+        Payload = payload;
         StartTime = startTime;
         _progress = progress;
         _isOwner = false;
@@ -142,33 +90,12 @@ public class InterprocessJob : IInterprocessJob
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Progress)));
         }
     }
-
-    /// <inheritdoc />
-    public string Description { get; }
-
-    /// <inheritdoc />
-    public JobType JobType { get; }
-
+    
     /// <inheritdoc />
     public DateTime StartTime { get; }
 
     /// <inheritdoc />
-    public byte[] Data { get; }
-
-    /// <inheritdoc />
-    public IId PayloadAsId => IId.FromTaggedSpan(Data);
-
-    /// <inheritdoc />
-    public Uri PayloadAsUri => new (Encoding.UTF8.GetString(Data));
-
-    /// <inheritdoc />
-    public LoadoutId LoadoutId => LoadoutId.From(Data);
-
-    /// <inheritdoc />
-    public T PayloadAsIMessage<T>() where T : IMessage, new()
-    {
-        return (T)T.Read(Data);
-    }
+    public Entity Payload { get; }
 
     public void Dispose()
     {

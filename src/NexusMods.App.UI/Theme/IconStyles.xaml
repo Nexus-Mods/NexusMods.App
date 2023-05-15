@@ -16,8 +16,10 @@
             <icons:Icon Classes="CheckUnderline"></icons:Icon>
             <icons:Icon Classes="ClearAll"></icons:Icon>
             <icons:Icon Classes="Cog"></icons:Icon>
+            <icons:Icon Classes="Download"></icons:Icon>
             <icons:Icon Classes="Help"></icons:Icon>
             <icons:Icon Classes="History"></icons:Icon>
+            <icons:Icon Classes="Play"></icons:Icon>
             <icons:Icon Classes="PlusCircleOutline"></icons:Icon>
             <icons:Icon Classes="ProgressDownload"></icons:Icon>
             <icons:Icon Classes="PauseCircleOutline"></icons:Icon>
@@ -38,6 +40,10 @@
     <Style Selector="icons|Icon.Cog">
         <Setter Property="Value" Value="mdi-cog" />
     </Style>
+    
+    <Style Selector="icons|Icon.Download">
+        <Setter Property="Value" Value="mdi-download" />
+    </Style>
 
     <Style Selector="icons|Icon.ClearAll">
         <Setter Property="Value" Value="mdi-notification-clear-all" />
@@ -50,9 +56,15 @@
     <Style Selector="icons|Icon.History">
         <Setter Property="Value" Value="mdi-history" />
     </Style>
+    
+    <Style Selector="icons|Icon.Play">
+        <Setter Property="Value" Value="mdi-play"></Setter>
+    </Style>
+    
     <Style Selector="icons|Icon.PlusCircleOutline">
         <Setter Property="Value" Value="mdi-plus-circle-outline"></Setter>
     </Style>
+    
     <Style Selector="icons|Icon.ProgressDownload">
         <Setter Property="Value" Value="mdi-progress-download"></Setter>
     </Style>

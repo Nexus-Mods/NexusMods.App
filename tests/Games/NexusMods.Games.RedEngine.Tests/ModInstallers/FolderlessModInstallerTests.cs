@@ -17,32 +17,37 @@ public class FolderlessModInstallerTests : AModInstallerTest<Cyberpunk2077, Fold
     [Fact]
     public async Task FilesUnderNoFolderAreSupported()
     {
+        var (hash1, hash2) = Next2Hash();
+        
         var description = await BuildAndInstall(Priority.Low, 
-            (1, "folder/filea.archive"),
-            (2, "fileb.archive"));
+            (hash1, "folder/filea.archive"),
+            (hash2, "fileb.archive"));
 
         description.Should()
             .BeEquivalentTo(new[]
             {
-                (1, GameFolderType.Game, "archive/pc/mod/filea.archive"), 
-                (2, GameFolderType.Game, "archive/pc/mod/fileb.archive")
+                (hash1, GameFolderType.Game, "archive/pc/mod/filea.archive"), 
+                (hash2, GameFolderType.Game, "archive/pc/mod/fileb.archive")
             });
     }
     
     [Fact]
     public async Task IgnoredExtensionsAreIgnored()
     {
+        var (hash1, hash2, hash3) = Next3Hash();
+        var (hash4, hash5) = Next2Hash();
+        
         var description = await BuildAndInstall(Priority.Low, 
-            (1, "folder/filea.archive"),
-            (2, "file.txt"),
-            (3, "docs/file.md"),
-            (4, "bin/x64/file.pdf"),
-            (5, "bin/x64/file.png"));
+            (hash1, "folder/filea.archive"),
+            (hash2, "file.txt"),
+            (hash3, "docs/file.md"),
+            (hash4, "bin/x64/file.pdf"),
+            (hash5, "bin/x64/file.png"));
 
         description.Should()
             .BeEquivalentTo(new[]
             {
-                (1, GameFolderType.Game, "archive/pc/mod/filea.archive")
+                (hash1, GameFolderType.Game, "archive/pc/mod/filea.archive")
             });
     }
 }

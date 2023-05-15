@@ -162,8 +162,10 @@ public class LoadoutManager
 
         _logger.LogInformation("Loadout {Name} {Id} created", name, loadoutId);
 
-        var managementJob = InterprocessJob.Create(JobType.AddMod, _jobManager, cursor,
-            $"Analyzing game files for {installation.Game.Name}");
+        var managementJob = InterprocessJob.Create(_jobManager, new ManageGameJob
+        {
+            LoadoutId = loadoutId
+        });
 
         var indexTask =
             Task.Run(
@@ -264,7 +266,11 @@ public class LoadoutManager
         try
         {
             // Create the job so the UI can show progress.
-            using var job = InterprocessJob.Create(JobType.AddMod, _jobManager, cursor, $"Installing {archivePath} to {loadoutId}");
+            using var job = InterprocessJob.Create(_jobManager, new AddModJob
+            {
+                ModId = baseMod.Id,
+                LoadoutId = loadoutId
+            });
 
             // Step 1: Archive the archive.
             await ArchiveManager.ArchiveFileAsync(archivePath, cancellationToken);

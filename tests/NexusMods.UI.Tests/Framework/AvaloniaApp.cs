@@ -4,6 +4,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Headless;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.UI;
 using NexusMods.App.UI.Windows;
@@ -36,9 +37,7 @@ public class AvaloniaApp : IDisposable
 
         Dispatcher.UIThread.Post(() => app.Shutdown());
     }
-
-    public static MainWindow GetMainWindow() => (MainWindow) GetApp().MainWindow;
-
+    
     private static IClassicDesktopStyleApplicationLifetime GetApp() =>
         (IClassicDesktopStyleApplicationLifetime) Application.Current.ApplicationLifetime;
 
@@ -111,6 +110,34 @@ public class AvaloniaApp : IDisposable
                 ViewModel = context,
                 App = this
             });
+        });
+
+        await tcs.Task;
+        waitHandle.Dispose();
+
+        return host;
+    }
+    
+    /// <summary>
+    /// Constructs a window host that can be used to interact with the window, this will be a fully functional
+    /// version of the app with all services connected and using a normal MainWindowViewModel
+    /// </summary>
+    /// <returns></returns>
+    public async Task<WindowHost> GetMainWindow()
+    {
+        var tcs = new TaskCompletionSource<bool>();
+        var (waitHandle, host) = await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+
+            var window = new MainWindow();
+            
+            var context = _provider.GetRequiredService<MainWindowViewModel>();
+            window.DataContext = context;
+            window.Width = 1280;
+            window.Height = 720;
+            var waitHandle = context.Activator.Activated.Subscribe(_ => tcs.TrySetResult(true));
+            window.Show();
+            return (waitHandle, new WindowHost(window, context));
         });
 
         await tcs.Task;

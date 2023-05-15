@@ -1,5 +1,5 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <StyleInclude Source="avares://NexusMods.App.UI/Theme/ButtonStyles.xaml" />
+    <StyleInclude Source="avares://NexusMods.App.UI/Theme/ButtonStyles/Index.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/BareIcons.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/Borders.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/DataGridStyles.xaml" />
@@ -8,6 +8,7 @@
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/LabelStyles.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/MainWindow.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/PillStyles.xaml" />
+    <StyleInclude Source="avares://NexusMods.App.UI/Theme/ProgressBar.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/SelectableTextBlock.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/StackPanelStyles.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/TextBlockStyles.xaml" />

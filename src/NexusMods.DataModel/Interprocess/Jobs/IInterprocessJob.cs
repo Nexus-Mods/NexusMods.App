@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Interprocess.Jobs;
 using NexusMods.DataModel.Loadouts;
@@ -25,40 +26,13 @@ public interface IInterprocessJob : INotifyPropertyChanged, IDisposable
     public Percent Progress { get; set; }
 
     /// <summary>
-    /// English description of the job.
+    /// The time the job was started.
     /// </summary>
-    public string Description { get; }
-
-    public JobType JobType { get; }
-
     public DateTime StartTime { get; }
 
-    public byte[] Data { get; }
-
     /// <summary>
-    /// Returns the payload as a <see cref="IId"/>. This is only valid if the payload
-    /// is a <see cref="IId"/>.
+    /// The payload of the job.
     /// </summary>
-    IId PayloadAsId { get; }
+    public Entity Payload { get; }
 
-    /// <summary>
-    /// Returns the payload as a Uri (utf-8 encoded string)
-    /// </summary>
-    Uri PayloadAsUri { get; }
-
-    /// <summary>
-    /// Returns the payload as a <see cref="ILoadoutId"/>. This is only valid if the payload
-    /// </summary>
-    LoadoutId LoadoutId { get; }
-
-    /// <summary>
-    /// Returns the payload as a <see cref="IMessage"/>. This is only valid if the payload is a <see cref="IMessage"/>
-    /// of the specified type.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    public T PayloadAsIMessage<T>() where T : IMessage, new()
-    {
-        return (T)T.Read(Data);
-    }
 }

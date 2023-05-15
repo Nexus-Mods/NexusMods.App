@@ -6,6 +6,10 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
     <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
         <!-- https://github.com/dotnet/sourcelink/tree/main/docs#continuousintegrationbuild -->
         <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>

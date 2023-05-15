@@ -31,18 +31,11 @@ public static class Services
         services.AddSingleton<IOptionSelector, CliOptionSelector>();
         services.AddSingleton<TemporaryFileManager>();
 
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            services.AddSingleton<IProtocolRegistration, ProtocolRegistrationWindows>();
-        }
-        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-        {
-            services.AddSingleton<IProtocolRegistration, ProtocolRegistrationLinux>();
-        }
-        else
-        {
-            throw new PlatformNotSupportedException("This platform does not support protocol registration");
-        }
+        OSInformation.Shared.SwitchPlatform(
+            ref services,
+            onWindows: (ref IServiceCollection value) => value.AddSingleton<IProtocolRegistration, ProtocolRegistrationWindows>(),
+            onLinux: (ref IServiceCollection value) => value.AddSingleton<IProtocolRegistration, ProtocolRegistrationLinux>()
+        );
 
         services.AddVerb<AnalyzeArchive>()
             .AddVerb<Apply>()

@@ -7,7 +7,7 @@
     <ItemGroup>
         <AvaloniaResource Include="Nexus.xaml" />
         <AvaloniaResource Include="Palatte\Nexus.xaml" />
-        <AvaloniaResource Include="Theme\ButtonStyles.xaml" />
+        <AvaloniaResource Include="Theme\ButtonStyles\Index.xaml" />
         <AvaloniaResource Include="Theme\CheckboxStyles.xaml" />
         <AvaloniaResource Include="Theme\DataGridStyles.xaml" />
         <AvaloniaResource Include="Theme\Index.xaml" />
@@ -65,6 +65,12 @@
         <AvaloniaResource Include="Theme\Toolbar.xaml" />
         <None Remove="Theme\MainWindow.xaml" />
         <AvaloniaResource Include="Theme\MainWindow.xaml" />
+        <None Remove="Theme\ButtonStyles\Standard.xaml" />
+        <AvaloniaResource Include="Theme\ButtonStyles\Standard.xaml" />
+        <None Remove="Theme\ProgressBar.xaml" />
+        <AvaloniaResource Include="Theme\ProgressBar.xaml" />
+        <None Remove="Theme\ButtonStyles\Spine\DownloadButton.xaml" />
+        <AvaloniaResource Include="Theme\ButtonStyles\Spine\DownloadButton.xaml" />
     </ItemGroup>
 
     <ItemGroup>
@@ -185,6 +191,18 @@
         </Compile>
         <Compile Update="ViewModels\Helpers\ViewModelSelector\AViewModelSelector.cs">
             <DependentUpon>IViewModelSelector.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Spine\Buttons\Icon\IconButtonViewModel.cs">
+          <DependentUpon>IIconButtonViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Spine\Buttons\Icon\IconButtonDesignViewModel.cs">
+          <DependentUpon>IIconButtonViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Spine\Buttons\Download\DownloadButtonDesignerViewModel.cs">
+          <DependentUpon>IDownloadButtonViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Spine\Buttons\Download\DownloadButtonViewModel.cs">
+          <DependentUpon>IDownloadButtonViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

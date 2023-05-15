@@ -23,12 +23,42 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
 {
     protected readonly TModInstaller ModInstaller;
 
+    private static ulong nextHash = ulong.MaxValue;
+
     /// <summary>
     /// Constructor.
     /// </summary>
     protected AModInstallerTest(IServiceProvider serviceProvider) : base(serviceProvider)
     {
         ModInstaller = serviceProvider.FindImplementationInContainer<TModInstaller, IModInstaller>();
+    }
+
+    /// <summary>
+    /// Get an auto-incrementing hash so tests don't conflict with each other.
+    /// </summary>
+    /// <returns></returns>
+    protected ulong NextHash()
+    {
+        return (ulong)Random.Shared.Next();
+        //return Interlocked.Decrement(ref nextHash);
+    }
+
+    /// <summary>
+    /// Gets two auto-incrementing hashes so tests don't conflict with each other.
+    /// </summary>
+    /// <returns></returns>
+    protected (ulong, ulong) Next2Hash()
+    {
+        return (NextHash(), NextHash());
+    }
+    
+    /// <summary>
+    /// Gets three auto-incrementing hashes so tests don't conflict with each other.
+    /// </summary>
+    /// <returns></returns>
+    protected (ulong, ulong, ulong) Next3Hash()
+    {
+        return (NextHash(), NextHash(), NextHash());
     }
 
     /// <summary>
