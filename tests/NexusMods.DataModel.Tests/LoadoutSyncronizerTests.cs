@@ -1,10 +1,12 @@
 ﻿using System.Collections.Immutable;
 using FluentAssertions;
+using Moq;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Markers;
+using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.DataModel.Tests.Harness;
@@ -18,22 +20,22 @@ public class LoadoutSyncronizerTests : ADataModelTest<LoadoutSyncronizerTests>
 {
     public LoadoutSyncronizerTests(IServiceProvider provider) : base(provider)
     {
-        
+
     }
 
-    
-    
-    
-    
+
+
+
+
     [Fact]
     public async Task GeneratedSortRulesAreFetched()
-    { 
+    {
        var loadout = await CreateTestLoadout(4);
 
        var mod = loadout.Value.Mods.Values.First(m => m.Name == "Mod 2");
 
        var nameForId = loadout.Value.Mods.Values.ToDictionary(m => m.Id, m => m.Name);
-       
+
        var rules = await LoadoutSyncronizer.ModSortRules(loadout.Value, mod).ToListAsync();
 
 
@@ -86,16 +88,29 @@ public class LoadoutSyncronizerTests : ADataModelTest<LoadoutSyncronizerTests>
                 new First<Mod, ModId>()
             }.ToImmutableList()
         };
-        
+
         var loadout = await CreateTestLoadout();
         loadout.Add(lastMod);
-        
+
         await LoadoutSyncronizer.Invoking(_ => LoadoutSyncronizer.SortMods(loadout.Value))
             .Should().ThrowAsync<InvalidOperationException>("rule conflicts with generated rules");
     }
-    
-    
-    
+
+    [Fact]
+    public async Task SortRulesAreCached()
+    {
+        var loadout = await CreateTestLoadout(2);
+        var cache = new TestFingerprintCache<Mod, CachedModSortRules>();
+        var syncronizer = new LoadoutSyncronizer(cache);
+
+        await syncronizer.SortMods(loadout.Value);
+
+        cache.Dict.Should().HaveCount(2);
+
+    }
+
+
+
     /// <summary>
     /// Example generated sort rule that sorts all mods alphabetically
     /// </summary>
@@ -103,7 +118,7 @@ public class LoadoutSyncronizerTests : ADataModelTest<LoadoutSyncronizerTests>
     public class AlphabeticalSort : IGeneratedSortRule, ISortRule<Mod, ModId>, ITriggerFilter<ModId, Loadout>
     {
         public ITriggerFilter<ModId, Loadout> TriggerFilter => this;
-        
+
         public async IAsyncEnumerable<ISortRule<Mod, ModId>> GenerateSortRules(ModId selfId, Loadout loadout)
         {
             var thisMod = loadout.Mods[selfId];
@@ -132,7 +147,27 @@ public class LoadoutSyncronizerTests : ADataModelTest<LoadoutSyncronizerTests>
         }
     }
 
-    
+
+    private class TestFingerprintCache<TSrc, TValue> : IFingerprintCache<TSrc, TValue> where TValue : Entity
+    {
+        public readonly Dictionary<Hash, TValue> Dict = new();
+        public readonly Dictionary<Hash, int> GetCount = new();
+        public readonly Dictionary<Hash, int> SetCount = new();
+
+        public bool TryGet(Hash hash, out TValue value)
+        {
+            GetCount[hash] = GetCount.GetValueOrDefault(hash, 0) + 1;
+            return Dict.TryGetValue(hash, out value);
+        }
+
+        public void Set(Hash hash, TValue value)
+        {
+            Dict[hash] = value;
+            SetCount[hash] = GetCount.GetValueOrDefault(hash, 0) + 1;
+        }
+    }
+
+
     /// <summary>
     /// Create a test loadout with a number of mods each with a alphabetical sort rule
     /// </summary>
@@ -143,7 +178,7 @@ public class LoadoutSyncronizerTests : ADataModelTest<LoadoutSyncronizerTests>
         var loadout = await LoadoutManager.ManageGameAsync(Install, Guid.NewGuid().ToString());
 
         var mainMod = loadout.Value.Mods.Values.First();
-        
+
         var mods = Enumerable.Range(0,  number).Select(x => new Mod()
         {
             Id = ModId.New(),
@@ -157,7 +192,7 @@ public class LoadoutSyncronizerTests : ADataModelTest<LoadoutSyncronizerTests>
 
         foreach (var mod in mods)
             loadout.Add(mod);
-        
+
         loadout.Remove(mainMod);
         return loadout;
     }

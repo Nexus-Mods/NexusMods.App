@@ -17,12 +17,12 @@ public class LoadoutSyncronizer
 {
     private readonly IFingerprintCache<Mod,CachedModSortRules> _modSortRulesFingerprintCache;
 
-    public LoadoutSyncronizer(IDataStore store, IFingerprintCache<Mod, CachedModSortRules> modSortRulesFingerprintCache)
+    public LoadoutSyncronizer(IFingerprintCache<Mod, CachedModSortRules> modSortRulesFingerprintCache)
     {
         _modSortRulesFingerprintCache = modSortRulesFingerprintCache;
     }
-    
-    
+
+
     /// <summary>
     /// Flattens a loadout into a dictionary of <see cref="GamePath"/> to <see cref="AModFile"/>, any files that are
     /// not IToFile are ignored.
@@ -41,14 +41,14 @@ public class LoadoutSyncronizer
             {
                 if (file is not IToFile toFile)
                     continue;
-                
+
                 dict[toFile.To] = file;
             }
         }
         return dict;
     }
 
-    
+
     /// <summary>
     /// Sorts the mods in the given loadout, using the rules defined in the mods.
     /// </summary>
@@ -83,10 +83,10 @@ public class LoadoutSyncronizer
                         yield return cachedRule;
                     continue;
                 }
-                
+
                 var rules = await gen.GenerateSortRules(mod.Id, loadout).ToArrayAsync();
                 _modSortRulesFingerprintCache.Set(fingerprint, new CachedModSortRules { Rules = rules });
-                
+
                 foreach (var genRule in rules)
                 {
                     yield return genRule;
