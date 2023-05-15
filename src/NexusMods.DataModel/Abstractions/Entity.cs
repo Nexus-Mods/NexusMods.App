@@ -3,6 +3,7 @@ using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Exceptions;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.Mods;
 
 namespace NexusMods.DataModel.Abstractions;
 

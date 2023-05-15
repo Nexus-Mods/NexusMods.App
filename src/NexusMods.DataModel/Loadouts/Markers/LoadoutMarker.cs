@@ -7,6 +7,7 @@ using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts.ApplySteps;
 using NexusMods.DataModel.Loadouts.ModFiles;
+using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.RateLimiting.Extensions;
 using NexusMods.DataModel.Sorting;
 using NexusMods.Hashing.xxHash64;
@@ -378,7 +379,7 @@ public readonly struct LoadoutMarker
     }
 
     /// <summary>
-    /// See <see cref="ApplyIngest(System.Func{NexusMods.DataModel.HashedEntry,NexusMods.DataModel.Loadouts.Mod},System.Threading.CancellationToken)"/>
+    /// See <see cref="ApplyIngest(System.Func{NexusMods.DataModel.HashedEntry,Mod},System.Threading.CancellationToken)"/>
     /// </summary>
     /// <param name="modMapper">Maps a given generated file to specified mod(s).</param>
     /// <param name="token">Cancel the task.</param>

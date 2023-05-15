@@ -15,7 +15,7 @@ using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
 using Xunit;
-using Mod = NexusMods.DataModel.Loadouts.Mod;
+using Mod = NexusMods.DataModel.Loadouts.Mods.Mod;
 
 namespace NexusMods.Games.FOMOD.Tests;
 

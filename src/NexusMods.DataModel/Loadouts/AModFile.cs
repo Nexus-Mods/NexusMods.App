@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Loadouts;

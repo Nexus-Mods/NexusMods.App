@@ -10,6 +10,7 @@ using NexusMods.DataModel.Interprocess.Messages;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.Paths;
@@ -62,6 +63,7 @@ public static class Services
                 Settings(s).LoadoutDeploymentJobs, Size.Zero));
         coll.AddSingleton<LoadoutManager>();
         coll.AddSingleton<LoadoutRegistry>();
+        coll.AddSingleton<LoadoutSyncronizer>();
         coll.AddSingleton<FileHashCache>();
         coll.AddSingleton<FileContentsCache>();
 

@@ -15,6 +15,7 @@ using NexusMods.DataModel.Loadouts.Cursors;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.ModFiles;
+using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.Hashing.xxHash64;
@@ -128,7 +129,7 @@ public class LoadoutManager
     {
         _logger.LogInformation("Indexing game files");
 
-        var mod = new Mod
+        var mod = new Mods.Mod
         {
             Id = ModId.New(),
             Status = ModStatus.Installing,
@@ -136,7 +137,7 @@ public class LoadoutManager
             Files = new EntityDictionary<ModFileId, AModFile>(Store),
             Version = installation.Version.ToString(),
             ModCategory = Mod.GameFilesCategory,
-            SortRules = ImmutableList<ISortRule<Mod, ModId>>.Empty.Add(new First<Mod, ModId>())
+            SortRules = ImmutableList<ISortRule<Mods.Mod, ModId>>.Empty.Add(new First<Mods.Mod, ModId>())
         }.WithPersist(Store);
 
         var loadoutId = LoadoutId.Create();
@@ -149,7 +150,7 @@ public class LoadoutManager
                     LoadoutId = loadoutId,
                     Installation = installation,
                     Name = name,
-                    Mods = new EntityDictionary<ModId, Mod>(Store,
+                    Mods = new EntityDictionary<ModId, Mods.Mod>(Store,
                         new[]
                         {
                             new KeyValuePair<ModId, IId>(mod.Id,
@@ -179,7 +180,7 @@ public class LoadoutManager
     }
 
     private async Task IndexAndAddGameFiles(GameInstallation installation,
-        CancellationToken token, Loadout loadout, Mod mod, IInterprocessJob managementJob, bool indexGameFiles)
+        CancellationToken token, Loadout loadout, Mods.Mod mod, IInterprocessJob managementJob, bool indexGameFiles)
     {
         // So we release this after the job is done.
         using var _ = managementJob;
@@ -252,7 +253,7 @@ public class LoadoutManager
         // Get the loadout and create the mod so we can use it in the job.
         var loadout = GetLoadout(loadoutId);
 
-        var baseMod = new Mod
+        var baseMod = new Mods.Mod
         {
             Id = ModId.New(),
             Name = string.IsNullOrWhiteSpace(defaultModName) ? archivePath.FileName : defaultModName,
@@ -308,7 +309,7 @@ public class LoadoutManager
                 archive.Contents,
                 cancellationToken);
 
-            var mods = results.Select(result => new Mod
+            var mods = results.Select(result => new Mods.Mod
             {
                 Id = result.Id,
                 Files = result.Files.ToEntityDictionary(Store),
@@ -411,7 +412,7 @@ public class LoadoutManager
     ///
     ///    Does not add new files, only performs replacements.
     /// </remarks>
-    public void ReplaceFiles(LoadoutId id, List<(AModFile File, Mod Mod)> items, string message)
+    public void ReplaceFiles(LoadoutId id, List<(AModFile File, Mods.Mod Mod)> items, string message)
     {
         var byMod = items.GroupBy(x => x.Mod, x => x.File)
             .ToDictionary(x => x.Key);

@@ -3,7 +3,7 @@ using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Sorting.Rules;
 
-namespace NexusMods.DataModel.Loadouts;
+namespace NexusMods.DataModel.Loadouts.Mods;
 
 /// <summary>
 /// Represents an individual mod recognised by NMA.
