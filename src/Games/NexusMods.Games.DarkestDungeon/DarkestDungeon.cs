@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using NexusMods.Common;
 using NexusMods.DataModel.Games;
 using NexusMods.FileExtractor.StreamFactories;
@@ -11,6 +12,8 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame
 
     public IEnumerable<int> SteamIds => new[] { 262060 };
     public IEnumerable<long> GogIds => new long[] { 1450711444 };
+    // TODO: EGS ID
+    // TODO: Xbox ID
 
     public DarkestDungeon(
         IOSInformation osInformation,
@@ -22,11 +25,20 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame
     public override string Name => "Darkest Dungeon";
     public override GameDomain Domain => GameDomain.From("darkestdungeon");
 
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
     public override GamePath GetPrimaryFile(GameStore store)
     {
         return _osInformation.MatchPlatform(
-            onWindows: () => new GamePath(GameFolderType.Game, @"_windowsnosteam\Darkest.exe"),
-            onLinux: () => new GamePath(GameFolderType.Game, "_linuxnosteam/darkest.bin.x86_64")
+            ref store,
+            onWindows: (ref GameStore gameStore) => gameStore == GameStore.Steam
+                ? new GamePath(GameFolderType.Game, @"_windows\Darkest.exe")
+                : new GamePath(GameFolderType.Game, @"_windowsnosteam\Darkest.exe"),
+            onLinux: (ref GameStore gameStore) => gameStore == GameStore.Steam
+                ? new GamePath(GameFolderType.Game, "_linux/darkest.bin.x86_64")
+                : new GamePath(GameFolderType.Game, "linuxnosteam/darkest.bin.x86_64"),
+            onOSX: (ref GameStore gameStore) => gameStore == GameStore.Steam
+                ? new GamePath(GameFolderType.Game, "_osx/Darkest.app/Contents/MacOS/Darkest")
+                : new GamePath(GameFolderType.Game, "_osxnosteam/Darkest.app/Contents/MacOS/Darkest NoSteam")
         );
     }
 
