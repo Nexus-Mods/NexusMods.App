@@ -42,6 +42,8 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
     [Fact]
     public async Task CanIntegrateChanges()
     {
+        throw new NotImplementedException();
+        /*
         var mainList = await LoadoutManager.ManageGameAsync(Install, "MainList", Token);
         await mainList.InstallModsFromArchiveAsync(DataZipLzma, "First Mod", Token);
         await mainList.InstallModsFromArchiveAsync(Data7ZLzma2, "Second Mod", Token);
@@ -105,5 +107,6 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
             .NotBeEmpty("Because we've updated a file");
 
         await BaseList.ApplyAsync(Token);
+        */
     }
 }

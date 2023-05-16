@@ -17,9 +17,4 @@ public interface IFromArchive
     /// The hash of the file.
     /// </summary>
     public Hash Hash { get; }
-    
-    /// <summary>
-    /// The relative path of the file inside the archive.
-    /// </summary>
-    public HashRelativePath From { get; }
 }

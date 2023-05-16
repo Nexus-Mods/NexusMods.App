@@ -1,12 +1,15 @@
-﻿using NexusMods.Common;
+﻿using System.Collections.Concurrent;
+using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Extensions;
+using NexusMods.DataModel.Loadouts.ApplySteps;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.DataModel.TriggerFilter;
+using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Loadouts;
@@ -17,10 +20,12 @@ namespace NexusMods.DataModel.Loadouts;
 public class LoadoutSyncronizer
 {
     private readonly IFingerprintCache<Mod,CachedModSortRules> _modSortRulesFingerprintCache;
+    private readonly IDirectoryIndexer _directoryIndexer;
 
-    public LoadoutSyncronizer(IFingerprintCache<Mod, CachedModSortRules> modSortRulesFingerprintCache)
+    public LoadoutSyncronizer(IFingerprintCache<Mod, CachedModSortRules> modSortRulesFingerprintCache, IDirectoryIndexer directoryIndexer)
     {
         _modSortRulesFingerprintCache = modSortRulesFingerprintCache;
+        _directoryIndexer = directoryIndexer;
     }
 
 
@@ -103,4 +108,87 @@ public class LoadoutSyncronizer
         }
     }
 
+    public async IAsyncEnumerable<IApplyStep> MakeApplySteps(Loadout loadout, CancellationToken token = default)
+    {
+
+        var install = loadout.Installation;
+
+        var existingFiles = _directoryIndexer.IndexFolders(install.Locations.Values, token);
+
+        var flattenedLoadout = await FlattenLoadout(loadout);
+        
+        var seen = new ConcurrentBag<GamePath>();
+
+        await foreach (var existing in existingFiles.WithCancellation(token))
+        {
+            var gamePath = install.ToGamePath(existing.Path);
+            seen.Add(gamePath);
+            
+            if (flattenedLoadout.TryGetValue(gamePath, out var planFile))
+            {
+                var planMetadata = await GetMetaData(loadout, planFile, existing.Path);
+                if (planMetadata is null || planMetadata.Hash != existing.Hash || planMetadata.Size != existing.Size)
+                {
+                    await foreach (var itm in EmitReplacePlan(existing, loadout, planFile).WithCancellation(token))
+                    {
+                        yield return itm;
+                    }
+                }
+            }
+            else
+            {
+                await foreach(var itm in EmitDeletePlan(existing, loadout).WithCancellation(token))
+                {
+                    yield return itm;
+                }
+            }
+        }
+        
+        foreach (var (gamePath, modFile) in flattenedLoadout.Where(kv => !seen.Contains(kv.Key)))
+        {
+            var absPath = gamePath.CombineChecked(install);
+
+            await foreach (var itm in EmitCreatePlan(modFile, absPath).WithCancellation(token))
+            {
+                yield return itm;
+            }
+        }
+        
+    }
+
+    private async IAsyncEnumerable<IApplyStep> EmitCreatePlan(AModFile modFile, AbsolutePath absPath)
+    {
+        if (modFile is IFromArchive fromArchive)
+        {
+            yield return new ExtractFile
+            {
+                To = absPath,
+                Hash = fromArchive.Hash,
+                Size = fromArchive.Size
+            };
+        }
+        else
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    private IAsyncEnumerable<IApplyStep> EmitDeletePlan(HashedEntry existing, Loadout loadout)
+    {
+        throw new NotImplementedException();
+    }
+
+    private IAsyncEnumerable<IApplyStep> EmitReplacePlan(HashedEntry existing, Loadout loadout, AModFile planFile)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async ValueTask<FileMetaData?> GetMetaData(Loadout loadout, AModFile file, AbsolutePath path)
+    {
+        throw new NotImplementedException();
+    }
+
+
+    public record FileMetaData(AbsolutePath Path, Hash Hash, Size Size);
+    
 }

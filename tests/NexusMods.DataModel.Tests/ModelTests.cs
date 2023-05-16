@@ -28,7 +28,6 @@ public class ModelTests : ADataModelTest<ModelTests>
         {
             Id = ModFileId.New(),
             To = new GamePath(GameFolderType.Game, "foo/bar.pez"),
-            From = new HashRelativePath(Hash.Zero, RelativePath.Empty),
             Hash = (Hash)0x42L,
             Size = Size.FromLong(44L)
         };
@@ -107,7 +106,7 @@ public class ModelTests : ADataModelTest<ModelTests>
             {
                 entries.Should().Contain(mod.DataStoreId, "The mod is stored");
                 foreach (var file in mod.Files.Values)
-                    entries.Should().Contain(file.DataStoreId, "The file is stored (file: {0})", file.To);
+                    entries.Should().Contain(file.DataStoreId, "The file is stored (file: {0})", (file as IToFile)?.To);
             }
 
             zip.Entries.Select(e => e.FullName).Should().Contain(LoadoutManager.ZipRootName);

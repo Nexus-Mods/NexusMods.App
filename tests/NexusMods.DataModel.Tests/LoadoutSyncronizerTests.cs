@@ -1,11 +1,11 @@
 ﻿using System.Collections.Immutable;
 using FluentAssertions;
-using Moq;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.ApplySteps;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
@@ -13,6 +13,7 @@ using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.DataModel.TriggerFilter;
 using NexusMods.Hashing.xxHash64;
+using NexusMods.Paths;
 using static System.String;
 
 namespace NexusMods.DataModel.Tests;
@@ -102,7 +103,7 @@ public class LoadoutSyncronizerTests : ADataModelTest<LoadoutSyncronizerTests>
     {
         var loadout = await CreateTestLoadout(2);
         var cache = new TestFingerprintCache<Mod, CachedModSortRules>();
-        var syncronizer = new LoadoutSyncronizer(cache);
+        var syncronizer = new LoadoutSyncronizer(cache, new TestDirectoryIndexer());
 
         await syncronizer.SortMods(loadout.Value);
 
@@ -206,5 +207,73 @@ public class LoadoutSyncronizerTests : ADataModelTest<LoadoutSyncronizerTests>
 
         loadout.Remove(mainMod);
         return loadout;
+    }
+
+    [Fact]
+    public async Task FilesThatDontExistAreCreatedByPlan()
+    {
+        var loadout = await CreateApplyPlanTestLoadout();
+        var (syncronizer, indexer) = CreateTestSyncronizer();
+        
+        var plan = await syncronizer.MakeApplySteps(loadout).ToListAsync();
+
+        var fileOne = loadout.Mods.Values.First().Files.Values.OfType<IFromArchive>()
+            .First(f => f.Hash == Hash.From(0x00001));
+
+        plan.Should().ContainEquivalentOf(new ExtractFile
+        {
+            To = loadout.Installation.Locations[GameFolderType.Game].CombineUnchecked("0x00001.dat"),
+            Hash = fileOne.Hash,
+            Size = fileOne.Size
+        });
+
+    }
+    
+    private (LoadoutSyncronizer, TestDirectoryIndexer) CreateTestSyncronizer()
+    {
+        var indexer = new TestDirectoryIndexer();
+        var syncronizer = new LoadoutSyncronizer(new TestFingerprintCache<Mod, CachedModSortRules>(), indexer);
+        return (syncronizer, indexer);
+    }
+
+    private class TestDirectoryIndexer : IDirectoryIndexer
+    {
+        public List<HashedEntry> Entries = new();
+
+        public async IAsyncEnumerable<HashedEntry> IndexFolders(IEnumerable<AbsolutePath> paths,
+            CancellationToken token = default)
+        {
+            foreach (var entry in Entries)
+            {
+                yield return entry;
+            }
+        }
+    }
+    private async Task<Loadout> CreateApplyPlanTestLoadout()
+    {
+        var loadout = await LoadoutManager.ManageGameAsync(Install, Guid.NewGuid().ToString());
+        
+        var mainMod = loadout.Value.Mods.Values.First();
+        var files = EntityDictionary<ModFileId, AModFile>.Empty(DataStore);
+        files = files.With(new FromArchive
+        {
+            Id = ModFileId.New(),
+            Hash = Hash.From(0x00001),
+            Size = Size.From(0x10001),
+            To = new GamePath(GameFolderType.Game, "0x00001.dat"),
+        }, m => m.Id);
+        
+
+        var mod = new Mod
+        {
+            Id = ModId.New(),
+            Name = "Test Mod",
+            Files = files,
+            SortRules = ImmutableList<ISortRule<Mod, ModId>>.Empty
+        };
+        
+        loadout.Add(mod);
+        loadout.Remove(mainMod);
+        return loadout.Value;
     }
 }

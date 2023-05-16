@@ -20,6 +20,8 @@ public class ToolTests : ADataModelTest<ToolTests>
     [Fact]
     public async Task CanRunTools()
     {
+        throw new NotImplementedException();
+        /*
         var name = Guid.NewGuid().ToString();
         var loadout = await LoadoutManager.ManageGameAsync(Install, name);
         await loadout.InstallModsFromArchiveAsync(Data7ZLzma2, "Mod1", CancellationToken.None);
@@ -41,6 +43,6 @@ public class ToolTests : ADataModelTest<ToolTests>
         generatedFile.Should().NotBeNull("the generated file should be in the loadout");
         loadout.Value.Mods.Values.Where(m => m.Name == "List Files Generated Files")
             .Should().HaveCount(1, "the generated file should be in a generated mod");
-
+*/
     }
 }

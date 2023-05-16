@@ -19,11 +19,6 @@ public abstract record AModFile : Entity
     public override EntityCategory Category => EntityCategory.Loadouts;
 
     /// <summary>
-    /// The location relative to the game folder where the file is deployed.
-    /// </summary>
-    public required GamePath To { get; init; }
-
-    /// <summary>
     /// Metadata for this file.
     /// </summary>
     public ImmutableHashSet<IModFileMetadata> Metadata { get; init; } = ImmutableHashSet<IModFileMetadata>.Empty;

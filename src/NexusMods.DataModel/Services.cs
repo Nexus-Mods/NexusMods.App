@@ -67,6 +67,7 @@ public static class Services
                 Settings(s).LoadoutDeploymentJobs, Size.Zero));
         coll.AddSingleton<LoadoutManager>();
         coll.AddSingleton<LoadoutRegistry>();
+        coll.AddSingleton<IDirectoryIndexer, DirectoryIndexer>();
         coll.AddSingleton<LoadoutSyncronizer>();
         coll.AddSingleton<FileHashCache>();
         coll.AddSingleton<FileContentsCache>();

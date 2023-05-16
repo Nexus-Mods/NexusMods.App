@@ -414,6 +414,8 @@ public class LoadoutManager
     /// </remarks>
     public void ReplaceFiles(LoadoutId id, List<(AModFile File, Mods.Mod Mod)> items, string message)
     {
+        throw new NotImplementedException();
+        /*
         var byMod = items.GroupBy(x => x.Mod, x => x.File)
             .ToDictionary(x => x.Key);
 
@@ -438,6 +440,7 @@ public class LoadoutManager
                 })
             };
         });
+        */
     }
 
     /// <summary>
@@ -450,6 +453,7 @@ public class LoadoutManager
     /// <remarks></remarks>
     public async Task ExportToAsync(LoadoutId id, AbsolutePath output, CancellationToken token)
     {
+        /*
         var loadout = Registry.Get(id)!;
 
         if (output.FileExists)
@@ -494,6 +498,8 @@ public class LoadoutManager
 
         await using var rootEntry = zip.CreateEntry(ZipRootName, CompressionLevel.Optimal).Open();
         await rootEntry.WriteAsync(Encoding.UTF8.GetBytes(loadout.DataStoreId.TaggedSpanHex), token);
+        */
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -554,6 +560,7 @@ public class LoadoutManager
     private async IAsyncEnumerable<IModFileMetadata> GetMetadata(Loadout loadout, Mod mod, GameFile file,
         AnalyzedFile analyzed)
     {
+        
         foreach (var source in _metadataSources)
         {
             if (!source.Games.Contains(loadout.Installation.Game.Domain))

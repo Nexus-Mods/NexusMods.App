@@ -71,7 +71,7 @@ public readonly struct LoadoutMarker
         {
             foreach (var file in mod.Files.Values)
             {
-                projected[file.To] = (file, mod);
+                //projected[file.To] = (file, mod);
             }
         }
         return projected.Values;
@@ -133,6 +133,7 @@ public readonly struct LoadoutMarker
     /// </summary>
     public async Task<ApplyPlan> MakeApplyPlanAsync(CancellationToken token = default)
     {
+        /*
         var steps = new List<IApplyStep>();
 
         var list = _manager.Registry.Get(_id)!;
@@ -214,6 +215,8 @@ public readonly struct LoadoutMarker
             Files = files,
             Steps = steps
         };
+        */
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -224,6 +227,7 @@ public readonly struct LoadoutMarker
     /// <exception cref="Exception">Some error occurred.</exception>
     public async Task ApplyAsync(ApplyPlan plan, CancellationToken token = default)
     {
+        /*
         var loadout = _manager.Registry.Get(_id)!;
 
         LoadoutManager manager = _manager;
@@ -278,6 +282,8 @@ public readonly struct LoadoutMarker
             await using var stream = step.To.Create();
             await from!.GenerateAsync(stream, loadout, plan.Files, token);
         }
+        */
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -291,8 +297,9 @@ public readonly struct LoadoutMarker
     /// <param name="token">Cancel the task.</param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
-    public async IAsyncEnumerable<IApplyStep> MakeIngestionPlanAsync(Func<HashedEntry, Mod> modMapper, [EnumeratorCancellation] CancellationToken token)
+    public IAsyncEnumerable<IApplyStep> MakeIngestionPlanAsync(Func<HashedEntry, Mod> modMapper, [EnumeratorCancellation] CancellationToken token)
     {
+        /*
         var list = _manager.Registry.Get(_id)!;
         var gameFolders = list.Installation.Locations;
         var srcFilesTask = _manager.FileHashCache
@@ -367,6 +374,8 @@ public readonly struct LoadoutMarker
             };
 
         }
+        */
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -396,6 +405,7 @@ public readonly struct LoadoutMarker
     /// <exception cref="Exception">Some error occurred.</exception>
     public async Task ApplyIngest(HashSet<IApplyStep> steps, CancellationToken token)
     {
+        /*
         var manager = _manager;
         await manager.Limiter.ForEachAsync(steps.OfType<BackupFile>().GroupBy(b => b.Hash),
             i => i.First().Size,
@@ -455,6 +465,7 @@ public readonly struct LoadoutMarker
         }
 
         _manager.Registry.Alter(_id, "Ingested changes from game folders", ApplyLoadout);
+        */
     }
 
 

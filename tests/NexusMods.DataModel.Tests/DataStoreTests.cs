@@ -31,7 +31,6 @@ public class DataStoreTests
         {
             Id = ModFileId.New(),
             Hash = Hash.Zero,
-            From = new HashRelativePath((Hash)42L, default),
             Size = Size.From(42L),
             To = new GamePath(GameFolderType.Game, "test.foo")
         }.WithPersist(DataStore);
@@ -83,7 +82,6 @@ public class DataStoreTests
         var files = Enumerable.Range(0, 1024).Select(idx => new FromArchive
         {
             Id = ModFileId.New(),
-            From = new HashRelativePath((Hash)(ulong)idx, $"{idx}.file".ToRelativePath()),
             Hash = (Hash)(ulong)idx,
             Size = Size.FromLong(idx),
             To = new GamePath(GameFolderType.Game, $"{idx}.file"),
