@@ -48,6 +48,27 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame
         GameLocatorResult installation)
     {
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);
+
+        var globalSettingsFile = fileSystem
+            .GetKnownPath(KnownPath.LocalApplicationDataDirectory)
+            .CombineUnchecked("Red Hook Studios")
+            .CombineUnchecked("Darkest")
+            .CombineUnchecked("persist.options.json");
+
+        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Preferences, globalSettingsFile);
+
+        if (installation.Store == GameStore.Steam)
+        {
+            // TODO: Steam Cloud Saves
+        }
+        else
+        {
+            var savesDirectory = fileSystem
+                .GetKnownPath(KnownPath.MyDocumentsDirectory)
+                .CombineUnchecked("Darkest");
+
+            yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Saves, savesDirectory);
+        }
     }
 
     public override IStreamFactory Icon =>
