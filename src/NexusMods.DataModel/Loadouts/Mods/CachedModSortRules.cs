@@ -1,9 +1,8 @@
 ﻿using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.JsonConverters;
-using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Sorting.Rules;
 
-namespace NexusMods.DataModel.Loadouts.ModFiles;
+namespace NexusMods.DataModel.Loadouts.Mods;
 
 /// <summary>
 /// Cached sort rules for a mod. 

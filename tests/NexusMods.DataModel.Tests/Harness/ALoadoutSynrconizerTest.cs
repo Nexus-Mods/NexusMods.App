@@ -19,13 +19,15 @@ public class ALoadoutSynrconizerTest<T> : ADataModelTest<T>
     protected readonly LoadoutSyncronizer TestSyncronizer;
     protected readonly TestArchiveManager TestArchiveManagerInstance;
     protected readonly TestFingerprintCache<Mod, CachedModSortRules> TestFingerprintCacheInstance;
+    protected readonly TestFingerprintCache<IGeneratedFile, CachedGeneratedFileData> TestGeneratedFileFingerprintCache;
 
     public ALoadoutSynrconizerTest(IServiceProvider provider) : base(provider)
     {
         TestIndexer = new TestDirectoryIndexer();
         TestArchiveManagerInstance = new TestArchiveManager();
         TestFingerprintCacheInstance = new TestFingerprintCache<Mod, CachedModSortRules>();
-        TestSyncronizer = new LoadoutSyncronizer(TestFingerprintCacheInstance, TestIndexer, TestArchiveManagerInstance);
+        TestGeneratedFileFingerprintCache = new TestFingerprintCache<IGeneratedFile, CachedGeneratedFileData>();
+        TestSyncronizer = new LoadoutSyncronizer(TestFingerprintCacheInstance, TestIndexer, TestArchiveManagerInstance, TestGeneratedFileFingerprintCache);
     }
 
 
@@ -53,20 +55,30 @@ public class ALoadoutSynrconizerTest<T> : ADataModelTest<T>
         }
     }
 
-    protected async Task<Loadout> CreateApplyPlanTestLoadout()
+    protected async Task<Loadout> CreateApplyPlanTestLoadout(bool generatedFile = false)
     {
         var loadout = await LoadoutManager.ManageGameAsync(Install, Guid.NewGuid().ToString());
         
         var mainMod = loadout.Value.Mods.Values.First();
         var files = EntityDictionary<ModFileId, AModFile>.Empty(DataStore);
-        files = files.With(new FromArchive
+        if (generatedFile)
         {
-            Id = ModFileId.New(),
-            Hash = Hash.From(0x00001),
-            Size = Size.From(0x10001),
-            To = new GamePath(GameFolderType.Game, "0x00001.dat"),
-        }, m => m.Id);
-        
+            files = files.With(new TestGeneratedFile
+            {
+                Id = ModFileId.New(),
+                To = new GamePath(GameFolderType.Game, "0x00001.generated"),
+            }, m => m.Id);
+        }
+        else
+        {
+            files = files.With(new FromArchive
+            {
+                Id = ModFileId.New(),
+                Hash = Hash.From(0x00001),
+                Size = Size.From(0x10001),
+                To = new GamePath(GameFolderType.Game, "0x00001.dat"),
+            }, m => m.Id);
+        }
 
         var mod = new Mod
         {
@@ -84,15 +96,15 @@ public class ALoadoutSynrconizerTest<T> : ADataModelTest<T>
     /// <summary>
     /// Create a test loadout with a number of mods each with a alphabetical sort rule
     /// </summary>
-    /// <param name="number"></param>
+    /// <param name="numberMainFiles"></param>
     /// <returns></returns>
-    protected async Task<LoadoutMarker> CreateTestLoadout(int number = 10)
+    protected async Task<LoadoutMarker> CreateTestLoadout(int numberMainFiles = 10)
     {
         var loadout = await LoadoutManager.ManageGameAsync(Install, Guid.NewGuid().ToString());
 
         var mainMod = loadout.Value.Mods.Values.First();
 
-        var mods = Enumerable.Range(0,  number).Select(x => new Mod()
+        var mods = Enumerable.Range(0,  numberMainFiles).Select(x => new Mod()
         {
             Id = ModId.New(),
             Name = $"Mod {x}",
@@ -130,6 +142,23 @@ public class ALoadoutSynrconizerTest<T> : ADataModelTest<T>
             Dict[hash] = value;
             SetCount[hash] = SetCount.GetValueOrDefault(hash, 0) + 1;
         }
+    }
+}
+
+[JsonName("TestGeneratedFile")]
+public record TestGeneratedFile : AModFile, IGeneratedFile, IToFile, ITriggerFilter<(ModId, ModFileId), Loadout>
+{
+    public ITriggerFilter<(ModId, ModFileId), Loadout> TriggerFilter => this;
+    public required GamePath To { get; init; }
+    public Hash GetFingerprint((ModId, ModFileId) self, Loadout input)
+    {
+        var printer = Fingerprinter.Create();
+        foreach (var mod in input.Mods)
+            foreach (var file in mod.Value.Files)
+                if (!file.Value.Id.Equals(self.Item2))
+                    printer.Add(file.Value.DataStoreId);
+
+        return printer.Digest();
     }
 }
 

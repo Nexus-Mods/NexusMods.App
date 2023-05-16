@@ -93,20 +93,18 @@ public class LoadoutSyncronizerTests : ALoadoutSynrconizerTest<LoadoutSyncronize
     public async Task SortRulesAreCached()
     {
         var loadout = await CreateTestLoadout(2);
-        var cache = new TestFingerprintCache<Mod, CachedModSortRules>();
-        var syncronizer = new LoadoutSyncronizer(cache, new TestDirectoryIndexer(), null!);
 
-        await syncronizer.SortMods(loadout.Value);
+        await TestSyncronizer.SortMods(loadout.Value);
 
-        cache.Dict.Should().HaveCount(2);
+        TestFingerprintCacheInstance.Dict.Should().HaveCount(2);
 
-        cache.GetCount.Values.Should().AllBeEquivalentTo(1);
-        cache.SetCount.Values.Should().AllBeEquivalentTo(1);
+        TestFingerprintCacheInstance.GetCount.Values.Should().AllBeEquivalentTo(1);
+        TestFingerprintCacheInstance.SetCount.Values.Should().AllBeEquivalentTo(1);
         
-        await syncronizer.SortMods(loadout.Value);
+        await TestSyncronizer.SortMods(loadout.Value);
         
-        cache.GetCount.Values.Should().AllBeEquivalentTo(2);
-        cache.SetCount.Values.Should().AllBeEquivalentTo(1);
+        TestFingerprintCacheInstance.GetCount.Values.Should().AllBeEquivalentTo(2);
+        TestFingerprintCacheInstance.SetCount.Values.Should().AllBeEquivalentTo(1);
 
     }
     
@@ -189,5 +187,55 @@ public class LoadoutSyncronizerTests : ALoadoutSynrconizerTest<LoadoutSyncronize
         var plan = await TestSyncronizer.MakeApplySteps(loadout).ToListAsync();
 
         plan.OfType<BackupFile>().Should().BeEmpty();
+    }
+    
+    [Fact]
+    public async Task ChangedFilesAreBackedUpDeletedAndCreated()
+    {
+        var loadout = await CreateApplyPlanTestLoadout();
+
+        var fileOne = loadout.Mods.Values.First().Files.Values.OfType<IFromArchive>()
+            .First(f => f.Hash == Hash.From(0x00001));
+
+        var absPath = loadout.Installation.Locations[GameFolderType.Game].CombineUnchecked("0x00001.dat");
+        TestIndexer.Entries.Add(new HashedEntry(absPath, Hash.From(0x042), DateTime.Now - TimeSpan.FromDays(1),
+            Size.From(0x33)));
+
+        var plan = await TestSyncronizer.MakeApplySteps(loadout).ToListAsync();
+
+        plan.Should().ContainEquivalentOf(new DeleteFile
+        {
+            To = absPath,
+            Hash = Hash.From(0x42),
+            Size = Size.From(0x33)
+        });
+
+        plan.Should().ContainEquivalentOf(new BackupFile
+        {
+            To = absPath,
+            Hash = Hash.From(0x42),
+            Size = Size.From(0x33)
+        });
+        
+        plan.Should().ContainEquivalentOf(new ExtractFile
+        {
+            To = loadout.Installation.Locations[GameFolderType.Game].CombineUnchecked("0x00001.dat"),
+            Hash = fileOne.Hash,
+            Size = fileOne.Size
+        });
+    }
+    
+    [Fact]
+    public async Task GeneratedFilesAreCreated()
+    {
+        var loadout = await CreateApplyPlanTestLoadout(generatedFile: true);
+
+        var fileOne = loadout.Mods.Values.First().Files.Values.OfType<IGeneratedFile>()
+            .First();
+
+        var absPath = loadout.Installation.Locations[GameFolderType.Game].CombineUnchecked("0x00001.generated");
+        
+        var plan = await TestSyncronizer.MakeApplySteps(loadout).ToListAsync();
+
     }
 }

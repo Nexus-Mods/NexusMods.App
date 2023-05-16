@@ -22,24 +22,29 @@ public class LoadoutSyncronizer
     private readonly IFingerprintCache<Mod,CachedModSortRules> _modSortRulesFingerprintCache;
     private readonly IDirectoryIndexer _directoryIndexer;
     private readonly IArchiveManager _archiveManager;
+    private readonly IFingerprintCache<IGeneratedFile,CachedGeneratedFileData> _generatedFileFingerprintCache;
 
-    public LoadoutSyncronizer(IFingerprintCache<Mod, CachedModSortRules> modSortRulesFingerprintCache, IDirectoryIndexer directoryIndexer, IArchiveManager archiveManager)
+    public LoadoutSyncronizer(IFingerprintCache<Mod, CachedModSortRules> modSortRulesFingerprintCache, 
+        IDirectoryIndexer directoryIndexer, 
+        IArchiveManager archiveManager,
+        IFingerprintCache<IGeneratedFile, CachedGeneratedFileData> generatedFileFingerprintCache)
     {
         _archiveManager = archiveManager;
+        _generatedFileFingerprintCache = generatedFileFingerprintCache;
         _modSortRulesFingerprintCache = modSortRulesFingerprintCache;
         _directoryIndexer = directoryIndexer;
     }
 
 
     /// <summary>
-    /// Flattens a loadout into a dictionary of <see cref="GamePath"/> to <see cref="AModFile"/>, any files that are
-    /// not IToFile are ignored.
+    /// Flattens a loadout into a dictionary of files and their corresponding mods. Any files that are not
+    /// IToFile will be ignored.
     /// </summary>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    public async ValueTask<IReadOnlyDictionary<GamePath, AModFile>> FlattenLoadout(Loadout loadout)
+    public async ValueTask<IReadOnlyDictionary<GamePath, (AModFile File, Mod Mod)>> FlattenLoadout(Loadout loadout)
     {
-        var dict = new Dictionary<GamePath, AModFile>();
+        var dict = new Dictionary<GamePath, (AModFile, Mod)>();
 
         var sorted = await SortMods(loadout);
 
@@ -50,7 +55,7 @@ public class LoadoutSyncronizer
                 if (file is not IToFile toFile)
                     continue;
 
-                dict[toFile.To] = file;
+                dict[toFile.To] = (file, mod);
             }
         }
         return dict;
@@ -128,10 +133,10 @@ public class LoadoutSyncronizer
             
             if (flattenedLoadout.TryGetValue(gamePath, out var planFile))
             {
-                var planMetadata = await GetMetaData(loadout, planFile, existing.Path);
+                var planMetadata = await GetMetaData(planFile.File, existing.Path);
                 if (planMetadata is null || planMetadata.Hash != existing.Hash || planMetadata.Size != existing.Size)
                 {
-                    await foreach (var itm in EmitReplacePlan(existing, loadout, planFile).WithCancellation(token))
+                    await foreach (var itm in EmitReplacePlan(existing, loadout, planFile.File, planFile.Mod).WithCancellation(token))
                     {
                         yield return itm;
                     }
@@ -146,14 +151,14 @@ public class LoadoutSyncronizer
             }
         }
         
-        foreach (var (gamePath, modFile) in flattenedLoadout.Where(kv => !seen.Contains(kv.Key)))
+        foreach (var (gamePath, (modFile, mod)) in flattenedLoadout.Where(kv => !seen.Contains(kv.Key)))
         {
             var absPath = gamePath.CombineChecked(install);
             
             if (seen.Contains(gamePath))
                 continue;
 
-            await foreach (var itm in EmitCreatePlan(modFile, absPath).WithCancellation(token))
+            await foreach (var itm in EmitCreatePlan(modFile, mod, loadout, absPath).WithCancellation(token))
             {
                 yield return itm;
             }
@@ -161,7 +166,7 @@ public class LoadoutSyncronizer
         
     }
 
-    private async IAsyncEnumerable<IApplyStep> EmitCreatePlan(AModFile modFile, AbsolutePath absPath)
+    private async IAsyncEnumerable<IApplyStep> EmitCreatePlan(AModFile modFile, Mod mod, Loadout loadout, AbsolutePath absPath)
     {
         if (modFile is IFromArchive fromArchive)
         {
@@ -172,10 +177,35 @@ public class LoadoutSyncronizer
                 Size = fromArchive.Size
             };
         }
-        else
+
+        if (modFile is IGeneratedFile generatedFile)
         {
-            throw new NotImplementedException();
+            var fingerprint = generatedFile.TriggerFilter.GetFingerprint((mod.Id, modFile.Id), loadout);
+            if (_generatedFileFingerprintCache.TryGet(fingerprint, out var cached))
+            {
+                if (await _archiveManager.HaveFile(cached.Hash))
+                {
+                    yield return new ExtractFile
+                    {
+                        To = absPath,
+                        Hash = cached.Hash,
+                        Size = cached.Size
+                    };
+                    yield break;
+                }
+            }
+            
+            yield return new GenerateFile
+            {
+                To = absPath,
+                Source = generatedFile,
+                Fingerprint = fingerprint
+            };
+            yield break;
         }
+
+        throw new NotImplementedException();
+
     }
 
     private async IAsyncEnumerable<IApplyStep> EmitDeletePlan(HashedEntry existing, Loadout loadout)
@@ -199,12 +229,20 @@ public class LoadoutSyncronizer
         };
     }
 
-    private IAsyncEnumerable<IApplyStep> EmitReplacePlan(HashedEntry existing, Loadout loadout, AModFile planFile)
+    private async IAsyncEnumerable<IApplyStep> EmitReplacePlan(HashedEntry existing, Loadout loadout, AModFile planFile, Mod mod)
     {
-        throw new NotImplementedException();
+        await foreach (var itm in EmitDeletePlan(existing, loadout))
+        {
+            yield return itm;
+        }
+        
+        await foreach (var itm in EmitCreatePlan(planFile, mod, loadout, existing.Path))
+        {
+            yield return itm;
+        }
     }
 
-    public async ValueTask<FileMetaData?> GetMetaData(Loadout loadout, AModFile file, AbsolutePath path)
+    public async ValueTask<FileMetaData?> GetMetaData(AModFile file, AbsolutePath path)
     {
         if (file is IFromArchive fa)
             return new FileMetaData(path, fa.Hash, fa.Size);

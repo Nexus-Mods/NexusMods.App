@@ -8,6 +8,5 @@ namespace NexusMods.DataModel.Loadouts.ModFiles;
 /// </summary>
 public interface IGeneratedFile
 {
-    public Hash Fingerprint { get; }
     public ITriggerFilter<(ModId, ModFileId), Loadout> TriggerFilter { get; }
 }
