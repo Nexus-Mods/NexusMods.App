@@ -30,7 +30,10 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame
         );
     }
 
-    protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(IGameLocator locator, GameLocatorResult installation)
+    protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(
+        IFileSystem fileSystem,
+        IGameLocator locator,
+        GameLocatorResult installation)
     {
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);
     }

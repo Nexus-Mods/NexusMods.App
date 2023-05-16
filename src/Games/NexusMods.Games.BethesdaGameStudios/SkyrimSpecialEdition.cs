@@ -9,7 +9,7 @@ using NexusMods.StandardGameLocators;
 
 namespace NexusMods.Games.BethesdaGameStudios;
 
-public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame
+public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame, IXboxGame
 {
     private readonly IFileSystem _fileSystem;
 
@@ -30,15 +30,22 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame
         _fileSystem = fileSystem;
     }
 
-    protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(IGameLocator locator, GameLocatorResult installation)
+    protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(
+        IFileSystem fileSystem,
+        IGameLocator locator,
+        GameLocatorResult installation)
     {
-        yield return new(GameFolderType.Game, installation.Path);
-        var appData = locator switch
-        {
-            GogLocator => _fileSystem.GetKnownPath(KnownPath.MyGamesDirectory).CombineUnchecked("Skyrim Special Edition GOG"),
-            _ => _fileSystem.GetKnownPath(KnownPath.MyGamesDirectory).CombineUnchecked("Skyrim Special Edition"),
-        };
-        yield return new(GameFolderType.AppData, appData);
+        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);
+
+        var appData = installation.Store == GameStore.GOG
+            ? fileSystem
+                .GetKnownPath(KnownPath.MyGamesDirectory)
+                .CombineUnchecked("Skyrim Special Edition GOG")
+            : fileSystem
+                .GetKnownPath(KnownPath.MyGamesDirectory)
+                .CombineUnchecked("Skyrim Special Edition");
+
+        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.AppData, appData);
     }
 
     public override IEnumerable<AModFile> GetGameFiles(GameInstallation installation, IDataStore store)
@@ -60,6 +67,8 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame
         1801825368, // The Elder Scrolls V: Skyrim Anniversary Edition AKA The Store Bundle
         1162721350 // Upgrade DLC
     };
+
+    public IEnumerable<string> XboxIds => new[] { "BethesdaSoftworks.SkyrimSE-PC" };
 
     public override IStreamFactory Icon =>
         new EmbededResourceStreamFactory<SkyrimSpecialEdition>("NexusMods.Games.BethesdaGameStudios.Resources.SkyrimSpecialEdition.icon.jpg");

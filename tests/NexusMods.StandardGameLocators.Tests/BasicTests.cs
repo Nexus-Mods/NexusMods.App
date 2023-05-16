@@ -1,46 +1,53 @@
-using System.Runtime.InteropServices;
 using FluentAssertions;
 using NexusMods.DataModel.Games;
 using NexusMods.Paths;
-using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
 namespace NexusMods.StandardGameLocators.Tests;
 
 public class BasicTests
 {
     private readonly IGame _game;
-    private readonly GameInstallation _steamInstall;
-    private readonly GameInstallation? _gogInstall;
 
-    public BasicTests(StubbedGame game)
+    public BasicTests(IGame game)
     {
         _game = game;
-        _steamInstall = _game.Installations.First(g => g.Locations.Any(l => l.ToString().Contains("steam_game")));
+    }
 
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            _gogInstall = _game.Installations.First(g => g.Locations.Any(l => l.ToString().Contains("gog_game")));
+    [Fact]
+    public void Test_Locators_Linux()
+    {
+        if (!OperatingSystem.IsLinux()) return;
 
+        _game.Installations.Should().SatisfyRespectively(
+            steamInstallation =>
+            {
+                steamInstallation.Locations
+                    .Should().ContainSingle()
+                    .Which.Value
+                    .ToString().Should().Contain("steam_game");
+            });
+    }
+
+    [Fact]
+    public void Test_Locators_Windows()
+    {
+        if (!OperatingSystem.IsWindows()) return;
+
+        _game.Installations
+            .Should().HaveCount(6)
+            .And.Satisfy(
+                eaInstallation => eaInstallation.Locations.First().Value.ToString().Contains("ea_game"),
+                epicInstallation => epicInstallation.Locations.First().Value.ToString().Contains("epic_game"),
+                originInstallation => originInstallation.Locations.First().Value.ToString().Contains("origin_game"),
+                gogInstallation => gogInstallation.Locations.First().Value.ToString().Contains("gog_game"),
+                steamInstallation => steamInstallation.Locations.First().Value.ToString().Contains("steam_game"),
+                xboxInstallation => xboxInstallation.Locations.First().Value.ToString().Contains("xbox_game")
+            );
     }
 
     [Fact]
     public void CanFindGames()
     {
-        Assert.NotEmpty(_game.Installations);
-    }
-
-    [Fact]
-    public void CanGetInstallLocations()
-    {
-        _steamInstall.Locations[GameFolderType.Game].CombineUnchecked("StubbedGame.exe").FileExists.Should().BeTrue();
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            _gogInstall!.Locations[GameFolderType.Game].CombineUnchecked("StubbedGame.exe").FileExists.Should().BeTrue();
-        }
-    }
-
-    [Fact]
-    public void CanConvertToString()
-    {
-        Assert.Equal("Stubbed Game v0.0.0.0 (Unknown)", _steamInstall.ToString());
+        _game.Installations.Should().NotBeEmpty();
     }
 }
