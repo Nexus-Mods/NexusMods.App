@@ -168,6 +168,7 @@ public class LoadoutSyncronizer
 
     private async IAsyncEnumerable<IApplyStep> EmitCreatePlan(AModFile modFile, Mod mod, Loadout loadout, AbsolutePath absPath)
     {
+        // If the file is from an archive, then we can just extract it
         if (modFile is IFromArchive fromArchive)
         {
             yield return new ExtractFile
@@ -176,13 +177,17 @@ public class LoadoutSyncronizer
                 Hash = fromArchive.Hash,
                 Size = fromArchive.Size
             };
+            yield break;
         }
 
+        // If the file is generated
         if (modFile is IGeneratedFile generatedFile)
         {
+            // Get the fingerprint for the generated file
             var fingerprint = generatedFile.TriggerFilter.GetFingerprint((mod.Id, modFile.Id), loadout);
             if (_generatedFileFingerprintCache.TryGet(fingerprint, out var cached))
             {
+                // If we have a cached version of the file in an archive, then we can just extract it
                 if (await _archiveManager.HaveFile(cached.Hash))
                 {
                     yield return new ExtractFile
@@ -195,6 +200,7 @@ public class LoadoutSyncronizer
                 }
             }
             
+            // Otherwise we need to generate the file
             yield return new GenerateFile
             {
                 To = absPath,
@@ -204,8 +210,8 @@ public class LoadoutSyncronizer
             yield break;
         }
 
+        // This should never happen
         throw new NotImplementedException();
-
     }
 
     private async IAsyncEnumerable<IApplyStep> EmitDeletePlan(HashedEntry existing, Loadout loadout)
