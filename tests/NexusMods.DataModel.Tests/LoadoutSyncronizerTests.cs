@@ -1,21 +1,15 @@
 ﻿using System.Collections.Immutable;
-using DynamicData;
 using FluentAssertions;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Extensions;
-using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ApplySteps;
-using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.DataModel.Tests.Harness;
-using NexusMods.DataModel.TriggerFilter;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using static System.String;
 
 namespace NexusMods.DataModel.Tests;
 
@@ -163,7 +157,7 @@ public class LoadoutSyncronizerTests : ALoadoutSynrconizerTest<LoadoutSyncronize
         var loadout = await CreateApplyPlanTestLoadout();
         
         var absPath = loadout.Installation.Locations[GameFolderType.Game].CombineUnchecked("file_to_delete.dat");
-        TestIndexer.Entries.Add(new HashedEntry(absPath, Hash.From(0x042), DateTime.Now - TimeSpan.FromDays(1), Size.From(0x42)));
+        TestIndexer.Entries.Add(new HashedEntry(absPath, Hash.From(0x042), DateTime.Now - TimeSpan.FromDays(1), Size.From(0x33)));
 
         var plan = await TestSyncronizer.MakeApplySteps(loadout).ToListAsync();
 
@@ -171,7 +165,14 @@ public class LoadoutSyncronizerTests : ALoadoutSynrconizerTest<LoadoutSyncronize
         {
             To = absPath,
             Hash = Hash.From(0x42),
-            Size = Size.From(0x42)
+            Size = Size.From(0x33)
+        });
+
+        plan.Should().ContainEquivalentOf(new BackupFile
+        {
+            To = absPath,
+            Hash = Hash.From(0x42),
+            Size = Size.From(0x33)
         });
     }
 }
