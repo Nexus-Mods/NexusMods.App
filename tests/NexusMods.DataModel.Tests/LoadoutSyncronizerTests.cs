@@ -175,4 +175,19 @@ public class LoadoutSyncronizerTests : ALoadoutSynrconizerTest<LoadoutSyncronize
             Size = Size.From(0x33)
         });
     }
+
+    [Fact]
+    public async Task FilesAreNotBackedUpIfAlreadyBackedUp()
+    {
+        var loadout = await CreateApplyPlanTestLoadout();
+
+        TestArchiveManagerInstance.Archives.Add(Hash.From(0x042));
+        var absPath = loadout.Installation.Locations[GameFolderType.Game].CombineUnchecked("file_to_delete.dat");
+        TestIndexer.Entries.Add(new HashedEntry(absPath, Hash.From(0x042), DateTime.Now - TimeSpan.FromDays(1),
+            Size.From(0x33)));
+
+        var plan = await TestSyncronizer.MakeApplySteps(loadout).ToListAsync();
+
+        plan.OfType<BackupFile>().Should().BeEmpty();
+    }
 }
