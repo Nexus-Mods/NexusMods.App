@@ -5,6 +5,7 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+    types: [opened, synchronize, reopened, ready_for_review]
 
 jobs:
   draft:
@@ -15,12 +16,12 @@ jobs:
         run: exit 1
 
   build:
-    if: github.ref == 'refs/heads/main' || github.event.pull_request.draft == false
+    if: github.event_name == 'push' || github.event.pull_request.draft == false
     name: Test ${{ matrix.project }} (${{ matrix.os }})
-    runs-on: 
+    runs-on:
        - self-hosted
        - ${{ matrix.os }}
-    
+
     strategy:
       matrix:
         os: [Linux, Windows] # disable macos-latest for now
@@ -32,7 +33,7 @@ jobs:
       #  uses: actions/setup-dotnet@v3
       #  with:
       #    dotnet-version: '7.0.x'
-          
+
       # - name: Set Permissions
       #  if: runner.os != 'Windows'
       #  run: chmod -R +x src/ArchiveManagement/NexusMods.FileExtractor/Extractors
@@ -49,4 +50,4 @@ jobs:
       - uses: codecov/codecov-action@v3
         with:
           flags: clean_environment_tests, ${{runner.os}}
-          verbose: true 
+          verbose: true
