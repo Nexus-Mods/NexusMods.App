@@ -1,14 +1,15 @@
 using GameFinder.Common;
 using NexusMods.Paths;
+using OneOf;
 
 namespace NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
 public class StubbedGameLocator<TGame, TId> : AHandler<TGame, TId>
-    where TGame : class where TId : notnull
+    where TGame : class, IGame
+    where TId : notnull
 {
     // ReSharper disable once NotAccessedField.Local
     private readonly Version? _version;
-    private readonly Func<TGame, TId> _idSelector;
     private readonly TGame _game;
 
     public StubbedGameLocator(TemporaryFileManager manager,
@@ -16,21 +17,16 @@ public class StubbedGameLocator<TGame, TId> : AHandler<TGame, TId>
         Func<TGame, TId> idSelector,
         Version? version = null)
     {
-        _idSelector = idSelector;
+        IdSelector = idSelector;
         _version = version;
         _game = factory(manager);
     }
-    public override IEnumerable<Result<TGame>> FindAllGames()
-    {
-        return new[]
-        {
-            Result.FromGame(_game)
-        };
-    }
 
-    public override Dictionary<TId, TGame> FindAllGamesById(out string[] errors)
+    public override Func<TGame, TId> IdSelector { get; }
+    public override IEqualityComparer<TId>? IdEqualityComparer => null;
+
+    public override IEnumerable<OneOf<TGame, ErrorMessage>> FindAllGames()
     {
-        errors = Array.Empty<string>();
-        return FindAllGames().ToDictionary(g => _idSelector(g.Game!), v => v.Game)!;
+        yield return _game;
     }
 }

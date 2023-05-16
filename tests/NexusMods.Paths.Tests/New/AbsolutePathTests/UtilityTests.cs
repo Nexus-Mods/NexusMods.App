@@ -51,6 +51,7 @@ public class UtilityTests
     }
 
     [SkippableTheory]
+    [InlineData("/", "/", true)]
     [InlineData("/", "/foo", true)]
     [InlineData("/", "/foo/bar", true)]
     [InlineData("C:\\", "C:\\foo", false)]

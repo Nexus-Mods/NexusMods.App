@@ -45,7 +45,7 @@ jobs:
         run: dotnet build
 
       - name: Tests
-        run: dotnet test --no-build --filter "RequiresNetworking!=True" --collect:"XPlat Code Coverage;Format=opencover"
+        run: dotnet test --no-build --logger "GitHubActions" --filter "RequiresNetworking!=True" --collect:"XPlat Code Coverage;Format=opencover"
 
       - uses: codecov/codecov-action@v3
         with:

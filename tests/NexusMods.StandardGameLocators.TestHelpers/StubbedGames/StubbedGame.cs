@@ -11,7 +11,7 @@ using NexusMods.Paths.Extensions;
 
 namespace NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
-public class StubbedGame : IEADesktopGame, IEpicGame, IOriginGame, ISteamGame, IGogGame
+public class StubbedGame : IEADesktopGame, IEpicGame, IOriginGame, ISteamGame, IGogGame, IXboxGame
 {
     private readonly ILogger<StubbedGame> _logger;
     private readonly IEnumerable<IGameLocator> _locators;
@@ -93,4 +93,5 @@ public class StubbedGame : IEADesktopGame, IEpicGame, IOriginGame, ISteamGame, I
     public IEnumerable<string> EADesktopSoftwareIDs => new[] { "ea-game-id" };
     public IEnumerable<string> EpicCatalogItemId => new[] { "epic-game-id" };
     public IEnumerable<string> OriginGameIds => new[] { "origin-game-id" };
+    public IEnumerable<string> XboxIds => new[] { "xbox-game-id" };
 }

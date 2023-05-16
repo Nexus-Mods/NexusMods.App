@@ -260,7 +260,7 @@ public partial class InMemoryFileSystem : BaseFileSystem
         }
 
         if (inMemoryFileEntry is null)
-            throw new FileNotFoundException("File does not exist!", path.FileName);
+            throw new FileNotFoundException($"File \"{path.GetFullPath()}\" does not exist");
 
         return access switch
         {
