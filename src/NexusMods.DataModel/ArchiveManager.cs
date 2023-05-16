@@ -1,4 +1,5 @@
 using NexusMods.Common;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -12,7 +13,7 @@ namespace NexusMods.DataModel;
 /// this includes accessing them by hash, caching them and pulling them by hash from the
 /// cache.
 /// </summary>
-public class ArchiveManager
+public class ArchiveManager : IArchiveManager
 {
     private readonly HashSet<AbsolutePath> _locations;
     private readonly FileExtractor.FileExtractor _fileExtractor;
@@ -113,13 +114,16 @@ public class ArchiveManager
     /// Returns true if the given hash is managed, or any archive that contains this file is managed
     /// </summary>
     /// <param name="hash">The hash to check.</param>
-    public bool HaveFile(Hash hash)
+    public async ValueTask<bool> HaveFile(Hash hash)
     {
         if (HaveArchive(hash))
             return true;
 
         // Verify the archive which contains this hash still exists.
-        return _contentsCache.ArchivesThatContain(hash).Any(containedIn => HaveFile(containedIn.Parent));
+        foreach (var archive in _contentsCache.ArchivesThatContain(hash))
+            if (await HaveFile(archive.Parent))
+                return true;
+        return false;
     }
 
     /// <summary>

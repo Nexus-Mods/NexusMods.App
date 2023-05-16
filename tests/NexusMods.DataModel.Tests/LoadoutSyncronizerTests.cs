@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using DynamicData;
 using FluentAssertions;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
@@ -18,17 +19,13 @@ using static System.String;
 
 namespace NexusMods.DataModel.Tests;
 
-public class LoadoutSyncronizerTests : ADataModelTest<LoadoutSyncronizerTests>
+public class LoadoutSyncronizerTests : ALoadoutSynrconizerTest<LoadoutSyncronizerTests>
 {
     public LoadoutSyncronizerTests(IServiceProvider provider) : base(provider)
     {
 
     }
-
-
-
-
-
+    
     [Fact]
     public async Task GeneratedSortRulesAreFetched()
     {
@@ -103,7 +100,7 @@ public class LoadoutSyncronizerTests : ADataModelTest<LoadoutSyncronizerTests>
     {
         var loadout = await CreateTestLoadout(2);
         var cache = new TestFingerprintCache<Mod, CachedModSortRules>();
-        var syncronizer = new LoadoutSyncronizer(cache, new TestDirectoryIndexer());
+        var syncronizer = new LoadoutSyncronizer(cache, new TestDirectoryIndexer(), null!);
 
         await syncronizer.SortMods(loadout.Value);
 
@@ -118,104 +115,13 @@ public class LoadoutSyncronizerTests : ADataModelTest<LoadoutSyncronizerTests>
         cache.SetCount.Values.Should().AllBeEquivalentTo(1);
 
     }
-
-
-
-    /// <summary>
-    /// Example generated sort rule that sorts all mods alphabetically
-    /// </summary>
-    [JsonName("TestGeneratedSortRule")]
-    public class AlphabeticalSort : IGeneratedSortRule, ISortRule<Mod, ModId>, ITriggerFilter<ModId, Loadout>
-    {
-        public ITriggerFilter<ModId, Loadout> TriggerFilter => this;
-
-        public async IAsyncEnumerable<ISortRule<Mod, ModId>> GenerateSortRules(ModId selfId, Loadout loadout)
-        {
-            var thisMod = loadout.Mods[selfId];
-            foreach (var (modId, other) in loadout.Mods)
-            {
-                if (modId.Equals(selfId)) continue;
-                if (Compare(other.Name, thisMod.Name, StringComparison.Ordinal) > 0)
-                {
-                    yield return new Before<Mod, ModId>(other.Id);
-                }
-                else
-                {
-                    yield return new After<Mod, ModId>(modId);
-                }
-            }
-        }
-
-        public Hash GetFingerprint(ModId self, Loadout input)
-        {
-            var fp = Fingerprinter.Create();
-            fp.Add(input.Mods[self].DataStoreId);
-            foreach (var name in input.Mods.Values.Select(n => n.Name).Order())
-            {
-                fp.Add(name);
-            }
-            return fp.Digest();
-        }
-    }
-
-
-    private class TestFingerprintCache<TSrc, TValue> : IFingerprintCache<TSrc, TValue> where TValue : Entity
-    {
-        public readonly Dictionary<Hash, TValue> Dict = new();
-        public readonly Dictionary<Hash, int> GetCount = new();
-        public readonly Dictionary<Hash, int> SetCount = new();
-
-        public bool TryGet(Hash hash, out TValue value)
-        {
-            GetCount[hash] = GetCount.GetValueOrDefault(hash, 0) + 1;
-            return Dict.TryGetValue(hash, out value);
-        }
-
-        public void Set(Hash hash, TValue value)
-        {
-            value.DataStoreId = new Id64(EntityCategory.Fingerprints, hash.Value);
-            Dict[hash] = value;
-            SetCount[hash] = SetCount.GetValueOrDefault(hash, 0) + 1;
-        }
-    }
-
-
-    /// <summary>
-    /// Create a test loadout with a number of mods each with a alphabetical sort rule
-    /// </summary>
-    /// <param name="number"></param>
-    /// <returns></returns>
-    private async Task<LoadoutMarker> CreateTestLoadout(int number = 10)
-    {
-        var loadout = await LoadoutManager.ManageGameAsync(Install, Guid.NewGuid().ToString());
-
-        var mainMod = loadout.Value.Mods.Values.First();
-
-        var mods = Enumerable.Range(0,  number).Select(x => new Mod()
-        {
-            Id = ModId.New(),
-            Name = $"Mod {x}",
-            Files = EntityDictionary<ModFileId, AModFile>.Empty(DataStore),
-            SortRules = new ISortRule<Mod, ModId>[]
-            {
-                new AlphabeticalSort()
-            }.ToImmutableList()
-        }).ToList();
-
-        foreach (var mod in mods)
-            loadout.Add(mod);
-
-        loadout.Remove(mainMod);
-        return loadout;
-    }
-
+    
     [Fact]
     public async Task FilesThatDontExistAreCreatedByPlan()
     {
         var loadout = await CreateApplyPlanTestLoadout();
-        var (syncronizer, indexer) = CreateTestSyncronizer();
         
-        var plan = await syncronizer.MakeApplySteps(loadout).ToListAsync();
+        var plan = await TestSyncronizer.MakeApplySteps(loadout).ToListAsync();
 
         var fileOne = loadout.Mods.Values.First().Files.Values.OfType<IFromArchive>()
             .First(f => f.Hash == Hash.From(0x00001));
@@ -232,7 +138,6 @@ public class LoadoutSyncronizerTests : ADataModelTest<LoadoutSyncronizerTests>
     public async Task FilesThatExistAreNotCreatedByPlan()
     {
         var loadout = await CreateApplyPlanTestLoadout();
-        var (syncronizer, indexer) = CreateTestSyncronizer();
         
         var fileOne = loadout.Mods.Values.First().Files.Values.OfType<IFromArchive>()
             .First(f => f.Hash == Hash.From(0x00001));
@@ -240,9 +145,9 @@ public class LoadoutSyncronizerTests : ADataModelTest<LoadoutSyncronizerTests>
 
         var absPath = loadout.Installation.Locations[GameFolderType.Game].CombineUnchecked("0x00001.dat");
 
-        indexer.Entries.Add(new HashedEntry(absPath, fileOne.Hash, DateTime.Now - TimeSpan.FromDays(1), fileOne.Size ));
+        TestIndexer.Entries.Add(new HashedEntry(absPath, fileOne.Hash, DateTime.Now - TimeSpan.FromDays(1), fileOne.Size ));
         
-        var plan = await syncronizer.MakeApplySteps(loadout).ToListAsync();
+        var plan = await TestSyncronizer.MakeApplySteps(loadout).ToListAsync();
         
         plan.Should().NotContainEquivalentOf(new ExtractFile
         {
@@ -252,51 +157,21 @@ public class LoadoutSyncronizerTests : ADataModelTest<LoadoutSyncronizerTests>
         });
     }
     
-    private (LoadoutSyncronizer, TestDirectoryIndexer) CreateTestSyncronizer()
-    {
-        var indexer = new TestDirectoryIndexer();
-        var syncronizer = new LoadoutSyncronizer(new TestFingerprintCache<Mod, CachedModSortRules>(), indexer);
-        return (syncronizer, indexer);
-    }
-
-    private class TestDirectoryIndexer : IDirectoryIndexer
-    {
-        public List<HashedEntry> Entries = new();
-
-        public async IAsyncEnumerable<HashedEntry> IndexFolders(IEnumerable<AbsolutePath> paths,
-            CancellationToken token = default)
-        {
-            foreach (var entry in Entries)
-            {
-                yield return entry;
-            }
-        }
-    }
-    private async Task<Loadout> CreateApplyPlanTestLoadout()
-    {
-        var loadout = await LoadoutManager.ManageGameAsync(Install, Guid.NewGuid().ToString());
+    [Fact]
+    public async Task ExtraFilesAreDeletedAndBackedUp()
+    { 
+        var loadout = await CreateApplyPlanTestLoadout();
         
-        var mainMod = loadout.Value.Mods.Values.First();
-        var files = EntityDictionary<ModFileId, AModFile>.Empty(DataStore);
-        files = files.With(new FromArchive
-        {
-            Id = ModFileId.New(),
-            Hash = Hash.From(0x00001),
-            Size = Size.From(0x10001),
-            To = new GamePath(GameFolderType.Game, "0x00001.dat"),
-        }, m => m.Id);
-        
+        var absPath = loadout.Installation.Locations[GameFolderType.Game].CombineUnchecked("file_to_delete.dat");
+        TestIndexer.Entries.Add(new HashedEntry(absPath, Hash.From(0x042), DateTime.Now - TimeSpan.FromDays(1), Size.From(0x42)));
 
-        var mod = new Mod
+        var plan = await TestSyncronizer.MakeApplySteps(loadout).ToListAsync();
+
+        plan.Should().ContainEquivalentOf(new DeleteFile
         {
-            Id = ModId.New(),
-            Name = "Test Mod",
-            Files = files,
-            SortRules = ImmutableList<ISortRule<Mod, ModId>>.Empty
-        };
-        
-        loadout.Add(mod);
-        loadout.Remove(mainMod);
-        return loadout.Value;
+            To = absPath,
+            Hash = Hash.From(0x42),
+            Size = Size.From(0x42)
+        });
     }
 }

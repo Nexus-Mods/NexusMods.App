@@ -39,7 +39,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected readonly FileContentsCache ArchiveContentsCache;
     protected readonly ArchiveManager ArchiveManager;
     protected readonly LoadoutManager LoadoutManager;
-    protected readonly LoadoutSyncronizer LoadoutSyncronizer;
+    protected LoadoutSyncronizer LoadoutSyncronizer;
     protected readonly FileHashCache FileHashCache;
     protected readonly IFileSystem FileSystem;
     protected readonly IDataStore DataStore;

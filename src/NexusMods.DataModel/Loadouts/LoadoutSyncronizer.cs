@@ -21,9 +21,11 @@ public class LoadoutSyncronizer
 {
     private readonly IFingerprintCache<Mod,CachedModSortRules> _modSortRulesFingerprintCache;
     private readonly IDirectoryIndexer _directoryIndexer;
+    private readonly IArchiveManager _archiveManager;
 
-    public LoadoutSyncronizer(IFingerprintCache<Mod, CachedModSortRules> modSortRulesFingerprintCache, IDirectoryIndexer directoryIndexer)
+    public LoadoutSyncronizer(IFingerprintCache<Mod, CachedModSortRules> modSortRulesFingerprintCache, IDirectoryIndexer directoryIndexer, IArchiveManager archiveManager)
     {
+        _archiveManager = archiveManager;
         _modSortRulesFingerprintCache = modSortRulesFingerprintCache;
         _directoryIndexer = directoryIndexer;
     }
@@ -176,9 +178,25 @@ public class LoadoutSyncronizer
         }
     }
 
-    private IAsyncEnumerable<IApplyStep> EmitDeletePlan(HashedEntry existing, Loadout loadout)
+    private async IAsyncEnumerable<IApplyStep> EmitDeletePlan(HashedEntry existing, Loadout loadout)
     {
-        throw new NotImplementedException();
+        if (!await _archiveManager.HaveFile(existing.Hash))
+        {
+            yield return new BackupFile
+            {
+                Hash = existing.Hash,
+                Size = existing.Size,
+                To = existing.Path
+            };
+        }
+
+
+        yield return new DeleteFile
+        {
+            To = existing.Path,
+            Hash = existing.Hash,
+            Size = existing.Size
+        };
     }
 
     private IAsyncEnumerable<IApplyStep> EmitReplacePlan(HashedEntry existing, Loadout loadout, AModFile planFile)

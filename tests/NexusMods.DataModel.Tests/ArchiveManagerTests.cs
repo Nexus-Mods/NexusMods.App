@@ -24,7 +24,7 @@ public class ArchiveManagerTests
         hash.Should().Be(Hash.From(0xA52B286A3E7F4D91));
 
         _manager.HaveArchive(hash).Should().BeTrue();
-        _manager.HaveFile(hash).Should().BeTrue();
+        (await _manager.HaveFile(hash)).Should().BeTrue();
         (await _manager.OpenRead(hash).ReadAllTextAsync()).Should().Be("Hello World!");
 
         _manager.AllArchives().Should().Contain(hash);
