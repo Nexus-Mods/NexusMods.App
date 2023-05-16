@@ -147,6 +147,9 @@ public class LoadoutSyncronizer
         foreach (var (gamePath, modFile) in flattenedLoadout.Where(kv => !seen.Contains(kv.Key)))
         {
             var absPath = gamePath.CombineChecked(install);
+            
+            if (seen.Contains(gamePath))
+                continue;
 
             await foreach (var itm in EmitCreatePlan(modFile, absPath).WithCancellation(token))
             {
@@ -185,6 +188,8 @@ public class LoadoutSyncronizer
 
     public async ValueTask<FileMetaData?> GetMetaData(Loadout loadout, AModFile file, AbsolutePath path)
     {
+        if (file is IFromArchive fa)
+            return new FileMetaData(path, fa.Hash, fa.Size);
         throw new NotImplementedException();
     }
 

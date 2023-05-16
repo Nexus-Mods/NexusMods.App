@@ -226,7 +226,30 @@ public class LoadoutSyncronizerTests : ADataModelTest<LoadoutSyncronizerTests>
             Hash = fileOne.Hash,
             Size = fileOne.Size
         });
+    }
+    
+    [Fact]
+    public async Task FilesThatExistAreNotCreatedByPlan()
+    {
+        var loadout = await CreateApplyPlanTestLoadout();
+        var (syncronizer, indexer) = CreateTestSyncronizer();
+        
+        var fileOne = loadout.Mods.Values.First().Files.Values.OfType<IFromArchive>()
+            .First(f => f.Hash == Hash.From(0x00001));
 
+
+        var absPath = loadout.Installation.Locations[GameFolderType.Game].CombineUnchecked("0x00001.dat");
+
+        indexer.Entries.Add(new HashedEntry(absPath, fileOne.Hash, DateTime.Now - TimeSpan.FromDays(1), fileOne.Size ));
+        
+        var plan = await syncronizer.MakeApplySteps(loadout).ToListAsync();
+        
+        plan.Should().NotContainEquivalentOf(new ExtractFile
+        {
+            To = loadout.Installation.Locations[GameFolderType.Game].CombineUnchecked("0x00001.dat"),
+            Hash = fileOne.Hash,
+            Size = fileOne.Size
+        });
     }
     
     private (LoadoutSyncronizer, TestDirectoryIndexer) CreateTestSyncronizer()
