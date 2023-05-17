@@ -107,7 +107,12 @@ public class LoadoutSyncronizerTests : ALoadoutSynrconizerTest<LoadoutSyncronize
         TestFingerprintCacheInstance.SetCount.Values.Should().AllBeEquivalentTo(1);
 
     }
-    
+
+    #region Make Apply Plan Tests
+
+    /// <summary>
+    /// If a file doesn't exist, it should be created 
+    /// </summary>
     [Fact]
     public async Task FilesThatDontExistAreCreatedByPlan()
     {
@@ -126,6 +131,9 @@ public class LoadoutSyncronizerTests : ALoadoutSynrconizerTest<LoadoutSyncronize
         });
     }
     
+    /// <summary>
+    /// Files that are already in the correct state in the game folder shouldn't be re-extracted
+    /// </summary>
     [Fact]
     public async Task FilesThatExistAreNotCreatedByPlan()
     {
@@ -149,6 +157,9 @@ public class LoadoutSyncronizerTests : ALoadoutSynrconizerTest<LoadoutSyncronize
         });
     }
     
+    /// <summary>
+    /// Files that are in the game folders, but not in the plan should be backed up then deleted
+    /// </summary>
     [Fact]
     public async Task ExtraFilesAreDeletedAndBackedUp()
     { 
@@ -174,6 +185,9 @@ public class LoadoutSyncronizerTests : ALoadoutSynrconizerTest<LoadoutSyncronize
         });
     }
 
+    /// <summary>
+    /// If a file is backed up, we shouldn't see a command to back it up again. 
+    /// </summary>
     [Fact]
     public async Task FilesAreNotBackedUpIfAlreadyBackedUp()
     {
@@ -189,6 +203,10 @@ public class LoadoutSyncronizerTests : ALoadoutSynrconizerTest<LoadoutSyncronize
         plan.OfType<BackupFile>().Should().BeEmpty();
     }
     
+    /// <summary>
+    /// If a file in the plan differs from the one on disk, then back up the on-disk file, delete it
+    /// then create the new file
+    /// </summary>
     [Fact]
     public async Task ChangedFilesAreBackedUpDeletedAndCreated()
     {
@@ -225,6 +243,9 @@ public class LoadoutSyncronizerTests : ALoadoutSynrconizerTest<LoadoutSyncronize
         });
     }
     
+    /// <summary>
+    /// Generated files that have never been generated before should be generated
+    /// </summary>
     [Fact]
     public async Task GeneratedFilesAreCreated()
     {
@@ -237,5 +258,43 @@ public class LoadoutSyncronizerTests : ALoadoutSynrconizerTest<LoadoutSyncronize
         
         var plan = await TestSyncronizer.MakeApplySteps(loadout).ToListAsync();
 
+        var generateFile = plan.OfType<GenerateFile>().FirstOrDefault();
+        generateFile.Should().NotBeNull();
+
+        generateFile!.Source.Should().Be(fileOne);
+        generateFile!.To.Should().BeEquivalentTo(absPath);
+        generateFile.Fingerprint.Should().Be(Hash.From(17241709254077376921));
     }
+
+    /// <summary>
+    /// If a generated file would create data that is already backed up and archived, then extract it instead
+    /// of regenerating the file
+    /// </summary>
+    [Fact]
+    public async Task GeneratedFilesFromArchivesAreExtracted()
+    {
+        var loadout = await CreateApplyPlanTestLoadout(generatedFile: true);
+
+        TestGeneratedFileFingerprintCache.Dict.Add(Hash.From(17241709254077376921), new CachedGeneratedFileData
+        {
+            Hash = Hash.From(0x42),
+            Size = Size.From(0x43)
+        });
+
+        TestArchiveManagerInstance.Archives.Add(Hash.From(0x42));
+
+        var absPath = loadout.Installation.Locations[GameFolderType.Game].CombineUnchecked("0x00001.generated");
+        
+        var plan = await TestSyncronizer.MakeApplySteps(loadout).ToListAsync();
+
+        plan.Should().ContainEquivalentOf(new ExtractFile
+        {
+            To = absPath,
+            Hash = Hash.From(0x42),
+            Size = Size.From(0x43)
+        });
+    }
+    
+    #endregion
+
 }
