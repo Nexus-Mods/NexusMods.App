@@ -36,7 +36,7 @@ public class MakeIngestPlanTests : ALoadoutSynrchonizerTest<MakeIngestPlanTests>
             Size = Size.From(10)
         });
 
-        plan.Should().ContainEquivalentOf(new AddToLoadout
+        plan.Should().ContainEquivalentOf(new CreateInLoadout
         {
             To = absPath,
             Hash = Hash.From(0x4242),
@@ -45,8 +45,7 @@ public class MakeIngestPlanTests : ALoadoutSynrchonizerTest<MakeIngestPlanTests>
     }
     
     /// <summary>
-    /// New files in the game folder need to be backed up if they don't already exist in the archive manager.
-    /// Either way they need to be added to the loadout. 
+    /// New files in the game folder should not be backed up if they are already backed up.
     /// </summary>
     [Fact]
     public async Task FilesThatAreAlreadyBackedUpShouldNotBeBackedUpAgain()
