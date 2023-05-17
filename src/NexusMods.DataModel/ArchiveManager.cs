@@ -93,7 +93,7 @@ public class ArchiveManager : IArchiveManager
         var rel = NameForHash(hash);
         return _locations.Any(r => r.CombineUnchecked(rel).FileExists);
     }
-    
+
     /// <summary>
     /// Determines if a given archive is stored by the manager, and returns the path if it is.
     /// </summary>
@@ -124,6 +124,11 @@ public class ArchiveManager : IArchiveManager
             if (await HaveFile(archive.Parent))
                 return true;
         return false;
+    }
+
+    public Task BackupFiles(IEnumerable<(AbsolutePath, Hash, Size)> backups)
+    {
+        throw new NotImplementedException();
     }
 
     /// <summary>

@@ -35,12 +35,29 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
 
 
 
+    /// <summary>
+    /// Get the `To` location of the first file in the first mod that is IToFile
+    /// </summary>
+    /// <param name="loadout"></param>
+    /// <returns></returns>
+    protected static AbsolutePath GetFirstModFile(Loadout loadout)
+    {
+        var to = loadout.Mods.Values.First().Files.Values.OfType<IToFile>().First().To;
+        return to.CombineChecked(loadout.Installation.Locations[GameFolderType.Game]);
+    }
+
+
     protected class TestArchiveManager : IArchiveManager
     {
         public readonly HashSet<Hash> Archives = new();
         public async ValueTask<bool> HaveFile(Hash hash)
         {
             return Archives.Contains(hash);
+        }
+
+        public async Task BackupFiles(IEnumerable<(AbsolutePath, Hash, Size)> backups)
+        {
+            Archives.AddRange(backups.Select(b => b.Item2));
         }
     }
 
@@ -61,7 +78,7 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
     protected async Task<Loadout> CreateApplyPlanTestLoadout(bool generatedFile = false)
     {
         var loadout = await LoadoutManager.ManageGameAsync(Install, Guid.NewGuid().ToString());
-        
+
         var mainMod = loadout.Value.Mods.Values.First();
         var files = EntityDictionary<ModFileId, AModFile>.Empty(DataStore);
         if (generatedFile)
@@ -90,12 +107,12 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
             Files = files,
             SortRules = ImmutableList<ISortRule<Mod, ModId>>.Empty
         };
-        
+
         loadout.Add(mod);
         loadout.Remove(mainMod);
         return loadout.Value;
     }
-    
+
     /// <summary>
     /// Create a test loadout with a number of mods each with a alphabetical sort rule
     /// </summary>
@@ -124,7 +141,7 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
         loadout.Remove(mainMod);
         return loadout;
     }
-    
+
 
 
     public class TestFingerprintCache<TSrc, TValue> : IFingerprintCache<TSrc, TValue> where TValue : Entity
@@ -201,4 +218,6 @@ public class AlphabeticalSort : IGeneratedSortRule, ISortRule<Mod, ModId>, ITrig
         }
         return fp.Digest();
     }
+
+
 }

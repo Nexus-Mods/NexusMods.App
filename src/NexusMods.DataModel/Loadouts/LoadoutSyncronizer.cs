@@ -27,8 +27,8 @@ public class LoadoutSynchronizer
     private readonly IArchiveManager _archiveManager;
     private readonly IFingerprintCache<IGeneratedFile,CachedGeneratedFileData> _generatedFileFingerprintCache;
 
-    public LoadoutSynchronizer(IFingerprintCache<Mod, CachedModSortRules> modSortRulesFingerprintCache, 
-        IDirectoryIndexer directoryIndexer, 
+    public LoadoutSynchronizer(IFingerprintCache<Mod, CachedModSortRules> modSortRulesFingerprintCache,
+        IDirectoryIndexer directoryIndexer,
         IArchiveManager archiveManager,
         IFingerprintCache<IGeneratedFile, CachedGeneratedFileData> generatedFileFingerprintCache)
     {
@@ -126,14 +126,14 @@ public class LoadoutSynchronizer
         var existingFiles = _directoryIndexer.IndexFolders(install.Locations.Values, token);
 
         var flattenedLoadout = await FlattenLoadout(loadout);
-        
+
         var seen = new ConcurrentBag<GamePath>();
 
         await foreach (var existing in existingFiles.WithCancellation(token))
         {
             var gamePath = install.ToGamePath(existing.Path);
             seen.Add(gamePath);
-            
+
             if (flattenedLoadout.TryGetValue(gamePath, out var planFile))
             {
                 var planMetadata = await GetMetaData(planFile.File, existing.Path);
@@ -153,11 +153,11 @@ public class LoadoutSynchronizer
                 }
             }
         }
-        
+
         foreach (var (gamePath, (modFile, mod)) in flattenedLoadout.Where(kv => !seen.Contains(kv.Key)))
         {
             var absPath = gamePath.CombineChecked(install);
-            
+
             if (seen.Contains(gamePath))
                 continue;
 
@@ -166,7 +166,7 @@ public class LoadoutSynchronizer
                 yield return itm;
             }
         }
-        
+
     }
 
     private async IAsyncEnumerable<IApplyStep> EmitCreatePlan(AModFile modFile, Mod mod, Loadout loadout, AbsolutePath absPath)
@@ -202,7 +202,7 @@ public class LoadoutSynchronizer
                     yield break;
                 }
             }
-            
+
             // Otherwise we need to generate the file
             yield return new GenerateFile
             {
@@ -244,7 +244,7 @@ public class LoadoutSynchronizer
         {
             yield return itm;
         }
-        
+
         await foreach (var itm in EmitCreatePlan(planFile, mod, loadout, existing.Path))
         {
             yield return itm;
@@ -268,7 +268,7 @@ public class LoadoutSynchronizer
         var existingFiles = _directoryIndexer.IndexFolders(install.Locations.Values, token);
 
         var flattenedLoadout = await FlattenLoadout(loadout);
-        
+
         var seen = new ConcurrentBag<GamePath>();
 
         await foreach (var existing in existingFiles.WithCancellation(token))
@@ -286,18 +286,18 @@ public class LoadoutSynchronizer
                 }
                 continue;
             }
-            
+
             await foreach (var itm in EmitIngestCreatePlan(existing, loadout).WithCancellation(token))
                 yield return itm;
         }
-        
+
         foreach (var (gamePath, (modFile, mod)) in flattenedLoadout)
         {
             if (seen.Contains(gamePath))
                 continue;
-            
+
             var absPath = gamePath.CombineChecked(install);
-            
+
             await foreach (var itm in EmitRemoveFromLoadout(absPath))
                 yield return itm;
         }
@@ -322,7 +322,7 @@ public class LoadoutSynchronizer
                 Size = existing.Size
             };
         }
-        
+
         yield return new CreateInLoadout
         {
             To = existing.Path,
@@ -342,7 +342,7 @@ public class LoadoutSynchronizer
                 Size = existing.Size
             };
         }
-        
+
         yield return new ReplaceInLoadout
         {
             To = existing.Path,
@@ -352,6 +352,21 @@ public class LoadoutSynchronizer
             ModId = mod.Id
         };
     }
-    
+
+    public async Task Apply(IEnumerable<IApplyStep> steps)
+    {
+        var backups = steps.OfType<BackupFile>()
+            .Select(f => (f.To, f.Hash, f.Size))
+            .ToList();
+        if (backups.Any())
+            await _archiveManager.BackupFiles(backups);
+
+        foreach (var file in steps.OfType<DeleteFile>())
+        {
+            file.To.Delete();
+        }
+
+    }
+
 }
 
