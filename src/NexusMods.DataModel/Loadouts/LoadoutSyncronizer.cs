@@ -4,6 +4,7 @@ using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Loadouts.ApplySteps;
+using NexusMods.DataModel.Loadouts.IngestSteps;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
@@ -12,6 +13,7 @@ using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.DataModel.TriggerFilter;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using BackupFile = NexusMods.DataModel.Loadouts.ApplySteps.BackupFile;
 
 namespace NexusMods.DataModel.Loadouts;
 
@@ -259,7 +261,7 @@ public class LoadoutSynchronizer
 
     public record FileMetaData(AbsolutePath Path, Hash Hash, Size Size);
 
-    public async IAsyncEnumerable<IApplyStep> MakeIngestPlan(Loadout loadout, CancellationToken token = default)
+    public async IAsyncEnumerable<IIngestStep> MakeIngestPlan(Loadout loadout, CancellationToken token = default)
     {
         var install = loadout.Installation;
 
@@ -291,11 +293,11 @@ public class LoadoutSynchronizer
         }
     }
 
-    private async IAsyncEnumerable<IApplyStep> EmitIngestCreatePlan(HashedEntry existing, Loadout loadout)
+    private async IAsyncEnumerable<IIngestStep> EmitIngestCreatePlan(HashedEntry existing, Loadout loadout)
     {
         if (!await _archiveManager.HaveFile(existing.Hash))
         {
-            yield return new BackupFile
+            yield return new IngestSteps.BackupFile
             {
                 To = existing.Path,
                 Hash = existing.Hash,
@@ -311,9 +313,26 @@ public class LoadoutSynchronizer
         };
     }
 
-    private IAsyncEnumerable<IApplyStep> EmitIngestReplacePlan(AModFile planFileFile, Mod planFileMod, HashedEntry existing, Loadout loadout)
+    private async IAsyncEnumerable<IIngestStep> EmitIngestReplacePlan(AModFile modFile, Mod mod, HashedEntry existing, Loadout loadout)
     {
-        throw new NotImplementedException();
+        if (!await _archiveManager.HaveFile(existing.Hash))
+        {
+            yield return new IngestSteps.BackupFile
+            {
+                To = existing.Path,
+                Hash = existing.Hash,
+                Size = existing.Size
+            };
+        }
+        
+        yield return new ReplaceInLoadout
+        {
+            To = existing.Path,
+            Hash = existing.Hash,
+            Size = existing.Size,
+            ModFileId = modFile.Id,
+            ModId = mod.Id
+        };
     }
     
 }
