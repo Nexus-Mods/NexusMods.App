@@ -11,7 +11,7 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord;
 /// Maintained by the BUTR Team
 /// https://github.com/BUTR
 /// </summary>
-public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpicGame
+public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpicGame, IXboxGame
 {
     public static readonly GameDomain StaticDomain = GameDomain.From("mountandblade2bannerlord");
     public static string DisplayName => "Mount & Blade II: Bannerlord";
@@ -55,7 +55,7 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
                     return new GameInstallation
                     {
                         Game = this,
-                        Locations = new Dictionary<GameFolderType, AbsolutePath>(GetLocations(locator, installation)),
+                        Locations = new Dictionary<GameFolderType, AbsolutePath>(GetLocations(_fileSystem, locator, installation)),
                         Version = Version.TryParse(launcherManagerHandler.GetGameVersion(), out var val) ? val : new Version(),
                     };
                 })
@@ -65,7 +65,7 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
         }
     }
 
-    protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(IGameLocator locator, GameLocatorResult installation)
+    protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(IFileSystem fileSystem, IGameLocator locator, GameLocatorResult installation)
     {
         const string DocumentsFolderName = "Mount and Blade II Bannerlord";
         var documentsFolder = _fileSystem.GetKnownPath(KnownPath.MyDocumentsDirectory);
