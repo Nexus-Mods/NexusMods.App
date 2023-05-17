@@ -26,9 +26,4 @@ public record AddToLoadout : IApplyStep, IStaticFileStep
     /// The hash of the file.
     /// </summary>
     public required Hash Hash { get; init; }
-
-    /// <summary>
-    /// The mod this file belongs to.
-    /// </summary>
-    public required ModId Mod { get; init; }
 }

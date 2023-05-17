@@ -13,21 +13,21 @@ using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Tests.Harness;
 
-public class ALoadoutSynrconizerTest<T> : ADataModelTest<T>
+public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
 {
     protected readonly TestDirectoryIndexer TestIndexer;
-    protected readonly LoadoutSyncronizer TestSyncronizer;
+    protected readonly LoadoutSynchronizer TestSyncronizer;
     protected readonly TestArchiveManager TestArchiveManagerInstance;
     protected readonly TestFingerprintCache<Mod, CachedModSortRules> TestFingerprintCacheInstance;
     protected readonly TestFingerprintCache<IGeneratedFile, CachedGeneratedFileData> TestGeneratedFileFingerprintCache;
 
-    public ALoadoutSynrconizerTest(IServiceProvider provider) : base(provider)
+    public ALoadoutSynrchonizerTest(IServiceProvider provider) : base(provider)
     {
         TestIndexer = new TestDirectoryIndexer();
         TestArchiveManagerInstance = new TestArchiveManager();
         TestFingerprintCacheInstance = new TestFingerprintCache<Mod, CachedModSortRules>();
         TestGeneratedFileFingerprintCache = new TestFingerprintCache<IGeneratedFile, CachedGeneratedFileData>();
-        TestSyncronizer = new LoadoutSyncronizer(TestFingerprintCacheInstance, TestIndexer, TestArchiveManagerInstance, TestGeneratedFileFingerprintCache);
+        TestSyncronizer = new LoadoutSynchronizer(TestFingerprintCacheInstance, TestIndexer, TestArchiveManagerInstance, TestGeneratedFileFingerprintCache);
     }
 
 

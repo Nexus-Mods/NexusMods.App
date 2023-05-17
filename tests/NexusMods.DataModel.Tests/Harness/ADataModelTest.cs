@@ -39,7 +39,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected readonly FileContentsCache ArchiveContentsCache;
     protected readonly ArchiveManager ArchiveManager;
     protected readonly LoadoutManager LoadoutManager;
-    protected LoadoutSyncronizer LoadoutSyncronizer;
+    protected LoadoutSynchronizer LoadoutSyncronizer;
     protected readonly FileHashCache FileHashCache;
     protected readonly IFileSystem FileSystem;
     protected readonly IDataStore DataStore;
@@ -66,7 +66,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         FileSystem = provider1.GetRequiredService<IFileSystem>();
         DataStore = provider1.GetRequiredService<IDataStore>();
         Logger = provider1.GetRequiredService<ILogger<T>>();
-        LoadoutSyncronizer = provider1.GetRequiredService<LoadoutSyncronizer>();
+        LoadoutSyncronizer = provider1.GetRequiredService<LoadoutSynchronizer>();
         TemporaryFileManager = provider1.GetRequiredService<TemporaryFileManager>();
         ServiceProvider = provider;
 

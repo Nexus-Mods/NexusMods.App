@@ -4,6 +4,7 @@ using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Loadouts.ApplySteps;
+using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Sorting;
@@ -17,14 +18,14 @@ namespace NexusMods.DataModel.Loadouts;
 /// <summary>
 /// All logic for synchronizing loadouts with the game folders is contained within this class.
 /// </summary>
-public class LoadoutSyncronizer
+public class LoadoutSynchronizer
 {
     private readonly IFingerprintCache<Mod,CachedModSortRules> _modSortRulesFingerprintCache;
     private readonly IDirectoryIndexer _directoryIndexer;
     private readonly IArchiveManager _archiveManager;
     private readonly IFingerprintCache<IGeneratedFile,CachedGeneratedFileData> _generatedFileFingerprintCache;
 
-    public LoadoutSyncronizer(IFingerprintCache<Mod, CachedModSortRules> modSortRulesFingerprintCache, 
+    public LoadoutSynchronizer(IFingerprintCache<Mod, CachedModSortRules> modSortRulesFingerprintCache, 
         IDirectoryIndexer directoryIndexer, 
         IArchiveManager archiveManager,
         IFingerprintCache<IGeneratedFile, CachedGeneratedFileData> generatedFileFingerprintCache)
@@ -257,5 +258,63 @@ public class LoadoutSyncronizer
 
 
     public record FileMetaData(AbsolutePath Path, Hash Hash, Size Size);
+
+    public async IAsyncEnumerable<IApplyStep> MakeIngestPlan(Loadout loadout, CancellationToken token = default)
+    {
+        var install = loadout.Installation;
+
+        var existingFiles = _directoryIndexer.IndexFolders(install.Locations.Values, token);
+
+        var flattenedLoadout = await FlattenLoadout(loadout);
+        
+        var seen = new ConcurrentBag<GamePath>();
+
+        await foreach (var existing in existingFiles.WithCancellation(token))
+        {
+            var gamePath = install.ToGamePath(existing.Path);
+            seen.Add(gamePath);
+
+            if (flattenedLoadout.TryGetValue(gamePath, out var planFile))
+            {
+                var planMetadata = await GetMetaData(planFile.File, existing.Path);
+                if (planMetadata == null || planMetadata.Hash != existing.Hash || planMetadata.Size != existing.Size)
+                {
+                    await foreach (var itm in EmitIngestReplacePlan(planFile.File, planFile.Mod, existing, loadout).WithCancellation(token))
+                        yield return itm;
+                }
+                continue;
+            }
+            
+            await foreach (var itm in EmitIngestCreatePlan(existing, loadout).WithCancellation(token))
+                yield return itm;
+
+        }
+    }
+
+    private async IAsyncEnumerable<IApplyStep> EmitIngestCreatePlan(HashedEntry existing, Loadout loadout)
+    {
+        if (!await _archiveManager.HaveFile(existing.Hash))
+        {
+            yield return new BackupFile
+            {
+                To = existing.Path,
+                Hash = existing.Hash,
+                Size = existing.Size
+            };
+        }
+        
+        yield return new CreateInLoadout
+        {
+            To = existing.Path,
+            Hash = existing.Hash,
+            Size = existing.Size
+        };
+    }
+
+    private IAsyncEnumerable<IApplyStep> EmitIngestReplacePlan(AModFile planFileFile, Mod planFileMod, HashedEntry existing, Loadout loadout)
+    {
+        throw new NotImplementedException();
+    }
     
 }
+
