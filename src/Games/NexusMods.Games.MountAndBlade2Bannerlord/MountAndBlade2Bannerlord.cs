@@ -68,7 +68,7 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
     protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(IFileSystem fileSystem, IGameLocator locator, GameLocatorResult installation)
     {
         const string DocumentsFolderName = "Mount and Blade II Bannerlord";
-        var documentsFolder = _fileSystem.GetKnownPath(KnownPath.MyDocumentsDirectory);
+        var documentsFolder = fileSystem.GetKnownPath(KnownPath.MyDocumentsDirectory);
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Saves, documentsFolder.CombineChecked(@$"{DocumentsFolderName}\Game Saves"));
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Preferences, documentsFolder.CombineChecked(@$"{DocumentsFolderName}\Configs"));
