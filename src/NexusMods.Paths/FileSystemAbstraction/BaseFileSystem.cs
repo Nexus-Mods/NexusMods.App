@@ -52,8 +52,12 @@ public abstract class BaseFileSystem : IFileSystem
             return mappedPath;
 
         // check if the path has already been mapped
-        if (_pathMappings.FirstOrDefault(kv => originalPath.InFolder(kv.Value)).Key != default)
+        if (_pathMappings
+                .Where(kv => kv.Value is not { Directory: "/", FileName: "" })
+                .FirstOrDefault(kv => originalPath.InFolder(kv.Value)).Key != default)
+        {
             return originalPath;
+        }
 
         // indirect mapping via parent directory
         var (originalParentDirectory, newParentDirectory) = _pathMappings
@@ -159,9 +163,12 @@ public abstract class BaseFileSystem : IFileSystem
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             throw new PlatformNotSupportedException();
 
+        // TODO: these mappings can be changed using winecfg and are stored inside the "dosdevices" folder
+        // NOTE(erri120): I need to revisit this entire function at some point and figure out a better way to handle path mappings
         var pathMappings = new Dictionary<AbsolutePath, AbsolutePath>
         {
             { fileSystem.FromFullPath("/c"), rootDirectory },
+            { fileSystem.FromFullPath("/z"), fileSystem.FromFullPath("/") },
         };
 
         var knownPaths = Enum.GetValues<KnownPath>();

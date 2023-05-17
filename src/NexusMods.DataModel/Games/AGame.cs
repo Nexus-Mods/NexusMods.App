@@ -71,7 +71,7 @@ public abstract class AGame : IGame
                 select new GameInstallation
                 {
                     Game = this,
-                    Locations = new Dictionary<GameFolderType, AbsolutePath>(GetLocations(locator, installation)),
+                    Locations = new Dictionary<GameFolderType, AbsolutePath>(GetLocations(installation.Path.FileSystem, locator, installation)),
                     Version = installation.Version ?? GetVersion(installation),
                     Store = installation.Store
                 })
@@ -82,10 +82,14 @@ public abstract class AGame : IGame
     /// <summary>
     /// Returns the locations of known game elements, such as save folder, etc.
     /// </summary>
+    /// <param name="fileSystem">The file system where the game was found in. This comes from <paramref name="installation"/>.</param>
     /// <param name="locator">The locator used to find this game installation.</param>
     /// <param name="installation">An installation of the game found by the <paramref name="locator"/>.</param>
     /// <returns></returns>
-    protected abstract IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(IGameLocator locator, GameLocatorResult installation);
+    protected abstract IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(
+        IFileSystem fileSystem,
+        IGameLocator locator,
+        GameLocatorResult installation);
 
     /// <inheritdoc />
     public override string ToString() => Name;

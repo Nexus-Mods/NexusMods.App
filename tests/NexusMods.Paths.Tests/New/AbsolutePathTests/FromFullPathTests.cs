@@ -22,8 +22,12 @@ public class FromFullPathTests
     [InlineData("C:\\foo\\bar", "C:\\foo\\bar", "C:\\foo", "bar", false)]
     [InlineData("C:\\foo\\bar\\", "C:\\foo\\bar", "C:\\foo", "bar", false)]
     [InlineData("C:\\foo\\bar\\baz", "C:\\foo\\bar\\baz", "C:\\foo\\bar", "baz", false)]
-    public void Test_FromFullPath(string input, string expectedFullPath,
-        string? expectedDirectory, string expectedFileName, bool linux)
+    public void Test_FromFullPath(
+        string input,
+        string expectedFullPath,
+        string expectedDirectory,
+        string expectedFileName,
+        bool linux)
     {
         Skip.If(linux != OperatingSystem.IsLinux());
         var path = AbsolutePath.FromFullPath(input, _fileSystem);

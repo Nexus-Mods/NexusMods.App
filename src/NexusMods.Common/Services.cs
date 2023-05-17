@@ -35,6 +35,11 @@ public static class Services
         return services;
     }
 
+    /// <summary>
+    /// Adds a shared implementation of <see cref="IOSInformation"/> to the service collection.
+    /// </summary>
+    /// <param name="serviceCollection"></param>
+    /// <returns></returns>
     public static IServiceCollection AddOSInformation(this IServiceCollection serviceCollection)
     {
         return serviceCollection.AddSingleton(OSInformation.Shared);

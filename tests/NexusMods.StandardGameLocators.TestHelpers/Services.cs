@@ -4,12 +4,16 @@ using GameFinder.StoreHandlers.EGS;
 using GameFinder.StoreHandlers.GOG;
 using GameFinder.StoreHandlers.Origin;
 using GameFinder.StoreHandlers.Steam;
+using GameFinder.StoreHandlers.Xbox;
+using GameFinder.Wine;
+using GameFinder.Wine.Bottles;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
+using IGame = NexusMods.DataModel.Games.IGame;
 
 namespace NexusMods.StandardGameLocators.TestHelpers;
 
@@ -20,30 +24,58 @@ public static class Services
         coll.AddAllSingleton<IGame, StubbedGame>();
         coll.AddAllSingleton<IModInstaller, StubbedGameInstaller>();
         coll.AddAllSingleton<ITool, ListFilesTool>();
-        coll.AddSingleton<AHandler<EADesktopGame, string>>(s =>
-            new StubbedGameLocator<EADesktopGame, string>(s.GetRequiredService<TemporaryFileManager>(),
-                tfm => new EADesktopGame("ea-game-id", "Stubbed Game", tfm.CreateFolder("ea_game").Path.ToString()),
-                game => game.SoftwareID));
+        coll.AddSingleton<AHandler<EADesktopGame, EADesktopGameId>>(s =>
+            new StubbedGameLocator<EADesktopGame, EADesktopGameId>(s.GetRequiredService<TemporaryFileManager>(),
+                tfm => new EADesktopGame(EADesktopGameId.From("ea-game-id"), "Stubbed Game", tfm.CreateFolder("ea_game").Path),
+                game => game.EADesktopGameId));
 
-        coll.AddSingleton<AHandler<EGSGame, string>>(s =>
-            new StubbedGameLocator<EGSGame, string>(s.GetRequiredService<TemporaryFileManager>(),
-                tfm => new EGSGame("epic-game-id", "Stubbed Game", tfm.CreateFolder("epic_game").Path.ToString()),
+        coll.AddSingleton<AHandler<EGSGame, EGSGameId>>(s =>
+            new StubbedGameLocator<EGSGame, EGSGameId>(s.GetRequiredService<TemporaryFileManager>(),
+                tfm => new EGSGame(EGSGameId.From("epic-game-id"), "Stubbed Game", tfm.CreateFolder("epic_game").Path),
                 game => game.CatalogItemId));
 
-        coll.AddSingleton<AHandler<OriginGame, string>>(s =>
-            new StubbedGameLocator<OriginGame, string>(s.GetRequiredService<TemporaryFileManager>(),
-                tfm => new OriginGame("origin-game-id", tfm.CreateFolder("origin_game").Path.ToString()),
+        coll.AddSingleton<AHandler<OriginGame, OriginGameId>>(s =>
+            new StubbedGameLocator<OriginGame, OriginGameId>(s.GetRequiredService<TemporaryFileManager>(),
+                tfm => new OriginGame(OriginGameId.From("origin-game-id"), tfm.CreateFolder("origin_game").Path),
                 game => game.Id));
 
-        coll.AddSingleton<AHandler<GOGGame, long>>(s =>
-            new StubbedGameLocator<GOGGame, long>(s.GetRequiredService<TemporaryFileManager>(),
-                tfm => new GOGGame(42, "Stubbed Game", tfm.CreateFolder("gog_game").Path.ToString()),
+        coll.AddSingleton<AHandler<GOGGame, GOGGameId>>(s =>
+            new StubbedGameLocator<GOGGame, GOGGameId>(s.GetRequiredService<TemporaryFileManager>(),
+                tfm => new GOGGame(GOGGameId.From(42), "Stubbed Game", tfm.CreateFolder("gog_game").Path),
                 game => game.Id));
 
-        coll.AddSingleton<AHandler<SteamGame, int>>(s =>
-            new StubbedGameLocator<SteamGame, int>(s.GetRequiredService<TemporaryFileManager>(),
-                tfm => new SteamGame(42, "Stubbed Game", tfm.CreateFolder("steam_game").Path.ToString()),
+        coll.AddSingleton<AHandler<SteamGame, SteamGameId>>(s =>
+            new StubbedGameLocator<SteamGame, SteamGameId>(s.GetRequiredService<TemporaryFileManager>(),
+                tfm => new SteamGame(SteamGameId.From( 42), "Stubbed Game", tfm.CreateFolder("steam_game").Path),
                 game => game.AppId));
+
+        coll.AddSingleton<AHandler<XboxGame, XboxGameId>>(s =>
+            new StubbedGameLocator<XboxGame, XboxGameId>(s.GetRequiredService<TemporaryFileManager>(),
+                tfm => new XboxGame(XboxGameId.From("xbox-game-id"), "Stubbed Game", tfm.CreateFolder("xbox_game").Path),
+                game => game.Id));
+
+        if (OSInformation.Shared.IsLinux)
+        {
+            coll.AddSingleton<IWinePrefixManager<WinePrefix>>(s =>
+                new StubbedWinePrefixManager<WinePrefix>(s.GetRequiredService<TemporaryFileManager>(),
+                    tfm => new WinePrefix
+                    {
+                        ConfigurationDirectory = tfm.CreateFolder("wine-prefix").Path,
+                    }));
+
+            coll.AddSingleton<IWinePrefixManager<BottlesWinePrefix>>(s =>
+                new StubbedWinePrefixManager<BottlesWinePrefix>(s.GetRequiredService<TemporaryFileManager>(),
+                    tfm => new BottlesWinePrefix
+                    {
+                        ConfigurationDirectory = tfm.CreateFolder("bottles-prefix").Path,
+                    }));
+
+            coll.AddSingleton<WineStoreHandlerWrapper>(s => new WineStoreHandlerWrapper(
+                s.GetRequiredService<IFileSystem>(),
+                new WineStoreHandlerWrapper.CreateHandler[] { },
+                new WineStoreHandlerWrapper.Matches[] { }));
+        }
+
         return coll;
     }
 }
