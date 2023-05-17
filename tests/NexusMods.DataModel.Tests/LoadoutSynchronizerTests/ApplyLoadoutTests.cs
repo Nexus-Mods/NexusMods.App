@@ -65,7 +65,27 @@ public class ApplyLoadoutTests : ALoadoutSynrchonizerTest<ApplyLoadoutTests>
         await TestSyncronizer.Apply(plan);
 
         mfilesystem.Verify(f => f.DeleteFile(file), Times.Once);
+    }
 
+    [Fact]
+    public async Task ExtractedFilesAreExtracted()
+    {
+        var loadout = await CreateApplyPlanTestLoadout();
 
+        var file = GetFirstModFile(loadout);
+        
+        var plan = new IApplyStep[]
+        {
+            new ExtractFile
+            {
+                To = file,
+                Hash = Hash.From(0x424),
+                Size = Size.From(0x42)
+            }
+        };
+
+        await TestSyncronizer.Apply(plan);
+
+        TestArchiveManagerInstance.Extracted.Should().Contain((Hash.From(0x424), file));
     }
 }

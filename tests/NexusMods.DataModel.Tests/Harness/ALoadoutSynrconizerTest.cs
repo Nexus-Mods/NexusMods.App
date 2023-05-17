@@ -50,14 +50,20 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
     protected class TestArchiveManager : IArchiveManager
     {
         public readonly HashSet<Hash> Archives = new();
+        public readonly HashSet<(Hash, AbsolutePath)> Extracted = new();
         public async ValueTask<bool> HaveFile(Hash hash)
         {
             return Archives.Contains(hash);
         }
 
-        public async Task BackupFiles(IEnumerable<(AbsolutePath, Hash, Size)> backups)
+        public async Task BackupFiles(IEnumerable<(AbsolutePath, Hash, Size)> backups, CancellationToken token = default)
         {
             Archives.AddRange(backups.Select(b => b.Item2));
+        }
+
+        public async Task ExtractFiles(IEnumerable<(Hash Src, AbsolutePath Dest)> files, CancellationToken token = default)
+        {
+            Extracted.AddRange(files);
         }
     }
 

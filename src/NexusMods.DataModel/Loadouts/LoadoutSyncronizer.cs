@@ -353,18 +353,32 @@ public class LoadoutSynchronizer
         };
     }
 
-    public async Task Apply(IEnumerable<IApplyStep> steps)
+    /// <summary>
+    /// Applies the given steps to the game folder
+    /// </summary>
+    /// <param name="steps"></param>
+    public async Task Apply(IEnumerable<IApplyStep> steps, Loadout loadout)
     {
-        var backups = steps.OfType<BackupFile>()
+        // Step 1: Backup Files
+        var byType = steps.ToLookup(g => g.GetType());
+        
+        var backups = byType[typeof(BackupFile)]
+            .OfType<BackupFile>()
             .Select(f => (f.To, f.Hash, f.Size))
             .ToList();
+        
         if (backups.Any())
             await _archiveManager.BackupFiles(backups);
 
-        foreach (var file in steps.OfType<DeleteFile>())
+        // Step 2: Delete Files
+        foreach (var file in byType[typeof(DeleteFile)].OfType<DeleteFile>())
         {
             file.To.Delete();
         }
+
+        // Step 3: Extract Files
+        var extractedFiles = byType[typeof(ExtractFile)].OfType<ExtractFile>().Select(f => (f.Hash, f.To));
+        await _archiveManager.ExtractFiles(extractedFiles);
 
     }
 

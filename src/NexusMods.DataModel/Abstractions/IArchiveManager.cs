@@ -22,5 +22,14 @@ public interface IArchiveManager
     /// backup process a exception may be thrown.
     /// </summary>
     /// <param name="backups"></param>
-    Task BackupFiles(IEnumerable<(AbsolutePath, Hash, Size)> backups);
+    Task BackupFiles(IEnumerable<(AbsolutePath, Hash, Size)> backups, CancellationToken token = default);
+    
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="files"></param>
+    /// <param name="token"></param>
+    /// <returns></returns>
+    Task ExtractFiles(IEnumerable<(Hash Src, AbsolutePath Dest)> files, CancellationToken token = default);
 }

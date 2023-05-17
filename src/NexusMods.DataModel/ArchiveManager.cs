@@ -126,7 +126,12 @@ public class ArchiveManager : IArchiveManager
         return false;
     }
 
-    public Task BackupFiles(IEnumerable<(AbsolutePath, Hash, Size)> backups)
+    public Task BackupFiles(IEnumerable<(AbsolutePath, Hash, Size)> backups, CancellationToken token = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task ExtractFiles(IEnumerable<(Hash Src, AbsolutePath Dest)> files, CancellationToken token = default)
     {
         throw new NotImplementedException();
     }
