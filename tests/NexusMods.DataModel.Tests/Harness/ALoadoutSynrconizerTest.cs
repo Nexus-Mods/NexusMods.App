@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using FluentAssertions;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.JsonConverters;
@@ -23,6 +24,8 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
 
     public ALoadoutSynrchonizerTest(IServiceProvider provider) : base(provider)
     {
+        AssertionOptions.AssertEquivalencyUsing(opt => opt.ComparingRecordsByValue());
+
         TestIndexer = new TestDirectoryIndexer();
         TestArchiveManagerInstance = new TestArchiveManager();
         TestFingerprintCacheInstance = new TestFingerprintCache<Mod, CachedModSortRules>();
