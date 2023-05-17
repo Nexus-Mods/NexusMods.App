@@ -289,8 +289,26 @@ public class LoadoutSynchronizer
             
             await foreach (var itm in EmitIngestCreatePlan(existing, loadout).WithCancellation(token))
                 yield return itm;
-
         }
+        
+        foreach (var (gamePath, (modFile, mod)) in flattenedLoadout)
+        {
+            if (seen.Contains(gamePath))
+                continue;
+            
+            var absPath = gamePath.CombineChecked(install);
+            
+            await foreach (var itm in EmitRemoveFromLoadout(absPath))
+                yield return itm;
+        }
+    }
+
+    private async IAsyncEnumerable<IIngestStep> EmitRemoveFromLoadout(AbsolutePath absPath)
+    {
+        yield return new IngestSteps.RemoveFromLoadout
+        {
+            To = absPath
+        };
     }
 
     private async IAsyncEnumerable<IIngestStep> EmitIngestCreatePlan(HashedEntry existing, Loadout loadout)

@@ -112,4 +112,20 @@ public class MakeIngestPlanTests : ALoadoutSynrchonizerTest<MakeIngestPlanTests>
         });
         
     }
+    
+    [Fact]
+    public async Task DeletedFilesAreRemovedFromTheLoadout()
+    {
+        var loadout = await CreateApplyPlanTestLoadout();
+        
+        var absPath = loadout.Installation.Locations[GameFolderType.Game].CombineUnchecked("0x00001.dat");
+        
+        var plan = await TestSyncronizer.MakeIngestPlan(loadout).ToListAsync();
+        
+        plan.Should().Contain(new RemoveFromLoadout
+        {
+            To = absPath
+        });
+
+    }
 }
