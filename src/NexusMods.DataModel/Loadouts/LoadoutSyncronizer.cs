@@ -417,6 +417,7 @@ public class LoadoutSynchronizer
     {
         private readonly IngestPlan _plan;
         private readonly HashSet<GamePath> _removeFiles;
+        private readonly ILookup<ModId,FromArchive> _replaceFiles;
 
         public IngestVisitor(ILookup<Type, IIngestStep> steps, IngestPlan plan)
         {
@@ -425,6 +426,17 @@ public class LoadoutSynchronizer
                 .OfType<IngestSteps.RemoveFromLoadout>()
                 .Select(r => plan.Loadout.Installation.ToGamePath(r.To))
                 .ToHashSet();
+
+            _replaceFiles = steps[typeof(IngestSteps.ReplaceInLoadout)]
+                .OfType<IngestSteps.ReplaceInLoadout>()
+                .ToLookup(r => r.ModId,
+                    r => new FromArchive
+                    {
+                        To = plan.Loadout.Installation.ToGamePath(r.To),
+                        Hash = r.Hash,
+                        Size = r.Size,
+                        Id = ModFileId.New()
+                    });
 
         }
 
@@ -435,6 +447,19 @@ public class LoadoutSynchronizer
                 if (_removeFiles.Contains(to.To)) return null;
             }
             return base.Alter(file);
+        }
+
+        public override Mod? Alter(Mod mod)
+        {
+            var toAdd = _replaceFiles[mod.Id];
+            if (toAdd.Any())
+            {
+                mod = mod with
+                {
+                    Files = mod.Files.With(toAdd, f => f.Id)
+                };
+            }
+            return base.Alter(mod);
         }
     }
 

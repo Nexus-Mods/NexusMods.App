@@ -2,6 +2,7 @@
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.IngestSteps;
 using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
+using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Hashing.xxHash64;
@@ -82,6 +83,38 @@ public class IngestChangesTest : ALoadoutSynrchonizerTest<IngestChangesTest>
         (from mod in loadout.Mods.Values
             from file in mod.Files.Values
             select file).Count().Should().Be(0);
+    }
 
+    [Fact]
+    public async Task ChangedFilesAreChanged()
+    {
+        var loadout = await CreateApplyPlanTestLoadout();
+
+        var firstMod = loadout.Mods.Values.First();
+        var firstFile = firstMod.Files.Values.First();
+        var absPath = loadout.Installation.Locations[GameFolderType.Game].CombineUnchecked("foo.bar");
+
+        loadout = await TestSyncronizer.Ingest(new IngestPlan
+        {
+            Loadout = loadout,
+            Mods = Array.Empty<Mod>(),
+            Flattened = new Dictionary<GamePath, ModFilePair>(),
+            Steps = new IIngestStep[]
+            {
+                new ReplaceInLoadout
+                {
+                    ModId = firstMod.Id,
+                    ModFileId = firstFile.Id,
+                    Hash = Hash.From(0x42DEADBEEF),
+                    Size = Size.MB,
+                    To = absPath
+                }
+            }
+        });
+
+        var file = (FromArchive)loadout.Mods.Values.First().Files.Values.First();
+        file.To.Should().Be(new GamePath(GameFolderType.Game, "foo.bar"));
+        file.Hash.Should().Be(Hash.From(0x42DEADBEEF));
+        file.Size.Should().Be(Size.MB);
     }
 }
