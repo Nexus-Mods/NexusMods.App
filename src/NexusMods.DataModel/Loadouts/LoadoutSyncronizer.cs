@@ -253,7 +253,7 @@ public class LoadoutSynchronizer
             return new FileMetaData(path, fa.Hash, fa.Size);
         throw new NotImplementedException();
     }
-    
+
     public async ValueTask<IngestPlan> MakeIngestPlan(Loadout loadout, CancellationToken token = default)
     {
         var install = loadout.Installation;
@@ -360,12 +360,12 @@ public class LoadoutSynchronizer
     {
         // Step 1: Backup Files
         var byType = plan.Steps.ToLookup(g => g.GetType());
-        
+
         var backups = byType[typeof(BackupFile)]
             .OfType<BackupFile>()
             .Select(f => (f.To, f.Hash, f.Size))
             .ToList();
-        
+
         if (backups.Any())
             await _archiveManager.BackupFiles(backups);
 
@@ -378,7 +378,7 @@ public class LoadoutSynchronizer
         // Step 3: Extract Files
         var extractedFiles = byType[typeof(ExtractFile)].OfType<ExtractFile>().Select(f => (f.Hash, f.To));
         await _archiveManager.ExtractFiles(extractedFiles);
-        
+
         // Step 4: Write Generated Files
         var generatedFiles = byType[typeof(GenerateFile)].OfType<GenerateFile>();
         foreach (var file in generatedFiles)
@@ -409,15 +409,32 @@ public class LoadoutSynchronizer
             .OfType<IngestSteps.BackupFile>()
             .Select(f => (f.To, f.Hash, f.Size));
         await _archiveManager.BackupFiles(backupFiles);
-        
-        return _loadoutRegistry.Alter(plan.Loadout.LoadoutId, message, new IngestVisitor(byType));
+
+        return _loadoutRegistry.Alter(plan.Loadout.LoadoutId, message, new IngestVisitor(byType, plan));
     }
 
     private class IngestVisitor : ALoadoutVisitor
-    { 
-        public IngestVisitor(ILookup<Type, IIngestStep> steps)
-        {
+    {
+        private readonly IngestPlan _plan;
+        private readonly HashSet<GamePath> _removeFiles;
 
+        public IngestVisitor(ILookup<Type, IIngestStep> steps, IngestPlan plan)
+        {
+            _plan = plan;
+            _removeFiles = steps[typeof(RemoveFromLoadout)]
+                .OfType<RemoveFromLoadout>()
+                .Select(r => plan.Loadout.Installation.ToGamePath(r.To))
+                .ToHashSet();
+
+        }
+
+        public override AModFile? Alter(AModFile file)
+        {
+            if (file is IToFile to)
+            {
+                if (_removeFiles.Contains(to.To)) return null;
+            }
+            return base.Alter(file);
         }
     }
 

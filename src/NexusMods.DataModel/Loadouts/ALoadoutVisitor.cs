@@ -22,7 +22,7 @@ public class ALoadoutVisitor
     /// </summary>
     /// <param name="modFile"></param>
     /// <returns></returns>
-    public virtual AModFile Alter(AModFile modFile)
+    public virtual AModFile? Alter(AModFile modFile)
     {
         return modFile;
     }
@@ -36,5 +36,5 @@ public class ALoadoutVisitor
     {
         return loadout;
     }
-    
+
 }
