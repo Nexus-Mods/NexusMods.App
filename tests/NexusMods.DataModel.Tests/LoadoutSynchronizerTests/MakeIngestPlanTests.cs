@@ -29,16 +29,16 @@ public class MakeIngestPlanTests : ALoadoutSynrchonizerTest<MakeIngestPlanTests>
         
         TestIndexer.Entries.Add(new HashedEntry(absPath, Hash.From(0x4242), DateTime.Now - TimeSpan.FromMinutes(20), Size.From(10)));
         
-        var plan = await TestSyncronizer.MakeIngestPlan(loadout).ToListAsync();
+        var plan = await TestSyncronizer.MakeIngestPlan(loadout);
         
-        plan.Should().ContainEquivalentOf(new BackupFile
+        plan.Steps.Should().ContainEquivalentOf(new BackupFile
         {
             To = absPath,
             Hash = Hash.From(0x4242),
             Size = Size.From(10)
         });
 
-        plan.Should().ContainEquivalentOf(new CreateInLoadout
+        plan.Steps.Should().ContainEquivalentOf(new CreateInLoadout
         {
             To = absPath,
             Hash = Hash.From(0x4242),
@@ -59,16 +59,16 @@ public class MakeIngestPlanTests : ALoadoutSynrchonizerTest<MakeIngestPlanTests>
         TestIndexer.Entries.Add(new HashedEntry(absPath, Hash.From(0x4242), DateTime.Now - TimeSpan.FromMinutes(20), Size.From(10)));
         TestArchiveManagerInstance.Archives.Add(Hash.From(0x4242));
         
-        var plan = await TestSyncronizer.MakeIngestPlan(loadout).ToListAsync();
+        var plan = await TestSyncronizer.MakeIngestPlan(loadout);
         
-        plan.Should().NotContainEquivalentOf(new BackupFile
+        plan.Steps.Should().NotContainEquivalentOf(new BackupFile
         {
             To = absPath,
             Hash = Hash.From(0x4242),
             Size = Size.From(10)
         });
 
-        plan.Should().ContainEquivalentOf(new CreateInLoadout
+        plan.Steps.Should().ContainEquivalentOf(new CreateInLoadout
         {
             To = absPath,
             Hash = Hash.From(0x4242),
@@ -92,17 +92,17 @@ public class MakeIngestPlanTests : ALoadoutSynrchonizerTest<MakeIngestPlanTests>
         TestIndexer.Entries.Add(new HashedEntry(absPath, Hash.From(0x4242), DateTime.Now - TimeSpan.FromMinutes(20), Size.From(10)));
 
         
-        var plan = await TestSyncronizer.MakeIngestPlan(loadout).ToListAsync();
+        var plan = await TestSyncronizer.MakeIngestPlan(loadout);
         
         
-        plan.Should().Contain(new BackupFile
+        plan.Steps.Should().Contain(new BackupFile
         {
             To = absPath,
             Hash = Hash.From(0x4242),
             Size = Size.From(10)
         });
 
-        plan.Should().Contain(new ReplaceInLoadout
+        plan.Steps.Should().Contain(new ReplaceInLoadout
         {
             To = absPath,
             Hash = Hash.From(0x4242),
@@ -120,9 +120,9 @@ public class MakeIngestPlanTests : ALoadoutSynrchonizerTest<MakeIngestPlanTests>
         
         var absPath = loadout.Installation.Locations[GameFolderType.Game].CombineUnchecked("0x00001.dat");
         
-        var plan = await TestSyncronizer.MakeIngestPlan(loadout).ToListAsync();
+        var plan = await TestSyncronizer.MakeIngestPlan(loadout);
         
-        plan.Should().Contain(new RemoveFromLoadout
+        plan.Steps.Should().Contain(new RemoveFromLoadout
         {
             To = absPath
         });

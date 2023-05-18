@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using DynamicData;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Extensions;
@@ -248,11 +249,8 @@ public class LoadoutSynchronizer
             return new FileMetaData(path, fa.Hash, fa.Size);
         throw new NotImplementedException();
     }
-
-
-    public record FileMetaData(AbsolutePath Path, Hash Hash, Size Size);
-
-    public async IAsyncEnumerable<IIngestStep> MakeIngestPlan(Loadout loadout, CancellationToken token = default)
+    
+    public async ValueTask<IngestPlan> MakeIngestPlan(Loadout loadout, CancellationToken token = default)
     {
         var install = loadout.Installation;
 
@@ -261,6 +259,7 @@ public class LoadoutSynchronizer
         var (flattenedLoadout, sortedMods) = await FlattenLoadout(loadout);
 
         var seen = new ConcurrentBag<GamePath>();
+        var plan = new List<IIngestStep>();
 
         await foreach (var existing in existingFiles.WithCancellation(token))
         {
@@ -272,14 +271,12 @@ public class LoadoutSynchronizer
                 var planMetadata = await GetMetaData(planFile.File, existing.Path);
                 if (planMetadata == null || planMetadata.Hash != existing.Hash || planMetadata.Size != existing.Size)
                 {
-                    await foreach (var itm in EmitIngestReplacePlan(planFile.File, planFile.Mod, existing, loadout).WithCancellation(token))
-                        yield return itm;
+                    await EmitIngestReplacePlan(plan, planFile, existing);
                 }
                 continue;
             }
 
-            await foreach (var itm in EmitIngestCreatePlan(existing, loadout).WithCancellation(token))
-                yield return itm;
+            await EmitIngestCreatePlan(plan, existing, loadout);
         }
 
         foreach (var (gamePath, pair) in flattenedLoadout)
@@ -289,65 +286,72 @@ public class LoadoutSynchronizer
 
             var absPath = gamePath.CombineChecked(install);
 
-            await foreach (var itm in EmitRemoveFromLoadout(absPath))
-                yield return itm;
+            await EmitRemoveFromLoadout(plan, absPath);
         }
-    }
 
-    private async IAsyncEnumerable<IIngestStep> EmitRemoveFromLoadout(AbsolutePath absPath)
-    {
-        yield return new IngestSteps.RemoveFromLoadout
+        return new IngestPlan
         {
-            To = absPath
+            Steps = plan,
+            Mods = sortedMods,
+            Flattened = flattenedLoadout,
+            Loadout = loadout
         };
     }
 
-    private async IAsyncEnumerable<IIngestStep> EmitIngestCreatePlan(HashedEntry existing, Loadout loadout)
+    private async ValueTask EmitRemoveFromLoadout(List<IIngestStep> plan, AbsolutePath absPath)
+    {
+        plan.Add(new IngestSteps.RemoveFromLoadout
+        {
+            To = absPath
+        });
+    }
+
+    private async ValueTask EmitIngestCreatePlan(List<IIngestStep> plan, HashedEntry existing, Loadout loadout)
     {
         if (!await _archiveManager.HaveFile(existing.Hash))
         {
-            yield return new IngestSteps.BackupFile
+            plan.Add(new IngestSteps.BackupFile
             {
                 To = existing.Path,
                 Hash = existing.Hash,
                 Size = existing.Size
-            };
+            });
         }
 
-        yield return new CreateInLoadout
+        plan.Add(new CreateInLoadout
         {
             To = existing.Path,
             Hash = existing.Hash,
             Size = existing.Size
-        };
+        });
     }
 
-    private async IAsyncEnumerable<IIngestStep> EmitIngestReplacePlan(AModFile modFile, Mod mod, HashedEntry existing, Loadout loadout)
+    private async ValueTask EmitIngestReplacePlan(List<IIngestStep> plan, ModFilePair pair, HashedEntry existing)
     {
         if (!await _archiveManager.HaveFile(existing.Hash))
         {
-            yield return new IngestSteps.BackupFile
+            plan.Add(new IngestSteps.BackupFile
             {
                 To = existing.Path,
                 Hash = existing.Hash,
                 Size = existing.Size
-            };
+            });
         }
 
-        yield return new ReplaceInLoadout
+        plan.Add(new ReplaceInLoadout
         {
             To = existing.Path,
             Hash = existing.Hash,
             Size = existing.Size,
-            ModFileId = modFile.Id,
-            ModId = mod.Id
-        };
+            ModFileId = pair.File.Id,
+            ModId = pair.Mod.Id
+        });
     }
 
     /// <summary>
     /// Applies the given steps to the game folder
     /// </summary>
-    /// <param name="steps"></param>
+    /// <param name="plan"></param>
     public async Task Apply(ApplyPlan plan)
     {
         // Step 1: Backup Files
@@ -388,8 +392,8 @@ public class LoadoutSynchronizer
                 Size = Size.FromLong(stream.Length)
             });
         }
-
     }
+    
 
 }
 
