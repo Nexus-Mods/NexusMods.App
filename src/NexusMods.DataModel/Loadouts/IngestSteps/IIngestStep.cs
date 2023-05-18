@@ -1,6 +1,6 @@
 using NexusMods.Paths;
 
-namespace NexusMods.DataModel.Loadouts.ApplySteps;
+namespace NexusMods.DataModel.Loadouts.IngestSteps;
 
 /// <summary>
 /// Represents a step performed during the loadout application process.

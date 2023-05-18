@@ -1,4 +1,5 @@
 ﻿using NexusMods.DataModel.Loadouts.ApplySteps;
+using NexusMods.DataModel.Loadouts.IngestSteps;
 
 namespace NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 

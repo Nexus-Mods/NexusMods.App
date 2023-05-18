@@ -393,7 +393,20 @@ public class LoadoutSynchronizer
             });
         }
     }
-    
+
+    /// <summary>
+    /// Run an ingest plan
+    /// </summary>
+    /// <param name="plan"></param>
+    public async ValueTask Ingest(IngestPlan plan)
+    {
+        var byType = plan.Steps.ToLookup(t => t.GetType());
+        var backupFiles = byType[typeof(IngestSteps.BackupFile)]
+            .OfType<IngestSteps.BackupFile>()
+            .Select(f => (f.To, f.Hash, f.Size));
+        await _archiveManager.BackupFiles(backupFiles);
+    }
+
 
 }
 
