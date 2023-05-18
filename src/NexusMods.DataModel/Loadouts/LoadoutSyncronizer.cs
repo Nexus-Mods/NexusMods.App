@@ -1,11 +1,10 @@
 ﻿using System.Collections.Concurrent;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Loadouts.ApplySteps;
 using NexusMods.DataModel.Loadouts.IngestSteps;
-using NexusMods.DataModel.Loadouts.Markers;
+using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Sorting;
@@ -45,11 +44,11 @@ public class LoadoutSynchronizer
     /// </summary>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    public async ValueTask<IReadOnlyDictionary<GamePath, (AModFile File, Mod Mod)>> FlattenLoadout(Loadout loadout)
+    public async ValueTask<(IReadOnlyDictionary<GamePath, ModFilePair> Files, IEnumerable<Mod> Mods)> FlattenLoadout(Loadout loadout)
     {
-        var dict = new Dictionary<GamePath, (AModFile, Mod)>();
+        var dict = new Dictionary<GamePath, ModFilePair>();
 
-        var sorted = await SortMods(loadout);
+        var sorted = (await SortMods(loadout)).ToList();
 
         foreach (var mod in sorted)
         {
@@ -58,10 +57,10 @@ public class LoadoutSynchronizer
                 if (file is not IToFile toFile)
                     continue;
 
-                dict[toFile.To] = (file, mod);
+                dict[toFile.To] = new ModFilePair {Mod = mod, File = file};
             }
         }
-        return dict;
+        return (dict, sorted);
     }
 
 
@@ -118,137 +117,129 @@ public class LoadoutSynchronizer
         }
     }
 
-    public async IAsyncEnumerable<IApplyStep> MakeApplySteps(Loadout loadout, CancellationToken token = default)
+    public async ValueTask<ApplyPlan> MakeApplySteps(Loadout loadout, CancellationToken token = default)
     {
 
         var install = loadout.Installation;
 
         var existingFiles = _directoryIndexer.IndexFolders(install.Locations.Values, token);
 
-        var flattenedLoadout = await FlattenLoadout(loadout);
+        var (flattenedLoadout, sortedMods) = await FlattenLoadout(loadout);
 
         var seen = new ConcurrentBag<GamePath>();
+
+        var plan = new List<IApplyStep>();
 
         await foreach (var existing in existingFiles.WithCancellation(token))
         {
             var gamePath = install.ToGamePath(existing.Path);
             seen.Add(gamePath);
 
-            if (flattenedLoadout.TryGetValue(gamePath, out var planFile))
+            if (flattenedLoadout.TryGetValue(gamePath, out var planned))
             {
-                var planMetadata = await GetMetaData(planFile.File, existing.Path);
+                var planMetadata = await GetMetaData(planned.File, existing.Path);
                 if (planMetadata is null || planMetadata.Hash != existing.Hash || planMetadata.Size != existing.Size)
                 {
-                    await foreach (var itm in EmitReplacePlan(existing, loadout, planFile.File, planFile.Mod).WithCancellation(token))
-                    {
-                        yield return itm;
-                    }
+                    await EmitReplacePlan(plan, existing, loadout, planned);
                 }
             }
             else
             {
-                await foreach(var itm in EmitDeletePlan(existing, loadout).WithCancellation(token))
-                {
-                    yield return itm;
-                }
+                await EmitDeletePlan(plan, existing);
             }
         }
 
-        foreach (var (gamePath, (modFile, mod)) in flattenedLoadout.Where(kv => !seen.Contains(kv.Key)))
+        foreach (var (gamePath, pair) in flattenedLoadout.Where(kv => !seen.Contains(kv.Key)))
         {
             var absPath = gamePath.CombineChecked(install);
 
             if (seen.Contains(gamePath))
                 continue;
 
-            await foreach (var itm in EmitCreatePlan(modFile, mod, loadout, absPath).WithCancellation(token))
-            {
-                yield return itm;
-            }
+            await EmitCreatePlan(plan, pair, loadout, absPath);
         }
 
+        return new ApplyPlan
+        {
+            Steps = plan,
+            Mods = sortedMods,
+            Flattened = flattenedLoadout,
+            Loadout = loadout
+        };
     }
 
-    private async IAsyncEnumerable<IApplyStep> EmitCreatePlan(AModFile modFile, Mod mod, Loadout loadout, AbsolutePath absPath)
+    private async ValueTask EmitCreatePlan(List<IApplyStep> plan, ModFilePair pair, Loadout loadout, AbsolutePath absPath)
     {
         // If the file is from an archive, then we can just extract it
-        if (modFile is IFromArchive fromArchive)
+        if (pair.File is IFromArchive fromArchive)
         {
-            yield return new ExtractFile
+            plan.Add(new ExtractFile
             {
                 To = absPath,
                 Hash = fromArchive.Hash,
                 Size = fromArchive.Size
-            };
-            yield break;
+            });
+            return;
         }
 
         // If the file is generated
-        if (modFile is IGeneratedFile generatedFile)
+        if (pair.File is IGeneratedFile generatedFile)
         {
             // Get the fingerprint for the generated file
-            var fingerprint = generatedFile.TriggerFilter.GetFingerprint((mod.Id, modFile.Id), loadout);
+            var fingerprint = generatedFile.TriggerFilter.GetFingerprint(pair, loadout);
             if (_generatedFileFingerprintCache.TryGet(fingerprint, out var cached))
             {
                 // If we have a cached version of the file in an archive, then we can just extract it
                 if (await _archiveManager.HaveFile(cached.Hash))
                 {
-                    yield return new ExtractFile
+                    plan.Add(new ExtractFile
                     {
                         To = absPath,
                         Hash = cached.Hash,
                         Size = cached.Size
-                    };
-                    yield break;
+                    });
+                    return;
                 }
             }
 
             // Otherwise we need to generate the file
-            yield return new GenerateFile
+            plan.Add(new GenerateFile
             {
                 To = absPath,
                 Source = generatedFile,
                 Fingerprint = fingerprint
-            };
-            yield break;
+            });
+            return;
         }
 
         // This should never happen
         throw new NotImplementedException();
     }
 
-    private async IAsyncEnumerable<IApplyStep> EmitDeletePlan(HashedEntry existing, Loadout loadout)
+    private async ValueTask EmitDeletePlan(List<IApplyStep> plan, HashedEntry existing)
     {
         if (!await _archiveManager.HaveFile(existing.Hash))
         {
-            yield return new BackupFile
+            plan.Add(new BackupFile
             {
                 Hash = existing.Hash,
                 Size = existing.Size,
                 To = existing.Path
-            };
+            });
         }
 
-
-        yield return new DeleteFile
+        plan.Add(new DeleteFile
         {
             To = existing.Path,
             Hash = existing.Hash,
             Size = existing.Size
-        };
+        });
     }
 
-    private async IAsyncEnumerable<IApplyStep> EmitReplacePlan(HashedEntry existing, Loadout loadout, AModFile planFile, Mod mod)
+    private async ValueTask EmitReplacePlan(List<IApplyStep> plan, HashedEntry existing, Loadout loadout, ModFilePair pair)
     {
-        await foreach (var itm in EmitDeletePlan(existing, loadout))
-        {
-            yield return itm;
-        }
-
-        await foreach (var itm in EmitCreatePlan(planFile, mod, loadout, existing.Path))
-        {
-            yield return itm;
-        }
+        await EmitDeletePlan(plan, existing);
+        await EmitCreatePlan(plan, pair, loadout, existing.Path);
     }
 
     public async ValueTask<FileMetaData?> GetMetaData(AModFile file, AbsolutePath path)
@@ -267,7 +258,7 @@ public class LoadoutSynchronizer
 
         var existingFiles = _directoryIndexer.IndexFolders(install.Locations.Values, token);
 
-        var flattenedLoadout = await FlattenLoadout(loadout);
+        var (flattenedLoadout, sortedMods) = await FlattenLoadout(loadout);
 
         var seen = new ConcurrentBag<GamePath>();
 
@@ -291,7 +282,7 @@ public class LoadoutSynchronizer
                 yield return itm;
         }
 
-        foreach (var (gamePath, (modFile, mod)) in flattenedLoadout)
+        foreach (var (gamePath, pair) in flattenedLoadout)
         {
             if (seen.Contains(gamePath))
                 continue;
@@ -357,10 +348,10 @@ public class LoadoutSynchronizer
     /// Applies the given steps to the game folder
     /// </summary>
     /// <param name="steps"></param>
-    public async Task Apply(IEnumerable<IApplyStep> steps, Loadout loadout)
+    public async Task Apply(ApplyPlan plan)
     {
         // Step 1: Backup Files
-        var byType = steps.ToLookup(g => g.GetType());
+        var byType = plan.Steps.ToLookup(g => g.GetType());
         
         var backups = byType[typeof(BackupFile)]
             .OfType<BackupFile>()
@@ -390,7 +381,7 @@ public class LoadoutSynchronizer
                 dir.Create();
 
             await using var stream = absPath.Create();
-            var hash = await file.Source.GenerateAsync(stream, loadout);
+            var hash = await file.Source.GenerateAsync(stream, plan);
             _generatedFileFingerprintCache.Set(file.Fingerprint, new CachedGeneratedFileData
             {
                 Hash = hash,

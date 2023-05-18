@@ -4,6 +4,7 @@ using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
@@ -172,21 +173,21 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
 }
 
 [JsonName("TestGeneratedFile")]
-public record TestGeneratedFile : AModFile, IGeneratedFile, IToFile, ITriggerFilter<(ModId, ModFileId), Loadout>
+public record TestGeneratedFile : AModFile, IGeneratedFile, IToFile, ITriggerFilter<ModFilePair, Loadout>
 {
-    public ITriggerFilter<(ModId, ModFileId), Loadout> TriggerFilter => this;
-    public Task<Hash> GenerateAsync(Stream stream, Loadout loadout, CancellationToken cancellationToken = default)
+    public ITriggerFilter<ModFilePair, Loadout> TriggerFilter => this;
+    public Task<Hash> GenerateAsync(Stream stream, ApplyPlan loadout, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
     public required GamePath To { get; init; }
-    public Hash GetFingerprint((ModId, ModFileId) self, Loadout input)
+    public Hash GetFingerprint(ModFilePair self, Loadout input)
     {
         var printer = Fingerprinter.Create();
         foreach (var mod in input.Mods)
             foreach (var file in mod.Value.Files)
-                if (!file.Value.Id.Equals(self.Item2))
+                if (!file.Value.Id.Equals(self.File.Id))
                     printer.Add(file.Value.DataStoreId);
 
         return printer.Digest();

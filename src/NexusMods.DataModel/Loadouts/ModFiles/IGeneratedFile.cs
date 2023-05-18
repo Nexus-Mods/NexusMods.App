@@ -1,4 +1,5 @@
-﻿using NexusMods.DataModel.TriggerFilter;
+﻿using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
+using NexusMods.DataModel.TriggerFilter;
 using NexusMods.Hashing.xxHash64;
 
 namespace NexusMods.DataModel.Loadouts.ModFiles;
@@ -8,7 +9,7 @@ namespace NexusMods.DataModel.Loadouts.ModFiles;
 /// </summary>
 public interface IGeneratedFile
 {
-    public ITriggerFilter<(ModId, ModFileId), Loadout> TriggerFilter { get; }
+    public ITriggerFilter<ModFilePair, Loadout> TriggerFilter { get; }
     
-    public Task<Hash> GenerateAsync(Stream stream, Loadout loadout, CancellationToken cancellationToken = default);
+    public Task<Hash> GenerateAsync(Stream stream, ApplyPlan plan, CancellationToken cancellationToken = default);
 }
