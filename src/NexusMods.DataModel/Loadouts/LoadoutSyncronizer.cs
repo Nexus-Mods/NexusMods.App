@@ -379,6 +379,24 @@ public class LoadoutSynchronizer
         // Step 3: Extract Files
         var extractedFiles = byType[typeof(ExtractFile)].OfType<ExtractFile>().Select(f => (f.Hash, f.To));
         await _archiveManager.ExtractFiles(extractedFiles);
+        
+        // Step 4: Write Generated Files
+        var generatedFiles = byType[typeof(GenerateFile)].OfType<GenerateFile>();
+        foreach (var file in generatedFiles)
+        {
+            var absPath = file.To;
+            var dir = absPath.Parent;
+            if (!dir.DirectoryExists())
+                dir.Create();
+
+            await using var stream = absPath.Create();
+            var hash = await file.Source.GenerateAsync(stream, loadout);
+            _generatedFileFingerprintCache.Set(file.Fingerprint, new CachedGeneratedFileData
+            {
+                Hash = hash,
+                Size = Size.FromLong(stream.Length)
+            });
+        }
 
     }
 

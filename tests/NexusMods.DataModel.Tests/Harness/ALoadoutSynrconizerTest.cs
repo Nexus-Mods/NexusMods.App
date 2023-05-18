@@ -175,6 +175,11 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
 public record TestGeneratedFile : AModFile, IGeneratedFile, IToFile, ITriggerFilter<(ModId, ModFileId), Loadout>
 {
     public ITriggerFilter<(ModId, ModFileId), Loadout> TriggerFilter => this;
+    public Task<Hash> GenerateAsync(Stream stream, Loadout loadout, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
     public required GamePath To { get; init; }
     public Hash GetFingerprint((ModId, ModFileId) self, Loadout input)
     {

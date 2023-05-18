@@ -1,7 +1,14 @@
-﻿using FluentAssertions;
+﻿using System.Text;
+using FluentAssertions;
 using Moq;
+using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
+using NexusMods.DataModel.Extensions;
+using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ApplySteps;
+using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Tests.Harness;
+using NexusMods.DataModel.TriggerFilter;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
@@ -34,7 +41,7 @@ public class ApplyLoadoutTests : ALoadoutSynrchonizerTest<ApplyLoadoutTests>
 
         TestArchiveManagerInstance.Archives.Should().NotContain(Hash.From(0x424));
 
-        await TestSyncronizer.Apply(plan);
+        await TestSyncronizer.Apply(plan, loadout);
 
         TestArchiveManagerInstance.Archives.Should().Contain(Hash.From(0x424));
     }
@@ -62,7 +69,7 @@ public class ApplyLoadoutTests : ALoadoutSynrchonizerTest<ApplyLoadoutTests>
             }
         };
 
-        await TestSyncronizer.Apply(plan);
+        await TestSyncronizer.Apply(plan, loadout);
 
         mfilesystem.Verify(f => f.DeleteFile(file), Times.Once);
     }
@@ -84,8 +91,55 @@ public class ApplyLoadoutTests : ALoadoutSynrchonizerTest<ApplyLoadoutTests>
             }
         };
 
-        await TestSyncronizer.Apply(plan);
+        await TestSyncronizer.Apply(plan, loadout);
 
         TestArchiveManagerInstance.Extracted.Should().Contain((Hash.From(0x424), file));
+    }
+
+
+    class TestGeneratedFile : IGeneratedFile, ITriggerFilter<(ModId, ModFileId), Loadout>
+    {
+        public ITriggerFilter<(ModId, ModFileId), Loadout> TriggerFilter => this;
+        public async Task<Hash> GenerateAsync(Stream stream, Loadout loadout, CancellationToken cancellationToken = default)
+        {
+            var txt = "Hello World!"u8.ToArray();
+            await stream.WriteAsync(txt, cancellationToken);
+            return txt.AsSpan().XxHash64();
+        }
+
+        public Hash GetFingerprint((ModId, ModFileId) self, Loadout input)
+        {
+            return Hash.From(0xDEADBEEF);
+        }
+    }
+    [Fact]
+    public async Task GeneratedFilesAreGenerated()
+    {
+        var loadout = await CreateApplyPlanTestLoadout(true);
+        
+        var dest = loadout.Installation.Locations[GameFolderType.Game].CombineUnchecked("generated.txt");
+        var gFile = new TestGeneratedFile();
+
+
+        await TestSyncronizer.Apply(new IApplyStep[]
+        {
+            new GenerateFile
+            {
+                To = dest,
+                Fingerprint = Hash.From(0xDEADBEEF),
+                Source = gFile
+            }
+        }, loadout);
+
+        dest.FileExists.Should().BeTrue();
+        (await dest.ReadAllTextAsync()).Should().Be("Hello World!");
+
+        TestGeneratedFileFingerprintCache.Dict.Should().Contain(KeyValuePair.Create(Hash.From(0xDEADBEEF),
+            new CachedGeneratedFileData
+            {
+                DataStoreId = new Id64(EntityCategory.Fingerprints, 0xDEADBEEF),
+                Hash = "Hello World!"u8.XxHash64(),
+                Size = dest.FileInfo.Size
+            }));
     }
 }
