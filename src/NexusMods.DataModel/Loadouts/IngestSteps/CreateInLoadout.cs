@@ -10,11 +10,13 @@ namespace NexusMods.DataModel.Loadouts.IngestSteps;
 /// </summary>
 public class CreateInLoadout : IIngestStep
 {
-    
+
     public required AbsolutePath To { get; init; }
-    
+
     public required Hash Hash { get; init; }
-    
+
     public required Size Size { get; init; }
-    
+
+    public required ModId ModId { get; init; }
+
 }

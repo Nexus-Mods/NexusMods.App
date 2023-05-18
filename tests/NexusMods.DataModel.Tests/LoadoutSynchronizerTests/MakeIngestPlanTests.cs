@@ -11,6 +11,7 @@ namespace NexusMods.DataModel.Tests.LoadoutSynchronizerTests;
 
 public class MakeIngestPlanTests : ALoadoutSynrchonizerTest<MakeIngestPlanTests>
 {
+    private Func<AbsolutePath, ModId> _nullFunc = _ => throw new InvalidOperationException();
     public MakeIngestPlanTests(IServiceProvider provider) : base(provider)
     {
     }
@@ -24,12 +25,13 @@ public class MakeIngestPlanTests : ALoadoutSynrchonizerTest<MakeIngestPlanTests>
     public async Task FilesThatDontExistInLoadoutAreAddedAndBackedUp()
     {
         var loadout = await CreateApplyPlanTestLoadout();
+        var firstModId = loadout.Mods.Values.First().Id;
 
         var absPath = loadout.Installation.Locations[GameFolderType.Game].CombineUnchecked("0x00001.extra_file");
 
         TestIndexer.Entries.Add(new HashedEntry(absPath, Hash.From(0x4242), DateTime.Now - TimeSpan.FromMinutes(20), Size.From(10)));
 
-        var plan = await TestSyncronizer.MakeIngestPlan(loadout);
+        var plan = await TestSyncronizer.MakeIngestPlan(loadout, _ => firstModId);
 
         plan.Steps.Should().ContainEquivalentOf(new BackupFile
         {
@@ -42,7 +44,8 @@ public class MakeIngestPlanTests : ALoadoutSynrchonizerTest<MakeIngestPlanTests>
         {
             To = absPath,
             Hash = Hash.From(0x4242),
-            Size = Size.From(10)
+            Size = Size.From(10),
+            ModId = firstModId
         }, opt => opt.RespectingRuntimeTypes());
     }
 
@@ -53,13 +56,14 @@ public class MakeIngestPlanTests : ALoadoutSynrchonizerTest<MakeIngestPlanTests>
     public async Task FilesThatAreAlreadyBackedUpShouldNotBeBackedUpAgain()
     {
         var loadout = await CreateApplyPlanTestLoadout();
+        var firstModId = loadout.Mods.Values.First().Id;
 
         var absPath = loadout.Installation.Locations[GameFolderType.Game].CombineUnchecked("0x00001.extra_file");
 
         TestIndexer.Entries.Add(new HashedEntry(absPath, Hash.From(0x4242), DateTime.Now - TimeSpan.FromMinutes(20), Size.From(10)));
         TestArchiveManagerInstance.Archives.Add(Hash.From(0x4242));
 
-        var plan = await TestSyncronizer.MakeIngestPlan(loadout);
+        var plan = await TestSyncronizer.MakeIngestPlan(loadout, _ => firstModId);
 
         plan.Steps.Should().NotContainEquivalentOf(new BackupFile
         {
@@ -72,7 +76,8 @@ public class MakeIngestPlanTests : ALoadoutSynrchonizerTest<MakeIngestPlanTests>
         {
             To = absPath,
             Hash = Hash.From(0x4242),
-            Size = Size.From(10)
+            Size = Size.From(10),
+            ModId = firstModId
         });
     }
 
@@ -92,7 +97,7 @@ public class MakeIngestPlanTests : ALoadoutSynrchonizerTest<MakeIngestPlanTests>
         TestIndexer.Entries.Add(new HashedEntry(absPath, Hash.From(0x4242), DateTime.Now - TimeSpan.FromMinutes(20), Size.From(10)));
 
 
-        var plan = await TestSyncronizer.MakeIngestPlan(loadout);
+        var plan = await TestSyncronizer.MakeIngestPlan(loadout, _nullFunc);
 
 
         plan.Steps.Should().Contain(new BackupFile
@@ -120,7 +125,7 @@ public class MakeIngestPlanTests : ALoadoutSynrchonizerTest<MakeIngestPlanTests>
 
         var absPath = loadout.Installation.Locations[GameFolderType.Game].CombineUnchecked("0x00001.dat");
 
-        var plan = await TestSyncronizer.MakeIngestPlan(loadout);
+        var plan = await TestSyncronizer.MakeIngestPlan(loadout, _nullFunc);
 
         plan.Steps.Should().Contain(new RemoveFromLoadout
         {

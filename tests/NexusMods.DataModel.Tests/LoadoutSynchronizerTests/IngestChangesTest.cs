@@ -117,4 +117,37 @@ public class IngestChangesTest : ALoadoutSynrchonizerTest<IngestChangesTest>
         file.Hash.Should().Be(Hash.From(0x42DEADBEEF));
         file.Size.Should().Be(Size.MB);
     }
+
+    [Fact]
+    public async Task CreatedFilesAreAdded()
+    {
+        var loadout = await CreateApplyPlanTestLoadout();
+        var firstMod = loadout.Mods.Values.First();
+        var absPath = loadout.Installation.Locations[GameFolderType.Game].CombineUnchecked("foo.bar");
+
+        loadout = await TestSyncronizer.Ingest(new IngestPlan
+        {
+            Loadout = loadout,
+            Mods = Array.Empty<Mod>(),
+            Flattened = new Dictionary<GamePath, ModFilePair>(),
+            Steps = new IIngestStep[]
+            {
+                new CreateInLoadout
+                {
+                    ModId = firstMod.Id,
+                    Hash = Hash.From(0x42DEADBEEF),
+                    Size = Size.MB,
+                    To = absPath
+                }
+            }
+        });
+
+        var gamePath = new GamePath(GameFolderType.Game, "foo.bar");
+
+        var file = loadout.Mods[firstMod.Id]
+            .Files.Values
+            .OfType<FromArchive>().First(f => f.To == gamePath);
+        file.Hash.Should().Be(Hash.From(0x42DEADBEEF));
+        file.Size.Should().Be(Size.MB);
+    }
 }

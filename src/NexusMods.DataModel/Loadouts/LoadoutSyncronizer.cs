@@ -254,7 +254,7 @@ public class LoadoutSynchronizer
         throw new NotImplementedException();
     }
 
-    public async ValueTask<IngestPlan> MakeIngestPlan(Loadout loadout, CancellationToken token = default)
+    public async ValueTask<IngestPlan> MakeIngestPlan(Loadout loadout, Func<AbsolutePath, ModId> modSelector, CancellationToken token = default)
     {
         var install = loadout.Installation;
 
@@ -280,7 +280,7 @@ public class LoadoutSynchronizer
                 continue;
             }
 
-            await EmitIngestCreatePlan(plan, existing, loadout);
+            await EmitIngestCreatePlan(plan, existing, modSelector);
         }
 
         foreach (var (gamePath, pair) in flattenedLoadout)
@@ -310,7 +310,7 @@ public class LoadoutSynchronizer
         });
     }
 
-    private async ValueTask EmitIngestCreatePlan(List<IIngestStep> plan, HashedEntry existing, Loadout loadout)
+    private async ValueTask EmitIngestCreatePlan(List<IIngestStep> plan, HashedEntry existing, Func<AbsolutePath, ModId> modSelector)
     {
         if (!await _archiveManager.HaveFile(existing.Hash))
         {
@@ -326,7 +326,8 @@ public class LoadoutSynchronizer
         {
             To = existing.Path,
             Hash = existing.Hash,
-            Size = existing.Size
+            Size = existing.Size,
+            ModId = modSelector(existing.Path)
         });
     }
 
@@ -418,6 +419,7 @@ public class LoadoutSynchronizer
         private readonly IngestPlan _plan;
         private readonly HashSet<GamePath> _removeFiles;
         private readonly ILookup<ModId,FromArchive> _replaceFiles;
+        private readonly ILookup<ModId,FromArchive> _createFiles;
 
         public IngestVisitor(ILookup<Type, IIngestStep> steps, IngestPlan plan)
         {
@@ -429,6 +431,17 @@ public class LoadoutSynchronizer
 
             _replaceFiles = steps[typeof(IngestSteps.ReplaceInLoadout)]
                 .OfType<IngestSteps.ReplaceInLoadout>()
+                .ToLookup(r => r.ModId,
+                    r => new FromArchive
+                    {
+                        To = plan.Loadout.Installation.ToGamePath(r.To),
+                        Hash = r.Hash,
+                        Size = r.Size,
+                        Id = r.ModFileId
+                    });
+
+            _createFiles = steps[typeof(IngestSteps.CreateInLoadout)]
+                .OfType<IngestSteps.CreateInLoadout>()
                 .ToLookup(r => r.ModId,
                     r => new FromArchive
                     {
@@ -451,7 +464,7 @@ public class LoadoutSynchronizer
 
         public override Mod? Alter(Mod mod)
         {
-            var toAdd = _replaceFiles[mod.Id];
+            var toAdd = _replaceFiles[mod.Id].Concat(_createFiles[mod.Id]);
             if (toAdd.Any())
             {
                 mod = mod with
