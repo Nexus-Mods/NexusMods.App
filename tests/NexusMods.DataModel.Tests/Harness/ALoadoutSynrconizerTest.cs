@@ -31,7 +31,11 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
         TestArchiveManagerInstance = new TestArchiveManager();
         TestFingerprintCacheInstance = new TestFingerprintCache<Mod, CachedModSortRules>();
         TestGeneratedFileFingerprintCache = new TestFingerprintCache<IGeneratedFile, CachedGeneratedFileData>();
-        TestSyncronizer = new LoadoutSynchronizer(TestFingerprintCacheInstance, TestIndexer, TestArchiveManagerInstance, TestGeneratedFileFingerprintCache);
+        TestSyncronizer = new LoadoutSynchronizer(TestFingerprintCacheInstance, 
+            TestIndexer, 
+            TestArchiveManagerInstance, 
+            TestGeneratedFileFingerprintCache,
+            LoadoutManager.Registry);
     }
 
 

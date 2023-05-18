@@ -14,6 +14,7 @@ using NexusMods.DataModel.TriggerFilter;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using BackupFile = NexusMods.DataModel.Loadouts.ApplySteps.BackupFile;
+using RemoveFromLoadout = NexusMods.DataModel.Loadouts.ApplySteps.RemoveFromLoadout;
 
 namespace NexusMods.DataModel.Loadouts;
 
@@ -26,16 +27,19 @@ public class LoadoutSynchronizer
     private readonly IDirectoryIndexer _directoryIndexer;
     private readonly IArchiveManager _archiveManager;
     private readonly IFingerprintCache<IGeneratedFile,CachedGeneratedFileData> _generatedFileFingerprintCache;
+    private readonly LoadoutRegistry _loadoutRegistry;
 
     public LoadoutSynchronizer(IFingerprintCache<Mod, CachedModSortRules> modSortRulesFingerprintCache,
         IDirectoryIndexer directoryIndexer,
         IArchiveManager archiveManager,
-        IFingerprintCache<IGeneratedFile, CachedGeneratedFileData> generatedFileFingerprintCache)
+        IFingerprintCache<IGeneratedFile, CachedGeneratedFileData> generatedFileFingerprintCache,
+        LoadoutRegistry loadoutRegistry)
     {
         _archiveManager = archiveManager;
         _generatedFileFingerprintCache = generatedFileFingerprintCache;
         _modSortRulesFingerprintCache = modSortRulesFingerprintCache;
         _directoryIndexer = directoryIndexer;
+        _loadoutRegistry = loadoutRegistry;
     }
 
 
@@ -398,13 +402,23 @@ public class LoadoutSynchronizer
     /// Run an ingest plan
     /// </summary>
     /// <param name="plan"></param>
-    public async ValueTask Ingest(IngestPlan plan)
+    public async ValueTask<Loadout> Ingest(IngestPlan plan, string message = "Ingested Changes")
     {
         var byType = plan.Steps.ToLookup(t => t.GetType());
         var backupFiles = byType[typeof(IngestSteps.BackupFile)]
             .OfType<IngestSteps.BackupFile>()
             .Select(f => (f.To, f.Hash, f.Size));
         await _archiveManager.BackupFiles(backupFiles);
+        
+        return _loadoutRegistry.Alter(plan.Loadout.LoadoutId, message, new IngestVisitor(byType));
+    }
+
+    private class IngestVisitor : ALoadoutVisitor
+    { 
+        public IngestVisitor(ILookup<Type, IIngestStep> steps)
+        {
+
+        }
     }
 
 

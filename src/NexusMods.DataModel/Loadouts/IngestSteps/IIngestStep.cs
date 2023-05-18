@@ -7,5 +7,8 @@ namespace NexusMods.DataModel.Loadouts.IngestSteps;
 /// </summary>
 public interface IIngestStep
 { 
+    /// <summary>
+    /// The path to the file that was changed.
+    /// </summary>
     public AbsolutePath To { get; }
 }

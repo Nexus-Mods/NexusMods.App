@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.IngestSteps;
 using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.Loadouts.Mods;
@@ -36,5 +37,51 @@ public class IngestChangesTest : ALoadoutSynrchonizerTest<IngestChangesTest>
         });
 
         TestArchiveManagerInstance.Archives.Should().Contain(Hash.From(0x1DEADBEEF));
+    }
+
+    [Fact]
+    public async Task RemovedFilesAreRemoved()
+    {
+        var loadout = await CreateApplyPlanTestLoadout();
+        var firstMod = loadout.Mods.Values.First();
+
+        var absPath = GetFirstModFile(loadout);
+
+        var newId = ModId.New();
+        loadout = LoadoutManager.Registry.Alter(loadout.LoadoutId, "Dup Mod", 
+            loadout => loadout with
+        {
+            Mods = loadout.Mods.With(newId, firstMod with
+            {
+                Id = newId
+            })
+        });
+
+        loadout.Mods.Count.Should().Be(2);
+        
+        (from mod in loadout.Mods.Values
+            from file in mod.Files.Values
+            select file).Count().Should().Be(2);
+        
+        await TestSyncronizer.Ingest(new IngestPlan()
+        {
+            Loadout = loadout,
+            Mods = Array.Empty<Mod>(),
+            Flattened = new Dictionary<GamePath, ModFilePair>(),
+            Steps = new IIngestStep[]
+            {
+                new RemoveFromLoadout
+                {
+                    To = absPath
+                }
+            }
+        });
+        
+        loadout.Mods.Count.Should().Be(2);
+        
+        (from mod in loadout.Mods.Values
+            from file in mod.Files.Values
+            select file).Count().Should().Be(0);
+        
     }
 }
