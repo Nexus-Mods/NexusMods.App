@@ -17,9 +17,9 @@ public class IngestChangesTest : ALoadoutSynrchonizerTest<IngestChangesTest>
     public async Task BackedUpFilesAreBackedUp()
     {
         var loadout = await CreateApplyPlanTestLoadout();
-        
+
         var absPath = loadout.Installation.Locations[GameFolderType.Game].CombineUnchecked("0x00001.dat");
-        
+
         await TestSyncronizer.Ingest(new IngestPlan()
         {
             Loadout = loadout,
@@ -48,7 +48,7 @@ public class IngestChangesTest : ALoadoutSynrchonizerTest<IngestChangesTest>
         var absPath = GetFirstModFile(loadout);
 
         var newId = ModId.New();
-        loadout = LoadoutManager.Registry.Alter(loadout.LoadoutId, "Dup Mod", 
+        loadout = LoadoutManager.Registry.Alter(loadout.LoadoutId, "Dup Mod",
             loadout => loadout with
         {
             Mods = loadout.Mods.With(newId, firstMod with
@@ -58,12 +58,12 @@ public class IngestChangesTest : ALoadoutSynrchonizerTest<IngestChangesTest>
         });
 
         loadout.Mods.Count.Should().Be(2);
-        
+
         (from mod in loadout.Mods.Values
             from file in mod.Files.Values
             select file).Count().Should().Be(2);
-        
-        await TestSyncronizer.Ingest(new IngestPlan()
+
+        loadout = await TestSyncronizer.Ingest(new IngestPlan
         {
             Loadout = loadout,
             Mods = Array.Empty<Mod>(),
@@ -76,12 +76,12 @@ public class IngestChangesTest : ALoadoutSynrchonizerTest<IngestChangesTest>
                 }
             }
         });
-        
+
         loadout.Mods.Count.Should().Be(2);
-        
+
         (from mod in loadout.Mods.Values
             from file in mod.Files.Values
             select file).Count().Should().Be(0);
-        
+
     }
 }

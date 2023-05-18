@@ -421,8 +421,8 @@ public class LoadoutSynchronizer
         public IngestVisitor(ILookup<Type, IIngestStep> steps, IngestPlan plan)
         {
             _plan = plan;
-            _removeFiles = steps[typeof(RemoveFromLoadout)]
-                .OfType<RemoveFromLoadout>()
+            _removeFiles = steps[typeof(IngestSteps.RemoveFromLoadout)]
+                .OfType<IngestSteps.RemoveFromLoadout>()
                 .Select(r => plan.Loadout.Installation.ToGamePath(r.To))
                 .ToHashSet();
 
