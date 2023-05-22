@@ -15,6 +15,7 @@ public static class Services
         serviceCollection.AddSingleton<IGame, DarkestDungeon>();
         serviceCollection.AddSingleton<IFileAnalyzer, ProjectAnalyzer>();
         serviceCollection.AddSingleton<IModInstaller, NativeModInstaller>();
+        serviceCollection.AddSingleton<IModInstaller, LooseFilesModInstaller>();
         serviceCollection.AddSingleton<ITypeFinder, TypeFinder>();
         return serviceCollection;
     }

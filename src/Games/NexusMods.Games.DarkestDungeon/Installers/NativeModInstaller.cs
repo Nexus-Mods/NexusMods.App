@@ -22,7 +22,7 @@ public class NativeModInstaller : IModInstaller
     private static readonly RelativePath ModsFolder = "mods".ToRelativePath();
     private static readonly RelativePath ProjectFile = "project.xml".ToRelativePath();
 
-    private static IEnumerable<KeyValuePair<RelativePath, AnalyzedFile>> GetModProjects(
+    internal static IEnumerable<KeyValuePair<RelativePath, AnalyzedFile>> GetModProjects(
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
         return archiveFiles.Where(kv =>

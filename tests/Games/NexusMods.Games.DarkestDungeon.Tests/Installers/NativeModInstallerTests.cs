@@ -79,7 +79,7 @@ public class NativeModInstallerTests : AModInstallerTest<DarkestDungeon, NativeM
         }
     }
 
-    private static byte[] CreateModProject(out ModProject project)
+    internal static byte[] CreateModProject(out ModProject project)
     {
         var fixture = new Fixture();
         project = fixture.Create<ModProject>();
