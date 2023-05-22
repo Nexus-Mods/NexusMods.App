@@ -32,5 +32,13 @@ public interface IArchiveManager
     /// <param name="files"></param>
     /// <param name="token"></param>
     /// <returns></returns>
-    Task ExtractFiles(IEnumerable<(Hash Src, IStreamFactory Dest)> files, CancellationToken token = default);
+    Task ExtractFiles(IEnumerable<(Hash Src, AbsolutePath Dest)> files, CancellationToken token = default);
+    
+    /// <summary>
+    /// Extract the given files from archives.
+    /// </summary>
+    /// <param name="files"></param>
+    /// <param name="token"></param>
+    /// <returns></returns>
+    Task<IDictionary<Hash, byte[]>> ExtractFiles(IEnumerable<Hash> files, CancellationToken token = default);
 }

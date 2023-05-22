@@ -379,7 +379,7 @@ public class LoadoutSynchronizer
         // Step 3: Extract Files
         var extractedFiles = byType[typeof(ExtractFile)]
             .OfType<ExtractFile>()
-            .Select(f => (f.Hash, (IStreamFactory)new NativeFileStreamFactory(f.To)));
+            .Select(f => (f.Hash, f.To));
         await _archiveManager.ExtractFiles(extractedFiles);
         
         // Step 4: Write Generated Files

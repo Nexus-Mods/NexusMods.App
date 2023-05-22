@@ -67,6 +67,16 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
             Archives.AddRange(backups.Select(b => b.Item2));
         }
 
+        public Task ExtractFiles(IEnumerable<(Hash Src, AbsolutePath Dest)> files, CancellationToken token = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IDictionary<Hash, byte[]>> ExtractFiles(IEnumerable<Hash> files, CancellationToken token = default)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task ExtractFiles(IEnumerable<(Hash Src, IStreamFactory Dest)> files, CancellationToken token = default)
         {
             Extracted.AddRange(files);

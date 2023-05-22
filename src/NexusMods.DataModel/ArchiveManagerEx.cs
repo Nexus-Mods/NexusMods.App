@@ -1,5 +1,8 @@
 ﻿using System.Buffers.Binary;
+using NexusMods.Archives.Nx.FileProviders;
+using NexusMods.Archives.Nx.Interfaces;
 using NexusMods.Archives.Nx.Packing;
+using NexusMods.Archives.Nx.Structs;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
@@ -75,14 +78,79 @@ public class ArchiveManagerEx : IArchiveManager
         return IId.FromSpan(EntityCategory.FileContainedInEx, buffer);
     }
 
-    public Task ExtractFiles(IEnumerable<(Hash Src, IStreamFactory Dest)> files, CancellationToken token = default)
+    public async Task ExtractFiles(IEnumerable<(Hash Src, AbsolutePath Dest)> files, CancellationToken token = default)
     {
-        throw new NotImplementedException();
+        var grouped = files.ToLookup(l => Location(l.Src));
+        if (grouped[default].Any())
+            throw new Exception($"Missing archive for {grouped[default].First().Src.ToHex()}");
+
+        var settings = new UnpackerSettings();
+
+        foreach (var group in grouped)
+        {
+            var byHash = group.ToLookup(f => f.Src);
+            var file = group.Key.Read();
+            var provider = new FromStreamProvider(file);
+            var unpacker = new NxUnpacker(provider);
+
+            var infos = new List<IOutputDataProvider>();
+            
+            
+            foreach (var entry in unpacker.GetFileEntriesRaw().ToArray())
+            {
+                var entryHash = Hash.From(entry.Hash);
+                if (!byHash[entryHash].Any()) continue;
+
+                infos.AddRange(byHash[entryHash].Select(dest => 
+                    new OutputFileProvider(dest.Dest.Parent.GetFullPath(), dest.Dest.FileName, entry)));
+            }
+            
+            unpacker.ExtractFiles(infos.ToArray(), settings);
+        }
     }
 
-    public AbsolutePath? Location(Hash hash)
+    public async Task<IDictionary<Hash, byte[]>> ExtractFiles(IEnumerable<Hash> files, CancellationToken token = default)
     {
-        var prefix = new Id64(EntityCategory.FileContainedIn, (ulong)hash);
+        var results = new Dictionary<Hash, byte[]>();
+        
+        var grouped = files.Distinct().ToLookup(Location);
+        if (grouped[default].Any())
+            throw new Exception($"Missing archive for {grouped[default].First().ToHex()}");
+
+        var settings = new UnpackerSettings();
+
+        foreach (var group in grouped)
+        {
+            var byHash = group.ToLookup(f => f);
+            var file = group.Key.Read();
+            var provider = new FromStreamProvider(file);
+            var unpacker = new NxUnpacker(provider);
+
+            var infos = new List<(Hash Hash, OutputArrayProvider Data)>();
+            
+            
+            foreach (var entry in unpacker.GetFileEntriesRaw().ToArray())
+            {
+                var entryHash = Hash.From(entry.Hash);
+                if (!byHash[entryHash].Any()) continue;
+
+                infos.AddRange(byHash[entryHash].Select(hash => (hash, new OutputArrayProvider("", entry))));
+            }
+            
+            unpacker.ExtractFiles(infos.Select(o => (IOutputDataProvider)o.Item2).ToArray(), settings);
+
+            foreach (var info in infos)
+            {
+                results.Add(info.Hash, info.Data.Data);
+            }
+        }
+
+        return results;
+    }
+
+    public AbsolutePath Location(Hash hash)
+    {
+        var prefix = new Id64(EntityCategory.FileContainedInEx, (ulong)hash);
         return _store.GetByPrefix<FileContainedInEx>(prefix)
             .SelectMany(f =>
             {

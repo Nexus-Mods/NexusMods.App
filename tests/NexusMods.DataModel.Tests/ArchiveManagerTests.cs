@@ -41,6 +41,16 @@ public class ArchiveManagerTests
 
         foreach (var hash in hashes)
             (await _manager.HaveFile(hash)).Should().BeTrue();
+
+        var extractionCount = Random.Shared.Next(fileCount);
+        var extractionIdxs = Enumerable.Range(0, extractionCount).Select(_ => Random.Shared.Next(fileCount)).ToArray();
+        var extractedDatas = extractionIdxs.Select(idx => new byte[sizes[idx].Value]).ToArray();
+        
+        var extracted = await _manager.ExtractFiles(extractionIdxs.Select(idx => hashes[idx]));
+        
+        foreach (var idx in extractionIdxs)
+            extracted[hashes[idx]].Should().BeEquivalentTo(datas[idx]);
+
     }
     
 
