@@ -54,7 +54,8 @@ public static class Services
             .AddVerb<ManageGame>()
             .AddVerb<ProtocolInvoke>()
             .AddVerb<Rename>()
-            .AddVerb<RunTool>();
+            .AddVerb<RunTool>()
+            .AddVerb<AssociateNxm>();
 
         services.AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ => new Resource<IExtractor, Size>("File Extraction"));
         services.AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(_ => new Resource<FileContentsCache, Size>("File Analysis"));
