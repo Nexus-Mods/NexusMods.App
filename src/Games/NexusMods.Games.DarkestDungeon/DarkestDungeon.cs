@@ -6,13 +6,14 @@ using NexusMods.Paths;
 
 namespace NexusMods.Games.DarkestDungeon;
 
-public class DarkestDungeon : AGame, ISteamGame, IGogGame
+public class DarkestDungeon : AGame, ISteamGame, IGogGame, IEpicGame
 {
     private readonly IOSInformation _osInformation;
 
     public IEnumerable<int> SteamIds => new[] { 262060 };
     public IEnumerable<long> GogIds => new long[] { 1450711444 };
-    // TODO: EGS ID
+    public IEnumerable<string> EpicCatalogItemId => new[] { "b4eecf70e3fe4e928b78df7855a3fc2d" };
+
     // TODO: Xbox ID
 
     public DarkestDungeon(

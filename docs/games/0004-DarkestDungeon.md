@@ -4,7 +4,7 @@
 
 - [Steam](https://store.steampowered.com/app/262060/Darkest_Dungeon): `262060`
 - [GOG](https://www.gog.com/game/darkest_dungeon): `1450711444`
-- [Epic Games Store](https://store.epicgames.com/en-US/p/darkest-dungeon): [`UNKNOWN`](https://erri120.github.io/egs-db/namespaces/21916c391ae4425d8f6cce2382aebd0c/index.html)
+- [Epic Games Store](https://store.epicgames.com/en-US/p/darkest-dungeon): [`b4eecf70e3fe4e928b78df7855a3fc2d`](https://erri120.github.io/egs-db/namespaces/21916c391ae4425d8f6cce2382aebd0c/index.html) (NOTE: API didn't return anything...)
 - [Xbox Game Pass](https://www.xbox.com/en-US/games/store/p/bxkvn6g9c5wj): `UNKNOWN`
 
 ## Engine
