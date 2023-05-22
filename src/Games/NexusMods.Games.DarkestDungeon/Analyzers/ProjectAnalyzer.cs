@@ -16,7 +16,7 @@ namespace NexusMods.Games.DarkestDungeon.Analyzers;
 /// </summary>
 public class ProjectAnalyzer : IFileAnalyzer
 {
-    public FileAnalyzerId Id => FileAnalyzerId.New("3152ea61-a5a1-4d89-a780-25ebbab3da3f", 1);
+    public FileAnalyzerId Id => FileAnalyzerId.New("3152ea61-a5a1-4d89-a780-25ebbab3da3f", 2);
     public IEnumerable<FileType> FileTypes => new[] { FileType.XML };
 
     public async IAsyncEnumerable<IFileAnalysisData> AnalyzeAsync(
