@@ -8,5 +8,14 @@ namespace NexusMods.DataModel.ArchiveContents;
 public record FileContainedInEx : Entity
 {
     public override EntityCategory Category => EntityCategory.FileContainedInEx;
-    public RelativePath File { get; init; }
+    
+    /// <summary>
+    /// Name of the archive this file is contained in.
+    /// </summary>
+    public required RelativePath File { get; init; }
+    
+    /// <summary>
+    /// The file entry data for the NX block offset
+    /// </summary>
+    public required byte[] FileEntryData { get; init; }
 }

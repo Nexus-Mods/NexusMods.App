@@ -1,8 +1,10 @@
 ﻿using System.Buffers.Binary;
 using NexusMods.Archives.Nx.FileProviders;
+using NexusMods.Archives.Nx.Headers.Managed;
 using NexusMods.Archives.Nx.Interfaces;
 using NexusMods.Archives.Nx.Packing;
 using NexusMods.Archives.Nx.Structs;
+using NexusMods.Archives.Nx.Utilities;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
@@ -33,13 +35,15 @@ public class ArchiveManagerEx : IArchiveManager
     
     public async ValueTask<bool> HaveFile(Hash hash)
     {
-        return Location(hash) != null;
+        return TryGetLocation(hash, out _, out _);
     }
 
     public async Task BackupFiles(IEnumerable<(IStreamFactory, Hash, Size)> backups, CancellationToken token = default)
     {
         var builder = new NxPackerBuilder();
-        foreach (var backup in backups)
+        var distinct = backups.DistinctBy(d => d.Item2).ToArray();
+        
+        foreach (var backup in distinct)
         {
             builder.AddFile(await backup.Item1.GetStreamAsync(), new AddFileParams
             {
@@ -57,16 +61,38 @@ public class ArchiveManagerEx : IArchiveManager
         }
 
         var finalPath = outputPath.ReplaceExtension(KnownExtensions.Nx);
-        await outputPath.MoveToAsync(finalPath, token: token);
         
-        foreach (var file in backups)
+        await outputPath.MoveToAsync(finalPath, token: token);
+        await using var os = finalPath.Read();
+        var unpacker = new NxUnpacker(new FromStreamProvider(os));
+        UpdateIndexes(unpacker, distinct, guid, finalPath);
+        
+
+    }
+
+    private unsafe void UpdateIndexes(NxUnpacker unpacker, (IStreamFactory, Hash, Size)[] distinct, Guid guid,
+        AbsolutePath finalPath)
+    {
+        Span<byte> buffer = stackalloc byte[64];
+        foreach (var entry in unpacker.GetFileEntriesRaw())
         {
-            var dbId = IdFor(file.Item2, guid);
-            var entry = new FileContainedInEx
+            fixed (byte* ptr = buffer)
             {
-                File = finalPath.FileName
-            };
-            _store.Put(dbId, entry);
+                var writer = new LittleEndianWriter(ptr);
+                entry.WriteAsV0(ref writer);
+                var written = (int)((UIntPtr)writer.Ptr - (UIntPtr)ptr);
+                
+                var dbId = IdFor((Hash)entry.Hash, guid);
+
+                var dbEntry = new FileContainedInEx
+                {
+                    File = finalPath.FileName,
+                    FileEntryData = buffer.SliceFast(0, written).ToArray()
+                };
+                
+                // TODO: Consider a bulk-put operation here
+                _store.Put(dbId, dbEntry);
+            }
         }
     }
 
@@ -80,32 +106,31 @@ public class ArchiveManagerEx : IArchiveManager
 
     public async Task ExtractFiles(IEnumerable<(Hash Src, AbsolutePath Dest)> files, CancellationToken token = default)
     {
-        var grouped = files.ToLookup(l => Location(l.Src));
+        var grouped = files.Distinct()
+            .Select(input => TryGetLocation(input.Src, out var archivePath, out var fileEntry) 
+                ? (true, Hash:input.Src, ArchivePath:archivePath, FileEntry:fileEntry, input.Dest) 
+                : default)
+            .Where(x => x.Item1)
+            .ToLookup(l => l.ArchivePath, l => (l.Hash, l.FileEntry, l.Dest));
+        
         if (grouped[default].Any())
-            throw new Exception($"Missing archive for {grouped[default].First().Src.ToHex()}");
+            throw new Exception($"Missing archive for {grouped[default].First().Hash.ToHex()}");
 
         var settings = new UnpackerSettings();
 
         foreach (var group in grouped)
         {
-            var byHash = group.ToLookup(f => f.Src);
             var file = group.Key.Read();
             var provider = new FromStreamProvider(file);
             var unpacker = new NxUnpacker(provider);
 
-            var infos = new List<IOutputDataProvider>();
-            
-            
-            foreach (var entry in unpacker.GetFileEntriesRaw().ToArray())
-            {
-                var entryHash = Hash.From(entry.Hash);
-                if (!byHash[entryHash].Any()) continue;
 
-                infos.AddRange(byHash[entryHash].Select(dest => 
-                    new OutputFileProvider(dest.Dest.Parent.GetFullPath(), dest.Dest.FileName, entry)));
-            }
+            var toExtract = group
+                .Select(entry =>
+                    (IOutputDataProvider)new OutputFileProvider(entry.Dest.Parent.GetFullPath(), entry.Dest.FileName, entry.FileEntry))
+                .ToArray();
             
-            unpacker.ExtractFiles(infos.ToArray(), settings);
+            unpacker.ExtractFiles(toExtract, settings);
         }
     }
 
@@ -113,9 +138,15 @@ public class ArchiveManagerEx : IArchiveManager
     {
         var results = new Dictionary<Hash, byte[]>();
         
-        var grouped = files.Distinct().ToLookup(Location);
+        var grouped = files.Distinct()
+            .Select(hash => TryGetLocation(hash, out var archivePath, out var fileEntry) 
+                ? (true, Hash:hash, ArchivePath:archivePath, FileEntry:fileEntry) 
+                : default)
+            .Where(x => x.Item1)
+            .ToLookup(l => l.ArchivePath, l => (l.Hash, l.FileEntry));
+        
         if (grouped[default].Any())
-            throw new Exception($"Missing archive for {grouped[default].First().ToHex()}");
+            throw new Exception($"Missing archive for {grouped[default].First().Hash.ToHex()}");
 
         var settings = new UnpackerSettings();
 
@@ -126,37 +157,47 @@ public class ArchiveManagerEx : IArchiveManager
             var provider = new FromStreamProvider(file);
             var unpacker = new NxUnpacker(provider);
 
-            var infos = new List<(Hash Hash, OutputArrayProvider Data)>();
-            
-            
-            foreach (var entry in unpacker.GetFileEntriesRaw().ToArray())
-            {
-                var entryHash = Hash.From(entry.Hash);
-                if (!byHash[entryHash].Any()) continue;
+            var infos = group.Select(entry => (entry.Hash, new OutputArrayProvider("", entry.FileEntry))).ToList();
 
-                infos.AddRange(byHash[entryHash].Select(hash => (hash, new OutputArrayProvider("", entry))));
-            }
-            
+
             unpacker.ExtractFiles(infos.Select(o => (IOutputDataProvider)o.Item2).ToArray(), settings);
 
             foreach (var info in infos)
             {
-                results.Add(info.Hash, info.Data.Data);
+                results.Add(info.Hash, info.Item2.Data);
             }
         }
 
         return results;
     }
 
-    public AbsolutePath Location(Hash hash)
+    private unsafe bool TryGetLocation(Hash hash, out AbsolutePath archivePath, out FileEntry fileEntry)
     {
         var prefix = new Id64(EntityCategory.FileContainedInEx, (ulong)hash);
-        return _store.GetByPrefix<FileContainedInEx>(prefix)
-            .SelectMany(f =>
+        foreach (var entry in _store.GetByPrefix<FileContainedInEx>(prefix))
+        {
+            foreach (var location in _archiveLocations)
             {
-                return _archiveLocations.Select(loc => loc.CombineUnchecked(f.File));
-            })
-            .FirstOrDefault(path => path.FileExists);
-        
+                var path = location.CombineUnchecked(entry.File);
+                if (!path.FileExists) continue;
+
+                archivePath = path;
+
+                fixed (byte* ptr = entry.FileEntryData.AsSpan())
+                {
+                    var reader = new LittleEndianReader(ptr);
+                    FileEntry tmpEntry = default;
+                    
+                    tmpEntry.FromReaderV0(ref reader);
+                    fileEntry = tmpEntry;
+                    return true;
+                }
+            }
+
+        }
+
+        archivePath = default;
+        fileEntry = default;
+        return false;
     }
 }

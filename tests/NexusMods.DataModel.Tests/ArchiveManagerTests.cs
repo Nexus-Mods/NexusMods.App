@@ -55,7 +55,7 @@ public class ArchiveManagerTests
 
         await using var tempFolder = _temporaryFileManager.CreateFolder();
         
-        var fullPaths = extractionIdxs.ToDictionary(idx => idx, idx => tempFolder.Path.CombineUnchecked($"{idx}.dat"));
+        var fullPaths = extractionIdxs.Distinct().ToDictionary(idx => idx, idx => tempFolder.Path.CombineUnchecked($"{idx}.dat"));
         
         await _manager.ExtractFiles(extractionIdxs.Select(idx => (hashes[idx], fullPaths[idx])));
 
