@@ -254,8 +254,8 @@ public class LoadoutSynchronizer
             return new FileMetaData(path, fa.Hash, fa.Size);
         throw new NotImplementedException();
     }
-    
-    public async ValueTask<IngestPlan> MakeIngestPlan(Loadout loadout, CancellationToken token = default)
+
+    public async ValueTask<IngestPlan> MakeIngestPlan(Loadout loadout, Func<AbsolutePath, ModId> modSelector, CancellationToken token = default)
     {
         var install = loadout.Installation;
 
@@ -281,7 +281,7 @@ public class LoadoutSynchronizer
                 continue;
             }
 
-            await EmitIngestCreatePlan(plan, existing, loadout);
+            await EmitIngestCreatePlan(plan, existing, modSelector);
         }
 
         foreach (var (gamePath, pair) in flattenedLoadout)
@@ -311,7 +311,7 @@ public class LoadoutSynchronizer
         });
     }
 
-    private async ValueTask EmitIngestCreatePlan(List<IIngestStep> plan, HashedEntry existing, Loadout loadout)
+    private async ValueTask EmitIngestCreatePlan(List<IIngestStep> plan, HashedEntry existing, Func<AbsolutePath, ModId> modSelector)
     {
         if (!await _archiveManager.HaveFile(existing.Hash))
         {
@@ -327,7 +327,8 @@ public class LoadoutSynchronizer
         {
             To = existing.Path,
             Hash = existing.Hash,
-            Size = existing.Size
+            Size = existing.Size,
+            ModId = modSelector(existing.Path)
         });
     }
 
@@ -361,12 +362,12 @@ public class LoadoutSynchronizer
     {
         // Step 1: Backup Files
         var byType = plan.Steps.ToLookup(g => g.GetType());
-        
+
         var backups = byType[typeof(BackupFile)]
             .OfType<BackupFile>()
             .Select(f => ((IStreamFactory)new NativeFileStreamFactory(f.To), f.Hash, f.Size))
             .ToList();
-        
+
         if (backups.Any())
             await _archiveManager.BackupFiles(backups);
 
@@ -381,7 +382,7 @@ public class LoadoutSynchronizer
             .OfType<ExtractFile>()
             .Select(f => (f.Hash, f.To));
         await _archiveManager.ExtractFiles(extractedFiles);
-        
+
         // Step 4: Write Generated Files
         var generatedFiles = byType[typeof(GenerateFile)].OfType<GenerateFile>();
         foreach (var file in generatedFiles)
@@ -412,15 +413,69 @@ public class LoadoutSynchronizer
             .OfType<IngestSteps.BackupFile>()
             .Select(f => ((IStreamFactory)new NativeFileStreamFactory(f.To), f.Hash, f.Size));
         await _archiveManager.BackupFiles(backupFiles);
-        
-        return _loadoutRegistry.Alter(plan.Loadout.LoadoutId, message, new IngestVisitor(byType));
+
+        return _loadoutRegistry.Alter(plan.Loadout.LoadoutId, message, new IngestVisitor(byType, plan));
     }
 
     private class IngestVisitor : ALoadoutVisitor
-    { 
-        public IngestVisitor(ILookup<Type, IIngestStep> steps)
-        {
+    {
+        private readonly IngestPlan _plan;
+        private readonly HashSet<GamePath> _removeFiles;
+        private readonly ILookup<ModId,FromArchive> _replaceFiles;
+        private readonly ILookup<ModId,FromArchive> _createFiles;
 
+        public IngestVisitor(ILookup<Type, IIngestStep> steps, IngestPlan plan)
+        {
+            _plan = plan;
+            _removeFiles = steps[typeof(IngestSteps.RemoveFromLoadout)]
+                .OfType<IngestSteps.RemoveFromLoadout>()
+                .Select(r => plan.Loadout.Installation.ToGamePath(r.To))
+                .ToHashSet();
+
+            _replaceFiles = steps[typeof(IngestSteps.ReplaceInLoadout)]
+                .OfType<IngestSteps.ReplaceInLoadout>()
+                .ToLookup(r => r.ModId,
+                    r => new FromArchive
+                    {
+                        To = plan.Loadout.Installation.ToGamePath(r.To),
+                        Hash = r.Hash,
+                        Size = r.Size,
+                        Id = r.ModFileId
+                    });
+
+            _createFiles = steps[typeof(IngestSteps.CreateInLoadout)]
+                .OfType<IngestSteps.CreateInLoadout>()
+                .ToLookup(r => r.ModId,
+                    r => new FromArchive
+                    {
+                        To = plan.Loadout.Installation.ToGamePath(r.To),
+                        Hash = r.Hash,
+                        Size = r.Size,
+                        Id = ModFileId.New()
+                    });
+
+        }
+
+        public override AModFile? Alter(AModFile file)
+        {
+            if (file is IToFile to)
+            {
+                if (_removeFiles.Contains(to.To)) return null;
+            }
+            return base.Alter(file);
+        }
+
+        public override Mod? Alter(Mod mod)
+        {
+            var toAdd = _replaceFiles[mod.Id].Concat(_createFiles[mod.Id]);
+            if (toAdd.Any())
+            {
+                mod = mod with
+                {
+                    Files = mod.Files.With(toAdd, f => f.Id)
+                };
+            }
+            return base.Alter(mod);
         }
     }
 
