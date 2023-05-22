@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using FluentAssertions;
+using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.JsonConverters;
@@ -55,18 +56,18 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
     protected class TestArchiveManager : IArchiveManager
     {
         public readonly HashSet<Hash> Archives = new();
-        public readonly HashSet<(Hash, AbsolutePath)> Extracted = new();
+        public readonly HashSet<(Hash, IStreamFactory)> Extracted = new();
         public async ValueTask<bool> HaveFile(Hash hash)
         {
             return Archives.Contains(hash);
         }
 
-        public async Task BackupFiles(IEnumerable<(AbsolutePath, Hash, Size)> backups, CancellationToken token = default)
+        public async Task BackupFiles(IEnumerable<(IStreamFactory, Hash, Size)> backups, CancellationToken token = default)
         {
             Archives.AddRange(backups.Select(b => b.Item2));
         }
 
-        public async Task ExtractFiles(IEnumerable<(Hash Src, AbsolutePath Dest)> files, CancellationToken token = default)
+        public async Task ExtractFiles(IEnumerable<(Hash Src, IStreamFactory Dest)> files, CancellationToken token = default)
         {
             Extracted.AddRange(files);
         }

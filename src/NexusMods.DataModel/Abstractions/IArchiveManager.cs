@@ -1,4 +1,5 @@
-﻿using NexusMods.DataModel.Loadouts.ApplySteps;
+﻿using NexusMods.Common;
+using NexusMods.DataModel.Loadouts.ApplySteps;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
@@ -22,7 +23,7 @@ public interface IArchiveManager
     /// backup process a exception may be thrown.
     /// </summary>
     /// <param name="backups"></param>
-    Task BackupFiles(IEnumerable<(AbsolutePath, Hash, Size)> backups, CancellationToken token = default);
+    Task BackupFiles(IEnumerable<(IStreamFactory, Hash, Size)> backups, CancellationToken token = default);
     
     
     /// <summary>
@@ -31,5 +32,5 @@ public interface IArchiveManager
     /// <param name="files"></param>
     /// <param name="token"></param>
     /// <returns></returns>
-    Task ExtractFiles(IEnumerable<(Hash Src, AbsolutePath Dest)> files, CancellationToken token = default);
+    Task ExtractFiles(IEnumerable<(Hash Src, IStreamFactory Dest)> files, CancellationToken token = default);
 }

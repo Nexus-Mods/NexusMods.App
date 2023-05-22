@@ -1,32 +1,47 @@
+using System.Text;
 using FluentAssertions;
+using NexusMods.Common;
+using NexusMods.DataModel.Abstractions;
+using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
 
 namespace NexusMods.DataModel.Tests;
 
 public class ArchiveManagerTests
 {
-    private readonly ArchiveManager _manager;
-    private readonly TemporaryFileManager _temporaryFileManager;
+    private readonly IArchiveManager _manager;
 
-    public ArchiveManagerTests(ArchiveManager manager, TemporaryFileManager temporaryFileManager)
+    public ArchiveManagerTests(IArchiveManager manager, TemporaryFileManager temporaryFileManager)
     {
         _manager = manager;
-        _temporaryFileManager = temporaryFileManager;
     }
 
-    [Fact]
-    public async Task CanArchiveAndOpenFiles()
+    [Theory]
+    [InlineData(1, 1024 * 1024)]
+    [InlineData(24, 1024)]
+    [InlineData(124, 1024)]
+    public async Task CanArchiveFiles(int fileCount, int maxSize)
     {
-        await using var file = _temporaryFileManager.CreateFile();
-        await file.Path.WriteAllTextAsync("Hello World!");
-        var hash = await _manager.ArchiveFileAsync(file.Path);
-        hash.Should().Be(Hash.From(0xA52B286A3E7F4D91));
+        var sizes = Enumerable.Range(0, fileCount).Select(s => Size.FromLong(Random.Shared.Next(maxSize))).ToArray();
+        var datas = sizes.Select(size =>
+        {
+            var buf = new byte[size.Value];
+            Random.Shared.NextBytes(buf);
+            return buf;
+        }).ToArray();
+        var hashes = datas.Select(d => d.AsSpan().XxHash64()).ToArray();
 
-        _manager.HaveArchive(hash).Should().BeTrue();
-        (await _manager.HaveFile(hash)).Should().BeTrue();
-        (await _manager.OpenRead(hash).ReadAllTextAsync()).Should().Be("Hello World!");
+        var records = Enumerable.Range(0, fileCount).Select(idx => (
+            (IStreamFactory)new MemoryStreamFactory($"{idx}.txt".ToRelativePath(), new MemoryStream(datas[idx])),
+            hashes[idx], Size.FromLong(datas[idx].Length)));
 
-        _manager.AllArchives().Should().Contain(hash);
+        await _manager.BackupFiles(records);
+
+        foreach (var hash in hashes)
+            (await _manager.HaveFile(hash)).Should().BeTrue();
     }
+    
+
 }

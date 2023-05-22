@@ -11,6 +11,7 @@ using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.DataModel.TriggerFilter;
+using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using BackupFile = NexusMods.DataModel.Loadouts.ApplySteps.BackupFile;
@@ -363,7 +364,7 @@ public class LoadoutSynchronizer
         
         var backups = byType[typeof(BackupFile)]
             .OfType<BackupFile>()
-            .Select(f => (f.To, f.Hash, f.Size))
+            .Select(f => ((IStreamFactory)new NativeFileStreamFactory(f.To), f.Hash, f.Size))
             .ToList();
         
         if (backups.Any())
@@ -376,7 +377,9 @@ public class LoadoutSynchronizer
         }
 
         // Step 3: Extract Files
-        var extractedFiles = byType[typeof(ExtractFile)].OfType<ExtractFile>().Select(f => (f.Hash, f.To));
+        var extractedFiles = byType[typeof(ExtractFile)]
+            .OfType<ExtractFile>()
+            .Select(f => (f.Hash, (IStreamFactory)new NativeFileStreamFactory(f.To)));
         await _archiveManager.ExtractFiles(extractedFiles);
         
         // Step 4: Write Generated Files
@@ -407,7 +410,7 @@ public class LoadoutSynchronizer
         var byType = plan.Steps.ToLookup(t => t.GetType());
         var backupFiles = byType[typeof(IngestSteps.BackupFile)]
             .OfType<IngestSteps.BackupFile>()
-            .Select(f => (f.To, f.Hash, f.Size));
+            .Select(f => ((IStreamFactory)new NativeFileStreamFactory(f.To), f.Hash, f.Size));
         await _archiveManager.BackupFiles(backupFiles);
         
         return _loadoutRegistry.Alter(plan.Loadout.LoadoutId, message, new IngestVisitor(byType));

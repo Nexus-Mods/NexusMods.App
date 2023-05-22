@@ -11,6 +11,7 @@ using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.DataModel.TriggerFilter;
+using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
@@ -113,7 +114,9 @@ public class ApplyLoadoutTests : ALoadoutSynrchonizerTest<ApplyLoadoutTests>
             Flattened = new Dictionary<GamePath, ModFilePair>()
         });
 
-        TestArchiveManagerInstance.Extracted.Should().Contain((Hash.From(0x424), file));
+        var fileFactory = new NativeFileStreamFactory(file);
+
+        TestArchiveManagerInstance.Extracted.Should().Contain((Hash.From(0x424), fileFactory));
     }
 
 

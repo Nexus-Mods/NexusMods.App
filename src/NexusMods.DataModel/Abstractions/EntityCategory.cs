@@ -76,4 +76,7 @@ public enum EntityCategory
     /// Fingerprint cache data
     /// </summary>
     Fingerprints,
+    
+    // TEMP TODO: Remove this
+    FileContainedInEx,
 }
