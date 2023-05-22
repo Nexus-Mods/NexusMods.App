@@ -12,10 +12,12 @@ namespace NexusMods.DataModel.Tests;
 public class ArchiveManagerTests
 {
     private readonly IArchiveManager _manager;
+    private readonly TemporaryFileManager _temporaryFileManager;
 
     public ArchiveManagerTests(IArchiveManager manager, TemporaryFileManager temporaryFileManager)
     {
         _manager = manager;
+        _temporaryFileManager = temporaryFileManager;
     }
 
     [Theory]
@@ -50,6 +52,19 @@ public class ArchiveManagerTests
         
         foreach (var idx in extractionIdxs)
             extracted[hashes[idx]].Should().BeEquivalentTo(datas[idx]);
+
+        await using var tempFolder = _temporaryFileManager.CreateFolder();
+        
+        var fullPaths = extractionIdxs.ToDictionary(idx => idx, idx => tempFolder.Path.CombineUnchecked($"{idx}.dat"));
+        
+        await _manager.ExtractFiles(extractionIdxs.Select(idx => (hashes[idx], fullPaths[idx])));
+
+        foreach (var idx in extractionIdxs)
+        {
+            var data = await fullPaths[idx].ReadAllBytesAsync();
+
+            data.Should().BeEquivalentTo(datas[idx]);
+        }
 
     }
     
