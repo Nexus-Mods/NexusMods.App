@@ -19,6 +19,8 @@ public class ListModContents : AVerb<LoadoutMarker, string>
 
     public async Task<int> Run(LoadoutMarker loadout, string modName, CancellationToken token)
     {
+        // TODO: Fix this
+        /*
         var rows = new List<object[]>();
         var mod = loadout.Value.Mods.Values.First(m => m.Name == modName);
         foreach (var file in mod.Files.Values)
@@ -30,6 +32,7 @@ public class ListModContents : AVerb<LoadoutMarker, string>
         }
 
         await _renderer.Render(new Table(new[] { "Name", "Source" }, rows));
+        */
         return 0;
     }
 }

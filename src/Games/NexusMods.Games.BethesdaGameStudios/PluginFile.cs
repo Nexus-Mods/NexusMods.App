@@ -1,6 +1,7 @@
 using NexusMods.DataModel;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Sorting.Rules;
@@ -12,7 +13,7 @@ using Noggog;
 namespace NexusMods.Games.BethesdaGameStudios;
 
 [JsonName("BethesdaGameStudios.PluginFile")]
-public record PluginFile : AGeneratedFile
+public record PluginFile : AGeneratedFile, IToFile
 {
     private static RelativePath[] _defaultOrdering = new[]
     {
@@ -22,26 +23,29 @@ public record PluginFile : AGeneratedFile
         "HearthFires.esm",
         "Dragonborn.esm",
     }.Select(e => e.ToRelativePath()).ToArray();
-
+    
+    public required GamePath To { get; init; }
+    
     public override async Task GenerateAsync(Stream stream, Loadout loadout, IReadOnlyCollection<(AModFile File, Mod Mod)> flattenedList,
         CancellationToken ct = default)
     {
         var pluginFiles = flattenedList
             .Select(f => f.File)
+            .OfType<PluginFile>()
             .Where(f => SkyrimSpecialEdition.PluginExtensions.Contains(f.To.Extension))
             .ToArray();
 
         var pluginFileRuleTuples = InitialiseFileRuleTuples(pluginFiles);
 
         var results = Sorter.Sort<ModRuleTuple, RelativePath, ModRuleTuple[]>(pluginFileRuleTuples,
-            i => i.Mod.To.FileName,
+            i => ((IToFile)i.Mod).To.FileName,
             i => i.Rules, //GenerateRules(pluginFiles, i),
             RelativePath.Comparer);
 
         await stream.WriteAllLinesAsync(results.Select(i => i.Mod.To.FileName.ToString()), token: ct);
     }
 
-    private ModRuleTuple[] InitialiseFileRuleTuples(AModFile[] pluginFiles)
+    private ModRuleTuple[] InitialiseFileRuleTuples(IToFile[] pluginFiles)
     {
         // Init Mods
         var pluginFileRuleTuples = GC.AllocateUninitializedArray<ModRuleTuple>(pluginFiles.Length);
@@ -61,7 +65,7 @@ public record PluginFile : AGeneratedFile
         return pluginFileRuleTuples;
     }
 
-    private IEnumerable<ISortRule<ModRuleTuple, RelativePath>> GenerateRules(ModRuleTuple[] modFiles, AModFile aModFile)
+    private IEnumerable<ISortRule<ModRuleTuple, RelativePath>> GenerateRules(ModRuleTuple[] modFiles, IToFile aModFile)
     {
         var defaultIdx = _defaultOrdering.IndexOf(aModFile.To.FileName);
         switch (defaultIdx)
@@ -86,7 +90,7 @@ public record PluginFile : AGeneratedFile
                 }
             default:
                 {
-                    foreach (var itm in aModFile.Metadata.OfType<AnalysisSortData>())
+                    foreach (var itm in ((AModFile)aModFile).Metadata.OfType<AnalysisSortData>())
                     {
                         foreach (var dep in itm.Masters)
                         {
@@ -121,7 +125,8 @@ public record PluginFile : AGeneratedFile
 
     private struct ModRuleTuple
     {
-        public AModFile Mod;
+        public IToFile Mod;
         public IReadOnlyList<ISortRule<ModRuleTuple, RelativePath>> Rules;
     }
+
 }

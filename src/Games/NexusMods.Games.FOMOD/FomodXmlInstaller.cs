@@ -136,7 +136,7 @@ public class FomodXmlInstaller : IModInstaller
         return instructions.Select(instruction => new EmptyDirectory
         {
             Id = ModFileId.New(),
-            To = new GamePath(GameFolderType.Game, instruction.destination)
+            Directory = new GamePath(GameFolderType.Game, instruction.destination)
         });
     }
 
