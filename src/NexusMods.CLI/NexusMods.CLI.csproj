@@ -9,6 +9,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\ArchiveManagement\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj" />
+        <ProjectReference Include="..\Networking\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />
         <ProjectReference Include="..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
         <ProjectReference Include="..\NexusMods.Paths\NexusMods.Paths.csproj" />
         <ProjectReference Include="..\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj" />

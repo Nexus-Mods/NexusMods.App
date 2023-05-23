@@ -55,6 +55,7 @@ public static class Services
             .AddVerb<ProtocolInvoke>()
             .AddVerb<Rename>()
             .AddVerb<RunTool>()
+            .AddVerb<DownloadUri>()
             .AddVerb<AssociateNxm>();
 
         services.AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ => new Resource<IExtractor, Size>("File Extraction"));
