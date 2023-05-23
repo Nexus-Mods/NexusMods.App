@@ -12,11 +12,9 @@
         <ProjectReference Include="..\NexusMods.StandardGameLocators.TestHelpers\NexusMods.StandardGameLocators.TestHelpers.csproj" />
     </ItemGroup>
 
-    <Target Name="CopyResources" AfterTargets="PostBuildEvent">
-        <ItemGroup>
-            <_Resources Include="Resources\**" />
-        </ItemGroup>
-
-        <Copy SourceFiles="@(_Resources)" DestinationFolder="$(TargetDir)\Resources" />
-    </Target>
+    <ItemGroup>
+        <None Update="Resources\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 </Project>

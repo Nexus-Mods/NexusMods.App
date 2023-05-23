@@ -96,6 +96,11 @@ namespace NexusMods.Networking.HttpDownloader
         {
             using var primaryJob = await _limiter.BeginAsync($"Initiating Download {destination.FileName}", size ?? Size.One, cancel);
 
+            // Integrate local download.
+            var hash = await LocalFileDownloader.TryDownloadLocal(primaryJob, sources, destination);
+            if (hash != null)
+                return hash.Value;
+            
             var state = await InitiateState(destination, cancel);
             state.Sources = sources.Select((source, idx) => new Source { Request = source, Priority = idx }).ToArray();
             state.Destination = destination;

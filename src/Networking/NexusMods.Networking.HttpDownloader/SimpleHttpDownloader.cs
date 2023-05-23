@@ -34,8 +34,13 @@ public class SimpleHttpDownloader : IHttpDownloader
         foreach (var source in sources)
         {
             using var job = await _limiter.BeginAsync($"Downloading {destination.FileName}", size ?? Size.One, token);
+            
+            // Integrate local download.
+            var hash = await LocalFileDownloader.TryDownloadLocal(job, source, destination);
+            if (hash != null)
+                return hash.Value;
+            
             var response = await _client.SendAsync(source, HttpCompletionOption.ResponseHeadersRead, token);
-
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogWarning("Failed to download {Source} to {Destination}: {StatusCode}", source.RequestUri, destination, response.StatusCode);
