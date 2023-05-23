@@ -41,9 +41,9 @@ public class DownloadAndInstallMod : AVerb<string, LoadoutMarker, string>
             await _httpDownloader.DownloadAsync(new[] { new HttpRequestMessage(HttpMethod.Get, uri) },
                 tempDir.Path, null, token);
             
-            return loadout.InstallModsFromArchiveAsync(tempDir.Path, modName, token);
+            return await loadout.InstallModsFromArchiveAsync(tempDir.Path, modName, token);
         });
-        
+
         return 0;
     }
 }
