@@ -1,4 +1,5 @@
 ﻿using System.Buffers.Binary;
+using DynamicData;
 using NexusMods.Archives.Nx.FileProviders;
 using NexusMods.Archives.Nx.Headers.Managed;
 using NexusMods.Archives.Nx.Interfaces;
@@ -45,10 +46,12 @@ public class ArchiveManager : IArchiveManager
     {
         var builder = new NxPackerBuilder();
         var distinct = backups.DistinctBy(d => d.Item2).ToArray();
-        
+        var streams = new List<Stream>();
         foreach (var backup in distinct)
         {
-            builder.AddFile(await backup.Item1.GetStreamAsync(), new AddFileParams
+            var stream = await backup.Item1.GetStreamAsync();
+            streams.Add(stream);
+            builder.AddFile(stream, new AddFileParams
             {
                 RelativePath = backup.Item2.ToHex(),
             });
@@ -62,6 +65,9 @@ public class ArchiveManager : IArchiveManager
             builder.WithOutput(outputStream);
             builder.Build();
         }
+        
+        foreach (var stream in streams)
+            await stream.DisposeAsync();
 
         var finalPath = outputPath.ReplaceExtension(KnownExtensions.Nx);
         
