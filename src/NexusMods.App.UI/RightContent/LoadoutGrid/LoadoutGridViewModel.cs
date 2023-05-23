@@ -91,7 +91,7 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
                 .OnUI()
                 .ToDiffedChangeSet(cur => cur.ModId, cur => cur)
                 .Bind(out _mods)
-                .Subscribe()
+                .SubscribeWithErrorLogging(logger)
                 .DisposeWith(d);
 
             this.WhenAnyValue(vm => vm.LoadoutId)
@@ -101,7 +101,7 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
 
             _columns.Connect()
                 .Bind(out _filteredColumns)
-                .Subscribe()
+                .SubscribeWithErrorLogging(logger)
                 .DisposeWith(d);
         });
     }
