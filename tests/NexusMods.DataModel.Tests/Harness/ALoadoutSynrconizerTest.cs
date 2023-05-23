@@ -11,6 +11,7 @@ using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.DataModel.TriggerFilter;
+using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
@@ -56,7 +57,7 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
     protected class TestArchiveManager : IArchiveManager
     {
         public readonly HashSet<Hash> Archives = new();
-        public readonly HashSet<(Hash, IStreamFactory)> Extracted = new();
+        public readonly Dictionary<Hash, IStreamFactory> Extracted = new();
         public async ValueTask<bool> HaveFile(Hash hash)
         {
             return Archives.Contains(hash);
@@ -67,9 +68,10 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
             Archives.AddRange(backups.Select(b => b.Item2));
         }
 
-        public Task ExtractFiles(IEnumerable<(Hash Src, AbsolutePath Dest)> files, CancellationToken token = default)
+        public async Task ExtractFiles(IEnumerable<(Hash Src, AbsolutePath Dest)> files, CancellationToken token = default)
         {
-            throw new NotImplementedException();
+            foreach (var entry in files)
+                Extracted[entry.Src] = new NativeFileStreamFactory(entry.Dest);
         }
 
         public Task<IDictionary<Hash, byte[]>> ExtractFiles(IEnumerable<Hash> files, CancellationToken token = default)
@@ -79,7 +81,8 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
 
         public async Task ExtractFiles(IEnumerable<(Hash Src, IStreamFactory Dest)> files, CancellationToken token = default)
         {
-            Extracted.AddRange(files);
+            foreach (var entry in files)
+                Extracted[entry.Src] = entry.Dest;
         }
     }
 

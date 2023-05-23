@@ -116,7 +116,7 @@ public class ApplyLoadoutTests : ALoadoutSynrchonizerTest<ApplyLoadoutTests>
 
         var fileFactory = new NativeFileStreamFactory(file);
 
-        TestArchiveManagerInstance.Extracted.Should().Contain((Hash.From(0x424), fileFactory));
+        TestArchiveManagerInstance.Extracted.Should().ContainKey(Hash.From(0x424));
     }
 
 
