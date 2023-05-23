@@ -44,6 +44,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected readonly FileHashCache FileHashCache;
     protected readonly IFileSystem FileSystem;
     protected readonly IDataStore DataStore;
+    protected readonly IToolManager ToolManager;
 
     protected readonly IGame Game;
     protected readonly GameInstallation Install;
@@ -70,6 +71,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         Logger = provider1.GetRequiredService<ILogger<T>>();
         LoadoutSynchronizer = provider1.GetRequiredService<LoadoutSynchronizer>();
         TemporaryFileManager = provider1.GetRequiredService<TemporaryFileManager>();
+        ToolManager = provider1.GetRequiredService<IToolManager>();
         ServiceProvider = provider;
 
         Game = provider1.GetRequiredService<StubbedGame>();

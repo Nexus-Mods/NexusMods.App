@@ -69,6 +69,7 @@ public static class Services
         coll.AddSingleton<FileHashCache>();
         coll.AddSingleton<IArchiveAnalyzer, ArchiveAnalyzer>();
         coll.AddSingleton<IArchiveInstaller, ArchiveInstaller>();
+        coll.AddSingleton<IToolManager, ToolManager>();
 
         coll.AddAllSingleton<IInterprocessJobManager, SqliteIPC>();
         coll.AddSingleton(typeof(IMessageConsumer<>),
