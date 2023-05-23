@@ -358,7 +358,7 @@ public class LoadoutSynchronizer
     /// Applies the given steps to the game folder
     /// </summary>
     /// <param name="plan"></param>
-    public async Task Apply(ApplyPlan plan)
+    public async Task Apply(ApplyPlan plan, CancellationToken token = default)
     {
         // Step 1: Backup Files
         var byType = plan.Steps.ToLookup(g => g.GetType());
@@ -369,7 +369,7 @@ public class LoadoutSynchronizer
             .ToList();
 
         if (backups.Any())
-            await _archiveManager.BackupFiles(backups);
+            await _archiveManager.BackupFiles(backups, token);
 
         // Step 2: Delete Files
         foreach (var file in byType[typeof(DeleteFile)].OfType<DeleteFile>())
@@ -381,7 +381,7 @@ public class LoadoutSynchronizer
         var extractedFiles = byType[typeof(ExtractFile)]
             .OfType<ExtractFile>()
             .Select(f => (f.Hash, f.To));
-        await _archiveManager.ExtractFiles(extractedFiles);
+        await _archiveManager.ExtractFiles(extractedFiles, token);
 
         // Step 4: Write Generated Files
         var generatedFiles = byType[typeof(GenerateFile)].OfType<GenerateFile>();
@@ -393,7 +393,7 @@ public class LoadoutSynchronizer
                 dir.Create();
 
             await using var stream = absPath.Create();
-            var hash = await file.Source.GenerateAsync(stream, plan);
+            var hash = await file.Source.GenerateAsync(stream, plan, token);
             _generatedFileFingerprintCache.Set(file.Fingerprint, new CachedGeneratedFileData
             {
                 Hash = hash,

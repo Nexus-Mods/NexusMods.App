@@ -70,7 +70,7 @@ public static class Services
         coll.AddSingleton<IDirectoryIndexer, DirectoryIndexer>();
         coll.AddSingleton<LoadoutSynchronizer>();
         coll.AddSingleton<FileHashCache>();
-        coll.AddSingleton<FileContentsCache>();
+        coll.AddSingleton<ArchiveAnalyzer>();
 
         coll.AddAllSingleton<IInterprocessJobManager, SqliteIPC>();
         coll.AddSingleton(typeof(IMessageConsumer<>),

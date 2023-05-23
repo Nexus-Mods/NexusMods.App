@@ -36,10 +36,11 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
     protected readonly TemporaryFileManager TemporaryFileManager;
     protected readonly IServiceProvider ServiceProvider;
-    protected readonly FileContentsCache ArchiveContentsCache;
-    protected readonly ArchiveManager ArchiveManager;
+    protected readonly IArchiveAnalyzer ArchiveAnalyzer;
+    protected readonly IArchiveManager ArchiveManager;
+    protected readonly IArchiveInstaller ArchiveInstaller;
     protected readonly LoadoutManager LoadoutManager;
-    protected LoadoutSynchronizer LoadoutSyncronizer;
+    protected readonly LoadoutSynchronizer LoadoutSynchronizer;
     protected readonly FileHashCache FileHashCache;
     protected readonly IFileSystem FileSystem;
     protected readonly IDataStore DataStore;
@@ -59,14 +60,15 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
             .ConfigureServices((_, service) => startup.ConfigureServices(service))
             .Build();
         var provider1 = _host.Services;
-        ArchiveContentsCache = provider1.GetRequiredService<FileContentsCache>();
-        ArchiveManager = provider1.GetRequiredService<ArchiveManager>();
+        ArchiveAnalyzer = provider1.GetRequiredService<IArchiveAnalyzer>();
+        ArchiveManager = provider1.GetRequiredService<IArchiveManager>();
+        ArchiveInstaller = provider1.GetRequiredService<IArchiveInstaller>();
         LoadoutManager = provider1.GetRequiredService<LoadoutManager>();
         FileHashCache = provider1.GetRequiredService<FileHashCache>();
         FileSystem = provider1.GetRequiredService<IFileSystem>();
         DataStore = provider1.GetRequiredService<IDataStore>();
         Logger = provider1.GetRequiredService<ILogger<T>>();
-        LoadoutSyncronizer = provider1.GetRequiredService<LoadoutSynchronizer>();
+        LoadoutSynchronizer = provider1.GetRequiredService<LoadoutSynchronizer>();
         TemporaryFileManager = provider1.GetRequiredService<TemporaryFileManager>();
         ServiceProvider = provider;
 
@@ -84,11 +86,6 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        await ArchiveContentsCache.AnalyzeFileAsync(DataZipLzma, Token);
-        await ArchiveContentsCache.AnalyzeFileAsync(Data7ZLzma2, Token);
-        await ArchiveManager.ArchiveFileAsync(DataZipLzma, Token);
-        await ArchiveManager.ArchiveFileAsync(Data7ZLzma2, Token);
-
         BaseList = await LoadoutManager.ManageGameAsync(Install, "BaseList", CancellationToken.None);
     }
 

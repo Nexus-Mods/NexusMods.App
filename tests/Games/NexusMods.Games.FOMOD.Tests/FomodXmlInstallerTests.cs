@@ -222,9 +222,9 @@ public class FomodXmlInstallerTests
             _serviceProvider.GetRequiredService<ILogger<FomodAnalyzer>>(),
             FileSystem.Shared);
 
-        var contentsCache = new FileContentsCache(
-            _serviceProvider.GetRequiredService<ILogger<FileContentsCache>>(),
-            _serviceProvider.GetRequiredService<IResource<FileContentsCache, Size>>(),
+        var contentsCache = new ArchiveAnalyzer(
+            _serviceProvider.GetRequiredService<ILogger<ArchiveAnalyzer>>(),
+            _serviceProvider.GetRequiredService<IResource<ArchiveAnalyzer, Size>>(),
             _serviceProvider.GetRequiredService<FileExtractor.FileExtractor>(),
             _serviceProvider.GetRequiredService<TemporaryFileManager>(),
             new FileHashCache(_serviceProvider.GetRequiredService<IResource<FileHashCache, Size>>(), dataStore),

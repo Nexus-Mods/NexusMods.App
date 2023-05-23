@@ -79,4 +79,7 @@ public enum EntityCategory
     
     // TEMP TODO: Remove this
     FileContainedInEx,
+    
+    // Archive meta data
+    ArchiveMetaData
 }

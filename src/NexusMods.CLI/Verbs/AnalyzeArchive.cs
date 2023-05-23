@@ -10,8 +10,8 @@ namespace NexusMods.CLI.Verbs;
 public class AnalyzeArchive : AVerb<AbsolutePath>
 {
     private readonly IRenderer _renderer;
-    private readonly FileContentsCache _archiveContentsCache;
-    public AnalyzeArchive(Configurator configurator, FileContentsCache archiveContentsCache, ILogger<AnalyzeArchive> logger)
+    private readonly ArchiveAnalyzer _archiveContentsCache;
+    public AnalyzeArchive(Configurator configurator, ArchiveAnalyzer archiveContentsCache, ILogger<AnalyzeArchive> logger)
     {
         _logger = logger;
         _renderer = configurator.Renderer;

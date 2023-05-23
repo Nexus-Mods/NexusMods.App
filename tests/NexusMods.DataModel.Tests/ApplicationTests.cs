@@ -20,12 +20,13 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
     public async Task CanApplyGame()
     {
         var mainList = await LoadoutManager.ManageGameAsync(Install, "MainList", CancellationToken.None);
-        await mainList.InstallModsFromArchiveAsync(DataZipLzma, "First Mod", CancellationToken.None);
+        var hash = await ArchiveAnalyzer.AnalyzeFileAsync(DataZipLzma, CancellationToken.None);
+        await ArchiveInstaller.AddMods(mainList.Value.LoadoutId, hash.Hash, "First Mod", CancellationToken.None);
 
-        var plan = await mainList.MakeApplyPlanAsync();
+        var plan = await LoadoutSynchronizer.MakeApplySteps(mainList.Value, CancellationToken.None);
         plan.Steps.OfType<CopyFile>().Count().Should().Be(3);
 
-        await mainList.ApplyAsync(plan, CancellationToken.None);
+        await LoadoutSynchronizer.Apply(plan, CancellationToken.None);
         
         var gameFolder = Install.Locations[GameFolderType.Game];
         foreach (var file in DataNames)
@@ -33,10 +34,8 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
             gameFolder.CombineUnchecked(file).FileExists.Should().BeTrue("File has been applied");
         }
 
-        var newPlan = await mainList.MakeApplyPlanAsync();
-        newPlan.Steps.Count.Should().Be(0);
-
-        await BaseList.ApplyAsync();
+        var newPlan = await LoadoutSynchronizer.MakeApplySteps(mainList.Value, CancellationToken.None);
+        newPlan.Steps.Count().Should().Be(0);
     }
 
     [Fact]

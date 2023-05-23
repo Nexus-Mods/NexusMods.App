@@ -10,13 +10,7 @@ public class ToolTests : ADataModelTest<ToolTests>
     public ToolTests(IServiceProvider provider) : base(provider)
     {
     }
-
-    [Fact]
-    public void HasTools()
-    {
-        BaseList.Tools.Should().NotBeEmpty();
-    }
-
+    
     [Fact]
     public async Task CanRunTools()
     {

@@ -5,7 +5,9 @@ using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Extensions;
+using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.RateLimiting.Extensions;
 using NexusMods.FileExtractor.FileSignatures;
@@ -20,27 +22,29 @@ namespace NexusMods.DataModel;
 /// Helper method that allows you to index (analyze) files using provided <see cref="IFileAnalyzer"/>(s),
 /// caching the results inside the given <see cref="IDataStore"/>.
 /// </summary>
-public class FileContentsCache
+public class ArchiveAnalyzer : IArchiveAnalyzer
 {
-    private readonly ILogger<FileContentsCache> _logger;
+    private readonly ILogger<ArchiveAnalyzer> _logger;
     private readonly FileExtractor.FileExtractor _extractor;
     private readonly TemporaryFileManager _manager;
-    private readonly IResource<FileContentsCache, Size> _limiter;
+    private readonly IResource<ArchiveAnalyzer, Size> _limiter;
     private readonly SignatureChecker _sigs;
     private readonly IDataStore _store;
     private readonly FileHashCache _fileHashCache;
     private readonly ILookup<FileType, IFileAnalyzer> _analyzers;
+    private readonly IArchiveManager _archiveManager;
     public Hash AnalyzersSignature { get; private set; }
 
     /// <summary/>
     /// <remarks>Called from DI container.</remarks>
-    public FileContentsCache(ILogger<FileContentsCache> logger,
-        IResource<FileContentsCache, Size> limiter,
+    public ArchiveAnalyzer(ILogger<ArchiveAnalyzer> logger,
+        IResource<ArchiveAnalyzer, Size> limiter,
         FileExtractor.FileExtractor extractor,
         TemporaryFileManager manager,
         FileHashCache hashCache,
         IEnumerable<IFileAnalyzer> analyzers,
-        IDataStore dataStore)
+        IDataStore dataStore,
+        IArchiveManager archiveManager)
     {
         _logger = logger;
         _limiter = limiter;
@@ -52,8 +56,12 @@ public class FileContentsCache
         AnalyzersSignature = MakeAnalyzerSignature(analyzers);
         _store = dataStore;
         _fileHashCache = hashCache;
+        _archiveManager = archiveManager;
     }
 
+    /// <summary>
+    /// Recalculates the analyzer signature, only used for testing.
+    /// </summary>
     public void RecalculateAnalyzerSignature()
     {
         AnalyzersSignature =
@@ -73,8 +81,17 @@ public class FileContentsCache
         if (found != null && found.AnalyzersHash == AnalyzersSignature)
             return found;
 
+        // Analyze the archive and cache the info
         var result = await AnalyzeFileInnerAsync(new NativeFileStreamFactory(path), path.FileName, token);
         result.EnsurePersisted(_store);
+
+        // Save the source of this archive so we can use it later
+        if (result is AnalyzedArchive archive)
+        {
+            var metaData = FileArchiveMetaData.Create(path, archive);
+            metaData.EnsurePersisted(_store);
+        }
+        
         return result;
     }
 
@@ -234,6 +251,14 @@ public class FileContentsCache
                     // ReSharper disable once AccessToDisposedClosure
                     .SelectAsync(a => KeyValuePair.Create(a.Path.RelativeTo(tmpFolder.Path), a.Results.DataStoreId))
                     .ToListAsync();
+                
+                await _archiveManager.BackupFiles(children
+                    .Select(c =>
+                    {
+                        IStreamFactory path = new NativeFileStreamFactory(tmpFolder.Path.CombineUnchecked(c.Key));
+                        var analysis = _store.Get<AnalyzedFile>(c.Value)!;
+                        return (path, analysis.Hash, analysis.Size);
+                    }), token);
             }
 
             var file = new AnalyzedArchive

@@ -9,6 +9,7 @@ using DynamicData.PLinq;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts.Cursors;
+using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.Mods;
 
 namespace NexusMods.DataModel.Loadouts;
@@ -350,5 +351,15 @@ public class LoadoutRegistry : IDisposable
         }
 
         _isDisposed = true;
+    }
+
+    /// <summary>
+    /// Gets the marker for the given loadout id.
+    /// </summary>
+    /// <param name="loadoutId"></param>
+    /// <returns></returns>
+    public LoadoutMarker GetMarker(LoadoutId loadoutId)
+    {
+        return new LoadoutMarker(this, loadoutId);
     }
 }

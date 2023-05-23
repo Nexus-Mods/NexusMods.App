@@ -49,13 +49,13 @@ public class LoadoutManager
     /// Provides lookup within the 'Archives' folder, for existing installed mods
     /// etc.
     /// </summary>
-    public readonly ArchiveManager ArchiveManager;
+    public readonly IArchiveManager ArchiveManager;
 
     private readonly ILogger<LoadoutManager> _logger;
 
     private readonly IFileSystem _fileSystem;
     private readonly IModInstaller[] _installers;
-    private readonly FileContentsCache _analyzer;
+    private readonly ArchiveAnalyzer _analyzer;
     private readonly IEnumerable<IFileMetadataSource> _metadataSources;
     private readonly ILookup<GameDomain, ITool> _tools;
     private readonly IInterprocessJobManager _jobManager;
@@ -68,12 +68,12 @@ public class LoadoutManager
         IFileSystem fileSystem,
         LoadoutRegistry registry,
         IResource<LoadoutManager, Size> limiter,
-        ArchiveManager archiveManager,
+        IArchiveManager archiveManager,
         IEnumerable<IFileMetadataSource> metadataSources,
         IDataStore store,
         FileHashCache fileHashCache,
         IEnumerable<IModInstaller> installers,
-        FileContentsCache analyzer,
+        ArchiveAnalyzer analyzer,
         IEnumerable<ITool> tools,
         IInterprocessJobManager jobManager)
     {
@@ -176,7 +176,7 @@ public class LoadoutManager
         if (!earlyReturn)
             await indexTask;
 
-        return new LoadoutMarker(this, loadoutId);
+        return new LoadoutMarker(Registry, loadoutId);
     }
 
     private async Task IndexAndAddGameFiles(GameInstallation installation,
@@ -272,12 +272,8 @@ public class LoadoutManager
                 ModId = baseMod.Id,
                 LoadoutId = loadoutId
             });
-
-            // Step 1: Archive the archive.
-            await ArchiveManager.ArchiveFileAsync(archivePath, cancellationToken);
-            job.Progress = new Percent(0.25);
-
-            // Step 2: Analyze the archive.
+            
+            // Step 1: Analyze the archive.
             var analyzed = await _analyzer.AnalyzeFileAsync(archivePath, cancellationToken);
             if (analyzed is not AnalyzedArchive archive)
             {
@@ -287,7 +283,7 @@ public class LoadoutManager
 
             job.Progress = new Percent(0.50);
 
-            // Step 3: Run the archive through the installers.
+            // Step 2: Run the archive through the installers.
             var installer = _installers
                 .Select(i => (Installer: i, Priority: i.GetPriority(loadout.Value.Installation, archive.Contents)))
                 .Where(p => p.Priority != Priority.None)
@@ -301,7 +297,7 @@ public class LoadoutManager
                 throw new NotSupportedException($"No Installer found for {archivePath}");
             }
 
-            // Step 4: Install the mods.
+            // Step 3: Install the mods.
             var results = await installer.Installer.GetModsAsync(
                 loadout.Value.Installation,
                 baseMod.Id,
@@ -319,7 +315,7 @@ public class LoadoutManager
 
             job.Progress = new Percent(0.75);
 
-            // Step 5: Add the mod to the loadout.
+            // Step 4: Add the mod to the loadout.
             AModMetadata? modMetadata = mods.Length > 1
                 ? new GroupMetadata
                 {
@@ -341,7 +337,7 @@ public class LoadoutManager
             {
                 mod.Metadata = modMetadata;
 
-                if (mod.Id == baseMod.Id)
+                if (mod.Id.Equals(baseMod.Id))
                 {
                     Registry.Alter(
                         cursor,
@@ -535,7 +531,7 @@ public class LoadoutManager
         if (loadout == null)
             throw new Exception("Loadout not found after loading data store, the loadout may be corrupt");
         Registry.Alter(loadout.LoadoutId, "Loadout Imported from backup",  _ => loadout);
-        return new LoadoutMarker(this, loadout.LoadoutId);
+        return new LoadoutMarker(Registry, loadout.LoadoutId);
     }
 
     /// <summary>
@@ -575,5 +571,5 @@ public class LoadoutManager
         }
     }
 
-    private LoadoutMarker GetLoadout(LoadoutId loadoutId) => new(this, loadoutId);
+    private LoadoutMarker GetLoadout(LoadoutId loadoutId) => new(Registry, loadoutId);
 }

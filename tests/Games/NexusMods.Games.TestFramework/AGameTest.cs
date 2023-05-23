@@ -31,7 +31,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     protected readonly ArchiveManager ArchiveManager;
     protected readonly LoadoutManager LoadoutManager;
     protected readonly LoadoutRegistry LoadoutRegistry;
-    protected readonly FileContentsCache FileContentsCache;
+    protected readonly ArchiveAnalyzer ArchiveAnalyzer;
     protected readonly IDataStore DataStore;
 
     protected readonly Client NexusClient;
@@ -58,7 +58,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
         TemporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
         LoadoutManager = serviceProvider.GetRequiredService<LoadoutManager>();
         LoadoutRegistry = serviceProvider.GetRequiredService<LoadoutRegistry>();
-        FileContentsCache = serviceProvider.GetRequiredService<FileContentsCache>();
+        ArchiveAnalyzer = serviceProvider.GetRequiredService<ArchiveAnalyzer>();
         DataStore = serviceProvider.GetRequiredService<IDataStore>();
 
         NexusClient = serviceProvider.GetRequiredService<Client>();
@@ -163,14 +163,14 @@ public abstract class AGameTest<TGame> where TGame : AGame
     }
 
     /// <summary>
-    /// Analyzes a file as an archive using the <see cref="NexusMods.DataModel.FileContentsCache"/>.
+    /// Analyzes a file as an archive using the <see cref="ArchiveAnalyzer"/>.
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException">The provided file is not an archive.</exception>
     protected async Task<AnalyzedArchive> AnalyzeArchive(AbsolutePath path)
     {
-        var analyzedFile = await FileContentsCache.AnalyzeFileAsync(path);
+        var analyzedFile = await ArchiveAnalyzer.AnalyzeFileAsync(path);
         if (analyzedFile is AnalyzedArchive analyzedArchive)
             return analyzedArchive;
         throw new ArgumentException($"File at {path} is not an archive!", nameof(path));

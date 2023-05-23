@@ -25,7 +25,7 @@ public class SortRulesTests : ALoadoutSynrchonizerTest<SortRulesTests>
 
        var nameForId = loadout.Value.Mods.Values.ToDictionary(m => m.Id, m => m.Name);
 
-       var rules = await LoadoutSyncronizer.ModSortRules(loadout.Value, mod).ToListAsync();
+       var rules = await LoadoutSynchronizer.ModSortRules(loadout.Value, mod).ToListAsync();
 
 
        var testData = rules.Select(r =>
@@ -48,7 +48,7 @@ public class SortRulesTests : ALoadoutSynrchonizerTest<SortRulesTests>
     {
         var loadout = await CreateTestLoadout();
 
-        var mods = await LoadoutSyncronizer.SortMods(loadout.Value);
+        var mods = await LoadoutSynchronizer.SortMods(loadout.Value);
         mods.Select(m => m.Name).Should().BeEquivalentTo(new[]
         {
             "Mod 0",
@@ -81,7 +81,7 @@ public class SortRulesTests : ALoadoutSynrchonizerTest<SortRulesTests>
         var loadout = await CreateTestLoadout();
         loadout.Add(lastMod);
 
-        await LoadoutSyncronizer.Invoking(_ => LoadoutSyncronizer.SortMods(loadout.Value))
+        await LoadoutSynchronizer.Invoking(_ => LoadoutSynchronizer.SortMods(loadout.Value))
             .Should().ThrowAsync<InvalidOperationException>("rule conflicts with generated rules");
     }
 
