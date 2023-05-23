@@ -275,7 +275,7 @@ public class ArchiveAnalyzer : IArchiveAnalyzer
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error extracting archive {Path}, skipping analyis", sFn.Name);
+            _logger.LogError(ex, "Error extracting archive {Path}, skipping analysis", sFn.Name);
             return null;
         }
     }

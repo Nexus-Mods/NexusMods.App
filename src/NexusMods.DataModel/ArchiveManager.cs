@@ -16,12 +16,15 @@ using NexusMods.Paths.Utilities;
 
 namespace NexusMods.DataModel;
 
-public class ArchiveManagerEx : IArchiveManager
+/// <summary>
+/// Manages the archive locations and allows for the backup of files to internal data folders.
+/// </summary>
+public class ArchiveManager : IArchiveManager
 {
     private readonly AbsolutePath[] _archiveLocations;
     private readonly IDataStore _store;
 
-    public ArchiveManagerEx(IDataStore store, IDataModelSettings settings)
+    public ArchiveManager(IDataStore store, IDataModelSettings settings)
     {
         _archiveLocations = settings.ArchiveLocations.Select(f => f.ToAbsolutePath()).ToArray();
         foreach (var location in _archiveLocations)
@@ -120,7 +123,7 @@ public class ArchiveManagerEx : IArchiveManager
 
         foreach (var group in grouped)
         {
-            var file = group.Key.Read();
+            await using var file = group.Key.Read();
             var provider = new FromStreamProvider(file);
             var unpacker = new NxUnpacker(provider);
 
@@ -129,8 +132,13 @@ public class ArchiveManagerEx : IArchiveManager
                 .Select(entry =>
                     (IOutputDataProvider)new OutputFileProvider(entry.Dest.Parent.GetFullPath(), entry.Dest.FileName, entry.FileEntry))
                 .ToArray();
-            
+
             unpacker.ExtractFiles(toExtract, settings);
+
+            foreach (var toDispose in toExtract)
+            {
+                toDispose.Dispose();
+            }
         }
     }
 

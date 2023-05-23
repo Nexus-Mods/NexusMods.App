@@ -1,5 +1,6 @@
 ﻿using NexusMods.Common;
 using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.JsonConverters;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel.ArchiveMetaData;
@@ -7,12 +8,13 @@ namespace NexusMods.DataModel.ArchiveMetaData;
 /// <summary>
 /// Archive Meta data for a file archive, where it cam
 /// </summary>
+[JsonName("NexusMods.DataMode.ArchiveMetaData")]
 public record FileArchiveMetaData : AArchiveMetaData
 {
     /// <summary>
-    /// The full path to the file on disk, when this metadata was created.
+    /// The filename of the file
     /// </summary>
-    public required AbsolutePath OriginalPath { get; init; }
+    public required RelativePath OriginalPath { get; init; }
 
     /// <summary>
     /// Create a new FileArchiveMetaData object from an AnalyzedArchive and a raw path
@@ -25,7 +27,7 @@ public record FileArchiveMetaData : AArchiveMetaData
         return new FileArchiveMetaData
         {
             Priority = Priority.Low,
-            OriginalPath = path,
+            OriginalPath = path.FileName,
             Name = path.GetFileNameWithoutExtension(),
             Size = archive.Size,
             Hash = archive.Hash

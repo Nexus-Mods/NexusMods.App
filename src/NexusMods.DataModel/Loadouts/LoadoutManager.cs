@@ -55,7 +55,7 @@ public class LoadoutManager
 
     private readonly IFileSystem _fileSystem;
     private readonly IModInstaller[] _installers;
-    private readonly ArchiveAnalyzer _analyzer;
+    private readonly IArchiveAnalyzer _analyzer;
     private readonly IEnumerable<IFileMetadataSource> _metadataSources;
     private readonly ILookup<GameDomain, ITool> _tools;
     private readonly IInterprocessJobManager _jobManager;
@@ -73,7 +73,7 @@ public class LoadoutManager
         IDataStore store,
         FileHashCache fileHashCache,
         IEnumerable<IModInstaller> installers,
-        ArchiveAnalyzer analyzer,
+        IArchiveAnalyzer analyzer,
         IEnumerable<ITool> tools,
         IInterprocessJobManager jobManager)
     {

@@ -24,7 +24,7 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
         await ArchiveInstaller.AddMods(mainList.Value.LoadoutId, hash.Hash, "First Mod", CancellationToken.None);
 
         var plan = await LoadoutSynchronizer.MakeApplySteps(mainList.Value, CancellationToken.None);
-        plan.Steps.OfType<CopyFile>().Count().Should().Be(3);
+        plan.Steps.OfType<ExtractFile>().Count().Should().Be(3);
 
         await LoadoutSynchronizer.Apply(plan, CancellationToken.None);
         
