@@ -1,10 +1,14 @@
 using FluentAssertions;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Loadouts.ApplySteps;
+using NexusMods.DataModel.Loadouts.IngestSteps;
+using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using BackupFile = NexusMods.DataModel.Loadouts.ApplySteps.BackupFile;
+using RemoveFromLoadout = NexusMods.DataModel.Loadouts.ApplySteps.RemoveFromLoadout;
 
 namespace NexusMods.DataModel.Tests;
 
@@ -41,17 +45,16 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
     [Fact]
     public async Task CanIntegrateChanges()
     {
-        throw new NotImplementedException();
-        /*
-        var mainList = await LoadoutManager.ManageGameAsync(Install, "MainList", Token);
-        await mainList.InstallModsFromArchiveAsync(DataZipLzma, "First Mod", Token);
-        await mainList.InstallModsFromArchiveAsync(Data7ZLzma2, "Second Mod", Token);
+        var mainList = BaseList;
+        await AddMods(mainList, DataZipLzma, "First Mod");
+        await AddMods(mainList, Data7ZLzma2, "Second Mod");
 
-        var originalPlan = await mainList.MakeApplyPlanAsync();
-        originalPlan.Steps.OfType<CopyFile>().Count().Should().Be(3, "Files override each other");
 
-        await mainList.ApplyAsync(originalPlan, CancellationToken.None);
-
+        var originalPlan = await LoadoutSynchronizer.MakeApplySteps(mainList.Value, Token);
+        originalPlan.Steps.OfType<ExtractFile>().Count().Should().Be(3, "Files override each other");
+        
+        await LoadoutSynchronizer.Apply(originalPlan, Token);
+        
         var gameFolder = Install.Locations[GameFolderType.Game];
         foreach (var file in DataNames)
         {
@@ -66,46 +69,45 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
         var modifiedHash = "modified".XxHash64AsUtf8();
 
         var firstMod = mainList.Value.Mods.Values.First();
-        var ingestPlan = await mainList.MakeIngestionPlanAsync(_ => firstMod, Token).ToHashSetAsync();
-
-        ingestPlan.Should().BeEquivalentTo(new IApplyStep[]
+        var ingestPlan = await LoadoutSynchronizer.MakeIngestPlan(mainList.Value, _ => firstMod.Id, CancellationToken.None); 
+            
+        ingestPlan.Steps.Should().BeEquivalentTo(new IIngestStep[]
         {
-            new BackupFile()
+            new Loadouts.IngestSteps.BackupFile
             {
                 To = gameFolder.CombineUnchecked(fileToModify),
                 Size = Size.FromLong("modified".Length),
                 Hash = modifiedHash
             },
-            new RemoveFromLoadout
+            new Loadouts.IngestSteps.RemoveFromLoadout
             {
                 To = gameFolder.CombineUnchecked(fileToDelete),
             },
-            new IntegrateFile
+            new CreateInLoadout
             {
                 To = gameFolder.CombineUnchecked(fileToModify),
                 Size = Size.FromLong("modified".Length),
                 Hash = modifiedHash,
-                Mod = firstMod
+                ModId = firstMod.Id
             }
         });
 
 
-        mainList.FlattenList().Count().Should().Be(7, "because no changes are applied yet");
+        (await LoadoutSynchronizer.FlattenLoadout(mainList.Value)).Files.Count.Should().Be(7, "because no changes are applied yet");
 
-        await mainList.ApplyIngest(ingestPlan, Token);
-
-
-        var flattened = mainList.FlattenList().ToDictionary(f => f.File.To);
-        flattened.Count.Should().Be(6, "Because we've deleted one file");
+        await LoadoutSynchronizer.Ingest(ingestPlan);
+        
+        var flattened = (await LoadoutSynchronizer.FlattenLoadout(mainList.Value)).Files.Count;
+        flattened.Should().Be(6, "Because we've deleted one file");
 
         mainList.Value.Mods.Values
             .SelectMany(m => m.Files.Values)
-            .OfType<AStaticModFile>()
+            .OfType<IToFile>()
+            .OfType<IFromArchive>()
             .Where(f => f.Hash == modifiedHash)
             .Should()
             .NotBeEmpty("Because we've updated a file");
 
-        await BaseList.ApplyAsync(Token);
-        */
     }
+
 }

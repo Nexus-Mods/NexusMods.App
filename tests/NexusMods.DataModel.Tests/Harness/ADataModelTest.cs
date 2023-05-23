@@ -88,6 +88,13 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     {
         BaseList = await LoadoutManager.ManageGameAsync(Install, "BaseList", CancellationToken.None);
     }
+    
+    
+    protected async Task AddMods(LoadoutMarker mainList, AbsolutePath path, string? name = null)
+    {
+        var hash1 = await ArchiveAnalyzer.AnalyzeFileAsync(path, CancellationToken.None);
+        await ArchiveInstaller.AddMods(mainList.Value.LoadoutId, hash1.Hash, name, CancellationToken.None);
+    }
 
     public Task DisposeAsync()
     {
