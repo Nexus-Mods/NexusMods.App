@@ -39,7 +39,7 @@ public class DownloadAndInstallMod : AGameTest<StubbedGame>
         origNumMods.Should().Be(1); // game files
 
         var makeUrl = $"file://{Path.GetFullPath(url)}";
-        await Test.RunNoBanner("download-and-install-mod", "-u", makeUrl, "-l", loadoutName, "-n", "TestMod");
+        Test.RunNoBanner("download-and-install-mod", "-u", makeUrl, "-l", loadoutName, "-n", "TestMod");
         loadout.Value.Mods.Count.Should().BeGreaterThan(origNumMods);
     }
 }

@@ -13,7 +13,7 @@ public class ListGames : AVerbTest
     [Fact]
     public async Task CanListGames()
     {
-        await RunNoBanner("--noBanner", "list-games");
+        await RunNoBannerAsync("--noBanner", "list-games");
 
         LogSize.Should().Be(1);
         LastTable.Rows.First().OfType<IGame>().First().Name.Should().Be("Stubbed Game");
