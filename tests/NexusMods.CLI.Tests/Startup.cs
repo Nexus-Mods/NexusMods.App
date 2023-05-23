@@ -3,6 +3,8 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
+using NexusMods.Networking.HttpDownloader;
+using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
@@ -19,6 +21,9 @@ public class Startup
                 .AddDataModel()
                 .AddFileExtractors()
                 .AddCLI()
+                .AddSingleton<HttpClient>()
+                .AddHttpDownloader()
+                .AddNexusWebApi(true)
                 .AddAllScoped<IRenderer, LoggingRenderer>()
                 .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
                 .Validate();

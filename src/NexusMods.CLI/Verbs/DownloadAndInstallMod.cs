@@ -7,14 +7,14 @@ namespace NexusMods.CLI.Verbs;
 /// <summary>
 /// Downloads a mod with NXM protocol.
 /// </summary>
-public class DownloadMod : AVerb<string, LoadoutMarker, string>
+public class DownloadAndInstallMod : AVerb<string, LoadoutMarker, string>
 {
     private readonly IHttpDownloader _httpDownloader;
     private readonly TemporaryFileManager _temp;
     private readonly IRenderer _renderer;
     
     /// <summary/>
-    public DownloadMod(IHttpDownloader httpDownloader, Configurator configurator, TemporaryFileManager temp)
+    public DownloadAndInstallMod(IHttpDownloader httpDownloader, Configurator configurator, TemporaryFileManager temp)
     {
         _httpDownloader = httpDownloader;
         _temp = temp;

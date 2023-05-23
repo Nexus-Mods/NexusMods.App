@@ -6,27 +6,27 @@ using NexusMods.Paths.Utilities;
 
 namespace NexusMods.CLI.Tests.VerbTests;
 
-public abstract class AVerbTest
+public class AVerbTest
 {
     // ReSharper disable InconsistentNaming
-    protected AbsolutePath Data7ZipLZMA2 => FileSystem.GetKnownPath(KnownPath.EntryDirectory).CombineUnchecked(@"Resources\data_7zip_lzma2.7z");
+    internal AbsolutePath Data7ZipLZMA2 => FileSystem.GetKnownPath(KnownPath.EntryDirectory).CombineUnchecked(@"Resources\data_7zip_lzma2.7z");
     // ReSharper restore InconsistentNaming
 
     private List<object> LastLog { get; set; } = new();
 
-    protected readonly TemporaryFileManager TemporaryFileManager;
+    internal readonly TemporaryFileManager TemporaryFileManager;
     private readonly IServiceProvider _provider;
 
-    protected readonly IFileSystem FileSystem;
+    internal readonly IFileSystem FileSystem;
 
-    protected AVerbTest(TemporaryFileManager temporaryFileManager, IServiceProvider provider)
+    internal AVerbTest(TemporaryFileManager temporaryFileManager, IServiceProvider provider)
     {
         _provider = provider;
         TemporaryFileManager = temporaryFileManager;
         FileSystem = provider.GetRequiredService<IFileSystem>();
     }
 
-    protected async Task RunNoBanner(params string[] args)
+    internal async Task RunNoBanner(params string[] args)
     {
         using var scope = _provider.CreateScope();
         _ = scope.ServiceProvider.GetRequiredService<LoggingRenderer>();
@@ -38,6 +38,6 @@ public abstract class AVerbTest
         LastLog = LoggingRenderer.Logs.Value!;
     }
 
-    protected int LogSize => LastLog.Count;
-    protected Table LastTable => LastLog.OfType<Table>().First();
+    internal int LogSize => LastLog.Count;
+    internal Table LastTable => LastLog.OfType<Table>().First();
 }

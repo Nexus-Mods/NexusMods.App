@@ -56,7 +56,8 @@ public static class Services
             .AddVerb<Rename>()
             .AddVerb<RunTool>()
             .AddVerb<DownloadUri>()
-            .AddVerb<AssociateNxm>();
+            .AddVerb<AssociateNxm>()
+            .AddVerb<DownloadAndInstallMod>();
 
         services.AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ => new Resource<IExtractor, Size>("File Extraction"));
         services.AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(_ => new Resource<FileContentsCache, Size>("File Analysis"));
