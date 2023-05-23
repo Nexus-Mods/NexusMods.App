@@ -1,6 +1,6 @@
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 
-namespace NexusMods.Networking.NexusWebApi;
+namespace NexusMods.Networking.NexusWebApi.NMA;
 
 /// <summary>
 /// find types for use in the data store

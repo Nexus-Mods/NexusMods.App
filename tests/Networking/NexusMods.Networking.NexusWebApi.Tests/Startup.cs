@@ -6,6 +6,7 @@ using NexusMods.Common.OSInterop;
 using NexusMods.DataModel;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.HttpDownloader.Tests;
+using NexusMods.Networking.NexusWebApi.NMA;
 using NexusMods.Paths;
 using Xunit.DependencyInjection;
 using Xunit.DependencyInjection.Logging;
@@ -27,7 +28,8 @@ public class Startup
             .AddSingleton<IProcessFactory, ProcessFactory>()
             .AddSingleton(mockOsInterop.Object)
             .AddSingleton<LocalHttpServer>()
-            .AddNexusWebApi(true)
+            .AddNexusWebApi()
+            .AddNexusWebApiNmaIntegration(true)
             .AddDataModel()
             .Validate();
     }

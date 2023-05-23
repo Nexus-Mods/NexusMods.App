@@ -13,10 +13,10 @@ public class ProtocolInvoke : AVerb<string>
             new OptionDefinition<string>("u", "url", "The URL to handle")
         });
 
-    private IProtocolHandler[] _handlers;
+    private IIpcProtocolHandler[] _handlers;
     private readonly ILogger<ProtocolInvoke> _logger;
 
-    public ProtocolInvoke(ILogger<ProtocolInvoke> logger, IEnumerable<IProtocolHandler> handlers)
+    public ProtocolInvoke(ILogger<ProtocolInvoke> logger, IEnumerable<IIpcProtocolHandler> handlers)
     {
         _handlers = handlers.ToArray();
         _logger = logger;

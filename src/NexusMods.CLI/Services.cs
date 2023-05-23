@@ -10,6 +10,8 @@ using NexusMods.DataModel.RateLimiting;
 using NexusMods.FileExtractor.Extractors;
 using NexusMods.Paths;
 using System.Runtime.InteropServices;
+using NexusMods.CLI.Types;
+using NexusMods.CLI.Types.IpcHandlers;
 using NexusMods.Common.ProtocolRegistration;
 using NexusMods.Common.UserInput;
 
@@ -37,6 +39,9 @@ public static class Services
             onLinux: (ref IServiceCollection value) => value.AddSingleton<IProtocolRegistration, ProtocolRegistrationLinux>()
         );
 
+        // Protocol Handler
+        services.AddSingleton<IIpcProtocolHandler, NxmIpcProtocolHandler>();
+
         services.AddVerb<AnalyzeArchive>()
             .AddVerb<Apply>()
             .AddVerb<ChangeTracking>()
@@ -57,7 +62,13 @@ public static class Services
             .AddVerb<RunTool>()
             .AddVerb<DownloadUri>()
             .AddVerb<AssociateNxm>()
-            .AddVerb<DownloadAndInstallMod>();
+            .AddVerb<DownloadAndInstallMod>()
+            .AddVerb<SetNexusAPIKey>()
+            .AddVerb<NexusApiVerify>()
+            .AddVerb<NexusGames>()
+            .AddVerb<DownloadLinks>()
+            .AddVerb<NexusLogin>()
+            .AddVerb<NexusLogout>();
 
         services.AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ => new Resource<IExtractor, Size>("File Extraction"));
         services.AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(_ => new Resource<FileContentsCache, Size>("File Analysis"));

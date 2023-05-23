@@ -1,7 +1,9 @@
-using NexusMods.CLI;
+using NexusMods.Networking.NexusWebApi;
+using NexusMods.Networking.NexusWebApi.NMA;
+
 // Temporary until moved to CLI project.
 #pragma warning disable CS1591
-namespace NexusMods.Networking.NexusWebApi.Verbs;
+namespace NexusMods.CLI.Verbs;
 
 // ReSharper disable once InconsistentNaming
 public class SetNexusAPIKey : AVerb<string>

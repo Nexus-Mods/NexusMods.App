@@ -21,13 +21,13 @@ public class ProtocolInvocationTests
     [InlineData("second://path", 0, 1)]
     public async void WillForwardToRightHandler(string url, int firstTimes, int secondTimes)
     {
-        var firstHandler = new Mock<IProtocolHandler>();
+        var firstHandler = new Mock<IIpcProtocolHandler>();
         firstHandler.Setup(_ => _.Protocol).Returns("first");
-        var secondHandler = new Mock<IProtocolHandler>();
+        var secondHandler = new Mock<IIpcProtocolHandler>();
         secondHandler.Setup(_ => _.Protocol).Returns("second");
 
         var invoke = new ProtocolInvoke(_logger,
-            new List<IProtocolHandler> { firstHandler.Object, secondHandler.Object });
+            new List<IIpcProtocolHandler> { firstHandler.Object, secondHandler.Object });
         var res = await invoke.Run(url, CancellationToken.None);
 
         res.Should().Be(0);
@@ -38,7 +38,7 @@ public class ProtocolInvocationTests
     [Fact]
     public async void WillThrowOnUnsupportedProtocol()
     {
-        var invok = new ProtocolInvoke(_logger, new List<IProtocolHandler>());
+        var invok = new ProtocolInvoke(_logger, new List<IIpcProtocolHandler>());
         Func<Task<int>> act = async () => await invok.Run("test://foobar", CancellationToken.None);
         await act.Should().ThrowAsync<Exception>();
     }

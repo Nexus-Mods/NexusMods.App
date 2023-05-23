@@ -16,6 +16,7 @@ using NexusMods.Games.StardewValley;
 using NexusMods.Games.TestHarness;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
+using NexusMods.Networking.NexusWebApi.NMA;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators;
 
@@ -51,6 +52,7 @@ public static class Services
             .AddStardewValley()
             .AddRenderers()
             .AddNexusWebApi()
+            .AddNexusWebApiNmaIntegration()
             .AddAdvancedHttpDownloader(config.HttpDownloaderSettings)
             .AddTestHarness()
             .AddSingleton<HttpClient>()

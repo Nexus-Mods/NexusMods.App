@@ -12,7 +12,7 @@ public class NXMModUrlTests
     {
         var parsed = NXMUrl.Parse("nxm://skyrim/mods/123/files/456");
         parsed.UrlType.Should().Be(NXMUrlType.Mod);
-        parsed.Mod.Game.Should().Be(GameDomain.From("skyrim"));
+        parsed.Mod.Game.Should().Be("skyrim");
         parsed.Mod.ModId.Value.Should().Be(123u);
         parsed.Mod.FileId.Value.Should().Be(456u);
         parsed.Key.Should().BeNull();
@@ -36,7 +36,7 @@ public class NXMModUrlTests
     {
         var parsed = NXMUrl.Parse("nxm://skyrim/collections/slug/revisions/42");
         parsed.UrlType.Should().Be(NXMUrlType.Collection);
-        parsed.Collection.Game.Should().Be(GameDomain.From("skyrim"));
+        parsed.Collection.Game.Should().Be("skyrim");
         parsed.Collection.Slug.Value.Should().Be("slug");
         parsed.Collection.Revision.Value.Should().Be(42u);
     }

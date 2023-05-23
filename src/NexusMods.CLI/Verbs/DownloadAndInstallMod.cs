@@ -38,6 +38,7 @@ public class DownloadAndInstallMod : AVerb<string, LoadoutMarker, string>
         await _renderer.WithProgress(token, async () =>
         {
             var uri = new Uri(url);
+
             await _httpDownloader.DownloadAsync(new[] { new HttpRequestMessage(HttpMethod.Get, uri) },
                 tempDir.Path, null, token);
             

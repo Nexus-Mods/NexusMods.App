@@ -5,6 +5,7 @@ using NexusMods.DataModel;
 using NexusMods.FileExtractor;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
+using NexusMods.Networking.NexusWebApi.NMA;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
@@ -23,7 +24,8 @@ public class Startup
                 .AddCLI()
                 .AddSingleton<HttpClient>()
                 .AddHttpDownloader()
-                .AddNexusWebApi(true)
+                .AddNexusWebApi()
+                .AddNexusWebApiNmaIntegration(true)
                 .AddAllScoped<IRenderer, LoggingRenderer>()
                 .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
                 .Validate();

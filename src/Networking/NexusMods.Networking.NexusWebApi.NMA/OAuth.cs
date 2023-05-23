@@ -1,86 +1,19 @@
-﻿using System.Reactive.Linq;
-using Microsoft.Extensions.Logging;
-using NexusMods.Common;
-using NexusMods.DataModel.Interprocess;
-using NexusMods.Networking.NexusWebApi.Types;
+using System.Reactive.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
+using Microsoft.Extensions.Logging;
+using NexusMods.Common;
 using NexusMods.Common.OSInterop;
+using NexusMods.DataModel.Interprocess;
 using NexusMods.DataModel.Interprocess.Jobs;
 using NexusMods.DataModel.Interprocess.Messages;
+using NexusMods.Networking.NexusWebApi.DTOs;
+using NexusMods.Networking.NexusWebApi.NMA.Messages;
+using NexusMods.Networking.NexusWebApi.NMA.Types;
+using NexusMods.Networking.NexusWebApi.Types;
 
-
-namespace NexusMods.Networking.NexusWebApi;
-
-/// <summary>
-/// JWT Token info as provided by the OAuth server
-/// </summary>
-public struct JwtTokenReply
-{
-    /// <summary>
-    /// the token to use for authentication
-    /// </summary>
-    [JsonPropertyName("access_token")]
-    public string AccessToken { get; set; }
-    /// <summary>
-    /// token type, e.g. "Bearer"
-    /// </summary>
-    [JsonPropertyName("token_type")]
-    public string Type { get; set; }
-    /// <summary>
-    /// when the access token expires in seconds
-    /// </summary>
-    [JsonPropertyName("expires_in")]
-    public ulong ExpiresIn { get; set; }
-    /// <summary>
-    /// token to use to refresh once this one has expired
-    /// </summary>
-    [JsonPropertyName("refresh_token")]
-    public string RefreshToken { get; set; }
-    /// <summary>
-    /// space separated list of scopes. defined by the server, currently always "public"?
-    /// </summary>
-    [JsonPropertyName("scope")]
-    public string Scope { get; set; }
-    /// <summary>
-    /// unix timestamp (seconds resolution) of when the token was created
-    /// </summary>
-    [JsonPropertyName("created_at")]
-    public ulong CreatedAt { get; set; }
-}
-
-/// <summary>
-/// nxm url message used in IPC. The oauth callback will spawn a new instance of NMA
-/// that then needs to send the token back to the "main" process that made the request
-/// </summary>
-// ReSharper disable once InconsistentNaming
-public readonly struct NXMUrlMessage : IMessage
-{
-    /// <summary>
-    /// the actual url
-    /// </summary>
-    public NXMUrl Value { get; init; }
-
-    /// <inheritdoc/>
-    public static int MaxSize => 16 * 1024;
-
-    /// <inheritdoc/>
-    public static IMessage Read(ReadOnlySpan<byte> buffer)
-    {
-        var value = Encoding.UTF8.GetString(buffer);
-        return new NXMUrlMessage { Value = NXMUrl.Parse(value) };
-    }
-
-    /// <inheritdoc/>
-    public int Write(Span<byte> buffer)
-    {
-        var buf = Encoding.UTF8.GetBytes(Value.ToString()!);
-        buf.CopyTo(buffer);
-        return buf.Length;
-    }
-}
+namespace NexusMods.Networking.NexusWebApi.NMA;
 
 /// <summary>
 /// helper class to deal with OAuth2 authentication messages

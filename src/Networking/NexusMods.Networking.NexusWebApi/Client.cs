@@ -1,7 +1,6 @@
 using System.Net.Http.Json;
 using System.Text.Json.Serialization.Metadata;
 using Microsoft.Extensions.Logging;
-using NexusMods.DataModel.Games;
 using NexusMods.Networking.NexusWebApi.DTOs;
 using NexusMods.Networking.NexusWebApi.DTOs.Interfaces;
 using NexusMods.Networking.NexusWebApi.Types;
@@ -71,7 +70,7 @@ public class Client
     /// <remarks>
     ///    Currently available for Premium users only; with some minor exceptions [nxm links].
     /// </remarks>
-    public async Task<Response<DownloadLink[]>> DownloadLinks(GameDomain domain, ModId modId, FileId fileId, CancellationToken token = default)
+    public async Task<Response<DownloadLink[]>> DownloadLinksAsync(string domain, ModId modId, FileId fileId, CancellationToken token = default)
     {
         var msg = await _factory.Create(HttpMethod.Get, new Uri(
             $"https://api.nexusmods.com/v1/games/{domain}/mods/{modId}/files/{fileId}/download_link.json"));
@@ -88,7 +87,7 @@ public class Client
     /// <param name="time">Time-frame within which to search for updates.</param>
     /// <param name="token">Token used to cancel the task.</param>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public async Task<Response<ModUpdate[]>> ModUpdates(GameDomain domain, PastTime time, CancellationToken token = default)
+    public async Task<Response<ModUpdate[]>> ModUpdatesAsync(string domain, PastTime time, CancellationToken token = default)
     {
         var timeString = time switch
         {
@@ -116,7 +115,7 @@ public class Client
     /// </param>
     /// <param name="token">Token used to cancel the task.</param>
     /// <returns></returns>
-    public async Task<Response<ModFiles>> ModFiles(GameDomain domain, ModId modId, CancellationToken token = default)
+    public async Task<Response<ModFiles>> ModFilesAsync(string domain, ModId modId, CancellationToken token = default)
     {
         var msg = await _factory.Create(HttpMethod.Get, new Uri(
             $"https://api.nexusmods.com/v1/games/{domain}/mods/{modId}/files.json"));

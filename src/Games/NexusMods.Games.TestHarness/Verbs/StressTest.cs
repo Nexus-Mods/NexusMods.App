@@ -7,6 +7,7 @@ using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.DTOs;
+using NexusMods.Networking.NexusWebApi.NMA.Extensions;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
 using ModId = NexusMods.Networking.NexusWebApi.Types.ModId;
@@ -46,7 +47,7 @@ public class StressTest : AVerb<IGame, AbsolutePath, AbsolutePath>
 
     public async Task<int> Run(IGame game, AbsolutePath loadout, AbsolutePath output, CancellationToken token)
     {
-        var mods = await _client.ModUpdates(game.Domain, Client.PastTime.Day, token);
+        var mods = await _client.ModUpdatesAsync(game.Domain, Client.PastTime.Day, token);
         var results = new List<(string FileName, ModId ModId, FileId FileId, Hash Hash, bool Passed, Exception? exception)>();
 
         foreach (var mod in mods.Data)
@@ -56,7 +57,7 @@ public class StressTest : AVerb<IGame, AbsolutePath, AbsolutePath>
             Response<ModFiles> files;
             try
             {
-                files = await _client.ModFiles(game.Domain, mod.ModId, token);
+                files = await _client.ModFilesAsync(game.Domain, mod.ModId, token);
             }
             catch (HttpRequestException ex)
             {
@@ -73,7 +74,7 @@ public class StressTest : AVerb<IGame, AbsolutePath, AbsolutePath>
                     _logger.LogInformation("Downloading {ModId} {FileId} {FileName} - {Size}", mod.ModId, file.FileId,
                         file.FileName, file.SizeInBytes);
 
-                    var urls = await _client.DownloadLinks(game.Domain, mod.ModId, file.FileId, token);
+                    var urls = await _client.DownloadLinksAsync(game.Domain, mod.ModId, file.FileId, token);
                     await using var tmpPath = _temporaryFileManager.CreateFile();
 
                     var cts = new CancellationTokenSource();

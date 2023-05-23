@@ -1,11 +1,13 @@
-using NexusMods.CLI;
 using NexusMods.CLI.DataOutputs;
 using NexusMods.DataModel.Games;
+using NexusMods.Networking.NexusWebApi;
+using NexusMods.Networking.NexusWebApi.NMA.Extensions;
 using NexusMods.Networking.NexusWebApi.Types;
+
 // Temporary until moved to CLI project.
 #pragma warning disable CS1591
 
-namespace NexusMods.Networking.NexusWebApi.Verbs;
+namespace NexusMods.CLI.Verbs;
 
 public class DownloadLinks : AVerb<GameDomain, ModId, FileId>
 {
@@ -29,7 +31,7 @@ public class DownloadLinks : AVerb<GameDomain, ModId, FileId>
 
     public async Task<int> Run(GameDomain gameDomain, ModId modId, FileId fileId, CancellationToken token)
     {
-        var links = await _client.DownloadLinks(gameDomain, modId, fileId, token);
+        var links = await _client.DownloadLinksAsync(gameDomain, modId, fileId, token);
 
         await _renderer.Render(new Table(new[] { "Source", "Link" },
             links.Data.Select(x => new object[] { x.ShortName, x.Uri })));
