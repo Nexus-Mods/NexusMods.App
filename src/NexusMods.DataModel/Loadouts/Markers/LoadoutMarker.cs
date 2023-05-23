@@ -1,17 +1,5 @@
-using System.Reactive.Linq;
-using System.Runtime.CompilerServices;
-using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
-using NexusMods.DataModel.Extensions;
-using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Loadouts.ApplySteps;
-using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
-using NexusMods.DataModel.RateLimiting.Extensions;
-using NexusMods.DataModel.Sorting;
-using NexusMods.Hashing.xxHash64;
-using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Loadouts.Markers;
 
