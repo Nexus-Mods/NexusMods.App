@@ -32,6 +32,9 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '7.0.x'
+          
+      - name: Build
+        run: dotnet build
 
       - name: Tests
         run: dotnet test --no-build --logger "GitHubActions" --filter "RequiresNetworking!=True" --collect:"XPlat Code Coverage;Format=opencover"
