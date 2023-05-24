@@ -1,6 +1,7 @@
 using NexusMods.DataModel;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Sorting;
@@ -26,7 +27,7 @@ public record PluginFile : AGeneratedFile, IToFile
     
     public required GamePath To { get; init; }
     
-    public override async Task GenerateAsync(Stream stream, Loadout loadout, IReadOnlyCollection<(AModFile File, Mod Mod)> flattenedList,
+    public override async Task GenerateAsync(Stream stream, Loadout loadout, IReadOnlyCollection<ModFilePair> flattenedList,
         CancellationToken ct = default)
     {
         var pluginFiles = flattenedList

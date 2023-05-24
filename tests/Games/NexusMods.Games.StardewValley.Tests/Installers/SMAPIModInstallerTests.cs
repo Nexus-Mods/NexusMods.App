@@ -90,9 +90,9 @@ public class SMAPIModInstallerTests : AModInstallerTest<StardewValley, SMAPIModI
         {
             hash.Should().Be(Hash.From(0x59112FD2E58BD042));
 
-            var mod = await InstallModFromArchiveIntoLoadout(loadout, path);
+            var mod = await InstallModFromArchiveIntoLoadout(loadout, hash);
             mod.Files.Should().NotBeEmpty();
-            mod.Files.Cast<IToFile>().Should().AllSatisfy(file => file.To.Path.StartsWith("Mods/NPCMapLocations"));
+            mod.Files.Values.Cast<IToFile>().Should().AllSatisfy(file => file.To.Path.StartsWith("Mods/NPCMapLocations"));
         }
     }
 

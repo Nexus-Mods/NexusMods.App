@@ -32,6 +32,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     protected readonly IArchiveInstaller ArchiveInstaller;
     protected readonly LoadoutManager LoadoutManager;
     protected readonly LoadoutRegistry LoadoutRegistry;
+    protected readonly LoadoutSynchronizer LoadoutSynchronizer;
     protected readonly IArchiveAnalyzer ArchiveAnalyzer;
     protected readonly IDataStore DataStore;
 
@@ -60,6 +61,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
         TemporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
         LoadoutManager = serviceProvider.GetRequiredService<LoadoutManager>();
         LoadoutRegistry = serviceProvider.GetRequiredService<LoadoutRegistry>();
+        LoadoutSynchronizer = serviceProvider.GetRequiredService<LoadoutSynchronizer>();
         ArchiveAnalyzer = serviceProvider.GetRequiredService<IArchiveAnalyzer>();
         DataStore = serviceProvider.GetRequiredService<IDataStore>();
 
@@ -156,6 +158,30 @@ public abstract class AGameTest<TGame> where TGame : AGame
     {
         var mods = await InstallModsFromArchiveIntoLoadout(
             loadout, hash,
+            defaultModName,
+            cancellationToken);
+
+        mods.Should().ContainSingle();
+        return mods.First();
+    }
+    
+    /// <summary>
+    /// Variant of <see cref="InstallModFromArchiveIntoLoadout"/> that takes a file path instead of a hash.
+    /// </summary>
+    /// <param name="loadout"></param>
+    /// <param name="hash"></param>
+    /// <param name="defaultModName"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    protected async Task<Mod> InstallModFromArchiveIntoLoadout(
+        LoadoutMarker loadout,
+        AbsolutePath path,
+        string? defaultModName = null,
+        CancellationToken cancellationToken = default)
+    {
+        var analyzed = await ArchiveAnalyzer.AnalyzeFileAsync(path, cancellationToken);
+        var mods = await InstallModsFromArchiveIntoLoadout(
+            loadout, analyzed.Hash,
             defaultModName,
             cancellationToken);
 

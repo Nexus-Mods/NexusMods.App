@@ -67,7 +67,9 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
             .Should().BeGreaterOrEqualTo(analysis.Count, "Analysis data has been added");
 
         var pluginFile = gameFiles.Files.Values.OfType<PluginFile>().First();
-        var flattenedList = loadout.FlattenList().ToArray();
+        var flattenedList = (await LoadoutSynchronizer.FlattenLoadout(loadout.Value)).Files.Values.ToList();
+        
+        LoadoutSynchronizer.Apply()
 
         using var ms = new MemoryStream();
         await pluginFile.GenerateAsync(ms, loadout.Value, flattenedList);

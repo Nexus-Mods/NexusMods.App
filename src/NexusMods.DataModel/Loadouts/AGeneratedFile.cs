@@ -1,4 +1,5 @@
 using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.Hashing.xxHash64;
@@ -28,7 +29,7 @@ public abstract record AGeneratedFile : AStaticModFile
     ///     mod file will be present.
     /// </param>
     /// <param name="ct">Cancel this action if desired.</param>
-    public abstract Task GenerateAsync(Stream stream, Loadout loadout, IReadOnlyCollection<(AModFile File, Mod Mod)> flattenedList, CancellationToken ct = default);
+    public abstract Task GenerateAsync(Stream stream, Loadout loadout, IReadOnlyCollection<ModFilePair> flattenedList, CancellationToken ct = default);
 
     /// <summary>
     /// Return metadata for the given file.
