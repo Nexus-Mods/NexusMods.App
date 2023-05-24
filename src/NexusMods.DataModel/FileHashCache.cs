@@ -94,6 +94,9 @@ public class FileHashCache
     public async IAsyncEnumerable<HashedEntry> IndexFoldersAsync(IEnumerable<AbsolutePath> paths, CancellationToken? token)
     {
         token ??= CancellationToken.None;
+        
+        // Don't want to error via a empty folder
+        paths = paths.Where(p => p.DirectoryExists());
 
         var result = _limiter.ForEachFileAsync(paths, async (job, entry) =>
         {
