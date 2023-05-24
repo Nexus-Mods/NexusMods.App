@@ -61,7 +61,7 @@ public abstract class AGameLocator<TGameType, TId, TGame, TParent> : IGameLocato
         foreach (var id in Ids(tg))
         {
             if (!_cachedGames.TryGetValue(id, out var found)) continue;
-            yield return new GameLocatorResult(Path(found), Store);
+            yield return new GameLocatorResult(Path(found), Store, CreateMetadata(found));
         }
     }
 
@@ -83,4 +83,11 @@ public abstract class AGameLocator<TGameType, TId, TGame, TParent> : IGameLocato
     /// <param name="record">Absolute path to the folder storing the game.</param>
     /// <returns>Absolute path to game folder.</returns>
     protected abstract AbsolutePath Path(TGameType record);
+
+    /// <summary>
+    /// Creates <see cref="IGameLocatorResultMetadata"/> for the specific result.
+    /// </summary>
+    /// <param name="game"></param>
+    /// <returns></returns>
+    protected abstract IGameLocatorResultMetadata CreateMetadata(TGameType game);
 }
