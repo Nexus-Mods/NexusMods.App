@@ -12,7 +12,7 @@ namespace NexusMods.Paths;
 /// A path that represents a full path to a file or directory.
 /// </summary>
 [PublicAPI]
-[DebuggerDisplay("{Directory}{DirectorySeparatorCharStr}{FileName}")]
+[DebuggerDisplay("{DebugDisplay()}")]
 public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
 {
     private static readonly char PathSeparatorForInternalOperations = Path.DirectorySeparatorChar;
@@ -495,4 +495,13 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
 
         return fileName;
     }
+
+#if DEBUG
+    private string DebugDisplay()
+    {
+        return IsRootDirectory(Directory)
+            ? $"{Directory}{FileName}"
+            : $"{Directory}{DirectorySeparatorCharStr}{FileName}";
+    }
+#endif
 }

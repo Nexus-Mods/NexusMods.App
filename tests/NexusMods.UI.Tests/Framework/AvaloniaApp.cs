@@ -128,16 +128,18 @@ public class AvaloniaApp : IDisposable
         var tcs = new TaskCompletionSource<bool>();
         var (waitHandle, host) = await Dispatcher.UIThread.InvokeAsync(() =>
         {
-
             var window = new MainWindow();
-            
             var context = _provider.GetRequiredService<MainWindowViewModel>();
+            var logger = _provider.GetRequiredService<ILogger<WindowHost>>();
+
             window.DataContext = context;
             window.Width = 1280;
             window.Height = 720;
+
             var waitHandle = context.Activator.Activated.Subscribe(_ => tcs.TrySetResult(true));
             window.Show();
-            return (waitHandle, new WindowHost(window, context));
+
+            return (waitHandle, new WindowHost(window, context, logger));
         });
 
         await tcs.Task;

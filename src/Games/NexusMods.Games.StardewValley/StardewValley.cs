@@ -8,14 +8,14 @@ using NexusMods.Paths;
 namespace NexusMods.Games.StardewValley;
 
 [UsedImplicitly]
-public class StardewValley : AGame, ISteamGame, IGogGame
+public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
 {
     private readonly IOSInformation _osInformation;
     private readonly IFileSystem _fileSystem;
 
     public IEnumerable<int> SteamIds => new[] { 413150 };
     public IEnumerable<long> GogIds => new long[] { 1453375253 };
-    // TODO: XboxId = "ConcernedApe.StardewValleyPC"
+    public IEnumerable<string> XboxIds => new[] { "ConcernedApe.StardewValleyPC" };
 
     public override string Name => "Stardew Valley";
 
@@ -47,7 +47,10 @@ public class StardewValley : AGame, ISteamGame, IGogGame
         );
     }
 
-    protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(IGameLocator locator, GameLocatorResult installation)
+    protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(
+        IFileSystem fileSystem,
+        IGameLocator locator,
+        GameLocatorResult installation)
     {
         if (installation.Store == GameStore.XboxGamePass)
         {
@@ -58,7 +61,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame
             yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);
         }
 
-        var stardewValleyAppDataPath = _fileSystem
+        var stardewValleyAppDataPath = fileSystem
             .GetKnownPath(KnownPath.ApplicationDataDirectory)
             .CombineUnchecked("StardewValley");
 

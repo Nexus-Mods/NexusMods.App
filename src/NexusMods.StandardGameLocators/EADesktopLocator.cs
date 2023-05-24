@@ -1,9 +1,6 @@
-using GameFinder.Common;
 using GameFinder.StoreHandlers.EADesktop;
-using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
 
 namespace NexusMods.StandardGameLocators;
 
@@ -11,19 +8,17 @@ namespace NexusMods.StandardGameLocators;
 /// Finds games managed by the 'EA Desktop' application, the successor to Origin.
 /// </summary>
 // ReSharper disable once InconsistentNaming
-public class EADesktopLocator : AGameLocator<EADesktopGame, string, IEADesktopGame, EADesktopLocator>
+public class EADesktopLocator : AGameLocator<EADesktopGame, EADesktopGameId, IEADesktopGame, EADesktopLocator>
 {
     /// <summary/>
-    public EADesktopLocator(IServiceProvider provider) : base(provider)
-    {
-    }
+    public EADesktopLocator(IServiceProvider provider) : base(provider) { }
 
     /// <inheritdoc />
     protected override GameStore Store => GameStore.EADesktop;
 
     /// <inheritdoc />
-    protected override IEnumerable<string> Ids(IEADesktopGame game) => game.EADesktopSoftwareIDs;
+    protected override IEnumerable<EADesktopGameId> Ids(IEADesktopGame game) => game.EADesktopSoftwareIDs.Select(EADesktopGameId.From);
 
     /// <inheritdoc />
-    protected override AbsolutePath Path(EADesktopGame record) => record.BaseInstallPath.ToAbsolutePath(FileSystem);
+    protected override AbsolutePath Path(EADesktopGame record) => record.BaseInstallPath;
 }
