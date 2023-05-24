@@ -36,6 +36,9 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame
         GameLocatorResult installation)
     {
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);
+
+        if (installation.Metadata is SteamLocatorResultMetadata { CloudSavesDirectory: not null } steamLocatorResultMetadata)
+            yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Saves, steamLocatorResultMetadata.CloudSavesDirectory.Value);
     }
 
     public override IStreamFactory Icon =>
