@@ -98,7 +98,7 @@ public interface IDataStore
     
     /// <summary>
     /// Serialize the entity the way it would be serialized in the data store and return the Hash as an Id64 and the
-    /// serialized data. Put<T>(entity) is equivalent to calling this method followed by a PutRaw(Id64, byte[]).
+    /// serialized data. Put(entity) is equivalent to calling PutRaw(ContentHashId(data), data).
     /// </summary>
     /// <param name="entity"></param>
     /// <typeparam name="T"></typeparam>

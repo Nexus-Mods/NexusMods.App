@@ -27,7 +27,8 @@ public interface IArchiveManager
     
     
     /// <summary>
-    /// 
+    /// Extract the given files to the given disk locations, provide as a less-abstract interface incase
+    /// the extractor needs more direct access (such as memory mapping). 
     /// </summary>
     /// <param name="files"></param>
     /// <param name="token"></param>
