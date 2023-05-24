@@ -120,9 +120,9 @@ public class ApplyLoadoutTests : ALoadoutSynrchonizerTest<ApplyLoadoutTests>
     }
 
 
-    class TestGeneratedFile : IGeneratedFile, ITriggerFilter<ModFilePair, Loadout>
+    class TestGeneratedFile : IGeneratedFile, ITriggerFilter<ModFilePair, Plan>
     {
-        public ITriggerFilter<ModFilePair, Loadout> TriggerFilter => this;
+        public ITriggerFilter<ModFilePair, Plan> TriggerFilter => this;
         public async Task<Hash> GenerateAsync(Stream stream, ApplyPlan plan, CancellationToken cancellationToken = default)
         {
             var txt = "Hello World!"u8.ToArray();
@@ -130,7 +130,7 @@ public class ApplyLoadoutTests : ALoadoutSynrchonizerTest<ApplyLoadoutTests>
             return txt.AsSpan().XxHash64();
         }
 
-        public Hash GetFingerprint(ModFilePair self, Loadout input)
+        public Hash GetFingerprint(ModFilePair self, Plan input)
         {
             return Hash.From(0xDEADBEEF);
         }

@@ -1,4 +1,6 @@
-﻿using NexusMods.Hashing.xxHash64;
+﻿using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
+using NexusMods.Hashing.xxHash64;
+using NexusMods.Paths;
 
 namespace NexusMods.DataModel.TriggerFilter;
 

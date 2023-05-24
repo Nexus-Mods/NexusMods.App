@@ -3,7 +3,10 @@ using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 
-public record APlan
+/// <summary>
+/// A generic plan, without the finalized steps (yet).
+/// </summary>
+public record Plan
 {
     /// <summary>
     /// The flattened modlist as created during the plan generation.

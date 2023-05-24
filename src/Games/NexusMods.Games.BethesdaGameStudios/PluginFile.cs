@@ -6,6 +6,7 @@ using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Sorting.Rules;
+using NexusMods.DataModel.TriggerFilter;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
@@ -14,7 +15,7 @@ using Noggog;
 namespace NexusMods.Games.BethesdaGameStudios;
 
 [JsonName("BethesdaGameStudios.PluginFile")]
-public record PluginFile : AGeneratedFile, IToFile
+public record PluginFile : AModFile, IGeneratedFile, IToFile, ITriggerFilter<ModFilePair, Plan>
 {
     private static RelativePath[] _defaultOrdering = new[]
     {
@@ -27,23 +28,13 @@ public record PluginFile : AGeneratedFile, IToFile
     
     public required GamePath To { get; init; }
     
-    public override async Task GenerateAsync(Stream stream, Loadout loadout, IReadOnlyCollection<ModFilePair> flattenedList,
-        CancellationToken ct = default)
+    private static IEnumerable<IToFile> PluginFiles(IEnumerable<ModFilePair> flattenedList)
     {
         var pluginFiles = flattenedList
             .Select(f => f.File)
-            .OfType<PluginFile>()
-            .Where(f => SkyrimSpecialEdition.PluginExtensions.Contains(f.To.Extension))
-            .ToArray();
-
-        var pluginFileRuleTuples = InitialiseFileRuleTuples(pluginFiles);
-
-        var results = Sorter.Sort<ModRuleTuple, RelativePath, ModRuleTuple[]>(pluginFileRuleTuples,
-            i => ((IToFile)i.Mod).To.FileName,
-            i => i.Rules, //GenerateRules(pluginFiles, i),
-            RelativePath.Comparer);
-
-        await stream.WriteAllLinesAsync(results.Select(i => i.Mod.To.FileName.ToString()), token: ct);
+            .OfType<IToFile>()
+            .Where(f => SkyrimSpecialEdition.PluginExtensions.Contains(f.To.Extension));
+        return pluginFiles;
     }
 
     private ModRuleTuple[] InitialiseFileRuleTuples(IToFile[] pluginFiles)
@@ -116,18 +107,44 @@ public record PluginFile : AGeneratedFile, IToFile
         }
     }
 
-    public override async Task<(Size Size, Hash Hash)> GetMetadataAsync(Loadout loadout, IReadOnlyCollection<(AModFile File, Mod Mod)> flattenedList, CancellationToken ct = default)
-    {
-        var ms = new MemoryStream();
-        await GenerateAsync(ms, loadout, flattenedList, ct);
-        ms.Position = 0;
-        return (Size.FromLong(ms.Length), await ms.XxHash64Async(token: ct));
-    }
-
     private struct ModRuleTuple
     {
         public IToFile Mod;
         public IReadOnlyList<ISortRule<ModRuleTuple, RelativePath>> Rules;
     }
 
+    public ITriggerFilter<ModFilePair, Plan> TriggerFilter => this;
+
+    public async Task<Hash> GenerateAsync(Stream stream, ApplyPlan plan, CancellationToken token = default)
+    {
+        var pluginFiles = PluginFiles(plan.Flattened.Values).ToArray();
+
+        var pluginFileRuleTuples = InitialiseFileRuleTuples(pluginFiles);
+
+        var results = Sorter.Sort<ModRuleTuple, RelativePath, ModRuleTuple[]>(pluginFileRuleTuples,
+            i => ((IToFile)i.Mod).To.FileName,
+            i => i.Rules, //GenerateRules(pluginFiles, i),
+            RelativePath.Comparer);
+
+        await stream.WriteAllLinesAsync(results.Select(i => i.Mod.To.FileName.ToString()), token: token);
+        stream.Position = 0;
+        return await stream.XxHash64Async(token);
+    }
+
+    public Hash GetFingerprint(ModFilePair self, Plan plan)
+    {
+        var fingerprinter = Fingerprinter.Create();
+
+        plan.Flattened
+            .Where(f => SkyrimSpecialEdition.PluginExtensions.Contains(f.Key.Extension))
+            .Select(f => (f.Key.FileName, f.Value.File.DataStoreId))
+            .OrderBy(f => f)
+            .ForEach(f =>
+            {
+                fingerprinter.Add(f.FileName);
+                fingerprinter.Add(f.DataStoreId);
+            });
+
+        return fingerprinter.Digest();
+    }
 }

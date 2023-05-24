@@ -191,19 +191,19 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
 }
 
 [JsonName("TestGeneratedFile")]
-public record TestGeneratedFile : AModFile, IGeneratedFile, IToFile, ITriggerFilter<ModFilePair, Loadout>
+public record TestGeneratedFile : AModFile, IGeneratedFile, IToFile, ITriggerFilter<ModFilePair, Plan>
 {
-    public ITriggerFilter<ModFilePair, Loadout> TriggerFilter => this;
+    public ITriggerFilter<ModFilePair, Plan> TriggerFilter => this;
     public Task<Hash> GenerateAsync(Stream stream, ApplyPlan loadout, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
     public required GamePath To { get; init; }
-    public Hash GetFingerprint(ModFilePair self, Loadout input)
+    public Hash GetFingerprint(ModFilePair self, Plan plan)
     {
         var printer = Fingerprinter.Create();
-        foreach (var mod in input.Mods)
+        foreach (var mod in plan.Loadout.Mods)
             foreach (var file in mod.Value.Files)
                 if (!file.Value.Id.Equals(self.File.Id))
                     printer.Add(file.Value.DataStoreId);
@@ -238,11 +238,11 @@ public class AlphabeticalSort : IGeneratedSortRule, ISortRule<Mod, ModId>, ITrig
         }
     }
 
-    public Hash GetFingerprint(ModId self, Loadout input)
+    public Hash GetFingerprint(ModId self, Loadout loadout)
     {
         var fp = Fingerprinter.Create();
-        fp.Add(input.Mods[self].DataStoreId);
-        foreach (var name in input.Mods.Values.Select(n => n.Name).Order())
+        fp.Add(loadout.Mods[self].DataStoreId);
+        foreach (var name in loadout.Mods.Values.Select(n => n.Name).Order())
         {
             fp.Add(name);
         }

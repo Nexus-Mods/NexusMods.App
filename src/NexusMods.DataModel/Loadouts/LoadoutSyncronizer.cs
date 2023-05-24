@@ -136,6 +136,13 @@ public class LoadoutSynchronizer
 
         var plan = new List<IApplyStep>();
 
+        var tmpPlan = new Plan
+        {
+            Loadout = loadout,
+            Flattened = flattenedLoadout,
+            Mods = Array.Empty<Mod>(),
+        };
+
         await foreach (var existing in existingFiles.WithCancellation(token))
         {
             var gamePath = install.ToGamePath(existing.Path);
@@ -146,7 +153,7 @@ public class LoadoutSynchronizer
                 var planMetadata = await GetMetaData(planned.File, existing.Path);
                 if (planMetadata is null || planMetadata.Hash != existing.Hash || planMetadata.Size != existing.Size)
                 {
-                    await EmitReplacePlan(plan, existing, loadout, planned);
+                    await EmitReplacePlan(plan, existing, tmpPlan, planned);
                 }
             }
             else
@@ -162,7 +169,7 @@ public class LoadoutSynchronizer
             if (seen.Contains(gamePath))
                 continue;
 
-            await EmitCreatePlan(plan, pair, loadout, absPath);
+            await EmitCreatePlan(plan, pair, tmpPlan, absPath);
         }
 
         return new ApplyPlan
@@ -174,7 +181,7 @@ public class LoadoutSynchronizer
         };
     }
 
-    private async ValueTask EmitCreatePlan(List<IApplyStep> plan, ModFilePair pair, Loadout loadout, AbsolutePath absPath)
+    private async ValueTask EmitCreatePlan(List<IApplyStep> plan, ModFilePair pair, Plan tmpPlan, AbsolutePath absPath)
     {
         // If the file is from an archive, then we can just extract it
         if (pair.File is IFromArchive fromArchive)
@@ -187,12 +194,12 @@ public class LoadoutSynchronizer
             });
             return;
         }
-
+        
         // If the file is generated
         if (pair.File is IGeneratedFile generatedFile)
         {
             // Get the fingerprint for the generated file
-            var fingerprint = generatedFile.TriggerFilter.GetFingerprint(pair, loadout);
+            var fingerprint = generatedFile.TriggerFilter.GetFingerprint(pair, tmpPlan);
             if (_generatedFileFingerprintCache.TryGet(fingerprint, out var cached))
             {
                 // If we have a cached version of the file in an archive, then we can just extract it
@@ -242,10 +249,10 @@ public class LoadoutSynchronizer
         });
     }
 
-    private async ValueTask EmitReplacePlan(List<IApplyStep> plan, HashedEntry existing, Loadout loadout, ModFilePair pair)
+    private async ValueTask EmitReplacePlan(List<IApplyStep> plan, HashedEntry existing, Plan tmpPlan, ModFilePair pair)
     {
         await EmitDeletePlan(plan, existing);
-        await EmitCreatePlan(plan, pair, loadout, existing.Path);
+        await EmitCreatePlan(plan, pair, tmpPlan, existing.Path);
     }
 
     public async ValueTask<FileMetaData?> GetMetaData(AModFile file, AbsolutePath path)

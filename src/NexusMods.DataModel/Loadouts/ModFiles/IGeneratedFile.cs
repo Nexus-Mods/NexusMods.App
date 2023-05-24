@@ -9,7 +9,7 @@ namespace NexusMods.DataModel.Loadouts.ModFiles;
 /// </summary>
 public interface IGeneratedFile
 {
-    public ITriggerFilter<ModFilePair, Loadout> TriggerFilter { get; }
+    public ITriggerFilter<ModFilePair, Plan> TriggerFilter { get; }
     
     public Task<Hash> GenerateAsync(Stream stream, ApplyPlan plan, CancellationToken cancellationToken = default);
 }
