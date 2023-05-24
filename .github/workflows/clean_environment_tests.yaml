@@ -24,25 +24,15 @@ jobs:
 
     strategy:
       matrix:
-        os: [Linux, Windows] # disable macos-latest for now
+        os: [linux-latest, windows-latest] # disable macos-latest for now
 
     steps:
       - uses: actions/checkout@v3
 
-      # - name: Setup .NET Core SDK 7.0.x
-      #  uses: actions/setup-dotnet@v3
-      #  with:
-      #    dotnet-version: '7.0.x'
-
-      # - name: Set Permissions
-      #  if: runner.os != 'Windows'
-      #  run: chmod -R +x src/ArchiveManagement/NexusMods.FileExtractor/Extractors
-
-      # - name: Clean
-      #  run: dotnet clean
-
-      - name: Build
-        run: dotnet build
+      - name: Setup .NET Core SDK 7.0.x
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.0.x'
 
       - name: Tests
         run: dotnet test --no-build --logger "GitHubActions" --filter "RequiresNetworking!=True" --collect:"XPlat Code Coverage;Format=opencover"
