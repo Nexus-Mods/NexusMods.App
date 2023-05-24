@@ -1,3 +1,4 @@
+using DynamicData;
 using NexusMods.CLI.DataOutputs;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ApplySteps;
@@ -45,18 +46,20 @@ public class Apply : AVerb<LoadoutMarker, bool, bool>
             var rows = new List<object[]>();
             foreach (var step in plan.Steps)
             {
-                // TODO: Fix this
-                /*
-                if (step is IStaticFileStep smf)
+                switch (step)
                 {
-                    rows.Add(new object[] { step, step.To, smf.Hash, smf.Size });
+                    case ExtractFile ef:
+                        rows.Add(new object[] { ef, ef.To, ef.Hash, ef.Size});
+                        break;
+                    case BackupFile bf:
+                        rows.Add(new object[] { bf, bf.To, bf.Hash, bf.Size});
+                        break;
+                    case DeleteFile df:
+                        rows.Add(new object[] { df, df.To, df.Hash, df.Size });
+                        break;
+                    default:
+                        throw new InvalidOperationException();
                 }
-                else
-                {
-                    rows.Add(new object[] { step, step.To, "", "" });
-                }
-                */
-
             }
             await _renderer.Render(new Table(new[] { "Action", "To", "Hash", "Size" }, rows));
         }
