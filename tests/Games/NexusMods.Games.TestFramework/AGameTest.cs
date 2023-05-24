@@ -139,6 +139,25 @@ public abstract class AGameTest<TGame> where TGame : AGame
         var modIds = await ArchiveInstaller.AddMods(loadout.Value.LoadoutId, hash, defaultModName, cancellationToken);
         return modIds.Select(id => loadout.Value.Mods[id]).ToArray();
     }
+    
+    /// <summary>
+    /// Installs the mods from the archive into the loadout.
+    /// </summary>
+    /// <param name="loadout"></param>
+    /// <param name="hash"></param>
+    /// <param name="defaultModName"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    protected async Task<Mod[]> InstallModsFromArchiveIntoLoadout(
+        LoadoutMarker loadout,
+        AbsolutePath path,
+        string? defaultModName = null,
+        CancellationToken cancellationToken = default)
+    {
+        var analyzedFile = await ArchiveAnalyzer.AnalyzeFileAsync(path, cancellationToken);
+        var modIds = await ArchiveInstaller.AddMods(loadout.Value.LoadoutId, analyzedFile.Hash, defaultModName, cancellationToken);
+        return modIds.Select(id => loadout.Value.Mods[id]).ToArray();
+    }
 
     /// <summary>
     /// Installs a single mod from the archive into the loadout. This calls
@@ -225,6 +244,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
             await using var ms = new MemoryStream(contents);
             await ms.CopyToAsync(entryStream);
         }
+        await stream.FlushAsync();
 
         return file;
     }

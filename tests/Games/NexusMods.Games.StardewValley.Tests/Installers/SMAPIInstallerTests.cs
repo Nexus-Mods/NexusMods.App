@@ -54,7 +54,7 @@ public class SMAPIInstallerTests : AModInstallerTest<StardewValley, SMAPIInstall
         {
             hash.Should().Be(Hash.From(0x8F3F6450139866F3));
 
-            var mod = await InstallModFromArchiveIntoLoadout(loadout, hash);
+            var mod = await InstallModFromArchiveIntoLoadout(loadout, path);
 
             var files = mod.Files;
             files.Should().NotBeEmpty();

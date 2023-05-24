@@ -259,13 +259,17 @@ public class ArchiveAnalyzer : IArchiveAnalyzer
                     .SelectAsync(a => KeyValuePair.Create(a.Path.RelativeTo(tmpFolder.Path), a.Results.DataStoreId))
                     .ToListAsync();
                 
-                await _archiveManager.BackupFiles(children
-                    .Select(c =>
-                    {
-                        IStreamFactory path = new NativeFileStreamFactory(tmpFolder.Path.CombineUnchecked(c.Key));
-                        var analysis = _store.Get<AnalyzedFile>(c.Value)!;
-                        return (path, analysis.Hash, analysis.Size);
-                    }), token);
+                // Some parts of this code fail with an empty collection
+                if (children.Any())
+                {
+                    await _archiveManager.BackupFiles(children
+                        .Select(c =>
+                        {
+                            IStreamFactory path = new NativeFileStreamFactory(tmpFolder.Path.CombineUnchecked(c.Key));
+                            var analysis = _store.Get<AnalyzedFile>(c.Value)!;
+                            return (path, analysis.Hash, analysis.Size);
+                        }), token);
+                }
             }
 
             var file = new AnalyzedArchive
