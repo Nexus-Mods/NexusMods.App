@@ -19,7 +19,6 @@ jobs:
     if: github.event_name == 'push' || github.event.pull_request.draft == false
     name: Test ${{ matrix.project }} (${{ matrix.os }})
     runs-on:
-       - self-hosted
        - ${{ matrix.os }}
 
     strategy:
