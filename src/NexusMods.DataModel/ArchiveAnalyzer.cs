@@ -79,7 +79,14 @@ public class ArchiveAnalyzer : IArchiveAnalyzer
         var entry = await _fileHashCache.IndexFileAsync(path, token);
         var found = _store.Get<AnalyzedFile>(new Id64(EntityCategory.FileAnalysis, (ulong)entry.Hash));
         if (found != null && found.AnalyzersHash == AnalyzersSignature)
+        {
+            if (found is AnalyzedArchive aa && !AArchiveMetaData.GetMetaDatas(_store, found.Hash).OfType<FileArchiveMetaData>().Any())
+            {
+                var metaData = FileArchiveMetaData.Create(path, aa);
+                metaData.EnsurePersisted(_store);
+            }
             return found;
+        }
 
         // Analyze the archive and cache the info
         var result = await AnalyzeFileInnerAsync(new NativeFileStreamFactory(path), path.FileName, token);

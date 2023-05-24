@@ -57,23 +57,25 @@ public class ArchiveInstaller : IArchiveInstaller
         // Get the loadout and create the mod so we can use it in the job.
         var loadout = _registry.GetMarker(loadoutId);
         
+
+
+        var metaData = AArchiveMetaData.GetMetaDatas(_dataStore, archiveHash).FirstOrDefault();
+        var archiveName = "<unknown>";
+        if (metaData is not null && defaultModName == null)
+        {
+            archiveName = metaData.Name;
+        }
+        
         var baseMod = new Mod
         {
             Id = ModId.New(),
-            Name = string.IsNullOrWhiteSpace(defaultModName) ? "TODO: unknown" : defaultModName,
+            Name = archiveName,
             Files = new EntityDictionary<ModFileId, AModFile>(_dataStore),
             Status = ModStatus.Installing
         };
 
         var cursor = new ModCursor { LoadoutId = loadoutId, ModId = baseMod.Id };
         loadout.Add(baseMod);
-
-        var metaData = AArchiveMetaData.GetMetaDatas(_dataStore, archiveHash).FirstOrDefault();
-        string archiveName = "<unknown>";
-        if (metaData is not null)
-        {
-            archiveName = metaData.Name;
-        }
 
         try
         {

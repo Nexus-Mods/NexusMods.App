@@ -1,3 +1,4 @@
+using DynamicData;
 using NexusMods.CLI.DataOutputs;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -19,20 +20,22 @@ public class ListModContents : AVerb<LoadoutMarker, string>
 
     public async Task<int> Run(LoadoutMarker loadout, string modName, CancellationToken token)
     {
-        // TODO: Fix this
-        /*
+
         var rows = new List<object[]>();
         var mod = loadout.Value.Mods.Values.First(m => m.Name == modName);
         foreach (var file in mod.Files.Values)
         {
-            if (file is FromArchive fa)
-                rows.Add(new object[] { fa.To, fa.From });
-            else if (file is GameFile gf)
-                rows.Add(new object[] { gf.To, gf.Installation });
+            if (file is IToFile tf and IFromArchive fa)
+            {
+                rows.Add(new object[] { tf.To, fa.Hash });
+            }
+            else if (file is IToFile tf2 and IGeneratedFile gf)
+                rows.Add(new object[] { tf2, gf.GetType().ToString() });
+            else 
+                rows.Add(new object[] { file.GetType().ToString() });
         }
 
         await _renderer.Render(new Table(new[] { "Name", "Source" }, rows));
-        */
         return 0;
     }
 }
