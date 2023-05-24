@@ -10,6 +10,7 @@ using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Interprocess;
 using NexusMods.DataModel.Interprocess.Messages;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
@@ -58,7 +59,9 @@ public class FomodXmlInstallerTests
         var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
 
         installedFiles
-            .Should().HaveCount(2)
+            .Cast<IToFile>()
+            .Should()
+            .HaveCount(2)
             .And.Satisfy(
                 x => x.To.FileName == "g1p1f1.out.esp",
                 x => x.To.FileName == "g2p1f1.out.esp"
@@ -72,7 +75,9 @@ public class FomodXmlInstallerTests
         var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
 
         installedFiles
-            .Should().HaveCount(3)
+            .Cast<IToFile>()
+            .Should()
+            .HaveCount(3)
             .And.Satisfy(
                 // In group 1, the second plugin is recommended
                 x => x.To.FileName == "g1p2f1.out.esp",
@@ -89,6 +94,7 @@ public class FomodXmlInstallerTests
         var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
 
         installedFiles
+            .Cast<IToFile>()
             .Should().HaveCount(3)
             .And.Satisfy(
                 // In group 1, the second plugin is recommended
@@ -106,6 +112,7 @@ public class FomodXmlInstallerTests
         var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
 
         installedFiles
+            .Cast<IToFile>()
             .Should().HaveCount(2)
             .And.Satisfy(
                 x => x.To.FileName == "g1p1f1.out.esp",
@@ -120,6 +127,7 @@ public class FomodXmlInstallerTests
         var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
 
         installedFiles
+            .Cast<IToFile>()
             .Should().HaveCount(2)
             .And.Satisfy(
                 x => x.To.FileName == "g1p1f1.out.esp",
@@ -134,6 +142,7 @@ public class FomodXmlInstallerTests
         var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
 
         installedFiles
+            .Cast<IToFile>()
             .Should().HaveCount(3)
             .And.Satisfy(
                 // In group 1, the second plugin is recommended
@@ -229,7 +238,8 @@ public class FomodXmlInstallerTests
             _serviceProvider.GetRequiredService<TemporaryFileManager>(),
             new FileHashCache(_serviceProvider.GetRequiredService<IResource<FileHashCache, Size>>(), dataStore),
             new IFileAnalyzer[] { analyzer },
-            dataStore
+            dataStore,
+            _serviceProvider.GetRequiredService<IArchiveManager>()
         );
 
         var analyzed = await contentsCache.AnalyzeFileAsync(FomodTestHelpers.GetFomodPath(testName));
