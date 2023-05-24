@@ -4,10 +4,10 @@ using NexusMods.Paths;
 
 namespace NexusMods.DataModel.ArchiveContents;
 
-[JsonName("FileContainedInEx")]
-public record FileContainedInEx : Entity
+[JsonName("ArchivedFiles")]
+public record ArchivedFiles : Entity
 {
-    public override EntityCategory Category => EntityCategory.FileContainedInEx;
+    public override EntityCategory Category => EntityCategory.ArchivedFiles;
     
     /// <summary>
     /// Name of the archive this file is contained in.

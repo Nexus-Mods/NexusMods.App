@@ -77,9 +77,13 @@ public enum EntityCategory
     /// </summary>
     Fingerprints,
     
-    // TEMP TODO: Remove this
-    FileContainedInEx,
+    /// <summary>
+    /// Back-indexes for finding hashes inside the ArchiveManager
+    /// </summary>
+    ArchivedFiles,
     
-    // Archive meta data
+    /// <summary>
+    /// Metadata about archives, normally the source (e.g. NexusMods, GitHub, etc.)
+    /// </summary>
     ArchiveMetaData
 }

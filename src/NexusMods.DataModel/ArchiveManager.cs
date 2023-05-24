@@ -93,7 +93,7 @@ public class ArchiveManager : IArchiveManager
                 
                 var dbId = IdFor((Hash)entry.Hash, guid);
 
-                var dbEntry = new FileContainedInEx
+                var dbEntry = new ArchivedFiles
                 {
                     File = finalPath.FileName,
                     FileEntryData = buffer.SliceFast(0, written).ToArray()
@@ -110,7 +110,7 @@ public class ArchiveManager : IArchiveManager
         Span<byte> buffer = stackalloc byte[24];
         BinaryPrimitives.WriteUInt64BigEndian(buffer, hash.Value);
         guid.TryWriteBytes(buffer.SliceFast(8));
-        return IId.FromSpan(EntityCategory.FileContainedInEx, buffer);
+        return IId.FromSpan(EntityCategory.ArchivedFiles, buffer);
     }
 
     public async Task ExtractFiles(IEnumerable<(Hash Src, AbsolutePath Dest)> files, CancellationToken token = default)
@@ -187,8 +187,8 @@ public class ArchiveManager : IArchiveManager
 
     private unsafe bool TryGetLocation(Hash hash, out AbsolutePath archivePath, out FileEntry fileEntry)
     {
-        var prefix = new Id64(EntityCategory.FileContainedInEx, (ulong)hash);
-        foreach (var entry in _store.GetByPrefix<FileContainedInEx>(prefix))
+        var prefix = new Id64(EntityCategory.ArchivedFiles, (ulong)hash);
+        foreach (var entry in _store.GetByPrefix<ArchivedFiles>(prefix))
         {
             foreach (var location in _archiveLocations)
             {
