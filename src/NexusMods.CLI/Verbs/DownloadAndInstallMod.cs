@@ -1,4 +1,5 @@
-﻿using NexusMods.DataModel.Loadouts.Markers;
+﻿using NexusMods.CLI.Types;
+using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Paths;
 
@@ -11,13 +12,15 @@ public class DownloadAndInstallMod : AVerb<string, LoadoutMarker, string>
 {
     private readonly IHttpDownloader _httpDownloader;
     private readonly TemporaryFileManager _temp;
+    private readonly IEnumerable<IDownloadProtocolHandler> _handlers;
     private readonly IRenderer _renderer;
     
     /// <summary/>
-    public DownloadAndInstallMod(IHttpDownloader httpDownloader, Configurator configurator, TemporaryFileManager temp)
+    public DownloadAndInstallMod(IHttpDownloader httpDownloader, Configurator configurator, TemporaryFileManager temp, IEnumerable<IDownloadProtocolHandler> handlers)
     {
         _httpDownloader = httpDownloader;
         _temp = temp;
+        _handlers = handlers;
         _renderer = configurator.Renderer;
     }
 
@@ -38,11 +41,18 @@ public class DownloadAndInstallMod : AVerb<string, LoadoutMarker, string>
         await _renderer.WithProgress(token, async () =>
         {
             var uri = new Uri(url);
+            var handler = _handlers.FirstOrDefault(x => x.Protocol == uri.Scheme);
+            if (handler != null)
+            {
+                await handler.Handle(url, loadout, modName, default);
+                return 0;
+            }
 
             await _httpDownloader.DownloadAsync(new[] { new HttpRequestMessage(HttpMethod.Get, uri) },
                 tempDir.Path, null, token);
             
-            return await loadout.InstallModsFromArchiveAsync(tempDir.Path, modName, token);
+            await loadout.InstallModsFromArchiveAsync(tempDir.Path, modName, token);
+            return 0;
         });
 
         return 0;

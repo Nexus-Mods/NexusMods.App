@@ -1,5 +1,4 @@
 using NexusMods.DataModel.Interprocess;
-using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.NMA.Messages;
 using NexusMods.Networking.NexusWebApi.Types;
 
@@ -12,7 +11,7 @@ namespace NexusMods.CLI.Types.IpcHandlers;
 public class NxmIpcProtocolHandler : IIpcProtocolHandler
 {
     /// <inheritdoc/>
-    public string Protocol { get; } = "nxm";
+    public string Protocol => "nxm";
 
     private IMessageProducer<NXMUrlMessage> _messages;
 

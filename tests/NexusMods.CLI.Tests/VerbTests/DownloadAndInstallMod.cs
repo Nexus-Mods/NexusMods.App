@@ -2,6 +2,8 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Games.TestFramework;
+using NexusMods.Networking.NexusWebApi.NMA.Extensions;
+using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
@@ -39,7 +41,22 @@ public class DownloadAndInstallMod : AGameTest<StubbedGame>
         origNumMods.Should().Be(1); // game files
 
         var makeUrl = $"file://{Path.GetFullPath(url)}";
-        Test.RunNoBanner("download-and-install-mod", "-u", makeUrl, "-l", loadoutName, "-n", "TestMod");
+        await Test.RunNoBannerAsync("download-and-install-mod", "-u", makeUrl, "-l", loadoutName, "-n", "TestMod");
+        loadout.Value.Mods.Count.Should().BeGreaterThan(origNumMods);
+    }
+    
+    [Theory]
+    [InlineData("cyberpunk2077", 107, 33156)]
+    public async Task DownloadModFromNxm(string gameDomain, ulong modId, ulong fileId)
+    {
+        // This test requires Premium. If it fails w/o Premium, ignore that.
+        var loadout = await CreateLoadout();
+        var loadoutName = loadout.Value.Name;
+        var origNumMods = loadout.Value.Mods.Count;
+        origNumMods.Should().Be(1); // game files
+
+        var uri = $"nxm://{gameDomain}/mods/{modId}/files/{fileId}";
+        await Test.RunNoBannerAsync("download-and-install-mod", "-u", uri, "-l", loadoutName, "-n", "TestMod");
         loadout.Value.Mods.Count.Should().BeGreaterThan(origNumMods);
     }
 }

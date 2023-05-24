@@ -1,4 +1,5 @@
 using System.CommandLine;
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.CLI.DataOutputs;
 using NexusMods.Paths;
@@ -26,6 +27,8 @@ public class AVerbTest
         FileSystem = provider.GetRequiredService<IFileSystem>();
     }
 
+    // I added this for testing purposes to help diagnose errors easier when needed - Sewer
+    [PublicAPI]
     internal void RunNoBanner(params string[] args)
     {
         using var scope = RunNoBannerInit(out var builder);

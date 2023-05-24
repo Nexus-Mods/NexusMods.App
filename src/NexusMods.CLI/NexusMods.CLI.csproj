@@ -16,8 +16,4 @@
         <ProjectReference Include="..\NexusMods.Paths\NexusMods.Paths.csproj" />
         <ProjectReference Include="..\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Types\DownloadHandlers\" />
-    </ItemGroup>
 </Project>

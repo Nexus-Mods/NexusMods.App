@@ -11,6 +11,7 @@ using NexusMods.FileExtractor.Extractors;
 using NexusMods.Paths;
 using System.Runtime.InteropServices;
 using NexusMods.CLI.Types;
+using NexusMods.CLI.Types.DownloadHandlers;
 using NexusMods.CLI.Types.IpcHandlers;
 using NexusMods.Common.ProtocolRegistration;
 using NexusMods.Common.UserInput;
@@ -39,9 +40,10 @@ public static class Services
             onLinux: (ref IServiceCollection value) => value.AddSingleton<IProtocolRegistration, ProtocolRegistrationLinux>()
         );
 
-        // Protocol Handler
+        // Protocol Handlers
         services.AddSingleton<IIpcProtocolHandler, NxmIpcProtocolHandler>();
-
+        services.AddSingleton<IDownloadProtocolHandler, NxmDownloadProtocolHandler>();
+        
         services.AddVerb<AnalyzeArchive>()
             .AddVerb<Apply>()
             .AddVerb<ChangeTracking>()
