@@ -2,7 +2,6 @@
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.DTOs;
-using NexusMods.Networking.NexusWebApi.NMA.Extensions;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
 

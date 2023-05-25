@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.CLI.Renderers;
+using NexusMods.App.Listeners;
 using NexusMods.App.UI;
 using NexusMods.CLI;
 using NexusMods.Common;
@@ -30,6 +31,12 @@ public static class Services
         services.AddScoped<IRenderer, Json>();
         return services;
     }
+    
+    public static IServiceCollection AddListeners(this IServiceCollection services)
+    {
+        services.AddSingleton<NxmRpcListener>();
+        return services;
+    }
 
     public static IServiceCollection AddApp(this IServiceCollection services,
         AppConfig? config = null, bool addStandardGameLocators = true)
@@ -56,8 +63,8 @@ public static class Services
             .AddAdvancedHttpDownloader(config.HttpDownloaderSettings)
             .AddTestHarness()
             .AddSingleton<HttpClient>()
+            .AddListeners()
             .AddCommon();
-
 
         if (addStandardGameLocators)
             services.AddStandardGameLocators();
