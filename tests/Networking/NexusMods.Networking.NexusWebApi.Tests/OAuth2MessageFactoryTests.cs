@@ -10,6 +10,7 @@ using System.Text.Json;
 using NexusMods.Common.OSInterop;
 using NexusMods.DataModel.Interprocess.Jobs;
 using NexusMods.Networking.NexusWebApi.DTOs;
+using NexusMods.Networking.NexusWebApi.DTOs.OAuth;
 using NexusMods.Networking.NexusWebApi.NMA;
 using NexusMods.Networking.NexusWebApi.NMA.Messages;
 

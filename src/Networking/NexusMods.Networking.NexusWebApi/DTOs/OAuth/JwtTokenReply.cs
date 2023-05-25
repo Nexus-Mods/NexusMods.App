@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace NexusMods.Networking.NexusWebApi.DTOs;
+namespace NexusMods.Networking.NexusWebApi.DTOs.OAuth;
 
 /// <summary>
 /// JWT Token info as provided by the OAuth server
