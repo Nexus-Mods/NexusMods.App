@@ -1,4 +1,5 @@
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
+using NexusMods.Networking.NexusWebApi.NMA.Types;
 
 namespace NexusMods.Networking.NexusWebApi.NMA;
 
@@ -15,6 +16,7 @@ public class TypeFinder : ITypeFinder
 
     private IEnumerable<Type> AllTypes => new[]
     {
-        typeof(JWTTokenEntity)
+        typeof(JWTTokenEntity),
+        typeof(NexusLoginJob),
     };
 }
