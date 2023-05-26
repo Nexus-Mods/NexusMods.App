@@ -10,10 +10,12 @@ public class NXMModUrl : NXMUrl
     /// id of the mod page
     /// </summary>
     public ModId ModId { get; set; }
+
     /// <summary>
     /// id of the file (within that game domain)
     /// </summary>
     public FileId FileId { get; set; }
+
     /// <summary>
     /// game domain (name of the game within the Nexus Mods page)
     /// </summary>
@@ -27,7 +29,7 @@ public class NXMModUrl : NXMUrl
     public NXMModUrl(Uri uri)
     {
         UrlType = NXMUrlType.Mod;
-        if ((uri.Segments.Length != 5) || (uri.Segments[3] != "files/"))
+        if (uri.Segments is not [_, _, _, "files/", _])
         {
             throw new ArgumentException($"invalid nxm url \"{uri}\"");
         }

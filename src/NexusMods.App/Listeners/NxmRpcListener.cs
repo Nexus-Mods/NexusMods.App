@@ -21,13 +21,14 @@ public class NxmRpcListener : IDisposable
 {
     private readonly Client _client;
     private readonly ILogger<NxmRpcListener> _logger;
-    private BufferBlock<NXMUrlMessage> _urlsBlock;
-    private CancellationTokenSource _cancellationSource;
-    private IHttpDownloader _downloader;
+    private readonly BufferBlock<NXMUrlMessage> _urlsBlock;
+    private readonly CancellationTokenSource _cancellationSource;
+    private readonly IHttpDownloader _downloader;
     private readonly TemporaryFileManager _temp;
 
     // Note: Temporary until we implement the UI part.
-    private LoadoutManager _loadoutManager;
+    private readonly LoadoutManager _loadoutManager;
+    private readonly Task _listenTask;
 
     public NxmRpcListener(IMessageConsumer<NXMUrlMessage> nxmUrlMessages, ILogger<NxmRpcListener> logger, Client client, IHttpDownloader downloader, TemporaryFileManager temp, LoadoutManager loadoutManager)
     {
@@ -38,7 +39,7 @@ public class NxmRpcListener : IDisposable
         _loadoutManager = loadoutManager;
         _cancellationSource = new CancellationTokenSource();
         _urlsBlock = new BufferBlock<NXMUrlMessage>();
-        Task.Run(ListenAsync);
+        _listenTask = Task.Run(ListenAsync);
         nxmUrlMessages.Messages
             .Where(url => url.Value.UrlType == NXMUrlType.Mod)
             .Subscribe(item => _urlsBlock.Post(item));
@@ -55,37 +56,36 @@ public class NxmRpcListener : IDisposable
             // the service keeps running rather than terminated.
             try
             {
-                await ProcessUrlAsync(item.Value);
+                await ProcessUrlAsync(item.Value, _cancellationSource.Token);
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Unhandled exception when downloading a mod.");
+                _logger.LogError(e, "Unhandled exception when downloading a mod");
             }
         }
     }
 
-    private async Task ProcessUrlAsync(NXMUrl parsed)
+    private async Task ProcessUrlAsync(NXMUrl parsed, CancellationToken token)
     {
         // TODO Note: This code is temporary, we need a UI design for this; where user selects a loadout for a game.
         // Then we would wrap this task in a class, and pass it off to the UI ViewModel (e.g. via event), from where
         // the user can cancel/pause/resume the task etc.
         // Then we pass this URL somewhere else (e.g. via an event) to a ViewModel which will be seen by the UI.
-        
-        using var tempPath = _temp.CreateFile();
+        await using var tempPath = _temp.CreateFile();
         var loadout = _loadoutManager.Registry.AllLoadouts().First(x => x.Installation.Game.Domain == parsed.Mod.Game);
         var marker = new LoadoutMarker(_loadoutManager, loadout.LoadoutId);
         
         Response<DownloadLink[]> links;
         if (parsed.Key == null)
-            links = await _client.DownloadLinksAsync(parsed.Mod.Game, parsed.Mod.ModId, parsed.Mod.FileId);
+            links = await _client.DownloadLinksAsync(parsed.Mod.Game, parsed.Mod.ModId, parsed.Mod.FileId, token);
         else
-            links = await _client.DownloadLinksAsync(parsed.Mod.Game, parsed.Mod.ModId, parsed.Mod.FileId, parsed.Key.Value, parsed.ExpireTime!.Value);
+            links = await _client.DownloadLinksAsync(parsed.Mod.Game, parsed.Mod.ModId, parsed.Mod.FileId, parsed.Key.Value, parsed.ExpireTime!.Value, token);
         
         var downloadUris = links.Data.Select(u => new HttpRequestMessage(HttpMethod.Get, u.Uri)).ToArray();
-        await _downloader.DownloadAsync(downloadUris, tempPath);
+        await _downloader.DownloadAsync(downloadUris, tempPath, token: token);
 
-        var file = (await _client.ModFilesAsync(parsed.Mod.Game, parsed.Mod.ModId)).Data.Files.First(x => x.FileId == parsed.Mod.FileId);
-        await marker.InstallModsFromArchiveAsync(tempPath, file.Name);
+        var file = (await _client.ModFilesAsync(parsed.Mod.Game, parsed.Mod.ModId, token)).Data.Files.First(x => x.FileId == parsed.Mod.FileId);
+        await marker.InstallModsFromArchiveAsync(tempPath, file.Name, token);
     }
 
     /// <summary>
@@ -93,7 +93,12 @@ public class NxmRpcListener : IDisposable
     /// </summary>
     public void Dispose()
     {
-        _cancellationSource.Cancel();
+        try { _cancellationSource.Cancel(); }
+        catch (Exception) { /* ignored */ }
+
+        try { _listenTask.Wait(); }
+        catch (Exception e) { _logger.LogError(e, "Unhandled exception in NXM dispatcher"); }
+
         _urlsBlock.Complete();
         _cancellationSource.Dispose();
     }

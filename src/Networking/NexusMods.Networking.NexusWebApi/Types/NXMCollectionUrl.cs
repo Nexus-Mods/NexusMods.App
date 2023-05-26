@@ -10,10 +10,12 @@ public class NXMCollectionUrl : NXMUrl
     /// string uniquely identifying a collection
     /// </summary>
     public CollectionSlug Slug { get; set; }
+
     /// <summary>
     /// the revision number (this is not the global revision id, the revision number is  like a version number within a collection)
     /// </summary>
     public RevisionNumber Revision { get; set; }
+
     /// <summary>
     /// name of the game within the Nexus Mods site
     /// </summary>
@@ -27,7 +29,7 @@ public class NXMCollectionUrl : NXMUrl
     public NXMCollectionUrl(Uri uri)
     {
         UrlType = NXMUrlType.Collection;
-        if ((uri.Segments.Length != 5) || (uri.Segments[3] != "revisions/"))
+        if (uri.Segments is not [_, _, _, "revisions/", _])
         {
             throw new ArgumentException($"invalid nxm url \"{uri}\"");
         }

@@ -37,7 +37,7 @@ public class DownloadAndInstallMod : AVerb<string, LoadoutMarker, string>
     /// <inheritdoc />
     public async Task<int> Run(string url, LoadoutMarker loadout, string modName, CancellationToken token)
     {
-        using var tempDir = _temp.CreateFile();
+        await using var tempDir = _temp.CreateFile();
         await _renderer.WithProgress(token, async () =>
         {
             var uri = new Uri(url);

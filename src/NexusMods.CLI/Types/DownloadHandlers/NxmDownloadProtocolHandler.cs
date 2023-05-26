@@ -30,7 +30,7 @@ public class NxmDownloadProtocolHandler : IDownloadProtocolHandler
     /// <inheritdoc />
     public async Task Handle(string url, LoadoutMarker loadout, string modName, CancellationToken token)
     {
-        using var tempPath = _temp.CreateFile();
+        await using var tempPath = _temp.CreateFile();
         var parsed = NXMUrl.Parse(url);
         
         // Note: Normally we should probably source domains from the loadout, but in this case, this is okay.

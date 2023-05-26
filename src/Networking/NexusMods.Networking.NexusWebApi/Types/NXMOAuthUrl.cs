@@ -25,7 +25,7 @@ public class NXMOAuthUrl : NXMUrl
     public NXMOAuthUrl(Uri uri)
     {
         UrlType = NXMUrlType.OAuth;
-        if ((uri.Segments.Length != 2) || (uri.Segments[1] != "callback"))
+        if (uri.Segments is not [_, "callback"])
             throw new ArgumentException($"invalid nxm url \"{uri}\"");
     }
 
