@@ -40,7 +40,8 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
     private readonly LoadoutRegistry _loadoutRegistry;
     private readonly IToolManager _toolManager;
 
-    public LaunchButtonViewModel(ILogger<LaunchButtonViewModel> logger, IInterprocessJobManager manager, LoadoutRegistry loadoutRegistry, LoadoutManager loadoutManager)
+    public LaunchButtonViewModel(ILogger<LaunchButtonViewModel> logger, IToolManager toolManager, 
+        IInterprocessJobManager manager, LoadoutRegistry loadoutRegistry)
     {
         _toolManager = toolManager;
         _loadoutRegistry = loadoutRegistry;
