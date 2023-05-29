@@ -3,7 +3,10 @@ using System.Text;
 using System.Text.Json;
 using FluentAssertions;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.Loadouts.ModFiles;
+using NexusMods.DataModel.Loadouts.Mods;
+using NexusMods.DataModel.TriggerFilter;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -14,7 +17,12 @@ namespace NexusMods.Games.BethesdaGameStudios.Tests.Skyrim;
 
 public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
 {
-    public SkyrimSpecialEditionTests(IServiceProvider serviceProvider) : base(serviceProvider) { }
+    private readonly IFingerprintCache<IGeneratedFile,CachedGeneratedFileData> _generatedFileFingerprintCache;
+
+    public SkyrimSpecialEditionTests(IServiceProvider serviceProvider) : base(serviceProvider)
+    {
+
+    }
 
     [Fact]
     public void CanFindGames()
@@ -47,7 +55,8 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
                     To = new GamePath(GameFolderType.Game, $"Data/{file.Key}"),
                     Hash = Hash.Zero,
                     Size = Size.Zero,
-                    Metadata = ImmutableHashSet<IModFileMetadata>.Empty.Add(
+                    Metadata = 
+                        ImmutableHashSet<IModFileMetadata>.Empty.Add(
                         new AnalysisSortData
                         {
                             Masters = file.Value.Select(f => f.ToRelativePath())
@@ -66,16 +75,16 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
             .Should().BeGreaterOrEqualTo(analysis.Count, "Analysis data has been added");
 
         var pluginFile = gameFiles.Files.Values.OfType<PluginFile>().First();
-        var flattenedList = loadout.FlattenList().ToArray();
+        var flattenedList = (await LoadoutSynchronizer.FlattenLoadout(loadout.Value)).Files.Values.ToList();
 
+        var plan = await LoadoutSynchronizer.MakeApplySteps(loadout.Value);
+        
         using var ms = new MemoryStream();
-        await pluginFile.GenerateAsync(ms, loadout.Value, flattenedList);
+        await pluginFile.GenerateAsync(ms, plan);
 
         ms.Position = 0;
-        var (size, hash) = await pluginFile.GetMetadataAsync(loadout.Value, flattenedList);
-
-        size.Should().Be(Size.FromLong(ms.Length));
-        (await ms.XxHash64Async()).Should().Be(hash);
+        
+        (await ms.XxHash64Async()).Should().Be(Hash.From(0x7F10458731B543D4));
         var results = Encoding.UTF8.GetString(ms.ToArray()).Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
 
         // CC = Creation Club

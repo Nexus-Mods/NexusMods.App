@@ -71,4 +71,19 @@ public enum EntityCategory
     /// This entity is used as part of the IPC job system.
     /// </summary>
     InterprocessJob,
+    
+    /// <summary>
+    /// Fingerprint cache data
+    /// </summary>
+    Fingerprints,
+    
+    /// <summary>
+    /// Back-indexes for finding hashes inside the ArchiveManager
+    /// </summary>
+    ArchivedFiles,
+    
+    /// <summary>
+    /// Metadata about archives, normally the source (e.g. NexusMods, GitHub, etc.)
+    /// </summary>
+    ArchiveMetaData
 }

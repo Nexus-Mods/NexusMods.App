@@ -1,5 +1,6 @@
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.Hashing.xxHash64;
+using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Loadouts.ModFiles;
 
@@ -7,11 +8,9 @@ namespace NexusMods.DataModel.Loadouts.ModFiles;
 /// Denotes any file which is originally sourced from an archive for installation.
 /// </summary>
 [JsonName("NexusMods.DataModel.GameFiles.FromArchive")]
-public record FromArchive : AStaticModFile
+public record FromArchive : AModFile, IFromArchive, IToFile
 {
-    /// <summary>
-    /// A tuple which contains the hash of the source archive a file has came from and its
-    /// relative path.
-    /// </summary>
-    public required HashRelativePath From { get; init; }
+    public required Size Size { get; init; }
+    public required Hash Hash { get; init; }
+    public required GamePath To { get; init; }
 }

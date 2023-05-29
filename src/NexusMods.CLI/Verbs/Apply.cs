@@ -1,4 +1,6 @@
+using DynamicData;
 using NexusMods.CLI.DataOutputs;
+using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ApplySteps;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.Paths;
@@ -9,10 +11,12 @@ namespace NexusMods.CLI.Verbs;
 public class Apply : AVerb<LoadoutMarker, bool, bool>
 {
     private readonly IRenderer _renderer;
+    private readonly LoadoutSynchronizer _loadoutSyncronizer;
 
-    public Apply(Configurator configurator)
+    public Apply(Configurator configurator, LoadoutSynchronizer loadoutSynchronizer)
     {
         _renderer = configurator.Renderer;
+        _loadoutSyncronizer = loadoutSynchronizer;
     }
 
     public static VerbDefinition Definition => new("apply", "Apply a Loadout to a game folder", new OptionDefinition[]
@@ -25,7 +29,7 @@ public class Apply : AVerb<LoadoutMarker, bool, bool>
     public async Task<int> Run(LoadoutMarker loadout, bool run, bool summary, CancellationToken token)
     {
 
-        var plan = await loadout.MakeApplyPlanAsync(token);
+        var plan = await _loadoutSyncronizer.MakeApplySteps(loadout.Value, token);
 
         if (summary)
         {
@@ -42,15 +46,20 @@ public class Apply : AVerb<LoadoutMarker, bool, bool>
             var rows = new List<object[]>();
             foreach (var step in plan.Steps)
             {
-                if (step is IStaticFileStep smf)
+                switch (step)
                 {
-                    rows.Add(new object[] { step, step.To, smf.Hash, smf.Size });
+                    case ExtractFile ef:
+                        rows.Add(new object[] { ef, ef.To, ef.Hash, ef.Size});
+                        break;
+                    case BackupFile bf:
+                        rows.Add(new object[] { bf, bf.To, bf.Hash, bf.Size});
+                        break;
+                    case DeleteFile df:
+                        rows.Add(new object[] { df, df.To, df.Hash, df.Size });
+                        break;
+                    default:
+                        throw new InvalidOperationException();
                 }
-                else
-                {
-                    rows.Add(new object[] { step, step.To, "", "" });
-                }
-
             }
             await _renderer.Render(new Table(new[] { "Action", "To", "Hash", "Size" }, rows));
         }
@@ -59,7 +68,7 @@ public class Apply : AVerb<LoadoutMarker, bool, bool>
         {
             await _renderer.WithProgress(token, async () =>
             {
-                await loadout.ApplyAsync(plan, token);
+                await _loadoutSyncronizer.Apply(plan, token);
                 return plan.Steps;
             });
         }

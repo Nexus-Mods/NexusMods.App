@@ -7,8 +7,4 @@ namespace NexusMods.DataModel.Loadouts.ApplySteps;
 /// </summary>
 public interface IApplyStep
 {
-    /// <summary>
-    /// The file to apply this operation to.
-    /// </summary>
-    public AbsolutePath To { get; }
 }

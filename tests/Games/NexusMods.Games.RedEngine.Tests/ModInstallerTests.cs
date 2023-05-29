@@ -1,4 +1,5 @@
 using FluentAssertions;
+using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.NexusWebApi.Types;
@@ -19,10 +20,12 @@ public class ModInstallerTests : AGameTest<Cyberpunk2077>
         Hash hash, IEnumerable<GamePath> files)
     {
         var loadout = await CreateLoadout(indexGameFiles:false);
-        var downloaded = await DownloadAndCacheMod(GameInstallation.Game.Domain, modId, fileId, hash);
-        var mod = await InstallModFromArchiveIntoLoadout(loadout, downloaded, name);
+        await DownloadAndCacheMod(GameInstallation.Game.Domain, modId, fileId, hash);
+        var mod = await InstallModFromArchiveIntoLoadout(loadout, hash, name);
 
-        mod.Files.Values.Select(file => file.To)
+        mod.Files.Values
+            .OfType<IToFile>()
+            .Select(file => file.To)
             .Should()
             .BeEquivalentTo(files, opt => opt.WithoutStrictOrdering());
     }

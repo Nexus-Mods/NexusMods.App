@@ -1,3 +1,4 @@
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.Paths;
 
@@ -7,7 +8,15 @@ namespace NexusMods.CLI.Verbs;
 public class InstallMod : AVerb<LoadoutMarker, AbsolutePath, string>
 {
     private readonly IRenderer _renderer;
-    public InstallMod(Configurator configurator) => _renderer = configurator.Renderer;
+    private readonly IArchiveInstaller _archiveInstaller;
+    private readonly IArchiveAnalyzer _archiveAnalyzer;
+
+    public InstallMod(Configurator configurator, IArchiveInstaller archiveInstaller, IArchiveAnalyzer archiveAnalyzer)
+    {
+        _renderer = configurator.Renderer;
+        _archiveInstaller = archiveInstaller;
+        _archiveAnalyzer = archiveAnalyzer;
+    }
 
     public static VerbDefinition Definition => new("install-mod", "Installs a mod into a loadout", new OptionDefinition[]
     {
@@ -20,7 +29,8 @@ public class InstallMod : AVerb<LoadoutMarker, AbsolutePath, string>
     {
         await _renderer.WithProgress(token, async () =>
         {
-            await loadout.InstallModsFromArchiveAsync(file, name, token);
+            var analyzedFile = await _archiveAnalyzer.AnalyzeFileAsync(file, token);
+            await _archiveInstaller.AddMods(loadout.Value.LoadoutId, analyzedFile.Hash, token:token);
             return file;
         });
         return 0;

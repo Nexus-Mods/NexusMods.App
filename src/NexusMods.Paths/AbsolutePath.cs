@@ -43,6 +43,16 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// </summary>
     public IFileSystem FileSystem { get; init; }
 
+    /// <summary>
+    /// Returns a new path, identical to this one, but with the filesystem replaced with the given filesystem
+    /// </summary>
+    /// <param name="fileSystem"></param>
+    /// <returns></returns>
+    public AbsolutePath WithFileSystem(IFileSystem fileSystem)
+    {
+        return new AbsolutePath(Directory, FileName, fileSystem);
+    }
+
     /// <inheritdoc />
     public Extension Extension => Extension.FromPath(FileName);
 
