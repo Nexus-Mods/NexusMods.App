@@ -15,6 +15,7 @@ using NexusMods.DataModel.Loadouts.Cursors;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.ModFiles;
+using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.Hashing.xxHash64;
@@ -48,13 +49,13 @@ public class LoadoutManager
     /// Provides lookup within the 'Archives' folder, for existing installed mods
     /// etc.
     /// </summary>
-    public readonly ArchiveManager ArchiveManager;
+    public readonly IArchiveManager ArchiveManager;
 
     private readonly ILogger<LoadoutManager> _logger;
 
     private readonly IFileSystem _fileSystem;
     private readonly IModInstaller[] _installers;
-    private readonly FileContentsCache _analyzer;
+    private readonly IArchiveAnalyzer _analyzer;
     private readonly IEnumerable<IFileMetadataSource> _metadataSources;
     private readonly ILookup<GameDomain, ITool> _tools;
     private readonly IInterprocessJobManager _jobManager;
@@ -67,12 +68,12 @@ public class LoadoutManager
         IFileSystem fileSystem,
         LoadoutRegistry registry,
         IResource<LoadoutManager, Size> limiter,
-        ArchiveManager archiveManager,
+        IArchiveManager archiveManager,
         IEnumerable<IFileMetadataSource> metadataSources,
         IDataStore store,
         FileHashCache fileHashCache,
         IEnumerable<IModInstaller> installers,
-        FileContentsCache analyzer,
+        IArchiveAnalyzer analyzer,
         IEnumerable<ITool> tools,
         IInterprocessJobManager jobManager)
     {
@@ -128,7 +129,7 @@ public class LoadoutManager
     {
         _logger.LogInformation("Indexing game files");
 
-        var mod = new Mod
+        var mod = new Mods.Mod
         {
             Id = ModId.New(),
             Status = ModStatus.Installing,
@@ -136,7 +137,7 @@ public class LoadoutManager
             Files = new EntityDictionary<ModFileId, AModFile>(Store),
             Version = installation.Version.ToString(),
             ModCategory = Mod.GameFilesCategory,
-            SortRules = ImmutableList<ISortRule<Mod, ModId>>.Empty.Add(new First<Mod, ModId>())
+            SortRules = ImmutableList<ISortRule<Mods.Mod, ModId>>.Empty.Add(new First<Mods.Mod, ModId>())
         }.WithPersist(Store);
 
         var loadoutId = LoadoutId.Create();
@@ -149,7 +150,7 @@ public class LoadoutManager
                     LoadoutId = loadoutId,
                     Installation = installation,
                     Name = name,
-                    Mods = new EntityDictionary<ModId, Mod>(Store,
+                    Mods = new EntityDictionary<ModId, Mods.Mod>(Store,
                         new[]
                         {
                             new KeyValuePair<ModId, IId>(mod.Id,
@@ -175,11 +176,11 @@ public class LoadoutManager
         if (!earlyReturn)
             await indexTask;
 
-        return new LoadoutMarker(this, loadoutId);
+        return new LoadoutMarker(Registry, loadoutId);
     }
 
     private async Task IndexAndAddGameFiles(GameInstallation installation,
-        CancellationToken token, Loadout loadout, Mod mod, IInterprocessJob managementJob, bool indexGameFiles)
+        CancellationToken token, Loadout loadout, Mods.Mod mod, IInterprocessJob managementJob, bool indexGameFiles)
     {
         // So we release this after the job is done.
         using var _ = managementJob;
@@ -252,7 +253,7 @@ public class LoadoutManager
         // Get the loadout and create the mod so we can use it in the job.
         var loadout = GetLoadout(loadoutId);
 
-        var baseMod = new Mod
+        var baseMod = new Mods.Mod
         {
             Id = ModId.New(),
             Name = string.IsNullOrWhiteSpace(defaultModName) ? archivePath.FileName : defaultModName,
@@ -271,12 +272,8 @@ public class LoadoutManager
                 ModId = baseMod.Id,
                 LoadoutId = loadoutId
             });
-
-            // Step 1: Archive the archive.
-            await ArchiveManager.ArchiveFileAsync(archivePath, cancellationToken);
-            job.Progress = new Percent(0.25);
-
-            // Step 2: Analyze the archive.
+            
+            // Step 1: Analyze the archive.
             var analyzed = await _analyzer.AnalyzeFileAsync(archivePath, cancellationToken);
             if (analyzed is not AnalyzedArchive archive)
             {
@@ -286,7 +283,7 @@ public class LoadoutManager
 
             job.Progress = new Percent(0.50);
 
-            // Step 3: Run the archive through the installers.
+            // Step 2: Run the archive through the installers.
             var installer = _installers
                 .Select(i => (Installer: i, Priority: i.GetPriority(loadout.Value.Installation, archive.Contents)))
                 .Where(p => p.Priority != Priority.None)
@@ -300,7 +297,7 @@ public class LoadoutManager
                 throw new NotSupportedException($"No Installer found for {archivePath}");
             }
 
-            // Step 4: Install the mods.
+            // Step 3: Install the mods.
             var results = await installer.Installer.GetModsAsync(
                 loadout.Value.Installation,
                 baseMod.Id,
@@ -308,7 +305,7 @@ public class LoadoutManager
                 archive.Contents,
                 cancellationToken);
 
-            var mods = results.Select(result => new Mod
+            var mods = results.Select(result => new Mods.Mod
             {
                 Id = result.Id,
                 Files = result.Files.ToEntityDictionary(Store),
@@ -318,7 +315,7 @@ public class LoadoutManager
 
             job.Progress = new Percent(0.75);
 
-            // Step 5: Add the mod to the loadout.
+            // Step 4: Add the mod to the loadout.
             AModMetadata? modMetadata = mods.Length > 1
                 ? new GroupMetadata
                 {
@@ -340,7 +337,7 @@ public class LoadoutManager
             {
                 mod.Metadata = modMetadata;
 
-                if (mod.Id == baseMod.Id)
+                if (mod.Id.Equals(baseMod.Id))
                 {
                     Registry.Alter(
                         cursor,
@@ -386,116 +383,6 @@ public class LoadoutManager
     }
 
     /// <summary>
-    /// Returns the available tools for a game.
-    /// </summary>
-    /// <param name="game">The game to get the tools for.</param>
-    public IEnumerable<ITool> Tools(GameDomain game)
-    {
-        return _tools[game];
-    }
-
-    // TODO: Should probably provide this API for already grouped elements. https://github.com/Nexus-Mods/NexusMods.App/issues/211
-
-    /// <summary>
-    /// Replaces existing files for given mod(s) within the loadout/data store.
-    /// Files to be replaced are matched using their <see cref="GamePath"/>(s).
-    /// </summary>
-    /// <param name="id">ID of the loadout to replace files in.</param>
-    /// <param name="items">
-    ///     List of files and their corresponding mods to perform the file replacement in.
-    /// </param>
-    /// <param name="message">The change message to attach to the new version of the loadout.</param>
-    /// <remarks>
-    ///    This is mostly used with 'generated' files, i.e. those output by a
-    ///    game specific extension of NMA like RedEngine.
-    ///
-    ///    Does not add new files, only performs replacements.
-    /// </remarks>
-    public void ReplaceFiles(LoadoutId id, List<(AModFile File, Mod Mod)> items, string message)
-    {
-        var byMod = items.GroupBy(x => x.Mod, x => x.File)
-            .ToDictionary(x => x.Key);
-
-        Registry.Alter(id, message, l =>
-        {
-            return l with
-            {
-                Mods = l.Mods.Keep(m =>
-                {
-                    if (!byMod.TryGetValue(m, out var files))
-                        return m; // not one of our mods
-
-                    // This mod matches with one of our own provided ones for replacement.
-
-                    // If the path of a given file matches one of our own, replace it with
-                    // our own [the path therefore gets a new ID/Metadata/etc., and replacement is complete].
-                    var indexed = files.ToDictionary(f => f.To);
-                    return m with
-                    {
-                        Files = m.Files.Keep(f => indexed.GetValueOrDefault(f.To, f))
-                    };
-                })
-            };
-        });
-    }
-
-    /// <summary>
-    /// Exports the contents of this loadout to a given directory.
-    /// Exported loadout is zipped up.
-    /// </summary>
-    /// <param name="id">ID of the loadout to export.</param>
-    /// <param name="output">The file path to export the loadout to.</param>
-    /// <param name="token">Cancel operation with this.</param>
-    /// <remarks></remarks>
-    public async Task ExportToAsync(LoadoutId id, AbsolutePath output, CancellationToken token)
-    {
-        var loadout = Registry.Get(id)!;
-
-        if (output.FileExists)
-            output.Delete();
-
-        using var zip = ZipFile.Open(output.ToString(), ZipArchiveMode.Create);
-        var ids = loadout.Walk((state, itm) =>
-        {
-            state.Add(itm.DataStoreId);
-
-            void AddFile(Hash hash, ISet<IId> hashes)
-            {
-                hashes.Add(new Id64(EntityCategory.FileAnalysis, (ulong)hash));
-                foreach (var foundIn in Store.GetByPrefix<FileContainedIn>(new Id64(EntityCategory.FileContainedIn,
-                             (ulong)hash)))
-                {
-                    hashes.Add(foundIn.DataStoreId);
-                }
-            }
-
-            if (itm is AStaticModFile file)
-            {
-                AddFile(file.Hash, state);
-            }
-            if (itm is FromArchive archive)
-            {
-                AddFile(archive.From.Hash, state);
-            }
-
-            return state;
-        }, new HashSet<IId>());
-        _logger.LogDebug("Found {Count} entities to export", ids.Count);
-
-        foreach (var entityId in ids)
-        {
-            var data = Store.GetRaw(entityId);
-            if (data == null) continue;
-
-            await using var entry = zip.CreateEntry($"{ZipEntitiesName}/" + entityId.TaggedSpanHex, CompressionLevel.Optimal).Open();
-            await entry.WriteAsync(data, token);
-        }
-
-        await using var rootEntry = zip.CreateEntry(ZipRootName, CompressionLevel.Optimal).Open();
-        await rootEntry.WriteAsync(Encoding.UTF8.GetBytes(loadout.DataStoreId.TaggedSpanHex), token);
-    }
-
-    /// <summary>
     /// Imports the contents of this loadout from a given directory [zip archive].
     /// </summary>
     /// <param name="path">Location of the file to import from.</param>
@@ -528,7 +415,7 @@ public class LoadoutManager
         if (loadout == null)
             throw new Exception("Loadout not found after loading data store, the loadout may be corrupt");
         Registry.Alter(loadout.LoadoutId, "Loadout Imported from backup",  _ => loadout);
-        return new LoadoutMarker(this, loadout.LoadoutId);
+        return new LoadoutMarker(Registry, loadout.LoadoutId);
     }
 
     /// <summary>
@@ -553,6 +440,7 @@ public class LoadoutManager
     private async IAsyncEnumerable<IModFileMetadata> GetMetadata(Loadout loadout, Mod mod, GameFile file,
         AnalyzedFile analyzed)
     {
+        
         foreach (var source in _metadataSources)
         {
             if (!source.Games.Contains(loadout.Installation.Game.Domain))
@@ -567,5 +455,5 @@ public class LoadoutManager
         }
     }
 
-    private LoadoutMarker GetLoadout(LoadoutId loadoutId) => new(this, loadoutId);
+    private LoadoutMarker GetLoadout(LoadoutId loadoutId) => new(Registry, loadoutId);
 }

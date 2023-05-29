@@ -94,7 +94,6 @@ public class SkyrimInstaller : IModInstaller
                 return new FromArchive
                 {
                     Id = ModFileId.New(),
-                    From = new HashRelativePath(srcArchiveHash, path),
                     To = new GamePath(GameFolderType.Game, Data.Join(trimmedPath.ToString())),
                     Hash = file.Hash,
                     Size = file.Size

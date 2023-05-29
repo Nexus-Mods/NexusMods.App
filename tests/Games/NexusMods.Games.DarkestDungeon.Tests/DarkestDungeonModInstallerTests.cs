@@ -1,5 +1,6 @@
 using System.Text;
 using FluentAssertions;
+using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.NexusWebApi.Types;
@@ -23,7 +24,10 @@ public class DarkestDungeonModInstallerTests : AModInstallerTest<DarkestDungeon,
         {
             var (_, modFiles) = await GetModWithFilesFromInstaller(file.Path);
             modFiles.Should().HaveCount(181);
-            modFiles.Should().AllSatisfy(x => x.To.Path.StartsWith("mods"));
+            modFiles
+                .OfType<IToFile>()
+                .Should()
+                .AllSatisfy(x => x.To.Path.StartsWith("mods"));
         }
     }
 
@@ -40,9 +44,11 @@ public class DarkestDungeonModInstallerTests : AModInstallerTest<DarkestDungeon,
         {
             var (_, modFiles) = await GetModWithFilesFromInstaller(file.Path);
             modFiles.Should().HaveCount(3);
-            modFiles.Should().AllSatisfy(x => x.To.Path.StartsWith("mods"));
-            modFiles.Should().Contain(x => x.To.FileName == "foo");
-            modFiles.Should().Contain(x => x.To.FileName == "bar");
+            modFiles
+                .Cast<IToFile>()
+                .Should().AllSatisfy(x => x.To.Path.StartsWith("mods"));
+            modFiles.Cast<IToFile>().Should().Contain(x => x.To.FileName == "foo");
+            modFiles.Cast<IToFile>().Should().Contain(x => x.To.FileName == "bar");
         }
     }
 }

@@ -8,6 +8,7 @@ using DynamicData.Aggregation;
 using DynamicData.PLinq;
 using NexusMods.App.UI.Extensions;
 using NexusMods.CLI.Verbs;
+using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Interprocess.Jobs;
@@ -36,11 +37,11 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
     private ReadOnlyObservableCollection<IInterprocessJob> _jobs = new(new ObservableCollection<IInterprocessJob>());
 
     private readonly LoadoutRegistry _loadoutRegistry;
-    private readonly LoadoutManager _loadoutManager;
+    private readonly IToolManager _toolManager;
 
-    public LaunchButtonViewModel(IInterprocessJobManager manager, LoadoutRegistry loadoutRegistry, LoadoutManager loadoutManager)
+    public LaunchButtonViewModel(IInterprocessJobManager manager, LoadoutRegistry loadoutRegistry, IToolManager toolManager)
     {
-        _loadoutManager = loadoutManager;
+        _toolManager = toolManager;
         _loadoutRegistry = loadoutRegistry;
 
         this.WhenActivated(d =>
@@ -67,9 +68,9 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
     private async Task LaunchGame(CancellationToken token)
     {
         Label = "RUNNING...";
-        var marker = new LoadoutMarker(_loadoutManager, LoadoutId);
-        var tool = marker.Tools.OfType<IRunGameTool>().First();
-        await marker.Run(tool, token);
+        var marker = new LoadoutMarker(_loadoutRegistry, LoadoutId);
+        var tool = _toolManager.GetTools(marker.Value).OfType<IRunGameTool>().First();
+        await _toolManager.RunTool(tool, marker.Value, token:token);
         Label = "LAUNCH";
     }
 }

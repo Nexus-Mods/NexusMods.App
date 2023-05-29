@@ -58,8 +58,11 @@ public class SMAPIInstallerTests : AModInstallerTest<StardewValley, SMAPIInstall
 
             var files = mod.Files;
             files.Should().NotBeEmpty();
-            files.Should().Contain(x => x.Value.To.Path.Equals("StardewModdingAPI.deps.json"))
-                .Which.Value
+            files
+                .Values
+                .Cast<IToFile>()
+                .Should().Contain(x => x.To.Path.Equals("StardewModdingAPI.deps.json"))
+                .Which
                 .Should().BeOfType<GameFile>();
 
             // TODO: update tests once the installer is working correctly
