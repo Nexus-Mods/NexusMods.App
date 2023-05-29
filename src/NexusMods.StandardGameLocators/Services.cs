@@ -87,15 +87,15 @@ public static class Services
                     {
                         CreateDelegateFor<GOGGame, IGogGame>(
                             (foundGame, requestedGame) => requestedGame.GogIds.Any(x => foundGame.Id.Equals(x)),
-                            game => new GameLocatorResult(game.Path, GameStore.GOG)
+                            game => new GameLocatorResult(game.Path, GameStore.GOG, GogLocator.CreateMetadataCore(game))
                         ),
                         CreateDelegateFor<EGSGame, IEpicGame>(
                             (foundGame, requestedGame) => requestedGame.EpicCatalogItemId.Any(x => foundGame.CatalogItemId.Equals(x)),
-                            game => new GameLocatorResult(game.InstallLocation, GameStore.EGS)
+                            game => new GameLocatorResult(game.InstallLocation, GameStore.EGS, EpicLocator.CreateMetadataCore(game))
                         ),
                         CreateDelegateFor<OriginGame, IOriginGame>(
                             (foundGame, requestedGame) => requestedGame.OriginGameIds.Any(x => foundGame.Id.Equals(x)),
-                            game => new GameLocatorResult(game.InstallPath, GameStore.Origin)
+                            game => new GameLocatorResult(game.InstallPath, GameStore.Origin, OriginLocator.CreateMetadataCore(game))
                         ),
                     }
                 ));

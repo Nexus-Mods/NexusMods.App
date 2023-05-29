@@ -20,4 +20,15 @@ public class OriginLocator : AGameLocator<OriginGame, OriginGameId, IOriginGame,
 
     /// <inheritdoc />
     protected override AbsolutePath Path(OriginGame record) => record.InstallPath;
+
+    /// <inheritdoc />
+    protected override IGameLocatorResultMetadata CreateMetadata(OriginGame game) => CreateMetadataCore(game);
+
+    internal static IGameLocatorResultMetadata CreateMetadataCore(OriginGame game)
+    {
+        return new OriginLocatorResultMetadata
+        {
+            Id = game.Id.Value,
+        };
+    }
 }

@@ -46,7 +46,7 @@ public static class Services
 
         coll.AddSingleton<AHandler<SteamGame, SteamGameId>>(s =>
             new StubbedGameLocator<SteamGame, SteamGameId>(s.GetRequiredService<TemporaryFileManager>(),
-                tfm => new SteamGame(SteamGameId.From( 42), "Stubbed Game", tfm.CreateFolder("steam_game").Path),
+                tfm => new SteamGame(SteamGameId.From( 42), "Stubbed Game", tfm.CreateFolder("steam_game").Path, CloudSavesDirectory: null),
                 game => game.AppId));
 
         coll.AddSingleton<AHandler<XboxGame, XboxGameId>>(s =>

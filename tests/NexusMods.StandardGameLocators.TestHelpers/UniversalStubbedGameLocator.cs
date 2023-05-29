@@ -32,7 +32,11 @@ public class UniversalStubbedGameLocator<TGame> : IGameLocator, IDisposable
         if (game is not TGame)
             yield break;
 
-        yield return new GameLocatorResult(_path, GameStore.Unknown, _version ?? new Version(1, 0, 0, 0));
+        yield return new GameLocatorResult(
+            _path,
+            GameStore.Unknown,
+            new UnknownLocatorResultMetadata(),
+            _version ?? new Version(1, 0, 0, 0));
     }
 
     public void Dispose()
