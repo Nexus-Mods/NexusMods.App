@@ -2,6 +2,7 @@
 using System.Reactive.Linq;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.Extensions.Logging;
+using NexusMods.DataModel;
 using NexusMods.DataModel.Interprocess;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Markers;
@@ -27,16 +28,22 @@ public class NxmRpcListener : IDisposable
     private readonly TemporaryFileManager _temp;
 
     // Note: Temporary until we implement the UI part.
-    private readonly LoadoutManager _loadoutManager;
+    private readonly LoadoutRegistry _loadoutRegistry;
     private readonly Task _listenTask;
+    private readonly ArchiveAnalyzer _archiveAnalyzer;
+    private readonly ArchiveInstaller _archiveInstaller;
 
-    public NxmRpcListener(IMessageConsumer<NXMUrlMessage> nxmUrlMessages, ILogger<NxmRpcListener> logger, Client client, IHttpDownloader downloader, TemporaryFileManager temp, LoadoutManager loadoutManager)
+    public NxmRpcListener(IMessageConsumer<NXMUrlMessage> nxmUrlMessages, ILogger<NxmRpcListener> logger, Client client, 
+        IHttpDownloader downloader, TemporaryFileManager temp, LoadoutRegistry loadoutRegistry,
+        ArchiveAnalyzer archiveAnalyzer, ArchiveInstaller archiveInstaller)
     {
         _logger = logger;
         _client = client;
         _downloader = downloader;
         _temp = temp;
-        _loadoutManager = loadoutManager;
+        _loadoutRegistry = loadoutRegistry;
+        _archiveAnalyzer = archiveAnalyzer;
+        _archiveInstaller = archiveInstaller;
         _cancellationSource = new CancellationTokenSource();
         _urlsBlock = new BufferBlock<NXMUrlMessage>();
         _listenTask = Task.Run(ListenAsync);
@@ -72,8 +79,8 @@ public class NxmRpcListener : IDisposable
         // the user can cancel/pause/resume the task etc.
         // Then we pass this URL somewhere else (e.g. via an event) to a ViewModel which will be seen by the UI.
         await using var tempPath = _temp.CreateFile();
-        var loadout = _loadoutManager.Registry.AllLoadouts().First(x => x.Installation.Game.Domain == parsed.Mod.Game);
-        var marker = new LoadoutMarker(_loadoutManager, loadout.LoadoutId);
+        var loadout = _loadoutRegistry.AllLoadouts().First(x => x.Installation.Game.Domain == parsed.Mod.Game);
+        var marker = new LoadoutMarker(_loadoutRegistry, loadout.LoadoutId);
         
         Response<DownloadLink[]> links;
         if (parsed.Key == null)
@@ -84,8 +91,11 @@ public class NxmRpcListener : IDisposable
         var downloadUris = links.Data.Select(u => new HttpRequestMessage(HttpMethod.Get, u.Uri)).ToArray();
         await _downloader.DownloadAsync(downloadUris, tempPath, token: token);
 
-        var file = (await _client.ModFilesAsync(parsed.Mod.Game, parsed.Mod.ModId, token)).Data.Files.First(x => x.FileId == parsed.Mod.FileId);
-        await marker.InstallModsFromArchiveAsync(tempPath, file.Name, token);
+        var file = (await _client.ModFilesAsync(parsed.Mod.Game, parsed.Mod.ModId, token))
+            .Data.Files.First(x => x.FileId == parsed.Mod.FileId);
+        
+        var analyzed = await _archiveAnalyzer.AnalyzeFileAsync(tempPath, token:token);
+        await _archiveInstaller.AddMods(loadout.LoadoutId, analyzed.Hash, token: token);
     }
 
     /// <summary>

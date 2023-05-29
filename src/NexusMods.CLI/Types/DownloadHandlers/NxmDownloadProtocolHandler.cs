@@ -1,4 +1,5 @@
-﻿using NexusMods.DataModel.Loadouts.Markers;
+﻿using NexusMods.DataModel;
+using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.DTOs;
@@ -15,10 +16,16 @@ public class NxmDownloadProtocolHandler : IDownloadProtocolHandler
     private readonly Client _client;
     private readonly IHttpDownloader _downloader;
     private readonly TemporaryFileManager _temp;
+    private readonly ArchiveAnalyzer _archiveAnalyzer;
+    private readonly ArchiveInstaller _archiveInstaller;
 
     /// <summary/>
-    public NxmDownloadProtocolHandler(Client client, IHttpDownloader downloader, TemporaryFileManager temp)
+    public NxmDownloadProtocolHandler(Client client, 
+        IHttpDownloader downloader, TemporaryFileManager temp, 
+        ArchiveInstaller archiveInstaller, ArchiveAnalyzer archiveAnalyzer)
     {
+        _archiveAnalyzer = archiveAnalyzer;
+        _archiveInstaller = archiveInstaller;
         _client = client;
         _downloader = downloader;
         _temp = temp;
@@ -43,6 +50,7 @@ public class NxmDownloadProtocolHandler : IDownloadProtocolHandler
         var downloadUris = links.Data.Select(u => new HttpRequestMessage(HttpMethod.Get, u.Uri)).ToArray();
         
         await _downloader.DownloadAsync(downloadUris, tempPath, null, token);
-        await loadout.InstallModsFromArchiveAsync(tempPath, modName, token);
+        var hash = await _archiveAnalyzer.AnalyzeFileAsync(tempPath, token);
+        await _archiveInstaller.AddMods(loadout.Value.LoadoutId, hash.Hash, token:token);
     }
 }
