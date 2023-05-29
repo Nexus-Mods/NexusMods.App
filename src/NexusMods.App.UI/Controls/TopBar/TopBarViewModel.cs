@@ -25,21 +25,20 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
         this.WhenActivated(d =>
         {
             _loginManager.IsLoggedIn
-                .Subscribe(x => IsLoggedIn = x)
+                .SubscribeWithErrorLogging(logger, x => IsLoggedIn = x)
                 .DisposeWith(d);
 
             _loginManager.IsPremium
-                .Subscribe(x => IsPremium = x)
+                .SubscribeWithErrorLogging(logger, x => IsPremium = x)
                 .DisposeWith(d);
 
             _loginManager.Avatar
                 .WhereNotNull()
                 .SelectMany(LoadImage)
                 .WhereNotNull()
-                .Subscribe(x => Avatar = x)
+                .SubscribeWithErrorLogging(logger, x => Avatar = x)
                 .DisposeWith(d);
         });
-
     }
 
     private async Task<IImage?> LoadImage(Uri? uri)

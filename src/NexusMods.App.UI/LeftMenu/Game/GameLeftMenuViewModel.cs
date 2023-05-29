@@ -49,7 +49,7 @@ public class GameLeftMenuViewModel : AViewModel<IGameLeftMenuViewModel>, IGameLe
 
             this.WhenAnyValue(vm => vm.Game)
                 .WhereNotNull()
-                .Subscribe(game =>
+                .SubscribeWithErrorLogging(logger, game =>
                 {
                     var result = loadoutRegistry.AllLoadouts()
                         .Where(l => l.Installation.Game.Domain == game.Domain)
@@ -77,7 +77,7 @@ public class GameLeftMenuViewModel : AViewModel<IGameLeftMenuViewModel>, IGameLe
                 })
                 .OnUI()
                 .Bind(out _items)
-                .Subscribe()
+                .SubscribeWithErrorLogging(logger)
                 .DisposeWith(d);
         });
     }
