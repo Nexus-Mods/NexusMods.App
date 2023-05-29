@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NexusMods.Common;
+using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Games.DarkestDungeon.Installers;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash64;
@@ -49,8 +50,8 @@ public class LooseFilesModInstallerTests : AModInstallerTest<DarkestDungeon, Loo
 
         var (_, modFiles) = await GetModWithFilesFromInstaller(path);
         modFiles.Should().HaveCount(2);
-        modFiles.Should().Contain(x => x.To.Path.Equals("mods/foo/bar"));
-        modFiles.Should().Contain(x => x.To.Path.Equals("mods/foo/baz"));
+        modFiles.Cast<IToFile>().Should().Contain(x => x.To.Path.Equals("mods/foo/bar"));
+        modFiles.Cast<IToFile>().Should().Contain(x => x.To.Path.Equals("mods/foo/baz"));
     }
 
     [Fact]
@@ -67,7 +68,7 @@ public class LooseFilesModInstallerTests : AModInstallerTest<DarkestDungeon, Loo
 
             var mod = await InstallModFromArchiveIntoLoadout(loadout, path);
             mod.Files.Should().NotBeEmpty();
-            mod.Files.Should().AllSatisfy(kv => kv.Value.To.Path.StartsWith("mods/Oks_BetterTrinkets_v2.03"));
+            mod.Files.Values.Cast<IToFile>().Should().AllSatisfy(kv => kv.To.Path.StartsWith("mods/Oks_BetterTrinkets_v2.03"));
         }
     }
 }

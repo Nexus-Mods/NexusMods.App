@@ -3,6 +3,7 @@ using FluentAssertions;
 using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Games.StardewValley.Installers;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash64;
@@ -57,8 +58,8 @@ public class SMAPIModInstallerTests : AModInstallerTest<StardewValley, SMAPIModI
 
         var (_, modFiles) = await GetModWithFilesFromInstaller(path);
         modFiles.Should().HaveCount(2);
-        modFiles.Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/manifest.json"));
-        modFiles.Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/foo"));
+        modFiles.Cast<IToFile>().Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/manifest.json"));
+        modFiles.Cast<IToFile>().Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/foo"));
     }
 
     [Fact]
@@ -75,7 +76,7 @@ public class SMAPIModInstallerTests : AModInstallerTest<StardewValley, SMAPIModI
 
             var mod = await InstallModFromArchiveIntoLoadout(loadout, path);
             mod.Files.Should().NotBeEmpty();
-            mod.Files.Should().AllSatisfy(kv => kv.Value.To.Path.StartsWith("Mods/NPCMapLocations"));
+            mod.Files.Values.Cast<IToFile>().Should().AllSatisfy(kv => kv.To.Path.StartsWith("Mods/NPCMapLocations"));
         }
     }
 

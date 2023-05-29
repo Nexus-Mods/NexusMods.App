@@ -3,6 +3,7 @@ using System.Xml.Serialization;
 using AutoFixture;
 using FluentAssertions;
 using NexusMods.Common;
+using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Games.DarkestDungeon.Installers;
 using NexusMods.Games.DarkestDungeon.Models;
 using NexusMods.Games.TestFramework;
@@ -56,8 +57,8 @@ public class NativeModInstallerTests : AModInstallerTest<DarkestDungeon, NativeM
 
         var (_, modFiles) = await GetModWithFilesFromInstaller(path);
         modFiles.Should().HaveCount(2);
-        modFiles.Should().Contain(x => x.To.Path.Equals($"mods/{modProject.Title}/project.xml"));
-        modFiles.Should().Contain(x => x.To.Path.Equals($"mods/{modProject.Title}/foo"));
+        modFiles.Cast<IToFile>().Should().Contain(x => x.To.Path.Equals($"mods/{modProject.Title}/project.xml"));
+        modFiles.Cast<IToFile>().Should().Contain(x => x.To.Path.Equals($"mods/{modProject.Title}/foo"));
     }
 
     [Fact]
@@ -75,7 +76,7 @@ public class NativeModInstallerTests : AModInstallerTest<DarkestDungeon, NativeM
 
             var mod = await InstallModFromArchiveIntoLoadout(loadout, path);
             mod.Files.Should().NotBeEmpty();
-            mod.Files.Should().AllSatisfy(kv => kv.Value.To.Path.StartsWith("mods/Lamia Mod Base"));
+            mod.Files.Values.Cast<IToFile>().Should().AllSatisfy(kv => kv.To.Path.StartsWith("mods/Lamia Mod Base"));
         }
     }
 
