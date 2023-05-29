@@ -1,30 +1,33 @@
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
-using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
-using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
+using NexusMods.DataModel.ModInstallers;
+using NexusMods.Games.DarkestDungeon.Models;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 
-namespace NexusMods.Games.DarkestDungeon;
+namespace NexusMods.Games.DarkestDungeon.Installers;
 
-public class DarkestDungeonModInstaller : IModInstaller
+/// <summary>
+/// <see cref="IModInstaller"/> implementation for loose file mods.
+/// </summary>
+public class LooseFilesModInstaller : IModInstaller
 {
-    private static readonly RelativePath ModFilesTxt = "modfiles.txt".ToRelativePath();
-    private static readonly RelativePath ModFolder = "mods".ToRelativePath();
+    private static readonly RelativePath ModsFolder = "mods".ToRelativePath();
 
-    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
+    public Priority GetPriority(
+        GameInstallation installation,
+        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        if (installation.Game is not DarkestDungeon)
-            return Priority.None;
+        if (!installation.Is<DarkestDungeon>()) return Priority.None;
+        if (NativeModInstaller.GetModProjects(archiveFiles).Any()) return Priority.None;
 
-        return archiveFiles.Keys.Any(f => f.FileName == ModFilesTxt)
-            ? Priority.Normal
-            : Priority.None;
+        // TODO: invalid directory structures: https://github.com/Nexus-Mods/NexusMods.App/issues/325
+        return Priority.Lowest;
     }
 
     public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
@@ -42,29 +45,30 @@ public class DarkestDungeonModInstaller : IModInstaller
         Hash srcArchiveHash,
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        var modFolder = archiveFiles.Keys
-            .First(m => m.FileName == ModFilesTxt)
-            .Parent;
-
-        var modFiles = archiveFiles
-            .Where(kv => kv.Key.InFolder(modFolder))
+        var files = archiveFiles
             .Select(kv =>
             {
                 var (path, file) = kv;
-
                 return new FromArchive
                 {
                     Id = ModFileId.New(),
-                    To = new GamePath(GameFolderType.Game, ModFolder.Join(path)),
+                    To = new GamePath(GameFolderType.Game, ModsFolder.Join(path)),
                     Hash = file.Hash,
-                    Size = file.Size
+                    Size = file.Size,
                 };
             });
+
+        // TODO: create project.xml file for the mod
+        // this needs to be serialized to XML and added to the files enumerable
+        var modProject = new ModProject
+        {
+            Title = archiveFiles.First().Key.TopParent.ToString()
+        };
 
         yield return new ModInstallerResult
         {
             Id = baseModId,
-            Files = modFiles
+            Files = files,
         };
     }
 }
