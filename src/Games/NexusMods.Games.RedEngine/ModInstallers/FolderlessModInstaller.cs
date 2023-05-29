@@ -53,7 +53,6 @@ public class FolderlessModInstaller : IModInstaller
                 return new FromArchive
                 {
                     Id = ModFileId.New(),
-                    From = new HashRelativePath(srcArchiveHash, path),
                     To = new GamePath(GameFolderType.Game, Destination.Join(path.FileName)),
                     Hash = file.Hash,
                     Size = file.Size

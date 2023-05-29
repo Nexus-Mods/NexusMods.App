@@ -28,7 +28,7 @@ public static class DependencyInjectionHelper
     ///     <item>Nexus Web API via <see cref="Networking.NexusWebApi.Services.AddNexusWebApi"/></item>
     ///     <item><see cref="IHttpDownloader"/> via <see cref="Networking.HttpDownloader.Services.AddHttpDownloader"/></item>
     ///     <item>All services related to the <see cref="NexusMods.DataModel"/> via <see cref="DataModel.Services.AddDataModel"/></item>
-    ///     <item><see cref="IResource{TResource,TUnit}"/> for <see cref="FileContentsCache"/></item>
+    ///     <item><see cref="IResource{TResource,TUnit}"/> for <see cref="ArchiveAnalyzer"/></item>
     ///     <item><see cref="IResource{TResource,TUnit}"/> for <see cref="IExtractor"/></item>
     ///     <item><see cref="IResource{TResource,TUnit}"/> for <see cref="FileHashCache"/></item>
     ///     <item>File extraction services via <see cref="NexusMods.FileExtractor.Services.AddFileExtractors"/></item>
@@ -48,7 +48,7 @@ public static class DependencyInjectionHelper
             .AddNexusWebApi(true)
             .AddHttpDownloader()
             .AddDataModel()
-            .AddAllSingleton<IResource, IResource<FileContentsCache, Size>>(_ => new Resource<FileContentsCache, Size>("File Analysis for tests"))
+            .AddAllSingleton<IResource, IResource<ArchiveAnalyzer, Size>>(_ => new Resource<ArchiveAnalyzer, Size>("File Analysis for tests"))
             .AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ => new Resource<IExtractor, Size>("File Extraction for tests"))
             .AddAllSingleton<IResource, IResource<FileHashCache, Size>>(_ => new Resource<FileHashCache, Size>("Hash Cache for tests"))
             .AddFileExtractors();

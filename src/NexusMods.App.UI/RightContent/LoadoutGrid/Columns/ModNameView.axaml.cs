@@ -18,7 +18,7 @@ public partial class ModNameView : ReactiveUserControl<IModNameViewModel>
                 .DisposeWith(d);
 
             this.WhenAnyValue(view => view.DataContext)
-                .Subscribe(dc => { })
+                .SubscribeWithErrorLogging(logger: default)
                 .DisposeWith(d);
         });
     }

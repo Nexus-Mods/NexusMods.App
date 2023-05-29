@@ -41,4 +41,10 @@ public class Id64 : AId
         other.ToSpan(buff);
         return BinaryPrimitives.ReadUInt64BigEndian(buff) == _id;
     }
+    
+    /// <summary>
+    /// Gets the raw ID as a 64-bit unsigned integer.
+    /// </summary>
+    /// <returns></returns>
+    public ulong ToUInt64() => _id;
 }

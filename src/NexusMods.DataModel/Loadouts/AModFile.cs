@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Loadouts;
@@ -16,11 +17,6 @@ public abstract record AModFile : Entity
 
     /// <inheritdoc />
     public override EntityCategory Category => EntityCategory.Loadouts;
-
-    /// <summary>
-    /// The location relative to the game folder where the file is deployed.
-    /// </summary>
-    public required GamePath To { get; init; }
 
     /// <summary>
     /// Metadata for this file.

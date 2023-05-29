@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using NexusMods.DataModel.Loadouts.Mods;
 
 namespace NexusMods.DataModel.Loadouts;
 

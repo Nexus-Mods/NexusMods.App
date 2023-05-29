@@ -30,25 +30,25 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                 .DisposeWith(disposables);
 
             ViewModel.WhenAnyValue(v => v.RightContent)
-                .Subscribe(_ => { })
+                .Subscribe()
                 .DisposeWith(disposables);
 
             this.WhenAnyValue(view => view.ViewModel!.TopBar.CloseCommand.IsExecuting)
                 .SelectMany(e => e)
                 .Where(e => e)
-                .Subscribe(_ => Close())
+                .SubscribeWithErrorLogging(logger: default, _ => Close())
                 .DisposeWith(disposables);
 
             this.WhenAnyValue(view => view.ViewModel!.TopBar.MinimizeCommand.IsExecuting)
                 .SelectMany(e => e)
                 .Where(e => e)
-                .Subscribe(_ => WindowState = WindowState.Minimized)
+                .SubscribeWithErrorLogging(logger: default, _ => WindowState = WindowState.Minimized)
                 .DisposeWith(disposables);
 
             this.WhenAnyValue(view => view.ViewModel!.TopBar.ToggleMaximizeCommand.IsExecuting)
                 .SelectMany(e => e)
                 .Where(e => e)
-                .Subscribe(_ => WindowState = WindowState == WindowState.Normal ? WindowState.Maximized : WindowState.Normal)
+                .SubscribeWithErrorLogging(logger: default, _ => WindowState = WindowState == WindowState.Normal ? WindowState.Maximized : WindowState.Normal)
                 .DisposeWith(disposables);
 
             this.WhenAnyValue(view => view.ViewModel!.LeftMenu)
@@ -58,14 +58,13 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
             this.WhenAnyValue(view => view.ViewModel!.OverlayContent)
                 .BindTo(this, view => view.OverlayViewHost.ViewModel)
                 .DisposeWith(disposables);
+
             this.WhenAnyValue(view => view.ViewModel!.OverlayContent)
                 .Select(content => content != null)
                 .BindTo(this, view => view.OverlayBorder.IsVisible)
                 .DisposeWith(disposables);
-
         });
     }
-
 
     private void PointerPressed_Handler(object? sender, PointerPressedEventArgs e)
     {

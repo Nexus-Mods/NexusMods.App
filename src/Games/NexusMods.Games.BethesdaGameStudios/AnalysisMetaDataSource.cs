@@ -2,6 +2,7 @@ using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Paths;
 

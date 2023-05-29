@@ -33,7 +33,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
         this.WhenActivated(d =>
         {
             Spine.Actions
-                .Subscribe(HandleSpineAction)
+                .SubscribeWithErrorLogging(logger, HandleSpineAction)
                 .DisposeWith(d);
 
             this.WhenAnyValue(vm => vm._nexusOverlayViewModel.IsActive)

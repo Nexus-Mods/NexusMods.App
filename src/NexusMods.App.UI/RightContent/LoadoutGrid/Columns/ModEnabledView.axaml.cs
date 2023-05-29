@@ -25,7 +25,7 @@ public partial class ModEnabledView : ReactiveUserControl<IModEnabledViewModel>
 
             this.WhenAnyValue(view => view.ViewModel!.Status)
                 .OnUI()
-                .Subscribe(UpdateVisibilities)
+                .SubscribeWithErrorLogging(logger: default, UpdateVisibilities)
                 .DisposeWith(d);
 
             this.BindCommand(ViewModel, vm => vm.DeleteModCommand, view => view.DeleteButton)

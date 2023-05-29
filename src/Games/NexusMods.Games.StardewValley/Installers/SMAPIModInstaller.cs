@@ -85,7 +85,6 @@ public class SMAPIModInstaller : IModInstaller
                         return new FromArchive
                         {
                             Id = ModFileId.New(),
-                            From = new HashRelativePath(srcArchiveHash, path),
                             To = new GamePath(GameFolderType.Game, ModsFolder.Join(path.DropFirst(parent.Depth))),
                             Hash = file.Hash,
                             Size = file.Size

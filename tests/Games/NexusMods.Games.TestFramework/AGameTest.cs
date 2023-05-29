@@ -9,6 +9,7 @@ using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Markers;
+using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
@@ -27,10 +28,12 @@ public abstract class AGameTest<TGame> where TGame : AGame
 
     protected readonly IFileSystem FileSystem;
     protected readonly TemporaryFileManager TemporaryFileManager;
-    protected readonly ArchiveManager ArchiveManager;
+    protected readonly IArchiveManager ArchiveManager;
+    protected readonly IArchiveInstaller ArchiveInstaller;
     protected readonly LoadoutManager LoadoutManager;
     protected readonly LoadoutRegistry LoadoutRegistry;
-    protected readonly FileContentsCache FileContentsCache;
+    protected readonly LoadoutSynchronizer LoadoutSynchronizer;
+    protected readonly IArchiveAnalyzer ArchiveAnalyzer;
     protected readonly IDataStore DataStore;
 
     protected readonly Client NexusClient;
@@ -53,11 +56,13 @@ public abstract class AGameTest<TGame> where TGame : AGame
         GameInstallation.Game.Should().BeOfType<TGame>("because the game installation should be for the game we're testing");
 
         FileSystem = serviceProvider.GetRequiredService<IFileSystem>();
-        ArchiveManager = serviceProvider.GetRequiredService<ArchiveManager>();
+        ArchiveManager = serviceProvider.GetRequiredService<IArchiveManager>();
+        ArchiveInstaller = serviceProvider.GetRequiredService<IArchiveInstaller>();
         TemporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
         LoadoutManager = serviceProvider.GetRequiredService<LoadoutManager>();
         LoadoutRegistry = serviceProvider.GetRequiredService<LoadoutRegistry>();
-        FileContentsCache = serviceProvider.GetRequiredService<FileContentsCache>();
+        LoadoutSynchronizer = serviceProvider.GetRequiredService<LoadoutSynchronizer>();
+        ArchiveAnalyzer = serviceProvider.GetRequiredService<IArchiveAnalyzer>();
         DataStore = serviceProvider.GetRequiredService<IDataStore>();
 
         NexusClient = serviceProvider.GetRequiredService<Client>();
@@ -105,33 +110,52 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// <param name="fileId"></param>
     /// <param name="hash"></param>
     /// <returns></returns>
-    public async Task<AbsolutePath> DownloadAndCacheMod(GameDomain gameDomain, ModId modId, FileId fileId, Hash hash)
+    public async Task DownloadAndCacheMod(GameDomain gameDomain, ModId modId, FileId fileId, Hash hash)
     {
-        if (ArchiveManager.TryGetPathFor(hash, out var path))
-            return path;
+        var data = ArchiveAnalyzer.GetAnalysisData(hash);
+        if (data != null)
+            return;
 
         var (file, downloadHash) = await DownloadMod(gameDomain, modId, fileId);
         downloadHash.Should().Be(hash);
         
-        await ArchiveManager.ArchiveFileAsync(file.Path);
-        return file.Path;
+        await ArchiveAnalyzer.AnalyzeFileAsync(file.Path);
     }
 
     /// <summary>
     /// Installs the mods from the archive into the loadout.
     /// </summary>
     /// <param name="loadout"></param>
-    /// <param name="archivePath"></param>
+    /// <param name="hash"></param>
     /// <param name="defaultModName"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     protected async Task<Mod[]> InstallModsFromArchiveIntoLoadout(
         LoadoutMarker loadout,
-        AbsolutePath archivePath,
+        Hash hash,
         string? defaultModName = null,
         CancellationToken cancellationToken = default)
     {
-        var modIds = await loadout.InstallModsFromArchiveAsync(archivePath, default, cancellationToken);
+        var modIds = await ArchiveInstaller.AddMods(loadout.Value.LoadoutId, hash, defaultModName, cancellationToken);
+        return modIds.Select(id => loadout.Value.Mods[id]).ToArray();
+    }
+    
+    /// <summary>
+    /// Installs the mods from the archive into the loadout.
+    /// </summary>
+    /// <param name="loadout"></param>
+    /// <param name="hash"></param>
+    /// <param name="defaultModName"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    protected async Task<Mod[]> InstallModsFromArchiveIntoLoadout(
+        LoadoutMarker loadout,
+        AbsolutePath path,
+        string? defaultModName = null,
+        CancellationToken cancellationToken = default)
+    {
+        var analyzedFile = await ArchiveAnalyzer.AnalyzeFileAsync(path, cancellationToken);
+        var modIds = await ArchiveInstaller.AddMods(loadout.Value.LoadoutId, analyzedFile.Hash, defaultModName, cancellationToken);
         return modIds.Select(id => loadout.Value.Mods[id]).ToArray();
     }
 
@@ -147,13 +171,36 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// <returns></returns>
     protected async Task<Mod> InstallModFromArchiveIntoLoadout(
         LoadoutMarker loadout,
-        AbsolutePath archivePath,
+        Hash hash,
         string? defaultModName = null,
         CancellationToken cancellationToken = default)
     {
         var mods = await InstallModsFromArchiveIntoLoadout(
-            loadout,
-            archivePath,
+            loadout, hash,
+            defaultModName,
+            cancellationToken);
+
+        mods.Should().ContainSingle();
+        return mods.First();
+    }
+    
+    /// <summary>
+    /// Variant of <see cref="InstallModFromArchiveIntoLoadout"/> that takes a file path instead of a hash.
+    /// </summary>
+    /// <param name="loadout"></param>
+    /// <param name="hash"></param>
+    /// <param name="defaultModName"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    protected async Task<Mod> InstallModFromArchiveIntoLoadout(
+        LoadoutMarker loadout,
+        AbsolutePath path,
+        string? defaultModName = null,
+        CancellationToken cancellationToken = default)
+    {
+        var analyzed = await ArchiveAnalyzer.AnalyzeFileAsync(path, cancellationToken);
+        var mods = await InstallModsFromArchiveIntoLoadout(
+            loadout, analyzed.Hash,
             defaultModName,
             cancellationToken);
 
@@ -162,14 +209,14 @@ public abstract class AGameTest<TGame> where TGame : AGame
     }
 
     /// <summary>
-    /// Analyzes a file as an archive using the <see cref="NexusMods.DataModel.FileContentsCache"/>.
+    /// Analyzes a file as an archive using the <see cref="ArchiveAnalyzer"/>.
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException">The provided file is not an archive.</exception>
     protected async Task<AnalyzedArchive> AnalyzeArchive(AbsolutePath path)
     {
-        var analyzedFile = await FileContentsCache.AnalyzeFileAsync(path);
+        var analyzedFile = await ArchiveAnalyzer.AnalyzeFileAsync(path);
         if (analyzedFile is AnalyzedArchive analyzedArchive)
             return analyzedArchive;
         throw new ArgumentException($"File at {path} is not an archive!", nameof(path));
@@ -197,6 +244,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
             await using var ms = new MemoryStream(contents);
             await ms.CopyToAsync(entryStream);
         }
+        await stream.FlushAsync();
 
         return file;
     }
