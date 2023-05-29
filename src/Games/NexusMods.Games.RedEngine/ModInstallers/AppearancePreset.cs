@@ -56,7 +56,6 @@ public class AppearancePreset : IModInstaller
                 return Paths.Select(relPath => new FromArchive
                 {
                     Id = ModFileId.New(),
-                    From = new HashRelativePath(srcArchiveHash, path),
                     To = new GamePath(GameFolderType.Game, relPath.Join(path)),
                     Hash = file.Hash,
                     Size = file.Size

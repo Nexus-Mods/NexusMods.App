@@ -19,28 +19,20 @@ jobs:
     if: github.event_name == 'push' || github.event.pull_request.draft == false
     name: Test ${{ matrix.project }} (${{ matrix.os }})
     runs-on:
-       - self-hosted
        - ${{ matrix.os }}
 
     strategy:
       matrix:
-        os: [Linux, Windows] # disable macos-latest for now
+        os: [ubuntu-latest, windows-latest] # disable macos-latest for now
 
     steps:
       - uses: actions/checkout@v3
 
-      # - name: Setup .NET Core SDK 7.0.x
-      #  uses: actions/setup-dotnet@v3
-      #  with:
-      #    dotnet-version: '7.0.x'
-
-      # - name: Set Permissions
-      #  if: runner.os != 'Windows'
-      #  run: chmod -R +x src/ArchiveManagement/NexusMods.FileExtractor/Extractors
-
-      # - name: Clean
-      #  run: dotnet clean
-
+      - name: Setup .NET Core SDK 7.0.x
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.0.x'
+          
       - name: Build
         run: dotnet build
 

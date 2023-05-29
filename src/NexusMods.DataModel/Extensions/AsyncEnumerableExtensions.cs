@@ -47,6 +47,28 @@ public static class AsyncEnumerableExtensions
     }
 
     /// <summary>
+    /// Asynchronously enumerates this enumerable, returning the results as a dictionary.
+    /// </summary>
+    /// <param name="coll">The collection to enumerate to hashset.</param>
+    /// <param name="keySelector">Function to select the keys</param>
+    /// <param name="valueSelector">Function to select the values</param>
+    /// <returns>The enumerated collection as a hashset.</returns>
+    /// <remarks>
+    ///     The result is only available once all items have been enumerated,
+    ///     which may be undesirable. To consume items one by one as they are
+    ///     available, consider using <see cref="SelectAsync{TIn,TOut}"/>.
+    /// </remarks>
+    public static async Task<Dictionary<TK, TV>> ToDictionaryAsync<TItm, TK, TV>(this IAsyncEnumerable<TItm> coll, 
+        Func<TItm, TK> keySelector, Func<TItm, TV> valueSelector) where TK : notnull
+    {
+        var lst = new Dictionary<TK, TV>();
+        await foreach (var itm in coll)
+            lst[keySelector(itm)] = valueSelector(itm);
+
+        return lst;
+    }
+    
+    /// <summary>
     /// Asynchronously enumerates this enumerable, returning the results as a hashset.
     /// </summary>
     /// <param name="coll">The collection to enumerate to hashset.</param>

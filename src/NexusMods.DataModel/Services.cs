@@ -1,20 +1,19 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Interprocess;
 using NexusMods.DataModel.Interprocess.Jobs;
-using NexusMods.DataModel.Interprocess.Messages;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.Sorting.Rules;
+using NexusMods.DataModel.TriggerFilter;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
-using NexusMods.Paths.Utilities;
 
 namespace NexusMods.DataModel;
 
@@ -51,19 +50,26 @@ public static class Services
         coll.AddSingleton(typeof(EntityLinkConverter<>));
 
         coll.AddSingleton<IDataStore, SqliteDataStore>();
-        coll.AddSingleton<ArchiveManager>();
+        coll.AddAllSingleton<IArchiveManager, ArchiveManager>();
         coll.AddAllSingleton<IResource, IResource<FileHashCache, Size>>(s =>
             new Resource<FileHashCache, Size>("File Hashing",
                 Settings(s).MaxHashingJobs,
                 Size.FromLong(Settings(s).MaxHashingThroughputBytesPerSecond)));
+        
+        
+        coll.AddSingleton(typeof(IFingerprintCache<,>), typeof(DataStoreFingerprintCache<,>));
         
         coll.AddAllSingleton<IResource, IResource<LoadoutManager, Size>>(s =>
             new Resource<LoadoutManager, Size>("Load Order Management",
                 Settings(s).LoadoutDeploymentJobs, Size.Zero));
         coll.AddSingleton<LoadoutManager>();
         coll.AddSingleton<LoadoutRegistry>();
+        coll.AddSingleton<IDirectoryIndexer, DirectoryIndexer>();
+        coll.AddSingleton<LoadoutSynchronizer>();
         coll.AddSingleton<FileHashCache>();
-        coll.AddSingleton<FileContentsCache>();
+        coll.AddSingleton<IArchiveAnalyzer, ArchiveAnalyzer>();
+        coll.AddSingleton<IArchiveInstaller, ArchiveInstaller>();
+        coll.AddSingleton<IToolManager, ToolManager>();
 
         coll.AddAllSingleton<IInterprocessJobManager, SqliteIPC>();
         coll.AddSingleton(typeof(IMessageConsumer<>),
@@ -72,11 +78,11 @@ public static class Services
             typeof(InterprocessProducer<>));
 
         coll.AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Services).Assembly));
-        coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<Entity>>();
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<AModMetadata>>();
-        coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<ISortRule<Mod, ModId>>>();
-        coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<IModFileMetadata>>();
+        coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<Entity>>();
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<IFileAnalysisData>>();
+        coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<IModFileMetadata>>();
+        coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<ISortRule<Mod, ModId>>>();
 
         coll.AddSingleton(s =>
         {

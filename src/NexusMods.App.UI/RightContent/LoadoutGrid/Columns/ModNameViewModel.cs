@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
+using NexusMods.DataModel.Loadouts.Mods;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

@@ -5,19 +5,19 @@ namespace NexusMods.CLI.OptionParsers;
 
 public class LoadoutMarkerParser : IOptionParser<LoadoutMarker>
 {
-    private readonly LoadoutManager _manager;
+    private readonly LoadoutRegistry _registry;
 
-    public LoadoutMarkerParser(LoadoutManager manager) => _manager = manager;
+    public LoadoutMarkerParser(LoadoutRegistry manager) => _registry = manager;
 
     public LoadoutMarker Parse(string input, OptionDefinition<LoadoutMarker> definition)
     {
-        var loadout = _manager.Registry.GetByName(input);
-        return new LoadoutMarker(_manager, loadout!.LoadoutId);
+        var loadout = _registry.GetByName(input);
+        return new LoadoutMarker(_registry, loadout!.LoadoutId);
     }
 
     public IEnumerable<string> GetOptions(string input)
     {
-        var byName = _manager.Registry.AllLoadouts()
+        var byName = _registry.AllLoadouts()
             .Where(l => l.Name.Contains(input, StringComparison.InvariantCultureIgnoreCase));
         return byName.Select(t => t.Name);
     }

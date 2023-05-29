@@ -1,3 +1,4 @@
+using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.Paths;
 
@@ -8,6 +9,13 @@ namespace NexusMods.CLI.Verbs;
 // ReSharper disable once ClassNeverInstantiated.Global
 public class ExportLoadout : AVerb<LoadoutMarker, AbsolutePath>
 {
+    private readonly LoadoutManager _loadoutManager;
+
+    public ExportLoadout(LoadoutManager loadoutManager)
+    {
+        _loadoutManager = loadoutManager;
+    }
+    
     public static VerbDefinition Definition => new("export-loadout", "Export a loadout to a file",
         new OptionDefinition[]
         {
@@ -17,7 +25,8 @@ public class ExportLoadout : AVerb<LoadoutMarker, AbsolutePath>
 
     public async Task<int> Run(LoadoutMarker loadout, AbsolutePath output, CancellationToken token)
     {
-        await loadout.ExportToAsync(output, token);
+        // TODO: Fix this
+        //await _loadoutManager.ExportToAsync(output, token);
         return 0;
     }
 }

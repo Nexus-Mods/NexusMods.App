@@ -1,5 +1,6 @@
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.Mods;
 
 namespace NexusMods.DataModel.ModInstallers;
 

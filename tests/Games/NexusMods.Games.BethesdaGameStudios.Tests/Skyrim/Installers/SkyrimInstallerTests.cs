@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Games.TestFramework;
+using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.BethesdaGameStudios.Tests.Skyrim.Installers;
@@ -60,7 +61,7 @@ public class SkyrimInstallerTests : AGameTest<SkyrimSpecialEdition>
         var loadout = await CreateLoadout(indexGameFiles: false);
         var path = BethesdaTestHelpers.GetDownloadableModFolder(_realFs, folderName);
         var downloaded = await _downloader.DownloadFromManifestAsync(path, _realFs);
-
+        
         var mod = await InstallModFromArchiveIntoLoadout(
             loadout,
             downloaded.Path,
