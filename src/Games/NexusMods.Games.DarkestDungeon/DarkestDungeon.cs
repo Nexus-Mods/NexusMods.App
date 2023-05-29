@@ -50,6 +50,10 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame, IEpicGame
     {
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);
 
+
+        if (installation.Metadata is SteamLocatorResultMetadata { CloudSavesDirectory: not null } steamLocatorResultMetadata)
+            yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Saves, steamLocatorResultMetadata.CloudSavesDirectory.Value);
+
         var globalSettingsFile = fileSystem
             .GetKnownPath(KnownPath.LocalApplicationDataDirectory)
             .CombineUnchecked("Red Hook Studios")

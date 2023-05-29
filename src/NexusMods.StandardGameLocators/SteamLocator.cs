@@ -20,4 +20,14 @@ public class SteamLocator : AGameLocator<SteamGame, SteamGameId, ISteamGame, Ste
 
     /// <inheritdoc />
     protected override AbsolutePath Path(SteamGame record) => record.Path;
+
+    /// <inheritdoc />
+    protected override IGameLocatorResultMetadata CreateMetadata(SteamGame game)
+    {
+        return new SteamLocatorResultMetadata
+        {
+            AppId = game.AppId.Value,
+            CloudSavesDirectory = game.CloudSavesDirectory
+        };
+    }
 }
