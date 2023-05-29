@@ -13,6 +13,7 @@ using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
+using NexusMods.Networking.NexusWebApi.NMA.Extensions;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
 using ModId = NexusMods.Networking.NexusWebApi.Types.ModId;
@@ -88,7 +89,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// <returns></returns>
     protected async Task<(TemporaryPath file, Hash downloadHash)> DownloadMod(GameDomain gameDomain, ModId modId, FileId fileId)
     {
-        var links = await NexusClient.DownloadLinks(gameDomain, modId, fileId);
+        var links = await NexusClient.DownloadLinksAsync(gameDomain, modId, fileId);
         var file = TemporaryFileManager.CreateFile();
 
         var downloadHash = await HttpDownloader.DownloadAsync(

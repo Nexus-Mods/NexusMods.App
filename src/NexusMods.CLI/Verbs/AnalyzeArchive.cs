@@ -19,13 +19,13 @@ public class AnalyzeArchive : AVerb<AbsolutePath>
     }
 
     public static VerbDefinition Definition => new("analyze-archive",
-        "Analyzes the contents of an archive caches them, and outputs them", new OptionDefinition[]
+        "Analyzes the contents of an archive caches them, and outputs them",
+        new OptionDefinition[]
         {
             new OptionDefinition<AbsolutePath>("i", "inputFile", "File to Analyze")
         });
 
     private readonly ILogger<AnalyzeArchive> _logger;
-
 
     public async Task<int> Run(AbsolutePath inputFile, CancellationToken token)
     {

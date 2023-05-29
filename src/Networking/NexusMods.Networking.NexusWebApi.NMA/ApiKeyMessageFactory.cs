@@ -3,7 +3,7 @@ using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.Networking.NexusWebApi.Types;
 
-namespace NexusMods.Networking.NexusWebApi;
+namespace NexusMods.Networking.NexusWebApi.NMA;
 
 /// <summary>
 /// Injects Nexus API keys into HTTP messages.

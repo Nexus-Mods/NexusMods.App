@@ -5,6 +5,7 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Microsoft.Extensions.Logging;
 using NexusMods.Networking.NexusWebApi;
+using NexusMods.Networking.NexusWebApi.NMA;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

@@ -2,7 +2,7 @@ using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.JsonConverters;
 
-namespace NexusMods.Networking.NexusWebApi;
+namespace NexusMods.Networking.NexusWebApi.NMA;
 
 /// <summary>
 /// entity to store a JWT token

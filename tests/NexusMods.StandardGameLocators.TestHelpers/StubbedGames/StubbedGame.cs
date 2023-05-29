@@ -11,12 +11,12 @@ using NexusMods.Paths.Extensions;
 
 namespace NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
-public class StubbedGame : IEADesktopGame, IEpicGame, IOriginGame, ISteamGame, IGogGame, IXboxGame
+public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteamGame, IGogGame, IXboxGame
 {
     private readonly ILogger<StubbedGame> _logger;
     private readonly IEnumerable<IGameLocator> _locators;
-    public string Name => "Stubbed Game";
-    public GameDomain Domain => GameDomain.From("stubbed-game");
+    public override string Name => "Stubbed Game";
+    public override GameDomain Domain => GameDomain.From("stubbed-game");
 
     public static readonly RelativePath[] DATA_NAMES = new[]
     {
@@ -32,12 +32,14 @@ public class StubbedGame : IEADesktopGame, IEpicGame, IOriginGame, ISteamGame, I
 
     private readonly IFileSystem _fileSystem;
 
-    public StubbedGame(ILogger<StubbedGame> logger, IEnumerable<IGameLocator> locators, IFileSystem fileSystem)
+    public StubbedGame(ILogger<StubbedGame> logger, IEnumerable<IGameLocator> locators, IFileSystem fileSystem) : base(locators)
     {
         _logger = logger;
         _locators = locators;
         _fileSystem = fileSystem;
     }
+
+    public override GamePath GetPrimaryFile(GameStore store) => new(GameFolderType.Game, "");
 
     public IEnumerable<GameInstallation> Installations
     {
@@ -68,6 +70,13 @@ public class StubbedGame : IEADesktopGame, IEpicGame, IOriginGame, ISteamGame, I
             "NexusMods.StandardGameLocators.TestHelpers.Resources.StubbedGame.png");
 
     public IStreamFactory GameImage => throw new NotImplementedException("No game image for stubbed game.");
+    protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(IFileSystem fileSystem, IGameLocator locator, GameLocatorResult installation)
+    {
+        return new[]
+        {
+            new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, Installations.First().Locations[GameFolderType.Game])
+        };
+    }
 
     private AbsolutePath EnsureFiles(AbsolutePath path)
     {

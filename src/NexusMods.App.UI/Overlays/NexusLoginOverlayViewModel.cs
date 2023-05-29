@@ -7,6 +7,7 @@ using DynamicData;
 using DynamicData.Binding;
 using NexusMods.DataModel.Interprocess.Jobs;
 using NexusMods.DataModel.Interprocess.Messages;
+using NexusMods.Networking.NexusWebApi.NMA.Types;
 using NexusMods.Networking.NexusWebApi.Types;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

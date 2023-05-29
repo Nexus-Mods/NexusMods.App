@@ -120,6 +120,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Common.Tests", "tests\NexusMods.Common.Tests\NexusMods.Common.Tests.csproj", "{FE0B804A-949E-44E7-9531-B16664ACEC01}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Networking.NexusWebApi.NMA", "src\Networking\NexusMods.Networking.NexusWebApi.NMA\NexusMods.Networking.NexusWebApi.NMA.csproj", "{871E2565-BD95-43D1-9EC3-CAAC74D55507}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -294,6 +296,10 @@ Global
 		{FE0B804A-949E-44E7-9531-B16664ACEC01}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE0B804A-949E-44E7-9531-B16664ACEC01}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE0B804A-949E-44E7-9531-B16664ACEC01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{871E2565-BD95-43D1-9EC3-CAAC74D55507}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{871E2565-BD95-43D1-9EC3-CAAC74D55507}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{871E2565-BD95-43D1-9EC3-CAAC74D55507}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{871E2565-BD95-43D1-9EC3-CAAC74D55507}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -346,6 +352,7 @@ Global
 		{83B2A024-0218-4F65-B75B-0102DAF38443} = {02A589BE-50CA-4D29-BA99-81EEA2410F8D}
 		{CB61A764-B3BB-42C0-8CDB-DBE57FB80DF5} = {CF7454A5-0EBB-46E7-9A10-614380DB95D9}
 		{FE0B804A-949E-44E7-9531-B16664ACEC01} = {52AF9D62-7D5B-4AD0-BA12-86F2AA67428B}
+		{871E2565-BD95-43D1-9EC3-CAAC74D55507} = {D7E9D8F5-8AC8-4ADA-B219-C549084AD84C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F9F8352-34DD-42C0-8564-EE9AF34A3501}

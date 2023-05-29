@@ -1,6 +1,7 @@
-using NexusMods.CLI;
+using NexusMods.Networking.NexusWebApi;
+using NexusMods.Networking.NexusWebApi.NMA;
 
-namespace NexusMods.Networking.NexusWebApi.Verbs;
+namespace NexusMods.CLI.Verbs;
 
 /// <summary>
 /// verb for logging out of the nexus api, which just means dropping our login

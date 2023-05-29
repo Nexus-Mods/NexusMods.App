@@ -1,9 +1,9 @@
 using System.Diagnostics;
-using NexusMods.CLI;
 using NexusMods.CLI.DataOutputs;
+using NexusMods.Networking.HttpDownloader;
 using NexusMods.Paths;
 
-namespace NexusMods.Networking.HttpDownloader.Verbs;
+namespace NexusMods.CLI.Verbs;
 
 /// <summary>
 /// Downloads a file from a given URI, outputting it to a specified location.
@@ -41,10 +41,8 @@ public class DownloadUri : AVerb<Uri, AbsolutePath>
         var sw = Stopwatch.StartNew();
         var hash = await _renderer.WithProgress(token, async () =>
         {
-
             return await _httpDownloader.DownloadAsync(new[] { new HttpRequestMessage(HttpMethod.Get, uri) },
                 output, null, token);
-
         });
 
         var elapsed = sw.Elapsed;

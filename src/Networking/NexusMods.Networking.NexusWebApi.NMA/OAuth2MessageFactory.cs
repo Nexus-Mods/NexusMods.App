@@ -1,64 +1,12 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Text.Json;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
+using NexusMods.Networking.NexusWebApi.DTOs.OAuth;
+using NexusMods.Networking.NexusWebApi.NMA.Extensions;
 using NexusMods.Networking.NexusWebApi.Types;
-using System.IdentityModel.Tokens.Jwt;
-using System.Runtime.Serialization;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
-namespace NexusMods.Networking.NexusWebApi;
-
-internal class PermissionMap
-{
-    [JsonPropertyName("collection")]
-    public string[] Collection { get; set; } = Array.Empty<string>();
-
-    [JsonPropertyName("collection_image")]
-    public string[] CollectionImage { get; set; } = Array.Empty<string>();
-
-    [JsonPropertyName("mod")]
-    public string[] Mod { get; set; } = Array.Empty<string>();
-
-    [JsonPropertyName("admin")]
-    public string[] Admin { get; set; } = Array.Empty<string>();
-
-    [JsonPropertyName("tag")]
-    public string[] Tag { get; set; } = Array.Empty<string>();
-
-    [JsonPropertyName("comment")]
-    public string[] Comment { get; set; } = Array.Empty<string>();
-}
-
-[JsonConverter(typeof(JsonStringEnumConverter))]
-internal enum MembershipRole
-{
-    [EnumMember(Value = "member")]
-    Member,
-    [EnumMember(Value = "supporter")]
-    Supporter,
-    [EnumMember(Value = "premium")]
-    Premium,
-    [EnumMember(Value = "lifetimepremium")]
-    LifetimePremium,
-}
-
-internal class TokenUserInfo
-{
-    [JsonPropertyName("id")]
-    public ulong Id { get; init; }
-    [JsonPropertyName("username")]
-    public string Name { get; init; } = string.Empty;
-    [JsonPropertyName("group_id")]
-    public int GroupId { get; init; }
-    [JsonPropertyName("membership_roles")]
-    public MembershipRole[] MembershipRoles { get; init; } = new MembershipRole[] { };
-    [JsonPropertyName("premium_expiry")]
-    public ulong PremiumExpiry { get; init; }
-
-    [JsonPropertyName("permissions")]
-    public PermissionMap Permissions { get; init; } = new PermissionMap();
-
-}
+namespace NexusMods.Networking.NexusWebApi.NMA;
 
 /// <summary>
 /// OAuth2 based authentication
@@ -104,7 +52,7 @@ public class OAuth2MessageFactory : IAuthenticatingMessageFactory
         //   Once graphql is implemented I recommend to fetch user info about the user the token belongs to
         //   so we can report more details about them.
         //   For now, any query will fail if the token is valid
-        await client.ModFiles(GameDomain.From("site"), ModId.From(1), cancel);
+        await client.ModFilesAsync(GameDomain.From("site"), ModId.From(1), cancel);
 
         var tokens = _store.Get<JWTTokenEntity>(JWTTokenEntity.StoreId);
         if (tokens == null)
@@ -113,7 +61,7 @@ public class OAuth2MessageFactory : IAuthenticatingMessageFactory
         }
 
         var handler = new JwtSecurityTokenHandler();
-        var tokenInfo = handler.ReadToken(tokens.AccessToken) as JwtSecurityToken;
+        var tokenInfo = handler.ReadJwtToken(tokens.AccessToken);
         var userClaim = tokenInfo?.Claims.FirstOrDefault(iter => iter.Type == "user");
         var userInfo = userClaim != null ? JsonSerializer.Deserialize<TokenUserInfo>(userClaim.Value) : null;
 

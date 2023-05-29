@@ -1,24 +1,24 @@
-using NexusMods.CLI.Types;
 using NexusMods.DataModel.Interprocess;
+using NexusMods.Networking.NexusWebApi.NMA.Messages;
 using NexusMods.Networking.NexusWebApi.Types;
 
-namespace NexusMods.Networking.NexusWebApi;
+namespace NexusMods.CLI.Types.IpcHandlers;
 
 /// <summary>
 /// a handler for nxm:// urls
 /// </summary>
 // ReSharper disable once InconsistentNaming
-public class NXMProtocolHandler : IProtocolHandler
+public class NxmIpcProtocolHandler : IIpcProtocolHandler
 {
     /// <inheritdoc/>
-    public string Protocol { get; } = "nxm";
+    public string Protocol => "nxm";
 
     private IMessageProducer<NXMUrlMessage> _messages;
 
     /// <summary>
     /// constructor
     /// </summary>
-    public NXMProtocolHandler(IMessageProducer<NXMUrlMessage> messages)
+    public NxmIpcProtocolHandler(IMessageProducer<NXMUrlMessage> messages)
     {
         _messages = messages;
     }

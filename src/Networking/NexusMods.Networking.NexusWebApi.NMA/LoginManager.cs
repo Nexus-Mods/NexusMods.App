@@ -3,7 +3,7 @@ using NexusMods.Common.ProtocolRegistration;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.Networking.NexusWebApi.Types;
 
-namespace NexusMods.Networking.NexusWebApi;
+namespace NexusMods.Networking.NexusWebApi.NMA;
 
 /// <summary>
 /// Component for handling login and logout from the Nexus Mods

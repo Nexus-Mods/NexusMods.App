@@ -14,7 +14,7 @@ public class AnalyzeArchive : AVerbTest
     [Fact]
     public async Task CanAnalyzeArchives()
     {
-        await RunNoBanner("analyze-archive", "-i", Data7ZipLZMA2.ToString());
+        await RunNoBannerAsync("analyze-archive", "-i", Data7ZipLZMA2.ToString());
 
         LogSize.Should().Be(1);
         LastTable.Columns.Should().BeEquivalentTo("Path", "Size", "Hash", "Signatures");

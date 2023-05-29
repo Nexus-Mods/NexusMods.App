@@ -15,7 +15,7 @@ public class ExtractArchive : AVerbTest
     {
         await using var folder = TemporaryFileManager.CreateFolder();
 
-        await RunNoBanner("extract-archive", "-i", Data7ZipLZMA2.ToString(), "-o", folder.Path.ToString());
+        await RunNoBannerAsync("extract-archive", "-i", Data7ZipLZMA2.ToString(), "-o", folder.Path.ToString());
 
         folder.Path.EnumerateFiles().Count().Should().Be(3);
 

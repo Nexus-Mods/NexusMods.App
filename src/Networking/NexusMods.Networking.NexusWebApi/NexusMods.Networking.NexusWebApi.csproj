@@ -5,10 +5,12 @@
     <ItemGroup>
         <PackageReference Include="System.Linq.Async" Version="6.0.1" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.29.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\NexusMods.CLI\NexusMods.CLI.csproj" />
-        <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
+        <PackageReference Include="Vogen" Version="3.0.15" />
     </ItemGroup>
+
 </Project>

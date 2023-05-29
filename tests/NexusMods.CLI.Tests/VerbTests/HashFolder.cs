@@ -18,7 +18,7 @@ public class HashFolderTests : AVerbTest
         await using var folder = TemporaryFileManager.CreateFolder();
         await folder.Path.CombineUnchecked("file1.txt").WriteAllTextAsync("file1.txt");
         await folder.Path.CombineUnchecked("file2.txt").WriteAllTextAsync("file2.txt");
-        await RunNoBanner("hash-folder", "-f", folder.Path.ToString());
+        await RunNoBannerAsync("hash-folder", "-f", folder.Path.ToString());
 
         LogSize.Should().Be(1);
         LastTable.Rows.Count().Should().Be(2);

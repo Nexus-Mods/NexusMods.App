@@ -6,6 +6,7 @@ using Avalonia;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NexusMods.App.Listeners;
 using NexusMods.App.UI;
 using NexusMods.CLI;
 using NexusMods.Common;
@@ -49,6 +50,8 @@ public class Program
             return await builder.InvokeAsync(args);
         }
 
+        // Start listeners only available in GUI mode
+        host.Services.GetRequiredService<NxmRpcListener>();
         Startup.Main(host.Services, args);
         return 0;
     }
