@@ -44,10 +44,12 @@ public partial class IconButton : ReactiveUserControl<IIconButtonViewModel>, IVi
         InitializeComponent();
         this.WhenActivated(disposables =>
         {
-            ViewModel.WhenAnyValue(vm => vm.IsActive)
+            ViewModel
+                .WhenAnyValue(vm => vm.IsActive)
                 .StartWith(false)
-                .Subscribe(SetClasses)
+                .SubscribeWithErrorLogging(logger: default, SetClasses)
                 .DisposeWith(disposables);
+
             this.BindCommand(ViewModel, vm => vm.Click, v => v.Button)
                 .DisposeWith(disposables);
         });

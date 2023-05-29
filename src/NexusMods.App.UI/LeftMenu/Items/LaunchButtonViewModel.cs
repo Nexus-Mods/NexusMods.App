@@ -6,6 +6,7 @@ using System.Windows.Input;
 using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.PLinq;
+using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.Extensions;
 using NexusMods.CLI.Verbs;
 using NexusMods.DataModel;
@@ -39,7 +40,8 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
     private readonly LoadoutRegistry _loadoutRegistry;
     private readonly IToolManager _toolManager;
 
-    public LaunchButtonViewModel(IInterprocessJobManager manager, LoadoutRegistry loadoutRegistry, IToolManager toolManager)
+    public LaunchButtonViewModel(ILogger<LaunchButtonViewModel> logger, IToolManager toolManager, 
+        IInterprocessJobManager manager, LoadoutRegistry loadoutRegistry)
     {
         _toolManager = toolManager;
         _loadoutRegistry = loadoutRegistry;
@@ -55,7 +57,7 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
 
             lockedLoadouts.Filter(selectedLoadoutFns)
                 .Bind(out _jobs)
-                .Subscribe()
+                .SubscribeWithErrorLogging(logger)
                 .DisposeWith(d);
 
             var canExecute = _jobs.WhenAnyValue(coll => coll.Count, count => count == 0);

@@ -20,7 +20,7 @@ public static class ReactiveExtensions
     {
         return obs
             .OnUI()
-            .Subscribe(val =>
+            .SubscribeWithErrorLogging(logger: default, val =>
             {
                 if (val)
                     target.Classes.Add(classToApply);
@@ -44,7 +44,7 @@ public static class ReactiveExtensions
     {
         return obs
             .OnUI()
-            .Subscribe(val =>
+            .SubscribeWithErrorLogging(logger: default, val =>
             {
                 if (val)
                 {
