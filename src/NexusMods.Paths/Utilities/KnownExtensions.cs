@@ -37,7 +37,10 @@ public static class KnownExtensions
 
     /// <summary>.md</summary>
     public static Extension Md = new(".md");
-
+    
+    /// <summary>.nx</summary>
+    public static Extension Nx = new(".nx");
+    
     /// <summary>.pdf</summary>
     public static Extension Pdf = new(".pdf");
 

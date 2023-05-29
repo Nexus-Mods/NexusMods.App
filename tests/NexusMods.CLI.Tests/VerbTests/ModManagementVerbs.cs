@@ -18,27 +18,27 @@ public class ModManagementVerbs : AVerbTest
     {
         var listName = Guid.NewGuid().ToString();
 
-        await RunNoBannerAsync("manage-game", "-g", "stubbed-game", "-v", _stubbedGame.Installations.First().Version.ToString(), "-n", listName);
+        await RunNoBanner("manage-game", "-g", "stubbed-game", "-v", _stubbedGame.Installations.First().Version.ToString(), "-n", listName);
 
-        await RunNoBannerAsync("list-managed-games");
+        await RunNoBanner("list-managed-games");
 
         LastTable.Columns.Should().BeEquivalentTo("Name", "Game", "Id", "Mod Count");
         LastTable.Rows.FirstOrDefault(r => r.First().Equals(listName)).Should().NotBeNull();
 
-        await RunNoBannerAsync("list-mods", "-l", listName);
+        await RunNoBanner("list-mods", "-l", listName);
         LastTable.Rows.Count().Should().Be(1);
 
-        await RunNoBannerAsync("install-mod", "-l", listName, "-f", Data7ZipLZMA2.ToString());
+        await RunNoBanner("install-mod", "-l", listName, "-f", Data7ZipLZMA2.ToString());
 
-        await RunNoBannerAsync("list-mods", "-l", listName);
+        await RunNoBanner("list-mods", "-l", listName);
         LastTable.Rows.Count().Should().Be(2);
 
-        await RunNoBannerAsync("list-mod-contents", "-l", listName, "-n", Data7ZipLZMA2.FileName);
+        await RunNoBanner("list-mod-contents", "-l", listName, "-n", Data7ZipLZMA2.GetFileNameWithoutExtension());
         LastTable.Rows.Count().Should().Be(3);
 
-        await RunNoBannerAsync("flatten-list", "-l", listName);
+        await RunNoBanner("flatten-list", "-l", listName);
         LastTable.Rows.Count().Should().Be(7);
 
-        await RunNoBannerAsync("apply", "-l", listName, "-r", "false");
+        await RunNoBanner("apply", "-l", listName, "-r", "false");
     }
 }

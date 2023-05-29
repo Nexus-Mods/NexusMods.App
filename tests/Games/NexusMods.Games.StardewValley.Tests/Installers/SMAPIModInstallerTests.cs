@@ -3,6 +3,7 @@ using FluentAssertions;
 using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Games.StardewValley.Installers;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash64;
@@ -41,40 +42,24 @@ public class SMAPIModInstallerTests : AModInstallerTest<StardewValley, SMAPIModI
         priority.Should().Be(Priority.Highest);
     }
 
-    [Fact]
-    public async Task Test_GetFilesToExtract()
+    [Theory]
+    [InlineData("")]
+    [InlineData("foo/bar/baz/")]
+    public async Task Test_GetMods(string basePath)
     {
         var manifestFile = TestHelper.CreateManifest(out var modName);
         var testFiles = new Dictionary<RelativePath, byte[]>
         {
-            { $"{modName}/manifest.json", manifestFile },
-            { $"{modName}/foo", Array.Empty<byte>() },
+            { $"{basePath}{modName}/manifest.json", manifestFile },
+            { $"{basePath}{modName}/foo", Array.Empty<byte>() },
         };
 
         await using var path = await CreateTestArchive(testFiles);
 
         var (_, modFiles) = await GetModWithFilesFromInstaller(path);
         modFiles.Should().HaveCount(2);
-        modFiles.Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/manifest.json"));
-        modFiles.Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/foo"));
-    }
-
-    [Fact]
-    public async Task Test_GetFilesToExtract_NestedArchive()
-    {
-        var manifestFile = TestHelper.CreateManifest(out var modName);
-        var testFiles = new Dictionary<RelativePath, byte[]>
-        {
-            { $"foo/bar/{modName}/manifest.json", manifestFile },
-            { $"foo/bar/{modName}/baz", Array.Empty<byte>() }
-        };
-
-        await using var path = await CreateTestArchive(testFiles);
-
-        var (_, modFiles) = await GetModWithFilesFromInstaller(path);
-        modFiles.Should().HaveCount(2);
-        modFiles.Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/manifest.json"));
-        modFiles.Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/baz"));
+        modFiles.Cast<IToFile>().Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/manifest.json"));
+        modFiles.Cast<IToFile>().Should().Contain(x => x.To.Path.Equals($"Mods/{modName}/foo"));
     }
 
     [Fact]
@@ -91,7 +76,7 @@ public class SMAPIModInstallerTests : AModInstallerTest<StardewValley, SMAPIModI
 
             var mod = await InstallModFromArchiveIntoLoadout(loadout, path);
             mod.Files.Should().NotBeEmpty();
-            mod.Files.Should().AllSatisfy(kv => kv.Value.To.Path.StartsWith("Mods/NPCMapLocations"));
+            mod.Files.Values.Cast<IToFile>().Should().AllSatisfy(kv => kv.To.Path.StartsWith("Mods/NPCMapLocations"));
         }
     }
 

@@ -1,4 +1,5 @@
 using FluentAssertions;
+using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
 
@@ -22,7 +23,9 @@ public class SifuModInstallerTests : AModInstallerTest<Sifu, SifuModInstaller>
         {
             var (_, modFiles) = await GetModWithFilesFromInstaller(file);
             modFiles
-                .Should().HaveCount(2)
+                .Cast<IToFile>()
+                .Should()
+                .HaveCount(2)
                 .And.AllSatisfy(x => x.To.Path.StartsWith(@"Content\Paks\~mods"))
                 .And.Satisfy(
                     x => x.To.FileName == "foo.pak",
@@ -44,6 +47,7 @@ public class SifuModInstallerTests : AModInstallerTest<Sifu, SifuModInstaller>
         {
             var (_, modFiles) = await GetModWithFilesFromInstaller(file);
             modFiles
+                .Cast<IToFile>()
                 .Should().HaveCount(2)
                 .And.AllSatisfy(x => x.To.Path.StartsWith(@"Content\Paks\~mods"))
                 .And.Satisfy(

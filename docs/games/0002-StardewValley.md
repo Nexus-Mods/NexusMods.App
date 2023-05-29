@@ -138,6 +138,12 @@ Regardless of platform, similarly to Bethesda Script Extenders, SMAPI comes with
 - Windows (Steam and GOG): `StardewModdingAPI.exe` can be launched directly. Alternatively, [Steam](https://stardewvalleywiki.com/Modding:Installing_SMAPI_on_Windows#Steam) and [GOG Galaxy](https://stardewvalleywiki.com/Modding:Installing_SMAPI_on_Windows#GOG_Galaxy) can be configured to launch `StardewModdingAPI.exe` instead of the original game executable `Stardew Valley.exe`. This is only needed if you want achievements and playtime tracking to work.
 - Windows ([Xbox Game Pass](https://stardewvalleywiki.com/Modding:Installing_SMAPI_on_Windows#Xbox_app)): the original game executable `Stardew Valley.exe` has to be replaced with `StardewModdingAPI.exe` for mods to work.
 
+## Community
+
+- [Stardew Valley Discord](https://discord.gg/stardewvalley)
+- [r/SMAPI](https://www.reddit.com/r/SMAPI)
+- [Stardew Valley Forums](https://forums.stardewvalley.net/)
+
 ## Additional Notes
 
 SMAPI provides the following additional web services:

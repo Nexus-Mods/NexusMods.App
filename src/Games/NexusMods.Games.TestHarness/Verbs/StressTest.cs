@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using NexusMods.CLI;
 using NexusMods.CLI.DataOutputs;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Hashing.xxHash64;
@@ -23,8 +24,13 @@ public class StressTest : AVerb<IGame, AbsolutePath, AbsolutePath>
 
     public StressTest(ILogger<StressTest> logger, Configurator configurator,
         LoadoutManager loadoutManager, Client client,
-        TemporaryFileManager temporaryFileManager, IHttpDownloader downloader)
+        TemporaryFileManager temporaryFileManager, 
+        IHttpDownloader downloader,
+        IArchiveAnalyzer archiveAnalyzer,
+        IArchiveInstaller archiveInstaller)
     {
+        _archiveAnalyzer = archiveAnalyzer;
+        _archiveInstaller = archiveInstaller;
         _downloader = downloader;
         _renderer = configurator.Renderer;
         _loadoutManager = loadoutManager;
@@ -44,6 +50,8 @@ public class StressTest : AVerb<IGame, AbsolutePath, AbsolutePath>
 
     private readonly LoadoutManager _loadoutManager;
     private readonly ILogger<StressTest> _logger;
+    private readonly IArchiveAnalyzer _archiveAnalyzer;
+    private readonly IArchiveInstaller _archiveInstaller;
 
     public async Task<int> Run(IGame game, AbsolutePath loadout, AbsolutePath output, CancellationToken token)
     {
@@ -86,8 +94,9 @@ public class StressTest : AVerb<IGame, AbsolutePath, AbsolutePath>
                         file.FileName, file.SizeInBytes);
 
                     var list = await _loadoutManager.ImportFromAsync(loadout, token);
-                    await list.InstallModsFromArchiveAsync(tmpPath, "Stress Test Mod", token);
-
+                    var analysisData = await _archiveAnalyzer.AnalyzeFileAsync(tmpPath, token);
+                    await _archiveInstaller.AddMods(list.Value.LoadoutId, analysisData.Hash, token: token);
+                    
                     results.Add((file.FileName, mod.ModId, file.FileId, hash, true, null));
                     _logger.LogInformation("Installed {ModId} {FileId} {FileName} - {Size}", mod.ModId, file.FileId,
                         file.FileName, file.SizeInBytes);

@@ -31,7 +31,7 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
 
             this.WhenAnyValue(view => view.ViewModel!.Columns)
                 .OnUI()
-                .Subscribe(columns =>
+                .SubscribeWithErrorLogging(logger: default, columns =>
                 {
                     ModsDataGrid.Columns.Clear();
                     foreach (var column in columns)

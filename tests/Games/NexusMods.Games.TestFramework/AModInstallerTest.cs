@@ -8,6 +8,7 @@ using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
+using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Hashing.xxHash64;
@@ -276,6 +277,6 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
 
         mods.Should().ContainSingle();
         var contents = mods.First().Files;
-        return contents.OfType<AStaticModFile>().Select(m => (m.Hash.Value, m.To.Type, m.To.Path.ToString().Replace("\\", "/")));
+        return contents.OfType<FromArchive>().Select(m => (m.Hash.Value, m.To.Type, m.To.Path.ToString().Replace("\\", "/")));
     }
 }

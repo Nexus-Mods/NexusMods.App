@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using NexusMods.DataModel.JsonConverters;
+using NexusMods.DataModel.Loadouts.Mods;
 
 namespace NexusMods.DataModel.Loadouts;
 

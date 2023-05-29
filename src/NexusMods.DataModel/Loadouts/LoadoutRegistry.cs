@@ -9,6 +9,8 @@ using DynamicData.PLinq;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts.Cursors;
+using NexusMods.DataModel.Loadouts.Markers;
+using NexusMods.DataModel.Loadouts.Mods;
 
 namespace NexusMods.DataModel.Loadouts;
 
@@ -161,6 +163,29 @@ public class LoadoutRegistry : IDisposable
     public void Alter(ModCursor cursor, string commitMessage, Func<Mod?, Mod?> alterFn)
     {
         Alter(cursor.LoadoutId, cursor.ModId, commitMessage, alterFn);
+    }
+
+    /// <summary>
+    /// Modify the loadout with the given id using the given visitor. This is not very
+    /// optimized, so should only be used in situations were large scale transformations
+    /// are being done. The methods on the visitor will be called for every part of the
+    /// loadout.
+    /// </summary>
+    /// <param name="visitor"></param>
+    public Loadout Alter(LoadoutId id, string commitMessage, ALoadoutVisitor visitor)
+    {
+        // Callback hell? Never heard of it!
+        return Alter(id, commitMessage, loadout =>
+        {
+            return visitor.Alter(loadout with
+            {
+                Mods = loadout.Mods.Keep(mod =>
+                {
+                    return visitor.Alter(mod with { Files = mod.Files.Keep(visitor.Alter) });
+                })
+            });
+        });
+
     }
 
     /// <summary>
@@ -326,5 +351,15 @@ public class LoadoutRegistry : IDisposable
         }
 
         _isDisposed = true;
+    }
+
+    /// <summary>
+    /// Gets the marker for the given loadout id.
+    /// </summary>
+    /// <param name="loadoutId"></param>
+    /// <returns></returns>
+    public LoadoutMarker GetMarker(LoadoutId loadoutId)
+    {
+        return new LoadoutMarker(this, loadoutId);
     }
 }
