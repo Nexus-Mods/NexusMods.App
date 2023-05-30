@@ -1,7 +1,6 @@
 using System.Net.Http.Json;
 using System.Text.Json.Serialization.Metadata;
 using Microsoft.Extensions.Logging;
-using NexusMods.DataModel.Games;
 using NexusMods.Networking.NexusWebApi.DTOs;
 using NexusMods.Networking.NexusWebApi.DTOs.Interfaces;
 using NexusMods.Networking.NexusWebApi.Types;
@@ -55,6 +54,7 @@ public class Client
 
     /// <summary>
     /// Generates download links for a given game.
+    /// [Premium only endpoint, use other overload for free users].
     /// </summary>
     /// <param name="domain">
     ///     Unique, human friendly name for the game used in URLs. e.g. 'skyrim'
@@ -71,10 +71,37 @@ public class Client
     /// <remarks>
     ///    Currently available for Premium users only; with some minor exceptions [nxm links].
     /// </remarks>
-    public async Task<Response<DownloadLink[]>> DownloadLinks(GameDomain domain, ModId modId, FileId fileId, CancellationToken token = default)
+    public async Task<Response<DownloadLink[]>> DownloadLinksAsync(string domain, ModId modId, FileId fileId, CancellationToken token = default)
     {
         var msg = await _factory.Create(HttpMethod.Get, new Uri(
             $"https://api.nexusmods.com/v1/games/{domain}/mods/{modId}/files/{fileId}/download_link.json"));
+        return await SendAsyncArray<DownloadLink>(msg, token);
+    }
+
+    /// <summary>
+    /// Generates download links for a given game.
+    /// </summary>
+    /// <param name="domain">
+    ///     Unique, human friendly name for the game used in URLs. e.g. 'skyrim'
+    ///     You can find this in <see cref="GameInfo.DomainName"/>.
+    /// </param>
+    /// <param name="modId">
+    ///    An individual identifier for the mod. Unique per game.
+    /// </param>
+    /// <param name="fileId">
+    ///    Unique ID for a game file hosted on a mod page; unique per game.
+    /// </param>
+    /// <param name="expireTime">Time before key expires.</param>
+    /// <param name="token">Token used to cancel the task.</param>
+    /// <param name="key">Key required for free user to download from the site.</param>
+    /// <returns> List of available download links. </returns>
+    /// <remarks>
+    ///    Currently available for Premium users only; with some minor exceptions [nxm links].
+    /// </remarks>
+    public async Task<Response<DownloadLink[]>> DownloadLinksAsync(string domain, ModId modId, FileId fileId, NXMKey key, DateTime expireTime, CancellationToken token = default)
+    {
+        var msg = await _factory.Create(HttpMethod.Get, new Uri(
+            $"https://api.nexusmods.com/v1/games/{domain}/mods/{modId}/files/{fileId}/download_link.json?key={key}&expires={new DateTimeOffset(expireTime).ToUnixTimeSeconds()}"));
         return await SendAsyncArray<DownloadLink>(msg, token);
     }
 
@@ -88,7 +115,7 @@ public class Client
     /// <param name="time">Time-frame within which to search for updates.</param>
     /// <param name="token">Token used to cancel the task.</param>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public async Task<Response<ModUpdate[]>> ModUpdates(GameDomain domain, PastTime time, CancellationToken token = default)
+    public async Task<Response<ModUpdate[]>> ModUpdatesAsync(string domain, PastTime time, CancellationToken token = default)
     {
         var timeString = time switch
         {
@@ -116,7 +143,7 @@ public class Client
     /// </param>
     /// <param name="token">Token used to cancel the task.</param>
     /// <returns></returns>
-    public async Task<Response<ModFiles>> ModFiles(GameDomain domain, ModId modId, CancellationToken token = default)
+    public async Task<Response<ModFiles>> ModFilesAsync(string domain, ModId modId, CancellationToken token = default)
     {
         var msg = await _factory.Create(HttpMethod.Get, new Uri(
             $"https://api.nexusmods.com/v1/games/{domain}/mods/{modId}/files.json"));

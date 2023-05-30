@@ -6,6 +6,7 @@ using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.DTOs;
+using NexusMods.Networking.NexusWebApi.NMA.Extensions;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
@@ -52,14 +53,14 @@ public class RecentModsTest
             return;
         }
 
-        var updates = await _client.ModUpdates(_game.Domain, Client.PastTime.Day);
+        var updates = await _client.ModUpdatesAsync(_game.Domain, Client.PastTime.Day);
         _logger.LogInformation("Found {Count} updates", updates.Data.Length);
         var files = new List<(ModId ModId, ModFile File)>();
         foreach (var mod in updates.Data)
         {
             try
             {
-                var modFiles = await _client.ModFiles(_game.Domain, mod.ModId);
+                var modFiles = await _client.ModFilesAsync(_game.Domain, mod.ModId);
                 files.AddRange(modFiles.Data.Files.Where(f => f.CategoryId == 1).Select(f => (mod.ModId, f)));
             }
             catch (HttpRequestException) { }
@@ -81,7 +82,7 @@ public class RecentModsTest
             _logger.LogInformation("Downloading {FileName}", record.FileName);
             var fileLocation = _downloadedFilesLocation.CombineUnchecked($"{_game.Domain}_{record.ModId}_{record.FileId}");
             var tempFileLocation = _downloadedFilesLocation.CombineUnchecked($"{_game.Domain}_{record.ModId}_{record.FileId}.temp");
-            var urls = await _client.DownloadLinks(_game.Domain, record.ModId, record.FileId);
+            var urls = await _client.DownloadLinksAsync(_game.Domain, record.ModId, record.FileId);
             var hash = await _downloader.DownloadAsync(urls.Data.Select(u => new HttpRequestMessage(HttpMethod.Get, u.Uri)).ToList(),
                 tempFileLocation);
 

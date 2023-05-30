@@ -1,12 +1,14 @@
 using Microsoft.Extensions.Logging;
 using NexusMods.CLI;
 using NexusMods.CLI.DataOutputs;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.DTOs;
+using NexusMods.Networking.NexusWebApi.NMA.Extensions;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
 using ModId = NexusMods.Networking.NexusWebApi.Types.ModId;
@@ -22,8 +24,13 @@ public class StressTest : AVerb<IGame, AbsolutePath, AbsolutePath>
 
     public StressTest(ILogger<StressTest> logger, Configurator configurator,
         LoadoutManager loadoutManager, Client client,
-        TemporaryFileManager temporaryFileManager, IHttpDownloader downloader)
+        TemporaryFileManager temporaryFileManager, 
+        IHttpDownloader downloader,
+        IArchiveAnalyzer archiveAnalyzer,
+        IArchiveInstaller archiveInstaller)
     {
+        _archiveAnalyzer = archiveAnalyzer;
+        _archiveInstaller = archiveInstaller;
         _downloader = downloader;
         _renderer = configurator.Renderer;
         _loadoutManager = loadoutManager;
@@ -43,10 +50,12 @@ public class StressTest : AVerb<IGame, AbsolutePath, AbsolutePath>
 
     private readonly LoadoutManager _loadoutManager;
     private readonly ILogger<StressTest> _logger;
+    private readonly IArchiveAnalyzer _archiveAnalyzer;
+    private readonly IArchiveInstaller _archiveInstaller;
 
     public async Task<int> Run(IGame game, AbsolutePath loadout, AbsolutePath output, CancellationToken token)
     {
-        var mods = await _client.ModUpdates(game.Domain, Client.PastTime.Day, token);
+        var mods = await _client.ModUpdatesAsync(game.Domain, Client.PastTime.Day, token);
         var results = new List<(string FileName, ModId ModId, FileId FileId, Hash Hash, bool Passed, Exception? exception)>();
 
         foreach (var mod in mods.Data)
@@ -56,7 +65,7 @@ public class StressTest : AVerb<IGame, AbsolutePath, AbsolutePath>
             Response<ModFiles> files;
             try
             {
-                files = await _client.ModFiles(game.Domain, mod.ModId, token);
+                files = await _client.ModFilesAsync(game.Domain, mod.ModId, token);
             }
             catch (HttpRequestException ex)
             {
@@ -73,7 +82,7 @@ public class StressTest : AVerb<IGame, AbsolutePath, AbsolutePath>
                     _logger.LogInformation("Downloading {ModId} {FileId} {FileName} - {Size}", mod.ModId, file.FileId,
                         file.FileName, file.SizeInBytes);
 
-                    var urls = await _client.DownloadLinks(game.Domain, mod.ModId, file.FileId, token);
+                    var urls = await _client.DownloadLinksAsync(game.Domain, mod.ModId, file.FileId, token);
                     await using var tmpPath = _temporaryFileManager.CreateFile();
 
                     var cts = new CancellationTokenSource();
@@ -85,8 +94,9 @@ public class StressTest : AVerb<IGame, AbsolutePath, AbsolutePath>
                         file.FileName, file.SizeInBytes);
 
                     var list = await _loadoutManager.ImportFromAsync(loadout, token);
-                    await list.InstallModsFromArchiveAsync(tmpPath, "Stress Test Mod", token);
-
+                    var analysisData = await _archiveAnalyzer.AnalyzeFileAsync(tmpPath, token);
+                    await _archiveInstaller.AddMods(list.Value.LoadoutId, analysisData.Hash, token: token);
+                    
                     results.Add((file.FileName, mod.ModId, file.FileId, hash, true, null));
                     _logger.LogInformation("Installed {ModId} {FileId} {FileName} - {Size}", mod.ModId, file.FileId,
                         file.FileName, file.SizeInBytes);

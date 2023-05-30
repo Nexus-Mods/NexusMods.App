@@ -20,4 +20,13 @@ public class XboxLocator : AGameLocator<XboxGame, XboxGameId, IXboxGame, XboxLoc
 
     /// <inheritdoc />
     protected override AbsolutePath Path(XboxGame record) => record.Path;
+
+    /// <inheritdoc />
+    protected override IGameLocatorResultMetadata CreateMetadata(XboxGame game)
+    {
+        return new XboxLocatorResultMetadata
+        {
+            Id = game.Id.Value,
+        };
+    }
 }

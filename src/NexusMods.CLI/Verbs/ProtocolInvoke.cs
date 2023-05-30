@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using NexusMods.CLI.Types;
 
@@ -12,10 +13,10 @@ public class ProtocolInvoke : AVerb<string>
             new OptionDefinition<string>("u", "url", "The URL to handle")
         });
 
-    private IProtocolHandler[] _handlers;
+    private IIpcProtocolHandler[] _handlers;
     private readonly ILogger<ProtocolInvoke> _logger;
 
-    public ProtocolInvoke(ILogger<ProtocolInvoke> logger, IEnumerable<IProtocolHandler> handlers)
+    public ProtocolInvoke(ILogger<ProtocolInvoke> logger, IEnumerable<IIpcProtocolHandler> handlers)
     {
         _handlers = handlers.ToArray();
         _logger = logger;
@@ -27,9 +28,7 @@ public class ProtocolInvoke : AVerb<string>
         var uri = new Uri(url);
         var handler = _handlers.FirstOrDefault(iter => iter.Protocol == uri.Scheme);
         if (handler == null)
-        {
             throw new Exception($"Unsupported protocol \"{uri.Scheme}\"");
-        }
 
         _logger.LogDebug("Handling {Url} with {Handler}", url, handler.GetType().Name);
         await handler.Handle(url, cancel);

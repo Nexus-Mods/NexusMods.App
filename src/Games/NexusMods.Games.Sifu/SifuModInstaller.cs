@@ -58,7 +58,6 @@ public class SifuModInstaller : IModInstaller
                 return new FromArchive
                 {
                     Id = ModFileId.New(),
-                    From = new HashRelativePath(srcArchiveHash, path),
                     To = new GamePath(GameFolderType.Game, ModsPath.Join(path.RelativeTo(pakPath))),
                     Hash = file.Hash,
                     Size = file.Size

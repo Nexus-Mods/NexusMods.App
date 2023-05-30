@@ -5,16 +5,16 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\Games\NexusMods.Games.BethesdaGameStudios\NexusMods.Games.BethesdaGameStudios.csproj" />
+        <ProjectReference Include="..\..\src\Networking\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />
         <ProjectReference Include="..\..\src\NexusMods.CLI\NexusMods.CLI.csproj" />
         <ProjectReference Include="..\..\src\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj" />
+        <ProjectReference Include="..\Games\NexusMods.Games.TestFramework\NexusMods.Games.TestFramework.csproj" />
         <ProjectReference Include="..\NexusMods.StandardGameLocators.TestHelpers\NexusMods.StandardGameLocators.TestHelpers.csproj" />
     </ItemGroup>
 
-    <Target Name="CopyResources" AfterTargets="PostBuildEvent">
-        <ItemGroup>
-            <_Resources Include="Resources\**" />
-        </ItemGroup>
-
-        <Copy SourceFiles="@(_Resources)" DestinationFolder="$(TargetDir)\Resources" />
-    </Target>
+    <ItemGroup>
+        <None Update="Resources\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 </Project>

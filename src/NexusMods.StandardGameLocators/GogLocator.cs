@@ -20,4 +20,15 @@ public class GogLocator : AGameLocator<GOGGame, GOGGameId, IGogGame, GogLocator>
 
     /// <inheritdoc />
     protected override AbsolutePath Path(GOGGame record) => record.Path;
+
+    /// <inheritdoc/>
+    protected override IGameLocatorResultMetadata CreateMetadata(GOGGame game) => CreateMetadataCore(game);
+
+    internal static IGameLocatorResultMetadata CreateMetadataCore(GOGGame game)
+    {
+        return new GOGLocatorResultMetadata
+        {
+            Id = game.Id.Value,
+        };
+    }
 }

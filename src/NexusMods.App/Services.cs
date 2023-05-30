@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.CLI.Renderers;
+using NexusMods.App.Listeners;
 using NexusMods.App.UI;
 using NexusMods.CLI;
 using NexusMods.Common;
@@ -17,6 +18,7 @@ using NexusMods.Games.StardewValley;
 using NexusMods.Games.TestHarness;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
+using NexusMods.Networking.NexusWebApi.NMA;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators;
 
@@ -28,6 +30,12 @@ public static class Services
     {
         services.AddScoped<IRenderer, CLI.Renderers.Spectre>();
         services.AddScoped<IRenderer, Json>();
+        return services;
+    }
+    
+    public static IServiceCollection AddListeners(this IServiceCollection services)
+    {
+        services.AddSingleton<NxmRpcListener>();
         return services;
     }
 
@@ -53,11 +61,12 @@ public static class Services
             .AddMountAndBladeBannerlord()
             .AddRenderers()
             .AddNexusWebApi()
+            .AddNexusWebApiNmaIntegration()
             .AddAdvancedHttpDownloader(config.HttpDownloaderSettings)
             .AddTestHarness()
             .AddSingleton<HttpClient>()
+            .AddListeners()
             .AddCommon();
-
 
         if (addStandardGameLocators)
             services.AddStandardGameLocators();

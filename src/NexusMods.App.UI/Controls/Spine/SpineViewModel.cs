@@ -70,9 +70,8 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
 
         this.WhenActivated(disposables =>
         {
-
             router.Messages
-                .Subscribe(HandleMessage)
+                .SubscribeWithErrorLogging(logger, HandleMessage)
                 .DisposeWith(disposables);
 
             loadoutRegistry.Games
@@ -89,7 +88,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 })
                 .OnUI()
                 .Bind(out _games)
-                .Subscribe()
+                .SubscribeWithErrorLogging(logger)
                 .DisposeWith(disposables);
 
             Home.Click = ReactiveCommand.Create(() =>
@@ -112,7 +111,8 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 LeftMenu = downloadsViewModel;
             });
 
-            Activations.Subscribe(HandleActivation)
+            Activations
+                .SubscribeWithErrorLogging(logger, HandleActivation)
                 .DisposeWith(disposables);
         });
     }

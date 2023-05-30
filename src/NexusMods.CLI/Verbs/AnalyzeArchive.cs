@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 using NexusMods.CLI.DataOutputs;
-using NexusMods.DataModel;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.Paths;
 
@@ -10,8 +10,8 @@ namespace NexusMods.CLI.Verbs;
 public class AnalyzeArchive : AVerb<AbsolutePath>
 {
     private readonly IRenderer _renderer;
-    private readonly FileContentsCache _archiveContentsCache;
-    public AnalyzeArchive(Configurator configurator, FileContentsCache archiveContentsCache, ILogger<AnalyzeArchive> logger)
+    private readonly IArchiveAnalyzer _archiveContentsCache;
+    public AnalyzeArchive(Configurator configurator, IArchiveAnalyzer archiveContentsCache, ILogger<AnalyzeArchive> logger)
     {
         _logger = logger;
         _renderer = configurator.Renderer;
@@ -19,13 +19,13 @@ public class AnalyzeArchive : AVerb<AbsolutePath>
     }
 
     public static VerbDefinition Definition => new("analyze-archive",
-        "Analyzes the contents of an archive caches them, and outputs them", new OptionDefinition[]
+        "Analyzes the contents of an archive caches them, and outputs them",
+        new OptionDefinition[]
         {
             new OptionDefinition<AbsolutePath>("i", "inputFile", "File to Analyze")
         });
 
     private readonly ILogger<AnalyzeArchive> _logger;
-
 
     public async Task<int> Run(AbsolutePath inputFile, CancellationToken token)
     {

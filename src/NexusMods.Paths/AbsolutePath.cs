@@ -12,7 +12,8 @@ namespace NexusMods.Paths;
 /// A path that represents a full path to a file or directory.
 /// </summary>
 [PublicAPI]
-[DebuggerDisplay("{DebugDisplay()}")]
+//[DebuggerDisplay("{DebugDisplay()}")]
+[DebuggerDisplay("Directory=\"{Directory}\" FileName=\"{FileName}\"")]
 public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
 {
     private static readonly char PathSeparatorForInternalOperations = Path.DirectorySeparatorChar;
@@ -42,6 +43,16 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// The <see cref="IFileSystem"/> implementation used by the IO methods.
     /// </summary>
     public IFileSystem FileSystem { get; init; }
+
+    /// <summary>
+    /// Returns a new path, identical to this one, but with the filesystem replaced with the given filesystem
+    /// </summary>
+    /// <param name="fileSystem"></param>
+    /// <returns></returns>
+    public AbsolutePath WithFileSystem(IFileSystem fileSystem)
+    {
+        return new AbsolutePath(Directory, FileName, fileSystem);
+    }
 
     /// <inheritdoc />
     public Extension Extension => Extension.FromPath(FileName);

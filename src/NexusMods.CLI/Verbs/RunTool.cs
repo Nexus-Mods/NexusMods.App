@@ -1,3 +1,4 @@
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts.Markers;
 
@@ -7,8 +8,13 @@ namespace NexusMods.CLI.Verbs;
 public class RunTool : AVerb<ITool, LoadoutMarker>
 {
     private readonly IRenderer _renderer;
+    private readonly IToolManager _toolManager;
 
-    public RunTool(Configurator configurator) => _renderer = configurator.Renderer;
+    public RunTool(Configurator configurator, IToolManager toolManager)
+    {
+        _renderer = configurator.Renderer;
+        _toolManager = toolManager;
+    }
 
     public static VerbDefinition Definition => new("run",
         "Run a tool with a loadout", new OptionDefinition[]
@@ -21,7 +27,7 @@ public class RunTool : AVerb<ITool, LoadoutMarker>
     {
         await _renderer.WithProgress(token, async () =>
         {
-            await loadout.Run(tool, token);
+            await _toolManager.RunTool(tool, loadout.Value, token:token);
             return 0;
         });
         return 0;

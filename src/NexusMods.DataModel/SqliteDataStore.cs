@@ -132,26 +132,8 @@ public class SqliteDataStore : IDataStore, IDisposable
     /// <inheritdoc />
     public IId Put<T>(T value) where T : Entity
     {
-        if (_isDisposed)
-            throw new ObjectDisposedException(nameof(SqliteDataStore));
-
-        using var conn = _pool.RentDisposable();
-        using var cmd = conn.Value.CreateCommand();
-        cmd.CommandText = _putStatements[value.Category];
-        var ms = new MemoryStream();
-        JsonSerializer.Serialize(ms, value, _jsonOptions.Value);
-        var msBytes = ms.ToArray();
-        var hash = new XxHash64Algorithm(0).HashBytes(msBytes);
-        var id = new Id64(value.Category, hash);
-
-        cmd.Parameters.AddWithValueUntagged("@id", id);
-        cmd.Parameters.AddWithValue("@data", msBytes);
-
-        cmd.ExecuteNonQuery();
-
-
-        if (!_immutableFields[id.Category])
-            _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
+        var id = ContentHashId(value, out var data);
+        PutRaw(id, data);
         return id;
     }
 
@@ -382,6 +364,18 @@ public class SqliteDataStore : IDataStore, IDisposable
         {
             yield return reader.GetId(category, 0);
         }
+    }
+
+    /// <inheritdoc />
+    public Id64 ContentHashId<T>(T entity, out byte[] data) where T: Entity
+    {
+        var ms = new MemoryStream();
+        JsonSerializer.Serialize(ms, entity, _jsonOptions.Value);
+        var msBytes = ms.ToArray();
+        var hash = new XxHash64Algorithm(0).HashBytes(msBytes);
+        var id = new Id64(entity.Category, hash);
+        data = msBytes;
+        return id;
     }
 
     /// <summary>

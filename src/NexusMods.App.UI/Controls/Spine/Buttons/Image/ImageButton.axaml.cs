@@ -18,7 +18,7 @@ public partial class ImageButton : ReactiveUserControl<IImageButtonViewModel>
         {
             this.WhenAnyValue(vm => vm.ViewModel!.IsActive)
                 .StartWith(false)
-                .Subscribe(SetClasses)
+                .SubscribeWithErrorLogging(logger: default, SetClasses)
                 .DisposeWith(d);
 
             this.BindCommand(ViewModel, vm => vm.Click, v => v.Button)
