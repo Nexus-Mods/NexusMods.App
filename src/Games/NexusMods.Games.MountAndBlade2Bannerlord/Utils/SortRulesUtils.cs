@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using Bannerlord.ModuleManager;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Sorting.Rules;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Utils;

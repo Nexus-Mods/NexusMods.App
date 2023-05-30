@@ -13,6 +13,9 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord.Analyzers;
 
 public class MountAndBlade2BannerlordAnalyzer : IFileAnalyzer
 {
+    public FileAnalyzerId Id { get; } = FileAnalyzerId.New("dce08909-ff0d-4b1b-9d2b-f2144563cf9f", 1);
+    public IEnumerable<FileType> FileTypes { get; } = new[] { FileType.XML };
+
     private readonly ILogger<MountAndBlade2BannerlordAnalyzer> _logger;
 
     public MountAndBlade2BannerlordAnalyzer(ILogger<MountAndBlade2BannerlordAnalyzer> logger)
@@ -20,11 +23,10 @@ public class MountAndBlade2BannerlordAnalyzer : IFileAnalyzer
         _logger = logger;
     }
 
-    public FileAnalyzerId Id { get; } = FileAnalyzerId.New("dce08909-ff0d-4b1b-9d2b-f2144563cf9f", 1);
-    public IEnumerable<FileType> FileTypes { get; } = new[] { FileType.XML };
-
     public async IAsyncEnumerable<IFileAnalysisData> AnalyzeAsync(FileAnalyzerInfo info, [EnumeratorCancellation] CancellationToken ct = default)
     {
+        await Task.Yield();
+
         // Not sourced from an archive.
         if (info.RelativePath == null)
             yield break;

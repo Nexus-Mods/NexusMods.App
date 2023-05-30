@@ -45,7 +45,7 @@ public sealed class MountAndBlade2BannerlordModInstaller : IModInstaller
             var (path, file) = kv;
 
             if (!path.FileName.Equals(MountAndBlade2BannerlordConstants.SubModuleFile)) return false;
-            return file.AnalysisData.OfType<MountAndBlade2BannerlordModuleInfo>().FirstOrDefault() is { } moduleInfo;
+            return file.AnalysisData.OfType<MountAndBlade2BannerlordModuleInfo>().FirstOrDefault() is not null;
         });
 
         var launcherManager = _launcherManagerFactory.Get(installation);
@@ -69,7 +69,6 @@ public sealed class MountAndBlade2BannerlordModInstaller : IModInstaller
                 {
                     Id = ModFileId.New(),
                     To = new GamePath(GameFolderType.Game, MountAndBlade2BannerlordConstants.ModFolder.Join(relativePath)),
-                    From = new HashRelativePath(srcHash, relativePath),
                     Hash = file.Hash,
                     Size = file.Size,
                     Metadata = ImmutableHashSet.CreateRange<IModFileMetadata>(new List<IModFileMetadata>
@@ -84,7 +83,7 @@ public sealed class MountAndBlade2BannerlordModInstaller : IModInstaller
                 Id = baseModId,
                 Files = modFiles,
                 Name = moduleInfo.Name,
-                Version = moduleInfo.Version.ToString()
+                Version = moduleInfo.Version.ToString(),
             };
         });
 
@@ -97,7 +96,6 @@ public sealed class MountAndBlade2BannerlordModInstaller : IModInstaller
                 {
                     Id = ModFileId.New(),
                     To = new GamePath(GameFolderType.Game, path),
-                    From = new HashRelativePath(srcHash, path),
                     Hash = file.Hash,
                     Size = file.Size,
                 };

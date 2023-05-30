@@ -6,15 +6,15 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
 public class TypeFinder : ITypeFinder
 {
-    public IEnumerable<Type> DescendentsOf(Type type)
-    {
-        return AllTypes.Where(t => t.IsAssignableTo(type));
-    }
-
-    private IEnumerable<Type> AllTypes => new[]
+    private static IEnumerable<Type> AllTypes => new[]
     {
         typeof(MountAndBlade2BannerlordModuleInfo),
         typeof(ModuleIdMetadata),
         typeof(OriginalPathMetadata)
     };
+
+    public IEnumerable<Type> DescendentsOf(Type type)
+    {
+        return AllTypes.Where(t => t.IsAssignableTo(type));
+    }
 }
