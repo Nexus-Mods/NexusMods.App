@@ -15,10 +15,17 @@
         <loadoutGrid:LoadoutGridDesignViewModel />
     </Design.DataContext>
     <StackPanel>
+        <Line/>
         <Border Classes="Toolbar">
             <Grid ColumnDefinitions="*, Auto">
                 <TextBlock Grid.Column="0" Text="" x:Name="ModlistNameText"></TextBlock>
                 <StackPanel Grid.Column="1">
+                    <Button x:Name="DeleteMods">
+                        <StackPanel>
+                            <avalonia:Icon Classes="TrashCanOutline" /> 
+                        </StackPanel>
+                    </Button>
+                    <Line/>
                     <Button x:Name="AddModButton">
                         <StackPanel>
                             <avalonia:Icon Classes="PlusCircleOutline" />

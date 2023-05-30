@@ -26,8 +26,15 @@
             <icons:Icon Classes="PauseCircleFilled"></icons:Icon>
             <icons:Icon Classes="RemoveCircleOutline"></icons:Icon>
             <icons:Icon Classes="Star"></icons:Icon>
+            <icons:Icon Classes="TrashCanOutline"></icons:Icon>
         </WrapPanel>
     </Design.PreviewWith>
+    
+    <!-- 
+    NOTE:
+       Material icon names are not standardized well, use this site to look them up:
+       https://pictogrammers.com/library/mdi/       
+     -->
     
     <Style Selector="icons|Icon.Bell">
         <Setter Property="Value" Value="mdi-bell"></Setter>
@@ -83,5 +90,9 @@
     
     <Style Selector="icons|Icon.Star">
         <Setter Property="Value" Value="mdi-star"></Setter>
+    </Style>
+    
+    <Style Selector="icons|Icon.TrashCanOutline">
+        <Setter Property="Value" Value="mdi-trash-can-outline"></Setter>
     </Style>
 </Styles>

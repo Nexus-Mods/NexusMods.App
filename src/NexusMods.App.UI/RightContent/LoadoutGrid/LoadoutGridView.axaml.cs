@@ -7,6 +7,8 @@ using Avalonia.Markup.Xaml.Templates;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
+using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.Cursors;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid;
@@ -28,6 +30,9 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
 
             AddModButton.Command =
                 ReactiveCommand.CreateFromTask(AddMod);
+            
+            DeleteMods.Command =
+                ReactiveCommand.CreateFromTask(DeleteSelectedMods);
 
             this.WhenAnyValue(view => view.ViewModel!.Columns)
                 .OnUI()
@@ -65,6 +70,17 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
         {
             await ViewModel!.AddMod(file.Path.LocalPath);
         }
+    }
+
+    private async Task DeleteSelectedMods()
+    {
+        var toDelete = new List<ModId>();
+        foreach (var row in ModsDataGrid.SelectedItems)
+        {
+            if (row is not ModCursor modCursor) continue;
+            toDelete.Add(modCursor.ModId);
+        }
+        await ViewModel!.DeleteMods(toDelete, "Deleted by user via UI.");
     }
 }
 
