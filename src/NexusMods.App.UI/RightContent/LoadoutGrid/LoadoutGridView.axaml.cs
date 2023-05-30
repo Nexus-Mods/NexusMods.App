@@ -31,7 +31,7 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
             AddModButton.Command =
                 ReactiveCommand.CreateFromTask(AddMod);
             
-            DeleteMods.Command =
+            DeleteModsButton.Command =
                 ReactiveCommand.CreateFromTask(DeleteSelectedMods);
 
             this.WhenAnyValue(view => view.ViewModel!.Columns)

@@ -56,7 +56,10 @@ public class SqliteDataStore : IDataStore, IDisposable
         IMessageConsumer<IdUpdated> idPutConsumer)
     {
         _logger = logger;
-        var connectionString = string.Intern($"Data Source={settings.DataStoreFilePath}");
+
+        var connectionString = string.Intern(settings.UseInMemoryDataStore ? 
+            "Data Source=:memory:" : 
+            $"Data Source={settings.DataStoreFilePath}");
 
         _poolPolicy = new ConnectionPoolPolicy(connectionString);
         _pool = ObjectPool.Create(_poolPolicy);

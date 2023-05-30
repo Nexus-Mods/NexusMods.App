@@ -80,7 +80,7 @@ public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>,
 
         _columns =
             new SourceCache<IDataGridColumnFactory, ColumnType>(
-                x => throw new NotImplementedException());
+                x => x.Type);
         _columns.Edit(x =>
         {
             x.AddOrUpdate(

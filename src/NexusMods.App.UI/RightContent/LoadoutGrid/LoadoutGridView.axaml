@@ -20,7 +20,7 @@
             <Grid ColumnDefinitions="*, Auto">
                 <TextBlock Grid.Column="0" Text="" x:Name="ModlistNameText"></TextBlock>
                 <StackPanel Grid.Column="1">
-                    <Button x:Name="DeleteMods">
+                    <Button x:Name="DeleteModsButton">
                         <StackPanel>
                             <avalonia:Icon Classes="TrashCanOutline" /> 
                         </StackPanel>

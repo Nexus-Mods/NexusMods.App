@@ -61,7 +61,9 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         _logger = logger;
         _storePath = settings.IpcDataStoreFilePath.ToAbsolutePath();
 
-        var connectionString = string.Intern($"Data Source={_storePath}");
+        var connectionString = string.Intern(settings.UseInMemoryDataStore ? 
+            "Data Source=:memory:" : 
+            $"Data Source={_storePath}");
 
         _syncPath = _storePath.AppendExtension(new Extension(".sync"));
         _syncArray = new SharedArray(_syncPath, 2);

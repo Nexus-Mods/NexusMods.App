@@ -15,6 +15,11 @@ public interface IDataModelSettings
     /// Path of the file which contains the backing data store or database.
     /// </summary>
     public ConfigurationPath DataStoreFilePath { get; }
+    
+    /// <summary>
+    /// Use an in-memory data store instead of a file based one, for testing purposes.
+    /// </summary>
+    public bool UseInMemoryDataStore { get; }
 
     /// <summary>
     /// Path of the file which contains the backing data store or database
@@ -60,6 +65,9 @@ public class DataModelSettings : IDataModelSettings
 
     /// <inheritdoc />
     public ConfigurationPath DataStoreFilePath { get; set; }
+
+    /// <inheritdoc />
+    public bool UseInMemoryDataStore { get; set; }
 
     /// <inheritdoc />
     public ConfigurationPath IpcDataStoreFilePath { get; set; }
