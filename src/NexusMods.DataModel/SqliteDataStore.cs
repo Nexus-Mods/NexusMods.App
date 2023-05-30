@@ -1,4 +1,3 @@
-using System.Buffers.Binary;
 using System.Collections.Concurrent;
 using System.Reactive.Linq;
 using System.Text.Json;
@@ -14,7 +13,6 @@ using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Interprocess;
 using NexusMods.DataModel.Interprocess.Messages;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.Paths;
 
 
 namespace NexusMods.DataModel;
