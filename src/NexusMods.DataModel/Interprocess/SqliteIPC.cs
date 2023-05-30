@@ -44,7 +44,6 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
 
     private bool _isDisposed;
     private readonly JsonSerializerOptions _jsonSettings;
-    private readonly ObjectPoolDisposable<SqliteConnection> _globalConnection;
 
     /// <summary>
     /// Allows you to subscribe to newly incoming IPC messages.
@@ -62,21 +61,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         _logger = logger;
         _storePath = settings.IpcDataStoreFilePath.ToAbsolutePath();
 
-        // By default :memory: databases are not shared between connections, we'll need to name it 
-        // if we want all the connections to share the same database within this instance.
-
-        string connectionString = "";
-        if (settings.UseInMemoryDataStore)
-        {
-            var id = Guid.NewGuid().ToString();
-            connectionString = $"Data Source={id};Mode=Memory;Cache=Shared";
-        }
-        else
-        {
-            connectionString = $"Data Source={settings.DataStoreFilePath}";
-        }
-
-        connectionString = string.Intern(connectionString);
+        var connectionString = string.Intern($"Data Source={_storePath}");
 
         _syncPath = _storePath.AppendExtension(new Extension(".sync"));
         _syncArray = new SharedArray(_syncPath, 2);
@@ -85,8 +70,6 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         _pool = ObjectPool.Create(_poolPolicy);
 
         _jsonSettings = jsonSettings;
-
-        _globalConnection = _pool.RentDisposable();
 
         EnsureTables();
 
@@ -443,7 +426,6 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         if (_isDisposed) return;
         if (disposing)
         {
-            _globalConnection.Dispose();
             _shutdownToken.Cancel();
             _subject.Dispose();
             _syncArray.Dispose();
