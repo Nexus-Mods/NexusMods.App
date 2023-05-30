@@ -7,9 +7,9 @@ using NexusMods.UI.Tests.Framework;
 
 namespace NexusMods.UI.Tests;
 
-public class LoadoutGridTests : AViewTest<LoadoutGridView, LoadoutGridDesignViewModel, ILoadoutGridViewModel>
+public class LoadoutGridViewTests : AViewTest<LoadoutGridView, LoadoutGridDesignViewModel, ILoadoutGridViewModel>
 {
-    public LoadoutGridTests(IServiceProvider provider, AvaloniaApp app) : base(provider, app) { }
+    public LoadoutGridViewTests(IServiceProvider provider, AvaloniaApp app) : base(provider, app) { }
 
     [Fact]
     public async Task CanDeleteModsFromLoadout()
@@ -35,6 +35,7 @@ public class LoadoutGridTests : AViewTest<LoadoutGridView, LoadoutGridDesignView
         
         await Host.OnUi(async () =>
         {
+            control.Items.OfType<ModCursor>().Should().HaveCount(9 - ids.Count);
             foreach (var item in ids)
             {
                 control.Items.OfType<ModCursor>().Should().NotContain(item);

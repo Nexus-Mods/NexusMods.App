@@ -44,6 +44,7 @@ public class SqliteDataStore : IDataStore, IDisposable
     private readonly Dictionary<EntityCategory, bool> _immutableFields;
     private readonly ObjectPool<SqliteConnection> _pool;
     private readonly ConnectionPoolPolicy _poolPolicy;
+    private readonly ObjectPoolDisposable<SqliteConnection> _globalConnection;
 
     /// <summary/>
     /// <param name="logger">Logs events.</param>
@@ -57,9 +58,21 @@ public class SqliteDataStore : IDataStore, IDisposable
     {
         _logger = logger;
 
-        var connectionString = string.Intern(settings.UseInMemoryDataStore ? 
-            "Data Source=:memory:" : 
-            $"Data Source={settings.DataStoreFilePath}");
+        // By default :memory: databases are not shared between connections, we'll need to name it 
+        // if we want all the connections to share the same database within this instance.
+
+        string connectionString = "";
+        if (settings.UseInMemoryDataStore)
+        {
+            var id = Guid.NewGuid().ToString();
+            connectionString = $"Data Source={id};Mode=Memory;Cache=Shared";
+        }
+        else
+        {
+            connectionString = $"Data Source={settings.DataStoreFilePath}";
+        }
+
+        connectionString = string.Intern(connectionString);
 
         _poolPolicy = new ConnectionPoolPolicy(connectionString);
         _pool = ObjectPool.Create(_poolPolicy);
@@ -71,6 +84,9 @@ public class SqliteDataStore : IDataStore, IDisposable
         _prefixStatements = new Dictionary<EntityCategory, string>();
         _deleteStatements = new Dictionary<EntityCategory, string>();
         _immutableFields = new Dictionary<EntityCategory, bool>();
+        
+        _globalConnection = _pool.RentDisposable();
+        
         EnsureTables();
 
         _jsonOptions = new Lazy<JsonSerializerOptions>(provider.GetRequiredService<JsonSerializerOptions>);
@@ -420,6 +436,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         if (_isDisposed) return;
         if (disposing)
         {
+            _globalConnection.Dispose();
             _enqueuerTcs.Dispose();
             if (_pool is IDisposable disposable)
                 disposable.Dispose();
