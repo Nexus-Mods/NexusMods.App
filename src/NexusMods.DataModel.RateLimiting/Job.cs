@@ -22,7 +22,7 @@ where TUnit : IAdditionOperators<TUnit, TUnit, TUnit>, IDivisionOperators<TUnit,
     {
         get
         {
-            if (!Started)
+            if (CurrentState == JobState.Waiting)
                 return Percent.Zero;
 
             if (Size == null)
@@ -31,9 +31,6 @@ where TUnit : IAdditionOperators<TUnit, TUnit, TUnit>, IDivisionOperators<TUnit,
             return new Percent(Current / Size);
         }
     }
-
-    /// <inheritdoc />
-    public bool Started { get; internal set; }
 
     /// <summary>
     /// The resource which owns this job
@@ -51,6 +48,9 @@ where TUnit : IAdditionOperators<TUnit, TUnit, TUnit>, IDivisionOperators<TUnit,
     
     /// <inheritdoc />
     public DateTime StartedAt { get; set; }
+
+    /// <inheritdoc />
+    public JobState CurrentState { get; set; } = JobState.Running;
 
     /// <inheritdoc />
     public required TUnit CurrentAtResumeTime { get; set; }

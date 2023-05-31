@@ -71,10 +71,23 @@ public class Resource<TResource, TUnit> : IResource<TResource, TUnit>
     // TODO: Optimize this by removing LINQ and calculating both counts at once. Iterating a dictionary's elements is already slow; doing it twice is oof. https://github.com/Nexus-Mods/NexusMods.App/issues/214
 
     /// <inheritdoc />
-    public StatusReport<TUnit> StatusReport =>
-        new(_tasks.Count(t => t.Value.Started),
-            _tasks.Count(t => !t.Value.Started),
-            _totalUsed);
+    public StatusReport<TUnit> StatusReport
+    {
+        get
+        {
+            var running = 0;
+            var pending = 0;
+            foreach (var task in _tasks.Values)
+            {
+                if (task.CurrentState == JobState.Waiting)
+                    pending++;
+                else
+                    running++;
+            }
+            
+            return new StatusReport<TUnit>(running, pending, _totalUsed);
+        }
+    }
 
     /// <inheritdoc />
     public async ValueTask<IJob<TResource, TUnit>> BeginAsync(string jobTitle, TUnit size, CancellationToken token)
@@ -94,7 +107,7 @@ public class Resource<TResource, TUnit> : IResource<TResource, TUnit>
 
         _tasks.TryAdd(id, job);
         await _semaphore.WaitAsync(token);
-        job.Started = true;
+        job.CurrentState = JobState.Running;
         return job;
     }
 
@@ -110,6 +123,7 @@ public class Resource<TResource, TUnit> : IResource<TResource, TUnit>
     {
         _semaphore.Release();
         _tasks.TryRemove(job.Id, out _);
+        job.CurrentState = JobState.Finished;
     }
 
     /// <inheritdoc />
