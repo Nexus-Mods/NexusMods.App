@@ -65,17 +65,19 @@ public sealed class MountAndBlade2BannerlordModInstaller : IModInstaller
             {
                 var relativePath = instruction.Source.ToRelativePath();
                 var file = files[relativePath];
+                var hasSubModule = relativePath.Equals(MountAndBlade2BannerlordConstants.SubModuleFile);
+                IEnumerable<IModFileMetadata> GetMetadata()
+                {
+                    yield return new OriginalPathMetadata { OriginalRelativePath = relativePath.Path };
+                    if (hasSubModule) yield return new ModuleInfoMetadata { ModuleInfo = moduleInfo };
+                }
                 return new FromArchive
                 {
                     Id = ModFileId.New(),
                     To = new GamePath(GameFolderType.Game, MountAndBlade2BannerlordConstants.ModFolder.Join(relativePath)),
                     Hash = file.Hash,
                     Size = file.Size,
-                    Metadata = ImmutableHashSet.CreateRange<IModFileMetadata>(new List<IModFileMetadata>
-                    {
-                        new ModuleIdMetadata { ModuleId = instruction.ModuleId },
-                        new OriginalPathMetadata { OriginalRelativePath = relativePath.Path }
-                    })
+                    Metadata = ImmutableHashSet.CreateRange<IModFileMetadata>(GetMetadata())
                 };
             });
             return new ModInstallerResult

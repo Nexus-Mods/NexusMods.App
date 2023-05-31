@@ -9,7 +9,7 @@ public class TypeFinder : ITypeFinder
     private static IEnumerable<Type> AllTypes => new[]
     {
         typeof(MountAndBlade2BannerlordModuleInfo),
-        typeof(ModuleIdMetadata),
+        typeof(ModuleInfoMetadata),
         typeof(OriginalPathMetadata)
     };
 
