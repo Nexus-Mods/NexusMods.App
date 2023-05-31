@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Interprocess;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Markers;
@@ -30,12 +31,12 @@ public class NxmRpcListener : IDisposable
     // Note: Temporary until we implement the UI part.
     private readonly LoadoutRegistry _loadoutRegistry;
     private readonly Task _listenTask;
-    private readonly ArchiveAnalyzer _archiveAnalyzer;
-    private readonly ArchiveInstaller _archiveInstaller;
+    private readonly IArchiveAnalyzer _archiveAnalyzer;
+    private readonly IArchiveInstaller _archiveInstaller;
 
     public NxmRpcListener(IMessageConsumer<NXMUrlMessage> nxmUrlMessages, ILogger<NxmRpcListener> logger, Client client, 
         IHttpDownloader downloader, TemporaryFileManager temp, LoadoutRegistry loadoutRegistry,
-        ArchiveAnalyzer archiveAnalyzer, ArchiveInstaller archiveInstaller)
+        IArchiveAnalyzer archiveAnalyzer, IArchiveInstaller archiveInstaller)
     {
         _logger = logger;
         _client = client;

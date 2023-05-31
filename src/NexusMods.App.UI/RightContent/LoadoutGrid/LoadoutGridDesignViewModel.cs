@@ -39,6 +39,18 @@ public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>,
         return Task.CompletedTask;
     }
 
+    public Task DeleteMods(IEnumerable<ModId> modsToDelete, string commitMessage)
+    {
+        _mods.Edit(x =>
+        {
+            foreach (var mod in modsToDelete)
+            {
+                x.Remove(mod);
+            }
+        });
+        return Task.CompletedTask;
+    }
+
     public LoadoutGridDesignViewModel()
     {
         _mods =
@@ -68,7 +80,7 @@ public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>,
 
         _columns =
             new SourceCache<IDataGridColumnFactory, ColumnType>(
-                x => throw new NotImplementedException());
+                x => x.Type);
         _columns.Edit(x =>
         {
             x.AddOrUpdate(

@@ -28,25 +28,12 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
     private readonly IFileSystem _fileSystem;
     private readonly ILogger<LoadoutGridViewModel> _logger;
     private readonly LoadoutManager _loadoutManager;
+    private readonly LoadoutRegistry _loadoutRegistry;
 
     [Reactive]
     public string LoadoutName { get; set; } = "";
     public ReadOnlyObservableCollection<IDataGridColumnFactory> Columns => _filteredColumns;
-    public async Task AddMod(string path)
-    {
-        var file = _fileSystem.FromFullPath(path);
-        if (!_fileSystem.FileExists(file))
-        {
-            _logger.LogError("File {File} does not exist, not installing mod",
-                file);
-            return;
-        }
 
-        var _ = Task.Run(async () =>
-        {
-            await _loadoutManager.InstallModsFromArchiveAsync(LoadoutId, file, file.FileName);
-        });
-    }
 
     public LoadoutGridViewModel(ILogger<LoadoutGridViewModel> logger, IServiceProvider provider, LoadoutRegistry loadoutRegistry,
         IFileSystem fileSystem, LoadoutManager loadoutManager)
@@ -54,6 +41,7 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
         _logger = logger;
         _fileSystem = fileSystem;
         _loadoutManager = loadoutManager;
+        _loadoutRegistry = loadoutRegistry;
         _columns =
             new SourceCache<IDataGridColumnFactory, ColumnType>(
                 x => throw new NotImplementedException());
@@ -104,5 +92,35 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
                 .SubscribeWithErrorLogging(logger)
                 .DisposeWith(d);
         });
+    }
+    
+    public async Task AddMod(string path)
+    {
+        var file = _fileSystem.FromFullPath(path);
+        if (!_fileSystem.FileExists(file))
+        {
+            _logger.LogError("File {File} does not exist, not installing mod",
+                file);
+            return;
+        }
+
+        var _ = Task.Run(async () =>
+        {
+            await _loadoutManager.InstallModsFromArchiveAsync(LoadoutId, file, file.FileName);
+        });
+    }
+
+    public Task DeleteMods(IEnumerable<ModId> modsToDelete, string commitMessage)
+    {
+        _loadoutRegistry.Alter(LoadoutId, commitMessage, loadout =>
+        {
+            var mods = loadout.Mods;
+            foreach (var modId in modsToDelete)
+            {
+                mods = mods.Without(modId);
+            }
+            return loadout with { Mods = mods };
+        });
+        return Task.CompletedTask;
     }
 }
