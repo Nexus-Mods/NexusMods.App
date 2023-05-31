@@ -1,6 +1,7 @@
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.Games.MountAndBlade2Bannerlord.Analyzers;
 using NexusMods.Games.MountAndBlade2Bannerlord.Loadouts;
+using NexusMods.Games.MountAndBlade2Bannerlord.Sorters;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
@@ -10,7 +11,8 @@ public class TypeFinder : ITypeFinder
     {
         typeof(MountAndBlade2BannerlordModuleInfo),
         typeof(ModuleInfoMetadata),
-        typeof(OriginalPathMetadata)
+        typeof(OriginalPathMetadata),
+        typeof(ModuleInfoSort),
     };
 
     public IEnumerable<Type> DescendentsOf(Type type)

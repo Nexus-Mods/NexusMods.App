@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Bannerlord.ModuleManager;
+using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Sorting.Rules;
@@ -9,6 +10,7 @@ using NexusMods.Hashing.xxHash64;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Sorters;
 
+[JsonName("MountAndBlade2Bannerlord.Sorters.ModuleInfoSort")]
 public class ModuleInfoSort : IGeneratedSortRule, ISortRule<Mod, ModId>, ITriggerFilter<ModId, Loadout>
 {
     public ITriggerFilter<ModId, Loadout> TriggerFilter => this;
