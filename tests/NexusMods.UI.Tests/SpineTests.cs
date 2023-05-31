@@ -4,8 +4,6 @@ using NexusMods.App.UI.Controls.Spine;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Games.RedEngine;
-using NexusMods.Paths;
-using NexusMods.Paths.Utilities;
 using Type = NexusMods.App.UI.Controls.Spine.Type;
 
 namespace NexusMods.UI.Tests;
@@ -66,7 +64,7 @@ public class SpineTests : AUiTest
         }
 
         using var vm = GetActivatedViewModel<ISpineViewModel>();
-        await _loadoutManager.ManageGameAsync(_game.Installations.First(), "Cyberpunk 2077");
+        var loadout = await _loadoutManager.ManageGameAsync(_game.Installations.First(), "Cyberpunk 2077");
 
         using var _ = vm.VM.Actions.Subscribe(vm.VM.Activations);
 

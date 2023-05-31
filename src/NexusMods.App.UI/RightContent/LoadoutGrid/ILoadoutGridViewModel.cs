@@ -17,5 +17,13 @@ public interface ILoadoutGridViewModel : IRightContentViewModel
     public ReadOnlyObservableCollection<IDataGridColumnFactory> Columns { get; }
 
     public Task AddMod(string path);
+    
+    /// <summary>
+    /// Delete the mods from the loadout.
+    /// </summary>
+    /// <param name="modsToDelete"></param>
+    /// <param name="commitMessage"></param>
+    /// <returns></returns>
+    public Task DeleteMods(IEnumerable<ModId> modsToDelete, string commitMessage);
 
 }
