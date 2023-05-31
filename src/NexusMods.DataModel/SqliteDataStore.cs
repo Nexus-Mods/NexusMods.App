@@ -44,6 +44,7 @@ public class SqliteDataStore : IDataStore, IDisposable
     private readonly Dictionary<EntityCategory, bool> _immutableFields;
     private readonly ObjectPool<SqliteConnection> _pool;
     private readonly ConnectionPoolPolicy _poolPolicy;
+    private readonly ObjectPoolDisposable<SqliteConnection> _globalHandle;
 
     /// <summary/>
     /// <param name="logger">Logs events.</param>
@@ -56,10 +57,26 @@ public class SqliteDataStore : IDataStore, IDisposable
         IMessageConsumer<IdUpdated> idPutConsumer)
     {
         _logger = logger;
-        var connectionString = string.Intern($"Data Source={settings.DataStoreFilePath}");
 
+        string connectionString;
+        if (settings.UseInMemoryDataModel)
+        {
+            var id = Guid.NewGuid().ToString();
+            connectionString = string.Intern($"Data Source={id};Mode=Memory;Cache=Shared");
+        }
+        else
+        {
+            connectionString = string.Intern($"Data Source={settings.DataStoreFilePath}");
+        }
+
+        connectionString = string.Intern(connectionString);
+        
         _poolPolicy = new ConnectionPoolPolicy(connectionString);
         _pool = ObjectPool.Create(_poolPolicy);
+        
+        // We do this so that while the app is running we never fully close the DB, this is needed
+        // if we're using a in-memory store, as closing the final connection will delete the DB.
+        _globalHandle = _pool.RentDisposable();
 
         _getStatements = new Dictionary<EntityCategory, string>();
         _putStatements = new Dictionary<EntityCategory, string>();
@@ -417,6 +434,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         if (_isDisposed) return;
         if (disposing)
         {
+            _globalHandle.Dispose();
             _enqueuerTcs.Dispose();
             if (_pool is IDisposable disposable)
                 disposable.Dispose();

@@ -20,7 +20,7 @@ public class SharedArrayTests : IDisposable
     {
         var arraySize = 16;
         ulong iterations = 1024 * 16;
-        using var array = new SharedArray(_file, arraySize);
+        using var array = new MultiProcessSharedArray(_file, arraySize);
         var threads = new Thread[ThreadCount];
 
         // Brute force CAS operations and make sure the final value is correct
@@ -28,7 +28,7 @@ public class SharedArrayTests : IDisposable
         {
             threads[i] = new Thread(() =>
             {
-                using var innerArray = new SharedArray(_file, arraySize);
+                using var innerArray = new MultiProcessSharedArray(_file, arraySize);
                 for (ulong loop = 0; loop < iterations; loop++)
                 {
                     for (var idx = 0; idx < arraySize; idx++)

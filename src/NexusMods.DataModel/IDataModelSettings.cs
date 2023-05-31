@@ -12,6 +12,11 @@ namespace NexusMods.DataModel;
 public interface IDataModelSettings
 {
     /// <summary>
+    /// If true, data model will be stored in memory only and the paths will be ignored.
+    /// </summary>
+    public bool UseInMemoryDataModel { get; }
+    
+    /// <summary>
     /// Path of the file which contains the backing data store or database.
     /// </summary>
     public ConfigurationPath DataStoreFilePath { get; }
@@ -57,7 +62,10 @@ public class DataModelSettings : IDataModelSettings
     private const string DataModelFileName = "DataModel.sqlite";
     private const string DataModelIpcFileName = "DataModel_IPC.sqlite";
     private const string ArchivesFileName = "Archives";
-
+    
+    /// <inheritdoc />
+    public bool UseInMemoryDataModel { get; set; }
+    
     /// <inheritdoc />
     public ConfigurationPath DataStoreFilePath { get; set; }
 
