@@ -26,14 +26,17 @@ public class FomodXmlInstallerTests
     private ICoreDelegates _coreDelegates;
 
     private readonly IServiceProvider _serviceProvider;
+    private readonly IDataStore _store;
 
     public FomodXmlInstallerTests(IServiceProvider serviceProvider,
         TemporaryFileManager tmpFileManager,
-        ICoreDelegates coreDelegates)
+        ICoreDelegates coreDelegates,
+        IDataStore store)
     {
         _serviceProvider = serviceProvider;
         _tmpFileManager = tmpFileManager;
         _coreDelegates = coreDelegates;
+        _store = store;
     }
 
     [Fact]
@@ -213,14 +216,7 @@ public class FomodXmlInstallerTests
     private async Task<TestState> SetupTestFromDirectoryAsync(string testName)
     {
         var tmpFile = _tmpFileManager.CreateFile(KnownExtensions.Sqlite);
-
-        var dataStore = new SqliteDataStore(
-            _serviceProvider.GetRequiredService<ILogger<SqliteDataStore>>(),
-            new DataModelSettings(FileSystem.Shared), 
-            _serviceProvider,
-            _serviceProvider.GetRequiredService<IMessageProducer<IdUpdated>>(),
-            _serviceProvider.GetRequiredService<IMessageConsumer<IdUpdated>>());
-
+        
         var installer = new FomodXmlInstaller(
             _serviceProvider.GetRequiredService<IDataStore>(),
             _serviceProvider.GetRequiredService<ILogger<FomodXmlInstaller>>(),
@@ -236,9 +232,9 @@ public class FomodXmlInstallerTests
             _serviceProvider.GetRequiredService<IResource<ArchiveAnalyzer, Size>>(),
             _serviceProvider.GetRequiredService<FileExtractor.FileExtractor>(),
             _serviceProvider.GetRequiredService<TemporaryFileManager>(),
-            new FileHashCache(_serviceProvider.GetRequiredService<IResource<FileHashCache, Size>>(), dataStore),
+            new FileHashCache(_serviceProvider.GetRequiredService<IResource<FileHashCache, Size>>(), _store),
             new IFileAnalyzer[] { analyzer },
-            dataStore,
+            _store,
             _serviceProvider.GetRequiredService<IArchiveManager>()
         );
 
@@ -246,10 +242,10 @@ public class FomodXmlInstallerTests
         if (analyzed is not AnalyzedArchive archive)
             throw new Exception("FOMOD was not registered as archive.");
 
-        return new TestState(installer, tmpFile, archive, dataStore);
+        return new TestState(installer, tmpFile, archive, _store);
     }
 
-    private record TestState(FomodXmlInstaller Installer, TemporaryPath DataStorePath, AnalyzedArchive AnalysisResults, SqliteDataStore DataStore) : IDisposable
+    private record TestState(FomodXmlInstaller Installer, TemporaryPath DataStorePath, AnalyzedArchive AnalysisResults, IDataStore DataStore) : IDisposable
     {
         public Priority GetPriority() => Installer.GetPriority(new GameInstallation(), AnalysisResults.Contents);
         public async ValueTask<IEnumerable<AModFile>> GetFilesToExtractAsync()
@@ -268,7 +264,6 @@ public class FomodXmlInstallerTests
 
         public void Dispose()
         {
-            DataStore.Dispose();
             DataStorePath.Dispose();
         }
     }
