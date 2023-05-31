@@ -1,3 +1,5 @@
+using System.Numerics;
+
 namespace NexusMods.DataModel.RateLimiting;
 
 /// <summary>
@@ -54,6 +56,25 @@ public interface IJob<TSize> : IJob
     /// Amount of work that was already done.
     /// </summary>
     public TSize Current { get; }
+    
+    /// <summary>
+    /// When this job was started.
+    /// </summary>
+    public DateTime StartedAt { get; }
+
+    // TODO: Remove the region for job PAUSE/RESUME PLACEHOLDER.
+    #region For Future Use when Pausing/Resuming Jobs Becomes Possible.
+    /// <summary>
+    /// Amount of work that was done at resume time.
+    /// </summary>
+    public TSize CurrentAtResumeTime { get; }
+    
+    /// <summary>
+    /// This is the last time the job was resumed, in situations where it may have been paused and then resumed.
+    /// This is for the accurate calculation of the time remaining.
+    /// </summary>
+    public DateTime ResumedAt { get; }
+    #endregion For Future Use when Pausing/Resuming Jobs Becomes Possible.
 
     /// <summary>
     /// Reports progress.
@@ -69,6 +90,28 @@ public interface IJob<TSize> : IJob
     /// </summary>
     /// <param name="processed">Total amount of work done since the last call to one of the report function(s).</param>
     public void ReportNoWait(TSize processed);
+}
+
+/// <summary>
+/// Extension methods to the <see cref="IJob"/> interface.
+/// </summary>
+public static class JobExtensions
+{
+    /// <summary>
+    /// Calculates the throughput of this job per second, based on the current progress.
+    /// </summary>
+    /// <remarks>
+    ///     This returns null/default if the type does not support the required arithmetic operations,
+    ///     else it returns the current TSize items per second.
+    /// </remarks>
+    /// <returns>Throughput of this job per second.</returns>
+    public static TSize? GetThroughput<TSize>(this IJob<TSize> job, IDateTimeProvider provider) where TSize : IDivisionOperators<TSize, double, TSize>, 
+        ISubtractionOperators<TSize, TSize, TSize>
+    {
+        var workDone = job.Current - job.CurrentAtResumeTime;
+        var timeElapsed = (provider.GetCurrentTimeUtc() - job.ResumedAt).TotalSeconds;
+        return workDone / timeElapsed;
+    }
 }
 
 /// <summary>

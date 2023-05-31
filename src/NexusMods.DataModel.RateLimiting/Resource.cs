@@ -19,6 +19,7 @@ public class Resource<TResource, TUnit> : IResource<TResource, TUnit>
     private readonly Channel<PendingReport> _channel;
     private readonly SemaphoreSlim _semaphore;
     private readonly ConcurrentDictionary<ulong, Job<TResource, TUnit>> _tasks;
+    private readonly IDateTimeProvider _provider;
     private ulong _nextId;
     private TUnit _totalUsed;
 
@@ -40,10 +41,11 @@ public class Resource<TResource, TUnit> : IResource<TResource, TUnit>
     /// <param name="humanName">Human friendly name for this resource.</param>
     /// <param name="maxJobs">Maximum number of simultaneous jobs being ran.</param>
     /// <param name="maxThroughput">Maximum throughput.</param>
+    /// <param name="provider"></param>
     /// <remarks>
     /// Default settings limit max jobs to CPU threads and no throughput limit.
     /// </remarks>
-    public Resource(string humanName, int maxJobs, TUnit maxThroughput)
+    public Resource(string humanName, int maxJobs, TUnit maxThroughput, IDateTimeProvider? provider = null)
     {
         Name = humanName;
         MaxJobs = maxJobs == 0 ? Environment.ProcessorCount : maxJobs;
@@ -52,6 +54,8 @@ public class Resource<TResource, TUnit> : IResource<TResource, TUnit>
         _channel = Channel.CreateBounded<PendingReport>(10);
         _tasks = new ConcurrentDictionary<ulong, Job<TResource, TUnit>>();
         _totalUsed = TUnit.AdditiveIdentity;
+        provider ??= new DateTimeProvider();
+        _provider = provider;
         _ = StartTask(CancellationToken.None);
     }
 
@@ -82,7 +86,10 @@ public class Resource<TResource, TUnit> : IResource<TResource, TUnit>
             Description = jobTitle,
             Size = size,
             Current = TUnit.AdditiveIdentity,
-            TypedResource = this
+            TypedResource = this,
+            StartedAt = _provider.GetCurrentTimeUtc(),
+            CurrentAtResumeTime = TUnit.AdditiveIdentity,
+            ResumedAt = _provider.GetCurrentTimeUtc()
         };
 
         _tasks.TryAdd(id, job);

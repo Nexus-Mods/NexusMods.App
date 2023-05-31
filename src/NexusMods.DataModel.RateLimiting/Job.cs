@@ -45,9 +45,18 @@ where TUnit : IAdditionOperators<TUnit, TUnit, TUnit>, IDivisionOperators<TUnit,
 
     /// <inheritdoc />
     public required TUnit Current { get; set; }
-
+    
     /// <inheritdoc />
     public TUnit? Size { get; set; }
+    
+    /// <inheritdoc />
+    public DateTime StartedAt { get; set; }
+
+    /// <inheritdoc />
+    public required TUnit CurrentAtResumeTime { get; set; }
+
+    /// <inheritdoc />
+    public DateTime ResumedAt { get; set; }
 
     // TODO: Add finalizer here. https://github.com/Nexus-Mods/NexusMods.App/issues/211
 
