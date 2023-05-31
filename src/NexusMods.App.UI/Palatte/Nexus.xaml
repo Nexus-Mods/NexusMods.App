@@ -14,10 +14,12 @@
         <Color x:Key="BrandSecondary">#2A2C2B</Color>
         <Color x:Key="BrandSecondaryLighter">#3E413F</Color>
         <Color x:Key="BrandSecondaryDarker">#181818</Color>
+        <Color x:Key="BrandSelectedBackground">#202020</Color>
 
         <SolidColorBrush Color="{DynamicResource BrandSecondary}" x:Key="BrandSecondaryBrush" />
         <SolidColorBrush Color="{DynamicResource BrandSecondaryLighter}" x:Key="BrandSecondaryLighterBrush" />
         <SolidColorBrush Color="{DynamicResource BrandSecondaryDarker}" x:Key="BrandSecondaryDarkerBrush" />
+        <SolidColorBrush Color="{DynamicResource BrandSelectedBackground}" x:Key="BrandSelectedBackgroundBrush" />
 
         <Color x:Key="BrandTertiary">#DDDDDD</Color>
         <Color x:Key="BrandTertiaryLighter">#F1F1F1</Color>
