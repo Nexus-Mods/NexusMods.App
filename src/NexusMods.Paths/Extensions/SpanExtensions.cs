@@ -60,7 +60,6 @@ public static class SpanExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReadOnlySpan<T> SliceFast<T>(this ReadOnlySpan<T> data, int start)
     {
-        return data.Slice(start);
         return MemoryMarshal.CreateSpan(ref Unsafe.Add(ref MemoryMarshal.GetReference(data), start), data.Length - start);
     }
 
@@ -70,7 +69,6 @@ public static class SpanExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReadOnlySpan<T> SliceFast<T>(this ReadOnlySpan<T> data, int start, int length)
     {
-        return data.Slice(start, length);
         return MemoryMarshal.CreateSpan(ref Unsafe.Add(ref MemoryMarshal.GetReference(data), start), length);
     }
 
@@ -80,7 +78,6 @@ public static class SpanExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Span<T> SliceFast<T>(this Span<T> data, int start)
     {
-        return data.Slice(start);
         return MemoryMarshal.CreateSpan(ref Unsafe.Add(ref MemoryMarshal.GetReference(data), start), data.Length - start);
     }
 
@@ -90,7 +87,6 @@ public static class SpanExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Span<T> SliceFast<T>(this Span<T> data, int start, int length)
     {
-        return data.Slice(start, length);
         return MemoryMarshal.CreateSpan(ref Unsafe.Add(ref MemoryMarshal.GetReference(data), start), length);
     }
 
