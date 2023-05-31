@@ -32,7 +32,7 @@
     </Style>
 
     <Style Selector="DataGridRow:selected Rectangle#BackgroundRectangle">
-        <Setter Property="Fill" Value="{DynamicResource BackgroundSecondaryBrush}" />
+        <Setter Property="Fill" Value="{DynamicResource BrandSelectedBackgroundBrush}" />
     </Style>
 
     <Style Selector="DataGridCell">

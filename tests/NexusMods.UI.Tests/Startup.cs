@@ -28,7 +28,8 @@ public class Startup
         };
         
         services.AddUniversalGameLocator<Cyberpunk2077>(new Version("1.61"))
-                .AddApp(addStandardGameLocators: false, config: config)
+                .AddApp(config: config)
+                .AddStubbedGameLocators()
                 .AddSingleton<AvaloniaApp>()
                 .Validate();
     }
