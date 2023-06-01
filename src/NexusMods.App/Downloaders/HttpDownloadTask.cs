@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Networking.HttpDownloader;
@@ -22,8 +23,8 @@ public class HttpDownloadTask : IDownloadTask
     private readonly TemporaryFileManager _temp;
     private readonly HttpClient _client;
     private readonly IHttpDownloader _downloader;
-    private readonly ArchiveAnalyzer _archiveAnalyzer;
-    private readonly ArchiveInstaller _archiveInstaller;
+    private readonly IArchiveAnalyzer _archiveAnalyzer;
+    private readonly IArchiveInstaller _archiveInstaller;
     private readonly CancellationTokenSource _tokenSource;
     private readonly HttpDownloaderState _state;
     private Loadout? _loadout;
@@ -40,7 +41,7 @@ public class HttpDownloadTask : IDownloadTask
     ///     This constructor is intended to be called from Dependency Injector.
     ///     After running this constructor, you will need to run 
     /// </remarks>
-    public HttpDownloadTask(LoadoutRegistry loadoutRegistry, ILogger<HttpDownloadTask> logger, TemporaryFileManager temp, HttpClient client, IHttpDownloader downloader, ArchiveAnalyzer archiveAnalyzer, ArchiveInstaller archiveInstaller, DownloadService owner)
+    public HttpDownloadTask(ILogger<HttpDownloadTask> logger, TemporaryFileManager temp, HttpClient client, IHttpDownloader downloader, IArchiveAnalyzer archiveAnalyzer, IArchiveInstaller archiveInstaller, DownloadService owner)
     {
         _logger = logger;
         _temp = temp;
@@ -84,6 +85,10 @@ public class HttpDownloadTask : IDownloadTask
 
     private async Task<GetNameAndSizeResult> GetNameAndSize()
     {
+        var uri = new Uri(_url);
+        if (uri.IsFile)
+            return new GetNameAndSizeResult(string.Empty, 0);
+
         var response = await _client.GetAsync(_url, HttpCompletionOption.ResponseHeadersRead);
         if (!response.IsSuccessStatusCode)
         {

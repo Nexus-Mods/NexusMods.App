@@ -60,7 +60,7 @@ public static class Services
             .AddStardewValley()
             .AddRenderers()
             .AddNexusWebApi()
-            .AddNexusWebApiNmaIntegration()
+            .AddNexusWebApiNmaIntegration(true)
             .AddAdvancedHttpDownloader(config.HttpDownloaderSettings)
             .AddTestHarness()
             .AddSingleton<HttpClient>()

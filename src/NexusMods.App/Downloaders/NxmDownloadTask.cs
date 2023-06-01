@@ -1,4 +1,5 @@
 using NexusMods.DataModel;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Networking.HttpDownloader;
@@ -22,8 +23,8 @@ public class NxmDownloadTask : IDownloadTask
     private readonly TemporaryFileManager _temp;
     private readonly Client _client;
     private readonly IHttpDownloader _downloader;
-    private readonly ArchiveAnalyzer _archiveAnalyzer;
-    private readonly ArchiveInstaller _archiveInstaller;
+    private readonly IArchiveAnalyzer _archiveAnalyzer;
+    private readonly IArchiveInstaller _archiveInstaller;
     private readonly CancellationTokenSource _tokenSource;
     private readonly HttpDownloaderState _state;
     private Task? _task;
@@ -39,7 +40,7 @@ public class NxmDownloadTask : IDownloadTask
     ///     This constructor is intended to be called from Dependency Injector.
     ///     After running this constructor, you will need to run 
     /// </remarks>
-    public NxmDownloadTask(LoadoutRegistry loadoutRegistry, TemporaryFileManager temp, Client client, IHttpDownloader downloader, ArchiveAnalyzer archiveAnalyzer, ArchiveInstaller archiveInstaller, DownloadService owner)
+    public NxmDownloadTask(LoadoutRegistry loadoutRegistry, TemporaryFileManager temp, Client client, IHttpDownloader downloader, IArchiveAnalyzer archiveAnalyzer, IArchiveInstaller archiveInstaller, DownloadService owner)
     {
         _loadoutRegistry = loadoutRegistry;
         _temp = temp;
@@ -65,6 +66,7 @@ public class NxmDownloadTask : IDownloadTask
     
     private async Task StartImpl()
     {
+        // TODO: Some error handling here in case user does not have correct game.
         var token = _tokenSource.Token;
         await using var tempPath = _temp.CreateFile();
         var loadout = _loadoutRegistry.AllLoadouts().First(x => x.Installation.Game.Domain == _url.Mod.Game);
