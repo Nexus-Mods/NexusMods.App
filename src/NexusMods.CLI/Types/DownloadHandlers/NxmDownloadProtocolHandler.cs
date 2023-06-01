@@ -1,4 +1,5 @@
 ﻿using NexusMods.DataModel;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
@@ -16,13 +17,13 @@ public class NxmDownloadProtocolHandler : IDownloadProtocolHandler
     private readonly Client _client;
     private readonly IHttpDownloader _downloader;
     private readonly TemporaryFileManager _temp;
-    private readonly ArchiveAnalyzer _archiveAnalyzer;
-    private readonly ArchiveInstaller _archiveInstaller;
+    private readonly IArchiveAnalyzer _archiveAnalyzer;
+    private readonly IArchiveInstaller _archiveInstaller;
 
     /// <summary/>
     public NxmDownloadProtocolHandler(Client client, 
         IHttpDownloader downloader, TemporaryFileManager temp, 
-        ArchiveInstaller archiveInstaller, ArchiveAnalyzer archiveAnalyzer)
+        IArchiveInstaller archiveInstaller, IArchiveAnalyzer archiveAnalyzer)
     {
         _archiveAnalyzer = archiveAnalyzer;
         _archiveInstaller = archiveInstaller;

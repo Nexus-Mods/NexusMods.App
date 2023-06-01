@@ -31,12 +31,10 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
     private static readonly TimeSpan ShortPollInterval = TimeSpan.FromMilliseconds(100); // Poll every 100ms
     private static readonly TimeSpan LongPollInterval = TimeSpan.FromSeconds(10); // Poll every 10s
 
-    private readonly AbsolutePath _storePath;
     private readonly Subject<(string Queue, byte[] Message)> _subject = new();
     private readonly CancellationTokenSource _shutdownToken;
     private readonly ILogger<SqliteIPC> _logger;
-    private readonly AbsolutePath _syncPath;
-    private readonly SharedArray _syncArray;
+    private readonly ISharedArray _syncArray;
 
     private SourceCache<IInterprocessJob, JobId> _jobs = new(x => x.JobId);
     private readonly ObjectPool<SqliteConnection> _pool;
@@ -44,6 +42,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
 
     private bool _isDisposed;
     private readonly JsonSerializerOptions _jsonSettings;
+    private readonly ObjectPoolDisposable<SqliteConnection> _globalHandle;
 
     /// <summary>
     /// Allows you to subscribe to newly incoming IPC messages.
@@ -59,15 +58,32 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
     public SqliteIPC(ILogger<SqliteIPC> logger, IDataModelSettings settings, JsonSerializerOptions jsonSettings)
     {
         _logger = logger;
-        _storePath = settings.IpcDataStoreFilePath.ToAbsolutePath();
+        var storePath = settings.IpcDataStoreFilePath.ToAbsolutePath();
 
-        var connectionString = string.Intern($"Data Source={_storePath}");
+        string connectionString;
+        if (settings.UseInMemoryDataModel)
+        {
+            var id = Guid.NewGuid().ToString();
+            connectionString = string.Intern($"Data Source={id};Mode=Memory;Cache=Shared");
+            _syncArray = new SingleProcessSharedArray(2);
+        }
+        else
+        {
+            var syncPath = storePath.AppendExtension(new Extension(".sync"));
+            _syncArray = new MultiProcessSharedArray(syncPath, 2);
+            connectionString = string.Intern($"Data Source={storePath}");
+        }
 
-        _syncPath = _storePath.AppendExtension(new Extension(".sync"));
-        _syncArray = new SharedArray(_syncPath, 2);
+        connectionString = string.Intern(connectionString);
+
+
 
         _poolPolicy = new ConnectionPoolPolicy(connectionString);
         _pool = ObjectPool.Create(_poolPolicy);
+
+        // We do this so that while the app is running we never fully close the DB, this is needed
+        // if we're using a in-memory store, as closing the final connection will delete the DB.
+        _globalHandle = _pool.RentDisposable();
 
         _jsonSettings = jsonSettings;
 
@@ -426,6 +442,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         if (_isDisposed) return;
         if (disposing)
         {
+            _globalHandle.Dispose();
             _shutdownToken.Cancel();
             _subject.Dispose();
             _syncArray.Dispose();

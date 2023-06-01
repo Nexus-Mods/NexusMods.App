@@ -52,7 +52,7 @@ public class ArchiveInstaller : IArchiveInstaller
     {
         if (_archiveAnalyzer.GetAnalysisData(archiveHash) is not AnalyzedArchive analysisData)
         {
-            _logger.LogError("Could not find analysis data for archive {ArchiveHash}", archiveHash);
+            _logger.LogError("Could not find analysis data for archive {ArchiveHash} or file is not an archive", archiveHash);
             throw new InvalidOperationException("Could not find analysis data for archive");
         }
         
