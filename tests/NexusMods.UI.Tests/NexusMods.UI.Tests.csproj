@@ -6,6 +6,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia.Headless" Version="11.0.0-preview6" />
+        <PackageReference Include="Avalonia.Headless" Version="11.0.0-rc1.1" />
     </ItemGroup>
 </Project>

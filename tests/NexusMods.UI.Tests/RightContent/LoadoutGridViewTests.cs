@@ -19,12 +19,12 @@ public class LoadoutGridViewTests : AViewTest<LoadoutGridView, LoadoutGridDesign
         var ids = new List<ModCursor>();
         await Host.OnUi(async () =>
         {
-            control.Items.OfType<ModCursor>().Should().HaveCount(9);
+            control.ItemsSource.OfType<ModCursor>().Should().HaveCount(9);
 
             for (int i = 0; i < Random.Shared.Next(1, 4); i++)
             {
-                ids.Add(control.Items.OfType<ModCursor>().ElementAt(i));
-                control.SelectedItems.Add(control.Items.OfType<ModCursor>().ElementAt(i));
+                ids.Add(control.ItemsSource.OfType<ModCursor>().ElementAt(i));
+                control.SelectedItems.Add(control.ItemsSource.OfType<ModCursor>().ElementAt(i));
             }
 
         });
@@ -35,10 +35,10 @@ public class LoadoutGridViewTests : AViewTest<LoadoutGridView, LoadoutGridDesign
         
         await Host.OnUi(async () =>
         {
-            control.Items.OfType<ModCursor>().Should().HaveCount(9 - ids.Count);
+            control.ItemsSource.OfType<ModCursor>().Should().HaveCount(9 - ids.Count);
             foreach (var item in ids)
             {
-                control.Items.OfType<ModCursor>().Should().NotContain(item);
+                control.ItemsSource.OfType<ModCursor>().Should().NotContain(item);
             }
         });
     }
