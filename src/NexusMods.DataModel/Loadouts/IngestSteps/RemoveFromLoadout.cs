@@ -8,5 +8,8 @@ namespace NexusMods.DataModel.Loadouts.IngestSteps;
 /// </summary>
 public record RemoveFromLoadout : IIngestStep
 {
-    public required AbsolutePath To { get; init; }
+    /// <summary>
+    /// The file to remove from the loadout, all files in any mod that maps to this file will be removed
+    /// </summary>
+    public required AbsolutePath Source { get; init; }
 }

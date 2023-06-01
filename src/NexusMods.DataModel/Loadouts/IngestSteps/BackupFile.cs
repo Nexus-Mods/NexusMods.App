@@ -16,7 +16,7 @@ public record BackupFile : IIngestStep
     /// <summary>
     /// Location of the file to be backed up.
     /// </summary>
-    public required AbsolutePath To { get; init; }
+    public required AbsolutePath Source { get; init; }
 
     /// <summary>
     /// Hash of the file to be backed up.

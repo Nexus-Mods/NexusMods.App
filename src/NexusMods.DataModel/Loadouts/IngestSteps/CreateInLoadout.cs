@@ -10,13 +10,24 @@ namespace NexusMods.DataModel.Loadouts.IngestSteps;
 /// </summary>
 public class CreateInLoadout : IIngestStep
 {
+    /// <summary>
+    /// The path to the file that was changed, used mostly for debugging and logging.
+    /// </summary>
+    public required AbsolutePath Source { get; init; }
 
-    public required AbsolutePath To { get; init; }
-
+    /// <summary>
+    /// The file's new hash
+    /// </summary>
     public required Hash Hash { get; init; }
 
+    /// <summary>
+    /// The file's new size
+    /// </summary>
     public required Size Size { get; init; }
 
+    /// <summary>
+    /// The mod in which the file should be created
+    /// </summary>
     public required ModId ModId { get; init; }
 
 }
