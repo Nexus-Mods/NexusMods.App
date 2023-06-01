@@ -8,7 +8,7 @@ namespace NexusMods.DataModel.Interprocess;
 /// A shared array of 64-bit unsigned integers, supports atomic operations via
 /// a CAS operation on a mmaped file.
 /// </summary>
-public unsafe class SharedArray : IDisposable
+public unsafe class MultiProcessSharedArray : ISharedArray
 {
     private readonly int _totalSize;
     private readonly Stream _stream;
@@ -17,7 +17,12 @@ public unsafe class SharedArray : IDisposable
 
     private bool _isDisposed;
 
-    public SharedArray(AbsolutePath path, int itemCount)
+    /// <summary>
+    /// Create a new shared array with the given number of items at the given path
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="itemCount"></param>
+    public MultiProcessSharedArray(AbsolutePath path, int itemCount)
     {
         _totalSize = itemCount * sizeof(ulong);
 
@@ -76,7 +81,7 @@ public unsafe class SharedArray : IDisposable
     public ulong Get(int idx)
     {
         if (_isDisposed)
-            throw new ObjectDisposedException(nameof(SharedArray));
+            throw new ObjectDisposedException(nameof(MultiProcessSharedArray));
 
 #if DEBUG
         if (idx < 0 || idx >= _totalSize / sizeof(ulong))
@@ -99,7 +104,7 @@ public unsafe class SharedArray : IDisposable
     public bool CompareAndSwap(int idx, ulong expected, ulong value)
     {
         if (_isDisposed)
-            throw new ObjectDisposedException(nameof(SharedArray));
+            throw new ObjectDisposedException(nameof(MultiProcessSharedArray));
 
 #if DEBUG
         if (idx < 0 || idx >= _totalSize / sizeof(ulong))

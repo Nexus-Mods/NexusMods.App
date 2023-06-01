@@ -19,7 +19,10 @@ public class Startup
         services.AddStandardGameLocators(false)
                 .AddStubbedGameLocators()
                 .AddFileSystem()
-                .AddDataModel()
+                .AddDataModel(new DataModelSettings
+                {
+                    UseInMemoryDataModel = true
+                })
                 .AddFileExtractors()
                 .AddCLI()
                 .AddSingleton<HttpClient>()

@@ -21,9 +21,7 @@ public class Startup
         {
             DataModelSettings =
             {
-                ArchiveLocations = new[] { new ConfigurationPath(path.CombineUnchecked("Archives"))},
-                DataStoreFilePath = new ConfigurationPath(path.CombineUnchecked("DataModel.sqlite")),
-                IpcDataStoreFilePath = new ConfigurationPath(path.CombineUnchecked("DataModel.IPC.sqlite"))
+                UseInMemoryDataModel = true
             }
         };
         
