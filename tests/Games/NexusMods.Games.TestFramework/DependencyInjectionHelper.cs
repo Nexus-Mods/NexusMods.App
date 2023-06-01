@@ -49,7 +49,10 @@ public static class DependencyInjectionHelper
             .AddNexusWebApi()
             .AddNexusWebApiNmaIntegration(true)
             .AddHttpDownloader()
-            .AddDataModel()
+            .AddDataModel(new DataModelSettings
+            {
+                UseInMemoryDataModel = true
+            })
             .AddAllSingleton<IResource, IResource<ArchiveAnalyzer, Size>>(_ => new Resource<ArchiveAnalyzer, Size>("File Analysis for tests"))
             .AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ => new Resource<IExtractor, Size>("File Extraction for tests"))
             .AddAllSingleton<IResource, IResource<FileHashCache, Size>>(_ => new Resource<FileHashCache, Size>("Hash Cache for tests"))

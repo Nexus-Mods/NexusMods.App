@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Immutable;
+using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using NexusMods.Common;
@@ -14,6 +15,7 @@ using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.RateLimiting;
+using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
@@ -50,7 +52,7 @@ public class ArchiveInstaller : IArchiveInstaller
     {
         if (_archiveAnalyzer.GetAnalysisData(archiveHash) is not AnalyzedArchive analysisData)
         {
-            _logger.LogError("Could not find analysis data for archive {ArchiveHash}", archiveHash);
+            _logger.LogError("Could not find analysis data for archive {ArchiveHash} or file is not an archive", archiveHash);
             throw new InvalidOperationException("Could not find analysis data for archive");
         }
         
@@ -115,6 +117,7 @@ public class ArchiveInstaller : IArchiveInstaller
                 Files = result.Files.ToEntityDictionary(_dataStore),
                 Name = result.Name ?? baseMod.Name,
                 Version = result.Version ?? baseMod.Version,
+                SortRules = (result.SortRules ?? Array.Empty<ISortRule<Mod, ModId>>()).ToImmutableList()
             }).WithPersist(_dataStore).ToArray();
 
             job.Progress = new Percent(0.75);

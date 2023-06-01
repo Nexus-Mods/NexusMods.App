@@ -75,17 +75,17 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
         {
             new Loadouts.IngestSteps.BackupFile
             {
-                To = gameFolder.CombineUnchecked(fileToModify),
+                Source = gameFolder.CombineUnchecked(fileToModify),
                 Size = Size.FromLong("modified".Length),
                 Hash = modifiedHash
             },
             new Loadouts.IngestSteps.RemoveFromLoadout
             {
-                To = gameFolder.CombineUnchecked(fileToDelete),
+                Source = gameFolder.CombineUnchecked(fileToDelete),
             },
             new CreateInLoadout
             {
-                To = gameFolder.CombineUnchecked(fileToModify),
+                Source = gameFolder.CombineUnchecked(fileToModify),
                 Size = Size.FromLong("modified".Length),
                 Hash = modifiedHash,
                 ModId = firstMod.Id

@@ -30,7 +30,10 @@ public class Startup
             .AddSingleton<LocalHttpServer>()
             .AddNexusWebApi()
             .AddNexusWebApiNmaIntegration(true)
-            .AddDataModel()
+            .AddDataModel(new DataModelSettings()
+            {
+                UseInMemoryDataModel = true
+            })
             .Validate();
     }
 

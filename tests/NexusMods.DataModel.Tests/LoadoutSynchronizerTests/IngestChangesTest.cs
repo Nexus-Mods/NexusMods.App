@@ -30,7 +30,7 @@ public class IngestChangesTest : ALoadoutSynrchonizerTest<IngestChangesTest>
             {
                 new BackupFile()
                 {
-                    To = absPath,
+                    Source = absPath,
                     Hash = Hash.From(0x1DEADBEEF),
                     Size = Size.From(0x2DEADBEEF)
                 }
@@ -73,7 +73,7 @@ public class IngestChangesTest : ALoadoutSynrchonizerTest<IngestChangesTest>
             {
                 new RemoveFromLoadout
                 {
-                    To = absPath
+                    Source = absPath
                 }
             }
         });
@@ -107,7 +107,7 @@ public class IngestChangesTest : ALoadoutSynrchonizerTest<IngestChangesTest>
                     ModFileId = firstFile.Id,
                     Hash = Hash.From(0x42DEADBEEF),
                     Size = Size.MB,
-                    To = absPath
+                    Source = absPath
                 }
             }
         });
@@ -137,7 +137,7 @@ public class IngestChangesTest : ALoadoutSynrchonizerTest<IngestChangesTest>
                     ModId = firstMod.Id,
                     Hash = Hash.From(0x42DEADBEEF),
                     Size = Size.MB,
-                    To = absPath
+                    Source = absPath
                 }
             }
         });
