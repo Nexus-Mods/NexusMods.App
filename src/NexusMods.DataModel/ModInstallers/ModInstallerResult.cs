@@ -1,6 +1,7 @@
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Mods;
+using NexusMods.DataModel.Sorting.Rules;
 
 namespace NexusMods.DataModel.ModInstallers;
 
@@ -28,4 +29,9 @@ public record ModInstallerResult
     /// Optional version of the mod.
     /// </summary>
     public string? Version { get; set; }
+    
+    /// <summary>
+    /// Optional sort rules for the mod.
+    /// </summary>
+    public IEnumerable<ISortRule<Mod, ModId>>? SortRules { get; init; }
 }

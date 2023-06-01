@@ -1,5 +1,7 @@
 ﻿using System.Collections.Concurrent;
+using System.Diagnostics;
 using DynamicData;
+using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Extensions;
@@ -29,13 +31,16 @@ public class LoadoutSynchronizer
     private readonly IArchiveManager _archiveManager;
     private readonly IFingerprintCache<IGeneratedFile,CachedGeneratedFileData> _generatedFileFingerprintCache;
     private readonly LoadoutRegistry _loadoutRegistry;
+    private readonly ILogger<LoadoutSynchronizer> _logger;
 
-    public LoadoutSynchronizer(IFingerprintCache<Mod, CachedModSortRules> modSortRulesFingerprintCache,
+    public LoadoutSynchronizer(ILogger<LoadoutSynchronizer> logger, 
+        IFingerprintCache<Mod, CachedModSortRules> modSortRulesFingerprintCache,
         IDirectoryIndexer directoryIndexer,
         IArchiveManager archiveManager,
         IFingerprintCache<IGeneratedFile, CachedGeneratedFileData> generatedFileFingerprintCache,
         LoadoutRegistry loadoutRegistry)
     {
+        _logger = logger;
         _archiveManager = archiveManager;
         _generatedFileFingerprintCache = generatedFileFingerprintCache;
         _modSortRulesFingerprintCache = modSortRulesFingerprintCache;
@@ -226,7 +231,8 @@ public class LoadoutSynchronizer
         }
 
         // This should never happen
-        throw new NotImplementedException();
+        _logger.LogError("Unknown file type {Type}", pair.File.GetType().Name);
+        throw new UnreachableException();
     }
 
     private async ValueTask EmitDeletePlan(List<IApplyStep> plan, HashedEntry existing)
@@ -397,7 +403,7 @@ public class LoadoutSynchronizer
             var absPath = file.To;
             var dir = absPath.Parent;
             if (!dir.DirectoryExists())
-                dir.Create();
+                dir.CreateDirectory();
 
             await using var stream = absPath.Create();
             var hash = await file.Source.GenerateAsync(stream, plan, token);

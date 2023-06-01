@@ -26,7 +26,7 @@ public record FileArchiveMetaData : AArchiveMetaData
     {
         return new FileArchiveMetaData
         {
-            Priority = Priority.Low,
+            Quality = Quality.Low,
             OriginalPath = path.FileName,
             Name = path.GetFileNameWithoutExtension(),
             Size = archive.Size,
