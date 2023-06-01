@@ -6,7 +6,7 @@ namespace NexusMods.DataModel.Loadouts.IngestSteps;
 
 public record ReplaceInLoadout : IIngestStep
 {
-    public required AbsolutePath To { get; init; }
+    public required AbsolutePath Source { get; init; }
     public required Hash Hash { get; init; }
     
     public required Size Size { get; init; }

@@ -11,6 +11,7 @@ using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using Noggog;
+// ReSharper disable AccessToDisposedClosure
 
 namespace NexusMods.Games.BethesdaGameStudios;
 
@@ -133,7 +134,7 @@ public record PluginFile : AModFile, IGeneratedFile, IToFile, ITriggerFilter<Mod
 
     public Hash GetFingerprint(ModFilePair self, Plan plan)
     {
-        var fingerprinter = Fingerprinter.Create();
+        using var fingerprinter = Fingerprinter.Create();
 
         plan.Flattened
             .Where(f => SkyrimSpecialEdition.PluginExtensions.Contains(f.Key.Extension))

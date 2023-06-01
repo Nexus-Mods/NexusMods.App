@@ -58,7 +58,7 @@ public class Apply : AVerb<LoadoutMarker, bool, bool>
                         rows.Add(new object[] { df, df.To, df.Hash, df.Size });
                         break;
                     default:
-                        throw new InvalidOperationException();
+                        throw new InvalidOperationException($"Unknown step type ({step.GetType()}) encountered, this should never happen.");
                 }
             }
             await _renderer.Render(new Table(new[] { "Action", "To", "Hash", "Size" }, rows));

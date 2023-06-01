@@ -3,10 +3,14 @@ using NexusMods.Hashing.xxHash64;
 
 namespace NexusMods.DataModel.TriggerFilter;
 
-public struct Fingerprinter
+public struct Fingerprinter : IDisposable
 {
     private BinaryWriter _binaryWriter;
 
+    /// <summary>
+    /// Creates a new fingerprinter instance
+    /// </summary>
+    /// <returns></returns>
     public static Fingerprinter Create()
     {
         return new Fingerprinter
@@ -50,5 +54,11 @@ public struct Fingerprinter
         
         _binaryWriter.Close();
         return hash;
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        _binaryWriter.Dispose();
     }
 }

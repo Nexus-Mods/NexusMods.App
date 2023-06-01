@@ -1,5 +1,7 @@
 ﻿using System.Collections.Immutable;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
@@ -33,7 +35,9 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
         TestArchiveManagerInstance = new TestArchiveManager();
         TestFingerprintCacheInstance = new TestFingerprintCache<Mod, CachedModSortRules>();
         TestGeneratedFileFingerprintCache = new TestFingerprintCache<IGeneratedFile, CachedGeneratedFileData>();
-        TestSyncronizer = new LoadoutSynchronizer(TestFingerprintCacheInstance, 
+        TestSyncronizer = new LoadoutSynchronizer(
+            provider.GetRequiredService<ILogger<LoadoutSynchronizer>>(), 
+            TestFingerprintCacheInstance, 
             TestIndexer, 
             TestArchiveManagerInstance, 
             TestGeneratedFileFingerprintCache,
@@ -202,7 +206,7 @@ public record TestGeneratedFile : AModFile, IGeneratedFile, IToFile, ITriggerFil
     public required GamePath To { get; init; }
     public Hash GetFingerprint(ModFilePair self, Plan plan)
     {
-        var printer = Fingerprinter.Create();
+        using var printer = Fingerprinter.Create();
         foreach (var mod in plan.Loadout.Mods)
             foreach (var file in mod.Value.Files)
                 if (!file.Value.Id.Equals(self.File.Id))
@@ -240,7 +244,7 @@ public class AlphabeticalSort : IGeneratedSortRule, ISortRule<Mod, ModId>, ITrig
 
     public Hash GetFingerprint(ModId self, Loadout loadout)
     {
-        var fp = Fingerprinter.Create();
+        using var fp = Fingerprinter.Create();
         fp.Add(loadout.Mods[self].DataStoreId);
         foreach (var name in loadout.Mods.Values.Select(n => n.Name).Order())
         {
