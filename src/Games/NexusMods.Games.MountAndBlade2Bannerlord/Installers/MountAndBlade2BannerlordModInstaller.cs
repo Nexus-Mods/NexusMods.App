@@ -17,6 +17,7 @@ using NexusMods.Games.MountAndBlade2Bannerlord.Sorters;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
+using static NexusMods.Games.MountAndBlade2Bannerlord.MountAndBlade2BannerlordConstants;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Installers;
 
@@ -47,7 +48,7 @@ public sealed class MountAndBlade2BannerlordModInstaller : IModInstaller
         {
             var (path, file) = kv;
 
-            if (!path.FileName.Equals(MountAndBlade2BannerlordConstants.SubModuleFile)) return false;
+            if (!path.FileName.Equals(SubModuleFile)) return false;
             return file.AnalysisData.OfType<MountAndBlade2BannerlordModuleInfo>().FirstOrDefault() is not null;
         });
 
@@ -68,7 +69,7 @@ public sealed class MountAndBlade2BannerlordModInstaller : IModInstaller
             {
                 var relativePath = instruction.Source.ToRelativePath();
                 var file = files[relativePath];
-                var hasSubModule = relativePath.Equals(MountAndBlade2BannerlordConstants.SubModuleFile);
+                var hasSubModule = relativePath.Equals(SubModuleFile);
                 IEnumerable<IModFileMetadata> GetMetadata()
                 {
                     yield return new OriginalPathMetadata { OriginalRelativePath = relativePath.Path };
@@ -77,10 +78,10 @@ public sealed class MountAndBlade2BannerlordModInstaller : IModInstaller
                 return new FromArchive
                 {
                     Id = ModFileId.New(),
-                    To = new GamePath(GameFolderType.Game, MountAndBlade2BannerlordConstants.ModFolder.Join(relativePath)),
+                    To = new GamePath(GameFolderType.Game, ModFolder.Join(relativePath)),
                     Hash = file.Hash,
                     Size = file.Size,
-                    Metadata = ImmutableHashSet.CreateRange<IModFileMetadata>(GetMetadata())
+                    Metadata = ImmutableHashSet.CreateRange(GetMetadata())
                 };
             });
             return new ModInstallerResult

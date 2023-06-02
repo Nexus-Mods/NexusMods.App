@@ -3,8 +3,6 @@ using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
 using NexusMods.Games.MountAndBlade2Bannerlord.Utils;
 using NexusMods.Paths;
-using GameStore = NexusMods.DataModel.Games.GameStore;
-using GameStoreTW = Bannerlord.LauncherManager.Models.GameStore;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Services;
 
@@ -32,13 +30,13 @@ public sealed class LauncherManagerFactory
             static (installationPath, tuple) => ValueFactory(tuple._loggerFactory, installationPath, tuple.store), (_loggerFactory, store));
     }
 
-    public LauncherManagerNexusMods Get(string installationPath, GameStoreTW store)
+    public LauncherManagerNexusMods Get(string installationPath, Bannerlord.LauncherManager.Models.GameStore store)
     {
         return _instances.GetOrAdd(installationPath,
             static (installationPath, tuple) => ValueFactory(tuple._loggerFactory, installationPath, tuple.store), (_loggerFactory, store));
     }
 
-    private static LauncherManagerNexusMods ValueFactory(ILoggerFactory loggerFactory, string installationPath, GameStoreTW store)
+    private static LauncherManagerNexusMods ValueFactory(ILoggerFactory loggerFactory, string installationPath, Bannerlord.LauncherManager.Models.GameStore store)
     {
         return new LauncherManagerNexusMods(loggerFactory.CreateLogger<LauncherManagerNexusMods>(), installationPath, store);
     }

@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using NexusMods.Common;
 using NexusMods.DataModel.Games;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Games.MountAndBlade2Bannerlord.Services;
 using NexusMods.Games.MountAndBlade2Bannerlord.Utils;
 using NexusMods.Paths;
+using static NexusMods.Games.MountAndBlade2Bannerlord.MountAndBlade2BannerlordConstants;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
@@ -26,6 +28,7 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
     public IEnumerable<string> EpicCatalogItemId => new[] { "Chickadee" };
     public IEnumerable<string> XboxIds => new[] { "TaleWorldsEntertainment.MountBladeIIBannerlord" };
 
+    [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
     public MountAndBlade2Bannerlord(IFileSystem fileSystem, IEnumerable<IGameLocator> gameLocators, LauncherManagerFactory launcherManagerFactory) : base(gameLocators)
     {
         _fileSystem = fileSystem;
@@ -67,7 +70,6 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
 
     protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(IFileSystem fileSystem, IGameLocator locator, GameLocatorResult installation)
     {
-        const string DocumentsFolderName = "Mount and Blade II Bannerlord";
         var documentsFolder = fileSystem.GetKnownPath(KnownPath.MyDocumentsDirectory);
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Saves, documentsFolder.CombineChecked(@$"{DocumentsFolderName}\Game Saves"));

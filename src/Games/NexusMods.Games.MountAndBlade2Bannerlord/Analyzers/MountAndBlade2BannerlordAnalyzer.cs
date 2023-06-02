@@ -2,11 +2,9 @@ using System.Runtime.CompilerServices;
 using System.Xml;
 using Bannerlord.LauncherManager;
 using Bannerlord.ModuleManager;
-using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
-using NexusMods.DataModel.JsonConverters;
 using NexusMods.FileExtractor.FileSignatures;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Analyzers;
@@ -41,7 +39,7 @@ public class MountAndBlade2BannerlordAnalyzer : IFileAnalyzer
 
         // Now get the actual items out.
         // Determine if this is a supported Bannerlord module.
-        ModuleInfoExtended? data;
+        ModuleInfoExtended data;
 
         try
         {
@@ -55,22 +53,9 @@ public class MountAndBlade2BannerlordAnalyzer : IFileAnalyzer
             yield break;
         }
 
-        if (data is null)
-        {
-            _logger.LogError("Failed to Parse SubModule.xml of the Bannerlord Module: {File}", info.RelativePath.Value.ToString());
-            yield break;
-        }
-
         yield return new MountAndBlade2BannerlordModuleInfo
         {
             ModuleInfo = data
         };
     }
-}
-
-[PublicAPI]
-[JsonName("NexusMods.Games.MountAndBlade2Bannerlord.MountAndBlade2BannerlordModuleInfo")]
-public record MountAndBlade2BannerlordModuleInfo : IFileAnalysisData
-{
-    public required ModuleInfoExtended ModuleInfo { get; init; }
 }
