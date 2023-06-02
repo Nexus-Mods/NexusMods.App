@@ -47,7 +47,7 @@ where TUnit : IAdditionOperators<TUnit, TUnit, TUnit>, IDivisionOperators<TUnit,
     public TUnit? Size { get; set; }
     
     /// <inheritdoc />
-    public DateTime StartedAt { get; set; }
+    public DateTime StartedAt { get; init; }
 
     /// <inheritdoc />
     public JobState CurrentState { get; set; } = JobState.Running;

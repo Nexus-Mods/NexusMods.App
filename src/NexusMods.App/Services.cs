@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.CLI.Renderers;
+using NexusMods.App.Downloaders;
 using NexusMods.App.Listeners;
 using NexusMods.App.UI;
 using NexusMods.CLI;
@@ -64,7 +65,8 @@ public static class Services
             .AddTestHarness()
             .AddSingleton<HttpClient>()
             .AddListeners()
-            .AddCommon();
+            .AddCommon()
+            .AddSingleton<DownloadService>();
 
         if (addStandardGameLocators)
             services.AddStandardGameLocators();
