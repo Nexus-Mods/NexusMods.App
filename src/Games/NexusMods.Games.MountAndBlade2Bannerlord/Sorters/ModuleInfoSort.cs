@@ -58,7 +58,7 @@ public class ModuleInfoSort : IGeneratedSortRule, ISortRule<Mod, ModId>, ITrigge
     {
         var moduleInfos = loadout.Mods.Select(x => x.Value.GetModuleInfo()).OfType<ModuleInfoExtended>().OrderBy(x => x.Id).ToArray();
         
-        var fp = Fingerprinter.Create();
+        using var fp = Fingerprinter.Create();
         fp.Add(loadout.Mods[self].DataStoreId);
         foreach (var moduleInfo in moduleInfos)
         {
