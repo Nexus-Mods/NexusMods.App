@@ -30,7 +30,7 @@ public class JobThroughputTests
         var throughput = job.GetThroughput(timeProvider.Object);
         throughput.Should().Be(Size.FromLong(expectedThroughput));
 
-        resource.Finish(job); 
+        job.Dispose();
         
         // Throughput should be zero after the job is finished.
         throughput = job.GetThroughput(timeProvider.Object);
