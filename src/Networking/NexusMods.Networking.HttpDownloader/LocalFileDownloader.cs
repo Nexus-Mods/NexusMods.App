@@ -29,7 +29,7 @@ internal static class LocalFileDownloader
         var filePath = Uri.UnescapeDataString(uri.AbsolutePath);
         var fullPath = Path.GetFullPath(filePath);
 
-        await using var stream = fullPath.ToAbsolutePath(FileSystem.Shared).Read();
+        await using var stream = fullPath.ToAbsolutePath(FileSystem.Shared).Open(FileMode.Open, FileAccess.ReadWrite);
         job.Size = Size.FromLong(stream.Length);
         await using var file = destination.Create();
         return await stream.HashingCopyAsync(file, default, job);
