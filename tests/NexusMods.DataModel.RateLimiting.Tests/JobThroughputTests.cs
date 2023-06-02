@@ -20,7 +20,7 @@ public class JobThroughputTests
         timeProvider.Setup(x => x.GetCurrentTimeUtc()).Returns(now);
         var resource = new Resource<JobThroughputTests, Size>("Test Resource", int.MaxValue, Size.FromLong(long.MaxValue), timeProvider.Object);
         
-        var job = await resource.BeginAsync("Test Job", Size.FromLong(jobSize), default);
+        using var job = await resource.BeginAsync("Test Job", Size.FromLong(jobSize), default);
         
         // Simulate some workload.
         await job.ReportAsync(Size.FromLong(processed), default);

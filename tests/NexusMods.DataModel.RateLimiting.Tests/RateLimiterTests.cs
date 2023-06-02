@@ -112,7 +112,7 @@ public class RateLimiterTests
     public async Task CanGetJobStatus()
     {
         var rateLimiter = new Resource<RateLimiterTests, Size>("Test Resource");
-        var job = await rateLimiter.BeginAsync("Test Job", Size.KB, CancellationToken.None);
+        using var job = await rateLimiter.BeginAsync("Test Job", Size.KB, CancellationToken.None);
 
         job.CurrentState.Should().Be(JobState.Running);
         job.Size.Should().Be(Size.KB);

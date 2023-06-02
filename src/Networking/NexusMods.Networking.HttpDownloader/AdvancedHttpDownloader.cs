@@ -92,10 +92,13 @@ namespace NexusMods.Networking.HttpDownloader
         }
 
         /// <inheritdoc />
-        public async Task<Hash> DownloadAsync(IReadOnlyList<HttpRequestMessage> sources, AbsolutePath destination, Size? size, CancellationToken cancel)
+        public async Task<Hash> DownloadAsync(IReadOnlyList<HttpRequestMessage> sources, AbsolutePath destination, HttpDownloaderState? downloaderState, Size? size, CancellationToken cancel)
         {
+            downloaderState ??= new HttpDownloaderState();
             using var primaryJob = await _limiter.BeginAsync($"Initiating Download {destination.FileName}", size ?? Size.One, cancel);
-
+            // Note: All data eventually is piped into primary job (when writing to destination), so we can just use that to track everything as a whole.
+            downloaderState.Jobs.Add(primaryJob);
+            
             // Integrate local download.
             var hash = await LocalFileDownloader.TryDownloadLocal(primaryJob, sources, destination);
             if (hash != null)
