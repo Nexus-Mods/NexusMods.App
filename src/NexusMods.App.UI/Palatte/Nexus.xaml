@@ -5,7 +5,8 @@
         <Color x:Key="BrandPrimaryDarker">#C87B28</Color>
         
         <Color x:Key="BrandAccent">#388FFA</Color>
-        
+        <Color x:Key="BrandAccentLighter">#60A5FB</Color>
+        <Color x:Key="BrandAccentDarker">#0555B8</Color>
 
         <SolidColorBrush Color="{DynamicResource BrandPrimary}" x:Key="BrandPrimaryBrush" />
         <SolidColorBrush Color="{DynamicResource BrandPrimaryLighter}" x:Key="BrandPrimaryLighterBrush" />

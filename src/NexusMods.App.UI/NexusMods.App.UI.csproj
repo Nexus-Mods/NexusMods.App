@@ -12,6 +12,7 @@
         <AvaloniaResource Include="Theme\DataGridStyles.xaml" />
         <AvaloniaResource Include="Theme\Index.xaml" />
         <AvaloniaResource Include="Theme\LabelStyles.xaml" />
+        <AvaloniaResource Include="Theme\ProgressBar.Download.xaml" />
         <AvaloniaResource Include="Theme\TextBlockStyles.xaml" />
         <AvaloniaResource Include="Theme\TextBox.xaml" />
         <AvaloniaResource Include="Theme\ToggleSwitchStyles.xaml" />
@@ -214,5 +215,9 @@
     <ItemGroup>
         <None Remove="Fonts\Bold\Montserrat-Bold.ttf" />
         <AvaloniaResource Include="Fonts\Bold\Montserrat-Bold.ttf" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <UpToDateCheckInput Remove="Controls\DownloadProgressBar\DownloadProgressBar.axaml" />
     </ItemGroup>
 </Project>
