@@ -10,9 +10,10 @@
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.RightContent.Downloads.InProgressView">
     <Design.DataContext>
-        <downloads:InProgressDesignViewModel></downloads:InProgressDesignViewModel>
+        <downloads:InProgressDesignViewModel/>
     </Design.DataContext>
     <StackPanel>
+        <!-- ToolBar -->
         <Border Classes="Toolbar">
             <Grid ColumnDefinitions="*, Auto">
                 <TextBlock Grid.Column="0" Text="IN PROGRESS"></TextBlock>
@@ -45,5 +46,38 @@
                 </StackPanel>
             </Grid>
         </Border>
+        
+        <!-- Title & Status -->
+        <DockPanel Margin="24, 16" LastChildFill="True" HorizontalAlignment="Stretch">
+            <TextBlock DockPanel.Dock="Left"
+                       Classes="H5MontserratSemi" 
+                       Text="In progress (0)" />
+            
+            <!-- Right Side -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <TextBlock VerticalAlignment="Center"
+                           Classes="Body2RobotoRegular" 
+                           Text="0GB / 0GB" Margin="0,0,16,0" />
+                
+                <!-- Note: Can use 'run' here, but don't want to make separate styles for 'run' -->
+                <TextBlock VerticalAlignment="Center"
+                           Classes="Body2RobotoRegularBold" 
+                           Text="0 mins" Margin="0,0,4,0" />
+                
+                <TextBlock VerticalAlignment="Center"
+                           Classes="Body2RobotoRegular" 
+                           Text="remaining" />
+                
+            </StackPanel>
+            
+        </DockPanel>
+        
+        <DataGrid
+            CanUserReorderColumns="True"
+            CanUserResizeColumns="True"
+            CanUserSortColumns="True"
+            Margin="24,16"
+            x:Name="ModsDataGrid" />
+        
     </StackPanel>
 </reactiveUi:ReactiveUserControl>

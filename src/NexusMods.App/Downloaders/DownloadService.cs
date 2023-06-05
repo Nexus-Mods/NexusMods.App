@@ -7,15 +7,10 @@ using NexusMods.Paths;
 
 namespace NexusMods.App.Downloaders;
 
-/// <summary>
-/// This is a 'download manager' of sorts.
-/// This service contains all of the downloads which have begun, or have.
-/// </summary>
-public class DownloadService
+/// <inheritdoc />
+public class DownloadService : IDownloadService
 {
-    /// <summary>
-    /// Contains all downloads managed by the application.
-    /// </summary>
+    /// <inheritdoc />
     public List<IDownloadTask> Downloads { get; } = new();
     
     private readonly IServiceProvider _provider;
@@ -30,51 +25,30 @@ public class DownloadService
         _provider = provider;
     }
     
-    /// <summary>
-    /// This gets fired whenever a download-and-install task is started.
-    /// </summary>
+    /// <inheritdoc />
     public IObservable<IDownloadTask> StartedTasks => _started;
 
-    /// <summary>
-    /// This gets fired whenever a status of download-and-install task is completed.
-    /// This happens when <see cref="JobState.Finished"/> is true.
-    /// </summary>
+    /// <inheritdoc />
     public IObservable<IDownloadTask> CompletedTasks => _completed;
 
-    /// <summary>
-    /// This gets fired whenever a status of download-and-install task is completed.
-    /// This happens when <see cref="JobState.Finished"/> is true.
-    /// </summary>
+    /// <inheritdoc />
     public IObservable<IDownloadTask> CancelledTasks => _cancelled;
 
-    /// <summary>
-    /// This gets fired whenever a download-and-install task is paused.
-    /// This happens when <see cref="JobState.Paused"/> is true.
-    /// </summary>
+    /// <inheritdoc />
     public IObservable<IDownloadTask> PausedTasks => _paused;
 
-    /// <summary>
-    /// This gets fired whenever a download-and-install task is resumed.
-    /// This happens when <see cref="JobState.Running"/> is true after <see cref="JobState.Paused"/>.
-    /// </summary>
+    /// <inheritdoc />
     public IObservable<IDownloadTask> ResumedTasks => _resumed;
 
-    /// <summary>
-    /// Adds a task that will download from a NXM link.
-    /// </summary>
-    /// <param name="url">Url to download from.</param>
+    /// <inheritdoc />
     public void AddNxmTask(NXMUrl url)
     {
         var task = _provider.GetRequiredService<NxmDownloadTask>();
         task.Init(url);
         AddTask(task);
     }
-
-    /// <summary>
-    /// Adds a task that will download from a HTTP link.
-    /// </summary>
-    /// <param name="url">Url to download from.</param>
-    /// <param name="loadout">Loadout for the task.</param>
+    
+    /// <inheritdoc />
     public void AddHttpTask(string url, Loadout loadout)
     {
         var task = _provider.GetRequiredService<HttpDownloadTask>();
@@ -82,10 +56,7 @@ public class DownloadService
         AddTask(task);
     }
     
-    /// <summary>
-    /// Adds a task to the download queue.
-    /// </summary>
-    /// <param name="task">A task which has not yet been started.</param>
+    /// <inheritdoc />
     public void AddTask(IDownloadTask task)
     {
         Downloads.Add(task);
@@ -93,44 +64,30 @@ public class DownloadService
         _started.OnNext(task);
     }
     
-    /// <summary>
-    /// This is a callback fired by individual implementations of <see cref="IDownloadTask"/>.
-    /// Fires off the necessary events.
-    /// </summary>
+    /// <inheritdoc />
     public void OnComplete(IDownloadTask task)
     {
         _completed.OnNext(task);
     }
     
-    /// <summary>
-    /// This is a callback fired by individual implementations of <see cref="IDownloadTask"/>.
-    /// Fires off the necessary events.
-    /// </summary>
+    /// <inheritdoc />
     public void OnCancelled(IDownloadTask task)
     {
         _cancelled.OnNext(task);
     }
     
-    /// <summary>
-    /// This is a callback fired by individual implementations of <see cref="IDownloadTask"/>.
-    /// Fires off the necessary events.
-    /// </summary>
+    /// <inheritdoc />
     public void OnPaused(IDownloadTask task)
     {
         _paused.OnNext(task);
     }
     
-    /// <summary>
-    /// This is a callback fired by individual implementations of <see cref="IDownloadTask"/>.
-    /// Fires off the necessary events.
-    /// </summary>
+    /// <inheritdoc />
     public void OnResumed(IDownloadTask task)
     {
         _resumed.OnNext(task);
     }
 
-    /// <summary>
-    /// Gets the total throughput of all download operations in bytes per second.
-    /// </summary>
+    /// <inheritdoc />
     public Size GetThroughput() => Downloads.SelectMany(x => x.DownloadJobs).GetTotalThroughput(new DateTimeProvider());
 }
