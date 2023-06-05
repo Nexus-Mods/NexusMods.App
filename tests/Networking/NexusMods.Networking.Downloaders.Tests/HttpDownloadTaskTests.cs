@@ -1,11 +1,10 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.App.Downloaders;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.TestFramework;
 
-namespace NexusMods.App.Tests.Downloaders;
+namespace NexusMods.Networking.Downloaders.Tests;
 
 public class HttpDownloadTaskTests : AGameTest<SkyrimSpecialEdition>
 {

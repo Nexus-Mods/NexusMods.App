@@ -1,8 +1,8 @@
 using System.Reactive.Linq;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.Extensions.Logging;
-using NexusMods.App.Downloaders;
 using NexusMods.DataModel.Interprocess;
+using NexusMods.Networking.Downloaders;
 using NexusMods.Networking.NexusWebApi.NMA.Messages;
 using NexusMods.Networking.NexusWebApi.Types;
 

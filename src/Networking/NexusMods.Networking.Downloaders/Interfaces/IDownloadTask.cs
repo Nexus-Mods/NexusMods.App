@@ -1,7 +1,7 @@
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Paths;
 
-namespace NexusMods.App.Downloaders;
+namespace NexusMods.Networking.Downloaders.Interfaces;
 
 /// <summary>
 /// Represents an individual task to download and install a mod.

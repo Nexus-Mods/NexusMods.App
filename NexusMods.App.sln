@@ -122,7 +122,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Common.Tests", "t
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Networking.NexusWebApi.NMA", "src\Networking\NexusMods.Networking.NexusWebApi.NMA\NexusMods.Networking.NexusWebApi.NMA.csproj", "{871E2565-BD95-43D1-9EC3-CAAC74D55507}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.App.Tests", "tests\NexusMods.App.Tests\NexusMods.App.Tests.csproj", "{0208BA92-B5FD-49EA-914D-26CEDBC333F0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Networking.Downloaders", "src\Networking\NexusMods.Networking.Downloaders\NexusMods.Networking.Downloaders.csproj", "{3FBDEE15-9892-40EF-9593-6353068FAF48}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Networking.Downloaders.Tests", "tests\Networking\NexusMods.Networking.Downloaders.Tests\NexusMods.Networking.Downloaders.Tests.csproj", "{09B037AB-07BB-4154-95FD-6EA2E55C4568}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -302,10 +304,14 @@ Global
 		{871E2565-BD95-43D1-9EC3-CAAC74D55507}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{871E2565-BD95-43D1-9EC3-CAAC74D55507}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{871E2565-BD95-43D1-9EC3-CAAC74D55507}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0208BA92-B5FD-49EA-914D-26CEDBC333F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0208BA92-B5FD-49EA-914D-26CEDBC333F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0208BA92-B5FD-49EA-914D-26CEDBC333F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0208BA92-B5FD-49EA-914D-26CEDBC333F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FBDEE15-9892-40EF-9593-6353068FAF48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FBDEE15-9892-40EF-9593-6353068FAF48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FBDEE15-9892-40EF-9593-6353068FAF48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FBDEE15-9892-40EF-9593-6353068FAF48}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09B037AB-07BB-4154-95FD-6EA2E55C4568}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09B037AB-07BB-4154-95FD-6EA2E55C4568}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09B037AB-07BB-4154-95FD-6EA2E55C4568}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09B037AB-07BB-4154-95FD-6EA2E55C4568}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -359,7 +365,8 @@ Global
 		{CB61A764-B3BB-42C0-8CDB-DBE57FB80DF5} = {CF7454A5-0EBB-46E7-9A10-614380DB95D9}
 		{FE0B804A-949E-44E7-9531-B16664ACEC01} = {52AF9D62-7D5B-4AD0-BA12-86F2AA67428B}
 		{871E2565-BD95-43D1-9EC3-CAAC74D55507} = {D7E9D8F5-8AC8-4ADA-B219-C549084AD84C}
-		{0208BA92-B5FD-49EA-914D-26CEDBC333F0} = {52AF9D62-7D5B-4AD0-BA12-86F2AA67428B}
+		{3FBDEE15-9892-40EF-9593-6353068FAF48} = {D7E9D8F5-8AC8-4ADA-B219-C549084AD84C}
+		{09B037AB-07BB-4154-95FD-6EA2E55C4568} = {897C4198-884F-448A-B0B0-C2A6D971EAE0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F9F8352-34DD-42C0-8564-EE9AF34A3501}

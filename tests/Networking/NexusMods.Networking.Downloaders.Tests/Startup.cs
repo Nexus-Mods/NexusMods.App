@@ -1,12 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.App.Downloaders;
 using NexusMods.Common;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.RedEngine;
 using NexusMods.Games.TestFramework;
 using NexusMods.StandardGameLocators.TestHelpers;
 
-namespace NexusMods.App.Tests;
+namespace NexusMods.Networking.Downloaders.Tests;
 
 public class Startup
 {

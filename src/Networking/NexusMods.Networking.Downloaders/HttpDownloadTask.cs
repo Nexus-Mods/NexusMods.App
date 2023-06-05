@@ -1,14 +1,12 @@
-using NexusMods.DataModel;
+using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.RateLimiting;
+using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.HttpDownloader;
-using NexusMods.Networking.NexusWebApi;
-using NexusMods.Networking.NexusWebApi.DTOs;
-using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
 
-namespace NexusMods.App.Downloaders;
+namespace NexusMods.Networking.Downloaders;
 
 /// <summary>
 /// Represents an individual task to download and install a .nxm link.
@@ -16,17 +14,18 @@ namespace NexusMods.App.Downloaders;
 /// <remarks>
 ///     This task is usually created via <see cref="DownloadService.AddNxmTask"/>.
 /// </remarks>
-public class NxmDownloadTask : IDownloadTask
+public class HttpDownloadTask : IDownloadTask
 {
-    private NXMUrl _url = null!;
-    private readonly LoadoutRegistry _loadoutRegistry;
+    private string _url = null!;
+    private readonly ILogger<HttpDownloadTask> _logger;
     private readonly TemporaryFileManager _temp;
-    private readonly Client _client;
+    private readonly HttpClient _client;
     private readonly IHttpDownloader _downloader;
     private readonly IArchiveAnalyzer _archiveAnalyzer;
     private readonly IArchiveInstaller _archiveInstaller;
     private readonly CancellationTokenSource _tokenSource;
     private readonly HttpDownloaderState _state;
+    private Loadout? _loadout;
     private Task? _task;
 
     /// <inheritdoc />
@@ -40,9 +39,9 @@ public class NxmDownloadTask : IDownloadTask
     ///     This constructor is intended to be called from Dependency Injector.
     ///     After running this constructor, you will need to run 
     /// </remarks>
-    public NxmDownloadTask(LoadoutRegistry loadoutRegistry, TemporaryFileManager temp, Client client, IHttpDownloader downloader, IArchiveAnalyzer archiveAnalyzer, IArchiveInstaller archiveInstaller, DownloadService owner)
+    public HttpDownloadTask(ILogger<HttpDownloadTask> logger, TemporaryFileManager temp, HttpClient client, IHttpDownloader downloader, IArchiveAnalyzer archiveAnalyzer, IArchiveInstaller archiveInstaller, DownloadService owner)
     {
-        _loadoutRegistry = loadoutRegistry;
+        _logger = logger;
         _temp = temp;
         _client = client;
         _downloader = downloader;
@@ -56,8 +55,12 @@ public class NxmDownloadTask : IDownloadTask
     /// <summary>
     /// Initializes components of this task that cannot be DI Injected.
     /// </summary>
-    public void Init(NXMUrl url) => _url = url;
-    
+    public void Init(string url, Loadout loadout)
+    {
+        _url = url;
+        _loadout = loadout;
+    }
+
     public Task StartAsync()
     {
         _task = StartImpl();
@@ -66,25 +69,37 @@ public class NxmDownloadTask : IDownloadTask
     
     private async Task StartImpl()
     {
-        // TODO: Some error handling here in case user does not have correct game.
         var token = _tokenSource.Token;
         await using var tempPath = _temp.CreateFile();
-        var loadout = _loadoutRegistry.AllLoadouts().First(x => x.Installation.Game.Domain == _url.Mod.Game);
-        
-        Response<DownloadLink[]> links;
-        if (_url.Key == null)
-            links = await _client.DownloadLinksAsync(_url.Mod.Game, _url.Mod.ModId, _url.Mod.FileId, token);
-        else
-            links = await _client.DownloadLinksAsync(_url.Mod.Game, _url.Mod.ModId, _url.Mod.FileId, _url.Key.Value, _url.ExpireTime!.Value, token);
-        
-        var downloadUris = links.Data.Select(u => new HttpRequestMessage(HttpMethod.Get, u.Uri)).ToArray();
-        var file = (await _client.ModFilesAsync(_url.Mod.Game, _url.Mod.ModId, token))
-            .Data.Files.First(x => x.FileId == _url.Mod.FileId);
-        await _downloader.DownloadAsync(downloadUris, tempPath, _state, Size.FromLong(file.SizeInBytes!.Value), token);
+
+        var nameSize = await GetNameAndSize();
+        var request = new HttpRequestMessage(HttpMethod.Get, _url);
+        await _downloader.DownloadAsync(new[] { request }, tempPath, _state, Size.FromLong(nameSize.FileSize), token);
 
         var analyzed = await _archiveAnalyzer.AnalyzeFileAsync(tempPath, token:token);
-        await _archiveInstaller.AddMods(loadout.LoadoutId, analyzed.Hash, file.Name, token);
+        await _archiveInstaller.AddMods(_loadout!.LoadoutId, analyzed.Hash, nameSize.FileName, token);
         Owner.OnComplete(this);
+    }
+
+    private async Task<GetNameAndSizeResult> GetNameAndSize()
+    {
+        var uri = new Uri(_url);
+        if (uri.IsFile)
+            return new GetNameAndSizeResult(string.Empty, 0);
+
+        var response = await _client.GetAsync(_url, HttpCompletionOption.ResponseHeadersRead);
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogWarning("HTTP request {Url} failed with status {ResponseStatusCode}", _url, response.StatusCode);
+            return new GetNameAndSizeResult(string.Empty, 0);
+        }
+
+        // Get the filename from the Content-Disposition header, or default to a temporary file name.
+        var contentDispositionHeader = response.Content.Headers.ContentDisposition?.FileNameStar
+                                       ?? response.Content.Headers.ContentDisposition?.FileName
+                                       ?? Path.GetTempFileName();
+
+        return new GetNameAndSizeResult(contentDispositionHeader.Trim('"'), response.Content.Headers.ContentLength.GetValueOrDefault(0));
     }
 
     public void Cancel()
@@ -98,4 +113,5 @@ public class NxmDownloadTask : IDownloadTask
 
     public void Pause() => throw new NotImplementedException();
     public void Resume() => throw new NotImplementedException();
+    private record GetNameAndSizeResult(string FileName, long FileSize);
 }

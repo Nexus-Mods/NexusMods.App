@@ -2,10 +2,11 @@ using System.Reactive.Subjects;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.RateLimiting;
+using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
 
-namespace NexusMods.App.Downloaders;
+namespace NexusMods.Networking.Downloaders;
 
 /// <inheritdoc />
 public class DownloadService : IDownloadService

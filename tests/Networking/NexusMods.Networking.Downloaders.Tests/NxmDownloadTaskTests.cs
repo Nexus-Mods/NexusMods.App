@@ -1,10 +1,9 @@
 using FluentAssertions;
-using NexusMods.App.Downloaders;
 using NexusMods.Games.RedEngine;
 using NexusMods.Games.TestFramework;
 using NexusMods.Networking.NexusWebApi.Types;
 
-namespace NexusMods.App.Tests.Downloaders;
+namespace NexusMods.Networking.Downloaders.Tests;
 
 [Trait("RequiresNetworking", "True")]
 public class NxmDownloadTaskTests : AGameTest<Cyberpunk2077>

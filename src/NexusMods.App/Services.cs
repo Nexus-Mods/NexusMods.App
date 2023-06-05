@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.CLI.Renderers;
-using NexusMods.App.Downloaders;
 using NexusMods.App.Listeners;
 using NexusMods.App.UI;
 using NexusMods.CLI;
@@ -16,6 +15,7 @@ using NexusMods.Games.Reshade;
 using NexusMods.Games.Sifu;
 using NexusMods.Games.StardewValley;
 using NexusMods.Games.TestHarness;
+using NexusMods.Networking.Downloaders;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.NMA;
@@ -66,7 +66,7 @@ public static class Services
             .AddSingleton<HttpClient>()
             .AddListeners()
             .AddCommon()
-            .AddSingleton<DownloadService>();
+            .AddDownloaders();
 
         if (addStandardGameLocators)
             services.AddStandardGameLocators();

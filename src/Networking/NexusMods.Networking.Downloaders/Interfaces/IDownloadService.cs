@@ -1,8 +1,9 @@
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.RateLimiting;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
 
-namespace NexusMods.App.Downloaders;
+namespace NexusMods.Networking.Downloaders.Interfaces;
 
 /// <summary>
 /// This is a 'download manager' of sorts.

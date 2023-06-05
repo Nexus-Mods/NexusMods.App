@@ -1,9 +1,9 @@
 using FluentAssertions;
-using NexusMods.App.Downloaders;
 using NexusMods.DataModel.RateLimiting;
+using NexusMods.Networking.Downloaders.Interfaces;
 using Size = NexusMods.Paths.Size;
 
-namespace NexusMods.App.Tests.Downloaders;
+namespace NexusMods.Networking.Downloaders.Tests;
 
 public class DownloadServiceTests
 {
