@@ -34,12 +34,12 @@ public readonly struct Extension : IEquatable<Extension>
     public static Extension FromPath(string path)
     {
         var ext = Path.GetExtension(path);
-        return ext == "" ? None : new Extension(ext);
+        return string.IsNullOrEmpty(ext) ? None : new Extension(ext);
     }
 
     private void Validate()
     {
-        if (!_extension.StartsWith(".") && _extension != "")
+        if (!_extension.StartsWith('.') && !string.IsNullOrEmpty(_extension))
             ThrowHelpers.PathException($"Extensions must start with '.' got {_extension}");
     }
 
@@ -47,7 +47,7 @@ public readonly struct Extension : IEquatable<Extension>
     public static explicit operator string(Extension path) => path._extension;
 
     /// <summary/>
-    public static explicit operator Extension(string path) => new Extension(path);
+    public static explicit operator Extension(string path) => new(path);
 
     /// <summary/>
     public static bool operator ==(Extension a, Extension b)

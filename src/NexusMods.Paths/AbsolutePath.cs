@@ -12,8 +12,7 @@ namespace NexusMods.Paths;
 /// A path that represents a full path to a file or directory.
 /// </summary>
 [PublicAPI]
-//[DebuggerDisplay("{DebugDisplay()}")]
-[DebuggerDisplay("Directory=\"{Directory}\" FileName=\"{FileName}\"")]
+[DebuggerDisplay("{DebugDisplay()}")]
 public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
 {
     private static readonly char PathSeparatorForInternalOperations = Path.DirectorySeparatorChar;
@@ -55,7 +54,7 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     }
 
     /// <inheritdoc />
-    public Extension Extension => Extension.FromPath(FileName);
+    public Extension Extension => string.IsNullOrEmpty(FileName) ? Extension.None : Extension.FromPath(FileName);
 
     /// <inheritdoc />
     RelativePath IPath.FileName => FileName;
@@ -272,6 +271,21 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         }
 
         return Directory.Length + DirectorySeparatorCharStr.Length + FileName.Length;
+    }
+
+
+    /// <summary>
+    /// Obtains the name of the first folder stored in this path.
+    /// </summary>
+    public AbsolutePath GetRootDirectory()
+    {
+        var span = Directory.AsSpan();
+
+        var rootLength = GetRootLength(span);
+        if (rootLength == 0) return FromFullPath(Directory, FileSystem);
+
+        var slice = span.SliceFast(0, rootLength);
+        return FromFullPath(slice.ToString(), FileSystem);
     }
 
     /// <summary>

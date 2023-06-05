@@ -13,7 +13,7 @@ public class UtilityTests
     {
         _fileSystem = new InMemoryFileSystem();
     }
-    
+
     [SkippableTheory]
     [InlineData("/", "/foo", true)]
     [InlineData("/foo", "/foo/bar", true)]
@@ -56,13 +56,13 @@ public class UtilityTests
     [InlineData("/", "/foo/bar", true)]
     [InlineData("C:\\", "C:\\foo", false)]
     [InlineData("C:\\", "C:\\foo\\bar", false)]
-    public void TopParent(string expected, string item, bool linux)
+    public void GetRootDirectory(string expected, string item, bool linux)
     {
         Skip.If(linux != OperatingSystem.IsLinux());
 
         var path = AbsolutePath.FromFullPath(item, _fileSystem);
 
-        path.TopParent.GetFullPath()
+        path.GetRootDirectory().GetFullPath()
             .Should()
             .Be(expected);
     }
