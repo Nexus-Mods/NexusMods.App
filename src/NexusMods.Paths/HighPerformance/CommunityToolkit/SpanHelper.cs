@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -386,6 +387,8 @@ internal static class SpanHelper
     [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes", Justification = "Using var will confuse the compiler and produce a nullability error.")]
     public static ref T DangerousGetReferenceAt<T>(this ReadOnlySpan<T> span, int i)
     {
+        Debug.Assert(i < span.Length, $"Unable to get dangerous reference at [{i}] because it's out of bounds at '{span.Length}'");
+
         ref T r0 = ref MemoryMarshal.GetReference(span);
         ref T ri = ref Unsafe.Add(ref r0, (nint)(uint)i);
 

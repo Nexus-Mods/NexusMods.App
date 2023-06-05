@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -60,6 +61,7 @@ public static class SpanExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReadOnlySpan<T> SliceFast<T>(this ReadOnlySpan<T> data, int start)
     {
+        Debug.Assert(start < data.Length, $"Unable to slice fast because [{start}..] is out of bounds at '{data.Length}'");
         return MemoryMarshal.CreateSpan(ref Unsafe.Add(ref MemoryMarshal.GetReference(data), start), data.Length - start);
     }
 
@@ -69,6 +71,8 @@ public static class SpanExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReadOnlySpan<T> SliceFast<T>(this ReadOnlySpan<T> data, int start, int length)
     {
+        Debug.Assert(start < data.Length, $"Unable to slice fast because [{start}..] is out of bounds at '{data.Length}'");
+        Debug.Assert(start + length <= data.Length, $"Unable to slice fast because [{start}..{start}+{length}] is out of bounds at '{data.Length}'");
         return MemoryMarshal.CreateSpan(ref Unsafe.Add(ref MemoryMarshal.GetReference(data), start), length);
     }
 
@@ -78,6 +82,7 @@ public static class SpanExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Span<T> SliceFast<T>(this Span<T> data, int start)
     {
+        Debug.Assert(start < data.Length, $"Unable to slice fast because [{start}..] is out of bounds at '{data.Length}'");
         return MemoryMarshal.CreateSpan(ref Unsafe.Add(ref MemoryMarshal.GetReference(data), start), data.Length - start);
     }
 
@@ -87,6 +92,8 @@ public static class SpanExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Span<T> SliceFast<T>(this Span<T> data, int start, int length)
     {
+        Debug.Assert(start < data.Length, $"Unable to slice fast because [{start}..] is out of bounds at '{data.Length}'");
+        Debug.Assert(start + length <= data.Length, $"Unable to slice fast because [{start}..{start}+{length}] is out of bounds at '{data.Length}'");
         return MemoryMarshal.CreateSpan(ref Unsafe.Add(ref MemoryMarshal.GetReference(data), start), length);
     }
 
@@ -126,7 +133,7 @@ public static class SpanExtensions
         if (oldValue.Equals(newValue))
             return data;
 
-        // Vectorised Span item replace by Sewer56 
+        // Vectorised Span item replace by Sewer56
         if (data.Length > buffer.Length)
         {
             ThrowHelpers.InsufficientMemoryException($"Length of '{nameof(buffer)}' passed into {nameof(Replace)} is insufficient.");
@@ -168,7 +175,7 @@ public static class SpanExtensions
                 while (x < lengthToExamine);
             }
 
-            // There are between 0 to Vector<T>.Count elements remaining now.  
+            // There are between 0 to Vector<T>.Count elements remaining now.
 
             // Since our operation can be applied multiple times without changing the result
             // [applying the replacement twice is non destructive]. We can avoid non-vectorised code
