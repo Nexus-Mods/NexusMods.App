@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using AutoFixture.Xunit2;
 using FluentAssertions;
+using NexusMods.Paths;
 
 namespace NexusMods.Common.Tests;
 

@@ -27,7 +27,7 @@ public class SevenZipExtractor : IExtractor
     private readonly ILogger<SevenZipExtractor> _logger;
     private readonly IResource<IExtractor, Size> _limiter;
 
-    private static readonly IOSInformation OSInformation = Common.OSInformation.Shared;
+    private static readonly IOSInformation OSInformation = Paths.OSInformation.Shared;
 
     private static readonly FileType[] SupportedTypesCached = { FileType._7Z, FileType.RAR_NEW, FileType.RAR_OLD, FileType.ZIP };
     private static readonly Extension[] SupportedExtensionsCached = { KnownExtensions._7z, KnownExtensions.Rar, KnownExtensions.Zip, KnownExtensions._7zip };
