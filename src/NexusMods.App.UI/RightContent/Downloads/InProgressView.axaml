@@ -47,37 +47,46 @@
             </Grid>
         </Border>
         
-        <!-- Title & Status -->
-        <DockPanel Margin="24, 16" LastChildFill="True" HorizontalAlignment="Stretch">
-            <TextBlock DockPanel.Dock="Left"
-                       Classes="H5MontserratSemi" 
-                       Text="In progress (0)" />
-            
-            <!-- Right Side -->
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <TextBlock VerticalAlignment="Center"
-                           Classes="Body2RobotoRegular" 
-                           Text="0GB / 0GB" Margin="0,0,16,0" />
-                
-                <!-- Note: Can use 'run' here, but don't want to make separate styles for 'run' -->
-                <TextBlock VerticalAlignment="Center"
-                           Classes="Body2RobotoRegularBold" 
-                           Text="0 mins" Margin="0,0,4,0" />
-                
-                <TextBlock VerticalAlignment="Center"
-                           Classes="Body2RobotoRegular" 
-                           Text="remaining" />
-                
-            </StackPanel>
-            
-        </DockPanel>
+        <!-- Page Content -->
+        <StackPanel Margin="24, 16" >
         
-        <DataGrid
-            CanUserReorderColumns="True"
-            CanUserResizeColumns="True"
-            CanUserSortColumns="True"
-            Margin="24,16"
-            x:Name="ModsDataGrid" />
+            <!-- Title & Status -->
+            <DockPanel LastChildFill="True" HorizontalAlignment="Stretch">
+                <TextBlock DockPanel.Dock="Left"
+                           Classes="H5MontserratSemi" 
+                           Text="In progress (0)" 
+                           Margin="0,0,0,16" />
+            
+                <!-- Right Side -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock VerticalAlignment="Center"
+                               Classes="Body2RobotoRegular" 
+                               Text="0GB / 0GB" Margin="0,0,16,0" />
+                
+                    <!-- Note: Can use 'run' here, but don't want to make separate styles for 'run' -->
+                    <TextBlock VerticalAlignment="Center"
+                               Classes="Body2RobotoRegularBold" 
+                               Text="0 mins" Margin="0,0,4,0" />
+                
+                    <TextBlock VerticalAlignment="Center"
+                               Classes="Body2RobotoRegular" 
+                               Text="remaining" />
+                
+                </StackPanel>
+            
+            </DockPanel>
         
+            <!-- Progress -->
+            <ProgressBar Classes="DownloadBar" Minimum="0" Maximum="1"/>
+        
+            <!-- Currently Downloaded Mods -->
+            <DataGrid
+                CanUserReorderColumns="True"
+                CanUserResizeColumns="True"
+                CanUserSortColumns="True"
+                AutoGenerateColumns="True"
+                Margin="24,16"
+                x:Name="ModsDataGrid" />
+        </StackPanel>
     </StackPanel>
 </reactiveUi:ReactiveUserControl>

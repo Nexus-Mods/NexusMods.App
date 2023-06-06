@@ -10,5 +10,9 @@ public enum ColumnType
     Version,
     Category,
     Installed,
-    Enabled
+    Enabled,
+    
+    // Download
+    Game,
+    Size
 }

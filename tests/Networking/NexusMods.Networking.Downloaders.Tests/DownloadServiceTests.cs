@@ -93,6 +93,8 @@ public class DownloadServiceTests
         public DummyDownloadTask(DownloadService service) { Owner = service; }
         public IEnumerable<IJob<Size>> DownloadJobs => Array.Empty<IJob<Size>>();
         public DownloadService Owner { get; }
+        public DownloadTaskStatus Status { get; }
+        public string FriendlyName { get; }
 
         public Task StartAsync() => Task.CompletedTask;
         public void Cancel() => Owner.OnCancelled(this);

@@ -2,6 +2,7 @@ using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Networking.Downloaders.Interfaces;
+using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.DTOs;
@@ -16,7 +17,7 @@ namespace NexusMods.Networking.Downloaders;
 /// <remarks>
 ///     This task is usually created via <see cref="DownloadService.AddNxmTask"/>.
 /// </remarks>
-public class NxmDownloadTask : IDownloadTask
+public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSize
 {
     private NXMUrl _url = null!;
     private readonly LoadoutRegistry _loadoutRegistry;
@@ -35,6 +36,18 @@ public class NxmDownloadTask : IDownloadTask
     /// <inheritdoc />
     public DownloadService Owner { get; }
 
+    /// <inheritdoc />
+    public DownloadTaskStatus Status { get; private set; } = DownloadTaskStatus.Idle;
+
+    /// <inheritdoc />
+    public string FriendlyName { get; private set; } = "Unknown NXM Mod";
+
+    /// <inheritdoc />
+    public string Version { get; private set; } = "Unknown Version";
+
+    /// <inheritdoc />
+    public long SizeBytes { get; private set; } = 0;
+    
     /// <summary/>
     /// <remarks>
     ///     This constructor is intended to be called from Dependency Injector.
@@ -70,7 +83,8 @@ public class NxmDownloadTask : IDownloadTask
         var token = _tokenSource.Token;
         await using var tempPath = _temp.CreateFile();
         var loadout = _loadoutRegistry.AllLoadouts().First(x => x.Installation.Game.Domain == _url.Mod.Game);
-        
+
+        Status = DownloadTaskStatus.Downloading;
         Response<DownloadLink[]> links;
         if (_url.Key == null)
             links = await _client.DownloadLinksAsync(_url.Mod.Game, _url.Mod.ModId, _url.Mod.FileId, token);
@@ -78,12 +92,20 @@ public class NxmDownloadTask : IDownloadTask
             links = await _client.DownloadLinksAsync(_url.Mod.Game, _url.Mod.ModId, _url.Mod.FileId, _url.Key.Value, _url.ExpireTime!.Value, token);
         
         var downloadUris = links.Data.Select(u => new HttpRequestMessage(HttpMethod.Get, u.Uri)).ToArray();
-        var file = (await _client.ModFilesAsync(_url.Mod.Game, _url.Mod.ModId, token))
-            .Data.Files.First(x => x.FileId == _url.Mod.FileId);
+        var modFiles = (await _client.ModFilesAsync(_url.Mod.Game, _url.Mod.ModId, token)).Data;
+        var file = modFiles.Files.First(x => x.FileId == _url.Mod.FileId);
+        
+        FriendlyName = file.Name;
+        Version = file.Version;
+        SizeBytes = file.SizeInBytes.GetValueOrDefault(-1);
+        
         await _downloader.DownloadAsync(downloadUris, tempPath, _state, Size.FromLong(file.SizeInBytes!.Value), token);
 
+        Status = DownloadTaskStatus.Installing;
         var analyzed = await _archiveAnalyzer.AnalyzeFileAsync(tempPath, token:token);
         await _archiveInstaller.AddMods(loadout.LoadoutId, analyzed.Hash, file.Name, token);
+        
+        Status = DownloadTaskStatus.Completed;
         Owner.OnComplete(this);
     }
 
@@ -96,6 +118,11 @@ public class NxmDownloadTask : IDownloadTask
         Owner.OnCancelled(this);
     }
 
-    public void Pause() => throw new NotImplementedException();
+    public void Pause()
+    {
+        Status = DownloadTaskStatus.Paused;
+        throw new NotImplementedException();
+    }
+
     public void Resume() => throw new NotImplementedException();
 }

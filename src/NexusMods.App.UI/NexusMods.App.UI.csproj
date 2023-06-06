@@ -97,6 +97,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Networking\NexusMods.Networking.Downloaders\NexusMods.Networking.Downloaders.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.NexusWebApi.NMA\NexusMods.Networking.NexusWebApi.NMA.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
         <ProjectReference Include="..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
@@ -122,9 +123,6 @@
         <Compile Update="RightContent\LoadoutGrid\Columns\ModEnabledDesignViewModel.cs">
             <DependentUpon>IModEnabledViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\ModNameDesignViewModel.cs">
-            <DependentUpon>IModNameViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="RightContent\FoundGamesViewModel.cs">
             <DependentUpon>IFoundGamesViewModel.cs</DependentUpon>
         </Compile>
@@ -136,9 +134,6 @@
         </Compile>
         <Compile Update="RightContent\LoadoutGrid\Columns\ModCategoryDesignViewModel.cs">
             <DependentUpon>IModCategoryViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\ModNameViewModel.cs">
-            <DependentUpon>IModNameViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="RightContent\LoadoutGrid\Columns\ModInstalledDesignViewModel.cs">
             <DependentUpon>IModInstalledViewModel.cs</DependentUpon>
@@ -205,6 +200,45 @@
         </Compile>
         <Compile Update="Controls\Spine\Buttons\Download\DownloadButtonViewModel.cs">
           <DependentUpon>IDownloadButtonViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\Downloads\ViewModels\DownloadTaskDesignViewModel.cs">
+          <DependentUpon>IDownloadTaskViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModNameDesignViewModel.cs">
+          <DependentUpon>IModNameViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModNameViewModel.cs">
+          <DependentUpon>IModNameViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadGameDesignViewModel.cs">
+          <DependentUpon>IDownloadGameViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadGameView.axaml.cs">
+          <DependentUpon>DownloadGameView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadGameViewModel.cs">
+          <DependentUpon>IDownloadGameViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadSizeDesignViewModel.cs">
+          <DependentUpon>IDownloadSizeViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadSizeViewModel.cs">
+          <DependentUpon>IDownloadSizeViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadSizeView.axaml.cs">
+          <DependentUpon>DownloadSizeView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadStatusDesignViewModel.cs">
+          <DependentUpon>IDownloadStatusViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadStatusViewModel.cs">
+          <DependentUpon>IDownloadStatusViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadStatusView.axaml.cs">
+          <DependentUpon>DownloadStatusView.axaml</DependentUpon>
+          <SubType>Code</SubType>
         </Compile>
     </ItemGroup>
 

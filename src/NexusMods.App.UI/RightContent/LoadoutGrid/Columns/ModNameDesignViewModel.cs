@@ -1,8 +1,5 @@
 ﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Ids;
-using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

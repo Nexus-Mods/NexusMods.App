@@ -3,6 +3,7 @@ using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Networking.Downloaders.Interfaces;
+using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Paths;
 
@@ -14,7 +15,7 @@ namespace NexusMods.Networking.Downloaders;
 /// <remarks>
 ///     This task is usually created via <see cref="DownloadService.AddNxmTask"/>.
 /// </remarks>
-public class HttpDownloadTask : IDownloadTask
+public class HttpDownloadTask : IDownloadTask, IHaveFileSize
 {
     private string _url = null!;
     private readonly ILogger<HttpDownloadTask> _logger;
@@ -33,6 +34,15 @@ public class HttpDownloadTask : IDownloadTask
 
     /// <inheritdoc />
     public DownloadService Owner { get; }
+
+    /// <inheritdoc />
+    public DownloadTaskStatus Status { get; private set; } = DownloadTaskStatus.Idle;
+
+    /// <inheritdoc />
+    public string FriendlyName { get; private set; } = "Unknown HTTP Download";
+
+    /// <inheritdoc />
+    public long SizeBytes { get; private set; } = -1;
 
     /// <summary/>
     /// <remarks>
@@ -72,12 +82,18 @@ public class HttpDownloadTask : IDownloadTask
         var token = _tokenSource.Token;
         await using var tempPath = _temp.CreateFile();
 
+        Status = DownloadTaskStatus.Downloading;
         var nameSize = await GetNameAndSize();
+        FriendlyName = nameSize.FileName;
+        SizeBytes = nameSize.FileSize;
         var request = new HttpRequestMessage(HttpMethod.Get, _url);
-        await _downloader.DownloadAsync(new[] { request }, tempPath, _state, Size.FromLong(nameSize.FileSize), token);
-
+        await _downloader.DownloadAsync(new[] { request }, tempPath, _state, Size.FromLong(SizeBytes <= 0 ? 0 : SizeBytes), token);
+        
+        Status = DownloadTaskStatus.Installing;
         var analyzed = await _archiveAnalyzer.AnalyzeFileAsync(tempPath, token:token);
         await _archiveInstaller.AddMods(_loadout!.LoadoutId, analyzed.Hash, nameSize.FileName, token);
+        
+        Status = DownloadTaskStatus.Completed;
         Owner.OnComplete(this);
     }
 
@@ -85,13 +101,13 @@ public class HttpDownloadTask : IDownloadTask
     {
         var uri = new Uri(_url);
         if (uri.IsFile)
-            return new GetNameAndSizeResult(string.Empty, 0);
+            return new GetNameAndSizeResult(string.Empty, -1);
 
         var response = await _client.GetAsync(_url, HttpCompletionOption.ResponseHeadersRead);
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogWarning("HTTP request {Url} failed with status {ResponseStatusCode}", _url, response.StatusCode);
-            return new GetNameAndSizeResult(string.Empty, 0);
+            return new GetNameAndSizeResult(string.Empty, -1);
         }
 
         // Get the filename from the Content-Disposition header, or default to a temporary file name.
@@ -111,7 +127,12 @@ public class HttpDownloadTask : IDownloadTask
         Owner.OnCancelled(this);
     }
 
-    public void Pause() => throw new NotImplementedException();
+    public void Pause()
+    {
+        Status = DownloadTaskStatus.Paused;
+        throw new NotImplementedException();
+    }
+
     public void Resume() => throw new NotImplementedException();
     private record GetNameAndSizeResult(string FileName, long FileSize);
 }

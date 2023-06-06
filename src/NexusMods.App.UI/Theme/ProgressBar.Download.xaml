@@ -4,8 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.PreviewWith>
         <StackPanel Width="200" Spacing="8" Margin="8">
-            <ProgressBar Classes="DownloadBar" Minimum="0" Maximum="1"></ProgressBar>
-            <ProgressBar Classes="DownloadBar" Minimum="0" Maximum="1" Value="0.75"></ProgressBar>
+            <ProgressBar Classes="DownloadBar" Minimum="0" Maximum="1"/>
+            <ProgressBar Classes="DownloadBar" Minimum="0" Maximum="1" Value="0.75"/>
         </StackPanel>
     </Design.PreviewWith>
     

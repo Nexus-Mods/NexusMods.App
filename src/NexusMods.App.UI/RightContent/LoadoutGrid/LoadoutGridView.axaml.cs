@@ -1,4 +1,5 @@
-﻿using System.Reactive.Disposables;
+﻿using System.Collections.ObjectModel;
+using System.Reactive.Disposables;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
@@ -6,10 +7,10 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.Templates;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
-using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
 using ReactiveUI;
+using static NexusMods.App.UI.RightContent.LoadoutGrid.Columns.Helpers;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid;
 
@@ -35,21 +36,13 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
                 ReactiveCommand.CreateFromTask(DeleteSelectedMods);
 
             this.WhenAnyValue(view => view.ViewModel!.Columns)
-                .OnUI()
-                .SubscribeWithErrorLogging(logger: default, columns =>
-                {
-                    ModsDataGrid.Columns.Clear();
-                    foreach (var column in columns)
-                    {
-                        var generatedColumn = column.Generate();
-                        generatedColumn.Header = column.Type.GenerateHeader();
-                        ModsDataGrid.Columns.Add(generatedColumn);
-                    }
-                })
+                .GenerateColumns(ModsDataGrid)
                 .DisposeWith(d);
         });
     }
+
     
+
     private async Task AddMod()
     {
         var provider = TopLevel.GetTopLevel(this)!.StorageProvider;
