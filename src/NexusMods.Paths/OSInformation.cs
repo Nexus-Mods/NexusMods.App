@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 
-namespace NexusMods.Common;
+namespace NexusMods.Paths;
 
 /// <summary>
 /// Implementation of <see cref="IOSInformation"/>.
