@@ -14,20 +14,10 @@ using ReactiveUI;
 
 namespace NexusMods.UI.Tests;
 
-public class GeneralTests
+public class GeneralTests : AUiTest
 {
-    private readonly AvaloniaApp _app;
-    private readonly IFileSystem _fileSystem;
-    private readonly LoadoutManager _loadoutManager;
-    private readonly IGameLeftMenuViewModel _vm;
-
-    public GeneralTests(AvaloniaApp helper,
-        IFileSystem fileSystem, LoadoutManager loadoutManager, IGameLeftMenuViewModel viewModel)
+    public GeneralTests(IServiceProvider provider) : base(provider)
     {
-        _fileSystem = fileSystem;
-        _loadoutManager = loadoutManager;
-        _app = helper;
-        _vm = viewModel;
     }
 
     [Fact]
@@ -35,7 +25,7 @@ public class GeneralTests
     {
 
         await using var host =
-            await _app.GetControl<LaunchButtonView, LaunchButtonDesignViewModel,
+            await App.GetControl<LaunchButtonView, LaunchButtonDesignViewModel,
                 ILaunchButtonViewModel>();
         var btn = await host.GetViewControl<Button>("LaunchButton");
         btn.Should().NotBeNull();
@@ -49,14 +39,20 @@ public class GeneralTests
 
         host.ViewModel.Command = cmd;
         
-        await host.OnUi(async () =>
+        
+        await OnUi(async () =>
         {
             btn.IsEnabled.Should().BeTrue();
             btn.Command!.Execute(null);
         });
+
+        await Eventually(async () =>
+        {
+            pressed.Should().BeTrue();
+        });
         
 
-        pressed.Should().BeTrue();
+
 
     }
 

@@ -48,10 +48,13 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
     {
         var text = Random.Shared.Next() + " Text";
         ViewModel.Label = text;
-        await Host.OnUi(async () =>
+        await Eventually(async () =>
         {
-            _text!.Text.Should().Be(text);
-            _progressBar!.ProgressTextFormat.Should().Be(text);
+            await Host.OnUi(async () =>
+            {
+                _text!.Text.Should().Be(text);
+                _progressBar!.ProgressTextFormat.Should().Be(text);
+            });
         });
     }
 
@@ -59,15 +62,20 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
     public async Task ProgressAffectsProgressBar()
     {
         ViewModel.Progress = Percent.CreateClamped(0.25);
-        await Host.OnUi(async () =>
+
+        await Eventually(async () =>
         {
-            _progressBar!.IsIndeterminate.Should().BeFalse();
-            _progressBar!.Value.Should().Be(0.25);
+            await Host.OnUi(async () =>
+            {
+                _progressBar!.IsIndeterminate.Should().BeFalse();
+                _progressBar!.Value.Should().Be(0.25);
+            });
         });
+        
 
         ViewModel.Progress = null;
 
-        await Host.OnUi(async () =>
+        await EventuallyOnUi(async () =>
         {
             _progressBar!.IsIndeterminate.Should().BeTrue();
         });
@@ -107,11 +115,14 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
         var subject = new Subject<bool>();
         ViewModel.Command = ReactiveCommand.Create(() => { }, subject.StartWith(false));
 
-        await Host.OnUi(async () =>
+        await Eventually(async () =>
         {
-            _button!.IsVisible.Should().BeFalse();
-            _button!.IsEnabled.Should().BeFalse();
-            _progressBar!.IsVisible.Should().BeTrue();
+            await Host.OnUi(async () =>
+            {
+                _button!.IsVisible.Should().BeFalse();
+                _button!.IsEnabled.Should().BeFalse();
+                _progressBar!.IsVisible.Should().BeTrue();
+            });
         });
     }
 

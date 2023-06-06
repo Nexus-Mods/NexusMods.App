@@ -23,10 +23,13 @@ public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadBut
         });
 
         ViewModel.IsActive = true;
-        
-        await Host.OnUi(async () =>
+
+        await Eventually(async () =>
         {
-            button.Classes.Should().Contain("Active");
+            await Host.OnUi(async () =>
+            {
+                button.Classes.Should().Contain("Active");
+            });
         });
     }
     
@@ -43,22 +46,28 @@ public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadBut
         });
 
         ViewModel.Progress = Percent.CreateClamped(0.5);
-        
-        await Host.OnUi(async () =>
+
+        await Eventually(async () =>
         {
-            button.Classes.Should().NotContain("Idle");
-            button.Classes.Should().Contain("Progress");
-            arc.SweepAngle.Should().Be(180);
+            await Host.OnUi(async () =>
+            {
+                button.Classes.Should().NotContain("Idle");
+                button.Classes.Should().Contain("Progress");
+                arc.SweepAngle.Should().Be(180);
+            });
         });
         
         
         ViewModel.Progress = Percent.CreateClamped(0.25);
-        
-        await Host.OnUi(async () =>
+
+        await Eventually(async () =>
         {
-            button.Classes.Should().NotContain("Idle");
-            button.Classes.Should().Contain("Progress");
-            arc.SweepAngle.Should().Be(90);
+            await Host.OnUi(async () =>
+            {
+                button.Classes.Should().NotContain("Idle");
+                button.Classes.Should().Contain("Progress");
+                arc.SweepAngle.Should().Be(90);
+            });
         });
 
         ViewModel.Progress = null;
@@ -89,7 +98,7 @@ public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadBut
         
         ViewModel.Number = 0.0001f;
         
-        await Host.OnUi(async () =>
+        await EventuallyOnUi(async () =>
         {
             numberBlock.Text.Should().Be("0.00");
             unitsBlock.Text.Should().Be("FOOS");
@@ -97,7 +106,7 @@ public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadBut
         
         ViewModel.Number = 1000.0f;
         
-        await Host.OnUi(async () =>
+        await EventuallyOnUi(async () =>
         {
             numberBlock.Text.Should().Be("1000.00");
             unitsBlock.Text.Should().Be("FOOS");
@@ -114,7 +123,11 @@ public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadBut
 
         val.Should().BeFalse();
         await Host.Click(button);
-        val.Should().BeTrue();
+
+        await Eventually(() =>
+        {
+            val.Should().BeTrue();
+        });
         ViewModel.Click = ReactiveCommand.Create(() => { });
     }
 }

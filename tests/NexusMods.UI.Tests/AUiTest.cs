@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI;
 using NexusMods.UI.Tests.Framework;
@@ -9,13 +10,14 @@ namespace NexusMods.UI.Tests;
 public class AUiTest
 {
     private readonly IServiceProvider _provider;
+    protected AvaloniaApp App { get; }
 
     public AUiTest(IServiceProvider provider)
     {
         _provider = provider;
 
         // Do this to trigger the AvaloniaApp constructor/initialization
-        provider.GetRequiredService<AvaloniaApp>();
+        App = provider.GetRequiredService<AvaloniaApp>();
     }
 
     protected VMWrapper<T> GetActivatedViewModel<T>()
@@ -104,5 +106,45 @@ public class AUiTest
                 await Task.Delay(delay.Value);
             }
         }
+    }
+
+    /// <summary>
+    /// Like Eventually, but runs the action on the UI thread.
+    /// </summary>
+    /// <param name="action"></param>
+    /// <param name="maxTimeout"></param>
+    /// <param name="delay"></param>
+    public async Task EventuallyOnUi(Func<Task> action, TimeSpan? maxTimeout = null, TimeSpan? delay = null)
+    {
+        await Eventually(async () =>
+        {
+            await OnUi(async () =>
+            {
+                await action();
+            });
+        });
+    }
+    
+    /// <summary>
+    /// Executes an action on the UI thread and waits for it to complete.
+    /// </summary>
+    /// <param name="action"></param>
+    public async Task<T> OnUi<T>(Func<Task<T>> action)
+    {
+        var result = await Dispatcher.UIThread.InvokeAsync(action);
+        return result;
+    }
+    
+    /// <summary>
+    /// Executes an action on the UI thread and waits for it to complete.
+    /// </summary>
+    /// <param name="action"></param>
+    public async Task OnUi(Func<Task> action)
+    {
+        var result = await Dispatcher.UIThread.InvokeAsync(async () =>
+        {
+            await action();
+            return 0;
+        });
     }
 }

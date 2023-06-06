@@ -33,7 +33,7 @@ public class AViewTest<TView, TViewModel, TViewModelInterface> : AUiTest, IAsync
 
     protected async Task<T[]> GetVisualDescendants<T>(Control parent) where T : Control
     {
-        return await Host.OnUi(async () =>
+        return await OnUi(async () =>
         {
             Control[] GetChildren(Control control, bool topLevel)
             {
@@ -48,7 +48,7 @@ public class AViewTest<TView, TViewModel, TViewModelInterface> : AUiTest, IAsync
     }
 
 
-    public async Task InitializeAsync()
+    public virtual async Task InitializeAsync()
     {
         _host = await _app.GetControl<TView, TViewModel, TViewModelInterface>();
         await PostInitializeSetup();
@@ -59,7 +59,7 @@ public class AViewTest<TView, TViewModel, TViewModelInterface> : AUiTest, IAsync
         return Task.CompletedTask;
     }
 
-    public async Task DisposeAsync()
+    public virtual async Task DisposeAsync()
     {
         if (_host != null) 
             await _host.DisposeAsync();

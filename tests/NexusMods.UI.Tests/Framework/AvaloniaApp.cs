@@ -35,11 +35,11 @@ public class AvaloniaApp : IDisposable
             Dispatcher.UIThread.Post(disposable.Dispose);
         }
 
-        Dispatcher.UIThread.Post(() => app.Shutdown());
+        Dispatcher.UIThread.Post(() => app?.Shutdown());
     }
     
-    private static IClassicDesktopStyleApplicationLifetime GetApp() =>
-        (IClassicDesktopStyleApplicationLifetime) Application.Current.ApplicationLifetime;
+    private static IClassicDesktopStyleApplicationLifetime? GetApp() =>
+        (IClassicDesktopStyleApplicationLifetime?) Application.Current?.ApplicationLifetime;
 
     private AppBuilder BuildAvaloniaApp()
     {
