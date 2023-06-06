@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI;
@@ -43,6 +44,65 @@ public class AUiTest
         public void Deconstruct(out T vm)
         {
             vm = VM;
+        }
+    }
+
+    
+    /// <summary>
+    /// Retries the action until it succeeds or the timeout is reached. If the timeout is reached, the last exception is
+    /// rethrown.
+    /// </summary>
+    /// <param name="action">The code to run on each attempt</param>
+    /// <param name="maxTimeout">The maximum amount of time to wait for a successful completion</param>
+    /// <param name="delay">Amount of time to delay between each attempt</param>
+    public async Task Eventually(Action action, TimeSpan? maxTimeout = null, TimeSpan? delay = null)
+    {
+        delay ??= TimeSpan.FromMilliseconds(500);
+        maxTimeout ??= TimeSpan.FromSeconds(15);
+        var sw = Stopwatch.StartNew();
+        
+        while (true)
+        {
+            try
+            {
+                action();
+                return;
+            }
+            catch (Exception)
+            {
+                if (sw.Elapsed >= maxTimeout)
+                    throw;
+                await Task.Delay(delay.Value);
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Retries the action until it succeeds or the timeout is reached. If the timeout is reached, the last exception is
+    /// rethrown.
+    /// </summary>
+    /// <param name="action">The code to run on each attempt</param>
+    /// <param name="maxTimeout">The maximum amount of time to wait for a successful completion</param>
+    /// <param name="delay">Amount of time to delay between each attempt</param>
+    public async Task Eventually(Func<Task> action, TimeSpan? maxTimeout = null, TimeSpan? delay = null)
+    {
+        delay ??= TimeSpan.FromMilliseconds(500);
+        maxTimeout ??= TimeSpan.FromSeconds(15);
+        var sw = Stopwatch.StartNew();
+        
+        while (true)
+        {
+            try
+            {
+                await action();
+                return;
+            }
+            catch (Exception)
+            {
+                if (sw.Elapsed >= maxTimeout)
+                    throw;
+                await Task.Delay(delay.Value);
+            }
         }
     }
 }

@@ -60,6 +60,18 @@ public class ControlHost<TView, TVm, TInterface> : IAsyncDisposable
         await Flush();
     }
 
+    
+    /// <summary>
+    /// Executes an action on the UI thread and waits for it to complete.
+    /// </summary>
+    /// <param name="action"></param>
+    public async Task<T> OnUi<T>(Func<Task<T>> action)
+    {
+        var result = await Dispatcher.UIThread.InvokeAsync(action);
+        await Flush();
+        return result;
+    }
+
     /// <summary>
     /// Insures that all pending UI actions have been completed.
     /// </summary>

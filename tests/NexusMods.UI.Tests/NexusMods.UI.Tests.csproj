@@ -8,4 +8,16 @@
     <ItemGroup>
         <PackageReference Include="Avalonia.Headless" Version="11.0.0-preview6" />
     </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Resources\data.test">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Resources\data_7zip_lzma2.7z">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Resources\data_zip_lzma.zip">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
 </Project>

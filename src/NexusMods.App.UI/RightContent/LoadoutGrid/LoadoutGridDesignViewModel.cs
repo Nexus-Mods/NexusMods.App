@@ -39,6 +39,19 @@ public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>,
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Used for unit tests
+    /// </summary>
+    /// <param name="cursor">Row to add</param>
+    /// <returns></returns>
+    public void AddMod(ModCursor cursor)
+    {
+        _mods.Edit(x =>
+        {
+            x.AddOrUpdate(cursor);
+        });
+    }
+
     public Task DeleteMods(IEnumerable<ModId> modsToDelete, string commitMessage)
     {
         _mods.Edit(x =>
