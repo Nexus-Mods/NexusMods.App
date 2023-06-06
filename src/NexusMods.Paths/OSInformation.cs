@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 namespace NexusMods.Common;
 
 /// <summary>
-///
+/// Implementation of <see cref="IOSInformation"/>.
 /// </summary>
 [PublicAPI]
 public class OSInformation : IOSInformation
