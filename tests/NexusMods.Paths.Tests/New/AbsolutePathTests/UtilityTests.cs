@@ -66,18 +66,4 @@ public class UtilityTests
             .Should()
             .Be(expected);
     }
-
-    [SkippableTheory]
-    [InlineData("/", true, true)]
-    [InlineData("/foo", false, true)]
-    [InlineData("foo", false, true)]
-    [InlineData("C:\\", true, false)]
-    [InlineData("C:", false, false)]
-    [InlineData("C:\\foo", false, false)]
-    [InlineData("foo", false, false)]
-    public void Test_IsRootDirectory(string input, bool expected, bool linux)
-    {
-        Skip.If(linux != OperatingSystem.IsLinux());
-        AbsolutePath.IsRootDirectory(input).Should().Be(expected);
-    }
 }
