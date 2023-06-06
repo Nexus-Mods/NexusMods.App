@@ -45,4 +45,7 @@ public class OSInformation : IOSInformation
             return new OSInformation(OSPlatform.OSX);
         throw new PlatformNotSupportedException($"The current platform is not supported: {RuntimeInformation.RuntimeIdentifier}");
     }
+
+    /// <inheritdoc/>
+    public override string ToString() => Platform.ToString();
 }
