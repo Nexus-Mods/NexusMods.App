@@ -1,5 +1,7 @@
 ﻿using System.Collections.Concurrent;
+using System.Diagnostics;
 using DynamicData;
+using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Extensions;
@@ -29,13 +31,16 @@ public class LoadoutSynchronizer
     private readonly IArchiveManager _archiveManager;
     private readonly IFingerprintCache<IGeneratedFile,CachedGeneratedFileData> _generatedFileFingerprintCache;
     private readonly LoadoutRegistry _loadoutRegistry;
+    private readonly ILogger<LoadoutSynchronizer> _logger;
 
-    public LoadoutSynchronizer(IFingerprintCache<Mod, CachedModSortRules> modSortRulesFingerprintCache,
+    public LoadoutSynchronizer(ILogger<LoadoutSynchronizer> logger, 
+        IFingerprintCache<Mod, CachedModSortRules> modSortRulesFingerprintCache,
         IDirectoryIndexer directoryIndexer,
         IArchiveManager archiveManager,
         IFingerprintCache<IGeneratedFile, CachedGeneratedFileData> generatedFileFingerprintCache,
         LoadoutRegistry loadoutRegistry)
     {
+        _logger = logger;
         _archiveManager = archiveManager;
         _generatedFileFingerprintCache = generatedFileFingerprintCache;
         _modSortRulesFingerprintCache = modSortRulesFingerprintCache;
@@ -226,7 +231,8 @@ public class LoadoutSynchronizer
         }
 
         // This should never happen
-        throw new NotImplementedException();
+        _logger.LogError("Unknown file type {Type}", pair.File.GetType().Name);
+        throw new UnreachableException();
     }
 
     private async ValueTask EmitDeletePlan(List<IApplyStep> plan, HashedEntry existing)
@@ -314,7 +320,7 @@ public class LoadoutSynchronizer
     {
         plan.Add(new IngestSteps.RemoveFromLoadout
         {
-            To = absPath
+            Source = absPath
         });
     }
 
@@ -324,7 +330,7 @@ public class LoadoutSynchronizer
         {
             plan.Add(new IngestSteps.BackupFile
             {
-                To = existing.Path,
+                Source = existing.Path,
                 Hash = existing.Hash,
                 Size = existing.Size
             });
@@ -332,7 +338,7 @@ public class LoadoutSynchronizer
 
         plan.Add(new CreateInLoadout
         {
-            To = existing.Path,
+            Source = existing.Path,
             Hash = existing.Hash,
             Size = existing.Size,
             ModId = modSelector(existing.Path)
@@ -345,7 +351,7 @@ public class LoadoutSynchronizer
         {
             plan.Add(new IngestSteps.BackupFile
             {
-                To = existing.Path,
+                Source = existing.Path,
                 Hash = existing.Hash,
                 Size = existing.Size
             });
@@ -353,7 +359,7 @@ public class LoadoutSynchronizer
 
         plan.Add(new ReplaceInLoadout
         {
-            To = existing.Path,
+            Source = existing.Path,
             Hash = existing.Hash,
             Size = existing.Size,
             ModFileId = pair.File.Id,
@@ -397,7 +403,7 @@ public class LoadoutSynchronizer
             var absPath = file.To;
             var dir = absPath.Parent;
             if (!dir.DirectoryExists())
-                dir.Create();
+                dir.CreateDirectory();
 
             await using var stream = absPath.Create();
             var hash = await file.Source.GenerateAsync(stream, plan, token);
@@ -418,7 +424,7 @@ public class LoadoutSynchronizer
         var byType = plan.Steps.ToLookup(t => t.GetType());
         var backupFiles = byType[typeof(IngestSteps.BackupFile)]
             .OfType<IngestSteps.BackupFile>()
-            .Select(f => ((IStreamFactory)new NativeFileStreamFactory(f.To), f.Hash, f.Size));
+            .Select(f => ((IStreamFactory)new NativeFileStreamFactory(f.Source), f.Hash, f.Size));
         await _archiveManager.BackupFiles(backupFiles);
 
         return _loadoutRegistry.Alter(plan.Loadout.LoadoutId, message, new IngestVisitor(byType, plan));
@@ -436,7 +442,7 @@ public class LoadoutSynchronizer
             _plan = plan;
             _removeFiles = steps[typeof(IngestSteps.RemoveFromLoadout)]
                 .OfType<IngestSteps.RemoveFromLoadout>()
-                .Select(r => plan.Loadout.Installation.ToGamePath(r.To))
+                .Select(r => plan.Loadout.Installation.ToGamePath(r.Source))
                 .ToHashSet();
 
             _replaceFiles = steps[typeof(IngestSteps.ReplaceInLoadout)]
@@ -444,7 +450,7 @@ public class LoadoutSynchronizer
                 .ToLookup(r => r.ModId,
                     r => new FromArchive
                     {
-                        To = plan.Loadout.Installation.ToGamePath(r.To),
+                        To = plan.Loadout.Installation.ToGamePath(r.Source),
                         Hash = r.Hash,
                         Size = r.Size,
                         Id = r.ModFileId
@@ -455,7 +461,7 @@ public class LoadoutSynchronizer
                 .ToLookup(r => r.ModId,
                     r => new FromArchive
                     {
-                        To = plan.Loadout.Installation.ToGamePath(r.To),
+                        To = plan.Loadout.Installation.ToGamePath(r.Source),
                         Hash = r.Hash,
                         Size = r.Size,
                         Id = ModFileId.New()

@@ -35,14 +35,14 @@ public class MakeIngestPlanTests : ALoadoutSynrchonizerTest<MakeIngestPlanTests>
 
         plan.Steps.Should().ContainEquivalentOf(new BackupFile
         {
-            To = absPath,
+            Source = absPath,
             Hash = Hash.From(0x4242),
             Size = Size.From(10)
         });
 
         plan.Steps.Should().ContainEquivalentOf(new CreateInLoadout
         {
-            To = absPath,
+            Source = absPath,
             Hash = Hash.From(0x4242),
             Size = Size.From(10),
             ModId = firstModId
@@ -67,14 +67,14 @@ public class MakeIngestPlanTests : ALoadoutSynrchonizerTest<MakeIngestPlanTests>
 
         plan.Steps.Should().NotContainEquivalentOf(new BackupFile
         {
-            To = absPath,
+            Source = absPath,
             Hash = Hash.From(0x4242),
             Size = Size.From(10)
         });
 
         plan.Steps.Should().ContainEquivalentOf(new CreateInLoadout
         {
-            To = absPath,
+            Source = absPath,
             Hash = Hash.From(0x4242),
             Size = Size.From(10),
             ModId = firstModId
@@ -102,14 +102,14 @@ public class MakeIngestPlanTests : ALoadoutSynrchonizerTest<MakeIngestPlanTests>
 
         plan.Steps.Should().Contain(new BackupFile
         {
-            To = absPath,
+            Source = absPath,
             Hash = Hash.From(0x4242),
             Size = Size.From(10)
         });
 
         plan.Steps.Should().Contain(new ReplaceInLoadout
         {
-            To = absPath,
+            Source = absPath,
             Hash = Hash.From(0x4242),
             Size = Size.From(10),
             ModId = fileOne.Item1,
@@ -129,7 +129,7 @@ public class MakeIngestPlanTests : ALoadoutSynrchonizerTest<MakeIngestPlanTests>
 
         plan.Steps.Should().Contain(new RemoveFromLoadout
         {
-            To = absPath
+            Source = absPath
         });
     }
 }

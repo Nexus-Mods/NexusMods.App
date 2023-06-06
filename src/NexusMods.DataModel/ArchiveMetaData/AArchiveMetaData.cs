@@ -27,10 +27,10 @@ public abstract record AArchiveMetaData : Entity
     public required Hash Hash { get; init; }
     
     /// <summary>
-    /// How reliable is the data is this object? Data from a file on disk is less reliable than data
+    /// How accurate is this metadata? Data from a file on disk is more generic than data
     /// from a NexusMods API call.
     /// </summary>
-    public required Priority Priority { get; init; }
+    public required Quality Quality { get; init; }
     
     public override EntityCategory Category => EntityCategory.ArchiveMetaData;
 
@@ -51,6 +51,6 @@ public abstract record AArchiveMetaData : Entity
     public static IEnumerable<AArchiveMetaData> GetMetaDatas(IDataStore store, Hash archiveHash)
     {
         return store.GetByPrefix<AArchiveMetaData>(new Id64(EntityCategory.ArchiveMetaData, archiveHash.Value))
-            .OrderBy(x => x.Priority);
+            .OrderBy(x => x.Quality);
     }
 }

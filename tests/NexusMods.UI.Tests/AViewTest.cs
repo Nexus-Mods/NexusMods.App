@@ -1,7 +1,9 @@
 ﻿using Avalonia.Controls;
 using Avalonia.ReactiveUI;
+using Avalonia.VisualTree;
 using NexusMods.App.UI;
 using NexusMods.UI.Tests.Framework;
+using Noggog;
 using ReactiveUI;
 
 namespace NexusMods.UI.Tests;
@@ -27,6 +29,22 @@ public class AViewTest<TView, TViewModel, TViewModelInterface> : AUiTest, IAsync
     protected async Task<T> GetControl<T>(string name) where T : Control
     {
         return await _host!.GetViewControl<T>(name);
+    }
+
+    protected async Task<T[]> GetVisualDescendants<T>(Control parent) where T : Control
+    {
+        return await Host.OnUi(async () =>
+        {
+            Control[] GetChildren(Control control, bool topLevel)
+            {
+                var children = control.GetVisualChildren()
+                    .SelectMany(c => GetChildren((Control)c, false));
+                if (!topLevel)
+                    return children.StartWith(control).ToArray();
+                return children.ToArray();
+            }
+            return GetChildren(parent, true).OfType<T>().ToArray();
+        });
     }
 
 

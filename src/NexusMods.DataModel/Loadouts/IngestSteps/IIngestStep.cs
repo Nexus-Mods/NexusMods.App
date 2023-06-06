@@ -8,7 +8,9 @@ namespace NexusMods.DataModel.Loadouts.IngestSteps;
 public interface IIngestStep
 { 
     /// <summary>
-    /// The path to the file that was changed.
+    /// The path to the file that was changed, used mostly for debugging and logging. Unlike
+    /// IApplyStep.To (previously removed) is that in the case of ingestion all files have source
+    /// path on disk.
     /// </summary>
-    public AbsolutePath To { get; }
+    public AbsolutePath Source { get; }
 }

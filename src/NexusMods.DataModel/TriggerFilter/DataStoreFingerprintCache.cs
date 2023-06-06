@@ -16,7 +16,7 @@ public class DataStoreFingerprintCache<TSrc, TValue> : IFingerprintCache<TSrc, T
     public DataStoreFingerprintCache(IDataStore store)
     {
         _store = store;
-        var fp = Fingerprinter.Create();
+        using var fp = Fingerprinter.Create();
         fp.Add(typeof(TSrc).Namespace ?? "");
         fp.Add(typeof(TSrc).Name);
         fp.Add(typeof(TValue).Namespace ?? "");

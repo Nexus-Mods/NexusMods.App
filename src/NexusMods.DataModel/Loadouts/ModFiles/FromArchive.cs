@@ -10,7 +10,12 @@ namespace NexusMods.DataModel.Loadouts.ModFiles;
 [JsonName("NexusMods.DataModel.GameFiles.FromArchive")]
 public record FromArchive : AModFile, IFromArchive, IToFile
 {
+    /// <inheritdoc />
     public required Size Size { get; init; }
+
+    /// <inheritdoc />
     public required Hash Hash { get; init; }
+
+    /// <inheritdoc />
     public required GamePath To { get; init; }
 }

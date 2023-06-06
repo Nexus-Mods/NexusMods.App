@@ -21,5 +21,5 @@ public record Plan
     /// <summary>
     /// The loadout from which the plan was generated
     /// </summary>
-    public required Loadout Loadout { get; set; }
+    public required Loadout Loadout { get; init; }
 }
