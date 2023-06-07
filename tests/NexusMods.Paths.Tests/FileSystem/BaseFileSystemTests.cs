@@ -37,7 +37,7 @@ public class BaseFileSystemTests
     [SkippableTheory, AutoFileSystem]
     public void Test_PathMappings_SpecialCases(InMemoryFileSystem fs)
     {
-        Skip.IfNot(OperatingSystem.IsLinux());
+        Skip.IfNot(OSHelper.IsUnixLike());
 
         var overlayFileSystem = (BaseFileSystem)fs.CreateOverlayFileSystem(
             new Dictionary<AbsolutePath, AbsolutePath>
@@ -86,7 +86,7 @@ public class BaseFileSystemTests
     [SkippableTheory, AutoFileSystem]
     public void Test_KnownPathMappings(IFileSystem fs)
     {
-        Skip.IfNot(OperatingSystem.IsLinux());
+        Skip.IfNot(OSHelper.IsUnixLike());
 
         var knownPathMappings = new Dictionary<KnownPath, AbsolutePath>();
         var values = Enum.GetValues<KnownPath>();
@@ -159,7 +159,7 @@ public class BaseFileSystemTests
     [SkippableTheory, AutoFileSystem]
     public void Test_EnumerateRootDirectories_WithCrossPlatformPathMappings(InMemoryFileSystem fs)
     {
-        Skip.IfNot(OperatingSystem.IsLinux());
+        Skip.IfNot(OSHelper.IsUnixLike());
 
         var rootDirectory = fs.FromFullPath("/");
 

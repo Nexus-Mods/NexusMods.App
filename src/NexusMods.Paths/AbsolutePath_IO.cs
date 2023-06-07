@@ -22,7 +22,7 @@ public readonly partial struct AbsolutePath
             GetFullPath(thisFullPath);
 
             var index = thisFullPath.IndexOf(Path.DirectorySeparatorChar);
-            if (OperatingSystem.IsLinux() && index == 0)
+            if ((OperatingSystem.IsLinux() || OperatingSystem.IsMacOS()) && index == 0)
                 return FromFullPath(DirectorySeparatorCharStr, FileSystem);
 
             // e.g. C:\
