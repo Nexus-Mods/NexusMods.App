@@ -159,7 +159,7 @@ public class BaseFileSystemTests
     [SkippableTheory, AutoFileSystem]
     public void Test_EnumerateRootDirectories_WithCrossPlatformPathMappings(InMemoryFileSystem fs)
     {
-        Skip.IfNot(OSHelper.IsUnixLike());
+        Skip.IfNot(OperatingSystem.IsLinux());
 
         var rootDirectory = fs.FromFullPath("/");
 
