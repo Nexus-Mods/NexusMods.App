@@ -39,6 +39,10 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
             return Unit.Default;
         });
 
+        await EventuallyOnUi(() =>
+        {
+            _button!.Command.Should().Be(ViewModel.Command);
+        });
 
         await Click(_button!);
 
