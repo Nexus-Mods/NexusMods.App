@@ -98,7 +98,7 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
             return Unit.Default;
         });
 
-        await OnUi(async () =>
+        await OnUi(() =>
         {
             _button!.IsVisible.Should().BeTrue();
             _progressBar!.IsVisible.Should().BeFalse();
@@ -106,7 +106,7 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
 
         await Click(_button!);
 
-        await OnUi(async () =>
+        await EventuallyOnUi(() =>
         {
             _button!.IsVisible.Should().BeFalse();
             _progressBar!.IsVisible.Should().BeTrue();
@@ -122,14 +122,11 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
         var subject = new Subject<bool>();
         ViewModel.Command = ReactiveCommand.Create(() => { }, subject.StartWith(false));
 
-        await Eventually(async () =>
+        await EventuallyOnUi(() =>
         {
-            await OnUi(async () =>
-            {
-                _button!.IsVisible.Should().BeFalse();
-                _button!.IsEnabled.Should().BeFalse();
-                _progressBar!.IsVisible.Should().BeTrue();
-            });
+            _button!.IsVisible.Should().BeFalse();
+            _button!.IsEnabled.Should().BeFalse();
+            _progressBar!.IsVisible.Should().BeTrue();
         });
     }
 
@@ -140,7 +137,7 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
         ViewModel.Command = ReactiveCommand.Create(() => { }, subject.StartWith(true));
         ViewModel.Progress = null;
 
-        await OnUi(async () =>
+        await EventuallyOnUi(() =>
         {
             _button!.IsVisible.Should().BeTrue();
             _button!.IsEnabled.Should().BeTrue();
