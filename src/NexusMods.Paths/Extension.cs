@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using JetBrains.Annotations;
 using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Paths;
@@ -5,6 +7,7 @@ namespace NexusMods.Paths;
 /// <summary>
 /// Represents an individual file extension.
 /// </summary>
+[PublicAPI]
 public readonly struct Extension : IEquatable<Extension>
 {
     /// <summary>
@@ -24,7 +27,8 @@ public readonly struct Extension : IEquatable<Extension>
     public Extension(string extension)
     {
         _extension = extension;
-        Validate();
+
+        Debug.Assert(extension == string.Empty || extension[0] == '.', $"Extension must start with a dot: '{extension}'");
     }
 
     /// <summary>
@@ -33,14 +37,8 @@ public readonly struct Extension : IEquatable<Extension>
     /// <param name="path">The file path to convert to an extension.</param>
     public static Extension FromPath(string path)
     {
-        var ext = Path.GetExtension(path);
-        return string.IsNullOrEmpty(ext) ? None : new Extension(ext);
-    }
-
-    private void Validate()
-    {
-        if (!_extension.StartsWith('.') && !string.IsNullOrEmpty(_extension))
-            ThrowHelpers.PathException($"Extensions must start with '.' got {_extension}");
+        var extensionSpan = PathHelpers.GetExtension(path);
+        return extensionSpan.IsEmpty ? None : new Extension(extensionSpan.ToString());
     }
 
     /// <summary/>
@@ -52,7 +50,7 @@ public readonly struct Extension : IEquatable<Extension>
     /// <summary/>
     public static bool operator ==(Extension a, Extension b)
     {
-        return string.Equals(a._extension, b._extension, StringComparison.InvariantCultureIgnoreCase);
+        return string.Equals(a._extension, b._extension, StringComparison.OrdinalIgnoreCase);
     }
 
     /// <summary/>
@@ -61,7 +59,7 @@ public readonly struct Extension : IEquatable<Extension>
     /// <inheritdoc />
     public bool Equals(Extension other)
     {
-        return string.Equals(_extension, other._extension, StringComparison.InvariantCultureIgnoreCase);
+        return string.Equals(_extension, other._extension, StringComparison.OrdinalIgnoreCase);
     }
 
     /// <inheritdoc />
@@ -71,5 +69,5 @@ public readonly struct Extension : IEquatable<Extension>
     public override string ToString() => _extension;
 
     /// <inheritdoc />
-    public override int GetHashCode() => _extension.GetHashCode(StringComparison.InvariantCultureIgnoreCase);
+    public override int GetHashCode() => _extension.GetHashCode(StringComparison.OrdinalIgnoreCase);
 }
