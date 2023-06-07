@@ -24,12 +24,9 @@ public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadBut
 
         ViewModel.IsActive = true;
 
-        await Eventually(async () =>
+        await EventuallyOnUi(async () =>
         {
-            await OnUi(() =>
-            {
-                button.Classes.Should().Contain("Active");
-            });
+            button.Classes.Should().Contain("Active");
         });
     }
     
@@ -116,17 +113,6 @@ public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadBut
     [Fact]
     public async Task ClickingTheButtonTriggersTheCommand()
     {
-        var val = false;
-        ViewModel.Click = ReactiveCommand.Create(() => { val = true; });
-        
-        var button = await Host.GetViewControl<Button>("ParentButton");
-
-        val.Should().BeFalse();
-        await Click(button);
-
-        await Eventually(() =>
-        {
-            val.Should().BeTrue();
-        });
+        await ButtonShouldFireCommand(vm => vm.Click, "ParentButton");
     }
 }

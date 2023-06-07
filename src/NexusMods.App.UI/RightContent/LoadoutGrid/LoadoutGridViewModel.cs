@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Avalonia.Controls;
 using DynamicData;
 using DynamicData.Binding;
 using Microsoft.Extensions.DependencyInjection;
@@ -54,6 +55,7 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
             .GetRequiredService<
                 DataGridColumnFactory<IModNameViewModel, ModCursor>>();
         nameColumn.Type = ColumnType.Name;
+        nameColumn.Width = new DataGridLength(1, DataGridLengthUnitType.Star);
         var categoryColumn = provider.GetRequiredService<DataGridColumnFactory<IModCategoryViewModel, ModCursor>>();
         categoryColumn.Type = ColumnType.Category;
         var installedColumn = provider.GetRequiredService<DataGridColumnFactory<IModInstalledViewModel, ModCursor>>();

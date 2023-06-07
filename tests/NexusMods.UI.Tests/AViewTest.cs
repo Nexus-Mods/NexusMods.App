@@ -1,6 +1,9 @@
-﻿using Avalonia.Controls;
+﻿using System.Linq.Expressions;
+using System.Windows.Input;
+using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using Avalonia.VisualTree;
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI;
 using NexusMods.UI.Tests.Framework;
@@ -64,5 +67,42 @@ public class AViewTest<TView, TViewModel, TViewModelInterface> : AUiTest, IAsync
     {
         if (_host != null) 
             await _host.DisposeAsync();
+    }
+
+    /// <summary>
+    /// Tests that clicking the button with the given name fires the command found on the viewmodel under the given expression.
+    /// </summary>
+    /// <param name="commandExpression"></param>
+    /// <param name="buttonName"></param>
+    protected async Task ButtonShouldFireCommand(Expression<Func<TViewModelInterface, ICommand>> commandExpression,
+        string buttonName)
+    {
+
+        // Create a TCS so that we can properly sync between threads
+        var src = new TaskCompletionSource<bool>();
+
+        // Recompile the expression into a setter
+        // if we're handed vm => vm.Click
+        // we'll rewrite that into (vm, newValue) => vm.Click = newValue
+        var setterParam = Expression.Parameter(typeof(ICommand), "newValue");
+        var setter = Expression.Lambda<Action<TViewModelInterface, ICommand>>(Expression.Assign(commandExpression.Body, setterParam),
+            commandExpression.Parameters.First(), setterParam).Compile();
+
+        var cmd = ReactiveCommand.Create(() => src.SetResult(true));
+        setter(ViewModel, cmd);
+        
+        var button = await Host.GetViewControl<Button>(buttonName);
+
+        // Make sure the wiring has all been done
+        await EventuallyOnUi(() =>
+        {
+            button.Command.Should().Be(cmd);
+        });
+        
+        // Click the button
+        await Click(button);
+
+        // Wait for the command to fire
+        (await src.Task.WaitAsync(TimeSpan.FromSeconds(10))).Should().BeTrue();
     }
 }
