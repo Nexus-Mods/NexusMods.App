@@ -143,9 +143,9 @@ public class BaseFileSystemTests
     }
 
     [SkippableTheory, AutoFileSystem]
-    public void Test_EnumerateRootDirectories_Linux(InMemoryFileSystem fs)
+    public void Test_EnumerateRootDirectories_UnixLike(InMemoryFileSystem fs)
     {
-        Skip.IfNot(OperatingSystem.IsLinux() || OperatingSystem.IsMacOS());
+        Skip.IfNot(OSHelper.IsUnixLike());
 
         var rootDirectory = fs.FromFullPath("/");
         var expectedRootDirectories = new[] { rootDirectory };

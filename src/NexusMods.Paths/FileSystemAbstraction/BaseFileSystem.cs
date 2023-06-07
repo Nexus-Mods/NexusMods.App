@@ -220,10 +220,7 @@ public abstract class BaseFileSystem : IFileSystem
     /// <inheritdoc/>
     public IEnumerable<AbsolutePath> EnumerateRootDirectories()
     {
-        if (!OperatingSystem.IsLinux() && !OperatingSystem.IsWindows())
-            throw new PlatformNotSupportedException();
-
-        if (OperatingSystem.IsLinux())
+        if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
             yield return FromFullPath("/");
 
         // go through the valid drive letters on Windows
