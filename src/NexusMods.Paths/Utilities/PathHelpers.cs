@@ -129,6 +129,43 @@ public static class PathHelpers
     }
 
     /// <summary>
+    /// Checks for equality between two paths.
+    /// </summary>
+    /// <remarks>
+    /// Equality of paths is handled case-insensitive, meaning "/foo" is equal to "/FOO".
+    /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool Equals(ReadOnlySpan<char> left, ReadOnlySpan<char> right, IOSInformation? os = null)
+    {
+        DebugAssertIsSanitized(left, os);
+        DebugAssertIsSanitized(right, os);
+
+        if (left.IsEmpty && right.IsEmpty) return true;
+        if (left.IsEmpty && !right.IsEmpty || right.IsEmpty && !left.IsEmpty) return false;
+        return left.Equals(right, StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>
+    /// Compares two paths.
+    /// </summary>
+    /// <remarks>
+    /// Path comparisons are handled case-insensitive, meaning "/foo" is equal to "/FOO".
+    /// </remarks>
+    /// <returns>
+    /// A signed integer that indicates the relative order of <paramref name="left" /> and <paramref name="right" />:
+    /// <br />   - If less than 0, <paramref name="left" /> precedes <paramref name="right" />.
+    /// <br />   - If 0, <paramref name="left" /> equals <paramref name="right" />.
+    /// <br />   - If greater than 0, <paramref name="left" /> follows <paramref name="right" />.
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int Compare(ReadOnlySpan<char> left, ReadOnlySpan<char> right, IOSInformation? os = null)
+    {
+        DebugAssertIsSanitized(left, os);
+        DebugAssertIsSanitized(right, os);
+        return left.CompareTo(right, StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>
     /// Returns true if the given character is a valid Windows drive letter.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -488,7 +525,7 @@ public static class PathHelpers
         DebugAssertIsSanitized(parent, os);
 
         if (child.IsEmpty || parent.IsEmpty) return false;
-        if (!child.StartsWith(parent, StringComparison.Ordinal)) return false;
+        if (!child.StartsWith(parent, StringComparison.OrdinalIgnoreCase)) return false;
 
         if (child.Length == parent.Length) return true;
         if (IsRootDirectory(parent, os)) return true;
@@ -500,7 +537,7 @@ public static class PathHelpers
     /// </summary>
     /// <remarks>
     /// This method will return <see cref="ReadOnlySpan{T}.Empty"/> if <paramref name="child"/> is
-    /// not relative to <paramref name="parent"/>. This comparison is done using <seealso cref="InFolder"/>.
+    /// not relative to <paramref name="parent"/>. This comparison is done using <see cref="InFolder"/>.
     /// </remarks>
     public static ReadOnlySpan<char> RelativeTo(ReadOnlySpan<char> child, ReadOnlySpan<char> parent, IOSInformation? os = null)
     {
@@ -549,5 +586,139 @@ public static class PathHelpers
         }
 
         return res;
+    }
+
+    /// <summary>
+    /// Delegate used with <see cref="PathHelpers.WalkParts"/>.
+    /// </summary>
+    /// <seealso cref="WalkPartDelegate{TState}"/>
+    public delegate bool WalkPartDelegate(ReadOnlySpan<char> part);
+
+    /// <summary>
+    /// Delegate used with <seealso cref="PathHelpers.WalkParts{TState}"/>
+    /// </summary>
+    /// <typeparam name="TState"></typeparam>
+    /// <seealso cref="WalkPartDelegate"/>
+    public delegate bool WalkPartDelegate<TState>(ReadOnlySpan<char> part, ref TState state);
+
+    /// <summary>
+    /// Walks the parts of a path, invoking <paramref name="partDelegate"/> with each part of the path.
+    /// </summary>
+    /// <seealso cref="WalkParts{TState}"/>
+    public static void WalkParts(ReadOnlySpan<char> path, WalkPartDelegate partDelegate, bool reverse = false, IOSInformation? os = null)
+    {
+        WalkParts(path, ref reverse, (ReadOnlySpan<char> part, ref bool _) => partDelegate(part), reverse, os);
+    }
+
+    /// <summary>
+    /// Walks the parts of a path, invoking <paramref name="partDelegate"/> with each part of the path.
+    /// </summary>
+    /// <remarks>
+    /// The path <c>/foo</c> has the parts <c>/</c> and <c>foo</c>.
+    /// </remarks>
+    /// <param name="path">The path to walk.</param>
+    /// <param name="state">The state to pass to the <paramref name="partDelegate"/></param>
+    /// <param name="partDelegate">The delegate to invoke with each part and state.</param>
+    /// <param name="reverse">Whether to walk the path forward or backwards.</param>
+    /// <param name="os"></param>
+    /// <typeparam name="TState"></typeparam>
+    /// <seealso cref="WalkParts"/>
+    public static void WalkParts<TState>(
+        ReadOnlySpan<char> path,
+        ref TState state,
+        WalkPartDelegate<TState> partDelegate,
+        bool reverse = false,
+        IOSInformation? os = null)
+    {
+        DebugAssertIsSanitized(path, os);
+
+        if (path.IsEmpty)
+        {
+            partDelegate(ReadOnlySpan<char>.Empty, ref state);
+            return;
+        }
+
+        var rootLength = GetRootLength(path, os);
+        if (path.Length == rootLength)
+        {
+            partDelegate(path, ref state);
+            return;
+        }
+
+        if (reverse) WalkPartsBackwards(path, rootLength, partDelegate, ref state);
+        else WalkPartsForward(path, rootLength, partDelegate, ref state);
+    }
+
+    private static void WalkPartsForward<TState>(ReadOnlySpan<char> path, int rootLength, WalkPartDelegate<TState> @delegate, ref TState state)
+    {
+        var previous = 0;
+        for (var i = 0; i < path.Length; i++)
+        {
+            if (path.DangerousGetReferenceAt(i) != DirectorySeparatorChar) continue;
+            if (i + 1 == rootLength)
+            {
+                var slice = path.SliceFast(0, rootLength);
+                if (!@delegate(slice, ref state)) return;
+                previous = i + 1;
+            }
+            else
+            {
+                var slice = path.SliceFast(previous, i - previous);
+                if (!@delegate(slice, ref state)) return;
+                previous = i + 1;
+            }
+        }
+
+        var rest = path.SliceFast(previous);
+        @delegate(rest, ref state);
+    }
+
+    private static void WalkPartsBackwards<TState>(ReadOnlySpan<char> path, int rootLength, WalkPartDelegate<TState> @delegate, ref TState state)
+    {
+        var previous = path.Length;
+        for (var i = path.Length; --i >= 0;)
+        {
+            if (path.DangerousGetReferenceAt(i) != DirectorySeparatorChar) continue;
+
+            if (i + 1 == rootLength)
+            {
+                var slice = path.SliceFast(rootLength, previous - rootLength);
+                if (!@delegate(slice, ref state)) return;
+                previous = i + 1;
+            }
+            else
+            {
+                var slice = path.SliceFast(i + 1, previous - i - 1);
+                if (!@delegate(slice, ref state)) return;
+                previous = i;
+            }
+        }
+
+        var rest = path.SliceFast(0, previous);
+        @delegate(rest, ref state);
+    }
+
+    /// <summary>
+    /// Returns a read-only list containing all parts of the given path.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="reverse"></param>
+    /// <param name="os"></param>
+    /// <returns></returns>
+    /// <seealso cref="WalkParts"/>
+    /// <seealso cref="WalkParts{TState}"/>
+    public static IReadOnlyList<string> GetParts(ReadOnlySpan<char> path, bool reverse = false, IOSInformation? os = null)
+    {
+        DebugAssertIsSanitized(path, os);
+
+        var list = new List<string>();
+
+        WalkParts(path, ref list, (ReadOnlySpan<char> part, ref List<string> output) =>
+        {
+            output.Add(part.ToString());
+            return true;
+        }, reverse, os);
+
+        return list;
     }
 }

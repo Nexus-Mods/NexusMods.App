@@ -104,15 +104,7 @@ public readonly struct RelativePath : IEquatable<RelativePath>, IPath, IComparab
     /// </summary>
     public bool StartsWith(ReadOnlySpan<char> other)
     {
-        var thisCopy = Path.Length <= 512? stackalloc char[Path.Length] : GC.AllocateUninitializedArray<char>(Path.Length);
-        Path.CopyTo(thisCopy);
-        thisCopy.NormalizeStringCase();
-
-        var otherCopy = other.Length <= 512 ? stackalloc char[other.Length] : GC.AllocateUninitializedArray<char>(other.Length);
-        other.CopyTo(otherCopy);
-        otherCopy.NormalizeStringCase();
-
-        return thisCopy.StartsWith(otherCopy);
+        return Path.AsSpan().StartsWith(other, StringComparison.OrdinalIgnoreCase);
     }
 
     /// <summary>
@@ -122,15 +114,7 @@ public readonly struct RelativePath : IEquatable<RelativePath>, IPath, IComparab
     /// <returns>True if this is a child path of the parent path; else false.</returns>
     public bool InFolder(RelativePath other)
     {
-        var child = Path.Length <= 512 ? stackalloc char[Path.Length] : GC.AllocateUninitializedArray<char>(Path.Length);
-        Path.CopyTo(child);
-        child.NormalizeStringCase();
-
-        var parent = other.Path.Length <= 512 ? stackalloc char[other.Path.Length] : GC.AllocateUninitializedArray<char>(other.Path.Length);
-        other.Path.CopyTo(parent);
-        parent.NormalizeStringCase();
-
-        return PathHelpers.InFolder(child, parent);
+        return PathHelpers.InFolder(Path, other.Path);
     }
 
     /// <summary>
@@ -152,15 +136,7 @@ public readonly struct RelativePath : IEquatable<RelativePath>, IPath, IComparab
         var other = basePath.Path;
         if (other.Length == 0) return this;
 
-        var child = Path.Length <= 512 ? stackalloc char[Path.Length] : GC.AllocateUninitializedArray<char>(Path.Length);
-        Path.CopyTo(child);
-        child.NormalizeStringCase();
-
-        var parent = other.Length <= 512 ? stackalloc char[other.Length] : GC.AllocateUninitializedArray<char>(other.Length);
-        other.CopyTo(parent);
-        parent.NormalizeStringCase();
-
-        var res = PathHelpers.RelativeTo(child, parent);
+        var res = PathHelpers.RelativeTo(Path, other);
         if (!res.IsEmpty) return new RelativePath(res.ToString());
 
         ThrowHelpers.PathException("Can't create path relative to paths that aren't in the same folder");
@@ -171,11 +147,9 @@ public readonly struct RelativePath : IEquatable<RelativePath>, IPath, IComparab
     public override string ToString() => Path;
 
     #region Equals & GetHashCode
+
     /// <inheritdoc />
-    public bool Equals(RelativePath other)
-    {
-        return StringExtensions.CompareStringsCaseInsensitive(Path, other.Path);
-    }
+    public bool Equals(RelativePath other) => PathHelpers.Equals(Path, other.Path);
 
     /// <inheritdoc />
     public override bool Equals(object? obj)
@@ -187,10 +161,7 @@ public readonly struct RelativePath : IEquatable<RelativePath>, IPath, IComparab
     [SkipLocalsInit]
     public override int GetHashCode()
     {
-        var thisCopy = Path.Length <= 512 ? stackalloc char[Path.Length] : GC.AllocateUninitializedArray<char>(Path.Length);
-        Path.CopyTo(thisCopy);
-        thisCopy.NormalizeStringCase();
-        return ((ReadOnlySpan<char>)thisCopy).GetNonRandomizedHashCode32();
+        return Path.AsSpan().GetNonRandomizedHashCode32();
     }
     #endregion
 
@@ -210,18 +181,7 @@ public readonly struct RelativePath : IEquatable<RelativePath>, IPath, IComparab
     public static bool operator !=(RelativePath lhs, RelativePath rhs) => !(lhs == rhs);
 
     /// <inheritdoc />
-    public int CompareTo(RelativePath other)
-    {
-        var aCopy = Path.Length <= 512 ? stackalloc char[Path.Length] : GC.AllocateUninitializedArray<char>(Path.Length);
-        Path.CopyTo(aCopy);
-        aCopy.NormalizeStringCase();
-
-        var bCopy = other.Path.Length <= 512 ? stackalloc char[other.Path.Length] : GC.AllocateUninitializedArray<char>(other.Path.Length);
-        other.Path.CopyTo(bCopy);
-        bCopy.NormalizeStringCase();
-
-        return MemoryExtensions.CompareTo(aCopy, bCopy, StringComparison.Ordinal);
-    }
+    public int CompareTo(RelativePath other) => PathHelpers.Compare(Path, other.Path);
 }
 
 /// <summary>

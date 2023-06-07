@@ -1,4 +1,6 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using System.Text;
 using FluentAssertions;
 using NexusMods.Paths.Utilities;
 
@@ -56,6 +58,52 @@ public class PathHelperTests
     {
         var actualOutput = PathHelpers.Sanitize(input, CreateOSInformation(isUnix));
         actualOutput.Should().Be(expectedOutput);
+    }
+
+    [Theory]
+    [InlineData(true, "", "", true)]
+    [InlineData(true,"foo", "", false)]
+    [InlineData(true,"", "foo", false)]
+    [InlineData(true,"foo", "foo", true)]
+    [InlineData(true,"foo", "FOO", true)]
+    [InlineData(true,"/foo", "/foo", true)]
+    [InlineData(true,"/foo", "/FOO", true)]
+    [InlineData(false, "C:/", "C:/", true)]
+    [InlineData(false, "C:/foo", "C:/foo", true)]
+    [InlineData(false, "C:/foo", "C:/FOO", true)]
+    public void Test_Equals(bool isUnix, string left, string right, bool expected)
+    {
+        var actual = PathHelpers.Equals(left, right, CreateOSInformation(isUnix));
+        actual.Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData(true, "", "", 0)]
+    [InlineData(true, "", "foo", -1)]
+    [InlineData(true, "foo", "", 1)]
+    [InlineData(true, "foo", "foo", 0)]
+    [InlineData(true, "foo", "FOO", 0)]
+    [InlineData(true, "/foo", "/foo", 0)]
+    [InlineData(true, "/foo", "/FOO", 0)]
+    [InlineData(true, "/FOO", "/foo", 0)]
+    [InlineData(true, "/foo", "/bar", 1)]
+    [InlineData(true, "/bar", "/foo", -1)]
+    [InlineData(false, "C:/foo", "C:/foo", 0)]
+    [InlineData(false, "C:/foo", "C:/FOO", 0)]
+    [InlineData(false, "C:/FOO", "C:/foo", 0)]
+    [InlineData(false, "C:/foo", "C:/bar", 1)]
+    [InlineData(false, "C:/bar", "C:/foo", -1)]
+    public void Test_Compare(bool isUnix, string left, string right, int expected)
+    {
+        var actual = PathHelpers.Compare(left, right, CreateOSInformation(isUnix));
+        actual = actual switch
+        {
+            0 => 0,
+            > 0 => 1,
+            < 0 => -1,
+        };
+
+        actual.Should().Be(expected);
     }
 
     [Theory]
@@ -344,4 +392,99 @@ public class PathHelperTests
         var actualOutput = PathHelpers.DropParents(path, count, CreateOSInformation(isUnix)).ToString();
         actualOutput.Should().Be(expectedOutput);
     }
+
+    [Theory]
+    [InlineData(true, false, "", "")]
+    [InlineData(true, false, "foo/bar", "foo+bar")]
+    [InlineData(true, false,"/", "/")]
+    [InlineData(true, false,"/foo", "/+foo")]
+    [InlineData(true, false,"/foo/bar/baz", "/+foo+bar+baz")]
+    [InlineData(false, false,"C:/", "C:/")]
+    [InlineData(false, false,"C:/foo", "C:/+foo")]
+    [InlineData(false, false,"C:/foo/bar/baz", "C:/+foo+bar+baz")]
+    [InlineData(true, true, "", "")]
+    [InlineData(true, true, "foo/bar", "bar+foo")]
+    [InlineData(true, true,"/", "/")]
+    [InlineData(true, true,"/foo", "foo+/")]
+    [InlineData(true, true,"/foo/bar/baz", "baz+bar+foo+/")]
+    [InlineData(false, true,"C:/", "C:/")]
+    [InlineData(false, true,"C:/foo", "foo+C:/")]
+    [InlineData(false, true,"C:/foo/bar/baz", "baz+bar+foo+C:/")]
+    public void Test_WalkParts(bool isUnix, bool isReverse, string path, string expectedOutput)
+    {
+        var sb = new StringBuilder();
+
+        // ReSharper disable once InconsistentNaming
+        PathHelpers.WalkParts(path, ref sb, (ReadOnlySpan<char> part, ref StringBuilder sb_) =>
+        {
+            if (sb_.Length != 0) sb_.Append('+');
+            sb_.Append(part);
+            return true;
+        }, isReverse, CreateOSInformation(isUnix));
+
+        var actualOutput = sb.ToString();
+        actualOutput.Should().Be(expectedOutput);
+
+        sb = new StringBuilder();
+        PathHelpers.WalkParts(path, part =>
+        {
+            if (sb.Length != 0) sb.Append('+');
+            sb.Append(part);
+            return true;
+        }, isReverse, CreateOSInformation(isUnix));
+
+        actualOutput = sb.ToString();
+        actualOutput.Should().Be(expectedOutput);
+    }
+
+    [Theory]
+    [InlineData(true, false, "/foo/bar/baz", 1, "/")]
+    [InlineData(true, false, "/foo/bar/baz", 2, "/+foo")]
+    [InlineData(true, false, "/foo/bar/baz", 3, "/+foo+bar")]
+    [InlineData(true, false, "/foo/bar/baz", 4, "/+foo+bar+baz")]
+    [InlineData(true, true, "/foo/bar/baz", 1, "baz")]
+    [InlineData(true, true, "/foo/bar/baz", 2, "baz+bar")]
+    [InlineData(true, true, "/foo/bar/baz", 3, "baz+bar+foo")]
+    [InlineData(true, true, "/foo/bar/baz", 4, "baz+bar+foo+/")]
+    [InlineData(false, false, "C:/foo/bar/baz", 1, "C:/")]
+    [InlineData(false, false, "C:/foo/bar/baz", 2, "C:/+foo")]
+    [InlineData(false, false, "C:/foo/bar/baz", 3, "C:/+foo+bar")]
+    [InlineData(false, false, "C:/foo/bar/baz", 4, "C:/+foo+bar+baz")]
+    [InlineData(false, true, "C:/foo/bar/baz", 1, "baz")]
+    [InlineData(false, true, "C:/foo/bar/baz", 2, "baz+bar")]
+    [InlineData(false, true, "C:/foo/bar/baz", 3, "baz+bar+foo")]
+    [InlineData(false, true, "C:/foo/bar/baz", 4, "baz+bar+foo+C:/")]
+    public void Test_WalkPartsPartially(bool isUnix, bool isReverse, string path, int stopAfterN, string expectedOutput)
+    {
+        var sb = new StringBuilder();
+        var counter = 0;
+
+        PathHelpers.WalkParts(path, part =>
+        {
+            if (sb.Length != 0) sb.Append('+');
+            sb.Append(part);
+            counter++;
+            return counter < stopAfterN;
+        }, isReverse, CreateOSInformation(isUnix));
+
+        var actualOutput = sb.ToString();
+        actualOutput.Should().Be(expectedOutput);
+    }
+
+    [Theory]
+    [MemberData(nameof(TestData_GetParts))]
+    public void Test_GetParts(bool isUnix, bool isReverse, string path, List<string> expectedOutput)
+    {
+        var actualOutput = PathHelpers.GetParts(path, isReverse, CreateOSInformation(isUnix));
+        actualOutput.Should().Equal(expectedOutput);
+    }
+
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    public static IEnumerable<object[]> TestData_GetParts => new[]
+    {
+        new object[] { true, false, "/foo/bar/baz", new List<string> { "/", "foo", "bar", "baz" } },
+        new object[] { true, true, "/foo/bar/baz", new List<string> { "baz", "bar", "foo", "/" } },
+        new object[] { false, false, "C:/foo/bar/baz", new List<string>{ "C:/", "foo", "bar", "baz" }},
+        new object[] { false, true, "C:/foo/bar/baz", new List<string>{ "baz", "bar", "foo", "C:/" }},
+    };
 }
