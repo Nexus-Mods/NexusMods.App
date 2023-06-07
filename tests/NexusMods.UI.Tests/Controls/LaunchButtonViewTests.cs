@@ -42,7 +42,7 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
 
         await Click(_button!);
 
-        (await source.Task).Should().BeTrue();
+        (await source.Task.WaitAsync(TimeSpan.FromSeconds(10))).Should().BeTrue();
     }
 
     [Fact]
