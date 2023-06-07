@@ -19,9 +19,9 @@ public class UtilityTests
     [InlineData("/foo", "/foo/bar", true)]
     [InlineData("C:\\", "C:\\foo", false)]
     [InlineData("C:\\foo", "C:\\foo\\bar", false)]
-    public void InFolder(string parent, string child, bool linux)
+    public void InFolder(string parent, string child, bool unixLike)
     {
-        Skip.If(linux != OperatingSystem.IsLinux());
+        Skip.If(unixLike != OSHelper.IsUnixLike());
 
         var parentPath = AbsolutePath.FromFullPath(parent, _fileSystem);
         var childPath = AbsolutePath.FromFullPath(child, _fileSystem);
@@ -36,9 +36,9 @@ public class UtilityTests
     [InlineData("foo", "C:\\", "C:\\foo", false)]
     [InlineData("foo\\bar", "C:\\", "C:\\foo\\bar", false)]
     [InlineData("bar", "C:\\foo", "C:\\foo\\bar", false)]
-    public void RelativeTo(string expected, string parent, string child, bool linux)
+    public void RelativeTo(string expected, string parent, string child, bool unixLike)
     {
-        Skip.If(linux != OperatingSystem.IsLinux());
+        Skip.If(unixLike != OSHelper.IsUnixLike());
 
         var childPath = AbsolutePath.FromFullPath(child, _fileSystem);
         var parentPath = AbsolutePath.FromFullPath(parent, _fileSystem);
@@ -56,9 +56,9 @@ public class UtilityTests
     [InlineData("/", "/foo/bar", true)]
     [InlineData("C:\\", "C:\\foo", false)]
     [InlineData("C:\\", "C:\\foo\\bar", false)]
-    public void TopParent(string expected, string item, bool linux)
+    public void TopParent(string expected, string item, bool unixLike)
     {
-        Skip.If(linux != OperatingSystem.IsLinux());
+        Skip.If(unixLike != OSHelper.IsUnixLike());
 
         var path = AbsolutePath.FromFullPath(item, _fileSystem);
 
@@ -75,9 +75,9 @@ public class UtilityTests
     [InlineData("C:", false, false)]
     [InlineData("C:\\foo", false, false)]
     [InlineData("foo", false, false)]
-    public void Test_IsRootDirectory(string input, bool expected, bool linux)
+    public void Test_IsRootDirectory(string input, bool expected, bool unixLike)
     {
-        Skip.If(linux != OperatingSystem.IsLinux());
+        Skip.If(unixLike != OSHelper.IsUnixLike());
         AbsolutePath.IsRootDirectory(input).Should().Be(expected);
     }
 }

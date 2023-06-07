@@ -43,9 +43,9 @@ public class CombineCheckedTest
     [InlineData("C:\\foo\\bar", "baz", "C:\\foo\\bar\\baz", "C:\\foo\\bar", "baz", false)]
     public void Test_CombinedChecked(string left, string right,
         string expectedFullPath, string expectedDirectory,
-        string expectedFileName, bool linux)
+        string expectedFileName, bool unixLike)
     {
-        Skip.If(linux != OperatingSystem.IsLinux());
+        Skip.If(unixLike != OSHelper.IsUnixLike());
         var absolutePath = AbsolutePath.FromFullPath(left, _fileSystem);
         var relativePath = new RelativePath(right);
 
@@ -64,9 +64,9 @@ public class CombineCheckedTest
     [InlineData("C:\\foo\\bar", "baz", "C:\\foo\\bar\\baz", "C:\\foo\\bar", "baz", false)]
     public void Test_CombineUnchecked(string left, string right,
         string expectedFullPath, string expectedDirectory,
-        string expectedFileName, bool linux)
+        string expectedFileName, bool unixLike)
     {
-        Skip.If(linux != OperatingSystem.IsLinux());
+        Skip.If(unixLike != OSHelper.IsUnixLike());
         var absolutePath = AbsolutePath.FromFullPath(left, _fileSystem);
         var relativePath = new RelativePath(right);
 

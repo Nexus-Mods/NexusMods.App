@@ -38,9 +38,9 @@ public class ExtensionTests
     [SkippableTheory]
     [InlineData("/foo.dds", true)]
     [InlineData("C:\\foo.dds", false)]
-    public void CanGetExtensionOfPath(string input, bool linux)
+    public void CanGetExtensionOfPath(string input, bool unixLike)
     {
-        Skip.If(linux != OperatingSystem.IsLinux());
+        Skip.If(unixLike != (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS()));
         var path = AbsolutePath.FromFullPath(input, _fileSystem);
         path.Extension.Should().Be(DDS);
     }

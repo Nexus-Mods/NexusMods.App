@@ -27,9 +27,9 @@ public class FromFullPathTests
         string expectedFullPath,
         string expectedDirectory,
         string expectedFileName,
-        bool linux)
+        bool unixLike)
     {
-        Skip.If(linux != OperatingSystem.IsLinux());
+        Skip.If(unixLike != OSHelper.IsUnixLike());
         var path = AbsolutePath.FromFullPath(input, _fileSystem);
         path.GetFullPath().Should().Be(expectedFullPath);
         path.Directory.Should().Be(expectedDirectory);
