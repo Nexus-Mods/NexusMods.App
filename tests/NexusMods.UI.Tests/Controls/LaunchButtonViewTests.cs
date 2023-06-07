@@ -30,24 +30,19 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
     [Fact]
     public async Task ClickingTheButtonFiresTheCommand()
     {
-        var clicked = false;
+        var source = new TaskCompletionSource<bool>();
+        
+
         ViewModel.Command = ReactiveCommand.Create<Unit, Unit>(_ =>
         {
-            clicked = true;
+            source.SetResult(true);
             return Unit.Default;
         });
 
-        await Eventually(() =>
-        {
-            clicked.Should().BeFalse();
-        });
-        
+
         await Click(_button!);
 
-        await Eventually(() =>
-        {
-            clicked.Should().BeTrue();
-        });
+        (await source.Task).Should().BeTrue();
     }
 
     [Fact]
