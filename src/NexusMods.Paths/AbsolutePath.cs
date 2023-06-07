@@ -168,7 +168,7 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static int GetRootLength(ReadOnlySpan<char> path)
     {
-        if (OperatingSystem.IsLinux())
+        if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
             return path.Length >= 1 && path[0] == PathSeparatorForInternalOperations ? 1 : 0;
 
         if (!OperatingSystem.IsWindows())

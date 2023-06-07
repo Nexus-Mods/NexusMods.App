@@ -50,6 +50,10 @@ public static class Services
 
                 services.AddSingleton<IGameLocator, DefaultWineGameLocator>();
                 services.AddSingleton<IGameLocator, BottlesWineGameLocator>();
+            },
+            onOSX: () =>
+            {
+                services.AddSingleton<IGameLocator, SteamLocator>();
             });
 
         if (!registerConcreteLocators) return services;
@@ -99,6 +103,10 @@ public static class Services
                         ),
                     }
                 ));
+            },
+            onOSX: () =>
+            {
+                services.AddSingleton<AHandler<SteamGame, SteamGameId>>(provider => new SteamHandler(provider.GetRequiredService<IFileSystem>(), null));
             });
 
         return services;

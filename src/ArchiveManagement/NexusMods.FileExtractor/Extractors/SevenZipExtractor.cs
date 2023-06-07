@@ -162,8 +162,8 @@ public class SevenZipExtractor : IExtractor
 
     private static string GetExeLocation()
     {
-        if (RuntimeInformation.ProcessArchitecture != Architecture.X64)
-            throw new NotSupportedException($"{nameof(NexusMods.FileExtractor)}'s {nameof(SevenZipExtractor)} only supports x64 processors.");
+        if (RuntimeInformation.ProcessArchitecture != Architecture.X64 && !RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            throw new NotSupportedException($"{nameof(NexusMods.FileExtractor)}'s {nameof(SevenZipExtractor)} only supports x64 processors (or Arm64 on OSX). This system is {RuntimeInformation.ProcessArchitecture}");
 
         return OSInformation.MatchPlatform(
             onWindows: () => @"runtimes\win-x64\native\7z.exe",
