@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using Avalonia.Automation.Peers;
+using Avalonia.Controls;
 using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI;
@@ -126,10 +128,21 @@ public class AUiTest
     }
     
     /// <summary>
+    /// Like Eventually, but runs the action on the UI thread.
+    /// </summary>
+    /// <param name="action"></param>
+    /// <param name="maxTimeout"></param>
+    /// <param name="delay"></param>
+    public async Task EventuallyOnUi(Action action, TimeSpan? maxTimeout = null, TimeSpan? delay = null)
+    {
+        await Eventually(async () => await OnUi(action));
+    }
+    
+    /// <summary>
     /// Executes an action on the UI thread and waits for it to complete.
     /// </summary>
     /// <param name="action"></param>
-    public async Task<T> OnUi<T>(Func<Task<T>> action)
+    protected async Task<T> OnUi<T>(Func<Task<T>> action)
     {
         var result = await Dispatcher.UIThread.InvokeAsync(action);
         return result;
@@ -139,12 +152,38 @@ public class AUiTest
     /// Executes an action on the UI thread and waits for it to complete.
     /// </summary>
     /// <param name="action"></param>
-    public async Task OnUi(Func<Task> action)
+    protected async Task OnUi(Func<Task> action)
     {
         var result = await Dispatcher.UIThread.InvokeAsync(async () =>
         {
             await action();
             return 0;
+        });
+    }
+    
+    /// <summary>
+    /// Executes an action on the UI thread and waits for it to complete.
+    /// </summary>
+    /// <param name="action"></param>
+    protected async Task OnUi(Action action)
+    {
+        var result = await Dispatcher.UIThread.InvokeAsync(async () =>
+        {
+            action();
+            return 0;
+        });
+    }
+    
+    /// <summary>
+    /// Clicks the button in a way that fires all the proper UI events
+    /// </summary>
+    /// <param name="button"></param>
+    protected async Task Click(Button button)
+    {
+        await OnUi(() =>
+        {
+            var peer = new ButtonAutomationPeer(button);
+            peer.Invoke();
         });
     }
 }

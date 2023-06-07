@@ -20,7 +20,7 @@ public class LoadoutGridViewTests : AViewTest<LoadoutGridView, LoadoutGridDesign
         var control = await GetControl<DataGrid>("ModsDataGrid");
         
         var ids = new List<ModCursor>();
-        await Host.OnUi(async () =>
+        await OnUi(async () =>
         {
             control.ItemsSource.OfType<ModCursor>().Should().HaveCount(9);
 
@@ -34,9 +34,9 @@ public class LoadoutGridViewTests : AViewTest<LoadoutGridView, LoadoutGridDesign
 
         var deleteButton = await GetControl<Button>("DeleteModsButton");
         
-        await Host.Click(deleteButton);
+        await Click(deleteButton);
         
-        await Host.OnUi(async () =>
+        await OnUi(() =>
         {
             control.ItemsSource.OfType<ModCursor>().Should().HaveCount(9 - ids.Count);
             foreach (var item in ids)
@@ -62,7 +62,7 @@ public class LoadoutGridViewTests : AViewTest<LoadoutGridView, LoadoutGridDesign
         
         events.Clear();
 
-        await Host.OnUi(async () =>
+        await OnUi(() =>
         {
             ViewModel.AddMod(new ModCursor(ViewModel.LoadoutId, ModId.New()));
         });

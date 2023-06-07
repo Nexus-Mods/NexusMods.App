@@ -46,7 +46,7 @@ public class DownloadsViewTests : AViewTest<DownloadsView, DownloadsDesignViewMo
     {
         foreach (var option in _options)
         {
-            await Host.Click(option.Control);
+            await Click(option.Control);
             Host.ViewModel.Current.Should().Be(option.Option, "value was set in the View Model");
             Host.ViewModel.CurrentViewModel.Should().NotBeNull("the view model should be set");
             Host.ViewModel.CurrentViewModel.Should().BeAssignableTo(option.Type, "the view model should be the correct type");

@@ -17,7 +17,7 @@ public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadBut
     {
         var button = await Host.GetViewControl<Button>("ParentButton");
         
-        await Host.OnUi(async () =>
+        await OnUi(async () =>
         {
             button.Classes.Should().NotContain("Active");
         });
@@ -26,7 +26,7 @@ public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadBut
 
         await Eventually(async () =>
         {
-            await Host.OnUi(async () =>
+            await OnUi(() =>
             {
                 button.Classes.Should().Contain("Active");
             });
@@ -39,7 +39,7 @@ public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadBut
         var button = await Host.GetViewControl<Button>("ParentButton");
         var arc = await Host.GetViewControl<Arc>("ProgressArc");
         
-        await Host.OnUi(async () =>
+        await OnUi(() =>
         {
             button.Classes.Should().Contain("Idle");
             button.Classes.Should().NotContain("Progress");
@@ -49,7 +49,7 @@ public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadBut
 
         await Eventually(async () =>
         {
-            await Host.OnUi(async () =>
+            await OnUi(() =>
             {
                 button.Classes.Should().NotContain("Idle");
                 button.Classes.Should().Contain("Progress");
@@ -62,7 +62,7 @@ public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadBut
 
         await Eventually(async () =>
         {
-            await Host.OnUi(async () =>
+            await OnUi(() =>
             {
                 button.Classes.Should().NotContain("Idle");
                 button.Classes.Should().Contain("Progress");
@@ -82,7 +82,7 @@ public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadBut
         ViewModel.Number = 4.2f;
         ViewModel.Units = "foos";
         
-        await EventuallyOnUi(async () =>
+        await EventuallyOnUi(() =>
         {
             numberBlock.Text.Should().Be("4.20");
             unitsBlock.Text.Should().Be("FOOS");
@@ -90,7 +90,7 @@ public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadBut
         
         ViewModel.Number = 0.0f;
         
-        await EventuallyOnUi(async () =>
+        await EventuallyOnUi(() =>
         {
             numberBlock.Text.Should().Be("0.00");
             unitsBlock.Text.Should().Be("FOOS");
@@ -98,7 +98,7 @@ public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadBut
         
         ViewModel.Number = 0.0001f;
         
-        await EventuallyOnUi(async () =>
+        await EventuallyOnUi(() =>
         {
             numberBlock.Text.Should().Be("0.00");
             unitsBlock.Text.Should().Be("FOOS");
@@ -106,7 +106,7 @@ public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadBut
         
         ViewModel.Number = 1000.0f;
         
-        await EventuallyOnUi(async () =>
+        await EventuallyOnUi(() =>
         {
             numberBlock.Text.Should().Be("1000.00");
             unitsBlock.Text.Should().Be("FOOS");
@@ -122,7 +122,7 @@ public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadBut
         var button = await Host.GetViewControl<Button>("ParentButton");
 
         val.Should().BeFalse();
-        await Host.Click(button);
+        await Click(button);
 
         await Eventually(() =>
         {
