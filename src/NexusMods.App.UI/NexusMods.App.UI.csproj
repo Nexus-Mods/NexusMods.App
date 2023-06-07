@@ -89,7 +89,7 @@
         <PackageReference Include="DynamicData" Version="7.14.2" />
         <PackageReference Include="Humanizer" Version="2.14.1" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
-        <PackageReference Include="NexusMods.Projektanker.Icons.Avalonia.MaterialDesign" Version="6.0.0-rc1" />
+        <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="6.6.0-rc1.1" />
         <PackageReference Include="ReactiveUI.Fody" Version="19.2.1" />
         <PackageReference Include="Splat.Microsoft.Extensions.Logging" Version="14.6.8" />
         <PackageReference Include="System.Reactive" Version="6.0.0" />
