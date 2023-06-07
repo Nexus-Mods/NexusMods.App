@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
+using Avalonia.Controls;
 using DynamicData;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 using NexusMods.DataModel.Loadouts;
@@ -103,7 +104,10 @@ public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>,
                     modId => new ModNameView
                     {
                         ViewModel = new ModNameDesignViewModel { Row = modId }
-                    }, ColumnType.Name));
+                    }, ColumnType.Name)
+                {
+                    Width = new DataGridLength(1, DataGridLengthUnitType.Star)
+                });
             x.AddOrUpdate(
                 new DataGridColumnDesignFactory<IModVersionViewModel,
                     ModCursor>(modId => new ModVersionView()
