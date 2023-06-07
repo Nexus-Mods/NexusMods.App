@@ -8,15 +8,15 @@ namespace NexusMods.UI.Tests.LeftMenu;
 
 public class DownloadsViewTests : AViewTest<DownloadsView, DownloadsDesignViewModel, IDownloadsViewModel>
 {
-    private (Options Option, Button Control, Type Type)[] _options;
+    private (Options Option, Button Control, Type Type)[]? _options;
     
-    public DownloadsViewTests(IServiceProvider provider, AvaloniaApp app) : base(provider, app) { }
+    public DownloadsViewTests(IServiceProvider provider) : base(provider) { }
 
     [Fact]
     public async Task ActiveIsAppliedToButtonsWhenTheVmActivatesThem()
     {
         // Select each option in turn
-        foreach (var current in _options)
+        foreach (var current in _options!)
         {
             Host.ViewModel.Set(current.Option);
             await EventuallyOnUi(async () =>

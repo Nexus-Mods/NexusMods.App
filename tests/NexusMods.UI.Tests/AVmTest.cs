@@ -66,8 +66,9 @@ where TVm : IViewModelInterface
         return await ArchiveInstaller.AddMods(Loadout.Value.LoadoutId, analyzedFile.Hash);
     }
 
-    public async Task DisposeAsync()
+    public Task DisposeAsync()
     {
         _vmWrapper.Dispose();
+        return Task.CompletedTask;
     }
 }

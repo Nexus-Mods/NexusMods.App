@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using Avalonia.VisualTree;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI;
 using NexusMods.UI.Tests.Framework;
 using Noggog;
@@ -21,9 +22,9 @@ public class AViewTest<TView, TViewModel, TViewModelInterface> : AUiTest, IAsync
     protected TViewModel ViewModel => _host!.ViewModel;
     protected TView View => _host!.View;
 
-    protected AViewTest(IServiceProvider provider, AvaloniaApp app) : base(provider)
+    protected AViewTest(IServiceProvider provider) : base(provider)
     {
-        _app = app;
+        _app = provider.GetRequiredService<AvaloniaApp>();
     }
     
     protected async Task<T> GetControl<T>(string name) where T : Control

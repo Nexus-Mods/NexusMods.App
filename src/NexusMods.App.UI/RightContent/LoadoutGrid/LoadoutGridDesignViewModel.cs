@@ -5,6 +5,7 @@ using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid;
 
@@ -17,6 +18,7 @@ public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>,
         new(new ObservableCollection<ModCursor>());
 
     public ReadOnlyObservableCollection<ModCursor> Mods => _filteredMods;
+    
     public LoadoutId LoadoutId { get; set; } = Initializers.LoadoutId;
 
     private readonly SourceCache<IDataGridColumnFactory, ColumnType> _columns;

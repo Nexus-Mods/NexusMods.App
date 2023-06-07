@@ -12,7 +12,7 @@ namespace NexusMods.UI.Tests;
 
 public class LoadoutGridViewTests : AViewTest<LoadoutGridView, LoadoutGridDesignViewModel, ILoadoutGridViewModel>
 {
-    public LoadoutGridViewTests(IServiceProvider provider, AvaloniaApp app) : base(provider, app) { }
+    public LoadoutGridViewTests(IServiceProvider provider) : base(provider) { }
 
     [Fact]
     public async Task CanDeleteModsFromLoadout()

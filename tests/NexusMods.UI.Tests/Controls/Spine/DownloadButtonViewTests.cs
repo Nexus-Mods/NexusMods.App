@@ -10,7 +10,7 @@ namespace NexusMods.UI.Tests.Controls.Spine;
 
 public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadButtonDesignerViewModel, IDownloadButtonViewModel>
 {
-    public DownloadButtonViewTests(IServiceProvider provider, AvaloniaApp app) : base(provider, app) { }
+    public DownloadButtonViewTests(IServiceProvider provider) : base(provider) { }
 
     [Fact]
     public async Task SettingButtonToActiveAppliesProperClass()
@@ -82,7 +82,7 @@ public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadBut
         ViewModel.Number = 4.2f;
         ViewModel.Units = "foos";
         
-        await Host.OnUi(async () =>
+        await EventuallyOnUi(async () =>
         {
             numberBlock.Text.Should().Be("4.20");
             unitsBlock.Text.Should().Be("FOOS");
@@ -90,7 +90,7 @@ public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadBut
         
         ViewModel.Number = 0.0f;
         
-        await Host.OnUi(async () =>
+        await EventuallyOnUi(async () =>
         {
             numberBlock.Text.Should().Be("0.00");
             unitsBlock.Text.Should().Be("FOOS");
@@ -128,6 +128,5 @@ public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadBut
         {
             val.Should().BeTrue();
         });
-        ViewModel.Click = ReactiveCommand.Create(() => { });
     }
 }

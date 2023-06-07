@@ -16,7 +16,7 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
     private TextBlock? _text;
     private ProgressBar? _progressBar;
 
-    public LaunchButtonViewTests(IServiceProvider provider, AvaloniaApp app) : base(provider, app) { }
+    public LaunchButtonViewTests(IServiceProvider provider) : base(provider) { }
 
     protected override async Task PostInitializeSetup()
     {

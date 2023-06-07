@@ -71,7 +71,7 @@ public class WindowHost : IAsyncDisposable
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
-    public async Task<IEnumerable<T>> Select<T>(string name, int maxTries = 5) where T : IStyleable
+    public async Task<IEnumerable<T>> Select<T>(string name, int maxTries = 5) where T : StyledElement
     {
         var timeout = Environment.GetEnvironmentVariable("GITHUB_CI") is not null
             ? TimeSpan.FromMilliseconds(500)

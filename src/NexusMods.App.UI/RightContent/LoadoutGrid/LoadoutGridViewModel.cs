@@ -2,6 +2,7 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
+using DynamicData.Binding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
@@ -86,11 +87,13 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
                 .SelectMany(loadoutRegistry.RevisionsAsLoadouts)
                 .Select(loadout => loadout.Name)
                 .BindTo(this, vm => vm.LoadoutName);
-
+            
             _columns.Connect()
                 .Bind(out _filteredColumns)
                 .SubscribeWithErrorLogging(logger)
                 .DisposeWith(d);
+            
+
         });
     }
     
