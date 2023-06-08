@@ -45,7 +45,7 @@ public class ZipArchiveManager : IArchiveManager
 
             foreach (var backup in distinct)
             {
-                var srcStream = await backup.Item1.GetStreamAsync();
+                await using var srcStream = await backup.Item1.GetStreamAsync();
                 var entry = builder.CreateEntry(backup.Item2.ToHex()); 
                 await using var entryStream = entry.Open();
                 await srcStream.CopyToAsync(entryStream, token);
@@ -110,12 +110,12 @@ public class ZipArchiveManager : IArchiveManager
                 if (!toExtract.Contains(entry.Name))
                     continue;
                 
-                foreach (var dest in toExtract[entry.Name])
+                foreach (var (_, dest) in toExtract[entry.Name])
                 {
-                    if (!dest.Dest.Parent.DirectoryExists())
-                        dest.Dest.Parent.CreateDirectory();
+                    if (!dest.Parent.DirectoryExists())
+                        dest.Parent.CreateDirectory();
                     await using var entryStream = entry.Open();
-                    await using var destStream = dest.Dest.Create();
+                    await using var destStream = dest.Create();
                     await entryStream.CopyToAsync(destStream, token);
                     await destStream.FlushAsync(token);
                 }
