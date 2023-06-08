@@ -50,7 +50,7 @@ public static class Services
         coll.AddSingleton(typeof(EntityLinkConverter<>));
 
         coll.AddSingleton<IDataStore, SqliteDataStore>();
-        coll.AddAllSingleton<IArchiveManager, ArchiveManager>();
+        coll.AddAllSingleton<IArchiveManager, ZipArchiveManager>();
         coll.AddAllSingleton<IResource, IResource<FileHashCache, Size>>(s =>
             new Resource<FileHashCache, Size>("File Hashing",
                 Settings(s).MaxHashingJobs,
