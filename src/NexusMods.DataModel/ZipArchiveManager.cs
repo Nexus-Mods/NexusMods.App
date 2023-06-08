@@ -11,6 +11,10 @@ using NexusMods.Paths.Utilities;
 
 namespace NexusMods.DataModel;
 
+/// <summary>
+/// Archive manager that uses zip files instead of the Nexus Mods archive format. This is used for testing and
+/// to verify possible stability and memory issues with the Nexus Mods archive format implementation.
+/// </summary>
 public class ZipArchiveManager : IArchiveManager
 {
     private readonly AbsolutePath[] _archiveLocations;
