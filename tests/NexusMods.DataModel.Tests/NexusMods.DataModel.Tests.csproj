@@ -8,12 +8,7 @@
       <ProjectReference Include="..\..\src\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj" />
       <ProjectReference Include="..\NexusMods.StandardGameLocators.Tests\NexusMods.StandardGameLocators.Tests.csproj" />
     </ItemGroup>
-    
-    <ItemGroup>
-      <None Remove="TestResults\ec21689c-8370-4ba5-ac84-e226c50e307c\testhost.exe_2700084_1686249413_crashdump.dmp" />
-      <None Remove="TestResults\86e7f9fb-9a10-47ad-aaad-35682a860909\testhost.exe_2702568_1686249364_crashdump.dmp" />
-    </ItemGroup>
-    
+
     <ItemGroup>
       <Folder Include="TestResults\86e7f9fb-9a10-47ad-aaad-35682a860909\" />
       <Folder Include="TestResults\ec21689c-8370-4ba5-ac84-e226c50e307c\" />
