@@ -261,13 +261,27 @@ public class LoadoutSynchronizer
         await EmitCreatePlan(plan, pair, tmpPlan, existing.Path);
     }
 
-    public async ValueTask<FileMetaData?> GetMetaData(AModFile file, AbsolutePath path)
+    /// <summary>
+    /// Gets the metadata for the given file, if the file is from an archive then the metadata is returned
+    /// </summary>
+    /// <param name="file"></param>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    /// <exception cref="NotImplementedException"></exception>
+    public ValueTask<FileMetaData?> GetMetaData(AModFile file, AbsolutePath path)
     {
         if (file is IFromArchive fa)
-            return new FileMetaData(path, fa.Hash, fa.Size);
+            return ValueTask.FromResult<FileMetaData?>(new FileMetaData(path, fa.Hash, fa.Size));
         throw new NotImplementedException();
     }
 
+    /// <summary>
+    /// Compares the game folders to the loadout and returns a plan of what needs to be done to make the loadout match the game folders
+    /// </summary>
+    /// <param name="loadout"></param>
+    /// <param name="modSelector"></param>
+    /// <param name="token"></param>
+    /// <returns></returns>
     public async ValueTask<IngestPlan> MakeIngestPlan(Loadout loadout, Func<AbsolutePath, ModId> modSelector, CancellationToken token = default)
     {
         var install = loadout.Installation;
@@ -316,12 +330,13 @@ public class LoadoutSynchronizer
         };
     }
 
-    private async ValueTask EmitRemoveFromLoadout(List<IIngestStep> plan, AbsolutePath absPath)
+    private ValueTask EmitRemoveFromLoadout(List<IIngestStep> plan, AbsolutePath absPath)
     {
         plan.Add(new IngestSteps.RemoveFromLoadout
         {
             Source = absPath
         });
+        return ValueTask.CompletedTask;
     }
 
     private async ValueTask EmitIngestCreatePlan(List<IIngestStep> plan, HashedEntry existing, Func<AbsolutePath, ModId> modSelector)

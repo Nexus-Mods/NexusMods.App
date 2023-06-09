@@ -6,6 +6,9 @@ using NexusMods.DataModel.Abstractions.Ids;
 
 namespace NexusMods.DataModel.Extensions;
 
+/// <summary>
+/// Extension methods for <see cref="IObservable{T}"/>.
+/// </summary>
 public static class ObservableExtensions
 {
     /// <summary>

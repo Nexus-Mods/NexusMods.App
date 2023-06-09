@@ -5,6 +5,9 @@ using SQLitePCL;
 
 namespace NexusMods.DataModel.Extensions;
 
+/// <summary>
+/// Extensions for SqliteDataReader
+/// </summary>
 public static class SqliteDataReaderExtensions
 {
     /// <summary>

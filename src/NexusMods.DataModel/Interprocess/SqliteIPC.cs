@@ -132,7 +132,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
             {
                 Process.GetProcessById((int)job.ProcessId.Value);
             }
-            catch (ArgumentException _)
+            catch (ArgumentException)
             {
                 _logger.LogInformation("Removing job {JobId} because the process {ProcessId} no longer exists", job.JobId, job.ProcessId);
                 EndJob(job.JobId);

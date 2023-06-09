@@ -58,7 +58,7 @@ public abstract class AGame : IGame
                 .GetFileVersionInfo();
             return fvi.ProductVersion;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return new Version(0, 0, 0, 0);
         }

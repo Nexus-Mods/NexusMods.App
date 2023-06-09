@@ -4,8 +4,6 @@ using DynamicData;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
-using System.Reactive.Disposables;
-using DynamicData.PLinq;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts.Cursors;
@@ -145,11 +143,8 @@ public class LoadoutRegistry : IDisposable
             {
                 return loadout with { Mods = loadout.Mods.Without(modId) };
             }
-            else
-            {
-                return loadout with { Mods = loadout.Mods.With(modId, newMod) };
-            }
-            return loadout;
+
+            return loadout with { Mods = loadout.Mods.With(modId, newMod) };
         });
 
     }

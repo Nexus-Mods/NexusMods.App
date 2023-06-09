@@ -33,6 +33,10 @@ public class ArchiveAnalyzer : IArchiveAnalyzer
     private readonly FileHashCache _fileHashCache;
     private readonly ILookup<FileType, IFileAnalyzer> _analyzers;
     private readonly IArchiveManager _archiveManager;
+    
+    /// <summary>
+    /// The signature of the analyzers used when indexing files.
+    /// </summary>
     public Hash AnalyzersSignature { get; private set; }
 
     /// <summary/>
@@ -134,7 +138,6 @@ public class ArchiveAnalyzer : IArchiveAnalyzer
     private async Task<AnalyzedFile> AnalyzeFileInnerAsync(IStreamFactory sFn, CancellationToken token, int level, Hash parent, TemporaryPath? parentArchivePath, RelativePath parentPath, string fileName)
     {
         Hash hash;
-        Hash analyzerHash;
         List<FileType> sigs;
         var analysisData = new List<IFileAnalysisData>();
         {

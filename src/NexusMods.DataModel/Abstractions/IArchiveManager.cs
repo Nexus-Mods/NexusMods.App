@@ -23,6 +23,7 @@ public interface IArchiveManager
     /// backup process a exception may be thrown.
     /// </summary>
     /// <param name="backups"></param>
+    /// <param name="token"></param>
     Task BackupFiles(IEnumerable<(IStreamFactory, Hash, Size)> backups, CancellationToken token = default);
     
     

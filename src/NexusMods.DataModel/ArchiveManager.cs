@@ -25,6 +25,11 @@ public class ArchiveManager : IArchiveManager
     private readonly AbsolutePath[] _archiveLocations;
     private readonly IDataStore _store;
 
+    /// <summary>
+    /// DI Constructor
+    /// </summary>
+    /// <param name="store"></param>
+    /// <param name="settings"></param>
     public ArchiveManager(IDataStore store, IDataModelSettings settings)
     {
         _archiveLocations = settings.ArchiveLocations.Select(f => f.ToAbsolutePath()).ToArray();
@@ -36,12 +41,14 @@ public class ArchiveManager : IArchiveManager
         _store = store;
 
     }
-    
-    public async ValueTask<bool> HaveFile(Hash hash)
+
+    /// <inheritdoc />
+    public ValueTask<bool> HaveFile(Hash hash)
     {
-        return TryGetLocation(hash, out _, out _);
+        return ValueTask.FromResult(TryGetLocation(hash, out _, out _));
     }
 
+    /// <inheritdoc />
     public async Task BackupFiles(IEnumerable<(IStreamFactory, Hash, Size)> backups, CancellationToken token = default)
     {
         var builder = new NxPackerBuilder();
@@ -113,6 +120,7 @@ public class ArchiveManager : IArchiveManager
         return IId.FromSpan(EntityCategory.ArchivedFiles, buffer);
     }
 
+    /// <inheritdoc />
     public async Task ExtractFiles(IEnumerable<(Hash Src, AbsolutePath Dest)> files, CancellationToken token = default)
     {
         var grouped = files.Distinct()
@@ -148,7 +156,8 @@ public class ArchiveManager : IArchiveManager
         }
     }
 
-    public async Task<IDictionary<Hash, byte[]>> ExtractFiles(IEnumerable<Hash> files, CancellationToken token = default)
+    /// <inheritdoc />
+    public Task<IDictionary<Hash, byte[]>> ExtractFiles(IEnumerable<Hash> files, CancellationToken token = default)
     {
         var results = new Dictionary<Hash, byte[]>();
         
@@ -182,7 +191,7 @@ public class ArchiveManager : IArchiveManager
             }
         }
 
-        return results;
+        return Task.FromResult<IDictionary<Hash, byte[]>>(results);
     }
 
     private unsafe bool TryGetLocation(Hash hash, out AbsolutePath archivePath, out FileEntry fileEntry)
