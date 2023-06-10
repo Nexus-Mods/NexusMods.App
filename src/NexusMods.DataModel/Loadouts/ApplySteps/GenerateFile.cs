@@ -4,6 +4,9 @@ using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Loadouts.ApplySteps;
 
+/// <summary>
+/// A step that generates a file from a IGeneratedFile.
+/// </summary>
 public class GenerateFile : IApplyStep
 {
     /// <summary>

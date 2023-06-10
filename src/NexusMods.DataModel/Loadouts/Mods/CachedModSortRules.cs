@@ -14,5 +14,7 @@ public record CachedModSortRules : Entity
     /// The cached sort rules
     /// </summary>
     public required ISortRule<Mod, ModId>[] Rules { get; init; }
+
+    /// <inheritdoc />
     public override EntityCategory Category => EntityCategory.Fingerprints;
 }

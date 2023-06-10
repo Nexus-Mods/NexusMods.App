@@ -13,6 +13,10 @@ public class DataStoreFingerprintCache<TSrc, TValue> : IFingerprintCache<TSrc, T
     private readonly IDataStore _store;
     private readonly Hash _prefix;
 
+    /// <summary>
+    /// DI Constructor
+    /// </summary>
+    /// <param name="store"></param>
     public DataStoreFingerprintCache(IDataStore store)
     {
         _store = store;

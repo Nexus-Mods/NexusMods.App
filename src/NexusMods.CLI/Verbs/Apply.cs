@@ -26,6 +26,7 @@ public class Apply : AVerb<LoadoutMarker, bool, bool>
         new OptionDefinition<bool>("s", "summary", "Print the summary, not the detailed step list")
     });
 
+    /// <inheritdoc />
     public async Task<int> Run(LoadoutMarker loadout, bool run, bool summary, CancellationToken token)
     {
 

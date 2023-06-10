@@ -3,6 +3,9 @@ using NexusMods.Hashing.xxHash64;
 
 namespace NexusMods.DataModel.TriggerFilter;
 
+/// <summary>
+/// A helper class for generating fingerprints, which are essentially content hashes
+/// </summary>
 public struct Fingerprinter : IDisposable
 {
     private BinaryWriter _binaryWriter;

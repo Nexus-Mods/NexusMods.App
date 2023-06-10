@@ -24,7 +24,7 @@ public class DownloadButtonDesignerViewModel : AViewModel<IDownloadButtonViewMod
 
     public DownloadButtonDesignerViewModel()
     {
-        Click = ReactiveCommand.CreateFromTask(async () => StartProgress());
+        Click = ReactiveCommand.CreateFromTask(() => Task.FromResult(StartProgress()));
     }
 
     private async Task StartProgress()

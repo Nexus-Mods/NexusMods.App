@@ -24,7 +24,7 @@ public class Startup
             .CombineUnchecked(Guid.NewGuid().ToString());
 
         container
-            .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
+            .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
             .AddFileSystem()
             .AddSingleton<TemporaryFileManager>()
             .AddDataModel(new DataModelSettings(prefix))

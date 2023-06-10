@@ -15,6 +15,13 @@ public class ToolManager : IToolManager
     private readonly IDataStore _dataStore;
     private readonly LoadoutRegistry _loadoutRegistry;
 
+    /// <summary>
+    /// DI Constructor
+    /// </summary>
+    /// <param name="tools"></param>
+    /// <param name="loadoutSynchronizer"></param>
+    /// <param name="dataStore"></param>
+    /// <param name="loadoutRegistry"></param>
     public ToolManager(IEnumerable<ITool> tools, LoadoutSynchronizer loadoutSynchronizer, IDataStore dataStore, LoadoutRegistry loadoutRegistry)
     {
         _dataStore = dataStore;

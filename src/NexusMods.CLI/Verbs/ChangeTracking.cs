@@ -4,10 +4,18 @@ using NexusMods.DataModel.Abstractions;
 namespace NexusMods.CLI.Verbs;
 
 // ReSharper disable once ClassNeverInstantiated.Global
+/// <summary>
+/// Displays changes to the datastore waiting for each new change
+/// </summary>
 public class ChangeTracking : AVerb
 {
     private readonly IRenderer _renderer;
 
+    /// <summary>
+    /// DI constructor
+    /// </summary>
+    /// <param name="configurator"></param>
+    /// <param name="store"></param>
     public ChangeTracking(Configurator configurator, IDataStore store)
     {
         _renderer = configurator.Renderer;

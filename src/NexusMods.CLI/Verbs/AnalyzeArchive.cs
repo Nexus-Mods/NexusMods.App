@@ -7,10 +7,20 @@ using NexusMods.Paths;
 namespace NexusMods.CLI.Verbs;
 
 // ReSharper disable once ClassNeverInstantiated.Global
+/// <summary>
+/// Analyzes the contents of an archive caches them, and outputs them
+/// </summary>
 public class AnalyzeArchive : AVerb<AbsolutePath>
 {
     private readonly IRenderer _renderer;
     private readonly IArchiveAnalyzer _archiveContentsCache;
+    
+    /// <summary>
+    /// DI constructor
+    /// </summary>
+    /// <param name="configurator"></param>
+    /// <param name="archiveContentsCache"></param>
+    /// <param name="logger"></param>
     public AnalyzeArchive(Configurator configurator, IArchiveAnalyzer archiveContentsCache, ILogger<AnalyzeArchive> logger)
     {
         _logger = logger;
@@ -27,6 +37,7 @@ public class AnalyzeArchive : AVerb<AbsolutePath>
 
     private readonly ILogger<AnalyzeArchive> _logger;
 
+    /// <inheritdoc />
     public async Task<int> Run(AbsolutePath inputFile, CancellationToken token)
     {
         try

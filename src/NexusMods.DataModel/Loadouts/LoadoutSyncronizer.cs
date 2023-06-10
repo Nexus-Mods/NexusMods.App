@@ -33,6 +33,15 @@ public class LoadoutSynchronizer
     private readonly LoadoutRegistry _loadoutRegistry;
     private readonly ILogger<LoadoutSynchronizer> _logger;
 
+    /// <summary>
+    /// DI constructor
+    /// </summary>
+    /// <param name="logger"></param>
+    /// <param name="modSortRulesFingerprintCache"></param>
+    /// <param name="directoryIndexer"></param>
+    /// <param name="archiveManager"></param>
+    /// <param name="generatedFileFingerprintCache"></param>
+    /// <param name="loadoutRegistry"></param>
     public LoadoutSynchronizer(ILogger<LoadoutSynchronizer> logger, 
         IFingerprintCache<Mod, CachedModSortRules> modSortRulesFingerprintCache,
         IDirectoryIndexer directoryIndexer,
@@ -128,6 +137,12 @@ public class LoadoutSynchronizer
         }
     }
 
+    /// <summary>
+    /// Generates a list of steps that need to be taken to synchronize the given loadout with the game folders.
+    /// </summary>
+    /// <param name="loadout"></param>
+    /// <param name="token"></param>
+    /// <returns></returns>
     public async ValueTask<ApplyPlan> MakeApplySteps(Loadout loadout, CancellationToken token = default)
     {
 
@@ -386,6 +401,7 @@ public class LoadoutSynchronizer
     /// Applies the given steps to the game folder
     /// </summary>
     /// <param name="plan"></param>
+    /// <param name="token"></param>
     public async Task Apply(ApplyPlan plan, CancellationToken token = default)
     {
         // Step 1: Backup Files
@@ -434,7 +450,8 @@ public class LoadoutSynchronizer
     /// Run an ingest plan
     /// </summary>
     /// <param name="plan"></param>
-    public async ValueTask<Loadout> Ingest(IngestPlan plan, string message = "Ingested Changes")
+    /// <param name="commitMessage"></param>
+    public async ValueTask<Loadout> Ingest(IngestPlan plan, string commitMessage = "Ingested Changes")
     {
         var byType = plan.Steps.ToLookup(t => t.GetType());
         var backupFiles = byType[typeof(IngestSteps.BackupFile)]
@@ -442,7 +459,7 @@ public class LoadoutSynchronizer
             .Select(f => ((IStreamFactory)new NativeFileStreamFactory(f.Source), f.Hash, f.Size));
         await _archiveManager.BackupFiles(backupFiles);
 
-        return _loadoutRegistry.Alter(plan.Loadout.LoadoutId, message, new IngestVisitor(byType, plan));
+        return _loadoutRegistry.Alter(plan.Loadout.LoadoutId, commitMessage, new IngestVisitor(byType, plan));
     }
 
     private class IngestVisitor : ALoadoutVisitor

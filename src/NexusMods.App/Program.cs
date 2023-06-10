@@ -114,9 +114,8 @@ public class Program
         loggingBuilder.ClearProviders();
 #if DEBUG
         loggingBuilder.SetMinimumLevel(LogLevel.Debug);
-#if TRACE
+#elif TRACE
         loggingBuilder.SetMinimumLevel(LogLevel.Trace);
-#endif
 #else
         loggingBuilder.SetMinimumLevel(LogLevel.Information);
 #endif
