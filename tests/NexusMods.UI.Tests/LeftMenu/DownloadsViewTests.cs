@@ -9,8 +9,8 @@ namespace NexusMods.UI.Tests.LeftMenu;
 public class DownloadsViewTests : IAsyncLifetime
 {
     private readonly AvaloniaApp _app;
-    private ControlHost<DownloadsView,DownloadsDesignViewModel,IDownloadsViewModel> _host;
-    private (Options Option, Button Control, Type Type)[] _options;
+    private ControlHost<DownloadsView,DownloadsDesignViewModel,IDownloadsViewModel>? _host;
+    private (Options Option, Button Control, Type Type)[]? _options;
 
     public DownloadsViewTests(AvaloniaApp app)
     {
@@ -21,9 +21,9 @@ public class DownloadsViewTests : IAsyncLifetime
     public async Task ActiveIsAppliedToButtonsWhenTheVMActivatesThem()
     {
         // Select each option in turn
-        foreach (var current in _options)
+        foreach (var current in _options!)
         {
-            _host.ViewModel.Set(current.Option);
+            _host!.ViewModel.Set(current.Option);
             _host.ViewModel.Current.Should().Be(current.Option, "value was set in the View Model");
             await _host.Flush();
 
@@ -77,6 +77,6 @@ public class DownloadsViewTests : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        await _host.DisposeAsync();
+        await _host!.DisposeAsync();
     }
 }

@@ -8,17 +8,26 @@ using NexusMods.Paths;
 namespace NexusMods.CLI.Verbs;
 
 // ReSharper disable once ClassNeverInstantiated.Global
+/// <summary>
+/// Apply a Loadout to a game folder
+/// </summary>
 public class Apply : AVerb<LoadoutMarker, bool, bool>
 {
     private readonly IRenderer _renderer;
     private readonly LoadoutSynchronizer _loadoutSyncronizer;
 
+    /// <summary>
+    /// DI constructor
+    /// </summary>
+    /// <param name="configurator"></param>
+    /// <param name="loadoutSynchronizer"></param>
     public Apply(Configurator configurator, LoadoutSynchronizer loadoutSynchronizer)
     {
         _renderer = configurator.Renderer;
         _loadoutSyncronizer = loadoutSynchronizer;
     }
 
+    /// <inheritdoc />
     public static VerbDefinition Definition => new("apply", "Apply a Loadout to a game folder", new OptionDefinition[]
     {
         new OptionDefinition<LoadoutMarker>("l", "loadout", "Loadout to apply"),

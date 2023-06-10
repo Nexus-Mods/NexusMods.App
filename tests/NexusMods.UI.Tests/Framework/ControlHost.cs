@@ -18,25 +18,46 @@ public class ControlHost<TView, TVm, TInterface> : IAsyncDisposable
     where TInterface : class, IViewModelInterface
     where TVm : TInterface
 {
+    private readonly TView? _view;
+    private readonly TVm? _viewModel;
+    private readonly Window? _window;
+    private readonly AvaloniaApp? _app;
+
     /// <summary>
     /// The view control that is being tested.
     /// </summary>
-    public TView View { get; init; }
+    public TView View
+    {
+        get => _view!;
+        init => _view = value;
+    }
 
     /// <summary>
     /// The view model backing the view
     /// </summary>
-    public TVm ViewModel { get; init; }
+    public TVm ViewModel
+    {
+        get => _viewModel!;
+        init => _viewModel = value;
+    }
 
     /// <summary>
     /// The window that hosts the view
     /// </summary>
-    public Window Window { get; init; }
+    public Window Window
+    {
+        get => _window!;
+        init => _window = value;
+    }
 
     /// <summary>
     /// The app that hosts the window
     /// </summary>
-    public AvaloniaApp App { get; init; }
+    public AvaloniaApp App
+    {
+        get => _app!;
+        init => _app = value;
+    }
 
 
     public async ValueTask DisposeAsync()

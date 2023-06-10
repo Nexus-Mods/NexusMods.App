@@ -28,6 +28,7 @@ public class AnalyzeArchive : AVerb<AbsolutePath>
         _archiveContentsCache = archiveContentsCache;
     }
 
+    /// <inheritdoc />
     public static VerbDefinition Definition => new("analyze-archive",
         "Analyzes the contents of an archive caches them, and outputs them",
         new OptionDefinition[]

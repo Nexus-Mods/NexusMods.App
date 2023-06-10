@@ -12,6 +12,7 @@ public class ListGames : AVerb
 {
     private readonly IEnumerable<IGame> _games;
 
+    /// <inheritdoc />
     public static VerbDefinition Definition => new("list-games",
         "Lists all the installed games",
         Array.Empty<OptionDefinition>());

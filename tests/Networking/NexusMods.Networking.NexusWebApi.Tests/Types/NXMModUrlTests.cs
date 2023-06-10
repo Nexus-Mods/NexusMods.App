@@ -23,7 +23,7 @@ public class NXMModUrlTests
     public void CanParsePersonalizedModUrls()
     {
         var parsed = NXMUrl.Parse("nxm://skyrim/mods/123/files/456?key=key&expires=1676541088&user_id=12345");
-        parsed.Key?.Value.Should().Be("key");
+        parsed.Key!.Value.Should().Be("key");
         parsed.ExpireTime.Should().NotBeNull();
         parsed.ExpireTime!.Value.Should().Be(DateTime.UnixEpoch.AddSeconds(1676541088));
         parsed.User.Should().NotBeNull();

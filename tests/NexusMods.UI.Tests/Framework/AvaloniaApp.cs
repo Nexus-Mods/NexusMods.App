@@ -39,7 +39,7 @@ public class AvaloniaApp : IDisposable
     }
     
     private static IClassicDesktopStyleApplicationLifetime GetApp() =>
-        (IClassicDesktopStyleApplicationLifetime) Application.Current.ApplicationLifetime;
+        (IClassicDesktopStyleApplicationLifetime) Application.Current!.ApplicationLifetime!;
 
     private AppBuilder BuildAvaloniaApp()
     {

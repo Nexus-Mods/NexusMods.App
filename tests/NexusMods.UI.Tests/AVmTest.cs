@@ -36,16 +36,16 @@ where TVm : IViewModelInterface
     }
 
 
-
-    public TVm Vm => _vmWrapper.VM;
+    protected TVm Vm => _vmWrapper.VM;
 
     public async Task InitializeAsync()
     {
         _loadoutId = (await LoadoutManager.ManageGameAsync(Install, "Test")).Value.LoadoutId;
     }
 
-    public async Task DisposeAsync()
+    public Task DisposeAsync()
     {
         _vmWrapper.Dispose();
+        return Task.CompletedTask;
     }
 }
