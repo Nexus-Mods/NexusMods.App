@@ -20,6 +20,11 @@ public class ZipArchiveManager : IArchiveManager
     private readonly AbsolutePath[] _archiveLocations;
     private readonly IDataStore _store;
 
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    /// <param name="store"></param>
+    /// <param name="settings"></param>
     public ZipArchiveManager(IDataStore store, IDataModelSettings settings)
     {
         _archiveLocations = settings.ArchiveLocations.Select(f => f.ToAbsolutePath()).ToArray();
@@ -31,12 +36,14 @@ public class ZipArchiveManager : IArchiveManager
         _store = store;
 
     }
-    
-    public async ValueTask<bool> HaveFile(Hash hash)
+
+    /// <inheritdoc/>
+    public ValueTask<bool> HaveFile(Hash hash)
     {
-        return TryGetLocation(hash, out _);
+        return ValueTask.FromResult(TryGetLocation(hash, out _));
     }
 
+    /// <inheritdoc/>
     public async Task BackupFiles(IEnumerable<(IStreamFactory, Hash, Size)> backups, CancellationToken token = default)
     {
         var guid = Guid.NewGuid();
@@ -50,15 +57,15 @@ public class ZipArchiveManager : IArchiveManager
             foreach (var backup in distinct)
             {
                 await using var srcStream = await backup.Item1.GetStreamAsync();
-                var entry = builder.CreateEntry(backup.Item2.ToHex()); 
+                var entry = builder.CreateEntry(backup.Item2.ToHex());
                 await using var entryStream = entry.Open();
                 await srcStream.CopyToAsync(entryStream, token);
                 await entryStream.FlushAsync(token);
             }
         }
-        
+
         var finalPath = outputPath.ReplaceExtension(KnownExtensions.Zip);
-        
+
         await outputPath.MoveToAsync(finalPath, token: token);
         UpdateIndexes(distinct, guid, finalPath);
     }
@@ -75,9 +82,9 @@ public class ZipArchiveManager : IArchiveManager
                 File = finalPath.FileName,
                 FileEntryData = Array.Empty<byte>()
             };
-            
+
             // TODO: Consider a bulk-put operation here
-            _store.Put(dbId, dbEntry); 
+            _store.Put(dbId, dbEntry);
         }
     }
 
@@ -89,18 +96,19 @@ public class ZipArchiveManager : IArchiveManager
         return IId.FromSpan(EntityCategory.ArchivedFiles, buffer);
     }
 
+    /// <inheritdoc/>
     public async Task ExtractFiles(IEnumerable<(Hash Src, AbsolutePath Dest)> files, CancellationToken token = default)
     {
         var grouped = files.Distinct()
-            .Select(input => TryGetLocation(input.Src, out var archivePath) 
-                ? (true, Hash:input.Src, ArchivePath:archivePath, input.Dest) 
+            .Select(input => TryGetLocation(input.Src, out var archivePath)
+                ? (true, Hash:input.Src, ArchivePath:archivePath, input.Dest)
                 : default)
             .Where(x => x.Item1)
             .ToLookup(l => l.ArchivePath, l => (l.Hash, l.Dest));
-        
+
         if (grouped[default].Any())
             throw new Exception($"Missing archive for {grouped[default].First().Hash.ToHex()}");
-        
+
 
         foreach (var group in grouped)
         {
@@ -113,7 +121,7 @@ public class ZipArchiveManager : IArchiveManager
             {
                 if (!toExtract.Contains(entry.Name))
                     continue;
-                
+
                 foreach (var (_, dest) in toExtract[entry.Name])
                 {
                     if (!dest.Parent.DirectoryExists())
@@ -127,26 +135,27 @@ public class ZipArchiveManager : IArchiveManager
         }
     }
 
+    /// <inheritdoc/>
     public async Task<IDictionary<Hash, byte[]>> ExtractFiles(IEnumerable<Hash> files, CancellationToken token = default)
     {
         var results = new Dictionary<Hash, byte[]>();
-        
+
         var grouped = files.Distinct()
-            .Select(hash => TryGetLocation(hash, out var archivePath) 
-                ? (true, Hash:hash, ArchivePath:archivePath) 
+            .Select(hash => TryGetLocation(hash, out var archivePath)
+                ? (true, Hash:hash, ArchivePath:archivePath)
                 : default)
             .Where(x => x.Item1)
             .ToLookup(l => l.ArchivePath, l => l.Hash);
-        
+
         if (grouped[default].Any())
             throw new Exception($"Missing archive for {grouped[default].First().ToHex()}");
 
-        
+
         foreach (var group in grouped)
         {
             var byHash = group.ToDictionary(f => f.ToHex());
             await using var file = group.Key.Read();
-            
+
             using var srcArchive = new ZipArchive(file, ZipArchiveMode.Read, true, System.Text.Encoding.UTF8);
 
             foreach (var entry in srcArchive.Entries)
