@@ -21,7 +21,7 @@ public partial class GameWidget : ReactiveUserControl<IGameWidgetViewModel>
             this.WhenAnyValue(view => view.ViewModel!.Image)
                 .WhereNotNull()
                 .OffUi()
-                .Select(img => BlurAvaloniaImage((IBitmap)img))
+                .Select(img => BlurAvaloniaImage((Bitmap)img))
                 .BindToUi(this, view => view.BlurryImage.Source)
                 .DisposeWith(d);
 
@@ -33,13 +33,15 @@ public partial class GameWidget : ReactiveUserControl<IGameWidgetViewModel>
         });
     }
 
-    private IBitmap BlurAvaloniaImage(IBitmap image)
+    private Bitmap BlurAvaloniaImage(Bitmap image)
     {
-        if (image is WriteableBitmap writeable)
-            return writeable.ToSkiaImage().BlurImage().ToAvaloniaImage();
-
-        if (image is Bitmap bitmap)
-            return bitmap.ToSkiaImage().BlurImage().ToAvaloniaImage();
+        switch (image)
+        {
+            case WriteableBitmap writeable:
+                return writeable.ToSkiaImage().BlurImage().ToAvaloniaImage();
+            case { } bitmap:
+                return bitmap.ToSkiaImage().BlurImage().ToAvaloniaImage();
+        }
 
         // Slow fallback.
         var ms = new MemoryStream();

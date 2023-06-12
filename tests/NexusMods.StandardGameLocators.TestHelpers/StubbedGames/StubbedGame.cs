@@ -67,7 +67,7 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
 
     public override IStreamFactory Icon =>
         new EmbededResourceStreamFactory<StubbedGame>(
-            "NexusMods.StandardGameLocators.TestHelpers.Resources.StubbedGame.png");
+            "NexusMods.StandardGameLocators.TestHelpers.Resources.question_mark_game.png");
 
     public override IStreamFactory GameImage => throw new NotImplementedException("No game image for stubbed game.");
     protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(IFileSystem fileSystem, IGameLocator locator, GameLocatorResult installation)

@@ -397,15 +397,27 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
             throw new ObjectDisposedException(nameof(TemporaryFileManager));
 
         _logger.DeletingJob(job);
+        TOP:
+        var retries = 0;
+        try
         {
-            using var conn = _pool.RentDisposable();
-            using var cmd = conn.Value.CreateCommand();
-            cmd.CommandText = "DELETE FROM Jobs WHERE JobId = @jobId";
-            cmd.Parameters.AddWithValue("@jobId", job.Value.ToByteArray());
-            cmd.ExecuteNonQuery();
+            {
+                using var conn = _pool.RentDisposable();
+                using var cmd = conn.Value.CreateCommand();
+                cmd.CommandText = "DELETE FROM Jobs WHERE JobId = @jobId";
+                cmd.Parameters.AddWithValue("@jobId", job.Value.ToByteArray());
+                cmd.ExecuteNonQuery();
+            }
+            
+            UpdateJobTimestamp();
         }
-        UpdateJobTimestamp();
-
+        catch (SqliteException ex)
+        {
+            retries += 1;
+            _logger.LogError(ex, "Error deleting job {JobId}", job);
+            if (retries < 3)
+                goto TOP;
+        }
     }
 
     /// <inheritdoc />

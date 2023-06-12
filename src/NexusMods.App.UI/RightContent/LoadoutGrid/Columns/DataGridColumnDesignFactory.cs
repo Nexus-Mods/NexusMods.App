@@ -12,6 +12,8 @@ public class DataGridColumnDesignFactory<TVm, TRow> : IDataGridColumnFactory whe
 {
     private readonly Func<TRow,IViewFor<TVm>> _ctor;
     public ColumnType Type { get; }
+    
+    public DataGridLength Width { get; set; } = DataGridLength.Auto;
 
     public DataGridColumnDesignFactory(Func<TRow, IViewFor<TVm>> ctor, ColumnType type)
     {
@@ -21,6 +23,6 @@ public class DataGridColumnDesignFactory<TVm, TRow> : IDataGridColumnFactory whe
 
     public DataGridColumn Generate()
     {
-        return new DataGridDesignViewModelColumn<TVm, TRow>(_ctor);
+        return new DataGridDesignViewModelColumn<TVm, TRow>(_ctor) { Width = Width };
     }
 }

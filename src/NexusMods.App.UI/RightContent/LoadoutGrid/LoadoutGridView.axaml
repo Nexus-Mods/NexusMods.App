@@ -14,9 +14,8 @@
     <Design.DataContext>
         <loadoutGrid:LoadoutGridDesignViewModel />
     </Design.DataContext>
-    <StackPanel>
-        <Line/>
-        <Border Classes="Toolbar">
+    <Grid RowDefinitions="Auto, *">
+        <Border Grid.Row="0" Classes="Toolbar">
             <Grid ColumnDefinitions="*, Auto">
                 <TextBlock Grid.Column="0" Text="" x:Name="ModlistNameText"></TextBlock>
                 <StackPanel Grid.Column="1">
@@ -35,12 +34,12 @@
                 </StackPanel>
             </Grid>
         </Border>
-        <DataGrid
+        <DataGrid Grid.Row="1"
             CanUserReorderColumns="True"
             CanUserResizeColumns="True"
             CanUserSortColumns="True"
             Margin="24,16"
             x:Name="ModsDataGrid" />
-    </StackPanel>
+    </Grid>
 </reactiveUi:ReactiveUserControl>
 
