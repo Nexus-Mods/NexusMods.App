@@ -12,15 +12,15 @@ using ReactiveUI;
 
 namespace NexusMods.UI.Tests;
 
-public class AViewTest<TView, TViewModel, TViewModelInterface> : AUiTest, IAsyncLifetime 
-    where TViewModelInterface : class, IViewModelInterface 
-    where TViewModel : TViewModelInterface, new() 
+public class AViewTest<TView, TViewModel, TViewModelInterface> : AUiTest, IAsyncLifetime
+    where TViewModelInterface : class, IViewModelInterface
+    where TViewModel : TViewModelInterface, new()
     where TView : ReactiveUserControl<TViewModelInterface>, new()
 {
     private readonly AvaloniaApp _app;
     private ControlHost<TView,TViewModel,TViewModelInterface>? _host;
-    
-    
+
+
     protected ControlHost<TView,TViewModel,TViewModelInterface> Host => _host!;
     protected TViewModel ViewModel => _host!.ViewModel;
     protected TView View => _host!.View;
@@ -29,7 +29,7 @@ public class AViewTest<TView, TViewModel, TViewModelInterface> : AUiTest, IAsync
     {
         _app = provider.GetRequiredService<AvaloniaApp>();
     }
-    
+
     protected async Task<T> GetControl<T>(string name) where T : Control
     {
         return await _host!.GetViewControl<T>(name);
@@ -37,7 +37,7 @@ public class AViewTest<TView, TViewModel, TViewModelInterface> : AUiTest, IAsync
 
     protected async Task<T[]> GetVisualDescendants<T>(Control parent) where T : Control
     {
-        return await OnUi(async () =>
+        return await OnUi(() =>
         {
             Control[] GetChildren(Control control, bool topLevel)
             {
@@ -47,7 +47,9 @@ public class AViewTest<TView, TViewModel, TViewModelInterface> : AUiTest, IAsync
                     return children.StartWith(control).ToArray();
                 return children.ToArray();
             }
-            return GetChildren(parent, true).OfType<T>().ToArray();
+
+            var res = GetChildren(parent, true).OfType<T>().ToArray();
+            return Task.FromResult(res);
         });
     }
 
@@ -65,7 +67,7 @@ public class AViewTest<TView, TViewModel, TViewModelInterface> : AUiTest, IAsync
 
     public virtual async Task DisposeAsync()
     {
-        if (_host != null) 
+        if (_host != null)
             await _host.DisposeAsync();
     }
 
@@ -90,7 +92,7 @@ public class AViewTest<TView, TViewModel, TViewModelInterface> : AUiTest, IAsync
 
         var cmd = ReactiveCommand.Create(() => src.SetResult(true));
         setter(ViewModel, cmd);
-        
+
         var button = await Host.GetViewControl<Button>(buttonName);
 
         // Make sure the wiring has all been done
@@ -98,7 +100,7 @@ public class AViewTest<TView, TViewModel, TViewModelInterface> : AUiTest, IAsync
         {
             button.Command.Should().Be(cmd);
         });
-        
+
         // Click the button
         await Click(button);
 

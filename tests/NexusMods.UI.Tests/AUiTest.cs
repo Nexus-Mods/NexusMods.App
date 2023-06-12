@@ -51,7 +51,7 @@ public class AUiTest
         }
     }
 
-    
+
     /// <summary>
     /// Retries the action until it succeeds or the timeout is reached. If the timeout is reached, the last exception is
     /// rethrown.
@@ -64,7 +64,7 @@ public class AUiTest
         delay ??= TimeSpan.FromMilliseconds(500);
         maxTimeout ??= TimeSpan.FromSeconds(15);
         var sw = Stopwatch.StartNew();
-        
+
         while (true)
         {
             try
@@ -80,7 +80,7 @@ public class AUiTest
             }
         }
     }
-    
+
     /// <summary>
     /// Retries the action until it succeeds or the timeout is reached. If the timeout is reached, the last exception is
     /// rethrown.
@@ -93,7 +93,7 @@ public class AUiTest
         delay ??= TimeSpan.FromMilliseconds(500);
         maxTimeout ??= TimeSpan.FromSeconds(15);
         var sw = Stopwatch.StartNew();
-        
+
         while (true)
         {
             try
@@ -126,7 +126,7 @@ public class AUiTest
             });
         });
     }
-    
+
     /// <summary>
     /// Like Eventually, but runs the action on the UI thread.
     /// </summary>
@@ -137,7 +137,7 @@ public class AUiTest
     {
         await Eventually(async () => await OnUi(action));
     }
-    
+
     /// <summary>
     /// Executes an action on the UI thread and waits for it to complete.
     /// </summary>
@@ -147,7 +147,7 @@ public class AUiTest
         var result = await Dispatcher.UIThread.InvokeAsync(action);
         return result;
     }
-    
+
     /// <summary>
     /// Executes an action on the UI thread and waits for it to complete.
     /// </summary>
@@ -160,20 +160,20 @@ public class AUiTest
             return 0;
         });
     }
-    
+
     /// <summary>
     /// Executes an action on the UI thread and waits for it to complete.
     /// </summary>
     /// <param name="action"></param>
     protected async Task OnUi(Action action)
     {
-        var result = await Dispatcher.UIThread.InvokeAsync(async () =>
+        var result = await Dispatcher.UIThread.InvokeAsync(() =>
         {
             action();
             return 0;
         });
     }
-    
+
     /// <summary>
     /// Clicks the button in a way that fires all the proper UI events
     /// </summary>
