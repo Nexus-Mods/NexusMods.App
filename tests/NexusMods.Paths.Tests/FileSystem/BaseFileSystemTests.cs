@@ -42,13 +42,13 @@ public class BaseFileSystemTests
         var overlayFileSystem = (BaseFileSystem)fs.CreateOverlayFileSystem(
             new Dictionary<AbsolutePath, AbsolutePath>
             {
-                { fs.FromFullPath("/c"), fs.FromFullPath("/foo") },
-                { fs.FromFullPath("/z"), fs.FromFullPath("/") },
+                { fs.FromUnsanitizedFullPath("/c"), fs.FromUnsanitizedFullPath("/foo") },
+                { fs.FromUnsanitizedFullPath("/z"), fs.FromUnsanitizedFullPath("/") },
             },
             new Dictionary<KnownPath, AbsolutePath>());
 
-        overlayFileSystem.GetMappedPath(fs.FromFullPath("/c/a")).Should().Be(fs.FromFullPath("/foo/a"));
-        overlayFileSystem.GetMappedPath(fs.FromFullPath("/z/a")).Should().Be(fs.FromFullPath("/a"));
+        overlayFileSystem.GetMappedPath(fs.FromUnsanitizedFullPath("/c/a")).Should().Be(fs.FromUnsanitizedFullPath("/foo/a"));
+        overlayFileSystem.GetMappedPath(fs.FromUnsanitizedFullPath("/z/a")).Should().Be(fs.FromUnsanitizedFullPath("/a"));
     }
 
     [SkippableTheory, AutoFileSystem]
@@ -79,7 +79,7 @@ public class BaseFileSystemTests
             new Dictionary<KnownPath, AbsolutePath>(),
             true);
 
-        var path = fs.FromFullPath(input);
+        var path = fs.FromUnsanitizedFullPath(input);
         path.GetFullPath().Should().Be(output);
     }
 
@@ -92,7 +92,7 @@ public class BaseFileSystemTests
         var values = Enum.GetValues<KnownPath>();
         foreach (var knownPath in values)
         {
-            var newPath = fs.FromFullPath($"/{Guid.NewGuid().ToString("D", CultureInfo.InvariantCulture)}");
+            var newPath = fs.FromUnsanitizedFullPath($"/{Guid.NewGuid().ToString("D", CultureInfo.InvariantCulture)}");
             knownPathMappings[knownPath] = newPath;
         }
 
@@ -111,12 +111,12 @@ public class BaseFileSystemTests
     {
         Skip.IfNot(OperatingSystem.IsWindows());
 
-        var rootDirectory = fs.FromFullPath("C:\\");
+        var rootDirectory = fs.FromUnsanitizedFullPath("C:\\");
         var pathMappings = Enumerable.Range('A', 'Z' - 'A')
             .Select(iDriveLetter =>
             {
                 var driveLetter = (char)iDriveLetter;
-                var originalPath = fs.FromFullPath($"{driveLetter}:\\");
+                var originalPath = fs.FromUnsanitizedFullPath($"{driveLetter}:\\");
                 var newPath = rootDirectory.Combine(Guid.NewGuid().ToString("D"));
                 return (originalPath, newPath);
             }).ToDictionary(x => x.originalPath, x => x.newPath);
@@ -147,7 +147,7 @@ public class BaseFileSystemTests
     {
         Skip.IfNot(OperatingSystem.IsLinux());
 
-        var rootDirectory = fs.FromFullPath("/");
+        var rootDirectory = fs.FromUnsanitizedFullPath("/");
         var expectedRootDirectories = new[] { rootDirectory };
         var actualRootDirectories = fs
             .EnumerateRootDirectories()
@@ -161,13 +161,13 @@ public class BaseFileSystemTests
     {
         Skip.IfNot(OperatingSystem.IsLinux());
 
-        var rootDirectory = fs.FromFullPath("/");
+        var rootDirectory = fs.FromUnsanitizedFullPath("/");
 
         var pathMappings = Enumerable.Range('a', 'z' - 'a')
             .Select(iDriveLetter =>
             {
                 var driveLetter = (char)iDriveLetter;
-                var originalPath = fs.FromDirectoryAndFileName("/", driveLetter.ToString());
+                var originalPath = fs.FromUnsanitizedDirectoryAndFileName("/", driveLetter.ToString());
                 var newPath = rootDirectory.Combine(Guid.NewGuid().ToString("D"));
                 return (originalPath, newPath);
             }).ToDictionary(x => x.originalPath, x => x.newPath);

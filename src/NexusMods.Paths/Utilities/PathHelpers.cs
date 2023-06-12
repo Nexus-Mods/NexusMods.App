@@ -63,7 +63,7 @@ public static class PathHelpers
 
     [Conditional("DEBUG")]
     [ExcludeFromCodeCoverage(Justification = $"{nameof(IsSanitized)} is tested separately.")]
-    private static void DebugAssertIsSanitized(ReadOnlySpan<char> path, IOSInformation? os = null)
+    private static void DebugAssertIsSanitized(ReadOnlySpan<char> path, IOSInformation os)
     {
         Debug.Assert(IsSanitized(path, os), $"Path is not sanitized: '{path.ToString()}'");
     }
@@ -72,10 +72,8 @@ public static class PathHelpers
     /// Determines whether the path is sanitized or not. Only sanitized paths should
     /// be used with <see cref="PathHelpers"/>.
     /// </summary>
-    public static bool IsSanitized(ReadOnlySpan<char> path, IOSInformation? os = null)
+    public static bool IsSanitized(ReadOnlySpan<char> path, IOSInformation os)
     {
-        os ??= OSInformation.Shared;
-
         // Empty strings are valid.
         if (path.IsEmpty) return true;
 
@@ -103,10 +101,8 @@ public static class PathHelpers
     /// Sanitizes the given path. Only sanitized paths should be used with
     /// <see cref="PathHelpers"/>.
     /// </summary>
-    public static string Sanitize(ReadOnlySpan<char> path, IOSInformation? os = null)
+    public static string Sanitize(ReadOnlySpan<char> path, IOSInformation os)
     {
-        os ??= OSInformation.Shared;
-
         // Path has already been sanitized.
         if (IsSanitized(path, os)) return path.ToString();
 
@@ -135,7 +131,7 @@ public static class PathHelpers
     /// Equality of paths is handled case-insensitive, meaning "/foo" is equal to "/FOO".
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool Equals(ReadOnlySpan<char> left, ReadOnlySpan<char> right, IOSInformation? os = null)
+    public static bool Equals(ReadOnlySpan<char> left, ReadOnlySpan<char> right, IOSInformation os)
     {
         DebugAssertIsSanitized(left, os);
         DebugAssertIsSanitized(right, os);
@@ -158,7 +154,7 @@ public static class PathHelpers
     /// <br />   - If greater than 0, <paramref name="left" /> follows <paramref name="right" />.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int Compare(ReadOnlySpan<char> left, ReadOnlySpan<char> right, IOSInformation? os = null)
+    public static int Compare(ReadOnlySpan<char> left, ReadOnlySpan<char> right, IOSInformation os)
     {
         DebugAssertIsSanitized(left, os);
         DebugAssertIsSanitized(right, os);
@@ -188,13 +184,11 @@ public static class PathHelpers
     /// <returns>Returns the length of the root of the path or <c>-1</c> if the path is not rooted.</returns>
     /// <seealso cref="IsRooted"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int GetRootLength(ReadOnlySpan<char> path, IOSInformation? os = null)
+    public static int GetRootLength(ReadOnlySpan<char> path, IOSInformation os)
     {
         const int invalidLength = -1;
         const int unixLength = 1;
         const int windowsLength = 3;
-
-        os ??= OSInformation.Shared;
 
         if (os.IsUnix())
         {
@@ -218,7 +212,7 @@ public static class PathHelpers
     /// </summary>
     /// <seealso cref="GetRootLength"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsRooted(ReadOnlySpan<char> path, IOSInformation? os = null)
+    public static bool IsRooted(ReadOnlySpan<char> path, IOSInformation os)
     {
         var rootLength = GetRootLength(path, os);
         return rootLength != -1;
@@ -233,7 +227,7 @@ public static class PathHelpers
     /// </remarks>
     /// <returns>For rooted paths, this returns the root part, for non-rooted paths, this returns <see cref="ReadOnlySpan{T}.Empty"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ReadOnlySpan<char> GetRootPart(ReadOnlySpan<char> path, IOSInformation? os = null)
+    public static ReadOnlySpan<char> GetRootPart(ReadOnlySpan<char> path, IOSInformation os)
     {
         var rootLength = GetRootLength(path, os);
         return rootLength == -1 ? ReadOnlySpan<char>.Empty : path.SliceFast(0, rootLength);
@@ -245,7 +239,7 @@ public static class PathHelpers
     /// <seealso cref="IsRooted"/>
     /// <seealso cref="GetRootPart"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsRootDirectory(ReadOnlySpan<char> path, IOSInformation? os = null)
+    public static bool IsRootDirectory(ReadOnlySpan<char> path, IOSInformation os)
     {
         var rootLength = GetRootLength(path, os);
         return rootLength == path.Length;
@@ -291,7 +285,7 @@ public static class PathHelpers
     /// <see cref="GetMaxJoinedPartLength"/> to get the maximum length.
     /// </remarks>
     /// <returns>The amount of written characters.</returns>
-    public static int JoinParts(Span<char> buffer, ReadOnlySpan<char> left, ReadOnlySpan<char> right, IOSInformation? os = null)
+    public static int JoinParts(Span<char> buffer, ReadOnlySpan<char> left, ReadOnlySpan<char> right, IOSInformation os)
     {
         DebugAssertIsSanitized(left, os);
         DebugAssertIsSanitized(right, os);
@@ -341,7 +335,7 @@ public static class PathHelpers
     /// <returns>The joined path.</returns>
     /// <seealso cref="JoinParts(System.Span{char},System.ReadOnlySpan{char},System.ReadOnlySpan{char},NexusMods.Paths.IOSInformation?)"/>
     /// <seealso cref="JoinParts(string, string,NexusMods.Paths.IOSInformation?)"/>
-    public static string JoinParts(ReadOnlySpan<char> left, ReadOnlySpan<char> right, IOSInformation? os = null)
+    public static string JoinParts(ReadOnlySpan<char> left, ReadOnlySpan<char> right, IOSInformation os)
     {
         DebugAssertIsSanitized(left, os);
         DebugAssertIsSanitized(right, os);
@@ -373,7 +367,7 @@ public static class PathHelpers
     /// <returns>The joined path.</returns>
     /// <seealso cref="JoinParts(System.Span{char},System.ReadOnlySpan{char},System.ReadOnlySpan{char},NexusMods.Paths.IOSInformation?)"/>
     /// <seealso cref="JoinParts(System.ReadOnlySpan{char},System.ReadOnlySpan{char},NexusMods.Paths.IOSInformation?)"/>
-    public static string JoinParts(string left, string right, IOSInformation? os = null)
+    public static string JoinParts(string left, string right, IOSInformation os)
     {
         DebugAssertIsSanitized(left, os);
         DebugAssertIsSanitized(right, os);
@@ -400,7 +394,7 @@ public static class PathHelpers
     /// with a directory separator, the result will be <see cref="ReadOnlySpan{T}.Empty"/>.
     /// </remarks>
     /// <returns></returns>
-    public static ReadOnlySpan<char> GetFileName(ReadOnlySpan<char> path, IOSInformation? os = null)
+    public static ReadOnlySpan<char> GetFileName(ReadOnlySpan<char> path, IOSInformation os)
     {
         DebugAssertIsSanitized(path, os);
 
@@ -479,7 +473,7 @@ public static class PathHelpers
     /// </remarks>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int GetDirectoryDepth(ReadOnlySpan<char> path, IOSInformation? os = null)
+    public static int GetDirectoryDepth(ReadOnlySpan<char> path, IOSInformation os)
     {
         DebugAssertIsSanitized(path, os);
         return path.Count(DirectorySeparatorChar);
@@ -488,7 +482,7 @@ public static class PathHelpers
     /// <summary>
     /// Returns the directory name of the given path, also known as the parent.
     /// </summary>
-    public static ReadOnlySpan<char> GetDirectoryName(ReadOnlySpan<char> path, IOSInformation? os = null)
+    public static ReadOnlySpan<char> GetDirectoryName(ReadOnlySpan<char> path, IOSInformation os)
     {
         DebugAssertIsSanitized(path, os);
         if (path.IsEmpty) return ReadOnlySpan<char>.Empty;
@@ -519,7 +513,7 @@ public static class PathHelpers
     /// This method will return <c>false</c>, if either <paramref name="child"/> or <paramref name="parent"/>
     /// are empty.
     /// </remarks>
-    public static bool InFolder(ReadOnlySpan<char> child, ReadOnlySpan<char> parent, IOSInformation? os = null)
+    public static bool InFolder(ReadOnlySpan<char> child, ReadOnlySpan<char> parent, IOSInformation os)
     {
         DebugAssertIsSanitized(child, os);
         DebugAssertIsSanitized(parent, os);
@@ -539,7 +533,7 @@ public static class PathHelpers
     /// This method will return <see cref="ReadOnlySpan{T}.Empty"/> if <paramref name="child"/> is
     /// not relative to <paramref name="parent"/>. This comparison is done using <see cref="InFolder"/>.
     /// </remarks>
-    public static ReadOnlySpan<char> RelativeTo(ReadOnlySpan<char> child, ReadOnlySpan<char> parent, IOSInformation? os = null)
+    public static ReadOnlySpan<char> RelativeTo(ReadOnlySpan<char> child, ReadOnlySpan<char> parent, IOSInformation os)
     {
         DebugAssertIsSanitized(child, os);
         DebugAssertIsSanitized(parent, os);
@@ -554,7 +548,7 @@ public static class PathHelpers
     /// <summary>
     /// Returns the first directory in the path.
     /// </summary>
-    public static ReadOnlySpan<char> GetTopParent(ReadOnlySpan<char> path, IOSInformation? os = null)
+    public static ReadOnlySpan<char> GetTopParent(ReadOnlySpan<char> path, IOSInformation os)
     {
         DebugAssertIsSanitized(path, os);
 
@@ -568,7 +562,7 @@ public static class PathHelpers
     /// <summary>
     /// Drops the first <paramref name="count"/> parents of the given path.
     /// </summary>
-    public static ReadOnlySpan<char> DropParents(ReadOnlySpan<char> path, int count, IOSInformation? os = null)
+    public static ReadOnlySpan<char> DropParents(ReadOnlySpan<char> path, int count, IOSInformation os)
     {
         DebugAssertIsSanitized(path, os);
 
@@ -605,9 +599,9 @@ public static class PathHelpers
     /// Walks the parts of a path, invoking <paramref name="partDelegate"/> with each part of the path.
     /// </summary>
     /// <seealso cref="WalkParts{TState}"/>
-    public static void WalkParts(ReadOnlySpan<char> path, WalkPartDelegate partDelegate, bool reverse = false, IOSInformation? os = null)
+    public static void WalkParts(ReadOnlySpan<char> path, WalkPartDelegate partDelegate, IOSInformation os, bool reverse = false)
     {
-        WalkParts(path, ref reverse, (ReadOnlySpan<char> part, ref bool _) => partDelegate(part), reverse, os);
+        WalkParts(path, ref reverse, (ReadOnlySpan<char> part, ref bool _) => partDelegate(part), os, reverse);
     }
 
     /// <summary>
@@ -627,8 +621,8 @@ public static class PathHelpers
         ReadOnlySpan<char> path,
         ref TState state,
         WalkPartDelegate<TState> partDelegate,
-        bool reverse = false,
-        IOSInformation? os = null)
+        IOSInformation os,
+        bool reverse = false)
     {
         DebugAssertIsSanitized(path, os);
 
@@ -707,7 +701,7 @@ public static class PathHelpers
     /// <returns></returns>
     /// <seealso cref="WalkParts"/>
     /// <seealso cref="WalkParts{TState}"/>
-    public static IReadOnlyList<string> GetParts(ReadOnlySpan<char> path, bool reverse = false, IOSInformation? os = null)
+    public static IReadOnlyList<string> GetParts(ReadOnlySpan<char> path, IOSInformation os, bool reverse = false)
     {
         DebugAssertIsSanitized(path, os);
 
@@ -717,7 +711,7 @@ public static class PathHelpers
         {
             output.Add(part.ToString());
             return true;
-        }, reverse, os);
+        }, os, reverse);
 
         return list;
     }

@@ -35,7 +35,7 @@ public readonly struct Extension : IEquatable<Extension>
     /// Creates an extension instance given a file path.
     /// </summary>
     /// <param name="path">The file path to convert to an extension.</param>
-    public static Extension FromPath(string path)
+    public static Extension FromPath(ReadOnlySpan<char> path)
     {
         var extensionSpan = PathHelpers.GetExtension(path);
         return extensionSpan.IsEmpty ? None : new Extension(extensionSpan.ToString());

@@ -1,7 +1,6 @@
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using NexusMods.Paths.Extensions;
-using NexusMods.Paths.HighPerformance.CommunityToolkit;
 using NexusMods.Paths.Utilities;
 
 [assembly: InternalsVisibleTo("NexusMods.Paths.Tests")]
@@ -57,59 +56,23 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// <summary>
     /// Gets the parent directory, i.e. navigates one folder up.
     /// </summary>
-    public AbsolutePath Parent => FromFullPath(Directory, FileSystem);
+    public AbsolutePath Parent => new(Directory, string.Empty, FileSystem);
 
     private AbsolutePath(string directory, string fileName, IFileSystem fileSystem)
     {
         Directory = directory;
         FileName = fileName;
-
         FileSystem = fileSystem;
-    }
-
-    internal static AbsolutePath FromDirectoryAndFileName(string directoryPath, string fileName, IFileSystem fileSystem)
-        => new(directoryPath, fileName, fileSystem);
-
-    internal static AbsolutePath FromFullPath(string fullPath, IFileSystem fileSystem)
-    {
-        var span = fullPath.AsSpan();
-
-        // path is not rooted
-        var rootLength = PathHelpers.GetRootLength(span);
-        if (rootLength == 0)
-            throw new ArgumentException($"The provided path is not rooted: \"{fullPath}\"", nameof(fullPath));
-
-        // path is only the root directory
-        if (span.Length == rootLength)
-            return new AbsolutePath(fullPath, "", fileSystem);
-
-        var slice = span.SliceFast(rootLength);
-        if (slice.DangerousGetReferenceAt(slice.Length - 1) == PathHelpers.DirectorySeparatorChar)
-            slice = slice.SliceFast(0, slice.Length - 1);
-
-        var separatorIndex = slice.LastIndexOf(PathHelpers.DirectorySeparatorChar);
-        if (separatorIndex == -1)
-        {
-            // root directory (eg: "/" or "C:\\") is the directory
-            return new AbsolutePath(span.SliceFast(0, rootLength).ToString(), slice.ToString(), fileSystem);
-        }
-
-        // everything before the separator
-        var directorySpan = span.SliceFast(0, rootLength + separatorIndex);
-        // everything after the separator (+1 since we don't want "/foo" but "foo")
-        var fileNameSpan = slice.SliceFast(separatorIndex + 1);
-
-        return new AbsolutePath(directorySpan.ToString(), fileNameSpan.ToString(), fileSystem);
     }
 
     /// <summary>
     /// Creates a new <see cref="AbsolutePath"/> from a sanitized full path.
     /// </summary>
     /// <seealso cref="FromUnsanitizedFullPath"/>
-    internal static AbsolutePath FromSanitizedFullPath(ReadOnlySpan<char> fullPath, IFileSystem fileSystem, IOSInformation? os = null)
+    internal static AbsolutePath FromSanitizedFullPath(ReadOnlySpan<char> fullPath, IFileSystem fileSystem)
     {
-        var directory = PathHelpers.GetDirectoryName(fullPath, os);
-        var fileName = PathHelpers.GetFileName(fullPath, os);
+        var directory = PathHelpers.GetDirectoryName(fullPath, fileSystem.OS);
+        var fileName = PathHelpers.GetFileName(fullPath, fileSystem.OS);
         return new AbsolutePath(directory.ToString(), fileName.ToString(), fileSystem);
     }
 
@@ -117,10 +80,24 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// Creates a new <see cref="AbsolutePath"/> from an unsanitized full path.
     /// </summary>
     /// <seealso cref="FromSanitizedFullPath"/>
-    internal static AbsolutePath FromUnsanitizedFullPath(ReadOnlySpan<char> fullPath, IFileSystem fileSystem, IOSInformation? os = null)
+    /// <seealso cref="FromUnsanitizedDirectoryAndFileName"/>
+    internal static AbsolutePath FromUnsanitizedFullPath(ReadOnlySpan<char> fullPath, IFileSystem fileSystem)
     {
-        var sanitizedPath = PathHelpers.Sanitize(fullPath, os);
-        return FromSanitizedFullPath(sanitizedPath, fileSystem, os);
+        var sanitizedPath = PathHelpers.Sanitize(fullPath, fileSystem.OS);
+        return FromSanitizedFullPath(sanitizedPath, fileSystem);
+    }
+
+    /// <summary>
+    /// Creates a new <see cref="AbsolutePath"/> from an unsanitized directory and file name.
+    /// </summary>
+    /// <seealso cref="FromUnsanitizedFullPath"/>
+    internal static AbsolutePath FromUnsanitizedDirectoryAndFileName(
+        string directory,
+        string fileName,
+        IFileSystem fileSystem)
+    {
+        var unsanitizedPath = Path.Combine(directory, fileName);
+        return FromUnsanitizedFullPath(unsanitizedPath, fileSystem);
     }
 
     /// <summary>
@@ -128,7 +105,9 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// </summary>
     public string GetFileNameWithoutExtension()
     {
+        if (FileName.Length == 0) return string.Empty;
         var span = FileName.AsSpan();
+
         var length = span.LastIndexOf('.');
         return length >= 0 ? span.SliceFast(0, length).ToString() : span.ToString();
     }
@@ -143,7 +122,9 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// </remarks>
     /// <param name="ext">The extension to append.</param>
     public AbsolutePath AppendExtension(Extension ext)
-        => FromDirectoryAndFileName(Directory, FileName + ext, FileSystem);
+    {
+        return new AbsolutePath(Directory, FileName + ext, FileSystem);
+    }
 
     /// <summary>
     /// Creates a new <see cref="AbsolutePath"/> from the current one, replacing
@@ -155,20 +136,22 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// </remarks>
     /// <param name="ext">The extension to replace.</param>
     public AbsolutePath ReplaceExtension(Extension ext)
-        => FromDirectoryAndFileName(Directory, PathHelpers.ReplaceExtension(FileName, ext.ToString()), FileSystem);
+    {
+        return new AbsolutePath(Directory, PathHelpers.ReplaceExtension(FileName, ext.ToString()), FileSystem);
+    }
 
     /// <summary>
     /// Returns the full path of the combined string.
     /// </summary>
     /// <returns>The full combined path.</returns>
-    public string GetFullPath() => PathHelpers.JoinParts(Directory, FileName);
+    public string GetFullPath() => PathHelpers.JoinParts(Directory, FileName, FileSystem.OS);
 
     /// <summary>
     /// Copies the full path into <paramref name="buffer"/>.
     /// </summary>
     public void GetFullPath(Span<char> buffer)
     {
-        PathHelpers.JoinParts(buffer, Directory, FileName);
+        PathHelpers.JoinParts(buffer, Directory, FileName, FileSystem.OS);
     }
 
     /// <summary>
@@ -182,26 +165,21 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// </summary>
     public AbsolutePath GetRootDirectory()
     {
-        var slice = PathHelpers.GetRootPart(Directory);
-        return FromDirectoryAndFileName(slice.ToString(), string.Empty, FileSystem);
+        var slice = PathHelpers.GetRootPart(Directory, FileSystem.OS);
+        return new AbsolutePath(slice.ToString(), string.Empty, FileSystem);
     }
 
     /// <summary>
-    /// Joins the current absolute path with a relative path without checking the case sensitivity of a path.
+    /// Combines the current path with a relative path.
     /// </summary>
-    /// <param name="path">
-    ///    The relative path.
-    /// </param>
-    /// <remarks>
-    ///    Use this for paths created by our application; i.e. where we can
-    ///    guarantee casing will match the specified relative path.
-    /// </remarks>
-    [SkipLocalsInit]
     public AbsolutePath Combine(RelativePath path)
     {
-        var res = PathHelpers.JoinParts(GetFullPath(), path.Path);
+        var res = PathHelpers.JoinParts(GetFullPath(), path.Path, FileSystem.OS);
         return FromSanitizedFullPath(res, FileSystem);
     }
+
+    [Obsolete(message: "This will be removed once dependents have updated.", error: true)]
+    public AbsolutePath CombineUnchecked(RelativePath path) => Combine(path);
 
     /// <summary>
     /// Gets a path relative to another absolute path.
@@ -213,11 +191,11 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         var child = childLength <= 512 ? stackalloc char[childLength] : GC.AllocateUninitializedArray<char>(childLength);
         GetFullPath(child);
 
-        var parentLength = GetFullPathLength();
+        var parentLength = other.GetFullPathLength();
         var parent = parentLength <= 512 ? stackalloc char[parentLength] : GC.AllocateUninitializedArray<char>(parentLength);
         other.GetFullPath(parent);
 
-        var res = PathHelpers.RelativeTo(child, parent);
+        var res = PathHelpers.RelativeTo(child, parent, FileSystem.OS);
         if (!res.IsEmpty) return new RelativePath(res.ToString());
 
         ThrowHelpers.PathException("Can't create path relative to paths that aren't in the same folder");
@@ -229,7 +207,6 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// </summary>
     /// <param name="parent">The path to verify.</param>
     /// <returns>True if this is a child path of the parent path; else false.</returns>
-    [SkipLocalsInit]
     public bool InFolder(AbsolutePath parent)
     {
         var parentLength = parent.GetFullPathLength();
@@ -239,7 +216,7 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         // NOTE(erri120):
         // We need the full path of the "parent", but only the directory name
         // of the "child".
-        return PathHelpers.InFolder(Directory, parentSpan);
+        return PathHelpers.InFolder(Directory, parentSpan, FileSystem.OS);
     }
 
     /// <summary/>
@@ -275,9 +252,6 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         var a = string.GetHashCode(Directory, StringComparison.OrdinalIgnoreCase);
         var b = string.GetHashCode(FileName, StringComparison.OrdinalIgnoreCase);
         return HashCode.Combine(a, b);
-        // var a = StringExtensions.GetNonRandomizedHashCode(Directory);
-        // var b = StringExtensions.GetNonRandomizedHashCode(FileName);
-        // return HashCode.Combine(a, b);
     }
     #endregion
 }

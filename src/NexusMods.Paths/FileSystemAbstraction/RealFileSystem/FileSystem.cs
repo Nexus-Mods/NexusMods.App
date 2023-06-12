@@ -43,7 +43,7 @@ public partial class FileSystem : BaseFileSystem
     internal FileSystem(
         Dictionary<AbsolutePath, AbsolutePath> pathMappings,
         Dictionary<KnownPath, AbsolutePath> knownPathMappings,
-        bool convertCrossPlatformPaths) : base(pathMappings, knownPathMappings, convertCrossPlatformPaths) { }
+        bool convertCrossPlatformPaths) : base(OSInformation.Shared, pathMappings, knownPathMappings, convertCrossPlatformPaths) { }
 
     /// <inheritdoc/>
     public override IFileSystem CreateOverlayFileSystem(
@@ -71,7 +71,7 @@ public partial class FileSystem : BaseFileSystem
         {
             var item = enumerator.Current;
             if (item.IsDirectory) continue;
-            yield return FromDirectoryAndFileName(enumerator.CurrentDirectory, item.FileName);
+            yield return FromUnsanitizedDirectoryAndFileName(enumerator.CurrentDirectory, item.FileName);
         }
     }
 
@@ -83,7 +83,7 @@ public partial class FileSystem : BaseFileSystem
         while (enumerator.MoveNext())
         {
             var item = enumerator.Current;
-            yield return FromFullPath(PathHelpers.JoinParts(enumerator.CurrentDirectory, item));
+            yield return FromUnsanitizedFullPath(PathHelpers.JoinParts(enumerator.CurrentDirectory, item, OS));
         }
     }
 
@@ -97,7 +97,7 @@ public partial class FileSystem : BaseFileSystem
         {
             var item = enumerator.Current;
             if (item.IsDirectory) continue;
-            yield return new FileEntry(this, FromDirectoryAndFileName(enumerator.CurrentDirectory, item.FileName));
+            yield return new FileEntry(this, FromUnsanitizedDirectoryAndFileName(enumerator.CurrentDirectory, item.FileName));
         }
     }
 
@@ -131,7 +131,7 @@ public partial class FileSystem : BaseFileSystem
 
         foreach (var subDirectories in Directory.GetDirectories(fullPath))
         {
-            InternalDeleteDirectory(FromFullPath(subDirectories), recursive);
+            InternalDeleteDirectory(FromUnsanitizedFullPath(subDirectories), recursive);
         }
 
         try

@@ -11,6 +11,11 @@ namespace NexusMods.Paths;
 [PublicAPI]
 public readonly struct RelativePath : IEquatable<RelativePath>, IPath, IComparable<RelativePath>
 {
+    // NOTE(erri120): since relative paths are not rooted, the operating system
+    // shouldn't matter. The OS is usually only relevant to determine the root part
+    // of a path.
+    private static readonly IOSInformation OS = OSInformation.Shared;
+
     /// <summary>
     /// Gets the comparer used for sorting.
     /// </summary>
@@ -30,12 +35,12 @@ public readonly struct RelativePath : IEquatable<RelativePath>, IPath, IComparab
     public Extension Extension => Extension.FromPath(Path);
 
     /// <inheritdoc />
-    public RelativePath FileName => PathHelpers.GetFileName(Path).ToString().ToRelativePath();
+    public RelativePath FileName => new(PathHelpers.GetFileName(Path, OS).ToString());
 
     /// <summary>
     /// Amount of directories contained within this relative path.
     /// </summary>
-    public int Depth => PathHelpers.GetDirectoryDepth(Path);
+    public int Depth => PathHelpers.GetDirectoryDepth(Path, OS);
 
     /// <summary>
     /// Traverses one directory up.
@@ -44,7 +49,7 @@ public readonly struct RelativePath : IEquatable<RelativePath>, IPath, IComparab
     {
         get
         {
-            var directoryName = PathHelpers.GetDirectoryName(Path);
+            var directoryName = PathHelpers.GetDirectoryName(Path, OS);
             return directoryName.IsEmpty ? Empty : new RelativePath(directoryName.ToString());
         }
     }
@@ -59,7 +64,7 @@ public readonly struct RelativePath : IEquatable<RelativePath>, IPath, IComparab
     {
         get
         {
-            var topParent = PathHelpers.GetTopParent(Path);
+            var topParent = PathHelpers.GetTopParent(Path, OS);
             return topParent.IsEmpty ? Empty : new RelativePath(topParent.ToString());
         }
     }
@@ -96,7 +101,7 @@ public readonly struct RelativePath : IEquatable<RelativePath>, IPath, IComparab
     [Pure]
     public RelativePath Join(RelativePath other)
     {
-        return new RelativePath(PathHelpers.JoinParts(Path, other.Path));
+        return new RelativePath(PathHelpers.JoinParts(Path, other.Path, OS));
     }
 
     /// <summary>
@@ -114,7 +119,7 @@ public readonly struct RelativePath : IEquatable<RelativePath>, IPath, IComparab
     /// <returns>True if this is a child path of the parent path; else false.</returns>
     public bool InFolder(RelativePath other)
     {
-        return PathHelpers.InFolder(Path, other.Path);
+        return PathHelpers.InFolder(Path, other.Path, OS);
     }
 
     /// <summary>
@@ -123,7 +128,7 @@ public readonly struct RelativePath : IEquatable<RelativePath>, IPath, IComparab
     /// <param name="numDirectories">Number of directories to drop.</param>
     public RelativePath DropFirst(int numDirectories = 1)
     {
-        var res = PathHelpers.DropParents(Path, numDirectories);
+        var res = PathHelpers.DropParents(Path, numDirectories, OS);
         return res.IsEmpty ? Empty : new RelativePath(res.ToString());
     }
 
@@ -136,7 +141,7 @@ public readonly struct RelativePath : IEquatable<RelativePath>, IPath, IComparab
         var other = basePath.Path;
         if (other.Length == 0) return this;
 
-        var res = PathHelpers.RelativeTo(Path, other);
+        var res = PathHelpers.RelativeTo(Path, other, OS);
         if (!res.IsEmpty) return new RelativePath(res.ToString());
 
         ThrowHelpers.PathException("Can't create path relative to paths that aren't in the same folder");
@@ -181,7 +186,7 @@ public readonly struct RelativePath : IEquatable<RelativePath>, IPath, IComparab
     public static bool operator !=(RelativePath lhs, RelativePath rhs) => !(lhs == rhs);
 
     /// <inheritdoc />
-    public int CompareTo(RelativePath other) => PathHelpers.Compare(Path, other.Path);
+    public int CompareTo(RelativePath other) => PathHelpers.Compare(Path, other.Path, OS);
 }
 
 /// <summary>

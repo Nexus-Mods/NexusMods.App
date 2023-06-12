@@ -28,14 +28,13 @@ public abstract class BaseFileSystem : IFileSystem
     /// <summary>
     /// Constructor that accepts path mappings.
     /// </summary>
-    /// <param name="pathMappings"></param>
-    /// <param name="knownPathMappings"></param>
-    /// <param name="convertCrossPlatformPaths"></param>
     protected BaseFileSystem(
+        IOSInformation os,
         Dictionary<AbsolutePath, AbsolutePath> pathMappings,
         Dictionary<KnownPath, AbsolutePath> knownPathMappings,
         bool convertCrossPlatformPaths)
     {
+        OS = os;
         _pathMappings = pathMappings;
         _knownPathMappings = knownPathMappings;
         _hasPathMappings = _pathMappings.Any();
@@ -109,6 +108,9 @@ public abstract class BaseFileSystem : IFileSystem
     #region IFileStream Implementation
 
     /// <inheritdoc/>
+    public IOSInformation OS { get; } = OSInformation.Shared;
+
+    /// <inheritdoc/>
     public abstract IFileSystem CreateOverlayFileSystem(
         Dictionary<AbsolutePath, AbsolutePath> pathMappings,
         Dictionary<KnownPath, AbsolutePath> knownPathMappings,
@@ -124,27 +126,27 @@ public abstract class BaseFileSystem : IFileSystem
 
         AbsolutePath ThisOrDefault(string fullPath)
         {
-            return string.IsNullOrWhiteSpace(fullPath) ? default : FromFullPath(fullPath);
+            return string.IsNullOrWhiteSpace(fullPath) ? default : FromUnsanitizedFullPath(fullPath);
         }
 
         // NOTE(erri120): if you change this method, make sure to update the docs in the KnownPath enum.
         var path = knownPath switch
         {
-            KnownPath.EntryDirectory => FromFullPath(AppContext.BaseDirectory),
-            KnownPath.CurrentDirectory => FromFullPath(Environment.CurrentDirectory),
+            KnownPath.EntryDirectory => FromUnsanitizedFullPath(AppContext.BaseDirectory),
+            KnownPath.CurrentDirectory => FromUnsanitizedFullPath(Environment.CurrentDirectory),
 
-            KnownPath.CommonApplicationDataDirectory => FromFullPath(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)),
+            KnownPath.CommonApplicationDataDirectory => FromUnsanitizedFullPath(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)),
             KnownPath.ProgramFilesDirectory => ThisOrDefault(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)),
             KnownPath.ProgramFilesX86Directory => ThisOrDefault(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)),
             KnownPath.CommonProgramFilesDirectory => ThisOrDefault(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFiles)),
             KnownPath.CommonProgramFilesX86Directory => ThisOrDefault(Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86)),
 
-            KnownPath.TempDirectory => FromFullPath(Path.GetTempPath()),
-            KnownPath.HomeDirectory => FromFullPath(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)),
-            KnownPath.ApplicationDataDirectory => FromFullPath(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)),
-            KnownPath.LocalApplicationDataDirectory => FromFullPath(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)),
-            KnownPath.MyDocumentsDirectory => FromFullPath(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)),
-            KnownPath.MyGamesDirectory => FromDirectoryAndFileName(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games"),
+            KnownPath.TempDirectory => FromUnsanitizedFullPath(Path.GetTempPath()),
+            KnownPath.HomeDirectory => FromUnsanitizedFullPath(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)),
+            KnownPath.ApplicationDataDirectory => FromUnsanitizedFullPath(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)),
+            KnownPath.LocalApplicationDataDirectory => FromUnsanitizedFullPath(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)),
+            KnownPath.MyDocumentsDirectory => FromUnsanitizedFullPath(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)),
+            KnownPath.MyGamesDirectory => FromUnsanitizedDirectoryAndFileName(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games"),
         };
 
         return path;
@@ -167,8 +169,8 @@ public abstract class BaseFileSystem : IFileSystem
         // NOTE(erri120): I need to revisit this entire function at some point and figure out a better way to handle path mappings
         var pathMappings = new Dictionary<AbsolutePath, AbsolutePath>
         {
-            { fileSystem.FromFullPath("/c"), rootDirectory },
-            { fileSystem.FromFullPath("/z"), fileSystem.FromFullPath("/") },
+            { fileSystem.FromUnsanitizedFullPath("/c"), rootDirectory },
+            { fileSystem.FromUnsanitizedFullPath("/z"), fileSystem.FromUnsanitizedFullPath("/") },
         };
 
         var knownPaths = Enum.GetValues<KnownPath>();
@@ -202,12 +204,12 @@ public abstract class BaseFileSystem : IFileSystem
     }
 
     /// <inheritdoc/>
-    public AbsolutePath FromFullPath(string fullPath)
-        => GetMappedPath(AbsolutePath.FromFullPath(ConvertCrossPlatformPath(fullPath), this));
+    public AbsolutePath FromUnsanitizedFullPath(string unsanitizedFullPath)
+        => GetMappedPath(AbsolutePath.FromUnsanitizedFullPath(ConvertCrossPlatformPath(unsanitizedFullPath), this));
 
     /// <inheritdoc/>
-    public AbsolutePath FromDirectoryAndFileName(string directoryPath, string fullPath)
-        => GetMappedPath(AbsolutePath.FromDirectoryAndFileName(ConvertCrossPlatformPath(directoryPath), fullPath, this));
+    public AbsolutePath FromUnsanitizedDirectoryAndFileName(string directoryPath, string fileName)
+        => GetMappedPath(AbsolutePath.FromUnsanitizedDirectoryAndFileName(ConvertCrossPlatformPath(directoryPath), fileName, this));
 
     /// <inheritdoc/>
     public IFileEntry GetFileEntry(AbsolutePath path)
@@ -224,7 +226,7 @@ public abstract class BaseFileSystem : IFileSystem
             throw new PlatformNotSupportedException();
 
         if (OperatingSystem.IsLinux())
-            yield return FromFullPath("/");
+            yield return FromUnsanitizedFullPath("/");
 
         // go through the valid drive letters on Windows
         // or on Linux with cross platform path conversion enabled, in case
@@ -234,7 +236,7 @@ public abstract class BaseFileSystem : IFileSystem
             for (var i = (uint)'A'; i <= 'Z'; i++)
             {
                 var driveLetter = (char)i;
-                var path = FromFullPath($"{driveLetter}:\\");
+                var path = FromUnsanitizedFullPath($"{driveLetter}:\\");
                 if (DirectoryExists(path))
                     yield return path;
             }

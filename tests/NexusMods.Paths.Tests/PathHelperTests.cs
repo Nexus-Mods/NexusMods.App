@@ -421,7 +421,7 @@ public class PathHelperTests
             if (sb_.Length != 0) sb_.Append('+');
             sb_.Append(part);
             return true;
-        }, isReverse, CreateOSInformation(isUnix));
+        }, CreateOSInformation(isUnix), isReverse);
 
         var actualOutput = sb.ToString();
         actualOutput.Should().Be(expectedOutput);
@@ -432,7 +432,7 @@ public class PathHelperTests
             if (sb.Length != 0) sb.Append('+');
             sb.Append(part);
             return true;
-        }, isReverse, CreateOSInformation(isUnix));
+        }, CreateOSInformation(isUnix), isReverse);
 
         actualOutput = sb.ToString();
         actualOutput.Should().Be(expectedOutput);
@@ -466,7 +466,7 @@ public class PathHelperTests
             sb.Append(part);
             counter++;
             return counter < stopAfterN;
-        }, isReverse, CreateOSInformation(isUnix));
+        }, CreateOSInformation(isUnix), isReverse);
 
         var actualOutput = sb.ToString();
         actualOutput.Should().Be(expectedOutput);
@@ -476,7 +476,7 @@ public class PathHelperTests
     [MemberData(nameof(TestData_GetParts))]
     public void Test_GetParts(bool isUnix, bool isReverse, string path, List<string> expectedOutput)
     {
-        var actualOutput = PathHelpers.GetParts(path, isReverse, CreateOSInformation(isUnix));
+        var actualOutput = PathHelpers.GetParts(path, CreateOSInformation(isUnix), isReverse);
         actualOutput.Should().Equal(expectedOutput);
     }
 

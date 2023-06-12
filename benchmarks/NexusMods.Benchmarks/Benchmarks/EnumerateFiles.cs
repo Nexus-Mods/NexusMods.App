@@ -1,7 +1,6 @@
 using BenchmarkDotNet.Attributes;
 using NexusMods.Benchmarks.Interfaces;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
 
 namespace NexusMods.Benchmarks.Benchmarks;
 
@@ -16,7 +15,7 @@ public class EnumerateFiles : IBenchmark
         _fileSystem = FileSystem.Shared;
         FilePath = _fileSystem.GetKnownPath(KnownPath.ApplicationDataDirectory);
     }
-    
+
     // Placeholder path that'll probably work for people using Windows.
     // Point this at your games' directory.
     public AbsolutePath FilePath { get; }
@@ -94,7 +93,6 @@ public class EnumerateFiles : IBenchmark
 
     private struct OriginalImplementation
     {
-        
         public static IEnumerable<AbsolutePath> EnumerateFiles(AbsolutePath path, string pattern = "*", bool recursive = true)
         {
             return Directory.EnumerateFiles(path.GetFullPath(), pattern,
@@ -104,7 +102,7 @@ public class EnumerateFiles : IBenchmark
                         RecurseSubdirectories = recursive,
                         MatchType = MatchType.Win32
                     })
-                .Select(file => file.ToAbsolutePath(FileSystem.Shared));
+                .Select(file => FileSystem.Shared.FromUnsanitizedFullPath(file));
         }
 
         public static IEnumerable<AbsolutePath> EnumerateDirectories(AbsolutePath path, bool recursive = true)
@@ -119,7 +117,7 @@ public class EnumerateFiles : IBenchmark
                         RecurseSubdirectories = recursive,
                         MatchType = MatchType.Win32
                     })
-                .Select(p => p.ToAbsolutePath(FileSystem.Shared));
+                .Select(file => FileSystem.Shared.FromUnsanitizedFullPath(file));
         }
 
         // public static IEnumerable<FileEntry> EnumerateFileEntries(AbsolutePath path, string pattern = "*",

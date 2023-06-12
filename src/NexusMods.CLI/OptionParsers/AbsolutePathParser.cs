@@ -11,8 +11,8 @@ public class AbsolutePathParser : IOptionParser<AbsolutePath>
     {
         _fileSystem = fileSystem;
     }
-    
-    public AbsolutePath Parse(string input, OptionDefinition<AbsolutePath> definition) => input.ToAbsolutePath(_fileSystem);
+
+    public AbsolutePath Parse(string input, OptionDefinition<AbsolutePath> definition) => _fileSystem.FromUnsanitizedFullPath(input);
 
     public IEnumerable<string> GetOptions(string input) => Array.Empty<string>();
 }

@@ -10,8 +10,8 @@ public class FileSystemTests
     {
         var fs = new Paths.FileSystem();
 
-        var file = fs.FromFullPath(Assembly.GetExecutingAssembly().Location);
-        var directory = fs.FromFullPath(AppContext.BaseDirectory);
+        var file = fs.FromUnsanitizedFullPath(Assembly.GetExecutingAssembly().Location);
+        var directory = fs.FromUnsanitizedFullPath(AppContext.BaseDirectory);
         fs.EnumerateFiles(directory, recursive: false)
             .Should()
             .Contain(file);
@@ -22,7 +22,7 @@ public class FileSystemTests
     {
         var fs = new Paths.FileSystem();
 
-        var directory = fs.FromFullPath(AppContext.BaseDirectory);
+        var directory = fs.FromUnsanitizedFullPath(AppContext.BaseDirectory);
         var parentDirectory = directory.Parent;
 
         fs.EnumerateDirectories(parentDirectory, recursive: false)
@@ -35,8 +35,8 @@ public class FileSystemTests
     {
         var fs = new Paths.FileSystem();
 
-        var file = fs.FromFullPath(Assembly.GetExecutingAssembly().Location);
-        var directory = fs.FromFullPath(AppContext.BaseDirectory);
+        var file = fs.FromUnsanitizedFullPath(Assembly.GetExecutingAssembly().Location);
+        var directory = fs.FromUnsanitizedFullPath(AppContext.BaseDirectory);
 
         fs.EnumerateFileEntries(directory, recursive: false)
             .Should()

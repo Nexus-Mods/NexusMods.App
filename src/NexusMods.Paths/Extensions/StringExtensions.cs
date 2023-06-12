@@ -1,9 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
-using NexusMods.Paths.HighPerformance.Backports.System.Globalization;
 
 namespace NexusMods.Paths.Extensions;
 
@@ -16,12 +14,6 @@ public static class StringExtensions
     /// Converts an existing path represented as a string to a <see cref="RelativePath"/>.
     /// </summary>
     public static RelativePath ToRelativePath(this string s) => new(s);
-
-    /// <summary>
-    /// Converts an existing path represented as a string to a <see cref="AbsolutePath"/>.
-    /// Use scarcely. Absolute paths should only come from OS.
-    /// </summary>
-    public static AbsolutePath ToAbsolutePath(this string s, IFileSystem fileSystem) => AbsolutePath.FromFullPath(s, fileSystem);
 
     /// <summary>
     /// Faster hashcode for strings; but does not randomize between application runs.

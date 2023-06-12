@@ -96,7 +96,7 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
     
     public async Task AddMod(string path)
     {
-        var file = _fileSystem.FromFullPath(path);
+        var file = _fileSystem.FromUnsanitizedFullPath(path);
         if (!_fileSystem.FileExists(file))
         {
             _logger.LogError("File {File} does not exist, not installing mod",

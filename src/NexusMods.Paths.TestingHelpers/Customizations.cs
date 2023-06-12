@@ -37,7 +37,7 @@ public static class Customizations
                 var fullPath = OperatingSystem.IsWindows()
                     ? $"C:\\{path}"
                     : $"/{path}";
-                return fs.FromFullPath(fullPath);
+                return fs.FromUnsanitizedFullPath(fullPath);
             }));
 
         fixture.Customize<RelativePath>(composer =>

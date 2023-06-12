@@ -1,15 +1,13 @@
+using System.Diagnostics;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
-using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
-using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Games.BethesdaGameStudios.Installers;
 
@@ -27,16 +25,16 @@ namespace NexusMods.Games.BethesdaGameStudios.Installers;
 /// </remarks>
 public class SkyrimInstaller : IModInstaller
 {
-    private const string MeshesFolderName = "meshes";
-    private const string TexturesFolderName = "textures";
-    private const string MeshExtension = ".nif";
-    private const string TextureExtension = ".dds";
-    private const string EspExtension = ".esp";
-    private const string EslExtension = ".esl";
-    private const string EsmExtension = ".esm";
-    private const string BsaExtension = ".bsa";
+    private static readonly RelativePath DataFolder = "Data";
+    private static readonly RelativePath MeshesFolder = "meshes";
+    private static readonly RelativePath TexturesFolder = "textures";
 
-    private static readonly RelativePath Data = "Data".ToRelativePath();
+    private static readonly Extension MeshExtension = new(".nif");
+    private static readonly Extension TextureExtension = new(".dds");
+    private static readonly Extension EspExtension = new(".esp");
+    private static readonly Extension EslExtension = new(".esl");
+    private static readonly Extension EsmExtension = new(".esm");
+    private static readonly Extension BsaExtension = new(".bsa");
 
     public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
@@ -47,22 +45,18 @@ public class SkyrimInstaller : IModInstaller
         // - There is a 'meshes' folder with NIF file.
         // - There is a 'textures' folder with DDS file.
         // - There is a folder (max 1 level deep) with either of the following cases.
-        foreach (var file in archiveFiles)
+        foreach (var kv in archiveFiles)
         {
-            var path = file.Key;
-            var rawPath = file.Key.Path;
+            var (path, _) = kv;
 
             // Check in subfolder first
-            var separatorIndex = path.GetFirstDirectorySeparatorIndex(out _);
-            if (separatorIndex != -1 && (separatorIndex + 1) < rawPath.Length)
+            if (path.Depth != 0)
             {
-                var subDirectory = rawPath.AsSpan(separatorIndex + 1);
-                if (AssertPathForPriority(subDirectory))
-                    return Priority.Normal;
+                var child = path.DropFirst(numDirectories: 1);
+                if (AssertPathForPriority(child)) return Priority.Normal;
             }
 
-            if (AssertPathForPriority(rawPath))
-                return Priority.Normal;
+            if (AssertPathForPriority(path)) return Priority.Normal;
         }
 
         return Priority.None;
@@ -83,18 +77,18 @@ public class SkyrimInstaller : IModInstaller
         Hash srcArchiveHash,
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        var prefix = FindFolderPrefixForExtract(archiveFiles).ToString();
+        var prefix = FindFolderPrefixForExtract(archiveFiles);
         var modFiles = archiveFiles
-            .Where(kv => prefix.Length <= 0 || kv.Key.StartsWith(prefix))
+            .Where(kv => kv.Key.InFolder(prefix))
             .Select(kv =>
             {
                 var (path, file) = kv;
-                var trimmedPath = path.Path.AsSpan(prefix.Length);
+                var relative = path.RelativeTo(prefix);
 
                 return new FromArchive
                 {
                     Id = ModFileId.New(),
-                    To = new GamePath(GameFolderType.Game, Data.Join(trimmedPath.ToString())),
+                    To = new GamePath(GameFolderType.Game, DataFolder.Join(relative)),
                     Hash = file.Hash,
                     Size = file.Size
                 };
@@ -107,7 +101,7 @@ public class SkyrimInstaller : IModInstaller
         };
     }
 
-    private static ReadOnlySpan<char> FindFolderPrefixForExtract(EntityDictionary<RelativePath, AnalyzedFile> files)
+    private static RelativePath FindFolderPrefixForExtract(EntityDictionary<RelativePath, AnalyzedFile> files)
     {
         // Note: We already determined in priority testing that this is something
         // we want to extract, so just find the folder with meshes/textures subfolders
@@ -116,79 +110,55 @@ public class SkyrimInstaller : IModInstaller
         // Normally we could cache this stuff between priority and extract but there's
         // no guarantee functions will be ran in that order and another file wouldn't be
         // checked somewhere in the middle for example.
-        foreach (var file in files)
+        foreach (var kv in files)
         {
-            var path = file.Key;
-            var rawPath = file.Key.Path;
+            var (path, _) = kv;
 
             // Check in subfolder first
-            var separatorIndex = path.GetFirstDirectorySeparatorIndex(out _);
-            if (separatorIndex != -1 && (separatorIndex + 1) < rawPath.Length)
+            // Check in subfolder first
+            if (path.Depth != 0)
             {
-                var subDirectory = rawPath.AsSpan(separatorIndex + 1);
-                if (AssertFolderForExtract(subDirectory))
-                    return rawPath.AsSpan(0, separatorIndex);
+                var child = path.DropFirst(numDirectories: 1);
+                if (AssertFolderForExtract(child)) return child.RelativeTo(path);
             }
 
-            if (AssertFolderForExtract(rawPath))
-                return "";
+            if (AssertFolderForExtract(path)) return RelativePath.Empty;
         }
 
-        throw new Exception("Possible bug in code, this should never throw.");
+        throw new UnreachableException();
     }
 
-    private static bool AssertPathForPriority(ReadOnlySpan<char> relativePath)
+    private static bool AssertPathForPriority(RelativePath relativePath)
     {
-        if (relativePath.StartsWith(MeshesFolderName, StringComparison.OrdinalIgnoreCase) &&
-            relativePath.EndsWith(MeshExtension, StringComparison.OrdinalIgnoreCase))
+        if (relativePath.InFolder(MeshesFolder) && relativePath.Extension == MeshExtension)
             return true;
 
-        if (relativePath.StartsWith(TexturesFolderName, StringComparison.OrdinalIgnoreCase) &&
-            relativePath.EndsWith(TextureExtension, StringComparison.OrdinalIgnoreCase))
+        if (relativePath.InFolder(TexturesFolder) && relativePath.Extension == TextureExtension)
             return true;
 
         // Has plugins in current directory.
-        if (PathHelpers.PathHasSubdirectory(relativePath))
-            return false;
+        if (relativePath.Depth != 0) return false;
 
-        if (relativePath.EndsWith(EsmExtension, StringComparison.OrdinalIgnoreCase))
-            return true;
-
-        if (relativePath.EndsWith(EspExtension, StringComparison.OrdinalIgnoreCase))
-            return true;
-
-        if (relativePath.EndsWith(EslExtension, StringComparison.OrdinalIgnoreCase))
-            return true;
-
-        if (relativePath.EndsWith(BsaExtension, StringComparison.OrdinalIgnoreCase))
-            return true;
+        if (relativePath.Extension == EsmExtension) return true;
+        if (relativePath.Extension == EspExtension) return true;
+        if (relativePath.Extension == EslExtension) return true;
+        if (relativePath.Extension == BsaExtension) return true;
 
         return false;
     }
 
-    private static bool AssertFolderForExtract(ReadOnlySpan<char> relativePath)
+    private static bool AssertFolderForExtract(RelativePath relativePath)
     {
-        if (relativePath.StartsWith(MeshesFolderName, StringComparison.OrdinalIgnoreCase))
-            return true;
-
-        if (relativePath.StartsWith(TexturesFolderName, StringComparison.OrdinalIgnoreCase))
-            return true;
+        if (relativePath.InFolder(MeshesFolder)) return true;
+        if (relativePath.InFolder(TexturesFolder)) return true;
 
         // Check for plugins, subdirectory and extension check here should be sufficient.
-        if (PathHelpers.PathHasSubdirectory(relativePath))
-            return false;
+        if (relativePath.Depth != 0) return false;
 
-        if (relativePath.EndsWith(EsmExtension, StringComparison.OrdinalIgnoreCase))
-            return true;
-
-        if (relativePath.EndsWith(EspExtension, StringComparison.OrdinalIgnoreCase))
-            return true;
-
-        if (relativePath.EndsWith(EslExtension, StringComparison.OrdinalIgnoreCase))
-            return true;
-
-        if (relativePath.EndsWith(BsaExtension, StringComparison.OrdinalIgnoreCase))
-            return true;
+        if (relativePath.Extension == EsmExtension) return true;
+        if (relativePath.Extension == EspExtension) return true;
+        if (relativePath.Extension == EslExtension) return true;
+        if (relativePath.Extension == BsaExtension) return true;
 
         return false;
     }
