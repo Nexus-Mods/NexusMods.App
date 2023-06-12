@@ -186,7 +186,7 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
         public bool TryGet(Hash hash, out TValue value)
         {
             GetCount[hash] = GetCount.GetValueOrDefault(hash, 0) + 1;
-            return Dict.TryGetValue(hash, out value);
+            return Dict.TryGetValue(hash, out value!);
         }
 
         public void Set(Hash hash, TValue value)

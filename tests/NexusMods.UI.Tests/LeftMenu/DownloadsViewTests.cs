@@ -19,7 +19,7 @@ public class DownloadsViewTests : AViewTest<DownloadsView, DownloadsDesignViewMo
         foreach (var current in _options!)
         {
             Host.ViewModel.Set(current.Option);
-            await EventuallyOnUi(async () =>
+            await EventuallyOnUi(() =>
             {
                 Host.ViewModel.Current.Should().Be(current.Option, "value was set in the View Model");
 
@@ -44,7 +44,7 @@ public class DownloadsViewTests : AViewTest<DownloadsView, DownloadsDesignViewMo
     [Fact]
     public async Task ClickingAButtonMakesItActive()
     {
-        foreach (var option in _options)
+        foreach (var option in _options!)
         {
             await Click(option.Control);
             Host.ViewModel.Current.Should().Be(option.Option, "value was set in the View Model");

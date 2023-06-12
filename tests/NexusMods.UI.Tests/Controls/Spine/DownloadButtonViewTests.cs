@@ -17,14 +17,14 @@ public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadBut
     {
         var button = await Host.GetViewControl<Button>("ParentButton");
         
-        await OnUi(async () =>
+        await OnUi(() =>
         {
             button.Classes.Should().NotContain("Active");
         });
 
         ViewModel.IsActive = true;
 
-        await EventuallyOnUi(async () =>
+        await EventuallyOnUi(() =>
         {
             button.Classes.Should().Contain("Active");
         });
