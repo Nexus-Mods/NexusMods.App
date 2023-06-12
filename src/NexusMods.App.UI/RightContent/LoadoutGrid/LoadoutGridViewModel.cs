@@ -99,20 +99,21 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
         });
     }
     
-    public async Task AddMod(string path)
+    public Task AddMod(string path)
     {
         var file = _fileSystem.FromFullPath(path);
         if (!_fileSystem.FileExists(file))
         {
             _logger.LogError("File {File} does not exist, not installing mod",
                 file);
-            return;
+            return Task.CompletedTask;
         }
 
         var _ = Task.Run(async () =>
         {
             await _loadoutManager.InstallModsFromArchiveAsync(LoadoutId, file, file.FileName);
         });
+        return Task.CompletedTask;
     }
 
     public Task DeleteMods(IEnumerable<ModId> modsToDelete, string commitMessage)

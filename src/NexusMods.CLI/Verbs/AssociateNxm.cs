@@ -12,6 +12,7 @@ public class AssociateNxm : AVerb
     /// <summary/>
     public AssociateNxm(IProtocolRegistration protocolRegistration) => _protocolRegistration = protocolRegistration;
 
+    /// <inheritdoc />
     public static VerbDefinition Definition { get; } = new("associate-nxm",
         "Associates NXM links with Nexus App.", Array.Empty<OptionDefinition>());
 

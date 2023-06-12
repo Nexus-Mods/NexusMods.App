@@ -54,13 +54,10 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
     {
         var text = Random.Shared.Next() + " Text";
         ViewModel.Label = text;
-        await Eventually(async () =>
+        await EventuallyOnUi(() =>
         {
-            await OnUi(async () =>
-            {
-                _text!.Text.Should().Be(text);
-                _progressBar!.ProgressTextFormat.Should().Be(text);
-            });
+            _text!.Text.Should().Be(text);
+            _progressBar!.ProgressTextFormat.Should().Be(text);
         });
     }
 
@@ -69,19 +66,16 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
     {
         ViewModel.Progress = Percent.CreateClamped(0.25);
 
-        await Eventually(async () =>
+        await EventuallyOnUi(() =>
         {
-            await OnUi(async () =>
-            {
-                _progressBar!.IsIndeterminate.Should().BeFalse();
-                _progressBar!.Value.Should().Be(0.25);
-            });
+            _progressBar!.IsIndeterminate.Should().BeFalse();
+            _progressBar!.Value.Should().Be(0.25);
         });
         
 
         ViewModel.Progress = null;
 
-        await EventuallyOnUi(async () =>
+        await EventuallyOnUi(() =>
         {
             _progressBar!.IsIndeterminate.Should().BeTrue();
         });

@@ -97,8 +97,16 @@ public class CommandLineConfigurator
     }
 }
 
+/// <summary>
+/// Defines a option the user can pass to the command line
+/// </summary>
+/// <param name="ShortOption"></param>
+/// <param name="LongOption"></param>
+/// <param name="Description"></param>
+/// <typeparam name="T"></typeparam>
 public record OptionDefinition<T>(string ShortOption, string LongOption, string Description) : OptionDefinition(ShortOption, LongOption, Description)
 {
+    /// <inheritdoc />
     public override Option GetOption(IServiceProvider provider)
     {
         var converter = provider.GetService<IOptionParser<T>>();
@@ -113,9 +121,23 @@ public record OptionDefinition<T>(string ShortOption, string LongOption, string 
         return opt;
     }
 }
+/// <summary>
+/// Defines a option the user can pass to the command line
+/// </summary>
+/// <param name="ShortOption"></param>
+/// <param name="LongOption"></param>
+/// <param name="Description"></param>
 public abstract record OptionDefinition(string ShortOption, string LongOption, string Description)
 {
+    /// <summary>
+    /// Aliases for the option
+    /// </summary>
     protected string[] Aliases => new[] { "-" + ShortOption, "--" + LongOption };
 
+    /// <summary>
+    /// Creates the option
+    /// </summary>
+    /// <param name="provider"></param>
+    /// <returns></returns>
     public abstract Option GetOption(IServiceProvider provider);
 }

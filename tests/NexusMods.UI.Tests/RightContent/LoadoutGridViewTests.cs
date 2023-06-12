@@ -20,7 +20,7 @@ public class LoadoutGridViewTests : AViewTest<LoadoutGridView, LoadoutGridDesign
         var control = await GetControl<DataGrid>("ModsDataGrid");
         
         var ids = new List<ModCursor>();
-        await OnUi(async () =>
+        await OnUi(() =>
         {
             control.ItemsSource.OfType<ModCursor>().Should().HaveCount(9);
 

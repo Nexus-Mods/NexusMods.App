@@ -52,8 +52,7 @@ where TVm : IViewModelInterface
     }
 
 
-
-    public TVm Vm => _vmWrapper.VM;
+    protected TVm Vm => _vmWrapper.VM;
 
     public async Task InitializeAsync()
     {

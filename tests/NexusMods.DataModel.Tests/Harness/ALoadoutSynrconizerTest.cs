@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Runtime.CompilerServices;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -16,6 +17,7 @@ using NexusMods.DataModel.TriggerFilter;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+#pragma warning disable CS1998
 
 namespace NexusMods.DataModel.Tests.Harness;
 
@@ -94,8 +96,10 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
     {
         public List<HashedEntry> Entries = new();
 
+#pragma warning disable CS1998
         public async IAsyncEnumerable<HashedEntry> IndexFolders(IEnumerable<AbsolutePath> paths,
-            CancellationToken token = default)
+#pragma warning restore CS1998
+            [EnumeratorCancellation] CancellationToken token = default)
         {
             foreach (var entry in Entries)
             {
@@ -182,7 +186,7 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
         public bool TryGet(Hash hash, out TValue value)
         {
             GetCount[hash] = GetCount.GetValueOrDefault(hash, 0) + 1;
-            return Dict.TryGetValue(hash, out value);
+            return Dict.TryGetValue(hash, out value!);
         }
 
         public void Set(Hash hash, TValue value)

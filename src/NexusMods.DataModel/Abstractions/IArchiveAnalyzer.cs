@@ -4,6 +4,10 @@ using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Abstractions;
 
+/// <summary>
+/// A service that analyzes files and archives, returning metadata on their contents with IFileAnalyzer, and
+/// possibly caching the results.
+/// </summary>
 public interface IArchiveAnalyzer
 {
     /// <summary>

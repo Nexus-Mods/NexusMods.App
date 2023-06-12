@@ -11,8 +11,15 @@ public class Configurator
 {
     private readonly IEnumerable<IRenderer> _renderers;
 
+    /// <summary>
+    /// The renderer to use for output
+    /// </summary>
     public IRenderer Renderer { get; private set; }
 
+    /// <summary>
+    /// DI constructor
+    /// </summary>
+    /// <param name="renderers"></param>
     public Configurator(IEnumerable<IRenderer> renderers)
     {
         // Note to readers: 

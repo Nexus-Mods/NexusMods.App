@@ -8,5 +8,6 @@ namespace NexusMods.DataModel.Games;
 /// </summary>
 /// <param name="Path">Full path to the folder which contains the game.</param>
 /// <param name="Store"><see cref="GameStore"/> which installed the game.</param>
+/// <param name="Metadata">Metadata about the game.</param>
 /// <param name="Version">Version of the game found.</param>
 public record GameLocatorResult(AbsolutePath Path, GameStore Store, IGameLocatorResultMetadata Metadata, Version? Version = null);

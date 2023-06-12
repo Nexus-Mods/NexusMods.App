@@ -3,6 +3,9 @@ using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Loadouts.ApplySteps;
 
+/// <summary>
+/// A step that extracts a file from an archive to a location.
+/// </summary>
 public record ExtractFile : IApplyStep
 {
     

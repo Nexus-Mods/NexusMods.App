@@ -16,6 +16,7 @@ public readonly record struct ModCursor(LoadoutId LoadoutId, ModId ModId) : IMes
     /// </summary>
     public static int MaxSize => 32;
 
+    /// <inheritdoc />
     public int Write(Span<byte> buffer)
     {
         LoadoutId.Value.TryWriteBytes(buffer);
@@ -23,6 +24,7 @@ public readonly record struct ModCursor(LoadoutId LoadoutId, ModId ModId) : IMes
         return MaxSize;
     }
 
+    /// <inheritdoc />
     public static IMessage Read(ReadOnlySpan<byte> buffer)
     {
         var loadoutId = LoadoutId.From(buffer.SliceFast(0, 16));
