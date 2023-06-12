@@ -16,4 +16,5 @@
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=skyrim/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Stardew/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Unpersisted/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=unsanitized/@EntryIndexedValue">True</s:Boolean>
 	</wpf:ResourceDictionary>

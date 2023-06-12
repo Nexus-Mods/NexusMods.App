@@ -66,7 +66,7 @@ public abstract class BaseFileSystem : IFileSystem
         if (newParentDirectory == default) return originalPath;
 
         var relativePath = originalPath.RelativeTo(originalParentDirectory);
-        var newPath = newParentDirectory.CombineUnchecked(relativePath);
+        var newPath = newParentDirectory.Combine(relativePath);
 
         return newPath;
     }
@@ -181,18 +181,18 @@ public abstract class BaseFileSystem : IFileSystem
                 KnownPath.EntryDirectory => originalPath,
                 KnownPath.CurrentDirectory => originalPath,
 
-                KnownPath.CommonApplicationDataDirectory => rootDirectory.CombineUnchecked("ProgramData"),
-                KnownPath.ProgramFilesDirectory => rootDirectory.CombineUnchecked("Program Files"),
-                KnownPath.ProgramFilesX86Directory => rootDirectory.CombineUnchecked("Program Files (x86)"),
-                KnownPath.CommonProgramFilesDirectory => rootDirectory.CombineUnchecked("Program Files/Common Files"),
-                KnownPath.CommonProgramFilesX86Directory => rootDirectory.CombineUnchecked("Program Files (x86)/Common Files"),
+                KnownPath.CommonApplicationDataDirectory => rootDirectory.Combine("ProgramData"),
+                KnownPath.ProgramFilesDirectory => rootDirectory.Combine("Program Files"),
+                KnownPath.ProgramFilesX86Directory => rootDirectory.Combine("Program Files (x86)"),
+                KnownPath.CommonProgramFilesDirectory => rootDirectory.Combine("Program Files/Common Files"),
+                KnownPath.CommonProgramFilesX86Directory => rootDirectory.Combine("Program Files (x86)/Common Files"),
 
                 KnownPath.HomeDirectory => newHomeDirectory,
-                KnownPath.MyDocumentsDirectory => newHomeDirectory.CombineUnchecked("Documents"),
-                KnownPath.MyGamesDirectory => newHomeDirectory.CombineUnchecked("Documents/My Games"),
-                KnownPath.LocalApplicationDataDirectory => newHomeDirectory.CombineUnchecked("AppData/Local"),
-                KnownPath.ApplicationDataDirectory => newHomeDirectory.CombineUnchecked("AppData/Roaming"),
-                KnownPath.TempDirectory => newHomeDirectory.CombineUnchecked("AppData/Local/Temp"),
+                KnownPath.MyDocumentsDirectory => newHomeDirectory.Combine("Documents"),
+                KnownPath.MyGamesDirectory => newHomeDirectory.Combine("Documents/My Games"),
+                KnownPath.LocalApplicationDataDirectory => newHomeDirectory.Combine("AppData/Local"),
+                KnownPath.ApplicationDataDirectory => newHomeDirectory.Combine("AppData/Roaming"),
+                KnownPath.TempDirectory => newHomeDirectory.Combine("AppData/Local/Temp"),
             };
 
             knownPathMappings[knownPath] = newPath;

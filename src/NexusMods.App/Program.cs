@@ -67,7 +67,7 @@ public class Program
                 // Bind the AppSettings class to the configuration and register it as a singleton service
                 // Question to Reviewers: Should this be moved to AddApp?
                 var appFolder = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory);
-                var configJson = File.ReadAllText(appFolder.CombineUnchecked("AppConfig.json").GetFullPath());
+                var configJson = File.ReadAllText(appFolder.Combine("AppConfig.json").GetFullPath());
 
                 // Note: suppressed because invalid config will throw.
                 config = JsonSerializer.Deserialize<AppConfig>(configJson)!;

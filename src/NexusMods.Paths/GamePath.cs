@@ -61,7 +61,7 @@ public struct GamePath : IPath, IEquatable<GamePath>
     /// <param name="folderPath">
     ///    The absolute path to combine with current relative path.
     /// </param>
-    public AbsolutePath CombineChecked(AbsolutePath folderPath) => folderPath.CombineChecked(Path);
+    public AbsolutePath Combine(AbsolutePath folderPath) => folderPath.Combine(Path);
 }
 
 /// <summary>

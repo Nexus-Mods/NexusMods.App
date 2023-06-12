@@ -50,8 +50,7 @@ public class SevenZipExtractor : IExtractor
         _logger = logger;
         _manager = fileManager;
         _limiter = limiter;
-        _exePath = fileSystem.GetKnownPath(KnownPath.EntryDirectory)
-            .CombineChecked(GetExeLocation().ToRelativePath()).ToString();
+        _exePath = fileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine(GetExeLocation().ToRelativePath()).ToString();
     }
 
     /// <inheritdoc />

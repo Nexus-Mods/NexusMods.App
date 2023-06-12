@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Paths;
 
@@ -82,7 +83,7 @@ public partial class FileSystem : BaseFileSystem
         while (enumerator.MoveNext())
         {
             var item = enumerator.Current;
-            yield return FromFullPath(AbsolutePath.JoinPathComponents(enumerator.CurrentDirectory, item));
+            yield return FromFullPath(PathHelpers.JoinParts(enumerator.CurrentDirectory, item));
         }
     }
 

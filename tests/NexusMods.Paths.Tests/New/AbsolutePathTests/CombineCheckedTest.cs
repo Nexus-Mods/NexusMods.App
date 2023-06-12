@@ -10,7 +10,7 @@ public class CombineCheckedTest
     {
         _fileSystem = new InMemoryFileSystem();
     }
-    
+
     [Fact]
     public void CasingMatchesFilesystem_Lower() => AssertCasingMatchesFileSystem("Assets/AbsolutePath/lower_dummy.txt");
 
@@ -25,7 +25,7 @@ public class CombineCheckedTest
     private void AssertCasingMatchesFileSystem(string actualRelativePath)
     {
         var absolutePath = AbsolutePath.FromDirectoryAndFileName(AppContext.BaseDirectory, "", _fileSystem);
-        var result = absolutePath.CombineChecked(actualRelativePath);
+        var result = absolutePath.Combine(actualRelativePath);
 
         result.ToString().Where(x => x is '\\' or '/').Distinct().Count()
             .Should()
@@ -49,7 +49,7 @@ public class CombineCheckedTest
         var absolutePath = AbsolutePath.FromFullPath(left, _fileSystem);
         var relativePath = new RelativePath(right);
 
-        var result = absolutePath.CombineChecked(relativePath);
+        var result = absolutePath.Combine(relativePath);
         result.GetFullPath().Should().Be(expectedFullPath);
         result.Directory.Should().Be(expectedDirectory);
         result.FileName.Should().Be(expectedFileName);
@@ -70,7 +70,7 @@ public class CombineCheckedTest
         var absolutePath = AbsolutePath.FromFullPath(left, _fileSystem);
         var relativePath = new RelativePath(right);
 
-        var result = absolutePath.CombineUnchecked(relativePath);
+        var result = absolutePath.Combine(relativePath);
         result.GetFullPath().Should().Be(expectedFullPath);
         result.Directory.Should().Be(expectedDirectory);
         result.FileName.Should().Be(expectedFileName);

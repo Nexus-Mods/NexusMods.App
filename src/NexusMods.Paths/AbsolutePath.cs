@@ -197,58 +197,10 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     ///    guarantee casing will match the specified relative path.
     /// </remarks>
     [SkipLocalsInit]
-    public AbsolutePath CombineUnchecked(RelativePath path)
+    public AbsolutePath Combine(RelativePath path)
     {
         var res = PathHelpers.JoinParts(GetFullPath(), path.Path);
         return FromSanitizedFullPath(res, FileSystem);
-    }
-
-    /// <summary>
-    /// Joins the current absolute path with a relative path.
-    /// </summary>
-    /// <param name="path">
-    ///    The relative path; stored case insensitive.
-    /// </param>
-    [SkipLocalsInit]
-    public AbsolutePath CombineChecked(RelativePath path)
-    {
-        if (path.Path.Length == 0)  return this;
-
-        // Note: Do not special case this for Windows.
-        // We have a constraint where Directory and FileName are normalised
-        // to follow OS casing. And Equals/GetHashCode relies on this.
-
-        // Since AbsolutePaths are created from the OS; we will assume the existing path is already correct, therefore
-        // we only need to checked combine the relative path.
-
-        // Now walk the directories.
-        return FromFullPath(AppendChecked(GetFullPath(), path.Path), FileSystem);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static string AppendChecked(string path, ReadOnlySpan<char> relativeSpan)
-    {
-        var remainingPath = relativeSpan;
-        ReadOnlySpan<char> splitSpan;
-
-        // path = "/foo"
-        // relative = "bar/baz"
-
-        // SplitDir("bar/baz") -> "bar"
-        // splitSpan = "bar"
-        // remainingPath = "bar/baz"
-        while ((splitSpan = SplitDir(remainingPath)) != remainingPath)
-        {
-            // path = "/foo/bar"
-            path = PathHelpers.JoinParts(path, FindFileOrDirectoryCasing(path, splitSpan));
-            // remainingPath = "baz"
-            remainingPath = remainingPath[(splitSpan.Length + 1)..];
-        }
-
-        if (remainingPath.Length > 0)
-            path = PathHelpers.JoinParts(path, FindFileOrDirectoryCasing(path, remainingPath));
-
-        return path;
     }
 
     /// <summary>
@@ -328,37 +280,4 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         // return HashCode.Combine(a, b);
     }
     #endregion
-
-    /// <summary>
-    /// Splits the string up to the next directory separator.
-    /// </summary>
-    /// <param name="text">The text to substring.</param>
-    /// <returns>The text up to next directory separator, else unchanged.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ReadOnlySpan<char> SplitDir(ReadOnlySpan<char> text)
-    {
-        var index = text.IndexOf(PathHelpers.DirectorySeparatorChar);
-        return index != -1 ? text[..index] : text;
-    }
-
-    private static ReadOnlySpan<char> FindFileOrDirectoryCasing(string searchDir, ReadOnlySpan<char> fileName)
-    {
-        try
-        {
-            foreach (var entry in System.IO.Directory.EnumerateFileSystemEntries(searchDir, "*.*", SearchOption.TopDirectoryOnly))
-            {
-                var entryFileName = Path.GetFileName(entry.AsSpan());
-                if (fileName.Equals(entryFileName, StringComparison.OrdinalIgnoreCase))
-                    return entryFileName;
-            }
-        }
-        catch (Exception)
-        {
-            // Fallback if directory not found or cannot be accessed.
-            // Static logger here would be nice.
-            return fileName;
-        }
-
-        return fileName;
-    }
 }

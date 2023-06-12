@@ -24,6 +24,7 @@ public class PathHelperTests
     [InlineData(true, "foo/", false)]
     [InlineData(true, "foo/bar/", false)]
     [InlineData(true, "/foo/", false)]
+    [InlineData(true, "/            ", false)]
     [InlineData(false, "", true)]
     [InlineData(false, "C:/", true)]
     [InlineData(false, "C:/foo", true)]

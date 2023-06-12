@@ -265,7 +265,7 @@ public class ArchiveAnalyzer : IArchiveAnalyzer
                     await _archiveManager.BackupFiles(children
                         .Select(c =>
                         {
-                            IStreamFactory path = new NativeFileStreamFactory(tmpFolder.Path.CombineUnchecked(c.Key));
+                            IStreamFactory path = new NativeFileStreamFactory(tmpFolder.Path.Combine(c.Key));
                             var analysis = _store.Get<AnalyzedFile>(c.Value)!;
                             return (path, analysis.Hash, analysis.Size);
                         }), token);

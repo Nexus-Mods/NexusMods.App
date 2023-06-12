@@ -153,8 +153,8 @@ public class WindowHost : IAsyncDisposable
         using var frame = (_window.PlatformImpl as IHeadlessWindow)?.GetLastRenderedFrame();
         var path = FileSystem.Shared
             .GetKnownPath(KnownPath.EntryDirectory)
-            .CombineUnchecked("screenshots")
-            .CombineUnchecked($"{name}_{line}.png");
+            .Combine("screenshots")
+            .Combine($"{name}_{line}.png");
 
         path.Parent.CreateDirectory();
         frame?.Item.Save(path.ToString());

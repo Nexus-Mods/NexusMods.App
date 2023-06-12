@@ -56,9 +56,9 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame, IEpicGame
 
         var globalSettingsFile = fileSystem
             .GetKnownPath(KnownPath.LocalApplicationDataDirectory)
-            .CombineUnchecked("Red Hook Studios")
-            .CombineUnchecked("Darkest")
-            .CombineUnchecked("persist.options.json");
+            .Combine("Red Hook Studios")
+            .Combine("Darkest")
+            .Combine("persist.options.json");
 
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Preferences, globalSettingsFile);
 
@@ -70,7 +70,7 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame, IEpicGame
         {
             var savesDirectory = fileSystem
                 .GetKnownPath(KnownPath.MyDocumentsDirectory)
-                .CombineUnchecked("Darkest");
+                .Combine("Darkest");
 
             yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Saves, savesDirectory);
         }

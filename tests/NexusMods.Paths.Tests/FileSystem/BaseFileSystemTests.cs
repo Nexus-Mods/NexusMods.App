@@ -21,8 +21,8 @@ public class BaseFileSystemTests
     public void Test_PathMapping_WithDirectory(InMemoryFileSystem fs,
         AbsolutePath originalDirectoryPath, AbsolutePath newDirectoryPath, string fileName)
     {
-        var originalFilePath = originalDirectoryPath.CombineUnchecked(fileName);
-        var newFilePath = newDirectoryPath.CombineUnchecked(fileName);
+        var originalFilePath = originalDirectoryPath.Combine(fileName);
+        var newFilePath = newDirectoryPath.Combine(fileName);
 
         var overlayFileSystem = (BaseFileSystem)fs.CreateOverlayFileSystem(
             new Dictionary<AbsolutePath, AbsolutePath>
@@ -117,7 +117,7 @@ public class BaseFileSystemTests
             {
                 var driveLetter = (char)iDriveLetter;
                 var originalPath = fs.FromFullPath($"{driveLetter}:\\");
-                var newPath = rootDirectory.CombineUnchecked(Guid.NewGuid().ToString("D"));
+                var newPath = rootDirectory.Combine(Guid.NewGuid().ToString("D"));
                 return (originalPath, newPath);
             }).ToDictionary(x => x.originalPath, x => x.newPath);
 
@@ -168,7 +168,7 @@ public class BaseFileSystemTests
             {
                 var driveLetter = (char)iDriveLetter;
                 var originalPath = fs.FromDirectoryAndFileName("/", driveLetter.ToString());
-                var newPath = rootDirectory.CombineUnchecked(Guid.NewGuid().ToString("D"));
+                var newPath = rootDirectory.Combine(Guid.NewGuid().ToString("D"));
                 return (originalPath, newPath);
             }).ToDictionary(x => x.originalPath, x => x.newPath);
 

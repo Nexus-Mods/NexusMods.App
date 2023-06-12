@@ -43,11 +43,11 @@ public class ProtocolRegistrationLinux : IProtocolRegistration
     public async Task<string?> Register(string protocol, string friendlyName, string commandLine)
     {
         var applicationsFolder = _fileSystem.GetKnownPath(KnownPath.HomeDirectory)
-            .CombineChecked(".local/share/applications");
+            .Combine(".local/share/applications");
 
         applicationsFolder.CreateDirectory();
 
-        var desktopEntryFile = applicationsFolder.CombineChecked(friendlyName);
+        var desktopEntryFile = applicationsFolder.Combine(friendlyName);
 
         var sb = new StringBuilder();
         sb.AppendLine("[Desktop Entry]");

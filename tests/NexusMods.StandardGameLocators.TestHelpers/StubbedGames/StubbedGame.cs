@@ -84,7 +84,7 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
         {
             foreach (var file in DATA_NAMES)
             {
-                EnsureFile(path.CombineUnchecked(file));
+                EnsureFile(path.Combine(file));
             }
             return path;
         }

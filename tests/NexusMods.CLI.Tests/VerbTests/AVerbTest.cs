@@ -10,7 +10,7 @@ namespace NexusMods.CLI.Tests.VerbTests;
 public class AVerbTest
 {
     // ReSharper disable InconsistentNaming
-    internal AbsolutePath Data7ZipLZMA2 => FileSystem.GetKnownPath(KnownPath.EntryDirectory).CombineUnchecked(@"Resources\data_7zip_lzma2.7z");
+    internal AbsolutePath Data7ZipLZMA2 => FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine(@"Resources\data_7zip_lzma2.7z");
     // ReSharper restore InconsistentNaming
 
     private List<object> LastLog { get; set; } = new();

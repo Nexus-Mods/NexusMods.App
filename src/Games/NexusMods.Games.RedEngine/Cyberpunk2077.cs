@@ -26,16 +26,13 @@ public class Cyberpunk2077 : AGame, ISteamGame, IGogGame, IEpicGame
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Saves,
             fileSystem
                 .GetKnownPath(KnownPath.HomeDirectory)
-                .CombineUnchecked("Saved Games")
-                .CombineChecked("CD Projekt Red")
-                .CombineChecked("Cyberpunk 2077")
+                .Combine("Saved Games/CD Projekt Red/Cyberpunk 2077")
             );
 
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.AppData,
             fileSystem
                 .GetKnownPath(KnownPath.LocalApplicationDataDirectory)
-                .CombineUnchecked("CD Projekt Red")
-                .CombineChecked("Cyberpunk 2077")
+                .Combine("CD Projekt Red/Cyberpunk 2077")
         );
     }
 

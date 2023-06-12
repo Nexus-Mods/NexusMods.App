@@ -63,7 +63,7 @@ public class GamePathTests
     {
         var baseFolder = _fileSystem.GetKnownPath(KnownPath.CurrentDirectory);
         var pathA = new GamePath(GameFolderType.Game, "foo/bar");
-        Assert.Equal(baseFolder.CombineChecked("foo/bar"), pathA.CombineChecked(baseFolder));
+        Assert.Equal(baseFolder.Combine("foo/bar"), pathA.Combine(baseFolder));
     }
 
 }

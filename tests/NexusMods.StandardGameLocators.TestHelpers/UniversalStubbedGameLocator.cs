@@ -21,7 +21,7 @@ public class UniversalStubbedGameLocator<TGame> : IGameLocator, IDisposable
         if (gameFiles is null) return;
         foreach (var gameFile in gameFiles)
         {
-            var gameFilePath = _path.Path.CombineUnchecked(gameFile.Key);
+            var gameFilePath = _path.Path.Combine(gameFile.Key);
             using var stream = fileSystem.CreateFile(gameFilePath);
             stream.Write(gameFile.Value, 0, gameFile.Value.Length);
         }

@@ -19,7 +19,7 @@ public class SevenZipExtractionTests
     [Fact]
     public async Task CanForeachOverFiles()
     {
-        var file = FileSystem.Shared.GetKnownPath(KnownPath.CurrentDirectory).CombineUnchecked("Resources/data_7zip_lzma2.7z");
+        var file = FileSystem.Shared.GetKnownPath(KnownPath.CurrentDirectory).Combine("Resources/data_7zip_lzma2.7z");
         var results = await _extractor.ForEachEntry(new NativeFileStreamFactory(file), async (_, e) =>
         {
             await using var fs = await e.GetStreamAsync();

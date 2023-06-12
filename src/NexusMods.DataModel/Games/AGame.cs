@@ -54,7 +54,7 @@ public abstract class AGame : IGame
         try
         {
             var fvi = GetPrimaryFile(installation.Store)
-                .CombineChecked(installation.Path).FileInfo
+                .Combine(installation.Path).FileInfo
                 .GetFileVersionInfo();
             return fvi.ProductVersion;
         }

@@ -37,7 +37,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
     {
         var loadout = await CreateLoadout(indexGameFiles:false);
 
-        var analysisStr = await BethesdaTestHelpers.GetAssetsPath(FileSystem).CombineUnchecked("plugin_dependencies.json").ReadAllTextAsync();
+        var analysisStr = await BethesdaTestHelpers.GetAssetsPath(FileSystem).Combine("plugin_dependencies.json").ReadAllTextAsync();
         var analysis = JsonSerializer.Deserialize<Dictionary<string, string[]>>(analysisStr)!;
         
 

@@ -148,9 +148,9 @@ public class SkyrimInstaller : IModInstaller
             return true;
 
         // Has plugins in current directory.
-        if (PathHelpers.PathHasSubdirectory(relativePath)) 
+        if (PathHelpers.PathHasSubdirectory(relativePath))
             return false;
-        
+
         if (relativePath.EndsWith(EsmExtension, StringComparison.OrdinalIgnoreCase))
             return true;
 
@@ -175,9 +175,9 @@ public class SkyrimInstaller : IModInstaller
             return true;
 
         // Check for plugins, subdirectory and extension check here should be sufficient.
-        if (PathHelpers.PathHasSubdirectory(relativePath)) 
+        if (PathHelpers.PathHasSubdirectory(relativePath))
             return false;
-        
+
         if (relativePath.EndsWith(EsmExtension, StringComparison.OrdinalIgnoreCase))
             return true;
 
@@ -189,7 +189,7 @@ public class SkyrimInstaller : IModInstaller
 
         if (relativePath.EndsWith(BsaExtension, StringComparison.OrdinalIgnoreCase))
             return true;
-        
+
         return false;
     }
 }

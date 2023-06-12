@@ -54,7 +54,7 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
     protected static AbsolutePath GetFirstModFile(Loadout loadout)
     {
         var to = loadout.Mods.Values.First().Files.Values.OfType<IToFile>().First().To;
-        return to.CombineChecked(loadout.Installation.Locations[GameFolderType.Game]);
+        return to.Combine(loadout.Installation.Locations[GameFolderType.Game]);
     }
 
 
