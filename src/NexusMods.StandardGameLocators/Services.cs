@@ -34,6 +34,8 @@ public static class Services
     {
         // TODO: figure out the Proton-Wine situation
 
+        services.AddSingleton<IGameLocator, ManuallyAddedLocator>();
+
         OSInformation.Shared.SwitchPlatform(
             onWindows: () =>
             {
