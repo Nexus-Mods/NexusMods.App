@@ -19,11 +19,13 @@ public class Startup
     {
         ReactiveUiExtensions.DefaultLogger = serviceProvider.GetRequiredService<ILogger<Startup>>();
 
+        IconProvider.Current
+            .Register<MaterialDesignIconProvider>();
+        
         var app = AppBuilder.Configure(serviceProvider.GetRequiredService<App>)
             .UsePlatformDetect()
             .LogToTrace()
-            .UseReactiveUI()
-            .WithIcons(c => c.Register<MaterialDesignIconProvider>());
+            .UseReactiveUI();
 
         Locator.CurrentMutable.UnregisterCurrent(typeof(IViewLocator));
         Locator.CurrentMutable.Register(serviceProvider.GetRequiredService<InjectedViewLocator>, typeof(IViewLocator));

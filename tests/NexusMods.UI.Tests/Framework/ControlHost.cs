@@ -51,24 +51,6 @@ public class ControlHost<TView, TVm, TInterface> : IAsyncDisposable
     }
 
     /// <summary>
-    /// Executes an action on the UI thread and waits for it to complete.
-    /// </summary>
-    /// <param name="action"></param>
-    public async Task OnUi(Func<Task> action)
-    {
-        await Dispatcher.UIThread.InvokeAsync(action);
-        await Flush();
-    }
-
-    /// <summary>
-    /// Insures that all pending UI actions have been completed.
-    /// </summary>
-    public async Task Flush()
-    {
-        await Dispatcher.UIThread.InvokeAsync(() => { });
-    }
-
-    /// <summary>
     /// Searches for a control of type T with the given name in the view.
     /// </summary>
     /// <param name="launchbutton"></param>
@@ -81,19 +63,5 @@ public class ControlHost<TView, TVm, TInterface> : IAsyncDisposable
             var btn = View.GetControl<T>(launchbutton);
             return btn;
         });
-    }
-
-    /// <summary>
-    /// Clicks the button in a way that fires all the proper UI events
-    /// </summary>
-    /// <param name="button"></param>
-    public async Task Click(Button button)
-    {
-        await Dispatcher.UIThread.InvokeAsync(() =>
-        {
-            var peer = new ButtonAutomationPeer(button);
-            peer.Invoke();
-        });
-        await Flush();
     }
 }

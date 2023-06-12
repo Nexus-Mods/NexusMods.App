@@ -16,7 +16,7 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
     private TextBlock? _text;
     private ProgressBar? _progressBar;
 
-    public LaunchButtonViewTests(IServiceProvider provider, AvaloniaApp app) : base(provider, app) { }
+    public LaunchButtonViewTests(IServiceProvider provider) : base(provider) { }
 
     protected override async Task PostInitializeSetup()
     {
@@ -30,17 +30,23 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
     [Fact]
     public async Task ClickingTheButtonFiresTheCommand()
     {
-        var clicked = false;
+        var source = new TaskCompletionSource<bool>();
+        
+
         ViewModel.Command = ReactiveCommand.Create<Unit, Unit>(_ =>
         {
-            clicked = true;
+            source.SetResult(true);
             return Unit.Default;
         });
 
-        clicked.Should().BeFalse();
+        await EventuallyOnUi(() =>
+        {
+            _button!.Command.Should().Be(ViewModel.Command);
+        });
 
-        await Host.Click(_button!);
-        clicked.Should().BeTrue();
+        await Click(_button!);
+
+        (await source.Task.WaitAsync(TimeSpan.FromSeconds(10))).Should().BeTrue();
     }
 
     [Fact]
@@ -48,10 +54,13 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
     {
         var text = Random.Shared.Next() + " Text";
         ViewModel.Label = text;
-        await Host.OnUi(async () =>
+        await Eventually(async () =>
         {
-            _text!.Text.Should().Be(text);
-            _progressBar!.ProgressTextFormat.Should().Be(text);
+            await OnUi(async () =>
+            {
+                _text!.Text.Should().Be(text);
+                _progressBar!.ProgressTextFormat.Should().Be(text);
+            });
         });
     }
 
@@ -59,15 +68,20 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
     public async Task ProgressAffectsProgressBar()
     {
         ViewModel.Progress = Percent.CreateClamped(0.25);
-        await Host.OnUi(async () =>
+
+        await Eventually(async () =>
         {
-            _progressBar!.IsIndeterminate.Should().BeFalse();
-            _progressBar!.Value.Should().Be(0.25);
+            await OnUi(async () =>
+            {
+                _progressBar!.IsIndeterminate.Should().BeFalse();
+                _progressBar!.Value.Should().Be(0.25);
+            });
         });
+        
 
         ViewModel.Progress = null;
 
-        await Host.OnUi(async () =>
+        await EventuallyOnUi(async () =>
         {
             _progressBar!.IsIndeterminate.Should().BeTrue();
         });
@@ -83,15 +97,15 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
             return Unit.Default;
         });
 
-        await Host.OnUi(async () =>
+        await OnUi(() =>
         {
             _button!.IsVisible.Should().BeTrue();
             _progressBar!.IsVisible.Should().BeFalse();
         });
 
-        await Host.Click(_button!);
+        await Click(_button!);
 
-        await Host.OnUi(async () =>
+        await EventuallyOnUi(() =>
         {
             _button!.IsVisible.Should().BeFalse();
             _progressBar!.IsVisible.Should().BeTrue();
@@ -107,7 +121,7 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
         var subject = new Subject<bool>();
         ViewModel.Command = ReactiveCommand.Create(() => { }, subject.StartWith(false));
 
-        await Host.OnUi(async () =>
+        await EventuallyOnUi(() =>
         {
             _button!.IsVisible.Should().BeFalse();
             _button!.IsEnabled.Should().BeFalse();
@@ -122,7 +136,7 @@ public class LaunchButtonViewTests : AViewTest<LaunchButtonView, LaunchButtonDes
         ViewModel.Command = ReactiveCommand.Create(() => { }, subject.StartWith(true));
         ViewModel.Progress = null;
 
-        await Host.OnUi(async () =>
+        await EventuallyOnUi(() =>
         {
             _button!.IsVisible.Should().BeTrue();
             _button!.IsEnabled.Should().BeTrue();

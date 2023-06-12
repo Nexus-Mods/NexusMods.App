@@ -10,21 +10,21 @@ namespace NexusMods.UI.Tests.Controls.Spine;
 
 public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadButtonDesignerViewModel, IDownloadButtonViewModel>
 {
-    public DownloadButtonViewTests(IServiceProvider provider, AvaloniaApp app) : base(provider, app) { }
+    public DownloadButtonViewTests(IServiceProvider provider) : base(provider) { }
 
     [Fact]
     public async Task SettingButtonToActiveAppliesProperClass()
     {
         var button = await Host.GetViewControl<Button>("ParentButton");
         
-        await Host.OnUi(async () =>
+        await OnUi(async () =>
         {
             button.Classes.Should().NotContain("Active");
         });
 
         ViewModel.IsActive = true;
-        
-        await Host.OnUi(async () =>
+
+        await EventuallyOnUi(async () =>
         {
             button.Classes.Should().Contain("Active");
         });
@@ -36,29 +36,35 @@ public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadBut
         var button = await Host.GetViewControl<Button>("ParentButton");
         var arc = await Host.GetViewControl<Arc>("ProgressArc");
         
-        await Host.OnUi(async () =>
+        await OnUi(() =>
         {
             button.Classes.Should().Contain("Idle");
             button.Classes.Should().NotContain("Progress");
         });
 
         ViewModel.Progress = Percent.CreateClamped(0.5);
-        
-        await Host.OnUi(async () =>
+
+        await Eventually(async () =>
         {
-            button.Classes.Should().NotContain("Idle");
-            button.Classes.Should().Contain("Progress");
-            arc.SweepAngle.Should().Be(180);
+            await OnUi(() =>
+            {
+                button.Classes.Should().NotContain("Idle");
+                button.Classes.Should().Contain("Progress");
+                arc.SweepAngle.Should().Be(180);
+            });
         });
         
         
         ViewModel.Progress = Percent.CreateClamped(0.25);
-        
-        await Host.OnUi(async () =>
+
+        await Eventually(async () =>
         {
-            button.Classes.Should().NotContain("Idle");
-            button.Classes.Should().Contain("Progress");
-            arc.SweepAngle.Should().Be(90);
+            await OnUi(() =>
+            {
+                button.Classes.Should().NotContain("Idle");
+                button.Classes.Should().Contain("Progress");
+                arc.SweepAngle.Should().Be(90);
+            });
         });
 
         ViewModel.Progress = null;
@@ -73,7 +79,7 @@ public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadBut
         ViewModel.Number = 4.2f;
         ViewModel.Units = "foos";
         
-        await Host.OnUi(async () =>
+        await EventuallyOnUi(() =>
         {
             numberBlock.Text.Should().Be("4.20");
             unitsBlock.Text.Should().Be("FOOS");
@@ -81,7 +87,7 @@ public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadBut
         
         ViewModel.Number = 0.0f;
         
-        await Host.OnUi(async () =>
+        await EventuallyOnUi(() =>
         {
             numberBlock.Text.Should().Be("0.00");
             unitsBlock.Text.Should().Be("FOOS");
@@ -89,7 +95,7 @@ public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadBut
         
         ViewModel.Number = 0.0001f;
         
-        await Host.OnUi(async () =>
+        await EventuallyOnUi(() =>
         {
             numberBlock.Text.Should().Be("0.00");
             unitsBlock.Text.Should().Be("FOOS");
@@ -97,7 +103,7 @@ public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadBut
         
         ViewModel.Number = 1000.0f;
         
-        await Host.OnUi(async () =>
+        await EventuallyOnUi(() =>
         {
             numberBlock.Text.Should().Be("1000.00");
             unitsBlock.Text.Should().Be("FOOS");
@@ -107,14 +113,6 @@ public class DownloadButtonViewTests : AViewTest<DownloadButtonView, DownloadBut
     [Fact]
     public async Task ClickingTheButtonTriggersTheCommand()
     {
-        var val = false;
-        ViewModel.Click = ReactiveCommand.Create(() => { val = true; });
-        
-        var button = await Host.GetViewControl<Button>("ParentButton");
-
-        val.Should().BeFalse();
-        await Host.Click(button);
-        val.Should().BeTrue();
-        ViewModel.Click = ReactiveCommand.Create(() => { });
+        await ButtonShouldFireCommand(vm => vm.Click, "ParentButton");
     }
 }

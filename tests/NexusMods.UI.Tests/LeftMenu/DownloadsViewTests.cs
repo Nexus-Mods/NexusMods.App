@@ -6,41 +6,38 @@ using NexusMods.UI.Tests.Framework;
 
 namespace NexusMods.UI.Tests.LeftMenu;
 
-public class DownloadsViewTests : IAsyncLifetime
+public class DownloadsViewTests : AViewTest<DownloadsView, DownloadsDesignViewModel, IDownloadsViewModel>
 {
-    private readonly AvaloniaApp _app;
-    private ControlHost<DownloadsView,DownloadsDesignViewModel,IDownloadsViewModel> _host;
-    private (Options Option, Button Control, Type Type)[] _options;
-
-    public DownloadsViewTests(AvaloniaApp app)
-    {
-        _app = app;
-    }
+    private (Options Option, Button Control, Type Type)[]? _options;
+    
+    public DownloadsViewTests(IServiceProvider provider) : base(provider) { }
 
     [Fact]
-    public async Task ActiveIsAppliedToButtonsWhenTheVMActivatesThem()
+    public async Task ActiveIsAppliedToButtonsWhenTheVmActivatesThem()
     {
         // Select each option in turn
-        foreach (var current in _options)
+        foreach (var current in _options!)
         {
-            _host.ViewModel.Set(current.Option);
-            _host.ViewModel.Current.Should().Be(current.Option, "value was set in the View Model");
-            await _host.Flush();
-
-            // Check each of the controls for their correct active state
-            foreach (var checking in _options)
+            Host.ViewModel.Set(current.Option);
+            await EventuallyOnUi(async () =>
             {
-                if (checking.Option == current.Option)
+                Host.ViewModel.Current.Should().Be(current.Option, "value was set in the View Model");
+
+                // Check each of the controls for their correct active state
+                foreach (var checking in _options)
                 {
-                    checking.Control.Classes.Should().Contain("Active",
-                        $"this is {checking.Option} and {current.Option} is active");
+                    if (checking.Option == current.Option)
+                    {
+                        checking.Control.Classes.Should().Contain("Active",
+                            $"this is {checking.Option} and {current.Option} is active");
+                    }
+                    else
+                    {
+                        checking.Control.Classes.Should().NotContain("Active",
+                            $"this is {checking.Option} and {current.Option} is active");
+                    }
                 }
-                else
-                {
-                    checking.Control.Classes.Should().NotContain("Active",
-                        $"this is {checking.Option} and {current.Option} is active");
-                }
-            }
+            });
         }
     }
 
@@ -49,23 +46,20 @@ public class DownloadsViewTests : IAsyncLifetime
     {
         foreach (var option in _options)
         {
-            await _host.Click(option.Control);
-            _host.ViewModel.Current.Should().Be(option.Option, "value was set in the View Model");
-            _host.ViewModel.CurrentViewModel.Should().NotBeNull("the view model should be set");
-            _host.ViewModel.CurrentViewModel.Should().BeAssignableTo(option.Type, "the view model should be the correct type");
+            await Click(option.Control);
+            Host.ViewModel.Current.Should().Be(option.Option, "value was set in the View Model");
+            Host.ViewModel.CurrentViewModel.Should().NotBeNull("the view model should be set");
+            Host.ViewModel.CurrentViewModel.Should().BeAssignableTo(option.Type, "the view model should be the correct type");
         }
 
     }
 
-    public async Task InitializeAsync()
+    public override async Task InitializeAsync()
     {
-        _host =
-            await _app.GetControl<DownloadsView, DownloadsDesignViewModel,
-                IDownloadsViewModel>();
-
-        var inProgress = await _host.GetViewControl<Button>("InProgressButton");
-        var completed = await _host.GetViewControl<Button>("CompletedButton");
-        var history = await _host.GetViewControl<Button>("HistoryButton");
+        await base.InitializeAsync();
+        var inProgress = await Host.GetViewControl<Button>("InProgressButton");
+        var completed = await Host.GetViewControl<Button>("CompletedButton");
+        var history = await Host.GetViewControl<Button>("HistoryButton");
 
         _options = new (Options Option, Button Control, Type Type)[]
         {
@@ -73,10 +67,5 @@ public class DownloadsViewTests : IAsyncLifetime
             (Options.Completed, completed, typeof(ICompletedViewModel)),
             (Options.History, history, typeof(IHistoryViewModel))
         };
-    }
-
-    public async Task DisposeAsync()
-    {
-        await _host.DisposeAsync();
     }
 }

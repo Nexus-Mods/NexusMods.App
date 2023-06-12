@@ -20,12 +20,12 @@ namespace NexusMods.DataModel;
 /// <summary>
 /// Manages the archive locations and allows for the backup of files to internal data folders.
 /// </summary>
-public class ArchiveManager : IArchiveManager
+public class NxArchiveManager : IArchiveManager
 {
     private readonly AbsolutePath[] _archiveLocations;
     private readonly IDataStore _store;
 
-    public ArchiveManager(IDataStore store, IDataModelSettings settings)
+    public NxArchiveManager(IDataStore store, IDataModelSettings settings)
     {
         _archiveLocations = settings.ArchiveLocations.Select(f => f.ToAbsolutePath()).ToArray();
         foreach (var location in _archiveLocations)
