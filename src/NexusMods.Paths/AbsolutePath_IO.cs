@@ -10,31 +10,6 @@ public readonly partial struct AbsolutePath
     /// <inheritdoc cref="IFileSystem.FileExists"/>
     public bool FileExists => FileSystem.FileExists(this);
 
-    /// <summary>
-    /// Obtains the name of the first folder stored in this path.
-    /// </summary>
-    public AbsolutePath TopParent
-    {
-        get
-        {
-            var thisPathLength = GetFullPathLength();
-            var thisFullPath = thisPathLength <= 512 ? stackalloc char[thisPathLength] : GC.AllocateUninitializedArray<char>(thisPathLength);
-            GetFullPath(thisFullPath);
-
-            var index = thisFullPath.IndexOf(Path.DirectorySeparatorChar);
-            if (OperatingSystem.IsLinux() && index == 0)
-                return FromFullPath(DirectorySeparatorCharStr, FileSystem);
-
-            // e.g. C:\
-            // Windows drive letters can only have 1 character/letter.
-            if (OperatingSystem.IsWindows() && index == 2)
-                index++;
-
-            var path = thisFullPath[..index];
-            return FromDirectoryAndFileName(path.ToString(), "", FileSystem);
-        }
-    }
-
     /// <inheritdoc cref="IFileSystem.OpenFile"/>
     public Stream Open(FileMode mode, FileAccess access = FileAccess.Read, FileShare share = FileShare.ReadWrite)
         => FileSystem.OpenFile(this, mode, access, share);
@@ -128,7 +103,7 @@ public readonly partial struct AbsolutePath
     /// <inheritdoc cref="IFileSystem.WriteAllBytesAsync"/>
     public Task WriteAllBytesAsync(byte[] data)
         => FileSystem.WriteAllBytesAsync(this, data);
-    
+
     /// <inheritdoc cref="IFileSystem.ReadAllBytesAsync"/>
     public Task<byte[]> ReadAllBytesAsync(CancellationToken token = default)
         => FileSystem.ReadAllBytesAsync(this, token);

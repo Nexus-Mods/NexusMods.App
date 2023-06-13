@@ -66,7 +66,7 @@ public class NxArchiveManager : IArchiveManager
 
         var guid = Guid.NewGuid();
         var id = guid.ToString();
-        var outputPath = _archiveLocations.First().CombineUnchecked(id).AppendExtension(KnownExtensions.Tmp);
+        var outputPath = _archiveLocations.First().Combine(id).AppendExtension(KnownExtensions.Tmp);
         
         await using (var outputStream = outputPath.Create()){
             builder.WithOutput(outputStream);
@@ -201,7 +201,7 @@ public class NxArchiveManager : IArchiveManager
         {
             foreach (var location in _archiveLocations)
             {
-                var path = location.CombineUnchecked(entry.File);
+                var path = location.Combine(entry.File);
                 if (!path.FileExists) continue;
 
                 archivePath = path;

@@ -14,8 +14,8 @@ public class PluginAnalysisTests : AFileAnalyzerTest<SkyrimSpecialEdition, Plugi
 
     public PluginAnalysisTests(IFileSystem fileSystem, IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _plugin1 = BethesdaTestHelpers.GetAssetsPath(fileSystem).CombineUnchecked("testfile1.esp");
-        _plugin2 = BethesdaTestHelpers.GetAssetsPath(fileSystem).CombineUnchecked("testfile2.esl");
+        _plugin1 = BethesdaTestHelpers.GetAssetsPath(fileSystem).Combine("testfile1.esp");
+        _plugin2 = BethesdaTestHelpers.GetAssetsPath(fileSystem).Combine("testfile2.esl");
     }
 
     [Fact]

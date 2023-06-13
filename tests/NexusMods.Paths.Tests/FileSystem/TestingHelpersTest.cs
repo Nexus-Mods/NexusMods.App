@@ -32,8 +32,6 @@ public class TestingHelpersTest
     [Theory, AutoFileSystem(useSharedFileSystem:true)]
     public void Test_UseSharedFileSystem_AbsolutePath(InMemoryFileSystem fs, AbsolutePath path)
     {
-        // NOTE(erri120): this test can be removed, once AbsolutePath doesn't
-        // use IFileSystem internally
         fs.AddEmptyFile(path);
         fs.FileExists(path).Should().BeTrue();
         path.FileExists.Should().BeTrue();
@@ -42,8 +40,6 @@ public class TestingHelpersTest
     [Theory, AutoFileSystem(useSharedFileSystem:false)]
     public void Test_DontUseSharedFileSystem_AbsolutePath(InMemoryFileSystem fs, AbsolutePath path)
     {
-        // NOTE(erri120): this test can be removed, once AbsolutePath doesn't
-        // use IFileSystem internally
         fs.AddEmptyFile(path);
         fs.FileExists(path).Should().BeTrue();
         path.FileExists.Should().BeFalse();

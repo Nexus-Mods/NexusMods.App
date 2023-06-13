@@ -117,14 +117,14 @@ public class SMAPIInstaller : IModInstaller
             var modLauncherScriptFile = archiveContents
                 .First(kv => kv.Key.FileName.Equals("unix-launcher.sh"));
 
-            var gameLauncherScriptFilePath = gameFolderPath.CombineUnchecked("StardewValley");
+            var gameLauncherScriptFilePath = gameFolderPath.Combine("StardewValley");
         }
 
         // TODO: for Xbox Game Pass: replace "Stardew Valley.exe" with "StardewModdingAPI.exe"
 
         // copy "Stardew Valley.deps.json" to "StardewModdingAPI.deps.json"
         // https://github.com/Pathoschild/SMAPI/blob/9763bc7484e29cbc9e7f37c61121d794e6720e75/src/SMAPI.Installer/InteractiveInstaller.cs#L419-L425
-        var gameDepsFilePath = gameFolderPath.CombineUnchecked("Stardew Valley.deps.json");
+        var gameDepsFilePath = gameFolderPath.Combine("Stardew Valley.deps.json");
         if (!_fileHashCache.TryGetCached(gameDepsFilePath, out var gameDepsFileCache))
             throw new NotImplementedException($"Game file {gameFolderPath} was not found in cache!");
 

@@ -20,8 +20,8 @@ public class Startup
     public void ConfigureServices(IServiceCollection container)
     {
         var prefix = FileSystem.Shared.GetKnownPath(KnownPath.TempDirectory)
-            .CombineUnchecked(typeof(Startup).FullName ?? "NexusMods.DataModel.Tests")
-            .CombineUnchecked(Guid.NewGuid().ToString());
+            .Combine(typeof(Startup).FullName ?? "NexusMods.DataModel.Tests")
+            .Combine(Guid.NewGuid().ToString());
 
         container
             .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))

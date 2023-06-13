@@ -19,14 +19,14 @@ public class Paths : IBenchmark
         var longPath = @"c:\" + string.Join(@"\", Enumerable.Range(0, 20).Select(x => $"path_{x}"));
         var shortestPath = @"c:\foo";
         _shortPath = @"c:\foo\bar\baz";
-        _nexusShortPath = _shortPath.ToAbsolutePath(FileSystem.Shared);
+        _nexusShortPath = FileSystem.Shared.FromUnsanitizedFullPath(_shortPath);
         var cPath = @"c:\";
 
         _paths = new[] { longPath, _shortPath, shortestPath, cPath };
     }
 
     public IEnumerable<(string StringPath, AbsolutePath AbsolutePath)> AllPaths =>
-        _paths.Select(p => (p, p.ToAbsolutePath(FileSystem.Shared)));
+        _paths.Select(p => (p, FileSystem.Shared.FromUnsanitizedFullPath(p)));
 
     [ParamsSource(nameof(AllPaths))]
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
@@ -91,7 +91,7 @@ public class Paths : IBenchmark
     {
         // Not a fair test here since one is a string concat; other includes
         // normalization to OS path.
-        return CurrentPath.AbsolutePath.CombineUnchecked("foo");
+        return CurrentPath.AbsolutePath.Combine("foo");
     }
 
     [Benchmark]
@@ -103,7 +103,7 @@ public class Paths : IBenchmark
     [Benchmark]
     public AbsolutePath NexusJoinLarge()
     {
-        return CurrentPath.AbsolutePath.CombineUnchecked("foo/bar/baz/quz/qax");
+        return CurrentPath.AbsolutePath.Combine("foo/bar/baz/quz/qax");
     }
 
     [Benchmark]

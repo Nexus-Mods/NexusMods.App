@@ -19,7 +19,7 @@ public class Sifu : AGame, ISteamGame, IEpicGame
     public override GameDomain Domain => GameDomain.From("sifu");
     public override GamePath GetPrimaryFile(GameStore store)
     {
-        return new(GameFolderType.Game, @"Sifu.exe");
+        return new(GameFolderType.Game, "Sifu.exe");
     }
     
     public Sifu(IEnumerable<IGameLocator> gameLocators) : base(gameLocators)

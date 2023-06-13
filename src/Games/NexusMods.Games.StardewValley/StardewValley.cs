@@ -54,7 +54,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
     {
         if (installation.Store == GameStore.XboxGamePass)
         {
-            yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path.CombineChecked("Content"));
+            yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path.Combine("Content"));
         }
         else
         {
@@ -63,18 +63,18 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
 
         var stardewValleyAppDataPath = fileSystem
             .GetKnownPath(KnownPath.ApplicationDataDirectory)
-            .CombineUnchecked("StardewValley");
+            .Combine("StardewValley");
 
         // base game saves
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(
             GameFolderType.Saves,
-            stardewValleyAppDataPath.CombineUnchecked("Saves")
+            stardewValleyAppDataPath.Combine("Saves")
         );
 
         // global data files (https://github.com/Pathoschild/SMAPI/blob/8d600e226960a81636137d9bf286c69ab39066ed/src/SMAPI/Framework/ModHelpers/DataHelper.cs#L163-L169)
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(
             GameFolderType.AppData,
-            stardewValleyAppDataPath.CombineUnchecked(".smapi")
+            stardewValleyAppDataPath.Combine(".smapi")
         );
     }
 

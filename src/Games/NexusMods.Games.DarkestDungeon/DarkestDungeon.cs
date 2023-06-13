@@ -32,8 +32,8 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame, IEpicGame
         return _osInformation.MatchPlatform(
             ref store,
             onWindows: (ref GameStore gameStore) => gameStore == GameStore.Steam
-                ? new GamePath(GameFolderType.Game, @"_windows\Darkest.exe")
-                : new GamePath(GameFolderType.Game, @"_windowsnosteam\Darkest.exe"),
+                ? new GamePath(GameFolderType.Game, "_windows/Darkest.exe")
+                : new GamePath(GameFolderType.Game, "_windowsnosteam/Darkest.exe"),
             onLinux: (ref GameStore gameStore) => gameStore == GameStore.Steam
                 ? new GamePath(GameFolderType.Game, "_linux/darkest.bin.x86_64")
                 : new GamePath(GameFolderType.Game, "linuxnosteam/darkest.bin.x86_64"),
@@ -56,9 +56,7 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame, IEpicGame
 
         var globalSettingsFile = fileSystem
             .GetKnownPath(KnownPath.LocalApplicationDataDirectory)
-            .CombineUnchecked("Red Hook Studios")
-            .CombineUnchecked("Darkest")
-            .CombineUnchecked("persist.options.json");
+            .Combine("Red Hook Studios/Darkest/persist.options.json");
 
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Preferences, globalSettingsFile);
 
@@ -70,7 +68,7 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame, IEpicGame
         {
             var savesDirectory = fileSystem
                 .GetKnownPath(KnownPath.MyDocumentsDirectory)
-                .CombineUnchecked("Darkest");
+                .Combine("Darkest");
 
             yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Saves, savesDirectory);
         }

@@ -35,7 +35,7 @@ public class TestModDownloader
     /// <returns>Downloaded item inside the provided FileSystem.</returns>
     public async Task<DownloadedItem> DownloadFromManifestAsync(AbsolutePath modFolder, IFileSystem targetFs, CancellationToken token = default)
     {
-        var manifestFile = modFolder.CombineUnchecked("manifest.json");
+        var manifestFile = modFolder.Combine("manifest.json");
         var meta = await RemoteModMetadataBase.DeserializeFromAsync(manifestFile, FileSystem.Shared);
         return await DownloadAsync(meta, targetFs, token);
     }
@@ -108,7 +108,7 @@ public class TestModDownloader
         IFileSystem fileSystem, CancellationToken token = default)
     {
         // TODO: CombineChecked this once FileSystem is separated from AbsolutePath/RelativePath.
-        var sourcePath = fsModMetadata.JsonPath.Parent.CombineUnchecked(fsModMetadata.FilePath);
+        var sourcePath = fsModMetadata.JsonPath.Parent.Combine(fsModMetadata.FilePath);
         _logger.LogInformation("Downloading {Type}, From: {Output}", RemoteModSource.RealFileSystem, sourcePath);
         var data = await FileSystem.Shared.ReadAllBytesAsync(sourcePath, token);
         await fileSystem.WriteAllBytesAsync(folderPath, data, token);

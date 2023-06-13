@@ -1,14 +1,8 @@
-﻿using System.Runtime.CompilerServices;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Headless;
-using Avalonia.Markup.Parsers;
-using Avalonia.Styling;
+﻿using Avalonia;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.Windows;
-using NexusMods.Paths;
 
 namespace NexusMods.UI.Tests.Framework;
 
@@ -25,7 +19,7 @@ public class WindowHost : IAsyncDisposable
         _logger = logger;
 
     }
-    
+
     public async ValueTask DisposeAsync()
     {
         await Dispatcher.UIThread.InvokeAsync(() =>
@@ -66,7 +60,7 @@ public class WindowHost : IAsyncDisposable
     /// Use Avalonia selectors to find controls in the current Window. For now the only
     /// types supported are those found in the Avalonia.* namespace.
     /// </summary>
-    /// <param name="selector"></param>
+    /// <param name="name"></param>
     /// <param name="maxTries"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
