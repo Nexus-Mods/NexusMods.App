@@ -29,20 +29,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      #- name: Setup .NET Core SDK 7.0.x
-      #  uses: actions/setup-dotnet@v3
-      #  with:
-      #    dotnet-version: '7.0.x'
-
-      - name: Set Permissions
-        if: runner.os != 'Windows'
-        run: chmod -R +x src/ArchiveManagement/NexusMods.FileExtractor/Extractors
-
-      - name: Clean Tests
-        run: dotnet clean
+      - name: Setup .NET Core SDK 7.0.x
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.0.x'
 
       - name: Stress Test
-        run: dotnet run --project src/NexusMods.App/NexusMods.App.csproj -- stress-test -g ${{matrix.game.domain}} -o ${{ github.step_summary }}
+        run: dotnet run --project ./src/NexusMods.App/NexusMods.App.csproj -- stress-test -g ${{matrix.game.domain}} -o ${{ github.step_summary }}
 
       - uses: codecov/codecov-action@v3
         with:

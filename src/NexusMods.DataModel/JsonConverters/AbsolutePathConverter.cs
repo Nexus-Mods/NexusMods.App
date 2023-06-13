@@ -24,7 +24,7 @@ public class AbsolutePathConverter : JsonConverter<AbsolutePath>
     /// <inheritdoc />
     public override AbsolutePath Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        return reader.GetString()!.ToAbsolutePath(_fileSystem);
+        return _fileSystem.FromUnsanitizedFullPath(reader.GetString()!);
     }
 
     /// <inheritdoc />
