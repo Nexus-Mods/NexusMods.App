@@ -178,7 +178,7 @@ public readonly struct RelativePath : IEquatable<RelativePath>, IPath, IComparab
     public static implicit operator ReadOnlySpan<char>(RelativePath d) => d.Path;
 
     /// <summary/>
-    public static implicit operator RelativePath(string b) => new(b);
+    public static implicit operator RelativePath(string b) => new(PathHelpers.Sanitize(b, OS));
 
     /// <summary/>
     public static bool operator ==(RelativePath lhs, RelativePath rhs) => lhs.Equals(rhs);

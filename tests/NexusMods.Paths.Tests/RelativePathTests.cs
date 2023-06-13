@@ -5,6 +5,18 @@ namespace NexusMods.Paths.Tests;
 public class RelativePathTests
 {
     [Theory]
+    [InlineData("a", "a")]
+    [InlineData("a/b", "a/b")]
+    [InlineData("a\\b", "a/b")]
+    [InlineData("a\\b/c", "a/b/c")]
+    [InlineData("a/b/c/", "a/b/c")]
+    public void Test_FromStringCast(string input, string expected)
+    {
+        var path = (RelativePath)input;
+        path.ToString().Should().Be(expected);
+    }
+    
+    [Theory]
     [InlineData("", "")]
     [InlineData("foo", "")]
     [InlineData("foo.txt", ".txt")]
