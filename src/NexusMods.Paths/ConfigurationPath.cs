@@ -58,7 +58,7 @@ public struct ConfigurationPath : IEquatable<ConfigurationPath>
     /// <summary>
     /// Retrieves the full path behind this configuration parameter.
     /// </summary>
-    public string GetFullPath() => FileSystem.ExpandKnownFoldersPath(RawPath);
+    public string GetFullPath() => FileSystem.ExpandKnownFoldersPath(RawPath).GetFullPath();
 
     /// <inheritdoc />
     public override string ToString() => GetFullPath();
