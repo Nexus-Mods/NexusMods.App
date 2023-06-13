@@ -24,8 +24,7 @@ jobs:
         #os: [ubuntu-latest, windows-latest, macos-latest]
         os: [Windows]
         game:
-          - domain: cyberpunk2077
-            file: tests/Games/NexusMods.Games.RedEngine.Tests/Resources/cyberpunk2077.1.61.zip
+          - domain: [cyberpunk2077, darkestdungeon, sifu, skyrimspecialedition, stardewvalley]
 
     steps:
       - uses: actions/checkout@v3
@@ -43,7 +42,7 @@ jobs:
         run: dotnet clean
 
       - name: Stress Test
-        run: dotnet run --project .\src\NexusMods.App\NexusMods.App.csproj -- stress-test -g ${{matrix.game.domain}} -l ${{ github.workspace }}/${{matrix.game.file}} -o ${{ github.step_summary }}
+        run: dotnet run --project .\src\NexusMods.App\NexusMods.App.csproj -- stress-test -g ${{matrix.game.domain}} -o ${{ github.step_summary }}
 
       - uses: codecov/codecov-action@v3
         with:
