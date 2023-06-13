@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using AutoFixture.Xunit2;
 using FluentAssertions;
 
-namespace NexusMods.Common.Tests;
+namespace NexusMods.Paths.Tests;
 
 public class OSInformationTests
 {

@@ -35,7 +35,7 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
         var gameFolder = Install.Locations[GameFolderType.Game];
         foreach (var file in DataNames)
         {
-            gameFolder.CombineUnchecked(file).FileExists.Should().BeTrue("File has been applied");
+            gameFolder.Combine(file).FileExists.Should().BeTrue("File has been applied");
         }
 
         var newPlan = await LoadoutSynchronizer.MakeApplySteps(mainList.Value, CancellationToken.None);
@@ -58,14 +58,14 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
         var gameFolder = Install.Locations[GameFolderType.Game];
         foreach (var file in DataNames)
         {
-            gameFolder.CombineUnchecked(file).FileExists.Should().BeTrue("File has been applied");
+            gameFolder.Combine(file).FileExists.Should().BeTrue("File has been applied");
         }
 
         var fileToDelete = DataNames.First();
         var fileToModify = DataNames.Skip(1).First();
 
-        gameFolder.CombineUnchecked(fileToDelete).Delete();
-        await gameFolder.CombineUnchecked(fileToModify).WriteAllTextAsync("modified");
+        gameFolder.Combine(fileToDelete).Delete();
+        await gameFolder.Combine(fileToModify).WriteAllTextAsync("modified");
         var modifiedHash = "modified".XxHash64AsUtf8();
 
         var firstMod = mainList.Value.Mods.Values.First();
@@ -75,17 +75,17 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
         {
             new Loadouts.IngestSteps.BackupFile
             {
-                Source = gameFolder.CombineUnchecked(fileToModify),
+                Source = gameFolder.Combine(fileToModify),
                 Size = Size.FromLong("modified".Length),
                 Hash = modifiedHash
             },
             new Loadouts.IngestSteps.RemoveFromLoadout
             {
-                Source = gameFolder.CombineUnchecked(fileToDelete),
+                Source = gameFolder.Combine(fileToDelete),
             },
             new CreateInLoadout
             {
-                Source = gameFolder.CombineUnchecked(fileToModify),
+                Source = gameFolder.Combine(fileToModify),
                 Size = Size.FromLong("modified".Length),
                 Hash = modifiedHash,
                 ModId = firstMod.Id

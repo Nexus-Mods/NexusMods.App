@@ -10,7 +10,7 @@ namespace NexusMods.Games.RedEngine;
 
 public class RedModDeployTool : ITool
 {
-    private static readonly GamePath RedModPath = new(GameFolderType.Game, @"tools\redmod\bin\redmod.exe");
+    private static readonly GamePath RedModPath = new(GameFolderType.Game, "tools/redmod/bin/redmod.exe");
 
     private readonly ILogger<RedModDeployTool> _logger;
 

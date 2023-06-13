@@ -11,7 +11,7 @@ public class ListFilesTool : ITool
     public async Task Execute(Loadout loadout)
     {
         var listPath = loadout.Installation.Locations[GameFolderType.Game];
-        var outPath = GeneratedFilePath.CombineChecked(listPath);
+        var outPath = GeneratedFilePath.Combine(listPath);
 
         var lines = listPath.EnumerateFiles()
             .Select(f => f.RelativeTo(listPath))

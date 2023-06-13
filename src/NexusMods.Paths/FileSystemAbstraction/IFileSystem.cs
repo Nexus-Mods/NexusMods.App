@@ -9,13 +9,18 @@ namespace NexusMods.Paths;
 public interface IFileSystem
 {
     /// <summary>
+    /// Gets the current <see cref="IOSInformation"/> associated with this file system.
+    /// </summary>
+    IOSInformation OS { get; }
+
+    /// <summary>
     /// Creates a new <see cref="FileSystem"/> that allows for path mapping.
     /// </summary>
     /// <param name="pathMappings">Path mappings</param>
     /// <param name="knownPathMappings">Mappings for <see cref="KnownPath"/></param>
     /// <param name="convertCrossPlatformPaths">
     /// If true, this will convert
-    /// Windows paths to Linux paths: <c>C:\foo\bar</c> will become
+    /// Windows paths to Linux paths: <c>C:/foo/bar</c> will become
     /// <c>/c/foo/bar</c>. This should not be used by default, and
     /// is only useful for mapping Windows paths into Linux, eg: for Wine.
     /// </param>
@@ -36,20 +41,23 @@ public interface IFileSystem
     /// <returns></returns>
     AbsolutePath GetKnownPath(KnownPath knownPath);
 
-    /// <summary>
-    /// Creates a new <see cref="AbsolutePath"/> from a full path.
-    /// </summary>
-    /// <param name="fullPath">Full path</param>
-    /// <returns></returns>
-    AbsolutePath FromFullPath(string fullPath);
+    [Obsolete(message: "This will be removed once dependents have updated.", error: true)]
+    AbsolutePath FromFullPath(string fullPath) => FromUnsanitizedFullPath(fullPath);
 
     /// <summary>
-    /// Creates a new <see cref="AbsolutePath"/> from a directory path and a file name.
+    /// Creates a new <see cref="AbsolutePath"/> from an unsanitized full path.
+    /// </summary>
+    /// <param name="unsanitizedFullPath">Full path</param>
+    /// <returns>A sanitized <see cref="AbsolutePath"/></returns>
+    AbsolutePath FromUnsanitizedFullPath(string unsanitizedFullPath);
+
+    /// <summary>
+    /// Creates a new <see cref="AbsolutePath"/> from an unsanitized directory and file name.
     /// </summary>
     /// <param name="directoryPath">Directory path</param>
     /// <param name="fileName">File name</param>
-    /// <returns></returns>
-    AbsolutePath FromDirectoryAndFileName(string directoryPath, string fileName);
+    /// <returns>A sanitized <see cref="AbsolutePath"/></returns>
+    AbsolutePath FromUnsanitizedDirectoryAndFileName(string directoryPath, string fileName);
 
     /// <summary>
     /// Returns the <see cref="IFileEntry"/> of the file at the given path.

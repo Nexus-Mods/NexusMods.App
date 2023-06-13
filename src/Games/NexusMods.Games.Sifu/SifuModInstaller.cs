@@ -18,7 +18,7 @@ namespace NexusMods.Games.Sifu;
 public class SifuModInstaller : IModInstaller
 {
     private static readonly Extension PakExt = new(".pak");
-    private static readonly RelativePath ModsPath = @"Content\Paks\~mods".ToRelativePath();
+    private static readonly RelativePath ModsPath = "Content/Paks/~mods".ToRelativePath();
 
     public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {

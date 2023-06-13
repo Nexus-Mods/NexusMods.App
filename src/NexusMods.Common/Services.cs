@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Runtime.InteropServices;
 using NexusMods.Common.OSInterop;
+using NexusMods.Paths;
 
 #if DEBUG
 using System.Text;

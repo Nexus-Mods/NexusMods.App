@@ -19,16 +19,25 @@ public partial class InMemoryFileSystem : BaseFileSystem
     /// <summary>
     /// Constructor.
     /// </summary>
-    public InMemoryFileSystem() : this(new Dictionary<AbsolutePath, AbsolutePath>(), new Dictionary<KnownPath, AbsolutePath>(), false) { }
+    public InMemoryFileSystem(IOSInformation? os = null)
+        : this(
+            new Dictionary<AbsolutePath, AbsolutePath>(),
+            new Dictionary<KnownPath, AbsolutePath>(),
+            false, os) { }
 
     private InMemoryFileSystem(
         Dictionary<AbsolutePath, AbsolutePath> pathMappings,
         Dictionary<KnownPath, AbsolutePath> knownPathMappings,
-        bool convertCrossPlatformPaths) : base(pathMappings, knownPathMappings, convertCrossPlatformPaths)
+        bool convertCrossPlatformPaths,
+        IOSInformation? os = null)
+        : base(os ?? OSInformation.Shared, pathMappings, knownPathMappings, convertCrossPlatformPaths)
     {
+        var root = OS.IsWindows ? "C:/" : "/";
+
         _rootDirectory = new InMemoryDirectoryEntry(
-            AbsolutePath.FromFullPath(OperatingSystem.IsWindows() ? "C:\\" : "/", this),
-            null!);
+            AbsolutePath.FromSanitizedFullPath(root, this),
+            null!
+        );
 
         _directories[_rootDirectory.Path] = _rootDirectory;
     }
@@ -140,7 +149,7 @@ public partial class InMemoryFileSystem : BaseFileSystem
         Dictionary<AbsolutePath, AbsolutePath> pathMappings,
         Dictionary<KnownPath, AbsolutePath> knownPathMappings,
         bool convertCrossPlatformPaths = false)
-        => new InMemoryFileSystem(pathMappings, knownPathMappings, convertCrossPlatformPaths);
+        => new InMemoryFileSystem(pathMappings, knownPathMappings, convertCrossPlatformPaths, OS);
 
     /// <inheritdoc/>
     protected override IFileEntry InternalGetFileEntry(AbsolutePath path)
