@@ -26,9 +26,10 @@ public static class Services
         {
             collection
                 .AddAllSingleton<IHttpMessageFactory, OAuth2MessageFactory>()
-                .AddSingleton<IAuthenticatingMessageFactory, OAuth2MessageFactory>()
-                .AddSingleton<OAuth>();
+                .AddSingleton<IAuthenticatingMessageFactory, OAuth2MessageFactory>();
         }
+        collection.AddSingleton<OAuth>();
+
 
         return collection.AddSingleton<ITypeFinder, TypeFinder>()
             .AddSingleton<LoginManager>();

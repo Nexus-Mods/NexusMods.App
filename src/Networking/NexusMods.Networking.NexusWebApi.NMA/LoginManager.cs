@@ -14,7 +14,7 @@ public class LoginManager
     private readonly IDataStore _dataStore;
     private readonly IProtocolRegistration _protocolRegistration;
     private readonly Client _client;
-    private readonly OAuth2MessageFactory _msgFactory;
+    private readonly IAuthenticatingMessageFactory _msgFactory;
 
     /// <summary>
     /// Allows you to subscribe to notifications of when the user information changes.
@@ -43,7 +43,7 @@ public class LoginManager
     /// <param name="dataStore">Used for storing information about the current login session.</param>
     /// <param name="protocolRegistration">Used to register NXM protocol.</param>
     public LoginManager(Client client,
-        OAuth2MessageFactory msgFactory,
+        IAuthenticatingMessageFactory msgFactory,
         OAuth oauth, IDataStore dataStore, IProtocolRegistration protocolRegistration)
     {
         _oauth = oauth;
