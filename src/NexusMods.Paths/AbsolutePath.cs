@@ -104,8 +104,10 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         string fileName,
         IFileSystem fileSystem)
     {
-        var unsanitizedPath = Path.Combine(directory, fileName);
-        return FromUnsanitizedFullPath(unsanitizedPath, fileSystem);
+        var sanitizedDirectory = PathHelpers.Sanitize(directory, fileSystem.OS);
+        var sanitizedFileName = PathHelpers.Sanitize(fileName, fileSystem.OS);
+        var fullPath = PathHelpers.JoinParts(sanitizedDirectory, sanitizedFileName, fileSystem.OS);
+        return FromSanitizedFullPath(fullPath, fileSystem);
     }
 
     /// <summary>
