@@ -1,9 +1,13 @@
 ﻿using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Games;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.Paths;
 
-namespace NexusMods.DataModel.Games.ManuallyAdded;
+namespace NexusMods.StandardGameLocators;
 
+/// <summary>
+/// Used to store information about manually added games.
+/// </summary>
 [JsonName("ManuallyAddedGame")]
 public record ManuallyAddedGame : Entity, IGameLocatorResultMetadata
 {

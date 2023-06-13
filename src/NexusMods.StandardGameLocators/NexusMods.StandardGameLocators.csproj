@@ -12,8 +12,4 @@
         <ProjectReference Include="..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
         <ProjectReference Include="..\NexusMods.Paths\NexusMods.Paths.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="ManuallyAdded\" />
-    </ItemGroup>
 </Project>

@@ -2,7 +2,6 @@
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Games.ManuallyAdded;
 using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators;
@@ -36,7 +35,7 @@ public class ManuallyAddedLocator : IGameLocator
     
     public IEnumerable<GameLocatorResult> Find(IGame game)
     {
-        var allGames = _store.Value.GetByPrefix<ManuallyAddedGame>(new Id64(EntityCategory.ManuallyAddedGame, 0));
+        var allGames = _store.Value.GetByPrefix<ManuallyAddedGame>(new IdVariableLength(EntityCategory.ManuallyAddedGame, Array.Empty<byte>()));
         var games = allGames.Where(g => g.GameDomain == game.Domain);
         return games.Select(g => new GameLocatorResult(g.Path, GameStore.ManuallyAdded, g, g.Version));
     }

@@ -63,6 +63,14 @@ public abstract class AGame : IGame
             return new Version(0, 0, 0, 0);
         }
     }
+    
+    /// <summary>
+    /// Clears the internal cache of game installations, so that the next access will re-query the system.
+    /// </summary>
+    public void ResetInstallations()
+    {
+        _installations = null;
+    }
 
     private List<GameInstallation> GetInstallations()
     {

@@ -64,6 +64,7 @@ public class StressTest : AVerb<IGame, AbsolutePath>
 
         await using var gameFolder = _temporaryFileManager.CreateFolder();
         var gameId = _manualLocator.Add(game, new Version(1, 0), gameFolder);
+        game.ResetInstallations();
         var install = game.Installations.First(f => f.Store == GameStore.ManuallyAdded);
 
         try
