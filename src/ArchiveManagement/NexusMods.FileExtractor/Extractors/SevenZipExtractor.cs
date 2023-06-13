@@ -166,7 +166,7 @@ public class SevenZipExtractor : IExtractor
             throw new NotSupportedException($"{nameof(NexusMods.FileExtractor)}'s {nameof(SevenZipExtractor)} only supports x64 processors.");
 
         return OSInformation.MatchPlatform(
-            onWindows: () => @"runtimes\win-x64\native\7z.exe",
+            onWindows: () => "runtimes/win-x64/native/7z.exe",
             onLinux: () => "runtimes/linux-x64/native/7zz",
             onOSX: () => "runtimes/osx-x64/native/7zz"
         );

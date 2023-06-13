@@ -20,7 +20,7 @@ public interface IFileSystem
     /// <param name="knownPathMappings">Mappings for <see cref="KnownPath"/></param>
     /// <param name="convertCrossPlatformPaths">
     /// If true, this will convert
-    /// Windows paths to Linux paths: <c>C:\foo\bar</c> will become
+    /// Windows paths to Linux paths: <c>C:/foo/bar</c> will become
     /// <c>/c/foo/bar</c>. This should not be used by default, and
     /// is only useful for mapping Windows paths into Linux, eg: for Wine.
     /// </param>
