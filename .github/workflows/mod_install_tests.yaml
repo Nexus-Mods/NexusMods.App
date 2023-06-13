@@ -11,7 +11,7 @@ on:
 jobs:
   build:
     
-    name: Test ${{matrix.game.domain}} - ${{ matrix.os }}
+    name: Test ${{matrix.game}} - ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     
     environment: test
@@ -34,7 +34,7 @@ jobs:
           dotnet-version: '7.0.x'
 
       - name: Stress Test
-        run: dotnet run --project ./src/NexusMods.App/NexusMods.App.csproj -- stress-test -g ${{matrix.game.domain}} -o ${{ github.step_summary }}
+        run: dotnet run --project ./src/NexusMods.App/NexusMods.App.csproj -- stress-test -g ${{matrix.game}} -o ${{ github.step_summary }}
 
       - uses: codecov/codecov-action@v3
         with:
