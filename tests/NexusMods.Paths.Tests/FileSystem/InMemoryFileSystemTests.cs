@@ -1,4 +1,3 @@
-using System.Text;
 using FluentAssertions;
 using NexusMods.Paths.TestingHelpers;
 
@@ -29,10 +28,10 @@ public class InMemoryFileSystemTests
         string fileName2,
         string subDirectoryName1)
     {
-        var subDirectory1 = parentDirectory.CombineUnchecked(subDirectoryName1);
+        var subDirectory1 = parentDirectory.Combine(subDirectoryName1);
 
-        var file1 = parentDirectory.CombineUnchecked(fileName1);
-        var file2 = subDirectory1.CombineUnchecked(fileName2);
+        var file1 = parentDirectory.Combine(fileName1);
+        var file2 = subDirectory1.Combine(fileName2);
 
         fs.AddDirectory(parentDirectory);
         fs.AddDirectory(subDirectory1);
@@ -54,12 +53,12 @@ public class InMemoryFileSystemTests
         string subDirectoryName1,
         string subDirectoryName2)
     {
-        var subDirectory1 = parentDirectory.CombineUnchecked(subDirectoryName1);
-        var subDirectory2 = parentDirectory.CombineUnchecked(subDirectoryName2);
+        var subDirectory1 = parentDirectory.Combine(subDirectoryName1);
+        var subDirectory2 = parentDirectory.Combine(subDirectoryName2);
 
-        var file1 = parentDirectory.CombineUnchecked(fileName1);
-        var file2 = subDirectory1.CombineUnchecked(fileName2);
-        var file3 = subDirectory2.CombineUnchecked(fileName3);
+        var file1 = parentDirectory.Combine(fileName1);
+        var file2 = subDirectory1.Combine(fileName2);
+        var file3 = subDirectory2.Combine(fileName3);
 
         fs.AddDirectory(parentDirectory);
         fs.AddDirectory(subDirectory1);
@@ -81,9 +80,9 @@ public class InMemoryFileSystemTests
         string subDirectoryName2,
         string subDirectoryName3)
     {
-        var subDirectory1 = parentDirectory.CombineUnchecked(subDirectoryName1);
-        var subDirectory2 = parentDirectory.CombineUnchecked(subDirectoryName2);
-        var subDirectory3 = subDirectory1.CombineUnchecked(subDirectoryName3);
+        var subDirectory1 = parentDirectory.Combine(subDirectoryName1);
+        var subDirectory2 = parentDirectory.Combine(subDirectoryName2);
+        var subDirectory3 = subDirectory1.Combine(subDirectoryName3);
 
         fs.AddDirectory(parentDirectory);
         fs.AddDirectory(subDirectory1);
@@ -103,9 +102,9 @@ public class InMemoryFileSystemTests
         string subDirectoryName2,
         string subDirectoryName3)
     {
-        var subDirectory1 = parentDirectory.CombineUnchecked(subDirectoryName1);
-        var subDirectory2 = parentDirectory.CombineUnchecked(subDirectoryName2);
-        var subDirectory3 = subDirectory1.CombineUnchecked(subDirectoryName3);
+        var subDirectory1 = parentDirectory.Combine(subDirectoryName1);
+        var subDirectory2 = parentDirectory.Combine(subDirectoryName2);
+        var subDirectory3 = subDirectory1.Combine(subDirectoryName3);
 
         fs.AddDirectory(parentDirectory);
         fs.AddDirectory(subDirectory1);
@@ -125,10 +124,10 @@ public class InMemoryFileSystemTests
         string fileName2,
         string subDirectoryName1)
     {
-        var subDirectory1 = parentDirectory.CombineUnchecked(subDirectoryName1);
+        var subDirectory1 = parentDirectory.Combine(subDirectoryName1);
 
-        var file1 = parentDirectory.CombineUnchecked(fileName1);
-        var file2 = subDirectory1.CombineUnchecked(fileName2);
+        var file1 = parentDirectory.Combine(fileName1);
+        var file2 = subDirectory1.Combine(fileName2);
 
         fs.AddDirectory(parentDirectory);
         fs.AddDirectory(subDirectory1);
@@ -150,12 +149,12 @@ public class InMemoryFileSystemTests
         string subDirectoryName1,
         string subDirectoryName2)
     {
-        var subDirectory1 = parentDirectory.CombineUnchecked(subDirectoryName1);
-        var subDirectory2 = parentDirectory.CombineUnchecked(subDirectoryName2);
+        var subDirectory1 = parentDirectory.Combine(subDirectoryName1);
+        var subDirectory2 = parentDirectory.Combine(subDirectoryName2);
 
-        var file1 = parentDirectory.CombineUnchecked(fileName1);
-        var file2 = subDirectory1.CombineUnchecked(fileName2);
-        var file3 = subDirectory2.CombineUnchecked(fileName3);
+        var file1 = parentDirectory.Combine(fileName1);
+        var file2 = subDirectory1.Combine(fileName2);
+        var file3 = subDirectory2.Combine(fileName3);
 
         fs.AddDirectory(parentDirectory);
         fs.AddDirectory(subDirectory1);
@@ -181,7 +180,7 @@ public class InMemoryFileSystemTests
         AbsolutePath parentDirectory,
         string subDirectoryName)
     {
-        var subDirectory = parentDirectory.CombineUnchecked(subDirectoryName);
+        var subDirectory = parentDirectory.Combine(subDirectoryName);
 
         fs.CreateDirectory(subDirectory);
 
@@ -250,11 +249,11 @@ public class InMemoryFileSystemTests
     {
         fs.CreateDirectory(directory);
 
-        var subDirectory = directory.CombineUnchecked(subDirectoryName);
+        var subDirectory = directory.Combine(subDirectoryName);
         fs.CreateDirectory(subDirectory);
 
-        var file1 = directory.CombineUnchecked(fileName1);
-        var file2 = subDirectory.CombineUnchecked(fileName2);
+        var file1 = directory.Combine(fileName1);
+        var file2 = subDirectory.Combine(fileName2);
 
         fs.AddEmptyFile(file1);
         fs.AddEmptyFile(file2);
@@ -280,7 +279,7 @@ public class InMemoryFileSystemTests
     {
         fs.CreateDirectory(directory);
 
-        var file = directory.CombineUnchecked(fileName);
+        var file = directory.Combine(fileName);
         fs.AddEmptyFile(file);
 
         fs.DirectoryExists(directory).Should().BeTrue();

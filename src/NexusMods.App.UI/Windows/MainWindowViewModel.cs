@@ -7,6 +7,7 @@ using NexusMods.App.UI.Controls.TopBar;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.Overlays;
 using NexusMods.Common;
+using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

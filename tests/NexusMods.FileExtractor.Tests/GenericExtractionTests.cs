@@ -38,9 +38,9 @@ public class GenericExtractionTests
             .Should()
             .BeEquivalentTo(new[]
             {
-                (@"deepFolder\deepFolder2\deepFolder3\deepFolder4\deepFile.txt".ToRelativePath(), (Hash)0xE405A7CFA6ABBDE3),
-                (@"folder1\folder1file.txt".ToRelativePath(), (Hash)0xC9E47B1523162066),
-                (@"rootFile.txt".ToRelativePath(), (Hash)0x33DDBF7930BA002A),
+                ("deepFolder/deepFolder2/deepFolder3/deepFolder4/deepFile.txt".ToRelativePath(), (Hash)0xE405A7CFA6ABBDE3),
+                ("folder1/folder1file.txt".ToRelativePath(), (Hash)0xC9E47B1523162066),
+                ("rootFile.txt".ToRelativePath(), (Hash)0x33DDBF7930BA002A),
             });
     }
 
@@ -56,9 +56,9 @@ public class GenericExtractionTests
             .Should()
             .BeEquivalentTo(new[]
             {
-                (@"deepFolder\deepFolder2\deepFolder3\deepFolder4\deepFile.txt".ToRelativePath(), (Hash)0xE405A7CFA6ABBDE3),
-                (@"folder1\folder1file.txt".ToRelativePath(), (Hash)0xC9E47B1523162066),
-                (@"rootFile.txt".ToRelativePath(), (Hash)0x33DDBF7930BA002A),
+                ("deepFolder/deepFolder2/deepFolder3/deepFolder4/deepFile.txt".ToRelativePath(), (Hash)0xE405A7CFA6ABBDE3),
+                ("folder1/folder1file.txt".ToRelativePath(), (Hash)0xC9E47B1523162066),
+                ("rootFile.txt".ToRelativePath(), (Hash)0x33DDBF7930BA002A),
             });
     }
 
@@ -69,6 +69,6 @@ public class GenericExtractionTests
         (await _extractor.CanExtract(path)).Should().BeTrue();
     }
 
-    public static IEnumerable<object[]> Archives => FileSystem.Shared.GetKnownPath(KnownPath.CurrentDirectory).CombineUnchecked("Resources").EnumerateFiles()
+    public static IEnumerable<object[]> Archives => FileSystem.Shared.GetKnownPath(KnownPath.CurrentDirectory).Combine("Resources").EnumerateFiles()
         .Select(file => new object[] { file });
 }

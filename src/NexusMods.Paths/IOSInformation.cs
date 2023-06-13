@@ -1,9 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
-using static NexusMods.Common.Delegates;
+using static NexusMods.Paths.Delegates;
 
-namespace NexusMods.Common;
+namespace NexusMods.Paths;
 
 /// <summary>
 /// Provides information about the current operating system.
@@ -188,6 +188,12 @@ public interface IOSInformation
     {
         return IsWindows || IsLinux || IsOSX;
     }
+
+    /// <summary>
+    /// Returns <c>true</c> if the current platform is Unix-based.
+    /// </summary>
+    /// <returns></returns>
+    bool IsUnix() => IsLinux || IsOSX;
 
     /// <summary>
     /// Guard statement for platform support.

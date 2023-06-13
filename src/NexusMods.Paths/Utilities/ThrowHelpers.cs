@@ -11,7 +11,7 @@ namespace NexusMods.Paths.Utilities;
 ///    (from both a size and performance perspective) to delegate the
 ///    throwing of exceptions to a separate class.
 /// </remarks>
-public class ThrowHelpers
+public static class ThrowHelpers
 {
     /// <summary>
     /// Throws <see cref="Utilities.PathException"/>(s).

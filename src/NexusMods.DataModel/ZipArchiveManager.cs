@@ -49,7 +49,7 @@ public class ZipArchiveManager : IArchiveManager
         var guid = Guid.NewGuid();
         var id = guid.ToString();
         var distinct = backups.DistinctBy(d => d.Item2).ToArray();
-        var outputPath = _archiveLocations.First().CombineUnchecked(id).AppendExtension(KnownExtensions.Tmp);
+        var outputPath = _archiveLocations.First().Combine(id).AppendExtension(KnownExtensions.Tmp);
         {
             await using var archiveStream = outputPath.Create();
             using var builder = new ZipArchive(archiveStream, ZipArchiveMode.Create, true, System.Text.Encoding.UTF8);
@@ -180,7 +180,7 @@ public class ZipArchiveManager : IArchiveManager
         {
             foreach (var location in _archiveLocations)
             {
-                var path = location.CombineUnchecked(entry.File);
+                var path = location.Combine(entry.File);
                 if (!path.FileExists) continue;
 
                 archivePath = path;

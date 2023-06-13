@@ -17,7 +17,7 @@ public static class FomodTestHelpers
     {
         var entry = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory);
         var relativePath = $"TestCasesPacked/{testCase}.fomod".ToRelativePath();
-        return entry.CombineUnchecked(relativePath);
+        return entry.Combine(relativePath);
     }
 
     /// <summary>
@@ -29,7 +29,7 @@ public static class FomodTestHelpers
     {
         var entry = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory);
         var relativePath = $"TestCases/{testCase}/{FomodConstants.XmlConfigRelativePath}".ToRelativePath();
-        return entry.CombineUnchecked(relativePath);
+        return entry.Combine(relativePath);
     }
 
     /// <summary>

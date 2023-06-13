@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
 
-namespace NexusMods.Common;
+namespace NexusMods.Paths;
 
 /// <summary>
 /// Useful delegates.

@@ -12,7 +12,7 @@ public class PathExpansionTests
     {
         _fileSystem = new InMemoryFileSystem();
     }
-    
+
     [Theory]
     [InlineData("{EntryFolder}/FluffyKitten.png", KnownPath.EntryDirectory, "FluffyKitten.png")]
     [InlineData("{CurrentDirectory}/AdorableWhiskers.png", KnownPath.CurrentDirectory, "AdorableWhiskers.png")]
@@ -21,7 +21,7 @@ public class PathExpansionTests
     public void CanExpandKnownFolder(string inputPath, KnownPath knownPath, string expectedPath)
     {
         var expandedPath = _fileSystem.ExpandKnownFoldersPath(inputPath);
-        var expectedFullPath = Path.Combine(_fileSystem.GetKnownPath(knownPath).GetFullPath(), expectedPath);
+        var expectedFullPath = _fileSystem.FromUnsanitizedFullPath(Path.Combine(_fileSystem.GetKnownPath(knownPath).GetFullPath(), expectedPath));
 
         expandedPath.Should().Be(expectedFullPath);
     }
@@ -29,20 +29,16 @@ public class PathExpansionTests
     [Fact]
     public void CanExpandPath_WithNoPlaceholder()
     {
-        var inputPath = "AdorableMeow.png";
+        const string inputPath = "AdorableMeow.png";
         var expandedPath = _fileSystem.ExpandKnownFoldersPath(inputPath);
-        var expectedPath = Path.GetFullPath(inputPath);
-
-        Assert.Equal(expectedPath, expandedPath);
+        expandedPath.GetFullPath().Should().Be(inputPath);
     }
 
     [Fact]
     public void CanExpandPath_WithInvalidPlaceholder()
     {
-        var inputPath = "{InvalidPlaceholder}/AdorableMeow.png";
+        const string inputPath = "{InvalidPlaceholder}/AdorableMeow.png";
         var expandedPath = _fileSystem.ExpandKnownFoldersPath(inputPath);
-        var expectedPath = Path.GetFullPath(inputPath);
-
-        Assert.Equal(expectedPath, expandedPath);
+        expandedPath.GetFullPath().Should().Be(inputPath);
     }
 }

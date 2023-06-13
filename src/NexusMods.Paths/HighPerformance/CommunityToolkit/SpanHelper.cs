@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -386,6 +387,28 @@ internal static class SpanHelper
     [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes", Justification = "Using var will confuse the compiler and produce a nullability error.")]
     public static ref T DangerousGetReferenceAt<T>(this ReadOnlySpan<T> span, int i)
     {
+        Debug.Assert(i < span.Length, $"Unable to get dangerous reference at [{i}] because it's out of bounds at '{span.Length}'");
+
+        ref T r0 = ref MemoryMarshal.GetReference(span);
+        ref T ri = ref Unsafe.Add(ref r0, (nint)(uint)i);
+
+        return ref ri;
+    }
+
+    /// <summary>
+    /// Returns a reference to an element at a specified index within a given <see cref="Span{T}"/>, with no bounds checks.
+    /// </summary>
+    /// <typeparam name="T">The type of elements in the input <see cref="Span{T}"/> instance.</typeparam>
+    /// <param name="span">The input <see cref="Span{T}"/> instance.</param>
+    /// <param name="i">The index of the element to retrieve within <paramref name="span"/>.</param>
+    /// <returns>A reference to the element within <paramref name="span"/> at the index specified by <paramref name="i"/>.</returns>
+    /// <remarks>This method doesn't do any bounds checks, therefore it is responsibility of the caller to ensure the <paramref name="i"/> parameter is valid.</remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [SuppressMessage("ReSharper", "SuggestVarOrType_SimpleTypes", Justification = "Using var will confuse the compiler and produce a nullability error.")]
+    public static ref T DangerousGetReferenceAt<T>(this Span<T> span, int i)
+    {
+        Debug.Assert(i < span.Length, $"Unable to get dangerous reference at [{i}] because it's out of bounds at '{span.Length}'");
+
         ref T r0 = ref MemoryMarshal.GetReference(span);
         ref T ri = ref Unsafe.Add(ref r0, (nint)(uint)i);
 

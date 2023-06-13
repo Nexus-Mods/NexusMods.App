@@ -17,15 +17,15 @@ namespace NexusMods.Games.RedEngine.ModInstallers;
 public class AppearancePreset : IModInstaller
 {
     private static readonly RelativePath[] Paths = {
-        @"bin\x64\plugins\cyber_engine_tweaks\mods\AppearanceChangeUnlocker\character-preset\female".ToRelativePath(),
-        @"bin\x64\plugins\cyber_engine_tweaks\mods\AppearanceChangeUnlocker\character-preset\male".ToRelativePath()
+        "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/female".ToRelativePath(),
+        "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/male".ToRelativePath()
     };
 
     public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
         if (!installation.Is<Cyberpunk2077>()) return Priority.None;
 
-        return archiveFiles.All(f => Helpers.IgnoreExtensions.Contains(f.Key.Extension) || 
+        return archiveFiles.All(f => Helpers.IgnoreExtensions.Contains(f.Key.Extension) ||
                                      (f.Value.FileTypes.Contains(FileType.Cyberpunk2077AppearancePreset) &&
                                       f.Key.Extension == KnownExtensions.Preset))
             ? Priority.Normal

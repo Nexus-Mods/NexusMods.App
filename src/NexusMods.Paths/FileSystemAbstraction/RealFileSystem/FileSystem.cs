@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Paths;
 
@@ -42,7 +43,8 @@ public partial class FileSystem : BaseFileSystem
     internal FileSystem(
         Dictionary<AbsolutePath, AbsolutePath> pathMappings,
         Dictionary<KnownPath, AbsolutePath> knownPathMappings,
-        bool convertCrossPlatformPaths) : base(pathMappings, knownPathMappings, convertCrossPlatformPaths) { }
+        bool convertCrossPlatformPaths)
+        : base(OSInformation.Shared, pathMappings, knownPathMappings, convertCrossPlatformPaths) { }
 
     /// <inheritdoc/>
     public override IFileSystem CreateOverlayFileSystem(
@@ -65,12 +67,12 @@ public partial class FileSystem : BaseFileSystem
     protected override IEnumerable<AbsolutePath> InternalEnumerateFiles(AbsolutePath directory, string pattern, bool recursive)
     {
         var options = GetSearchOptions(recursive);
-        using var enumerator = new FilesEnumerator(directory.GetFullPath(), pattern, options);
+        using var enumerator = new FilesEnumerator(directory.GetFullPath(), pattern, options, OS);
         while (enumerator.MoveNext())
         {
             var item = enumerator.Current;
             if (item.IsDirectory) continue;
-            yield return FromDirectoryAndFileName(enumerator.CurrentDirectory, item.FileName);
+            yield return AbsolutePath.FromSanitizedFullPath(PathHelpers.JoinParts(enumerator.CurrentDirectory, item.FileName, OS), this);
         }
     }
 
@@ -78,11 +80,11 @@ public partial class FileSystem : BaseFileSystem
     protected override IEnumerable<AbsolutePath> InternalEnumerateDirectories(AbsolutePath directory, string pattern, bool recursive)
     {
         var options = GetSearchOptions(recursive);
-        var enumerator = new DirectoriesEnumerator(directory.GetFullPath(), "*", options);
+        var enumerator = new DirectoriesEnumerator(directory.GetFullPath(), "*", options, OS);
         while (enumerator.MoveNext())
         {
             var item = enumerator.Current;
-            yield return FromFullPath(AbsolutePath.JoinPathComponents(enumerator.CurrentDirectory, item));
+            yield return AbsolutePath.FromSanitizedFullPath(PathHelpers.JoinParts(enumerator.CurrentDirectory, item, OS), this);
         }
     }
 
@@ -90,13 +92,13 @@ public partial class FileSystem : BaseFileSystem
     protected override IEnumerable<IFileEntry> InternalEnumerateFileEntries(AbsolutePath directory, string pattern, bool recursive)
     {
         var options = GetSearchOptions(recursive);
-        var enumerator = new FilesEnumeratorEx(directory.GetFullPath(), pattern, options);
+        var enumerator = new FilesEnumeratorEx(directory.GetFullPath(), pattern, options, OS);
 
         while (enumerator.MoveNext())
         {
             var item = enumerator.Current;
             if (item.IsDirectory) continue;
-            yield return new FileEntry(this, FromDirectoryAndFileName(enumerator.CurrentDirectory, item.FileName));
+            yield return new FileEntry(this, AbsolutePath.FromSanitizedFullPath(PathHelpers.JoinParts(enumerator.CurrentDirectory, item.FileName, OS), this));
         }
     }
 
@@ -130,7 +132,7 @@ public partial class FileSystem : BaseFileSystem
 
         foreach (var subDirectories in Directory.GetDirectories(fullPath))
         {
-            InternalDeleteDirectory(FromFullPath(subDirectories), recursive);
+            InternalDeleteDirectory(FromUnsanitizedFullPath(subDirectories), recursive);
         }
 
         try

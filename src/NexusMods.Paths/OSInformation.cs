@@ -1,10 +1,10 @@
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 
-namespace NexusMods.Common;
+namespace NexusMods.Paths;
 
 /// <summary>
-///
+/// Implementation of <see cref="IOSInformation"/>.
 /// </summary>
 [PublicAPI]
 public class OSInformation : IOSInformation
@@ -14,6 +14,16 @@ public class OSInformation : IOSInformation
     /// runtime information.
     /// </summary>
     public static readonly IOSInformation Shared = FromCurrentRuntime();
+
+    /// <summary>
+    /// Shared instance to fake a Windows installation.
+    /// </summary>
+    public static readonly IOSInformation FakeWindows = new OSInformation(OSPlatform.Windows);
+
+    /// <summary>
+    /// Shared instance to fake a Unix-based installation.
+    /// </summary>
+    public static readonly IOSInformation FakeUnix = new OSInformation(OSPlatform.Linux);
 
     /// <inheritdoc/>
     public OSPlatform Platform { get; }
@@ -45,4 +55,7 @@ public class OSInformation : IOSInformation
             return new OSInformation(OSPlatform.OSX);
         throw new PlatformNotSupportedException($"The current platform is not supported: {RuntimeInformation.RuntimeIdentifier}");
     }
+
+    /// <inheritdoc/>
+    public override string ToString() => Platform.ToString();
 }
