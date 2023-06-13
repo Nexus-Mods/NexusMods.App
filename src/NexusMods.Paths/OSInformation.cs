@@ -15,6 +15,16 @@ public class OSInformation : IOSInformation
     /// </summary>
     public static readonly IOSInformation Shared = FromCurrentRuntime();
 
+    /// <summary>
+    /// Shared instance to fake a Windows installation.
+    /// </summary>
+    public static readonly IOSInformation FakeWindows = new OSInformation(OSPlatform.Windows);
+
+    /// <summary>
+    /// Shared instance to fake a Unix-based installation.
+    /// </summary>
+    public static readonly IOSInformation FakeUnix = new OSInformation(OSPlatform.Linux);
+
     /// <inheritdoc/>
     public OSPlatform Platform { get; }
 

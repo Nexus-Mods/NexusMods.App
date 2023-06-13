@@ -56,7 +56,15 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     /// <summary>
     /// Gets the parent directory, i.e. navigates one folder up.
     /// </summary>
-    public AbsolutePath Parent => new(Directory, string.Empty, FileSystem);
+    public AbsolutePath Parent
+    {
+        get
+        {
+            var directory = PathHelpers.GetDirectoryName(Directory, FileSystem.OS);
+            var fileName = PathHelpers.GetFileName(Directory, FileSystem.OS);
+            return new AbsolutePath(directory.ToString(), fileName.ToString(), FileSystem);
+        }
+    }
 
     private AbsolutePath(string directory, string fileName, IFileSystem fileSystem)
     {

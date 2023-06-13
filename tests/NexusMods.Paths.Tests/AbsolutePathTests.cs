@@ -55,17 +55,19 @@ public class AbsolutePathTests
     }
 
     [Theory]
-    [InlineData(true, "/", "/")]
-    [InlineData(true, "/foo", "/")]
-    [InlineData(true, "/foo/bar", "/foo")]
-    [InlineData(false, "C:/", "C:/")]
-    [InlineData(false, "C:/foo", "C:/")]
-    [InlineData(false, "C:/foo/bar", "C:/foo")]
-    public void Test_Parent(bool isUnix, string input, string expectedParent)
+    [InlineData(true, "/", "/", "", "/")]
+    [InlineData(true, "/foo", "/", "", "/")]
+    [InlineData(true, "/foo/bar", "/", "foo", "/foo")]
+    [InlineData(false, "C:/", "C:/", "", "C:/")]
+    [InlineData(false, "C:/foo", "C:/", "", "C:/")]
+    [InlineData(false, "C:/foo/bar", "C:/", "foo", "C:/foo")]
+    public void Test_Parent(bool isUnix, string input, string expectedDirectory, string expectedFileName, string expectedFullPath)
     {
         var path = CreatePath(input, isUnix);
         var actualParent = path.Parent;
-        actualParent.GetFullPath().Should().Be(expectedParent);
+        actualParent.Directory.Should().Be(expectedDirectory);
+        actualParent.FileName.Should().Be(expectedFileName);
+        actualParent.GetFullPath().Should().Be(expectedFullPath);
     }
 
     [Theory]

@@ -149,7 +149,7 @@ public partial class InMemoryFileSystem : BaseFileSystem
         Dictionary<AbsolutePath, AbsolutePath> pathMappings,
         Dictionary<KnownPath, AbsolutePath> knownPathMappings,
         bool convertCrossPlatformPaths = false)
-        => new InMemoryFileSystem(pathMappings, knownPathMappings, convertCrossPlatformPaths);
+        => new InMemoryFileSystem(pathMappings, knownPathMappings, convertCrossPlatformPaths, OS);
 
     /// <inheritdoc/>
     protected override IFileEntry InternalGetFileEntry(AbsolutePath path)

@@ -34,7 +34,7 @@ public static class Customizations
         fixture.Customize<AbsolutePath>(composer =>
             composer.FromFactory<IFileSystem, string>((fs, path) =>
             {
-                var fullPath = OperatingSystem.IsWindows()
+                var fullPath = OSInformation.Shared.IsWindows
                     ? $"C:/{path}"
                     : $"/{path}";
                 return fs.FromUnsanitizedFullPath(fullPath);

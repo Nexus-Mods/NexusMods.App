@@ -4,6 +4,7 @@ using System.Text;
 using JetBrains.Annotations;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.HighPerformance.CommunityToolkit;
+using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Paths;
 
@@ -75,31 +76,30 @@ public abstract class BaseFileSystem : IFileSystem
         // NOTE(erri120): This method is required for
         // Windows (Wine) -> Linux (native) path mappings to work correctly.
         // This works on the assumption that the input is a fully rooted
-        // Windows-drive path, eg: "C:\\foo\\bar" or "D:\\baz.txt" and
+        // Windows-drive path, eg: "C:/foo/bar" or "D:/baz.txt" and
         // converts that input into a fully rooted Linux path, where
         // the first path component after the root directory is the
-        // drive letter, eg: "C:\\foo\\bar" -> "/c/foo/bar"
+        // drive letter, eg: "C:/foo/bar" -> "/c/foo/bar"
         // This enables path mappings to map "/c" to something else, like
         // "/opt/wine/drive_c"
 
-        if (!OperatingSystem.IsLinux()) return input;
+        if (!OS.IsLinux) return input;
         if (!_convertCrossPlatformPaths) return input;
-        if (input.Length < 3) return input;
+
         var inputSpan = input.AsSpan();
-        if (inputSpan.DangerousGetReferenceAt(1) != ':') return input;
+        if (PathHelpers.GetRootLength(inputSpan, OSInformation.FakeWindows) != 3) return input;
 
         var result = string.Create(
             input.Length,
             input,
             (span, s) =>
             {
-                // C:\foo\bar -> /c/foo/bar
+                // C:/foo/bar -> /c/foo/bar
                 var inputSpan = s.AsSpan();
 
                 span[0] = '/';
                 span[1] = char.ToLower(inputSpan.DangerousGetReferenceAt(0));
                 inputSpan.SliceFast(2).CopyTo(span.SliceFast(2));
-                span.Replace('\\', '/', span);
             });
 
         return result;
@@ -222,23 +222,21 @@ public abstract class BaseFileSystem : IFileSystem
     /// <inheritdoc/>
     public IEnumerable<AbsolutePath> EnumerateRootDirectories()
     {
-        if (!OperatingSystem.IsLinux() && !OperatingSystem.IsWindows())
-            throw new PlatformNotSupportedException();
-
-        if (OperatingSystem.IsLinux())
-            yield return FromUnsanitizedFullPath("/");
+        if (OS.IsUnix())
+        {
+            yield return AbsolutePath.FromSanitizedFullPath("/", this);
+        }
 
         // go through the valid drive letters on Windows
         // or on Linux with cross platform path conversion enabled, in case
         // the current file system is an overlay file system for Wine
-        if (OperatingSystem.IsWindows() || (OperatingSystem.IsLinux() && _convertCrossPlatformPaths))
+        if (OS.IsWindows || (OS.IsLinux && _convertCrossPlatformPaths))
         {
             for (var i = (uint)'A'; i <= 'Z'; i++)
             {
                 var driveLetter = (char)i;
-                var path = FromUnsanitizedFullPath($"{driveLetter}:\\");
-                if (DirectoryExists(path))
-                    yield return path;
+                var path = FromUnsanitizedFullPath($"{driveLetter}:/");
+                if (DirectoryExists(path)) yield return path;
             }
         }
     }

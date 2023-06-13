@@ -43,7 +43,8 @@ public partial class FileSystem : BaseFileSystem
     internal FileSystem(
         Dictionary<AbsolutePath, AbsolutePath> pathMappings,
         Dictionary<KnownPath, AbsolutePath> knownPathMappings,
-        bool convertCrossPlatformPaths) : base(OSInformation.Shared, pathMappings, knownPathMappings, convertCrossPlatformPaths) { }
+        bool convertCrossPlatformPaths)
+        : base(OSInformation.Shared, pathMappings, knownPathMappings, convertCrossPlatformPaths) { }
 
     /// <inheritdoc/>
     public override IFileSystem CreateOverlayFileSystem(

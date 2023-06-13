@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
 using System.Text;
 using FluentAssertions;
 using NexusMods.Paths.Utilities;
@@ -10,7 +9,7 @@ public class PathHelperTests
 {
     private static IOSInformation CreateOSInformation(bool isUnix)
     {
-        return isUnix ? new OSInformation(OSPlatform.Linux) : new OSInformation(OSPlatform.Windows);
+        return isUnix ? OSInformation.FakeUnix : OSInformation.FakeWindows;
     }
 
     [Theory]
