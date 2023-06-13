@@ -5,7 +5,7 @@ namespace NexusMods.Paths;
 /// <summary>
 /// Stores the path for an individual game.
 /// </summary>
-public struct GamePath : IPath, IEquatable<GamePath>
+public readonly struct GamePath : IPath, IEquatable<GamePath>
 {
     /// <summary>
     /// The path to this instance.
@@ -53,7 +53,7 @@ public struct GamePath : IPath, IEquatable<GamePath>
     public override int GetHashCode() => Path.GetHashCode() ^ (int)Type;
 
     /// <inheritdoc />
-    public override string ToString() => "{" + Type + "}\\" + Path;
+    public override string ToString() => "{" + Type + "}/" + Path;
 
     /// <summary>
     /// Joins the current absolute path with a relative path.

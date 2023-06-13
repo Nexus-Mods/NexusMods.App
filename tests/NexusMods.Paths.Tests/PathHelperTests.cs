@@ -84,7 +84,7 @@ public class PathHelperTests
     [InlineData(false, "C:/foo", "C:/FOO", true)]
     public void Test_Equals(bool isUnix, string left, string right, bool expected)
     {
-        var actual = PathHelpers.Equals(left, right, CreateOSInformation(isUnix));
+        var actual = PathHelpers.PathEquals(left, right, CreateOSInformation(isUnix));
         actual.Should().Be(expected);
     }
 

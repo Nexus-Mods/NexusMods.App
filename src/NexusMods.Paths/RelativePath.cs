@@ -155,7 +155,7 @@ public readonly struct RelativePath : IEquatable<RelativePath>, IPath, IComparab
     #region Equals & GetHashCode
 
     /// <inheritdoc />
-    public bool Equals(RelativePath other) => PathHelpers.Equals(Path, other.Path);
+    public bool Equals(RelativePath other) => PathHelpers.PathEquals(Path, other.Path, OS);
 
     /// <inheritdoc />
     public override bool Equals(object? obj)

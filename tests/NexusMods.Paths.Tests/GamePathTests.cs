@@ -15,10 +15,10 @@ public class GamePathTests
     [Fact]
     public void CanComparePaths()
     {
-        var pathA = new GamePath(GameFolderType.Game, "/foo/bar.zip");
-        var pathB = new GamePath(GameFolderType.Game, "/Foo/bar.zip");
-        var pathC = new GamePath(GameFolderType.Preferences, "/foo/bar.zip");
-        var pathD = new GamePath(GameFolderType.Game, "/foo/bar.pex");
+        var pathA = new GamePath(GameFolderType.Game, "foo/bar.zip");
+        var pathB = new GamePath(GameFolderType.Game, "Foo/bar.zip");
+        var pathC = new GamePath(GameFolderType.Preferences, "foo/bar.zip");
+        var pathD = new GamePath(GameFolderType.Game, "foo/bar.pex");
 
         Assert.Equal(pathA, pathB);
         Assert.NotEqual(pathA, pathC);

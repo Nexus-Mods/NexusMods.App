@@ -142,7 +142,7 @@ public static class PathHelpers
     /// Equality of paths is handled case-insensitive, meaning "/foo" is equal to "/FOO".
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool Equals(ReadOnlySpan<char> left, ReadOnlySpan<char> right, IOSInformation os)
+    public static bool PathEquals(ReadOnlySpan<char> left, ReadOnlySpan<char> right, IOSInformation os)
     {
         DebugAssertIsSanitized(left, os);
         DebugAssertIsSanitized(right, os);
