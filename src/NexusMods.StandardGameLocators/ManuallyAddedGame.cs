@@ -11,11 +11,21 @@ namespace NexusMods.StandardGameLocators;
 [JsonName("ManuallyAddedGame")]
 public record ManuallyAddedGame : Entity, IGameLocatorResultMetadata
 {
+    /// <inheritdoc />
     public override EntityCategory Category => EntityCategory.ManuallyAddedGame;
 
+    /// <summary>
+    /// The game domain this game install belongs to.
+    /// </summary>
     public required GameDomain GameDomain { get; init; }
 
+    /// <summary>
+    /// The version of the game.
+    /// </summary>
     public required Version Version { get; init; }
 
+    /// <summary>
+    /// The path to the game install.
+    /// </summary>
     public required AbsolutePath Path { get; init; }
 }

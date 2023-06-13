@@ -5,11 +5,17 @@ using NexusMods.Paths.Extensions;
 
 namespace NexusMods.DataModel.JsonConverters;
 
-/// <inheritdoc />
+/// <summary>
+/// Json converter for <see cref="AbsolutePath"/>.
+/// </summary>
 public class AbsolutePathConverter : JsonConverter<AbsolutePath>
 {
     private readonly IFileSystem _fileSystem;
 
+    /// <summary>
+    /// DI Constructor
+    /// </summary>
+    /// <param name="fileSystem"></param>
     public AbsolutePathConverter(IFileSystem fileSystem)
     {
         _fileSystem = fileSystem;
