@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI;
-using NexusMods.CLI.Verbs;
-using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
@@ -14,27 +12,27 @@ namespace NexusMods.UI.Tests;
 public class AVmTest<TVm> : AUiTest, IAsyncLifetime
 where TVm : IViewModelInterface
 {
-    protected AbsolutePath DataZipLzma => FileSystem.GetKnownPath(KnownPath.EntryDirectory).CombineUnchecked(@"Resources\data_zip_lzma.zip");
-    protected AbsolutePath Data7ZLzma2 => FileSystem.GetKnownPath(KnownPath.EntryDirectory).CombineUnchecked(@"Resources\data_7zip_lzma2.7z");
+    protected AbsolutePath DataZipLzma => FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Resources/data_zip_lzma.zip");
+    protected AbsolutePath Data7ZLzma2 => FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Resources/data_7zip_lzma2.7z");
 
     protected AbsolutePath DataTest =>
-        FileSystem.GetKnownPath(KnownPath.EntryDirectory).CombineUnchecked(@"Resources\data.test");
-    
+        FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Resources/data.test");
+
     private VMWrapper<TVm> _vmWrapper { get; }
     protected StubbedGame Game { get; }
     protected IFileSystem FileSystem { get; }
     protected GameInstallation Install { get; }
     protected LoadoutManager LoadoutManager { get; }
     protected LoadoutRegistry LoadoutRegistry { get; }
-    
+
     protected IDataStore DataStore { get; }
-    
+
     protected IArchiveAnalyzer ArchiveAnalyzer { get; }
     protected IArchiveInstaller ArchiveInstaller { get; }
 
 
     private LoadoutId? _loadoutId;
-    protected LoadoutMarker Loadout => _loadoutId != null ? 
+    protected LoadoutMarker Loadout => _loadoutId != null ?
         new LoadoutMarker(LoadoutRegistry, _loadoutId.Value) :
         throw new InvalidOperationException("LoadoutId is null");
 
