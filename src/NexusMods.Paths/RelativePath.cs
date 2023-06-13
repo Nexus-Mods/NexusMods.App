@@ -145,7 +145,7 @@ public readonly struct RelativePath : IEquatable<RelativePath>, IPath, IComparab
         var res = PathHelpers.RelativeTo(Path, other, OS);
         if (!res.IsEmpty) return new RelativePath(res.ToString());
 
-        ThrowHelpers.PathException("Can't create path relative to paths that aren't in the same folder");
+        ThrowHelpers.PathException($"Path '{Path}' is not relative to '{other}'");
         return default;
     }
 

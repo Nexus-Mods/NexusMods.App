@@ -79,7 +79,7 @@ public class SkyrimInstaller : IModInstaller
     {
         var prefix = FindFolderPrefixForExtract(archiveFiles);
         var modFiles = archiveFiles
-            .Where(kv => kv.Key.InFolder(prefix))
+            .Where(kv => prefix == RelativePath.Empty || kv.Key.InFolder(prefix))
             .Select(kv =>
             {
                 var (path, file) = kv;
@@ -114,12 +114,15 @@ public class SkyrimInstaller : IModInstaller
         {
             var (path, _) = kv;
 
-            // Check in subfolder first
+            // foo/bar/baz
+            // 1) child: foo/bar/baz -> bar/baz
+            // 2) top-parent: foo/bar/baz -> foo
+
             // Check in subfolder first
             if (path.Depth != 0)
             {
                 var child = path.DropFirst(numDirectories: 1);
-                if (AssertFolderForExtract(child)) return child.RelativeTo(path);
+                if (AssertFolderForExtract(child)) return path.TopParent;
             }
 
             if (AssertFolderForExtract(path)) return RelativePath.Empty;
