@@ -4,11 +4,19 @@ using NexusMods.DataModel.Loadouts.Markers;
 namespace NexusMods.CLI.Verbs;
 
 // ReSharper disable once ClassNeverInstantiated.Global
+/// <summary>
+/// List all the mods in a given managed game
+/// </summary>
 public class ListMods : AVerb<LoadoutMarker>
 {
     private readonly IRenderer _renderer;
+    /// <summary>
+    /// DI constructor
+    /// </summary>
+    /// <param name="configurator"></param>
     public ListMods(Configurator configurator) => _renderer = configurator.Renderer;
 
+    /// <inheritdoc />
     public static VerbDefinition Definition => new("list-mods",
         "List all the mods in a given managed game",
         new OptionDefinition[]
@@ -16,6 +24,7 @@ public class ListMods : AVerb<LoadoutMarker>
             new OptionDefinition<LoadoutMarker>("l", "loadout", "The managed game to access")
         });
 
+    /// <inheritdoc />
     public async Task<int> Run(LoadoutMarker loadout, CancellationToken token)
     {
         var rows = new List<object[]>();

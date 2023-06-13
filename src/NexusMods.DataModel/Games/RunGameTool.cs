@@ -7,7 +7,7 @@ namespace NexusMods.DataModel.Games;
 
 
 /// <summary>
-/// Marker interface for RunGameTool<T>
+/// Marker interface for RunGameTool
 /// </summary>
 public interface IRunGameTool : ITool
 {

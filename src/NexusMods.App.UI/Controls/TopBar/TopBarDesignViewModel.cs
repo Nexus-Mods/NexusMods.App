@@ -39,8 +39,7 @@ public class TopBarDesignViewModel : AViewModel<ITopBarViewModel>, ITopBarViewMo
 
     public TopBarDesignViewModel()
     {
-        var assets = AvaloniaLocator.Current.GetRequiredService<IAssetLoader>();
-        Avatar = new Bitmap(assets.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")));
+        Avatar = new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")));
         IsLoggedIn = false;
         IsPremium = true;
 

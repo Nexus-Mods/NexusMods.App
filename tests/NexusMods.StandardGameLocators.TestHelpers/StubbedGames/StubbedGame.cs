@@ -41,7 +41,7 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
 
     public override GamePath GetPrimaryFile(GameStore store) => new(GameFolderType.Game, "");
 
-    public IEnumerable<GameInstallation> Installations
+    public override IEnumerable<GameInstallation> Installations
     {
         get
         {
@@ -60,16 +60,16 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
         }
     }
 
-    public IEnumerable<AModFile> GetGameFiles(GameInstallation installation, IDataStore store)
+    public override IEnumerable<AModFile> GetGameFiles(GameInstallation installation, IDataStore store)
     {
         return Array.Empty<AModFile>();
     }
 
-    public IStreamFactory Icon =>
+    public override IStreamFactory Icon =>
         new EmbededResourceStreamFactory<StubbedGame>(
-            "NexusMods.StandardGameLocators.TestHelpers.Resources.StubbedGame.png");
+            "NexusMods.StandardGameLocators.TestHelpers.Resources.question_mark_game.png");
 
-    public IStreamFactory GameImage => throw new NotImplementedException("No game image for stubbed game.");
+    public override IStreamFactory GameImage => throw new NotImplementedException("No game image for stubbed game.");
     protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(IFileSystem fileSystem, IGameLocator locator, GameLocatorResult installation)
     {
         return new[]

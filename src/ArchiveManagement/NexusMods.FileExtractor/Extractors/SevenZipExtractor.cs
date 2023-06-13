@@ -45,6 +45,7 @@ public class SevenZipExtractor : IExtractor
     /// <param name="logger">Provides logger support. Use <see cref="NullLogger.Instance"/> if you don't want logging.</param>
     /// <param name="fileManager">Manager that can be used to create temporary folders.</param>
     /// <param name="limiter">Limits CPU core usage depending on our use case.</param>
+    /// <param name="fileSystem">Filesystem to use when constructing and using paths</param>
     public SevenZipExtractor(ILogger<SevenZipExtractor> logger, TemporaryFileManager fileManager, IResource<IExtractor, Size> limiter, IFileSystem fileSystem)
     {
         _logger = logger;

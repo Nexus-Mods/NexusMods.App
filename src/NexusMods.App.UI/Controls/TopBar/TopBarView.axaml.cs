@@ -38,10 +38,9 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
                 .BindToUi(this, view => view.Premium.IsVisible)
                 .DisposeWith(d);
 
-            var avatar = UserButton.FindDescendantOfType<Image>();
             ViewModel.WhenAnyValue(vm => vm.Avatar)
-                .Select(e => e)
-                .BindToUi(avatar, v => v.Source)
+                .WhereNotNull()
+                .BindToUi(AvatarImage, v => v.Source)
                 .DisposeWith(d);
             
         });

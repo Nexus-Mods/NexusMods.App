@@ -29,11 +29,16 @@ public struct ConfigurationPath : IEquatable<ConfigurationPath>
     /// </summary>
     public string RawPath { get; set; }
 
-    public IFileSystem FileSystem { get;}
+    /// <summary>
+    /// The filesystem used by this path when it constructs absolute paths.
+    /// </summary>
+    public IFileSystem FileSystem { get; }
 
     /// <summary>
     /// Creates a new configuration path.
     /// </summary>
+    /// <param name="rawPath">Raw path which can include expansion monikers.</param>
+    /// <param name="fileSystem">The filesystem to use when converting to AbsolutePaths</param>
     public ConfigurationPath(string rawPath, IFileSystem fileSystem)
     {
         RawPath = rawPath;
@@ -41,8 +46,9 @@ public struct ConfigurationPath : IEquatable<ConfigurationPath>
     }
 
     /// <summary>
-    /// Creates a new configuration path.
+    /// Creates a new configuration path, with the default global filesystem
     /// </summary>
+    /// <param name="path"></param>
     public ConfigurationPath(AbsolutePath path)
     {
         RawPath = path.GetFullPath();

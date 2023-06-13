@@ -5,6 +5,9 @@ using SQLitePCL;
 
 namespace NexusMods.DataModel.Extensions;
 
+/// <summary>
+/// Extensions for SqliteDataReader
+/// </summary>
 public static class SqliteDataReaderExtensions
 {
     /// <summary>
@@ -25,7 +28,6 @@ public static class SqliteDataReaderExtensions
     /// data to determine the entity type
     /// </summary>
     /// <param name="reader"></param>
-    /// <param name="ent"></param>
     /// <param name="column"></param>
     /// <returns></returns>
     public static IId GetId(this SqliteDataReader reader, int column)

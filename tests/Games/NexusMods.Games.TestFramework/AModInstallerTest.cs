@@ -23,9 +23,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     where TModInstaller : IModInstaller
 {
     protected readonly TModInstaller ModInstaller;
-
-    private static ulong nextHash = ulong.MaxValue;
-
+    
     /// <summary>
     /// Constructor.
     /// </summary>

@@ -48,6 +48,8 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
     /// Allows you to subscribe to newly incoming IPC messages.
     /// </summary>
     public IObservable<(string Queue, byte[] Message)> Messages => _subject;
+
+    /// <inheritdoc />
     public IObservable<IChangeSet<IInterprocessJob, JobId>> Jobs => _jobs.Connect();
 
     /// <summary>
@@ -55,6 +57,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
     /// </summary>
     /// <param name="logger">Allows for logging of messages.</param>
     /// <param name="settings">Datamodel settings.</param>
+    /// <param name="jsonSettings">JSON serializer settings</param>
     public SqliteIPC(ILogger<SqliteIPC> logger, IDataModelSettings settings, JsonSerializerOptions jsonSettings)
     {
         _logger = logger;
@@ -132,7 +135,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
             {
                 Process.GetProcessById((int)job.ProcessId.Value);
             }
-            catch (ArgumentException _)
+            catch (ArgumentException)
             {
                 _logger.LogInformation("Removing job {JobId} because the process {ProcessId} no longer exists", job.JobId, job.ProcessId);
                 EndJob(job.JobId);
@@ -387,23 +390,37 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         }
     }
 
+    /// <inheritdoc />
     public void EndJob(JobId job)
     {
         if (_isDisposed)
             throw new ObjectDisposedException(nameof(TemporaryFileManager));
 
         _logger.DeletingJob(job);
+        TOP:
+        var retries = 0;
+        try
         {
-            using var conn = _pool.RentDisposable();
-            using var cmd = conn.Value.CreateCommand();
-            cmd.CommandText = "DELETE FROM Jobs WHERE JobId = @jobId";
-            cmd.Parameters.AddWithValue("@jobId", job.Value.ToByteArray());
-            cmd.ExecuteNonQuery();
+            {
+                using var conn = _pool.RentDisposable();
+                using var cmd = conn.Value.CreateCommand();
+                cmd.CommandText = "DELETE FROM Jobs WHERE JobId = @jobId";
+                cmd.Parameters.AddWithValue("@jobId", job.Value.ToByteArray());
+                cmd.ExecuteNonQuery();
+            }
+            
+            UpdateJobTimestamp();
         }
-        UpdateJobTimestamp();
-
+        catch (SqliteException ex)
+        {
+            retries += 1;
+            _logger.LogError(ex, "Error deleting job {JobId}", job);
+            if (retries < 3)
+                goto TOP;
+        }
     }
 
+    /// <inheritdoc />
     public void UpdateProgress(JobId jobId, Percent value)
     {
         if (_isDisposed)

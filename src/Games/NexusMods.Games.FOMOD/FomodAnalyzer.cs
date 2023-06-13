@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Runtime.CompilerServices;
+using System.Text;
 using FomodInstaller.Scripting.XmlScript;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
@@ -27,7 +28,7 @@ public class FomodAnalyzer : IFileAnalyzer
 
     public IEnumerable<FileType> FileTypes { get; } = new [] { FileType.XML };
 
-    public async IAsyncEnumerable<IFileAnalysisData> AnalyzeAsync(FileAnalyzerInfo info, CancellationToken ct = default)
+    public async IAsyncEnumerable<IFileAnalysisData> AnalyzeAsync(FileAnalyzerInfo info, [EnumeratorCancellation] CancellationToken ct = default)
     {
         // Not sourced from an archive.
         if (info.RelativePath == null)

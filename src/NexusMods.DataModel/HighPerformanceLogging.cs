@@ -71,7 +71,7 @@ internal static partial class HighPerformanceLogging
     public static partial void DeletingJob(
         this ILogger logger,
         JobId jobId);
-
+    
     [LoggerMessage(
         EventId = 0,
         Level = LogLevel.Trace,

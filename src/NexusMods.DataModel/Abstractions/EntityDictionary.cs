@@ -254,6 +254,11 @@ public struct EntityDictionary<TK, TV> :
         return _coll.TryGetValue(modId, out var value) ? value : null;
     }
 
+    /// <summary>
+    /// Creates a changeset between this dictionary and another.
+    /// </summary>
+    /// <param name="old"></param>
+    /// <returns></returns>
     public IChangeSet<IId,TK> Diff(EntityDictionary<TK,TV> old)
     {
         var changes = new ChangeSet<IId,TK>();

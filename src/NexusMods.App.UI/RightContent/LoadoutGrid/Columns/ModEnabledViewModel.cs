@@ -2,6 +2,7 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Input;
+using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Loadouts;
@@ -30,7 +31,7 @@ public class ModEnabledViewModel : AViewModel<IModEnabledViewModel>, IModEnabled
     [Reactive]
     public ICommand DeleteModCommand { get; set; }
 
-    public ModEnabledViewModel(LoadoutRegistry loadoutRegistry, IDataStore store)
+    public ModEnabledViewModel(LoadoutRegistry loadoutRegistry)
     {
         _loadoutRegistry = loadoutRegistry;
 
