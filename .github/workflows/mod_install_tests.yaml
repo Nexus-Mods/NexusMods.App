@@ -23,8 +23,7 @@ jobs:
       matrix:
         #os: [ubuntu-latest, windows-latest, macos-latest]
         os: [ubuntu-latest]
-        game:
-          - domain: [cyberpunk2077, darkestdungeon, sifu, skyrimspecialedition, stardewvalley]
+        game: [cyberpunk2077, darkestdungeon, sifu, skyrimspecialedition, stardewvalley]
 
     steps:
       - uses: actions/checkout@v3
