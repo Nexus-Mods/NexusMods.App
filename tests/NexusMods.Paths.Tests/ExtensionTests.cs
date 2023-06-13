@@ -33,12 +33,11 @@ public class ExtensionTests
     [Theory]
     [InlineData("foo.dds", ".dds")]
     [InlineData(".dds", ".dds")]
-    [InlineData(".", "")]
     [InlineData("foo.bar.baz.dds", ".dds")]
     public void Test_FromPath(string input, string expectedExtension)
     {
         var actualExtension = Extension.FromPath(input);
-        actualExtension.Should().Be(expectedExtension);
+        actualExtension.Should().Be(new Extension(expectedExtension));
     }
 
     [Fact]
@@ -49,16 +48,10 @@ public class ExtensionTests
     }
 
     [Fact]
-    public void ExtensionsRequireDots()
-    {
-        Assert.Throws<PathException>(() => new Extension("foo"));
-    }
-
-    [Fact]
     public void ExtensionsOverrideObjectMethods()
     {
         Assert.Equal(".DDS", DDS.ToString());
-        Assert.Equal(".DDS".GetHashCode(StringComparison.InvariantCultureIgnoreCase), DDS.GetHashCode());
+        Assert.Equal(".DDS".GetHashCode(StringComparison.OrdinalIgnoreCase), DDS.GetHashCode());
     }
 
     [Fact]

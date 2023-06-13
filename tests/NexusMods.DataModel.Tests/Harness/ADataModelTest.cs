@@ -17,11 +17,11 @@ namespace NexusMods.DataModel.Tests.Harness;
 
 public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 {
-    public AbsolutePath DataZipLzma => FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine(@"Resources\data_zip_lzma.zip");
-    public AbsolutePath Data7ZLzma2 => FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine(@"Resources\data_7zip_lzma2.7z");
+    public AbsolutePath DataZipLzma => FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Resources/data_zip_lzma.zip");
+    public AbsolutePath Data7ZLzma2 => FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Resources/data_7zip_lzma2.7z");
 
     public AbsolutePath DataTest =>
-        FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine(@"Resources\data.test");
+        FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Resources/data.test");
 
     public static readonly RelativePath[] DataNames = new[]
     {
@@ -90,8 +90,8 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     {
         BaseList = await LoadoutManager.ManageGameAsync(Install, "BaseList", CancellationToken.None);
     }
-    
-    
+
+
     protected async Task AddMods(LoadoutMarker mainList, AbsolutePath path, string? name = null)
     {
         var hash1 = await ArchiveAnalyzer.AnalyzeFileAsync(path, CancellationToken.None);

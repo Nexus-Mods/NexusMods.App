@@ -32,9 +32,9 @@ public class SevenZipExtractionTests
             .Should()
             .BeEquivalentTo(new[]
             {
-                (@"deepFolder\deepFolder2\deepFolder3\deepFolder4\deepFile.txt".ToRelativePath(), (Hash)0xE405A7CFA6ABBDE3),
-                (@"folder1\folder1file.txt".ToRelativePath(), (Hash)0xC9E47B1523162066),
-                (@"rootFile.txt".ToRelativePath(), (Hash)0x33DDBF7930BA002A),
+                ("deepFolder/deepFolder2/deepFolder3/deepFolder4/deepFile.txt".ToRelativePath(), (Hash)0xE405A7CFA6ABBDE3),
+                ("folder1/folder1file.txt".ToRelativePath(), (Hash)0xC9E47B1523162066),
+                ("rootFile.txt".ToRelativePath(), (Hash)0x33DDBF7930BA002A),
             });
     }
 }

@@ -75,6 +75,7 @@ public readonly struct RelativePath : IEquatable<RelativePath>, IPath, IComparab
     /// <param name="path">The relative path to use.</param>
     public RelativePath(string path)
     {
+        PathHelpers.DebugAssertIsSanitized(path, OS, isRelative: true);
         Path = path;
     }
 

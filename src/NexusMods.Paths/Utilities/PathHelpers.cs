@@ -61,30 +61,41 @@ public static class PathHelpers
     /// </remarks>
     public const char WindowsVolumeSeparatorChar = ':';
 
+    /// <summary>
+    /// Debug assert <see cref="IsSanitized"/>.
+    /// </summary>
     [Conditional("DEBUG")]
     [ExcludeFromCodeCoverage(Justification = $"{nameof(IsSanitized)} is tested separately.")]
-    private static void DebugAssertIsSanitized(ReadOnlySpan<char> path, IOSInformation os)
+    public static void DebugAssertIsSanitized(ReadOnlySpan<char> path, IOSInformation os, bool isRelative = false)
     {
-        Debug.Assert(IsSanitized(path, os), $"Path is not sanitized: '{path.ToString()}'");
+        Debug.Assert(IsSanitized(path, os, isRelative), $"Path is not sanitized: '{path.ToString()}'");
     }
 
     /// <summary>
     /// Determines whether the path is sanitized or not. Only sanitized paths should
     /// be used with <see cref="PathHelpers"/>.
     /// </summary>
-    public static bool IsSanitized(ReadOnlySpan<char> path, IOSInformation os)
+    public static bool IsSanitized(ReadOnlySpan<char> path, IOSInformation os, bool isRelative = false)
     {
         // Empty strings are valid.
         if (path.IsEmpty) return true;
 
+        var rootLength = GetRootLength(path, os);
+
+        // Relative paths must not be rooted
+        if (isRelative && rootLength != -1) return false;
+
         // Paths that only contain the root directory are valid.
-        if (IsRootDirectory(path, os)) return true;
+        if (!isRelative && rootLength == path.Length) return true;
+
+        // Paths must be trimmed
+        if (path.DangerousGetReferenceAt(path.Length - 1) == ' ') return false;
 
         // Paths that end with the directory separator but are not root directories are invalid.
         if (path.DangerousGetReferenceAt(path.Length - 1) == DirectorySeparatorChar) return false;
 
         // Paths on Windows that use backwards slashes '\' instead of forward ones are invalid.
-        if (os.IsWindows && path.Count('\\') != 0) return false;
+        if (path.Count('\\') != 0) return false;
 
         // Everything else is valid.
         return true;

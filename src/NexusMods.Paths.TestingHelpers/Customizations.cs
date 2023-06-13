@@ -35,7 +35,7 @@ public static class Customizations
             composer.FromFactory<IFileSystem, string>((fs, path) =>
             {
                 var fullPath = OperatingSystem.IsWindows()
-                    ? $"C:\\{path}"
+                    ? $"C:/{path}"
                     : $"/{path}";
                 return fs.FromUnsanitizedFullPath(fullPath);
             }));

@@ -46,6 +46,17 @@ public class PathHelperTests
     }
 
     [Theory]
+    [InlineData(true, "/foo/bar", false)]
+    [InlineData(true, "foo/bar", true)]
+    [InlineData(false, "C:/foo/bar", false)]
+    [InlineData(false, "foo/bar", true)]
+    public void Test_IsSanitized_Relative(bool isUnix, string path, bool expected)
+    {
+        var actual = PathHelpers.IsSanitized(path, CreateOSInformation(isUnix), isRelative: true);
+        actual.Should().Be(expected);
+    }
+
+    [Theory]
     [InlineData(true, "", "")]
     [InlineData(true, "/", "/")]
     [InlineData(true, "/foo/", "/foo")]

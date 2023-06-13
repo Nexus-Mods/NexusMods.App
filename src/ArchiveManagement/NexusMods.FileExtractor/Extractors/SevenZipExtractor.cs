@@ -166,7 +166,7 @@ public class SevenZipExtractor : IExtractor
 
         return OSInformation.MatchPlatform(
             onWindows: () => @"runtimes\win-x64\native\7z.exe",
-            onLinux: () => @"runtimes/linux-x64/native/7zz",
+            onLinux: () => "runtimes/linux-x64/native/7zz",
             onOSX: () => "runtimes/osx-x64/native/7zz"
         );
     }

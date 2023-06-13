@@ -56,9 +56,7 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame, IEpicGame
 
         var globalSettingsFile = fileSystem
             .GetKnownPath(KnownPath.LocalApplicationDataDirectory)
-            .Combine("Red Hook Studios")
-            .Combine("Darkest")
-            .Combine("persist.options.json");
+            .Combine("Red Hook Studios/Darkest/persist.options.json");
 
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Preferences, globalSettingsFile);
 
