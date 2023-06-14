@@ -23,7 +23,6 @@ public class DownloadStatusDesignViewModel : AViewModel<IDownloadStatusViewModel
 
     public DownloadStatusDesignViewModel()
     {
-        // TODO: Fix subscriptions.
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.Row.Status, vm => vm.Row.SizeBytes, vm => vm.Row.DownloadedBytes)

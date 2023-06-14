@@ -12,7 +12,7 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(view => view.ViewModel!.Tasks)
-                .BindToUi(this, view => view.ModsDataGrid.Items)
+                .BindToUi(this, view => view.ModsDataGrid.ItemsSource)
                 .DisposeWith(d);
         });
     }
