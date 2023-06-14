@@ -15,7 +15,7 @@ using ModId = NexusMods.Networking.NexusWebApi.Types.ModId;
 
 namespace NexusMods.Games.TestHarness.Verbs;
 
-public class StressTest : AVerb<IGame, AbsolutePath, AbsolutePath>
+public class StressTest : AVerb<IGame, AbsolutePath>
 {
     private readonly IRenderer _renderer;
     private readonly Client _client;
@@ -53,7 +53,7 @@ public class StressTest : AVerb<IGame, AbsolutePath, AbsolutePath>
     private readonly IArchiveAnalyzer _archiveAnalyzer;
     private readonly IArchiveInstaller _archiveInstaller;
 
-    public async Task<int> Run(IGame game, AbsolutePath loadout, AbsolutePath output, CancellationToken token)
+    public async Task<int> Run(IGame game, AbsolutePath output, CancellationToken token)
     {
         var mods = await _client.ModUpdatesAsync(game.Domain, Client.PastTime.Day, token);
         var results = new List<(string FileName, ModId ModId, FileId FileId, Hash Hash, bool Passed, Exception? exception)>();
@@ -93,7 +93,7 @@ public class StressTest : AVerb<IGame, AbsolutePath, AbsolutePath>
                     _logger.LogInformation("Installing {ModId} {FileId} {FileName} - {Size}", mod.ModId, file.FileId,
                         file.FileName, file.SizeInBytes);
 
-                    var list = await _loadoutManager.ImportFromAsync(loadout, token);
+                    var list = await _loadoutManager.ManageGameAsync(game.Installations.First(), indexGameFiles: false, token: cts.Token);
                     var analysisData = await _archiveAnalyzer.AnalyzeFileAsync(tmpPath, token);
                     await _archiveInstaller.AddMods(list.Value.LoadoutId, analysisData.Hash, token: token);
                     

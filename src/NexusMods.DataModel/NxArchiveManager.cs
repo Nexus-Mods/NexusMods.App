@@ -20,12 +20,17 @@ namespace NexusMods.DataModel;
 /// <summary>
 /// Manages the archive locations and allows for the backup of files to internal data folders.
 /// </summary>
-public class ArchiveManager : IArchiveManager
+public class NxArchiveManager : IArchiveManager
 {
     private readonly AbsolutePath[] _archiveLocations;
     private readonly IDataStore _store;
 
-    public ArchiveManager(IDataStore store, IDataModelSettings settings)
+    /// <summary>
+    /// DI Constructor
+    /// </summary>
+    /// <param name="store"></param>
+    /// <param name="settings"></param>
+    public NxArchiveManager(IDataStore store, IDataModelSettings settings)
     {
         _archiveLocations = settings.ArchiveLocations.Select(f => f.ToAbsolutePath()).ToArray();
         foreach (var location in _archiveLocations)
@@ -36,12 +41,14 @@ public class ArchiveManager : IArchiveManager
         _store = store;
 
     }
-    
-    public async ValueTask<bool> HaveFile(Hash hash)
+
+    /// <inheritdoc />
+    public ValueTask<bool> HaveFile(Hash hash)
     {
-        return TryGetLocation(hash, out _, out _);
+        return ValueTask.FromResult(TryGetLocation(hash, out _, out _));
     }
 
+    /// <inheritdoc />
     public async Task BackupFiles(IEnumerable<(IStreamFactory, Hash, Size)> backups, CancellationToken token = default)
     {
         var builder = new NxPackerBuilder();
@@ -59,7 +66,7 @@ public class ArchiveManager : IArchiveManager
 
         var guid = Guid.NewGuid();
         var id = guid.ToString();
-        var outputPath = _archiveLocations.First().CombineUnchecked(id).AppendExtension(KnownExtensions.Tmp);
+        var outputPath = _archiveLocations.First().Combine(id).AppendExtension(KnownExtensions.Tmp);
         
         await using (var outputStream = outputPath.Create()){
             builder.WithOutput(outputStream);
@@ -113,6 +120,7 @@ public class ArchiveManager : IArchiveManager
         return IId.FromSpan(EntityCategory.ArchivedFiles, buffer);
     }
 
+    /// <inheritdoc />
     public async Task ExtractFiles(IEnumerable<(Hash Src, AbsolutePath Dest)> files, CancellationToken token = default)
     {
         var grouped = files.Distinct()
@@ -148,7 +156,8 @@ public class ArchiveManager : IArchiveManager
         }
     }
 
-    public async Task<IDictionary<Hash, byte[]>> ExtractFiles(IEnumerable<Hash> files, CancellationToken token = default)
+    /// <inheritdoc />
+    public Task<IDictionary<Hash, byte[]>> ExtractFiles(IEnumerable<Hash> files, CancellationToken token = default)
     {
         var results = new Dictionary<Hash, byte[]>();
         
@@ -182,7 +191,7 @@ public class ArchiveManager : IArchiveManager
             }
         }
 
-        return results;
+        return Task.FromResult<IDictionary<Hash, byte[]>>(results);
     }
 
     private unsafe bool TryGetLocation(Hash hash, out AbsolutePath archivePath, out FileEntry fileEntry)
@@ -192,7 +201,7 @@ public class ArchiveManager : IArchiveManager
         {
             foreach (var location in _archiveLocations)
             {
-                var path = location.CombineUnchecked(entry.File);
+                var path = location.Combine(entry.File);
                 if (!path.FileExists) continue;
 
                 archivePath = path;

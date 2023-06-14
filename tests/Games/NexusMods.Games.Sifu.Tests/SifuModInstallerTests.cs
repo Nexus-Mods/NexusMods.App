@@ -26,7 +26,7 @@ public class SifuModInstallerTests : AModInstallerTest<Sifu, SifuModInstaller>
                 .Cast<IToFile>()
                 .Should()
                 .HaveCount(2)
-                .And.AllSatisfy(x => x.To.Path.StartsWith(@"Content\Paks\~mods"))
+                .And.AllSatisfy(x => x.To.Path.StartsWith(@"Content/Paks/~mods"))
                 .And.Satisfy(
                     x => x.To.FileName == "foo.pak",
                     x => x.To.FileName == "foo.txt");
@@ -49,7 +49,7 @@ public class SifuModInstallerTests : AModInstallerTest<Sifu, SifuModInstaller>
             modFiles
                 .Cast<IToFile>()
                 .Should().HaveCount(2)
-                .And.AllSatisfy(x => x.To.Path.StartsWith(@"Content\Paks\~mods"))
+                .And.AllSatisfy(x => x.To.Path.StartsWith(@"Content/Paks/~mods"))
                 .And.Satisfy(
                     x => x.To.FileName == "foo.pak",
                     x => x.To.FileName == "foo.txt");

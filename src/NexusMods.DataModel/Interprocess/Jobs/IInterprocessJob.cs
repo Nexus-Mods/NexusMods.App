@@ -7,6 +7,9 @@ using NexusMods.DataModel.RateLimiting;
 
 namespace NexusMods.DataModel.Interprocess.Messages;
 
+/// <summary>
+/// A interface for a job that can be managed by the <see cref="IInterprocessJobManager"/>.
+/// </summary>
 public interface IInterprocessJob : INotifyPropertyChanged, IDisposable
 {
     /// <summary>

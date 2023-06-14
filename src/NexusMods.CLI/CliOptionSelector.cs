@@ -16,11 +16,23 @@ public class CliOptionSelector : IOptionSelector
 
     private readonly IRenderer _renderer;
 
+    /// <summary>
+    /// DI Constructor
+    /// </summary>
+    /// <param name="configurator"></param>
     public CliOptionSelector(Configurator configurator)
     {
         _renderer = configurator.Renderer;
     }
 
+    /// <summary>
+    /// Request a choice from the user.
+    /// </summary>
+    /// <param name="query"></param>
+    /// <param name="type"></param>
+    /// <param name="options"></param>
+    /// <typeparam name="TOptionId"></typeparam>
+    /// <returns></returns>
     public Task<IEnumerable<TOptionId>> RequestChoice<TOptionId>(string query, ChoiceType type, IEnumerable<Option<TOptionId>> options)
     {
         var done = false;
@@ -44,6 +56,7 @@ public class CliOptionSelector : IOptionSelector
         return Task.FromResult(current.Where(_ => _.Type is OptionState.Selected or OptionState.Required).Select(_ => _.Id));
     }
 
+    /// <inheritdoc />
     public Task<Tuple<TGroupId, IEnumerable<TOptionId>>?> RequestMultipleChoices<TGroupId, TOptionId>(IEnumerable<ChoiceGroup<TGroupId, TOptionId>> groups)
     {
         var selectedGroupIdx = -1;

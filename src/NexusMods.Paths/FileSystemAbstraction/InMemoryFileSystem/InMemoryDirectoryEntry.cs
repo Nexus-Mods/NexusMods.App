@@ -20,5 +20,7 @@ public partial class InMemoryFileSystem
             Path = path;
             ParentDirectory = parentDirectory;
         }
+
+        public override string ToString() => Path.ToString();
     }
 }

@@ -42,7 +42,7 @@ public enum KnownPath
     ///         <term>Windows</term>
     ///         <description>
     ///             (CSIDL_COMMON_APPDATA) ProgramData folder <c>%ALLUSERSPROFILE%</c>
-    ///             (<c>%ProgramData%"</c>, <c>%SystemDrive%\ProgramData</c>)
+    ///             (<c>%ProgramData%"</c>, <c>%SystemDrive%/ProgramData</c>)
     ///         </description>
     ///     </item>
     ///     <item>
@@ -68,7 +68,7 @@ public enum KnownPath
     ///         <term>Windows</term>
     ///         <description>
     ///             (CSIDL_PROGRAM_FILES) Program Files folder for the current process architecture
-    ///             <c>%ProgramFiles%</c> (<c>%SystemDrive%\Program Files</c>)
+    ///             <c>%ProgramFiles%</c> (<c>%SystemDrive%/Program Files</c>)
     ///         </description>
     ///     </item>
     ///     <item>
@@ -119,7 +119,7 @@ public enum KnownPath
     ///         <term>Windows</term>
     ///         <description>
     ///             (CSIDL_PROGRAM_FILES_COMMON) Common Program Files folder for the current process architecture
-    ///             <c>%ProgramFiles%\Common Files</c>
+    ///             <c>%ProgramFiles%/Common Files</c>
     ///         </description>
     ///     </item>
     ///     <item>
@@ -189,7 +189,7 @@ public enum KnownPath
     ///         <term>Windows</term>
     ///         <description>
     ///             (CSIDL_PROFILE) The root users profile folder <c>%USERPROFILE%</c>
-    ///             (<c>%SystemDrive%\Users\%USERNAME%</c>)
+    ///             (<c>%SystemDrive%/Users/%USERNAME%</c>)
     ///         </description>
     ///     </item>
     ///     <item>
@@ -216,7 +216,7 @@ public enum KnownPath
     ///         <term>Windows</term>
     ///         <description>
     ///             (CSIDL_APPDATA) Roaming user application data folder
-    ///             <c>%APPDATA%</c> (<c>%USERPROFILE%\AppData\Roaming</c>)
+    ///             <c>%APPDATA%</c> (<c>%USERPROFILE%/AppData/Roaming</c>)
     ///         </description>
     ///     </item>
     ///     <item>
@@ -243,7 +243,7 @@ public enum KnownPath
     ///         <term>Windows</term>
     ///         <description>
     ///             (CSIDL_LOCAL_APPDATA) Local folder
-    ///             <c>%LOCALAPPDATA%</c> (<c>%USERPROFILE%\AppData\Local</c>)
+    ///             <c>%LOCALAPPDATA%</c> (<c>%USERPROFILE%/AppData/Local</c>)
     ///         </description>
     ///     </item>
     ///     <item>
@@ -269,7 +269,7 @@ public enum KnownPath
     ///         <term>Windows</term>
     ///         <description>
     ///             (CSIDL_MYDOCUMENTS, CSIDL_PERSONAL) Documents (My Documents) folder
-    ///             <c>%USERPROFILE%\Documents</c>
+    ///             <c>%USERPROFILE%/Documents</c>
     ///         </description>
     ///     </item>
     ///     <item>

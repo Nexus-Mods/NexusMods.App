@@ -68,6 +68,8 @@ public partial class InMemoryFileSystem
             _contents = contents;
         }
 
+        public override string ToString() => Path.ToString();
+
         /// <summary>
         /// Wrapper around <see cref="MemoryStream"/> that updates <see cref="InMemoryFileEntry"/>
         /// on dispose.

@@ -39,7 +39,7 @@ public class FileExtractorSettings : IFileExtractorSettings
     {
         _fileSystem = fileSystem;
         TempFolderLocation = new ConfigurationPath(_fileSystem
-            .GetKnownPath(KnownPath.EntryDirectory).CombineUnchecked("Temp"));
+            .GetKnownPath(KnownPath.EntryDirectory).Combine("Temp"));
     }
     
     /// <inheritdoc />

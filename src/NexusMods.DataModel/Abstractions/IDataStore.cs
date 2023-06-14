@@ -95,12 +95,13 @@ public interface IDataStore
     /// </summary>
     /// <returns></returns>
     IEnumerable<IId> AllIds(EntityCategory category);
-    
+
     /// <summary>
     /// Serialize the entity the way it would be serialized in the data store and return the Hash as an Id64 and the
     /// serialized data. Put(entity) is equivalent to calling PutRaw(ContentHashId(data), data).
     /// </summary>
     /// <param name="entity"></param>
+    /// <param name="data"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
     Id64 ContentHashId<T>(T entity, out byte[] data) where T : Entity;

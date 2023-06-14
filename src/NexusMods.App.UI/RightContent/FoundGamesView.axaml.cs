@@ -12,7 +12,7 @@ public partial class FoundGamesView : ReactiveUserControl<IFoundGamesViewModel>
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(view => view.ViewModel!.Games)
-                .BindTo(this, view => view.FoundGamesItemsControl.Items)
+                .BindTo(this, view => view.FoundGamesItemsControl.ItemsSource)
                 .DisposeWith(d);
         });
     }

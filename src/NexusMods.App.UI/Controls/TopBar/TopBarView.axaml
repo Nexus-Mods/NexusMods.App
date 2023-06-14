@@ -83,12 +83,10 @@
             <StackPanel Orientation="Horizontal" Spacing="16" Margin="16, 0">
                 <Button
                     Classes="Action"
-                    Grid.Column="0"
                     HorizontalAlignment="Center">
                     <avalonia:Icon Classes="Bell" />
                 </Button>
                 <Button Classes="Avatar"
-                    Grid.Column="1"
                     HorizontalAlignment="Center"
                     x:Name="UserButton">
                     <Image

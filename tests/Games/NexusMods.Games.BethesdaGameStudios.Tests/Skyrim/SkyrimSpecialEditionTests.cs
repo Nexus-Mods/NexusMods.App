@@ -6,7 +6,6 @@ using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
-using NexusMods.DataModel.TriggerFilter;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -17,8 +16,10 @@ namespace NexusMods.Games.BethesdaGameStudios.Tests.Skyrim;
 
 public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
 {
-    private readonly IFingerprintCache<IGeneratedFile,CachedGeneratedFileData> _generatedFileFingerprintCache;
-
+    /// <summary>
+    /// DI Constructor
+    /// </summary>
+    /// <param name="serviceProvider"></param>
     public SkyrimSpecialEditionTests(IServiceProvider serviceProvider) : base(serviceProvider)
     {
 
@@ -37,7 +38,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
     {
         var loadout = await CreateLoadout(indexGameFiles:false);
 
-        var analysisStr = await BethesdaTestHelpers.GetAssetsPath(FileSystem).CombineUnchecked("plugin_dependencies.json").ReadAllTextAsync();
+        var analysisStr = await BethesdaTestHelpers.GetAssetsPath(FileSystem).Combine("plugin_dependencies.json").ReadAllTextAsync();
         var analysis = JsonSerializer.Deserialize<Dictionary<string, string[]>>(analysisStr)!;
         
 

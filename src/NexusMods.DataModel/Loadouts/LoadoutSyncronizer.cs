@@ -33,6 +33,15 @@ public class LoadoutSynchronizer
     private readonly LoadoutRegistry _loadoutRegistry;
     private readonly ILogger<LoadoutSynchronizer> _logger;
 
+    /// <summary>
+    /// DI constructor
+    /// </summary>
+    /// <param name="logger"></param>
+    /// <param name="modSortRulesFingerprintCache"></param>
+    /// <param name="directoryIndexer"></param>
+    /// <param name="archiveManager"></param>
+    /// <param name="generatedFileFingerprintCache"></param>
+    /// <param name="loadoutRegistry"></param>
     public LoadoutSynchronizer(ILogger<LoadoutSynchronizer> logger, 
         IFingerprintCache<Mod, CachedModSortRules> modSortRulesFingerprintCache,
         IDirectoryIndexer directoryIndexer,
@@ -128,6 +137,12 @@ public class LoadoutSynchronizer
         }
     }
 
+    /// <summary>
+    /// Generates a list of steps that need to be taken to synchronize the given loadout with the game folders.
+    /// </summary>
+    /// <param name="loadout"></param>
+    /// <param name="token"></param>
+    /// <returns></returns>
     public async ValueTask<ApplyPlan> MakeApplySteps(Loadout loadout, CancellationToken token = default)
     {
 
@@ -261,13 +276,27 @@ public class LoadoutSynchronizer
         await EmitCreatePlan(plan, pair, tmpPlan, existing.Path);
     }
 
-    public async ValueTask<FileMetaData?> GetMetaData(AModFile file, AbsolutePath path)
+    /// <summary>
+    /// Gets the metadata for the given file, if the file is from an archive then the metadata is returned
+    /// </summary>
+    /// <param name="file"></param>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    /// <exception cref="NotImplementedException"></exception>
+    public ValueTask<FileMetaData?> GetMetaData(AModFile file, AbsolutePath path)
     {
         if (file is IFromArchive fa)
-            return new FileMetaData(path, fa.Hash, fa.Size);
+            return ValueTask.FromResult<FileMetaData?>(new FileMetaData(path, fa.Hash, fa.Size));
         throw new NotImplementedException();
     }
 
+    /// <summary>
+    /// Compares the game folders to the loadout and returns a plan of what needs to be done to make the loadout match the game folders
+    /// </summary>
+    /// <param name="loadout"></param>
+    /// <param name="modSelector"></param>
+    /// <param name="token"></param>
+    /// <returns></returns>
     public async ValueTask<IngestPlan> MakeIngestPlan(Loadout loadout, Func<AbsolutePath, ModId> modSelector, CancellationToken token = default)
     {
         var install = loadout.Installation;
@@ -316,12 +345,13 @@ public class LoadoutSynchronizer
         };
     }
 
-    private async ValueTask EmitRemoveFromLoadout(List<IIngestStep> plan, AbsolutePath absPath)
+    private ValueTask EmitRemoveFromLoadout(List<IIngestStep> plan, AbsolutePath absPath)
     {
         plan.Add(new IngestSteps.RemoveFromLoadout
         {
             Source = absPath
         });
+        return ValueTask.CompletedTask;
     }
 
     private async ValueTask EmitIngestCreatePlan(List<IIngestStep> plan, HashedEntry existing, Func<AbsolutePath, ModId> modSelector)
@@ -371,6 +401,7 @@ public class LoadoutSynchronizer
     /// Applies the given steps to the game folder
     /// </summary>
     /// <param name="plan"></param>
+    /// <param name="token"></param>
     public async Task Apply(ApplyPlan plan, CancellationToken token = default)
     {
         // Step 1: Backup Files
@@ -419,7 +450,8 @@ public class LoadoutSynchronizer
     /// Run an ingest plan
     /// </summary>
     /// <param name="plan"></param>
-    public async ValueTask<Loadout> Ingest(IngestPlan plan, string message = "Ingested Changes")
+    /// <param name="commitMessage"></param>
+    public async ValueTask<Loadout> Ingest(IngestPlan plan, string commitMessage = "Ingested Changes")
     {
         var byType = plan.Steps.ToLookup(t => t.GetType());
         var backupFiles = byType[typeof(IngestSteps.BackupFile)]
@@ -427,7 +459,7 @@ public class LoadoutSynchronizer
             .Select(f => ((IStreamFactory)new NativeFileStreamFactory(f.Source), f.Hash, f.Size));
         await _archiveManager.BackupFiles(backupFiles);
 
-        return _loadoutRegistry.Alter(plan.Loadout.LoadoutId, message, new IngestVisitor(byType, plan));
+        return _loadoutRegistry.Alter(plan.Loadout.LoadoutId, commitMessage, new IngestVisitor(byType, plan));
     }
 
     private class IngestVisitor : ALoadoutVisitor

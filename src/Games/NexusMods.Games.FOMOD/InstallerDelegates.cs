@@ -14,7 +14,9 @@ public class InstallerDelegates : ICoreDelegates
 
     public IUIDelegates ui { get; init; }
 
+#pragma warning disable CS0169
     private IOptionSelector? _inputHandler;
+#pragma warning restore CS0169
 
     public InstallerDelegates(IOptionSelector optionSelector)
     {

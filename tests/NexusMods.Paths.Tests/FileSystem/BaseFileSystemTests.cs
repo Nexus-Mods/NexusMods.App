@@ -21,8 +21,8 @@ public class BaseFileSystemTests
     public void Test_PathMapping_WithDirectory(InMemoryFileSystem fs,
         AbsolutePath originalDirectoryPath, AbsolutePath newDirectoryPath, string fileName)
     {
-        var originalFilePath = originalDirectoryPath.CombineUnchecked(fileName);
-        var newFilePath = newDirectoryPath.CombineUnchecked(fileName);
+        var originalFilePath = originalDirectoryPath.Combine(fileName);
+        var newFilePath = newDirectoryPath.Combine(fileName);
 
         var overlayFileSystem = (BaseFileSystem)fs.CreateOverlayFileSystem(
             new Dictionary<AbsolutePath, AbsolutePath>
@@ -34,24 +34,24 @@ public class BaseFileSystemTests
         overlayFileSystem.GetMappedPath(originalFilePath).Should().Be(newFilePath);
     }
 
-    [SkippableTheory, AutoFileSystem]
-    public void Test_PathMappings_SpecialCases(InMemoryFileSystem fs)
+    [Fact]
+    public void Test_PathMappings_SpecialCases()
     {
-        Skip.IfNot(OperatingSystem.IsLinux());
+        var fs = new InMemoryFileSystem(OSInformation.FakeUnix);
 
         var overlayFileSystem = (BaseFileSystem)fs.CreateOverlayFileSystem(
             new Dictionary<AbsolutePath, AbsolutePath>
             {
-                { fs.FromFullPath("/c"), fs.FromFullPath("/foo") },
-                { fs.FromFullPath("/z"), fs.FromFullPath("/") },
+                { fs.FromUnsanitizedFullPath("/c"), fs.FromUnsanitizedFullPath("/foo") },
+                { fs.FromUnsanitizedFullPath("/z"), fs.FromUnsanitizedFullPath("/") },
             },
             new Dictionary<KnownPath, AbsolutePath>());
 
-        overlayFileSystem.GetMappedPath(fs.FromFullPath("/c/a")).Should().Be(fs.FromFullPath("/foo/a"));
-        overlayFileSystem.GetMappedPath(fs.FromFullPath("/z/a")).Should().Be(fs.FromFullPath("/a"));
+        overlayFileSystem.GetMappedPath(fs.FromUnsanitizedFullPath("/c/a")).Should().Be(fs.FromUnsanitizedFullPath("/foo/a"));
+        overlayFileSystem.GetMappedPath(fs.FromUnsanitizedFullPath("/z/a")).Should().Be(fs.FromUnsanitizedFullPath("/a"));
     }
 
-    [SkippableTheory, AutoFileSystem]
+    [Theory, AutoFileSystem]
     public async Task Test_ReadAllBytesAsync(InMemoryFileSystem fs, AbsolutePath path, byte[] contents)
     {
         fs.AddFile(path, contents);
@@ -59,7 +59,7 @@ public class BaseFileSystemTests
         result.Should().BeEquivalentTo(contents);
     }
 
-    [SkippableTheory, AutoFileSystem]
+    [Theory, AutoFileSystem]
     public async Task Test_ReadAllTextAsync(InMemoryFileSystem fs, AbsolutePath path, string contents)
     {
         fs.AddFile(path, contents);
@@ -67,32 +67,31 @@ public class BaseFileSystemTests
         result.Should().BeEquivalentTo(contents);
     }
 
-    [SkippableTheory]
-    [InlineData("C:\\", "/c")]
-    [InlineData("C:\\foo\\bar", "/c/foo/bar")]
+    [Theory]
+    [InlineData("C:/", "/c")]
+    [InlineData("C:/foo/bar", "/c/foo/bar")]
     public void Test_ConvertCrossPlatformPath(string input, string output)
     {
-        Skip.IfNot(OperatingSystem.IsLinux());
-
-        var fs = new InMemoryFileSystem().CreateOverlayFileSystem(
+        var fs = new InMemoryFileSystem(OSInformation.FakeUnix)
+            .CreateOverlayFileSystem(
             new Dictionary<AbsolutePath, AbsolutePath>(),
             new Dictionary<KnownPath, AbsolutePath>(),
             true);
 
-        var path = fs.FromFullPath(input);
+        var path = fs.FromUnsanitizedFullPath(input);
         path.GetFullPath().Should().Be(output);
     }
 
-    [SkippableTheory, AutoFileSystem]
-    public void Test_KnownPathMappings(IFileSystem fs)
+    [Fact]
+    public void Test_KnownPathMappings()
     {
-        Skip.IfNot(OperatingSystem.IsLinux());
+        var fs = new InMemoryFileSystem(OSInformation.FakeUnix);
 
         var knownPathMappings = new Dictionary<KnownPath, AbsolutePath>();
         var values = Enum.GetValues<KnownPath>();
         foreach (var knownPath in values)
         {
-            var newPath = fs.FromFullPath($"/{Guid.NewGuid().ToString("D", CultureInfo.InvariantCulture)}");
+            var newPath = fs.FromUnsanitizedFullPath($"/{Guid.NewGuid().ToString("D", CultureInfo.InvariantCulture)}");
             knownPathMappings[knownPath] = newPath;
         }
 
@@ -106,18 +105,18 @@ public class BaseFileSystemTests
         }
     }
 
-    [SkippableTheory, AutoFileSystem]
-    public void Test_EnumerateRootDirectories_Windows(InMemoryFileSystem fs)
+    [Fact]
+    public void Test_EnumerateRootDirectories_Windows()
     {
-        Skip.IfNot(OperatingSystem.IsWindows());
+        var fs = new InMemoryFileSystem(OSInformation.FakeWindows);
 
-        var rootDirectory = fs.FromFullPath("C:\\");
+        var rootDirectory = fs.FromUnsanitizedFullPath("C:/");
         var pathMappings = Enumerable.Range('A', 'Z' - 'A')
             .Select(iDriveLetter =>
             {
                 var driveLetter = (char)iDriveLetter;
-                var originalPath = fs.FromFullPath($"{driveLetter}:\\");
-                var newPath = rootDirectory.CombineUnchecked(Guid.NewGuid().ToString("D"));
+                var originalPath = fs.FromUnsanitizedFullPath($"{driveLetter}:/");
+                var newPath = rootDirectory.Combine(Guid.NewGuid().ToString("D"));
                 return (originalPath, newPath);
             }).ToDictionary(x => x.originalPath, x => x.newPath);
 
@@ -142,12 +141,12 @@ public class BaseFileSystemTests
         actualRootDirectories.Should().BeEquivalentTo(expectedRootDirectories);
     }
 
-    [SkippableTheory, AutoFileSystem]
-    public void Test_EnumerateRootDirectories_Linux(InMemoryFileSystem fs)
+    [Fact]
+    public void Test_EnumerateRootDirectories_Linux()
     {
-        Skip.IfNot(OperatingSystem.IsLinux());
+        var fs = new InMemoryFileSystem(OSInformation.FakeUnix);
 
-        var rootDirectory = fs.FromFullPath("/");
+        var rootDirectory = fs.FromUnsanitizedFullPath("/");
         var expectedRootDirectories = new[] { rootDirectory };
         var actualRootDirectories = fs
             .EnumerateRootDirectories()
@@ -156,19 +155,19 @@ public class BaseFileSystemTests
         actualRootDirectories.Should().BeEquivalentTo(expectedRootDirectories);
     }
 
-    [SkippableTheory, AutoFileSystem]
-    public void Test_EnumerateRootDirectories_WithCrossPlatformPathMappings(InMemoryFileSystem fs)
+    [Fact]
+    public void Test_EnumerateRootDirectories_WithCrossPlatformPathMappings()
     {
-        Skip.IfNot(OperatingSystem.IsLinux());
+        var fs = new InMemoryFileSystem(OSInformation.FakeUnix);
 
-        var rootDirectory = fs.FromFullPath("/");
+        var rootDirectory = fs.FromUnsanitizedFullPath("/");
 
         var pathMappings = Enumerable.Range('a', 'z' - 'a')
             .Select(iDriveLetter =>
             {
                 var driveLetter = (char)iDriveLetter;
-                var originalPath = fs.FromDirectoryAndFileName("/", driveLetter.ToString());
-                var newPath = rootDirectory.CombineUnchecked(Guid.NewGuid().ToString("D"));
+                var originalPath = fs.FromUnsanitizedDirectoryAndFileName("/", driveLetter.ToString());
+                var newPath = rootDirectory.Combine(Guid.NewGuid().ToString("D"));
                 return (originalPath, newPath);
             }).ToDictionary(x => x.originalPath, x => x.newPath);
 

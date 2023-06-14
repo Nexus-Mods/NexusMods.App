@@ -4,8 +4,12 @@ using NexusMods.CLI.Types;
 
 namespace NexusMods.CLI.Verbs;
 
+/// <summary>
+/// Handle a URL with custom protocol
+/// </summary>
 public class ProtocolInvoke : AVerb<string>
 {
+    /// <inheritdoc />
     public static VerbDefinition Definition => new("protocol-invoke",
         "Handle a URL with custom protocol",
         new OptionDefinition[]
@@ -16,6 +20,11 @@ public class ProtocolInvoke : AVerb<string>
     private IIpcProtocolHandler[] _handlers;
     private readonly ILogger<ProtocolInvoke> _logger;
 
+    /// <summary>
+    /// DI constructor
+    /// </summary>
+    /// <param name="logger"></param>
+    /// <param name="handlers"></param>
     public ProtocolInvoke(ILogger<ProtocolInvoke> logger, IEnumerable<IIpcProtocolHandler> handlers)
     {
         _handlers = handlers.ToArray();
@@ -23,6 +32,7 @@ public class ProtocolInvoke : AVerb<string>
         logger.LogInformation("Number of handlers: {Handlers}", _handlers.Length);
     }
 
+    /// <inheritdoc />
     public async Task<int> Run(string url, CancellationToken cancel)
     {
         var uri = new Uri(url);
