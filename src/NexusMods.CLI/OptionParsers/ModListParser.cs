@@ -4,15 +4,23 @@ using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.CLI.OptionParsers;
 
+/// <summary>
+/// Parses a string into a loadout
+/// </summary>
 public class LoadoutParser : IOptionParser<Loadout>
 {
     private readonly IDataStore _store;
 
+    /// <summary>
+    /// DI constructor
+    /// </summary>
+    /// <param name="store"></param>
     public LoadoutParser(IDataStore store)
     {
         _store = store;
     }
 
+    /// <inheritdoc />
     public Loadout Parse(string input, OptionDefinition<Loadout> definition)
     {
         var bytes = Convert.FromHexString(input);
@@ -23,6 +31,7 @@ public class LoadoutParser : IOptionParser<Loadout>
         return found.First();
     }
 
+    /// <inheritdoc />
     public IEnumerable<string> GetOptions(string input)
     {
         return Array.Empty<string>();

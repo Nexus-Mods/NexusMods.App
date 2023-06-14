@@ -1,7 +1,6 @@
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
 
 namespace NexusMods.Networking.HttpDownloader;
 
@@ -18,7 +17,7 @@ internal static class LocalFileDownloader
 
         return null;
     }
-    
+
     public static async Task<Hash?> TryDownloadLocal(IJob<IHttpDownloader, Size> job, HttpRequestMessage source, AbsolutePath destination)
     {
         var uri = source.RequestUri!;
@@ -29,7 +28,7 @@ internal static class LocalFileDownloader
         var filePath = Uri.UnescapeDataString(uri.AbsolutePath);
         var fullPath = Path.GetFullPath(filePath);
 
-        await using var stream = fullPath.ToAbsolutePath(FileSystem.Shared).Open(FileMode.Open, FileAccess.ReadWrite);
+        await using var stream = FileSystem.Shared.FromUnsanitizedFullPath(fullPath).Read();
         job.Size = Size.FromLong(stream.Length);
         await using var file = destination.Create();
         return await stream.HashingCopyAsync(file, default, job);

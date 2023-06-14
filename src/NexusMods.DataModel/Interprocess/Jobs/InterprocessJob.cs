@@ -15,7 +15,6 @@ namespace NexusMods.DataModel.Interprocess.Jobs;
 /// <summary>
 /// Base class for interprocess jobs.
 /// </summary>
-/// <typeparam name="T"></typeparam>
 public class InterprocessJob : IInterprocessJob
 {
     private readonly IInterprocessJobManager _manager;
@@ -25,14 +24,12 @@ public class InterprocessJob : IInterprocessJob
     /// the instance will auto-close the job
     /// </summary>
     private readonly bool _isOwner = true;
-    
+
     /// <summary>
     /// Create a new job, where the payload is a IMessage
     /// </summary>
-    /// <param name="jobType"></param>
     /// <param name="manager"></param>
     /// <param name="payload"></param>
-    /// <param name="description"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
     public static InterprocessJob Create<T>(IInterprocessJobManager manager, T payload)
@@ -46,10 +43,8 @@ public class InterprocessJob : IInterprocessJob
     /// <summary>
     /// Create a new job
     /// </summary>
-    /// <param name="jobType"></param>
     /// <param name="manager"></param>
     /// <param name="payload"></param>
-    /// <param name="description"></param>
     private InterprocessJob(IInterprocessJobManager manager, Entity payload)
     {
         JobId = JobId.From(Guid.NewGuid());
@@ -71,6 +66,7 @@ public class InterprocessJob : IInterprocessJob
         _isOwner = false;
     }
 
+    /// <inheritdoc />
     public event PropertyChangedEventHandler? PropertyChanged;
 
     /// <inheritdoc />
@@ -97,6 +93,7 @@ public class InterprocessJob : IInterprocessJob
     /// <inheritdoc />
     public Entity Payload { get; }
 
+    /// <inheritdoc />
     public void Dispose()
     {
         // If the process that created the job is still running, end the job.

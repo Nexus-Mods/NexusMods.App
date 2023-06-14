@@ -40,10 +40,10 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame, IXboxGame
         var appData = installation.Store == GameStore.GOG
             ? fileSystem
                 .GetKnownPath(KnownPath.MyGamesDirectory)
-                .CombineUnchecked("Skyrim Special Edition GOG")
+                .Combine("Skyrim Special Edition GOG")
             : fileSystem
                 .GetKnownPath(KnownPath.MyGamesDirectory)
-                .CombineUnchecked("Skyrim Special Edition");
+                .Combine("Skyrim Special Edition");
 
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.AppData, appData);
     }

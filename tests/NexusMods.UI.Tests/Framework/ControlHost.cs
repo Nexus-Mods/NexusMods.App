@@ -18,25 +18,46 @@ public class ControlHost<TView, TVm, TInterface> : IAsyncDisposable
     where TInterface : class, IViewModelInterface
     where TVm : TInterface
 {
+    private readonly TView? _view;
+    private readonly TVm? _viewModel;
+    private readonly Window? _window;
+    private readonly AvaloniaApp? _app;
+
     /// <summary>
     /// The view control that is being tested.
     /// </summary>
-    public TView View { get; init; }
+    public TView View
+    {
+        get => _view!;
+        init => _view = value;
+    }
 
     /// <summary>
     /// The view model backing the view
     /// </summary>
-    public TVm ViewModel { get; init; }
+    public TVm ViewModel
+    {
+        get => _viewModel!;
+        init => _viewModel = value;
+    }
 
     /// <summary>
     /// The window that hosts the view
     /// </summary>
-    public Window Window { get; init; }
+    public Window Window
+    {
+        get => _window!;
+        init => _window = value;
+    }
 
     /// <summary>
     /// The app that hosts the window
     /// </summary>
-    public AvaloniaApp App { get; init; }
+    public AvaloniaApp App
+    {
+        get => _app!;
+        init => _app = value;
+    }
 
 
     public async ValueTask DisposeAsync()
@@ -48,24 +69,6 @@ public class ControlHost<TView, TVm, TInterface> : IAsyncDisposable
             // or we hide the window instead :|
             Window.Hide();
         });
-    }
-
-    /// <summary>
-    /// Executes an action on the UI thread and waits for it to complete.
-    /// </summary>
-    /// <param name="action"></param>
-    public async Task OnUi(Func<Task> action)
-    {
-        await Dispatcher.UIThread.InvokeAsync(action);
-        await Flush();
-    }
-
-    /// <summary>
-    /// Insures that all pending UI actions have been completed.
-    /// </summary>
-    public async Task Flush()
-    {
-        await Dispatcher.UIThread.InvokeAsync(() => { });
     }
 
     /// <summary>
@@ -81,19 +84,5 @@ public class ControlHost<TView, TVm, TInterface> : IAsyncDisposable
             var btn = View.GetControl<T>(launchbutton);
             return btn;
         });
-    }
-
-    /// <summary>
-    /// Clicks the button in a way that fires all the proper UI events
-    /// </summary>
-    /// <param name="button"></param>
-    public async Task Click(Button button)
-    {
-        await Dispatcher.UIThread.InvokeAsync(() =>
-        {
-            var peer = new ButtonAutomationPeer(button);
-            peer.Invoke();
-        });
-        await Flush();
     }
 }

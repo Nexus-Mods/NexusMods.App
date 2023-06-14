@@ -6,11 +6,19 @@ using NexusMods.DataModel.Loadouts.ModFiles;
 namespace NexusMods.CLI.Verbs;
 
 // ReSharper disable once ClassNeverInstantiated.Global
+/// <summary>
+/// Lists all the files in a mod
+/// </summary>
 public class ListModContents : AVerb<LoadoutMarker, string>
 {
     private readonly IRenderer _renderer;
+    /// <summary>
+    /// DI constructor
+    /// </summary>
+    /// <param name="configurator"></param>
     public ListModContents(Configurator configurator) => _renderer = configurator.Renderer;
 
+    /// <inheritdoc />
     public static VerbDefinition Definition => new("list-mod-contents", "Lists all the files in a mod",
         new OptionDefinition[]
         {
@@ -18,6 +26,7 @@ public class ListModContents : AVerb<LoadoutMarker, string>
             new OptionDefinition<string>("n", "modName", "The name of the mod to list")
         });
 
+    /// <inheritdoc />
     public async Task<int> Run(LoadoutMarker loadout, string modName, CancellationToken token)
     {
 

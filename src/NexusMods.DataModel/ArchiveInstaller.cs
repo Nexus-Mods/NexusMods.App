@@ -21,16 +21,28 @@ using NexusMods.Paths;
 
 namespace NexusMods.DataModel;
 
+/// <summary>
+/// Installs mods from archives previously analyzed by <see cref="IArchiveAnalyzer"/>.
+/// </summary>
 public class ArchiveInstaller : IArchiveInstaller
 {
     private readonly ILogger<ArchiveInstaller> _logger;
     private readonly IDataStore _dataStore;
-    private readonly IArchiveManager _archiveManager;
     private readonly IArchiveAnalyzer _archiveAnalyzer;
     private readonly LoadoutRegistry _registry;
     private readonly IModInstaller[] _modInstallers;
     private readonly IInterprocessJobManager _jobManager;
 
+    /// <summary>
+    /// DI Constructor
+    /// </summary>
+    /// <param name="logger"></param>
+    /// <param name="archiveAnalyzer"></param>
+    /// <param name="dataStore"></param>
+    /// <param name="archiveManager"></param>
+    /// <param name="registry"></param>
+    /// <param name="modInstallers"></param>
+    /// <param name="jobManager"></param>
     public ArchiveInstaller(ILogger<ArchiveInstaller> logger,
         IArchiveAnalyzer archiveAnalyzer,
         IDataStore dataStore,
@@ -42,12 +54,12 @@ public class ArchiveInstaller : IArchiveInstaller
         _logger = logger;
         _dataStore = dataStore;
         _registry = registry;
-        _archiveManager = archiveManager;
         _archiveAnalyzer = archiveAnalyzer;
         _jobManager = jobManager;
         _modInstallers = modInstallers.ToArray();
     }
-    
+
+    /// <inheritdoc />
     public async Task<ModId[]> AddMods(LoadoutId loadoutId, Hash archiveHash, string? defaultModName = null, CancellationToken token = default)
     {
         if (_archiveAnalyzer.GetAnalysisData(archiveHash) is not AnalyzedArchive analysisData)

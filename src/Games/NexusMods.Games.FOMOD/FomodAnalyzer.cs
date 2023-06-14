@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Runtime.CompilerServices;
+using System.Text;
 using FomodInstaller.Scripting.XmlScript;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
@@ -27,7 +28,7 @@ public class FomodAnalyzer : IFileAnalyzer
 
     public IEnumerable<FileType> FileTypes { get; } = new [] { FileType.XML };
 
-    public async IAsyncEnumerable<IFileAnalysisData> AnalyzeAsync(FileAnalyzerInfo info, CancellationToken ct = default)
+    public async IAsyncEnumerable<IFileAnalysisData> AnalyzeAsync(FileAnalyzerInfo info, [EnumeratorCancellation] CancellationToken ct = default)
     {
         // Not sourced from an archive.
         if (info.RelativePath == null)
@@ -59,7 +60,7 @@ public class FomodAnalyzer : IFileAnalyzer
                 if (string.IsNullOrEmpty(imagePath))
                     return;
 
-                var path = info.ParentArchive!.Value.Path.CombineChecked(imagePath);
+                var path = info.ParentArchive!.Value.Path.Combine(imagePath);
                 byte[] bytes;
                 try
                 {
@@ -96,7 +97,7 @@ public class FomodAnalyzer : IFileAnalyzer
 
     internal async Task<byte[]> GetPlaceholderImage(CancellationToken ct = default)
     {
-        return await _fileSystem.GetKnownPath(KnownPath.EntryDirectory).CombineChecked("Assets/InvalidImagePlaceholder.png")
+        return await _fileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Assets/InvalidImagePlaceholder.png")
             .ReadAllBytesAsync(ct);
     }
 }
@@ -119,7 +120,7 @@ public record FomodAnalyzerInfo : IFileAnalysisData
         // Dump Item
         async Task DumpItem(string relativePath, byte[] data)
         {
-            var finalPath = path.CombineUnchecked(relativePath);
+            var finalPath = path.Combine(relativePath);
             fs.CreateDirectory(finalPath.Parent);
             await fs.WriteAllBytesAsync(finalPath, data);
         }

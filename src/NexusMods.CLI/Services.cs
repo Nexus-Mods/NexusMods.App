@@ -18,9 +18,17 @@ using NexusMods.Common.UserInput;
 
 namespace NexusMods.CLI;
 
+/// <summary>
+/// Extension class for <see cref="IServiceCollection"/>
+/// </summary>
 public static class Services
 {
     // ReSharper disable once InconsistentNaming
+    /// <summary>
+    /// Adds the CLI services to the <see cref="IServiceCollection"/>
+    /// </summary>
+    /// <param name="services"></param>
+    /// <returns></returns>
     public static IServiceCollection AddCLI(this IServiceCollection services)
     {
         services.AddScoped<Configurator>();
@@ -36,19 +44,25 @@ public static class Services
 
         OSInformation.Shared.SwitchPlatform(
             ref services,
+#pragma warning disable CA1416
             onWindows: (ref IServiceCollection value) => value.AddSingleton<IProtocolRegistration, ProtocolRegistrationWindows>(),
             onLinux: (ref IServiceCollection value) => value.AddSingleton<IProtocolRegistration, ProtocolRegistrationLinux>()
+#pragma warning restore CA1416
         );
 
         // Protocol Handlers
         services.AddSingleton<IIpcProtocolHandler, NxmIpcProtocolHandler>();
         services.AddSingleton<IDownloadProtocolHandler, NxmDownloadProtocolHandler>();
-        
+
         services.AddVerb<AnalyzeArchive>()
             .AddVerb<Apply>()
+            .AddVerb<AssociateNxm>()
             .AddVerb<ChangeTracking>()
-            .AddVerb<ExtractArchive>()
+            .AddVerb<DownloadAndInstallMod>()
+            .AddVerb<DownloadLinks>()
+            .AddVerb<DownloadUri>()
             .AddVerb<ExportLoadout>()
+            .AddVerb<ExtractArchive>()
             .AddVerb<FlattenList>()
             .AddVerb<HashFolder>()
             .AddVerb<InstallMod>()
@@ -59,18 +73,14 @@ public static class Services
             .AddVerb<ListMods>()
             .AddVerb<ListTools>()
             .AddVerb<ManageGame>()
+            .AddVerb<NexusApiVerify>()
+            .AddVerb<NexusGames>()
+            .AddVerb<NexusLogin>()
+            .AddVerb<NexusLogout>()
             .AddVerb<ProtocolInvoke>()
             .AddVerb<Rename>()
             .AddVerb<RunTool>()
-            .AddVerb<DownloadUri>()
-            .AddVerb<AssociateNxm>()
-            .AddVerb<DownloadAndInstallMod>()
-            .AddVerb<SetNexusAPIKey>()
-            .AddVerb<NexusApiVerify>()
-            .AddVerb<NexusGames>()
-            .AddVerb<DownloadLinks>()
-            .AddVerb<NexusLogin>()
-            .AddVerb<NexusLogout>();
+            .AddVerb<SetNexusAPIKey>();
 
         services.AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ => new Resource<IExtractor, Size>("File Extraction"));
         services.AddAllSingleton<IResource, IResource<ArchiveAnalyzer, Size>>(_ => new Resource<ArchiveAnalyzer, Size>("File Analysis"));

@@ -14,7 +14,7 @@ public readonly struct LoadoutMarker
     private readonly LoadoutId _id;
 
     /// <summary/>
-    /// <param name="manager">Manager providing utility functionality for this marker.</param>
+    /// <param name="registry"></param>
     /// <param name="id"></param>
     public LoadoutMarker(LoadoutRegistry registry, LoadoutId id)
     {

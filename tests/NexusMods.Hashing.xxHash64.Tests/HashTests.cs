@@ -58,7 +58,7 @@ public class HashTests
     [Fact]
     public async Task CanHashFile()
     {
-        var file = _fileSystem.GetKnownPath(KnownPath.CurrentDirectory).CombineUnchecked($"tempFile{Guid.NewGuid()}");
+        var file = _fileSystem.GetKnownPath(KnownPath.CurrentDirectory).Combine($"tempFile{Guid.NewGuid()}");
         await file.WriteAllTextAsync(_knownString);
         (await file.XxHash64Async()).Should().Be(_knownHash);
     }
@@ -66,7 +66,7 @@ public class HashTests
     [Fact]
     public async Task CanHashLargeFile()
     {
-        var file = _fileSystem.GetKnownPath(KnownPath.CurrentDirectory).CombineUnchecked($"tempFile{Guid.NewGuid()}");
+        var file = _fileSystem.GetKnownPath(KnownPath.CurrentDirectory).Combine($"tempFile{Guid.NewGuid()}");
         var emptyArray = new byte[1024 * 1024 * 10];
         for (var x = 0; x < emptyArray.Length; x++)
         {

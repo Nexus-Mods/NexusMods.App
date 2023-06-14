@@ -104,8 +104,8 @@ public class LoggingSettings : ILoggingSettings
     {
         var baseFolder = fileSystem.GetKnownPath(KnownPath.EntryDirectory);
         baseFolder.CreateDirectory();
-        FilePath = new ConfigurationPath(baseFolder.CombineUnchecked(LogFileName));
-        ArchiveFilePath = new ConfigurationPath(baseFolder.CombineUnchecked(LogFileNameTemplate));
+        FilePath = new ConfigurationPath(baseFolder.Combine(LogFileName));
+        ArchiveFilePath = new ConfigurationPath(baseFolder.Combine(LogFileNameTemplate));
         MaxArchivedFiles = 10;
     }
 

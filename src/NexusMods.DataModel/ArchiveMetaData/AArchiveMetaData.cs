@@ -31,9 +31,11 @@ public abstract record AArchiveMetaData : Entity
     /// from a NexusMods API call.
     /// </summary>
     public required Quality Quality { get; init; }
-    
+
+    /// <inheritdoc />
     public override EntityCategory Category => EntityCategory.ArchiveMetaData;
 
+    /// <inheritdoc />
     protected override IId Persist(IDataStore store)
     {
         var id = store.ContentHashId(this, out var data);

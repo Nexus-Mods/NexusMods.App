@@ -3,6 +3,7 @@ using FluentAssertions;
 using NexusMods.App.UI.RightContent.LoadoutGrid;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.Cursors;
 using NexusMods.DataModel.Loadouts.Mods;
 
 namespace NexusMods.UI.Tests;
@@ -31,19 +32,40 @@ public class LoadoutGridViewModelTests : AVmTest<ILoadoutGridViewModel>
             });
         }
 
-        await Task.Delay(1000);
-        Vm.Mods.Count.Should().Be(11, "because 10 mods were added, and we started with one");
+        await Eventually(() =>
+        {
+            Vm.Mods.Count.Should().Be(11, "because 10 mods were added, and we started with one");
+        });
         
         var toDelete = Random.Shared.Next(1, 8);
         var toDeleteIds = ids.Take(toDelete).ToList();
 
         await Vm.DeleteMods(toDeleteIds, "Delete mods");
-        await Task.Delay(1000);
 
-        Vm.Mods.Count.Should().Be(11 - toDelete, $"because {toDelete} mods were deleted of {10}");
-        foreach (var id in toDeleteIds)
+
+        await Eventually(() =>
         {
-            Vm.Mods.Any(m => m.ModId == id).Should().BeFalse();
-        }
+
+            Vm.Mods.Count.Should().Be(11 - toDelete, $"because {toDelete} mods were deleted of {10}");
+            foreach (var id in toDeleteIds)
+            {
+                Vm.Mods.Any(m => m.ModId == id).Should().BeFalse();
+            }
+        });
+    }
+
+    [Fact]
+    public async Task AddingModUpdatesTheModSource()
+    {
+        Vm.LoadoutId = Loadout.Value.LoadoutId;
+
+        var ids = await InstallMod(DataZipLzma);
+
+        await Eventually(() =>
+        {
+            Vm.Mods.Count.Should().Be(2);
+            Vm.Mods.Should().Contain(new ModCursor(Loadout.Value.LoadoutId, ids.First()));
+        });
+
     }
 }

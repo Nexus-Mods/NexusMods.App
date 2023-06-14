@@ -18,7 +18,7 @@ namespace NexusMods.Games.RedEngine.ModInstallers;
 /// </summary>
 public class FolderlessModInstaller : IModInstaller
 {
-    private static readonly RelativePath Destination = @"archive\pc\mod".ToRelativePath();
+    private static readonly RelativePath Destination = "archive/pc/mod".ToRelativePath();
 
     public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {

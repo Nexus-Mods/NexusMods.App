@@ -28,23 +28,27 @@ public struct ConfigurationPath : IEquatable<ConfigurationPath>
     /// Raw, unmodified path.
     /// </summary>
     public string RawPath { get; set; }
-    
-    public IFileSystem FileSystem { get;}
+
+    /// <summary>
+    /// The filesystem used by this path when it constructs absolute paths.
+    /// </summary>
+    public IFileSystem FileSystem { get; }
 
     /// <summary>
     /// Creates a new configuration path.
     /// </summary>
     /// <param name="rawPath">Raw path which can include expansion monikers.</param>
+    /// <param name="fileSystem">The filesystem to use when converting to AbsolutePaths</param>
     public ConfigurationPath(string rawPath, IFileSystem fileSystem)
     {
         RawPath = rawPath;
         FileSystem = fileSystem;
     }
-    
+
     /// <summary>
-    /// Creates a new configuration path.
+    /// Creates a new configuration path, with the default global filesystem
     /// </summary>
-    /// <param name="rawPath">Raw path which can include expansion monikers.</param>
+    /// <param name="path"></param>
     public ConfigurationPath(AbsolutePath path)
     {
         RawPath = path.GetFullPath();
@@ -54,7 +58,7 @@ public struct ConfigurationPath : IEquatable<ConfigurationPath>
     /// <summary>
     /// Retrieves the full path behind this configuration parameter.
     /// </summary>
-    public string GetFullPath() => FileSystem.ExpandKnownFoldersPath(RawPath);
+    public string GetFullPath() => FileSystem.ExpandKnownFoldersPath(RawPath).GetFullPath();
 
     /// <inheritdoc />
     public override string ToString() => GetFullPath();
@@ -62,8 +66,8 @@ public struct ConfigurationPath : IEquatable<ConfigurationPath>
     /// <summary>
     /// Converts the current string to an absolute path.
     /// </summary>
-    public AbsolutePath ToAbsolutePath() => AbsolutePath.FromFullPath(GetFullPath(), FileSystem);
-    
+    public AbsolutePath ToAbsolutePath() => AbsolutePath.FromUnsanitizedFullPath(GetFullPath(), FileSystem);
+
     /// <inheritdoc />
     public bool Equals(ConfigurationPath other) => RawPath == other.RawPath;
 
@@ -88,7 +92,7 @@ public class ConfigurationPathJsonConverter : JsonConverter<ConfigurationPath>
     {
         _fileSystem = FileSystem.Shared;
     }
-    
+
     /// <summary>
     /// DI constructor.
     /// </summary>
@@ -97,7 +101,7 @@ public class ConfigurationPathJsonConverter : JsonConverter<ConfigurationPath>
     {
         _fileSystem = fileSystem;
     }
-    
+
     /// <inheritdoc />
     public override ConfigurationPath Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

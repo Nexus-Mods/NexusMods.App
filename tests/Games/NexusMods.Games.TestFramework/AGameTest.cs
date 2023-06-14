@@ -253,7 +253,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     protected async Task<TemporaryPath> CreateTestFile(string fileName, byte[] contents)
     {
         var folder = TemporaryFileManager.CreateFolder();
-        var path = folder.Path.CombineUnchecked(fileName);
+        var path = folder.Path.Combine(fileName);
         var file = new TemporaryPath(FileSystem, path);
 
         await path.WriteAllBytesAsync(contents);

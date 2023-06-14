@@ -1,10 +1,12 @@
 ﻿using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
+using Avalonia.Controls;
 using DynamicData;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid;
 
@@ -17,6 +19,7 @@ public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>,
         new(new ObservableCollection<ModCursor>());
 
     public ReadOnlyObservableCollection<ModCursor> Mods => _filteredMods;
+    
     public LoadoutId LoadoutId { get; set; } = Initializers.LoadoutId;
 
     private readonly SourceCache<IDataGridColumnFactory, ColumnType> _columns;
@@ -32,6 +35,19 @@ public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>,
     {
         _mods.Edit(x => { x.AddOrUpdate(new ModCursor(LoadoutId, ModId.From(Guid.NewGuid()))); });
         return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Used for unit tests
+    /// </summary>
+    /// <param name="cursor">Row to add</param>
+    /// <returns></returns>
+    public void AddMod(ModCursor cursor)
+    {
+        _mods.Edit(x =>
+        {
+            x.AddOrUpdate(cursor);
+        });
     }
 
     public Task DeleteMods(IEnumerable<ModId> modsToDelete, string commitMessage)
@@ -81,7 +97,10 @@ public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>,
                     modId => new ModNameView
                     {
                         ViewModel = new ModNameDesignViewModel { Row = modId }
-                    }, ColumnType.Name));
+                    }, ColumnType.Name)
+                {
+                    Width = new DataGridLength(1, DataGridLengthUnitType.Star)
+                });
             x.AddOrUpdate(
                 new DataGridColumnDesignFactory<IModVersionViewModel,
                     ModCursor>(modId => new ModVersionView

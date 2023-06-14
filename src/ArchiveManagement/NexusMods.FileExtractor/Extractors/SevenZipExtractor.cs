@@ -27,7 +27,7 @@ public class SevenZipExtractor : IExtractor
     private readonly ILogger<SevenZipExtractor> _logger;
     private readonly IResource<IExtractor, Size> _limiter;
 
-    private static readonly IOSInformation OSInformation = Common.OSInformation.Shared;
+    private static readonly IOSInformation OSInformation = Paths.OSInformation.Shared;
 
     private static readonly FileType[] SupportedTypesCached = { FileType._7Z, FileType.RAR_NEW, FileType.RAR_OLD, FileType.ZIP };
     private static readonly Extension[] SupportedExtensionsCached = { KnownExtensions._7z, KnownExtensions.Rar, KnownExtensions.Zip, KnownExtensions._7zip };
@@ -45,13 +45,13 @@ public class SevenZipExtractor : IExtractor
     /// <param name="logger">Provides logger support. Use <see cref="NullLogger.Instance"/> if you don't want logging.</param>
     /// <param name="fileManager">Manager that can be used to create temporary folders.</param>
     /// <param name="limiter">Limits CPU core usage depending on our use case.</param>
+    /// <param name="fileSystem">Filesystem to use when constructing and using paths</param>
     public SevenZipExtractor(ILogger<SevenZipExtractor> logger, TemporaryFileManager fileManager, IResource<IExtractor, Size> limiter, IFileSystem fileSystem)
     {
         _logger = logger;
         _manager = fileManager;
         _limiter = limiter;
-        _exePath = fileSystem.GetKnownPath(KnownPath.EntryDirectory)
-            .CombineChecked(GetExeLocation().ToRelativePath()).ToString();
+        _exePath = fileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine(GetExeLocation().ToRelativePath()).ToString();
     }
 
     /// <inheritdoc />
@@ -166,8 +166,8 @@ public class SevenZipExtractor : IExtractor
             throw new NotSupportedException($"{nameof(NexusMods.FileExtractor)}'s {nameof(SevenZipExtractor)} only supports x64 processors.");
 
         return OSInformation.MatchPlatform(
-            onWindows: () => @"runtimes\win-x64\native\7z.exe",
-            onLinux: () => @"runtimes/linux-x64/native/7zz",
+            onWindows: () => "runtimes/win-x64/native/7z.exe",
+            onLinux: () => "runtimes/linux-x64/native/7zz",
             onOSX: () => "runtimes/osx-x64/native/7zz"
         );
     }

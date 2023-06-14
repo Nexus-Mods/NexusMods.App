@@ -42,7 +42,7 @@
             <Setter Property="BorderBrush" Value="{DynamicResource ContentSecondary}" />
             <Setter Property="Background" Value="#01FFFFFF" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="BorderDashArray" Value="2, 2" />
+            <!--<Setter Property="BorderDashArray" Value="2, 2" />-->
 
             <Setter Property="Transitions">
                 <Transitions>
@@ -58,14 +58,14 @@
             <Setter Property="Background" Value="#4CFFFFFF" />
             <Setter Property="BorderBrush" Value="{DynamicResource ContentSecondaryBrush}" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="BorderDashArray" Value="0, 0" />
+            <!--<Setter Property="BorderDashArray" Value="0, 0" />-->
         </Style>
 
         <Style Selector="Button.Spine.Active.Add Border">
             <Setter Property="Background" Value="#00FFFFFF" />
             <Setter Property="BorderBrush" Value="#FFFFFF" />
             <Setter Property="BorderThickness" Value="2" />
-            <Setter Property="BorderDashArray" Value="0, 0" />
+            <!--<Setter Property="BorderDashArray" Value="0, 0" />-->
             <Setter Property="BoxShadow" Value="0 0 10 0 #66FFFFFF" />
         </Style>
 

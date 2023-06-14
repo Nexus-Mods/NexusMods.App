@@ -2,6 +2,9 @@
 
 namespace NexusMods.DataModel.Extensions;
 
+/// <summary>
+/// Extensions for <see cref="ObjectPool{T}"/>.
+/// </summary>
 public static class ObjectPoolExtensions
 {
     /// <summary>
@@ -28,6 +31,10 @@ public struct ObjectPoolDisposable<T> : IDisposable where T : class
     private readonly ObjectPool<T> _pool;
     private T _value;
 
+    /// <summary>
+    /// The value wrapped by this disposable.
+    /// </summary>
+    /// <exception cref="ObjectDisposedException"></exception>
     public T Value
     {
         get
