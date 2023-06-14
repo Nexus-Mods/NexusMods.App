@@ -33,6 +33,7 @@ public static class Helpers
             ColumnType.Enabled => new ModEnabledHeader(),
             ColumnType.Game => new TextBlock { Text = "GAME" },
             ColumnType.Size => new TextBlock { Text = "SIZE" },
+            ColumnType.PauseResume => new TextBlock { Text = "" }, // no title for this column
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
     }

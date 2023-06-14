@@ -14,5 +14,6 @@ public enum ColumnType
     
     // Download
     Game,
-    Size
+    Size,
+    PauseResume
 }
