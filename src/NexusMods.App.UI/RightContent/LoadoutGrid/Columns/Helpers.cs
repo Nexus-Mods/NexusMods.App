@@ -30,7 +30,7 @@ public static class Helpers
             ColumnType.Version => new TextBlock { Text = "VERSION" },
             ColumnType.Category => new TextBlock { Text = "CATEGORY" },
             ColumnType.Installed => new TextBlock { Text = "INSTALLED" },
-            ColumnType.Enabled => new ModEnabledHeader(),
+            ColumnType.Enabled => new ModEnabled.ModEnabledHeader(),
             ColumnType.Game => new TextBlock { Text = "GAME" },
             ColumnType.Size => new TextBlock { Text = "SIZE" },
             ColumnType.PauseResume => new TextBlock { Text = "" }, // no title for this column

@@ -17,11 +17,25 @@ using NexusMods.App.UI.RightContent.Downloads;
 using NexusMods.App.UI.RightContent.Home;
 using NexusMods.App.UI.RightContent.LoadoutGrid;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
+using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadName;
+using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadPausePlay;
+using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadSize;
+using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadStatus;
+using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModCategory;
+using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModEnabled;
+using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModInstalled;
+using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModName;
+using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModVersion;
 using NexusMods.App.UI.RightContent.MyGames;
 using NexusMods.App.UI.Routing;
 using NexusMods.App.UI.Windows;
 using ReactiveUI;
 using ImageButton = NexusMods.App.UI.Controls.Spine.Buttons.Image.ImageButton;
+using ModCategoryView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModCategory.ModCategoryView;
+using ModEnabledView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModEnabled.ModEnabledView;
+using ModInstalledView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModInstalled.ModInstalledView;
+using ModNameView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModName.ModNameView;
+using ModVersionView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModVersion.ModVersionView;
 
 namespace NexusMods.App.UI;
 
@@ -65,6 +79,10 @@ public static class Services
             .AddViewModel<SpineViewModel, ISpineViewModel>()
             .AddViewModel<TopBarViewModel, ITopBarViewModel>()
             .AddViewModel<DownloadButtonViewModel, IDownloadButtonViewModel>()
+            .AddViewModel<DownloadNameViewModel, IDownloadNameViewModel>()
+            .AddViewModel<DownloadPausePlayViewModel, IDownloadPausePlayViewModel>()
+            .AddViewModel<DownloadSizeViewModel, IDownloadSizeViewModel>()
+            .AddViewModel<DownloadStatusViewModel, IDownloadStatusViewModel>()
 
             // Views
             .AddView<CompletedView, ICompletedViewModel>()
@@ -93,6 +111,10 @@ public static class Services
             .AddView<Spine, ISpineViewModel>()
             .AddView<TopBarView, ITopBarViewModel>()
             .AddView<DownloadButtonView, IDownloadButtonViewModel>()
+            .AddView<DownloadNameView, IDownloadNameViewModel>()
+            .AddView<DownloadPausePlayView, IDownloadPausePlayViewModel>()
+            .AddView<DownloadSizeView, IDownloadSizeViewModel>()
+            .AddView<DownloadStatusView, IDownloadStatusViewModel>()
 
             // Other
             .AddSingleton<InjectedViewLocator>()

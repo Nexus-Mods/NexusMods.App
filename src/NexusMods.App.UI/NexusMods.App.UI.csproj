@@ -120,41 +120,17 @@
             <DependentUpon>MainWindow.axaml</DependentUpon>
             <SubType>Code</SubType>
         </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\ModEnabledDesignViewModel.cs">
-            <DependentUpon>IModEnabledViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="RightContent\FoundGamesViewModel.cs">
             <DependentUpon>IFoundGamesViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="RightContent\FoundGamesDesignViewModel.cs">
             <DependentUpon>IFoundGamesViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\ModEnabledViewModel.cs">
-            <DependentUpon>IModEnabledViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\ModCategoryDesignViewModel.cs">
-            <DependentUpon>IModCategoryViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\ModInstalledDesignViewModel.cs">
-            <DependentUpon>IModInstalledViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\ModVersionDesignViewModel.cs">
-            <DependentUpon>IModVersionViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="RightContent\LoadoutGrid\LoadoutGridDesignViewModel.cs">
             <DependentUpon>ILoadoutGridViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="RightContent\LoadoutGrid\LoadoutGridViewModel.cs">
             <DependentUpon>ILoadoutGridViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\ModInstalledViewModel.cs">
-            <DependentUpon>IModInstalledViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\ModVersionViewModel.cs">
-            <DependentUpon>IModVersionViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\ModCategoryViewModel.cs">
-            <DependentUpon>IModCategoryViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="RightContent\Downloads\CompletedDesignViewModel.cs">
             <DependentUpon>ICompletedViewModel.cs</DependentUpon>
@@ -204,41 +180,105 @@
         <Compile Update="RightContent\Downloads\ViewModels\DownloadTaskDesignViewModel.cs">
           <DependentUpon>IDownloadTaskViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\ModNameDesignViewModel.cs">
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModCategory\ModCategoryView.axaml.cs">
+          <DependentUpon>ModCategoryView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModCategory\ModCategoryDesignViewModel.cs">
+          <DependentUpon>IModCategoryViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModCategory\ModCategoryViewModel.cs">
+          <DependentUpon>IModCategoryViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModName\ModNameView.axaml.cs">
+          <DependentUpon>ModNameView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModName\ModNameDesignViewModel.cs">
           <DependentUpon>IModNameViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\ModNameViewModel.cs">
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModName\ModNameViewModel.cs">
           <DependentUpon>IModNameViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadGameDesignViewModel.cs">
-          <DependentUpon>IDownloadGameViewModel.cs</DependentUpon>
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModEnabled\ModEnabledHeader.axaml.cs">
+          <DependentUpon>ModEnabledHeader.axaml</DependentUpon>
+          <SubType>Code</SubType>
         </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadGameView.axaml.cs">
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModEnabled\ModEnabledView.axaml.cs">
+          <DependentUpon>ModEnabledView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModEnabled\ModEnabledDesignViewModel.cs">
+          <DependentUpon>IModEnabledViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModEnabled\ModEnabledViewModel.cs">
+          <DependentUpon>IModEnabledViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadGameView\DownloadGameView.axaml.cs">
           <DependentUpon>DownloadGameView.axaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadGameViewModel.cs">
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadGameView\DownloadGameViewModel.cs">
           <DependentUpon>IDownloadGameViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadSizeDesignViewModel.cs">
-          <DependentUpon>IDownloadSizeViewModel.cs</DependentUpon>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadGameView\DownloadGameDesignViewModel.cs">
+          <DependentUpon>IDownloadGameViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadSizeViewModel.cs">
-          <DependentUpon>IDownloadSizeViewModel.cs</DependentUpon>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadName\DownloadNameViewModel.cs">
+          <DependentUpon>IDownloadNameViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadSizeView.axaml.cs">
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadName\DownloadNameDesignViewModel.cs">
+          <DependentUpon>IDownloadNameViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadSize\DownloadSizeView.axaml.cs">
           <DependentUpon>DownloadSizeView.axaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadStatusDesignViewModel.cs">
-          <DependentUpon>IDownloadStatusViewModel.cs</DependentUpon>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadSize\DownloadSizeViewModel.cs">
+          <DependentUpon>IDownloadSizeViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadStatusViewModel.cs">
-          <DependentUpon>IDownloadStatusViewModel.cs</DependentUpon>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadSize\DownloadSizeDesignViewModel.cs">
+          <DependentUpon>IDownloadSizeViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadStatusView.axaml.cs">
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModInstalled\ModInstalledView.axaml.cs">
+          <DependentUpon>ModInstalledView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModInstalled\ModInstalledDesignViewModel.cs">
+          <DependentUpon>ModInstalledViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModInstalled\IModInstalledViewModel.cs">
+          <DependentUpon>ModInstalledViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadStatus\DownloadStatusView.axaml.cs">
           <DependentUpon>DownloadStatusView.axaml</DependentUpon>
           <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadStatus\DownloadStatusViewModel.cs">
+          <DependentUpon>IDownloadStatusViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadStatus\DownloadStatusDesignViewModel.cs">
+          <DependentUpon>IDownloadStatusViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModVersion\ModVersionView.axaml.cs">
+          <DependentUpon>ModVersionView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModVersion\ModVersionDesignViewModel.cs">
+          <DependentUpon>IModVersionViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModVersion\ModVersionViewModel.cs">
+          <DependentUpon>IModVersionViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadPausePlay\DownloadPausePlayView.axaml.cs">
+          <DependentUpon>DownloadNameView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadPausePlay\DownloadPausePlayDesignViewModel.cs">
+          <DependentUpon>IDownloadPausePlayViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadPausePlay\DownloadPausePlayViewModel.cs">
+          <DependentUpon>IDownloadPausePlayViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

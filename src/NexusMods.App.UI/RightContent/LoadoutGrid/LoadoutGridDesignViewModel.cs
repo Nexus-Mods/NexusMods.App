@@ -3,10 +3,20 @@ using System.Reactive.Disposables;
 using Avalonia.Controls;
 using DynamicData;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
+using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModCategory;
+using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModEnabled;
+using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModInstalled;
+using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModName;
+using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModVersion;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using ModCategoryView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModCategory.ModCategoryView;
+using ModEnabledView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModEnabled.ModEnabledView;
+using ModInstalledView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModInstalled.ModInstalledView;
+using ModNameView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModName.ModNameView;
+using ModVersionView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModVersion.ModVersionView;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid;
 
