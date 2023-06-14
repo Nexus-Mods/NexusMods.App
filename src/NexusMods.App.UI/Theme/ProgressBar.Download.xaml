@@ -6,6 +6,9 @@
         <StackPanel Width="200" Spacing="8" Margin="8">
             <ProgressBar Classes="DownloadBar" Minimum="0" Maximum="1"/>
             <ProgressBar Classes="DownloadBar" Minimum="0" Maximum="1" Value="0.75"/>
+            
+            <!-- For Classes.DisabledDownloadBar see Conditional Classes at https://docs.avaloniaui.net/docs/styling/styles -->
+            <ProgressBar Classes="DownloadBar" Classes.DisabledDownloadBar="true" Minimum="0" Maximum="1" Value="0"/>
         </StackPanel>
     </Design.PreviewWith>
     
@@ -16,6 +19,10 @@
         <Setter Property="Background" Value="#330555b8"/>
         <Setter Property="MinWidth" Value="100"/>
         <Setter Property="ProgressTextFormat" Value="Total {1:0}%"/>
+    </Style>
+    
+    <Style Selector="ProgressBar.DisabledDownloadBar">
+        <Setter Property="Background" Value="{DynamicResource BrandSecondary}"/>
     </Style>
     
     <Style Selector="ProgressBar.DownloadBar TextBlock">

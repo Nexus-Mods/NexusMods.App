@@ -1,4 +1,5 @@
-﻿using System.Reactive.Disposables;
+﻿using System.Diagnostics;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
@@ -23,6 +24,18 @@ public partial class DownloadStatusView : ReactiveUserControl<IDownloadStatusVie
 
             this.WhenAnyValue(view => view.DataContext)
                 .SubscribeWithErrorLogging(logger: default)
+                .DisposeWith(d);
+            
+            this.WhenAnyValue(vm => vm.ViewModel!.IsRunning)
+                .OnUI()
+                .Subscribe(isRunning =>
+                {
+                    // TODO: I (Sewer) am not particularly a fan of this; but I'm not sure of the best alternative for now.
+                    if (isRunning)
+                        DownloadProgressBar.Classes.Remove("DisabledDownloadBar");
+                    else
+                        DownloadProgressBar.Classes.Add("DisabledDownloadBar");
+                })
                 .DisposeWith(d);
         });
     }

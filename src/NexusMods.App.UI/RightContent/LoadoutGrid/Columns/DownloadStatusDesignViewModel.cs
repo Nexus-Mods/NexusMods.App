@@ -31,7 +31,7 @@ public class DownloadStatusDesignViewModel : AViewModel<IDownloadStatusViewModel
                 .DisposeWith(d);
             
             this.WhenAnyValue(vm => vm.Row.Status)
-                .Select(status => status != DownloadTaskStatus.Idle && status != DownloadTaskStatus.Paused)
+                .Select(status => !(status is DownloadTaskStatus.Idle or DownloadTaskStatus.Paused))
                 .BindToUi(this, vm => vm.IsRunning)
                 .DisposeWith(d);
             

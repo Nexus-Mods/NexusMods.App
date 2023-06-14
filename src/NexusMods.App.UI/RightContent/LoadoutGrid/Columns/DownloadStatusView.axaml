@@ -14,7 +14,8 @@
         <columns:DownloadStatusDesignViewModel />
     </Design.DataContext>
 
-    <ProgressBar Classes="DownloadBar" Name="DownloadProgressBar" 
+    <ProgressBar Classes="DownloadBar" 
+                 Name="DownloadProgressBar" 
                  Minimum="0" Maximum="1" ShowProgressText="True" />
 </reactiveUi:ReactiveUserControl>
 
