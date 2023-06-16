@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.Controls;
 using DynamicData;
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
@@ -12,6 +13,7 @@ using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadStatus;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadVersion;
 using NexusMods.Networking.Downloaders.Interfaces;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using DownloadNameView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadName.DownloadNameView;
 
 namespace NexusMods.App.UI.RightContent.Downloads;
@@ -24,8 +26,10 @@ public class InProgressDesignViewModel : AViewModel<IInProgressViewModel>, IInPr
     private ReadOnlyObservableCollection<IDataGridColumnFactory>
         _filteredColumns = new(new ObservableCollection<IDataGridColumnFactory>());
     public ReadOnlyObservableCollection<IDataGridColumnFactory> Columns => _filteredColumns;
-
     
+    [Reactive]
+    public bool IsRunning { get; set; }
+
     private readonly CancellationTokenSource _backgroundUpdateToken = new();
 
     public InProgressDesignViewModel()
@@ -123,6 +127,11 @@ public class InProgressDesignViewModel : AViewModel<IInProgressViewModel>, IInPr
                 .Subscribe()
                 .DisposeWith(d);
 
+            this.WhenAnyValue(vm => vm.Tasks)
+                .Select(task => task.Any(x => !(x.Status is DownloadTaskStatus.Idle or DownloadTaskStatus.Paused)))
+                .BindToUi(this, vm => vm.IsRunning)
+                .DisposeWith(d);
+            
             _backgroundUpdateToken.DisposeWith(d);
         });
     }

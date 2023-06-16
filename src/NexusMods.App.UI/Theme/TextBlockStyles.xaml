@@ -96,4 +96,8 @@
         <Setter Property="LineHeight" Value="21" />
         <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryColor}" />
     </Style>
+    
+    <Style Selector="TextBlock.UsesAccentLighterColor">
+        <Setter Property="Foreground" Value="{DynamicResource BrandAccentLighter}" />
+    </Style>
 </Styles>

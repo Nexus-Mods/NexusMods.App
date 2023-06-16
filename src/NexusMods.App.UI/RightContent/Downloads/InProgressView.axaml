@@ -66,11 +66,13 @@
                     <!-- Note: Can use 'run' here, but don't want to make separate styles for 'run' -->
                     <TextBlock VerticalAlignment="Center"
                                Classes="Body2RobotoRegularBold" 
-                               Text="0 mins" Margin="0,0,4,0" />
+                               Text="0 mins" Margin="0,0,4,0"
+                               x:Name="BoldMinutesRemainingTextBlock" />
                 
                     <TextBlock VerticalAlignment="Center"
                                Classes="Body2RobotoRegular" 
-                               Text="remaining" />
+                               Text="remaining"
+                               x:Name="MinutesRemainingTextBlock" />
                 
                 </StackPanel>
             
