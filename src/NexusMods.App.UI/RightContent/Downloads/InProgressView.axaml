@@ -7,7 +7,7 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:downloads="clr-namespace:NexusMods.App.UI.RightContent.Downloads"
     xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
-    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    mc:Ignorable="d" d:DesignWidth="920" d:DesignHeight="664"
     x:Class="NexusMods.App.UI.RightContent.Downloads.InProgressView">
     <Design.DataContext>
         <downloads:InProgressDesignViewModel/>
@@ -81,11 +81,11 @@
         
             <!-- Currently Downloaded Mods -->
             <DataGrid
+                HorizontalAlignment="Stretch"
                 CanUserReorderColumns="True"
                 CanUserResizeColumns="True"
                 CanUserSortColumns="True"
-                AutoGenerateColumns="True"
-                Margin="24,16"
+                Margin="-16,16"
                 x:Name="ModsDataGrid" />
         </StackPanel>
     </StackPanel>

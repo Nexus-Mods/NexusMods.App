@@ -35,6 +35,28 @@ public partial class DownloadStatusView : ReactiveUserControl<IDownloadStatusVie
                         DownloadProgressBar.Classes.Add("DisabledDownloadBar");
                 })
                 .DisposeWith(d);
+            
+            this.WhenAnyValue(vm => vm.ViewModel!.CanPause)
+                .OnUI()
+                .Subscribe(canPause =>
+                {
+                    // TODO: Not a fan of this either, but best we got.
+                    const string playIcon = "PlayCircleOutline";
+                    const string pauseIcon = "PauseCircleOutline";
+                    var classes = PlayPauseIcon.Classes;
+                    
+                    if (canPause)
+                    {
+                        classes.Remove(playIcon);
+                        classes.Add(pauseIcon);
+                    }
+                    else
+                    {
+                        classes.Remove(pauseIcon);
+                        classes.Add(playIcon);
+                    }
+                })
+                .DisposeWith(d);
         });
     }
 }

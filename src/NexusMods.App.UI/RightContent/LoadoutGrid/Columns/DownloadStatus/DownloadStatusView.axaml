@@ -11,13 +11,23 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:modName="clr-namespace:NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModName"
-    xmlns:downloadStatus="clr-namespace:NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadStatus">
+    xmlns:downloadStatus="clr-namespace:NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadStatus"
+    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia">
     <Design.DataContext>
         <downloadStatus:DownloadStatusDesignViewModel />
     </Design.DataContext>
 
-    <ProgressBar Classes="DownloadBar" 
-                 Name="DownloadProgressBar" 
-                 Minimum="0" Maximum="1" ShowProgressText="True" />
+    <StackPanel Orientation="Horizontal">
+        
+        <ProgressBar Classes="DownloadBar" 
+                     Name="DownloadProgressBar" 
+                     Minimum="0" Maximum="1" ShowProgressText="True"
+                     Width="137" />
+        
+        <Button Height="24" Width="24" Padding="0" Margin="18,0,18,0">
+            <avalonia:Icon FontSize="24" Margin="0" Foreground="{DynamicResource BrandGray}" x:Name="PlayPauseIcon" />
+        </Button>
+        
+    </StackPanel>
 </reactiveUi:ReactiveUserControl>
 

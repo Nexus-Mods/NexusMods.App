@@ -7,5 +7,8 @@ namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadName;
 /// </summary>
 public interface IDownloadNameViewModel : IColumnViewModel<IDownloadTaskViewModel>
 {
-    public string Game { get; }
+    /// <summary>
+    /// e.g. 'My Cool Mod'
+    /// </summary>
+    public string Name { get; }
 }

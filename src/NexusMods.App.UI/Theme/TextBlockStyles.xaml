@@ -54,8 +54,7 @@
         <Setter Property="LineHeight" Value="16.41" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
     </Style>
-
-
+    
     <Style Selector="TextBlock.H5MontserratSemi">
         <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
         <Setter Property="FontWeight" Value="600" />

@@ -15,7 +15,6 @@
         <modVersion:ModVersionDesignViewModel />
     </Design.DataContext>
     <TextBlock
-        Classes="Body2RobotoRegular"
         VerticalAlignment="Center"
         x:Name="VersionTextBlock" />
 </reactiveUi:ReactiveUserControl>

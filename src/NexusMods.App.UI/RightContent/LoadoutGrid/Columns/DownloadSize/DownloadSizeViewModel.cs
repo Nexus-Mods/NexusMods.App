@@ -24,5 +24,7 @@ public class DownloadSizeViewModel : AViewModel<IDownloadSizeViewModel>, IDownlo
                 .DisposeWith(d);
         });
     }
+    
+    // TODO: Implement sorting; it's unclear how to implement this sort currently.
 }
 

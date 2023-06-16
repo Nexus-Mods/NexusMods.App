@@ -1,21 +1,23 @@
 ﻿<reactiveUi:ReactiveUserControl
-    d:DesignHeight="44"
-    d:DesignWidth="400"
+    d:DesignHeight="21"
+    d:DesignWidth="120"
+    Width="120"
     mc:Ignorable="d"
-    x:Class="NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadName.DownloadNameView"
+    x:Class="NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadGameName.DownloadGameNameView"
     x:TypeArguments="modName:IModNameViewModel"
     xmlns="https://github.com/avaloniaui"
+    xmlns:columns="clr-namespace:NexusMods.App.UI.RightContent.LoadoutGrid.Columns"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:modName="clr-namespace:NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModName"
-    xmlns:downloadName="clr-namespace:NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadName">
+    xmlns:downloadGameName="clr-namespace:NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadGameName">
     <Design.DataContext>
-        <downloadName:DownloadNameDesignViewModel />
+        <downloadGameName:DownloadGameNameDesignViewModel />
     </Design.DataContext>
     <TextBlock
         VerticalAlignment="Center"
-        x:Name="NameTextBox" />
+        x:Name="GameTextBox" />
 </reactiveUi:ReactiveUserControl>
 

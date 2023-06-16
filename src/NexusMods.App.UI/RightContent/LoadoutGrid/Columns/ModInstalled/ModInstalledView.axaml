@@ -15,7 +15,6 @@
         <modInstalled:ModInstalledDesignViewModel />
     </Design.DataContext>
     <TextBlock
-        Classes="Body2RobotoRegular"
         VerticalAlignment="Center"
         x:Name="InstalledTextBlock" />
 </reactiveUi:ReactiveUserControl>

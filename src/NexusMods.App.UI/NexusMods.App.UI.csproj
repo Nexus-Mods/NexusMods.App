@@ -270,15 +270,25 @@
         <Compile Update="RightContent\LoadoutGrid\Columns\ModVersion\ModVersionViewModel.cs">
           <DependentUpon>IModVersionViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadPausePlay\DownloadPausePlayView.axaml.cs">
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadGameName\DownloadGameNameViewModel.cs">
+          <DependentUpon>IDownloadGameNameViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadGameName\DownloadGameNameDesignViewModel.cs">
+          <DependentUpon>IDownloadGameNameViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadName\DownloadNameView.axaml.cs">
+          <DependentUpon>DownloadGameNameView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadVersion\DownloadVersionView.axaml.cs">
           <DependentUpon>DownloadNameView.axaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadPausePlay\DownloadPausePlayDesignViewModel.cs">
-          <DependentUpon>IDownloadPausePlayViewModel.cs</DependentUpon>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadVersion\DownloadVersionViewModel.cs">
+          <DependentUpon>IDownloadVersionViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadPausePlay\DownloadPausePlayViewModel.cs">
-          <DependentUpon>IDownloadPausePlayViewModel.cs</DependentUpon>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadVersion\DownloadVersionDesignViewModel.cs">
+          <DependentUpon>IDownloadVersionViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

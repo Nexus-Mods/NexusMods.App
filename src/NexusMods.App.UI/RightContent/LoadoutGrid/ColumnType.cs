@@ -13,7 +13,9 @@ public enum ColumnType
     Enabled,
     
     // Download
-    Game,
-    Size,
-    PauseResume
+    DownloadName,
+    DownloadVersion,
+    DownloadGameName,
+    DownloadSize,
+    DownloadStatus
 }

@@ -7,7 +7,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadStatus;
 
-public class DownloadStatusDesignViewModel : AViewModel<IDownloadStatusViewModel>, IDownloadStatusViewModel
+public class DownloadStatusDesignViewModel : AViewModel<IDownloadStatusViewModel>, IDownloadStatusViewModel, IComparableColumn<IDownloadTaskViewModel>
 {
     [Reactive]
     public IDownloadTaskViewModel Row { get; set; } = new DownloadTaskDesignViewModel();
@@ -20,6 +20,9 @@ public class DownloadStatusDesignViewModel : AViewModel<IDownloadStatusViewModel
 
     [Reactive]
     public bool IsRunning { get; set; }
+    
+    [Reactive]
+    public bool CanPause { get; set; }
 
     public DownloadStatusDesignViewModel()
     {
@@ -39,6 +42,11 @@ public class DownloadStatusDesignViewModel : AViewModel<IDownloadStatusViewModel
                 .Select(x => x.Item1 / (float)Math.Max(1, x.Item2))
                 .BindToUi(this, vm => vm.CurrentValue)
                 .DisposeWith(d);
+            
+            this.WhenAnyValue(vm => vm.Row.Status)
+                .Select(status => !(status is DownloadTaskStatus.Idle or DownloadTaskStatus.Paused))
+                .BindToUi(this, vm => vm.CanPause)
+                .DisposeWith(d);
         });
     }
 
@@ -56,5 +64,12 @@ public class DownloadStatusDesignViewModel : AViewModel<IDownloadStatusViewModel
         };
         
         return $"{status} {percent}%";
+    }
+    
+    public int Compare(IDownloadTaskViewModel a, IDownloadTaskViewModel b)
+    {
+        var decA = a.DownloadedBytes / (float)Math.Max(1, a.SizeBytes);
+        var decB = b.DownloadedBytes / (float)Math.Max(1, b.SizeBytes);
+        return decA.CompareTo(decB);
     }
 }

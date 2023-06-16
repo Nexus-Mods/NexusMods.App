@@ -31,9 +31,11 @@ public static class Helpers
             ColumnType.Category => new TextBlock { Text = "CATEGORY" },
             ColumnType.Installed => new TextBlock { Text = "INSTALLED" },
             ColumnType.Enabled => new ModEnabled.ModEnabledHeader(),
-            ColumnType.Game => new TextBlock { Text = "GAME" },
-            ColumnType.Size => new TextBlock { Text = "SIZE" },
-            ColumnType.PauseResume => new TextBlock { Text = "" }, // no title for this column
+            ColumnType.DownloadName => new TextBlock { Text = "MOD NAME" },
+            ColumnType.DownloadVersion => new TextBlock { Text = "VERSION" },
+            ColumnType.DownloadGameName => new TextBlock { Text = "GAME" },
+            ColumnType.DownloadSize => new TextBlock { Text = "SIZE" },
+            ColumnType.DownloadStatus => new TextBlock { Text = "STATUS" },
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
     }

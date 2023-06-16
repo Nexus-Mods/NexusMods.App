@@ -21,4 +21,9 @@ public interface IDownloadStatusViewModel : IColumnViewModel<IDownloadTaskViewMo
     /// True if download is running, else false.
     /// </summary>
     public bool IsRunning { get; }
+    
+    /// <summary>
+    /// Determines whether the user can pause the current download operation.
+    /// </summary>
+    public bool CanPause { get; set; }
 }

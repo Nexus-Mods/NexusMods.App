@@ -1,8 +1,9 @@
 ﻿<reactiveUi:ReactiveUserControl
-    d:DesignHeight="44"
-    d:DesignWidth="400"
+    d:DesignWidth="120"
+    d:DesignHeight="21"
+    Width="120"
     mc:Ignorable="d"
-    x:Class="NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadName.DownloadNameView"
+    x:Class="NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadVersion.DownloadVersionView"
     x:TypeArguments="modName:IModNameViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -10,12 +11,12 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:modName="clr-namespace:NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModName"
-    xmlns:downloadName="clr-namespace:NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadName">
+    xmlns:downloadVersion="clr-namespace:NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadVersion">
     <Design.DataContext>
-        <downloadName:DownloadNameDesignViewModel />
+        <downloadVersion:DownloadVersionDesignViewModel />
     </Design.DataContext>
     <TextBlock
         VerticalAlignment="Center"
-        x:Name="NameTextBox" />
+        x:Name="VersionTextBox" />
 </reactiveUi:ReactiveUserControl>
 

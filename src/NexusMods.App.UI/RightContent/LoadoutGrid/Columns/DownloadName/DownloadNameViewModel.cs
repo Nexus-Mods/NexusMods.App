@@ -11,17 +11,17 @@ public class DownloadNameViewModel : AViewModel<IDownloadNameViewModel>, IDownlo
     public IDownloadTaskViewModel Row { get; set; } = new DownloadTaskDesignViewModel();
 
     [Reactive]
-    public string Game { get; set; } = "";
+    public string Name { get; set; } = "";
 
     public DownloadNameViewModel()
     {
         this.WhenActivated(d =>
         {
-            this.WhenAnyValue(vm => vm.Row.Game)
-                .BindToUi(this, vm => vm.Game)
+            this.WhenAnyValue(vm => vm.Row.Name)
+                .BindToUi(this, vm => vm.Name)
                 .DisposeWith(d);
         });
     }
 
-    public int Compare(IDownloadTaskViewModel a, IDownloadTaskViewModel b) => String.Compare(a.Game, b.Game, StringComparison.Ordinal);
+    public int Compare(IDownloadTaskViewModel a, IDownloadTaskViewModel b) => String.Compare(a.Name, b.Name, StringComparison.Ordinal);
 }

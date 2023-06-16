@@ -5,21 +5,23 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadName;
 
-public class DownloadNameDesignViewModel : AViewModel<IDownloadNameViewModel>, IDownloadNameViewModel
+public class DownloadNameDesignViewModel : AViewModel<IDownloadNameViewModel>, IDownloadNameViewModel, IComparableColumn<IDownloadTaskViewModel>
 {
     [Reactive]
     public IDownloadTaskViewModel Row { get; set; } = new DownloadTaskDesignViewModel();
 
     [Reactive]
-    public string Game { get; set; } = "";
+    public string Name { get; set; } = "";
 
     public DownloadNameDesignViewModel()
     {
         this.WhenActivated(d =>
         {
-            this.WhenAnyValue(vm => vm.Row.Game)
-                .BindToUi(this, vm => vm.Game)
+            this.WhenAnyValue(vm => vm.Row.Name)
+                .BindToUi(this, vm => vm.Name)
                 .DisposeWith(d);
         });
     }
+    
+    public int Compare(IDownloadTaskViewModel a, IDownloadTaskViewModel b) => String.Compare(a.Name, b.Name, StringComparison.Ordinal);
 }

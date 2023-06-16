@@ -15,7 +15,6 @@
         <modName:ModNameDesignViewModel />
     </Design.DataContext>
     <TextBlock
-        Classes="Body2RobotoRegular"
         VerticalAlignment="Center"
         x:Name="NameTextBox" />
 </reactiveUi:ReactiveUserControl>
