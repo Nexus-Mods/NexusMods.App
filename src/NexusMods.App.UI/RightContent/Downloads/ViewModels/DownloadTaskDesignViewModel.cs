@@ -10,4 +10,5 @@ public class DownloadTaskDesignViewModel : AViewModel<IDownloadTaskViewModel>, I
     public DownloadTaskStatus Status { get; set; } = DownloadTaskStatus.Idle;
     public long DownloadedBytes { get; set; } = 1024 * 1024 * 512;
     public long SizeBytes { get; set; } = 1024 * 1024 * 1337;
+    public long Throughput { get; set; } = 0;
 }

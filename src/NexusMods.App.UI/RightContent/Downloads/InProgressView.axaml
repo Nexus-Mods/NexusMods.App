@@ -55,13 +55,15 @@
                 <TextBlock DockPanel.Dock="Left"
                            Classes="H5MontserratSemi" 
                            Text="In progress (0)" 
+                           x:Name="InProgressTitleTextBlock"
                            Margin="0,0,0,16" />
             
                 <!-- Right Side -->
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <TextBlock VerticalAlignment="Center"
                                Classes="Body2RobotoRegular" 
-                               Text="0GB / 0GB" Margin="0,0,16,0" />
+                               Text="0GB / 0GB" Margin="0,0,16,0" 
+                               x:Name="SizeCompletionTextBlock" />
                 
                     <!-- Note: Can use 'run' here, but don't want to make separate styles for 'run' -->
                     <TextBlock VerticalAlignment="Center"

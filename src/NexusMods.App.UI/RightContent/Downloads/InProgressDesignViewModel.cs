@@ -1,6 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.ComponentModel;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using Avalonia.Controls;
 using DynamicData;
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
@@ -13,25 +12,12 @@ using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadStatus;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadVersion;
 using NexusMods.Networking.Downloaders.Interfaces;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 using DownloadNameView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadName.DownloadNameView;
 
 namespace NexusMods.App.UI.RightContent.Downloads;
 
-public class InProgressDesignViewModel : AViewModel<IInProgressViewModel>, IInProgressViewModel
+public class InProgressDesignViewModel : InProgressCommonViewModel
 {
-    private ReadOnlyObservableCollection<IDownloadTaskViewModel> _tasksObservable = new(new ObservableCollection<IDownloadTaskViewModel>());
-    public ReadOnlyObservableCollection<IDownloadTaskViewModel> Tasks => _tasksObservable;
-    
-    private ReadOnlyObservableCollection<IDataGridColumnFactory>
-        _filteredColumns = new(new ObservableCollection<IDataGridColumnFactory>());
-    public ReadOnlyObservableCollection<IDataGridColumnFactory> Columns => _filteredColumns;
-    
-    [Reactive]
-    public bool IsRunning { get; set; }
-
-    private readonly CancellationTokenSource _backgroundUpdateToken = new();
-
     public InProgressDesignViewModel()
     {
         SourceList<IDownloadTaskViewModel> tasks = new();
@@ -42,7 +28,8 @@ public class InProgressDesignViewModel : AViewModel<IInProgressViewModel>, IInPr
             Version = "2.5.0",
             DownloadedBytes = 330_000000,
             SizeBytes = 1000_000000,
-            Status = DownloadTaskStatus.Downloading
+            Status = DownloadTaskStatus.Downloading,
+            Throughput = 10_000_000
         });
         
         tasks.Add(new DownloadTaskDesignViewModel()
@@ -52,7 +39,8 @@ public class InProgressDesignViewModel : AViewModel<IInProgressViewModel>, IInPr
             Version = "1.2.0",
             DownloadedBytes = 280_000000,
             SizeBytes = 1000_000000,
-            Status = DownloadTaskStatus.Downloading
+            Status = DownloadTaskStatus.Downloading,
+            Throughput = 4_500_000
         });
         
         tasks.Add(new DownloadTaskDesignViewModel()
@@ -69,7 +57,8 @@ public class InProgressDesignViewModel : AViewModel<IInProgressViewModel>, IInPr
         {
             Name = "Silent Karaoke Mode",
             Game = "Pop Star World",
-            Version = "0.0.0"
+            Version = "0.0.0",
+            DownloadedBytes = 0
         });
 
         // Make Columns
@@ -118,21 +107,21 @@ public class InProgressDesignViewModel : AViewModel<IInProgressViewModel>, IInPr
         this.WhenActivated(d =>
         {
             tasks.Connect()
-                .Bind(out _tasksObservable)
+                .Bind(out TasksObservable)
                 .Subscribe()
                 .DisposeWith(d);
             
             columns.Connect()
-                .Bind(out _filteredColumns)
+                .Bind(out FilteredColumns)
                 .Subscribe()
                 .DisposeWith(d);
-
-            this.WhenAnyValue(vm => vm.Tasks)
-                .Select(task => task.Any(x => !(x.Status is DownloadTaskStatus.Idle or DownloadTaskStatus.Paused)))
-                .BindToUi(this, vm => vm.IsRunning)
-                .DisposeWith(d);
             
-            _backgroundUpdateToken.DisposeWith(d);
+            // This is necessary due to inheritance,
+            // WhenActivated gets fired in wrong order and
+            // parent classes need to be able to properly subscribe
+            // here.
+            this.RaisePropertyChanged(nameof(Tasks));
+            this.RaisePropertyChanged(nameof(Columns));
         });
     }
 }

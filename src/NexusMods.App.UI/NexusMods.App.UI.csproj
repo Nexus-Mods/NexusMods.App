@@ -290,6 +290,9 @@
         <Compile Update="RightContent\LoadoutGrid\Columns\DownloadVersion\DownloadVersionDesignViewModel.cs">
           <DependentUpon>IDownloadVersionViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="RightContent\Downloads\InProgressCommonViewModel.cs">
+          <DependentUpon>IInProgressViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

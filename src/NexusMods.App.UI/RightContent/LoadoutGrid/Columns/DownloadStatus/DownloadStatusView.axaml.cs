@@ -13,7 +13,7 @@ public partial class DownloadStatusView : ReactiveUserControl<IDownloadStatusVie
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.ViewModel!.CurrentValue)
-                .BindToUi<float, DownloadStatusView, double>(this, view => view.DownloadProgressBar.Value)
+                .BindToUi(this, view => view.DownloadProgressBar.Value)
                 .DisposeWith(d);
             
             this.WhenAnyValue(vm => vm.ViewModel!.Text)

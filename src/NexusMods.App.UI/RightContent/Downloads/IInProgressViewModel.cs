@@ -17,4 +17,19 @@ public interface IInProgressViewModel : IRightContentViewModel
     /// True if download is running, else false.
     /// </summary>
     public bool IsRunning { get; }
+    
+    /// <summary>
+    /// Total size of items currently downloaded.
+    /// </summary>
+    public long DownloadedSizeBytes { get; }
+    
+    /// <summary>
+    /// Total size of items to be downloaded in bytes.
+    /// </summary>
+    public long TotalSizeBytes { get; }
+    
+    /// <summary>
+    /// Seconds remaining until the download completes.
+    /// </summary>
+    public int SecondsRemaining { get; set; }
 }

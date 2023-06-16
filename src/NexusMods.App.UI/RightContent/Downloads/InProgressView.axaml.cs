@@ -1,6 +1,8 @@
-﻿using System.Reactive.Disposables;
+﻿using System.Diagnostics;
+using System.Reactive.Disposables;
 using Avalonia;
 using Avalonia.ReactiveUI;
+using NexusMods.App.UI.Helpers;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 using ReactiveUI;
 
@@ -29,6 +31,7 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
                 .GenerateColumns(ModsDataGrid)
                 .DisposeWith(d);
             
+            // Dynamically Update Accented Items During Active Download
             this.WhenAnyValue(view => view.ViewModel!.IsRunning)
                 .OnUI()
                 .Subscribe(isRunning =>
@@ -44,6 +47,35 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
                         foreach (var element in tintedElements)
                             element.Classes.Remove("UsesAccentLighterColor");
                     }
+                })
+                .DisposeWith(d);
+            
+            // Dynamically Update Title
+            this.WhenAnyValue(view => view.ViewModel!.Tasks)
+                .OnUI()
+                .Subscribe(models =>
+                {
+                    InProgressTitleTextBlock.Text = $"In progress ({models.Count})";
+                })
+                .DisposeWith(d);
+            
+            // Dynamically Update Downloaded Bytes Text
+            this.WhenAnyValue(view => view.ViewModel!.DownloadedSizeBytes, view => view.ViewModel!.TotalSizeBytes)
+                .OnUI()
+                .Subscribe(_ =>
+                {
+                    var vm = ViewModel!;
+                    SizeCompletionTextBlock.Text = StringFormatters.ToGB(vm.DownloadedSizeBytes, vm.TotalSizeBytes);
+                })
+                .DisposeWith(d);
+            
+            // Dynamically Update Time Remaining Text
+            this.WhenAnyValue(view => view.ViewModel!.SecondsRemaining)
+                .OnUI()
+                .Subscribe(_ =>
+                {
+                    var vm = ViewModel!;
+                    BoldMinutesRemainingTextBlock.Text = StringFormatters.ToTimeRemainingShort(vm.SecondsRemaining);
                 })
                 .DisposeWith(d);
         });

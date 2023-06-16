@@ -30,10 +30,15 @@ public interface IDownloadTaskViewModel : IRightContentViewModel
     /// <summary>
     /// e.g. '0'
     /// </summary>
-    public long DownloadedBytes { get; set; }
+    public long DownloadedBytes { get; }
     
     /// <summary>
     /// e.g. '1024'
     /// </summary>
-    public long SizeBytes { get; set; }
+    public long SizeBytes { get; }
+    
+    /// <summary>
+    /// Current download speed of this task in bytes per second.
+    /// </summary>
+    public long Throughput { get; }
 }
