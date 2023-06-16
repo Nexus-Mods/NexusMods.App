@@ -10,5 +10,6 @@ public interface IDownloadVersionViewModel : IColumnViewModel<IDownloadTaskViewM
     /// <summary>
     /// e.g. '1.0.0'
     /// </summary>
-    public string Version { get; }
+    // ReSharper disable once UnusedMember.Global
+    public string Version { get; set; }
 }

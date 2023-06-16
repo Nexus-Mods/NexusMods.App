@@ -5,7 +5,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadVersion;
 
-public class DownloadVersionDesignViewModel : AViewModel<IDownloadVersionViewModel>, IDownloadVersionViewModel
+public class DownloadVersionDesignViewModel : AViewModel<IDownloadVersionViewModel>, IDownloadVersionViewModel, IComparableColumn<IDownloadTaskViewModel>
 {
     [Reactive]
     public IDownloadTaskViewModel Row { get; set; } = new DownloadTaskDesignViewModel();
@@ -22,4 +22,7 @@ public class DownloadVersionDesignViewModel : AViewModel<IDownloadVersionViewMod
                 .DisposeWith(d);
         });
     }
+    
+    // TODO: We should parse this as something like a NuGet (semantic) version and sort by that instead of a string comparison.
+    public int Compare(IDownloadTaskViewModel a, IDownloadTaskViewModel b) => String.Compare(a.Version, b.Version, StringComparison.Ordinal);
 }

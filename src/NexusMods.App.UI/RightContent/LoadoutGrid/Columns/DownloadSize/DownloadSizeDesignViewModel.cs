@@ -6,7 +6,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadSize;
 
-public class DownloadSizeDesignViewModel : AViewModel<IDownloadSizeViewModel>, IDownloadSizeViewModel
+public class DownloadSizeDesignViewModel : AViewModel<IDownloadSizeViewModel>, IDownloadSizeViewModel, IComparableColumn<IDownloadTaskViewModel>
 {
     [Reactive]
     public IDownloadTaskViewModel Row { get; set; } = new DownloadTaskDesignViewModel();
@@ -33,5 +33,8 @@ public class DownloadSizeDesignViewModel : AViewModel<IDownloadSizeViewModel>, I
 
         return $"{usedGB:F2} GB / {totalGB:F2} GB";
     }
+    
+    // TODO: It's unclear how to implement this sort currently. For now we sort by downloaded.
+    public int Compare(IDownloadTaskViewModel a, IDownloadTaskViewModel b) => a.DownloadedBytes.CompareTo(b.DownloadedBytes);
 }
 
