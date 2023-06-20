@@ -81,7 +81,7 @@
             </DockPanel>
         
             <!-- Progress -->
-            <ProgressBar Classes="DownloadBar" Minimum="0" Maximum="1"/>
+            <ProgressBar Classes="DownloadBar" x:Name="DownloadProgressBar" Minimum="0" Maximum="1"/>
         
             <!-- Currently Downloaded Mods -->
             <DataGrid
