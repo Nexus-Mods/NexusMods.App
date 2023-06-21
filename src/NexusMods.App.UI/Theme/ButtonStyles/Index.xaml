@@ -184,12 +184,12 @@
     </Style>
 
     <Style Selector="Button.Primary:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource BrandPrimaryLighterBrush}" />
+        <Setter Property="Background" Value="{DynamicResource BrandPrimaryDarkerBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
     </Style>
 
     <Style Selector="Button.Primary:pressed /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource BrandPrimaryDarkerBrush}" />
+        <Setter Property="Background" Value="{DynamicResource BrandPrimaryLighterBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
     </Style>
 
