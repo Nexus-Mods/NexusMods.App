@@ -41,4 +41,12 @@ public interface IDownloadTaskViewModel : IRightContentViewModel
     /// Current download speed of this task in bytes per second.
     /// </summary>
     public long Throughput { get; }
+
+    /// <summary>
+    /// Schedules a cancellation of the task.
+    /// </summary>
+    public void Cancel()
+    {
+        
+    }
 }

@@ -37,6 +37,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
                 .SubscribeWithErrorLogging(logger, HandleSpineAction)
                 .DisposeWith(d);
 
+            // TODO: We should probably have some sort of common 'stack' of modals/overlays.
             this.WhenAnyValue(vm => vm._nexusOverlayViewModel.IsActive)
                 .Select(active => active ? _nexusOverlayViewModel : null)
                 .BindTo(this, vm => vm.OverlayContent)

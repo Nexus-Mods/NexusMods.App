@@ -8,10 +8,10 @@ public interface IMessageBoxOkCancelViewModel
     /// <summary>
     /// When the user presses 'ok'
     /// </summary>
-    Action Ok { get; set; }
+    Action Ok { get; }
     
     /// <summary>
     /// When the user presses 'cancel'
     /// </summary>
-    Action Cancel { get; set; }
+    Action Cancel { get; }
 }

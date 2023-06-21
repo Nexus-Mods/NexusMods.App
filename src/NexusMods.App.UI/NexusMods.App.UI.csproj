@@ -297,6 +297,13 @@
           <DependentUpon>MessageBoxOkCancelView.axaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
+        <Compile Update="Overlays\Download\Cancel\CancelDownloadOverlayView.axaml.cs">
+          <DependentUpon>MessageBoxOkCancelView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Overlays\Download\Cancel\CancelDownloadOverlayViewModel.cs">
+          <DependentUpon>ICancelDownloadOverlayViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
