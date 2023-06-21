@@ -49,6 +49,7 @@
                         Classes="Body2RobotoRegular"
                         Margin="0,16,0,0"
                         Text="Please copy the following URL into your browser window. We support Chrome, Safari, Firefox and Edge."
+                        Foreground="{DynamicResource FontDarkSecondaryColor}"
                         TextWrapping="Wrap" />
                     <Border
                         BorderBrush="{DynamicResource BorderContainerBrush}"

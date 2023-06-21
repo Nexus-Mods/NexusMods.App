@@ -62,6 +62,14 @@
         <Setter Property="LineHeight" Value="33" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
     </Style>
+    
+    <Style Selector="TextBlock.H6MontserratSemi">
+        <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
+        <Setter Property="FontWeight" Value="600" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="LineHeight" Value="25" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
 
     <Style Selector="TextBlock.CaptionMontserratSemi">
         <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
@@ -86,7 +94,7 @@
         <Setter Property="FontWeight" Value="400" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="LineHeight" Value="21" />
-        <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryColor}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
     </Style>
     
     <Style Selector="TextBlock.Body2RobotoRegularBold">
