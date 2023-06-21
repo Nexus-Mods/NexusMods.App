@@ -15,7 +15,7 @@
     </Design.DataContext>
     
     <okCancel:MessageBoxOkCancelView MinWidth="300" MaxWidth="450" 
-                                     Title="Cancel and delete downloads?"
+                                     Title="Cancel and delete download?"
                                      x:Name="OkCancelView" />
     
 </reactiveUi:ReactiveUserControl>
