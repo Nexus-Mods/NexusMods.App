@@ -130,6 +130,23 @@ public static class JobExtensions
 
         return totalThroughput;
     }
+    
+    /// <summary>
+    /// Calculates the total completion of a group of jobs. i.e. The number of downloaded bytes.
+    /// </summary>
+    /// <remarks>
+    ///     This returns null/default if the type does not support the required arithmetic operations,
+    ///     else it returns the current TSize items per second.
+    /// </remarks>
+    /// <returns>Total completion of this job.</returns>
+    public static TSize GetTotalCompletion<TSize>(this IEnumerable<IJob<TSize>> jobs) where TSize : IAdditionOperators<TSize, TSize, TSize>, IAdditiveIdentity<TSize, TSize>
+    {
+        var totalCompletion = TSize.AdditiveIdentity;
+        foreach (var job in jobs)
+            totalCompletion += job.Current;
+
+        return totalCompletion;
+    }
 }
 
 /// <summary>

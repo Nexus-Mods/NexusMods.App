@@ -17,7 +17,7 @@ namespace NexusMods.Networking.Downloaders;
 /// <remarks>
 ///     This task is usually created via <see cref="DownloadService.AddNxmTask"/>.
 /// </remarks>
-public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSize
+public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSize, IHaveGameName
 {
     private NXMUrl _url = null!;
     private readonly LoadoutRegistry _loadoutRegistry;
@@ -44,6 +44,9 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
 
     /// <inheritdoc />
     public string Version { get; private set; } = "Unknown Version";
+    
+    /// <inheritdoc />
+    public string GameName { get; private set; } = "Unknown Game";
 
     /// <inheritdoc />
     public long SizeBytes { get; private set; } = 0;
@@ -98,6 +101,7 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
         FriendlyName = file.Name;
         Version = file.Version;
         SizeBytes = file.SizeInBytes.GetValueOrDefault(-1);
+        GameName = _url.Mod.Game;
         
         await _downloader.DownloadAsync(downloadUris, tempPath, _state, Size.FromLong(file.SizeInBytes!.Value), token);
 

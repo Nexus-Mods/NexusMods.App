@@ -304,6 +304,9 @@
         <Compile Update="Overlays\Download\Cancel\CancelDownloadOverlayViewModel.cs">
           <DependentUpon>ICancelDownloadOverlayViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="RightContent\Downloads\ViewModels\DownloadTaskViewModel.cs">
+          <DependentUpon>IDownloadTaskViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

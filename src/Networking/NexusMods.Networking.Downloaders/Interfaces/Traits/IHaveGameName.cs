@@ -11,5 +11,5 @@ public interface IHaveGameName
     /// <summary>
     /// Name of the game the mod will be installed to.
     /// </summary>
-    public string Version { get; }
+    public string GameName { get; }
 }
