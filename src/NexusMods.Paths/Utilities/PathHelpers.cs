@@ -119,7 +119,10 @@ public static class PathHelpers
 
         // Paths on Unix-based systems and Windows paths without backslashes
         // only need to be checked for trailing directory separators.
-        if (os.IsUnix() || path.Count('\\') == 0) return RemoveTrailingDirectorySeparator(path).ToString();
+        if (os.IsUnix() || path.Count('\\') == 0)
+        {
+            path = RemoveTrailingDirectorySeparator(path).ToString();
+        }
 
         // Windows paths with backslashes instead of forward slashes need to be fixed.
         var buffer = path.Length > 512
