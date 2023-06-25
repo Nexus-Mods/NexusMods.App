@@ -49,5 +49,5 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
     }
     
     public long Throughput => (long)_task.DownloadJobs.GetTotalThroughput(DateTimeProvider.Instance).Value;
-
+    public void Cancel() => _task.Cancel();
 }

@@ -86,8 +86,6 @@
             <!-- Currently Downloaded Mods -->
             <DataGrid
                 HorizontalAlignment="Stretch"
-                CanUserReorderColumns="True"
-                CanUserResizeColumns="True"
                 CanUserSortColumns="True"
                 Margin="-16,16"
                 x:Name="ModsDataGrid" />

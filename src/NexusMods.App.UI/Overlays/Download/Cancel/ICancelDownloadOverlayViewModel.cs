@@ -6,7 +6,7 @@ namespace NexusMods.App.UI.Overlays.Download.Cancel;
 /// <summary>
 /// ViewModel for <see cref="CancelDownloadOverlayView"/>.
 /// </summary>
-public interface ICancelDownloadOverlayViewModel : IOverlayViewModel, IMessageBoxOkCancelViewModel
+public interface ICancelDownloadOverlayViewModel : IMessageBoxOkCancelViewModel
 {
     /// <summary>
     /// The task that we will request if it's means to be cancelled.

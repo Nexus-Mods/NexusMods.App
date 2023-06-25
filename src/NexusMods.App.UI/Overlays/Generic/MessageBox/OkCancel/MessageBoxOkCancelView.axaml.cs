@@ -41,7 +41,9 @@ public partial class MessageBoxOkCancelView : ReactiveUserControl<IMessageBoxOkC
             
             CancelButton.Command = ReactiveCommand.CreateFromTask(() =>
             {
-                ViewModel?.Cancel.Invoke();
+                if (ViewModel != null)
+                    ViewModel.IsActive = false;
+                
                 return Task.CompletedTask;
             });
         });

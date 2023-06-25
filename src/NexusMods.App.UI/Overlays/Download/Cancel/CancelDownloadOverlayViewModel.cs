@@ -7,16 +7,11 @@ public class CancelDownloadOverlayViewModel : AViewModel<ICancelDownloadOverlayV
     public IDownloadTaskViewModel DownloadTask { get; } = new DownloadTaskDesignViewModel();
 
     public Action Ok => DownloadTask.Cancel;
-
-    public Action Cancel { get; set; }
+    public bool IsActive { get; set; } = true;
     
     // For design.
-    public CancelDownloadOverlayViewModel() => Cancel = () => { };
+    public CancelDownloadOverlayViewModel() { }
 
     // For runtime.
-    public CancelDownloadOverlayViewModel(IDownloadTaskViewModel task, Action cancel)
-    {
-        Cancel = cancel;
-        DownloadTask = task;
-    }
+    public CancelDownloadOverlayViewModel(IDownloadTaskViewModel task) { DownloadTask = task; }
 }

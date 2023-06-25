@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Reactive.Disposables;
+﻿using System.Reactive.Disposables;
 using Avalonia;
 using Avalonia.ReactiveUI;
 using NexusMods.App.UI.Helpers;
