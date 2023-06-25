@@ -2,19 +2,30 @@
 using Avalonia;
 using Avalonia.ReactiveUI;
 using NexusMods.App.UI.Helpers;
+using NexusMods.App.UI.Overlays.Download.Cancel;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
+using NexusMods.App.UI.Windows;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.RightContent.Downloads;
 
 public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
 {
-    public InProgressView()
+    public InProgressView(MainWindowViewModel mainWindowViewModel)
     {
         InitializeComponent();
         
         this.WhenActivated(d =>
         {
+            CancelButton.Command = ReactiveCommand.Create(() =>
+            {
+                if (ViewModel?.SelectedTask != null)
+                    mainWindowViewModel.SetOverlayContent(new CancelDownloadOverlayViewModel(ViewModel.SelectedTask));
+                
+                // TODO: Remove this code, for testing only
+                // mainWindowViewModel.SetOverlayContent(new CancelDownloadOverlayViewModel(ViewModel?.SelectedTask!));
+            });
+            
             // List of elements that are tinted blue when a download is active.
             var tintedElements = new StyledElement[]
             {

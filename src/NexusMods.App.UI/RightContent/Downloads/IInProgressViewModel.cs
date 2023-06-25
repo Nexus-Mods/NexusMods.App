@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Windows.Input;
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 
@@ -11,25 +12,40 @@ public interface IInProgressViewModel : IRightContentViewModel
     /// </summary>
     ReadOnlyObservableCollection<IDownloadTaskViewModel> Tasks { get; }
     
-    public ReadOnlyObservableCollection<IDataGridColumnFactory> Columns { get; }
+    ReadOnlyObservableCollection<IDataGridColumnFactory> Columns { get; }
+    
+    /// <summary>
+    /// This command cancels the currently selected task.
+    /// </summary>
+    ICommand CancelSelectedTask { get; }
     
     /// <summary>
     /// True if download is running, else false.
     /// </summary>
-    public bool IsRunning { get; }
+    bool IsRunning { get; }
     
     /// <summary>
     /// Total size of items currently downloaded.
     /// </summary>
-    public long DownloadedSizeBytes { get; }
+    long DownloadedSizeBytes { get; }
     
     /// <summary>
     /// Total size of items to be downloaded in bytes.
     /// </summary>
-    public long TotalSizeBytes { get; }
+    long TotalSizeBytes { get; }
     
     /// <summary>
     /// Seconds remaining until the download completes.
     /// </summary>
-    public int SecondsRemaining { get; set; }
+    int SecondsRemaining { get; set; }
+    
+    /// <summary>
+    /// The currently selected task.
+    /// </summary>
+    IDownloadTaskViewModel? SelectedTask { get; set; }
+
+    /// <summary>
+    /// Cancels the selected task.
+    /// </summary>
+    void Cancel() => SelectedTask?.Cancel();
 }

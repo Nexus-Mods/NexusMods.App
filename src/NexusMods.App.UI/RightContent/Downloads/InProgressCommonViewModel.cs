@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Windows.Input;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using DynamicData;
@@ -30,10 +31,15 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
     public ReadOnlyObservableCollection<IDataGridColumnFactory> Columns => FilteredColumns;
     
     [Reactive]
+    public ICommand CancelSelectedTask { get; set; }
+
+    [Reactive]
     public bool IsRunning { get; set; }
     
     [Reactive]
     public int SecondsRemaining { get; set; }
+
+    public IDownloadTaskViewModel? SelectedTask { get; set; }
 
     [Reactive]
     public long DownloadedSizeBytes { get; set; }
@@ -43,6 +49,8 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
 
     public InProgressCommonViewModel()
     {
+        CancelSelectedTask = ReactiveCommand.Create(() => ((IInProgressViewModel)this).Cancel());
+        
         // Make Columns
         var columns = new SourceCache<IDataGridColumnFactory, ColumnType>(x => x.Type);
         columns.Edit(x =>
@@ -117,7 +125,7 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
     /// Updates the window info, providing refresh support for data which might not be natively
     /// notify property changed, or needs to aggregate other data.
     /// </summary>
-    protected virtual void UpdateWindowInfo()
+    protected void UpdateWindowInfo()
     {
         // Calculate Number of Downloaded Bytes.
         long totalDownloadedBytes = 0;
