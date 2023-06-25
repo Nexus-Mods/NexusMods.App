@@ -125,7 +125,7 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
     /// Updates the window info, providing refresh support for data which might not be natively
     /// notify property changed, or needs to aggregate other data.
     /// </summary>
-    protected void UpdateWindowInfo()
+    protected virtual void UpdateWindowInfo()
     {
         // Calculate Number of Downloaded Bytes.
         long totalDownloadedBytes = 0;

@@ -46,4 +46,17 @@ public class InProgressViewModel : InProgressCommonViewModel
             this.RaisePropertyChanged(nameof(Tasks));
         });
     }
+
+    protected override void UpdateWindowInfo()
+    {
+        // Poll Tasks
+        foreach (var task in Tasks)
+        {
+            if (task is DownloadTaskViewModel vm)
+                vm.Poll();
+        }
+        
+        // Update Base
+        base.UpdateWindowInfo();
+    }
 }
