@@ -5,6 +5,30 @@ namespace NexusMods.Paths.Tests;
 public class RelativePathTests
 {
     [Theory]
+    [InlineData("a", "a")]
+    [InlineData("a/b", "a/b")]
+    [InlineData("a/b/c", "a/b/c")]
+    public void Test_FromStringExplicitCast(string input, string expected)
+    {
+        var path = (RelativePath)input;
+        path.ToString().Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData("a", "a")]
+    [InlineData("a/b", "a/b")]
+    [InlineData("a/b/c", "a/b/c")]
+    [InlineData("Images/748-0-1477626175.jpg", "Images/748-0-1477626175.jpg")]
+    public void Test_FromStringImplicitCast(string input, string expected)
+    {
+        // A little roundabout, but I wanted to make sure the cast happens as part
+        // of a method call.
+        var basePath = Paths.FileSystem.Shared.EnumerateRootDirectories().First();
+        var path = basePath.Combine(input).RelativeTo(basePath);
+        path.ToString().Should().Be(expected);
+    }
+
+    [Theory]
     [InlineData("", "")]
     [InlineData("foo", "")]
     [InlineData("foo.txt", ".txt")]

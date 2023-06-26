@@ -14,5 +14,6 @@ namespace NexusMods.DataModel.Games;
 [Instance("Origin", "Origin")]
 [Instance("EADesktop", "EA Desktop")]
 [Instance("XboxGamePass", "Xbox Game Pass")]
+[Instance("ManuallyAdded", "Manually Added")]
 [PublicAPI]
 public readonly partial struct GameStore { }
