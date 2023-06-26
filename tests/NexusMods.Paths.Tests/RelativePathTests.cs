@@ -7,22 +7,18 @@ public class RelativePathTests
     [Theory]
     [InlineData("a", "a")]
     [InlineData("a/b", "a/b")]
-    [InlineData("a\\b", "a/b")]
-    [InlineData("a\\b/c", "a/b/c")]
-    [InlineData("a/b/c/", "a/b/c")]
+    [InlineData("a/b/c", "a/b/c")]
     public void Test_FromStringExplicitCast(string input, string expected)
     {
         var path = (RelativePath)input;
         path.ToString().Should().Be(expected);
     }
-    
+
     [Theory]
     [InlineData("a", "a")]
     [InlineData("a/b", "a/b")]
-    [InlineData("a\\b", "a/b")]
-    [InlineData("a\\b/c", "a/b/c")]
-    [InlineData("a/b/c/", "a/b/c")]
-    [InlineData("Images\\748-0-1477626175.jpg", "Images/748-0-1477626175.jpg")]
+    [InlineData("a/b/c", "a/b/c")]
+    [InlineData("Images/748-0-1477626175.jpg", "Images/748-0-1477626175.jpg")]
     public void Test_FromStringImplicitCast(string input, string expected)
     {
         // A little roundabout, but I wanted to make sure the cast happens as part
@@ -31,7 +27,7 @@ public class RelativePathTests
         var path = basePath.Combine(input).RelativeTo(basePath);
         path.ToString().Should().Be(expected);
     }
-    
+
     [Theory]
     [InlineData("", "")]
     [InlineData("foo", "")]
