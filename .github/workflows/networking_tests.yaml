@@ -37,5 +37,5 @@ jobs:
 
       - uses: codecov/codecov-action@v3
         with:
-          flags: clean_environment_tests, ${{runner.os}}
+          flags: network_tests, ${{runner.os}}
           verbose: true
