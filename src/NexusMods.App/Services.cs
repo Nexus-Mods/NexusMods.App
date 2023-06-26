@@ -43,7 +43,6 @@ public static class Services
     {
         config ??= new AppConfig();
 
-
         services.AddCLI()
             .AddFileSystem()
             .AddUI()

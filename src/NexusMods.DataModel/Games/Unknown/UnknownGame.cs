@@ -41,6 +41,11 @@ public class UnknownGame : IGame
     };
 
     /// <inheritdoc />
+    public void ResetInstallations()
+    {
+    }
+
+    /// <inheritdoc />
     public IEnumerable<AModFile> GetGameFiles(GameInstallation installation, IDataStore store)
     {
         return Array.Empty<AModFile>();

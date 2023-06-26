@@ -11,7 +11,7 @@ on:
 jobs:
   build:
     
-    name: Test ${{matrix.game.domain}} - ${{ matrix.os }}
+    name: Test ${{matrix.game}} - ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     
     environment: test
@@ -22,28 +22,19 @@ jobs:
     strategy:
       matrix:
         #os: [ubuntu-latest, windows-latest, macos-latest]
-        os: [Windows]
-        game:
-          - domain: cyberpunk2077
-            file: tests/Games/NexusMods.Games.RedEngine.Tests/Resources/cyberpunk2077.1.61.zip
+        os: [windows-latest]
+        game: [cyberpunk2077, darkestdungeon, sifu, stardewvalley]
 
     steps:
       - uses: actions/checkout@v3
 
-      #- name: Setup .NET Core SDK 7.0.x
-      #  uses: actions/setup-dotnet@v3
-      #  with:
-      #    dotnet-version: '7.0.x'
-
-      - name: Set Permissions
-        if: runner.os != 'Windows'
-        run: chmod -R +x src/ArchiveManagement/NexusMods.FileExtractor/Extractors
-
-      - name: Clean Tests
-        run: dotnet clean
+      - name: Setup .NET Core SDK 7.0.x
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.0.x'
 
       - name: Stress Test
-        run: dotnet run --project .\src\NexusMods.App\NexusMods.App.csproj -- stress-test -g ${{matrix.game.domain}} -l ${{ github.workspace }}/${{matrix.game.file}} -o ${{ github.step_summary }}
+        run: dotnet run --project ./src/NexusMods.App/NexusMods.App.csproj -- stress-test -g ${{matrix.game}} -o ${{ github.step_summary }}
 
       - uses: codecov/codecov-action@v3
         with:

@@ -12,9 +12,11 @@ public static class Services
     /// <summary>
     /// Adds the Nexus Web API to your DI Container's service collection.
     /// </summary>
-    public static IServiceCollection AddNexusWebApiNmaIntegration(this IServiceCollection collection, bool apiKeyAuth = false)
+    public static IServiceCollection AddNexusWebApiNmaIntegration(this IServiceCollection collection, bool? apiKeyAuth = null)
     {
-        if (apiKeyAuth)
+        apiKeyAuth ??= Environment.GetEnvironmentVariable(ApiKeyMessageFactory.NexusApiKeyEnvironmentVariable) != null;
+        
+        if (apiKeyAuth!.Value)
         {
             collection
                 .AddAllSingleton<IHttpMessageFactory, ApiKeyMessageFactory>()
@@ -24,9 +26,10 @@ public static class Services
         {
             collection
                 .AddAllSingleton<IHttpMessageFactory, OAuth2MessageFactory>()
-                .AddSingleton<IAuthenticatingMessageFactory, OAuth2MessageFactory>()
-                .AddSingleton<OAuth>();
+                .AddSingleton<IAuthenticatingMessageFactory, OAuth2MessageFactory>();
         }
+        collection.AddSingleton<OAuth>();
+
 
         return collection.AddSingleton<ITypeFinder, TypeFinder>()
             .AddSingleton<LoginManager>();
