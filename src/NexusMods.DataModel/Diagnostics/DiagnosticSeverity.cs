@@ -21,7 +21,7 @@ public enum DiagnosticSeverity : byte
     /// This severity can be used to provide helpful advises to the user. Applying these
     /// suggestions MUST NOT introduce further diagnostics of a higher severity. Furthermore,
     /// analysis and deduction MUST BE objective and based on facts. Suggestions have to
-    /// be documented and their improvements must be justifiable. Don't offer improvements
+    /// be documented, and their improvements must be justifiable. Don't offer improvements
     /// if you aren't sure that the user benefits from them.
     /// </remarks>
     /// <example>
@@ -39,25 +39,25 @@ public enum DiagnosticSeverity : byte
     /// </summary>
     /// <remarks>
     /// This severity differs from <see cref="Error"/> in that it's any effect,
-    /// positive or negative, that the user didn't expected. This severity
+    /// positive or negative, that the user didn't expect. This severity
     /// should be used for installation and configuration issues, that don't
-    /// fall into any higher severities (<see cref="Error"/> or <see cref="Critical"/>).
+    /// fall into any higher levels (<see cref="Error"/> or <see cref="Critical"/>).
     /// </remarks>
     /// <example>
     /// <list type="bullet">
     ///     <item>The user manually installs a mod into the wrong directory.</item>
     ///     <item>The user forgot to install a patch.</item>
-    ///     <item>A mod installer might need to be re-run, because the loadout changed and new options are available.</item>
+    ///     <item>A mod installer might need to be re-run, because the loadout changed, and new options are available.</item>
     /// </list>
     /// </example>
     Warning = 2,
 
     /// <summary>
-    /// Something that has an unintended adverse effect on any part the game.
+    /// Something that has an unintended adverse effect on any part of the game.
     /// </summary>
     /// <remarks>
     /// This severity encompasses unintended problems that negatively impact the game
-    /// in any of it's aspects. This includes the visuals, the performance and even the gameplay.
+    /// in any of its aspects. This includes the visuals, the performance, and even the gameplay.
     /// </remarks>
     /// <example>
     /// <list type="bullet">
