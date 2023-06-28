@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveMetaData;
+using NexusMods.DataModel.Diagnostics;
 using NexusMods.DataModel.Interprocess;
 using NexusMods.DataModel.Interprocess.Jobs;
 using NexusMods.DataModel.JsonConverters;
@@ -56,10 +57,10 @@ public static class Services
             new Resource<FileHashCache, Size>("File Hashing",
                 Settings(s).MaxHashingJobs,
                 Size.FromLong(Settings(s).MaxHashingThroughputBytesPerSecond)));
-        
-        
+
+
         coll.AddSingleton(typeof(IFingerprintCache<,>), typeof(DataStoreFingerprintCache<,>));
-        
+
         coll.AddAllSingleton<IResource, IResource<LoadoutManager, Size>>(s =>
             new Resource<LoadoutManager, Size>("Load Order Management",
                 Settings(s).LoadoutDeploymentJobs, Size.Zero));
@@ -93,6 +94,11 @@ public static class Services
                 opts.Converters.Add(converter);
             return opts;
         });
+
+
+        // Diagnostics
+        coll.AddSingleton<IDiagnosticObservable, DiagnosticObservable>();
+
         return coll;
     }
 }
