@@ -35,24 +35,6 @@ public enum DiagnosticSeverity : byte
     Suggestion = 1,
 
     /// <summary>
-    /// Something that has an unexpected effect on any part of the game.
-    /// </summary>
-    /// <remarks>
-    /// This severity differs from <see cref="Error"/> in that it's any effect,
-    /// positive or negative, that the user didn't expect. This severity
-    /// should be used for installation and configuration issues, that don't
-    /// fall into any higher levels (<see cref="Error"/> or <see cref="Critical"/>).
-    /// </remarks>
-    /// <example>
-    /// <list type="bullet">
-    ///     <item>The user manually installs a mod into the wrong directory.</item>
-    ///     <item>The user forgot to install a patch.</item>
-    ///     <item>A mod installer might need to be re-run, because the loadout changed, and new options are available.</item>
-    /// </list>
-    /// </example>
-    Warning = 2,
-
-    /// <summary>
     /// Something that has an unintended adverse effect on any part of the game.
     /// </summary>
     /// <remarks>
@@ -68,7 +50,7 @@ public enum DiagnosticSeverity : byte
     ///     </item>
     /// </list>
     /// </example>
-    Error = 3,
+    Warning = 2,
 
     /// <summary>
     /// Something that will make the game unplayable.
@@ -89,5 +71,5 @@ public enum DiagnosticSeverity : byte
     ///     <item>A prolonged or indefinite freeze.</item>
     /// </list>
     /// </example>
-    Critical = 4,
+    Critical = 3,
 }
