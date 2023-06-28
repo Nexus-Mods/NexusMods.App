@@ -122,8 +122,8 @@ public class LoadoutManager
     /// In the context of the Nexus app 'Manage Game' effectively means 'Add Game to App'; we call it
     /// 'Manage Game' because it effectively means putting the game files under our control.
     /// </remarks>
-    public async Task<LoadoutMarker> ManageGameAsync(GameInstallation installation, string name = "", 
-        CancellationToken token = default, 
+    public async Task<LoadoutMarker> ManageGameAsync(GameInstallation installation, string name = "",
+        CancellationToken token = default,
         bool indexGameFiles = true,
         bool earlyReturn = false)
     {
@@ -200,8 +200,7 @@ public class LoadoutManager
                                    .IndexFolderAsync(path, token)
                                    .WithCancellation(token))
                 {
-                    var analysis =
-                        await _analyzer.AnalyzeFileAsync(result.Path, token);
+                    var analysis = await _analyzer.AnalyzeFileAsync(result.Path, token);
                     var file = new GameFile
                     {
                         Id = ModFileId.New(),
@@ -211,11 +210,8 @@ public class LoadoutManager
                         Size = result.Size
                     }.WithPersist(Store);
 
-                    var metaData =
-                        await GetMetadata(loadout, mod, file, analysis)
-                            .ToHashSetAsync();
-                    gameFiles.Add(
-                        file with { Metadata = metaData.ToImmutableHashSet() });
+                    var metaData = await GetMetadata(loadout, mod, file, analysis).ToHashSetAsync();
+                    gameFiles.Add(file with { Metadata = metaData.ToImmutableHashSet() });
                 }
             }
         }
@@ -272,7 +268,7 @@ public class LoadoutManager
                 ModId = baseMod.Id,
                 LoadoutId = loadoutId
             });
-            
+
             // Step 1: Analyze the archive.
             var analyzed = await _analyzer.AnalyzeFileAsync(archivePath, cancellationToken);
             if (analyzed is not AnalyzedArchive archive)
@@ -437,16 +433,16 @@ public class LoadoutManager
         return $"My Loadout {Guid.NewGuid()}";
     }
 
-    private async IAsyncEnumerable<IModFileMetadata> GetMetadata(Loadout loadout, Mod mod, GameFile file,
+    private async IAsyncEnumerable<IModFileMetadata> GetMetadata(
+        Loadout loadout,
+        Mod mod,
+        GameFile file,
         AnalyzedFile analyzed)
     {
-        
         foreach (var source in _metadataSources)
         {
-            if (!source.Games.Contains(loadout.Installation.Game.Domain))
-                continue;
-            if (!source.Extensions.Contains(file.To.Extension))
-                continue;
+            if (!source.Games.Contains(loadout.Installation.Game.Domain)) continue;
+            if (!source.Extensions.Contains(file.To.Extension)) continue;
 
             await foreach (var metadata in source.GetMetadataAsync(loadout, mod, file, analyzed))
             {

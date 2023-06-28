@@ -14,12 +14,14 @@ public class AnalysisMetaDataSource : IFileMetadataSource
     public IEnumerable<FileType> FileTypes => new[] { FileType.TES4 };
     public IEnumerable<GameDomain> Games => new[] { SkyrimSpecialEdition.StaticDomain };
 
-#pragma warning disable CS1998
-    public async IAsyncEnumerable<IModFileMetadata> GetMetadataAsync(Loadout loadout, Mod mod, AModFile file,
-#pragma warning restore CS1998
+    public async IAsyncEnumerable<IModFileMetadata> GetMetadataAsync(
+        Loadout loadout,
+        Mod mod,
+        AModFile file,
         AnalyzedFile analyzedFile)
     {
-        yield return new AnalysisSortData()
+        await Task.Yield();
+        yield return new AnalysisSortData
         {
             Masters = analyzedFile.AnalysisData.OfType<PluginAnalysisData>().First().Masters
         };
