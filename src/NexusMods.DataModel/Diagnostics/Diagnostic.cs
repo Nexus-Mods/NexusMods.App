@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using NexusMods.DataModel.Diagnostics.References;
 
 namespace NexusMods.DataModel.Diagnostics;
 
@@ -22,4 +23,9 @@ public record Diagnostic
     /// Gets the message of the diagnostic.
     /// </summary>
     public required DiagnosticMessage Message { get; init; }
+
+    /// <summary>
+    /// Gets all data references.
+    /// </summary>
+    public required IReadOnlyList<IDataReference> DataReferences { get; init; }
 }
