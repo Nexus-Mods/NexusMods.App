@@ -92,7 +92,7 @@ public class DataModelSettings : IDataModelSettings
     /// <summary>
     /// Creates the default datamodel settings with a given base directory.
     /// </summary>
-    public DataModelSettings(IFileSystem s) : this(s.GetKnownPath(KnownPath.EntryDirectory).CombineUnchecked("DataModel")) { }
+    public DataModelSettings(IFileSystem s) : this(s.GetKnownPath(KnownPath.EntryDirectory).Combine("DataModel")) { }
 
     /// <summary>
     /// Creates the default datamodel settings with a given base directory.
@@ -101,11 +101,11 @@ public class DataModelSettings : IDataModelSettings
     public DataModelSettings(AbsolutePath baseDirectory)
     {
         baseDirectory.CreateDirectory();
-        DataStoreFilePath = new ConfigurationPath(baseDirectory.CombineUnchecked(DataModelFileName));
-        IpcDataStoreFilePath = new ConfigurationPath(baseDirectory.CombineUnchecked(DataModelIpcFileName));
+        DataStoreFilePath = new ConfigurationPath(baseDirectory.Combine(DataModelFileName));
+        IpcDataStoreFilePath = new ConfigurationPath(baseDirectory.Combine(DataModelIpcFileName));
         ArchiveLocations = new[]
         {
-            new ConfigurationPath(baseDirectory.CombineUnchecked(ArchivesFileName))
+            new ConfigurationPath(baseDirectory.Combine(ArchivesFileName))
         };
     }
 

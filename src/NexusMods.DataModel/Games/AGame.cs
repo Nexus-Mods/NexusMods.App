@@ -54,14 +54,22 @@ public abstract class AGame : IGame
         try
         {
             var fvi = GetPrimaryFile(installation.Store)
-                .CombineChecked(installation.Path).FileInfo
+                .Combine(installation.Path).FileInfo
                 .GetFileVersionInfo();
             return fvi.ProductVersion;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return new Version(0, 0, 0, 0);
         }
+    }
+    
+    /// <summary>
+    /// Clears the internal cache of game installations, so that the next access will re-query the system.
+    /// </summary>
+    public void ResetInstallations()
+    {
+        _installations = null;
     }
 
     private List<GameInstallation> GetInstallations()

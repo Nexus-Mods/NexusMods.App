@@ -4,8 +4,6 @@ using DynamicData;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
-using System.Reactive.Disposables;
-using DynamicData.PLinq;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts.Cursors;
@@ -30,9 +28,15 @@ public class LoadoutRegistry : IDisposable
     /// </summary>
     public IObservable<IChangeSet<IId,LoadoutId>> LoadoutChanges => _cache.Connect();
 
+    /// <summary>
+    /// All the loadouts and their current root ids
+    /// </summary>
     public IObservable<IChangeSet<Loadout, LoadoutId>> Loadouts =>
         LoadoutChanges.Transform(id => _store.Get<Loadout>(id, true)!);
 
+    /// <summary>
+    /// All games that have loadouts
+    /// </summary>
     public IObservable<IDistinctChangeSet<IGame>> Games =>
         Loadouts
             .DistinctValues(d => d.Installation.Game);
@@ -145,11 +149,8 @@ public class LoadoutRegistry : IDisposable
             {
                 return loadout with { Mods = loadout.Mods.Without(modId) };
             }
-            else
-            {
-                return loadout with { Mods = loadout.Mods.With(modId, newMod) };
-            }
-            return loadout;
+
+            return loadout with { Mods = loadout.Mods.With(modId, newMod) };
         });
 
     }
@@ -171,6 +172,8 @@ public class LoadoutRegistry : IDisposable
     /// are being done. The methods on the visitor will be called for every part of the
     /// loadout.
     /// </summary>
+    /// <param name="id"></param>
+    /// <param name="commitMessage"></param>
     /// <param name="visitor"></param>
     public Loadout Alter(LoadoutId id, string commitMessage, ALoadoutVisitor visitor)
     {

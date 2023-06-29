@@ -13,6 +13,7 @@ public class DataGridColumnFactory<TVm, TRow> : IDataGridColumnFactory
 {
     private readonly IServiceProvider _provider;
     public ColumnType Type { get; set; } = ColumnType.Name;
+    public DataGridLength Width { get; set; } = DataGridLength.Auto;
 
     public DataGridColumnFactory(IServiceProvider provider)
     {
@@ -21,6 +22,8 @@ public class DataGridColumnFactory<TVm, TRow> : IDataGridColumnFactory
 
     public DataGridColumn Generate()
     {
-        return _provider.GetRequiredService<DataGridViewModelColumn<TVm, TRow>>();
+        var column = _provider.GetRequiredService<DataGridViewModelColumn<TVm, TRow>>();
+        column.Width = Width;
+        return column;
     }
 }

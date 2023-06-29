@@ -5,44 +5,39 @@ namespace NexusMods.Paths.Tests;
 
 public class ExtensionTests
 {
-
     private readonly InMemoryFileSystem _fileSystem;
+
     public ExtensionTests()
     {
         _fileSystem = new InMemoryFileSystem();
     }
-    
-    // ReSharper disable InconsistentNaming
-    public static Extension DDS = new(".DDS");
-    public static Extension Dds = new(".Dds");
-    public static Extension DDS2 = new(".DDS");
-    public static Extension EMPTY = new("");
 
+    // ReSharper disable InconsistentNaming
+    private static readonly Extension DDS = new(".DDS");
+    private static readonly Extension Dds = new(".Dds");
+    private static readonly Extension DDS2 = new(".DDS");
+    private static readonly Extension EMPTY = new("");
     // ReSharper restore InconsistentNaming
 
     [Fact]
-    public void ExtensionsAreEqual()
+    public void Test_Equality()
     {
-        Assert.Equal(DDS, DDS);
-        Assert.Equal(DDS, DDS2);
-        Assert.Equal(DDS, Dds);
+        DDS.Should().Be(DDS);
+        DDS.Should().Be(DDS2);
+        DDS.Should().Be(Dds);
 
-        Assert.True(DDS == Dds);
-        Assert.True(DDS != EMPTY);
-
-        Assert.NotEqual(EMPTY, DDS);
-
-        Assert.NotEqual(DDS, (object)42);
+        EMPTY.Should().NotBe(DDS);
+        DDS.Should().NotBe(42);
     }
 
-    [SkippableTheory]
-    [InlineData("/foo.dds", true)]
-    [InlineData("C:\\foo.dds", false)]
-    public void CanGetExtensionOfPath(string input, bool linux)
+    [Theory]
+    [InlineData("foo.dds", ".dds")]
+    [InlineData(".dds", ".dds")]
+    [InlineData("foo.bar.baz.dds", ".dds")]
+    public void Test_FromPath(string input, string expectedExtension)
     {
-        Skip.If(linux != OperatingSystem.IsLinux());
-        var path = AbsolutePath.FromFullPath(input, _fileSystem);
-        path.Extension.Should().Be(DDS);
+        var actualExtension = Extension.FromPath(input);
+        actualExtension.Should().Be(new Extension(expectedExtension));
     }
 
     [Fact]
@@ -53,16 +48,10 @@ public class ExtensionTests
     }
 
     [Fact]
-    public void ExtensionsRequireDots()
-    {
-        Assert.Throws<PathException>(() => new Extension("foo"));
-    }
-
-    [Fact]
     public void ExtensionsOverrideObjectMethods()
     {
         Assert.Equal(".DDS", DDS.ToString());
-        Assert.Equal(".DDS".GetHashCode(StringComparison.InvariantCultureIgnoreCase), DDS.GetHashCode());
+        Assert.Equal(".DDS".GetHashCode(StringComparison.OrdinalIgnoreCase), DDS.GetHashCode());
     }
 
     [Fact]

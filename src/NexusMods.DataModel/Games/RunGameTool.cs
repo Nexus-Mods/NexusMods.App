@@ -7,7 +7,7 @@ namespace NexusMods.DataModel.Games;
 
 
 /// <summary>
-/// Marker interface for RunGameTool<T>
+/// Marker interface for RunGameTool
 /// </summary>
 public interface IRunGameTool : ITool
 {
@@ -44,7 +44,7 @@ where T : AGame
     /// <inheritdoc />
     public async Task Execute(Loadout loadout)
     {
-        var program = _game.GetPrimaryFile(loadout.Installation.Store).CombineChecked(loadout.Installation.Locations[GameFolderType.Game]);
+        var program = _game.GetPrimaryFile(loadout.Installation.Store).Combine(loadout.Installation.Locations[GameFolderType.Game]);
         _logger.LogInformation("Running {Program}", program);
 
         // TODO: use IProcessFactory

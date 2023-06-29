@@ -66,24 +66,30 @@ public enum EntityCategory
     /// Stores test information e.g. for mocking purposes.
     /// </summary>
     TestData,
-    
+
     /// <summary>
     /// This entity is used as part of the IPC job system.
     /// </summary>
     InterprocessJob,
-    
+
     /// <summary>
     /// Fingerprint cache data
     /// </summary>
     Fingerprints,
-    
+
     /// <summary>
     /// Back-indexes for finding hashes inside the ArchiveManager
     /// </summary>
     ArchivedFiles,
-    
+
     /// <summary>
     /// Metadata about archives, normally the source (e.g. NexusMods, GitHub, etc.)
     /// </summary>
-    ArchiveMetaData
+    ArchiveMetaData,
+
+    /// <summary>
+    /// Records for games that have been manually registered, as opposed to detected by
+    /// the automatic locators
+    /// </summary>
+    ManuallyAddedGame,
 }

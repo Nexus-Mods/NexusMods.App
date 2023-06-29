@@ -32,16 +32,12 @@ public static class SkiaAvaloniaExtensions
     /// <returns>The blurred image.</returns>
     public static SKImage ToSkiaImage(this Bitmap bitmap)
     {
-        // See: ToAvaloniaImage
-        if (bitmap.Format == null ||
-            bitmap.PlatformImpl.Item is not IReadableBitmapImpl readable ||
-            bitmap.Format != readable.Format)
-            throw new Exception("Not supported for this bitmap type.");
-
-        using var locked = readable.Lock();
-        var size = bitmap.PixelSize;
-        var imageInfo = new SKImageInfo(size.Width, size.Height, locked.Format.ToSkColorType());
-        return SKImage.FromPixels(imageInfo, locked.Address);
+        var info = new SKImageInfo(bitmap.PixelSize.Width, bitmap.PixelSize.Height, SKColorType.Bgra8888, SKAlphaType.Premul);
+        var result = new SKBitmap(info);
+        var dest = result.GetPixels(out var length);
+        var stride = bitmap.PixelSize.Width * 4;
+        bitmap.CopyPixels(new PixelRect(bitmap.PixelSize), dest, (int)length, stride);
+        return SKImage.FromBitmap(result);
     }
 
     /// <summary>
@@ -49,20 +45,13 @@ public static class SkiaAvaloniaExtensions
     /// </summary>
     /// <param name="bitmap">The bitmap to convert to Avalonia.</param>
     /// <returns>The blurred image.</returns>
-    public static IBitmap ToAvaloniaImage(this SKBitmap bitmap)
+    public static Bitmap ToAvaloniaImage(this SKBitmap bitmap)
     {
-        // This is annoying, we convert to Avalonia for Avalonia to convert it back to Skia
-        // but I can't find any docs on how to convert from Skia to Avalonia AT ALL,
-        // so I'm just grokking this from walking the Avalonia sources.
-        var info = bitmap.Info;
-        var pixelFormat = info.ColorType.ToAvalonia();
-        var alphaFormat = info.AlphaType.ToAlphaFormat();
-        var pixelSize = new PixelSize(info.Width, info.Height);
-
-        if (pixelFormat == null)
-            throw new Exception("Not Supported Pixel Format");
-
-        // Note: Don't use the other constructor, it does a copyBlock per stride/row, for some reason.
-        return new Bitmap(pixelFormat.Value, alphaFormat, bitmap.GetPixels(), pixelSize, SkiaPlatform.DefaultDpi, bitmap.RowBytes);
+        return new Bitmap(PixelFormat.Bgra8888,
+            AlphaFormat.Premul,
+            bitmap.GetPixels(),
+            new PixelSize(bitmap.Width, bitmap.Height),
+            new Vector(96.0, 96.0),
+            bitmap.RowBytes);
     }
 }

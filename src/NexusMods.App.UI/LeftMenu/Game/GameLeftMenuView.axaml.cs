@@ -17,7 +17,7 @@ public partial class GameLeftMenuView : ReactiveUserControl<IGameLeftMenuViewMod
                 .DisposeWith(d);
 
             this.WhenAnyValue(x => x.ViewModel!.Items)
-                .BindTo(this, x => x.MenuItemsControl.Items)
+                .BindTo(this, x => x.MenuItemsControl.ItemsSource)
                 .DisposeWith(d);
         });
     }

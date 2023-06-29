@@ -1,0 +1,35 @@
+name: Validate NuGet packages
+
+on:
+  schedule:
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/validate-nupkgs.yaml'
+      - '**.csproj'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/validate-nupkgs.yaml'
+      - '**.csproj'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7'
+
+      - name: Pack
+        run: dotnet pack
+
+      - name: Validate
+        shell: pwsh
+        run: ./scripts/validate-nupkgs.ps1

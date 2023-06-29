@@ -15,7 +15,7 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        var path = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory).CombineUnchecked("temp").CombineUnchecked(Guid.NewGuid().ToString());
+        var path = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory).Combine("temp").Combine(Guid.NewGuid().ToString());
         path.CreateDirectory();
         var config = new AppConfig
         {

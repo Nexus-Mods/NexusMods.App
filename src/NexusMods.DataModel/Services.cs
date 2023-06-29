@@ -37,6 +37,7 @@ public static class Services
             return provider.GetRequiredService<IDataModelSettings>();
         }
 
+        coll.AddSingleton<JsonConverter, AbsolutePathConverter>();
         coll.AddSingleton<JsonConverter, RelativePathConverter>();
         coll.AddSingleton<JsonConverter, GamePathConverter>();
         coll.AddSingleton<JsonConverter, DateTimeConverter>();
@@ -50,7 +51,7 @@ public static class Services
         coll.AddSingleton(typeof(EntityLinkConverter<>));
 
         coll.AddSingleton<IDataStore, SqliteDataStore>();
-        coll.AddAllSingleton<IArchiveManager, ArchiveManager>();
+        coll.AddAllSingleton<IArchiveManager, ZipArchiveManager>();
         coll.AddAllSingleton<IResource, IResource<FileHashCache, Size>>(s =>
             new Resource<FileHashCache, Size>("File Hashing",
                 Settings(s).MaxHashingJobs,

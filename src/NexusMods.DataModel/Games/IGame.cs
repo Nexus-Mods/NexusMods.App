@@ -30,6 +30,11 @@ public interface IGame
     public IEnumerable<GameInstallation> Installations { get; }
 
     /// <summary>
+    /// Resets the internal cache of installations, forcing a re-scan on the next access of <see cref="Installations"/>.
+    /// </summary>
+    public void ResetInstallations();
+
+    /// <summary>
     /// Returns any files that should be placed in the "Game Files" that are generated or maintained
     /// by this <see cref="IGame"/> instance.
     /// </summary>

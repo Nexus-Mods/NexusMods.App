@@ -64,6 +64,7 @@ public readonly struct HashRelativePath : IPath, IEquatable<HashRelativePath>, I
 #pragma warning restore CS1591
     #endregion
 
+    /// <inheritdoc />
     public int CompareTo(HashRelativePath other)
     {
         var hashComparison = Hash.CompareTo(other.Hash);

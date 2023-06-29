@@ -7,14 +7,12 @@ namespace NexusMods.DataModel.JsonConverters;
 /// <inheritdoc />
 public class GameInstallationConverter : JsonConverter<GameInstallation>
 {
-    private readonly Dictionary<(GameDomain Slug, Version Version, GameStore Store), GameInstallation> _games;
+    private readonly ILookup<GameDomain, IGame> _games;
 
     /// <inheritdoc />
     public GameInstallationConverter(IEnumerable<IGame> games)
     {
-        _games = games
-            .SelectMany(g => g.Installations.Select(i => (Slug: g.Domain, Install: i)))
-            .ToDictionary(r => (r.Slug, r.Install.Version, r.Install.Store), r => r.Install);
+        _games = games.ToLookup(d => d.Domain);
     }
 
     /// <inheritdoc />
@@ -30,11 +28,12 @@ public class GameInstallationConverter : JsonConverter<GameInstallation>
         reader.Read();
         var store = GameStore.From(reader.GetString());
         reader.Read();
+        
+        var foundGame = _games[slug]
+            .SelectMany(g => g.Installations)
+            .FirstOrDefault(install => install.Version == version && install.Store == store);
 
-        if (_games.TryGetValue((slug, version, store), out var found))
-            return found;
-
-        return new UnknownGame(slug, version).Installations.First();
+        return foundGame ?? new UnknownGame(slug, version).Installations.First();
     }
 
     /// <inheritdoc />

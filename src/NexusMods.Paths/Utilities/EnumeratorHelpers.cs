@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace NexusMods.Paths.Utilities;
 
-internal class EnumeratorHelpers
+internal static class EnumeratorHelpers
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool MatchesPattern(string expression, ReadOnlySpan<char> name, MatchType matchType)
