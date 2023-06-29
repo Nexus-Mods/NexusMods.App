@@ -56,7 +56,6 @@ public class LoadoutManager
     private readonly IFileSystem _fileSystem;
     private readonly IModInstaller[] _installers;
     private readonly IArchiveAnalyzer _analyzer;
-    private readonly IEnumerable<IFileMetadataSource> _metadataSources;
     private readonly ILookup<GameDomain, ITool> _tools;
     private readonly IInterprocessJobManager _jobManager;
 
@@ -69,7 +68,6 @@ public class LoadoutManager
         LoadoutRegistry registry,
         IResource<LoadoutManager, Size> limiter,
         IArchiveManager archiveManager,
-        IEnumerable<IFileMetadataSource> metadataSources,
         IDataStore store,
         FileHashCache fileHashCache,
         IEnumerable<IModInstaller> installers,
@@ -85,7 +83,6 @@ public class LoadoutManager
         Limiter = limiter;
         Store = store;
         _jobManager = jobManager;
-        _metadataSources = metadataSources;
         _installers = installers.ToArray();
         _analyzer = analyzer;
         _tools = tools.SelectMany(t => t.Domains.Select(d => (Tool: t, Domain: d)))
@@ -129,7 +126,7 @@ public class LoadoutManager
     {
         _logger.LogInformation("Indexing game files");
 
-        var mod = new Mods.Mod
+        var mod = new Mod
         {
             Id = ModId.New(),
             Status = ModStatus.Installing,
@@ -137,7 +134,7 @@ public class LoadoutManager
             Files = new EntityDictionary<ModFileId, AModFile>(Store),
             Version = installation.Version.ToString(),
             ModCategory = Mod.GameFilesCategory,
-            SortRules = ImmutableList<ISortRule<Mods.Mod, ModId>>.Empty.Add(new First<Mods.Mod, ModId>())
+            SortRules = ImmutableList<ISortRule<Mod, ModId>>.Empty.Add(new First<Mod, ModId>())
         }.WithPersist(Store);
 
         var loadoutId = LoadoutId.Create();
@@ -150,7 +147,7 @@ public class LoadoutManager
                     LoadoutId = loadoutId,
                     Installation = installation,
                     Name = name,
-                    Mods = new EntityDictionary<ModId, Mods.Mod>(Store,
+                    Mods = new EntityDictionary<ModId, Mod>(Store,
                         new[]
                         {
                             new KeyValuePair<ModId, IId>(mod.Id,
@@ -180,7 +177,7 @@ public class LoadoutManager
     }
 
     private async Task IndexAndAddGameFiles(GameInstallation installation,
-        CancellationToken token, Loadout loadout, Mods.Mod mod, IInterprocessJob managementJob, bool indexGameFiles)
+        CancellationToken token, Loadout loadout, Mod mod, IInterprocessJob managementJob, bool indexGameFiles)
     {
         // So we release this after the job is done.
         using var _ = managementJob;
@@ -200,18 +197,13 @@ public class LoadoutManager
                                    .IndexFolderAsync(path, token)
                                    .WithCancellation(token))
                 {
-                    var analysis = await _analyzer.AnalyzeFileAsync(result.Path, token);
-                    var file = new GameFile
-                    {
-                        Id = ModFileId.New(),
-                        To = new GamePath(type, result.Path.RelativeTo(path)),
-                        Installation = installation,
-                        Hash = result.Hash,
-                        Size = result.Size
-                    }.WithPersist(Store);
+                    var analyzedFile = await _analyzer.AnalyzeFileAsync(result.Path, token);
 
-                    var metaData = await GetMetadata(loadout, mod, file, analysis).ToHashSetAsync();
-                    gameFiles.Add(file with { Metadata = metaData.ToImmutableList() });
+                    var file = analyzedFile
+                        .ToGameFile(new GamePath(type, result.Path.RelativeTo(path)), installation)
+                        .WithPersist(Store);
+
+                    gameFiles.Add(file);
                 }
             }
         }
@@ -249,7 +241,7 @@ public class LoadoutManager
         // Get the loadout and create the mod so we can use it in the job.
         var loadout = GetLoadout(loadoutId);
 
-        var baseMod = new Mods.Mod
+        var baseMod = new Mod
         {
             Id = ModId.New(),
             Name = string.IsNullOrWhiteSpace(defaultModName) ? archivePath.FileName : defaultModName,
@@ -301,7 +293,7 @@ public class LoadoutManager
                 archive.Contents,
                 cancellationToken);
 
-            var mods = results.Select(result => new Mods.Mod
+            var mods = results.Select(result => new Mod
             {
                 Id = result.Id,
                 Files = result.Files.ToEntityDictionary(Store),
@@ -431,24 +423,6 @@ public class LoadoutManager
         }
 
         return $"My Loadout {Guid.NewGuid()}";
-    }
-
-    private async IAsyncEnumerable<IMetadata> GetMetadata(
-        Loadout loadout,
-        Mod mod,
-        GameFile file,
-        AnalyzedFile analyzed)
-    {
-        foreach (var source in _metadataSources)
-        {
-            if (!source.Games.Contains(loadout.Installation.Game.Domain)) continue;
-            if (!source.Extensions.Contains(file.To.Extension)) continue;
-
-            await foreach (var metadata in source.GetMetadataAsync(loadout, mod, file, analyzed))
-            {
-                yield return metadata;
-            }
-        }
     }
 
     private LoadoutMarker GetLoadout(LoadoutId loadoutId) => new(Registry, loadoutId);

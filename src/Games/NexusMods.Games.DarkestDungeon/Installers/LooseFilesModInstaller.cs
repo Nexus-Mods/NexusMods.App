@@ -1,6 +1,7 @@
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -49,13 +50,9 @@ public class LooseFilesModInstaller : IModInstaller
             .Select(kv =>
             {
                 var (path, file) = kv;
-                return new FromArchive
-                {
-                    Id = ModFileId.New(),
-                    To = new GamePath(GameFolderType.Game, ModsFolder.Join(path)),
-                    Hash = file.Hash,
-                    Size = file.Size,
-                };
+                return file.ToFromArchive(
+                    new GamePath(GameFolderType.Game, ModsFolder.Join(path))
+                );
             });
 
         // TODO: create project.xml file for the mod

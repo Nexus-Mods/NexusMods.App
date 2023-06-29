@@ -33,7 +33,7 @@ public class ArchiveAnalyzer : IArchiveAnalyzer
     private readonly FileHashCache _fileHashCache;
     private readonly ILookup<FileType, IFileAnalyzer> _analyzers;
     private readonly IArchiveManager _archiveManager;
-    
+
     /// <summary>
     /// The signature of the analyzers used when indexing files.
     /// </summary>
@@ -102,7 +102,7 @@ public class ArchiveAnalyzer : IArchiveAnalyzer
             var metaData = FileArchiveMetaData.Create(path, archive);
             metaData.EnsurePersisted(_store);
         }
-        
+
         return result;
     }
 
@@ -179,14 +179,19 @@ public class ArchiveAnalyzer : IArchiveAnalyzer
                     hashStream.Position = 0;
                     try
                     {
-                        await foreach (var data in analyzer.AnalyzeAsync(new FileAnalyzerInfo()
-                                       {
-                                           RelativePath = parentPath,
-                                           FileName = fileName,
-                                           ParentArchive = parentArchivePath,
-                                           Stream = hashStream
-                                       }, token))
+                        var fileAnalyzerInfo = new FileAnalyzerInfo
+                        {
+
+                            RelativePath = parentPath,
+                            FileName = fileName,
+                            ParentArchive = parentArchivePath,
+                            Stream = hashStream
+                        };
+
+                        await foreach (var data in analyzer.AnalyzeAsync(fileAnalyzerInfo, token))
+                        {
                             analysisData.Add(data);
+                        }
                     }
                     catch (Exception e)
                     {
@@ -261,7 +266,7 @@ public class ArchiveAnalyzer : IArchiveAnalyzer
                     // ReSharper disable once AccessToDisposedClosure
                     .SelectAsync(a => KeyValuePair.Create(a.Path.RelativeTo(tmpFolder.Path), a.Results.DataStoreId))
                     .ToListAsync();
-                
+
                 // Some parts of this code fail with an empty collection
                 if (children.Any())
                 {
