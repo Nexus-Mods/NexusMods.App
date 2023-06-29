@@ -1,8 +1,6 @@
 ﻿using System.ComponentModel;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Interprocess.Jobs;
-using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.RateLimiting;
 
 namespace NexusMods.DataModel.Interprocess.Messages;

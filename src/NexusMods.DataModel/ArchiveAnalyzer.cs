@@ -7,7 +7,6 @@ using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Extensions;
-using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.RateLimiting.Extensions;
 using NexusMods.FileExtractor.FileSignatures;

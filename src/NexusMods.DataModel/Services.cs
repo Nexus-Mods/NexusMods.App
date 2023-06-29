@@ -3,7 +3,6 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Diagnostics;
 using NexusMods.DataModel.Interprocess;
 using NexusMods.DataModel.Interprocess.Jobs;

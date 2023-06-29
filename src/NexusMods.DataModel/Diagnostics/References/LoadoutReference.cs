@@ -1,5 +1,4 @@
 using JetBrains.Annotations;
-using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.DataModel.Diagnostics.References;

@@ -5,7 +5,6 @@ using System.Text.Json.Serialization;
 using DynamicData;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.JsonConverters;
-using NexusMods.DataModel.Loadouts;
 
 #pragma warning disable CS8604
 

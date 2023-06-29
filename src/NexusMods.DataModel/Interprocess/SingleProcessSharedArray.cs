@@ -1,6 +1,4 @@
-﻿using System.Runtime.InteropServices;
-
-namespace NexusMods.DataModel.Interprocess;
+﻿namespace NexusMods.DataModel.Interprocess;
 
 /// <summary>
 /// A shared array of 64-bit unsigned integers, supports atomic operations via a CAS operation, for use in a single process

@@ -1,5 +1,4 @@
 ﻿using System.Buffers.Binary;
-using DynamicData;
 using NexusMods.Archives.Nx.FileProviders;
 using NexusMods.Archives.Nx.Headers.Managed;
 using NexusMods.Archives.Nx.Interfaces;
