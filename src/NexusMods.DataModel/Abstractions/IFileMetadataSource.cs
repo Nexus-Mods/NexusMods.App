@@ -44,6 +44,9 @@ public interface IFileMetadataSource
     ///     it will be removed before the new metadata is added, so this method should always return
     ///     all metadata for the given file.
     /// </remarks>
-    public IAsyncEnumerable<IModFileMetadata> GetMetadataAsync(Loadout loadout, Mod mod, AModFile file,
+    public IAsyncEnumerable<IMetadata> GetMetadataAsync(
+        Loadout loadout,
+        Mod mod,
+        AModFile file,
         AnalyzedFile analyzedFile);
 }

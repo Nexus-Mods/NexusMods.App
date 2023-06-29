@@ -211,7 +211,7 @@ public class LoadoutManager
                     }.WithPersist(Store);
 
                     var metaData = await GetMetadata(loadout, mod, file, analysis).ToHashSetAsync();
-                    gameFiles.Add(file with { Metadata = metaData.ToImmutableHashSet() });
+                    gameFiles.Add(file with { Metadata = metaData.ToImmutableList() });
                 }
             }
         }
@@ -433,7 +433,7 @@ public class LoadoutManager
         return $"My Loadout {Guid.NewGuid()}";
     }
 
-    private async IAsyncEnumerable<IModFileMetadata> GetMetadata(
+    private async IAsyncEnumerable<IMetadata> GetMetadata(
         Loadout loadout,
         Mod mod,
         GameFile file,

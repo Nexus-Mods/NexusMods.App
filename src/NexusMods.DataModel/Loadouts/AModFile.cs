@@ -1,7 +1,6 @@
 using System.Collections.Immutable;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts.Mods;
-using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Loadouts;
 
@@ -21,5 +20,5 @@ public abstract record AModFile : Entity
     /// <summary>
     /// Metadata for this file.
     /// </summary>
-    public ImmutableHashSet<IModFileMetadata> Metadata { get; init; } = ImmutableHashSet<IModFileMetadata>.Empty;
+    public ImmutableList<IMetadata> Metadata { get; init; } = ImmutableList<IMetadata>.Empty;
 }

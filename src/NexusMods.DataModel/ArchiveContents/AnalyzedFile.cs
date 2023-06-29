@@ -27,7 +27,7 @@ public record AnalyzedFile : Entity
     /// Individual hash of the file.
     /// </summary>
     public required Hash Hash { get; init; }
-    
+
     /// <summary>
     /// Hash of the ids of the analyzers used to analyze this file.
     /// </summary>
