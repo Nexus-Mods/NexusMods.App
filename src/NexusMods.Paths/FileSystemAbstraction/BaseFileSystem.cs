@@ -83,26 +83,31 @@ public abstract class BaseFileSystem : IFileSystem
         // This enables path mappings to map "/c" to something else, like
         // "/opt/wine/drive_c"
 
-        if (!OS.IsLinux) return input;
-        if (!_convertCrossPlatformPaths) return input;
+        var sanitizedPathCurrentOS = PathHelpers.Sanitize(input, OS);
 
-        var inputSpan = input.AsSpan();
-        if (PathHelpers.GetRootLength(inputSpan, OSInformation.FakeWindows) != 3) return input;
+        // Only supported on Linux and with the setting enabled
+        if (!OS.IsLinux || !_convertCrossPlatformPaths) return sanitizedPathCurrentOS;
+
+        // The input has to be a Windows path
+        if (PathHelpers.IsRooted(sanitizedPathCurrentOS, OS)) return sanitizedPathCurrentOS;
+
+        var sanitizedPathWindows = PathHelpers.Sanitize(input, OSInformation.FakeWindows);
+        Debug.Assert(PathHelpers.IsRooted(sanitizedPathWindows, OSInformation.FakeWindows));
 
         var result = string.Create(
-            input.Length,
-            input,
+            sanitizedPathWindows.Length,
+            sanitizedPathWindows,
             (span, s) =>
             {
                 // C:/foo/bar -> /c/foo/bar
                 var inputSpan = s.AsSpan();
 
-                span[0] = '/';
+                span[0] = PathHelpers.DirectorySeparatorChar;
                 span[1] = char.ToLower(inputSpan.DangerousGetReferenceAt(0));
                 inputSpan.SliceFast(2).CopyTo(span.SliceFast(2));
             });
 
-        return result;
+        return PathHelpers.RemoveTrailingDirectorySeparator(result).ToString();
     }
 
     #region IFileStream Implementation
@@ -205,11 +210,19 @@ public abstract class BaseFileSystem : IFileSystem
 
     /// <inheritdoc/>
     public AbsolutePath FromUnsanitizedFullPath(string unsanitizedFullPath)
-        => GetMappedPath(AbsolutePath.FromUnsanitizedFullPath(ConvertCrossPlatformPath(unsanitizedFullPath), this));
+    {
+        var convertedPath = ConvertCrossPlatformPath(unsanitizedFullPath);
+        var mappedPath = GetMappedPath(AbsolutePath.FromSanitizedFullPath(convertedPath, this));
+        return mappedPath;
+    }
 
     /// <inheritdoc/>
     public AbsolutePath FromUnsanitizedDirectoryAndFileName(string directoryPath, string fileName)
-        => GetMappedPath(AbsolutePath.FromUnsanitizedDirectoryAndFileName(ConvertCrossPlatformPath(directoryPath), fileName, this));
+    {
+        // Note(erri120): hacky at best, PathHelpers.JoinParts expects sanitized inputs
+        var unsanitizedFullPath = Path.Combine(directoryPath, fileName);
+        return FromUnsanitizedFullPath(unsanitizedFullPath);
+    }
 
     /// <inheritdoc/>
     public IFileEntry GetFileEntry(AbsolutePath path)

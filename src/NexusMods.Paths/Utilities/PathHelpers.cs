@@ -101,7 +101,10 @@ public static class PathHelpers
         return true;
     }
 
-    private static ReadOnlySpan<char> RemoveTrailingDirectorySeparator(ReadOnlySpan<char> path)
+    /// <summary>
+    /// Removes trailing directory separator characters from the input.
+    /// </summary>
+    public static ReadOnlySpan<char> RemoveTrailingDirectorySeparator(ReadOnlySpan<char> path)
     {
         return path.DangerousGetReferenceAt(path.Length - 1) == DirectorySeparatorChar
             ? path.SliceFast(0, path.Length - 1)
