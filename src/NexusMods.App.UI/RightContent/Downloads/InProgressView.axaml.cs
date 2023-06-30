@@ -1,6 +1,7 @@
 ﻿using System.Reactive.Disposables;
 using Avalonia;
 using Avalonia.ReactiveUI;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Helpers;
 using NexusMods.App.UI.Overlays.Download.Cancel;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
@@ -37,20 +38,12 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
             // Dynamically Update Accented Items During Active Download
             this.WhenAnyValue(view => view.ViewModel!.IsRunning)
                 .OnUI()
-                .Subscribe(isRunning =>
-                {
-                    // TODO: I (Sewer) am not particularly a fan of this; but I'm not sure of the best alternative for now.
-                    if (isRunning)
-                    {
-                        foreach (var element in tintedElements)
-                            element.Classes.Add("UsesAccentLighterColor");
-                    }
-                    else
-                    {
-                        foreach (var element in tintedElements)
-                            element.Classes.Remove("UsesAccentLighterColor");
-                    }
-                })
+                .BindToClasses(BoldMinutesRemainingTextBlock, "UsesAccentLighterColor")
+                .DisposeWith(d);
+                
+            this.WhenAnyValue(view => view.ViewModel!.IsRunning)
+                .OnUI()
+                .BindToClasses(MinutesRemainingTextBlock, "UsesAccentLighterColor")
                 .DisposeWith(d);
 
             // Dynamically Update Title

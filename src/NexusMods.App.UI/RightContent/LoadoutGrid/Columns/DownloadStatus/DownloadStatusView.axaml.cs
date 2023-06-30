@@ -28,7 +28,7 @@ public partial class DownloadStatusView : ReactiveUserControl<IDownloadStatusVie
                 .OnUI()
                 .Subscribe(isRunning =>
                 {
-                    // TODO: I (Sewer) am not particularly a fan of this; but I'm not sure of the best alternative for now.
+                    // Note: This is inverse of BindToClasses, but this is the only use of this in the app for now, so not going into a helper.
                     if (isRunning)
                         DownloadProgressBar.Classes.Remove("DisabledDownloadBar");
                     else
