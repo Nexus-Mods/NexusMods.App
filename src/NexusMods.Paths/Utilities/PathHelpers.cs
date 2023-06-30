@@ -125,13 +125,22 @@ public static class PathHelpers
             ? GC.AllocateUninitializedArray<char>(path.Length)
             : stackalloc char[path.Length];
 
-        path.CopyTo(buffer);
-        buffer.Replace('\\', '/', buffer);
+        var bufferIndex = 0;
+        var previous = '\0';
+
+        for (var pathIndex = 0; pathIndex < path.Length; pathIndex++)
+        {
+            var current = path.DangerousGetReferenceAt(pathIndex);
+            if (previous == '\\' && current == '\\') continue;
+            buffer[bufferIndex++] = current == '\\' ? '/' : current;
+            previous = current;
+        }
 
         // Don't remove the trailing directory separator for root directories like "C:/".
-        return IsRootDirectory(buffer, os)
-            ? buffer.ToString()
-            : RemoveTrailingDirectorySeparator(buffer).ToString();
+        var slice = buffer.SliceFast(0, bufferIndex);
+        return IsRootDirectory(slice, os)
+            ? slice.ToString()
+            : RemoveTrailingDirectorySeparator(slice).ToString();
     }
 
     /// <summary>
