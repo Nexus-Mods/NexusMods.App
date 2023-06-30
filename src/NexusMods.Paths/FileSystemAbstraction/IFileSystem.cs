@@ -41,9 +41,6 @@ public interface IFileSystem
     /// <returns></returns>
     AbsolutePath GetKnownPath(KnownPath knownPath);
 
-    [Obsolete(message: "This will be removed once dependents have updated.", error: true)]
-    AbsolutePath FromFullPath(string fullPath) => FromUnsanitizedFullPath(fullPath);
-
     /// <summary>
     /// Creates a new <see cref="AbsolutePath"/> from an unsanitized full path.
     /// </summary>
