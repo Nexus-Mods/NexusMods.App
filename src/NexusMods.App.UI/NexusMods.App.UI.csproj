@@ -307,6 +307,13 @@
         <Compile Update="RightContent\Downloads\ViewModels\DownloadTaskViewModel.cs">
           <DependentUpon>IDownloadTaskViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Overlays\Login\NexusLoginOverlayView.axaml.cs">
+          <DependentUpon>NexusLoginOverlayView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Overlays\OverlayController.cs">
+          <DependentUpon>IOverlayController.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

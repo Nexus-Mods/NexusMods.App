@@ -1,24 +1,19 @@
-﻿using System.Collections.ObjectModel;
-using System.Reactive;
-using System.Reactive.Disposables;
+﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using DynamicData;
-using DynamicData.Binding;
 using NexusMods.DataModel.Interprocess.Jobs;
-using NexusMods.DataModel.Interprocess.Messages;
 using NexusMods.Networking.NexusWebApi.NMA.Types;
-using NexusMods.Networking.NexusWebApi.Types;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
-namespace NexusMods.App.UI.Overlays;
+namespace NexusMods.App.UI.Overlays.Login;
 
 public class NexusLoginOverlayViewModel : AViewModel<INexusLoginOverlayViewModel>, INexusLoginOverlayViewModel, IDisposable
 {
     private readonly CompositeDisposable _compositeDisposable;
 
-    public NexusLoginOverlayViewModel(IInterprocessJobManager jobManager)
+    public NexusLoginOverlayViewModel(IInterprocessJobManager jobManager, IOverlayController overlayController)
     {
         _compositeDisposable = new CompositeDisposable();
 
@@ -32,7 +27,18 @@ public class NexusLoginOverlayViewModel : AViewModel<INexusLoginOverlayViewModel
             .DisposeWith(_compositeDisposable);
 
         currentJob.Select(job => job != null)
-            .BindToUi(this, vm => vm.IsActive)
+            .OnUI()
+            .Subscribe(b =>
+            {
+                if (!b)
+                {
+                    IsActive = false;
+                    return;
+                }
+                
+                IsActive = true;
+                overlayController.SetOverlayContent(new SetOverlayItem(this));
+            })
             .DisposeWith(_compositeDisposable);
 
         currentJob

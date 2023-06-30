@@ -12,6 +12,8 @@ using NexusMods.App.UI.LeftMenu.Game;
 using NexusMods.App.UI.LeftMenu.Home;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Overlays;
+using NexusMods.App.UI.Overlays.Download.Cancel;
+using NexusMods.App.UI.Overlays.Login;
 using NexusMods.App.UI.RightContent;
 using NexusMods.App.UI.RightContent.Downloads;
 using NexusMods.App.UI.RightContent.Home;
@@ -38,6 +40,7 @@ using ModEnabledView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModEnab
 using ModInstalledView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModInstalled.ModInstalledView;
 using ModNameView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModName.ModNameView;
 using ModVersionView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModVersion.ModVersionView;
+using NexusLoginOverlayView = NexusMods.App.UI.Overlays.Login.NexusLoginOverlayView;
 
 namespace NexusMods.App.UI;
 
@@ -50,6 +53,8 @@ public static class Services
 
             // Services
             .AddSingleton<IRouter, ReactiveMessageRouter>()
+            .AddSingleton<IOverlayController, OverlayController>()
+
             // View Models
             .AddTransient<MainWindowViewModel>()
             .AddTransient(typeof(DataGridViewModelColumn<,>))
@@ -86,6 +91,7 @@ public static class Services
             .AddViewModel<DownloadVersionViewModel, IDownloadVersionViewModel>()
             .AddViewModel<DownloadSizeViewModel, IDownloadSizeViewModel>()
             .AddViewModel<DownloadStatusViewModel, IDownloadStatusViewModel>()
+            .AddViewModel<CancelDownloadOverlayViewModel, ICancelDownloadOverlayViewModel>()
 
             // Views
             .AddView<CompletedView, ICompletedViewModel>()
@@ -119,6 +125,7 @@ public static class Services
             .AddView<DownloadVersionView, IDownloadVersionViewModel>()
             .AddView<DownloadSizeView, IDownloadSizeViewModel>()
             .AddView<DownloadStatusView, IDownloadStatusViewModel>()
+            .AddView<CancelDownloadOverlayView, ICancelDownloadOverlayViewModel>()
 
             // Other
             .AddSingleton<InjectedViewLocator>()

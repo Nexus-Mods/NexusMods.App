@@ -1,12 +1,11 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.TopBar;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.Overlays;
-using NexusMods.Common;
+using NexusMods.App.UI.Overlays.Login;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -16,16 +15,19 @@ namespace NexusMods.App.UI.Windows;
 public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
 {
     private readonly INexusLoginOverlayViewModel _nexusOverlayViewModel;
+    private readonly IOverlayController _overlayController;
 
     public MainWindowViewModel(
         ILogger<MainWindowViewModel> logger,
         IOSInformation osInformation,
         ISpineViewModel spineViewModel,
         ITopBarViewModel topBarViewModel,
-        INexusLoginOverlayViewModel nexusOverlayViewModel)
+        INexusLoginOverlayViewModel nexusOverlayViewModel,
+        IOverlayController controller)
     {
         TopBar = topBarViewModel;
         Spine = spineViewModel;
+        _overlayController = controller;
         _nexusOverlayViewModel = nexusOverlayViewModel;
 
         // Only show controls in Windows since we can remove the chrome on that platform
@@ -37,9 +39,23 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
                 .SubscribeWithErrorLogging(logger, HandleSpineAction)
                 .DisposeWith(d);
 
-            this.WhenAnyValue(vm => vm._nexusOverlayViewModel.IsActive)
-                .Select(active => active ? _nexusOverlayViewModel : null)
-                .BindTo(this, vm => vm.OverlayContent)
+            _overlayController.ApplyNextOverlay.Subscribe(item =>
+                {
+                    if (item == null)
+                    {
+                        OverlayContent = null;
+                        return;
+                    }
+
+                    // This is the main window, if no reference control is specified, show it here.
+                    if (item.Value.viewItem == null)
+                        OverlayContent = item.Value.vm;
+                    else
+                    {
+                        // TODO: Determine if we are the right window. For now we do nothing, until that helper is implemented
+                        OverlayContent = item.Value.vm;
+                    }
+                })
                 .DisposeWith(d);
 
             this.WhenAnyValue(vm => vm.Spine.LeftMenu)
@@ -62,27 +78,6 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
         });
     }
     
-    // TODO: We should probably have some sort of common 'stack' of modals/overlays.
-    public void SetOverlayContent(IOverlayViewModel vm)
-    {
-        // Register overlay close.
-        var unsubscribeToken = new CancellationTokenSource();
-        vm.WhenAnyValue(x => x.IsActive)
-            .OnUI()
-            .Subscribe(b =>
-            {
-                if (b) 
-                    return;
-                
-                // On unsubscribe (IsActive == false), kill the overlay.
-                OverlayContent = null;
-                unsubscribeToken.Cancel();
-            }, unsubscribeToken.Token);
-        
-        // Set the new overlay.
-        OverlayContent = vm;
-    }
-
     private void HandleSpineAction(SpineButtonAction action)
     {
         Spine.Activations.OnNext(action);

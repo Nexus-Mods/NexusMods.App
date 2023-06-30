@@ -1,4 +1,5 @@
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Overlays.Download.Cancel;
 
@@ -6,12 +7,10 @@ public class CancelDownloadOverlayViewModel : AViewModel<ICancelDownloadOverlayV
 {
     public IDownloadTaskViewModel DownloadTask { get; } = new DownloadTaskDesignViewModel();
 
-    public Action Ok => () =>
-    {
-        DownloadTask.Cancel();
-        IsActive = false;
-    };
-    
+    [Reactive]
+    public bool DialogResult { get; set; }
+
+    [Reactive]
     public bool IsActive { get; set; } = true;
     
     // For design.

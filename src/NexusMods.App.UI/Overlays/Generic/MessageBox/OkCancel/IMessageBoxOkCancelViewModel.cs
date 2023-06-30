@@ -6,7 +6,7 @@ namespace NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel;
 public interface IMessageBoxOkCancelViewModel : IOverlayViewModel
 {
     /// <summary>
-    /// When the user presses 'ok'
+    /// True if the user clicked 'ok', false if the user clicked 'cancel' or closed dialog.
     /// </summary>
-    Action Ok { get; }
+    bool DialogResult { get; set; }
 }

@@ -1,10 +1,10 @@
 ﻿using System.Reactive.Disposables;
-using Avalonia;
+using System.Windows.Input;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
-namespace NexusMods.App.UI.Overlays;
+namespace NexusMods.App.UI.Overlays.Login;
 
 public partial class NexusLoginOverlayView : ReactiveUserControl<INexusLoginOverlayViewModel>
 {
@@ -18,10 +18,10 @@ public partial class NexusLoginOverlayView : ReactiveUserControl<INexusLoginOver
                 await TopLevel.GetTopLevel(this)!.Clipboard!.SetTextAsync(ViewModel!.Uri.ToString());
             });
 
-            this.BindCommand(ViewModel, vm => vm.Cancel, v => v.CancelButton)
+            this.BindCommand<NexusLoginOverlayView, INexusLoginOverlayViewModel, ICommand, Button>(ViewModel, vm => vm.Cancel, v => v.CancelButton)
                 .DisposeWith(d);
             this.WhenAnyValue(view => view.ViewModel!.Uri)
-                .BindTo(this, view => view.UrlTextBlock.Text)
+                .BindTo<Uri, NexusLoginOverlayView, string>(this, view => view.UrlTextBlock.Text)
                 .DisposeWith(d);
 
         });

@@ -11,36 +11,29 @@ namespace NexusMods.App.UI.RightContent.Downloads;
 
 public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
 {
-    public InProgressView(MainWindowViewModel mainWindowViewModel)
+    public InProgressView()
     {
         InitializeComponent();
-        
+
         this.WhenActivated(d =>
         {
-            CancelButton.Command = ReactiveCommand.Create(() =>
-            {
-                if (ViewModel?.SelectedTask != null)
-                    mainWindowViewModel.SetOverlayContent(new CancelDownloadOverlayViewModel(ViewModel.SelectedTask));
-                
-                // TODO: Remove this code, for testing only
-                // mainWindowViewModel.SetOverlayContent(new CancelDownloadOverlayViewModel(ViewModel?.SelectedTask!));
-            });
-            
+            CancelButton.Command = ViewModel!.ShowCancelDialog;
+
             // List of elements that are tinted blue when a download is active.
             var tintedElements = new StyledElement[]
             {
                 BoldMinutesRemainingTextBlock,
                 MinutesRemainingTextBlock
             };
-            
+
             this.WhenAnyValue(view => view.ViewModel!.Tasks)
                 .BindToUi(this, view => view.ModsDataGrid.ItemsSource)
                 .DisposeWith(d);
-            
+
             this.WhenAnyValue(view => view.ViewModel!.Columns)
                 .GenerateColumns(ModsDataGrid)
                 .DisposeWith(d);
-            
+
             // Dynamically Update Accented Items During Active Download
             this.WhenAnyValue(view => view.ViewModel!.IsRunning)
                 .OnUI()
@@ -59,7 +52,7 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
                     }
                 })
                 .DisposeWith(d);
-            
+
             // Dynamically Update Title
             this.WhenAnyValue(view => view.ViewModel!.Tasks)
                 .OnUI()
@@ -68,7 +61,7 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
                     InProgressTitleTextBlock.Text = $"In progress ({models.Count})";
                 })
                 .DisposeWith(d);
-            
+
             // Dynamically Update Downloaded Bytes Text
             this.WhenAnyValue(view => view.ViewModel!.DownloadedSizeBytes, view => view.ViewModel!.TotalSizeBytes)
                 .OnUI()
@@ -79,7 +72,7 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
                     DownloadProgressBar.Value = vm.DownloadedSizeBytes / (double)vm.TotalSizeBytes;
                 })
                 .DisposeWith(d);
-            
+
             // Dynamically Update Time Remaining Text
             this.WhenAnyValue(view => view.ViewModel!.SecondsRemaining)
                 .OnUI()

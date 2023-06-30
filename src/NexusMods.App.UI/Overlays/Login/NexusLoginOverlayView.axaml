@@ -2,16 +2,17 @@
     d:DesignHeight="335"
     d:DesignWidth="600"
     mc:Ignorable="d"
-    x:Class="NexusMods.App.UI.Overlays.NexusLoginOverlayView"
-    x:TypeArguments="overlays:INexusLoginOverlayViewModel"
+    x:Class="NexusMods.App.UI.Overlays.Login.NexusLoginOverlayView"
+    x:TypeArguments="login:INexusLoginOverlayViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:overlays="clr-namespace:NexusMods.App.UI.Overlays"
     xmlns:reactiveUi="http://reactiveui.net"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:login="clr-namespace:NexusMods.App.UI.Overlays.Login">
     <Design.DataContext>
-        <overlays:NexusLoginOverlayDesignerViewModel />
+        <login:NexusLoginOverlayDesignerViewModel />
     </Design.DataContext>
     <Border Background="{DynamicResource BackgroundSecondaryBrush}" CornerRadius="8">
         <StackPanel

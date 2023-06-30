@@ -11,34 +11,34 @@ public interface IInProgressViewModel : IRightContentViewModel
     /// These tasks contain only current in-progress tasks; completed tasks are removed from this list.
     /// </summary>
     ReadOnlyObservableCollection<IDownloadTaskViewModel> Tasks { get; }
-    
+
     ReadOnlyObservableCollection<IDataGridColumnFactory> Columns { get; }
-    
+
     /// <summary>
     /// This command cancels the currently selected task.
     /// </summary>
-    ICommand CancelSelectedTask { get; }
-    
+    void CancelSelectedTask();
+
     /// <summary>
     /// True if download is running, else false.
     /// </summary>
     bool IsRunning { get; }
-    
+
     /// <summary>
     /// Total size of items currently downloaded.
     /// </summary>
     long DownloadedSizeBytes { get; }
-    
+
     /// <summary>
     /// Total size of items to be downloaded in bytes.
     /// </summary>
     long TotalSizeBytes { get; }
-    
+
     /// <summary>
     /// Seconds remaining until the download completes.
     /// </summary>
     int SecondsRemaining { get; set; }
-    
+
     /// <summary>
     /// The currently selected task.
     /// </summary>
@@ -48,4 +48,9 @@ public interface IInProgressViewModel : IRightContentViewModel
     /// Cancels the selected task.
     /// </summary>
     void Cancel() => SelectedTask?.Cancel();
+
+    /// <summary>
+    /// Shows the cancel 'dialog' to the user.
+    /// </summary>
+    ICommand ShowCancelDialog { get; }
 }

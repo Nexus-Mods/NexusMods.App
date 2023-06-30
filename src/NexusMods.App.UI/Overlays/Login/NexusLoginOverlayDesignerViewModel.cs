@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 
-namespace NexusMods.App.UI.Overlays;
+namespace NexusMods.App.UI.Overlays.Login;
 
 public class NexusLoginOverlayDesignerViewModel : AViewModel<INexusLoginOverlayViewModel>, INexusLoginOverlayViewModel
 {

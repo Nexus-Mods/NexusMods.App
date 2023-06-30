@@ -1,7 +1,10 @@
 ﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
+using NexusMods.App.UI.Overlays;
+using NexusMods.App.UI.Overlays.Download.Cancel;
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
+using NexusMods.App.UI.Windows;
 using NexusMods.Networking.Downloaders;
 using NexusMods.Networking.Downloaders.Interfaces;
 using ReactiveUI;
@@ -10,12 +13,22 @@ namespace NexusMods.App.UI.RightContent.Downloads;
 
 public class InProgressViewModel : InProgressCommonViewModel
 {
-    public InProgressViewModel(DownloadService downloadService)
+    public InProgressViewModel(DownloadService downloadService, IOverlayController overlayController)
     {
         SourceCache<IDownloadTaskViewModel, IDownloadTask> tasks = new(_ => throw new NotImplementedException());
-        
+
         this.WhenActivated(d =>
         {
+            ShowCancelDialog = ReactiveCommand.Create(async () =>
+            {
+                if (SelectedTask == null)
+                    return;
+                
+                var result = await overlayController.ShowCancelDownloadOverlay(SelectedTask);
+                if (result) 
+                    CancelSelectedTask();
+            });
+
             // Subscribe to started tasks
             downloadService.StartedTasks
                 .Subscribe(task =>
@@ -33,7 +46,7 @@ public class InProgressViewModel : InProgressCommonViewModel
                 {
                     tasks.Remove(task);
                 });
-            
+
             tasks.Connect()
                 .Bind(out TasksObservable)
                 .Subscribe()
@@ -55,7 +68,7 @@ public class InProgressViewModel : InProgressCommonViewModel
             if (task is DownloadTaskViewModel vm)
                 vm.Poll();
         }
-        
+
         // Update Base
         base.UpdateWindowInfo();
     }
