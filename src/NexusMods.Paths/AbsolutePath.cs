@@ -188,6 +188,9 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
         return FromSanitizedFullPath(res, FileSystem);
     }
 
+    [Obsolete(message: "This will be removed once dependents have updated.", error: true)]
+    public AbsolutePath CombineUnchecked(RelativePath path) => Combine(path);
+
     /// <summary>
     /// Gets a path relative to another absolute path.
     /// </summary>
