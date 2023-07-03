@@ -122,17 +122,40 @@ public abstract class BaseFileSystem : IFileSystem
         bool convertCrossPlatformPaths = false);
 
     /// <inheritdoc/>
+    public bool HasKnownPath(KnownPath knownPath)
+    {
+        Debug.Assert(Enum.IsDefined(knownPath));
+
+        return knownPath switch
+        {
+            KnownPath.EntryDirectory => true,
+            KnownPath.CurrentDirectory => true,
+            KnownPath.CommonApplicationDataDirectory => true,
+            KnownPath.ProgramFilesDirectory => IsWindowsOrMapped(),
+            KnownPath.ProgramFilesX86Directory => IsWindowsOrMapped(),
+            KnownPath.CommonProgramFilesDirectory => IsWindowsOrMapped(),
+            KnownPath.CommonProgramFilesX86Directory => IsWindowsOrMapped(),
+            KnownPath.TempDirectory => true,
+            KnownPath.HomeDirectory => true,
+            KnownPath.ApplicationDataDirectory => true,
+            KnownPath.LocalApplicationDataDirectory => true,
+            KnownPath.MyDocumentsDirectory => true,
+            KnownPath.MyGamesDirectory => true,
+        };
+
+        bool IsWindowsOrMapped()
+        {
+            return OS.IsWindows || _knownPathMappings.ContainsKey(knownPath);
+        }
+    }
+
+    /// <inheritdoc/>
     public virtual AbsolutePath GetKnownPath(KnownPath knownPath)
     {
         Debug.Assert(Enum.IsDefined(knownPath));
 
         if (_knownPathMappings.TryGetValue(knownPath, out var mappedPath))
             return mappedPath;
-
-        AbsolutePath ThisOrDefault(string fullPath)
-        {
-            return string.IsNullOrWhiteSpace(fullPath) ? default : FromUnsanitizedFullPath(fullPath);
-        }
 
         // NOTE(erri120): if you change this method, make sure to update the docs in the KnownPath enum.
         var path = knownPath switch
@@ -154,7 +177,13 @@ public abstract class BaseFileSystem : IFileSystem
             KnownPath.MyGamesDirectory => FromUnsanitizedDirectoryAndFileName(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games"),
         };
 
+        Debug.Assert(path != default, $"{nameof(GetKnownPath)} returns 'default' for {nameof(KnownPath)} '{knownPath}'. You forgot to add a mapping for this {nameof(KnownPath)}!");
         return path;
+
+        AbsolutePath ThisOrDefault(string fullPath)
+        {
+            return string.IsNullOrWhiteSpace(fullPath) ? default : FromUnsanitizedFullPath(fullPath);
+        }
     }
 
     /// <summary>
@@ -182,11 +211,10 @@ public abstract class BaseFileSystem : IFileSystem
         var knownPathMappings = new Dictionary<KnownPath, AbsolutePath>(knownPaths.Length);
         foreach (var knownPath in knownPaths)
         {
-            var originalPath = fileSystem.GetKnownPath(knownPath);
             var newPath = knownPath switch
             {
-                KnownPath.EntryDirectory => originalPath,
-                KnownPath.CurrentDirectory => originalPath,
+                KnownPath.EntryDirectory => fileSystem.GetKnownPath(knownPath),
+                KnownPath.CurrentDirectory => fileSystem.GetKnownPath(knownPath),
 
                 KnownPath.CommonApplicationDataDirectory => rootDirectory.Combine("ProgramData"),
                 KnownPath.ProgramFilesDirectory => rootDirectory.Combine("Program Files"),
