@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Runtime.InteropServices;
 using FluentAssertions;
 using NexusMods.Paths.TestingHelpers;
 
@@ -191,5 +192,67 @@ public class BaseFileSystemTests
             .ToArray();
 
         actualRootDirectories.Should().BeEquivalentTo(expectedRootDirectories);
+    }
+
+    [Theory]
+    [InlineData(true, KnownPath.EntryDirectory, true)]
+    [InlineData(true, KnownPath.CurrentDirectory, true)]
+    [InlineData(true, KnownPath.CommonApplicationDataDirectory, true)]
+    [InlineData(true, KnownPath.ProgramFilesDirectory, false)]
+    [InlineData(true, KnownPath.ProgramFilesX86Directory, false)]
+    [InlineData(true, KnownPath.CommonProgramFilesDirectory, false)]
+    [InlineData(true, KnownPath.CommonProgramFilesX86Directory, false)]
+    [InlineData(true, KnownPath.TempDirectory, true)]
+    [InlineData(true, KnownPath.HomeDirectory, true)]
+    [InlineData(true, KnownPath.ApplicationDataDirectory, true)]
+    [InlineData(true, KnownPath.LocalApplicationDataDirectory, true)]
+    [InlineData(true, KnownPath.MyDocumentsDirectory, true)]
+    [InlineData(true, KnownPath.MyGamesDirectory, true)]
+
+    [InlineData(false, KnownPath.EntryDirectory, true)]
+    [InlineData(false, KnownPath.CurrentDirectory, true)]
+    [InlineData(false, KnownPath.CommonApplicationDataDirectory, true)]
+    [InlineData(false, KnownPath.ProgramFilesDirectory, true)]
+    [InlineData(false, KnownPath.ProgramFilesX86Directory, true)]
+    [InlineData(false, KnownPath.CommonProgramFilesDirectory, true)]
+    [InlineData(false, KnownPath.CommonProgramFilesX86Directory, true)]
+    [InlineData(false, KnownPath.TempDirectory, true)]
+    [InlineData(false, KnownPath.HomeDirectory, true)]
+    [InlineData(false, KnownPath.ApplicationDataDirectory, true)]
+    [InlineData(false, KnownPath.LocalApplicationDataDirectory, true)]
+    [InlineData(false, KnownPath.MyDocumentsDirectory, true)]
+    [InlineData(false, KnownPath.MyGamesDirectory, true)]
+    public void Test_KnownPath(bool isLinux, KnownPath knownPath, bool expected)
+    {
+        var fakeOS = new OSInformation(isLinux ? OSPlatform.Linux : OSPlatform.Windows);
+        var hostOS = OSInformation.Shared;
+
+        var knownPathMappings = new Dictionary<KnownPath, AbsolutePath>();
+        var hostFS = new InMemoryFileSystem(hostOS);
+        var fakeFS = new InMemoryFileSystem(fakeOS);
+
+        if (!fakeOS.Equals(hostOS))
+        {
+            try
+            {
+                hostFS.GetKnownPath(knownPath);
+            }
+            catch (Exception)
+            {
+                knownPathMappings.Add(knownPath, fakeFS.GetKnownPath(KnownPath.TempDirectory));
+            }
+        }
+
+        var fs = fakeFS.CreateOverlayFileSystem(
+            new Dictionary<AbsolutePath, AbsolutePath>(),
+            knownPathMappings
+        );
+
+        var actual = fs.HasKnownPath(knownPath);
+        actual.Should().Be(expected);
+
+        Action act = () => fs.GetKnownPath(knownPath);
+        if (expected) act.Should().NotThrow();
+        else act.Should().Throw<Exception>();
     }
 }
