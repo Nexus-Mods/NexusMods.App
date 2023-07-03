@@ -194,7 +194,7 @@ public class BaseFileSystemTests
         actualRootDirectories.Should().BeEquivalentTo(expectedRootDirectories);
     }
 
-    [Theory]
+    [SkippableTheory]
     [InlineData(true, KnownPath.EntryDirectory, true)]
     [InlineData(true, KnownPath.CurrentDirectory, true)]
     [InlineData(true, KnownPath.CommonApplicationDataDirectory, true)]
@@ -224,29 +224,8 @@ public class BaseFileSystemTests
     [InlineData(false, KnownPath.MyGamesDirectory, true)]
     public void Test_KnownPath(bool isLinux, KnownPath knownPath, bool expected)
     {
-        var fakeOS = new OSInformation(isLinux ? OSPlatform.Linux : OSPlatform.Windows);
-        var hostOS = OSInformation.Shared;
-
-        var knownPathMappings = new Dictionary<KnownPath, AbsolutePath>();
-        var hostFS = new InMemoryFileSystem(hostOS);
-        var fakeFS = new InMemoryFileSystem(fakeOS);
-
-        if (!fakeOS.Equals(hostOS))
-        {
-            try
-            {
-                hostFS.GetKnownPath(knownPath);
-            }
-            catch (Exception)
-            {
-                knownPathMappings.Add(knownPath, fakeFS.GetKnownPath(KnownPath.TempDirectory));
-            }
-        }
-
-        var fs = fakeFS.CreateOverlayFileSystem(
-            new Dictionary<AbsolutePath, AbsolutePath>(),
-            knownPathMappings
-        );
+        Skip.If(isLinux != OSInformation.Shared.IsLinux);
+        var fs = new InMemoryFileSystem();
 
         var actual = fs.HasKnownPath(knownPath);
         actual.Should().Be(expected);
