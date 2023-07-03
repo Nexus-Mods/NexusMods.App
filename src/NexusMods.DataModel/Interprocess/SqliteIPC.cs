@@ -275,7 +275,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
                     }
 
                     _logger.NewJob(jobId);
-                    var processId = ProcessId.From((uint)reader.GetInt64(1));
+                    var processId = Interprocess.Jobs.ProcessId.From((uint)reader.GetInt64(1));
                     var startTime =
                         DateTime.FromFileTimeUtc(reader.GetInt64(3));
 

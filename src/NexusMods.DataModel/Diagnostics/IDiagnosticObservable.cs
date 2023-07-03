@@ -9,7 +9,7 @@ namespace NexusMods.DataModel.Diagnostics;
 public interface IDiagnosticObservable : IObservable<Diagnostic>
 {
     /// <summary>
-    /// Emits a new <see cref="Diagnostic"/>.
+    /// Publishes a new <see cref="Diagnostic"/>.
     /// </summary>
-    void Emit(Diagnostic diagnostic);
+    void Publish(Diagnostic diagnostic);
 }

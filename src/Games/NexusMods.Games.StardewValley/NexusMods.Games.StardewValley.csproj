@@ -11,4 +11,5 @@
         <EmbeddedResource Include="Resources\icon.png" />
     </ItemGroup>
 
+
 </Project>

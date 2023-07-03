@@ -10,9 +10,9 @@ namespace NexusMods.DataModel.Diagnostics;
 public record Diagnostic
 {
     /// <summary>
-    /// Gets the creation time of this diagnostics.
+    /// Gets the unique identifier of the diagnostic.
     /// </summary>
-    public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
+    public required DiagnosticId Id { get; init; }
 
     /// <summary>
     /// Gets the severity of the diagnostic.
@@ -28,4 +28,9 @@ public record Diagnostic
     /// Gets all data references.
     /// </summary>
     public required IReadOnlyList<IDataReference> DataReferences { get; init; }
+
+    /// <summary>
+    /// Gets the creation time of this diagnostics.
+    /// </summary>
+    public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
 }

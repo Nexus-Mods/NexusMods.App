@@ -44,7 +44,7 @@ public class InterprocessJob : IInterprocessJob
         _manager = manager;
         Payload = payload;
         StartTime = DateTime.UtcNow;
-        ProcessId = ProcessId.From((uint)Environment.ProcessId);
+        ProcessId = Jobs.ProcessId.From((uint)Environment.ProcessId);
         _progress = Percent.Zero;
     }
 

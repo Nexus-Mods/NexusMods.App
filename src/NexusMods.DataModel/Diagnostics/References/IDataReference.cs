@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using NexusMods.DataModel.Abstractions;
 
 namespace NexusMods.DataModel.Diagnostics.References;
 
@@ -24,6 +25,7 @@ public interface IDataReference
 /// </summary>
 [PublicAPI]
 public interface IDataReference<out TDataId, TData> : IDataReference
+    where TData : Entity
 {
     Type IDataReference.IdType => typeof(TDataId);
 

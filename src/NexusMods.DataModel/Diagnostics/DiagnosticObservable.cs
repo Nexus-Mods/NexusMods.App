@@ -11,7 +11,7 @@ internal class DiagnosticObservable : IDiagnosticObservable
         return _subject.Subscribe(observer);
     }
 
-    public void Emit(Diagnostic diagnostic)
+    public void Publish(Diagnostic diagnostic)
     {
         _subject.OnNext(diagnostic);
     }
