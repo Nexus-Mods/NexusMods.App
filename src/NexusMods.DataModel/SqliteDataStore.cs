@@ -118,18 +118,20 @@ public class SqliteDataStore : IDataStore, IDisposable
             pragma.ExecuteNonQuery();
         }
 
-        foreach (var table in Enum.GetValues<EntityCategory>())
+        foreach (var table in EntityCategoryExtensions.GetValues())
         {
+            var tableName = table.ToStringFast();
+
             using var cmd = conn.Value.CreateCommand();
-            cmd.CommandText = $"CREATE TABLE IF NOT EXISTS {table} (Id BLOB PRIMARY KEY, Data BLOB)";
+            cmd.CommandText = $"CREATE TABLE IF NOT EXISTS {tableName} (Id BLOB PRIMARY KEY, Data BLOB)";
             cmd.ExecuteNonQuery();
 
-            _getStatements[table] = $"SELECT Data FROM [{table}] WHERE Id = @id";
-            _putStatements[table] = $"INSERT OR REPLACE INTO [{table}] (Id, Data) VALUES (@id, @data)";
-            _allIdsStatements[table] = $"SELECT Id FROM [{table}]";
-            _casStatements[table] = $"UPDATE [{table}] SET Data = @newData WHERE Data = @oldData AND Id = @id RETURNING *;";
-            _prefixStatements[table] = $"SELECT Id, Data FROM [{table}] WHERE Id >= @prefix ORDER BY Id ASC";
-            _deleteStatements[table] = $"DELETE FROM [{table}] WHERE Id = @id";
+            _getStatements[table] = $"SELECT Data FROM [{tableName}] WHERE Id = @id";
+            _putStatements[table] = $"INSERT OR REPLACE INTO [{tableName}] (Id, Data) VALUES (@id, @data)";
+            _allIdsStatements[table] = $"SELECT Id FROM [{tableName}]";
+            _casStatements[table] = $"UPDATE [{tableName}] SET Data = @newData WHERE Data = @oldData AND Id = @id RETURNING *;";
+            _prefixStatements[table] = $"SELECT Id, Data FROM [{tableName}] WHERE Id >= @prefix ORDER BY Id ASC";
+            _deleteStatements[table] = $"DELETE FROM [{tableName}] WHERE Id = @id";
 
             var memberInfo = typeof(EntityCategory).GetField(Enum.GetName(table)!)!;
             _immutableFields[table] = memberInfo.CustomAttributes.Any(x => x.AttributeType == typeof(ImmutableAttribute));
