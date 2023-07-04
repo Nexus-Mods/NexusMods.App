@@ -5,13 +5,7 @@ namespace NexusMods.Games.BethesdaGameStudios;
 
 public class SkyrimLegendaryEdition : AGame, ISteamGame
 {
-    private readonly IFileSystem _fileSystem;
-
-
-    public SkyrimLegendaryEdition(IEnumerable<IGameLocator> gameLocators, IFileSystem fileSystem) : base(gameLocators)
-    {
-        _fileSystem = fileSystem;
-    }
+    public SkyrimLegendaryEdition(IEnumerable<IGameLocator> gameLocators) : base(gameLocators) { }
     public override string Name => "Skyrim Legendary Edition";
     
     public static GameDomain StaticDomain => GameDomain.From("skyrim");

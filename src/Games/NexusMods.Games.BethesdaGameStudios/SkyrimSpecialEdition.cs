@@ -11,8 +11,6 @@ namespace NexusMods.Games.BethesdaGameStudios;
 
 public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame, IXboxGame
 {
-    private readonly IFileSystem _fileSystem;
-
     // ReSharper disable InconsistentNaming
     public static Extension ESL = new(".esl");
     public static Extension ESM = new(".esm");
@@ -25,10 +23,7 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame, IXboxGame
     public override GameDomain Domain => StaticDomain;
     public override GamePath GetPrimaryFile(GameStore store) => new(GameFolderType.Game, "SkyrimSE.exe");
 
-    public SkyrimSpecialEdition(IEnumerable<IGameLocator> gameLocators, IFileSystem fileSystem) : base(gameLocators)
-    {
-        _fileSystem = fileSystem;
-    }
+    public SkyrimSpecialEdition(IEnumerable<IGameLocator> gameLocators) : base(gameLocators) { }
 
     protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(
         IFileSystem fileSystem,
