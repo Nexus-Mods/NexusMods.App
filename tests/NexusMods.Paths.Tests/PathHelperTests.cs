@@ -337,8 +337,8 @@ public class PathHelperTests
     }
 
     [Theory]
-    [InlineData(true, "", "", false)]
-    [InlineData(true, "foo", "", false)]
+    [InlineData(true, "", "", true)]
+    [InlineData(true, "foo", "", true)]
     [InlineData(true, "", "foo", false)]
     [InlineData(true, "foo/bar", "foo", true)]
     [InlineData(true, "foo", "bar", false)]
