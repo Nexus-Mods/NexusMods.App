@@ -33,11 +33,11 @@ public class MissingDependenciesEmitter : ILoadoutDiagnosticEmitter
             var (modId, missingDependencies) = kv;
             foreach (var missingDependency in missingDependencies)
             {
+                var mod = loadout.Mods[modId];
                 yield return Diagnostics.MissingRequiredDependency(
-                    modName: loadout.Mods[modId].Name,
-                    missingDependency,
-                    loadout.LoadoutId,
-                    modId
+                    loadout,
+                    mod,
+                    missingDependency
                 );
             }
         }

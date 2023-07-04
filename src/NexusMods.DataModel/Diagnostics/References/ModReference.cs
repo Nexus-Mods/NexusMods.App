@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Mods;
 
@@ -12,4 +13,7 @@ public record ModReference : IDataReference<ModId, Mod>
 {
     /// <inheritdoc/>
     public required ModId DataId { get; init; }
+
+    /// <inheritdoc/>
+    public required IId DataStoreId { get; init; }
 }

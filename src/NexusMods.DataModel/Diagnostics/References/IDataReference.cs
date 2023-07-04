@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Abstractions.Ids;
 
 namespace NexusMods.DataModel.Diagnostics.References;
 
@@ -35,4 +36,12 @@ public interface IDataReference<out TDataId, TData> : IDataReference
     /// Gets the ID of the referenced data.
     /// </summary>
     TDataId DataId { get; }
+
+    /// <summary>
+    /// Gets the ID of the <see cref="Entity"/> in the data store.
+    /// </summary>
+    /// <remarks>
+    /// This is used for change tracking.
+    /// </remarks>
+    IId DataStoreId { get; }
 }

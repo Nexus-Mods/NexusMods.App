@@ -10,8 +10,21 @@ namespace NexusMods.DataModel.Diagnostics;
 public record Diagnostic
 {
     /// <summary>
-    /// Gets the unique identifier of the diagnostic.
+    /// Gets the globally unique identifier of this object instance.
     /// </summary>
+    /// <remarks>
+    /// Only a single instance can have this <see cref="Guid"/>.
+    /// </remarks>
+    /// <seealso cref="Id"/>
+    public Guid Guid { get; init; } = Guid.NewGuid();
+
+    /// <summary>
+    /// Gets the identifier of the diagnostic.
+    /// </summary>
+    /// <remarks>
+    /// Multiple instances can have the same <see cref="Id"/>.
+    /// </remarks>
+    /// <seealso cref="Guid"/>
     public required DiagnosticId Id { get; init; }
 
     /// <summary>
