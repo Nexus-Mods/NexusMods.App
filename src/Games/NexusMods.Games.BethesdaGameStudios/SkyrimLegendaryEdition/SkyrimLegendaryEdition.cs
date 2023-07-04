@@ -24,7 +24,7 @@ public class SkyrimLegendaryEdition : AGame, ISteamGame
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);
         
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.AppData, fileSystem
-            .GetKnownPath(KnownPath.MyGamesDirectory)
+            .GetKnownPath(KnownPath.LocalApplicationDataDirectory)
             .Combine("Skyrim"));
     }
 
