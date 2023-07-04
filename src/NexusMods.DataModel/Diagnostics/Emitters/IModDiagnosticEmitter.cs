@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Mods;
 
 namespace NexusMods.DataModel.Diagnostics.Emitters;
@@ -12,4 +13,12 @@ namespace NexusMods.DataModel.Diagnostics.Emitters;
 /// </remarks>
 /// <seealso cref="ILoadoutDiagnosticEmitter"/>
 [PublicAPI]
-public interface IModDiagnosticEmitter : IDataDiagnosticEmitter<Mod> { }
+public interface IModDiagnosticEmitter
+{
+    /// <summary>
+    /// Diagnoses a mod and creates instances of <see cref="Diagnostic"/>.
+    /// </summary>
+    /// <param name="loadout">The current loadout.</param>
+    /// <param name="mod">The current mod.</param>
+    IEnumerable<Diagnostic> Diagnose(Loadout loadout, Mod mod);
+}

@@ -12,4 +12,11 @@ namespace NexusMods.DataModel.Diagnostics.Emitters;
 /// </remarks>
 /// <seealso cref="IModDiagnosticEmitter"/>
 [PublicAPI]
-public interface ILoadoutDiagnosticEmitter : IDataDiagnosticEmitter<Loadout> { }
+public interface ILoadoutDiagnosticEmitter
+{
+    /// <summary>
+    /// Diagnoses a loadout and creates instances of <see cref="Diagnostic"/>.
+    /// </summary>
+    /// <param name="loadout">The current loadout.</param>
+    IEnumerable<Diagnostic> Diagnose(Loadout loadout);
+}
