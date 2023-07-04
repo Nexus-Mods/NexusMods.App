@@ -110,8 +110,8 @@ public class LoadoutRegistry : IDisposable
 
         Span<byte> span = stackalloc byte[newLoadout.DataStoreId.SpanSize + 1];
         newLoadout.DataStoreId.ToTaggedSpan(span);
-        
-        
+
+
         if (!_store.CompareAndSwap(dbId, span, loadoutRoot))
             goto TryAgain;
 

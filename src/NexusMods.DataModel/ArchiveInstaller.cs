@@ -193,6 +193,5 @@ public class ArchiveInstaller : IArchiveInstaller
 
             throw;
         }
-
     }
 }
