@@ -179,8 +179,6 @@ public class ArchiveInstaller : IArchiveInstaller
                 loadout.Remove(baseMod);
             }
 
-            job.Progress = Percent.One;
-
             return mods.Select(x => x.Id).ToArray();
         }
         catch (Exception ex)
