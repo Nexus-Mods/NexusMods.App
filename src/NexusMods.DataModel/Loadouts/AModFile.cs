@@ -15,7 +15,7 @@ public abstract record AModFile : Entity
     public required ModFileId Id { get; init; }
 
     /// <inheritdoc />
-    public override EntityCategory Category => EntityCategory.Loadouts;
+    public override EntityCategory Category => EntityCategory.ModFiles;
 
     /// <summary>
     /// Metadata for this file.
