@@ -12,13 +12,12 @@
 
     <ItemGroup>
         <None Remove="Resources\SkyrimSpecialEdition\game_image.png" />
+        <EmbeddedResource Include="Resources\SkyrimSpecialEdition\game_image.png" />
         <None Remove="Resources\SkyrimSpecialEdition\icon.jpg" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <EmbeddedResource Include="Resources\SkyrimLegendaryEdition\game_image.png" />
-      <EmbeddedResource Include="Resources\SkyrimLegendaryEdition\icon.jpg" />
-      <EmbeddedResource Include="Resources\SkyrimSpecialEdition\game_image.png" />
-      <EmbeddedResource Include="Resources\SkyrimSpecialEdition\icon.jpg" />
+        <EmbeddedResource Include="Resources\SkyrimSpecialEdition\icon.jpg" />
+        <None Remove="Resources\SkyrimLegendaryEdition\icon.png" />
+        <EmbeddedResource Include="Resources\SkyrimLegendaryEdition\icon.png" />
+        <None Remove="Resources\SkyrimLegendaryEdition\game_image.jpg" />
+        <EmbeddedResource Include="Resources\SkyrimLegendaryEdition\game_image.jpg" />
     </ItemGroup>
 </Project>

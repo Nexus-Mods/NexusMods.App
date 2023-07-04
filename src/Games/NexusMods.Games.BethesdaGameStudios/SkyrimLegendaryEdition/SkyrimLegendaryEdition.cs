@@ -1,5 +1,8 @@
-﻿using NexusMods.DataModel.Games;
+﻿using NexusMods.Common;
+using NexusMods.DataModel.Games;
 using NexusMods.Paths;
+using NexusMods.FileExtractor.StreamFactories;
+
 
 namespace NexusMods.Games.BethesdaGameStudios;
 
@@ -26,4 +29,10 @@ public class SkyrimLegendaryEdition : AGame, ISteamGame
     }
 
     public IEnumerable<int> SteamIds => new[] { 72850 };
+    
+    public override IStreamFactory Icon =>
+        new EmbededResourceStreamFactory<SkyrimLegendaryEdition>("NexusMods.Games.BethesdaGameStudios.Resources.SkyrimLegendaryEdition.icon.png");
+
+    public override IStreamFactory GameImage =>
+        new EmbededResourceStreamFactory<SkyrimLegendaryEdition>("NexusMods.Games.BethesdaGameStudios.Resources.SkyrimLegendaryEdition.game_image.jpg");
 }
