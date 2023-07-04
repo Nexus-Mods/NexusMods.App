@@ -71,12 +71,12 @@ public class LoadoutRegistry : IDisposable
             {
                 _cache.Edit(x =>
                 {
-                    var id = GetId(loadoutId);
-                    x.AddOrUpdate(id!, loadoutId);
+                    var dataStoreId = GetId(loadoutId);
+                    x.AddOrUpdate(dataStoreId!, loadoutId);
                 });
             });
-        _compositeDisposable.Add(dispose);
 
+        _compositeDisposable.Add(dispose);
     }
 
     /// <summary>

@@ -213,7 +213,6 @@ public class LoadoutManager
             {
                 Status = ModStatus.Installed,
                 Enabled = true,
-                Installed = DateTime.UtcNow,
                 Files = m.Files.With(gameFiles, f => f.Id)
             });
 

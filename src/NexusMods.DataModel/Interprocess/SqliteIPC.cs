@@ -79,8 +79,6 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
 
         connectionString = string.Intern(connectionString);
 
-
-
         _poolPolicy = new ConnectionPoolPolicy(connectionString);
         _pool = ObjectPool.Create(_poolPolicy);
 
@@ -238,8 +236,6 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         cmd2.ExecuteNonQuery();
     }
 
-
-
     private void ProcessJobs()
     {
         try
@@ -334,7 +330,6 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
                     break;
                 prevId = _syncArray.Get(0);
             }
-
         }
         catch (Exception ex)
         {
