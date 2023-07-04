@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Diagnostics.References;
 
 namespace NexusMods.DataModel.Diagnostics;
@@ -7,17 +8,8 @@ namespace NexusMods.DataModel.Diagnostics;
 /// Represents a diagnostic.
 /// </summary>
 [PublicAPI]
-public record Diagnostic
+public record Diagnostic : Entity
 {
-    /// <summary>
-    /// Gets the globally unique identifier of this object instance.
-    /// </summary>
-    /// <remarks>
-    /// Only a single instance can have this <see cref="Guid"/>.
-    /// </remarks>
-    /// <seealso cref="Id"/>
-    public Guid Guid { get; init; } = Guid.NewGuid();
-
     /// <summary>
     /// Gets the identifier of the diagnostic.
     /// </summary>
@@ -46,4 +38,7 @@ public record Diagnostic
     /// Gets the creation time of this diagnostics.
     /// </summary>
     public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
+
+    /// <inheritdoc/>
+    public override EntityCategory Category => EntityCategory.Diagnostics;
 }

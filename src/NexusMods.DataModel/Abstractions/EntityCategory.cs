@@ -103,4 +103,9 @@ public enum EntityCategory : byte
     /// the automatic locators
     /// </summary>
     ManuallyAddedGame = 13,
+
+    /// <summary>
+    /// See <see cref="Diagnostics"/>.
+    /// </summary>
+    Diagnostics = 14,
 }
