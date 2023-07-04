@@ -42,7 +42,7 @@ public class ArchiveInstaller : IArchiveInstaller
     public ArchiveInstaller(ILogger<ArchiveInstaller> logger,
         IArchiveAnalyzer archiveAnalyzer,
         IDataStore dataStore,
-        IArchiveManager archiveManager, 
+        IArchiveManager archiveManager,
         LoadoutRegistry registry,
         IEnumerable<IModInstaller> modInstallers,
         IInterprocessJobManager jobManager)
@@ -63,11 +63,9 @@ public class ArchiveInstaller : IArchiveInstaller
             _logger.LogError("Could not find analysis data for archive {ArchiveHash} or file is not an archive", archiveHash);
             throw new InvalidOperationException("Could not find analysis data for archive");
         }
-        
+
         // Get the loadout and create the mod so we can use it in the job.
         var loadout = _registry.GetMarker(loadoutId);
-        
-
 
         var metaData = AArchiveMetaData.GetMetaDatas(_dataStore, archiveHash).FirstOrDefault();
         var archiveName = "<unknown>";
@@ -75,7 +73,7 @@ public class ArchiveInstaller : IArchiveInstaller
         {
             archiveName = metaData.Name;
         }
-        
+
         var baseMod = new Mod
         {
             Id = ModId.New(),
@@ -95,7 +93,7 @@ public class ArchiveInstaller : IArchiveInstaller
                 ModId = baseMod.Id,
                 LoadoutId = loadoutId
             });
-            
+
 
             // Step 3: Run the archive through the installers.
             var installer = _modInstallers
@@ -195,6 +193,6 @@ public class ArchiveInstaller : IArchiveInstaller
 
             throw;
         }
-        
+
     }
 }

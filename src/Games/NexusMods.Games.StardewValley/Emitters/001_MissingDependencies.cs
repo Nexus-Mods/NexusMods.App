@@ -10,6 +10,8 @@ public class MissingDependenciesEmitter : ILoadoutDiagnosticEmitter
 {
     public IEnumerable<Diagnostic> Diagnose(Loadout loadout)
     {
+        // TODO: check the versions
+
         var modIdToManifest = loadout.Mods
             .Select(kv => (Id: kv.Key, Manifest: GetManifest(kv.Value)))
             .Where(tuple => tuple.Manifest is not null)

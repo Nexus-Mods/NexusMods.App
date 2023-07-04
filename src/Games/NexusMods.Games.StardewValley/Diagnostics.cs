@@ -6,7 +6,7 @@ namespace NexusMods.Games.StardewValley;
 
 internal static class Diagnostics
 {
-    private const string Source = "NexusMods.Games.StardewValley";
+    internal const string Source = "NexusMods.Games.StardewValley";
 
     internal static Diagnostic MissingRequiredDependency(string modName, string missingDependency, LoadoutId loadoutId, ModId modId)
     {
