@@ -14,6 +14,7 @@ public static class Services
     {
         services.AddAllSingleton<IModInstaller, SkyrimInstaller>();
         services.AddAllSingleton<IGame, SkyrimSpecialEdition>();
+        services.AddAllSingleton<IGame, SkyrimLegendaryEdition>();
         services.AddAllSingleton<IFileAnalyzer, PluginAnalyzer>();
         services.AddAllSingleton<ITypeFinder, TypeFinder>();
         services.AddAllSingleton<IFileMetadataSource, AnalysisMetaDataSource>();
