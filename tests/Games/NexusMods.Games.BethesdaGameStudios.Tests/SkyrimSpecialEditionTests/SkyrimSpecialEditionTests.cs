@@ -4,16 +4,14 @@ using System.Text.Json;
 using FluentAssertions;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using Noggog;
 
-namespace NexusMods.Games.BethesdaGameStudios.Tests.Skyrim;
+namespace NexusMods.Games.BethesdaGameStudios.Tests.SkyrimSpecialEditionTests;
 
 public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
 {

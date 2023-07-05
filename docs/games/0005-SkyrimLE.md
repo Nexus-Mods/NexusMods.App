@@ -1,34 +1,8 @@
-## General Info
+﻿## General Info
 
-- Name: Skyrim Special Edition
-- Release Date: 2016
-- Engine: 'Creation (Gamebryo)
-
-## Code Injection Dependency Chart
-
-For a typical modded game.
-
-```mermaid
-flowchart TD
-
-    SE[skse_loader64] -->|"Start Process #40;Suspended#41;"| A
-    SE -->|"Init#40;#41;"| B{SKSE}
-
-    A[Skyrim SE] -->|"Load via Import Table #40;d3dx9_42.dll#41;"| C
-    C{Preloader} -. Implicit Dependency .-> B
-
-    B -- load+init plugin --> PA{Plugin A \ne.g. Engine Fixes}
-    B -- load+init plugin --> PB{Plugin B}
-    B -- load+init plugin --> PC{Plugin C}
-
-    C -- Preload --> PA{Plugin A \ne.g. Engine Fixes}
-```
-
-Game setup starts with SKSE doing DLL Injection into suspended process; calling Init, and unsuspending.
-
-In some cases behaviour of engine needs to be augmented ahead of SKSE loading. In those cases the `preloader` dll hijacking stub is used.
-
-For our purposes; no special functionality/integration is required here we can simply push files out to game directory; run `skse_loader64.exe` and call it a day.
+- Name: Skyrim Legendary Edition
+- Release Date: 2011
+- Engine: 'Gamebryo'
 
 ## Uploaded Files Structure
 
@@ -36,16 +10,18 @@ For our purposes; no special functionality/integration is required here we can s
 
 Uploaded Skyrim SE mods can appear in the following form:
 
+https://www.nexusmods.com/skyrim/mods/13722?tab=files
+
 - Files Targeting Data Subfolder
-  - [SkyUI](https://www.nexusmods.com/skyrimspecialedition/mods/12604?tab=files)
+  - [Unofficial Skyrim Legndary Edition Patch](https://www.nexusmods.com/skyrim/mods/71214?tab=files)
   - Root of archive maps to data.
-  - e.g. `/SkyUI_SE.bsa` maps to `Data/SkyUI_SE.bsa`.
+  - e.g. `/Unofficial Skyrim Legendary Edition Patch.bsa` maps to `Data/Unofficial Skyrim Legendary Edition Patch.bsa`.
 
 - Loose Files Targeting `Data` Subdirectory
-  - [Skyrim 202X 9.0 to 9.4](https://www.nexusmods.com/skyrimspecialedition/mods/2347?tab=files)
+    - [Skyrim HD - 2K Textures](https://www.nexusmods.com/skyrim/mods/607?tab=files)
 
 - Files Targeting Game Root Directory
-  - [Skyrim 202X 9.0](https://www.nexusmods.com/skyrimspecialedition/mods/2347?tab=files)
+    - [SKSE Plugin Preloader](https://www.nexusmods.com/skyrim/mods/75795?tab=files)
 
 Mods can ship as 'loose files' or '.esp+.bsa' pairs
 
@@ -59,38 +35,20 @@ The `plugins.txt` file in Skyrim lists plugin files with the ".esp" and ".esm" e
 
 - `.esm` stands for "Elder Scrolls Master" and is mainly used for adding database data other plugins (`.esp`, `.esl`) rely upon; such as models, terrain, mechanics. Mainly used for large scale overhauls, and loaded first before `.esp`(s).
 - `.esp` stands for "Elder Scrolls Plugin" and is used for most mods that add new content to the game, i.e. weapons, armor, or quests. They can have dependencies on `.esm`(s).
-- `.esl` stands for "Elder Scrolls (Master) Light" and is exclusive to >= Special Edition. These are effectively `.esm`(s) with limitations.
-
-Example of file looks like:
-```txt
-*Unofficial Skyrim Special Edition Patch.esp
-*LegacyoftheDragonborn.esm
-*MajesticMountains_Landscape.esm
-*DwemerGatesNoRelock.esl
-AbandonedPrisonTweaks.esp
-*UHDAP - en0.esp
-```
-
-`*` denotes a file that is enabled; and will be loaded by the game, if missing, the game will ignore the plugin.
-This makes the presence of loadorder.txt superfluous, but could still be used to keep track of ghosted plugins.
-
 
 Each `.esp`/`.esm` has a 'Mod Index':
 - Using naming convention `xxYYYYYY`, where `xx` is plugin slot.
 - Therefore there is a 255 implicit item limit.
-- However... slot `0xFE` is reserved for `.esl` files.
 
-The newer `.esl` files have a limit of 4096 items; and have their own limit.
-- They have naming convention `FExxxYYY` where `xxx` is plugin slot.
-- Therefore there is a 4096 limit.
-- i.e. They use the 0xFE slot previously reserved for `.esp` & `.esm`.
+`.esm`(s) `.esp`(s) by the engine.
 
-`.esm`(s) and `.esl`(s) are always loaded before `.esp`(s) by the engine.
+Typical file looks like:
+```txt
+Dawnguard.esm
+Dragonborn.esm
+HearthFires.esm
+```
 
-Please note however. ***The game engine has a 512 open file handle limit;***
-so you can never realistically consume all possible ~4350 items without hitting this cap.
-
-This can however be increased with [engine-fixes](#engine-fixes).
 
 ### LoadOrder.txt
 
@@ -98,18 +56,12 @@ Found in: `%LOCALAPPDATA%\Skyrim`.
 
 Typical file looks like:
 ```txt
-Skyrim.esm
-Update.esm
 Dawnguard.esm
 HearthFires.esm
 Dragonborn.esm
-ccBGSSSE001-Fish.esm
-ccQDRSSE001-SurvivalMode.esl
-ccBGSSSE037-Curios.esl
-ccBGSSSE025-AdvDSGS.esm
 ```
 
-This file declares the order in which all `.esm`, `.esp` and `.esl` files are loaded relative for each other.
+This file declares the order in which all `.esm` and`.esp` files are loaded relative for each other.
 It has no effect on the game's runtime (this stores disabled mods, too); it is only used for book keeping.
 Usually used for preserving order of mods when re-enabling them once they have been disabled.
 
@@ -118,7 +70,7 @@ NMA shouldn't need to generate this file.
 
 ### Masters (Dependencies)
 
-Plugins (`.esp`, `.esl`), can have 'Masters'; these are effectively dependencies.
+Plugins (`.esp`), can have 'Masters'; these are effectively dependencies.
 
 To load a given plugin, all masters present in the plugin file's header must also be enabled.
 These masters are usually `.esm`, files but can also technically be other `.esp` files.
@@ -127,15 +79,9 @@ These masters are usually `.esm`, files but can also technically be other `.esp`
 
 BSAs are a collection of archived files that are loaded either if there is a plugin with the same name
 
-`Unofficial Skyrim Legendary Edition Patch.esp` -> `Unofficial Skyrim Legendary Edition Patch.bsa`
+(Unofficial Skyrim Legendary Edition Patch.esp -> Unofficial Skyrim Legendary Edition Patch.bsa)
 
-or same name followed by ellipsis: `<pluginName> - <something>.bsa`:
-
-eg. `Unofficial Skyrim Legendary Edition Patch - Textures.BSA`
-
-(Note: different bethesda games have different loading behaviour for BSA files)
-
-or if the archive is listed in the `Archive` section of the `Skyrim.ini` file
+or if the archive is listed in the `Archive` section of the `Skyrim.ini` file 
 (see [sResourceArchiveList](https://stepmodifications.org/wiki/Guide:Skyrim_INI/Archive#sResourceArchiveList)).
 
 The files listed here are loaded first, and then the files from the plugins, in the order listed in plugins.txt.
@@ -163,16 +109,11 @@ Also acts as code loader; loading DLLs from inside `Data/SKSE/Plugins`.
 This mod is considered essential; as it is a required dependency for many mods out there.
 It should ideally be preinstalled automatically for most mod setups.
 
-### [Preloader](https://www.nexusmods.com/skyrimspecialedition/mods/17230?tab=files&file_id=181171)
+### [SKSE Plugin Preloader](https://www.nexusmods.com/skyrim/mods/75795?tab=files)
 
 A DLL stub (entry point: `d3dx9_42.dll`) which forces itself to load before SKSE using DLL Hijacking approach.
-This is done as some mods, e.g. [Engine Fixes](#engine-fixes) need to kick in before SKSE loads to make engine changes.
+This is done as some mods, e.g. [Crash fixes](https://www.nexusmods.com/skyrim/mods/72725) need to kick in before SKSE loads to make engine changes.
 
-### [Engine Fixes](https://www.nexusmods.com/skyrimspecialedition/mods/17230)
-
-General suite of fixes for game code/logic.
-
-This one is considered essential for large mod setups because the ***game engine has a 512 open file handle limit;*** which means in practice you're hard capped at around 400-500 mods. This mod can extend that limit to 2048.
 
 ### [LOOT](https://loot.github.io)
 
@@ -209,7 +150,7 @@ Not suitable for VFS; tools work on game folder directly, and thus having VFS wo
 
 ## Work To Do
 
-[Refer to the relevant Epic for the game.](https://github.com/Nexus-Mods/NexusMods.App/issues/33)
+[Refer to the relevant Epic for the game.](https://github.com/Nexus-Mods/NexusMods.App/issues/34)
 
 ## Misc Notes
 

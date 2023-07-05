@@ -1,20 +1,20 @@
 ﻿using FluentAssertions;
+using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Games.TestFramework;
-using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
-namespace NexusMods.Games.BethesdaGameStudios.Tests.Skyrim.Installers;
+namespace NexusMods.Games.BethesdaGameStudios.Tests.Installers;
 
 /// <summary>
 /// Tests for the Skyrim installer.
 /// </summary>
-public class SkyrimInstallerTests : AGameTest<SkyrimSpecialEdition>
+public abstract class SkyrimInstallerTests<TGame> : AGameTest<TGame> where TGame : AGame
 {
     private readonly TestModDownloader _downloader;
     private readonly IFileSystem _realFs;
 
-    public SkyrimInstallerTests(IServiceProvider serviceProvider, TestModDownloader downloader, IFileSystem realFs) : base(serviceProvider)
+    protected SkyrimInstallerTests(IServiceProvider serviceProvider, TestModDownloader downloader, IFileSystem realFs) : base(serviceProvider)
     {
         _downloader = downloader;
         _realFs = realFs;
@@ -55,7 +55,7 @@ public class SkyrimInstallerTests : AGameTest<SkyrimSpecialEdition>
     [Fact]
     public async Task InstallMod_WithEspInSubfolder() => await TestLooseFileCommon("HasEsp_InSubfolder");
 
-    private async Task TestLooseFileCommon(string folderName)
+    protected async Task TestLooseFileCommon(string folderName)
     {
         // TODO: Technically these tests don't cover where the file is sourced from, some code could be added here to do this.
         var loadout = await CreateLoadout(indexGameFiles: false);

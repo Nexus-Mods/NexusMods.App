@@ -3,16 +3,12 @@ using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.FileExtractor.StreamFactories;
-using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using NexusMods.StandardGameLocators;
 
 namespace NexusMods.Games.BethesdaGameStudios;
 
 public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame, IXboxGame
 {
-    private readonly IFileSystem _fileSystem;
-
     // ReSharper disable InconsistentNaming
     public static Extension ESL = new(".esl");
     public static Extension ESM = new(".esm");
@@ -25,10 +21,7 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame, IXboxGame
     public override GameDomain Domain => StaticDomain;
     public override GamePath GetPrimaryFile(GameStore store) => new(GameFolderType.Game, "SkyrimSE.exe");
 
-    public SkyrimSpecialEdition(IEnumerable<IGameLocator> gameLocators, IFileSystem fileSystem) : base(gameLocators)
-    {
-        _fileSystem = fileSystem;
-    }
+    public SkyrimSpecialEdition(IEnumerable<IGameLocator> gameLocators) : base(gameLocators) { }
 
     protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(
         IFileSystem fileSystem,
@@ -39,10 +32,10 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame, IXboxGame
 
         var appData = installation.Store == GameStore.GOG
             ? fileSystem
-                .GetKnownPath(KnownPath.MyGamesDirectory)
+                .GetKnownPath(KnownPath.LocalApplicationDataDirectory)
                 .Combine("Skyrim Special Edition GOG")
             : fileSystem
-                .GetKnownPath(KnownPath.MyGamesDirectory)
+                .GetKnownPath(KnownPath.LocalApplicationDataDirectory)
                 .Combine("Skyrim Special Edition");
 
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.AppData, appData);
