@@ -1,7 +1,6 @@
 using System.Buffers.Binary;
 using System.Text.Json.Serialization;
 using NexusMods.DataModel.JsonConverters;
-using NexusMods.DataModel.RateLimiting;
 
 namespace NexusMods.DataModel.Abstractions.Ids;
 

@@ -68,10 +68,10 @@ public class SqliteDataStore : IDataStore, IDisposable
         }
 
         connectionString = string.Intern(connectionString);
-        
+
         _poolPolicy = new ConnectionPoolPolicy(connectionString);
         _pool = ObjectPool.Create(_poolPolicy);
-        
+
         // We do this so that while the app is running we never fully close the DB, this is needed
         // if we're using a in-memory store, as closing the final connection will delete the DB.
         _globalHandle = _pool.RentDisposable();
@@ -118,29 +118,23 @@ public class SqliteDataStore : IDataStore, IDisposable
             pragma.ExecuteNonQuery();
         }
 
-        foreach (var table in Enum.GetValues<EntityCategory>())
+        foreach (var table in EntityCategoryExtensions.GetValues())
         {
+            var tableName = table.ToStringFast();
+
             using var cmd = conn.Value.CreateCommand();
-            cmd.CommandText =
-                $"CREATE TABLE IF NOT EXISTS {table} (Id BLOB PRIMARY KEY, Data BLOB)";
+            cmd.CommandText = $"CREATE TABLE IF NOT EXISTS {tableName} (Id BLOB PRIMARY KEY, Data BLOB)";
             cmd.ExecuteNonQuery();
 
-            _getStatements[table] =
-                $"SELECT Data FROM [{table}] WHERE Id = @id";
-            _putStatements[table] =
-                $"INSERT OR REPLACE INTO [{table}] (Id, Data) VALUES (@id, @data)";
-            _allIdsStatements[table] = $"SELECT Id FROM [{table}]";
-            _casStatements[table] =
-                $"UPDATE [{table}] SET Data = @newData WHERE Data = @oldData AND Id = @id RETURNING *;";
-            _prefixStatements[table] =
-                $"SELECT Id, Data FROM [{table}] WHERE Id >= @prefix ORDER BY Id ASC";
-            _deleteStatements[table] =
-                $"DELETE FROM [{table}] WHERE Id = @id";
+            _getStatements[table] = $"SELECT Data FROM [{tableName}] WHERE Id = @id";
+            _putStatements[table] = $"INSERT OR REPLACE INTO [{tableName}] (Id, Data) VALUES (@id, @data)";
+            _allIdsStatements[table] = $"SELECT Id FROM [{tableName}]";
+            _casStatements[table] = $"UPDATE [{tableName}] SET Data = @newData WHERE Data = @oldData AND Id = @id RETURNING *;";
+            _prefixStatements[table] = $"SELECT Id, Data FROM [{tableName}] WHERE Id >= @prefix ORDER BY Id ASC";
+            _deleteStatements[table] = $"DELETE FROM [{tableName}] WHERE Id = @id";
 
-            var memberInfo =
-                typeof(EntityCategory).GetField(Enum.GetName(table)!)!;
-            _immutableFields[table] = memberInfo.CustomAttributes.Any(x =>
-                x.AttributeType == typeof(ImmutableAttribute));
+            var memberInfo = typeof(EntityCategory).GetField(Enum.GetName(table)!)!;
+            _immutableFields[table] = memberInfo.CustomAttributes.Any(x => x.AttributeType == typeof(ImmutableAttribute));
         }
     }
 
@@ -233,7 +227,6 @@ public class SqliteDataStore : IDataStore, IDisposable
 
         if (!_immutableFields[id.Category])
             _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
-
     }
 
     /// <inheritdoc />
@@ -261,7 +254,7 @@ public class SqliteDataStore : IDataStore, IDisposable
             cmd.ExecuteNonQuery();
             transaction.Commit();
         }
-        
+
         if (!_immutableFields[id.Category])
             _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
         return true;

@@ -7,6 +7,7 @@ using DynamicData.Binding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
@@ -29,21 +30,29 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
     private ReadOnlyObservableCollection<IDataGridColumnFactory> _filteredColumns = new(new ObservableCollection<IDataGridColumnFactory>());
     private readonly IFileSystem _fileSystem;
     private readonly ILogger<LoadoutGridViewModel> _logger;
-    private readonly LoadoutManager _loadoutManager;
     private readonly LoadoutRegistry _loadoutRegistry;
+    private readonly IArchiveAnalyzer _archiveAnalyzer;
+    private readonly IArchiveInstaller _archiveInstaller;
 
     [Reactive]
     public string LoadoutName { get; set; } = "";
     public ReadOnlyObservableCollection<IDataGridColumnFactory> Columns => _filteredColumns;
 
 
-    public LoadoutGridViewModel(ILogger<LoadoutGridViewModel> logger, IServiceProvider provider, LoadoutRegistry loadoutRegistry,
-        IFileSystem fileSystem, LoadoutManager loadoutManager)
+    public LoadoutGridViewModel(
+        ILogger<LoadoutGridViewModel> logger,
+        IServiceProvider provider,
+        LoadoutRegistry loadoutRegistry,
+        IFileSystem fileSystem,
+        IArchiveAnalyzer archiveAnalyzer,
+        IArchiveInstaller archiveInstaller)
     {
         _logger = logger;
         _fileSystem = fileSystem;
-        _loadoutManager = loadoutManager;
         _loadoutRegistry = loadoutRegistry;
+        _archiveAnalyzer = archiveAnalyzer;
+        _archiveInstaller = archiveInstaller;
+
         _columns =
             new SourceCache<IDataGridColumnFactory, ColumnType>(
                 x => throw new NotImplementedException());
@@ -89,16 +98,16 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
                 .SelectMany(loadoutRegistry.RevisionsAsLoadouts)
                 .Select(loadout => loadout.Name)
                 .BindTo(this, vm => vm.LoadoutName);
-            
+
             _columns.Connect()
                 .Bind(out _filteredColumns)
                 .SubscribeWithErrorLogging(logger)
                 .DisposeWith(d);
-            
+
 
         });
     }
-    
+
     public Task AddMod(string path)
     {
         var file = _fileSystem.FromUnsanitizedFullPath(path);
@@ -111,8 +120,10 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
 
         var _ = Task.Run(async () =>
         {
-            await _loadoutManager.InstallModsFromArchiveAsync(LoadoutId, file, file.FileName);
+            var analyzedFile = await _archiveAnalyzer.AnalyzeFileAsync(file, CancellationToken.None);
+            await _archiveInstaller.AddMods(LoadoutId, analyzedFile.Hash, token: CancellationToken.None);
         });
+
         return Task.CompletedTask;
     }
 

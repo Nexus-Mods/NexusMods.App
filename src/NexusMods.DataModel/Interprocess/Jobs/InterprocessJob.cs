@@ -1,14 +1,7 @@
 ﻿using System.ComponentModel;
-using System.Diagnostics;
-using System.Dynamic;
-using System.Text;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Interprocess.Messages;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.Cursors;
 using NexusMods.DataModel.RateLimiting;
-using NexusMods.Paths.Extensions;
 
 namespace NexusMods.DataModel.Interprocess.Jobs;
 
@@ -51,7 +44,7 @@ public class InterprocessJob : IInterprocessJob
         _manager = manager;
         Payload = payload;
         StartTime = DateTime.UtcNow;
-        ProcessId = ProcessId.From((uint)Environment.ProcessId);
+        ProcessId = Jobs.ProcessId.From((uint)Environment.ProcessId);
         _progress = Percent.Zero;
     }
 

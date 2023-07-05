@@ -1,5 +1,4 @@
 using NexusMods.DataModel.Abstractions.Ids;
-using NexusMods.DataModel.Interprocess.Messages;
 
 namespace NexusMods.DataModel.Abstractions;
 

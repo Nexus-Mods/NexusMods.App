@@ -1,4 +1,3 @@
-using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Sorting.Rules;
@@ -23,13 +22,13 @@ public record ModInstallerResult
     /// <summary>
     /// Optional name of the mod.
     /// </summary>
-    public string? Name { get; set; }
+    public string? Name { get; init; }
 
     /// <summary>
     /// Optional version of the mod.
     /// </summary>
-    public string? Version { get; set; }
-    
+    public string? Version { get; init; }
+
     /// <summary>
     /// Optional sort rules for the mod.
     /// </summary>
