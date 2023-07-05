@@ -1,11 +1,8 @@
 ﻿using System.ComponentModel;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Ids;
-using NexusMods.DataModel.Interprocess.Jobs;
-using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.RateLimiting;
 
-namespace NexusMods.DataModel.Interprocess.Messages;
+namespace NexusMods.DataModel.Interprocess.Jobs;
 
 /// <summary>
 /// A interface for a job that can be managed by the <see cref="IInterprocessJobManager"/>.

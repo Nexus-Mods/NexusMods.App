@@ -52,14 +52,9 @@ public class AppearancePreset : IModInstaller
             .SelectMany(kv =>
             {
                 var (path, file) = kv;
-
-                return Paths.Select(relPath => new FromArchive
-                {
-                    Id = ModFileId.New(),
-                    To = new GamePath(GameFolderType.Game, relPath.Join(path)),
-                    Hash = file.Hash,
-                    Size = file.Size
-                });
+                return Paths.Select(relPath => file.ToFromArchive(
+                    new GamePath(GameFolderType.Game, relPath.Join(path))
+                ));
             });
 
         yield return new ModInstallerResult

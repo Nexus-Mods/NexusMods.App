@@ -60,7 +60,7 @@ public record Mod : Entity, IHasEntityId<ModId>
     public bool Enabled { get; init; } = false;
 
     /// <inheritdoc />
-    public override EntityCategory Category => EntityCategory.Loadouts;
+    public override EntityCategory Category => EntityCategory.Mods;
 
     /// <summary>
     /// Defines the individual sorting rules applied to a game.

@@ -3,7 +3,6 @@ using System.Text;
 using FluentAssertions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Games;
@@ -99,7 +98,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
 
         return (file, downloadHash);
     }
-    
+
     /// <summary>
     /// Downloads a mod and caches it in the <see cref="ArchiveManager"/> so future
     /// requests for the same file will be served from the cache. Compares the
@@ -119,7 +118,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
 
         var (file, downloadHash) = await DownloadMod(gameDomain, modId, fileId);
         downloadHash.Should().Be(hash);
-        
+
         await ArchiveAnalyzer.AnalyzeFileAsync(file.Path);
     }
 
@@ -140,12 +139,12 @@ public abstract class AGameTest<TGame> where TGame : AGame
         var modIds = await ArchiveInstaller.AddMods(loadout.Value.LoadoutId, hash, defaultModName, cancellationToken);
         return modIds.Select(id => loadout.Value.Mods[id]).ToArray();
     }
-    
+
     /// <summary>
     /// Installs the mods from the archive into the loadout.
     /// </summary>
     /// <param name="loadout"></param>
-    /// <param name="hash"></param>
+    /// <param name="path"></param>
     /// <param name="defaultModName"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
@@ -162,11 +161,11 @@ public abstract class AGameTest<TGame> where TGame : AGame
 
     /// <summary>
     /// Installs a single mod from the archive into the loadout. This calls
-    /// <see cref="InstallModsFromArchiveIntoLoadout"/> and asserts only one mod
+    /// <see cref="InstallModsFromArchiveIntoLoadout(NexusMods.DataModel.Loadouts.Markers.LoadoutMarker,NexusMods.Hashing.xxHash64.Hash,string?,System.Threading.CancellationToken)"/> and asserts only one mod
     /// exists in the archive.
     /// </summary>
     /// <param name="loadout"></param>
-    /// <param name="archivePath"></param>
+    /// <param name="hash"></param>
     /// <param name="defaultModName"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
@@ -184,12 +183,12 @@ public abstract class AGameTest<TGame> where TGame : AGame
         mods.Should().ContainSingle();
         return mods.First();
     }
-    
+
     /// <summary>
-    /// Variant of <see cref="InstallModFromArchiveIntoLoadout"/> that takes a file path instead of a hash.
+    /// Variant of <see cref="InstallModFromArchiveIntoLoadout(NexusMods.DataModel.Loadouts.Markers.LoadoutMarker,NexusMods.Hashing.xxHash64.Hash,string?,System.Threading.CancellationToken)"/> that takes a file path instead of a hash.
     /// </summary>
     /// <param name="loadout"></param>
-    /// <param name="hash"></param>
+    /// <param name="path"></param>
     /// <param name="defaultModName"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
@@ -201,9 +200,11 @@ public abstract class AGameTest<TGame> where TGame : AGame
     {
         var analyzed = await ArchiveAnalyzer.AnalyzeFileAsync(path, cancellationToken);
         var mods = await InstallModsFromArchiveIntoLoadout(
-            loadout, analyzed.Hash,
+            loadout,
+            analyzed.Hash,
             defaultModName,
-            cancellationToken);
+            cancellationToken
+        );
 
         mods.Should().ContainSingle();
         return mods.First();
@@ -235,7 +236,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
 
         await using var stream = FileSystem.OpenFile(file.Path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
         using var zipArchive = new ZipArchive(stream, ZipArchiveMode.Create);
-        
+
         foreach (var kv in filesToZip)
         {
             var (path, contents) = kv;
@@ -245,8 +246,8 @@ public abstract class AGameTest<TGame> where TGame : AGame
             await using var ms = new MemoryStream(contents);
             await ms.CopyToAsync(entryStream);
         }
-        await stream.FlushAsync();
 
+        await stream.FlushAsync();
         return file;
     }
 

@@ -3,9 +3,9 @@ using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 using DynamicData;
+using DynamicData.Kernel;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.JsonConverters;
-using NexusMods.DataModel.Loadouts;
 
 #pragma warning disable CS8604
 
@@ -271,7 +271,9 @@ public struct EntityDictionary<TK, TV> :
             }
 
             if (!id.Equals(oldId))
-                changes.Add(new Change<IId, TK>(ChangeReason.Update, key, id));
+            {
+                changes.Add(new Change<IId, TK>(ChangeReason.Update, key, id, Optional.Some(oldId)));
+            }
         }
 
         foreach (var (key, id) in old._coll)

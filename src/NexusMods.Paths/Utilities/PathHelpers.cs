@@ -540,7 +540,8 @@ public static class PathHelpers
         DebugAssertIsSanitized(child, os);
         DebugAssertIsSanitized(parent, os);
 
-        if (child.IsEmpty || parent.IsEmpty) return false;
+        if (parent.IsEmpty || child.IsEmpty && parent.IsEmpty) return true;
+        if (child.IsEmpty) return false;
         if (!child.StartsWith(parent, StringComparison.OrdinalIgnoreCase)) return false;
 
         if (child.Length == parent.Length) return true;
@@ -560,6 +561,7 @@ public static class PathHelpers
         DebugAssertIsSanitized(child, os);
         DebugAssertIsSanitized(parent, os);
 
+        if (child.IsEmpty && parent.IsEmpty) return ReadOnlySpan<char>.Empty;
         if (!InFolder(child, parent, os)) return ReadOnlySpan<char>.Empty;
 
         return IsRootDirectory(parent, os)

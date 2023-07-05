@@ -10,7 +10,4 @@ namespace NexusMods.DataModel.Abstractions;
 ///     it is only used for clarification and as a constraint
 ///     throughout the various DataModel APIs.
 /// </remarks>
-public interface IFileAnalysisData
-{
-
-}
+public interface IFileAnalysisData : IMetadata { }
