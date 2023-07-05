@@ -7,7 +7,7 @@ namespace NexusMods.Paths;
 /// Implementation of <see cref="IOSInformation"/>.
 /// </summary>
 [PublicAPI]
-public class OSInformation : IOSInformation
+public sealed class OSInformation : IOSInformation
 {
     /// <summary>
     /// Shared instance of <see cref="IOSInformation"/> using the current
@@ -58,4 +58,16 @@ public class OSInformation : IOSInformation
 
     /// <inheritdoc/>
     public override string ToString() => Platform.ToString();
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj)
+    {
+        return obj is OSInformation other && Platform.Equals(other.Platform);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return Platform.GetHashCode();
+    }
 }
