@@ -38,7 +38,8 @@ public class SkyrimInstaller : IModInstaller
 
     public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        if (installation.Game is not SkyrimSpecialEdition)
+        if (installation.Game is not SkyrimSpecialEdition && 
+            installation.Game is not SkyrimLegendaryEdition)
             return Priority.None;
 
         // Determine one of the following:
