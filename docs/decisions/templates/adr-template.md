@@ -1,92 +1,81 @@
-﻿# UI Panel (or widget) layout in the app
+﻿```
+# These are optional elements. Feel free to remove any of them.
+status: {proposed | rejected | accepted | deprecated | … | superseded by [ADR-0005](0005-example.md)}
+date: {YYYY-MM-DD when the decision was last updated}
+deciders: {list everyone involved in the decision}
+consulted: {list everyone whose opinions are sought (typically subject-matter experts); and with whom there is a two-way communication}
+informed: {list everyone who is kept up-to-date on progress; and with whom there is a one-way communication}
+```
+
+
+# {short title of solved problem and solution}
 
 ## Context and Problem Statement
 
-We have a rather broad range of use cases in the app. Some of our users are beginners at modding, others are experienced
-users who don't want to be held back by the software. Some users have ultra-wide monitors, others have small laptops, still
-others have multiple monitors. In general we want to support all these options while still making the interface easy to 
-understand and use.
+{Describe the context and problem statement, e.g., in free form using two to three sentences or in the form of an illustrative story.
+You may want to articulate the problem in form of a question and add links to collaboration boards or issue management systems.}
 
+<!-- This is an optional element. Feel free to remove. -->
 ## Decision Drivers
-While researching approaches to this design we looked at several options. The main drivers for our decision were:
 
-* Make the UI easy to extend with new tools. We shouldn't have to figure out where to "fit" a visualizer or tool, we should simply be able to make an interface and have it 
-be added to the UI via the DI system
-* Don't limit ourselves to a UI design that is not forward thinking enough. Sure we may only want one texture viewer today, but what if we want to view two textures side-by-side?
-* Everyone has a different workflow, so make the UI adaptable to portrait, landscape, and ultra-wide monitors, as well as Steam Deck displays
-* The UI should come with sensible defaults, with options for experts to really leverage the power of the application on their setups.
-* Make the UI discoverable by new users, you shouldn't need arcane incantations to get the UI to do what you want.
+* {decision driver 1, e.g., a force, facing concern, …}
+* {decision driver 2, e.g., a force, facing concern, …}
+* … <!-- numbers of drivers can vary -->
 
-## Examined Products
+## Considered Options
 
-### Vortex
-Vortex offers limited UI configuration of most of the UI, but the dashboard is quite customizable:
-
-![Vortex Dashboard](images/Vortex_Dashboard.gif)
-
-While the rest of the app has a horizontal-only, two panel viewing model.
-
-![Vortex UI](images/Vortex_Panels.gif)
-
-This is sub optimal for widescreens that would like to split vertically or optimally have multiple panels open at once.
-
-### Mod Organizer 2
-This app features a two pane system, split vertically but with tabs on the right pane to allow the user to switch between
-different visualizers for the files and loadout configuration. This is a good approach for a two pane system, but it doesn't
-allow for more than two panes, and it doesn't allow for horizontal splitting, or any splitting at all. 
-
-![MO2 UI](images/MO2.png)
-
-### Tiling Window Managers
-Tiling window managers are a class of window managers that automatically tile windows on the screen. They are popular with
-power users because they allow for very efficient use of screen real estate. In this example (taken from the [flashfocus](https://github.com/fennerm/flashfocus) project)
-each time a button is pressed, the current pane is split in half, and the new pane is focused. This is a rather extreme
-case of minimalizm, but in the hands of an expert it can be very powerful. In addition these panes are often used
-for notifications and popups. If a modal dialog is opened, it will be opened in a new pane, and the user can easily switch
-to that pane, and then close it when they are done (or it may auto close).
-
-![Tiling Window Manager](images/Flash_Focus.gif)
-
-### Blender
-Blender is a 3D modeling application that has a very flexible UI. It allows the user to split the screen horizontally or vertically
-to create new panels. Each panel has a header that allows the user to change the type of panel it is. In addition panels 
-can be swapped between different areas of the UI, and combined. These layouts are stored in the .blend file, so they are
-persistent between sessions and even across machines. This often results in developers creating a layout that works for them
-and then cloning that into each additional project they create.
-
-![Blender UI](images/Blender.gif)
-
-### Previous mockup done by the UI team
-This mockup was done by the UI team to show what a UI might look like with a multi pane system. It was done before any meetings
-on the subject or before this ADR was written. However it has one key features the other examples don't have, a rather basic
-"Add Pane" button. This helps a bit with discoverability so that users don't need to know to right click separators. They can 
-click "add pane" and then choose the type of pane they want once the default is shown. We can still add the right click menu
-to the separators for power users, but this helps new users get started.
-
-![UI Mockup](images/UI_Mockup.png)
+* {title of option 1}
+* {title of option 2}
+* {title of option 3}
+* … <!-- numbers of options can vary -->
 
 ## Decision Outcome
-After much discussion we've kindof decided to go "whole hog" on support in the UI, thus we propose the following: 
 
-* Make a UI grid for Avalonia that takes a set of ViewModelHosts and displays them in a grid, with movable separators between them.
-* The most recent pane to be focused will be tracked by the grid at all times. Blender displays this as a slight tint to the header of the pane, we may do the same
-* Clicking "Add Pane" Button will by default try to split the biggest pane in half in a way that results in the most 1:1 ratio of width and height
-* Split menus will be added to the separators for power user, and by default they will split at the position of the mouse cursor. No fancy preview splitting will
-be supported at first, we can add that feature later
-* All layouts should savable as JSON data, so that we can persist them between sessions and across machines. 
-* Each pane will have the following properties
-  * A title
-  * A Unique ID/Type (for saving and loading the state later)
-  * A ViewModelHost for the content of the pane
-  * A ViewModelHost for the header of the pane. This header will exist as a toolbar above the rest of the pane.
-* Via switching a boolean on the grid, it will swap into a tabbed mode, where each pane becomes a separate tab, and the tabs can be toggled through via a "Next and Previous" commands.
-this will most often be used on the Steam Deck, but it may also be useful for users who want to focus on one pane at a time on a small screen. Also in this mode, the header for the
-pane will be integrated into the main toolbar. 
-* For multi-monitor support we will allow for multiple windows to be active from the app at once, launching a new window will simply create a new instance of the app's MainViewModel.
+Chosen option: "{title of option 1}", because
+{justification. e.g., only option, which meets k.o. criterion decision driver | which resolves force {force} | … | comes out best (see below)}.
 
+<!-- This is an optional element. Feel free to remove. -->
 ### Consequences
-Building this UI will take a lot of time, but it's not extremely difficult work. Movable separators are already supported in Avalonia, and the rest
-of the hard work in this project is related to data management and saving/loading the layouts.
 
-Another consequence of this design is that we may choose to make components even more modular than they are now. For example, we may want to break the 
-downloader component into "Downloading", "Completed", and "Download Performance" panes. 
+* Good, because {positive consequence, e.g., improvement of one or more desired qualities, …}
+* Bad, because {negative consequence, e.g., compromising one or more desired qualities, …}
+* … <!-- numbers of consequences can vary -->
+
+<!-- This is an optional element. Feel free to remove. -->
+## Validation
+
+{describe how the implementation of/compliance with the ADR is validated. E.g., by a review or an ArchUnit test}
+
+<!-- This is an optional element. Feel free to remove. -->
+## Pros and Cons of the Options
+
+### {title of option 1}
+
+<!-- This is an optional element. Feel free to remove. -->
+{example | description | pointer to more information | …}
+
+* Good, because {argument a}
+* Good, because {argument b}
+<!-- use "neutral" if the given argument weights neither for good nor bad -->
+* Neutral, because {argument c}
+* Bad, because {argument d}
+* … <!-- numbers of pros and cons can vary -->
+
+### {title of other option}
+
+{example | description | pointer to more information | …}
+
+* Good, because {argument a}
+* Good, because {argument b}
+* Neutral, because {argument c}
+* Bad, because {argument d}
+* …
+
+<!-- This is an optional element. Feel free to remove. -->
+## More Information
+
+{You might want to provide additional evidence/confidence for the decision outcome here and/or
+document the team agreement on the decision and/or
+define when this decision when and how the decision should be realized and if/when it should be re-visited and/or
+how the decision is validated.
+Links to other decisions and resources might appear here as well.}
