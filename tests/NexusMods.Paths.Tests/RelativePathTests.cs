@@ -116,10 +116,28 @@ public class RelativePathTests
     [Theory]
     [InlineData("foo", "bar", false)]
     [InlineData("foo", "foo", true)]
+    [InlineData("foo/bar", "foo", true)]
+    [InlineData("foo/bar", "bar", false)]
+    [InlineData("foo/bar/baz", "bar/baz", false)]
+    [InlineData("foo/bar/baz", "foo/bar", true)]
     public void Test_StartsWith(string left, string right, bool expected)
     {
         var path = new RelativePath(left);
         var actual = path.StartsWith(right);
+        actual.Should().Be(expected);
+    }
+    
+    [Theory]
+    [InlineData("foo", "bar", false)]
+    [InlineData("foo", "foo", true)]
+    [InlineData("foo/bar", "foo", false)]
+    [InlineData("foo/bar", "bar", true)]
+    [InlineData("foo/bar/baz", "bar/baz", true)]
+    [InlineData("foo/bar/baz", "foo/bar", false)]
+    public void Test_EndsWith(string left, string right, bool expected)
+    {
+        var path = new RelativePath(left);
+        var actual = path.EndsWith(right);
         actual.Should().Be(expected);
     }
 

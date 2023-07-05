@@ -112,6 +112,14 @@ public readonly struct RelativePath : IEquatable<RelativePath>, IPath, IComparab
     {
         return Path.AsSpan().StartsWith(other, StringComparison.OrdinalIgnoreCase);
     }
+    
+    /// <summary>
+    /// Returns true if the relative path ends with a given string.
+    /// </summary>
+    public bool EndsWith(ReadOnlySpan<char> other)
+    {
+        return Path.AsSpan().EndsWith(other, StringComparison.OrdinalIgnoreCase);
+    }
 
     /// <summary>
     /// Returns true if this path is a child of this path.
