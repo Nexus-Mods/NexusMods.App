@@ -1,5 +1,6 @@
 using System.Reactive.Disposables;
 using DynamicData;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
@@ -12,6 +13,7 @@ using NexusMods.DataModel.Loadouts.Mods;
 namespace NexusMods.DataModel.Diagnostics;
 
 /// <inheritdoc/>
+[UsedImplicitly]
 internal sealed class DiagnosticManager : IDiagnosticManager
 {
     private bool _isDisposed;
@@ -46,12 +48,18 @@ internal sealed class DiagnosticManager : IDiagnosticManager
         _compositeDisposable = new();
     }
 
-    public IObservable<IChangeSet<Diagnostic, IId>> ActiveDiagnostics => _diagnosticCache.Connect();
+    public IObservable<IChangeSet<Diagnostic, IId>> DiagnosticChanges => _diagnosticCache.Connect();
+    public IEnumerable<Diagnostic> ActiveDiagnostics => _diagnosticCache.Items;
 
     public void OnLoadoutChanged(Loadout loadout)
     {
         RefreshLoadoutDiagnostics(loadout);
         RefreshModDiagnostics(loadout);
+    }
+
+    public void ClearDiagnostics()
+    {
+        _diagnosticCache.Edit(updater => updater.Clear());
     }
 
     internal void RefreshLoadoutDiagnostics(Loadout loadout)

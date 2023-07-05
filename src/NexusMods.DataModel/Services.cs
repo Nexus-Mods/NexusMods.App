@@ -94,9 +94,8 @@ public static class Services
             return opts;
         });
 
-
         // Diagnostics
-        coll.AddSingleton<IDiagnosticManager, DiagnosticManager>();
+        coll.AddAllSingleton<IDiagnosticManager, DiagnosticManager>();
 
         return coll;
     }

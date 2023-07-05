@@ -12,9 +12,19 @@ namespace NexusMods.DataModel.Diagnostics;
 public interface IDiagnosticManager : IDisposable
 {
     /// <summary>
-    /// Gets the current active diagnostics.
+    /// Gets an observable for all diagnostic changes.
     /// </summary>
-    IObservable<IChangeSet<Diagnostic, IId>> ActiveDiagnostics { get; }
+    IObservable<IChangeSet<Diagnostic, IId>> DiagnosticChanges { get; }
+
+    /// <summary>
+    /// Gets all active diagnostics.
+    /// </summary>
+    IEnumerable<Diagnostic> ActiveDiagnostics { get; }
+
+    /// <summary>
+    /// Clears all active diagnostics.
+    /// </summary>
+    void ClearDiagnostics();
 
     /// <summary>
     /// Callback for loadout changes.
