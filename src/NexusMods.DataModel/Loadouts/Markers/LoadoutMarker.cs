@@ -35,8 +35,7 @@ public readonly struct LoadoutMarker
         var list = Value;
         // This exists to deal with bad data we may have for previous list versions
         // for example if we've purged the previous versions of a list
-        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-        while (list != null)
+        while (list is not null)
         {
             yield return list;
             if (list.PreviousVersion.Id.Equals(IdEmpty.Empty))
@@ -45,7 +44,7 @@ public readonly struct LoadoutMarker
             list = list.PreviousVersion.Value;
         }
     }
-    
+
     /// <summary>
     /// Adds a known mod to the given loadout.
     /// </summary>

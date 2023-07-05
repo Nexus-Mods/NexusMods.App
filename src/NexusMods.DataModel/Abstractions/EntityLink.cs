@@ -26,7 +26,7 @@ public record struct EntityLink<T> : IEmptyWithDataStore<EntityLink<T>>,
     /// Retrieves the item from the data store.
     /// </summary>
     [JsonIgnore]
-    public T Value => Get();
+    public T? Value => Get();
 
     [JsonIgnore]
     private readonly IDataStore _store;
@@ -40,10 +40,10 @@ public record struct EntityLink<T> : IEmptyWithDataStore<EntityLink<T>>,
         _store = store;
     }
 
-    private T Get()
+    private T? Get()
     {
         _value ??= _store.Get<T>(Id);
-        return _value!;
+        return _value;
     }
 
     /// <inheritdoc />
@@ -52,9 +52,9 @@ public record struct EntityLink<T> : IEmptyWithDataStore<EntityLink<T>>,
     /// <inheritdoc />
     public TState Walk<TState>(Func<TState, Entity, TState> visitor, TState initial)
     {
-        return Id is IdEmpty ? initial : visitor(initial, Value);
+        return Id is IdEmpty ? initial : visitor(initial, Value!);
     }
 
     /// <summary/>
-    public static implicit operator T(EntityLink<T> t) => t.Value;
+    public static implicit operator T(EntityLink<T> t) => t.Value!;
 }
