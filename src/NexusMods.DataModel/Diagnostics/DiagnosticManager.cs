@@ -2,6 +2,7 @@ using System.Reactive.Disposables;
 using DynamicData;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Diagnostics.Emitters;
@@ -20,6 +21,7 @@ internal sealed class DiagnosticManager : IDiagnosticManager
 
     private readonly ILogger<DiagnosticManager> _logger;
     private readonly IDataStore _dataStore;
+    private readonly IOptionsMonitor<DiagnosticOptions> _optionsMonitor;
 
     private readonly ILoadoutDiagnosticEmitter[] _loadoutDiagnosticEmitters;
     private readonly IModDiagnosticEmitter[] _modDiagnosticEmitters;
@@ -34,18 +36,32 @@ internal sealed class DiagnosticManager : IDiagnosticManager
     public DiagnosticManager(
         ILogger<DiagnosticManager> logger,
         IDataStore dataStore,
+        IOptionsMonitor<DiagnosticOptions> optionsMonitor,
         IEnumerable<ILoadoutDiagnosticEmitter> loadoutDiagnosticEmitters,
         IEnumerable<IModDiagnosticEmitter> modDiagnosticEmitters,
         IEnumerable<IModFileDiagnosticEmitter> modFileDiagnosticEmitters)
     {
         _logger = logger;
         _dataStore = dataStore;
+        _optionsMonitor = optionsMonitor;
 
         _loadoutDiagnosticEmitters = loadoutDiagnosticEmitters.ToArray();
         _modDiagnosticEmitters = modDiagnosticEmitters.ToArray();
         _modFileDiagnosticEmitters = modFileDiagnosticEmitters.ToArray();
 
         _compositeDisposable = new();
+
+        // Listen to option changes and update the currently existing diagnostics.
+        var disposable = _optionsMonitor.OnChange(newOptions =>
+        {
+            var filteredDiagnostics = FilterDiagnostics(_diagnosticCache.Items, newOptions);
+            _diagnosticCache.Edit(updater =>
+            {
+                updater.Load(filteredDiagnostics);
+            });
+        });
+
+        if (disposable is not null) _compositeDisposable.Add(disposable);
     }
 
     public IObservable<IChangeSet<Diagnostic, IId>> DiagnosticChanges => _diagnosticCache.Connect();
@@ -75,13 +91,9 @@ internal sealed class DiagnosticManager : IDiagnosticManager
 
         var newDiagnostics = _loadoutDiagnosticEmitters
             .SelectMany(emitter => emitter.Diagnose(loadout))
-            .Select(diagnostic => diagnostic.WithPersist(_dataStore))
             .ToArray();
 
-        _diagnosticCache.Edit(updater =>
-        {
-            updater.AddOrUpdate(newDiagnostics);
-        });
+        AddDiagnostics(newDiagnostics);
     }
 
     internal void RefreshModDiagnostics(Loadout loadout)
@@ -123,13 +135,9 @@ internal sealed class DiagnosticManager : IDiagnosticManager
             .SelectMany(mod => _modDiagnosticEmitters
                 .SelectMany(emitter => emitter.Diagnose(loadout, mod))
             )
-            .Select(diagnostic => diagnostic.WithPersist(_dataStore))
             .ToArray();
 
-        _diagnosticCache.Edit(updater =>
-        {
-            updater.AddOrUpdate(newDiagnostics);
-        });
+        AddDiagnostics(newDiagnostics);
     }
 
     internal void RefreshModFileDiagnostics()
@@ -149,6 +157,24 @@ internal sealed class DiagnosticManager : IDiagnosticManager
 
             updater.RemoveKeys(toRemove);
         });
+    }
+
+    private void AddDiagnostics(IEnumerable<Diagnostic> newDiagnostics)
+    {
+        var toAdd = FilterDiagnostics(newDiagnostics, _optionsMonitor.CurrentValue);
+
+        _diagnosticCache.Edit(updater =>
+        {
+            updater.AddOrUpdate(toAdd.Select(diagnostic => diagnostic.WithPersist(_dataStore)));
+        });
+    }
+
+    internal static IEnumerable<Diagnostic> FilterDiagnostics(
+        IEnumerable<Diagnostic> diagnostics,
+        DiagnosticOptions options)
+    {
+        return diagnostics
+            .Where(x => x.Severity >= options.MinimumSeverity);
     }
 
     public void Dispose()

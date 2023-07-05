@@ -1,6 +1,8 @@
+using System.Collections.Immutable;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.DataModel.Diagnostics;
+using NexusMods.DataModel.Diagnostics.References;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Tests.Harness;
@@ -67,6 +69,29 @@ public class DiagnosticManagerTests : ADataModelTest<DiagnosticManagerTests>
     {
         var act = () => _diagnosticManager.RefreshModFileDiagnostics();
         act.Should().ThrowExactly<NotImplementedException>();
+    }
+
+    [Fact]
+    public void Test_FilterDiagnostics_MinimumSeverity()
+    {
+        var options = new DiagnosticOptions
+        {
+            MinimumSeverity = DiagnosticSeverity.Critical
+        };
+
+        var diagnostics = new Diagnostic[]
+        {
+            new()
+            {
+                Id = new DiagnosticId(),
+                Message = DiagnosticMessage.From(""),
+                Severity = DiagnosticSeverity.Warning,
+                DataReferences = ImmutableArray<IDataReference>.Empty
+            }
+        };
+
+        var result = DiagnosticManager.FilterDiagnostics(diagnostics, options);
+        result.Should().BeEmpty();
     }
 
     private async Task<Mod> AddDummyMod(LoadoutMarker loadout)

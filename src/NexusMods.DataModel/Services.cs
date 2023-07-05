@@ -96,6 +96,7 @@ public static class Services
 
         // Diagnostics
         coll.AddAllSingleton<IDiagnosticManager, DiagnosticManager>();
+        coll.AddOptions<DiagnosticOptions>();
 
         return coll;
     }
