@@ -36,11 +36,11 @@ public class OverlayViewModelTests
         
         // Check if first overlay is loaded.
         controller.GetLastOverlay().Should().Be(overlay);
-        overlay.vm.IsActive = false; // Unloads the overlay, causing queue item to be popped.
+        overlay.VM.IsActive = false; // Unloads the overlay, causing queue item to be popped.
         
         // Assert next modal got loaded.
         controller.GetLastOverlay().Should().Be(overlay2);
-        overlay2.vm.IsActive = false;
+        overlay2.VM.IsActive = false;
         
         // Assert last modal is null
         controller.GetLastOverlay().Should().BeNull();
@@ -63,15 +63,15 @@ public class OverlayViewModelTests
         
         // Check if first overlay is loaded.
         controller.GetLastOverlay().Should().Be(overlay);
-        overlay.vm.IsActive = false; // Unloads the overlay, causing queue item to be popped.
+        overlay.VM.IsActive = false; // Unloads the overlay, causing queue item to be popped.
         
         // Assert next modal got loaded.
         controller.GetLastOverlay().Should().Be(overlay2);
-        overlay2.vm.IsActive = false;
+        overlay2.VM.IsActive = false;
         
         // Assert next modal got loaded.
         controller.GetLastOverlay().Should().Be(overlay3);
-        overlay3.vm.IsActive = false;
+        overlay3.VM.IsActive = false;
     }
     
     [Fact]
@@ -104,7 +104,7 @@ public class OverlayViewModelTests
         // Act
         using var sub = controller.ApplyNextOverlay.Subscribe(_ => { updated = true; });
         controller.SetOverlayContent(overlay, tcs);
-        overlay.vm.IsActive = false;
+        overlay.VM.IsActive = false;
 
         // Assert
         updated.Should().BeTrue();

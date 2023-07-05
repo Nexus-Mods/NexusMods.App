@@ -48,12 +48,12 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
                     }
 
                     // This is the main window, if no reference control is specified, show it here.
-                    if (item.Value.viewItem == null)
-                        OverlayContent = item.Value.vm;
+                    if (item.Value.ViewItem == null)
+                        OverlayContent = item.Value.VM;
                     else
                     {
                         // TODO: Determine if we are the right window. For now we do nothing, until that helper is implemented
-                        OverlayContent = item.Value.vm;
+                        OverlayContent = item.Value.VM;
                     }
                 })
                 .DisposeWith(d);

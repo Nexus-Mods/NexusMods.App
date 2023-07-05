@@ -59,7 +59,7 @@ public class OverlayController : IOverlayController
         // Note(Sewer): This throws a warning because vm is a POCO that doesn't emit change notification.
         // This is however irrelevant because VM is member of record, it is readonly; the element inside successfully emits
         // change notifications. I just don't know how to suppress warning here from WhenAnyValue
-        vm.WhenAnyValue(x => x.vm.IsActive)
+        vm.WhenAnyValue(x => x.VM.IsActive)
             .OnUI()
             .Subscribe(b =>
             {

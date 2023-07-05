@@ -1,4 +1,5 @@
-﻿using NexusMods.App.UI.RightContent.Downloads.ViewModels;
+﻿using JetBrains.Annotations;
+using NexusMods.App.UI.RightContent.Downloads.ViewModels;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Overlays;
@@ -40,11 +41,30 @@ public interface IOverlayController
 /// <summary>
 /// Item in the overlay system.
 /// </summary>
-/// <param name="vm">
-///     The ViewModel to be displayed.
-/// </param>
-/// <param name="viewItem">
-///     Any Avalonia control/item.
-///     This is used to determine which window to spawn the overlay in.
-/// </param>
-public record struct SetOverlayItem(IOverlayViewModel vm, object? viewItem = null);
+[PublicAPI]
+public struct SetOverlayItem
+{
+    // Note: Needs to be property for Reactive binding. Do not refactor to field (this includes use of Records).
+    
+    /// <summary>
+    /// The ViewModel to be displayed.
+    /// </summary>
+    public IOverlayViewModel VM { get; }
+    
+    /// <summary>
+    /// Any Avalonia control/item.
+    /// This is used to determine which window to spawn the overlay in.
+    /// </summary>
+    public object? ViewItem { get; }
+    
+    public SetOverlayItem(IOverlayViewModel vm)
+    {
+        this.VM = vm;
+    }
+    
+    public SetOverlayItem(IOverlayViewModel vm, object? viewItem)
+    {
+        this.VM = vm;
+        this.ViewItem = viewItem;
+    }
+}
