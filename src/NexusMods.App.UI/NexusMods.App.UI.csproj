@@ -78,14 +78,14 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.0.0-rc1.1" />
-        <PackageReference Include="Avalonia.Desktop" Version="11.0.0-rc1.1" />
-        <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.0-rc1.1" />
+        <PackageReference Include="Avalonia" Version="11.0.0" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.0.0" />
+        <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.0" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.0-rc1.1" />
-        <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0-rc1.1" />
-        <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0-rc1.1" />
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-rc1.1" />
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.0" />
+        <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0" />
+        <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0" />
         <PackageReference Include="DynamicData" Version="7.14.2" />
         <PackageReference Include="Humanizer" Version="2.14.1" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
