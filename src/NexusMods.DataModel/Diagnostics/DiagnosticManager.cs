@@ -4,7 +4,10 @@ using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Diagnostics.Emitters;
+using NexusMods.DataModel.Diagnostics.References;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.Cursors;
+using NexusMods.DataModel.Loadouts.Mods;
 
 namespace NexusMods.DataModel.Diagnostics;
 
@@ -14,6 +17,8 @@ internal sealed class DiagnosticManager : IDiagnosticManager
     private bool _isDisposed;
 
     private readonly ILogger<DiagnosticManager> _logger;
+    private readonly IDataStore _dataStore;
+
     private readonly ILoadoutDiagnosticEmitter[] _loadoutDiagnosticEmitters;
     private readonly IModDiagnosticEmitter[] _modDiagnosticEmitters;
     private readonly IModFileDiagnosticEmitter[] _modFileDiagnosticEmitters;
@@ -26,13 +31,13 @@ internal sealed class DiagnosticManager : IDiagnosticManager
     /// </summary>
     public DiagnosticManager(
         ILogger<DiagnosticManager> logger,
+        IDataStore dataStore,
         IEnumerable<ILoadoutDiagnosticEmitter> loadoutDiagnosticEmitters,
         IEnumerable<IModDiagnosticEmitter> modDiagnosticEmitters,
-        IEnumerable<IModFileDiagnosticEmitter> modFileDiagnosticEmitters,
-        IDataStore dataStore,
-        LoadoutRegistry loadoutRegistry)
+        IEnumerable<IModFileDiagnosticEmitter> modFileDiagnosticEmitters)
     {
         _logger = logger;
+        _dataStore = dataStore;
 
         _loadoutDiagnosticEmitters = loadoutDiagnosticEmitters.ToArray();
         _modDiagnosticEmitters = modDiagnosticEmitters.ToArray();
@@ -42,6 +47,101 @@ internal sealed class DiagnosticManager : IDiagnosticManager
     }
 
     public IObservable<IChangeSet<Diagnostic, IId>> ActiveDiagnostics => _diagnosticCache.Connect();
+
+    public void OnLoadoutChanged(Loadout loadout)
+    {
+        RefreshLoadoutDiagnostics(loadout);
+        RefreshModDiagnostics(loadout);
+    }
+
+    internal void RefreshLoadoutDiagnostics(Loadout loadout)
+    {
+        // Remove outdated diagnostics for previous revisions of the loadout
+        RemoveDiagnostics(kv => kv.Value.DataReferences
+            .OfType<LoadoutReference>()
+            .Any(loadoutReference =>
+                loadoutReference.DataId == loadout.LoadoutId
+                && !Equals(loadoutReference.DataStoreId, loadout.DataStoreId)
+            )
+        );
+
+        var newDiagnostics = _loadoutDiagnosticEmitters
+            .SelectMany(emitter => emitter.Diagnose(loadout))
+            .Select(diagnostic => diagnostic.WithPersist(_dataStore))
+            .ToArray();
+
+        _diagnosticCache.Edit(updater =>
+        {
+            updater.AddOrUpdate(newDiagnostics);
+        });
+    }
+
+    internal void RefreshModDiagnostics(Loadout loadout)
+    {
+        var previousLoadout = loadout.PreviousVersion.Value;
+
+        Mod[] addedMods;
+        if (previousLoadout is not null)
+        {
+            var modChangeSet = loadout.Mods.Diff(previousLoadout.Mods);
+            var removedMods = modChangeSet
+                .Where(change => change.Reason is ChangeReason.Remove or ChangeReason.Update)
+                .Select(change => new ModCursor(loadout.LoadoutId, change.Key))
+                .ToHashSet();
+
+            // Remove outdated diagnostics for mods that have been removed or updated.
+            RemoveDiagnostics(kv => kv.Value.DataReferences
+                .OfType<ModReference>()
+                .Any(modReference => removedMods.Contains(modReference.DataId))
+            );
+
+            // Prepare a collection of new or updated mods.
+            addedMods = modChangeSet
+                .Where(change => change.Reason is ChangeReason.Add or ChangeReason.Update)
+                .Select(change => change.Key)
+                .Select(modId => loadout.Mods[modId])
+                .ToArray();
+        }
+        else
+        {
+            // Every mod is considered to be new if there is no previous loadout revision.
+            addedMods = loadout.Mods
+                .Select(x => x.Value)
+                .ToArray();
+        }
+
+        // Run the emitters on the added mods.
+        var newDiagnostics = addedMods
+            .SelectMany(mod => _modDiagnosticEmitters
+                .SelectMany(emitter => emitter.Diagnose(loadout, mod))
+            )
+            .Select(diagnostic => diagnostic.WithPersist(_dataStore))
+            .ToArray();
+
+        _diagnosticCache.Edit(updater =>
+        {
+            updater.AddOrUpdate(newDiagnostics);
+        });
+    }
+
+    internal void RefreshModFileDiagnostics()
+    {
+        // TODO: figure out how to track changes to files (mods and files are "immutable")
+        throw new NotImplementedException();
+    }
+
+    private void RemoveDiagnostics(Func<KeyValuePair<IId, Diagnostic>, bool> predicate)
+    {
+        // TODO: consider removing them from the DataStore as well. This requires batching.
+        _diagnosticCache.Edit(updater =>
+        {
+            var toRemove = updater.KeyValues
+                .Where(predicate)
+                .Select(kv => kv.Key);
+
+            updater.RemoveKeys(toRemove);
+        });
+    }
 
     public void Dispose()
     {

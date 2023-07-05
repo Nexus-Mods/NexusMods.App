@@ -1,6 +1,7 @@
 using DynamicData;
 using JetBrains.Annotations;
 using NexusMods.DataModel.Abstractions.Ids;
+using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.DataModel.Diagnostics;
 
@@ -14,4 +15,9 @@ public interface IDiagnosticManager : IDisposable
     /// Gets the current active diagnostics.
     /// </summary>
     IObservable<IChangeSet<Diagnostic, IId>> ActiveDiagnostics { get; }
+
+    /// <summary>
+    /// Callback for loadout changes.
+    /// </summary>
+    void OnLoadoutChanged(Loadout loadout);
 }
