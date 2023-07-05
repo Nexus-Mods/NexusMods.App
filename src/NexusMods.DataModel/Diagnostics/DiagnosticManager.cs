@@ -174,7 +174,8 @@ internal sealed class DiagnosticManager : IDiagnosticManager
         DiagnosticOptions options)
     {
         return diagnostics
-            .Where(x => x.Severity >= options.MinimumSeverity);
+            .Where(x => x.Severity >= options.MinimumSeverity)
+            .Where(x => !options.IgnoredDiagnostics.Contains(x.Id));
     }
 
     public void Dispose()

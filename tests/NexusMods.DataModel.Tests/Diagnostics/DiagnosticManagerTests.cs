@@ -94,6 +94,32 @@ public class DiagnosticManagerTests : ADataModelTest<DiagnosticManagerTests>
         result.Should().BeEmpty();
     }
 
+    [Fact]
+    public void Test_FilterDiagnostics_IgnoredDiagnostics()
+    {
+        var options = new DiagnosticOptions
+        {
+            IgnoredDiagnostics = new HashSet<DiagnosticId>
+            {
+                new("foo", 1)
+            }.ToImmutableHashSet()
+        };
+
+        var diagnostics = new Diagnostic[]
+        {
+            new()
+            {
+                Id = new DiagnosticId("foo", 1),
+                Message = DiagnosticMessage.From(""),
+                Severity = DiagnosticSeverity.Warning,
+                DataReferences = ImmutableArray<IDataReference>.Empty
+            }
+        };
+
+        var result = DiagnosticManager.FilterDiagnostics(diagnostics, options);
+        result.Should().BeEmpty();
+    }
+
     private async Task<Mod> AddDummyMod(LoadoutMarker loadout)
     {
         var ids = await AddMods(loadout, DataZipLzma, "First Mod");

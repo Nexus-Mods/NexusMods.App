@@ -18,7 +18,6 @@ public record Diagnostic : Entity
     /// <remarks>
     /// Multiple instances can have the same <see cref="Id"/>.
     /// </remarks>
-    /// <seealso cref="Guid"/>
     public required DiagnosticId Id { get; init; }
 
     /// <summary>
