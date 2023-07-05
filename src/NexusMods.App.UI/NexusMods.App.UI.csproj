@@ -77,7 +77,11 @@
     <ItemGroup>
         <TrimmerRootDescriptor Include="Roots.xml" />
     </ItemGroup>
-
+    
+    <ItemGroup>
+        <InternalsVisibleTo Include="NexusMods.UI.Tests" />
+    </ItemGroup>
+    
     <ItemGroup>
         <PackageReference Include="Avalonia" Version="11.0.0-rc1.1" />
         <PackageReference Include="Avalonia.Desktop" Version="11.0.0-rc1.1" />

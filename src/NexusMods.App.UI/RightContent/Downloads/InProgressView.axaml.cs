@@ -1,11 +1,10 @@
 ﻿using System.Reactive.Disposables;
-using Avalonia;
+using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
+using DynamicData.Binding;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Helpers;
-using NexusMods.App.UI.Overlays.Download.Cancel;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
-using NexusMods.App.UI.Windows;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.RightContent.Downloads;
@@ -18,14 +17,9 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
 
         this.WhenActivated(d =>
         {
-            CancelButton.Command = ViewModel!.ShowCancelDialog;
-
-            // List of elements that are tinted blue when a download is active.
-            var tintedElements = new StyledElement[]
-            {
-                BoldMinutesRemainingTextBlock,
-                MinutesRemainingTextBlock
-            };
+            this.WhenAnyValue(view => view.ViewModel!.ShowCancelDialog)
+                .BindToUi(this, view => view.CancelButton.Command)
+                .DisposeWith(d);
 
             this.WhenAnyValue(view => view.ViewModel!.Tasks)
                 .BindToUi(this, view => view.ModsDataGrid.ItemsSource)
@@ -38,20 +32,24 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
             // Dynamically Update Accented Items During Active Download
             this.WhenAnyValue(view => view.ViewModel!.IsRunning)
                 .OnUI()
-                .BindToClasses(BoldMinutesRemainingTextBlock, "UsesAccentLighterColor")
+                .BindToClasses(BoldMinutesRemainingTextBlock, StyleConstants.TextBlock.UsesAccentLighterColor)
                 .DisposeWith(d);
                 
             this.WhenAnyValue(view => view.ViewModel!.IsRunning)
                 .OnUI()
-                .BindToClasses(MinutesRemainingTextBlock, "UsesAccentLighterColor")
+                .BindToClasses(MinutesRemainingTextBlock, StyleConstants.TextBlock.UsesAccentLighterColor)
                 .DisposeWith(d);
 
             // Dynamically Update Title
             this.WhenAnyValue(view => view.ViewModel!.Tasks)
                 .OnUI()
-                .Subscribe(models =>
+                .Select(models => models.ToObservableChangeSet())
+                .Subscribe(x =>
                 {
-                    InProgressTitleTextBlock.Text = $"In progress ({models.Count})";
+                    x.Subscribe(_ =>
+                    {
+                        InProgressTitleTextBlock.Text = StringFormatters.ToDownloadsInProgressTitle(ViewModel!.Tasks.Count);
+                    }).DisposeWith(d);
                 })
                 .DisposeWith(d);
 
@@ -62,7 +60,7 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
                 {
                     var vm = ViewModel!;
                     SizeCompletionTextBlock.Text = StringFormatters.ToGB(vm.DownloadedSizeBytes, vm.TotalSizeBytes);
-                    DownloadProgressBar.Value = vm.DownloadedSizeBytes / (double)vm.TotalSizeBytes;
+                    DownloadProgressBar.Value = vm.DownloadedSizeBytes / Math.Max(1.0, vm.TotalSizeBytes);
                 })
                 .DisposeWith(d);
 

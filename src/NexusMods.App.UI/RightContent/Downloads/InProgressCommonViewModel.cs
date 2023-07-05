@@ -5,6 +5,8 @@ using System.Windows.Input;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using DynamicData;
+using DynamicData.Binding;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
 using NexusMods.App.UI.RightContent.LoadoutGrid;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
@@ -21,6 +23,8 @@ namespace NexusMods.App.UI.RightContent.Downloads;
 
 public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInProgressViewModel
 {
+    internal const int PollTimeMilliseconds = 1000;
+    
     protected ReadOnlyObservableCollection<IDownloadTaskViewModel> TasksObservable = new(new ObservableCollection<IDownloadTaskViewModel>());
 
     public ReadOnlyObservableCollection<IDownloadTaskViewModel> Tasks => TasksObservable;
@@ -100,8 +104,19 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.Tasks)
-                .Select(task => task.Any(x => !(x.Status is DownloadTaskStatus.Idle or DownloadTaskStatus.Paused)))
-                .BindToUi(this, vm => vm.IsRunning)
+                .Select(tasks => tasks.ToObservableChangeSet())
+                .Subscribe(changeSet =>
+                {
+                    // Update 'IsRunning' Property when any new task occurs.
+                    changeSet.Select(_ => Tasks.Any(x => !(x.Status is DownloadTaskStatus.Idle or DownloadTaskStatus.Paused)))
+                        .BindToUi(this, vm => vm.IsRunning)
+                        .DisposeWith(d);
+                    
+                    // Update ViewModel Properties (non-polling) when any task arrives.
+                    changeSet.OnUI()
+                        .Subscribe(set => UpdateWindowInfo())
+                        .DisposeWith(d);
+                })
                 .DisposeWith(d);
 
             columns.Connect()
@@ -110,8 +125,12 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
                 .DisposeWith(d);
 
             // Start updating on the UI thread
+            // This is a service to provide polling in case of downloaders that don't have a way of notifying
+            // changes in progress (e.g. when file name is resolved, or download progress is made).
+            
+            // This is not the only mechanism, a manual refresh also can occur when tasks are added/removed.
             var timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Interval = TimeSpan.FromMilliseconds(PollTimeMilliseconds);
             timer.Tick += UpdateWindowInfoInternal;
             timer.Start();
             Disposable.Create(timer, (tmr) => tmr.Stop()).DisposeWith(d);

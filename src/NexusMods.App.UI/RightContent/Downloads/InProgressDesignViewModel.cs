@@ -8,10 +8,12 @@ namespace NexusMods.App.UI.RightContent.Downloads;
 
 public class InProgressDesignViewModel : InProgressCommonViewModel
 {
+    private SourceList<IDownloadTaskViewModel> _tasks;
+    
     public InProgressDesignViewModel()
     {
-        SourceList<IDownloadTaskViewModel> tasks = new();
-        tasks.Add(new DownloadTaskDesignViewModel()
+        _tasks = new();
+        _tasks.Add(new DownloadTaskDesignViewModel()
         {
             Name = "Invisible Camouflage",
             Game = "Hide and Seek Pro",
@@ -22,7 +24,7 @@ public class InProgressDesignViewModel : InProgressCommonViewModel
             Throughput = 10_000_000
         });
         
-        tasks.Add(new DownloadTaskDesignViewModel()
+        _tasks.Add(new DownloadTaskDesignViewModel()
         {
             Name = "Time Travel Mod",
             Game = "Chronos Unleashed",
@@ -33,7 +35,7 @@ public class InProgressDesignViewModel : InProgressCommonViewModel
             Throughput = 4_500_000
         });
         
-        tasks.Add(new DownloadTaskDesignViewModel()
+        _tasks.Add(new DownloadTaskDesignViewModel()
         {
             Name = "Unlimited Lives",
             Game = "Endless Quest",
@@ -43,7 +45,7 @@ public class InProgressDesignViewModel : InProgressCommonViewModel
             Status = DownloadTaskStatus.Paused
         });
 
-        tasks.Add(new DownloadTaskDesignViewModel()
+        _tasks.Add(new DownloadTaskDesignViewModel()
         {
             Name = "Silent Karaoke Mode",
             Game = "Pop Star World",
@@ -53,7 +55,7 @@ public class InProgressDesignViewModel : InProgressCommonViewModel
 
         this.WhenActivated(d =>
         {
-            tasks.Connect()
+            _tasks.Connect()
                 .Bind(out TasksObservable)
                 .Subscribe()
                 .DisposeWith(d);
@@ -65,4 +67,8 @@ public class InProgressDesignViewModel : InProgressCommonViewModel
             this.RaisePropertyChanged(nameof(Tasks));
         });
     }
+
+    public void AddDownload(DownloadTaskDesignViewModel vm) => _tasks.Add(vm);
+
+    public void ClearDownloads() => _tasks.Clear();
 }

@@ -34,4 +34,10 @@ public static class StringFormatters
             >= 3600 => $"{secondsRemaining / 3600} hours"
         };
     }
+
+    /// <summary>
+    /// Formats the 'In Progress' title in Downloads Menu.
+    /// </summary>
+    /// <param name="itemCount">Number of items in the menu.</param>
+    public static string ToDownloadsInProgressTitle(int itemCount) => $"In progress ({itemCount})";
 }
