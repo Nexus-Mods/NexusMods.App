@@ -96,14 +96,9 @@ public class SimpleOverlayModInstaller : IModInstaller
             .Select(kv =>
             {
                 var (path, file) = kv;
-
-                return new FromArchive
-                {
-                    Id = ModFileId.New(),
-                    To = new GamePath(GameFolderType.Game, path.DropFirst(root)),
-                    Hash = file.Hash,
-                    Size = file.Size
-                };
+                return file.ToFromArchive(
+                    new GamePath(GameFolderType.Game, path.DropFirst(root))
+                );
             });
 
         yield return new ModInstallerResult

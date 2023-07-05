@@ -30,4 +30,8 @@
     <ItemGroup>
         <PackageReference Include="NetEscapades.EnumGenerators" Version="1.0.0-beta07" PrivateAssets="all" ExcludeAssets="compile;runtime" />
     </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="NexusMods.DataModel.Tests" />
+    </ItemGroup>
 </Project>

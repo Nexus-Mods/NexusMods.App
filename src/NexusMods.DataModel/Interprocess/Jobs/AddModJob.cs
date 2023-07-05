@@ -1,5 +1,4 @@
-﻿using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.JsonConverters;
+﻿using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.DataModel.Interprocess.Jobs;

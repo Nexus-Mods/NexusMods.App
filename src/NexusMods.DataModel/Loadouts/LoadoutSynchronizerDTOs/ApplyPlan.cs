@@ -1,6 +1,4 @@
 ﻿using NexusMods.DataModel.Loadouts.ApplySteps;
-using NexusMods.DataModel.Loadouts.Mods;
-using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 

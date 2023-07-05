@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveMetaData;
+using NexusMods.DataModel.Diagnostics;
 using NexusMods.DataModel.Interprocess;
 using NexusMods.DataModel.Interprocess.Jobs;
 using NexusMods.DataModel.JsonConverters;
@@ -56,10 +56,10 @@ public static class Services
             new Resource<FileHashCache, Size>("File Hashing",
                 Settings(s).MaxHashingJobs,
                 Size.FromLong(Settings(s).MaxHashingThroughputBytesPerSecond)));
-        
-        
+
+
         coll.AddSingleton(typeof(IFingerprintCache<,>), typeof(DataStoreFingerprintCache<,>));
-        
+
         coll.AddAllSingleton<IResource, IResource<LoadoutManager, Size>>(s =>
             new Resource<LoadoutManager, Size>("Load Order Management",
                 Settings(s).LoadoutDeploymentJobs, Size.Zero));
@@ -81,8 +81,8 @@ public static class Services
         coll.AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Services).Assembly));
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<AModMetadata>>();
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<Entity>>();
+        coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<IMetadata>>();
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<IFileAnalysisData>>();
-        coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<IModFileMetadata>>();
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<ISortRule<Mod, ModId>>>();
 
         coll.AddSingleton(s =>
@@ -93,6 +93,11 @@ public static class Services
                 opts.Converters.Add(converter);
             return opts;
         });
+
+        // Diagnostics
+        coll.AddAllSingleton<IDiagnosticManager, DiagnosticManager>();
+        coll.AddOptions<DiagnosticOptions>();
+
         return coll;
     }
 }

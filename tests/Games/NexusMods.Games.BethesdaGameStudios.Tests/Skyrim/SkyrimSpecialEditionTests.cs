@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using System.Text;
 using System.Text.Json;
 using FluentAssertions;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -40,10 +41,10 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
 
         var analysisStr = await BethesdaTestHelpers.GetAssetsPath(FileSystem).Combine("plugin_dependencies.json").ReadAllTextAsync();
         var analysis = JsonSerializer.Deserialize<Dictionary<string, string[]>>(analysisStr)!;
-        
+
 
         var gameFiles = loadout.Value.Mods.Values.First(m => m.ModCategory == Mod.GameFilesCategory); // <= throws on failure
-        
+
         LoadoutRegistry.Alter(loadout.Value.LoadoutId, gameFiles.Id, "Added plugins", mod =>
         {
             var files = mod!.Files;
@@ -56,35 +57,34 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
                     To = new GamePath(GameFolderType.Game, $"Data/{file.Key}"),
                     Hash = Hash.Zero,
                     Size = Size.Zero,
-                    Metadata = 
-                        ImmutableHashSet<IModFileMetadata>.Empty.Add(
-                        new AnalysisSortData
+                    Metadata =
+                        ImmutableList<IMetadata>.Empty.Add(
+                        new PluginAnalysisData
                         {
-                            Masters = file.Value.Select(f => f.ToRelativePath())
-                                .ToArray()
+                            Masters = file.Value.Select(f => f.ToRelativePath()).ToArray()
                         })
                 };
                 files = files.With(newFile.Id, newFile);
             }
             return mod with { Files = files };
         });
-        
-        
+
+
         gameFiles.Files.Count.Should().BeGreaterThan(0);
 
-        LoadoutRegistry.Get(loadout.Value.LoadoutId, gameFiles.Id)!.Files.Values.Count(x => x.Metadata.OfType<AnalysisSortData>().Any())
+        LoadoutRegistry.Get(loadout.Value.LoadoutId, gameFiles.Id)!.Files.Values.Count(x => x.Metadata.OfType<PluginAnalysisData>().Any())
             .Should().BeGreaterOrEqualTo(analysis.Count, "Analysis data has been added");
 
         var pluginFile = gameFiles.Files.Values.OfType<PluginFile>().First();
         var flattenedList = (await LoadoutSynchronizer.FlattenLoadout(loadout.Value)).Files.Values.ToList();
 
         var plan = await LoadoutSynchronizer.MakeApplySteps(loadout.Value);
-        
+
         using var ms = new MemoryStream();
         await pluginFile.GenerateAsync(ms, plan);
 
         ms.Position = 0;
-        
+
         (await ms.XxHash64Async()).Should().Be(Hash.From(0x7F10458731B543D4));
         var results = Encoding.UTF8.GetString(ms.ToArray()).Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
 

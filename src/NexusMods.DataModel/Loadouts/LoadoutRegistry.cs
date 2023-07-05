@@ -71,12 +71,12 @@ public class LoadoutRegistry : IDisposable
             {
                 _cache.Edit(x =>
                 {
-                    var id = GetId(loadoutId);
-                    x.AddOrUpdate(id!, loadoutId);
+                    var dataStoreId = GetId(loadoutId);
+                    x.AddOrUpdate(dataStoreId!, loadoutId);
                 });
             });
-        _compositeDisposable.Add(dispose);
 
+        _compositeDisposable.Add(dispose);
     }
 
     /// <summary>
@@ -110,8 +110,8 @@ public class LoadoutRegistry : IDisposable
 
         Span<byte> span = stackalloc byte[newLoadout.DataStoreId.SpanSize + 1];
         newLoadout.DataStoreId.ToTaggedSpan(span);
-        
-        
+
+
         if (!_store.CompareAndSwap(dbId, span, loadoutRoot))
             goto TryAgain;
 

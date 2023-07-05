@@ -1,23 +1,19 @@
 ﻿using System.Collections.Immutable;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
-using Microsoft.Win32;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Interprocess.Jobs;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
-using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.Paths;
 
 namespace NexusMods.DataModel;
 
@@ -36,17 +32,9 @@ public class ArchiveInstaller : IArchiveInstaller
     /// <summary>
     /// DI Constructor
     /// </summary>
-    /// <param name="logger"></param>
-    /// <param name="archiveAnalyzer"></param>
-    /// <param name="dataStore"></param>
-    /// <param name="archiveManager"></param>
-    /// <param name="registry"></param>
-    /// <param name="modInstallers"></param>
-    /// <param name="jobManager"></param>
     public ArchiveInstaller(ILogger<ArchiveInstaller> logger,
         IArchiveAnalyzer archiveAnalyzer,
         IDataStore dataStore,
-        IArchiveManager archiveManager, 
         LoadoutRegistry registry,
         IEnumerable<IModInstaller> modInstallers,
         IInterprocessJobManager jobManager)
@@ -67,11 +55,9 @@ public class ArchiveInstaller : IArchiveInstaller
             _logger.LogError("Could not find analysis data for archive {ArchiveHash} or file is not an archive", archiveHash);
             throw new InvalidOperationException("Could not find analysis data for archive");
         }
-        
+
         // Get the loadout and create the mod so we can use it in the job.
         var loadout = _registry.GetMarker(loadoutId);
-        
-
 
         var metaData = AArchiveMetaData.GetMetaDatas(_dataStore, archiveHash).FirstOrDefault();
         var archiveName = "<unknown>";
@@ -79,7 +65,7 @@ public class ArchiveInstaller : IArchiveInstaller
         {
             archiveName = metaData.Name;
         }
-        
+
         var baseMod = new Mod
         {
             Id = ModId.New(),
@@ -99,7 +85,6 @@ public class ArchiveInstaller : IArchiveInstaller
                 ModId = baseMod.Id,
                 LoadoutId = loadoutId
             });
-            
 
             // Step 3: Run the archive through the installers.
             var installer = _modInstallers
@@ -121,7 +106,8 @@ public class ArchiveInstaller : IArchiveInstaller
                 baseMod.Id,
                 analysisData.Hash,
                 analysisData.Contents,
-                token);
+                token
+            );
 
             var mods = results.Select(result => new Mod
             {
@@ -131,6 +117,20 @@ public class ArchiveInstaller : IArchiveInstaller
                 Version = result.Version ?? baseMod.Version,
                 SortRules = (result.SortRules ?? Array.Empty<ISortRule<Mod, ModId>>()).ToImmutableList()
             }).WithPersist(_dataStore).ToArray();
+
+            if (mods.Length == 0)
+            {
+                _registry.Alter(cursor, $"Failed to install mod {archiveName}", m => m! with { Status = ModStatus.Failed});
+                throw new NotImplementedException($"The installer returned 0 mods for {archiveName}");
+            }
+
+            if (mods.Length == 1)
+            {
+                mods[0] = mods[0] with
+                {
+                    Id = baseMod.Id
+                };
+            }
 
             job.Progress = new Percent(0.75);
 
@@ -142,12 +142,6 @@ public class ArchiveInstaller : IArchiveInstaller
                     CreationReason = GroupCreationReason.MultipleModsOneArchive
                 }
                 : null;
-
-            if (mods.Length == 0)
-            {
-                _registry.Alter(cursor, $"Failed to install mod {archiveName}", m => m! with { Status = ModStatus.Failed});
-                throw new NotImplementedException($"The installer returned 0 mods for {archiveName}");
-            }
 
             var modIds = mods.Select(mod => mod.Id).ToHashSet();
             Debug.Assert(modIds.Count == mods.Length, $"The installer {installer.Installer.GetType()} returned mods with non-unique ids.");
@@ -185,8 +179,6 @@ public class ArchiveInstaller : IArchiveInstaller
                 loadout.Remove(baseMod);
             }
 
-            job.Progress = Percent.One;
-
             return mods.Select(x => x.Id).ToArray();
         }
         catch (Exception ex)
@@ -199,6 +191,5 @@ public class ArchiveInstaller : IArchiveInstaller
 
             throw;
         }
-        
     }
 }

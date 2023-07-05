@@ -1,5 +1,3 @@
-using NexusMods.Paths;
-
 namespace NexusMods.DataModel.Loadouts.ApplySteps;
 
 /// <summary>

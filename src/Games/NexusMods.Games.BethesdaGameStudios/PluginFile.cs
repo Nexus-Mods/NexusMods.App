@@ -26,9 +26,9 @@ public record PluginFile : AModFile, IGeneratedFile, IToFile, ITriggerFilter<Mod
         "HearthFires.esm",
         "Dragonborn.esm",
     }.Select(e => e.ToRelativePath()).ToArray();
-    
+
     public required GamePath To { get; init; }
-    
+
     private static IEnumerable<IToFile> PluginFiles(IEnumerable<ModFilePair> flattenedList)
     {
         var pluginFiles = flattenedList
@@ -83,7 +83,7 @@ public record PluginFile : AModFile, IGeneratedFile, IToFile, ITriggerFilter<Mod
                 }
             default:
                 {
-                    foreach (var itm in ((AModFile)aModFile).Metadata.OfType<AnalysisSortData>())
+                    foreach (var itm in ((AModFile)aModFile).Metadata.OfType<PluginAnalysisData>())
                     {
                         foreach (var dep in itm.Masters)
                         {

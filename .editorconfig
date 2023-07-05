@@ -66,6 +66,9 @@ dotnet_diagnostic.CS8509.severity = error
 # CS824: Missing switch case for unnamed enum value
 dotnet_diagnostic.CS8524.severity = none
 
+# Enums should not have duplicate values
+dotnet_diagnostic.CA1069.severity = error
+
 [{*.yaml,*.yml}]
 indent_style = space
 indent_size = 2
