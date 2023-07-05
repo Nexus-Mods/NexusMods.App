@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Diagnostics.References;
+using NexusMods.DataModel.JsonConverters;
 
 namespace NexusMods.DataModel.Diagnostics;
 
@@ -8,6 +9,7 @@ namespace NexusMods.DataModel.Diagnostics;
 /// Represents a diagnostic.
 /// </summary>
 [PublicAPI]
+[JsonName("NexusMods.DataModel.Diagnostic")]
 public record Diagnostic : Entity
 {
     /// <summary>
@@ -41,4 +43,16 @@ public record Diagnostic : Entity
 
     /// <inheritdoc/>
     public override EntityCategory Category => EntityCategory.Diagnostics;
+
+    /// <inheritdoc/>
+    public virtual bool Equals(Diagnostic? other)
+    {
+        return other is not null && DataStoreId.Equals(other.DataStoreId);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return DataStoreId.GetHashCode();
+    }
 }

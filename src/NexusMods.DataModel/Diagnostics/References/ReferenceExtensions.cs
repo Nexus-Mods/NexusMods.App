@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.Cursors;
 using NexusMods.DataModel.Loadouts.Mods;
 
 namespace NexusMods.DataModel.Diagnostics.References;
@@ -26,11 +27,11 @@ public static class ReferenceExtensions
     /// <summary>
     /// Creates a new <see cref="ModReference"/> for the given <see cref="Mod"/>.
     /// </summary>
-    public static ModReference ToReference(this Mod mod)
+    public static ModReference ToReference(this Mod mod, Loadout loadout)
     {
         return new ModReference
         {
-            DataId = mod.Id,
+            DataId = new ModCursor(loadout.LoadoutId, mod.Id),
             DataStoreId = mod.DataStoreId
         };
     }

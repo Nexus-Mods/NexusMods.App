@@ -19,7 +19,7 @@ internal static class Diagnostics
             DataReferences = new IDataReference[]
             {
                 loadout.ToReference(),
-                mod.ToReference()
+                mod.ToReference(loadout)
             }
         };
     }

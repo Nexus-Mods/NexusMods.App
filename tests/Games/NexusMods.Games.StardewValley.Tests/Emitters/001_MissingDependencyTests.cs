@@ -41,7 +41,7 @@ public class MissingDependenciesEmitterTests : ALoadoutDiagnosticEmitterTest<Sta
         diagnostic.Message.Should().Be(DiagnosticMessage.From($"Mod 'ModA' is missing required dependency 'ModB'"));
         diagnostic.DataReferences.Should().Equal(
             loadoutMarker.Value.ToReference(),
-            modA.ToReference()
+            modA.ToReference(loadoutMarker.Value)
         );
 
         var modBManifest = new SMAPIManifest
