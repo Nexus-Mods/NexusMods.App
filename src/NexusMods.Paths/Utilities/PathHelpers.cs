@@ -117,11 +117,10 @@ public static class PathHelpers
         // Path has already been sanitized.
         if (IsSanitized(path, os)) return path.ToString();
 
-        // Paths on Unix-based systems and Windows paths without backslashes
-        // only need to be checked for trailing directory separators.
-        if (os.IsUnix() || path.Count('\\') == 0) return RemoveTrailingDirectorySeparator(path).ToString();
+        // Paths without backslashes only need to be checked for trailing directory separators.
+        if (path.Count('\\') == 0) return RemoveTrailingDirectorySeparator(path).ToString();
 
-        // Windows paths with backslashes instead of forward slashes need to be fixed.
+        // Paths with backslashes instead of forward slashes need to be fixed.
         var buffer = path.Length > 512
             ? GC.AllocateUninitializedArray<char>(path.Length)
             : stackalloc char[path.Length];

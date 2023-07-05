@@ -37,6 +37,7 @@ public static class Services
             return provider.GetRequiredService<IDataModelSettings>();
         }
 
+        coll.AddSingleton<JsonConverter, AbsolutePathConverter>();
         coll.AddSingleton<JsonConverter, RelativePathConverter>();
         coll.AddSingleton<JsonConverter, GamePathConverter>();
         coll.AddSingleton<JsonConverter, DateTimeConverter>();
