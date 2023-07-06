@@ -117,8 +117,8 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
     {
         try { _tokenSource.Cancel(); }
         catch (Exception) { /* ignored */ }
-        try { _task?.Wait(); }
-        catch (Exception) { /* ignored */ }
+        
+        // Do not _task.Wait() here, as it will deadlock without async.
         Owner.OnCancelled(this);
     }
 
