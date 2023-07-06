@@ -73,6 +73,10 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
                     BoldMinutesRemainingTextBlock.Text = StringFormatters.ToTimeRemainingShort(vm.SecondsRemaining);
                 })
                 .DisposeWith(d);
+
+            // Bind Selected Item
+            this.Bind(ViewModel!, model => model.SelectedTask, view => view.ModsDataGrid.SelectedItem)
+                .DisposeWith(d);
         });
     }
 }
