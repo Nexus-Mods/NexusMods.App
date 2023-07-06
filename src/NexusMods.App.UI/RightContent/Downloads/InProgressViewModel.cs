@@ -17,6 +17,18 @@ public class InProgressViewModel : InProgressCommonViewModel
     {
         SourceCache<IDownloadTaskViewModel, IDownloadTask> tasks = new(_ => throw new NotImplementedException());
 
+        // Add already running tasks to the tasks list
+        foreach (var task in downloadService.Downloads)
+        {
+            if (task.Status != DownloadTaskStatus.Completed)
+            {
+                tasks.Edit(x =>
+                {
+                    x.AddOrUpdate(new DownloadTaskViewModel(task), task);
+                });
+            }
+        }
+        
         this.WhenActivated(d =>
         {
             ShowCancelDialog = ReactiveCommand.Create(async () =>
