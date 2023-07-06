@@ -69,7 +69,7 @@ public class ArchiveInstaller : IArchiveInstaller
         var baseMod = new Mod
         {
             Id = ModId.New(),
-            Name = archiveName,
+            Name = defaultModName ?? archiveName,
             Files = new EntityDictionary<ModFileId, AModFile>(_dataStore),
             Status = ModStatus.Installing
         };
