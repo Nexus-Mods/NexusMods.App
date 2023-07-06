@@ -1,7 +1,5 @@
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.ReactiveUI;
-using NexusMods.App.UI.Overlays.Generic.MessageBox.Base;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel;
@@ -36,6 +34,7 @@ public partial class MessageBoxOkCancelView : ReactiveUserControl<IMessageBoxOkC
             OkButton.Command = ReactiveCommand.CreateFromTask(() =>
             {
                 ViewModel!.DialogResult = true;
+                ViewModel!.IsActive = false;
                 return Task.CompletedTask;
             });
             

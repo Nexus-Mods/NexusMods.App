@@ -318,6 +318,9 @@
         <Compile Update="Overlays\OverlayController.cs">
           <DependentUpon>IOverlayController.cs</DependentUpon>
         </Compile>
+        <Compile Update="Overlays\Generic\MessageBox\OkCancel\MessageBoxOkCancelViewModel.cs">
+          <DependentUpon>IMessageBoxOkCancelViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

@@ -13,6 +13,7 @@ using NexusMods.App.UI.LeftMenu.Home;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.Download.Cancel;
+using NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel;
 using NexusMods.App.UI.Overlays.Login;
 using NexusMods.App.UI.RightContent;
 using NexusMods.App.UI.RightContent.Downloads;
@@ -92,6 +93,7 @@ public static class Services
             .AddViewModel<DownloadSizeViewModel, IDownloadSizeViewModel>()
             .AddViewModel<DownloadStatusViewModel, IDownloadStatusViewModel>()
             .AddViewModel<CancelDownloadOverlayViewModel, ICancelDownloadOverlayViewModel>()
+            .AddViewModel<MessageBoxOkCancelViewModel, IMessageBoxOkCancelViewModel>()
 
             // Views
             .AddView<CompletedView, ICompletedViewModel>()
@@ -126,6 +128,7 @@ public static class Services
             .AddView<DownloadSizeView, IDownloadSizeViewModel>()
             .AddView<DownloadStatusView, IDownloadStatusViewModel>()
             .AddView<CancelDownloadOverlayView, ICancelDownloadOverlayViewModel>()
+            .AddView<MessageBoxOkCancelView, IMessageBoxOkCancelViewModel>()
 
             // Other
             .AddSingleton<InjectedViewLocator>()
