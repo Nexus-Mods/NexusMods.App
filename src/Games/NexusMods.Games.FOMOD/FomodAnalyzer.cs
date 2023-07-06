@@ -49,7 +49,7 @@ public class FomodAnalyzer : IFileAnalyzer
 
         try
         {
-            using var streamReader = new StreamReader(info.Stream);
+            using var streamReader = new StreamReader(info.Stream, leaveOpen:true);
             data = await streamReader.ReadToEndAsync(ct);
             var xmlScript = new XmlScriptType();
             var script = (XmlScript)xmlScript.LoadScript(data, true);
