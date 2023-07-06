@@ -12,9 +12,9 @@
     <Design.DataContext>
         <downloads:InProgressDesignViewModel/>
     </Design.DataContext>
-    <StackPanel>
+    <Grid RowDefinitions="Auto, *">
         <!-- ToolBar -->
-        <Border Classes="Toolbar">
+        <Border Classes="Toolbar" Grid.Row="0">
             <Grid ColumnDefinitions="*, Auto">
                 <TextBlock Grid.Column="0" Text="IN PROGRESS"></TextBlock>
                 <StackPanel Grid.Column="1">
@@ -48,10 +48,10 @@
         </Border>
         
         <!-- Page Content -->
-        <StackPanel Margin="24, 16" >
+        <Grid RowDefinitions="Auto, Auto, *" Margin="24, 16" Grid.Row="1">
         
             <!-- Title & Status -->
-            <DockPanel LastChildFill="True" HorizontalAlignment="Stretch">
+            <DockPanel LastChildFill="True" HorizontalAlignment="Stretch" Grid.Row="0">
                 <TextBlock DockPanel.Dock="Left"
                            Classes="H5MontserratSemi" 
                            Text="In progress (0)" 
@@ -81,14 +81,14 @@
             </DockPanel>
         
             <!-- Progress -->
-            <ProgressBar Classes="DownloadBar" x:Name="DownloadProgressBar" Minimum="0" Maximum="1"/>
+            <ProgressBar Classes="DownloadBar" x:Name="DownloadProgressBar" Minimum="0" Maximum="1" Grid.Row="1"/>
         
             <!-- Currently Downloaded Mods -->
-            <DataGrid
+            <DataGrid Grid.Row="2" 
                 HorizontalAlignment="Stretch"
                 CanUserSortColumns="True"
                 Margin="-16,16"
                 x:Name="ModsDataGrid" />
-        </StackPanel>
-    </StackPanel>
+        </Grid>
+    </Grid>
 </reactiveUi:ReactiveUserControl>
