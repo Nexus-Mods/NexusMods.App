@@ -9,11 +9,14 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
 {
     private readonly IDownloadTask _task;
     
-    public DownloadTaskViewModel(IDownloadTask task)
+    public DownloadTaskViewModel(IDownloadTask task, bool initPreviousStates = true)
     {
         _task = task;
         
         // Initialize the previous states
+        if (!initPreviousStates)
+            return;
+        
         _previousName = Name;
         _previousVersion = Version;
         _previousGame = Game;
@@ -66,13 +69,13 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
 
     // Polling implementation, for bridging the gap between a non-INotifyPropertyChanged implementation and 
     // live-updating ViewModel.
-    private string _previousName;
-    private string _previousVersion;
-    private string _previousGame;
-    private DownloadTaskStatus _previousStatus;
-    private long _previousDownloadedBytes;
-    private long _previousSizeBytes;
-    private long _previousThroughput;
+    private string _previousName = string.Empty;
+    private string _previousVersion = string.Empty;
+    private string _previousGame = string.Empty;
+    private DownloadTaskStatus _previousStatus = DownloadTaskStatus.Idle;
+    private long _previousDownloadedBytes = 0;
+    private long _previousSizeBytes = 0;
+    private long _previousThroughput = 0;
     
     public void Poll()
     {
