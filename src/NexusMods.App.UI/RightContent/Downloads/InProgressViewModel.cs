@@ -31,6 +31,7 @@ public class InProgressViewModel : InProgressCommonViewModel
 
             // Subscribe to started tasks
             downloadService.StartedTasks
+                .OnUI()
                 .Subscribe(task =>
                 {
                     tasks.Edit(x =>
@@ -41,6 +42,7 @@ public class InProgressViewModel : InProgressCommonViewModel
 
             // Subscribe to completed tasks and remove them from tasks list
             downloadService.CompletedTasks
+                .OnUI()
                 .Merge(downloadService.CancelledTasks) // Cancelled and completed are treated the same here.
                 .Subscribe(task =>
                 {
