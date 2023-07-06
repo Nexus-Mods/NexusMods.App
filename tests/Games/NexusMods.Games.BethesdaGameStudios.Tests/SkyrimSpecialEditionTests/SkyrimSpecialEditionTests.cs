@@ -83,14 +83,14 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
 
         ms.Position = 0;
 
-        (await ms.XxHash64Async()).Should().Be(Hash.From(0x7F10458731B543D4));
+        (await ms.XxHash64Async()).Should().Be(Hash.From(0x68B821EEFD98523C));
         var results = Encoding.UTF8.GetString(ms.ToArray()).Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
 
         // CC = Creation Club
         if (results.Length == 9)
         {
             // Skyrim SE without CC downloads
-            results.Should()
+            results.Select(t=> t.TrimStart('*')).Should()
                 .BeEquivalentTo(new[]
                 {
                     "Skyrim.esm",
@@ -108,7 +108,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
         {
             // Skyrim SE with CC downloads
             results
-                .Select(t => t.ToLowerInvariant())
+                .Select(t => t.TrimStart('*').ToLowerInvariant())
                 .Should()
                 .BeEquivalentTo(new[]
                 {
