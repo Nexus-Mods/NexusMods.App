@@ -45,14 +45,9 @@ public class StubbedGameInstaller : IModInstaller
             .Select(kv =>
             {
                 var (path, file) = kv;
-
-                return new FromArchive
-                {
-                    Id = ModFileId.New(),
-                    To = new GamePath(GameFolderType.Game, path),
-                    Hash = file.Hash,
-                    Size = file.Size
-                };
+                return file.ToFromArchive(
+                    new GamePath(GameFolderType.Game, path)
+                );
             });
 
         yield return new ModInstallerResult

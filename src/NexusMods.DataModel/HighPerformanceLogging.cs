@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging;
-using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Interprocess.Jobs;
 using NexusMods.DataModel.RateLimiting;

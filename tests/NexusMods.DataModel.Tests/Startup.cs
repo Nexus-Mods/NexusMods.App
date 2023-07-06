@@ -1,13 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Diagnostics.Emitters;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.DataModel.RateLimiting;
+using NexusMods.DataModel.Tests.Diagnostics;
 using NexusMods.FileExtractor;
 using NexusMods.FileExtractor.Extractors;
 using NexusMods.Paths;
-using NexusMods.Paths.Utilities;
 using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.DependencyInjection;
@@ -35,6 +35,11 @@ public class Startup
             .AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ => new Resource<IExtractor, Size>("File Extraction"))
             //.AddSingleton<IFileAnalyzer, ArchiveContentsCacheTests.MutatingFileAnalyzer>()
             .AddSingleton<ITypeFinder>(_ => new AssemblyTypeFinder(typeof(Startup).Assembly))
+
+            // Diagnostics
+            .AddSingleton<ILoadoutDiagnosticEmitter, DummyLoadoutDiagnosticEmitter>()
+            .AddSingleton<IModDiagnosticEmitter, DummyModDiagnosticEmitter>()
+
             .Validate();
     }
 

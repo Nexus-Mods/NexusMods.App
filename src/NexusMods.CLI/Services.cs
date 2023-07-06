@@ -54,7 +54,9 @@ public static class Services
         services.AddSingleton<IIpcProtocolHandler, NxmIpcProtocolHandler>();
         services.AddSingleton<IDownloadProtocolHandler, NxmDownloadProtocolHandler>();
 
-        services.AddVerb<AnalyzeArchive>()
+        services
+            .AddVerb<AddGame>()
+            .AddVerb<AnalyzeArchive>()
             .AddVerb<Apply>()
             .AddVerb<AssociateNxm>()
             .AddVerb<ChangeTracking>()

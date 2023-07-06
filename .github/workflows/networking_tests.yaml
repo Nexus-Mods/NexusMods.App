@@ -22,27 +22,20 @@ jobs:
     strategy:
       matrix:
         #os: [ubuntu-latest, windows-latest, macos-latest]
-        os: [Windows]
+        os: [windows-latest]
 
     steps:
       - uses: actions/checkout@v3
 
-      #- name: Setup .NET Core SDK 7.0.x
-      #  uses: actions/setup-dotnet@v3
-      #  with:
-      #    dotnet-version: '7.0.x'
-
-      - name: Set Permissions
-        if: runner.os != 'Windows'
-        run: chmod -R +x src/ArchiveManagement/NexusMods.FileExtractor/Extractors
-
-      - name: Clean Tests
-        run: dotnet clean
+      - name: Setup .NET Core SDK 7.0.x
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.0.x'
 
       - name: Tests
-        run: dotnet test --filter RequiresNetworking=True --collect:"XPlat Code Coverage;Format=opencover"
+        run: dotnet test --no-build --logger "GitHubActions" --filter "RequiresNetworking!=True" --collect:"XPlat Code Coverage;Format=opencover"
 
       - uses: codecov/codecov-action@v3
         with:
-          flags: networking_tests, ${{runner.os}}
-          verbose: true 
+          flags: network_tests, ${{runner.os}}
+          verbose: true

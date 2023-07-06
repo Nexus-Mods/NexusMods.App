@@ -1,5 +1,4 @@
-﻿using NexusMods.DataModel.Loadouts.ApplySteps;
-using NexusMods.Hashing.xxHash64;
+﻿using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Loadouts.IngestSteps;

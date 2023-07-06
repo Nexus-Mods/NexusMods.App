@@ -83,26 +83,31 @@ public abstract class BaseFileSystem : IFileSystem
         // This enables path mappings to map "/c" to something else, like
         // "/opt/wine/drive_c"
 
-        if (!OS.IsLinux) return input;
-        if (!_convertCrossPlatformPaths) return input;
+        var sanitizedPathCurrentOS = PathHelpers.Sanitize(input, OS);
 
-        var inputSpan = input.AsSpan();
-        if (PathHelpers.GetRootLength(inputSpan, OSInformation.FakeWindows) != 3) return input;
+        // Only supported on Linux and with the setting enabled
+        if (!OS.IsLinux || !_convertCrossPlatformPaths) return sanitizedPathCurrentOS;
+
+        // The input has to be a Windows path
+        if (PathHelpers.IsRooted(sanitizedPathCurrentOS, OS)) return sanitizedPathCurrentOS;
+
+        var sanitizedPathWindows = PathHelpers.Sanitize(input, OSInformation.FakeWindows);
+        Debug.Assert(PathHelpers.IsRooted(sanitizedPathWindows, OSInformation.FakeWindows));
 
         var result = string.Create(
-            input.Length,
-            input,
+            sanitizedPathWindows.Length,
+            sanitizedPathWindows,
             (span, s) =>
             {
                 // C:/foo/bar -> /c/foo/bar
                 var inputSpan = s.AsSpan();
 
-                span[0] = '/';
+                span[0] = PathHelpers.DirectorySeparatorChar;
                 span[1] = char.ToLower(inputSpan.DangerousGetReferenceAt(0));
                 inputSpan.SliceFast(2).CopyTo(span.SliceFast(2));
             });
 
-        return result;
+        return PathHelpers.RemoveTrailingDirectorySeparator(result).ToString();
     }
 
     #region IFileStream Implementation
@@ -117,17 +122,40 @@ public abstract class BaseFileSystem : IFileSystem
         bool convertCrossPlatformPaths = false);
 
     /// <inheritdoc/>
+    public bool HasKnownPath(KnownPath knownPath)
+    {
+        Debug.Assert(Enum.IsDefined(knownPath));
+
+        return knownPath switch
+        {
+            KnownPath.EntryDirectory => true,
+            KnownPath.CurrentDirectory => true,
+            KnownPath.CommonApplicationDataDirectory => true,
+            KnownPath.ProgramFilesDirectory => IsWindowsOrMapped(),
+            KnownPath.ProgramFilesX86Directory => IsWindowsOrMapped(),
+            KnownPath.CommonProgramFilesDirectory => IsWindowsOrMapped(),
+            KnownPath.CommonProgramFilesX86Directory => IsWindowsOrMapped(),
+            KnownPath.TempDirectory => true,
+            KnownPath.HomeDirectory => true,
+            KnownPath.ApplicationDataDirectory => true,
+            KnownPath.LocalApplicationDataDirectory => true,
+            KnownPath.MyDocumentsDirectory => true,
+            KnownPath.MyGamesDirectory => true,
+        };
+
+        bool IsWindowsOrMapped()
+        {
+            return OS.IsWindows || _knownPathMappings.ContainsKey(knownPath);
+        }
+    }
+
+    /// <inheritdoc/>
     public virtual AbsolutePath GetKnownPath(KnownPath knownPath)
     {
         Debug.Assert(Enum.IsDefined(knownPath));
 
         if (_knownPathMappings.TryGetValue(knownPath, out var mappedPath))
             return mappedPath;
-
-        AbsolutePath ThisOrDefault(string fullPath)
-        {
-            return string.IsNullOrWhiteSpace(fullPath) ? default : FromUnsanitizedFullPath(fullPath);
-        }
 
         // NOTE(erri120): if you change this method, make sure to update the docs in the KnownPath enum.
         var path = knownPath switch
@@ -149,7 +177,13 @@ public abstract class BaseFileSystem : IFileSystem
             KnownPath.MyGamesDirectory => FromUnsanitizedDirectoryAndFileName(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "My Games"),
         };
 
+        Debug.Assert(path != default, $"{nameof(GetKnownPath)} returns 'default' for {nameof(KnownPath)} '{knownPath}'. You forgot to add a mapping for this {nameof(KnownPath)}!");
         return path;
+
+        AbsolutePath ThisOrDefault(string fullPath)
+        {
+            return string.IsNullOrWhiteSpace(fullPath) ? default : FromUnsanitizedFullPath(fullPath);
+        }
     }
 
     /// <summary>
@@ -177,11 +211,10 @@ public abstract class BaseFileSystem : IFileSystem
         var knownPathMappings = new Dictionary<KnownPath, AbsolutePath>(knownPaths.Length);
         foreach (var knownPath in knownPaths)
         {
-            var originalPath = fileSystem.GetKnownPath(knownPath);
             var newPath = knownPath switch
             {
-                KnownPath.EntryDirectory => originalPath,
-                KnownPath.CurrentDirectory => originalPath,
+                KnownPath.EntryDirectory => fileSystem.GetKnownPath(knownPath),
+                KnownPath.CurrentDirectory => fileSystem.GetKnownPath(knownPath),
 
                 KnownPath.CommonApplicationDataDirectory => rootDirectory.Combine("ProgramData"),
                 KnownPath.ProgramFilesDirectory => rootDirectory.Combine("Program Files"),
@@ -205,11 +238,19 @@ public abstract class BaseFileSystem : IFileSystem
 
     /// <inheritdoc/>
     public AbsolutePath FromUnsanitizedFullPath(string unsanitizedFullPath)
-        => GetMappedPath(AbsolutePath.FromUnsanitizedFullPath(ConvertCrossPlatformPath(unsanitizedFullPath), this));
+    {
+        var convertedPath = ConvertCrossPlatformPath(unsanitizedFullPath);
+        var mappedPath = GetMappedPath(AbsolutePath.FromSanitizedFullPath(convertedPath, this));
+        return mappedPath;
+    }
 
     /// <inheritdoc/>
     public AbsolutePath FromUnsanitizedDirectoryAndFileName(string directoryPath, string fileName)
-        => GetMappedPath(AbsolutePath.FromUnsanitizedDirectoryAndFileName(ConvertCrossPlatformPath(directoryPath), fileName, this));
+    {
+        // Note(erri120): hacky at best, PathHelpers.JoinParts expects sanitized inputs
+        var unsanitizedFullPath = Path.Combine(directoryPath, fileName);
+        return FromUnsanitizedFullPath(unsanitizedFullPath);
+    }
 
     /// <inheritdoc/>
     public IFileEntry GetFileEntry(AbsolutePath path)

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics;
-using DynamicData;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
@@ -14,10 +13,8 @@ using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.DataModel.TriggerFilter;
 using NexusMods.FileExtractor.StreamFactories;
-using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using BackupFile = NexusMods.DataModel.Loadouts.ApplySteps.BackupFile;
-using RemoveFromLoadout = NexusMods.DataModel.Loadouts.ApplySteps.RemoveFromLoadout;
 
 namespace NexusMods.DataModel.Loadouts;
 

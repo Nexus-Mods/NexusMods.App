@@ -54,14 +54,9 @@ public class SifuModInstaller : IModInstaller
             .Select(kv =>
             {
                 var (path, file) = kv;
-
-                return new FromArchive
-                {
-                    Id = ModFileId.New(),
-                    To = new GamePath(GameFolderType.Game, ModsPath.Join(path.RelativeTo(pakPath))),
-                    Hash = file.Hash,
-                    Size = file.Size
-                };
+                return file.ToFromArchive(
+                    new GamePath(GameFolderType.Game, ModsPath.Join(path.RelativeTo(pakPath)))
+                );
             });
 
         yield return new ModInstallerResult

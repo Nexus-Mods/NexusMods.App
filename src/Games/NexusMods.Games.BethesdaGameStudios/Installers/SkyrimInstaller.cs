@@ -2,6 +2,7 @@ using System.Diagnostics;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Loadouts;
@@ -38,7 +39,8 @@ public class SkyrimInstaller : IModInstaller
 
     public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        if (installation.Game is not SkyrimSpecialEdition)
+        if (installation.Game is not SkyrimSpecialEdition && 
+            installation.Game is not SkyrimLegendaryEdition)
             return Priority.None;
 
         // Determine one of the following:
@@ -85,13 +87,9 @@ public class SkyrimInstaller : IModInstaller
                 var (path, file) = kv;
                 var relative = path.RelativeTo(prefix);
 
-                return new FromArchive
-                {
-                    Id = ModFileId.New(),
-                    To = new GamePath(GameFolderType.Game, DataFolder.Join(relative)),
-                    Hash = file.Hash,
-                    Size = file.Size
-                };
+                return file.ToFromArchive(
+                    new GamePath(GameFolderType.Game, DataFolder.Join(relative))
+                );
             });
 
         yield return new ModInstallerResult

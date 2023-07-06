@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using JetBrains.Annotations;
 
 namespace NexusMods.Paths;
@@ -31,14 +32,21 @@ public interface IFileSystem
         bool convertCrossPlatformPaths = false);
 
     /// <summary>
+    /// Returns whether or not the current <see cref="OS"/> supports the
+    /// provided <see cref="KnownPath"/>.
+    /// </summary>
+    /// <seealso cref="GetKnownPath"/>
+    bool HasKnownPath(KnownPath path);
+
+    /// <summary>
     /// Returns a known path.
     /// </summary>
     /// <remarks>
-    /// The return value can be <c>default</c>, if <see cref="KnownPath"/>
-    /// is invalid on the current platform.
+    /// This method runs <see cref="Debug.Assert(bool)"/> on the result to prevent a 'default'
+    /// value from being returned. Use <see cref="GetKnownPath"/> to determine whether or not
+    /// the current platform supports the <see cref="KnownPath"/>.
     /// </remarks>
-    /// <param name="knownPath"></param>
-    /// <returns></returns>
+    /// <seealso cref="GetKnownPath"/>
     AbsolutePath GetKnownPath(KnownPath knownPath);
 
     [Obsolete(message: "This will be removed once dependents have updated.", error: true)]
