@@ -33,9 +33,9 @@ public interface IOverlayController
     /// <summary>
     /// Sets the current overlay.
     /// </summary>
-    /// <param name="vm">The item to be shown.</param>
+    /// <param name="item">The item to be shown.</param>
     /// <param name="tcs">This is signaled 'true' once the overlay has been dismissed.</param>
-    public void SetOverlayContent(SetOverlayItem vm, TaskCompletionSource<bool>? tcs = null);
+    public void SetOverlayContent(SetOverlayItem item, TaskCompletionSource<bool>? tcs = null);
 }
 
 /// <summary>

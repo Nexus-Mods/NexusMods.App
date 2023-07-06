@@ -46,12 +46,17 @@ public class OverlayController : IOverlayController
     {
         var tcs = new TaskCompletionSource<bool>();
         var vm = new CancelDownloadOverlayViewModel(task);
-        SetOverlayContent(new SetOverlayItem(vm));
+        SetOverlayContent(new SetOverlayItem(vm), tcs);
         await tcs.Task;
         return vm.DialogResult;
     }
     
-    public void SetOverlayContent(SetOverlayItem vm, TaskCompletionSource<bool>? tcs = null)
+    /// <summary>
+    /// Sets the overlay to display to the screen.
+    /// </summary>
+    /// <param name="item">The item being signaled.</param>
+    /// <param name="tcs">Signals completion. This field is optional for tests only.</param>
+    public void SetOverlayContent(SetOverlayItem item, TaskCompletionSource<bool>? tcs = null)
     {
         // Register overlay close.
         var unsubscribeToken = new CancellationTokenSource();
@@ -59,7 +64,7 @@ public class OverlayController : IOverlayController
         // Note(Sewer): This throws a warning because vm is a POCO that doesn't emit change notification.
         // This is however irrelevant because VM is member of record, it is readonly; the element inside successfully emits
         // change notifications. I just don't know how to suppress warning here from WhenAnyValue
-        vm.WhenAnyValue(x => x.VM.IsActive)
+        item.WhenAnyValue(x => x.VM.IsActive)
             .OnUI()
             .Subscribe(b =>
             {
@@ -78,6 +83,6 @@ public class OverlayController : IOverlayController
             }, unsubscribeToken.Token);
         
         // Set the new overlay.
-        QueueOrSetOverlayViewModel(vm);
+        QueueOrSetOverlayViewModel(item);
     }
 }
