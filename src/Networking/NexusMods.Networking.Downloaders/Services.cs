@@ -18,6 +18,8 @@ public static class Services
     /// <param name="services">Your DI container collection builder.</param>
     public static IServiceCollection AddDownloaders(this IServiceCollection services)
     {
-        return services.AddAllSingleton<IDownloadService, DownloadService>();
+        return services.AddAllSingleton<IDownloadService, DownloadService>()
+            .AddTransient<NxmDownloadTask>()
+            .AddTransient<HttpDownloadTask>();
     }
 }
