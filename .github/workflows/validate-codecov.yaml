@@ -14,12 +14,4 @@ on:
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Validate
-        shell: bash
-        run: |
-          curl --fail --data-binary @codecov.yaml https://codecov.io/validate
+    uses: Nexus-Mods/NexusMods.App.Meta/.github/workflows/validate-codecov.yaml@main
