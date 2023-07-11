@@ -43,7 +43,7 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame, IXboxGame
 
     public override IEnumerable<AModFile> GetGameFiles(GameInstallation installation, IDataStore store)
     {
-        yield return new PluginFile
+        yield return new PluginOrderFile
         {
             Id = ModFileId.New(),
             To = new GamePath(GameFolderType.AppData, "plugins.txt")
