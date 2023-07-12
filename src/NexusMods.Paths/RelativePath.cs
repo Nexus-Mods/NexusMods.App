@@ -78,6 +78,16 @@ public readonly struct RelativePath : IEquatable<RelativePath>, IPath, IComparab
         PathHelpers.DebugAssertIsSanitized(path, OS, isRelative: true);
         Path = path;
     }
+    
+    /// <summary>
+    /// Creates a new <see cref="RelativePath"/> from a <see cref="ReadOnlySpan{T}"/>.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public static RelativePath FromUnsanitizedInput(ReadOnlySpan<char> path)
+    {
+        return new RelativePath(PathHelpers.Sanitize(path, OS));
+    }
 
     /// <summary>
     /// Returns a new path that is this path with the extension changed.

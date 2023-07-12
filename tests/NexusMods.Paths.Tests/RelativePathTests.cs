@@ -27,6 +27,23 @@ public class RelativePathTests
         var path = basePath.Combine(input).RelativeTo(basePath);
         path.ToString().Should().Be(expected);
     }
+    
+    
+    [Theory]
+    [InlineData("a", "a")]
+    [InlineData("a/", "a")]
+    [InlineData("a/b", "a/b")]
+    [InlineData("a\\b", "a/b")]
+    [InlineData("a\\b/c", "a/b/c")]
+    [InlineData("a\\b\\c\\", "a/b/c")]
+    public void Test_FromUnsanitizedInput(
+        string inputPath,
+        string expectedRelativePath)
+    {
+        
+        var sanitizedPath = RelativePath.FromUnsanitizedInput(inputPath);
+        sanitizedPath.Should().Be(expectedRelativePath);
+    }
 
     [Theory]
     [InlineData("", "")]
