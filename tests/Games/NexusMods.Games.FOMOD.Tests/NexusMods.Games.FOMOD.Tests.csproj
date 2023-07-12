@@ -18,5 +18,21 @@
         <None Update="TestCasesPacked\**">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+
+        <None Update="TestCases\NestedWithImages\random subfolder name\fomod\g1p1i1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+
+        <None Update="TestCases\NestedWithImages\random subfolder name\fomod\g1p2i1.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+
+        <None Update="TestCases\NestedWithImages\random subfolder name\fomod\ModuleConfig.xml">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+
+        <None Update="TestCases\NestedWithImages\random subfolder name\fomod\moduleTitle.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 </Project>
