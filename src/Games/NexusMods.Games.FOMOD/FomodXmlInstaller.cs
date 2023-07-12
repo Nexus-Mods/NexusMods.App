@@ -1,5 +1,4 @@
-﻿using System.Net;
-using FomodInstaller.Interface;
+﻿using FomodInstaller.Interface;
 using FomodInstaller.Scripting.XmlScript;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
@@ -106,32 +105,18 @@ public class FomodXmlInstaller : IModInstaller
 
     private IEnumerable<AModFile> ConvertInstructions(IEnumerable<Instruction> instructions, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
-        var result = new List<AModFile>();
         if (!instructions.Any())
-            return result;
-    
-        instructions.GroupBy(instruction => instruction.type).ToList().ForEach(instructionGroup =>
+            return new List<AModFile>();
+
+        switch (instructions.First().type)
         {
-            IEnumerable<Instruction> instructionList = instructionGroup.ToList();
-            if (instructionGroup.Any())
-            {
-                switch (instructionGroup.First().type)
-                {
-                    case "copy": result.AddRange(ConvertInstructionCopy(instructionList, srcArchive, files));
-                        break;
-                    case "mkdir": result.AddRange(ConvertInstructionMkdir(instructionList));
-                        break;
-                    case "enableallplugins": result.AddRange(ConvertInstructionEnableAllPlugins(instructionList));
-                        break;
-                    default:
-                        _logger.LogError("Unsupported instruction type: {}", instructionList.First().type);
-                        break;
-                    // "iniedit" - only supported by c# script and modscript installers atm
-                    // "generatefile" - only supported by c# script installers
-                    // "enableplugin" - supported in the fomod-installer module but doesn't seem to be emitted anywhere
-                } 
-            }
-        });
+            case "copy": return ConvertInstructionCopy(instructions, srcArchive, files);
+            case "mkdir": return ConvertInstructionMkdir(instructions);
+            case "enableallplugins": return ConvertInstructionEnableAllPlugins(instructions);
+            // "iniedit" - only supported by c# script and modscript installers atm
+            // "generatefile" - only supported by c# script installers
+            // "enableplugin" - supported in the fomod-installer module but doesn't seem to be emitted anywhere
+        }
 
         return new List<AModFile>();
     }
