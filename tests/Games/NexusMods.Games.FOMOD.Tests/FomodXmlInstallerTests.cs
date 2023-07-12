@@ -193,6 +193,24 @@ public class FomodXmlInstallerTests
                 x => x.To.FileName == "g2p2f1.out.esp"
             );
     }
+    
+    [Fact]
+    public async Task ResilientToCaseInconsistencies()
+    {
+        using var testData = await SetupTestFromDirectoryAsync("ComplexInstallerCaseChanges.7z");
+        var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
+
+        installedFiles
+            .Cast<IToFile>()
+            .Should().HaveCount(3)
+            .And.Satisfy(
+                // In group 1, the second plugin is recommended
+                x => x.To.FileName.Equals("g1p2f1.out.esp"),
+                // In group 2, both plugins are required
+                x => x.To.FileName.Equals("g2p1f1.out.esp"),
+                x => x.To.FileName.Equals("g2p2f1.out.esp")
+            );
+    }
 
     #region Tests for Broken FOMODs. Don't install them, don't throw. Only log. No-Op
 
