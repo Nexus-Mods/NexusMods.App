@@ -63,7 +63,7 @@ public class FomodAnalyzer : IFileAnalyzer
             {
                 if (string.IsNullOrEmpty(imagePathFragment))
                     return;
-                var imagePath = pathPrefix.Join(PathHelpers.Sanitize(imagePathFragment, _fileSystem.OS));
+                var imagePath = pathPrefix.Join(RelativePath.FromUnsanitizedInput(imagePathFragment));
                 
                 var path = info.ParentArchive!.Value.Path.Combine(imagePath);
                 byte[] bytes;

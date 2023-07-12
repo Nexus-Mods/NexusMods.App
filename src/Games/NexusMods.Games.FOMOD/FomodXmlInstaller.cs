@@ -140,7 +140,7 @@ public class FomodXmlInstaller : IModInstaller
     {
         return instructions.Select(instruction =>
         {
-            var file = files.First(_ => _.Key.Equals((RelativePath)instruction.source));
+            var file = files.First(_ => _.Key.Equals(RelativePath.FromUnsanitizedInput(instruction.source)));
 
             return new FromArchive
             {
