@@ -62,7 +62,9 @@ public class FomodXmlInstallerTests
         var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
 
         installedFiles
-            .Cast<IToFile>()
+            .Should()
+            .AllBeAssignableTo<IToFile>()
+            .Which
             .Should()
             .HaveCount(2)
             .And.Satisfy(
@@ -78,7 +80,9 @@ public class FomodXmlInstallerTests
         var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
 
         installedFiles
-            .Cast<IToFile>()
+            .Should()
+            .AllBeAssignableTo<IToFile>()
+            .Which
             .Should()
             .HaveCount(3)
             .And.Satisfy(
@@ -97,7 +101,9 @@ public class FomodXmlInstallerTests
         var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
 
         installedFiles
-            .Cast<IToFile>()
+            .Should()
+            .AllBeAssignableTo<IToFile>()
+            .Which
             .Should().HaveCount(3)
             .And.Satisfy(
                 // In group 1, the second plugin is recommended
@@ -115,7 +121,9 @@ public class FomodXmlInstallerTests
         var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
 
         installedFiles
-            .Cast<IToFile>()
+            .Should()
+            .AllBeAssignableTo<IToFile>()
+            .Which
             .Should().HaveCount(2)
             .And.Satisfy(
                 x => x.To.FileName == "g1p1f1.out.esp",
@@ -130,7 +138,9 @@ public class FomodXmlInstallerTests
         var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
 
         installedFiles
-            .Cast<IToFile>()
+            .Should()
+            .AllBeAssignableTo<IToFile>()
+            .Which
             .Should().HaveCount(2)
             .And.Satisfy(
                 x => x.To.FileName == "g1p1f1.out.esp",
@@ -145,7 +155,9 @@ public class FomodXmlInstallerTests
         var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
 
         installedFiles
-            .Cast<IToFile>()
+            .Should()
+            .AllBeAssignableTo<IToFile>()
+            .Which
             .Should()
             .HaveCount(3)
             .And.Satisfy(
@@ -164,7 +176,9 @@ public class FomodXmlInstallerTests
         var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
 
         installedFiles
-            .Cast<IToFile>()
+            .Should()
+            .AllBeAssignableTo<IToFile>()
+            .Which
             .Should()
             .HaveCount(3)
             .And.Satisfy(
@@ -183,7 +197,9 @@ public class FomodXmlInstallerTests
         var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
 
         installedFiles
-            .Cast<IToFile>()
+            .Should()
+            .AllBeAssignableTo<IToFile>()
+            .Which
             .Should().HaveCount(3)
             .And.Satisfy(
                 // In group 1, the second plugin is recommended
@@ -201,7 +217,9 @@ public class FomodXmlInstallerTests
         var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
 
         installedFiles
-            .Cast<IToFile>()
+            .Should()
+            .AllBeAssignableTo<IToFile>()
+            .Which
             .Should().HaveCount(3)
             .And.Satisfy(
                 // In group 1, the second plugin is recommended
