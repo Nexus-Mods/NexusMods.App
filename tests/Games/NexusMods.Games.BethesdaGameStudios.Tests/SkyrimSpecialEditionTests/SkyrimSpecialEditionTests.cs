@@ -73,13 +73,13 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
         LoadoutRegistry.Get(loadout.Value.LoadoutId, gameFiles.Id)!.Files.Values.Count(x => x.Metadata.OfType<PluginAnalysisData>().Any())
             .Should().BeGreaterOrEqualTo(analysis.Count, "Analysis data has been added");
 
-        var pluginFile = gameFiles.Files.Values.OfType<PluginFile>().First();
+        var pluginOrderFile = gameFiles.Files.Values.OfType<PluginOrderFile>().First();
         var flattenedList = (await LoadoutSynchronizer.FlattenLoadout(loadout.Value)).Files.Values.ToList();
 
         var plan = await LoadoutSynchronizer.MakeApplySteps(loadout.Value);
 
         using var ms = new MemoryStream();
-        await pluginFile.GenerateAsync(ms, plan);
+        await pluginOrderFile.GenerateAsync(ms, plan);
 
         ms.Position = 0;
 
