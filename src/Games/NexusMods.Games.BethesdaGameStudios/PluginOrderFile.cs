@@ -15,8 +15,8 @@ using Noggog;
 
 namespace NexusMods.Games.BethesdaGameStudios;
 
-[JsonName("BethesdaGameStudios.PluginFile")]
-public record PluginFile : AModFile, IGeneratedFile, IToFile, ITriggerFilter<ModFilePair, Plan>
+[JsonName("BethesdaGameStudios.PluginOrderFile")]
+public record PluginOrderFile : AModFile, IGeneratedFile, IToFile, ITriggerFilter<ModFilePair, Plan>
 {
     private static RelativePath[] _defaultOrdering = new[]
     {
