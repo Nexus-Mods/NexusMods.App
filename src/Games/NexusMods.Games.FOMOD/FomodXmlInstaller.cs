@@ -48,14 +48,11 @@ public class FomodXmlInstaller : IModInstaller
         // we only intend to support xml scripted fomods, this should be good enough
         var stopPattern = new List<string> { "fomod" };
 
-        var xmlFileList = archiveFiles.Keys.Where(x => x.EndsWith(FomodConstants.XmlConfigRelativePath));
-        var xmlCount = xmlFileList.Count();
-        if (xmlCount != 1)
-            throw new Exception($"$[{nameof(FomodXmlInstaller)}] found $[{xmlCount}] fomod configuration files. This should never happen and is indicative of a bug.");
-        var xmlFile = xmlFileList.First();
-        
+        if (!archiveFiles.Keys.TryGetFirst(x => x.EndsWith(FomodConstants.XmlConfigRelativePath), out var xmlFile))
+            throw new Exception($"$[{nameof(FomodXmlInstaller)}] XML file not found. This should never be true and is indicative of a bug.");
+
         if (!archiveFiles.TryGetValue(xmlFile, out var analyzedFile))
-            throw new Exception($"$[{nameof(FomodXmlInstaller)}] XML not found. This should never be true and is indicative of a bug.");
+            throw new Exception($"$[{nameof(FomodXmlInstaller)}] XML data not found. This should never be true and is indicative of a bug.");
 
         var analyzerInfo = analyzedFile.AnalysisData.OfType<FomodAnalyzerInfo>().FirstOrDefault();
         if (analyzerInfo == default)
