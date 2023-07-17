@@ -111,6 +111,14 @@ public readonly partial struct AbsolutePath : IEquatable<AbsolutePath>, IPath
     }
 
     /// <summary>
+    /// Returns the full path with directory separators matching the passed OS.
+    /// </summary>
+    public string ToNativeSeparators(IOSInformation os)
+    {
+        return PathHelpers.ToNativeSeparators(GetFullPath(), os);
+    }
+
+    /// <summary>
     /// Returns the file name of the specified path string without the extension.
     /// </summary>
     public string GetFileNameWithoutExtension()
