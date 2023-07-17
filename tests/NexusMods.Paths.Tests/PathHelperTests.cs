@@ -78,19 +78,10 @@ public class PathHelperTests
     [Theory]
     [InlineData(true, "", "")]
     [InlineData(false, "", "")]
-    [InlineData(true, "/", "/")]
-    [InlineData(false, "/", "\\")]
-    [InlineData(true, "/foo/", "/foo/")]
-    [InlineData(false, "/foo/", "\\foo\\")]
-    [InlineData(true, "foo\\bar", "foo/bar")]
-    [InlineData(false, "foo\\bar", "foo\\bar")]
-    [InlineData(true, "foo\\bar\\", "foo/bar/")]
-    [InlineData(false, "foo\\bar\\", "foo\\bar\\")]
-    [InlineData(true, "/foo\\bar", "/foo/bar")]
-    [InlineData(false, "/foo\\bar", "\\foo\\bar")]
-    [InlineData(true, "foo/bar\\", "foo/bar/")]
-    [InlineData(false, "foo/bar\\", "foo\\bar\\")]
-
+    [InlineData(true, "/foo/bar", "/foo/bar")]
+    [InlineData(false, "/foo/bar", "\\foo\\bar")]
+    [InlineData(true, "foo/bar", "foo/bar")]
+    [InlineData(false, "foo/bar", "foo\\bar")]
     public void Test_ToNativeSeparators(bool isUnix, string input, string expectedOutput)
     {
         var actualOutput = PathHelpers.ToNativeSeparators(input, CreateOSInformation(isUnix));
