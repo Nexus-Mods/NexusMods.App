@@ -88,6 +88,14 @@ public readonly struct RelativePath : IEquatable<RelativePath>, IPath, IComparab
     {
         return new RelativePath(PathHelpers.Sanitize(path, OS));
     }
+    
+    /// <summary>
+    /// Returns the path with the directory separators native to the passed operating system.
+    /// </summary>
+    public string ToNativeSeparators(IOSInformation os)
+    {
+        return PathHelpers.ToNativeSeparators(Path, os);
+    }
 
     /// <summary>
     /// Returns a new path that is this path with the extension changed.

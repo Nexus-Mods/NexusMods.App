@@ -4,6 +4,11 @@ namespace NexusMods.Paths.Tests;
 
 public class RelativePathTests
 {
+    private static IOSInformation CreateOSInformation(bool isUnix)
+    {
+        return isUnix ? OSInformation.FakeUnix : OSInformation.FakeWindows;
+    }
+    
     [Theory]
     [InlineData("a", "a")]
     [InlineData("a/b", "a/b")]
@@ -43,6 +48,29 @@ public class RelativePathTests
         
         var sanitizedPath = RelativePath.FromUnsanitizedInput(inputPath);
         sanitizedPath.Should().Be(expectedRelativePath);
+    }
+    
+    [Theory]
+    [InlineData(true, "", "")]
+    [InlineData(false, "", "")]
+    [InlineData(true, "/", "/")]
+    [InlineData(false, "/", "\\")]
+    [InlineData(true, "/foo/", "/foo/")]
+    [InlineData(false, "/foo/", "\\foo\\")]
+    [InlineData(true, "foo\\bar", "foo/bar")]
+    [InlineData(false, "foo\\bar", "foo\\bar")]
+    [InlineData(true, "foo\\bar\\", "foo/bar/")]
+    [InlineData(false, "foo\\bar\\", "foo\\bar\\")]
+    [InlineData(true, "/foo\\bar", "/foo/bar")]
+    [InlineData(false, "/foo\\bar", "\\foo\\bar")]
+    [InlineData(true, "foo/bar\\", "foo/bar/")]
+    [InlineData(false, "foo/bar\\", "foo\\bar\\")]
+    public void Test_ToNativeSeparators(bool isUnix, string input, string expected)
+    {
+        var os = CreateOSInformation(isUnix);
+        
+        var path = new RelativePath(input);
+        path.ToNativeSeparators(os).Should().Be(expected);
     }
 
     [Theory]

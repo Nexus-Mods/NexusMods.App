@@ -145,6 +145,45 @@ public static class PathHelpers
             ? slice.ToString()
             : RemoveTrailingDirectorySeparator(slice).ToString();
     }
+    
+    /// <summary>
+    /// Replaces all directory separator characters with the
+    /// native directory separator character of the passed OS.
+    /// <remarks>
+    /// Uses `/` on Unix-based systems and `\` on Windows.
+    /// </remarks>
+    /// </summary>
+    public static string ToNativeSeparators(ReadOnlySpan<char> path, IOSInformation os)
+    {
+        if (path.IsEmpty) return string.Empty;
+        if (os.IsWindows)
+        {
+            var buffer = path.Length > 512
+                ? GC.AllocateUninitializedArray<char>(path.Length)
+                : stackalloc char[path.Length]; 
+            path.CopyTo(buffer);
+            return buffer.Replace('/', '\\', buffer).ToString();
+        }
+        else
+        {
+            // Paths with backslashes instead of forward slashes need to be fixed.
+            var buffer = path.Length > 512
+                ? GC.AllocateUninitializedArray<char>(path.Length)
+                : stackalloc char[path.Length];
+
+            var bufferIndex = 0;
+            var previous = '\0';
+
+            for (var pathIndex = 0; pathIndex < path.Length; pathIndex++)
+            {
+                var current = path.DangerousGetReferenceAt(pathIndex);
+                if (previous == '\\' && current == '\\') continue;
+                buffer[bufferIndex++] = current == '\\' ? '/' : current;
+                previous = current;
+            }
+            return buffer.SliceFast(0, bufferIndex).ToString();
+        }
+    }
 
     /// <summary>
     /// Checks for equality between two paths.
