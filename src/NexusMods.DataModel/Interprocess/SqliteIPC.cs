@@ -247,13 +247,14 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
             var reader = cmd.ExecuteReader();
 
             var seen = new HashSet<JobId>();
+
             _jobs.Edit(editable =>
             {
+                var idBytes = new byte[16];
                 while (reader.Read())
                 {
-                    var idSize = reader.GetBytes(0, 0, null, 0, 0);
-                    var idBytes = new byte[idSize];
-                    reader.GetBytes(0, 0, idBytes, 0, idBytes.Length);
+                    var count = reader.GetBytes(0, 0, idBytes, 0, idBytes.Length);
+                    Debug.Assert(count == 16);
 
                     var jobId = JobId.From(new Guid(idBytes));
 
