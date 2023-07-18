@@ -125,10 +125,15 @@ public class SevenZipExtractor : IExtractor
             var totalSize = source.FileInfo.Size;
             var lastPercent = 0;
             job.Size = totalSize;
+            
+            // NOTE: 7z.exe has a bug with long destination path with forwards `/` separators on windows,
+            // as a workaround we need to change the separators to backwards '\' on windows.
+            // See: https://sourceforge.net/p/sevenzip/discussion/45797/thread/a9a0f02618/
+            var fixedDestination = destination.ToNativeSeparators(OSInformation);
 
             var result = await process.WithArguments(new[]
                     {
-                        "x", "-bsp1", "-y", $"-o{destination}", source.ToString(), "-mmt=off"
+                        "x", "-bsp1", "-y", $"-o{fixedDestination}", source.ToString(), "-mmt=off"
                     }, true)
                 .WithStandardOutputPipe(PipeTarget.ToDelegate(line =>
                 {

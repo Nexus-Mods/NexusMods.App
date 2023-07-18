@@ -62,7 +62,9 @@ public class FomodXmlInstallerTests
         var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
 
         installedFiles
-            .Cast<IToFile>()
+            .Should()
+            .AllBeAssignableTo<IToFile>()
+            .Which
             .Should()
             .HaveCount(2)
             .And.Satisfy(
@@ -78,7 +80,9 @@ public class FomodXmlInstallerTests
         var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
 
         installedFiles
-            .Cast<IToFile>()
+            .Should()
+            .AllBeAssignableTo<IToFile>()
+            .Which
             .Should()
             .HaveCount(3)
             .And.Satisfy(
@@ -97,7 +101,9 @@ public class FomodXmlInstallerTests
         var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
 
         installedFiles
-            .Cast<IToFile>()
+            .Should()
+            .AllBeAssignableTo<IToFile>()
+            .Which
             .Should().HaveCount(3)
             .And.Satisfy(
                 // In group 1, the second plugin is recommended
@@ -115,7 +121,9 @@ public class FomodXmlInstallerTests
         var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
 
         installedFiles
-            .Cast<IToFile>()
+            .Should()
+            .AllBeAssignableTo<IToFile>()
+            .Which
             .Should().HaveCount(2)
             .And.Satisfy(
                 x => x.To.FileName == "g1p1f1.out.esp",
@@ -130,11 +138,55 @@ public class FomodXmlInstallerTests
         var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
 
         installedFiles
-            .Cast<IToFile>()
+            .Should()
+            .AllBeAssignableTo<IToFile>()
+            .Which
             .Should().HaveCount(2)
             .And.Satisfy(
                 x => x.To.FileName == "g1p1f1.out.esp",
                 x => x.To.FileName == "g2p1f1.out.esp"
+            );
+    }
+    
+    [Fact]
+    public async Task InstallFilesNestedWithImages()
+    {
+        using var testData = await SetupTestFromDirectoryAsync("NestedWithImages.zip");
+        var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
+
+        installedFiles
+            .Should()
+            .AllBeAssignableTo<IToFile>()
+            .Which
+            .Should()
+            .HaveCount(3)
+            .And.Satisfy(
+                // In group 1, the second plugin is recommended
+                x => x.To.FileName == "g1p2f1.out.esp",
+                // In group 2, both plugins are required
+                x => x.To.FileName == "g2p1f1.out.esp",
+                x => x.To.FileName == "g2p2f1.out.esp"
+            );
+    }
+    
+    [Fact]
+    public async Task InstallFilesMultipleNestedWithImages()
+    {
+        using var testData = await SetupTestFromDirectoryAsync("MultipleNestingWithImages.7z");
+        var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
+
+        installedFiles
+            .Should()
+            .AllBeAssignableTo<IToFile>()
+            .Which
+            .Should()
+            .HaveCount(3)
+            .And.Satisfy(
+                // In group 1, the second plugin is recommended
+                x => x.To.FileName == "g1p2f1.out.esp",
+                // In group 2, both plugins are required
+                x => x.To.FileName == "g2p1f1.out.esp",
+                x => x.To.FileName == "g2p2f1.out.esp"
             );
     }
 
@@ -145,7 +197,9 @@ public class FomodXmlInstallerTests
         var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
 
         installedFiles
-            .Cast<IToFile>()
+            .Should()
+            .AllBeAssignableTo<IToFile>()
+            .Which
             .Should().HaveCount(3)
             .And.Satisfy(
                 // In group 1, the second plugin is recommended
@@ -153,6 +207,26 @@ public class FomodXmlInstallerTests
                 // In group 2, both plugins are required
                 x => x.To.FileName == "g2p1f1.out.esp",
                 x => x.To.FileName == "g2p2f1.out.esp"
+            );
+    }
+    
+    [Fact]
+    public async Task ResilientToCaseInconsistencies()
+    {
+        using var testData = await SetupTestFromDirectoryAsync("ComplexInstallerCaseChanges.7z");
+        var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
+
+        installedFiles
+            .Should()
+            .AllBeAssignableTo<IToFile>()
+            .Which
+            .Should().HaveCount(3)
+            .And.Satisfy(
+                // In group 1, the second plugin is recommended
+                x => x.To.FileName.Equals("g1p2f1.out.esp"),
+                // In group 2, both plugins are required
+                x => x.To.FileName.Equals("g2p1f1.out.esp"),
+                x => x.To.FileName.Equals("g2p2f1.out.esp")
             );
     }
 

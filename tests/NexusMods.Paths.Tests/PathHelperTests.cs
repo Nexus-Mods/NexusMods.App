@@ -74,6 +74,19 @@ public class PathHelperTests
         var actualOutput = PathHelpers.Sanitize(input, CreateOSInformation(isUnix));
         actualOutput.Should().Be(expectedOutput);
     }
+    
+    [Theory]
+    [InlineData(true, "", "")]
+    [InlineData(false, "", "")]
+    [InlineData(true, "/foo/bar", "/foo/bar")]
+    [InlineData(false, "/foo/bar", "\\foo\\bar")]
+    [InlineData(true, "foo/bar", "foo/bar")]
+    [InlineData(false, "foo/bar", "foo\\bar")]
+    public void Test_ToNativeSeparators(bool isUnix, string input, string expectedOutput)
+    {
+        var actualOutput = PathHelpers.ToNativeSeparators(input, CreateOSInformation(isUnix));
+        actualOutput.Should().Be(expectedOutput);
+    }
 
     [Theory]
     [InlineData(true, "", "", true)]

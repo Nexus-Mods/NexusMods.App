@@ -4,6 +4,11 @@ namespace NexusMods.Paths.Tests;
 
 public class RelativePathTests
 {
+    private static IOSInformation CreateOSInformation(bool isUnix)
+    {
+        return isUnix ? OSInformation.FakeUnix : OSInformation.FakeWindows;
+    }
+    
     [Theory]
     [InlineData("a", "a")]
     [InlineData("a/b", "a/b")]
@@ -26,6 +31,36 @@ public class RelativePathTests
         var basePath = Paths.FileSystem.Shared.EnumerateRootDirectories().First();
         var path = basePath.Combine(input).RelativeTo(basePath);
         path.ToString().Should().Be(expected);
+    }
+    
+    
+    [Theory]
+    [InlineData("a", "a")]
+    [InlineData("a/", "a")]
+    [InlineData("a/b", "a/b")]
+    [InlineData("a\\b", "a/b")]
+    [InlineData("a\\b/c", "a/b/c")]
+    [InlineData("a\\b\\c\\", "a/b/c")]
+    public void Test_FromUnsanitizedInput(
+        string inputPath,
+        string expectedRelativePath)
+    {
+        
+        var sanitizedPath = RelativePath.FromUnsanitizedInput(inputPath);
+        sanitizedPath.Should().Be(expectedRelativePath);
+    }
+    
+    [Theory]
+    [InlineData(true, "", "")]
+    [InlineData(false, "", "")]
+    [InlineData(true, "foo/bar", "foo/bar")]
+    [InlineData(false, "foo/bar", "foo\\bar")]
+    public void Test_ToNativeSeparators(bool isUnix, string input, string expected)
+    {
+        var os = CreateOSInformation(isUnix);
+        
+        var path = new RelativePath(input);
+        path.ToNativeSeparators(os).Should().Be(expected);
     }
 
     [Theory]
@@ -116,10 +151,28 @@ public class RelativePathTests
     [Theory]
     [InlineData("foo", "bar", false)]
     [InlineData("foo", "foo", true)]
+    [InlineData("foo/bar", "foo", true)]
+    [InlineData("foo/bar", "bar", false)]
+    [InlineData("foo/bar/baz", "bar/baz", false)]
+    [InlineData("foo/bar/baz", "foo/bar", true)]
     public void Test_StartsWith(string left, string right, bool expected)
     {
         var path = new RelativePath(left);
         var actual = path.StartsWith(right);
+        actual.Should().Be(expected);
+    }
+    
+    [Theory]
+    [InlineData("foo", "bar", false)]
+    [InlineData("foo", "foo", true)]
+    [InlineData("foo/bar", "foo", false)]
+    [InlineData("foo/bar", "bar", true)]
+    [InlineData("foo/bar/baz", "bar/baz", true)]
+    [InlineData("foo/bar/baz", "foo/bar", false)]
+    public void Test_EndsWith(string left, string right, bool expected)
+    {
+        var path = new RelativePath(left);
+        var actual = path.EndsWith(right);
         actual.Should().Be(expected);
     }
 

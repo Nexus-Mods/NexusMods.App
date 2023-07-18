@@ -145,6 +145,27 @@ public static class PathHelpers
             ? slice.ToString()
             : RemoveTrailingDirectorySeparator(slice).ToString();
     }
+    
+    /// <summary>
+    /// Replaces all directory separator characters with the
+    /// native directory separator character of the passed OS.
+    /// <remarks>
+    /// Assumes sanitized path, changes to `/` on Unix-based systems and `\` on Windows.
+    /// </remarks>
+    /// </summary>
+    public static string ToNativeSeparators(ReadOnlySpan<char> path, IOSInformation os)
+    {
+        DebugAssertIsSanitized(path, os);
+        if (path.IsEmpty) return string.Empty;
+        
+        if (os.IsUnix()) return path.ToString();
+
+        var buffer = path.Length > 512
+            ? GC.AllocateUninitializedArray<char>(path.Length)
+            : stackalloc char[path.Length];
+        path.CopyTo(buffer);
+        return buffer.Replace('/', '\\', buffer).ToString();
+    }
 
     /// <summary>
     /// Checks for equality between two paths.

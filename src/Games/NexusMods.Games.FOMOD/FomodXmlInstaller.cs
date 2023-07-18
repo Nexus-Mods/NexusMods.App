@@ -32,7 +32,7 @@ public class FomodXmlInstaller : IModInstaller
 
     public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        var hasScript = archiveFiles.ContainsKey(FomodConstants.XmlConfigRelativePath);
+        var hasScript = archiveFiles.Keys.Any(x => x.EndsWith(FomodConstants.XmlConfigRelativePath));
         return hasScript ? Priority.High : Priority.None;
     }
 
@@ -48,8 +48,11 @@ public class FomodXmlInstaller : IModInstaller
         // we only intend to support xml scripted fomods, this should be good enough
         var stopPattern = new List<string> { "fomod" };
 
-        if (!archiveFiles.TryGetValue(FomodConstants.XmlConfigRelativePath, out var analyzedFile))
-            throw new Exception($"$[{nameof(FomodXmlInstaller)}] XML not found. This should never be true and is indicative of a bug.");
+        if (!archiveFiles.Keys.TryGetFirst(x => x.EndsWith(FomodConstants.XmlConfigRelativePath), out var xmlFile))
+            throw new Exception($"$[{nameof(FomodXmlInstaller)}] XML file not found. This should never be true and is indicative of a bug.");
+
+        if (!archiveFiles.TryGetValue(xmlFile, out var analyzedFile))
+            throw new Exception($"$[{nameof(FomodXmlInstaller)}] XML data not found. This should never be true and is indicative of a bug.");
 
         var analyzerInfo = analyzedFile.AnalysisData.OfType<FomodAnalyzerInfo>().FirstOrDefault();
         if (analyzerInfo == default)
@@ -57,7 +60,7 @@ public class FomodXmlInstaller : IModInstaller
 
         // Setup mod, exclude script path so it doesn't get picked up and thus double read from disk
         var modFiles = archiveFiles.Keys.Select(x => x.ToString()).ToList();
-        var mod = new Mod(modFiles, stopPattern, FomodConstants.XmlConfigRelativePath, string.Empty, _scriptType);
+        var mod = new Mod(modFiles, stopPattern, xmlFile, string.Empty, _scriptType);
         await mod.InitializeWithoutLoadingScript();
 
         var executor = _scriptType.CreateExecutor(mod, _delegates);
@@ -119,7 +122,7 @@ public class FomodXmlInstaller : IModInstaller
     {
         return instructions.Select(instruction =>
         {
-            var file = files.First(_ => _.Key.Equals((RelativePath)instruction.source));
+            var file = files.First(_ => _.Key.Equals(RelativePath.FromUnsanitizedInput(instruction.source)));
 
             return new FromArchive
             {
