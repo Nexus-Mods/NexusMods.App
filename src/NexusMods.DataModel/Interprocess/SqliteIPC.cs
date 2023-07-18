@@ -250,14 +250,9 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
 
             _jobs.Edit(editable =>
             {
-                var idBytes = new byte[16];
                 while (reader.Read())
                 {
-                    var count = reader.GetBytes(0, 0, idBytes, 0, idBytes.Length);
-                    Debug.Assert(count == 16);
-
-                    var jobId = JobId.From(new Guid(idBytes));
-
+                    var jobId = JobId.From(new Guid(reader.GetBlob(0)));
                     var progress = new Percent(reader.GetDouble(2));
 
                     seen.Add(jobId);
