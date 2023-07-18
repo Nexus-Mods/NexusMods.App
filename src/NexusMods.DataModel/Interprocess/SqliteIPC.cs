@@ -271,13 +271,10 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
                     }
 
                     _logger.NewJob(jobId);
-                    var processId = Interprocess.Jobs.ProcessId.From((uint)reader.GetInt64(1));
-                    var startTime =
-                        DateTime.FromFileTimeUtc(reader.GetInt64(3));
+                    var processId = ProcessId.From((uint)reader.GetInt64(1));
+                    var startTime = DateTime.FromFileTimeUtc(reader.GetInt64(3));
 
-                    var entity =
-                        JsonSerializer.Deserialize<Entity>(reader.GetBlob(4),
-                            _jsonSettings)!;
+                    var entity = JsonSerializer.Deserialize<Entity>(reader.GetBlob(4), _jsonSettings)!;
 
                     var newJob = new InterprocessJob(jobId, this, processId, startTime, progress, entity);
                     editable.AddOrUpdate(newJob);
