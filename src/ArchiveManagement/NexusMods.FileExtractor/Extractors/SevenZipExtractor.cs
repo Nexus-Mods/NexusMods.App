@@ -137,6 +137,9 @@ public class SevenZipExtractor : IExtractor
                     }, true)
                 .WithStandardOutputPipe(PipeTarget.ToDelegate(line =>
                 {
+                    if (string.IsNullOrWhiteSpace(line)) return;
+                    _logger.LogDebug("[7z.exe] {Line}", line);
+                    
                     if (line.Length <= 4 || line[3] != '%') return;
                     if (!int.TryParse(line.AsSpan()[..3], out var percentInt)) return;
 
