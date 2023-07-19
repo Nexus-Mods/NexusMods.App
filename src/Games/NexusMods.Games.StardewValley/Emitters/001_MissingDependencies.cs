@@ -3,6 +3,7 @@ using NexusMods.DataModel.Diagnostics.Emitters;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.Games.StardewValley.Analyzers;
+using NexusMods.Games.StardewValley.Models;
 
 namespace NexusMods.Games.StardewValley.Emitters;
 
