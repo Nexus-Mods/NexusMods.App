@@ -12,6 +12,7 @@ public class InterprocessJob : IInterprocessJob
 {
     private readonly IInterprocessJobManager _manager;
     private Percent _progress;
+
     /// <summary>
     /// True if this instance is the "owning" instance of the job, where disposing
     /// the instance will auto-close the job
@@ -44,7 +45,7 @@ public class InterprocessJob : IInterprocessJob
         _manager = manager;
         Payload = payload;
         StartTime = DateTime.UtcNow;
-        ProcessId = Jobs.ProcessId.From((uint)Environment.ProcessId);
+        ProcessId = ProcessId.From((uint)Environment.ProcessId);
         _progress = Percent.Zero;
     }
 
@@ -75,11 +76,11 @@ public class InterprocessJob : IInterprocessJob
         set
         {
             _progress = value;
-            _manager.UpdateProgress(JobId, value);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Progress)));
+            if (_isOwner) _manager.UpdateProgress(JobId, value);
         }
     }
-    
+
     /// <inheritdoc />
     public DateTime StartTime { get; }
 
@@ -90,7 +91,6 @@ public class InterprocessJob : IInterprocessJob
     public void Dispose()
     {
         // If the process that created the job is still running, end the job.
-        if (_isOwner)
-            _manager.EndJob(JobId);
+        if (_isOwner) _manager.EndJob(JobId);
     }
 }
