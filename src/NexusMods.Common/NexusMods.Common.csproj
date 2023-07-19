@@ -9,7 +9,6 @@
     <ItemGroup>
         <PackageReference Include="CliWrap" Version="3.6.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
-        <PackageReference Include="NexusMods.Archives.Nx" Version="0.3.2-preview" />
     </ItemGroup>
 
     <ItemGroup>
