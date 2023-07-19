@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using NexusMods.Games.StardewValley.Analyzers;
+using NexusMods.Games.StardewValley.Models;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.StardewValley.Tests;
