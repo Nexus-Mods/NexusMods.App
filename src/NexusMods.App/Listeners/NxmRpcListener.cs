@@ -2,6 +2,7 @@
 using System.Reactive.Linq;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.Extensions.Logging;
+using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Interprocess;
@@ -80,7 +81,12 @@ public class NxmRpcListener : IDisposable
         // the user can cancel/pause/resume the task etc.
         // Then we pass this URL somewhere else (e.g. via an event) to a ViewModel which will be seen by the UI.
         await using var tempPath = _temp.CreateFile();
-        var loadout = _loadoutRegistry.AllLoadouts().First(x => x.Installation.Game.Domain == parsed.Mod.Game);
+        _loadoutRegistry.AllLoadouts().TryGetFirst(x => x.Installation.Game.Domain == parsed.Mod.Game, out var loadout);
+        if (loadout is null)
+        {
+            _logger.LogError("Nxm download aborted: No loadouts found matching game {Game}", parsed.Mod.Game);
+            return;
+        }
         var marker = new LoadoutMarker(_loadoutRegistry, loadout.LoadoutId);
         
         Response<DownloadLink[]> links;
