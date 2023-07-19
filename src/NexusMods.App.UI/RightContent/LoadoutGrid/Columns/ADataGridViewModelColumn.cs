@@ -14,6 +14,7 @@ namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 /// </summary>
 /// <typeparam name="TVmType"></typeparam>
 /// <typeparam name="TRowType"></typeparam>
+// ReSharper disable once UnusedTypeParameter
 public abstract class ADataGridViewModelColumn<TVmType, TRowType> : DataGridTemplateColumn where TVmType : IColumnViewModel<TRowType>
 {
     /// <summary>
