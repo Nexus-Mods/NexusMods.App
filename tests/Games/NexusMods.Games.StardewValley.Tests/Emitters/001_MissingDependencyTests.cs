@@ -3,6 +3,7 @@ using NexusMods.DataModel.Diagnostics;
 using NexusMods.DataModel.Diagnostics.References;
 using NexusMods.Games.StardewValley.Analyzers;
 using NexusMods.Games.StardewValley.Emitters;
+using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.TestFramework;
 
 namespace NexusMods.Games.StardewValley.Tests.Emitters;
@@ -20,7 +21,11 @@ public class MissingDependenciesEmitterTests : ALoadoutDiagnosticEmitterTest<Sta
         {
             Name = "ModA",
             UniqueID = "ModA",
-            Version = new Version(1, 0, 0),
+            Version = new SMAPIVersion
+            {
+                MajorVersion = 1,
+                MinorVersion = 0
+            },
             Dependencies = new[]
             {
                 new SMAPIManifestDependency
@@ -48,7 +53,11 @@ public class MissingDependenciesEmitterTests : ALoadoutDiagnosticEmitterTest<Sta
         {
             Name = "ModB",
             UniqueID = "ModB",
-            Version = new Version(1, 0, 0)
+            Version = new SMAPIVersion
+            {
+                MajorVersion = 1,
+                MinorVersion = 0
+            },
         };
 
         var modBFiles = TestHelper.CreateTestFiles(modBManifest);

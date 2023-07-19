@@ -67,6 +67,9 @@ public class Apply : AVerb<LoadoutMarker, bool, bool>
                     case DeleteFile df:
                         rows.Add(new object[] { df, df.To, df.Hash, df.Size });
                         break;
+                    case GenerateFile gf:
+                        rows.Add(new object[] { gf, gf.To, gf.Fingerprint, "-"});
+                        break;
                     default:
                         throw new InvalidOperationException($"Unknown step type ({step.GetType()}) encountered, this should never happen.");
                 }

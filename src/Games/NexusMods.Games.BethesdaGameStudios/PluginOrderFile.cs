@@ -15,8 +15,8 @@ using Noggog;
 
 namespace NexusMods.Games.BethesdaGameStudios;
 
-[JsonName("BethesdaGameStudios.PluginFile")]
-public record PluginFile : AModFile, IGeneratedFile, IToFile, ITriggerFilter<ModFilePair, Plan>
+[JsonName("BethesdaGameStudios.PluginOrderFile")]
+public record PluginOrderFile : AModFile, IGeneratedFile, IToFile, ITriggerFilter<ModFilePair, Plan>
 {
     private static RelativePath[] _defaultOrdering = new[]
     {
@@ -127,7 +127,7 @@ public record PluginFile : AModFile, IGeneratedFile, IToFile, ITriggerFilter<Mod
             i => i.Rules, //GenerateRules(pluginFiles, i),
             RelativePath.Comparer);
 
-        await stream.WriteAllLinesAsync(results.Select(i => i.Mod.To.FileName.ToString()), token: token);
+        await stream.WriteAllLinesAsync(results.Select(i => '*' + i.Mod.To.FileName.ToString()), token: token);
         stream.Position = 0;
         return await stream.XxHash64Async(token);
     }

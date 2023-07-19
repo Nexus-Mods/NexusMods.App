@@ -1,5 +1,6 @@
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.Games.StardewValley.Analyzers;
+using NexusMods.Games.StardewValley.Models;
 
 namespace NexusMods.Games.StardewValley;
 
@@ -14,5 +15,6 @@ public class TypeFinder : ITypeFinder
     {
         typeof(SMAPIManifest),
         typeof(SMAPIManifestDependency),
+        typeof(SMAPIVersion)
     };
 }

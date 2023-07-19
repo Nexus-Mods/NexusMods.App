@@ -42,6 +42,21 @@ public class AbsolutePathTests
         actualPath.FileName.Should().Be(expectedFileName);
         actualPath.GetFullPath().Should().Be(expectedFullPath);
     }
+    
+    [Theory]
+    [InlineData(true, "", "")]
+    [InlineData(false, "", "")]
+    [InlineData(true, "foo/bar", "foo/bar")]
+    [InlineData(false, "foo/bar", "foo\\bar")]
+    public void Test_ToNativeSeparators(bool isUnix, string input, string expected)
+    {
+        var os = CreateOSInformation(isUnix);
+        var fs = new InMemoryFileSystem(os);
+        
+        var absolutePath = AbsolutePath.FromUnsanitizedFullPath(input, fs);
+        var actual = absolutePath.ToNativeSeparators(os);
+        actual.Should().Be(expected);
+    }
 
     [Theory]
     [InlineData("/", "")]

@@ -1,6 +1,7 @@
 ﻿using System.Buffers.Binary;
 using NexusMods.Archives.Nx.FileProviders;
 using NexusMods.Archives.Nx.Headers.Managed;
+using NexusMods.Archives.Nx.Headers.Native;
 using NexusMods.Archives.Nx.Interfaces;
 using NexusMods.Archives.Nx.Packing;
 using NexusMods.Archives.Nx.Structs;
@@ -81,28 +82,24 @@ public class NxArchiveManager : IArchiveManager
         await using var os = finalPath.Read();
         var unpacker = new NxUnpacker(new FromStreamProvider(os));
         UpdateIndexes(unpacker, distinct, guid, finalPath);
-        
-
     }
 
     private unsafe void UpdateIndexes(NxUnpacker unpacker, (IStreamFactory, Hash, Size)[] distinct, Guid guid,
         AbsolutePath finalPath)
     {
-        Span<byte> buffer = stackalloc byte[64];
+        Span<byte> buffer = stackalloc byte[sizeof(NativeFileEntryV1)];
         foreach (var entry in unpacker.GetFileEntriesRaw())
         {
             fixed (byte* ptr = buffer)
             {
                 var writer = new LittleEndianWriter(ptr);
-                entry.WriteAsV0(ref writer);
-                var written = (int)((UIntPtr)writer.Ptr - (UIntPtr)ptr);
+                entry.WriteAsV1(ref writer);
                 
                 var dbId = IdFor((Hash)entry.Hash, guid);
-
                 var dbEntry = new ArchivedFiles
                 {
                     File = finalPath.FileName,
-                    FileEntryData = buffer.SliceFast(0, written).ToArray()
+                    FileEntryData = buffer.ToArray()
                 };
                 
                 // TODO: Consider a bulk-put operation here
@@ -139,8 +136,7 @@ public class NxArchiveManager : IArchiveManager
             await using var file = group.Key.Read();
             var provider = new FromStreamProvider(file);
             var unpacker = new NxUnpacker(provider);
-
-
+            
             var toExtract = group
                 .Select(entry =>
                     (IOutputDataProvider)new OutputFileProvider(entry.Dest.Parent.GetFullPath(), entry.Dest.FileName, entry.FileEntry))
@@ -171,19 +167,16 @@ public class NxArchiveManager : IArchiveManager
             throw new Exception($"Missing archive for {grouped[default].First().Hash.ToHex()}");
 
         var settings = new UnpackerSettings();
-
+        settings.MaxNumThreads = 1;
         foreach (var group in grouped)
         {
-            var byHash = group.ToLookup(f => f);
             var file = group.Key.Read();
             var provider = new FromStreamProvider(file);
             var unpacker = new NxUnpacker(provider);
 
             var infos = group.Select(entry => (entry.Hash, new OutputArrayProvider("", entry.FileEntry))).ToList();
-
-
+            
             unpacker.ExtractFiles(infos.Select(o => (IOutputDataProvider)o.Item2).ToArray(), settings);
-
             foreach (var info in infos)
             {
                 results.Add(info.Hash, info.Item2.Data);
@@ -210,7 +203,7 @@ public class NxArchiveManager : IArchiveManager
                     var reader = new LittleEndianReader(ptr);
                     FileEntry tmpEntry = default;
                     
-                    tmpEntry.FromReaderV0(ref reader);
+                    tmpEntry.FromReaderV1(ref reader);
                     fileEntry = tmpEntry;
                     return true;
                 }
