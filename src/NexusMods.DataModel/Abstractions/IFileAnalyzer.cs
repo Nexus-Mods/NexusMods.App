@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Paths;
@@ -36,6 +37,7 @@ public interface IFileAnalyzer
 /// <summary>
 /// Extra info for file analyzer. Passed as a struct to avoid having to update all callees.
 /// </summary>
+[DebuggerDisplay("{FileName}")]
 public struct FileAnalyzerInfo
 {
     /// <summary>

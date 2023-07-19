@@ -1,11 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using FluentAssertions;
-using NexusMods.DataModel.Abstractions;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Games.StardewValley.Analyzers;
+using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.TestFramework;
-using NexusMods.Paths;
 
 namespace NexusMods.Games.StardewValley.Tests.Analyzers;
 
@@ -26,9 +25,17 @@ public class SMAPIManifestAnalyzerTests : AFileAnalyzerTest<StardewValley, SMAPI
         var expected = new SMAPIManifest
         {
             Name = Guid.NewGuid().ToString("N"),
-            Version = new Version(1, 2, 3),
+            Version = new SMAPIVersion
+            {
+                MajorVersion = 1,
+                MinorVersion = 2,
+            },
             UniqueID = Guid.NewGuid().ToString("N"),
-            MinimumApiVersion = new Version(3, 12, 0),
+            MinimumApiVersion = new SMAPIVersion
+            {
+                MajorVersion = 3,
+                MinorVersion = 12
+            }
         };
 
         var bytes = JsonSerializer.SerializeToUtf8Bytes(expected);
@@ -50,9 +57,18 @@ public class SMAPIManifestAnalyzerTests : AFileAnalyzerTest<StardewValley, SMAPI
         var expected = new SMAPIManifest
         {
             Name = "foo",
-            Version = new Version(1, 0, 5),
+            Version = new SMAPIVersion
+            {
+                MajorVersion = 1,
+                MinorVersion = 0,
+                PatchVersion = 5
+            },
             UniqueID = "foo",
-            MinimumApiVersion = new Version(3, 12, 0),
+            MinimumApiVersion = new SMAPIVersion
+            {
+                MajorVersion = 3,
+                MinorVersion = 12
+            },
             Dependencies = new SMAPIManifestDependency[]
             {
                 new()
@@ -73,7 +89,8 @@ public class SMAPIManifestAnalyzerTests : AFileAnalyzerTest<StardewValley, SMAPI
     ""UpdateKeys"": [""Nexus:0""],
     ""Dependencies"": [
         {
-            ""UniqueID"": ""bar""
+            /* this is a comment */
+            ""UniqueID"": ""bar"",
         }
     ]
 }
