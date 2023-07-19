@@ -1,6 +1,7 @@
 ﻿using System.Buffers.Binary;
 using NexusMods.Archives.Nx.FileProviders;
 using NexusMods.Archives.Nx.Headers.Managed;
+using NexusMods.Archives.Nx.Headers.Native;
 using NexusMods.Archives.Nx.Interfaces;
 using NexusMods.Archives.Nx.Packing;
 using NexusMods.Archives.Nx.Structs;
@@ -86,21 +87,19 @@ public class NxArchiveManager : IArchiveManager
     private unsafe void UpdateIndexes(NxUnpacker unpacker, (IStreamFactory, Hash, Size)[] distinct, Guid guid,
         AbsolutePath finalPath)
     {
-        Span<byte> buffer = stackalloc byte[64];
+        Span<byte> buffer = stackalloc byte[sizeof(NativeFileEntryV1)];
         foreach (var entry in unpacker.GetFileEntriesRaw())
         {
             fixed (byte* ptr = buffer)
             {
                 var writer = new LittleEndianWriter(ptr);
-                entry.WriteAsV0(ref writer);
-                var written = (int)((UIntPtr)writer.Ptr - (UIntPtr)ptr);
+                entry.WriteAsV1(ref writer);
                 
                 var dbId = IdFor((Hash)entry.Hash, guid);
-
                 var dbEntry = new ArchivedFiles
                 {
                     File = finalPath.FileName,
-                    FileEntryData = buffer.SliceFast(0, written).ToArray()
+                    FileEntryData = buffer.ToArray()
                 };
                 
                 // TODO: Consider a bulk-put operation here
@@ -204,7 +203,7 @@ public class NxArchiveManager : IArchiveManager
                     var reader = new LittleEndianReader(ptr);
                     FileEntry tmpEntry = default;
                     
-                    tmpEntry.FromReaderV0(ref reader);
+                    tmpEntry.FromReaderV1(ref reader);
                     fileEntry = tmpEntry;
                     return true;
                 }
