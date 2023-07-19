@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.JsonConverters;
@@ -21,14 +22,34 @@ public class SMAPIManifestAnalyzer : IFileAnalyzer
 
     public IEnumerable<FileType> FileTypes => new[] { FileType.JSON };
 
+    private static readonly JsonSerializerOptions JsonSerializerOptions = new()
+    {
+        AllowTrailingCommas = true
+    };
+
+    private readonly ILogger<SMAPIManifestAnalyzer> _logger;
+
+    public SMAPIManifestAnalyzer(ILogger<SMAPIManifestAnalyzer> logger)
+    {
+        _logger = logger;
+    }
+
     public async IAsyncEnumerable<IFileAnalysisData> AnalyzeAsync(FileAnalyzerInfo info, [EnumeratorCancellation] CancellationToken token = default)
     {
         if (!info.FileName.Equals("manifest.json", StringComparison.OrdinalIgnoreCase))
             yield break;
 
-        var result = await JsonSerializer.DeserializeAsync<SMAPIManifest>(info.Stream, cancellationToken: token);
-        if (result is null) yield break;
+        SMAPIManifest? result = null;
+        try
+        {
+            result = await JsonSerializer.DeserializeAsync<SMAPIManifest>(info.Stream, JsonSerializerOptions, cancellationToken: token);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Exception while deserializing SMAPIManifest at {RelativePath}", info.RelativePath);
+        }
 
+        if (result is null) yield break;
         yield return result;
     }
 }

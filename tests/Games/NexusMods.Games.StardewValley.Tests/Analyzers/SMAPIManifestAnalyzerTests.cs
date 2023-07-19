@@ -73,7 +73,7 @@ public class SMAPIManifestAnalyzerTests : AFileAnalyzerTest<StardewValley, SMAPI
     ""UpdateKeys"": [""Nexus:0""],
     ""Dependencies"": [
         {
-            ""UniqueID"": ""bar""
+            ""UniqueID"": ""bar"",
         }
     ]
 }
