@@ -1,8 +1,4 @@
-﻿using Avalonia.Controls;
-using Avalonia.Layout;
-using Projektanker.Icons.Avalonia;
-
-namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
+﻿namespace NexusMods.App.UI.Controls.DataGrid;
 
 /// <summary>
 /// Interface for view models that are used in a column, each one is bound to a row,

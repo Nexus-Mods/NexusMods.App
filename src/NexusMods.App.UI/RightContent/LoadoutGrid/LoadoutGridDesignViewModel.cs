@@ -2,6 +2,7 @@
 using System.Reactive.Disposables;
 using Avalonia.Controls;
 using DynamicData;
+using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModCategory;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModEnabled;
@@ -32,14 +33,14 @@ public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>,
     
     public LoadoutId LoadoutId { get; set; } = Initializers.LoadoutId;
 
-    private readonly SourceCache<IDataGridColumnFactory, ColumnType> _columns;
+    private readonly SourceCache<IDataGridColumnFactory<LoadoutColumn>, LoadoutColumn> _columns;
 
-    private ReadOnlyObservableCollection<IDataGridColumnFactory>
-        _filteredColumns = new(new ObservableCollection<IDataGridColumnFactory>());
+    private ReadOnlyObservableCollection<IDataGridColumnFactory<LoadoutColumn>>
+        _filteredColumns = new(new ObservableCollection<IDataGridColumnFactory<LoadoutColumn>>());
 
     public string LoadoutName => "My Test Loadout";
 
-    public ReadOnlyObservableCollection<IDataGridColumnFactory> Columns => _filteredColumns;
+    public ReadOnlyObservableCollection<IDataGridColumnFactory<LoadoutColumn>> Columns => _filteredColumns;
 
     public Task AddMod(string path)
     {
@@ -98,43 +99,43 @@ public class LoadoutGridDesignViewModel : AViewModel<ILoadoutGridViewModel>,
         });
 
         _columns =
-            new SourceCache<IDataGridColumnFactory, ColumnType>(
+            new SourceCache<IDataGridColumnFactory<LoadoutColumn>, LoadoutColumn>(
                 x => x.Type);
         _columns.Edit(x =>
         {
             x.AddOrUpdate(
-                new DataGridColumnDesignFactory<IModNameViewModel, ModCursor>(
+                new DataGridColumnDesignFactory<IModNameViewModel, ModCursor, LoadoutColumn>(
                     modId => new ModNameView
                     {
                         ViewModel = new ModNameDesignViewModel { Row = modId }
-                    }, ColumnType.Name)
+                    }, LoadoutColumn.Name)
                 {
                     Width = new DataGridLength(1, DataGridLengthUnitType.Star)
                 });
             x.AddOrUpdate(
                 new DataGridColumnDesignFactory<IModVersionViewModel,
-                    ModCursor>(modId => new ModVersionView
+                    ModCursor, LoadoutColumn>(modId => new ModVersionView
                 {
                     ViewModel = new ModVersionDesignViewModel { Row = modId }
-                }, ColumnType.Version));
+                }, LoadoutColumn.Version));
             x.AddOrUpdate(
                 new DataGridColumnDesignFactory<IModCategoryViewModel,
-                    ModCursor>(modId => new ModCategoryView
+                    ModCursor, LoadoutColumn>(modId => new ModCategoryView
                 {
                     ViewModel = new ModCategoryDesignViewModel { Row = modId }
-                }, ColumnType.Category));
+                }, LoadoutColumn.Category));
             x.AddOrUpdate(
                 new DataGridColumnDesignFactory<IModInstalledViewModel,
-                    ModCursor>(modId => new ModInstalledView
+                    ModCursor, LoadoutColumn>(modId => new ModInstalledView
                 {
                     ViewModel = new ModInstalledDesignViewModel { Row = modId, Status = ModStatus.Failed }
-                }, ColumnType.Installed));
+                }, LoadoutColumn.Installed));
             x.AddOrUpdate(
                 new DataGridColumnDesignFactory<IModEnabledViewModel,
-                    ModCursor>(modId => new ModEnabledView
+                    ModCursor, LoadoutColumn>(modId => new ModEnabledView
                 {
                     ViewModel = new ModEnabledDesignViewModel { Row = modId, Status = ModStatus.Installing }
-                }, ColumnType.Enabled));
+                }, LoadoutColumn.Enabled));
         });
 
         this.WhenActivated(d =>

@@ -6,11 +6,13 @@ using Avalonia.Controls;
 using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Binding;
+using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.RightContent.DownloadGrid;
+using NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadGameName;
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
 using NexusMods.App.UI.RightContent.LoadoutGrid;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
-using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadGameName;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadName;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadSize;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadStatus;
@@ -18,6 +20,7 @@ using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadVersion;
 using NexusMods.Networking.Downloaders.Interfaces;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using DownloadGameNameView = NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadGameName.DownloadGameNameView;
 
 namespace NexusMods.App.UI.RightContent.Downloads;
 
@@ -29,10 +32,10 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
 
     public ReadOnlyObservableCollection<IDownloadTaskViewModel> Tasks => TasksObservable;
 
-    protected ReadOnlyObservableCollection<IDataGridColumnFactory>
-        FilteredColumns = new(new ObservableCollection<IDataGridColumnFactory>());
+    protected ReadOnlyObservableCollection<IDataGridColumnFactory<DownloadColumn>>
+        FilteredColumns = new(new ObservableCollection<IDataGridColumnFactory<DownloadColumn>>());
 
-    public ReadOnlyObservableCollection<IDataGridColumnFactory> Columns => FilteredColumns;
+    public ReadOnlyObservableCollection<IDataGridColumnFactory<DownloadColumn>> Columns => FilteredColumns;
 
     public void CancelSelectedTask() => ((IInProgressViewModel)this).Cancel();
 
@@ -59,46 +62,46 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
         ShowCancelDialog = ReactiveCommand.Create(() => { });
 
         // Make Columns
-        var columns = new SourceCache<IDataGridColumnFactory, ColumnType>(x => x.Type);
+        var columns = new SourceCache<IDataGridColumnFactory<DownloadColumn>, DownloadColumn>(x => x.Type);
         columns.Edit(x =>
         {
             x.AddOrUpdate(
-                new DataGridColumnDesignFactory<IDownloadNameViewModel, IDownloadTaskViewModel>(
+                new DataGridColumnDesignFactory<IDownloadNameViewModel, IDownloadTaskViewModel, DownloadColumn>(
                     x => new DownloadNameView()
                     {
                         ViewModel = new DownloadNameViewModel() { Row = x }
-                    }, ColumnType.DownloadName)
+                    }, DownloadColumn.DownloadName)
                 {
                     Width = new DataGridLength(1, DataGridLengthUnitType.Star)
                 });
 
             x.AddOrUpdate(
-                new DataGridColumnDesignFactory<IDownloadVersionViewModel, IDownloadTaskViewModel>(
+                new DataGridColumnDesignFactory<IDownloadVersionViewModel, IDownloadTaskViewModel, DownloadColumn>(
                     x => new DownloadVersionView()
                     {
                         ViewModel = new DownloadVersionViewModel() { Row = x }
-                    }, ColumnType.DownloadVersion));
+                    }, DownloadColumn.DownloadVersion));
 
             x.AddOrUpdate(
-                new DataGridColumnDesignFactory<IDownloadGameNameViewModel, IDownloadTaskViewModel>(
+                new DataGridColumnDesignFactory<IDownloadGameNameViewModel, IDownloadTaskViewModel, DownloadColumn>(
                     x => new DownloadGameNameView()
                     {
                         ViewModel = new DownloadGameNameViewModel() { Row = x }
-                    }, ColumnType.DownloadGameName));
+                    }, DownloadColumn.DownloadGameName));
 
             x.AddOrUpdate(
-                new DataGridColumnDesignFactory<IDownloadSizeViewModel, IDownloadTaskViewModel>(
+                new DataGridColumnDesignFactory<IDownloadSizeViewModel, IDownloadTaskViewModel, DownloadColumn>(
                     x => new DownloadSizeView()
                     {
                         ViewModel = new DownloadSizeViewModel() { Row = x }
-                    }, ColumnType.DownloadSize));
+                    }, DownloadColumn.DownloadSize));
 
             x.AddOrUpdate(
-                new DataGridColumnDesignFactory<IDownloadStatusViewModel, IDownloadTaskViewModel>(
+                new DataGridColumnDesignFactory<IDownloadStatusViewModel, IDownloadTaskViewModel, DownloadColumn>(
                     x => new DownloadStatusView()
                     {
                         ViewModel = new DownloadStatusViewModel() { Row = x }
-                    }, ColumnType.DownloadStatus));
+                    }, DownloadColumn.DownloadStatus));
         });
 
         this.WhenActivated(d =>

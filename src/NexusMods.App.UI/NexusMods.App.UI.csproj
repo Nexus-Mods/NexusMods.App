@@ -228,22 +228,6 @@
         <Compile Update="RightContent\LoadoutGrid\Columns\DownloadGameView\DownloadGameDesignViewModel.cs">
           <DependentUpon>IDownloadGameViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadName\DownloadNameViewModel.cs">
-          <DependentUpon>IDownloadNameViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadName\DownloadNameDesignViewModel.cs">
-          <DependentUpon>IDownloadNameViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadSize\DownloadSizeView.axaml.cs">
-          <DependentUpon>DownloadSizeView.axaml</DependentUpon>
-          <SubType>Code</SubType>
-        </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadSize\DownloadSizeViewModel.cs">
-          <DependentUpon>IDownloadSizeViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadSize\DownloadSizeDesignViewModel.cs">
-          <DependentUpon>IDownloadSizeViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="RightContent\LoadoutGrid\Columns\ModInstalled\ModInstalledView.axaml.cs">
           <DependentUpon>ModInstalledView.axaml</DependentUpon>
           <SubType>Code</SubType>
@@ -253,16 +237,6 @@
         </Compile>
         <Compile Update="RightContent\LoadoutGrid\Columns\ModInstalled\IModInstalledViewModel.cs">
           <DependentUpon>ModInstalledViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadStatus\DownloadStatusView.axaml.cs">
-          <DependentUpon>DownloadStatusView.axaml</DependentUpon>
-          <SubType>Code</SubType>
-        </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadStatus\DownloadStatusViewModel.cs">
-          <DependentUpon>IDownloadStatusViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadStatus\DownloadStatusDesignViewModel.cs">
-          <DependentUpon>IDownloadStatusViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="RightContent\LoadoutGrid\Columns\ModVersion\ModVersionView.axaml.cs">
           <DependentUpon>ModVersionView.axaml</DependentUpon>
@@ -279,20 +253,6 @@
         </Compile>
         <Compile Update="RightContent\LoadoutGrid\Columns\DownloadGameName\DownloadGameNameDesignViewModel.cs">
           <DependentUpon>IDownloadGameNameViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadName\DownloadNameView.axaml.cs">
-          <DependentUpon>DownloadGameNameView.axaml</DependentUpon>
-          <SubType>Code</SubType>
-        </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadVersion\DownloadVersionView.axaml.cs">
-          <DependentUpon>DownloadNameView.axaml</DependentUpon>
-          <SubType>Code</SubType>
-        </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadVersion\DownloadVersionViewModel.cs">
-          <DependentUpon>IDownloadVersionViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadVersion\DownloadVersionDesignViewModel.cs">
-          <DependentUpon>IDownloadVersionViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="RightContent\Downloads\InProgressCommonViewModel.cs">
           <DependentUpon>IInProgressViewModel.cs</DependentUpon>
@@ -334,5 +294,17 @@
 
     <ItemGroup>
       <UpToDateCheckInput Remove="Controls\DownloadProgressBar\DownloadProgressBar.axaml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="RightContent\DownloadGrid\Columns\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadGameName\DownloadGameNameView.axaml" />
+      <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadName\DownloadNameView.axaml" />
+      <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadSize\DownloadSizeView.axaml" />
+      <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadStatus\DownloadStatusView.axaml" />
+      <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadVersion\DownloadVersionView.axaml" />
     </ItemGroup>
 </Project>

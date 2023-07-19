@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
@@ -14,7 +15,7 @@ public interface ILoadoutGridViewModel : IRightContentViewModel
     public LoadoutId LoadoutId { get; set; }
     public string LoadoutName { get; }
 
-    public ReadOnlyObservableCollection<IDataGridColumnFactory> Columns { get; }
+    public ReadOnlyObservableCollection<IDataGridColumnFactory<LoadoutColumn>> Columns { get; }
 
     public Task AddMod(string path);
     

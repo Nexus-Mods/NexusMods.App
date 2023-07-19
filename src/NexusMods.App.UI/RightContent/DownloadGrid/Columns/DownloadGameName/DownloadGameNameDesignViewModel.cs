@@ -1,9 +1,11 @@
 using System.Reactive.Disposables;
+using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
+using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
-namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadGameName;
+namespace NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadGameName;
 
 public class DownloadGameNameDesignViewModel : AViewModel<IDownloadGameNameViewModel>, IDownloadGameNameViewModel, IComparableColumn<IDownloadTaskViewModel>
 {

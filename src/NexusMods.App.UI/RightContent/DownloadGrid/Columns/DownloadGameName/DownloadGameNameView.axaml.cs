@@ -2,7 +2,7 @@
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
-namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadGameName;
+namespace NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadGameName;
 
 public partial class DownloadGameNameView : ReactiveUserControl<IDownloadGameNameViewModel>
 {
@@ -13,7 +13,7 @@ public partial class DownloadGameNameView : ReactiveUserControl<IDownloadGameNam
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.ViewModel!.Game)
-                .BindToUi(this, view => view.GameTextBox.Text)
+                .BindToUi<string, DownloadGameNameView, string>(this, view => view.GameTextBox.Text)
                 .DisposeWith(d);
 
             this.WhenAnyValue(view => view.DataContext)

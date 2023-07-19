@@ -1,4 +1,5 @@
 ﻿using System.Windows.Input;
+using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
 

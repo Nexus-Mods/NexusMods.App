@@ -1,13 +1,8 @@
-﻿using System.Collections;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Controls.Utils;
 using Avalonia.Interactivity;
-using Avalonia.Layout;
-using Microsoft.Extensions.DependencyInjection;
-using Projektanker.Icons.Avalonia;
-using ReactiveUI;
 
-namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
+namespace NexusMods.App.UI.Controls.DataGrid;
 
 /// <summary>
 /// Abstract base
@@ -29,8 +24,7 @@ public abstract class ADataGridViewModelColumn<TVmType, TRowType> : DataGridTemp
 
     protected override void RefreshCellContent(Control element, string propertyName)
     {
-        var cell = element.Parent as DataGridCell;
-        if (propertyName == nameof(CellTemplate) && cell is not null)
+        if (propertyName == nameof(CellTemplate) && element.Parent is DataGridCell cell)
         {
             cell.Content = GenerateElement(cell, cell.DataContext);
         }

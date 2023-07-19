@@ -1,21 +1,25 @@
 ﻿using Avalonia.Controls;
+using NexusMods.App.UI.RightContent.LoadoutGrid;
 using ReactiveUI;
 
-namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
+namespace NexusMods.App.UI.Controls.DataGrid;
 
 /// <summary>
 /// Datagrid column factory that creates a column that uses a design-time view model.
 /// </summary>
 /// <typeparam name="TVm"></typeparam>
 /// <typeparam name="TRow"></typeparam>
-public class DataGridColumnDesignFactory<TVm, TRow> : IDataGridColumnFactory where TVm : class, IColumnViewModel<TRow>
+/// <typeparam name="TColumnType"></typeparam>
+public class DataGridColumnDesignFactory<TVm, TRow, TColumnType> : IDataGridColumnFactory<TColumnType> 
+    where TVm : class, IColumnViewModel<TRow> 
+    where TColumnType : Enum
 {
     private readonly Func<TRow,IViewFor<TVm>> _ctor;
-    public ColumnType Type { get; }
+    public TColumnType Type { get; }
     
     public DataGridLength Width { get; set; } = DataGridLength.Auto;
 
-    public DataGridColumnDesignFactory(Func<TRow, IViewFor<TVm>> ctor, ColumnType type)
+    public DataGridColumnDesignFactory(Func<TRow, IViewFor<TVm>> ctor, TColumnType type)
     {
         Type = type;
         _ctor = ctor;

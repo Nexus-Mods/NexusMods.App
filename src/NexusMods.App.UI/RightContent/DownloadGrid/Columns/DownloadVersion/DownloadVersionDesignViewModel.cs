@@ -1,4 +1,5 @@
 using System.Reactive.Disposables;
+using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

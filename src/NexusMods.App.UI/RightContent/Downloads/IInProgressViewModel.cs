@@ -1,5 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
+using NexusMods.App.UI.Controls.DataGrid;
+using NexusMods.App.UI.RightContent.DownloadGrid;
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 
@@ -12,7 +14,7 @@ public interface IInProgressViewModel : IRightContentViewModel
     /// </summary>
     ReadOnlyObservableCollection<IDownloadTaskViewModel> Tasks { get; }
 
-    ReadOnlyObservableCollection<IDataGridColumnFactory> Columns { get; }
+    ReadOnlyObservableCollection<IDataGridColumnFactory<DownloadColumn>> Columns { get; }
 
     /// <summary>
     /// This command cancels the currently selected task.

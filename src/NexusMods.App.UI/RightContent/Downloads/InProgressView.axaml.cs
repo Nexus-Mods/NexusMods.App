@@ -2,6 +2,7 @@
 using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
 using DynamicData.Binding;
+using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Helpers;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;

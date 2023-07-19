@@ -1,4 +1,5 @@
-﻿using NexusMods.App.UI.RightContent.Downloads.ViewModels;
+﻿using NexusMods.App.UI.Controls.DataGrid;
+using NexusMods.App.UI.RightContent.Downloads.ViewModels;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadSize;
 

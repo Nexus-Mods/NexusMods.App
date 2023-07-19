@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModCategory;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModEnabled;
@@ -30,8 +31,8 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
     public ReadOnlyObservableCollection<ModCursor> Mods => _mods;
 
 
-    private readonly SourceCache<IDataGridColumnFactory,ColumnType> _columns;
-    private ReadOnlyObservableCollection<IDataGridColumnFactory> _filteredColumns = new(new ObservableCollection<IDataGridColumnFactory>());
+    private readonly SourceCache<IDataGridColumnFactory<LoadoutColumn> ,LoadoutColumn> _columns;
+    private ReadOnlyObservableCollection<IDataGridColumnFactory<LoadoutColumn>> _filteredColumns = new(new ObservableCollection<IDataGridColumnFactory<LoadoutColumn>>());
     private readonly IFileSystem _fileSystem;
     private readonly ILogger<LoadoutGridViewModel> _logger;
     private readonly LoadoutRegistry _loadoutRegistry;
@@ -40,7 +41,7 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
 
     [Reactive]
     public string LoadoutName { get; set; } = "";
-    public ReadOnlyObservableCollection<IDataGridColumnFactory> Columns => _filteredColumns;
+    public ReadOnlyObservableCollection<IDataGridColumnFactory<LoadoutColumn>> Columns => _filteredColumns;
 
 
     public LoadoutGridViewModel(
@@ -58,7 +59,7 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
         _archiveInstaller = archiveInstaller;
 
         _columns =
-            new SourceCache<IDataGridColumnFactory, ColumnType>(
+            new SourceCache<IDataGridColumnFactory<LoadoutColumn>, LoadoutColumn>(
                 x => throw new NotImplementedException());
 
         _mods = new ReadOnlyObservableCollection<ModCursor>(
@@ -66,25 +67,25 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
 
         var nameColumn = provider
             .GetRequiredService<
-                DataGridColumnFactory<IModNameViewModel, ModCursor>>();
-        nameColumn.Type = ColumnType.Name;
+                DataGridColumnFactory<IModNameViewModel, ModCursor, LoadoutColumn>>();
+        nameColumn.Type = LoadoutColumn.Name;
         nameColumn.Width = new DataGridLength(1, DataGridLengthUnitType.Star);
-        var categoryColumn = provider.GetRequiredService<DataGridColumnFactory<IModCategoryViewModel, ModCursor>>();
-        categoryColumn.Type = ColumnType.Category;
-        var installedColumn = provider.GetRequiredService<DataGridColumnFactory<IModInstalledViewModel, ModCursor>>();
-        installedColumn.Type = ColumnType.Installed;
-        var enabledColumn = provider.GetRequiredService<DataGridColumnFactory<IModEnabledViewModel, ModCursor>>();
-        enabledColumn.Type = ColumnType.Enabled;
-        var versionColumn = provider.GetRequiredService<DataGridColumnFactory<IModVersionViewModel, ModCursor>>();
-        versionColumn.Type = ColumnType.Version;
+        var categoryColumn = provider.GetRequiredService<DataGridColumnFactory<IModCategoryViewModel, ModCursor, LoadoutColumn>>();
+        categoryColumn.Type = LoadoutColumn.Category;
+        var installedColumn = provider.GetRequiredService<DataGridColumnFactory<IModInstalledViewModel, ModCursor, LoadoutColumn>>();
+        installedColumn.Type = LoadoutColumn.Installed;
+        var enabledColumn = provider.GetRequiredService<DataGridColumnFactory<IModEnabledViewModel, ModCursor, LoadoutColumn>>();
+        enabledColumn.Type = LoadoutColumn.Enabled;
+        var versionColumn = provider.GetRequiredService<DataGridColumnFactory<IModVersionViewModel, ModCursor, LoadoutColumn>>();
+        versionColumn.Type = LoadoutColumn.Version;
 
         _columns.Edit(x =>
         {
-            x.AddOrUpdate(nameColumn, ColumnType.Name);
-            x.AddOrUpdate(versionColumn, ColumnType.Version);
-            x.AddOrUpdate(categoryColumn, ColumnType.Category);
-            x.AddOrUpdate(installedColumn, ColumnType.Installed);
-            x.AddOrUpdate(enabledColumn, ColumnType.Enabled);
+            x.AddOrUpdate(nameColumn, LoadoutColumn.Name);
+            x.AddOrUpdate(versionColumn, LoadoutColumn.Version);
+            x.AddOrUpdate(categoryColumn, LoadoutColumn.Category);
+            x.AddOrUpdate(installedColumn, LoadoutColumn.Installed);
+            x.AddOrUpdate(enabledColumn, LoadoutColumn.Enabled);
         });
 
         this.WhenActivated(d =>

@@ -1,11 +1,12 @@
 using System.Reactive.Disposables;
+using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadName;
 
-public class DownloadNameViewModel : AViewModel<IDownloadNameViewModel>, IDownloadNameViewModel, IComparableColumn<IDownloadTaskViewModel>
+public class DownloadNameDesignViewModel : AViewModel<IDownloadNameViewModel>, IDownloadNameViewModel, IComparableColumn<IDownloadTaskViewModel>
 {
     [Reactive]
     public IDownloadTaskViewModel Row { get; set; } = new DownloadTaskDesignViewModel();
@@ -13,7 +14,7 @@ public class DownloadNameViewModel : AViewModel<IDownloadNameViewModel>, IDownlo
     [Reactive]
     public string Name { get; set; } = "";
 
-    public DownloadNameViewModel()
+    public DownloadNameDesignViewModel()
     {
         this.WhenActivated(d =>
         {
@@ -22,6 +23,6 @@ public class DownloadNameViewModel : AViewModel<IDownloadNameViewModel>, IDownlo
                 .DisposeWith(d);
         });
     }
-
+    
     public int Compare(IDownloadTaskViewModel a, IDownloadTaskViewModel b) => String.Compare(a.Name, b.Name, StringComparison.Ordinal);
 }

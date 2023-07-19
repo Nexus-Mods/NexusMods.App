@@ -4,7 +4,7 @@ using Avalonia.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 
-namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
+namespace NexusMods.App.UI.Controls.DataGrid;
 
 /// <summary>
 /// A data grid column that uses a view model to generate the content through the

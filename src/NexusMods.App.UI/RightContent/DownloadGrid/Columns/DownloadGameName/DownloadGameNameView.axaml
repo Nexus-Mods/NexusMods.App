@@ -3,7 +3,7 @@
     d:DesignWidth="120"
     Width="120"
     mc:Ignorable="d"
-    x:Class="NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadGameName.DownloadGameNameView"
+    x:Class="NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadGameName.DownloadGameNameView"
     x:TypeArguments="modName:IModNameViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:columns="clr-namespace:NexusMods.App.UI.RightContent.LoadoutGrid.Columns"
@@ -12,9 +12,9 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:modName="clr-namespace:NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModName"
-    xmlns:downloadGameName="clr-namespace:NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadGameName">
+    xmlns:downloadGameName1="clr-namespace:NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadGameName">
     <Design.DataContext>
-        <downloadGameName:DownloadGameNameDesignViewModel />
+        <downloadGameName1:DownloadGameNameDesignViewModel />
     </Design.DataContext>
     <TextBlock
         VerticalAlignment="Center"

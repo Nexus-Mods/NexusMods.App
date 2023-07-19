@@ -10,7 +10,7 @@ using Avalonia.ReactiveUI;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
 using ReactiveUI;
-using static NexusMods.App.UI.RightContent.LoadoutGrid.Columns.Helpers;
+using static NexusMods.App.UI.Controls.DataGrid.Helpers;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid;
 

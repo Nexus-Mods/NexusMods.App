@@ -1,4 +1,5 @@
-﻿using NexusMods.DataModel.Loadouts.Cursors;
+﻿using NexusMods.App.UI.Controls.DataGrid;
+using NexusMods.DataModel.Loadouts.Cursors;
 
 namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModVersion;
 

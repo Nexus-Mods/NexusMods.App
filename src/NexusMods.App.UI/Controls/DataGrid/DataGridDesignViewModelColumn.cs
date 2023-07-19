@@ -1,7 +1,7 @@
 ﻿using Avalonia.Controls;
 using ReactiveUI;
 
-namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
+namespace NexusMods.App.UI.Controls.DataGrid;
 
 /// <summary>
 /// DataGridColumn for use in design-time.
