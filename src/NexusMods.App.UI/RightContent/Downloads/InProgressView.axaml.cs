@@ -60,7 +60,7 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
                 .Subscribe(_ =>
                 {
                     var vm = ViewModel!;
-                    SizeCompletionTextBlock.Text = StringFormatters.ToGB(vm.DownloadedSizeBytes, vm.TotalSizeBytes);
+                    SizeCompletionTextBlock.Text = StringFormatters.ToSizeString(vm.DownloadedSizeBytes, vm.TotalSizeBytes);
                     DownloadProgressBar.Value = vm.DownloadedSizeBytes / Math.Max(1.0, vm.TotalSizeBytes);
                 })
                 .DisposeWith(d);

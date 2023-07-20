@@ -158,7 +158,7 @@ public class InProgressViewModelTests : AViewTest<InProgressView, InProgressDesi
             ViewModel.IsRunning.Should().BeFalse();
         
             // Check the total completion is correct with 0 elements.
-            View.SizeCompletionTextBlock.Text.Should().Be(StringFormatters.ToGB(0, 0));
+            View.SizeCompletionTextBlock.Text.Should().Be(StringFormatters.ToSizeString(0, 0));
             
             // Check the total completion is correct with 1 element.
             ViewModel.AddDownload(new DownloadTaskDesignViewModel()
@@ -167,7 +167,7 @@ public class InProgressViewModelTests : AViewTest<InProgressView, InProgressDesi
                 SizeBytes = 4200
             });
             
-            View.SizeCompletionTextBlock.Text.Should().Be(StringFormatters.ToGB(1337, 4200));
+            View.SizeCompletionTextBlock.Text.Should().Be(StringFormatters.ToSizeString(1337, 4200));
         });
     }
     

@@ -1,3 +1,6 @@
+using Humanizer.Bytes;
+using NexusMods.Paths;
+
 namespace NexusMods.App.UI.Helpers;
 
 /// <summary>
@@ -11,13 +14,11 @@ public static class StringFormatters
     /// <param name="currentBytes">The currently downloaded number of bytes.</param>
     /// <param name="totalBytes">The total number of downloaded bytes.</param>
     /// <remarks>Complete number of downloaded bytes.</remarks>
-    public static string ToGB(long currentBytes, long totalBytes)
+    public static string ToSizeString(long currentBytes, long totalBytes)
     {
-        const float scale = 1000 * 1000 * 1000;
-        var usedGB = currentBytes / scale;
-        var totalGB = totalBytes / scale;
-
-        return $"{usedGB:F2} GB / {totalGB:F2} GB";
+        var currentBytesStr = ByteSize.FromBytes(currentBytes).ToString("#.##");
+        var totalBytesStr = ByteSize.FromBytes(totalBytes).ToString("#.##");
+        return $"{currentBytesStr} / {totalBytesStr}";
     }
 
     /// <summary>

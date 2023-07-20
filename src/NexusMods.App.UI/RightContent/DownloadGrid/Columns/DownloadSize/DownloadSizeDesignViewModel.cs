@@ -21,7 +21,7 @@ public class DownloadSizeDesignViewModel : AViewModel<IDownloadSizeViewModel>, I
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.Row.DownloadedBytes, vm => vm.Row.SizeBytes)
-                .Select(x => StringFormatters.ToGB(x.Item1, x.Item2))
+                .Select(x => StringFormatters.ToSizeString(x.Item1, x.Item2))
                 .BindToUi(this, vm => vm.Size)
                 .DisposeWith(d);
         });
