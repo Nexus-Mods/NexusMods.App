@@ -18,7 +18,6 @@
         <PackageReference Include="NexusMods.Archives.Nx" Version="0.3.3-preview" />
         <PackageReference Include="Sewer56.BitStream" Version="1.3.0" />
         <PackageReference Include="System.Reactive" Version="6.0.0" />
-        <PackageReference Include="Vogen" Version="3.0.15" />
     </ItemGroup>
 
     <PropertyGroup>

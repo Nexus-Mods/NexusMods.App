@@ -5,8 +5,4 @@
     <ItemGroup>
         <ProjectReference Include="..\NexusMods.DataModel.RateLimiting\NexusMods.DataModel.RateLimiting.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="Vogen" Version="3.0.15" />
-    </ItemGroup>
 </Project>

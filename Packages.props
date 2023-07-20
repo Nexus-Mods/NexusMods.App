@@ -1,0 +1,5 @@
+<Project>
+    <ItemGroup>
+        <PackageVersion Include="NexusMods.Paths" Version="0.1.1" />
+    </ItemGroup>
+</Project>
