@@ -10,6 +10,5 @@
 
     <ItemGroup>
         <ProjectReference Include="..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
-        <ProjectReference Include="..\NexusMods.Paths\NexusMods.Paths.csproj" />
     </ItemGroup>
 </Project>

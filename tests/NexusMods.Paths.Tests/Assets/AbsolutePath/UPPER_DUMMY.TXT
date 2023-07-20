@@ -1,2 +1,0 @@
-This dummy is used for checking CombineChecked.
-It's a friendly dummy and means no harm.
