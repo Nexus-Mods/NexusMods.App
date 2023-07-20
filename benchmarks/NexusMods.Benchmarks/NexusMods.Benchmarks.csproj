@@ -2,15 +2,15 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
     </PropertyGroup>
-    
+
     <ItemGroup>
         <ProjectReference Include="..\..\src\NexusMods.Hashing.xxHash64\NexusMods.Hashing.xxHash64.csproj" />
         <ProjectReference Include="..\..\src\NexusMods.DataModel\NexusMods.DataModel.csproj" />
     </ItemGroup>
-    
+
     <ItemGroup>
-        <PackageReference Include="BenchmarkDotNet" Version="0.13.5" />
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+        <PackageReference Include="BenchmarkDotNet" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" />
     </ItemGroup>
 
     <ItemGroup>
