@@ -1,7 +1,7 @@
 ﻿<reactiveUi:ReactiveUserControl
     d:DesignWidth="120"
     d:DesignHeight="21"
-    Width="120"
+    Width="80"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadVersion.DownloadVersionView"
     x:TypeArguments="modName:IModNameViewModel"

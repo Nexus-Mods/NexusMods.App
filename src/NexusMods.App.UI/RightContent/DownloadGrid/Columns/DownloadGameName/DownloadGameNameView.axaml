@@ -1,7 +1,7 @@
 ﻿<reactiveUi:ReactiveUserControl
     d:DesignHeight="21"
     d:DesignWidth="120"
-    Width="120"
+    Width="140"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadGameName.DownloadGameNameView"
     x:TypeArguments="modName:IModNameViewModel"
