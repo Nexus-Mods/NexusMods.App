@@ -2,12 +2,11 @@ using System.Buffers;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Channels;
-using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Hashing.xxHash64;
+using NexusMods.Networking.HttpDownloader.DTOs;
 using NexusMods.Paths;
 
 namespace NexusMods.Networking.HttpDownloader
@@ -451,14 +450,14 @@ namespace NexusMods.Networking.HttpDownloader
                         break;
                     }
                     var curSize = Math.Min(chunkSize, download.TotalSize - curOffset);
-                    download.Chunks.Add(CreateChunk(curOffset, curSize));
+                    download.Chunks.Add(ChunkState.Create(curOffset, curSize));
                     curOffset += curSize;
                 }
             }
             else if (rangeSupported)
             {
                 // if we don't know the total size we currently don't do chunking but resume might still be possible
-                download.Chunks.Add(CreateChunk(initChunk.Size, -1));
+                download.Chunks.Add(ChunkState.Create(initChunk.Size, -1));
             }
         }
 
@@ -566,7 +565,7 @@ namespace NexusMods.Networking.HttpDownloader
             {
                 // at this point we don't know how large the file is in total and we don't know if the source supports range requests
                 // so start with a small requests for the first part of the file before we can decide if/how to chunk the download
-                state.Chunks.Add(CreateChunk(0, InitChunkSize, true));
+                state.Chunks.Add(ChunkState.Create(0, InitChunkSize, true));
             }
 
             return state;
@@ -646,17 +645,7 @@ namespace NexusMods.Networking.HttpDownloader
             return input.ReplaceExtension(new Extension(".downloading"));
         }
 
-        private ChunkState CreateChunk(long start, long size, bool initChunk = false)
-        {
-            return new ChunkState
-            {
-                Completed = 0,
-                Read = 0,
-                InitChunk = initChunk,
-                Size = size,
-                Offset = start,
-            };
-        }
+
 
         private HttpRequestMessage CopyRequest(HttpRequestMessage input)
         {
@@ -687,63 +676,4 @@ namespace NexusMods.Networking.HttpDownloader
 
         #endregion // Utility Functions
     }
-
-    #region State Structs
-    class ChunkState
-    {
-        public long Offset { get; init; }
-        public long Size { get; set; }
-        [JsonIgnore]
-        public long Read { get; set; }
-        public long Completed { get; set; }
-        public bool InitChunk { get; init; }
-
-        [JsonIgnore]
-        public Source? Source { get; set; }
-
-        [PublicAPI]
-        public string SourceUrl => Source?.Request?.RequestUri?.AbsoluteUri ?? "No URL";
-
-        [JsonIgnore]
-        public CancellationTokenSource? Cancel { get; set; }
-        [JsonIgnore]
-        public DateTime Started { get; set; }
-
-        public int BytesPerSecond => (int)Math.Floor(Read / (DateTime.Now - Started).TotalSeconds);
-
-        [JsonIgnore]
-        public int KBytesPerSecond => (int)Math.Floor((Read / (DateTime.Now - Started).TotalSeconds) / 1024);
-    }
-
-    struct WriteOrder
-    {
-        public long Offset;
-        public int Size;
-        public byte[] Data;
-    }
-
-    class Source
-    {
-        public HttpRequestMessage? Request { get; init; }
-        public int Priority { get; set; }
-        public override string ToString()
-        {
-            return Request?.RequestUri?.AbsoluteUri ?? "No URL";
-        }
-    }
-
-    class DownloadState
-    {
-        public long TotalSize { get; set; } = -1;
-
-        public List<ChunkState> Chunks { get; set; } = new List<ChunkState>();
-
-        [JsonIgnore]
-        public AbsolutePath Destination;
-
-        [JsonIgnore]
-        public Source[]? Sources;
-    }
-
-    #endregion // State Structs
 }
