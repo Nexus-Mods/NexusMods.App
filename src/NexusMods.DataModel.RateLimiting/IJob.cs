@@ -1,3 +1,5 @@
+using System.Numerics;
+
 namespace NexusMods.DataModel.RateLimiting;
 
 /// <summary>
@@ -24,9 +26,20 @@ public interface IJob : IDisposable
     public Percent Progress { get; }
 
     /// <summary>
-    /// True if this job was actually started; else false if it was only queued.
+    /// When this job was started.
     /// </summary>
-    public bool Started { get; }
+    public DateTime StartedAt { get; }
+    
+    /// <summary>
+    /// The current state of the job.
+    /// </summary>
+    public JobState CurrentState { get; set; }
+    
+    /// <summary>
+    /// This is the last time the job was resumed, in situations where it may have been paused and then resumed.
+    /// This is for the accurate calculation of the time remaining.
+    /// </summary>
+    public DateTime ResumedAt { get; }
 
     /// <summary>
     /// The underlying resource used to create this job; used for rate limiting,
@@ -54,6 +67,11 @@ public interface IJob<TSize> : IJob
     /// Amount of work that was already done.
     /// </summary>
     public TSize Current { get; }
+    
+    /// <summary>
+    /// Amount of work that was done at last resume time.
+    /// </summary>
+    public TSize CurrentAtResumeTime { get; }
 
     /// <summary>
     /// Reports progress.
@@ -72,6 +90,66 @@ public interface IJob<TSize> : IJob
 }
 
 /// <summary>
+/// Extension methods to the <see cref="IJob"/> interface.
+/// </summary>
+public static class JobExtensions
+{
+    /// <summary>
+    /// Calculates the current throughput of this job per second, based on the current progress.
+    /// </summary>
+    /// <remarks>
+    ///     This returns null/default if the type does not support the required arithmetic operations,
+    ///     else it returns the current TSize items per second.
+    /// </remarks>
+    /// <returns>Throughput of this job per second.</returns>
+    public static TSize GetThroughput<TSize>(this IJob<TSize> job, IDateTimeProvider provider) where TSize : IDivisionOperators<TSize, double, TSize>, 
+        ISubtractionOperators<TSize, TSize, TSize>, IAdditiveIdentity<TSize, TSize>
+    {
+        if (job.CurrentState != JobState.Running)
+            return TSize.AdditiveIdentity;
+        
+        var workDone = job.Current - job.CurrentAtResumeTime;
+        var timeElapsed = (provider.GetCurrentTimeUtc() - job.ResumedAt).TotalSeconds;
+        return workDone / timeElapsed;
+    }
+    
+    /// <summary>
+    /// Calculates the average throughput of a given collection of non-paused jobs per second, based on the current progress.
+    /// </summary>
+    /// <remarks>
+    ///     This returns null/default if the type does not support the required arithmetic operations,
+    ///     else it returns the current TSize items per second.
+    /// </remarks>
+    /// <returns>Throughput of this job per second.</returns>
+    public static TSize GetTotalThroughput<TSize>(this IEnumerable<IJob<TSize>> jobs, IDateTimeProvider provider) where TSize : IDivisionOperators<TSize, double, TSize>, 
+        ISubtractionOperators<TSize, TSize, TSize>, IAdditionOperators<TSize, TSize, TSize>, IAdditiveIdentity<TSize, TSize>
+    {
+        var totalThroughput = TSize.AdditiveIdentity;
+        foreach (var job in jobs)
+            totalThroughput += GetThroughput(job, provider);
+
+        return totalThroughput;
+    }
+    
+    /// <summary>
+    /// Calculates the total completion of a group of jobs. i.e. The number of downloaded bytes.
+    /// </summary>
+    /// <remarks>
+    ///     This returns null/default if the type does not support the required arithmetic operations,
+    ///     else it returns the current TSize items per second.
+    /// </remarks>
+    /// <returns>Total completion of this job.</returns>
+    public static TSize GetTotalCompletion<TSize>(this IEnumerable<IJob<TSize>> jobs) where TSize : IAdditionOperators<TSize, TSize, TSize>, IAdditiveIdentity<TSize, TSize>
+    {
+        var totalCompletion = TSize.AdditiveIdentity;
+        foreach (var job in jobs)
+            totalCompletion += job.Current;
+
+        return totalCompletion;
+    }
+}
+
+/// <summary>
 /// An <see cref="IJob{TUnit}"/> with a typed owner resource.
 /// </summary>
 /// <typeparam name="TResource">Underlying type used to represent the parent resource.</typeparam>
@@ -82,4 +160,30 @@ public interface IJob<TResource, TSize> : IJob<TSize>
     /// Type of the owning resource.
     /// </summary>
     public Type Type => typeof(TResource);
+}
+
+/// <summary>
+/// Exposes the current state of the job.
+/// </summary>
+public enum JobState
+{
+    /// <summary>
+    /// The job is currently waiting to be started.
+    /// </summary>
+    Waiting,
+    
+    /// <summary>
+    /// The job is currently running.
+    /// </summary>
+    Running, 
+        
+    /// <summary>
+    /// The job is paused.
+    /// </summary>
+    Paused,
+        
+    /// <summary>
+    /// The job has finished processing.
+    /// </summary>
+    Finished
 }

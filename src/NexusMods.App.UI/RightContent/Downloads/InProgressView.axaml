@@ -7,13 +7,14 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:downloads="clr-namespace:NexusMods.App.UI.RightContent.Downloads"
     xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
-    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    mc:Ignorable="d" d:DesignWidth="920" d:DesignHeight="664"
     x:Class="NexusMods.App.UI.RightContent.Downloads.InProgressView">
     <Design.DataContext>
-        <downloads:InProgressDesignViewModel></downloads:InProgressDesignViewModel>
+        <downloads:InProgressDesignViewModel/>
     </Design.DataContext>
-    <StackPanel>
-        <Border Classes="Toolbar">
+    <Grid RowDefinitions="Auto, *">
+        <!-- ToolBar -->
+        <Border Classes="Toolbar" Grid.Row="0">
             <Grid ColumnDefinitions="*, Auto">
                 <TextBlock Grid.Column="0" Text="IN PROGRESS"></TextBlock>
                 <StackPanel Grid.Column="1">
@@ -45,5 +46,49 @@
                 </StackPanel>
             </Grid>
         </Border>
-    </StackPanel>
+        
+        <!-- Page Content -->
+        <Grid RowDefinitions="Auto, Auto, *" Margin="24, 16" Grid.Row="1">
+        
+            <!-- Title & Status -->
+            <DockPanel LastChildFill="True" HorizontalAlignment="Stretch" Grid.Row="0">
+                <TextBlock DockPanel.Dock="Left"
+                           Classes="H5MontserratSemi" 
+                           Text="In progress (0)" 
+                           x:Name="InProgressTitleTextBlock"
+                           Margin="0,0,0,16" />
+            
+                <!-- Right Side -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock VerticalAlignment="Center"
+                               Classes="Body2RobotoRegular" 
+                               Text="0GB / 0GB" Margin="0,0,16,0" 
+                               x:Name="SizeCompletionTextBlock" />
+                
+                    <!-- Note: Can use 'run' here, but don't want to make separate styles for 'run' -->
+                    <TextBlock VerticalAlignment="Center"
+                               Classes="Body2RobotoRegularBold" 
+                               Text="0 mins" Margin="0,0,4,0"
+                               x:Name="BoldMinutesRemainingTextBlock" />
+                
+                    <TextBlock VerticalAlignment="Center"
+                               Classes="Body2RobotoRegular" 
+                               Text="remaining"
+                               x:Name="MinutesRemainingTextBlock" />
+                
+                </StackPanel>
+            
+            </DockPanel>
+        
+            <!-- Progress -->
+            <ProgressBar Classes="DownloadBar" x:Name="DownloadProgressBar" Minimum="0" Maximum="1" Grid.Row="1"/>
+        
+            <!-- Currently Downloaded Mods -->
+            <DataGrid Grid.Row="2" 
+                HorizontalAlignment="Stretch"
+                CanUserSortColumns="True"
+                Margin="-16,16"
+                x:Name="ModsDataGrid" />
+        </Grid>
+    </Grid>
 </reactiveUi:ReactiveUserControl>

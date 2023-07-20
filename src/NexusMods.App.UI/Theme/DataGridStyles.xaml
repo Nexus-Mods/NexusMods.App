@@ -40,11 +40,20 @@
         <Setter Property="Margin" Value="0" />
         <Setter Property="Padding" Value="16, 0, 0, 0" />
     </Style>
+    
     <Style Selector="DataGridCell:selected">
         <Setter Property="BorderThickness" Value="0" />
     </Style>
 
     <Style Selector="DataGridCell /template/ Rectangle">
         <Setter Property="IsVisible" Value="False" />
+    </Style>
+    
+    <Style Selector="DataGridCell TextBlock">
+        <Setter Property="FontFamily" Value="{DynamicResource FontSecondaryRegular}" />
+        <Setter Property="FontWeight" Value="400" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="LineHeight" Value="21" />
+        <Setter Property="Foreground" Value="{DynamicResource FontDarkPrimary}" />
     </Style>
 </Styles>

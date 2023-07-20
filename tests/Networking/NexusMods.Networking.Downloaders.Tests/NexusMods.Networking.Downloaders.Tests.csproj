@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <XunitStartupAssembly>NexusMods.Networking.Downloaders.Tests</XunitStartupAssembly>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\src\NexusMods.App\NexusMods.App.csproj" />
+        <ProjectReference Include="..\..\..\src\NexusMods.DataModel.RateLimiting\NexusMods.DataModel.RateLimiting.csproj" />
+        <ProjectReference Include="..\..\Games\NexusMods.Games.TestFramework\NexusMods.Games.TestFramework.csproj" />
+        <ProjectReference Include="..\..\NexusMods.StandardGameLocators.TestHelpers\NexusMods.StandardGameLocators.TestHelpers.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="Resources\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+</Project>

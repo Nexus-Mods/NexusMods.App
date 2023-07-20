@@ -27,6 +27,7 @@
             <icons:Icon Classes="RemoveCircleOutline"></icons:Icon>
             <icons:Icon Classes="Star"></icons:Icon>
             <icons:Icon Classes="TrashCanOutline"></icons:Icon>
+            <icons:Icon Classes="PlayCircleOutline"></icons:Icon>
         </WrapPanel>
     </Design.PreviewWith>
     
@@ -94,5 +95,9 @@
     
     <Style Selector="icons|Icon.TrashCanOutline">
         <Setter Property="Value" Value="mdi-trash-can-outline"></Setter>
+    </Style>
+    
+    <Style Selector="icons|Icon.PlayCircleOutline">
+        <Setter Property="Value" Value="mdi-play-circle-outline"/>
     </Style>
 </Styles>

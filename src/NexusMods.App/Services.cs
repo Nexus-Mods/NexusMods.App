@@ -15,6 +15,7 @@ using NexusMods.Games.Reshade;
 using NexusMods.Games.Sifu;
 using NexusMods.Games.StardewValley;
 using NexusMods.Games.TestHarness;
+using NexusMods.Networking.Downloaders;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.NMA;
@@ -63,7 +64,8 @@ public static class Services
             .AddTestHarness()
             .AddSingleton<HttpClient>()
             .AddListeners()
-            .AddCommon();
+            .AddCommon()
+            .AddDownloaders();
 
         if (addStandardGameLocators)
             services.AddStandardGameLocators();

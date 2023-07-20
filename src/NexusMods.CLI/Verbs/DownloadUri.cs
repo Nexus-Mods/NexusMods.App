@@ -42,7 +42,7 @@ public class DownloadUri : AVerb<Uri, AbsolutePath>
         var hash = await _renderer.WithProgress(token, async () =>
         {
             return await _httpDownloader.DownloadAsync(new[] { new HttpRequestMessage(HttpMethod.Get, uri) },
-                output, null, token);
+                output, null, null, token);
         });
 
         var elapsed = sw.Elapsed;

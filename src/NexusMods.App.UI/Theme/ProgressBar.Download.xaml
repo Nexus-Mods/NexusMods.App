@@ -1,0 +1,49 @@
+﻿<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <StackPanel Width="200" Spacing="8" Margin="8">
+            <ProgressBar Classes="DownloadBar" Minimum="0" Maximum="1"/>
+            <ProgressBar Classes="DownloadBar" Minimum="0" Maximum="1" Value="0.75"/>
+            
+            <!-- For Classes.DisabledDownloadBar see Conditional Classes at https://docs.avaloniaui.net/docs/styling/styles -->
+            <ProgressBar Classes="DownloadBar" Classes.DisabledDownloadBar="true" Minimum="0" Maximum="1" Value="0.4"/>
+        </StackPanel>
+    </Design.PreviewWith>
+    
+    <Style Selector="ProgressBar.DownloadBar">
+        <Setter Property="ShowProgressText" Value="True"/>
+        <Setter Property="Height" Value="24"/>
+        <Setter Property="Foreground" Value="{DynamicResource BrandAccentDarker}"/>
+        <Setter Property="Background" Value="#330555b8"/>
+        <Setter Property="MinWidth" Value="100"/>
+        <Setter Property="ProgressTextFormat" Value="Total {1:0}%"/>
+    </Style>
+    
+    <Style Selector="ProgressBar.DisabledDownloadBar">
+        <Setter Property="Background" Value="{DynamicResource BrandSecondary}"/>
+        <Setter Property="Foreground" Value="{DynamicResource BrandSecondaryLighter}"/>
+    </Style>
+    
+    <Style Selector="ProgressBar.DownloadBar TextBlock">
+        <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontWeight" Value="400"/>
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}"/>
+        <Setter Property="LineHeight" Value="16.5"/>
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        
+        <!-- TODO: How do I get this 'right?' -->
+        <Setter Property="Margin" Value="0,3,0,0"/>
+    </Style>
+    
+    <Style Selector="ProgressBar.DownloadBar LayoutTransformControl">
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Padding" Value="8,0,0,0"/>
+    </Style>
+
+
+</Styles>

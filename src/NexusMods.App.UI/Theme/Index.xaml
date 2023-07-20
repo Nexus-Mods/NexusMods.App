@@ -9,6 +9,7 @@
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/MainWindow.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/PillStyles.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/ProgressBar.xaml" />
+    <StyleInclude Source="avares://NexusMods.App.UI/Theme/ProgressBar.Download.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/SelectableTextBlock.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/StackPanelStyles.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/TextBlockStyles.xaml" />

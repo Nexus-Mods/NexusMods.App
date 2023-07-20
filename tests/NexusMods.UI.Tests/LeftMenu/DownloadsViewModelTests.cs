@@ -18,7 +18,7 @@ public class DownloadsViewModelTests : AVmTest<IDownloadsViewModel>
     {
         var mappings = AViewModelAttribute.GetAttributes<Options>();
 
-        var cmd = Vm.CommandFor(current);
+        var cmd = Vm.CommandForViewModel(current);
         cmd.Execute(null);
         
         foreach (var check in Enum.GetValues<Options>())

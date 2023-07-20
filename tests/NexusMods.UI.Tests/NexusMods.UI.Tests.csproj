@@ -6,6 +6,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="ReactiveUI.Fody" Version="19.2.1" />
         <PackageReference Include="Avalonia.Headless" Version="11.0.0" />
     </ItemGroup>
 

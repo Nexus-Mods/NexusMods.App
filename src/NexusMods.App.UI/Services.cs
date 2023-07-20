@@ -1,5 +1,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.GameWidget;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
@@ -12,16 +13,37 @@ using NexusMods.App.UI.LeftMenu.Game;
 using NexusMods.App.UI.LeftMenu.Home;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Overlays;
+using NexusMods.App.UI.Overlays.Download.Cancel;
+using NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel;
+using NexusMods.App.UI.Overlays.Login;
 using NexusMods.App.UI.RightContent;
+using NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadGameName;
 using NexusMods.App.UI.RightContent.Downloads;
 using NexusMods.App.UI.RightContent.Home;
 using NexusMods.App.UI.RightContent.LoadoutGrid;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
+using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadName;
+using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadSize;
+using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadStatus;
+using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadVersion;
+using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModCategory;
+using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModEnabled;
+using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModInstalled;
+using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModName;
+using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModVersion;
 using NexusMods.App.UI.RightContent.MyGames;
 using NexusMods.App.UI.Routing;
 using NexusMods.App.UI.Windows;
 using ReactiveUI;
+using DownloadGameNameView = NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadGameName.DownloadGameNameView;
+using DownloadNameView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadName.DownloadNameView;
 using ImageButton = NexusMods.App.UI.Controls.Spine.Buttons.Image.ImageButton;
+using ModCategoryView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModCategory.ModCategoryView;
+using ModEnabledView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModEnabled.ModEnabledView;
+using ModInstalledView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModInstalled.ModInstalledView;
+using ModNameView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModName.ModNameView;
+using ModVersionView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModVersion.ModVersionView;
+using NexusLoginOverlayView = NexusMods.App.UI.Overlays.Login.NexusLoginOverlayView;
 
 namespace NexusMods.App.UI;
 
@@ -34,10 +56,12 @@ public static class Services
 
             // Services
             .AddSingleton<IRouter, ReactiveMessageRouter>()
+            .AddSingleton<IOverlayController, OverlayController>()
+
             // View Models
             .AddTransient<MainWindowViewModel>()
             .AddTransient(typeof(DataGridViewModelColumn<,>))
-            .AddTransient(typeof(DataGridColumnFactory<,>))
+            .AddTransient(typeof(DataGridColumnFactory<,,>))
             .AddSingleton<IViewLocator, InjectedViewLocator>()
 
             .AddViewModel<CompletedViewModel, ICompletedViewModel>()
@@ -65,6 +89,13 @@ public static class Services
             .AddViewModel<SpineViewModel, ISpineViewModel>()
             .AddViewModel<TopBarViewModel, ITopBarViewModel>()
             .AddViewModel<DownloadButtonViewModel, IDownloadButtonViewModel>()
+            .AddViewModel<DownloadGameNameViewModel, IDownloadGameNameViewModel>()
+            .AddViewModel<DownloadNameViewModel, IDownloadNameViewModel>()
+            .AddViewModel<DownloadVersionViewModel, IDownloadVersionViewModel>()
+            .AddViewModel<DownloadSizeViewModel, IDownloadSizeViewModel>()
+            .AddViewModel<DownloadStatusViewModel, IDownloadStatusViewModel>()
+            .AddViewModel<CancelDownloadOverlayViewModel, ICancelDownloadOverlayViewModel>()
+            .AddViewModel<MessageBoxOkCancelViewModel, IMessageBoxOkCancelViewModel>()
 
             // Views
             .AddView<CompletedView, ICompletedViewModel>()
@@ -93,6 +124,13 @@ public static class Services
             .AddView<Spine, ISpineViewModel>()
             .AddView<TopBarView, ITopBarViewModel>()
             .AddView<DownloadButtonView, IDownloadButtonViewModel>()
+            .AddView<DownloadGameNameView, IDownloadGameNameViewModel>()
+            .AddView<DownloadNameView, IDownloadNameViewModel>()
+            .AddView<DownloadVersionView, IDownloadVersionViewModel>()
+            .AddView<DownloadSizeView, IDownloadSizeViewModel>()
+            .AddView<DownloadStatusView, IDownloadStatusViewModel>()
+            .AddView<CancelDownloadOverlayView, ICancelDownloadOverlayViewModel>()
+            .AddView<MessageBoxOkCancelView, IMessageBoxOkCancelViewModel>()
 
             // Other
             .AddSingleton<InjectedViewLocator>()

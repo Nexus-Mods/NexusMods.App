@@ -3,6 +3,10 @@
     xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    <!--  
+        TODO: Some styles aren't shown in preview; which can lead us to make accidental duplicates (like I did).  
+        We should probably find all unused styles and add them to preview.
+    -->
     <Design.PreviewWith>
         <StackPanel Spacing="5">
             <Button Classes="Avatar">
@@ -19,6 +23,19 @@
                     <icons:Icon Classes="ProgressDownload"/>
                     <TextBlock Text="Label Goes Here"></TextBlock>
                 </StackPanel>
+            </Button>
+            
+            <!-- Use like this -->
+            <Button Classes="Primary">
+                <TextBlock Text="YES"/>
+            </Button>
+            
+            <!-- DO NOT use like this -->
+            <Button Classes="Primary" Content="YES"/>
+            
+            <!-- Tertiary -->
+            <Button Classes="LeftMenuItem" HorizontalAlignment="Center">
+                <TextBlock Text="NO" />
             </Button>
         </StackPanel>
     </Design.PreviewWith>
@@ -156,22 +173,29 @@
         <Setter Property="LetterSpacing" Value="0.7" />
         <Setter Property="Margin" Value="0" />
     </Style>
-
-
+    
     <Style Selector="Button.Primary">
         <Setter Property="Background" Value="{DynamicResource BrandPrimaryBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+        <Setter Property="FontWeight" Value="600" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
     </Style>
 
     <Style Selector="Button.Primary:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource BrandPrimaryLighterBrush}" />
+        <Setter Property="Background" Value="{DynamicResource BrandPrimaryDarkerBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
     </Style>
 
     <Style Selector="Button.Primary:pressed /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource BrandPrimaryDarkerBrush}" />
+        <Setter Property="Background" Value="{DynamicResource BrandPrimaryLighterBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
     </Style>
 
     <Style Selector="Button.Primary:disabled /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource BrandPrimaryBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
         <Setter Property="Opacity" Value="40" />
     </Style>
     
@@ -207,24 +231,34 @@
         </Setter>
     </Style>
     
-    <!-- Left Menu Item -->
-    
+    <!-- Left Menu Item: 'Tertiary' Style -->
     <Style Selector="Button.LeftMenuItem">
         <Setter Property="Height" Value="40" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="CornerRadius" Value="4"></Setter>
         <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
-        <Setter Property="Background" Value="{DynamicResource Transparent}"></Setter>
+        
+        <!-- This is a hack to make our invisible background hit testable 
+        by making it visually transparent, but not really, so the user can hover 
+        over the space meant to be taken by the button, and still be able to click it.-->
+        <Setter Property="Background" Value="#01FFFFFF" />
         
     </Style>
 
     <Style Selector="Button.LeftMenuItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource BrandSecondaryLighter}"></Setter>
+        <Setter Property="Background" Value="{DynamicResource BrandSecondaryLighter}"/>
     </Style>
     
     <Style Selector="Button.LeftMenuItem.Active /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource BackgroundTertiaryColor}"></Setter>
+        <Setter Property="Background" Value="{DynamicResource BackgroundTertiaryColor}"/>
     </Style>
+
+    <!-- TODO: Reach out to design. There's no visual feedback for when a button is held down.
+    <Style Selector="Button.LeftMenuItem:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BrandPrimaryDarkerBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+    -->
     
     <Style Selector="Button.LeftMenuItem StackPanel">
         <Setter Property="Orientation" Value="Horizontal" />
@@ -246,8 +280,6 @@
         <Setter Property="LineHeight" Value="16.41"></Setter>
         <Setter Property="Margin" Value="0" />
     </Style>
-
-
     
     <!-- End of Styling Rework -->
     

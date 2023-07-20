@@ -15,6 +15,7 @@
         <ProjectReference Include="..\Games\NexusMods.Games.Reshade\NexusMods.Games.Reshade.csproj" />
         <ProjectReference Include="..\Games\NexusMods.Games.Sifu\NexusMods.Games.Sifu.csproj" />
         <ProjectReference Include="..\Games\NexusMods.Games.TestHarness\NexusMods.Games.TestHarness.csproj" />
+        <ProjectReference Include="..\Networking\NexusMods.Networking.Downloaders\NexusMods.Networking.Downloaders.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
         <ProjectReference Include="..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
@@ -32,5 +33,10 @@
         <None Update="AppConfig.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Downloaders\" />
+      <Folder Include="Models\" />
     </ItemGroup>
 </Project>

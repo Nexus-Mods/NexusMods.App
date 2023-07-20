@@ -3,7 +3,9 @@ using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.Helpers;
 using ReactiveUI;
+using static NexusMods.App.UI.Helpers.StyleConstants.SpineDownloadButton;
 
 namespace NexusMods.App.UI.Controls.Spine.Buttons.Download;
 
@@ -21,7 +23,7 @@ public partial class DownloadButtonView : ReactiveUserControl<IDownloadButtonVie
             
             this.WhenAnyValue(view => view.ViewModel!.Progress)
                 .Select(p => p == null)
-                .BindToClasses(ParentButton, "Idle", "Progress")
+                .BindToClasses(ParentButton, Idle, Progress)
                 .DisposeWith(d);
             
             this.WhenAnyValue(view => view.ViewModel!.IsActive)
