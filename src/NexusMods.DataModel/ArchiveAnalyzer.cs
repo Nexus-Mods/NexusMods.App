@@ -93,11 +93,14 @@ public class ArchiveAnalyzer : IArchiveAnalyzer
 
         // Analyze the archive and cache the info
         var result = await AnalyzeFileInnerAsync(new NativeFileStreamFactory(path), path.FileName, token);
-        result.EnsurePersisted(_store);
 
-        // Save the source of this archive so we can use it later
+        
         if (result is AnalyzedArchive archive)
-        {
+        {   
+            // Only persist AnalyzedData if it's an archive
+            result.EnsurePersisted(_store);
+            
+            // Save the source of this archive so we can use it later
             var metaData = FileArchiveMetaData.Create(path, archive);
             metaData.EnsurePersisted(_store);
         }
