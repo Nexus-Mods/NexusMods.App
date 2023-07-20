@@ -16,13 +16,12 @@ class ChunkState
     /// <param name="size"></param>
     /// <param name="initChunk"></param>
     /// <returns></returns>
-    public static ChunkState Create(long start, long size, bool initChunk = false)
+    public static ChunkState Create(long start, long size)
     {
         return new ChunkState
         {
             Completed = 0,
             Read = 0,
-            InitChunk = initChunk,
             Size = size,
             Offset = start,
         };
@@ -48,11 +47,6 @@ class ChunkState
     /// The number of bytes written to the output file
     /// </summary>
     public long Completed { get; set; }
-    
-    /// <summary>
-    /// True if this chunk is the first chunk of the download
-    /// </summary>
-    public bool InitChunk { get; init; }
 
     /// <summary>
     /// The source of the chunk, (the download information)
@@ -82,4 +76,25 @@ class ChunkState
 
     [JsonIgnore]
     public int KBytesPerSecond => (int)Math.Floor((Read / (DateTime.Now - Started).TotalSeconds) / 1024);
+    
+    
+    /// <summary>
+    /// True if the chunk has been read completely
+    /// </summary>
+    public bool IsReadComplete => Read == Size;
+    
+    /// <summary>
+    /// True if the chunk has been written completely
+    /// </summary>
+    public bool IsWriteComplete => Completed == Size;
+    
+    /// <summary>
+    /// True if the chunk has been read and written completely
+    /// </summary>
+    public bool IsComplete => IsReadComplete && IsWriteComplete;
+    
+    /// <summary>
+    /// Returns the number of bytes remaining to be read
+    /// </summary>
+    public long RemainingToRead => Size - Read;
 }

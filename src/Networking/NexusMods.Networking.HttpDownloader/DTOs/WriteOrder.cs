@@ -1,4 +1,6 @@
-﻿namespace NexusMods.Networking.HttpDownloader.DTOs;
+﻿using System.Buffers;
+
+namespace NexusMods.Networking.HttpDownloader.DTOs;
 
 /// <summary>
 /// Used to contain information that will be sent to the write queue.
@@ -6,6 +8,6 @@
 struct WriteOrder
 {
     public long Offset;
-    public int Size;
-    public byte[] Data;
+    public Memory<byte> Data;
+    public IMemoryOwner<byte> Owner;
 }

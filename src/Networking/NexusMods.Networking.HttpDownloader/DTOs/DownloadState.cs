@@ -30,4 +30,56 @@ class DownloadState
     /// </summary>
     [JsonIgnore]
     public Source[]? Sources;
+    
+    /// <summary>
+    /// Returns true if any chunk is incomplete
+    /// </summary>
+    [JsonIgnore]
+    public bool HasIncompleteChunk
+    {
+        get {
+            if (TotalSize < 0)
+            {
+                return Chunks.Any(chunk => chunk.Completed < chunk.Size);
+            }
+
+            return Chunks.Any(chunk =>
+                (chunk.Completed < chunk.Size) && ((chunk.Offset + chunk.Completed) < TotalSize));
+        }
+    }
+
+
+    /// <summary>
+    /// The file where the download state is stored
+    /// </summary>
+    [JsonIgnore]
+    public AbsolutePath StateFilePath => GetStateFilePath(Destination);
+
+    /// <summary>
+    /// The file where the download is stored while it is in progress
+    /// </summary>
+    [JsonIgnore]
+    public AbsolutePath TempFilePath => GetTempFilePath(Destination);
+    
+    /// <summary>
+    /// Based on the destination, get the path to the state file
+    /// </summary>
+    /// <param name="destination"></param>
+    /// <returns></returns>
+    public static AbsolutePath GetStateFilePath(AbsolutePath destination) => destination.ReplaceExtension(new Extension(".progress"));
+    
+    /// <summary>
+    /// Based on the destination, get the path to the temp file
+    /// </summary>
+    /// <param name="destination"></param>
+    /// <returns></returns>
+    public static AbsolutePath GetTempFilePath(AbsolutePath destination) => destination.ReplaceExtension(new Extension(".downloading"));
+    
+    
+    /// <summary>
+    /// Gets chunks that are not completely downloaded and written to disk
+    /// </summary>
+    /// <returns></returns>
+    [JsonIgnore]
+    public IEnumerable<ChunkState> UnfinishedChunks => Chunks.Where(chunk => !chunk.IsComplete);
 }
