@@ -92,10 +92,10 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     }
 
 
-    protected async Task AddMods(LoadoutMarker mainList, AbsolutePath path, string? name = null)
+    protected async Task<ModId[]> AddMods(LoadoutMarker mainList, AbsolutePath path, string? name = null)
     {
         var hash1 = await ArchiveAnalyzer.AnalyzeFileAsync(path, CancellationToken.None);
-        await ArchiveInstaller.AddMods(mainList.Value.LoadoutId, hash1.Hash, name, CancellationToken.None);
+        return await ArchiveInstaller.AddMods(mainList.Value.LoadoutId, hash1.Hash, name, CancellationToken.None);
     }
 
     public Task DisposeAsync()

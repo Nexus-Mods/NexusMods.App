@@ -8,6 +8,7 @@ using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Games.StardewValley.Analyzers;
+using NexusMods.Games.StardewValley.Models;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
@@ -81,14 +82,9 @@ public class SMAPIModInstaller : IModInstaller
                     .Select(kv =>
                     {
                         var (path, file) = kv;
-
-                        return new FromArchive
-                        {
-                            Id = ModFileId.New(),
-                            To = new GamePath(GameFolderType.Game, ModsFolder.Join(path.DropFirst(parent.Depth))),
-                            Hash = file.Hash,
-                            Size = file.Size
-                        };
+                        return file.ToFromArchive(
+                            new GamePath(GameFolderType.Game, ModsFolder.Join(path.DropFirst(parent.Depth)))
+                        );
                     });
 
                 return new ModInstallerResult

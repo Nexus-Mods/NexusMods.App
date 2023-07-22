@@ -1,14 +1,7 @@
 ﻿using System.ComponentModel;
-using System.Diagnostics;
-using System.Dynamic;
-using System.Text;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Interprocess.Messages;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.Cursors;
 using NexusMods.DataModel.RateLimiting;
-using NexusMods.Paths.Extensions;
 
 namespace NexusMods.DataModel.Interprocess.Jobs;
 
@@ -19,6 +12,7 @@ public class InterprocessJob : IInterprocessJob
 {
     private readonly IInterprocessJobManager _manager;
     private Percent _progress;
+
     /// <summary>
     /// True if this instance is the "owning" instance of the job, where disposing
     /// the instance will auto-close the job
@@ -82,11 +76,11 @@ public class InterprocessJob : IInterprocessJob
         set
         {
             _progress = value;
-            _manager.UpdateProgress(JobId, value);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Progress)));
+            if (_isOwner) _manager.UpdateProgress(JobId, value);
         }
     }
-    
+
     /// <inheritdoc />
     public DateTime StartTime { get; }
 
@@ -97,7 +91,6 @@ public class InterprocessJob : IInterprocessJob
     public void Dispose()
     {
         // If the process that created the job is still running, end the job.
-        if (_isOwner)
-            _manager.EndJob(JobId);
+        if (_isOwner) _manager.EndJob(JobId);
     }
 }

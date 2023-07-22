@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using System.Text;
 using CliWrap;
 using CliWrap.Exceptions;
 using Microsoft.Extensions.Logging;
@@ -103,6 +104,7 @@ public class SevenZipExtractor : IExtractor
     private async Task ExtractAllAsync_Impl(IStreamFactory sFn, AbsolutePath destination, CancellationToken token, IJob<IExtractor, Size> job)
     {
         TemporaryPath? spoolFile = null;
+        var processOutput = new StringBuilder();
         try
         {
             AbsolutePath source;
@@ -124,14 +126,23 @@ public class SevenZipExtractor : IExtractor
 
             var totalSize = source.FileInfo.Size;
             var lastPercent = 0;
+            
             job.Size = totalSize;
+            
+            // NOTE: 7z.exe has a bug with long destination path with forwards `/` separators on windows,
+            // as a workaround we need to change the separators to backwards '\' on windows.
+            // See: https://sourceforge.net/p/sevenzip/discussion/45797/thread/a9a0f02618/
+            var fixedDestination = destination.ToNativeSeparators(OSInformation);
 
             var result = await process.WithArguments(new[]
                     {
-                        "x", "-bsp1", "-y", $"-o{destination}", source.ToString(), "-mmt=off"
+                        "x", "-bsp1", "-y", $"-o{fixedDestination}", source.ToString(), "-mmt=off"
                     }, true)
                 .WithStandardOutputPipe(PipeTarget.ToDelegate(line =>
                 {
+                    if (string.IsNullOrWhiteSpace(line)) return;
+                    processOutput.Append($"[7z.exe] {line} \n");
+                    
                     if (line.Length <= 4 || line[3] != '%') return;
                     if (!int.TryParse(line.AsSpan()[..3], out var percentInt)) return;
 
@@ -151,6 +162,7 @@ public class SevenZipExtractor : IExtractor
         catch (CommandExecutionException ex)
         {
             _logger.LogError(ex, "While executing 7zip");
+            _logger.LogInformation("Output from the extractor, trying to extract file {File}:\n{Output}", sFn.Name, processOutput.ToString());
             throw;
         }
         finally

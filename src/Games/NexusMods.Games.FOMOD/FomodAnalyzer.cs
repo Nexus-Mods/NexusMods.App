@@ -9,6 +9,7 @@ using NexusMods.DataModel.JsonConverters;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
+using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Games.FOMOD;
 
@@ -35,12 +36,15 @@ public class FomodAnalyzer : IFileAnalyzer
             yield break;
 
         // Check if file path is "fomod/ModuleConfig.xml"
-        if (!info.RelativePath.Value.Equals(FomodConstants.XmlConfigRelativePath.ToRelativePath()))
+        if (!info.RelativePath.Value.EndsWith(FomodConstants.XmlConfigRelativePath))
             yield break;
 
         // If not from inside an archive, this is probably not a FOMOD.
         if (info.ParentArchive == null)
             yield break;
+        
+        // If the fomod folder is not at first level, find the prefix.
+        var pathPrefix = info.RelativePath.Value.Parent.Parent;
 
         // Now get the actual items out.
         // Determine if this is a supported FOMOD.
@@ -49,17 +53,18 @@ public class FomodAnalyzer : IFileAnalyzer
 
         try
         {
-            using var streamReader = new StreamReader(info.Stream);
+            using var streamReader = new StreamReader(info.Stream, leaveOpen:true);
             data = await streamReader.ReadToEndAsync(ct);
             var xmlScript = new XmlScriptType();
             var script = (XmlScript)xmlScript.LoadScript(data, true);
 
             // Get all images listed in the FOMOD script.
-            async Task AddImageIfValid(string? imagePath)
+            async Task AddImageIfValid(string? imagePathFragment)
             {
-                if (string.IsNullOrEmpty(imagePath))
+                if (string.IsNullOrEmpty(imagePathFragment))
                     return;
-
+                var imagePath = pathPrefix.Join(RelativePath.FromUnsanitizedInput(imagePathFragment));
+                
                 var path = info.ParentArchive!.Value.Path.Combine(imagePath);
                 byte[] bytes;
                 try

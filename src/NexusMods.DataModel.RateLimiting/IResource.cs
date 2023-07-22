@@ -80,7 +80,7 @@ where TUnit : IAdditionOperators<TUnit, TUnit, TUnit>, IDivisionOperators<TUnit,
     void ReportNoWait(Job<TResource, TUnit> job, TUnit processedSize);
 
     /// <summary>
-    /// Creates a report of the current status for this resource.
+    /// Contains the state of all the jobs that are currently being processed or have been processed.
     /// </summary>
     StatusReport<TUnit> StatusReport { get; }
 

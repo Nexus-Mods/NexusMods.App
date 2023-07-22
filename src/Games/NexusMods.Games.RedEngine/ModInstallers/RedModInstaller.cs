@@ -29,7 +29,7 @@ public class RedModInstaller : IModInstaller
     {
         return file.Key.FileName == InfoJson && file.Value.AnalysisData.OfType<RedModInfo>().Any();
     }
-    
+
     public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
         ModId baseModId,
@@ -57,14 +57,9 @@ public class RedModInstaller : IModInstaller
                     .Select(kv =>
                     {
                         var (path, file) = kv;
-
-                        return new FromArchive
-                        {
-                            Id = ModFileId.New(),
-                            To = new GamePath(GameFolderType.Game, Mods.Join(parentName).Join(path.RelativeTo(parent))),
-                            Hash = file.Hash,
-                            Size = file.Size
-                        };
+                        return file.ToFromArchive(
+                            new GamePath(GameFolderType.Game, Mods.Join(parentName).Join(path.RelativeTo(parent)))
+                        );
                     });
             });
 

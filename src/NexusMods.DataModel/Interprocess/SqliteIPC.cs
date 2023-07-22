@@ -79,8 +79,6 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
 
         connectionString = string.Intern(connectionString);
 
-
-
         _poolPolicy = new ConnectionPoolPolicy(connectionString);
         _pool = ObjectPool.Create(_poolPolicy);
 
@@ -238,8 +236,6 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         cmd2.ExecuteNonQuery();
     }
 
-
-
     private void ProcessJobs()
     {
         try
@@ -251,16 +247,12 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
             var reader = cmd.ExecuteReader();
 
             var seen = new HashSet<JobId>();
+
             _jobs.Edit(editable =>
             {
                 while (reader.Read())
                 {
-                    var idSize = reader.GetBytes(0, 0, null, 0, 0);
-                    var idBytes = new byte[idSize];
-                    reader.GetBytes(0, 0, idBytes, 0, idBytes.Length);
-
-                    var jobId = JobId.From(new Guid(idBytes));
-
+                    var jobId = JobId.From(new Guid(reader.GetBlob(0)));
                     var progress = new Percent(reader.GetDouble(2));
 
                     seen.Add(jobId);
@@ -276,12 +268,9 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
 
                     _logger.NewJob(jobId);
                     var processId = ProcessId.From((uint)reader.GetInt64(1));
-                    var startTime =
-                        DateTime.FromFileTimeUtc(reader.GetInt64(3));
+                    var startTime = DateTime.FromFileTimeUtc(reader.GetInt64(3));
 
-                    var entity =
-                        JsonSerializer.Deserialize<Entity>(reader.GetBlob(4),
-                            _jsonSettings)!;
+                    var entity = JsonSerializer.Deserialize<Entity>(reader.GetBlob(4), _jsonSettings)!;
 
                     var newJob = new InterprocessJob(jobId, this, processId, startTime, progress, entity);
                     editable.AddOrUpdate(newJob);
@@ -334,7 +323,6 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
                     break;
                 prevId = _syncArray.Get(0);
             }
-
         }
         catch (Exception ex)
         {
@@ -364,7 +352,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
             cmd.Parameters.AddWithValue("@processId", job.ProcessId.Value);
             cmd.Parameters.AddWithValue("@progress", job.Progress.Value);
             cmd.Parameters.AddWithValue("@startTime", job.StartTime.ToFileTimeUtc());
-            
+
             var ms = new MemoryStream();
             JsonSerializer.Serialize(ms, (T)job.Payload, _jsonSettings);
             ms.Position = 0;
@@ -397,27 +385,15 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
             throw new ObjectDisposedException(nameof(TemporaryFileManager));
 
         _logger.DeletingJob(job);
-        TOP:
-        var retries = 0;
-        try
         {
-            {
-                using var conn = _pool.RentDisposable();
-                using var cmd = conn.Value.CreateCommand();
-                cmd.CommandText = "DELETE FROM Jobs WHERE JobId = @jobId";
-                cmd.Parameters.AddWithValue("@jobId", job.Value.ToByteArray());
-                cmd.ExecuteNonQuery();
-            }
-            
-            UpdateJobTimestamp();
+            using var conn = _pool.RentDisposable();
+            using var cmd = conn.Value.CreateCommand();
+            cmd.CommandText = "DELETE FROM Jobs WHERE JobId = @jobId";
+            cmd.Parameters.AddWithValue("@jobId", job.Value.ToByteArray());
+            cmd.ExecuteNonQuery();
         }
-        catch (SqliteException ex)
-        {
-            retries += 1;
-            _logger.LogError(ex, "Error deleting job {JobId}", job);
-            if (retries < 3)
-                goto TOP;
-        }
+
+        UpdateJobTimestamp();
     }
 
     /// <inheritdoc />
@@ -427,6 +403,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
             throw new ObjectDisposedException(nameof(TemporaryFileManager));
 
         _logger.UpdatingJobProgress(jobId, value);
+
         {
             using var conn = _pool.RentDisposable();
             using var cmd = conn.Value.CreateCommand();
@@ -435,6 +412,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
             cmd.Parameters.AddWithValue("@jobId", jobId.Value.ToByteArray());
             cmd.ExecuteNonQuery();
         }
+
         UpdateJobTimestamp();
     }
 

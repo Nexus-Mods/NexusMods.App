@@ -2,7 +2,7 @@
 
 - Name: Skyrim Special Edition
 - Release Date: 2016
-- Engine: 'Gamebryo'
+- Engine: 'Creation (Gamebryo)
 
 ## Code Injection Dependency Chart
 
@@ -61,6 +61,20 @@ The `plugins.txt` file in Skyrim lists plugin files with the ".esp" and ".esm" e
 - `.esp` stands for "Elder Scrolls Plugin" and is used for most mods that add new content to the game, i.e. weapons, armor, or quests. They can have dependencies on `.esm`(s).
 - `.esl` stands for "Elder Scrolls (Master) Light" and is exclusive to >= Special Edition. These are effectively `.esm`(s) with limitations.
 
+Example of file looks like:
+```txt
+*Unofficial Skyrim Special Edition Patch.esp
+*LegacyoftheDragonborn.esm
+*MajesticMountains_Landscape.esm
+*DwemerGatesNoRelock.esl
+AbandonedPrisonTweaks.esp
+*UHDAP - en0.esp
+```
+
+`*` denotes a file that is enabled; and will be loaded by the game, if missing, the game will ignore the plugin.
+This makes the presence of loadorder.txt superfluous, but could still be used to keep track of ghosted plugins.
+
+
 Each `.esp`/`.esm` has a 'Mod Index':
 - Using naming convention `xxYYYYYY`, where `xx` is plugin slot.
 - Therefore there is a 255 implicit item limit.
@@ -108,6 +122,26 @@ Plugins (`.esp`, `.esl`), can have 'Masters'; these are effectively dependencies
 
 To load a given plugin, all masters present in the plugin file's header must also be enabled.
 These masters are usually `.esm`, files but can also technically be other `.esp` files.
+
+### BSA Archives
+
+BSAs are a collection of archived files that are loaded either if there is a plugin with the same name
+
+`Unofficial Skyrim Legendary Edition Patch.esp` -> `Unofficial Skyrim Legendary Edition Patch.bsa`
+
+or same name followed by ellipsis: `<pluginName> - <something>.bsa`:
+
+eg. `Unofficial Skyrim Legendary Edition Patch - Textures.BSA`
+
+(Note: different bethesda games have different loading behaviour for BSA files)
+
+or if the archive is listed in the `Archive` section of the `Skyrim.ini` file
+(see [sResourceArchiveList](https://stepmodifications.org/wiki/Guide:Skyrim_INI/Archive#sResourceArchiveList)).
+
+The files listed here are loaded first, and then the files from the plugins, in the order listed in plugins.txt.
+Later archives overwrite earlier archives.
+
+For list of BSA formats compatible with Skyrim see: [Bethesda mod archives](https://wiki.nexusmods.com/index.php/Bethesda_mod_archives).
 
 ### Loose Files Load Order
 

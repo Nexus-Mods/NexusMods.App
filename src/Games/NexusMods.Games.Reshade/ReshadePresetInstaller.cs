@@ -79,14 +79,9 @@ public class ReshadePresetInstaller : IModInstaller
             .Select(kv =>
             {
                 var (path, file) = kv;
-
-                return new FromArchive
-                {
-                    Id = ModFileId.New(),
-                    To = new GamePath(GameFolderType.Game, path.FileName),
-                    Hash = file.Hash,
-                    Size = file.Size
-                };
+                return file.ToFromArchive(
+                    new GamePath(GameFolderType.Game, path.FileName)
+                );
             });
 
         yield return new ModInstallerResult

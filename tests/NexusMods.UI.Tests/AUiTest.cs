@@ -180,10 +180,17 @@ public class AUiTest
     /// <param name="button"></param>
     protected async Task Click(Button button)
     {
-        await OnUi(() =>
-        {
-            var peer = new ButtonAutomationPeer(button);
-            peer.Invoke();
-        });
+        await OnUi(() => Click_AlreadyOnUi(button));
+    }
+    
+    /// <summary>
+    /// Clicks the button in a way that fires all the proper UI events, use this if you are
+    /// already on UI via <see cref="OnUi{T}"/>.
+    /// </summary>
+    /// <param name="button"></param>
+    protected void Click_AlreadyOnUi(Button button)
+    {
+        var peer = new ButtonAutomationPeer(button);
+        peer.Invoke();
     }
 }

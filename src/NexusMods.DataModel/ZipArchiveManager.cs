@@ -149,8 +149,7 @@ public class ZipArchiveManager : IArchiveManager
 
         if (grouped[default].Any())
             throw new Exception($"Missing archive for {grouped[default].First().ToHex()}");
-
-
+        
         foreach (var group in grouped)
         {
             var byHash = group.ToDictionary(f => f.ToHex());

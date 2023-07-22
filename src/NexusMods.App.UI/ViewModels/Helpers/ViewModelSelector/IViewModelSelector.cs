@@ -34,9 +34,9 @@ public interface IViewModelSelector<TEnum, TVmType> where TEnum : Enum where TVm
     public IObservable<bool> IsActive(TEnum current);
 
     /// <summary>
-    /// Get the command for the button that selects the given ViewModel
+    /// Get the command for the control that selects the given ViewModel
     /// </summary>
     /// <param name="current"></param>
     /// <returns></returns>
-    public ICommand CommandFor(TEnum current);
+    public ICommand CommandForViewModel(TEnum current);
 }

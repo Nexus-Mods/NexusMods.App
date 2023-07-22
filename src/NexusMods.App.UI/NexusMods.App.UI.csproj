@@ -12,6 +12,7 @@
         <AvaloniaResource Include="Theme\DataGridStyles.xaml" />
         <AvaloniaResource Include="Theme\Index.xaml" />
         <AvaloniaResource Include="Theme\LabelStyles.xaml" />
+        <AvaloniaResource Include="Theme\ProgressBar.Download.xaml" />
         <AvaloniaResource Include="Theme\TextBlockStyles.xaml" />
         <AvaloniaResource Include="Theme\TextBox.xaml" />
         <AvaloniaResource Include="Theme\ToggleSwitchStyles.xaml" />
@@ -76,16 +77,20 @@
     <ItemGroup>
         <TrimmerRootDescriptor Include="Roots.xml" />
     </ItemGroup>
-
+    
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.0.0-rc1.1" />
-        <PackageReference Include="Avalonia.Desktop" Version="11.0.0-rc1.1" />
-        <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.0-rc1.1" />
+        <InternalsVisibleTo Include="NexusMods.UI.Tests" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="11.0.0" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.0.0" />
+        <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.0" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.0-rc1.1" />
-        <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0-rc1.1" />
-        <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0-rc1.1" />
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-rc1.1" />
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.0" />
+        <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0" />
+        <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0" />
         <PackageReference Include="DynamicData" Version="7.14.2" />
         <PackageReference Include="Humanizer" Version="2.14.1" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
@@ -96,6 +101,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Networking\NexusMods.Networking.Downloaders\NexusMods.Networking.Downloaders.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.NexusWebApi.NMA\NexusMods.Networking.NexusWebApi.NMA.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
         <ProjectReference Include="..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
@@ -118,47 +124,17 @@
             <DependentUpon>MainWindow.axaml</DependentUpon>
             <SubType>Code</SubType>
         </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\ModEnabledDesignViewModel.cs">
-            <DependentUpon>IModEnabledViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\ModNameDesignViewModel.cs">
-            <DependentUpon>IModNameViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="RightContent\FoundGamesViewModel.cs">
             <DependentUpon>IFoundGamesViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="RightContent\FoundGamesDesignViewModel.cs">
             <DependentUpon>IFoundGamesViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\ModEnabledViewModel.cs">
-            <DependentUpon>IModEnabledViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\ModCategoryDesignViewModel.cs">
-            <DependentUpon>IModCategoryViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\ModNameViewModel.cs">
-            <DependentUpon>IModNameViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\ModInstalledDesignViewModel.cs">
-            <DependentUpon>IModInstalledViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\ModVersionDesignViewModel.cs">
-            <DependentUpon>IModVersionViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="RightContent\LoadoutGrid\LoadoutGridDesignViewModel.cs">
             <DependentUpon>ILoadoutGridViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="RightContent\LoadoutGrid\LoadoutGridViewModel.cs">
             <DependentUpon>ILoadoutGridViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\ModInstalledViewModel.cs">
-            <DependentUpon>IModInstalledViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\ModVersionViewModel.cs">
-            <DependentUpon>IModVersionViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="RightContent\LoadoutGrid\Columns\ModCategoryViewModel.cs">
-            <DependentUpon>IModCategoryViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="RightContent\Downloads\CompletedDesignViewModel.cs">
             <DependentUpon>ICompletedViewModel.cs</DependentUpon>
@@ -205,6 +181,106 @@
         <Compile Update="Controls\Spine\Buttons\Download\DownloadButtonViewModel.cs">
           <DependentUpon>IDownloadButtonViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="RightContent\Downloads\ViewModels\DownloadTaskDesignViewModel.cs">
+          <DependentUpon>IDownloadTaskViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModCategory\ModCategoryView.axaml.cs">
+          <DependentUpon>ModCategoryView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModCategory\ModCategoryDesignViewModel.cs">
+          <DependentUpon>IModCategoryViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModCategory\ModCategoryViewModel.cs">
+          <DependentUpon>IModCategoryViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModName\ModNameView.axaml.cs">
+          <DependentUpon>ModNameView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModName\ModNameDesignViewModel.cs">
+          <DependentUpon>IModNameViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModName\ModNameViewModel.cs">
+          <DependentUpon>IModNameViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModEnabled\ModEnabledHeader.axaml.cs">
+          <DependentUpon>ModEnabledHeader.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModEnabled\ModEnabledView.axaml.cs">
+          <DependentUpon>ModEnabledView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModEnabled\ModEnabledDesignViewModel.cs">
+          <DependentUpon>IModEnabledViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModEnabled\ModEnabledViewModel.cs">
+          <DependentUpon>IModEnabledViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadGameView\DownloadGameView.axaml.cs">
+          <DependentUpon>DownloadGameView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadGameView\DownloadGameViewModel.cs">
+          <DependentUpon>IDownloadGameViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadGameView\DownloadGameDesignViewModel.cs">
+          <DependentUpon>IDownloadGameViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModInstalled\ModInstalledView.axaml.cs">
+          <DependentUpon>ModInstalledView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModInstalled\ModInstalledDesignViewModel.cs">
+          <DependentUpon>ModInstalledViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModInstalled\IModInstalledViewModel.cs">
+          <DependentUpon>ModInstalledViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModVersion\ModVersionView.axaml.cs">
+          <DependentUpon>ModVersionView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModVersion\ModVersionDesignViewModel.cs">
+          <DependentUpon>IModVersionViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\ModVersion\ModVersionViewModel.cs">
+          <DependentUpon>IModVersionViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadGameName\DownloadGameNameViewModel.cs">
+          <DependentUpon>IDownloadGameNameViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\LoadoutGrid\Columns\DownloadGameName\DownloadGameNameDesignViewModel.cs">
+          <DependentUpon>IDownloadGameNameViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\Downloads\InProgressCommonViewModel.cs">
+          <DependentUpon>IInProgressViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Overlays\Generic\MessageBox\OkCancel\MessageBoxOkCancelView.axaml.cs">
+          <DependentUpon>MessageBoxOkCancelView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Overlays\Download\Cancel\CancelDownloadOverlayView.axaml.cs">
+          <DependentUpon>MessageBoxOkCancelView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Overlays\Download\Cancel\CancelDownloadOverlayViewModel.cs">
+          <DependentUpon>ICancelDownloadOverlayViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="RightContent\Downloads\ViewModels\DownloadTaskViewModel.cs">
+          <DependentUpon>IDownloadTaskViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Overlays\Login\NexusLoginOverlayView.axaml.cs">
+          <DependentUpon>NexusLoginOverlayView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Overlays\OverlayController.cs">
+          <DependentUpon>IOverlayController.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Overlays\Generic\MessageBox\OkCancel\MessageBoxOkCancelViewModel.cs">
+          <DependentUpon>IMessageBoxOkCancelViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
@@ -214,5 +290,21 @@
     <ItemGroup>
         <None Remove="Fonts\Bold\Montserrat-Bold.ttf" />
         <AvaloniaResource Include="Fonts\Bold\Montserrat-Bold.ttf" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <UpToDateCheckInput Remove="Controls\DownloadProgressBar\DownloadProgressBar.axaml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="RightContent\DownloadGrid\Columns\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadGameName\DownloadGameNameView.axaml" />
+      <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadName\DownloadNameView.axaml" />
+      <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadSize\DownloadSizeView.axaml" />
+      <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadStatus\DownloadStatusView.axaml" />
+      <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadVersion\DownloadVersionView.axaml" />
     </ItemGroup>
 </Project>

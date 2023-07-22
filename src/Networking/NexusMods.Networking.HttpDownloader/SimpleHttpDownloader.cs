@@ -29,11 +29,15 @@ public class SimpleHttpDownloader : IHttpDownloader
     }
 
     /// <inheritdoc />
-    public async Task<Hash> DownloadAsync(IReadOnlyList<HttpRequestMessage> sources, AbsolutePath destination, Size? size, CancellationToken token)
+    public async Task<Hash> DownloadAsync(IReadOnlyList<HttpRequestMessage> sources, AbsolutePath destination, HttpDownloaderState? state, Size? size, CancellationToken token)
     {
+        state ??= new HttpDownloaderState();
         foreach (var source in sources)
         {
             using var job = await _limiter.BeginAsync($"Downloading {destination.FileName}", size ?? Size.One, token);
+            
+            // Note: If download fails, job will be reported as 'failed', and will not participate in throughput calculations.
+            state.Jobs.Add(job);
             
             // Integrate local download.
             var hash = await LocalFileDownloader.TryDownloadLocal(job, source, destination);

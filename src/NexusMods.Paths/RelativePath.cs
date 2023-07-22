@@ -78,6 +78,24 @@ public readonly struct RelativePath : IEquatable<RelativePath>, IPath, IComparab
         PathHelpers.DebugAssertIsSanitized(path, OS, isRelative: true);
         Path = path;
     }
+    
+    /// <summary>
+    /// Creates a new <see cref="RelativePath"/> from a <see cref="ReadOnlySpan{T}"/>.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public static RelativePath FromUnsanitizedInput(ReadOnlySpan<char> path)
+    {
+        return new RelativePath(PathHelpers.Sanitize(path, OS));
+    }
+    
+    /// <summary>
+    /// Returns the path with the directory separators native to the passed operating system.
+    /// </summary>
+    public string ToNativeSeparators(IOSInformation os)
+    {
+        return PathHelpers.ToNativeSeparators(Path, os);
+    }
 
     /// <summary>
     /// Returns a new path that is this path with the extension changed.
@@ -111,6 +129,14 @@ public readonly struct RelativePath : IEquatable<RelativePath>, IPath, IComparab
     public bool StartsWith(ReadOnlySpan<char> other)
     {
         return Path.AsSpan().StartsWith(other, StringComparison.OrdinalIgnoreCase);
+    }
+    
+    /// <summary>
+    /// Returns true if the relative path ends with a given string.
+    /// </summary>
+    public bool EndsWith(ReadOnlySpan<char> other)
+    {
+        return Path.AsSpan().EndsWith(other, StringComparison.OrdinalIgnoreCase);
     }
 
     /// <summary>

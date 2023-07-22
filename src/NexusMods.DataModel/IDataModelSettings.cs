@@ -1,7 +1,5 @@
 ﻿using JetBrains.Annotations;
-using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Paths;
-using NexusMods.Paths.Utilities;
 
 namespace NexusMods.DataModel;
 

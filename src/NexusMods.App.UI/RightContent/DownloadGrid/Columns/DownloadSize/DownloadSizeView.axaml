@@ -1,0 +1,22 @@
+﻿<reactiveUi:ReactiveUserControl
+    d:DesignHeight="21"
+    d:DesignWidth="120"
+    Width="155"
+    mc:Ignorable="d"
+    x:Class="NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadSize.DownloadSizeView"
+    x:TypeArguments="modName:IModNameViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:modName="clr-namespace:NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModName"
+    xmlns:downloadSize="clr-namespace:NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadSize">
+    <Design.DataContext>
+        <downloadSize:DownloadSizeDesignViewModel />
+    </Design.DataContext>
+    <TextBlock
+        VerticalAlignment="Center"
+        x:Name="SizeTextBox" />
+</reactiveUi:ReactiveUserControl>
+

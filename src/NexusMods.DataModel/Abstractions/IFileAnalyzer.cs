@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices.JavaScript;
+using System.Diagnostics;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Paths;
@@ -16,10 +16,10 @@ public interface IFileAnalyzer
     /// <summary>
     /// The unique identifier for this file analyzer, includes a revision number that
     /// should be updated whenever changes to the analyzer necessitate a re-analysis
-    /// of archive files. 
+    /// of archive files.
     /// </summary>
     public FileAnalyzerId Id { get; }
-    
+
     /// <summary>
     /// Defines the file types supported by this file analyzer.
     /// </summary>
@@ -37,6 +37,7 @@ public interface IFileAnalyzer
 /// <summary>
 /// Extra info for file analyzer. Passed as a struct to avoid having to update all callees.
 /// </summary>
+[DebuggerDisplay("{FileName}")]
 public struct FileAnalyzerInfo
 {
     /// <summary>

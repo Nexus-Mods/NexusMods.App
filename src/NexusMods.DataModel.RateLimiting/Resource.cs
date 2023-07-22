@@ -19,6 +19,7 @@ public class Resource<TResource, TUnit> : IResource<TResource, TUnit>
     private readonly Channel<PendingReport> _channel;
     private readonly SemaphoreSlim _semaphore;
     private readonly ConcurrentDictionary<ulong, Job<TResource, TUnit>> _tasks;
+    private readonly IDateTimeProvider _provider;
     private ulong _nextId;
     private TUnit _totalUsed;
 
@@ -40,10 +41,11 @@ public class Resource<TResource, TUnit> : IResource<TResource, TUnit>
     /// <param name="humanName">Human friendly name for this resource.</param>
     /// <param name="maxJobs">Maximum number of simultaneous jobs being ran.</param>
     /// <param name="maxThroughput">Maximum throughput.</param>
+    /// <param name="provider"></param>
     /// <remarks>
     /// Default settings limit max jobs to CPU threads and no throughput limit.
     /// </remarks>
-    public Resource(string humanName, int maxJobs, TUnit maxThroughput)
+    public Resource(string humanName, int maxJobs, TUnit maxThroughput, IDateTimeProvider? provider = null)
     {
         Name = humanName;
         MaxJobs = maxJobs == 0 ? Environment.ProcessorCount : maxJobs;
@@ -52,6 +54,8 @@ public class Resource<TResource, TUnit> : IResource<TResource, TUnit>
         _channel = Channel.CreateBounded<PendingReport>(10);
         _tasks = new ConcurrentDictionary<ulong, Job<TResource, TUnit>>();
         _totalUsed = TUnit.AdditiveIdentity;
+        provider ??= new DateTimeProvider();
+        _provider = provider;
         _ = StartTask(CancellationToken.None);
     }
 
@@ -64,13 +68,24 @@ public class Resource<TResource, TUnit> : IResource<TResource, TUnit>
     /// <inheritdoc />
     public string Name { get; }
 
-    // TODO: Optimize this by removing LINQ and calculating both counts at once. Iterating a dictionary's elements is already slow; doing it twice is oof. https://github.com/Nexus-Mods/NexusMods.App/issues/214
-
     /// <inheritdoc />
-    public StatusReport<TUnit> StatusReport =>
-        new(_tasks.Count(t => t.Value.Started),
-            _tasks.Count(t => !t.Value.Started),
-            _totalUsed);
+    public StatusReport<TUnit> StatusReport
+    {
+        get
+        {
+            var running = 0;
+            var pending = 0;
+            foreach (var task in _tasks.Values)
+            {
+                if (task.CurrentState == JobState.Waiting)
+                    pending++;
+                else
+                    running++;
+            }
+            
+            return new StatusReport<TUnit>(running, pending, _totalUsed);
+        }
+    }
 
     /// <inheritdoc />
     public async ValueTask<IJob<TResource, TUnit>> BeginAsync(string jobTitle, TUnit size, CancellationToken token)
@@ -82,12 +97,15 @@ public class Resource<TResource, TUnit> : IResource<TResource, TUnit>
             Description = jobTitle,
             Size = size,
             Current = TUnit.AdditiveIdentity,
-            TypedResource = this
+            TypedResource = this,
+            StartedAt = _provider.GetCurrentTimeUtc(),
+            CurrentAtResumeTime = TUnit.AdditiveIdentity,
+            ResumedAt = _provider.GetCurrentTimeUtc()
         };
 
         _tasks.TryAdd(id, job);
         await _semaphore.WaitAsync(token);
-        job.Started = true;
+        job.CurrentState = JobState.Running;
         return job;
     }
 
@@ -103,6 +121,7 @@ public class Resource<TResource, TUnit> : IResource<TResource, TUnit>
     {
         _semaphore.Release();
         _tasks.TryRemove(job.Id, out _);
+        job.CurrentState = JobState.Finished;
     }
 
     /// <inheritdoc />

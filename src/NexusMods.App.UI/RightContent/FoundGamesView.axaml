@@ -10,9 +10,9 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:rightContent="clr-namespace:NexusMods.App.UI.RightContent"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <UserControl.DataContext>
+    <Design.DataContext>
         <rightContent:FoundGamesDesignViewModel />
-    </UserControl.DataContext>
+    </Design.DataContext>
     <ItemsControl
         Background="#0AFFFFFF"
         CornerRadius="8"

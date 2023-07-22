@@ -101,7 +101,10 @@ public static class PathHelpers
         return true;
     }
 
-    private static ReadOnlySpan<char> RemoveTrailingDirectorySeparator(ReadOnlySpan<char> path)
+    /// <summary>
+    /// Removes trailing directory separator characters from the input.
+    /// </summary>
+    public static ReadOnlySpan<char> RemoveTrailingDirectorySeparator(ReadOnlySpan<char> path)
     {
         return path.DangerousGetReferenceAt(path.Length - 1) == DirectorySeparatorChar
             ? path.SliceFast(0, path.Length - 1)
@@ -125,13 +128,43 @@ public static class PathHelpers
             ? GC.AllocateUninitializedArray<char>(path.Length)
             : stackalloc char[path.Length];
 
-        path.CopyTo(buffer);
-        buffer.Replace('\\', '/', buffer);
+        var bufferIndex = 0;
+        var previous = '\0';
+
+        for (var pathIndex = 0; pathIndex < path.Length; pathIndex++)
+        {
+            var current = path.DangerousGetReferenceAt(pathIndex);
+            if (previous == '\\' && current == '\\') continue;
+            buffer[bufferIndex++] = current == '\\' ? '/' : current;
+            previous = current;
+        }
 
         // Don't remove the trailing directory separator for root directories like "C:/".
-        return IsRootDirectory(buffer, os)
-            ? buffer.ToString()
-            : RemoveTrailingDirectorySeparator(buffer).ToString();
+        var slice = buffer.SliceFast(0, bufferIndex);
+        return IsRootDirectory(slice, os)
+            ? slice.ToString()
+            : RemoveTrailingDirectorySeparator(slice).ToString();
+    }
+    
+    /// <summary>
+    /// Replaces all directory separator characters with the
+    /// native directory separator character of the passed OS.
+    /// <remarks>
+    /// Assumes sanitized path, changes to `/` on Unix-based systems and `\` on Windows.
+    /// </remarks>
+    /// </summary>
+    public static string ToNativeSeparators(ReadOnlySpan<char> path, IOSInformation os)
+    {
+        DebugAssertIsSanitized(path, os);
+        if (path.IsEmpty) return string.Empty;
+        
+        if (os.IsUnix()) return path.ToString();
+
+        var buffer = path.Length > 512
+            ? GC.AllocateUninitializedArray<char>(path.Length)
+            : stackalloc char[path.Length];
+        path.CopyTo(buffer);
+        return buffer.Replace('/', '\\', buffer).ToString();
     }
 
     /// <summary>
@@ -528,7 +561,8 @@ public static class PathHelpers
         DebugAssertIsSanitized(child, os);
         DebugAssertIsSanitized(parent, os);
 
-        if (child.IsEmpty || parent.IsEmpty) return false;
+        if (parent.IsEmpty || child.IsEmpty && parent.IsEmpty) return true;
+        if (child.IsEmpty) return false;
         if (!child.StartsWith(parent, StringComparison.OrdinalIgnoreCase)) return false;
 
         if (child.Length == parent.Length) return true;
@@ -548,6 +582,7 @@ public static class PathHelpers
         DebugAssertIsSanitized(child, os);
         DebugAssertIsSanitized(parent, os);
 
+        if (child.IsEmpty && parent.IsEmpty) return ReadOnlySpan<char>.Empty;
         if (!InFolder(child, parent, os)) return ReadOnlySpan<char>.Empty;
 
         return IsRootDirectory(parent, os)

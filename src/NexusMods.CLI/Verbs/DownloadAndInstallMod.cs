@@ -56,7 +56,7 @@ public class DownloadAndInstallMod : AVerb<string, LoadoutMarker, string>
             }
 
             await _httpDownloader.DownloadAsync(new[] { new HttpRequestMessage(HttpMethod.Get, uri) },
-                temporaryPath, null, token);
+                temporaryPath, null, null, token);
             
             var analyzedFile = await _archiveAnalyzer.AnalyzeFileAsync(temporaryPath, token);
             await _archiveInstaller.AddMods(loadout.Value.LoadoutId, analyzedFile.Hash, token:token);

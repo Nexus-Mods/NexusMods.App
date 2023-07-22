@@ -52,7 +52,7 @@ public abstract class AViewModelSelector<TEnum, TVmType, TBase> :
             .Select(val => val.Equals(current));
     }
     
-    public ICommand CommandFor(TEnum current)
+    public ICommand CommandForViewModel(TEnum current)
     {
         return ReactiveCommand.Create(() => Set(current));
     }

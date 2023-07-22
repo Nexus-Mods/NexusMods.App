@@ -50,7 +50,7 @@ public class NxmDownloadProtocolHandler : IDownloadProtocolHandler
 
         var downloadUris = links.Data.Select(u => new HttpRequestMessage(HttpMethod.Get, u.Uri)).ToArray();
         
-        await _downloader.DownloadAsync(downloadUris, tempPath, null, token);
+        await _downloader.DownloadAsync(downloadUris, tempPath, null, null, token);
         var hash = await _archiveAnalyzer.AnalyzeFileAsync(tempPath, token);
         await _archiveInstaller.AddMods(loadout.Value.LoadoutId, hash.Hash, token:token);
     }
