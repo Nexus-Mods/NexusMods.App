@@ -104,7 +104,8 @@ public class SevenZipExtractor : IExtractor
     private async Task ExtractAllAsync_Impl(IStreamFactory sFn, AbsolutePath destination, CancellationToken token, IJob<IExtractor, Size> job)
     {
         TemporaryPath? spoolFile = null;
-        var processOutput = new StringBuilder();
+        var processStdOutput = new StringBuilder();
+        var processStdError = new StringBuilder();
         try
         {
             AbsolutePath source;
@@ -141,7 +142,7 @@ public class SevenZipExtractor : IExtractor
                 .WithStandardOutputPipe(PipeTarget.ToDelegate(line =>
                 {
                     if (string.IsNullOrWhiteSpace(line)) return;
-                    processOutput.Append($"[7z.exe] {line} \n");
+                    processStdOutput.AppendLine($"[7z stdout] {line}");
                     
                     if (line.Length <= 4 || line[3] != '%') return;
                     if (!int.TryParse(line.AsSpan()[..3], out var percentInt)) return;
@@ -154,6 +155,11 @@ public class SevenZipExtractor : IExtractor
 
                     lastPercent = percentInt;
                 }))
+                .WithStandardErrorPipe(PipeTarget.ToDelegate(line =>
+                { 
+                    if (string.IsNullOrWhiteSpace(line)) return;
+                    processStdError.AppendLine($"[7z stderr] {line}");
+                }))
                 .ExecuteAsync();
 
             if (result.ExitCode != 0)
@@ -162,7 +168,8 @@ public class SevenZipExtractor : IExtractor
         catch (CommandExecutionException ex)
         {
             _logger.LogError(ex, "While executing 7zip");
-            _logger.LogInformation("Output from the extractor, trying to extract file {File}:\n{Output}", sFn.Name, processOutput.ToString());
+            _logger.LogInformation("Output from the extractor, trying to extract file {File}:\n{StdOutput}\n{StdError}", 
+                sFn.Name, processStdOutput.ToString(), processStdError.ToString());
             throw;
         }
         finally
