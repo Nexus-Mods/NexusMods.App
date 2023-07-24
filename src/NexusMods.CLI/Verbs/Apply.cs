@@ -9,7 +9,7 @@ namespace NexusMods.CLI.Verbs;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 /// <summary>
-/// Apply a Loadout to a game folder
+/// Compute and potentially run the steps needed to apply a Loadout to a game folder
 /// </summary>
 public class Apply : AVerb<LoadoutMarker, bool, bool>
 {
@@ -28,10 +28,10 @@ public class Apply : AVerb<LoadoutMarker, bool, bool>
     }
 
     /// <inheritdoc />
-    public static VerbDefinition Definition => new("apply", "Apply a Loadout to a game folder", new OptionDefinition[]
+    public static VerbDefinition Definition => new("apply", "Compute the steps needed to apply a Loadout to a game folder", new OptionDefinition[]
     {
         new OptionDefinition<LoadoutMarker>("l", "loadout", "Loadout to apply"),
-        new OptionDefinition<bool>("r", "run", "Run the application? (defaults to just printing the steps)"),
+        new OptionDefinition<bool>("r", "run", "Run computed apply steps? (makes actual changes on disk, defaults to just printing the steps otherwise)"),
         new OptionDefinition<bool>("s", "summary", "Print the summary, not the detailed step list")
     });
 
