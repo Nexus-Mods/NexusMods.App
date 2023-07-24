@@ -5,7 +5,7 @@ using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.TestFramework;
 using NexusMods.Networking.Downloaders.Tasks;
 
-namespace NexusMods.Networking.Downloaders.Tests;
+namespace NexusMods.Networking.Downloaders.Tests.Tasks;
 
 public class HttpDownloadTaskTests : AGameTest<SkyrimSpecialEdition>
 {
