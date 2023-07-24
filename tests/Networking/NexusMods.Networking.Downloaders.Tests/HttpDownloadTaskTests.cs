@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.TestFramework;
+using NexusMods.Networking.Downloaders.Tasks;
 
 namespace NexusMods.Networking.Downloaders.Tests;
 

@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Networking.Downloaders.Interfaces;
+using NexusMods.Networking.Downloaders.Tasks;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Paths;
 

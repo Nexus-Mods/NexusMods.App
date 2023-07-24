@@ -7,7 +7,7 @@ using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Paths;
 
-namespace NexusMods.Networking.Downloaders;
+namespace NexusMods.Networking.Downloaders.Tasks;
 
 /// <summary>
 /// Represents an individual task to download and install a .nxm link.
