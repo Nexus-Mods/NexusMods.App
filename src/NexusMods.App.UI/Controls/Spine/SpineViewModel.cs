@@ -43,6 +43,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     private readonly Subject<SpineButtonAction> _actions = new();
     private readonly ILogger<SpineViewModel> _logger;
     private readonly IGameLeftMenuViewModel _gameLeftMenuViewModel;
+    private readonly IHomeLeftMenuViewModel _homeLeftMenuViewModel;
     private readonly IDownloadsViewModel _downloadsViewModel;
     public IObservable<SpineButtonAction> Actions => _actions;
 
@@ -63,7 +64,8 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         Home = homeButtonViewModel;
         Add = addButtonViewModel;
         Downloads = downloadsButtonViewModel;
-
+        
+        _homeLeftMenuViewModel = homeLeftMenuViewModel;
         _downloadsViewModel = downloadsViewModel;
         _gameLeftMenuViewModel = gameLeftMenuViewModel;
 
@@ -91,32 +93,33 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 .SubscribeWithErrorLogging(logger)
                 .DisposeWith(disposables);
 
-            Home.Click = ReactiveCommand.Create(() =>
-            {
-                _logger.LogTrace("Home selected");
-                _actions.OnNext(new SpineButtonAction(Type.Home));
-                LeftMenu = homeLeftMenuViewModel;
-            });
+            Home.Click = ReactiveCommand.Create(NavigateToHome);
 
-            Add.Click = ReactiveCommand.Create(() =>
-            {
-                _logger.LogTrace("Add selected");
-                _actions.OnNext(new SpineButtonAction(Type.Add));
-            });
+            Add.Click = ReactiveCommand.Create(NavigateToAdd);
 
-            Downloads.Click = ReactiveCommand.Create(() =>
-            {
-                _logger.LogTrace("Download selected");
-                _actions.OnNext(new SpineButtonAction(Type.Download));
-                LeftMenu = downloadsViewModel;
-            });
+            Downloads.Click = ReactiveCommand.Create(NavigateToDownloads);
 
             Activations
                 .SubscribeWithErrorLogging(logger, HandleActivation)
                 .DisposeWith(disposables);
+            
+            // For now just select home on startup
+            NavigateToHome();
         });
     }
 
+    private void NavigateToHome()
+    {
+        _logger.LogTrace("Home selected");
+        _actions.OnNext(new SpineButtonAction(Type.Home));
+        LeftMenu = _homeLeftMenuViewModel;
+    }
+    
+    private void NavigateToAdd()
+    {
+        _logger.LogTrace("Add selected");
+        _actions.OnNext(new SpineButtonAction(Type.Add));
+    }
     private void NavigateToGame(IGame game)
     {
         _logger.LogTrace("Game {Game} selected", game);
