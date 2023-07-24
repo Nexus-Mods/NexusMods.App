@@ -93,25 +93,11 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 .SubscribeWithErrorLogging(logger)
                 .DisposeWith(disposables);
 
-            Home.Click = ReactiveCommand.Create(() =>
-            {
-                _logger.LogTrace("Home selected");
-                _actions.OnNext(new SpineButtonAction(Type.Home));
-                LeftMenu = homeLeftMenuViewModel;
-            });
+            Home.Click = ReactiveCommand.Create(NavigateToHome);
 
-            Add.Click = ReactiveCommand.Create(() =>
-            {
-                _logger.LogTrace("Add selected");
-                _actions.OnNext(new SpineButtonAction(Type.Add));
-            });
+            Add.Click = ReactiveCommand.Create(NavigateToAdd);
 
-            Downloads.Click = ReactiveCommand.Create(() =>
-            {
-                _logger.LogTrace("Download selected");
-                _actions.OnNext(new SpineButtonAction(Type.Download));
-                LeftMenu = downloadsViewModel;
-            });
+            Downloads.Click = ReactiveCommand.Create(NavigateToDownloads);
 
             Activations
                 .SubscribeWithErrorLogging(logger, HandleActivation)
@@ -127,6 +113,12 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         _logger.LogTrace("Home selected");
         _actions.OnNext(new SpineButtonAction(Type.Home));
         LeftMenu = _homeLeftMenuViewModel;
+    }
+    
+    private void NavigateToAdd()
+    {
+        _logger.LogTrace("Add selected");
+        _actions.OnNext(new SpineButtonAction(Type.Add));
     }
     private void NavigateToGame(IGame game)
     {
