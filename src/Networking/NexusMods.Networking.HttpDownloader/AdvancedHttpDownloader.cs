@@ -106,7 +106,7 @@ namespace NexusMods.Networking.HttpDownloader
             // Can't do multipart downloads if we don't know the full size or the server doesn't support
             if (!features.SupportsResume || size == null)
             {
-                throw new Exception("Server does not support multipart downloads");
+                return await DownloadWithoutResume(sources, destination, downloaderState, size, cancel);
             }
 
             // Note: All data eventually is piped into primary job (when writing to destination), so we can just use that to track everything as a whole.
@@ -127,6 +127,24 @@ namespace NexusMods.Networking.HttpDownloader
             await fileWriter;
 
             return await FinalizeDownload(state, cancel);
+        }
+
+        private async Task<Hash> DownloadWithoutResume(IReadOnlyList<HttpRequestMessage> sources, AbsolutePath destination, HttpDownloaderState downloaderState, Size? size, CancellationToken cancel)
+        {
+            using var primaryJob = await _limiter.BeginAsync($"Downloading {destination.FileName}", size ?? Size.One, cancel);
+
+            using var buffer = _memoryPool.Rent((int)ReadBlockSize.Value);
+            foreach (var source in sources)
+            {
+                var response = await _client.SendAsync(source.Copy(), cancel);
+                if (!response.IsSuccessStatusCode) continue;
+
+                await using var of = destination.Create();
+                await using var stream = await response.Content.ReadAsStreamAsync(cancel);
+                return await stream.HashingCopyAsync(of, cancel, primaryJob);
+            }
+
+            throw new Exception("No valid server");
         }
 
         private async Task<Hash> FinalizeDownload(DownloadState state, CancellationToken cancel)

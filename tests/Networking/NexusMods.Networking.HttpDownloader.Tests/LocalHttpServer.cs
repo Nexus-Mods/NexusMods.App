@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Headers;
+using System.Text;
 using Microsoft.Extensions.Logging;
 using NexusMods.Hashing.xxHash64;
 
@@ -53,17 +54,25 @@ public class LocalHttpServer : IDisposable
                 switch (context.Request.Url?.PathAndQuery)
                 {
                     case "/hello":
-                        {
+                    {
+                            var responseString = Encoding.UTF8.GetBytes("Hello World!");
                             resp.StatusCode = 200;
                             resp.StatusDescription = "OK";
-                            await using var ros = resp.OutputStream;
-                            ros.Write("Hello World!"u8);
+                            resp.ProtocolVersion = HttpVersion.Version11;
+                            resp.ContentLength64 = responseString.Length;
+                            if (context.Request.HttpMethod != "HEAD")
+                            {
+                                await using var ros = resp.OutputStream;
+                                await ros.WriteAsync(responseString);
+                            }
                             break;
-                        }
+                    }
                     case "/100MB-Break":
                         {
                             resp.StatusCode = 200;
                             resp.StatusDescription = "OK";
+                            resp.ProtocolVersion = HttpVersion.Version11;
+                            resp.Headers.Add(HttpResponseHeader.ContentType, "text/plain");
                             await using var ros = resp.OutputStream;
                             ros.Write("Hello World!"u8);
                             break;
