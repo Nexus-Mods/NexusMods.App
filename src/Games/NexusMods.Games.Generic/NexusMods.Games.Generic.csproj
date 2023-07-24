@@ -4,6 +4,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="ini-parser-netstandard" Version="2.5.2" />
+        <PackageReference Include="ini-parser-netstandard" />
     </ItemGroup>
 </Project>

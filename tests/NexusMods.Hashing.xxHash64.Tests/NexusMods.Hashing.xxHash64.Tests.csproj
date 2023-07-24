@@ -2,12 +2,12 @@
     <PropertyGroup>
         <EnableXunitDependencyInjectionDefaultTestFrameworkAttribute>false</EnableXunitDependencyInjectionDefaultTestFrameworkAttribute>
     </PropertyGroup>
-    
+
     <ItemGroup>
         <ProjectReference Include="..\..\src\NexusMods.Hashing.xxHash64\NexusMods.Hashing.xxHash64.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="System.IO.Hashing" Version="8.0.0-preview.1.23110.8" />
+        <PackageReference Include="System.IO.Hashing" />
     </ItemGroup>
 </Project>

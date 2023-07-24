@@ -23,10 +23,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
-        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
-        <PackageReference Include="NLog.Extensions.Logging" Version="5.2.3" />
-        <PackageReference Include="Spectre.Console" Version="0.46.1-preview.0.7" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+        <PackageReference Include="NLog.Extensions.Logging" />
+        <PackageReference Include="Spectre.Console" />
     </ItemGroup>
 
     <ItemGroup>

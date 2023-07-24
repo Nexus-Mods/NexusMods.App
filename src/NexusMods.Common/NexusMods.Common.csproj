@@ -3,12 +3,9 @@
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
     <ItemGroup>
-        <ProjectReference Include="..\NexusMods.Paths\NexusMods.Paths.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="CliWrap" Version="3.6.0" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+        <PackageReference Include="NexusMods.Paths" />
+        <PackageReference Include="CliWrap" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     </ItemGroup>
 
     <ItemGroup>

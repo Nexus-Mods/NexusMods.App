@@ -3,6 +3,6 @@
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
     <ItemGroup>
-        <ProjectReference Include="..\NexusMods.Paths\NexusMods.Paths.csproj" />
+        <PackageReference Include="NexusMods.Paths" />
     </ItemGroup>
 </Project>
