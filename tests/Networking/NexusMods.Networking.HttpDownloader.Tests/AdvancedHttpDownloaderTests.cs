@@ -82,4 +82,33 @@ public class AdvancedHttpDownloaderTests
         resultHash.Should().Be(Hash.From(0x79B2246476DAA5CE));
         (await path.Path.ReadAllTextAsync()).Should().Be("Welcome back, World!");
     }
+
+    [Fact]
+    public async Task CanDownloadFromReliableSource()
+    {
+        await using var path = _temporaryFileManager.CreateFile();
+
+        var resultHash = await _httpDownloader.DownloadAsync(new[]
+        {
+            new HttpRequestMessage(HttpMethod.Get, _localHttpServer.Uri + "reliable")
+        }, path);
+
+        await path.Path.MoveToAsync( FileSystem.Shared.FromUnsanitizedFullPath(@"c:\tmp\goodFile.bin"));
+
+        resultHash.Should().Be(_localHttpServer.LargeDataHash);
+    }
+
+    [Fact]
+    public async Task CanDownloadFromUnreliableSource()
+    {
+        await using var path = _temporaryFileManager.CreateFile();
+
+        var resultHash = await _httpDownloader.DownloadAsync(new[]
+        {
+            new HttpRequestMessage(HttpMethod.Get, _localHttpServer.Uri + "unreliable")
+        }, path);
+
+        await path.Path.MoveToAsync( FileSystem.Shared.FromUnsanitizedFullPath(@"c:\tmp\lastFile.bin"));
+        resultHash.Should().Be(_localHttpServer.LargeDataHash);
+    }
 }

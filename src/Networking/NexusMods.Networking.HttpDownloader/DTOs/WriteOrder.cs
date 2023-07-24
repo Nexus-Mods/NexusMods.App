@@ -10,4 +10,5 @@ struct WriteOrder
     public long Offset;
     public Memory<byte> Data;
     public IMemoryOwner<byte> Owner;
+    public ChunkState Chunk;
 }

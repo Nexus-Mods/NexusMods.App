@@ -62,7 +62,7 @@ namespace NexusMods.Networking.HttpDownloader
         /// before trying other sources and/or threads
         /// </summary>
         private readonly Size ChunkSize = Size.MB * 128;
-        
+
         /// <summary>
         /// The size of the buffer used to read from the network stream, no need to make this too large as
         /// they are pretty quickly written to disk and returned to the pool. Really these should be fairly
@@ -82,7 +82,7 @@ namespace NexusMods.Networking.HttpDownloader
         /// <summary>
         /// Constructor
         /// </summary>
-        public AdvancedHttpDownloader(ILogger<AdvancedHttpDownloader> logger, HttpClient client, IResource<IHttpDownloader, Size> limiter, 
+        public AdvancedHttpDownloader(ILogger<AdvancedHttpDownloader> logger, HttpClient client, IResource<IHttpDownloader, Size> limiter,
             IHttpDownloaderSettings settings)
         {
             _logger = logger;
@@ -99,10 +99,10 @@ namespace NexusMods.Networking.HttpDownloader
         {
             downloaderState ??= new HttpDownloaderState();
             using var primaryJob = await _limiter.BeginAsync($"Initiating Download {destination.FileName}", size ?? Size.One, cancel);
-            
+
             var features = await ServerFeatures.Request(_client, sources[0].Copy(), cancel);
             size ??= features.DownloadSize;
-            
+
             // Can't do multipart downloads if we don't know the full size or the server doesn't support
             if (!features.SupportsResume || size == null)
             {
@@ -111,7 +111,7 @@ namespace NexusMods.Networking.HttpDownloader
 
             // Note: All data eventually is piped into primary job (when writing to destination), so we can just use that to track everything as a whole.
             downloaderState.Jobs.Add(primaryJob);
-            
+
             var state = await InitiateState(destination, size.Value, sources, cancel);
             state.Sources = sources.Select((source, idx) => new Source { Request = source, Priority = idx }).ToArray();
             state.Destination = destination;
@@ -134,7 +134,7 @@ namespace NexusMods.Networking.HttpDownloader
             var tempPath = state.TempFilePath;
 
             if (state.HasIncompleteChunk) return Hash.Zero;
-            
+
             state.StateFilePath.Delete();
             File.Move(tempPath.ToString(), state.Destination.ToString(), true);
             return await state.Destination.XxHash64Async(cancel);
@@ -144,10 +144,9 @@ namespace NexusMods.Networking.HttpDownloader
         private async Task FileWriterTask(DownloadState state, ChannelReader<WriteOrder> writes, DLJob job, CancellationToken cancel)
         {
             var tempPath = state.TempFilePath;
-
-            var sizeKnown = false;
-
             await using var file = tempPath.Open(FileMode.OpenOrCreate, FileAccess.Write);
+            file.SetLength(state.TotalSize);
+
             while (true)
             {
                 // writing out data that was already downloaded is intentionally not cancellable. The writes channel
@@ -155,17 +154,15 @@ namespace NexusMods.Networking.HttpDownloader
                 // been written
                 try
                 {
-                    var order = await writes.ReadAsync(CancellationToken.None);
-                    if (!sizeKnown && state.TotalSize > 0)
-                    {
-                        // technically we don't need this as the FileStream is happy to resize the file as necessary
-                        // as we seek around but that's not true for Streams in general plus it feels cleaner to
-                        // allocate the space right away
-                        file.SetLength(state.TotalSize);
-                        sizeKnown = true;
-                    }
+                    var order = await writes.ReadAsync(cancel);
+                    file.Position = order.Offset;
+                    await file.WriteAsync(order.Data, cancel);
+                    await file.FlushAsync(cancel);
+                    order.Owner.Dispose();
 
-                    await ApplyWriteOrder(file, order, state);
+                    order.Chunk.Completed += order.Data.Length;
+
+                    await WriteDownloadState(state, cancel);
                     // _bufferPool.Return(order.Data);
                     await job.ReportAsync(Size.FromLong(order.Data.Length), cancel);
                 }
@@ -175,37 +172,6 @@ namespace NexusMods.Networking.HttpDownloader
                 }
             }
         }
-
-        private async Task ApplyWriteOrder(Stream file, WriteOrder order, DownloadState state)
-        {
-            file.Position = order.Offset;
-            await file.WriteAsync(order.Data, CancellationToken.None);
-            
-            UpdateChunk(state, order);
-
-            // data file has to be flushed before updating the state file. If the state is outdated that's ok, on resume
-            //   we'll just download a bit more than necessary. But the other way around the output file would be corrupted.
-            //   if this is a performance issue, either increase the block size or tie the state update to the automatic file flushing
-            //   (something like file.OnFlush(() => WriteDownloadState(state))
-            await file.FlushAsync(CancellationToken.None);
-            order.Owner.Dispose();
-
-            await WriteDownloadState(state, CancellationToken.None);
-        }
-
-        private void UpdateChunk(DownloadState state, WriteOrder order)
-        {
-            lock (state)
-            {
-                var chunkIdx = state.Chunks.FindIndex(chunk =>
-                    (chunk.Offset <= order.Offset)
-                    && ((chunk.Size == -1)
-                        || (order.Offset < (chunk.Offset + chunk.Size))));
-
-                state.Chunks[chunkIdx].Completed += order.Data.Length;
-            }
-        }
-
         #endregion
 
         #region Downloading
@@ -323,7 +289,11 @@ namespace NexusMods.Networking.HttpDownloader
         {
             // Caller passes a full http request but we need to adjust the headers so need a copy
             var request = chunk.Source!.Request!.Copy();
-            request.Headers.Range = MakeRangeHeader(chunk);
+
+            var from = chunk.Offset + chunk.Read;
+            var to = chunk.Offset + chunk.Size - 1;
+            request.Headers.Range = new RangeHeaderValue(from, to);
+
 
             var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancel);
 
@@ -343,45 +313,33 @@ namespace NexusMods.Networking.HttpDownloader
 
             HttpResponseMessage? response = null;
 
-            while (!sourceValid)
+            while (!chunk.IsReadComplete)
             {
-                // this is not an endless loop, TakeSource will throw an exception if all sources were tried and rejected
-                chunk.Source = TakeSource(download);
-
-                response = await SendRangeRequest(chunk, cancel);
-                sourceValid = response != null;
-                if (!sourceValid)
+                _logger.LogInformation("Remaining : {ToRead}", chunk.RemainingToRead);
+                sourceValid = false;
+                while (!sourceValid)
                 {
-                    chunk.Source.Priority = int.MaxValue;
-                }
-            }
+                    // this is not an endless loop, TakeSource will throw an exception if all sources were tried and rejected
+                    chunk.Source = TakeSource(download);
 
-            if (response != null)
-            {
-                bool ret;
-
-                var rangeSupported = response.Content.Headers.ContentRange?.HasRange == true;
-
-                var success = UpdateChunks(download, chunk, rangeSupported);
-                if (success) ret = success;
-                else
-                {
-                    chunk.Source!.Priority = int.MaxValue;
-                    response.Dispose();
-                    success = false;
-
-                    ret = success;
+                    response = await SendRangeRequest(chunk, cancel);
+                    sourceValid = response != null;
+                    if (!sourceValid)
+                    {
+                        chunk.Source.Priority = int.MaxValue;
+                    }
                 }
 
-                if (!ret)
+                if (response != null)
                 {
-                    return;
+                    var start = DateTime.Now;
+                    await using var stream = await response.Content.ReadAsStreamAsync(cancel);
+                    await ReadStreamToEnd(job, stream, chunk, writes, cancel);
+                    _logger.LogInformation("chunk {}-{} @ {} took {} ms => {} kb/s",
+                        chunk.Offset + chunk.Read, chunk.Offset + chunk.Size, chunk.Source,
+                        (int)((DateTime.Now - start).TotalMilliseconds), chunk.KBytesPerSecond);
                 }
-                var start = DateTime.Now;
-                await using var stream = await response.Content.ReadAsStreamAsync(cancel);
-                await ReadStreamToEnd(job, stream, chunk, writes, cancel);
-                _logger.LogDebug("chunk {}-{} @ {} took {} ms => {} kb/s",
-                    chunk.Offset, chunk.Offset + chunk.Size, chunk.Source, (int)((DateTime.Now - start).TotalMilliseconds), chunk.KBytesPerSecond);
+
             }
         }
 
@@ -401,16 +359,18 @@ namespace NexusMods.Networking.HttpDownloader
 
         private async Task ReadStreamToEnd(DLJob job, Stream stream, ChunkState chunk, ChannelWriter<WriteOrder> writes, CancellationToken cancel)
         {
-            var lastRead = -1;
-            var offset = chunk.Offset + chunk.Completed;
+            var offset = chunk.Offset + chunk.Read;
+            var upperBounds = chunk.Offset + chunk.Size;
             chunk.Started = DateTime.Now;
-            while (lastRead != 0)
+            while (offset < upperBounds)
             {
                 var rented = _memoryPool.Rent((int)ReadBlockSize.Value);
-                var (filledBuffer, totalRead) = await FillBuffer(stream, rented, (int)chunk.RemainingToRead, cancel);
-                lastRead = totalRead;
-                
+                var filledBuffer = await FillBuffer(stream, rented, (int)chunk.RemainingToRead, cancel);
+                var lastRead = filledBuffer.Length;
+                if (lastRead == 0) break;
+
                 await job.ReportAsync(Size.FromLong(lastRead), cancel);
+                _logger.LogInformation("Copied {Bytes} of data at {Offset} remaining {Remain}", lastRead, offset,  upperBounds - offset);
                 if (lastRead > 0)
                 {
                     chunk.Read += lastRead;
@@ -420,7 +380,8 @@ namespace NexusMods.Networking.HttpDownloader
                         Offset = offset,
                         Data = filledBuffer,
                         Owner = rented,
-                    }, CancellationToken.None);
+                        Chunk = chunk
+                    }, cancel);
                     offset += lastRead;
                 }
             }
@@ -435,7 +396,7 @@ namespace NexusMods.Networking.HttpDownloader
         /// <param name="totalSize"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        private async ValueTask<(Memory<byte> Buffer, int TotalRead)> FillBuffer(Stream stream, IMemoryOwner<byte> data, int totalSize, CancellationToken token)
+        private async ValueTask<Memory<byte>> FillBuffer(Stream stream, IMemoryOwner<byte> data, int totalSize, CancellationToken token)
         {
             var memory = data.Memory;
             var totalRead = 0;
@@ -447,45 +408,16 @@ namespace NexusMods.Networking.HttpDownloader
 
                 totalRead += read;
             }
-            return (memory[..totalRead], totalRead);
+            return memory[..totalRead];
         }
 
         #endregion // Downloading
-
-        #region Header Handling
-        
-        private bool UpdateChunks(DownloadState download, ChunkState chunk, bool rangeSupport)
-        {
-            if (rangeSupport)
-            {
-                // range request supported, perfect
-                return true;
-            }
-
-            if (chunk.Completed > 0)
-            {
-                // we've already started a chunked download but this source doesn't support it. Drop the source,
-                // cancel the thread
-                _logger.LogInformation("Source ignored because it doesn't support chunked downloads: {Source}", chunk.Source);
-                return false;
-            }
-
-            // TODO we should try if one of the other sources supports ranges
-            _logger.LogInformation("Source doesn't support chunked downloads, downloading in all-or-nothing mode: {Source}", chunk.Source);
-            // this will set data.size negative if the Content-Length header is also missing
-            chunk.Size = download.TotalSize;
-            download.Chunks = new List<ChunkState> { chunk };
-
-            return true;
-        }
-
-        #endregion // Header Handling
 
         #region Download State Persistance
 
         private async Task<DownloadState> InitiateState(AbsolutePath destination, Size size, IReadOnlyList<HttpRequestMessage> sourceMessages, CancellationToken cancel)
         {
-            
+
             DownloadState? state = null;
             var stateFilePath = DownloadState.GetStateFilePath(destination);
             if (stateFilePath.FileExists && DownloadState.GetTempFilePath(destination).FileExists)
@@ -493,7 +425,7 @@ namespace NexusMods.Networking.HttpDownloader
                 _logger.LogInformation("Resuming prior download {FilePath}", destination);
                 state = DeserializeDownloadState(await stateFilePath.ReadAllTextAsync(cancel));
             }
-            
+
             var sources = sourceMessages.Select(msg =>
                 new Source{
                     Request = msg,
@@ -526,9 +458,9 @@ namespace NexusMods.Networking.HttpDownloader
                         Read = 0
                     });
                 }
-                
+
                 _logger.LogInformation("Starting download {FilePath} in {ChunkCount} chunks of {Size} ", destination, chunks.Count, ChunkSize);
-                
+
                 state = new DownloadState
                 {
                     TotalSize = (long)size.Value,
@@ -537,26 +469,21 @@ namespace NexusMods.Networking.HttpDownloader
                     Chunks = chunks
                 };
             }
-            
+
             return state;
         }
-        
+
         private async Task WriteDownloadState(DownloadState state, CancellationToken cancel = default)
         {
             await using var fs = state.StateFilePath.Create();
             try
             {
-                await fs.WriteAsync(Encoding.UTF8.GetBytes(SerializeDownloadState(state)), cancel);
+                await fs.WriteAsync(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(state)), cancel);
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Failed to write download state");
             }
-        }
-
-        private string SerializeDownloadState(DownloadState state)
-        {
-            return JsonSerializer.Serialize(state);
         }
 
         private DownloadState DeserializeDownloadState(string input)
@@ -571,21 +498,5 @@ namespace NexusMods.Networking.HttpDownloader
 
         #endregion // Download State Persistence
 
-        #region Utility Functions
-
-
-
-        private RangeHeaderValue MakeRangeHeader(ChunkState chunk)
-        {
-            var from = chunk.Offset + chunk.Read;
-            long? to = null;
-            if (chunk.Size > 0)
-            {
-                to = chunk.Offset + chunk.Size - 1;
-            }
-            return new RangeHeaderValue(from, to);
-        }
-
-        #endregion // Utility Functions
     }
 }
