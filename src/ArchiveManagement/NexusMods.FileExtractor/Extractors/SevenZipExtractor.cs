@@ -142,7 +142,7 @@ public class SevenZipExtractor : IExtractor
                 .WithStandardOutputPipe(PipeTarget.ToDelegate(line =>
                 {
                     if (string.IsNullOrWhiteSpace(line)) return;
-                    processStdOutput.Append($"[7z.exe stdout] {line} \n");
+                    processStdOutput.AppendLine($"[7z stdout] {line}");
                     
                     if (line.Length <= 4 || line[3] != '%') return;
                     if (!int.TryParse(line.AsSpan()[..3], out var percentInt)) return;
@@ -158,7 +158,7 @@ public class SevenZipExtractor : IExtractor
                 .WithStandardErrorPipe(PipeTarget.ToDelegate(line =>
                 { 
                     if (string.IsNullOrWhiteSpace(line)) return;
-                    processStdError.Append($"[7z.exe stderr] {line} \n");
+                    processStdError.AppendLine($"[7z stderr] {line}");
                 }))
                 .ExecuteAsync();
 
