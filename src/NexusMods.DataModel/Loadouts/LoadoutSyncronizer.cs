@@ -69,6 +69,9 @@ public class LoadoutSynchronizer
 
         foreach (var mod in sorted)
         {
+            if (! mod.Enabled)
+                continue;
+            
             foreach (var (_, file) in mod.Files)
             {
                 if (file is not IToFile toFile)
