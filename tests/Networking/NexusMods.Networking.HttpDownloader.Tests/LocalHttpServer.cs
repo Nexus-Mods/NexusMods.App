@@ -66,36 +66,8 @@ public class LocalHttpServer : IDisposable
                             }
                             break;
                     }
-                    case "/100MB-Break":
-                        {
-                            resp.StatusCode = 200;
-                            resp.StatusDescription = "OK";
-                            resp.ProtocolVersion = HttpVersion.Version11;
-                            resp.Headers.Add(HttpResponseHeader.ContentType, "text/plain");
-                            await using var ros = resp.OutputStream;
-                            ros.Write("Hello World!"u8);
-                            break;
-                        }
-                    case "/resume":
-                        {
-                            resp.StatusCode = (int)HttpStatusCode.PartialContent;
-                            resp.StatusDescription = "Partial Content";
-                            resp.ProtocolVersion = HttpVersion.Version11;
-                            resp.Headers.Add(HttpResponseHeader.ContentType, "text/plain");
-                            // resp.Headers.Add(HttpResponseHeader.ContentType, "application/octet-stream");
-                            resp.Headers.Add(HttpResponseHeader.AcceptRanges, "bytes");
-                            resp.Headers.Add(HttpResponseHeader.ContentRange, $"bytes 15-20/21");
-                            resp.Headers.Add(HttpResponseHeader.KeepAlive, "true");
-
-                            await using var ros = resp.OutputStream;
-                            ros.Write("World!"u8);
-                            break;
-                        }
                     case "/reliable":
                         await HandleUnreliable(resp, context.Request, false);
-                        break;
-                    case "/delay":
-                        await HandleUnreliable(resp, context.Request, false, true);
                         break;
                     case "/unreliable":
                         await HandleUnreliable(resp, context.Request, true);
@@ -112,7 +84,7 @@ public class LocalHttpServer : IDisposable
     }
 
     private const int MB = 1024 * 1024;
-    private async Task HandleUnreliable(HttpListenerResponse resp, HttpListenerRequest request, bool truncate, bool delay = false)
+    private async Task HandleUnreliable(HttpListenerResponse resp, HttpListenerRequest request, bool truncate)
     {
         if (request.HttpMethod == "HEAD")
         {
@@ -149,8 +121,6 @@ public class LocalHttpServer : IDisposable
         resp.Headers.Add(HttpResponseHeader.KeepAlive, "true");
         resp.Headers.Add(HttpResponseHeader.ContentRange, range.ToString());
         await using var ros = resp.OutputStream;
-        if (delay)
-            await Task.Delay(2000);
         await ros.WriteAsync(originalSegment);
 
     }

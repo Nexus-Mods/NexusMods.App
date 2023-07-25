@@ -122,11 +122,12 @@ namespace NexusMods.Networking.HttpDownloader
 
             await DownloaderTask(primaryJob, state, writeQueue.Writer, cancel);
 
-            // once the download driver is done (for whatever reason), signal the file writer to finish the rest of the queue and then also end
-            writeQueue.Writer.Complete();
 
             try
             {
+                // once the download driver is done (for whatever reason), signal the file writer to finish the rest of the queue and then also end
+                writeQueue.Writer.TryComplete();
+
                 await fileWriter;
             }
             catch (OperationCanceledException)
@@ -450,7 +451,7 @@ namespace NexusMods.Networking.HttpDownloader
             if (stateFilePath.FileExists && DownloadState.GetTempFilePath(destination).FileExists)
             {
                 _logger.LogInformation("Resuming prior download {FilePath}", destination);
-                state = DeserializeDownloadState(await stateFilePath.ReadAllTextAsync(cancel));
+                state = await DeserializeDownloadState(stateFilePath, cancel);
             }
 
             var sources = sourceMessages.Select(msg =>
@@ -505,7 +506,7 @@ namespace NexusMods.Networking.HttpDownloader
             await using var fs = state.StateFilePath.Create();
             try
             {
-                await fs.WriteAsync(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(state)), cancel);
+                await JsonSerializer.SerializeAsync(fs, state, cancellationToken: CancellationToken.None);
             }
             catch (Exception e)
             {
@@ -513,9 +514,10 @@ namespace NexusMods.Networking.HttpDownloader
             }
         }
 
-        private DownloadState DeserializeDownloadState(string input)
+        private async ValueTask<DownloadState> DeserializeDownloadState(AbsolutePath path, CancellationToken token)
         {
-            var res = JsonSerializer.Deserialize<DownloadState>(input);
+            using var fs = path.Read();
+            var res = await JsonSerializer.DeserializeAsync<DownloadState>(fs, JsonSerializerOptions.Default, token);
             if (res == null)
             {
                 return new DownloadState();
