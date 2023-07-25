@@ -10,6 +10,11 @@ public class DownloadState
 {
 
     /// <summary>
+    /// This is incremented by 1 every time the state is loaded and the download is resumed
+    /// </summary>
+    public int ResumeCount { get; set; }
+
+    /// <summary>
     /// Total size of the download
     /// </summary>
     public long TotalSize { get; set; } = -1;

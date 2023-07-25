@@ -34,7 +34,6 @@ public class AdvancedHttpDownloaderTests
             }.Select(x => new HttpRequestMessage(HttpMethod.Get, new Uri(x)))
         .ToArray(), path);
 
-        await path.Path.MoveToAsync(FileSystem.Shared.FromUnsanitizedFullPath("c:\\tmp\\100M.good"));
         resultHash.Should().Be(Hash.From(0xBEEADB5B05BED390));
     }
 
@@ -90,11 +89,10 @@ public class AdvancedHttpDownloaderTests
         downloadingFile.FileExists.Should().BeTrue();
 
 
+
+
         tokenSource = new CancellationTokenSource();
         var hash = await _httpDownloader.DownloadAsync(sources, path, token: tokenSource.Token);
-
-        await path.Path.MoveToAsync(FileSystem.Shared.FromUnsanitizedFullPath("c:\\tmp\\100M.bad"));
-
 
         hash.Should().Be(Hash.From(0xBEEADB5B05BED390));
 

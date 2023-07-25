@@ -452,6 +452,7 @@ namespace NexusMods.Networking.HttpDownloader
             {
                 _logger.LogInformation("Resuming prior download {FilePath}", destination);
                 state = await DeserializeDownloadState(stateFilePath, cancel);
+                state.ResumeCount += 1;
             }
 
             var sources = sourceMessages.Select(msg =>
@@ -516,13 +517,10 @@ namespace NexusMods.Networking.HttpDownloader
 
         private async ValueTask<DownloadState> DeserializeDownloadState(AbsolutePath path, CancellationToken token)
         {
-            using var fs = path.Read();
+            await using var fs = path.Read();
             var res = await JsonSerializer.DeserializeAsync<DownloadState>(fs, JsonSerializerOptions.Default, token);
-            if (res == null)
-            {
-                return new DownloadState();
-            }
-            return res;
+
+            return res ?? new DownloadState();
         }
 
         #endregion // Download State Persistence
