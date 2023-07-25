@@ -1,4 +1,5 @@
 using GameFinder.StoreHandlers.Steam;
+using GameFinder.StoreHandlers.Steam.Models.ValueTypes;
 using NexusMods.DataModel.Games;
 using NexusMods.Paths;
 
@@ -7,7 +8,7 @@ namespace NexusMods.StandardGameLocators;
 /// <summary>
 /// Finds games managed by 'Steam'.
 /// </summary>
-public class SteamLocator : AGameLocator<SteamGame, SteamGameId, ISteamGame, SteamLocator>
+public class SteamLocator : AGameLocator<SteamGame, AppId, ISteamGame, SteamLocator>
 {
     /// <inheritdoc />
     public SteamLocator(IServiceProvider provider) : base(provider) { }
@@ -16,7 +17,7 @@ public class SteamLocator : AGameLocator<SteamGame, SteamGameId, ISteamGame, Ste
     protected override GameStore Store => GameStore.Steam;
 
     /// <inheritdoc />
-    protected override IEnumerable<SteamGameId> Ids(ISteamGame game) => game.SteamIds.Select(SteamGameId.From);
+    protected override IEnumerable<AppId> Ids(ISteamGame game) => game.SteamIds.Select(AppId.From);
 
     /// <inheritdoc />
     protected override AbsolutePath Path(SteamGame record) => record.Path;
@@ -27,7 +28,7 @@ public class SteamLocator : AGameLocator<SteamGame, SteamGameId, ISteamGame, Ste
         return new SteamLocatorResultMetadata
         {
             AppId = game.AppId.Value,
-            CloudSavesDirectory = game.CloudSavesDirectory
+            CloudSavesDirectory = game.GetCloudSavesDirectoryPath(),
         };
     }
 }
