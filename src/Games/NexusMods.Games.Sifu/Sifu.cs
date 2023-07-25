@@ -11,7 +11,7 @@ namespace NexusMods.Games.Sifu;
 
 public class Sifu : AGame, ISteamGame, IEpicGame
 {
-    public IEnumerable<int> SteamIds => new[] { 2138710 };
+    public IEnumerable<uint> SteamIds => new[] { 2138710u };
     public IEnumerable<string> EpicCatalogItemId => new[] { "c80a76de890145edbe0d41679dbccc66" };
 
     public override string Name => "Sifu";

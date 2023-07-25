@@ -10,7 +10,7 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame, IEpicGame
 {
     private readonly IOSInformation _osInformation;
 
-    public IEnumerable<int> SteamIds => new[] { 262060 };
+    public IEnumerable<uint> SteamIds => new[] { 262060u };
     public IEnumerable<long> GogIds => new long[] { 1450711444 };
     public IEnumerable<string> EpicCatalogItemId => new[] { "b4eecf70e3fe4e928b78df7855a3fc2d" };
 
