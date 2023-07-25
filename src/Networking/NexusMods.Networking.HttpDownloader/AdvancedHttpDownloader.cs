@@ -173,7 +173,7 @@ namespace NexusMods.Networking.HttpDownloader
         {
             var tempPath = state.TempFilePath;
             await using var file = tempPath.Open(FileMode.OpenOrCreate, FileAccess.Write);
-            file.SetLength(state.TotalSize);
+            file.SetLength((long)(ulong)state.TotalSize);
 
             while (true)
             {
@@ -183,12 +183,12 @@ namespace NexusMods.Networking.HttpDownloader
                 try
                 {
                     var order = await writes.ReadAsync(cancel);
-                    file.Position = order.Offset;
+                    file.Position = (long)order.Offset.Value;
                     await file.WriteAsync(order.Data, cancel);
                     await file.FlushAsync(cancel);
                     order.Owner.Dispose();
 
-                    order.Chunk.Completed += order.Data.Length;
+                    order.Chunk.Completed += Size.From((ulong)order.Data.Length);
 
                     await WriteDownloadState(state, cancel);
                     // _bufferPool.Return(order.Data);
@@ -211,7 +211,7 @@ namespace NexusMods.Networking.HttpDownloader
             // start one task per unfinished chunk. We never start additional tasks but a task may take on another chunks
             await Task.WhenAll(state.UnfinishedChunks.Select(async chunk =>
             {
-                using var chunkJob = await _limiter.BeginAsync($"Download Chunk @${chunk.Offset}", Size.FromLong(chunk.Size), cancel);
+                using var chunkJob = await _limiter.BeginAsync($"Download Chunk @${chunk.Offset}", chunk.Size, cancel);
 
                 try
                 {
@@ -240,7 +240,7 @@ namespace NexusMods.Networking.HttpDownloader
             {
                 _logger.LogInformation("canceling chunk {}-{} @ {}, downloading at {} kb/s",
                     slowChunk.Offset, slowChunk.Offset + slowChunk.Size, slowChunk.Source,
-                    slowChunk.KBytesPerSecond);
+                    slowChunk.BytesPerSecond);
 
                 chunk = StealWork(slowChunk);
                 lock (state)
@@ -252,7 +252,7 @@ namespace NexusMods.Networking.HttpDownloader
             return chunk;
         }
 
-        private bool IsDownloadSlow(ChunkState chunk, double referenceSpeed)
+        private bool IsDownloadSlow(ChunkState chunk, Bandwidth referenceSpeed)
         {
             var now = DateTime.Now;
             if ((now - chunk.Started).TotalMilliseconds < _minCancelAge)
@@ -260,23 +260,23 @@ namespace NexusMods.Networking.HttpDownloader
                 // don't cancel downloads that were only just started
                 return false;
             }
-            if (((float)chunk.Read / chunk.Size) > 0.8f)
+            if (chunk.Read / chunk.Size > 0.8f)
             {
                 // don't cancel downloads that are almost done
                 return false;
             }
 
-            return chunk.BytesPerSecond < referenceSpeed * _cancelSpeedFraction;
+            return chunk.BytesPerSecond.Value < referenceSpeed.Value * _cancelSpeedFraction;
         }
 
-        private ChunkState? FindSlowChunk(IEnumerable<ChunkState> chunks, Source source, double speed)
+        private ChunkState? FindSlowChunk(IEnumerable<ChunkState> chunks, Source source, Bandwidth speed)
         {
             return chunks.Aggregate<ChunkState, ChunkState?>(null, (prev, iter) =>
             {
-                if ((iter.Source != source)
-                    && (iter.Cancel?.IsCancellationRequested == false)
+                if (iter.Source != source
+                    && iter.Cancel?.IsCancellationRequested == false
                     && IsDownloadSlow(iter, speed)
-                    && ((prev == null) || (iter.BytesPerSecond < prev.BytesPerSecond)))
+                    && (prev == null || iter.BytesPerSecond.Value < prev.BytesPerSecond.Value))
                 {
                     return iter;
                 }
@@ -291,9 +291,7 @@ namespace NexusMods.Networking.HttpDownloader
 
             var newChunk = new ChunkState
             {
-                Completed = 0,
                 Offset = slowChunk.Offset + slowChunk.Read,
-                Read = 0,
                 Size = slowChunk.Size - slowChunk.Read
             };
             lock (slowChunk.Source!)
@@ -319,8 +317,8 @@ namespace NexusMods.Networking.HttpDownloader
             var request = chunk.Source!.Request!.Copy();
 
             var from = chunk.Offset + chunk.Read;
-            var to = chunk.Offset + chunk.Size - 1;
-            request.Headers.Range = new RangeHeaderValue(from, to);
+            var to = chunk.Offset + chunk.Size - Size.One;
+            request.Headers.Range = new RangeHeaderValue((long)from.Value, (long)to.Value);
 
 
             var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancel);
@@ -365,7 +363,7 @@ namespace NexusMods.Networking.HttpDownloader
                     await ReadStreamToEnd(job, stream, chunk, writes, cancel);
                     _logger.LogInformation("chunk {}-{} @ {} took {} ms => {} kb/s",
                         chunk.Offset + chunk.Read, chunk.Offset + chunk.Size, chunk.Source,
-                        (int)((DateTime.Now - start).TotalMilliseconds), chunk.KBytesPerSecond);
+                        (int)((DateTime.Now - start).TotalMilliseconds), chunk.BytesPerSecond);
                 }
 
             }
@@ -393,13 +391,13 @@ namespace NexusMods.Networking.HttpDownloader
             while (offset < upperBounds)
             {
                 var rented = _memoryPool.Rent((int)ReadBlockSize.Value);
-                var filledBuffer = await FillBuffer(stream, rented, (int)chunk.RemainingToRead, cancel);
-                var lastRead = filledBuffer.Length;
-                if (lastRead == 0) break;
+                var filledBuffer = await FillBuffer(stream, rented, chunk.RemainingToRead, cancel);
+                var lastRead = Size.FromLong(filledBuffer.Length);
+                if (lastRead == Size.Zero) break;
 
-                await job.ReportAsync(Size.FromLong(lastRead), cancel);
+                await job.ReportAsync(lastRead, cancel);
                 _logger.LogInformation("Copied {Bytes} of data at {Offset} remaining {Remain}", lastRead, offset,  upperBounds - offset);
-                if (lastRead > 0)
+                if (lastRead > Size.Zero)
                 {
                     chunk.Read += lastRead;
 
@@ -424,11 +422,11 @@ namespace NexusMods.Networking.HttpDownloader
         /// <param name="totalSize"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        private async ValueTask<Memory<byte>> FillBuffer(Stream stream, IMemoryOwner<byte> data, int totalSize, CancellationToken token)
+        private async ValueTask<Memory<byte>> FillBuffer(Stream stream, IMemoryOwner<byte> data, Size totalSize, CancellationToken token)
         {
             var memory = data.Memory;
             var totalRead = 0;
-            while (totalRead < data.Memory.Length && totalRead < totalSize)
+            while (totalRead < data.Memory.Length && totalRead < (long)totalSize.Value)
             {
                 var read = await stream.ReadAsync(memory[totalRead..], token);
                 if (read == 0)
@@ -481,10 +479,8 @@ namespace NexusMods.Networking.HttpDownloader
                 {
                     chunks.Add(new ChunkState
                     {
-                        Offset = (long)offset.Value,
-                        Size = (long)Math.Min(ChunkSize.Value, size.Value - offset.Value),
-                        Completed = 0,
-                        Read = 0
+                        Offset = offset,
+                        Size = Size.From(Math.Min(ChunkSize.Value, size.Value - offset.Value)),
                     });
                 }
 
@@ -492,7 +488,7 @@ namespace NexusMods.Networking.HttpDownloader
 
                 state = new DownloadState
                 {
-                    TotalSize = (long)size.Value,
+                    TotalSize = size,
                     Sources = sources.ToArray(),
                     Destination = destination,
                     Chunks = chunks

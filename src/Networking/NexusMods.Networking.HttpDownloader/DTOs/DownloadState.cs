@@ -17,7 +17,7 @@ public class DownloadState
     /// <summary>
     /// Total size of the download
     /// </summary>
-    public long TotalSize { get; set; } = -1;
+    public Size TotalSize { get; set; }
 
     /// <summary>
     /// A list of the chunks that make up the download
@@ -43,11 +43,6 @@ public class DownloadState
     public bool HasIncompleteChunk
     {
         get {
-            if (TotalSize < 0)
-            {
-                return Chunks.Any(chunk => chunk.Completed < chunk.Size);
-            }
-
             return Chunks.Any(chunk =>
                 (chunk.Completed < chunk.Size) && ((chunk.Offset + chunk.Completed) < TotalSize));
         }

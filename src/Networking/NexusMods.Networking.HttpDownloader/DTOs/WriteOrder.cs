@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using NexusMods.Paths;
 
 namespace NexusMods.Networking.HttpDownloader.DTOs;
 
@@ -7,7 +8,7 @@ namespace NexusMods.Networking.HttpDownloader.DTOs;
 /// </summary>
 struct WriteOrder
 {
-    public long Offset;
+    public Size Offset;
     public Memory<byte> Data;
     public IMemoryOwner<byte> Owner;
     public ChunkState Chunk;

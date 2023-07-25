@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using JetBrains.Annotations;
+using NexusMods.Paths;
 
 namespace NexusMods.Networking.HttpDownloader.DTOs;
 
@@ -16,12 +17,12 @@ public class ChunkState
     /// <param name="size"></param>
     /// <param name="initChunk"></param>
     /// <returns></returns>
-    public static ChunkState Create(long start, long size)
+    public static ChunkState Create(Size start, Size size)
     {
         return new ChunkState
         {
-            Completed = 0,
-            Read = 0,
+            Completed = Size.Zero,
+            Read = Size.Zero,
             Size = size,
             Offset = start,
         };
@@ -30,23 +31,23 @@ public class ChunkState
     /// <summary>
     /// The offset of the chunk within the output file
     /// </summary>
-    public long Offset { get; init; }
+    public Size Offset { get; init; } = Size.Zero;
 
     /// <summary>
     /// The size of the chunk
     /// </summary>
-    public long Size { get; set; }
+    public Size Size { get; set; }
 
     /// <summary>
     /// The number of bytes read from the network into the chunk
     /// </summary>
     [JsonIgnore]
-    public long Read { get; set; }
+    public Size Read { get; set; } = Size.Zero;
 
     /// <summary>
     /// The number of bytes written to the output file
     /// </summary>
-    public long Completed { get; set; }
+    public Size Completed { get; set; } = Size.Zero;
 
     /// <summary>
     /// The source of the chunk, (the download information)
@@ -72,11 +73,7 @@ public class ChunkState
     /// <summary>
     /// The number of bytes per second being read from the network
     /// </summary>
-    public int BytesPerSecond => (int)Math.Floor(Read / (DateTime.Now - Started).TotalSeconds);
-
-    [JsonIgnore]
-    public int KBytesPerSecond => (int)Math.Floor((Read / (DateTime.Now - Started).TotalSeconds) / 1024);
-
+    public Bandwidth BytesPerSecond => Read / (DateTime.Now - Started);
 
     /// <summary>
     /// True if the chunk has been read completely
@@ -100,5 +97,5 @@ public class ChunkState
     /// Returns the number of bytes remaining to be read
     /// </summary>
     [JsonIgnore]
-    public long RemainingToRead => Size - Read;
+    public Size RemainingToRead => Size - Read;
 }
