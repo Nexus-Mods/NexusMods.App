@@ -139,7 +139,8 @@ namespace NexusMods.Networking.HttpDownloader
             return await FinalizeDownload(state, cancel);
         }
 
-        private async Task<Hash> DownloadWithoutResume(IReadOnlyList<HttpRequestMessage> sources, AbsolutePath destination, HttpDownloaderState downloaderState, Size? size, CancellationToken cancel)
+        private async Task<Hash> DownloadWithoutResume(IReadOnlyList<HttpRequestMessage> sources, AbsolutePath destination,
+            HttpDownloaderState downloaderState, Size? size, CancellationToken cancel)
         {
             using var primaryJob = await _limiter.BeginAsync($"Downloading {destination.FileName}", size ?? Size.One, cancel);
 
@@ -391,7 +392,7 @@ namespace NexusMods.Networking.HttpDownloader
             while (offset < upperBounds)
             {
                 var rented = _memoryPool.Rent((int)ReadBlockSize.Value);
-                var filledBuffer = await FillBuffer(stream, rented, chunk.RemainingToRead, cancel);
+                var filledBuffer = await FillBuffer(stream, rented.Memory, chunk.RemainingToRead, cancel);
                 var lastRead = Size.FromLong(filledBuffer.Length);
                 if (lastRead == Size.Zero) break;
 
@@ -414,7 +415,7 @@ namespace NexusMods.Networking.HttpDownloader
         }
 
         /// <summary>
-        /// Tries to fill the buffer with data from the stream. Returns the actual buffer once it's full or the stream
+        /// Tries to fill the buffer with data from the stream. Returns a view of the actual buffer once it's full or the stream
         /// has ended.
         /// </summary>
         /// <param name="stream"></param>
@@ -422,19 +423,18 @@ namespace NexusMods.Networking.HttpDownloader
         /// <param name="totalSize"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        private async ValueTask<Memory<byte>> FillBuffer(Stream stream, IMemoryOwner<byte> data, Size totalSize, CancellationToken token)
+        private async ValueTask<Memory<byte>> FillBuffer(Stream stream, Memory<byte> data, Size totalSize, CancellationToken token)
         {
-            var memory = data.Memory;
             var totalRead = 0;
-            while (totalRead < data.Memory.Length && totalRead < (long)totalSize.Value)
+            while (totalRead < data.Length && totalRead < (long)totalSize.Value)
             {
-                var read = await stream.ReadAsync(memory[totalRead..], token);
+                var read = await stream.ReadAsync(data[totalRead..], token);
                 if (read == 0)
                     break;
 
                 totalRead += read;
             }
-            return memory[..totalRead];
+            return data[..totalRead];
         }
 
         #endregion // Downloading
