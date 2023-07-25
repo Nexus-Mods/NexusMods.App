@@ -124,7 +124,16 @@ namespace NexusMods.Networking.HttpDownloader
 
             // once the download driver is done (for whatever reason), signal the file writer to finish the rest of the queue and then also end
             writeQueue.Writer.Complete();
-            await fileWriter;
+
+            try
+            {
+                await fileWriter;
+            }
+            catch (OperationCanceledException)
+            {
+                // ignore
+                return Hash.Zero;
+            }
 
             return await FinalizeDownload(state, cancel);
         }

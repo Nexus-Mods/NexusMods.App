@@ -55,32 +55,34 @@ public class AdvancedHttpDownloaderTests
     {
         await using var path = _temporaryFileManager.CreateFile();
 
-        const string existingContent = "Welcome back, ";
-        const string missingContent = "World!";
-
-        await path.Path.ReplaceExtension(new Extension(".downloading")).WriteAllTextAsync(existingContent);
-        await path.Path.ReplaceExtension(new Extension(".progress")).WriteAllTextAsync(JsonSerializer.Serialize(new
+        var tokenSource = new CancellationTokenSource();
+        var downloadTask = _httpDownloader.DownloadAsync(new[]
         {
-            TotalSize = existingContent.Length + missingContent.Length,
-            Chunks = new object[]
-            {
-                new
-                {
-                    Offset = 0,
-                    Size = existingContent.Length + missingContent.Length,
-                    Completed = existingContent.Length,
-                    InitChunk = true,
-                }
-            }
-        }));
+            new HttpRequestMessage(HttpMethod.Get, _localHttpServer.Uri + "delay")
+        }, path, token: tokenSource.Token);
 
-        var resultHash = await _httpDownloader.DownloadAsync(new[]
+        await Task.Delay(1000);
+        tokenSource.Cancel();
+        try
         {
-            new HttpRequestMessage(HttpMethod.Get, _localHttpServer.Uri + "resume")
-        }, path);
+            await downloadTask;
+        }
+        catch (TaskCanceledException)
+        {
+            // expected
+        }
 
-        resultHash.Should().Be(Hash.From(0x79B2246476DAA5CE));
-        (await path.Path.ReadAllTextAsync()).Should().Be("Welcome back, World!");
+        path.Path.FileExists.Should().BeFalse("The file hasn't fully downloaded yet");
+        path.Path.Combine(".progress").FileExists.Should().BeTrue();
+        path.Path.Combine(".downloading").FileExists.Should().BeTrue();
+
+        var hash = await _httpDownloader.DownloadAsync(new[]
+        {
+            new HttpRequestMessage(HttpMethod.Get, _localHttpServer.Uri + "unreliable")
+        }, path, token: tokenSource.Token);
+
+        hash.Should().Be(_localHttpServer.LargeDataHash);
+
     }
 
     [Fact]
@@ -92,8 +94,6 @@ public class AdvancedHttpDownloaderTests
         {
             new HttpRequestMessage(HttpMethod.Get, _localHttpServer.Uri + "reliable")
         }, path);
-
-        await path.Path.MoveToAsync( FileSystem.Shared.FromUnsanitizedFullPath(@"c:\tmp\goodFile.bin"));
 
         resultHash.Should().Be(_localHttpServer.LargeDataHash);
     }
@@ -108,7 +108,6 @@ public class AdvancedHttpDownloaderTests
             new HttpRequestMessage(HttpMethod.Get, _localHttpServer.Uri + "unreliable")
         }, path);
 
-        await path.Path.MoveToAsync( FileSystem.Shared.FromUnsanitizedFullPath(@"c:\tmp\lastFile.bin"));
         resultHash.Should().Be(_localHttpServer.LargeDataHash);
     }
 }

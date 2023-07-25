@@ -32,11 +32,10 @@ public class LocalHttpServer : IDisposable
 
     private byte[] GenerateLargeData()
     {
-        var data = new byte[8 * 1024 * 1024];
+        var data = new byte[512 * 1024 * 1024];
         var seed = Random.Shared.Next(0, 255);
         for (var offset = 0; offset < data.Length; offset++)
-            //data[offset] = (byte)((offset % 255) ^ seed);
-            data[offset] = (byte)(offset % 255);
+            data[offset] = (byte)((offset % 255) ^ seed);
 
         return data;
     }
@@ -95,6 +94,9 @@ public class LocalHttpServer : IDisposable
                     case "/reliable":
                         await HandleUnreliable(resp, context.Request, false);
                         break;
+                    case "/delay":
+                        await HandleUnreliable(resp, context.Request, false, true);
+                        break;
                     case "/unreliable":
                         await HandleUnreliable(resp, context.Request, true);
                         break;
@@ -110,7 +112,7 @@ public class LocalHttpServer : IDisposable
     }
 
     private const int MB = 1024 * 1024;
-    private async Task HandleUnreliable(HttpListenerResponse resp, HttpListenerRequest request, bool truncate)
+    private async Task HandleUnreliable(HttpListenerResponse resp, HttpListenerRequest request, bool truncate, bool delay = false)
     {
         if (request.HttpMethod == "HEAD")
         {
@@ -147,6 +149,8 @@ public class LocalHttpServer : IDisposable
         resp.Headers.Add(HttpResponseHeader.KeepAlive, "true");
         resp.Headers.Add(HttpResponseHeader.ContentRange, range.ToString());
         await using var ros = resp.OutputStream;
+        if (delay)
+            await Task.Delay(2000);
         await ros.WriteAsync(originalSegment);
 
     }
