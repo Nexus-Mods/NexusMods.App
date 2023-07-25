@@ -5,8 +5,8 @@ on:
     branches: [ main ]
     paths:
       - ".github/workflows/clean_environment_tests.yaml"
-      - "./src/**"
-      - "./tests/**"
+      - "src/**"
+      - "tests/**"
       - "**.props"
       - "**.targets"
   pull_request:
