@@ -43,8 +43,7 @@ public class DownloadState
     public bool HasIncompleteChunk
     {
         get {
-            return Chunks.Any(chunk =>
-                (chunk.Completed < chunk.Size) && ((chunk.Offset + chunk.Completed) < TotalSize));
+            return Chunks.Any(chunk => !chunk.IsComplete);
         }
     }
 

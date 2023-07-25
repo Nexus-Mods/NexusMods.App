@@ -22,33 +22,14 @@ namespace NexusMods.Networking.HttpDownloader
     /// </summary>
     ///
     /// <remarks>
-    /// Workflow:<br/>
-    ///   - A write job is started that opens the output file for writing and waits for write orders from the<br/>
-    ///     downloaders<br/>
-    ///   - Before the download can be chunked, an initial request to the server has to be made to determine<br/>
-    ///     if range requests are allowed and how large the file is. This chunk shouldn't be too small, chunking tiny<br/>
-    ///     files is pointless overhead<br/>
-    ///   - Once this initial response is received, the remaining file size, if any, is broken up into a fixed number
-    ///     of chunk<br/>
-    ///   - worker jobs are generated to handle each chunk<br/>
-    ///   - worker jobs follow a work stealing strategy, so when a worker job is finished it will look at the slowest other
-    ///     job (the one with the least amount of progress). Unless that job has only just started or is also close to being
-    ///     done, that job is canceled<br/>
-    ///   - if a job is canceled by a faster job, the faster job deprioritizes the slow source and restarts itself with a new
-    ///     chunk for the remaining range of the canceled one.<br/>
-    ///   - a canceled job will still submit its last already-downloaded block if necessary before ending.<br/>
-    ///   - the hash is generated once the whole file is downloaded<br/>
+    /// This code works by first doing a HEAD request on the sources passed in, this is used to determine the size
+    /// of the download. If HEAD isn't supported or no ContentLength is defined, then the code falls back onto a
+    /// non-resumable downloader.
     ///
-    /// TODO:<br/>
-    ///   - make parameters configurable<br/>
-    ///   - bandwidth throttling<br/>
-    ///   - currently only checks the first server for range request support, if it doesn't have it we just continue that<br/>
-    ///     download as an all-or-nothing fetch<br/>
-    ///   - have a separate watchdog task to cancel slow downloads. Currently, each task that finishes may cancel the slowest
-    ///     one and take over. There is a possible scenario where n-1 tasks finish quickly
-    ///     before the nth one is eligible to be canceled (MinCancelAge) and that task then takes forever and doesn't get
-    ///     canceled because all other ones have already ended.<br/>.
-    ///     As a result, MinCancelAge is set quite low which may lead to unnecessary cancellations.<br/>
+    /// In the case of resumable server support, the download is divided into ChunkSize chunks and each is downloaded
+    /// separately. Data is read from the network stream in chunks of `ReadChunk` size. These come from a memory pool
+    /// so they don't result in many allocations, but each read block will result in a write and flush to disk and the
+    /// saving to disk, which could result in slowdown with slow HDDs if this buffer is too slow.
     /// </remarks>
     public class AdvancedHttpDownloader : IHttpDownloader
     {
