@@ -3,6 +3,12 @@ name: Git Builds
 on:
   push:
     branches: [ main ]
+    paths:
+      - ".github/workflows/clean_environment_tests.yaml"
+      - "./src/**"
+      - "./tests/**"
+      - "**.props"
+      - "**.targets"
 
 jobs:
   build:

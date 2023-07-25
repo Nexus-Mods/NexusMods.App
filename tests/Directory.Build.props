@@ -6,45 +6,33 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Moq" Version="4.*" />
+        <PackageReference Include="Moq" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoFixture" Version="4.*" />
-        <PackageReference Include="AutoFixture.AutoMoq" Version="4.*" />
-        <PackageReference Include="AutoFixture.Xunit2" Version="4.*" />
+        <PackageReference Include="AutoFixture" />
+        <PackageReference Include="AutoFixture.AutoMoq" />
+        <PackageReference Include="AutoFixture.Xunit2" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="FluentAssertions" Version="6.*" />
-        <PackageReference Include="FluentAssertions.OneOf" Version="0.0.5" />
-        <PackageReference Include="FluentAssertions.Analyzers" Version="0.18.0">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
+        <PackageReference Include="FluentAssertions" />
+        <PackageReference Include="FluentAssertions.OneOf" />
+        <PackageReference Include="FluentAssertions.Analyzers" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="xunit" Version="2.4.2" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="Xunit.SkippableFact" Version="1.4.13" />
-        <PackageReference Include="Xunit.DependencyInjection" Version="8.7.1" />
-        <PackageReference Include="Xunit.DependencyInjection.Logging" Version="8.0.1" />
-        <PackageReference Include="Xunit.DependencyInjection.SkippableFact" Version="8.0.1" />
+        <PackageReference Include="xunit" />
+        <PackageReference Include="xunit.runner.visualstudio" />
+        <PackageReference Include="Xunit.SkippableFact" />
+        <PackageReference Include="Xunit.DependencyInjection" />
+        <PackageReference Include="Xunit.DependencyInjection.Logging" />
+        <PackageReference Include="Xunit.DependencyInjection.SkippableFact" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.*" />
-        <PackageReference Include="coverlet.collector" Version="6.*">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="GitHubActionsTestLogger" Version="2.*">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="coverlet.collector" />
+        <PackageReference Include="GitHubActionsTestLogger" />
     </ItemGroup>
 </Project>

@@ -11,11 +11,8 @@
         <EmbeddedResource Include="Resources\icon.png" />
     </ItemGroup>
 
-
     <ItemGroup>
         <InternalsVisibleTo Include="NexusMods.Games.StardewValley.Tests" />
     </ItemGroup>
-
-
 
 </Project>
