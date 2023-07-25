@@ -42,14 +42,14 @@ namespace NexusMods.Networking.HttpDownloader
         /// The size of each chunk to download, we will never download more than this amount from a single source
         /// before trying other sources and/or threads
         /// </summary>
-        private readonly Size ChunkSize = Size.MB * 128;
+        private readonly Size _chunkSize = Size.MB * 128;
 
         /// <summary>
         /// The size of the buffer used to read from the network stream, no need to make this too large as
         /// they are pretty quickly written to disk and returned to the pool. Really these should be fairly
         /// close to the size of the TCP buffers.
         /// </summary>
-        private readonly Size ReadBlockSize = Size.MB;
+        private readonly Size _readBlockSize = Size.MB;
 
 
         // see IHttpDownloaderSettings for docs about these
@@ -101,7 +101,7 @@ namespace NexusMods.Networking.HttpDownloader
 
             var fileWriter = FileWriterTask(state, writeQueue.Reader, primaryJob, cancel);
 
-            await DownloaderTask(primaryJob, state, writeQueue.Writer, cancel);
+            await DownloaderTask(state, writeQueue.Writer, cancel);
 
 
             try
@@ -125,7 +125,7 @@ namespace NexusMods.Networking.HttpDownloader
         {
             using var primaryJob = await _limiter.BeginAsync($"Downloading {destination.FileName}", size ?? Size.One, cancel);
 
-            using var buffer = _memoryPool.Rent((int)ReadBlockSize.Value);
+            using var buffer = _memoryPool.Rent((int)_readBlockSize.Value);
             foreach (var source in sources)
             {
                 var response = await _client.SendAsync(source.Copy(), cancel);
@@ -172,7 +172,7 @@ namespace NexusMods.Networking.HttpDownloader
 
                     order.Chunk.Completed += Size.From((ulong)order.Data.Length);
 
-                    await WriteDownloadState(state, cancel);
+                    await WriteDownloadState(state);
                     // _bufferPool.Return(order.Data);
                     await job.ReportAsync(Size.FromLong(order.Data.Length), cancel);
                 }
@@ -186,7 +186,7 @@ namespace NexusMods.Networking.HttpDownloader
 
         #region Downloading
 
-        private async Task DownloaderTask(DLJob job, DownloadState state, ChannelWriter<WriteOrder> writes, CancellationToken cancel)
+        private async Task DownloaderTask(DownloadState state, ChannelWriter<WriteOrder> writes, CancellationToken cancel)
         {
             var finishReward = 1024;
 
@@ -372,7 +372,7 @@ namespace NexusMods.Networking.HttpDownloader
             chunk.Started = DateTime.Now;
             while (offset < upperBounds)
             {
-                var rented = _memoryPool.Rent((int)ReadBlockSize.Value);
+                var rented = _memoryPool.Rent((int)_readBlockSize.Value);
                 var filledBuffer = await FillBuffer(stream, rented.Memory, chunk.RemainingToRead, cancel);
                 var lastRead = Size.FromLong(filledBuffer.Length);
                 if (lastRead == Size.Zero) break;
@@ -456,16 +456,16 @@ namespace NexusMods.Networking.HttpDownloader
             else
             {
                 List<ChunkState> chunks = new();
-                for (var offset = Size.Zero; offset < size; offset += ChunkSize)
+                for (var offset = Size.Zero; offset < size; offset += _chunkSize)
                 {
                     chunks.Add(new ChunkState
                     {
                         Offset = offset,
-                        Size = Size.From(Math.Min(ChunkSize.Value, size.Value - offset.Value)),
+                        Size = Size.From(Math.Min(_chunkSize.Value, size.Value - offset.Value)),
                     });
                 }
 
-                _logger.LogInformation("Starting download {FilePath} in {ChunkCount} chunks of {Size} ", destination, chunks.Count, ChunkSize);
+                _logger.LogInformation("Starting download {FilePath} in {ChunkCount} chunks of {Size} ", destination, chunks.Count, _chunkSize);
 
                 state = new DownloadState
                 {
@@ -479,7 +479,7 @@ namespace NexusMods.Networking.HttpDownloader
             return state;
         }
 
-        private async Task WriteDownloadState(DownloadState state, CancellationToken cancel = default)
+        private async Task WriteDownloadState(DownloadState state)
         {
             await using var fs = state.StateFilePath.Create();
             try

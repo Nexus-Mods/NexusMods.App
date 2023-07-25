@@ -33,6 +33,7 @@ public class LocalHttpServer : IDisposable
     private byte[] GenerateLargeData()
     {
         var data = new byte[512 * 1024 * 1024];
+        // Bit of a hack because .NextBytes is *extremely* slow
         var seed = Random.Shared.Next(0, 255);
         for (var offset = 0; offset < data.Length; offset++)
             data[offset] = (byte)((offset % 255) ^ seed);

@@ -6,7 +6,7 @@ namespace NexusMods.Networking.HttpDownloader.DTOs;
 /// <summary>
 /// Overall state of a download
 /// </summary>
-public class DownloadState
+class DownloadState
 {
 
     /// <summary>
