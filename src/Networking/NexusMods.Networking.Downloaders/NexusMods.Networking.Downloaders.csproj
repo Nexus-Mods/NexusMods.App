@@ -7,4 +7,8 @@
       <ProjectReference Include="..\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageVersion Update="MemoryPack" Version="1.9.16" />
+    </ItemGroup>
+
 </Project>
