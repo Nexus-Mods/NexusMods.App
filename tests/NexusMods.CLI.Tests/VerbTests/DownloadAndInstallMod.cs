@@ -2,6 +2,7 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Games.TestFramework;
+using NexusMods.Networking.HttpDownloader.Tests;
 using NexusMods.Networking.NexusWebApi.NMA.Extensions;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
@@ -12,18 +13,20 @@ namespace NexusMods.CLI.Tests.VerbTests;
 [Trait("RequiresNetworking", "True")]
 public class DownloadAndInstallMod : AGameTest<StubbedGame>
 {
+    private readonly LocalHttpServer _server;
     public AVerbTest Test { get; }
-    
+
     // Note: These tests use game testing framework to ensure code reuse.
     // This is needed because some APIs, e.g. loadouts require an actual game instance.
-    public DownloadAndInstallMod(IServiceProvider serviceProvider) : base(serviceProvider)
+    public DownloadAndInstallMod(IServiceProvider serviceProvider, LocalHttpServer server) : base(serviceProvider)
     {
         Test = new AVerbTest(serviceProvider.GetRequiredService<TemporaryFileManager>(), serviceProvider);
+        _server = server;
     }
 
     // Not sure what to use for test data, we don't have a designated location,
     // and Nexus doesn't have raw download links.
-    
+
     // For now I settled on stubbed mod from commit they were added in to the repo.
     // This should be valid as long as the repo is not renamed or commits deleted.
     // I think it's okay.
@@ -40,11 +43,11 @@ public class DownloadAndInstallMod : AGameTest<StubbedGame>
         var origNumMods = loadout.Value.Mods.Count;
         origNumMods.Should().Be(1); // game files
 
-        var makeUrl = $"file://{Path.GetFullPath(url)}";
+        var makeUrl = $"{_server.Uri}{url}";
         await Test.RunNoBannerAsync("download-and-install-mod", "-u", makeUrl, "-l", loadoutName, "-n", "TestMod");
         loadout.Value.Mods.Count.Should().BeGreaterThan(origNumMods);
     }
-    
+
     [Theory]
     [InlineData("cyberpunk2077", 107, 33156)]
     public async Task DownloadModFromNxm(string gameDomain, ulong modId, ulong fileId)

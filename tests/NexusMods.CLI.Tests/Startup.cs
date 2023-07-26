@@ -4,6 +4,7 @@ using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
 using NexusMods.Networking.HttpDownloader;
+using NexusMods.Networking.HttpDownloader.Tests;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.NMA;
 using NexusMods.Paths;
@@ -31,6 +32,7 @@ public class Startup
                 .AddNexusWebApiNmaIntegration(true)
                 .AddAllScoped<IRenderer, LoggingRenderer>()
                 .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
+                .AddSingleton<LocalHttpServer>()
                 .Validate();
     }
 }

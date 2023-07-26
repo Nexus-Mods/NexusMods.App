@@ -5,8 +5,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="FomodInstaller.Interface" Version="1.2.0" />
-        <PackageReference Include="FomodInstaller.Scripting.XmlScript" Version="1.0.0" />
+        <PackageReference Include="FomodInstaller.Interface" />
+        <PackageReference Include="FomodInstaller.Scripting.XmlScript" />
     </ItemGroup>
 
     <ItemGroup>

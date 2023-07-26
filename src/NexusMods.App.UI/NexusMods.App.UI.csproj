@@ -77,27 +77,27 @@
     <ItemGroup>
         <TrimmerRootDescriptor Include="Roots.xml" />
     </ItemGroup>
-    
+
     <ItemGroup>
         <InternalsVisibleTo Include="NexusMods.UI.Tests" />
     </ItemGroup>
-    
+
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.0.0" />
-        <PackageReference Include="Avalonia.Desktop" Version="11.0.0" />
-        <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.0" />
+        <PackageReference Include="Avalonia" />
+        <PackageReference Include="Avalonia.Desktop" />
+        <PackageReference Include="Avalonia.Controls.DataGrid" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.0" />
-        <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0" />
-        <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0" />
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0" />
-        <PackageReference Include="DynamicData" Version="7.14.2" />
-        <PackageReference Include="Humanizer" Version="2.14.1" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
-        <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="6.6.0-rc1.1" />
-        <PackageReference Include="ReactiveUI.Fody" Version="19.2.1" />
-        <PackageReference Include="Splat.Microsoft.Extensions.Logging" Version="14.6.8" />
-        <PackageReference Include="System.Reactive" Version="6.0.0" />
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" />
+        <PackageReference Include="Avalonia.ReactiveUI" />
+        <PackageReference Include="Avalonia.Svg.Skia" />
+        <PackageReference Include="Avalonia.Themes.Fluent" />
+        <PackageReference Include="DynamicData" />
+        <PackageReference Include="Humanizer" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+        <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" />
+        <PackageReference Include="ReactiveUI.Fody" />
+        <PackageReference Include="Splat.Microsoft.Extensions.Logging" />
+        <PackageReference Include="System.Reactive" />
     </ItemGroup>
 
     <ItemGroup>

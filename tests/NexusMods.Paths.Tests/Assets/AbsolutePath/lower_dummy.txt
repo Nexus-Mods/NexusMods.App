@@ -1,2 +1,0 @@
-This dummy is used for checking CombineChecked.
-It is a very cool dummy! Hopefully UPPER_DUMMY is friendly.

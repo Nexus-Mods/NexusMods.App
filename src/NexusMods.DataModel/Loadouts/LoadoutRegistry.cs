@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
@@ -266,6 +267,8 @@ public class LoadoutRegistry : IDisposable
         return AllLoadoutIds()
             .Select(id => Get(id)!);
     }
+
+
 
     /// <summary>
     /// An observable of all the revisions of a given LoadoutId

@@ -50,7 +50,7 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame, IXboxGame
         };
     }
 
-    public IEnumerable<int> SteamIds => new[] { 489830 };
+    public IEnumerable<uint> SteamIds => new[] { 489830u };
 
     public IEnumerable<long> GogIds => new long[]
     {

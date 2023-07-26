@@ -13,7 +13,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
     private readonly IOSInformation _osInformation;
     private readonly IFileSystem _fileSystem;
 
-    public IEnumerable<int> SteamIds => new[] { 413150 };
+    public IEnumerable<uint> SteamIds => new[] { 413150u };
     public IEnumerable<long> GogIds => new long[] { 1453375253 };
     public IEnumerable<string> XboxIds => new[] { "ConcernedApe.StardewValleyPC" };
 

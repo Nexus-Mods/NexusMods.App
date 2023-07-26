@@ -28,7 +28,7 @@ public class SkyrimLegendaryEdition : AGame, ISteamGame
             .Combine("Skyrim"));
     }
 
-    public IEnumerable<int> SteamIds => new[] { 72850 };
+    public IEnumerable<uint> SteamIds => new[] { 72850u };
     
     public override IStreamFactory Icon =>
         new EmbededResourceStreamFactory<SkyrimLegendaryEdition>("NexusMods.Games.BethesdaGameStudios.Resources.SkyrimLegendaryEdition.icon.png");

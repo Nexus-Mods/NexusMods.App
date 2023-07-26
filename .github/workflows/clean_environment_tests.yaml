@@ -3,9 +3,21 @@ name: Clean Environment Tests
 on:
   push:
     branches: [ main ]
+    paths:
+      - ".github/workflows/clean_environment_tests.yaml"
+      - "src/**"
+      - "tests/**"
+      - "**.props"
+      - "**.targets"
   pull_request:
     branches: [ main ]
-    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - ".github/workflows/clean_environment_tests.yaml"
+      - "src/**"
+      - "tests/**"
+      - "**.props"
+      - "**.targets"
+    types: [ opened, synchronize, reopened, ready_for_review ]
 
 jobs:
   draft:
@@ -15,31 +27,9 @@ jobs:
       - name: Fails because it's a draft PR
         run: exit 1
 
-  build:
+  build-and-test:
     if: github.event_name == 'push' || github.event.pull_request.draft == false
-    name: Test ${{ matrix.project }} (${{ matrix.os }})
-    runs-on:
-       - ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest] # disable macos-latest for now
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Setup .NET Core SDK 7.0.x
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '7.0.x'
-          
-      - name: Build
-        run: dotnet build
-
-      - name: Tests
-        run: dotnet test --no-build --logger "GitHubActions" --filter "RequiresNetworking!=True" --collect:"XPlat Code Coverage;Format=opencover"
-
-      - uses: codecov/codecov-action@v3
-        with:
-          flags: clean_environment_tests, ${{runner.os}}
-          verbose: true
+    uses: Nexus-Mods/NexusMods.App.Meta/.github/workflows/dotnet-build-and-test.yaml@2b734d6bd0ca3925cd009872e7cb00a7c2c72627
+    with:
+      test-filter: "RequiresNetworking!=True"
+      codecov-flags: ",clean_environment_tests"

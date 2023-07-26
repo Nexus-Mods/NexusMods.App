@@ -6,31 +6,26 @@ on:
       - 'v*'
 
 jobs:
-  build:
+  get-version:
     runs-on: ubuntu-latest
-    
-    environment: test
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
 
     steps:
-    - uses: actions/checkout@v3
+      - name: Get version
+        id: get-version
+        shell: pwsh
+        run: |
+          $version = [System.Version]::Parse("${{ github.ref_name }}".Replace('v', '')).ToString()
+          echo "version=$version" >> $env:GITHUB_OUTPUT
+          echo $version
 
-    - name: Get Version
-      id: get-version
-      shell: pwsh
-      run: |
-        $version = [System.Version]::Parse("${{ github.ref_name }}".Replace('v', '')).ToString()
-        echo "version=$version" >> $env:GITHUB_OUTPUT
-        echo $version
-
-    - name: Print Debug Info
-      run: dotnet --info
-
-    - name: Pack
-      run: dotnet pack -p:Version="${{ steps.get-version.outputs.version }}" -p:RepositoryCommit="${{ github.sha }}"
-
-    - name: Validate
-      shell: pwsh
-      run: ./scripts/validate-nupkgs.ps1
-
-    - name: Push to NuGet
-      run: dotnet nuget push **/*.nupkg --api-key ${{ secrets.NUGET_KEY }} --source https://api.nuget.org/v3/index.json
+  publish:
+    needs: get-version
+    uses: Nexus-Mods/NexusMods.App.Meta/.github/workflows/publish-nuget-packages.yaml@7153945b739384233c7b3ba188b55201514a6fa8
+    with:
+      version: ${{ needs.get-version.outputs.version }}
+      use-nuget: true
+      use-github: false
+    secrets:
+      NUGET_API_KEY: ${{ secrets.NUGET_KEY }}
