@@ -9,6 +9,7 @@
         <ProjectReference Include="..\..\..\src\NexusMods.DataModel.RateLimiting\NexusMods.DataModel.RateLimiting.csproj" />
         <ProjectReference Include="..\..\Games\NexusMods.Games.TestFramework\NexusMods.Games.TestFramework.csproj" />
         <ProjectReference Include="..\..\NexusMods.StandardGameLocators.TestHelpers\NexusMods.StandardGameLocators.TestHelpers.csproj" />
+        <ProjectReference Include="..\NexusMods.Networking.HttpDownloader.Tests\NexusMods.Networking.HttpDownloader.Tests.csproj" />
     </ItemGroup>
 
     <ItemGroup>

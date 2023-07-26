@@ -11,4 +11,9 @@
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     </ItemGroup>
+
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="NexusMods.Networking.HttpDownloader.Tests" />
+    </ItemGroup>
 </Project>

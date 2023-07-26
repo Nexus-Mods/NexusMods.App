@@ -13,8 +13,8 @@ on:
     branches: [ main ]
     paths:
       - ".github/workflows/clean_environment_tests.yaml"
-      - "./src/**"
-      - "./tests/**"
+      - "src/**"
+      - "tests/**"
       - "**.props"
       - "**.targets"
     types: [ opened, synchronize, reopened, ready_for_review ]

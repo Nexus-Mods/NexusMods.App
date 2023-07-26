@@ -3,6 +3,7 @@ using NexusMods.Common;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.RedEngine;
 using NexusMods.Games.TestFramework;
+using NexusMods.Networking.HttpDownloader.Tests;
 using NexusMods.StandardGameLocators.TestHelpers;
 
 namespace NexusMods.Networking.Downloaders.Tests;
@@ -19,6 +20,7 @@ public class Startup
             .AddBethesdaGameStudios()
             .AddRedEngineGames()
             .AddSingleton<DownloadService>()
+            .AddSingleton<LocalHttpServer>()
             .Validate();
     }
 }

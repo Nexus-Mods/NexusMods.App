@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.TestFramework;
+using NexusMods.Networking.HttpDownloader.Tests;
 
 namespace NexusMods.Networking.Downloaders.Tests;
 
@@ -10,12 +11,15 @@ public class HttpDownloadTaskTests : AGameTest<SkyrimSpecialEdition>
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly DownloadService _downloadService;
-    public HttpDownloadTaskTests(IServiceProvider serviceProvider, DownloadService downloadService) : base(serviceProvider)
+    private readonly LocalHttpServer _server;
+
+    public HttpDownloadTaskTests(IServiceProvider serviceProvider, DownloadService downloadService, LocalHttpServer server) : base(serviceProvider)
     {
         _serviceProvider = serviceProvider;
         _downloadService = downloadService;
+        _server = server;
     }
-    
+
     [Theory]
     [InlineData("Resources/RootedAtGameFolder/-Skyrim 202X 9.0 - Architecture-2347-9-0-1664994366.zip")]
     [InlineData("Resources/RootedAtDataFolder/-Skyrim 202X 9.0 to 9.4 - Update Ravenrock.zip")]
@@ -29,7 +33,7 @@ public class HttpDownloadTaskTests : AGameTest<SkyrimSpecialEdition>
         var origNumMods = loadout.Value.Mods.Count;
         origNumMods.Should().Be(1); // game files
 
-        var makeUrl = $"file://{Path.GetFullPath(url)}";
+        var makeUrl = $"{_server.Uri}{url}";
         task.Init(makeUrl, loadout.Value);
         await task.StartAsync();
         loadout.Value.Mods.Count.Should().BeGreaterThan(origNumMods);
