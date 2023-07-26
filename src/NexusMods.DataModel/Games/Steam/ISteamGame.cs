@@ -13,5 +13,5 @@ public interface ISteamGame : IGame
     /// <summary>
     /// Returns one or more steam app IDs for the game.
     /// </summary>
-    IEnumerable<int> SteamIds { get; }
+    IEnumerable<uint> SteamIds { get; }
 }

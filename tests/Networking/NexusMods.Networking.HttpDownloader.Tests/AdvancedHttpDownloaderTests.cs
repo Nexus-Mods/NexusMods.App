@@ -2,6 +2,7 @@ using FluentAssertions;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using System.Text.Json;
+using NexusMods.Networking.HttpDownloader.DTOs;
 
 namespace NexusMods.Networking.HttpDownloader.Tests;
 
@@ -25,12 +26,12 @@ public class AdvancedHttpDownloaderTests
         await using var path = _temporaryFileManager.CreateFile();
 
         var resultHash = await _httpDownloader.DownloadAsync(new[]
-        {
-            "http://miami.nexus-cdn.com/100M",
-            "http://la.nexus-cdn.com/100M",
-            "http://paris.nexus-cdn.com/100M",
-            "http://chicago.nexus-cdn.com/100M"
-        }.Select(x => new HttpRequestMessage(HttpMethod.Get, new Uri(x)))
+            {
+                "http://miami.nexus-cdn.com/100M",
+                "http://la.nexus-cdn.com/100M",
+                "http://paris.nexus-cdn.com/100M",
+                "http://chicago.nexus-cdn.com/100M"
+            }.Select(x => new HttpRequestMessage(HttpMethod.Get, new Uri(x)))
         .ToArray(), path);
 
         resultHash.Should().Be(Hash.From(0xBEEADB5B05BED390));
@@ -55,31 +56,71 @@ public class AdvancedHttpDownloaderTests
     {
         await using var path = _temporaryFileManager.CreateFile();
 
-        const string existingContent = "Welcome back, ";
-        const string missingContent = "World!";
+        var tokenSource = new CancellationTokenSource();
 
-        await path.Path.ReplaceExtension(new Extension(".downloading")).WriteAllTextAsync(existingContent);
-        await path.Path.ReplaceExtension(new Extension(".progress")).WriteAllTextAsync(JsonSerializer.Serialize(new
+        var sources = new[]
         {
-            TotalSize = existingContent.Length + missingContent.Length,
-            Chunks = new object[]
-            {
-                new
-                {
-                    Offset = 0,
-                    Size = existingContent.Length + missingContent.Length,
-                    Completed = existingContent.Length,
-                    InitChunk = true,
-                }
-            }
-        }));
+            "http://miami.nexus-cdn.com/100M",
+            "http://la.nexus-cdn.com/100M",
+            "http://paris.nexus-cdn.com/100M",
+            "http://chicago.nexus-cdn.com/100M"
+        }.Select(x => new HttpRequestMessage(HttpMethod.Get, new Uri(x))).ToArray();
+
+        var downloadTask = _httpDownloader.DownloadAsync(sources,path, token: tokenSource.Token);
+
+        var progressFile = DownloadState.GetStateFilePath(path.Path);
+        var downloadingFile = DownloadState.GetTempFilePath(path.Path);
+
+        while (!progressFile.FileExists)
+            await Task.Delay(10);
+
+        tokenSource.Cancel();
+        try
+        {
+            await downloadTask;
+        }
+        catch (TaskCanceledException)
+        {
+            // expected
+        }
+
+        path.Path.FileExists.Should().BeFalse("The file hasn't fully downloaded yet");
+        progressFile.FileExists.Should().BeTrue();
+        downloadingFile.FileExists.Should().BeTrue();
+
+
+
+
+        tokenSource = new CancellationTokenSource();
+        var hash = await _httpDownloader.DownloadAsync(sources, path, token: tokenSource.Token);
+
+        hash.Should().Be(Hash.From(0xBEEADB5B05BED390));
+
+    }
+
+    [Fact]
+    public async Task CanDownloadFromReliableSource()
+    {
+        await using var path = _temporaryFileManager.CreateFile();
 
         var resultHash = await _httpDownloader.DownloadAsync(new[]
         {
-            new HttpRequestMessage(HttpMethod.Get, _localHttpServer.Uri + "resume")
+            new HttpRequestMessage(HttpMethod.Get, _localHttpServer.Uri + "reliable")
         }, path);
 
-        resultHash.Should().Be(Hash.From(0x79B2246476DAA5CE));
-        (await path.Path.ReadAllTextAsync()).Should().Be("Welcome back, World!");
+        resultHash.Should().Be(_localHttpServer.LargeDataHash);
+    }
+
+    [Fact]
+    public async Task CanDownloadFromUnreliableSource()
+    {
+        await using var path = _temporaryFileManager.CreateFile();
+
+        var resultHash = await _httpDownloader.DownloadAsync(new[]
+        {
+            new HttpRequestMessage(HttpMethod.Get, _localHttpServer.Uri + "unreliable")
+        }, path);
+
+        resultHash.Should().Be(_localHttpServer.LargeDataHash);
     }
 }

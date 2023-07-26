@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.Sqlite;
+﻿using System.Collections.Concurrent;
+using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.ObjectPool;
 
 namespace NexusMods.DataModel;
@@ -29,7 +30,9 @@ public class ConnectionPoolPolicy : IPooledObjectPolicy<SqliteConnection>, IDisp
     {
         var conn = new SqliteConnection(_connectionString);
         conn.Open();
-        _connections.Add(conn);
+
+        lock(_connections)
+            _connections.Add(conn);
         return conn;
     }
 
@@ -58,10 +61,13 @@ public class ConnectionPoolPolicy : IPooledObjectPolicy<SqliteConnection>, IDisp
         if (_isDisposed) return;
         if (disposing)
         {
-            foreach (var connection in _connections)
+            lock (_connections)
             {
-                connection.Close();
-                connection.Dispose();
+                foreach (var connection in _connections)
+                {
+                    connection.Close();
+                    connection.Dispose();
+                }
             }
 
             SqliteConnection.ClearAllPools();

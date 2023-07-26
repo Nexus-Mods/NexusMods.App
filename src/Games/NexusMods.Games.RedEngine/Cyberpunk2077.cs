@@ -36,7 +36,7 @@ public class Cyberpunk2077 : AGame, ISteamGame, IGogGame, IEpicGame
         );
     }
 
-    public IEnumerable<int> SteamIds => new[] { 1091500 };
+    public IEnumerable<uint> SteamIds => new[] { 1091500u };
     public IEnumerable<long> GogIds => new[] { 2093619782L, 1423049311 };
     public IEnumerable<string> EpicCatalogItemId => new[] { "5beededaad9743df90e8f07d92df153f" };
 

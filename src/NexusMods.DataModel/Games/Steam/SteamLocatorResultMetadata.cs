@@ -12,7 +12,7 @@ public record SteamLocatorResultMetadata : IGameLocatorResultMetadata
     /// <summary>
     /// The specific ID of the found game.
     /// </summary>
-    public required int AppId { get; init; }
+    public required uint AppId { get; init; }
 
     /// <summary>
     /// Optional absolute path to the cloud saves directory for the game.

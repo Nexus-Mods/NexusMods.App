@@ -39,11 +39,6 @@ public class SimpleHttpDownloader : IHttpDownloader
             // Note: If download fails, job will be reported as 'failed', and will not participate in throughput calculations.
             state.Jobs.Add(job);
             
-            // Integrate local download.
-            var hash = await LocalFileDownloader.TryDownloadLocal(job, source, destination);
-            if (hash != null)
-                return hash.Value;
-            
             var response = await _client.SendAsync(source, HttpCompletionOption.ResponseHeadersRead, token);
             if (!response.IsSuccessStatusCode)
             {

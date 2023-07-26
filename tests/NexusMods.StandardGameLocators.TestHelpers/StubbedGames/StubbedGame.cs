@@ -97,7 +97,7 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
         _fileSystem.WriteAllText(path, path.FileName);
     }
 
-    public IEnumerable<int> SteamIds => new[] { 42 };
+    public IEnumerable<uint> SteamIds => new[] { 42u };
     public IEnumerable<long> GogIds => new[] { (long)42 };
     public IEnumerable<string> EADesktopSoftwareIDs => new[] { "ea-game-id" };
     public IEnumerable<string> EpicCatalogItemId => new[] { "epic-game-id" };

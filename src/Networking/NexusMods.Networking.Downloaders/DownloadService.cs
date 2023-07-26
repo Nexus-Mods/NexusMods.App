@@ -155,6 +155,8 @@ public partial class DownloadService : IDownloadService
         // Replace this with sending all possible loadouts to UI, for now we just install whatever we find.
         if (loadouts.Length > 0)
             await _archiveInstaller.AddMods(loadouts[0], analyzedHash, modName);
+        else
+            await _archiveInstaller.AddMods(_registry.AllLoadouts().First().LoadoutId, analyzedHash, modName);
     }
 
     private void PersistOnPause(IDownloadTask task)

@@ -4,6 +4,7 @@ using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.RedEngine;
 using NexusMods.Games.TestFramework;
+using NexusMods.Networking.HttpDownloader.Tests;
 using NexusMods.StandardGameLocators.TestHelpers;
 
 namespace NexusMods.Networking.Downloaders.Tests;
@@ -21,6 +22,7 @@ public class Startup
             .AddRedEngineGames()
             .AddDownloaders()
             .AddAllSingleton<ITypeFinder, TypeFinder>()
+            .AddSingleton<LocalHttpServer>()
             .Validate();
     }
 }
