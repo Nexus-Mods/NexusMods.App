@@ -21,14 +21,14 @@ public class NxmDownloadTaskTests : AGameTest<Cyberpunk2077>
     public async Task DownloadModFromNxm(string gameDomain, ulong modId, ulong fileId)
     {
         // This test requires Premium. If it fails w/o Premium, ignore that.
-        var loadout = await CreateLoadout();
-        var task = new NxmDownloadTask(TemporaryFileManager, NexusClient, HttpDownloader, _downloadService);
-        var origNumMods = loadout.Value.Mods.Count;
-        origNumMods.Should().Be(1); // game files
+
+        // This test fails if mock throws.
+        // DownloadTasks report their results to IDownloadService, so we intercept them from there.
+        var downloadService = DownloadTasksCommon.CreateMockWithConfirmFileReceive();
+        var task = new NxmDownloadTask(TemporaryFileManager, NexusClient, HttpDownloader, downloadService.Object);
 
         var uri = $"nxm://{gameDomain}/mods/{modId}/files/{fileId}";
         task.Init(NXMUrl.Parse(uri));
         await task.StartAsync();
-        loadout.Value.Mods.Count.Should().BeGreaterThan(origNumMods);
     }
 }

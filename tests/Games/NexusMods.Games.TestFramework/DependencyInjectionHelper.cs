@@ -48,7 +48,7 @@ public static class DependencyInjectionHelper
             .AddSingleton<TestModDownloader>()
             .AddNexusWebApi()
             .AddNexusWebApiNmaIntegration(true)
-            .AddAdvancedHttpDownloader()
+            .AddHttpDownloader()
             .AddDataModel(new DataModelSettings
             {
                 UseInMemoryDataModel = true

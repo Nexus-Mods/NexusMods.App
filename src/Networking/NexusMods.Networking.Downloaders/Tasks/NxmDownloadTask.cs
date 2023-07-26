@@ -57,7 +57,7 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
     ///     This constructor is intended to be called from Dependency Injector.
     ///     After running this constructor, you will need to run
     /// </remarks>
-    public NxmDownloadTask(TemporaryFileManager temp, Client client, IHttpDownloader downloader, DownloadService owner)
+    public NxmDownloadTask(TemporaryFileManager temp, Client client, IHttpDownloader downloader, IDownloadService owner)
     {
         _temp = temp;
         _client = client;

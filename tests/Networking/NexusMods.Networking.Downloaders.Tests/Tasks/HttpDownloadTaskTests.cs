@@ -1,8 +1,10 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Moq;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.TestFramework;
+using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Tasks;
 using NexusMods.Networking.HttpDownloader.Tests;
 
@@ -29,14 +31,13 @@ public class HttpDownloadTaskTests : AGameTest<SkyrimSpecialEdition>
     [InlineData("Resources/DataFolderWithDifferentName/-Skyrim 202X 9.0 to 9.4 - Update Ravenrock.zip")]
     public async Task DownloadModFromUrl(string url)
     {
-        var loadout = await CreateLoadout();
-        var task = new HttpDownloadTask(_serviceProvider.GetRequiredService<ILogger<HttpDownloadTask>>(), TemporaryFileManager, _serviceProvider.GetRequiredService<HttpClient>(), HttpDownloader, _downloadService);
-        var origNumMods = loadout.Value.Mods.Count;
-        origNumMods.Should().Be(1); // game files
+        // This test fails if mock throws.
+        // DownloadTasks report their results to IDownloadService, so we intercept them from there.
+        var mock = DownloadTasksCommon.CreateMockWithConfirmFileReceive();
+        var task = new HttpDownloadTask(_serviceProvider.GetRequiredService<ILogger<HttpDownloadTask>>(), TemporaryFileManager, _serviceProvider.GetRequiredService<HttpClient>(), HttpDownloader, mock.Object);
 
         var makeUrl = $"{_server.Uri}{url}";
         task.Init(makeUrl);
         await task.StartAsync();
-        loadout.Value.Mods.Count.Should().BeGreaterThan(origNumMods);
     }
 }
