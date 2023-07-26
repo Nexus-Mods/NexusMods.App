@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Networking.Downloaders.Interfaces;
+using NexusMods.Networking.Downloaders.Tasks.State;
 using Size = NexusMods.Paths.Size;
 
 namespace NexusMods.Networking.Downloaders.Tests;
@@ -92,13 +93,14 @@ public class DownloadServiceTests
     {
         public DummyDownloadTask(DownloadService service) { Owner = service; }
         public IEnumerable<IJob<Size>> DownloadJobs => Array.Empty<IJob<Size>>();
-        public DownloadService Owner { get; }
-        public DownloadTaskStatus Status { get; }
+        public IDownloadService Owner { get; set; }
+        public DownloadTaskStatus Status { get; set; }
         public string FriendlyName { get; } = "";
 
         public Task StartAsync() => Task.CompletedTask;
         public void Cancel() => Owner.OnCancelled(this);
         public void Pause() => Owner.OnPaused(this);
         public void Resume() => Owner.OnResumed(this);
+        public DownloaderState ExportState() => throw new NotImplementedException();
     }
 }

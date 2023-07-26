@@ -1,4 +1,5 @@
 using NexusMods.DataModel.RateLimiting;
+using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Paths;
 
 namespace NexusMods.Networking.Downloaders.Interfaces;
@@ -12,17 +13,17 @@ public interface IDownloadTask
     /// Gets all download jobs associated with this task for the purpose of calculating throughput.
     /// </summary>
     IEnumerable<IJob<Size>> DownloadJobs { get; }
-    
+
     /// <summary>
     /// Service this task is associated with.
     /// </summary>
-    DownloadService Owner { get; }
-    
+    IDownloadService Owner { get; }
+
     /// <summary>
     /// Status of the current task.
     /// </summary>
-    DownloadTaskStatus Status { get; }
-    
+    DownloadTaskStatus Status { get; set; }
+
     /// <summary>
     /// Friendly name for the task.
     /// </summary>
@@ -50,6 +51,12 @@ public interface IDownloadTask
     /// Resumes a download task.
     /// </summary>
     void Resume();
+
+    /// <summary>
+    /// Exports state for performing a suspend operation.
+    /// </summary>
+    /// <remarks>Suspend means 'pause download by terminating it, leaving partial download intact'.</remarks>
+    DownloaderState ExportState();
 }
 
 // TODO: These statuses need unit tests for individual downloaders.
@@ -63,19 +70,19 @@ public enum DownloadTaskStatus
     /// The task is not yet initialized.
     /// </summary>
     Idle,
-    
+
     /// <summary>
     /// The download was paused.
     /// </summary>
     Paused,
-    
+
     /// <summary>
     /// The mod is currently being downloaded.
     /// </summary>
     Downloading,
-    
+
     /// <summary>
-    /// The mod is being installed to a loadout.
+    /// The mod is being archived (and possibly installed) to a loadout.
     /// </summary>
     Installing,
 

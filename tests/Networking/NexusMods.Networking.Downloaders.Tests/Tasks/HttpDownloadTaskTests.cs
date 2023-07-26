@@ -26,12 +26,12 @@ public class HttpDownloadTaskTests : AGameTest<SkyrimSpecialEdition>
     public async Task DownloadModFromUrl(string url)
     {
         var loadout = await CreateLoadout();
-        var task = new HttpDownloadTask(_serviceProvider.GetRequiredService<ILogger<HttpDownloadTask>>(), TemporaryFileManager, _serviceProvider.GetRequiredService<HttpClient>(), HttpDownloader, ArchiveAnalyzer, ArchiveInstaller, _downloadService);
+        var task = new HttpDownloadTask(_serviceProvider.GetRequiredService<ILogger<HttpDownloadTask>>(), TemporaryFileManager, _serviceProvider.GetRequiredService<HttpClient>(), HttpDownloader, _downloadService);
         var origNumMods = loadout.Value.Mods.Count;
         origNumMods.Should().Be(1); // game files
 
         var makeUrl = $"file://{Path.GetFullPath(url)}";
-        task.Init(makeUrl, loadout.Value);
+        task.Init(makeUrl);
         await task.StartAsync();
         loadout.Value.Mods.Count.Should().BeGreaterThan(origNumMods);
     }

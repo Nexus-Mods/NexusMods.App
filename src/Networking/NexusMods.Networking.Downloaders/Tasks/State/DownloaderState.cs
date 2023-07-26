@@ -10,7 +10,7 @@ namespace NexusMods.Networking.Downloaders.Tasks.State;
 /// Stores the state of a suspended download.
 /// </summary>
 /// <remarks>
-///     <see cref="ITypeSpecificState"/> contains injected data.  
+///     <see cref="ITypeSpecificState"/> contains injected data.
 ///     That is, state specific to the owner.
 ///
 ///     To give an example, <see cref="HttpDownloadTask"/> will have a <see cref="HttpDownloadState"/> injected; which
@@ -48,6 +48,12 @@ public record DownloaderState : Entity
     public string? GameName { get; private set; }
 
     /// <summary>
+    /// Unique identifier for the game whose loadouts should be suggested for installation.
+    /// </summary>
+    /// <remarks>Provided by <see cref="IHaveGameDomain"/> trait.</remarks>
+    public string? GameDomain { get; private set; }
+
+    /// <summary>
     /// Size of the file being downloaded in bytes. A value of less than 0 means size is unknown.
     /// </summary>
     /// <remarks>Provided by <see cref="IHaveFileSize"/> trait.</remarks>
@@ -59,7 +65,7 @@ public record DownloaderState : Entity
     /// <remarks>Provided by <see cref="IHaveDownloadVersion"/> trait.</remarks>
     public string? Version { get; private set; }
 
-    // Unused, but required for serialization. 
+    // Unused, but required for serialization.
 
     /// <summary>
     /// Creates the downloader state given the item to serialize
@@ -84,13 +90,16 @@ public record DownloaderState : Entity
         if (item is IHaveGameName gameName)
             result.GameName = gameName.GameName;
 
+        if (item is IHaveGameDomain gameDomain)
+            result.GameDomain = gameDomain.GameDomain;
+
         return result;
     }
 
     // Download path is a temporary path, thus should be unique.
     // ReSharper disable once NonReadonlyMemberInGetHashCode
     public override int GetHashCode() => DownloadPath.GetHashCode(StringComparison.OrdinalIgnoreCase);
-    
+
     /// <inheritdoc />
     public override EntityCategory Category => EntityCategory.DownloadStates;
 }

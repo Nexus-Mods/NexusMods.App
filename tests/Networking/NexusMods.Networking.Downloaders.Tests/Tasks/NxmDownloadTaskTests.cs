@@ -1,9 +1,10 @@
 using FluentAssertions;
 using NexusMods.Games.RedEngine;
 using NexusMods.Games.TestFramework;
+using NexusMods.Networking.Downloaders.Tasks;
 using NexusMods.Networking.NexusWebApi.Types;
 
-namespace NexusMods.Networking.Downloaders.Tests;
+namespace NexusMods.Networking.Downloaders.Tests.Tasks;
 
 [Trait("RequiresNetworking", "True")]
 public class NxmDownloadTaskTests : AGameTest<Cyberpunk2077>
@@ -21,7 +22,7 @@ public class NxmDownloadTaskTests : AGameTest<Cyberpunk2077>
     {
         // This test requires Premium. If it fails w/o Premium, ignore that.
         var loadout = await CreateLoadout();
-        var task = new NxmDownloadTask(LoadoutRegistry, TemporaryFileManager, NexusClient, HttpDownloader, ArchiveAnalyzer, ArchiveInstaller, _downloadService);
+        var task = new NxmDownloadTask(TemporaryFileManager, NexusClient, HttpDownloader, _downloadService);
         var origNumMods = loadout.Value.Mods.Count;
         origNumMods.Should().Be(1); // game files
 

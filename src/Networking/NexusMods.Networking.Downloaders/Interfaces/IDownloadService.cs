@@ -8,6 +8,8 @@ namespace NexusMods.Networking.Downloaders.Interfaces;
 /// <summary>
 /// This is a 'download manager' of sorts.
 /// This service contains all of the downloads which have begun, or have already started.
+///
+/// This service only tracks the states and passes messages on behalf of currently live downloads.
 /// </summary>
 public interface IDownloadService
 {
@@ -55,8 +57,7 @@ public interface IDownloadService
     /// Adds a task that will download from a HTTP link.
     /// </summary>
     /// <param name="url">Url to download from.</param>
-    /// <param name="loadout">Loadout for the task.</param>
-    void AddHttpTask(string url, Loadout loadout);
+    void AddHttpTask(string url);
 
     /// <summary>
     /// Adds a task to the download queue.
@@ -92,4 +93,12 @@ public interface IDownloadService
     /// Gets the total throughput of all download operations in bytes per second.
     /// </summary>
     Size GetThroughput();
+
+    /// <summary>
+    /// Finishes the download process.
+    /// </summary>
+    /// <param name="task">The task being finalized.</param>
+    /// <param name="tempPath">Path of the file to handle. Please delete this path at end of method.</param>
+    /// <param name="modName">User friendly name under which this item is to be installed.</param>
+    Task FinalizeDownloadAsync(IDownloadTask task, TemporaryPath tempPath, string modName);
 }
