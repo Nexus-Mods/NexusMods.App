@@ -41,7 +41,7 @@ public static class DependencyInjectionHelper
     public static IServiceCollection AddDefaultServicesForTesting(this IServiceCollection serviceCollection)
     {
         var prefix = FileSystem.Shared
-            .GetKnownPath(KnownPath.TempDirectory)
+            .GetKnownPath(KnownPath.EntryDirectory)
             .Combine($"NexusMods.App-{Guid.NewGuid().ToString("D", CultureInfo.InvariantCulture)}");
 
         return serviceCollection
