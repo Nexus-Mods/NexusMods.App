@@ -1,0 +1,105 @@
+name: Build Windows (PupNet)
+
+on:
+  workflow_call:
+    inputs:
+      AppVersion:
+        type: string
+        required: false
+        description: "The version of the application to build"
+        default: "1.0.0"
+      PupNetVersion:
+        type: string
+        required: false
+        description: "The PupNet version to use"
+        default: "1.6.0"
+      ProjectFile:
+        type: string
+        required: true
+        description: "The relative path to the project to build"
+      RetentionDays:
+        type: number
+        required: false
+        default: 1
+        description: "The amount of days for the artifact to persist"
+      BuildInnoSetup:
+        type: boolean
+        description: "Build an Inno Setup?"
+        required: false
+        default: true
+      BuildArchive:
+        type: boolean
+        description: "Build an Archive?"
+        required: false
+        default: true
+    outputs:
+      ArtifactNameWindowsArchive:
+        description: "Name of the Artifact that contains the Windows Archive"
+        value: ${{ jobs.build.outputs.artifactNameWindowsArchive }}
+      ArtifactNameWindowsInnoSetup:
+        description: "Name of the Artifact that contains the Windows Inno Setup"
+        value: ${{ jobs.build.outputs.artifactNameWindowsInnoSetup }}
+
+jobs:
+  build:
+    runs-on: windows-latest
+    outputs:
+      artifactNameWindowsArchive: ${{ steps.setOutputs.outputs.artifactNameWindowsArchive }}
+      artifactNameWindowsInnoSetup: ${{ steps.setOutputs.outputs.artifactNameWindowsInnoSetup }}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: "recursive"
+
+      - name: Transform inputs
+        id: transformInputs
+        shell: pwsh
+        env:
+          ProjectFile: ${{ inputs.ProjectFile }}
+        run: |
+          $projectDir = [System.IO.Path]::GetDirectoryName("$env:ProjectFile")
+          $projectName = [System.IO.Path]::GetFileNameWithoutExtension("$env:ProjectFile")
+          echo "projectDir=$projectDir" >> $env:GITHUB_OUTPUT
+          echo "projectName=$projectName" >> $env:GITHUB_OUTPUT
+
+      - name: Print debug info
+        run: dotnet --info
+
+      - name: Get PupNet
+        run: dotnet tool install -g KuiperZone.PupNet --version ${{ inputs.PupNetVersion }}
+
+      - name: Create Archive
+        if: ${{ inputs.BuildArchive }}
+        working-directory: ${{ steps.transformInputs.outputs.projectDir }}
+        run: pupnet -y -v ${{ inputs.AppVersion }} -k zip -p DefineConstants=INSTALLATION_METHOD_ARCHIVE
+
+      - name: Create Setup
+        if: ${{ inputs.BuildInnoSetup }}
+        working-directory: ${{ steps.transformInputs.outputs.projectDir }}
+        run: pupnet -y -v ${{ inputs.AppVersion }} -k Setup -p DefineConstants=INSTALLATION_METHOD_INNO_SETUP
+
+      - name: Set outputs
+        id: setOutputs
+        shell: pwsh
+        run: |
+          echo "artifactNameWindowsArchive=${{ steps.transformInputs.outputs.projectName }}-${{ github.sha }}-Windows-Archive" >> $env:GITHUB_OUTPUT
+          echo "artifactNameWindowsInnoSetup=${{ steps.transformInputs.outputs.projectName }}-${{ github.sha }}-Windows-Setup" >> $env:GITHUB_OUTPUT
+
+      - name: Upload Archive
+        if: ${{ inputs.BuildArchive }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.setOutputs.outputs.artifactNameWindowsArchive }}
+          path: ${{ steps.transformInputs.outputs.projectDir }}/Deploy/OUT/*.zip
+          if-no-files-found: error
+          retention-days: ${{ inputs.RetentionDays }}
+
+      - name: Upload Setup
+        if: ${{ inputs.BuildInnoSetup }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.setOutputs.outputs.artifactNameWindowsInnoSetup }}
+          path: ${{ steps.transformInputs.outputs.projectDir }}/Deploy/OUT/*.exe
+          if-no-files-found: error
+          retention-days: ${{ inputs.RetentionDays }}
