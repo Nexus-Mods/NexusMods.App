@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.Diagnostics;
 using System.Net.Http.Headers;
+using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Channels;
@@ -343,6 +344,8 @@ namespace NexusMods.Networking.HttpDownloader
 
             HttpResponseMessage? response = null;
 
+            int retries = 0;
+
             while (!chunk.IsReadComplete)
             {
                 _logger.LogInformation("Remaining : {ToRead}", chunk.RemainingToRead);
@@ -363,11 +366,20 @@ namespace NexusMods.Networking.HttpDownloader
                 if (response != null)
                 {
                     var start = DateTime.Now;
-                    await using var stream = await response.Content.ReadAsStreamAsync(cancel);
-                    await ReadStreamToEnd(job, stream, chunk, writes, cancel);
-                    _logger.LogInformation("chunk {}-{} @ {} took {} ms => {} kb/s",
-                        chunk.Offset + chunk.Read, chunk.Offset + chunk.Size, chunk.Source,
-                        (int)((DateTime.Now - start).TotalMilliseconds), chunk.BytesPerSecond);
+                    try
+                    {
+                        await using var stream = await response.Content.ReadAsStreamAsync(cancel);
+                        await ReadStreamToEnd(job, stream, chunk, writes, cancel);
+                        _logger.LogInformation("chunk {}-{} @ {} took {} ms => {} kb/s",
+                            chunk.Offset + chunk.Read, chunk.Offset + chunk.Size, chunk.Source,
+                            (int)((DateTime.Now - start).TotalMilliseconds), chunk.BytesPerSecond);
+                    }
+                    catch (SocketException _)
+                    {
+                        if (retries > MaxRetries)
+                            throw;
+                        retries += 1;
+                    }
                 }
 
             }
