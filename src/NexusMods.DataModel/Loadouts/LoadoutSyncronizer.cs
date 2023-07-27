@@ -69,7 +69,7 @@ public class LoadoutSynchronizer
 
         foreach (var mod in sorted)
         {
-            if (! mod.Enabled)
+            if (!mod.Enabled)
                 continue;
             
             foreach (var (_, file) in mod.Files)
