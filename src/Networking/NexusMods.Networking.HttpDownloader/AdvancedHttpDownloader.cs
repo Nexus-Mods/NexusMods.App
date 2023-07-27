@@ -324,6 +324,7 @@ namespace NexusMods.Networking.HttpDownloader
                     if (retries >= MaxRetries)
                         throw;
                     retries += 1;
+                    request = request.Copy();
                     continue;
                 }
             }
