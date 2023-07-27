@@ -19,14 +19,14 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection container)
     {
-        var prefix = FileSystem.Shared.GetKnownPath(KnownPath.TempDirectory)
-            .Combine(typeof(Startup).FullName ?? "NexusMods.DataModel.Tests")
-            .Combine(Guid.NewGuid().ToString());
+        var prefix = FileSystem.Shared
+            .GetKnownPath(KnownPath.EntryDirectory)
+            .Combine($"NexusMods.DataModel.Tests-{Guid.NewGuid()}");
 
         container
             .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
             .AddFileSystem()
-            .AddSingleton<TemporaryFileManager>()
+            .AddSingleton(new TemporaryFileManager(FileSystem.Shared, prefix))
             .AddDataModel(new DataModelSettings(prefix))
             .AddStandardGameLocators(false)
             .AddFileExtractors()
