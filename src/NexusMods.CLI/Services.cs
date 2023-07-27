@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.CLI.OptionParsers;
 using NexusMods.CLI.Verbs;
@@ -40,7 +41,11 @@ public static class Services
         services.AddSingleton<IOptionParser<Loadout>, LoadoutParser>();
         services.AddSingleton<IOptionParser<ITool>, ToolParser>();
         services.AddSingleton<IOptionSelector, CliOptionSelector>();
-        services.AddSingleton<TemporaryFileManager>();
+
+        var prefix = FileSystem.Shared
+            .GetKnownPath(KnownPath.TempDirectory)
+            .Combine($"NexusMods.App-{Guid.NewGuid().ToString("D", CultureInfo.InvariantCulture)}");
+        services.AddSingleton(new TemporaryFileManager(FileSystem.Shared, prefix));
 
         OSInformation.Shared.SwitchPlatform(
             ref services,
