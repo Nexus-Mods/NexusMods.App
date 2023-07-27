@@ -117,7 +117,7 @@ public class MakeApplyPlanTests : ALoadoutSynrchonizerTest<MakeApplyPlanTests>
     {
         var loadout = await CreateApplyPlanTestLoadout();
 
-        var fileOne = loadout.Mods.Values.First().Files.Values.OfType<IFromArchive>()
+        var fileOne = loadout.Mods.Values.First(mod => mod.Enabled == true).Files.Values.OfType<IFromArchive>()
             .First(f => f.Hash == Hash.From(0x00001));
 
         var absPath = loadout.Installation.Locations[GameFolderType.Game].Combine("0x00001.dat");
@@ -125,6 +125,8 @@ public class MakeApplyPlanTests : ALoadoutSynrchonizerTest<MakeApplyPlanTests>
             Size.From(0x33)));
 
         var plan = await TestSyncronizer.MakeApplySteps(loadout);
+        
+        
 
         plan.Steps.Should().ContainEquivalentOf(new DeleteFile
         {

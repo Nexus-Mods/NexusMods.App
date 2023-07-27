@@ -114,6 +114,8 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
 
         var mainMod = loadout.Value.Mods.Values.First();
         var files = EntityDictionary<ModFileId, AModFile>.Empty(DataStore);
+        var disabledFiles = EntityDictionary<ModFileId, AModFile>.Empty(DataStore);
+
         if (generatedFile)
         {
             files = files.With(new TestGeneratedFile
@@ -138,10 +140,30 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
             Id = ModId.New(),
             Name = "Test Mod",
             Files = files,
-            SortRules = ImmutableList<ISortRule<Mod, ModId>>.Empty
+            SortRules = ImmutableList<ISortRule<Mod, ModId>>.Empty,
+            Enabled = true,
         };
-
+        
+        disabledFiles = files.With(new FromArchive
+        {
+            Id = ModFileId.New(),
+            Hash = Hash.From(0x00001),
+            Size = Size.From(0x10001),
+            To = new GamePath(GameFolderType.Game, "shouldNotExist/0x00001.dat"),
+        }, m => m.Id);
+        
+        var disabledMod = new Mod
+        {
+            Id = ModId.New(),
+            Name = "Disabled Test Mod",
+            Files = disabledFiles,
+            SortRules = ImmutableList<ISortRule<Mod, ModId>>.Empty,
+            Enabled = false,
+        };
+        
+        
         loadout.Add(mod);
+        loadout.Add(disabledMod);
         loadout.Remove(mainMod);
         return loadout.Value;
     }
@@ -165,7 +187,8 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
             SortRules = new ISortRule<Mod, ModId>[]
             {
                 new AlphabeticalSort()
-            }.ToImmutableList()
+            }.ToImmutableList(),
+            Enabled = true,
         }).ToList();
 
         foreach (var mod in mods)
@@ -212,9 +235,14 @@ public record TestGeneratedFile : AModFile, IGeneratedFile, IToFile, ITriggerFil
     {
         using var printer = Fingerprinter.Create();
         foreach (var mod in plan.Loadout.Mods)
+        {
+            if (mod.Value.Enabled == false) 
+                continue;
+            
             foreach (var file in mod.Value.Files)
                 if (!file.Value.Id.Equals(self.File.Id))
                     printer.Add(file.Value.DataStoreId);
+        }
 
         return printer.Digest();
     }
