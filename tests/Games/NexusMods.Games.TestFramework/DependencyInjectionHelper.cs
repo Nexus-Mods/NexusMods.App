@@ -1,3 +1,4 @@
+using System.Globalization;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -39,11 +40,15 @@ public static class DependencyInjectionHelper
     /// <returns></returns>
     public static IServiceCollection AddDefaultServicesForTesting(this IServiceCollection serviceCollection)
     {
+        var prefix = FileSystem.Shared
+            .GetKnownPath(KnownPath.TempDirectory)
+            .Combine($"NexusMods.App-{Guid.NewGuid().ToString("D", CultureInfo.InvariantCulture)}");
+
         return serviceCollection
             .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
             .AddOSInformation()
             .AddFileSystem()
-            .AddSingleton<TemporaryFileManager>()
+            .AddSingleton<TemporaryFileManager>(_ => new TemporaryFileManager(FileSystem.Shared, prefix))
             .AddSingleton<HttpClient>()
             .AddSingleton<TestModDownloader>()
             .AddNexusWebApi()
