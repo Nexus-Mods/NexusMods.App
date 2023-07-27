@@ -14,7 +14,7 @@ public class Startup
     {
         var prefix = FileSystem.Shared
             .GetKnownPath(KnownPath.EntryDirectory)
-            .Combine($"NexusMods.App-{Guid.NewGuid().ToString("D", CultureInfo.InvariantCulture)}");
+            .Combine($"NexusMods.Networking.HttpDownloader.Tests-{Guid.NewGuid()}");
 
         container.AddAdvancedHttpDownloader()
                  .AddSingleton<SimpleHttpDownloader>()
