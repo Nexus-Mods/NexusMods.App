@@ -45,6 +45,8 @@ namespace NexusMods.Networking.HttpDownloader
         /// </summary>
         private readonly Size _chunkSize = Size.MB * 128;
 
+        private const int MaxRetries = 4;
+
         /// <summary>
         /// The size of the buffer used to read from the network stream, no need to make this too large as
         /// they are pretty quickly written to disk and returned to the pool. Really these should be fairly
@@ -305,8 +307,25 @@ namespace NexusMods.Networking.HttpDownloader
             Debug.Assert(to < state.TotalSize);
             request.Headers.Range = new RangeHeaderValue((long)from.Value, (long)to.Value);
 
+            HttpResponseMessage response;
+            int retries = 0;
 
-            var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancel);
+            while(true)
+            {
+                try
+                {
+                    response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancel);
+                    break;
+
+                }
+                catch (HttpRequestException)
+                {
+                    if (retries >= MaxRetries)
+                        throw;
+                    retries += 1;
+                    continue;
+                }
+            }
 
             if (!response.IsSuccessStatusCode)
             {
