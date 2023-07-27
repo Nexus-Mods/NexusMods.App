@@ -43,7 +43,7 @@ public static class Services
         services.AddSingleton<IOptionSelector, CliOptionSelector>();
 
         var prefix = FileSystem.Shared
-            .GetKnownPath(KnownPath.TempDirectory)
+            .GetKnownPath(KnownPath.CurrentDirectory)
             .Combine($"NexusMods.App-{Guid.NewGuid().ToString("D", CultureInfo.InvariantCulture)}");
         services.AddSingleton(new TemporaryFileManager(FileSystem.Shared, prefix));
 
