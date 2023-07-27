@@ -31,4 +31,42 @@ public class NxmDownloadTaskTests : AGameTest<Cyberpunk2077>
         task.Init(NXMUrl.Parse(uri));
         await task.StartAsync();
     }
+
+    [Theory]
+    [InlineData("cyberpunk2077", 107, 33156)]
+    public async Task ResumeDownload(string gameDomain, ulong modId, ulong fileId)
+    {
+        // This test requires Premium. If it fails w/o Premium, ignore that.
+
+        // This test fails if mock throws.
+        // DownloadTasks report their results to IDownloadService, so we intercept them from there.
+        var downloadService = DownloadTasksCommon.CreateMockWithConfirmFileReceive();
+        var task = new NxmDownloadTask(TemporaryFileManager, NexusClient, HttpDownloader, downloadService.Object);
+
+        var uri = $"nxm://{gameDomain}/mods/{modId}/files/{fileId}";
+        task.Init(NXMUrl.Parse(uri));
+        await task.StartSuspended();
+        await task.Resume();
+    }
+
+    [Theory]
+    [InlineData("cyberpunk2077", 107, 33156)]
+    public async Task ResumeDownload_AfterAppReboot(string gameDomain, ulong modId, ulong fileId)
+    {
+        // This test requires Premium. If it fails w/o Premium, ignore that.
+
+        // This test fails if mock throws.
+        // DownloadTasks report their results to IDownloadService, so we intercept them from there.
+        var downloadService = DownloadTasksCommon.CreateMockWithConfirmFileReceive();
+        var task = new NxmDownloadTask(TemporaryFileManager, NexusClient, HttpDownloader, downloadService.Object);
+
+        var uri = $"nxm://{gameDomain}/mods/{modId}/files/{fileId}";
+        task.Init(NXMUrl.Parse(uri));
+        await task.StartSuspended();
+
+        // Oops our app rebooted!
+        var newTask = new NxmDownloadTask(TemporaryFileManager, NexusClient, HttpDownloader, downloadService.Object);
+        newTask.RestoreFromSuspend(task.ExportState());
+        await newTask.Resume();
+    }
 }

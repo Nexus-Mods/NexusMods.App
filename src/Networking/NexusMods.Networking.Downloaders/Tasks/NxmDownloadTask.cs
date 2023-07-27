@@ -7,6 +7,7 @@ using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.DTOs;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
 
 namespace NexusMods.Networking.Downloaders.Tasks;
 
@@ -71,6 +72,25 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
     /// Initializes components of this task that cannot be DI Injected.
     /// </summary>
     public void Init(NXMUrl url) => _url = url;
+
+    /// <summary>
+    /// Initializes this download from suspended state (after rebooting application or pausing).
+    /// After this method is called, please call <see cref="Resume"/>.
+    /// </summary>
+    public void RestoreFromSuspend(DownloaderState state)
+    {
+        if (state.TypeSpecificData is not NxmDownloadState data)
+            throw new ArgumentException("Invalid state provided.", nameof(state));
+
+        var absPath = FileSystem.Shared.FromUnsanitizedFullPath(state.DownloadPath);
+        _downloadLocation = new TemporaryPath(FileSystem.Shared, absPath);
+        FriendlyName = state.FriendlyName;
+        GameName = state.GameName!;
+        GameDomain = state.GameDomain!;
+        SizeBytes = state.SizeBytes!.Value;
+        Version = state.Version!;
+        _url = NXMUrl.Parse(data.Query);
+    }
 
     public Task StartAsync()
     {
@@ -137,7 +157,7 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
         Owner.OnCancelled(this);
     }
 
-    public void Pause()
+    public void Suspend()
     {
         Status = DownloadTaskStatus.Paused;
         try { _tokenSource.Cancel(); }
@@ -148,11 +168,26 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
         Owner.OnPaused(this);
     }
 
-    public void Resume()
+    public Task Resume()
     {
         _task = ResumeImpl();
         Owner.OnResumed(this);
+        return _task;
     }
 
     public DownloaderState ExportState() => DownloaderState.Create(this, new NxmDownloadState(_url.Mod.ToString()), _downloadLocation.ToString());
+
+    #region Test Only
+    internal Task StartSuspended()
+    {
+        _task = StartSuspendedImpl();
+        return _task;
+    }
+
+    private async Task StartSuspendedImpl()
+    {
+        await InitDownload();
+        Suspend();
+    }
+    #endregion
 }

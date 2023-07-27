@@ -29,10 +29,6 @@ internal static class DownloadTasksCommon
                     using var stream = tempPath.Path.Open(FileMode.Open);
                     stream.Length.Should().BeGreaterThan(0);
                 }
-                catch (Exception e)
-                {
-                    throw;
-                }
                 finally
                 {
                     // Clean up after our test!!

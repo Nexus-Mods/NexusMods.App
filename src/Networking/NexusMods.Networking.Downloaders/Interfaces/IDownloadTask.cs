@@ -43,14 +43,14 @@ public interface IDownloadTask
     void Cancel();
 
     /// <summary>
-    /// Pauses a download task.
+    /// Pauses a download task, by saving the current state and temporarily cancelling it.
     /// </summary>
-    void Pause();
+    void Suspend();
 
     /// <summary>
     /// Resumes a download task.
     /// </summary>
-    void Resume();
+    Task Resume();
 
     /// <summary>
     /// Exports state for performing a suspend operation.

@@ -99,8 +99,13 @@ public class DownloadServiceTests
 
         public Task StartAsync() => Task.CompletedTask;
         public void Cancel() => Owner.OnCancelled(this);
-        public void Pause() => Owner.OnPaused(this);
-        public void Resume() => Owner.OnResumed(this);
+        public void Suspend() => Owner.OnPaused(this);
+        public Task Resume()
+        {
+            Owner.OnResumed(this);
+            return Task.CompletedTask;
+        }
+
         public DownloaderState ExportState() => throw new NotImplementedException();
     }
 }

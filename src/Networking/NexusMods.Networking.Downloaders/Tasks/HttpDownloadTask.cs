@@ -63,6 +63,22 @@ public class HttpDownloadTask : IDownloadTask, IHaveFileSize
     /// </summary>
     public void Init(string url) => _url = url;
 
+    /// <summary>
+    /// Initializes this download from suspended state (after rebooting application or pausing).
+    /// After this method is called, please call <see cref="Resume"/>.
+    /// </summary>
+    public void RestoreFromSuspend(DownloaderState state)
+    {
+        if (state.TypeSpecificData is not HttpDownloadState data)
+            throw new ArgumentException("Invalid state provided.", nameof(state));
+
+        var absPath = FileSystem.Shared.FromUnsanitizedFullPath(state.DownloadPath);
+        _downloadLocation = new TemporaryPath(FileSystem.Shared, absPath);
+        FriendlyName = state.FriendlyName;
+        SizeBytes = state.SizeBytes!.Value;
+        _url = data.Url!;
+    }
+
     public Task StartAsync()
     {
         _task = StartImpl();
@@ -128,7 +144,7 @@ public class HttpDownloadTask : IDownloadTask, IHaveFileSize
         Owner.OnCancelled(this);
     }
 
-    public void Pause()
+    public void Suspend()
     {
         Status = DownloadTaskStatus.Paused;
         try { _tokenSource.Cancel(); }
@@ -139,12 +155,27 @@ public class HttpDownloadTask : IDownloadTask, IHaveFileSize
         Owner.OnPaused(this);
     }
 
-    public void Resume()
+    public Task Resume()
     {
         _task = ResumeImpl();
         Owner.OnResumed(this);
+        return _task;
     }
 
     public DownloaderState ExportState() => DownloaderState.Create(this, new HttpDownloadState(_url), _downloadLocation.ToString());
     private record GetNameAndSizeResult(string FileName, long FileSize);
+
+    #region Test Only
+    internal Task StartSuspended()
+    {
+        _task = StartSuspendedImpl();
+        return _task;
+    }
+
+    private async Task StartSuspendedImpl()
+    {
+        await InitDownload();
+        Suspend();
+    }
+    #endregion
 }
