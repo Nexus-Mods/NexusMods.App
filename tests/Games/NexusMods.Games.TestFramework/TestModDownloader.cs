@@ -18,9 +18,11 @@ public class TestModDownloader
     private readonly ILogger<TestModDownloader> _logger;
     private readonly IHttpDownloader _httpDownloader;
     private readonly Client _nexusClient;
+    private readonly TemporaryFileManager _manager;
 
-    public TestModDownloader(IHttpDownloader httpDownloader, ILogger<TestModDownloader> logger, Client nexusClient)
+    public TestModDownloader(IHttpDownloader httpDownloader, ILogger<TestModDownloader> logger, Client nexusClient, TemporaryFileManager manager)
     {
+        _manager = manager;
         _httpDownloader = httpDownloader;
         _logger = logger;
         _nexusClient = nexusClient;
@@ -49,10 +51,9 @@ public class TestModDownloader
     /// <returns>Downloaded item inside the provided FileSystem.</returns>
     public async Task<DownloadedItem> DownloadAsync(RemoteModMetadataBase meta, IFileSystem targetFs, CancellationToken token = default)
     {
-        var manager = new TemporaryFileManager(targetFs);
-        var tempFile = manager.CreateFile();
+        var tempFile = _manager.CreateFile();
         await DownloadAsync(meta, targetFs, tempFile.Path, token);
-        return new DownloadedItem(manager, tempFile, targetFs, meta);
+        return new DownloadedItem(_manager, tempFile, targetFs, meta);
     }
 
     /// <summary>
