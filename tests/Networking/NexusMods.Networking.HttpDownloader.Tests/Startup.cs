@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
@@ -11,11 +12,15 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection container)
     {
+        var prefix = FileSystem.Shared
+            .GetKnownPath(KnownPath.EntryDirectory)
+            .Combine($"NexusMods.App-{Guid.NewGuid().ToString("D", CultureInfo.InvariantCulture)}");
+
         container.AddAdvancedHttpDownloader()
                  .AddSingleton<SimpleHttpDownloader>()
                  .AddSingleton<AdvancedHttpDownloader>()
                  .AddFileSystem()
-                 .AddSingleton<TemporaryFileManager>()
+                 .AddSingleton(new TemporaryFileManager(FileSystem.Shared, prefix))
                  .AddSingleton<HttpClient>()
                  .AddSingleton<LocalHttpServer>()
                  .Validate();
