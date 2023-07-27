@@ -106,6 +106,6 @@ public class DownloadServiceTests
             return Task.CompletedTask;
         }
 
-        public DownloaderState ExportState() => throw new NotImplementedException();
+        public DownloaderState ExportState() => new();
     }
 }
