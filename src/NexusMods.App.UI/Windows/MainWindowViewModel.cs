@@ -5,7 +5,11 @@ using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.TopBar;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.Overlays;
-using NexusMods.App.UI.Overlays.Login;
+using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Loadouts;
+using NexusMods.Hashing.xxHash64;
+using NexusMods.Networking.Downloaders.Interfaces;
+using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -14,21 +18,25 @@ namespace NexusMods.App.UI.Windows;
 
 public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
 {
-    private readonly INexusLoginOverlayViewModel _nexusOverlayViewModel;
     private readonly IOverlayController _overlayController;
+    private readonly IArchiveInstaller _archiveInstaller;
+    private LoadoutRegistry _registry;
 
     public MainWindowViewModel(
         ILogger<MainWindowViewModel> logger,
         IOSInformation osInformation,
         ISpineViewModel spineViewModel,
         ITopBarViewModel topBarViewModel,
-        INexusLoginOverlayViewModel nexusOverlayViewModel,
-        IOverlayController controller)
+        IOverlayController controller,
+        IDownloadService downloadService,
+        IArchiveInstaller archiveInstaller,
+        LoadoutRegistry registry)
     {
         TopBar = topBarViewModel;
         Spine = spineViewModel;
         _overlayController = controller;
-        _nexusOverlayViewModel = nexusOverlayViewModel;
+        _archiveInstaller = archiveInstaller;
+        _registry = registry;
 
         // Only show controls in Windows since we can remove the chrome on that platform
         TopBar.ShowWindowControls = osInformation.IsWindows;
@@ -38,6 +46,16 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
             Spine.Actions
                 .SubscribeWithErrorLogging(logger, HandleSpineAction)
                 .DisposeWith(d);
+
+            downloadService.AnalyzedArchives.Subscribe(tuple =>
+            {
+                // Because HandleDownloadedAnalyzedArchive is an async task, it begins automatically.
+                HandleDownloadedAnalyzedArchive(tuple.task, tuple.analyzedHash, tuple.modName).ContinueWith(t =>
+                {
+                    if (t.Exception != null)
+                        logger.LogError(t.Exception, "Error while installing downloaded analyzed archive");
+                });
+            }).DisposeWith(d);
 
             _overlayController.ApplyNextOverlay.Subscribe(item =>
                 {
@@ -77,7 +95,27 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
                 }).BindTo(this, vm => vm.RightContent);
         });
     }
-    
+
+    private async Task HandleDownloadedAnalyzedArchive(IDownloadTask task, Hash analyzedHash, string modName)
+    {
+        var loadouts = Array.Empty<LoadoutId>();
+        if (task is IHaveGameDomain gameDomain)
+            loadouts = _registry.AllLoadouts().Where(x => x.Installation.Game.Domain == gameDomain.GameDomain)
+                .Select(x => x.LoadoutId).ToArray();
+
+        // Insert code here to invoke loadout picker and get results for final loadouts to install to.
+        // ...
+
+        // Install in the background, to avoid blocking UI.
+        await Task.Run(async () =>
+        {
+            if (loadouts.Length > 0)
+                await _archiveInstaller.AddMods(loadouts[0], analyzedHash, modName);
+            else
+                await _archiveInstaller.AddMods(_registry.AllLoadouts().First().LoadoutId, analyzedHash, modName);
+        });
+    }
+
     private void HandleSpineAction(SpineButtonAction action)
     {
         Spine.Activations.OnNext(action);

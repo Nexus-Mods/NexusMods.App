@@ -7,7 +7,6 @@ using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.Downloaders.Interfaces;
-using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using NexusMods.Networking.Downloaders.Tasks;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
@@ -15,7 +14,7 @@ using NexusMods.Paths;
 namespace NexusMods.Networking.Downloaders;
 
 /// <inheritdoc />
-public partial class DownloadService : IDownloadService
+public class DownloadService : IDownloadService
 {
     /// <inheritdoc />
     public List<IDownloadTask> Downloads { get; } = new();
@@ -23,25 +22,20 @@ public partial class DownloadService : IDownloadService
     private readonly ILogger<DownloadService> _logger;
     private readonly IServiceProvider _provider;
     private readonly IDataStore _store;
-
     private readonly IArchiveAnalyzer _archiveAnalyzer;
-    private readonly IArchiveInstaller _archiveInstaller;
-
     private readonly Subject<IDownloadTask> _started = new();
     private readonly Subject<IDownloadTask> _completed = new();
     private readonly Subject<IDownloadTask> _cancelled = new();
     private readonly Subject<IDownloadTask> _paused = new();
     private readonly Subject<IDownloadTask> _resumed = new();
-    private LoadoutRegistry _registry;
+    private readonly Subject<(IDownloadTask task, Hash analyzedHash, string modName)> _analyzed = new();
 
-    public DownloadService(ILogger<DownloadService> logger, IServiceProvider provider, IDataStore store, IArchiveAnalyzer archiveAnalyzer, IArchiveInstaller archiveInstaller, LoadoutRegistry registry)
+    public DownloadService(ILogger<DownloadService> logger, IServiceProvider provider, IDataStore store, IArchiveAnalyzer archiveAnalyzer)
     {
         _logger = logger;
         _provider = provider;
         _store = store;
         _archiveAnalyzer = archiveAnalyzer;
-        _archiveInstaller = archiveInstaller;
-        _registry = registry;
 
         // TODO: Restore state from DataStore
 
@@ -61,6 +55,9 @@ public partial class DownloadService : IDownloadService
 
     /// <inheritdoc />
     public IObservable<IDownloadTask> ResumedTasks => _resumed;
+
+    /// <inheritdoc />
+    public IObservable<(IDownloadTask task, Hash analyzedHash, string modName)> AnalyzedArchives => _analyzed;
 
     /// <inheritdoc />
     public void AddNxmTask(NXMUrl url)
@@ -124,7 +121,7 @@ public partial class DownloadService : IDownloadService
         try
         {
             var analyzed = await _archiveAnalyzer.AnalyzeFileAsync(path);
-            await SendToUiAsync(task, analyzed.Hash, modName);
+            _analyzed.OnNext((task, analyzed.Hash, modName));
         }
         catch (Exception e)
         {
@@ -140,23 +137,6 @@ public partial class DownloadService : IDownloadService
             task.Status = DownloadTaskStatus.Completed;
             OnComplete(task);
         }
-
-    }
-
-    private async Task SendToUiAsync(IDownloadTask task, Hash analyzedHash, string modName)
-    {
-        var loadouts = Array.Empty<LoadoutId>();
-        if (task is IHaveGameDomain gameDomain)
-            loadouts = _registry.AllLoadouts().Where(x => x.Installation.Game.Domain == gameDomain.GameDomain).Select(x => x.LoadoutId).ToArray();
-
-        // TODO: This is a placeholder for sending an event to the UI, where the user can choose a layout and confirm mod installation.
-        //       For now, we lack the UI design to support this; so we just 'auto install' to whatever we can find.
-
-        // Replace this with sending all possible loadouts to UI, for now we just install whatever we find.
-        if (loadouts.Length > 0)
-            await _archiveInstaller.AddMods(loadouts[0], analyzedHash, modName);
-        else
-            await _archiveInstaller.AddMods(_registry.AllLoadouts().First().LoadoutId, analyzedHash, modName);
     }
 
     private void PersistOnPause(IDownloadTask task)

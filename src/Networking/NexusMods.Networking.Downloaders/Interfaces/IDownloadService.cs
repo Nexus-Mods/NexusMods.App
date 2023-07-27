@@ -1,5 +1,5 @@
-using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.RateLimiting;
+using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
 
@@ -19,33 +19,39 @@ public interface IDownloadService
     List<IDownloadTask> Downloads { get; }
 
     /// <summary>
-    /// This gets fired whenever a download-and-install task is started.
+    /// This gets fired whenever a download task is started.
     /// </summary>
     IObservable<IDownloadTask> StartedTasks { get; }
 
     /// <summary>
-    /// This gets fired whenever a status of download-and-install task is completed.
-    /// This happens when <see cref="JobState.Finished"/> is true.
+    /// This gets fired whenever a status of download task is completed.
+    /// This happens when <see cref="JobState.Finished"/> is true and <see cref="AnalyzedArchives"/> callback has completed.
     /// </summary>
     IObservable<IDownloadTask> CompletedTasks { get; }
 
     /// <summary>
-    /// This gets fired whenever a status of download-and-install task is completed.
+    /// This gets fired whenever a status of download task is completed.
     /// This happens when <see cref="JobState.Finished"/> is true.
     /// </summary>
     IObservable<IDownloadTask> CancelledTasks { get; }
 
     /// <summary>
-    /// This gets fired whenever a download-and-install task is paused.
+    /// This gets fired whenever a download task is paused.
     /// This happens when <see cref="JobState.Paused"/> is true.
     /// </summary>
     IObservable<IDownloadTask> PausedTasks { get; }
 
     /// <summary>
-    /// This gets fired whenever a download-and-install task is resumed.
+    /// This gets fired whenever a download task is resumed.
     /// This happens when <see cref="JobState.Running"/> is true after <see cref="JobState.Paused"/>.
     /// </summary>
     IObservable<IDownloadTask> ResumedTasks { get; }
+
+    /// <summary>
+    /// This gets fired whenever a download is complete and an archive has been analyzed.
+    /// You can use this callback to gather additional metadata about the archive, or install the mods within.
+    /// </summary>
+    IObservable<(IDownloadTask task, Hash analyzedHash, string modName)> AnalyzedArchives { get; }
 
     /// <summary>
     /// Adds a task that will download from a NXM link.
