@@ -1,0 +1,109 @@
+name: Build Linux (PupNet)
+
+on:
+  workflow_call:
+    inputs:
+      AppVersion:
+        type: string
+        required: false
+        description: "The version of the application to build"
+        default: "1.0.0"
+      PupNetVersion:
+        type: string
+        required: false
+        description: "The PupNet version to use"
+        default: "1.6.0"
+      ProjectFile:
+        type: string
+        required: true
+        description: "The relative path to the project to build"
+      RetentionDays:
+        type: number
+        required: false
+        default: 1
+        description: "The amount of days for the artifact to persist"
+      BuildAppImage:
+        type: boolean
+        description: "Build an AppImage?"
+        required: false
+        default: true
+      BuildArchive:
+        type: boolean
+        description: "Build an Archive?"
+        required: false
+        default: true
+    outputs:
+      ArtifactNameLinuxArchive:
+        description: "Name of the Artifact that contains the Linux Archive"
+        value: ${{ jobs.build.outputs.artifactNameLinuxArchive }}
+      ArtifactNameLinuxAppImage:
+        description: "Name of the Artifact that contains the Linux AppImage"
+        value: ${{ jobs.build.outputs.artifactNameLinuxAppImage }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      artifactNameLinuxArchive: ${{ steps.setOutputs.outputs.artifactNameLinuxArchive }}
+      artifactNameLinuxAppImage: ${{ steps.setOutputs.outputs.artifactNameLinuxAppImage }}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: "recursive"
+
+      - name: Transform inputs
+        id: transformInputs
+        shell: pwsh
+        env:
+          ProjectFile: ${{ inputs.ProjectFile }}
+        run: |
+          $projectDir = [System.IO.Path]::GetDirectoryName("$env:ProjectFile")
+          $projectName = [System.IO.Path]::GetFileNameWithoutExtension("$env:ProjectFile")
+          echo "projectDir=$projectDir" >> $env:GITHUB_OUTPUT
+          echo "projectName=$projectName" >> $env:GITHUB_OUTPUT
+
+      - name: Print debug info
+        run: dotnet --info
+
+      # https://github.com/AppImage/AppImageKit/wiki/FUSE#install-fuse
+      - name: Install FUSE
+        run: sudo add-apt-repository universe && sudo apt install libfuse2
+
+      - name: Get PupNet
+        run: dotnet tool install -g KuiperZone.PupNet --version ${{ inputs.PupNetVersion }}
+
+      - name: Create Archive
+        if: ${{ inputs.BuildArchive }}
+        working-directory: ${{ steps.transformInputs.outputs.projectDir }}
+        run: pupnet -y -v ${{ inputs.AppVersion }} -k zip -p DefineConstants=INSTALLATION_METHOD_ARCHIVE
+
+      - name: Create AppImage
+        if: ${{ inputs.BuildAppImage }}
+        working-directory: ${{ steps.transformInputs.outputs.projectDir }}
+        run: pupnet -y -v ${{ inputs.AppVersion }} -k AppImage -p DefineConstants=INSTALLATION_METHOD_APPIMAGE
+
+      - name: Set outputs
+        id: setOutputs
+        shell: pwsh
+        run: |
+          echo "artifactNameLinuxArchive=${{ steps.transformInputs.outputs.projectName }}-${{ github.sha }}-Linux-Archive" >> $env:GITHUB_OUTPUT
+          echo "artifactNameLinuxAppImage=${{ steps.transformInputs.outputs.projectName }}-${{ github.sha }}-Linux-AppImage" >> $env:GITHUB_OUTPUT
+
+      - name: Upload Archive
+        if: ${{ inputs.BuildArchive }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.setOutputs.outputs.artifactNameLinuxArchive }}
+          path: ${{ steps.transformInputs.outputs.projectDir }}/Deploy/OUT/*.zip
+          if-no-files-found: error
+          retention-days: ${{ inputs.RetentionDays }}
+
+      - name: Upload AppImage
+        if: ${{ inputs.BuildAppImage }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.setOutputs.outputs.artifactNameLinuxAppImage }}
+          path: ${{ steps.transformInputs.outputs.projectDir }}/Deploy/OUT/*.AppImage
+          if-no-files-found: error
+          retention-days: ${{ inputs.RetentionDays }}
