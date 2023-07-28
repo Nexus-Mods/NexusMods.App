@@ -27,6 +27,11 @@ public record DownloaderState : Entity
     public ITypeSpecificState? TypeSpecificData { get; private set; }
 
     /// <summary>
+    /// Status of the task associated with this state.
+    /// </summary>
+    public DownloadTaskStatus Status { get; private set; }
+
+    /// <summary>
     /// Path to the temporary file being downloaded.
     /// </summary>
     /// <remarks>
@@ -81,6 +86,7 @@ public record DownloaderState : Entity
         result.TypeSpecificData = typeSpecificState;
         result.FriendlyName = item.FriendlyName;
         result.DownloadPath = downloadLocation;
+        result.Status = item.Status;
         if (item is IHaveFileSize fileSize)
             result.SizeBytes = fileSize.SizeBytes;
 

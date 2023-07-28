@@ -1,13 +1,15 @@
+using System.Collections.ObjectModel;
 using System.Reactive.Subjects;
+using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
-using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Tasks;
+using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
 
@@ -17,8 +19,10 @@ namespace NexusMods.Networking.Downloaders;
 public class DownloadService : IDownloadService
 {
     /// <inheritdoc />
-    public List<IDownloadTask> Downloads { get; } = new();
+    public ReadOnlyObservableCollection<IDownloadTask> Downloads => _downloads;
 
+    private readonly SourceList<IDownloadTask> _tasks;
+    private ReadOnlyObservableCollection<IDownloadTask> _downloads;
     private readonly ILogger<DownloadService> _logger;
     private readonly IServiceProvider _provider;
     private readonly IDataStore _store;
@@ -37,8 +41,35 @@ public class DownloadService : IDownloadService
         _store = store;
         _archiveAnalyzer = archiveAnalyzer;
 
-        // TODO: Restore state from DataStore
+        _tasks = new SourceList<IDownloadTask>();
+        _tasks.Connect()
+              .Bind(out _downloads);
 
+        _tasks.AddRange(_store.AllIds(EntityCategory.DownloadStates)
+            .Select(id => _store.Get<DownloaderState>(id))
+            .Where(x => x!.Status != DownloadTaskStatus.Completed)
+            .Select(state => GetTaskFromState(state!)));
+    }
+
+    private IDownloadTask GetTaskFromState(DownloaderState state)
+    {
+        switch (state.TypeSpecificData)
+        {
+            case HttpDownloadState:
+            {
+                var task = _provider.GetRequiredService<HttpDownloadTask>();
+                task.RestoreFromSuspend(state);
+                return task;
+            }
+            case NxmDownloadState:
+            {
+                var task = _provider.GetRequiredService<NxmDownloadTask>();
+                task.RestoreFromSuspend(state);
+                return task;
+            }
+            default:
+                throw new Exception("Unrecognised Type Specific Data.");
+        }
     }
 
     /// <inheritdoc />
@@ -78,7 +109,7 @@ public class DownloadService : IDownloadService
     /// <inheritdoc />
     public void AddTask(IDownloadTask task)
     {
-        Downloads.Add(task);
+        _tasks.Add(task);
         _ = task.StartAsync();
         _started.OnNext(task);
     }
@@ -86,13 +117,15 @@ public class DownloadService : IDownloadService
     /// <inheritdoc />
     public void OnComplete(IDownloadTask task)
     {
-        DeleteFromDatastore(task);
+        UpdateAsComplete(task);
+        _tasks.Remove(task);
         _completed.OnNext(task);
     }
 
     /// <inheritdoc />
     public void OnCancelled(IDownloadTask task)
     {
+        DeleteFromDatastore(task);
         _cancelled.OnNext(task);
     }
 
@@ -104,11 +137,7 @@ public class DownloadService : IDownloadService
     }
 
     /// <inheritdoc />
-    public void OnResumed(IDownloadTask task)
-    {
-        DeleteFromDatastore(task);
-        _resumed.OnNext(task);
-    }
+    public void OnResumed(IDownloadTask task) => _resumed.OnNext(task);
 
     /// <inheritdoc />
     public Size GetThroughput() => Downloads.SelectMany(x => x.DownloadJobs).GetTotalThroughput(new DateTimeProvider());
@@ -148,5 +177,13 @@ public class DownloadService : IDownloadService
     private void DeleteFromDatastore(IDownloadTask task)
     {
         _store.Delete(new IdVariableLength(EntityCategory.DownloadStates, task.ExportState().DownloadPath));
+    }
+
+    private void UpdateAsComplete(IDownloadTask task)
+    {
+        // Note: It's easier to re-generate state rather than updating existing instance.
+        var state = task.ExportState();
+        _store.Delete(new IdVariableLength(EntityCategory.DownloadStates, state.DownloadPath));
+        _store.Put(new IdVariableLength(EntityCategory.DownloadStates, state.DownloadPath), state);
     }
 }
