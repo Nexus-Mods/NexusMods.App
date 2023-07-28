@@ -1,19 +1,23 @@
-using FluentAssertions;
-using NexusMods.Games.RedEngine;
-using NexusMods.Games.TestFramework;
 using NexusMods.Networking.Downloaders.Tasks;
+using NexusMods.Networking.HttpDownloader;
+using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.Types;
+using NexusMods.Paths;
 
 namespace NexusMods.Networking.Downloaders.Tests.Tasks;
 
 [Trait("RequiresNetworking", "True")]
-public class NxmDownloadTaskTests : AGameTest<Cyberpunk2077>
+public class NxmDownloadTaskTests
 {
-    private readonly DownloadService _downloadService;
+    private readonly IHttpDownloader _httpDownloader;
+    private readonly TemporaryFileManager _temporaryFileManager;
+    private readonly Client _nexusClient;
 
-    public NxmDownloadTaskTests(IServiceProvider serviceProvider, DownloadService downloadService) : base(serviceProvider)
+    public NxmDownloadTaskTests(IServiceProvider serviceProvider, IHttpDownloader httpDownloader, TemporaryFileManager temporaryFileManager, Client nexusClient)
     {
-        _downloadService = downloadService;
+        _httpDownloader = httpDownloader;
+        _temporaryFileManager = temporaryFileManager;
+        _nexusClient = nexusClient;
     }
 
     [Theory]
@@ -25,7 +29,7 @@ public class NxmDownloadTaskTests : AGameTest<Cyberpunk2077>
         // This test fails if mock throws.
         // DownloadTasks report their results to IDownloadService, so we intercept them from there.
         var downloadService = DownloadTasksCommon.CreateMockWithConfirmFileReceive();
-        var task = new NxmDownloadTask(TemporaryFileManager, NexusClient, HttpDownloader, downloadService.Object);
+        var task = new NxmDownloadTask(_temporaryFileManager, _nexusClient, _httpDownloader, downloadService.Object);
 
         var uri = $"nxm://{gameDomain}/mods/{modId}/files/{fileId}";
         task.Init(NXMUrl.Parse(uri));
@@ -41,7 +45,7 @@ public class NxmDownloadTaskTests : AGameTest<Cyberpunk2077>
         // This test fails if mock throws.
         // DownloadTasks report their results to IDownloadService, so we intercept them from there.
         var downloadService = DownloadTasksCommon.CreateMockWithConfirmFileReceive();
-        var task = new NxmDownloadTask(TemporaryFileManager, NexusClient, HttpDownloader, downloadService.Object);
+        var task = new NxmDownloadTask(_temporaryFileManager, _nexusClient, _httpDownloader, downloadService.Object);
 
         var uri = $"nxm://{gameDomain}/mods/{modId}/files/{fileId}";
         task.Init(NXMUrl.Parse(uri));
@@ -58,14 +62,14 @@ public class NxmDownloadTaskTests : AGameTest<Cyberpunk2077>
         // This test fails if mock throws.
         // DownloadTasks report their results to IDownloadService, so we intercept them from there.
         var downloadService = DownloadTasksCommon.CreateMockWithConfirmFileReceive();
-        var task = new NxmDownloadTask(TemporaryFileManager, NexusClient, HttpDownloader, downloadService.Object);
+        var task = new NxmDownloadTask(_temporaryFileManager, _nexusClient, _httpDownloader, downloadService.Object);
 
         var uri = $"nxm://{gameDomain}/mods/{modId}/files/{fileId}";
         task.Init(NXMUrl.Parse(uri));
         await task.StartSuspended();
 
         // Oops our app rebooted!
-        var newTask = new NxmDownloadTask(TemporaryFileManager, NexusClient, HttpDownloader, downloadService.Object);
+        var newTask = new NxmDownloadTask(_temporaryFileManager, _nexusClient, _httpDownloader, downloadService.Object);
         newTask.RestoreFromSuspend(task.ExportState());
         await newTask.Resume();
     }

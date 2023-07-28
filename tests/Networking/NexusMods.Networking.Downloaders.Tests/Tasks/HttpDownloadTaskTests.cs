@@ -6,21 +6,25 @@ using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.TestFramework;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Tasks;
+using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.HttpDownloader.Tests;
+using NexusMods.Paths;
 
 namespace NexusMods.Networking.Downloaders.Tests.Tasks;
 
-public class HttpDownloadTaskTests : AGameTest<SkyrimSpecialEdition>
+public class HttpDownloadTaskTests
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly DownloadService _downloadService;
     private readonly LocalHttpServer _server;
+    private readonly IHttpDownloader _httpDownloader;
+    private readonly TemporaryFileManager _temporaryFileManager;
 
-    public HttpDownloadTaskTests(IServiceProvider serviceProvider, DownloadService downloadService, LocalHttpServer server) : base(serviceProvider)
+    public HttpDownloadTaskTests(IServiceProvider serviceProvider, LocalHttpServer server, IHttpDownloader httpDownloader, TemporaryFileManager temporaryFileManager)
     {
         _serviceProvider = serviceProvider;
-        _downloadService = downloadService;
         _server = server;
+        _httpDownloader = httpDownloader;
+        _temporaryFileManager = temporaryFileManager;
     }
 
     [Theory]
@@ -34,8 +38,7 @@ public class HttpDownloadTaskTests : AGameTest<SkyrimSpecialEdition>
         // This test fails if mock throws.
         // DownloadTasks report their results to IDownloadService, so we intercept them from there.
         var mock = DownloadTasksCommon.CreateMockWithConfirmFileReceive();
-        var task = new HttpDownloadTask(_serviceProvider.GetRequiredService<ILogger<HttpDownloadTask>>(), TemporaryFileManager, _serviceProvider.GetRequiredService<HttpClient>(), HttpDownloader, mock.Object);
-
+        var task = new HttpDownloadTask(_serviceProvider.GetRequiredService<ILogger<HttpDownloadTask>>(), _temporaryFileManager, _serviceProvider.GetRequiredService<HttpClient>(), _httpDownloader, mock.Object);
         var makeUrl = $"{_server.Uri}{url}";
         task.Init(makeUrl);
         await task.StartAsync();
@@ -52,14 +55,14 @@ public class HttpDownloadTaskTests : AGameTest<SkyrimSpecialEdition>
         // This test fails if mock throws.
         // DownloadTasks report their results to IDownloadService, so we intercept them from there.
         var mock = DownloadTasksCommon.CreateMockWithConfirmFileReceive();
-        var task = new HttpDownloadTask(_serviceProvider.GetRequiredService<ILogger<HttpDownloadTask>>(), TemporaryFileManager, _serviceProvider.GetRequiredService<HttpClient>(), HttpDownloader, mock.Object);
+        var task = new HttpDownloadTask(_serviceProvider.GetRequiredService<ILogger<HttpDownloadTask>>(), _temporaryFileManager, _serviceProvider.GetRequiredService<HttpClient>(), _httpDownloader, mock.Object);
 
         var makeUrl = $"{_server.Uri}{url}";
         task.Init(makeUrl);
         await task.StartSuspended();
 
         // Oops our app rebooted!
-        var newTask = new HttpDownloadTask(_serviceProvider.GetRequiredService<ILogger<HttpDownloadTask>>(), TemporaryFileManager, _serviceProvider.GetRequiredService<HttpClient>(), HttpDownloader, mock.Object);
+        var newTask = new HttpDownloadTask(_serviceProvider.GetRequiredService<ILogger<HttpDownloadTask>>(), _temporaryFileManager, _serviceProvider.GetRequiredService<HttpClient>(), _httpDownloader, mock.Object);
         newTask.RestoreFromSuspend(task.ExportState());
         await newTask.Resume();
     }

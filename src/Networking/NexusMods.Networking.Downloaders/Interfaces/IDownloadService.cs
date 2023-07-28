@@ -58,19 +58,19 @@ public interface IDownloadService
     /// Adds a task that will download from a NXM link.
     /// </summary>
     /// <param name="url">Url to download from.</param>
-    void AddNxmTask(NXMUrl url);
+    Task AddNxmTask(NXMUrl url);
 
     /// <summary>
     /// Adds a task that will download from a HTTP link.
     /// </summary>
     /// <param name="url">Url to download from.</param>
-    void AddHttpTask(string url);
+    Task AddHttpTask(string url);
 
     /// <summary>
     /// Adds a task to the download queue.
     /// </summary>
     /// <param name="task">A task which has not yet been started.</param>
-    void AddTask(IDownloadTask task);
+    Task AddTask(IDownloadTask task);
 
     /// <summary>
     /// This is a callback fired by individual implementations of <see cref="IDownloadTask"/>.

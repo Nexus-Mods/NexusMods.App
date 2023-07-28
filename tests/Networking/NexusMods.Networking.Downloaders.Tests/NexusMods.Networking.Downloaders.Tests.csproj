@@ -3,7 +3,7 @@
     <PropertyGroup>
         <XunitStartupAssembly>NexusMods.Networking.Downloaders.Tests</XunitStartupAssembly>
     </PropertyGroup>
-    
+
     <ItemGroup>
         <ProjectReference Include="..\..\..\src\NexusMods.App\NexusMods.App.csproj" />
         <ProjectReference Include="..\..\..\src\NexusMods.DataModel.RateLimiting\NexusMods.DataModel.RateLimiting.csproj" />

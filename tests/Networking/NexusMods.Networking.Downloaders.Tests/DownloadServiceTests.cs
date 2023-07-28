@@ -1,4 +1,5 @@
 using FluentAssertions;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Tasks.State;
@@ -12,7 +13,7 @@ public class DownloadServiceTests
     private readonly DownloadService _downloadService;
     private readonly DummyDownloadTask _dummyTask;
 
-    public DownloadServiceTests(DownloadService downloadService)
+    public DownloadServiceTests(DownloadService downloadService, IDataStore store)
     {
         // Create a new instance of the DownloadService
         _downloadService = downloadService;
@@ -97,7 +98,12 @@ public class DownloadServiceTests
         public DownloadTaskStatus Status { get; set; }
         public string FriendlyName { get; } = "";
 
-        public Task StartAsync() => Task.CompletedTask;
+        public Task StartAsync()
+        {
+            Owner.OnComplete(this);
+            return Task.CompletedTask;
+        }
+
         public void Cancel() => Owner.OnCancelled(this);
         public void Suspend() => Owner.OnPaused(this);
         public Task Resume()
@@ -109,3 +115,4 @@ public class DownloadServiceTests
         public DownloaderState ExportState() => new();
     }
 }
+

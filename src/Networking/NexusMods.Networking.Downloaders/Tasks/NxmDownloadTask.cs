@@ -71,7 +71,11 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
     /// <summary>
     /// Initializes components of this task that cannot be DI Injected.
     /// </summary>
-    public void Init(NXMUrl url) => _url = url;
+    public void Init(NXMUrl url)
+    {
+        _url = url;
+        _downloadLocation = _temp.CreateFile();
+    }
 
     /// <summary>
     /// Initializes this download from suspended state (after rebooting application or pausing).
@@ -120,7 +124,6 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
 
     private async Task InitDownload()
     {
-        _downloadLocation = _temp.CreateFile();
         var file = await GetFileInfo();
         GameDomain = _url.Mod.Game;
         FriendlyName = file.Name;

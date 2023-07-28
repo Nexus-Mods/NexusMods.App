@@ -45,13 +45,18 @@ public class DownloadService : IDownloadService
         _tasks.Connect()
               .Bind(out _downloads);
 
-        _tasks.AddRange(_store.AllIds(EntityCategory.DownloadStates)
-            .Select(id => _store.Get<DownloaderState>(id))
-            .Where(x => x!.Status != DownloadTaskStatus.Completed)
-            .Select(state => GetTaskFromState(state!)));
+        _tasks.AddRange(GetItemsToResume());
     }
 
-    private IDownloadTask GetTaskFromState(DownloaderState state)
+    internal IEnumerable<IDownloadTask> GetItemsToResume()
+    {
+        return _store.AllIds(EntityCategory.DownloadStates)
+            .Select(id => _store.Get<DownloaderState>(id))
+            .Where(x => x!.Status != DownloadTaskStatus.Completed)
+            .Select(state => GetTaskFromState(state!));
+    }
+
+    internal IDownloadTask GetTaskFromState(DownloaderState state)
     {
         switch (state.TypeSpecificData)
         {
@@ -91,29 +96,37 @@ public class DownloadService : IDownloadService
     public IObservable<(IDownloadTask task, Hash analyzedHash, string modName)> AnalyzedArchives => _analyzed;
 
     /// <inheritdoc />
-    public void AddNxmTask(NXMUrl url)
+    public Task AddNxmTask(NXMUrl url)
     {
         var task = _provider.GetRequiredService<NxmDownloadTask>();
         task.Init(url);
-        AddTask(task);
+        return AddTask(task);
     }
 
     /// <inheritdoc />
-    public void AddHttpTask(string url)
+    public Task AddHttpTask(string url)
     {
         var task = _provider.GetRequiredService<HttpDownloadTask>();
         task.Init(url);
-        AddTask(task);
+        return AddTask(task);
     }
 
     /// <inheritdoc />
-    public void AddTask(IDownloadTask task)
+    public Task AddTask(IDownloadTask task)
+    {
+        AddTaskWithoutStarting(task);
+        var item = task.StartAsync();
+        return item;
+    }
+    
+    // For test use, too.
+    internal void AddTaskWithoutStarting(IDownloadTask task)
     {
         _tasks.Add(task);
-        _ = task.StartAsync();
         _started.OnNext(task);
+        PersistOnStart(task);
     }
-
+    
     /// <inheritdoc />
     public void OnComplete(IDownloadTask task)
     {
@@ -130,11 +143,7 @@ public class DownloadService : IDownloadService
     }
 
     /// <inheritdoc />
-    public void OnPaused(IDownloadTask task)
-    {
-        PersistOnPause(task);
-        _paused.OnNext(task);
-    }
+    public void OnPaused(IDownloadTask task) => _paused.OnNext(task);
 
     /// <inheritdoc />
     public void OnResumed(IDownloadTask task) => _resumed.OnNext(task);
@@ -168,7 +177,7 @@ public class DownloadService : IDownloadService
         }
     }
 
-    private void PersistOnPause(IDownloadTask task)
+    private void PersistOnStart(IDownloadTask task)
     {
         var state = task.ExportState();
         _store.Put(new IdVariableLength(EntityCategory.DownloadStates, state.DownloadPath), state);

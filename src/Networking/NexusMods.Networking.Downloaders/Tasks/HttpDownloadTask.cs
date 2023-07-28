@@ -61,7 +61,11 @@ public class HttpDownloadTask : IDownloadTask, IHaveFileSize
     /// <summary>
     /// Initializes components of this task that cannot be DI Injected.
     /// </summary>
-    public void Init(string url) => _url = url;
+    public void Init(string url)
+    {
+        _url = url;
+        _downloadLocation = _temp.CreateFile();
+    }
 
     /// <summary>
     /// Initializes this download from suspended state (after rebooting application or pausing).
@@ -100,9 +104,7 @@ public class HttpDownloadTask : IDownloadTask, IHaveFileSize
 
     private async Task InitDownload()
     {
-        var tempPath = _temp.CreateFile();
         var nameSize = await GetNameAndSize();
-        _downloadLocation = tempPath;
         FriendlyName = nameSize.FileName;
         SizeBytes = nameSize.FileSize;
     }
