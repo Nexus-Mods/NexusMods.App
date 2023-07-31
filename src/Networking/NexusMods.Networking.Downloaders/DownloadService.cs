@@ -53,10 +53,12 @@ public class DownloadService : IDownloadService
         return _store.AllIds(EntityCategory.DownloadStates)
             .Select(id => _store.Get<DownloaderState>(id))
             .Where(x => x!.Status != DownloadTaskStatus.Completed)
-            .Select(state => GetTaskFromState(state!));
+            .Select(state => GetTaskFromState(state!))
+            .Where(x => x != null)
+            .Cast<IDownloadTask>();
     }
 
-    internal IDownloadTask GetTaskFromState(DownloaderState state)
+    internal IDownloadTask? GetTaskFromState(DownloaderState state)
     {
         switch (state.TypeSpecificData)
         {
@@ -73,7 +75,10 @@ public class DownloadService : IDownloadService
                 return task;
             }
             default:
-                throw new Exception("Unrecognised Type Specific Data.");
+            {
+                _logger.LogError("Unrecognised Type Specific Data. {StateTypeSpecificData}", state.TypeSpecificData);
+                return null;
+            }
         }
     }
 
