@@ -66,6 +66,8 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
 
     public long Throughput => (long)_task.DownloadJob.GetThroughput(DateTimeProvider.Instance).Value;
     public void Cancel() => _task.Cancel();
+    public void Suspend() => _task.Suspend();
+    public void Resume() => _task.Resume();
 
     // Polling implementation, for bridging the gap between a non-INotifyPropertyChanged implementation and
     // live-updating ViewModel.

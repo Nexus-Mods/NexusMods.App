@@ -1,3 +1,4 @@
+using System.Windows.Input;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
 
@@ -27,4 +28,9 @@ public interface IDownloadStatusViewModel : IColumnViewModel<IDownloadTaskViewMo
     /// Determines whether the user can pause the current download operation.
     /// </summary>
     public bool CanPause { get; set; }
+
+    /// <summary>
+    /// Pauses or resumes the current download operation.
+    /// </summary>
+    public ICommand PauseOrResume { get; set; }
 }

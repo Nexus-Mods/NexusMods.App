@@ -32,7 +32,7 @@
         <Style Selector="Button.Spine.Home /template/ icons|Icon">
             <Setter Property="Value" Value="mdi-home" />
         </Style>
-        
+
         <Style Selector="Button.Spine.Download /template/ icons|Icon">
             <Setter Property="Value" Value="mdi-download" />
         </Style>

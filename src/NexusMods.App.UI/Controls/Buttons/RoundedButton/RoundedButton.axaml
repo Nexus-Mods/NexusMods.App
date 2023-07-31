@@ -21,7 +21,6 @@
         </Style>
     </UserControl.Styles>
 
-
     <Button
         Background="#14FFFFFF"
         BorderBrush="#19FFFFFF"

@@ -24,6 +24,9 @@ public partial class DownloadStatusView : ReactiveUserControl<IDownloadStatusVie
                 .SubscribeWithErrorLogging(logger: default)
                 .DisposeWith(d);
 
+            this.BindCommand(this.ViewModel, vm => vm.PauseOrResume, v => v.PlayPauseButton)
+                .DisposeWith(d);
+
             this.WhenAnyValue(vm => vm.ViewModel!.IsRunning)
                 .OnUI()
                 .Subscribe(isRunning =>

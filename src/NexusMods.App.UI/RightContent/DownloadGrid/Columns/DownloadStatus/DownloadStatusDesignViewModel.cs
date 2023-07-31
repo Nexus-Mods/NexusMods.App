@@ -1,5 +1,6 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Windows.Input;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
 using NexusMods.Networking.Downloaders.Interfaces;
@@ -25,8 +26,13 @@ public class DownloadStatusDesignViewModel : AViewModel<IDownloadStatusViewModel
     [Reactive]
     public bool CanPause { get; set; }
 
+    [Reactive]
+    public ICommand PauseOrResume { get; set; }
+
     public DownloadStatusDesignViewModel()
     {
+        PauseOrResume = ReactiveCommand.Create(() => Row.Cancel());
+
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.Row.Status, vm => vm.Row.SizeBytes, vm => vm.Row.DownloadedBytes)
