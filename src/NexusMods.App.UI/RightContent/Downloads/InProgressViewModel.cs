@@ -2,9 +2,7 @@
 using System.Reactive.Linq;
 using DynamicData;
 using NexusMods.App.UI.Overlays;
-using NexusMods.App.UI.Overlays.Download.Cancel;
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
-using NexusMods.App.UI.Windows;
 using NexusMods.Networking.Downloaders;
 using NexusMods.Networking.Downloaders.Interfaces;
 using ReactiveUI;

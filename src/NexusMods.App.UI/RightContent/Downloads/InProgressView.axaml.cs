@@ -5,7 +5,6 @@ using DynamicData.Binding;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Helpers;
-using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.RightContent.Downloads;

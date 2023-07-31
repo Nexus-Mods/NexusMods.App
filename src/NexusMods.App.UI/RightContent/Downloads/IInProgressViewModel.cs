@@ -3,7 +3,6 @@ using System.Windows.Input;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.RightContent.DownloadGrid;
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
-using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 
 namespace NexusMods.App.UI.RightContent.Downloads;
 
