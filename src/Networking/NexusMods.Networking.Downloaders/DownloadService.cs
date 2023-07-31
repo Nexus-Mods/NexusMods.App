@@ -154,7 +154,7 @@ public class DownloadService : IDownloadService
     public void OnResumed(IDownloadTask task) => _resumed.OnNext(task);
 
     /// <inheritdoc />
-    public Size GetThroughput() => Downloads.Select(x => x.DownloadJob).GetTotalThroughput(new DateTimeProvider());
+    public Size GetThroughput() => Downloads.Select(x => x.DownloadJob).Where(x => x != null)!.GetTotalThroughput(new DateTimeProvider());
 
     /// <inheritdoc />
     public async Task FinalizeDownloadAsync(IDownloadTask task, TemporaryPath path, string modName)

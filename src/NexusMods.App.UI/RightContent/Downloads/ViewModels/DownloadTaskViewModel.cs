@@ -51,7 +51,16 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
 
     public DownloadTaskStatus Status => _task.Status;
 
-    public long DownloadedBytes => (long)_task.DownloadJob.Current.Value;
+    public long DownloadedBytes
+    {
+        get
+        {
+            if (_task.DownloadJob == null)
+                return 0;
+
+            return (long)_task.DownloadJob.Current.Value;
+        }
+    }
 
     public long SizeBytes
     {
@@ -64,7 +73,17 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
         }
     }
 
-    public long Throughput => (long)_task.DownloadJob.GetThroughput(DateTimeProvider.Instance).Value;
+    public long Throughput
+    {
+        get
+        {
+            if (_task.DownloadJob == null)
+                return 0;
+
+            return (long)_task.DownloadJob.GetThroughput(DateTimeProvider.Instance).Value;
+        }
+    }
+
     public void Cancel() => _task.Cancel();
     public void Suspend() => _task.Suspend();
     public void Resume() => _task.Resume();

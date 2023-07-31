@@ -12,7 +12,7 @@ public interface IDownloadTask
     /// <summary>
     /// Gets all download jobs associated with this task for the purpose of calculating throughput.
     /// </summary>
-    IJob<Size> DownloadJob { get; }
+    IJob<Size>? DownloadJob { get; }
 
     /// <summary>
     /// Service this task is associated with.
