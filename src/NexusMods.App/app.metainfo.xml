@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+    <!-- See https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#spec-component-filespec -->
+
+    <!-- This license is not the project license but the license for this singular file. -->
+    <metadata_license>MIT</metadata_license>
+
+    <!-- Note the use of macros to automate most (but not all) content below -->
+    <id>${APP_ID}</id>
+    <name>${APP_FRIENDLY_NAME}</name>
+    <summary>${APP_SHORT_SUMMARY}</summary>
+    <developer_name>${PUBLISHER_NAME}</developer_name>
+    <url type="homepage">${PUBLISHER_LINK_URL}</url>
+    <project_license>${APP_LICENSE_ID}</project_license>
+    <content_rating type="oars-1.1" />
+
+    <launchable type="desktop-id">${APP_ID}.desktop</launchable>
+
+    <description>
+        ${APPSTREAM_DESCRIPTION_XML}
+    </description>
+
+    <!-- Freedesktop Categories -->
+    <categories>
+        <category>${PRIME_CATEGORY}</category>
+    </categories>
+
+    <!-- Uncomment to provide keywords
+    <keywords>
+        <keyword translate="no">IDE</keyword>
+        <keyword>development</keyword>
+        <keyword>programming</keyword>
+        <keyword xml:lang="de">entwicklung</keyword>
+        <keyword xml:lang="de">programmierung</keyword>
+    </keywords>
+    -->
+
+    <!-- Uncomment to provide screenshots
+    <screenshots>
+        <screenshot type="default">
+            <image>https://i.postimg.cc/0jc8xxxC/Hello-Computer.png</image>
+        </screenshot>
+    </screenshots>
+    -->
+
+    <releases>
+        <!-- See AppChangeFile in configuration -->
+        ${APPSTREAM_CHANGELOG_XML}
+    </releases>
+
+</component>

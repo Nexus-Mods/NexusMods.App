@@ -142,11 +142,7 @@ public class LocalHttpServer : IDisposable
             resp.Headers.Add(HttpResponseHeader.KeepAlive, "true");
             resp.Headers.Add(HttpResponseHeader.ContentRange, range.ToString());
 
-            stream.Position = (long)range.From!;
-            var buffer = new byte[(int)(range.To! - range.From!)];
-            await stream.ReadExactlyAsync(buffer);
-            await using var ros = resp.OutputStream;
-            await ros.WriteAsync(buffer);
+            await SendContent(resp, stream, range);
         }
     }
 
@@ -170,16 +166,6 @@ public class LocalHttpServer : IDisposable
         var rangeValue = RangeHeaderValue.Parse(rangeString);
         var range = rangeValue.Ranges.First();
 
-        var from = range.From ?? 0;
-        var to = range.To == null ? LargeData.Length : range.To + 1;
-
-        var originalSegment = LargeData[(int)from..(int)to];
-
-        if (truncate && originalSegment.Length > MB * 2)
-        {
-            originalSegment = originalSegment[..Random.Shared.Next(MB, MB * 2)];
-        }
-
         resp.StatusCode = (int)HttpStatusCode.PartialContent;
         resp.StatusDescription = "Partial Content";
         resp.ProtocolVersion = HttpVersion.Version11;
@@ -187,9 +173,25 @@ public class LocalHttpServer : IDisposable
         resp.Headers.Add(HttpResponseHeader.AcceptRanges, "bytes");
         resp.Headers.Add(HttpResponseHeader.KeepAlive, "true");
         resp.Headers.Add(HttpResponseHeader.ContentRange, range.ToString());
-        await using var ros = resp.OutputStream;
-        await ros.WriteAsync(originalSegment);
+        await SendContent(resp, new MemoryStream(LargeData), range, truncate);
 
+    }
+
+    private async Task SendContent(HttpListenerResponse resp, Stream src, RangeItemHeaderValue range, bool truncate = false)
+    {
+        var from = range.From ?? 0;
+        var to = range.To ?? src.Length;
+        await using var ros = resp.OutputStream;
+        src.Position = from;
+
+        var count = to - from + 1;
+
+        if (truncate && count > MB * 2)
+            count = Random.Shared.Next(MB, MB * 2);
+
+        var buffer = new byte[count];
+        await src.ReadExactlyAsync(buffer);
+        await ros.WriteAsync(buffer);
     }
 
     public Uri Uri => new(_prefix);

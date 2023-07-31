@@ -44,7 +44,7 @@ public class IngestChangesTest : ALoadoutSynrchonizerTest<IngestChangesTest>
     public async Task RemovedFilesAreRemoved()
     {
         var loadout = await CreateApplyPlanTestLoadout();
-        var firstMod = loadout.Mods.Values.First();
+        var firstMod = loadout.Mods.Values.First(mod => mod.Enabled == true);
 
         var absPath = GetFirstModFile(loadout);
 
@@ -58,9 +58,10 @@ public class IngestChangesTest : ALoadoutSynrchonizerTest<IngestChangesTest>
             })
         });
 
-        loadout.Mods.Count.Should().Be(2);
+        loadout.Mods.Count.Should().Be(3);
 
         (from mod in loadout.Mods.Values
+            where mod.Enabled == true
             from file in mod.Files.Values
             select file).Count().Should().Be(2);
 
@@ -78,9 +79,10 @@ public class IngestChangesTest : ALoadoutSynrchonizerTest<IngestChangesTest>
             }
         });
 
-        loadout.Mods.Count.Should().Be(2);
+        loadout.Mods.Count.Should().Be(3);
 
         (from mod in loadout.Mods.Values
+            where mod.Enabled == true
             from file in mod.Files.Values
             select file).Count().Should().Be(0);
     }

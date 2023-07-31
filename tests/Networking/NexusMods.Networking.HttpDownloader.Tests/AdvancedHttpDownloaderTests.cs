@@ -121,6 +121,7 @@ public class AdvancedHttpDownloaderTests
             new HttpRequestMessage(HttpMethod.Get, _localHttpServer.Uri + "unreliable")
         }, path);
 
+        path.Path.FileInfo.Size.Value.Should().Be((ulong)_localHttpServer.LargeData.Length);
         resultHash.Should().Be(_localHttpServer.LargeDataHash);
     }
 }
