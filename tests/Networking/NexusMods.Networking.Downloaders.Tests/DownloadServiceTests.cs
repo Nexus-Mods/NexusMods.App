@@ -93,7 +93,7 @@ public class DownloadServiceTests
     private class DummyDownloadTask : IDownloadTask
     {
         public DummyDownloadTask(DownloadService service) { Owner = service; }
-        public IEnumerable<IJob<Size>> DownloadJobs => Array.Empty<IJob<Size>>();
+        public IJob<Size> DownloadJob => default!;
         public IDownloadService Owner { get; set; }
         public DownloadTaskStatus Status { get; set; }
         public string FriendlyName { get; } = "";

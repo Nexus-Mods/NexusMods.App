@@ -123,7 +123,7 @@ public class DownloadService : IDownloadService
         var item = task.StartAsync();
         return item;
     }
-    
+
     // For test use, too.
     internal void AddTaskWithoutStarting(IDownloadTask task)
     {
@@ -131,7 +131,7 @@ public class DownloadService : IDownloadService
         _started.OnNext(task);
         PersistOnStart(task);
     }
-    
+
     /// <inheritdoc />
     public void OnComplete(IDownloadTask task)
     {
@@ -154,7 +154,7 @@ public class DownloadService : IDownloadService
     public void OnResumed(IDownloadTask task) => _resumed.OnNext(task);
 
     /// <inheritdoc />
-    public Size GetThroughput() => Downloads.SelectMany(x => x.DownloadJobs).GetTotalThroughput(new DateTimeProvider());
+    public Size GetThroughput() => Downloads.Select(x => x.DownloadJob).GetTotalThroughput(new DateTimeProvider());
 
     /// <inheritdoc />
     public async Task FinalizeDownloadAsync(IDownloadTask task, TemporaryPath path, string modName)

@@ -9,7 +9,7 @@ namespace NexusMods.Networking.HttpDownloader;
 public class HttpDownloaderState
 {
     /// <summary>
-    /// The jobs associated with the current HTTP Downloader Progress.
+    /// The job associated with the current HTTP Downloader Progress.
     /// </summary>
-    public List<IJob<IHttpDownloader, Size>> Jobs { get; init; } = new();
+    public IJob<IHttpDownloader, Size> Job { get; set; } = default!;
 }

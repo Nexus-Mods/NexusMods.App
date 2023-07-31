@@ -28,7 +28,7 @@ public class HttpDownloadTask : IDownloadTask, IHaveFileSize
     private Task? _task;
 
     /// <inheritdoc />
-    public IEnumerable<IJob<Size>> DownloadJobs => _state.Jobs;
+    public IJob<Size> DownloadJob => _state.Job;
 
     /// <inheritdoc />
     public IDownloadService Owner { get; }

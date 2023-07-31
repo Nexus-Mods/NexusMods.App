@@ -8,15 +8,15 @@ namespace NexusMods.App.UI.RightContent.Downloads.ViewModels;
 public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownloadTaskViewModel
 {
     private readonly IDownloadTask _task;
-    
+
     public DownloadTaskViewModel(IDownloadTask task, bool initPreviousStates = true)
     {
         _task = task;
-        
+
         // Initialize the previous states
         if (!initPreviousStates)
             return;
-        
+
         _previousName = Name;
         _previousVersion = Version;
         _previousGame = Game;
@@ -27,7 +27,7 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
     }
 
     public string Name => _task.FriendlyName;
-    public string Version 
+    public string Version
     {
         get
         {
@@ -37,8 +37,8 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
              return "Unknown";
         }
     }
-    
-    public string Game 
+
+    public string Game
     {
         get
         {
@@ -51,9 +51,9 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
 
     public DownloadTaskStatus Status => _task.Status;
 
-    public long DownloadedBytes => (long)_task.DownloadJobs.GetTotalCompletion().Value;
-    
-    public long SizeBytes 
+    public long DownloadedBytes => (long)_task.DownloadJob.Current.Value;
+
+    public long SizeBytes
     {
         get
         {
@@ -63,11 +63,11 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
             return 0;
         }
     }
-    
-    public long Throughput => (long)_task.DownloadJobs.GetTotalThroughput(DateTimeProvider.Instance).Value;
+
+    public long Throughput => (long)_task.DownloadJob.GetThroughput(DateTimeProvider.Instance).Value;
     public void Cancel() => _task.Cancel();
 
-    // Polling implementation, for bridging the gap between a non-INotifyPropertyChanged implementation and 
+    // Polling implementation, for bridging the gap between a non-INotifyPropertyChanged implementation and
     // live-updating ViewModel.
     private string _previousName = string.Empty;
     private string _previousVersion = string.Empty;
@@ -76,7 +76,7 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
     private long _previousDownloadedBytes = 0;
     private long _previousSizeBytes = 0;
     private long _previousThroughput = 0;
-    
+
     public void Poll()
     {
         if (_previousName != Name)
