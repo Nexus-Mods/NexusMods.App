@@ -19,6 +19,9 @@
         <Style Selector="Button.PlayPause:pressed">
             <Setter Property="RenderTransform" Value="scale(0.9)" />
         </Style>
+        <Style Selector="Button.PlayPause">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
     </UserControl.Styles>
 
     <StackPanel Orientation="Horizontal">
