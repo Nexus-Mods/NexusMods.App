@@ -1,7 +1,5 @@
 ﻿using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using DynamicData;
-using DynamicData.Binding;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
 using NexusMods.Networking.Downloaders;
