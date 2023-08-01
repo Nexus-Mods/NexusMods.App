@@ -1,7 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Subjects;
 using DynamicData;
-using DynamicData.Alias;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
@@ -11,6 +10,8 @@ using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Tasks;
 using NexusMods.Networking.Downloaders.Tasks.State;
+using NexusMods.Networking.HttpDownloader;
+using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
 
@@ -65,13 +66,13 @@ public class DownloadService : IDownloadService
         {
             case HttpDownloadState:
             {
-                var task = _provider.GetRequiredService<HttpDownloadTask>();
+                var task = new HttpDownloadTask(_provider.GetRequiredService<ILogger<HttpDownloadTask>>(), _provider.GetRequiredService<TemporaryFileManager>(), _provider.GetRequiredService<HttpClient>(), _provider.GetRequiredService<IHttpDownloader>(), this);
                 task.RestoreFromSuspend(state);
                 return task;
             }
             case NxmDownloadState:
             {
-                var task = _provider.GetRequiredService<NxmDownloadTask>();
+                var task = new NxmDownloadTask(_provider.GetRequiredService<TemporaryFileManager>(), _provider.GetRequiredService<Client>(), _provider.GetRequiredService<IHttpDownloader>(), this);
                 task.RestoreFromSuspend(state);
                 return task;
             }
