@@ -129,7 +129,8 @@ public class LoadoutManager
             Files = new EntityDictionary<ModFileId, AModFile>(Store),
             Version = installation.Version.ToString(),
             ModCategory = Mod.GameFilesCategory,
-            SortRules = ImmutableList<ISortRule<Mod, ModId>>.Empty.Add(new First<Mod, ModId>())
+            SortRules = ImmutableList<ISortRule<Mod, ModId>>.Empty.Add(new First<Mod, ModId>()),
+            Enabled = true
         }.WithPersist(Store);
 
         var loadoutId = LoadoutId.Create();

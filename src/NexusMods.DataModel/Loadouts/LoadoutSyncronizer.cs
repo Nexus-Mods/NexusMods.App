@@ -96,6 +96,9 @@ public class LoadoutSynchronizer
         var modRules = await mods
             .SelectAsync(async mod => (mod.Id, await ModSortRules(loadout, mod).ToListAsync()))
             .ToDictionaryAsync(r => r.Id, r => r.Item2);
+        if (modRules.Count == 0)
+            return Array.Empty<Mod>();
+        
         var sorted = Sorter.Sort<Mod, ModId>(mods, m => m.Id, m => modRules[m.Id]);
         return sorted;
     }

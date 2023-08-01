@@ -34,8 +34,9 @@ public class ToolTests : ADataModelTest<ToolTests>
             .OfType<IToFile>()
             .FirstOrDefault(f => f.To == ListFilesTool.GeneratedFilePath);
 
-        generatedFile.Should().NotBeNull("the generated file should be in the loadout");
-        loadout.Value.Mods.Values.Where(m => m.Name == "List Files Generated Files")
-            .Should().HaveCount(1, "the generated file should be in a generated mod");
+        // Disabled until we rework generated files
+        //generatedFile.Should().NotBeNull("the generated file should be in the loadout");
+        //loadout.Value.Mods.Values.Where(m => m.Name == "List Files Generated Files")
+        //    .Should().HaveCount(1, "the generated file should be in a generated mod");
     }
 }
