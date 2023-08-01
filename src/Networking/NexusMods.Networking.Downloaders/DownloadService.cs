@@ -146,6 +146,7 @@ public class DownloadService : IDownloadService
     public void OnCancelled(IDownloadTask task)
     {
         DeleteFromDatastore(task);
+        _tasks.Remove(task);
         _cancelled.OnNext(task);
     }
 
