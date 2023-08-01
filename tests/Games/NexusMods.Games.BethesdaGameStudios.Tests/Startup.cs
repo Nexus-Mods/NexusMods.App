@@ -17,7 +17,6 @@ public class Startup
             .AddUniversalGameLocator<SkyrimSpecialEdition>(new Version("1.6.659.0"))
             .AddUniversalGameLocator<SkyrimLegendaryEdition>(new Version("1.9.32.0"))
             .AddBethesdaGameStudios()
-            .AddCommon()
             .Validate();
     }
 

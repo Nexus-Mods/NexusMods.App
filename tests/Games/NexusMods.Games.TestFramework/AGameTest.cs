@@ -35,7 +35,6 @@ public abstract class AGameTest<TGame> where TGame : AGame
     protected readonly LoadoutSynchronizer LoadoutSynchronizer;
     protected readonly IArchiveAnalyzer ArchiveAnalyzer;
     protected readonly IDataStore DataStore;
-    protected readonly TestModDownloader Downloader;
 
     protected readonly Client NexusClient;
     protected readonly IHttpDownloader HttpDownloader;
@@ -65,7 +64,6 @@ public abstract class AGameTest<TGame> where TGame : AGame
         LoadoutSynchronizer = serviceProvider.GetRequiredService<LoadoutSynchronizer>();
         ArchiveAnalyzer = serviceProvider.GetRequiredService<IArchiveAnalyzer>();
         DataStore = serviceProvider.GetRequiredService<IDataStore>();
-        Downloader = serviceProvider.GetRequiredService<TestModDownloader>();
 
         NexusClient = serviceProvider.GetRequiredService<Client>();
         HttpDownloader = serviceProvider.GetRequiredService<IHttpDownloader>();

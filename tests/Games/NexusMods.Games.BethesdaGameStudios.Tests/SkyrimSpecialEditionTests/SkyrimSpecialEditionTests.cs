@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using System.Text;
 using System.Text.Json;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Loadouts;
@@ -18,12 +19,15 @@ namespace NexusMods.Games.BethesdaGameStudios.Tests.SkyrimSpecialEditionTests;
 
 public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
 {
+    private readonly TestModDownloader _downloader;
+
     /// <summary>
     /// DI Constructor
     /// </summary>
     /// <param name="serviceProvider"></param>
     public SkyrimSpecialEditionTests(IServiceProvider serviceProvider) : base(serviceProvider)
     {
+        _downloader = serviceProvider.GetRequiredService<TestModDownloader>();
 
     }
 
@@ -215,7 +219,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
         var pluginFilePath = pluginFile.To.CombineChecked(loadout.Value.Installation);
         
         var path = BethesdaTestHelpers.GetDownloadableModFolder(FileSystem, "SkyrimBase");
-        var downloaded = await Downloader.DownloadFromManifestAsync(path, FileSystem);
+        var downloaded = await _downloader.DownloadFromManifestAsync(path, FileSystem);
         
         var skyrimBase = await InstallModFromArchiveIntoLoadout(
             loadout,
@@ -233,7 +237,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
         text.Should().NotContain("plugin_test.esp", "plugin_test.esp is not installed");
         
         path = BethesdaTestHelpers.GetDownloadableModFolder(FileSystem, "PluginTest");
-        downloaded = await Downloader.DownloadFromManifestAsync(path, FileSystem);
+        downloaded = await _downloader.DownloadFromManifestAsync(path, FileSystem);
         var pluginTest = await InstallModFromArchiveIntoLoadout(
             loadout,
             downloaded.Path,
