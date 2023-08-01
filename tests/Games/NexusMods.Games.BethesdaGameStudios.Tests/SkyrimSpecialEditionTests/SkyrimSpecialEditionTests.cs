@@ -216,9 +216,6 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
         
         var path = BethesdaTestHelpers.GetDownloadableModFolder(FileSystem, "SkyrimBase");
         var downloaded = await Downloader.DownloadFromManifestAsync(path, FileSystem);
-
-
-
         
         var skyrimBase = await InstallModFromArchiveIntoLoadout(
             loadout,
