@@ -8,6 +8,11 @@ namespace NexusMods.App.UI.RightContent.Downloads.ViewModels;
 public interface IDownloadTaskViewModel : IRightContentViewModel
 {
     /// <summary>
+    /// The underlying task.
+    /// </summary>
+    public IDownloadTask Task { get; }
+
+    /// <summary>
     /// e.g. 'My Cool Mod'
     /// </summary>
     public string Name { get; }

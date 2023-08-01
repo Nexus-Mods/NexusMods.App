@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Subjects;
 using DynamicData;
+using DynamicData.Alias;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
@@ -19,10 +20,9 @@ namespace NexusMods.Networking.Downloaders;
 public class DownloadService : IDownloadService
 {
     /// <inheritdoc />
-    public ReadOnlyObservableCollection<IDownloadTask> Downloads => _downloads;
+    public IObservable<IChangeSet<IDownloadTask>> Downloads => _tasksChangeSet;
 
     private readonly SourceList<IDownloadTask> _tasks;
-    private ReadOnlyObservableCollection<IDownloadTask> _downloads;
     private readonly ILogger<DownloadService> _logger;
     private readonly IServiceProvider _provider;
     private readonly IDataStore _store;
@@ -33,6 +33,8 @@ public class DownloadService : IDownloadService
     private readonly Subject<IDownloadTask> _paused = new();
     private readonly Subject<IDownloadTask> _resumed = new();
     private readonly Subject<(IDownloadTask task, Hash analyzedHash, string modName)> _analyzed = new();
+    private readonly IObservable<IChangeSet<IDownloadTask>> _tasksChangeSet;
+    private readonly ReadOnlyObservableCollection<IDownloadTask> _currentDownloads;
 
     public DownloadService(ILogger<DownloadService> logger, IServiceProvider provider, IDataStore store, IArchiveAnalyzer archiveAnalyzer)
     {
@@ -42,9 +44,8 @@ public class DownloadService : IDownloadService
         _archiveAnalyzer = archiveAnalyzer;
 
         _tasks = new SourceList<IDownloadTask>();
-        _tasks.Connect()
-              .Bind(out _downloads);
-
+        _tasksChangeSet = _tasks.Connect();
+        _tasksChangeSet.Bind(out _currentDownloads);
         _tasks.AddRange(GetItemsToResume());
     }
 
@@ -154,7 +155,7 @@ public class DownloadService : IDownloadService
     public void OnResumed(IDownloadTask task) => _resumed.OnNext(task);
 
     /// <inheritdoc />
-    public Size GetThroughput() => Downloads.Select(x => x.DownloadJob).Where(x => x != null)!.GetTotalThroughput(new DateTimeProvider());
+    public Size GetThroughput() => _currentDownloads.Select(x => x.DownloadJob).Where(x => x != null)!.GetTotalThroughput(new DateTimeProvider());
 
     /// <inheritdoc />
     public async Task FinalizeDownloadAsync(IDownloadTask task, TemporaryPath path, string modName)

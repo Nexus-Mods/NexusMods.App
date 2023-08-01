@@ -7,6 +7,7 @@ namespace NexusMods.App.UI.RightContent.Downloads.ViewModels;
 
 public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownloadTaskViewModel
 {
+    public IDownloadTask Task => _task;
     private readonly IDownloadTask _task;
 
     public DownloadTaskViewModel(IDownloadTask task, bool initPreviousStates = true)

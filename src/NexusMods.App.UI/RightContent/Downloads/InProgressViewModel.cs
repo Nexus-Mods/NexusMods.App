@@ -1,6 +1,7 @@
 ﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
+using DynamicData.Binding;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
 using NexusMods.Networking.Downloaders;
@@ -13,53 +14,22 @@ public class InProgressViewModel : InProgressCommonViewModel
 {
     public InProgressViewModel(DownloadService downloadService, IOverlayController overlayController)
     {
-        SourceCache<IDownloadTaskViewModel, IDownloadTask> tasks = new(_ => throw new NotImplementedException());
-
-        // Add already running tasks to the tasks list
-        foreach (var task in downloadService.Downloads)
-        {
-            if (task.Status != DownloadTaskStatus.Completed)
-            {
-                tasks.Edit(x =>
-                {
-                    x.AddOrUpdate(new DownloadTaskViewModel(task), task);
-                });
-            }
-        }
-        
         this.WhenActivated(d =>
         {
             ShowCancelDialog = ReactiveCommand.Create(async () =>
             {
                 if (SelectedTask == null)
                     return;
-                
+
                 var result = await overlayController.ShowCancelDownloadOverlay(SelectedTask);
-                if (result) 
+                if (result)
                     CancelSelectedTask();
             });
 
-            // Subscribe to started tasks
-            downloadService.StartedTasks
+            downloadService.Downloads
+                .Filter(x => x.Status != DownloadTaskStatus.Completed)
+                .Transform(x => (IDownloadTaskViewModel) new DownloadTaskViewModel(x))
                 .OnUI()
-                .Subscribe(task =>
-                {
-                    tasks.Edit(x =>
-                    {
-                        x.AddOrUpdate(new DownloadTaskViewModel(task), task);
-                    });
-                });
-
-            // Subscribe to completed tasks and remove them from tasks list
-            downloadService.CompletedTasks
-                .OnUI()
-                .Merge(downloadService.CancelledTasks) // Cancelled and completed are treated the same here.
-                .Subscribe(task =>
-                {
-                    tasks.Remove(task);
-                });
-
-            tasks.Connect()
                 .Bind(out TasksObservable)
                 .Subscribe()
                 .DisposeWith(d);

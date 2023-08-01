@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using DynamicData;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.NexusWebApi.Types;
@@ -17,7 +18,7 @@ public interface IDownloadService
     /// <summary>
     /// Contains all downloads managed by the application.
     /// </summary>
-    ReadOnlyObservableCollection<IDownloadTask> Downloads { get; }
+    IObservable<IChangeSet<IDownloadTask>> Downloads { get; }
 
     /// <summary>
     /// This gets fired whenever a download task is started.
