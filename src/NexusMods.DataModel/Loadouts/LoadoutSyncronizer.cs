@@ -69,6 +69,9 @@ public class LoadoutSynchronizer
 
         foreach (var mod in sorted)
         {
+            if (!mod.Enabled)
+                continue;
+            
             foreach (var (_, file) in mod.Files)
             {
                 if (file is not IToFile toFile)
@@ -176,7 +179,6 @@ public class LoadoutSynchronizer
                     case IGeneratedFile generatedFile:
                     {
                         var fingerprint = generatedFile.TriggerFilter.GetFingerprint(planned, tmpPlan);
-                        _logger.LogInformation("Fingerprint is {Fingerprint}", fingerprint);
                         if (_generatedFileFingerprintCache.TryGet(fingerprint, out var cached) && cached.Hash == existing.Hash && cached.Size == existing.Size)
                         {
                             continue;
