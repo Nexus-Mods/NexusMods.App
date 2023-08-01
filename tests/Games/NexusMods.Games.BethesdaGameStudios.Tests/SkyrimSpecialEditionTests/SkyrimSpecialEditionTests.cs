@@ -3,13 +3,16 @@ using System.Text;
 using System.Text.Json;
 using FluentAssertions;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
+using Noggog;
 
 namespace NexusMods.Games.BethesdaGameStudios.Tests.SkyrimSpecialEditionTests;
 
@@ -194,5 +197,91 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
                 }.Select(t => t.ToLowerInvariant()),
                     opt => opt.WithStrictOrdering());
         }
+    }
+    
+    [Fact]
+    public async Task EnablingAndDisablingModsModifiesThePluginsFile()
+    {
+        var loadout = await CreateLoadout(indexGameFiles: false);
+        
+        var pluginFile = (from mod in loadout.Value.Mods.Values
+                            from file in mod.Files.Values
+                            where file is PluginOrderFile
+                            select file)
+            .OfType<PluginOrderFile>()
+            .First();
+
+
+        var pluginFilePath = pluginFile.To.CombineChecked(loadout.Value.Installation);
+        
+        var path = BethesdaTestHelpers.GetDownloadableModFolder(FileSystem, "SkyrimBase");
+        var downloaded = await Downloader.DownloadFromManifestAsync(path, FileSystem);
+
+
+
+        
+        var skyrimBase = await InstallModFromArchiveIntoLoadout(
+            loadout,
+            downloaded.Path,
+            downloaded.Manifest.Name);
+        
+        await Apply(loadout.Value);
+
+        pluginFilePath.FileExists.Should().BeTrue("the loadout is applied");
+        
+        
+        var text = await GetPluginOrder(pluginFilePath);
+
+        text.Should().Contain("Skyrim.esm");
+        text.Should().NotContain("plugin_test.esp", "plugin_test.esp is not installed");
+        
+        path = BethesdaTestHelpers.GetDownloadableModFolder(FileSystem, "PluginTest");
+        downloaded = await Downloader.DownloadFromManifestAsync(path, FileSystem);
+        var pluginTest = await InstallModFromArchiveIntoLoadout(
+            loadout,
+            downloaded.Path,
+            downloaded.Manifest.Name);
+        
+        await Apply(loadout.Value);
+
+        pluginFilePath.FileExists.Should().BeTrue("the loadout is applied");
+        text = await GetPluginOrder(pluginFilePath);
+
+        text.Should().Contain("Skyrim.esm");
+        text.Should().Contain("plugin_test.esp", "plugin_test.esp is installed");
+        
+        LoadoutRegistry.Alter(loadout.Value.LoadoutId, pluginTest.Id, "disable plugin",  
+            mod => mod with {Enabled  = false});
+        
+        text = await GetPluginOrder(pluginFilePath);
+
+        text.Should().Contain("Skyrim.esm");
+        text.Should().Contain("plugin_test.esp", "new loadout has not been applied yet");
+        
+        await Apply(loadout.Value);
+        
+        text = await GetPluginOrder(pluginFilePath);
+        
+        text.Should().Contain("Skyrim.esm");
+        text.Should().NotContain("plugin_test.esp", "plugin_test.esp is disabled");
+        
+        LoadoutRegistry.Alter(loadout.Value.LoadoutId, pluginTest.Id, "enable plugin",  
+            mod => mod with {Enabled  = true});
+        
+        await Apply(loadout.Value);
+        
+        text = await GetPluginOrder(pluginFilePath);
+        
+        text.Should().Contain("Skyrim.esm");
+        text.Should().Contain("plugin_test.esp", "plugin_test.esp is enabled again");
+        
+    }
+
+    private static async Task<string[]> GetPluginOrder(AbsolutePath pluginFilePath)
+    {
+        return (await pluginFilePath.ReadAllTextAsync())
+            .Split(new []{"\r","\n"}, StringSplitOptions.RemoveEmptyEntries)
+            .Select(p => p.TrimStart("*"))
+            .ToArray();
     }
 }

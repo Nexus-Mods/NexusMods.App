@@ -69,7 +69,8 @@ public class ToolManager : IToolManager
             generatedFilesMod = mod.Id;
         }
 
-        var ingestPlan = await _loadoutSynchronizer.MakeIngestPlan(loadout, _ => generatedFilesMod.Value, token);
-        return await _loadoutSynchronizer.Ingest(ingestPlan, $"Updating {tool.Name} Generated Files"); 
+        //var ingestPlan = await _loadoutSynchronizer.MakeIngestPlan(loadout, _ => generatedFilesMod.Value, token);
+        //return await _loadoutSynchronizer.Ingest(ingestPlan, $"Updating {tool.Name} Generated Files");
+        return loadout;
     }
 }

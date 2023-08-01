@@ -35,6 +35,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     protected readonly LoadoutSynchronizer LoadoutSynchronizer;
     protected readonly IArchiveAnalyzer ArchiveAnalyzer;
     protected readonly IDataStore DataStore;
+    protected readonly TestModDownloader Downloader;
 
     protected readonly Client NexusClient;
     protected readonly IHttpDownloader HttpDownloader;
@@ -64,6 +65,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
         LoadoutSynchronizer = serviceProvider.GetRequiredService<LoadoutSynchronizer>();
         ArchiveAnalyzer = serviceProvider.GetRequiredService<IArchiveAnalyzer>();
         DataStore = serviceProvider.GetRequiredService<IDataStore>();
+        Downloader = serviceProvider.GetRequiredService<TestModDownloader>();
 
         NexusClient = serviceProvider.GetRequiredService<Client>();
         HttpDownloader = serviceProvider.GetRequiredService<IHttpDownloader>();
@@ -273,4 +275,14 @@ public abstract class AGameTest<TGame> where TGame : AGame
 
     protected Task<TemporaryPath> CreateTestFile(string contents, Extension? extension, Encoding? encoding = null)
         => CreateTestFile((encoding ?? Encoding.UTF8).GetBytes(contents), extension);
+
+    /// <summary>
+    /// Helper method to create create a apply plan and apply it.
+    /// </summary>
+    /// <param name="loadout"></param>
+    protected async Task Apply(Loadout loadout)
+    {
+        var plan = await LoadoutSynchronizer.MakeApplySteps(loadout);
+        await LoadoutSynchronizer.Apply(plan);
+    }
 }

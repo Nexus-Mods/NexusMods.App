@@ -88,10 +88,12 @@ public class LoadoutSynchronizer
     /// <returns></returns>
     public async Task<IEnumerable<Mod>> SortMods(Loadout loadout)
     {
-        var modRules = await loadout.Mods.Values
+        var mods = loadout.Mods.Values.Where(mod => mod.Enabled).ToList();
+        _logger.LogInformation("Sorting {ModCount} mods in loadout {LoadoutName}", mods.Count, loadout.Name);
+        var modRules = await mods
             .SelectAsync(async mod => (mod.Id, await ModSortRules(loadout, mod).ToListAsync()))
             .ToDictionaryAsync(r => r.Id, r => r.Item2);
-        var sorted = Sorter.Sort<Mod, ModId>(loadout.Mods.Values.ToList(), m => m.Id, m => modRules[m.Id]);
+        var sorted = Sorter.Sort<Mod, ModId>(mods, m => m.Id, m => modRules[m.Id]);
         return sorted;
     }
 
@@ -174,6 +176,7 @@ public class LoadoutSynchronizer
                     case IGeneratedFile generatedFile:
                     {
                         var fingerprint = generatedFile.TriggerFilter.GetFingerprint(planned, tmpPlan);
+                        _logger.LogInformation("Fingerprint is {Fingerprint}", fingerprint);
                         if (_generatedFileFingerprintCache.TryGet(fingerprint, out var cached) && cached.Hash == existing.Hash && cached.Size == existing.Size)
                         {
                             continue;

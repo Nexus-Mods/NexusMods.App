@@ -88,14 +88,18 @@ public class NxArchiveManager : IArchiveManager
         AbsolutePath finalPath)
     {
         Span<byte> buffer = stackalloc byte[sizeof(NativeFileEntryV1)];
+
+        var paths = unpacker.GetPathedFileEntries();
+
         foreach (var entry in unpacker.GetFileEntriesRaw())
         {
             fixed (byte* ptr = buffer)
             {
                 var writer = new LittleEndianWriter(ptr);
                 entry.WriteAsV1(ref writer);
-                
-                var dbId = IdFor((Hash)entry.Hash, guid);
+
+                var hash = Hash.FromHex(paths[entry.FilePathIndex].FileName);
+                var dbId = IdFor(hash, guid);
                 var dbEntry = new ArchivedFiles
                 {
                     File = finalPath.FileName,
@@ -136,13 +140,21 @@ public class NxArchiveManager : IArchiveManager
             await using var file = group.Key.Read();
             var provider = new FromStreamProvider(file);
             var unpacker = new NxUnpacker(provider);
-            
+
             var toExtract = group
                 .Select(entry =>
                     (IOutputDataProvider)new OutputFileProvider(entry.Dest.Parent.GetFullPath(), entry.Dest.FileName, entry.FileEntry))
                 .ToArray();
 
-            unpacker.ExtractFiles(toExtract, settings);
+            try
+            {
+                unpacker.ExtractFiles(toExtract, settings);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
 
             foreach (var toDispose in toExtract)
             {
