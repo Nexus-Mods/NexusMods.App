@@ -32,6 +32,18 @@ on:
         description: "Build an Archive?"
         required: false
         default: true
+      SignExecutable:
+        type: boolean
+        description: "Sign the executable on Windows?"
+        required: false
+        default: false
+    secrets:
+      PFX_BASE64:
+        description: "Base64 encoded string of the PFX file for signing"
+        required: false
+      PFX_KEY:
+        description: "Key for the PFX file used for signing"
+        required: false
     outputs:
       ArtifactNameWindowsArchive:
         description: "Name of the Artifact that contains the Windows Archive"
@@ -39,6 +51,10 @@ on:
       ArtifactNameWindowsInnoSetup:
         description: "Name of the Artifact that contains the Windows Inno Setup"
         value: ${{ jobs.build.outputs.artifactNameWindowsInnoSetup }}
+
+env:
+  SigningCertificate: "GitHubActionsWorkflow.pfx"
+  TimestampServer: "http://timestamp.digicert.com"
 
 jobs:
   build:
@@ -69,15 +85,44 @@ jobs:
       - name: Get PupNet
         run: dotnet tool install -g KuiperZone.PupNet --version ${{ inputs.PupNetVersion }}
 
+      - name: Decode PFX
+        if: inputs.SignExecutable == true
+        shell: pwsh
+        run: |
+          $certBytes = [System.Convert]::FromBase64String("${{ secrets.PFX_BASE64 }}")
+          $certPath = Join-Path -Path ${{ steps.transformInputs.outputs.projectDir }} -ChildPath $env:SigningCertificate
+          [IO.File]::WriteAllBytes("$certPath", $certBytes)
+
       - name: Create Archive
-        if: ${{ inputs.BuildArchive }}
+        if: inputs.BuildArchive == true
         working-directory: ${{ steps.transformInputs.outputs.projectDir }}
         run: pupnet -y -v ${{ inputs.AppVersion }} -k zip -p DefineConstants=INSTALLATION_METHOD_ARCHIVE
+        env:
+          SignExecutable: ${{ inputs.SignExecutable }}
+          SigningCertificatePassword: ${{ secrets.PFX_KEY }}
 
       - name: Create Setup
-        if: ${{ inputs.BuildInnoSetup }}
+        if: inputs.BuildInnoSetup == true
         working-directory: ${{ steps.transformInputs.outputs.projectDir }}
         run: pupnet -y -v ${{ inputs.AppVersion }} -k Setup -p DefineConstants=INSTALLATION_METHOD_INNO_SETUP
+        env:
+          SignExecutable: ${{ inputs.SignExecutable }}
+          SigningCertificatePassword: ${{ secrets.PFX_KEY }}
+
+      - name: Sign Setup
+        if: inputs.BuildInnoSetup == true && inputs.SignExecutable == true
+        working-directory: ${{ steps.transformInputs.outputs.projectDir }}
+        run: ../../scripts/sign.ps1 Deploy/OUT
+        env:
+          SignExecutable: ${{ inputs.SignExecutable }}
+          SigningCertificatePassword: ${{ secrets.PFX_KEY }}
+
+      - name: Remove PFX
+        if: inputs.SignExecutable == true
+        shell: pwsh
+        run: |
+          $certPath = Join-Path -Path ${{ steps.transformInputs.outputs.projectDir }} -ChildPath $env:SigningCertificate
+          Remove-Item -Path $certPath
 
       - name: Set outputs
         id: setOutputs
@@ -87,7 +132,7 @@ jobs:
           echo "artifactNameWindowsInnoSetup=${{ steps.transformInputs.outputs.projectName }}-${{ github.sha }}-Windows-Setup" >> $env:GITHUB_OUTPUT
 
       - name: Upload Archive
-        if: ${{ inputs.BuildArchive }}
+        if: inputs.BuildArchive == true
         uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.setOutputs.outputs.artifactNameWindowsArchive }}
@@ -96,7 +141,7 @@ jobs:
           retention-days: ${{ inputs.RetentionDays }}
 
       - name: Upload Setup
-        if: ${{ inputs.BuildInnoSetup }}
+        if: inputs.BuildInnoSetup == true
         uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.setOutputs.outputs.artifactNameWindowsInnoSetup }}
