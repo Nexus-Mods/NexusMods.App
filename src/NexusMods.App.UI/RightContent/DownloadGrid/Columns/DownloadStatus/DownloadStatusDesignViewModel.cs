@@ -31,7 +31,12 @@ public class DownloadStatusDesignViewModel : AViewModel<IDownloadStatusViewModel
 
     public DownloadStatusDesignViewModel()
     {
-        PauseOrResume = ReactiveCommand.Create(() => Row.Cancel());
+        PauseOrResume = ReactiveCommand.Create(() => {    
+            if (Row.Status != DownloadTaskStatus.Paused)
+                Row.Suspend();
+            else if (Row.Status != DownloadTaskStatus.Downloading || Row.Status != DownloadTaskStatus.Idle)
+                Row.Resume();
+        });
 
         this.WhenActivated(d =>
         {
