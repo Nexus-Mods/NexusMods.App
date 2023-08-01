@@ -62,6 +62,9 @@ public class DownloadService : IDownloadService
 
     internal IDownloadTask? GetTaskFromState(DownloaderState state)
     {
+        if (state.Status == DownloadTaskStatus.Completed)
+            return null;
+
         switch (state.TypeSpecificData)
         {
             case HttpDownloadState:
@@ -137,7 +140,7 @@ public class DownloadService : IDownloadService
     /// <inheritdoc />
     public void OnComplete(IDownloadTask task)
     {
-        UpdateAsComplete(task);
+        UpdateInDatastore(task);
         _tasks.Remove(task);
         _completed.OnNext(task);
     }
@@ -151,13 +154,20 @@ public class DownloadService : IDownloadService
     }
 
     /// <inheritdoc />
-    public void OnPaused(IDownloadTask task) => _paused.OnNext(task);
+    public void OnPaused(IDownloadTask task) 
+    {
+        _paused.OnNext(task);
+        UpdatePersistedState(task);
+    }
 
     /// <inheritdoc />
     public void OnResumed(IDownloadTask task) => _resumed.OnNext(task);
 
     /// <inheritdoc />
     public Size GetThroughput() => _currentDownloads.Select(x => x.DownloadJob).Where(x => x != null)!.GetTotalThroughput(new DateTimeProvider());
+
+    /// <inheritdoc />
+    public void UpdatePersistedState(IDownloadTask task) => UpdateInDatastore(task);
 
     /// <inheritdoc />
     public async Task FinalizeDownloadAsync(IDownloadTask task, TemporaryPath path, string modName)
@@ -196,7 +206,7 @@ public class DownloadService : IDownloadService
         _store.Delete(new IdVariableLength(EntityCategory.DownloadStates, task.ExportState().DownloadPath));
     }
 
-    private void UpdateAsComplete(IDownloadTask task)
+    private void UpdateInDatastore(IDownloadTask task)
     {
         // Note: It's easier to re-generate state rather than updating existing instance.
         var state = task.ExportState();

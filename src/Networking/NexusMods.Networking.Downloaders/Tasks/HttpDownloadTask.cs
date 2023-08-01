@@ -80,6 +80,7 @@ public class HttpDownloadTask : IDownloadTask, IHaveFileSize
         _downloadLocation = new TemporaryPath(FileSystem.Shared, absPath);
         FriendlyName = state.FriendlyName;
         SizeBytes = state.SizeBytes!.Value;
+        Status = DownloadTaskStatus.Paused;
         _url = data.Url!;
     }
 
@@ -107,6 +108,7 @@ public class HttpDownloadTask : IDownloadTask, IHaveFileSize
         var nameSize = await GetNameAndSize();
         FriendlyName = nameSize.FileName;
         SizeBytes = nameSize.FileSize;
+        Owner.UpdatePersistedState(this);
     }
 
     private async Task StartOrResumeDownload(TemporaryPath tempPath, CancellationToken token)

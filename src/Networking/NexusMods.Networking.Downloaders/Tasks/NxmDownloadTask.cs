@@ -93,6 +93,7 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
         GameDomain = state.GameDomain!;
         SizeBytes = state.SizeBytes!.Value;
         Version = state.Version!;
+        Status = DownloadTaskStatus.Paused;
         _url = NXMUrl.Parse(data.Query);
     }
 
@@ -130,6 +131,7 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
         Version = file.Version;
         SizeBytes = file.SizeInBytes.GetValueOrDefault(-1);
         GameName = _url.Mod.Game;
+        Owner.UpdatePersistedState(this);
     }
 
     private async Task<HttpRequestMessage[]> InitDownloadLinks(CancellationToken token)

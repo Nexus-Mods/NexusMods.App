@@ -103,6 +103,16 @@ public interface IDownloadService
     Size GetThroughput();
 
     /// <summary>
+    /// Updates the state of the task that's persisted behind the scenes.
+    /// </summary>
+    /// <param name="task">The task being finalized.</param>
+    /// <remarks>
+    ///    This should be called by the individual tasks right before they start downloading, such that the absolute
+    ///    latest state is persisted in the case user kills the app.
+    /// </remarks>
+    void UpdatePersistedState(IDownloadTask task);
+
+    /// <summary>
     /// Finishes the download process.
     /// </summary>
     /// <param name="task">The task being finalized.</param>
