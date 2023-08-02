@@ -8,7 +8,6 @@ using Microsoft.Extensions.ObjectPool;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Interprocess.Jobs;
-using NexusMods.DataModel.Interprocess.Messages;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Paths;
 
@@ -188,6 +187,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         return 0L;
     }
 
+    private readonly Stack<(string, byte[])> _updates = new(256);
     private long ProcessMessages(long lastId)
     {
         if (_isDisposed)
@@ -207,12 +207,18 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
                 var size = reader.GetBytes(2, 0, null, 0, 0);
                 var bytes = new byte[size];
                 reader.GetBytes(2, 0, bytes, 0, bytes.Length);
-                _subject.OnNext((queue, bytes));
+
+                _updates.Push((queue, bytes));
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to process messages after {LastId}", lastId);
+        }
+
+        while (_updates.TryPop(out var update))
+        {
+            _subject.OnNext(update);
         }
 
         return lastId;
