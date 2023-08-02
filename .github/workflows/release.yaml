@@ -78,6 +78,10 @@ jobs:
       # https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability
       ProjectFile: ${{ needs.transformInputs.outputs.ProjectFile }}
       RetentionDays: 1
+      SignExecutable: true
+    secrets:
+      PFX_BASE64: ${{ secrets.PFX_BASE64 }}
+      PFX_KEY: ${{ secrets.PFX_KEY }}
 
   release-github:
     runs-on: ubuntu-latest

@@ -170,11 +170,23 @@ public class LoadoutSynchronizer
 
             if (flattenedLoadout.TryGetValue(gamePath, out var planned))
             {
-                var planMetadata = await GetMetaData(planned.File, existing.Path);
-                if (planMetadata is null || planMetadata.Hash != existing.Hash || planMetadata.Size != existing.Size)
+                switch (planned.File)
                 {
-                    await EmitReplacePlan(plan, existing, tmpPlan, planned);
+                    case IFromArchive fa when fa.Hash == existing.Hash && fa.Size == existing.Size:
+                        continue;
+                    case IGeneratedFile generatedFile:
+                    {
+                        var fingerprint = generatedFile.TriggerFilter.GetFingerprint(planned, tmpPlan);
+                        if (_generatedFileFingerprintCache.TryGet(fingerprint, out var cached) && cached.Hash == existing.Hash && cached.Size == existing.Size)
+                        {
+                            continue;
+                        }
+
+                        break;
+                    }
                 }
+
+                await EmitReplacePlan(plan, existing, tmpPlan, planned);
             }
             else
             {
