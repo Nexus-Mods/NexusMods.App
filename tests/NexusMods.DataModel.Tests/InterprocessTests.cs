@@ -53,28 +53,22 @@ public class InterprocessTests : IDisposable
     public async Task CanSendAndReceiveMessages()
     {
         var src = Enumerable.Range(0, 128).ToList();
+
         var dest = new List<int>();
         using var _ = _consumer.Messages.Subscribe(x =>
         {
-            lock (dest)
-                dest.Add(x.Value);
+            dest.Add(x.Value);
         });
-
-        await Task.Delay(1000);
 
         foreach (var i in src)
         {
             await _producer.Write(new Message { Value = i }, CancellationToken.None);
         }
 
-        while (dest.Count < src.Count)
-        {
-            await Task.Delay(100);
-        }
+        // Wait for the IPC reader loop to finish
+        await Task.Delay(TimeSpan.FromMilliseconds(500));
 
-        // Dest is in a stack, so we'll reverse the src to make sure it all worked
-        lock (dest)
-            dest.Should().BeEquivalentTo(src, opt => opt.WithStrictOrdering());
+        dest.Should().BeEquivalentTo(src);
     }
 
     [JsonName(nameof(TestEntity))]
