@@ -311,20 +311,23 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         try
         {
             _logger.SendingByteMessageToQueue(Size.FromLong(message.Length), queue);
-            using var conn = _pool.RentDisposable();
-            using var cmd = conn.Value.CreateCommand();
-            cmd.CommandText = "INSERT INTO Ipc (Queue, Data, TimeStamp) VALUES (@queue, @data, @timestamp); SELECT last_insert_rowid();";
-            cmd.Parameters.AddWithValue("@queue", queue);
-            cmd.Parameters.AddWithValue("@data", message.ToArray());
-            cmd.Parameters.AddWithValue("@timestamp",DateTime.UtcNow.ToFileTimeUtc());
-            var lastId = (ulong)((long?)cmd.ExecuteScalar()!).Value;
+
+            ulong lastId;
+            using (var conn = _pool.RentDisposable())
+            using (var cmd = conn.Value.CreateCommand())
+            {
+                cmd.CommandText = "INSERT INTO Ipc (Queue, Data, TimeStamp) VALUES (@queue, @data, @timestamp); SELECT last_insert_rowid();";
+                cmd.Parameters.AddWithValue("@queue", queue);
+                cmd.Parameters.AddWithValue("@data", message.ToArray());
+                cmd.Parameters.AddWithValue("@timestamp",DateTime.UtcNow.ToFileTimeUtc());
+                lastId = (ulong)((long?)cmd.ExecuteScalar()!).Value;
+            }
+
             var prevId = _syncArray.Get(0);
             while (true)
             {
-                if (prevId >= lastId)
-                    break;
-                if (_syncArray.CompareAndSwap(0, prevId, lastId))
-                    break;
+                if (prevId >= lastId) break;
+                if (_syncArray.CompareAndSwap(0, prevId, lastId)) break;
                 prevId = _syncArray.Get(0);
             }
         }
