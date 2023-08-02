@@ -4,9 +4,9 @@ using NexusMods.Paths;
 
 namespace NexusMods.Games.BethesdaGameStudios.Tests.SkyrimSpecialEditionTests.Installers;
 
-public class SkyrimSpecialEditionInstallerTests : SkyrimInstallerTests<SkyrimSpecialEdition>
+public class SkyrimSpecialEditionMatchInstallerTests : GenericFolderMatchInstallerTests<SkyrimSpecialEdition>
 {
-    public SkyrimSpecialEditionInstallerTests(
+    public SkyrimSpecialEditionMatchInstallerTests(
         IServiceProvider serviceProvider, 
         TestModDownloader downloader, 
         IFileSystem realFs) : 

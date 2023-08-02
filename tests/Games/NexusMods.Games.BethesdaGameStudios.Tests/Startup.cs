@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
+using NexusMods.Games.Generic;
 using NexusMods.Games.TestFramework;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.DependencyInjection;
@@ -17,6 +18,7 @@ public class Startup
             .AddUniversalGameLocator<SkyrimSpecialEdition>(new Version("1.6.659.0"))
             .AddUniversalGameLocator<SkyrimLegendaryEdition>(new Version("1.9.32.0"))
             .AddBethesdaGameStudios()
+            .AddGenericGameSupport()
             .Validate();
     }
 

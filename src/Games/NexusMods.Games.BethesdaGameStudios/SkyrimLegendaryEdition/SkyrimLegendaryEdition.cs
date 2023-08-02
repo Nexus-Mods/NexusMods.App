@@ -1,8 +1,10 @@
 ﻿using NexusMods.Common;
 using NexusMods.DataModel.Games;
-using NexusMods.Paths;
+using NexusMods.DataModel.Games.GameCapabilities;
+using NexusMods.DataModel.Games.GameCapabilities.AFolderMatchInstallerCapability;
 using NexusMods.FileExtractor.StreamFactories;
-
+using NexusMods.Games.BethesdaGameStudios.Capabilities;
+using NexusMods.Paths;
 
 namespace NexusMods.Games.BethesdaGameStudios;
 
@@ -27,6 +29,14 @@ public class SkyrimLegendaryEdition : AGame, ISteamGame
             .GetKnownPath(KnownPath.LocalApplicationDataDirectory)
             .Combine("Skyrim"));
     }
+    
+    public override Dictionary<GameCapabilityId, IGameCapability> SupportedCapabilities => new()
+    {
+        {
+            // Support for installing simple Data and GameRoot level mods. 
+            AFolderMatchInstallerCapability.CapabilityId, new BethesdaFolderMatchInstallerCapability()
+        }
+    };
 
     public IEnumerable<uint> SteamIds => new[] { 72850u };
     
