@@ -91,10 +91,15 @@ public class LoadoutSynchronizer
     /// <returns></returns>
     public async Task<IEnumerable<Mod>> SortMods(Loadout loadout)
     {
-        var modRules = await loadout.Mods.Values
+        var mods = loadout.Mods.Values.Where(mod => mod.Enabled).ToList();
+        _logger.LogInformation("Sorting {ModCount} mods in loadout {LoadoutName}", mods.Count, loadout.Name);
+        var modRules = await mods
             .SelectAsync(async mod => (mod.Id, await ModSortRules(loadout, mod).ToListAsync()))
             .ToDictionaryAsync(r => r.Id, r => r.Item2);
-        var sorted = Sorter.Sort<Mod, ModId>(loadout.Mods.Values.ToList(), m => m.Id, m => modRules[m.Id]);
+        if (modRules.Count == 0)
+            return Array.Empty<Mod>();
+        
+        var sorted = Sorter.Sort<Mod, ModId>(mods, m => m.Id, m => modRules[m.Id]);
         return sorted;
     }
 
@@ -289,20 +294,6 @@ public class LoadoutSynchronizer
     }
 
     /// <summary>
-    /// Gets the metadata for the given file, if the file is from an archive then the metadata is returned
-    /// </summary>
-    /// <param name="file"></param>
-    /// <param name="path"></param>
-    /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
-    public ValueTask<FileMetaData?> GetMetaData(AModFile file, AbsolutePath path)
-    {
-        if (file is IFromArchive fa)
-            return ValueTask.FromResult<FileMetaData?>(new FileMetaData(path, fa.Hash, fa.Size));
-        throw new NotImplementedException();
-    }
-
-    /// <summary>
     /// Compares the game folders to the loadout and returns a plan of what needs to be done to make the loadout match the game folders
     /// </summary>
     /// <param name="loadout"></param>
@@ -327,11 +318,12 @@ public class LoadoutSynchronizer
 
             if (flattenedLoadout.TryGetValue(gamePath, out var planFile))
             {
-                var planMetadata = await GetMetaData(planFile.File, existing.Path);
-                if (planMetadata == null || planMetadata.Hash != existing.Hash || planMetadata.Size != existing.Size)
+                if (planFile.File is IFromArchive fa && (fa.Hash != existing.Hash || fa.Size != existing.Size))
                 {
                     await EmitIngestReplacePlan(plan, planFile, existing);
                 }
+                // TODO: Fix this, it doesn't contain support for IGeneratedFile, 
+                // once we re-design apply/ingest this should be implemented
                 continue;
             }
 

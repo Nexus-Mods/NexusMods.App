@@ -141,7 +141,7 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
             Name = "Test Mod",
             Files = files,
             SortRules = ImmutableList<ISortRule<Mod, ModId>>.Empty,
-            Enabled = true,
+            Enabled = true
         };
         
         disabledFiles = files.With(new FromArchive
@@ -188,7 +188,7 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
             {
                 new AlphabeticalSort()
             }.ToImmutableList(),
-            Enabled = true,
+            Enabled = true
         }).ToList();
 
         foreach (var mod in mods)
