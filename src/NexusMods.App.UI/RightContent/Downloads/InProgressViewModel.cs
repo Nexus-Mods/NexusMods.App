@@ -24,6 +24,13 @@ public class InProgressViewModel : InProgressCommonViewModel
                     CancelSelectedTask();
             });
 
+            SuspendCurrentTask = ReactiveCommand.Create(() => SelectedTask?.Suspend());
+            SuspendAllTasks = ReactiveCommand.Create(() => 
+            {
+                foreach (var task in Tasks.ToArray())
+                    task.Suspend();
+            });
+
             downloadService.Downloads
                 .Filter(x => x.Status != DownloadTaskStatus.Completed)
                 .Transform(x => (IDownloadTaskViewModel) new DownloadTaskViewModel(x))

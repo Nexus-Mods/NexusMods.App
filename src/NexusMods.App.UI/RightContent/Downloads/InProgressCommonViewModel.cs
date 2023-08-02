@@ -37,6 +37,8 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
 
     public void CancelSelectedTask() => ((IInProgressViewModel)this).Cancel();
 
+    public void SuspendSelectedTask() => ((IInProgressViewModel)this).Suspend();
+
     [Reactive]
     public bool IsRunning { get; set; }
 
@@ -55,9 +57,17 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
     [Reactive]
     public ICommand ShowCancelDialog { get; set; }
 
+    [Reactive]
+    public ICommand SuspendCurrentTask { get; set; }
+
+    [Reactive]
+    public ICommand SuspendAllTasks { get; set; }
+
     public InProgressCommonViewModel()
     {
         ShowCancelDialog = ReactiveCommand.Create(() => { });
+        SuspendCurrentTask = ReactiveCommand.Create(() => { });
+        SuspendAllTasks = ReactiveCommand.Create(() => { });
 
         // Make Columns
         var columns = new SourceCache<IDataGridColumnFactory<DownloadColumn>, DownloadColumn>(x => x.Type);

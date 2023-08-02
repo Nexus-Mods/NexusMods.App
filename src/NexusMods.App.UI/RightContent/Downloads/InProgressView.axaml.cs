@@ -21,6 +21,14 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
                 .BindToUi(this, view => view.CancelButton.Command)
                 .DisposeWith(d);
 
+            this.WhenAnyValue(view => view.ViewModel!.SuspendCurrentTask)
+                .BindToUi(this, view => view.PauseButton.Command)
+                .DisposeWith(d);
+
+            this.WhenAnyValue(view => view.ViewModel!.SuspendAllTasks)
+                .BindToUi(this, view => view.PauseAllButton.Command)
+                .DisposeWith(d);
+
             this.WhenAnyValue(view => view.ViewModel!.Tasks)
                 .BindToUi(this, view => view.ModsDataGrid.ItemsSource)
                 .DisposeWith(d);

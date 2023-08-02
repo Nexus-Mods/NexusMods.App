@@ -21,6 +21,11 @@ public interface IInProgressViewModel : IRightContentViewModel
     void CancelSelectedTask();
 
     /// <summary>
+    /// This command suspends the currently selected task.
+    /// </summary>
+    void SuspendSelectedTask();
+
+    /// <summary>
     /// True if download is running, else false.
     /// </summary>
     bool IsRunning { get; }
@@ -51,7 +56,22 @@ public interface IInProgressViewModel : IRightContentViewModel
     void Cancel() => SelectedTask?.Cancel();
 
     /// <summary>
+    /// Suspends the selected task.
+    /// </summary>
+    void Suspend() => SelectedTask?.Suspend();
+
+    /// <summary>
     /// Shows the cancel 'dialog' to the user.
     /// </summary>
     ICommand ShowCancelDialog { get; }
+
+    /// <summary>
+    /// Suspends the current task.
+    /// </summary>
+    ICommand SuspendCurrentTask { get; }
+
+    /// <summary>
+    /// Suspends all the tasks.
+    /// </summary>
+    ICommand SuspendAllTasks { get; }
 }
