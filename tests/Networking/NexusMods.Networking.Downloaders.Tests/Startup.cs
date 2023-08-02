@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
 using NexusMods.Games.BethesdaGameStudios;
+using NexusMods.Games.Generic;
 using NexusMods.Games.RedEngine;
 using NexusMods.Games.TestFramework;
 using NexusMods.Networking.HttpDownloader.Tests;
@@ -18,6 +19,7 @@ public class Startup
             .AddUniversalGameLocator<SkyrimSpecialEdition>(new Version("1.6.659.0"))
             .AddStubbedGameLocators()
             .AddBethesdaGameStudios()
+            .AddGenericGameSupport()
             .AddRedEngineGames()
             .AddSingleton<DownloadService>()
             .AddSingleton<LocalHttpServer>()
