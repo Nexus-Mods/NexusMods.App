@@ -228,7 +228,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         }
 
         using var cmd = conn.Value.CreateCommand();
-        cmd.CommandText = "CREATE TABLE IF NOT EXISTS Ipc (Id INTEGER PRIMARY KEY AUTOINCREMENT, Queue TEXT, Data BLOB, TimeStamp INTEGER)";
+        cmd.CommandText = "CREATE TABLE IF NOT EXISTS Ipc (Id INTEGER PRIMARY KEY ASC AUTOINCREMENT, Queue TEXT, Data BLOB, TimeStamp INTEGER)";
         cmd.ExecuteNonQuery();
 
         using var cmd2 = conn.Value.CreateCommand();
