@@ -15,12 +15,6 @@ public interface IDownloadTask
     long DownloadedSizeBytes { get; }
 
     /// <summary>
-    /// Total size of items to be downloaded in bytes.
-    /// </summary>
-    /// <returns>0 if unknown.</returns>
-    long TotalSizeBytes { get; }
-
-    /// <summary>
     /// Calculates the download speed of the current job.
     /// </summary>
     /// <returns>Current speed in terms of bytes per second.</returns>

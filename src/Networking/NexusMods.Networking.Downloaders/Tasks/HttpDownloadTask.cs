@@ -26,13 +26,11 @@ public class HttpDownloadTask : IDownloadTask, IHaveFileSize
     private TemporaryPath _downloadLocation; // for resume
     private CancellationTokenSource _tokenSource;
     private Task? _task;
+    private long _defaultDownloadedSize;
 
     /// <inheritdoc />
-    public long DownloadedSizeBytes => _state.Job != null ? (long)_state.Job.Current.Value : 0L;
+    public long DownloadedSizeBytes => _state.Job != null ? (long)_state.Job.Current.Value : _defaultDownloadedSize;
     
-    /// <inheritdoc />
-    public long TotalSizeBytes => _state.Job != null ? (long)_state.Job.Size.Value : 0L;
-
     /// <inheritdoc />
     public long CalculateThroughput<TDateTimeProvider>(TDateTimeProvider provider) where TDateTimeProvider : IDateTimeProvider
     {
@@ -93,6 +91,7 @@ public class HttpDownloadTask : IDownloadTask, IHaveFileSize
         FriendlyName = state.FriendlyName;
         SizeBytes = state.SizeBytes!.Value;
         Status = DownloadTaskStatus.Paused;
+        _defaultDownloadedSize = state.DownloadedBytes;
         _url = data.Url!;
     }
 

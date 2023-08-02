@@ -47,6 +47,11 @@ public record DownloaderState : Entity
     public string FriendlyName { get; private set; } = "";
 
     /// <summary>
+    /// Amount of already downloaded bytes.
+    /// </summary>
+    public long DownloadedBytes { get; private set; } = 0L;
+
+    /// <summary>
     /// Name of the game the mod will be installed to.
     /// </summary>
     /// <remarks>Provided by <see cref="IHaveGameName"/> trait.</remarks>
@@ -87,6 +92,7 @@ public record DownloaderState : Entity
         result.FriendlyName = item.FriendlyName;
         result.DownloadPath = downloadLocation;
         result.Status = item.Status;
+        result.DownloadedBytes = item.DownloadedSizeBytes;
         if (item is IHaveFileSize fileSize)
             result.SizeBytes = fileSize.SizeBytes;
 

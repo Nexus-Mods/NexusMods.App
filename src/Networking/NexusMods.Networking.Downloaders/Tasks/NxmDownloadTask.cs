@@ -27,12 +27,10 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
     private TemporaryPath _downloadLocation; // for resume
     private CancellationTokenSource _tokenSource;
     private Task? _task;
+    private long _defaultDownloadedSize;
 
     /// <inheritdoc />
-    public long DownloadedSizeBytes => _state.Job != null ? (long)_state.Job.Current.Value : 0L;
-    
-    /// <inheritdoc />
-    public long TotalSizeBytes => _state.Job != null ? (long)_state.Job.Size.Value : 0L;
+    public long DownloadedSizeBytes => _state.Job != null ? (long)_state.Job.Current.Value : _defaultDownloadedSize;
 
     /// <inheritdoc />
     public long CalculateThroughput<TDateTimeProvider>(TDateTimeProvider provider) where TDateTimeProvider : IDateTimeProvider
@@ -103,6 +101,8 @@ public class NxmDownloadTask : IDownloadTask, IHaveDownloadVersion, IHaveFileSiz
         GameName = state.GameName!;
         GameDomain = state.GameDomain!;
         SizeBytes = state.SizeBytes!.Value;
+        _defaultDownloadedSize = state.DownloadedBytes;
+
         Version = state.Version!;
         Status = DownloadTaskStatus.Paused;
         _url = NXMUrl.Parse(data.Query);
