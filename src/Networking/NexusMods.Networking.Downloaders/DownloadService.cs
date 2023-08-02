@@ -164,7 +164,15 @@ public class DownloadService : IDownloadService
     public void OnResumed(IDownloadTask task) => _resumed.OnNext(task);
 
     /// <inheritdoc />
-    public Size GetThroughput() => _currentDownloads.Select(x => x.DownloadJob).Where(x => x != null)!.GetTotalThroughput(new DateTimeProvider());
+    public Size GetThroughput() 
+    {
+        var provider = DateTimeProvider.Instance; 
+        var totalThroughput = 0L;
+        foreach (var download in _currentDownloads)
+            totalThroughput += download.CalculateThroughput(provider);
+
+        return Size.FromLong(totalThroughput);
+    }
 
     /// <inheritdoc />
     public void UpdatePersistedState(IDownloadTask task) => UpdateInDatastore(task);

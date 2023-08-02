@@ -1,6 +1,5 @@
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Networking.Downloaders.Tasks.State;
-using NexusMods.Paths;
 
 namespace NexusMods.Networking.Downloaders.Interfaces;
 
@@ -10,9 +9,22 @@ namespace NexusMods.Networking.Downloaders.Interfaces;
 public interface IDownloadTask
 {
     /// <summary>
-    /// Gets all download jobs associated with this task for the purpose of calculating throughput.
+    /// Total size of items currently downloaded.
     /// </summary>
-    IJob<Size>? DownloadJob { get; }
+    /// <returns>0 if unknown.</returns>
+    long DownloadedSizeBytes { get; }
+
+    /// <summary>
+    /// Total size of items to be downloaded in bytes.
+    /// </summary>
+    /// <returns>0 if unknown.</returns>
+    long TotalSizeBytes { get; }
+
+    /// <summary>
+    /// Calculates the download speed of the current job.
+    /// </summary>
+    /// <returns>Current speed in terms of bytes per second.</returns>
+    long CalculateThroughput<TDateTimeProvider>(TDateTimeProvider provider) where TDateTimeProvider : IDateTimeProvider;
 
     /// <summary>
     /// Service this task is associated with.

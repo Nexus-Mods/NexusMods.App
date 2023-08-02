@@ -28,7 +28,19 @@ public class HttpDownloadTask : IDownloadTask, IHaveFileSize
     private Task? _task;
 
     /// <inheritdoc />
-    public IJob<Size> DownloadJob => _state.Job;
+    public long DownloadedSizeBytes => _state.Job != null ? (long)_state.Job.Current.Value : 0L;
+    
+    /// <inheritdoc />
+    public long TotalSizeBytes => _state.Job != null ? (long)_state.Job.Size.Value : 0L;
+
+    /// <inheritdoc />
+    public long CalculateThroughput<TDateTimeProvider>(TDateTimeProvider provider) where TDateTimeProvider : IDateTimeProvider
+    {
+        if (_state.Job == null)
+            return 0;
+
+        return (long)_state.Job.GetThroughput(DateTimeProvider.Instance).Value;
+    }
 
     /// <inheritdoc />
     public IDownloadService Owner { get; }
