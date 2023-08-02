@@ -78,43 +78,120 @@ public class InterprocessTests : IDisposable
     }
 
     [JsonName(nameof(TestEntity))]
-    record TestEntity : Entity
+    private record TestEntity : Entity
     {
-        
         public int Value { get; init; }
-        
-        
-        public override EntityCategory Category =>
-            EntityCategory.InterprocessJob;
+
+        public override EntityCategory Category => EntityCategory.InterprocessJob;
     }
-    
+
     [Fact]
-    public async Task CanCreateJobs()
+    public void TestJobTracking_SingleThread_HighTimeout()
     {
-        var updates = new HashSet<(int Adds, int Removes)>();
+        var magic = Random.Shared.Next();
+        var updates = new List<(int Adds, int Updates, int Removes)>();
+
+        // SqliteIPC pools every 100ms
+        var timeout = TimeSpan.FromMilliseconds(300);
+
         _jobManager.Jobs
-            .Filter(job => job.Payload is TestEntity)
+            .Filter(job => job.Payload is TestEntity testEntity && testEntity.Value == magic)
             .Subscribe(x =>
             {
-                lock (updates)
-                    updates.Add((x.Adds, x.Removes));
+                lock (updates) updates.Add((x.Adds, x.Updates, x.Removes));
             });
 
+        using (var job = InterprocessJob.Create(_jobManager, new TestEntity { Value = magic }))
         {
-            using var job = InterprocessJob.Create(_jobManager, new TestEntity {Value = 128});
+            // waits for the IPC to pickup the newly created job
+            Thread.Sleep(timeout);
+
             for (var x = 0.0; x < 1; x += 0.1)
             {
-                await Task.Delay(10);
                 job.Progress = new Percent(x);
+
+                // waits for the IPC to pickup the update
+                Thread.Sleep(timeout);
             }
         }
-        await Task.Delay(2000);
-        // One update, one removal
+
+        // waits for the IPC to pickup the removed job
+        Thread.Sleep(timeout);
+
+        // The IPC should have picked up every addition, update and removal
         updates.Should().BeEquivalentTo(new[]
         {
-            (1, 0),
-            (0, 1)
+            (1, 0, 0),
+            (0, 1, 0),
+            (0, 1, 0),
+            (0, 1, 0),
+            (0, 1, 0),
+            (0, 1, 0),
+            (0, 1, 0),
+            (0, 1, 0),
+            (0, 1, 0),
+            (0, 1, 0),
+            (0, 1, 0),
+            (0, 0, 1)
         });
+    }
+
+    [Fact]
+    public void TestJobTracking_MultipleThreads_HighTimeout()
+    {
+        var magic = Random.Shared.Next();
+
+        var totalAdds = 0;
+        var totalUpdates = 0;
+        var totalRemoves = 0;
+
+        _jobManager.Jobs
+            .Filter(job => job.Payload is TestEntity testEntity && testEntity.Value == magic)
+            .Subscribe(x =>
+            {
+                Interlocked.Add(ref totalAdds, x.Adds);
+                Interlocked.Add(ref totalUpdates, x.Updates);
+                Interlocked.Add(ref totalRemoves, x.Removes);
+            });
+
+        // SqliteIPC pools every 100ms
+        var timeout = TimeSpan.FromMilliseconds(300);
+
+        var numThreads = Math.Min(10, Environment.ProcessorCount * 2);
+        var threads = Enumerable.Range(0, numThreads)
+            .Select(_ => new Thread(() =>
+            {
+                using var job = InterprocessJob.Create(_jobManager, new TestEntity { Value = magic });
+                // waits for the IPC to pickup the newly created job
+                Thread.Sleep(timeout);
+
+                for (var x = 0.0; x < 1; x += 0.1)
+                {
+                    job.Progress = new Percent(x);
+
+                    // waits for the IPC to pickup the update
+                    Thread.Sleep(timeout);
+                }
+            }))
+            .ToArray();
+
+        foreach(var thread in threads)
+        {
+            thread.Start();
+        }
+
+        foreach(var thread in threads)
+        {
+            thread.Join();
+        }
+
+        // waits for the IPC to pickup the removed jobs
+        Thread.Sleep(timeout);
+
+        // The IPC should have picked up every addition, update and removal
+        totalAdds.Should().Be(numThreads);
+        totalRemoves.Should().Be(totalAdds);
+        totalUpdates.Should().Be(totalAdds * 10);
     }
 
     [Fact]
