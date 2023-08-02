@@ -100,7 +100,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
 
             // As such, we need a "global" connection when using an in-memory database to prevent the database
             // from being deleted before we close the app or finish the tests.
-            _globalConnection = new SqliteConnection(_connectionString);
+            _globalConnection = CreateConnection();
         }
 
         EnsureTables();
@@ -108,6 +108,14 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         var startId = GetStartId();
         Task.Run(() => ReaderLoop(startId, _shutdownToken.Token));
         Task.Run(() => CleanupLoop(_shutdownToken.Token));
+    }
+
+    private SqliteConnection CreateConnection()
+    {
+        var connection = new SqliteConnection(_connectionString);
+        connection.Open();
+
+        return connection;
     }
 
     private async Task CleanupLoop(CancellationToken token)
@@ -131,7 +139,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         var oldTime = DateTime.UtcNow - RetentionTime;
         _logger.LogTrace("Cleaning up old IPC messages");
 
-        using (var connection = new SqliteConnection(_connectionString))
+        using (var connection = CreateConnection())
         using (var transaction = connection.BeginTransaction())
         using (var command = connection.CreateCommand())
         {
@@ -188,7 +196,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
     {
         ObjectDisposedException.ThrowIf(_isDisposed, this);
 
-        using var connection = new SqliteConnection(_connectionString);
+        using var connection = CreateConnection();
         using var transaction = connection.BeginTransaction();
         using var command = connection.CreateCommand();
 
@@ -198,14 +206,14 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         return result == DBNull.Value ? (long)_syncArray.Get(0) : Convert.ToInt64(result);
     }
 
-    private readonly Stack<(string, byte[])> _updates = new(256);
+    private readonly Queue<(string, byte[])> _updates = new(256);
     private long ProcessMessages(long lastId)
     {
         ObjectDisposedException.ThrowIf(_isDisposed, this);
 
         try
         {
-            using var connection = new SqliteConnection(_connectionString);
+            using var connection = CreateConnection();
             using var transaction = connection.BeginTransaction();
             using var command = connection.CreateCommand();
 
@@ -223,7 +231,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
                 var bytes = new byte[size];
                 reader.GetBytes(2, 0, bytes, 0, bytes.Length);
 
-                _updates.Push((queue, bytes));
+                _updates.Enqueue((queue, bytes));
             }
         }
         catch (Exception ex)
@@ -231,7 +239,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
             _logger.LogError(ex, "Failed to process messages after {LastId}", lastId);
         }
 
-        while (_updates.TryPop(out var update))
+        while (_updates.TryDequeue(out var update))
         {
             _subject.OnNext(update);
         }
@@ -241,7 +249,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
 
     private void EnsureTables()
     {
-        using var connection = new SqliteConnection(_connectionString);
+        using var connection = CreateConnection();
         using var transaction = connection.BeginTransaction();
 
         using var pragmaCommand = connection.CreateCommand();
@@ -259,8 +267,8 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         transaction.Commit();
     }
 
-    private readonly Stack<(JobId, Percent)> _updatedJobs = new(128);
-    private readonly Stack<InterprocessJob> _newJobs = new(64);
+    private readonly Queue<(JobId, Percent)> _updatedJobs = new(128);
+    private readonly Queue<InterprocessJob> _newJobs = new(64);
     private void ProcessJobs()
     {
         _logger.ProcessingJobs();
@@ -270,7 +278,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
 
         try
         {
-            using var connection = new SqliteConnection(_connectionString);
+            using var connection = CreateConnection();
             using var _ = connection.BeginTransaction();
             using var command = connection.CreateCommand();
 
@@ -285,7 +293,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
                 var progress = new Percent(reader.GetDouble(2));
                 if (isKnownJob)
                 {
-                    _updatedJobs.Push((jobId, progress));
+                    _updatedJobs.Enqueue((jobId, progress));
                     continue;
                 }
 
@@ -294,7 +302,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
                 var entity = JsonSerializer.Deserialize<Entity>(reader.GetBlob(4), _jsonSettings)!;
 
                 var newJob = new InterprocessJob(jobId, this, processId, startTime, progress, entity);
-                _newJobs.Push(newJob);
+                _newJobs.Enqueue(newJob);
             }
         }
         catch (Exception ex)
@@ -306,7 +314,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         {
             var seen = new HashSet<JobId>();
 
-            while (_updatedJobs.TryPop(out var tuple))
+            while (_updatedJobs.TryDequeue(out var tuple))
             {
                 var (jobId, progress) = tuple;
                 seen.Add(jobId);
@@ -319,7 +327,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
                 editable.AddOrUpdate(item.Value);
             }
 
-            while (_newJobs.TryPop(out var newJob))
+            while (_newJobs.TryDequeue(out var newJob))
             {
                 seen.Add(newJob.JobId);
                 editable.AddOrUpdate(newJob);
@@ -349,7 +357,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
 
         try
         {
-            using var connection = new SqliteConnection(_connectionString);
+            using var connection = CreateConnection();
             using var transaction = connection.BeginTransaction();
             using var command = connection.CreateCommand();
 
@@ -392,7 +400,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
             var data = JsonSerializer.SerializeToUtf8Bytes((T)job.Payload, _jsonSettings);
             var jobIdBytes = job.JobId.Value.ToByteArray();
 
-            using var connection = new SqliteConnection(_connectionString);
+            using var connection = CreateConnection();
             using var transaction = connection.BeginTransaction();
             using var command = connection.CreateCommand();
 
@@ -435,7 +443,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         {
             var jobIdBytes = job.Value.ToByteArray();
 
-            using var connection = new SqliteConnection(_connectionString);
+            using var connection = CreateConnection();
             using var transaction = connection.BeginTransaction();
             using var command = connection.CreateCommand();
 
@@ -462,7 +470,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         {
             var jobIdBytes = jobId.Value.ToByteArray();
 
-            using var connection = new SqliteConnection(_connectionString);
+            using var connection = CreateConnection();
             using var transaction = connection.BeginTransaction();
             using var command = connection.CreateCommand();
 
