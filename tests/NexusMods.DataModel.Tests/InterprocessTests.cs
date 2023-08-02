@@ -188,9 +188,9 @@ public class InterprocessTests : IDisposable
     }
 
     [Fact]
-    public async Task CanCleanup()
+    public void CanCleanup()
     {
-        await _ipc.CleanupOnce(CancellationToken.None);
+        _ipc.CleanupOnce();
     }
 
     public void Dispose()
