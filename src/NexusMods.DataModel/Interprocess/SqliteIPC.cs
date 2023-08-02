@@ -349,6 +349,8 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
 
         try
         {
+            var data = JsonSerializer.SerializeToUtf8Bytes((T)job.Payload, _jsonSettings);
+
             _logger.CreatingJob(job.JobId, job.Payload.GetType());
             using var conn = _pool.RentDisposable();
             using var cmd = conn.Value.CreateCommand();
@@ -359,11 +361,7 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
             cmd.Parameters.AddWithValue("@processId", job.ProcessId.Value);
             cmd.Parameters.AddWithValue("@progress", job.Progress.Value);
             cmd.Parameters.AddWithValue("@startTime", job.StartTime.ToFileTimeUtc());
-
-            var ms = new MemoryStream();
-            JsonSerializer.Serialize(ms, (T)job.Payload, _jsonSettings);
-            ms.Position = 0;
-            cmd.Parameters.AddWithValue("@data", ms.ToArray());
+            cmd.Parameters.AddWithValue("@data", data);
             cmd.ExecuteNonQuery();
         }
         catch (Exception ex)
