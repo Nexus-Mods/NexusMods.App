@@ -1,5 +1,8 @@
 using System.Diagnostics;
+using System.Text;
+using CliWrap;
 using Microsoft.Extensions.Logging;
+using NexusMods.Common;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Paths;
 
@@ -22,6 +25,7 @@ where T : AGame
 {
     private readonly ILogger<RunGameTool<T>> _logger;
     private readonly T _game;
+    private readonly IProcessFactory _processFactory;
 
     /// <summary/>
     /// <param name="logger">The logger used to log execution.</param>
@@ -29,8 +33,9 @@ where T : AGame
     /// <remarks>
     ///    This constructor is usually called from DI.
     /// </remarks>
-    public RunGameTool(ILogger<RunGameTool<T>> logger, T game)
+    public RunGameTool(ILogger<RunGameTool<T>> logger, T game, IProcessFactory processFactory)
     {
+        _processFactory = processFactory;
         _game = game;
         _logger = logger;
     }
@@ -47,10 +52,18 @@ where T : AGame
         var program = _game.GetPrimaryFile(loadout.Installation.Store).Combine(loadout.Installation.Locations[GameFolderType.Game]);
         _logger.LogInformation("Running {Program}", program);
 
-        // TODO: use IProcessFactory
-        var psi = new ProcessStartInfo(program.ToString());
-        var process = Process.Start(psi);
-        await process!.WaitForExitAsync();
+        var stdOut = new StringBuilder();
+        var stdErr = new StringBuilder();
+        var command = new Command(program.ToString())
+            .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOut))
+            .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErr))
+            .WithValidation(CommandResultValidation.None)
+            .WithWorkingDirectory(program.Parent.ToString());
+        
+
+        var result = await _processFactory.ExecuteAsync(command);
+        if (result.ExitCode != 0)
+            _logger.LogError("While Running {Filename} : {Error} {Output}", program, stdErr, stdOut);
 
         _logger.LogInformation("Finished running {Program}", program);
     }

@@ -146,6 +146,7 @@ public record PluginOrderFile : AModFile, IGeneratedFile, IToFile, ITriggerFilte
                 fingerprinter.Add(f.DataStoreId);
             });
 
+        
         return fingerprinter.Digest();
     }
 }

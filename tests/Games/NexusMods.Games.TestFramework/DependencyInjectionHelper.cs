@@ -47,6 +47,7 @@ public static class DependencyInjectionHelper
         return serviceCollection
             .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
             .AddOSInformation()
+            .AddCommon()
             .AddFileSystem()
             .AddSingleton<TemporaryFileManager>(_ => new TemporaryFileManager(FileSystem.Shared, prefix))
             .AddSingleton<HttpClient>()
