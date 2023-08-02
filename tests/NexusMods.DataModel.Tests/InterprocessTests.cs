@@ -189,9 +189,8 @@ public class InterprocessTests : IDisposable
         Thread.Sleep(timeout);
 
         // The IPC should have picked up every addition, update and removal
-        totalAdds.Should().Be(numThreads);
-        totalRemoves.Should().Be(totalAdds);
-        totalUpdates.Should().Be(totalAdds * 10);
+        var combined = (totalAdds, totalUpdates, totalRemoves);
+        combined.Should().Be((numThreads, numThreads * 10, numThreads));
     }
 
     [Fact]
