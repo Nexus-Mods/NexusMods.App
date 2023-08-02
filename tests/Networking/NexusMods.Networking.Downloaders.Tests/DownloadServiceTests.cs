@@ -1,9 +1,7 @@
 using FluentAssertions;
-using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Tasks.State;
-using Size = NexusMods.Paths.Size;
 
 namespace NexusMods.Networking.Downloaders.Tests;
 
@@ -13,7 +11,7 @@ public class DownloadServiceTests
     private readonly DownloadService _downloadService;
     private readonly DummyDownloadTask _dummyTask;
 
-    public DownloadServiceTests(DownloadService downloadService, IDataStore store)
+    public DownloadServiceTests(DownloadService downloadService)
     {
         // Create a new instance of the DownloadService
         _downloadService = downloadService;
@@ -93,7 +91,6 @@ public class DownloadServiceTests
     private class DummyDownloadTask : IDownloadTask
     {
         public DummyDownloadTask(DownloadService service) { Owner = service; }
-        public IJob<Size> DownloadJob => default!;
         public long DownloadedSizeBytes => 0;
         public long TotalSizeBytes => 0;
         public long CalculateThroughput<TDateTimeProvider>(TDateTimeProvider provider) where TDateTimeProvider : IDateTimeProvider => 0;
