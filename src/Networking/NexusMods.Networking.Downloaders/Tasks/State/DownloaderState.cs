@@ -24,12 +24,12 @@ public record DownloaderState : Entity
     /// <summary>
     /// Data tied to the type that created this state snapshot.
     /// </summary>
-    public ITypeSpecificState? TypeSpecificData { get; private set; }
+    public required ITypeSpecificState? TypeSpecificData { get; init; }
 
     /// <summary>
     /// Status of the task associated with this state.
     /// </summary>
-    public DownloadTaskStatus Status { get; private set; }
+    public required DownloadTaskStatus Status { get; init; }
 
     /// <summary>
     /// Path to the temporary file being downloaded.
@@ -39,41 +39,41 @@ public record DownloaderState : Entity
     ///     for serialization reasons. Because <see cref="IFileSystem"/> always is <see cref="FileSystem"/> however,
     ///     (more specifically, saved to `/tmp` i.e. `%temp%` on Windows) this is okay to store.
     /// </remarks>
-    public string DownloadPath { get; private set; } = "";
+    public required string DownloadPath { get; init; } = "";
 
     /// <summary>
     /// Friendly name for the suspended download task.
     /// </summary>
-    public string FriendlyName { get; private set; } = "";
+    public required string FriendlyName { get; init; } = "";
 
     /// <summary>
     /// Amount of already downloaded bytes.
     /// </summary>
-    public long DownloadedBytes { get; private set; } = 0L;
+    public required long DownloadedBytes { get; init; } = 0L;
 
     /// <summary>
     /// Name of the game the mod will be installed to.
     /// </summary>
     /// <remarks>Provided by <see cref="IHaveGameName"/> trait.</remarks>
-    public string? GameName { get; private set; }
+    public required string? GameName { get; init; }
 
     /// <summary>
     /// Unique identifier for the game whose loadouts should be suggested for installation.
     /// </summary>
     /// <remarks>Provided by <see cref="IHaveGameDomain"/> trait.</remarks>
-    public string? GameDomain { get; private set; }
+    public required string? GameDomain { get; init; }
 
     /// <summary>
     /// Size of the file being downloaded in bytes. A value of less than 0 means size is unknown.
     /// </summary>
     /// <remarks>Provided by <see cref="IHaveFileSize"/> trait.</remarks>
-    public long? SizeBytes { get; private set; }
+    public required long? SizeBytes { get; init; }
 
     /// <summary>
     /// Version of the mod; can sometimes be arbitrary and not follow SemVer or any standard.
     /// </summary>
     /// <remarks>Provided by <see cref="IHaveDownloadVersion"/> trait.</remarks>
-    public string? Version { get; private set; }
+    public required string? Version { get; init; }
 
     // Unused, but required for serialization.
 
@@ -87,25 +87,20 @@ public record DownloaderState : Entity
     public static DownloaderState Create<TItem>(TItem item, ITypeSpecificState typeSpecificState, string downloadLocation)
         where TItem : IDownloadTask
     {
-        var result = new DownloaderState();
-        result.TypeSpecificData = typeSpecificState;
-        result.FriendlyName = item.FriendlyName;
-        result.DownloadPath = downloadLocation;
-        result.Status = item.Status;
-        result.DownloadedBytes = item.DownloadedSizeBytes;
-        if (item is IHaveFileSize fileSize)
-            result.SizeBytes = fileSize.SizeBytes;
-
-        if (item is IHaveDownloadVersion downloadVersion)
-            result.Version = downloadVersion.Version;
-
-        if (item is IHaveGameName gameName)
-            result.GameName = gameName.GameName;
-
-        if (item is IHaveGameDomain gameDomain)
-            result.GameDomain = gameDomain.GameDomain;
-
-        return result;
+        return new DownloaderState
+        {
+            TypeSpecificData = typeSpecificState,
+            FriendlyName = item.FriendlyName,
+            DownloadPath = downloadLocation,
+            Status = item.Status,
+            DownloadedBytes = item.DownloadedSizeBytes,
+            
+            // Conditionals
+            GameName = item is IHaveGameName gameName ? gameName.GameName : null,
+            GameDomain = item is IHaveGameDomain gameDomain ? gameDomain.GameDomain : null,
+            SizeBytes = item is IHaveFileSize fileSize ? fileSize.SizeBytes : null,
+            Version = item is IHaveDownloadVersion downloadVersion ? downloadVersion.Version : null
+        };
     }
 
     // Download path is a temporary path, thus should be unique.

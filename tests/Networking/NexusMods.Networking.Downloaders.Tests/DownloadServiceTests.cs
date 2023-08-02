@@ -113,7 +113,7 @@ public class DownloadServiceTests
             return Task.CompletedTask;
         }
 
-        public DownloaderState ExportState() => new();
+        public DownloaderState ExportState() => DownloaderState.Create(this, null!, "");
     }
 }
 
