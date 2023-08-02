@@ -322,7 +322,8 @@ public class LoadoutSynchronizer
                 {
                     await EmitIngestReplacePlan(plan, planFile, existing);
                 }
-                // TODO: Fix this
+                // TODO: Fix this, it doesn't contain support for IGeneratedFile, 
+                // once we re-design apply/ingest this should be implemented
                 continue;
             }
 
