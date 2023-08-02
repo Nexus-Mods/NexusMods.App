@@ -259,10 +259,14 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
                     var item = editable.Lookup(jobId);
                     if (item.HasValue)
                     {
-                        if (item.Value.Progress != progress)
-                            item.Value.Progress = progress;
+                        var prev = item.Value;
+
+                        if (prev.Progress == progress) continue;
+                        prev.Progress = progress;
 
                         _logger.JobProgress(jobId, progress);
+                        editable.AddOrUpdate(prev);
+
                         continue;
                     }
 
