@@ -1,5 +1,6 @@
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Games.GameCapabilities;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Paths;
 
@@ -47,7 +48,11 @@ public abstract class AGame : IGame
     public virtual IStreamFactory Icon => throw new NotImplementedException("No icon provided for this game.");
 
     /// <inheritdoc />
-    public virtual IStreamFactory GameImage => throw new NotImplementedException("No game image provided for this game.");
+    public virtual IStreamFactory GameImage =>
+        throw new NotImplementedException("No game image provided for this game.");
+
+    /// <inheritdoc />
+    public virtual Dictionary<GameCapabilityId, IGameCapability> SupportedCapabilities { get; } = new();
 
     private Version GetVersion(GameLocatorResult installation)
     {
@@ -63,7 +68,7 @@ public abstract class AGame : IGame
             return new Version(0, 0, 0, 0);
         }
     }
-    
+
     /// <summary>
     /// Clears the internal cache of game installations, so that the next access will re-query the system.
     /// </summary>
@@ -79,7 +84,8 @@ public abstract class AGame : IGame
                 select new GameInstallation
                 {
                     Game = this,
-                    Locations = new Dictionary<GameFolderType, AbsolutePath>(GetLocations(installation.Path.FileSystem, locator, installation)),
+                    Locations = new Dictionary<GameFolderType, AbsolutePath>(GetLocations(installation.Path.FileSystem,
+                        locator, installation)),
                     Version = installation.Version ?? GetVersion(installation),
                     Store = installation.Store
                 })
