@@ -4,6 +4,7 @@ using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Games.GameCapabilities;
 using NexusMods.DataModel.Games.GameCapabilities.AFolderMatchInstallerCapability;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -25,7 +26,9 @@ public class GenericFolderMatchInstaller : IModInstaller
 {
     private readonly ILogger<GenericFolderMatchInstaller> _logger;
 
-    //TODO: Add static method to get requirement gameCapabilityID
+
+    public GameCapabilityId RequiredGameCapability => AFolderMatchInstallerCapability.CapabilityId;
+
     public GenericFolderMatchInstaller(ILogger<GenericFolderMatchInstaller> logger)
     {
         _logger = logger;
@@ -36,17 +39,16 @@ public class GenericFolderMatchInstaller : IModInstaller
     public Priority GetPriority(GameInstallation installation,
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        if (installation.Game.SupportedCapabilities.TryGetValue(AFolderMatchInstallerCapability.CapabilityId,
-                out var capability))
-        {
-            var folderMatchInstallerCapability = (AFolderMatchInstallerCapability)capability;
-            var installFolderTargets = folderMatchInstallerCapability.GetInstallFolderTargets();
+        if (!installation.Game.SupportedCapabilities.TryGetValue(RequiredGameCapability, out var capability))
+            return Priority.None;
+        var folderMatchInstallerCapability = (AFolderMatchInstallerCapability)capability;
+        var installFolderTargets = folderMatchInstallerCapability.GetInstallFolderTargets();
 
-            var filePaths = archiveFiles.Keys;
-            if (filePaths.Any(filePath => PathMatchesAnyTarget(filePath, installFolderTargets)))
-            {
-                return Priority.Normal;
-            }
+        var filePaths = archiveFiles.Keys;
+        
+        if (filePaths.Any(filePath => PathMatchesAnyTarget(filePath, installFolderTargets)))
+        {
+            return Priority.Normal;
         }
 
         return Priority.None;
@@ -56,8 +58,7 @@ public class GenericFolderMatchInstaller : IModInstaller
         Hash srcArchiveHash,
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles, CancellationToken cancellationToken = default)
     {
-        if (!gameInstallation.Game.SupportedCapabilities.TryGetValue(AFolderMatchInstallerCapability.CapabilityId,
-                out var capability))
+        if (!gameInstallation.Game.SupportedCapabilities.TryGetValue(RequiredGameCapability, out var capability))
         {
             throw new NotSupportedException(
                 $"Game {gameInstallation.Game.Name} does not support GenericFolderMatchInstaller capability.");
@@ -192,7 +193,7 @@ public class GenericFolderMatchInstaller : IModInstaller
         // NOTE: Assumes that the path is longer than numFolders
         if (numFolders == 0)
             return RelativePath.Empty;
-        
+
         var foldersToDrop = numFolders;
         var suffix = path;
         var prefix = new RelativePath("");
