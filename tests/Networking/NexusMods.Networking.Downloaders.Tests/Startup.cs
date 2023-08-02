@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
+using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.RedEngine;
 using NexusMods.Games.TestFramework;
@@ -19,7 +20,8 @@ public class Startup
             .AddStubbedGameLocators()
             .AddBethesdaGameStudios()
             .AddRedEngineGames()
-            .AddSingleton<DownloadService>()
+            .AddDownloaders()
+            .AddAllSingleton<ITypeFinder, TypeFinder>()
             .AddSingleton<LocalHttpServer>()
             .Validate();
     }

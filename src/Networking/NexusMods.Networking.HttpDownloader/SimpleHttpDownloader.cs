@@ -35,10 +35,10 @@ public class SimpleHttpDownloader : IHttpDownloader
         foreach (var source in sources)
         {
             using var job = await _limiter.BeginAsync($"Downloading {destination.FileName}", size ?? Size.One, token);
-            
+
             // Note: If download fails, job will be reported as 'failed', and will not participate in throughput calculations.
-            state.Jobs.Add(job);
-            
+            state.Job = job;
+
             var response = await _client.SendAsync(source, HttpCompletionOption.ResponseHeadersRead, token);
             if (!response.IsSuccessStatusCode)
             {

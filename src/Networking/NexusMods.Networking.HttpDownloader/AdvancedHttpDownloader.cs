@@ -95,7 +95,7 @@ namespace NexusMods.Networking.HttpDownloader
             }
 
             // Note: All data eventually is piped into primary job (when writing to destination), so we can just use that to track everything as a whole.
-            downloaderState.Jobs.Add(primaryJob);
+            downloaderState.Job = primaryJob;
 
             var state = await InitiateState(destination, size.Value, sources, cancel);
             state.Sources = sources.Select((source, idx) => new Source { Request = source, Priority = idx }).ToArray();

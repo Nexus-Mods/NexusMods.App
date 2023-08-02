@@ -4,6 +4,7 @@ namespace NexusMods.App.UI.RightContent.Downloads.ViewModels;
 
 public class DownloadTaskDesignViewModel : AViewModel<IDownloadTaskViewModel>, IDownloadTaskViewModel
 {
+    public IDownloadTask Task => null!;
     public string Name { get; set; } = "Design Mod";
     public string Version { get; set; } = "1.0.0";
     public string Game { get; set; } = "Unknown Game";

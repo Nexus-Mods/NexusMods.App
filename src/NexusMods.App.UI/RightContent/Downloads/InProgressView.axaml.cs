@@ -5,7 +5,6 @@ using DynamicData.Binding;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Helpers;
-using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.RightContent.Downloads;
@@ -20,6 +19,14 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
         {
             this.WhenAnyValue(view => view.ViewModel!.ShowCancelDialog)
                 .BindToUi(this, view => view.CancelButton.Command)
+                .DisposeWith(d);
+
+            this.WhenAnyValue(view => view.ViewModel!.SuspendCurrentTask)
+                .BindToUi(this, view => view.PauseButton.Command)
+                .DisposeWith(d);
+
+            this.WhenAnyValue(view => view.ViewModel!.SuspendAllTasks)
+                .BindToUi(this, view => view.PauseAllButton.Command)
                 .DisposeWith(d);
 
             this.WhenAnyValue(view => view.ViewModel!.Tasks)

@@ -39,12 +39,12 @@ public class NxmRpcListener : IDisposable
         while (await _urlsBlock.OutputAvailableAsync(_cancellationSource.Token))
         {
             var item = await _urlsBlock.ReceiveAsync(_cancellationSource.Token);
-            
+
             // The following code is wrapped in an exception handler such that on possible unhandled exception,
             // the service keeps running rather than terminated.
             try
             {
-                _downloadService.AddNxmTask(item.Value);
+                _ = _downloadService.AddNxmTask(item.Value);
             }
             catch (Exception e)
             {

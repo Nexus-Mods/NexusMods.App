@@ -2,7 +2,7 @@
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
-namespace NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadStatus;
+namespace NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadStatus;
 
 public partial class DownloadStatusView : ReactiveUserControl<IDownloadStatusViewModel>
 {
@@ -13,9 +13,9 @@ public partial class DownloadStatusView : ReactiveUserControl<IDownloadStatusVie
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.ViewModel!.CurrentValue)
-                .BindToUi(this, view => view.DownloadProgressBar.Value)
+                .BindToUi<float, DownloadStatusView, double>(this, view => view.DownloadProgressBar.Value)
                 .DisposeWith(d);
-            
+
             this.WhenAnyValue(vm => vm.ViewModel!.Text)
                 .BindToUi<string, DownloadStatusView, string>(this, view => view.DownloadProgressBar.ProgressTextFormat)
                 .DisposeWith(d);
@@ -23,7 +23,10 @@ public partial class DownloadStatusView : ReactiveUserControl<IDownloadStatusVie
             this.WhenAnyValue(view => view.DataContext)
                 .SubscribeWithErrorLogging(logger: default)
                 .DisposeWith(d);
-            
+
+            this.BindCommand(this.ViewModel, vm => vm.PauseOrResume, v => v.PlayPauseButton)
+                .DisposeWith(d);
+
             this.WhenAnyValue(vm => vm.ViewModel!.IsRunning)
                 .OnUI()
                 .Subscribe(isRunning =>
@@ -35,7 +38,7 @@ public partial class DownloadStatusView : ReactiveUserControl<IDownloadStatusVie
                         DownloadProgressBar.Classes.Add("DisabledDownloadBar");
                 })
                 .DisposeWith(d);
-            
+
             this.WhenAnyValue(vm => vm.ViewModel!.CanPause)
                 .OnUI()
                 .Subscribe(canPause =>
@@ -44,7 +47,7 @@ public partial class DownloadStatusView : ReactiveUserControl<IDownloadStatusVie
                     const string playIcon = "PlayCircleOutline";
                     const string pauseIcon = "PauseCircleOutline";
                     var classes = PlayPauseIcon.Classes;
-                    
+
                     if (canPause)
                     {
                         classes.Remove(playIcon);

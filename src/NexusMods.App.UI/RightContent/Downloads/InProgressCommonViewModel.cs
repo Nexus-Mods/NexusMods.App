@@ -7,27 +7,25 @@ using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Binding;
 using NexusMods.App.UI.Controls.DataGrid;
-using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.RightContent.DownloadGrid;
 using NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadGameName;
+using NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadStatus;
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
-using NexusMods.App.UI.RightContent.LoadoutGrid;
-using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadName;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadSize;
-using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadStatus;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadVersion;
 using NexusMods.Networking.Downloaders.Interfaces;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using DownloadGameNameView = NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadGameName.DownloadGameNameView;
+using DownloadStatusView = NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadStatus.DownloadStatusView;
 
 namespace NexusMods.App.UI.RightContent.Downloads;
 
 public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInProgressViewModel
 {
     internal const int PollTimeMilliseconds = 1000;
-    
+
     protected ReadOnlyObservableCollection<IDownloadTaskViewModel> TasksObservable = new(new ObservableCollection<IDownloadTaskViewModel>());
 
     public ReadOnlyObservableCollection<IDownloadTaskViewModel> Tasks => TasksObservable;
@@ -38,6 +36,8 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
     public ReadOnlyObservableCollection<IDataGridColumnFactory<DownloadColumn>> Columns => FilteredColumns;
 
     public void CancelSelectedTask() => ((IInProgressViewModel)this).Cancel();
+
+    public void SuspendSelectedTask() => ((IInProgressViewModel)this).Suspend();
 
     [Reactive]
     public bool IsRunning { get; set; }
@@ -57,9 +57,17 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
     [Reactive]
     public ICommand ShowCancelDialog { get; set; }
 
+    [Reactive]
+    public ICommand SuspendCurrentTask { get; set; }
+
+    [Reactive]
+    public ICommand SuspendAllTasks { get; set; }
+
     public InProgressCommonViewModel()
     {
         ShowCancelDialog = ReactiveCommand.Create(() => { });
+        SuspendCurrentTask = ReactiveCommand.Create(() => { });
+        SuspendAllTasks = ReactiveCommand.Create(() => { });
 
         // Make Columns
         var columns = new SourceCache<IDataGridColumnFactory<DownloadColumn>, DownloadColumn>(x => x.Type);
@@ -114,7 +122,7 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
                     changeSet.Select(_ => Tasks.Any(x => !(x.Status is DownloadTaskStatus.Idle or DownloadTaskStatus.Paused)))
                         .BindToUi(this, vm => vm.IsRunning)
                         .DisposeWith(d);
-                    
+
                     // Update ViewModel Properties (non-polling) when any task arrives.
                     changeSet.OnUI()
                         .Subscribe(set => UpdateWindowInfo())
@@ -130,7 +138,7 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
             // Start updating on the UI thread
             // This is a service to provide polling in case of downloaders that don't have a way of notifying
             // changes in progress (e.g. when file name is resolved, or download progress is made).
-            
+
             // This is not the only mechanism, a manual refresh also can occur when tasks are added/removed.
             var timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromMilliseconds(PollTimeMilliseconds);
