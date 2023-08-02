@@ -36,6 +36,7 @@ public class DownloadService : IDownloadService
     private readonly Subject<(IDownloadTask task, Hash analyzedHash, string modName)> _analyzed = new();
     private readonly IObservable<IChangeSet<IDownloadTask>> _tasksChangeSet;
     private readonly ReadOnlyObservableCollection<IDownloadTask> _currentDownloads;
+    private bool _isDisposed = false;
 
     public DownloadService(ILogger<DownloadService> logger, IServiceProvider provider, IDataStore store, IArchiveAnalyzer archiveAnalyzer)
     {
@@ -220,5 +221,24 @@ public class DownloadService : IDownloadService
         var state = task.ExportState();
         _store.Delete(new IdVariableLength(EntityCategory.DownloadStates, state.DownloadPath));
         _store.Put(new IdVariableLength(EntityCategory.DownloadStates, state.DownloadPath), state);
+    }
+
+    public void Dispose()
+    {
+        if (_isDisposed)
+            return;
+        
+        // Pause all tasks, which persists them to datastore.
+        foreach (var task in _currentDownloads)
+            task.Suspend();
+        
+        _isDisposed = true;
+        _tasks.Dispose();
+        _started.Dispose();
+        _completed.Dispose();
+        _cancelled.Dispose();
+        _paused.Dispose();
+        _resumed.Dispose();
+        _analyzed.Dispose();
     }
 }

@@ -13,7 +13,7 @@ namespace NexusMods.Networking.Downloaders.Interfaces;
 ///
 /// This service only tracks the states and passes messages on behalf of currently live downloads.
 /// </summary>
-public interface IDownloadService
+public interface IDownloadService : IDisposable
 {
     /// <summary>
     /// Contains all downloads managed by the application.

@@ -47,6 +47,11 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
                 .SubscribeWithErrorLogging(logger, HandleSpineAction)
                 .DisposeWith(d);
 
+            // When the user closes the window, we should persist all download state such that it shows
+            // accurate values after a reboot.
+            // If we ever plan to remove and re-add main window (unlikely), this might need changing to not dispose but only save.
+            downloadService.DisposeWith(d);
+
             downloadService.AnalyzedArchives.Subscribe(tuple =>
             {
                 // Because HandleDownloadedAnalyzedArchive is an async task, it begins automatically.
