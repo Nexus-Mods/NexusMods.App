@@ -91,7 +91,7 @@ public class InterprocessTests : IDisposable
         var magic = Random.Shared.Next();
         var updates = new List<(int Adds, int Updates, int Removes)>();
 
-        // SqliteIPC pools every 100ms
+        // SqliteIPC polls every 100ms
         var timeout = TimeSpan.FromMilliseconds(300);
 
         _jobManager.Jobs
