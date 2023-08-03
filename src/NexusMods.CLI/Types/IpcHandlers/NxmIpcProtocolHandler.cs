@@ -13,7 +13,7 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
     /// <inheritdoc/>
     public string Protocol => "nxm";
 
-    private IMessageProducer<NXMUrlMessage> _messages;
+    private readonly IMessageProducer<NXMUrlMessage> _messages;
 
     /// <summary>
     /// constructor
@@ -27,6 +27,7 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
     public async Task Handle(string url, CancellationToken cancel)
     {
         await _messages.Write(new NXMUrlMessage { Value = NXMUrl.Parse(url) }, cancel);
+        _messages.EnsureWrite(cancel);
     }
 }
 
