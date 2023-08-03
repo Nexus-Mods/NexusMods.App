@@ -21,7 +21,7 @@ namespace NexusMods.DataModel.Interprocess;
 /// without having to run a SQL query every second.
 /// </summary>
 // ReSharper disable once InconsistentNaming
-public class SqliteIPC : IDisposable, IInterprocessJobManager
+public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
 {
     private static readonly TimeSpan SqliteDefaultTimeout = TimeSpan.FromMilliseconds(150);
 
@@ -483,34 +483,24 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
         UpdateJobTimestamp();
     }
 
-    /// <summary>
-    /// Dispose of the IPC connection.
-    /// </summary>
+    /// <inheritdoc/>
     public void Dispose()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    /// <summary>
-    /// Releases the unmanaged resources and optionally releases the managed resources.
-    /// </summary>
-    /// <param name="disposing">
-    /// <c>true</c> to release both managed and unmanaged resources;
-    /// <c>false</c> to release only unmanaged resources.
-    /// </param>
-    protected virtual void Dispose(bool disposing)
-    {
         if (_isDisposed) return;
-        if (disposing)
+        _isDisposed = true;
+
+        try
         {
-            _globalConnection?.Close();
             _shutdownToken.Cancel();
-            _subject.Dispose();
-            _syncArray.Dispose();
-            _jobs.Dispose();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Exception while requesting cancellation");
         }
 
-        _isDisposed = true;
+        _subject.Dispose();
+        _jobs.Dispose();
+        _syncArray.Dispose();
+        _globalConnection?.Close();
     }
 }
