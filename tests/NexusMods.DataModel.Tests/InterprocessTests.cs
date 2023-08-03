@@ -1,12 +1,10 @@
 using System.Buffers.Binary;
 using System.Text.Json;
 using DynamicData;
-using DynamicData.PLinq;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Interprocess;
 using NexusMods.Paths;
 using NexusMods.DataModel.Interprocess.Jobs;
@@ -15,7 +13,7 @@ using NexusMods.DataModel.RateLimiting;
 
 namespace NexusMods.DataModel.Tests;
 
-public class InterprocessTests : IDisposable
+public sealed class InterprocessTests : IDisposable
 {
     private readonly TemporaryPath _sqliteFile;
     private readonly IMessageProducer<Message> _producer;
@@ -23,7 +21,7 @@ public class InterprocessTests : IDisposable
     private readonly SqliteIPC _ipc;
     private readonly IInterprocessJobManager _jobManager;
 
-    public class Message : IMessage
+    private class Message : IMessage
     {
         public int Value { get; init; }
         public static int MaxSize => 4;
@@ -80,12 +78,10 @@ public class InterprocessTests : IDisposable
     }
 
     [Fact]
-    public void TestJobTracking_SingleThread_HighTimeout()
+    public void TestJobTracking_SingleThread()
     {
         var magic = Random.Shared.Next();
         var updates = new List<(int Adds, int Updates, int Removes)>();
-
-        var timeout = SqliteIPC.ReaderLoopInterval * 2;
 
         _jobManager.Jobs
             .Filter(job => job.Payload is TestEntity testEntity && testEntity.Value == magic)
@@ -101,8 +97,6 @@ public class InterprocessTests : IDisposable
                 job.Progress = new Percent(x);
             }
         }
-
-        Thread.Sleep(timeout);
 
         // The IPC should have picked up every addition, update and removal
         updates.Should().BeEquivalentTo(new[]
@@ -123,7 +117,7 @@ public class InterprocessTests : IDisposable
     }
 
     [Fact]
-    public void TestJobTracking_MultipleThreads_HighTimeout()
+    public void TestJobTracking_MultipleThreads()
     {
         var magic = Random.Shared.Next();
 
@@ -140,23 +134,14 @@ public class InterprocessTests : IDisposable
                 Interlocked.Add(ref totalRemoves, x.Removes);
             });
 
-        // SqliteIPC pools every 100ms
-        var timeout = TimeSpan.FromMilliseconds(300);
-
         var numThreads = Math.Min(10, Environment.ProcessorCount * 2);
         var threads = Enumerable.Range(0, numThreads)
             .Select(_ => new Thread(() =>
             {
                 using var job = InterprocessJob.Create(_jobManager, new TestEntity { Value = magic });
-                // waits for the IPC to pickup the newly created job
-                Thread.Sleep(timeout);
-
                 for (var x = 0.0; x < 1; x += 0.1)
                 {
                     job.Progress = new Percent(x);
-
-                    // waits for the IPC to pickup the update
-                    Thread.Sleep(timeout);
                 }
             }))
             .ToArray();
@@ -171,10 +156,6 @@ public class InterprocessTests : IDisposable
             thread.Join();
         }
 
-        // waits for the IPC to pickup the removed jobs
-        Thread.Sleep(timeout);
-
-        // The IPC should have picked up every addition, update and removal
         var combined = (totalAdds, totalUpdates, totalRemoves);
         combined.Should().Be((numThreads, numThreads * 10, numThreads));
     }
