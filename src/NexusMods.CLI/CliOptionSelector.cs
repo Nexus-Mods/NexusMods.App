@@ -17,6 +17,11 @@ public class CliOptionSelector : IOptionSelector
     private readonly IRenderer _renderer;
 
     /// <summary>
+    /// If true, all option selection will throw an error, useful for automated installers and tests
+    /// </summary>
+    public bool AutoFail { get; set; } = false;
+
+    /// <summary>
     /// DI Constructor
     /// </summary>
     /// <param name="configurator"></param>
@@ -59,6 +64,9 @@ public class CliOptionSelector : IOptionSelector
     /// <inheritdoc />
     public Task<Tuple<TGroupId, IEnumerable<TOptionId>>?> RequestMultipleChoices<TGroupId, TOptionId>(IEnumerable<ChoiceGroup<TGroupId, TOptionId>> groups)
     {
+        if (AutoFail)
+            throw new Exception("AutoFail is enabled for this option selector.");
+        
         var selectedGroupIdx = -1;
         Tuple<TGroupId, IEnumerable<TOptionId>>? result = null;
         IList<Option<TOptionId>>? selectedGroup = null;
