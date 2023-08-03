@@ -23,11 +23,13 @@ namespace NexusMods.DataModel.Interprocess;
 // ReSharper disable once InconsistentNaming
 public class SqliteIPC : IDisposable, IInterprocessJobManager
 {
+    private static readonly TimeSpan SqliteDefaultTimeout = TimeSpan.FromMilliseconds(150);
+
     private static readonly TimeSpan RetentionTime = TimeSpan.FromSeconds(10); // Keep messages for 10 seconds
     private static readonly TimeSpan CleanupInterval = TimeSpan.FromMinutes(10); // Cleanup every 10 minutes
-    private static readonly int CleanupJitter = 2000; // Jitter cleanup by up to 2 second
-    private static readonly TimeSpan ShortPollInterval = TimeSpan.FromMilliseconds(100); // Poll every 100ms
-    private static readonly TimeSpan LongPollInterval = TimeSpan.FromSeconds(10); // Poll every 10s
+    private const int CleanupJitter = 2000; // Jitter cleanup by up to 2 second
+
+    private static readonly TimeSpan ReaderLoopInterval = SqliteDefaultTimeout + TimeSpan.FromMilliseconds(50);
 
     private bool _isDisposed;
 
@@ -167,28 +169,22 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
 
     private async Task ReaderLoop(long lastId, CancellationToken shutdownTokenToken)
     {
-        var lastJobTimestamp = (long)_syncArray.Get(1);
+        var sw = new Stopwatch();
         while (!shutdownTokenToken.IsCancellationRequested)
         {
+            sw.Restart();
+
             lastId = ProcessMessages(lastId);
             ProcessJobs();
 
-            var elapsed = DateTime.UtcNow;
-            while (!shutdownTokenToken.IsCancellationRequested)
+            var elapsed = sw.Elapsed;
+            if (elapsed > SqliteDefaultTimeout)
             {
-                if (lastId < (long)_syncArray.Get(0))
-                    break;
-
-                var jobTimeStamp = (long)_syncArray.Get(1);
-                if (jobTimeStamp > lastJobTimestamp)
-                {
-                    lastJobTimestamp = jobTimeStamp;
-                    break;
-                }
-
-                await Task.Delay(ShortPollInterval, shutdownTokenToken);
-                if (DateTime.UtcNow - elapsed > LongPollInterval) break;
+                _logger.LogDebug("ReaderLoop was locked by Sqlite for {}ms", elapsed.TotalMilliseconds);
+                continue;
             }
+
+            await Task.Delay(ReaderLoopInterval - elapsed, shutdownTokenToken);
         }
     }
 
@@ -473,7 +469,6 @@ public class SqliteIPC : IDisposable, IInterprocessJobManager
             using var connection = CreateConnection();
             using var transaction = connection.BeginTransaction();
             using var command = connection.CreateCommand();
-
             command.CommandText = "UPDATE Jobs SET Progress = @progress WHERE JobId = @jobId";
             command.Parameters.AddWithValue("@progress", value.Value);
             command.Parameters.AddWithValue("@jobId", jobIdBytes);
