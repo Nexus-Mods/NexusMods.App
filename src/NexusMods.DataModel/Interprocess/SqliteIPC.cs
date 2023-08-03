@@ -29,7 +29,8 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
     private static readonly TimeSpan CleanupInterval = TimeSpan.FromMinutes(10); // Cleanup every 10 minutes
     private const int CleanupJitter = 2000; // Jitter cleanup by up to 2 second
 
-    private static readonly TimeSpan ReaderLoopInterval = SqliteDefaultTimeout + TimeSpan.FromMilliseconds(50);
+    internal static readonly TimeSpan ReaderLoopInterval = SqliteDefaultTimeout + TimeSpan.FromMilliseconds(50);
+    internal static readonly TimeSpan WriterLoopInterval = TimeSpan.FromMilliseconds(50);
 
     private bool _isDisposed;
 
@@ -43,6 +44,10 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
 
     private readonly Subject<(string Queue, byte[] Message)> _subject = new();
     private readonly SourceCache<IInterprocessJob, JobId> _jobs = new(x => x.JobId);
+
+    private readonly Queue<IInterprocessJob> _jobsToCreate = new(16);
+    private readonly Queue<(JobId, Percent)> _jobsToUpdate = new(64);
+    private readonly Queue<JobId> _jobsToDelete = new(32);
 
     /// <summary>
     /// Allows you to subscribe to newly incoming IPC messages.
@@ -109,6 +114,7 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
 
         var startId = GetStartId();
         Task.Run(() => ReaderLoop(startId, _shutdownToken.Token));
+        Task.Run(() => WriterLoop(_shutdownToken.Token));
         Task.Run(() => CleanupLoop(_shutdownToken.Token));
     }
 
@@ -118,6 +124,40 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
         connection.Open();
 
         return connection;
+    }
+
+    private void EnsureTables()
+    {
+        using var connection = CreateConnection();
+        using var transaction = connection.BeginTransaction();
+
+        using var pragmaCommand = connection.CreateCommand();
+        pragmaCommand.CommandText = "PRAGMA journal_mode = WAL";
+        pragmaCommand.ExecuteNonQuery();
+
+        using var ipcTableCommand = connection.CreateCommand();
+        ipcTableCommand.CommandText = "CREATE TABLE IF NOT EXISTS Ipc (Id INTEGER PRIMARY KEY ASC AUTOINCREMENT, Queue TEXT, Data BLOB, TimeStamp INTEGER)";
+        ipcTableCommand.ExecuteNonQuery();
+
+        using var jobsTableCommand = connection.CreateCommand();
+        jobsTableCommand.CommandText = "CREATE TABLE IF NOT EXISTS Jobs (JobId BLOB PRIMARY KEY, ProcessId INTEGER, Progress REAL, StartTime INTEGER, Data BLOB)";
+        jobsTableCommand.ExecuteNonQuery();
+
+        transaction.Commit();
+    }
+
+    private long GetStartId()
+    {
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
+
+        using var connection = CreateConnection();
+        using var transaction = connection.BeginTransaction();
+        using var command = connection.CreateCommand();
+
+        command.CommandText = "SELECT MAX(Id) FROM Ipc";
+
+        var result = command.ExecuteScalar();
+        return result == DBNull.Value ? (long)_syncArray.Get(0) : Convert.ToInt64(result);
     }
 
     private async Task CleanupLoop(CancellationToken token)
@@ -188,18 +228,120 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
         }
     }
 
-    private long GetStartId()
+    private async Task WriterLoop(CancellationToken cancellationToken)
     {
-        ObjectDisposedException.ThrowIf(_isDisposed, this);
+        var sw = new Stopwatch();
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            sw.Reset();
 
-        using var connection = CreateConnection();
-        using var transaction = connection.BeginTransaction();
-        using var command = connection.CreateCommand();
+            try
+            {
+                WriteToDatabase();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Exception while writing to the database");
+            }
 
-        command.CommandText = "SELECT MAX(Id) FROM Ipc";
+            var elapsed = sw.Elapsed;
+            if (elapsed > SqliteDefaultTimeout)
+            {
+                _logger.LogDebug("WriterLoop was locked by Sqlite for {}ms", elapsed.TotalMilliseconds);
+                continue;
+            }
 
-        var result = command.ExecuteScalar();
-        return result == DBNull.Value ? (long)_syncArray.Get(0) : Convert.ToInt64(result);
+            await Task.Delay(WriterLoopInterval - elapsed, cancellationToken);
+        }
+    }
+
+    private void WriteToDatabase()
+    {
+        lock (_jobsToCreate)
+        lock (_jobsToUpdate)
+        lock (_jobsToDelete)
+        {
+            using var connection = CreateConnection();
+            using var transaction = connection.BeginTransaction();
+
+            if (_jobsToCreate.Count > 0)
+            {
+                using var insertCommand = connection.CreateCommand();
+                insertCommand.CommandText = "INSERT INTO Jobs (JobId, ProcessId, Progress, StartTime, Data) VALUES (@jobId, @processId, @progress, @startTime, @data);";
+
+                var jobIdParameter = insertCommand.CreateParameter();
+                jobIdParameter.ParameterName = "@jobId";
+                insertCommand.Parameters.Add(jobIdParameter);
+
+                var processIdParameter = insertCommand.CreateParameter();
+                processIdParameter.ParameterName = "@processId";
+                insertCommand.Parameters.Add(processIdParameter);
+
+                var progressParameter = insertCommand.CreateParameter();
+                progressParameter.ParameterName = "@progress";
+                insertCommand.Parameters.Add(progressParameter);
+
+                var startTimeParameters = insertCommand.CreateParameter();
+                startTimeParameters.ParameterName = "@startTime";
+                insertCommand.Parameters.Add(startTimeParameters);
+
+                var dataParameter = insertCommand.CreateParameter();
+                dataParameter.ParameterName = "@data";
+                insertCommand.Parameters.Add(dataParameter);
+
+                while (_jobsToCreate.TryDequeue(out var job))
+                {
+                    jobIdParameter.Value = job.JobId.Value.ToByteArray();
+                    processIdParameter.Value = job.ProcessId.Value;
+                    progressParameter.Value = job.Progress.Value;
+                    startTimeParameters.Value = job.StartTime.ToFileTimeUtc();
+                    dataParameter.Value = JsonSerializer.SerializeToUtf8Bytes(job.Payload, _jsonSettings);
+                }
+            }
+
+            if (_jobsToUpdate.Count > 0)
+            {
+                using var updateCommand = connection.CreateCommand();
+                updateCommand.CommandText = "UPDATE Jobs SET Progress = @progress WHERE JobId = @jobId";
+
+                var jobIdParameter = updateCommand.CreateParameter();
+                jobIdParameter.ParameterName = "@jobId";
+                updateCommand.Parameters.Add(jobIdParameter);
+
+                var progressParameter = updateCommand.CreateParameter();
+                progressParameter.ParameterName = "@progress";
+                updateCommand.Parameters.Add(progressParameter);
+
+                while (_jobsToUpdate.TryDequeue(out var tuple))
+                {
+                    var (jobId, percent) = tuple;
+                    jobIdParameter.Value = jobId.Value.ToByteArray();
+                    progressParameter.Value = percent.Value;
+
+                    updateCommand.ExecuteNonQuery();
+                }
+            }
+
+            if (_jobsToDelete.Count > 0)
+            {
+                using var deleteCommand = connection.CreateCommand();
+                deleteCommand.CommandText = "DELETE FROM Jobs WHERE JobId = @jobId";
+
+                var jobIdParameter = deleteCommand.CreateParameter();
+                jobIdParameter.ParameterName = "@jobId";
+                deleteCommand.Parameters.Add(jobIdParameter);
+
+                while (_jobsToDelete.TryDequeue(out var jobId))
+                {
+                    jobIdParameter.Value = jobId.Value.ToByteArray();
+                    deleteCommand.ExecuteNonQuery();
+                }
+            }
+
+            transaction.Commit();
+        }
+
+        UpdateJobTimestamp();
     }
 
     private readonly Queue<(string, byte[])> _updates = new(256);
@@ -241,26 +383,6 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
         }
 
         return lastId;
-    }
-
-    private void EnsureTables()
-    {
-        using var connection = CreateConnection();
-        using var transaction = connection.BeginTransaction();
-
-        using var pragmaCommand = connection.CreateCommand();
-        pragmaCommand.CommandText = "PRAGMA journal_mode = WAL";
-        pragmaCommand.ExecuteNonQuery();
-
-        using var ipcTableCommand = connection.CreateCommand();
-        ipcTableCommand.CommandText = "CREATE TABLE IF NOT EXISTS Ipc (Id INTEGER PRIMARY KEY ASC AUTOINCREMENT, Queue TEXT, Data BLOB, TimeStamp INTEGER)";
-        ipcTableCommand.ExecuteNonQuery();
-
-        using var jobsTableCommand = connection.CreateCommand();
-        jobsTableCommand.CommandText = "CREATE TABLE IF NOT EXISTS Jobs (JobId BLOB PRIMARY KEY, ProcessId INTEGER, Progress REAL, StartTime INTEGER, Data BLOB)";
-        jobsTableCommand.ExecuteNonQuery();
-
-        transaction.Commit();
     }
 
     private readonly Queue<(JobId, Percent)> _updatedJobs = new(128);
@@ -381,43 +503,6 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
         }
     }
 
-    /// <summary>
-    /// Create a new job.
-    /// </summary>
-    /// <param name="job"></param>
-    /// <exception cref="ObjectDisposedException"></exception>
-    public void CreateJob<T>(IInterprocessJob job) where T : Entity
-    {
-        ObjectDisposedException.ThrowIf(_isDisposed, this);
-        _logger.CreatingJob(job.JobId, job.Payload.GetType());
-
-        try
-        {
-            var data = JsonSerializer.SerializeToUtf8Bytes((T)job.Payload, _jsonSettings);
-            var jobIdBytes = job.JobId.Value.ToByteArray();
-
-            using var connection = CreateConnection();
-            using var transaction = connection.BeginTransaction();
-            using var command = connection.CreateCommand();
-
-            command.CommandText = "INSERT INTO Jobs (JobId, ProcessId, Progress, StartTime, Data) VALUES (@jobId, @processId, @progress, @startTime, @data);";
-            command.Parameters.AddWithValue("@jobId", jobIdBytes);
-            command.Parameters.AddWithValue("@processId", job.ProcessId.Value);
-            command.Parameters.AddWithValue("@progress", job.Progress.Value);
-            command.Parameters.AddWithValue("@startTime", job.StartTime.ToFileTimeUtc());
-            command.Parameters.AddWithValue("@data", data);
-            command.ExecuteNonQuery();
-
-            transaction.Commit();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to create job {JobId} of type {JobType}", job.JobId, job.GetType().Name);
-        }
-
-        UpdateJobTimestamp();
-    }
-
     private void UpdateJobTimestamp()
     {
         var prevTimeStamp = _syncArray.Get(1);
@@ -429,31 +514,20 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
         }
     }
 
-    /// <inheritdoc />
-    public void EndJob(JobId job)
+    /// <summary>
+    /// Create a new job.
+    /// </summary>
+    /// <param name="job"></param>
+    /// <exception cref="ObjectDisposedException"></exception>
+    public void CreateJob<T>(IInterprocessJob job) where T : Entity
     {
         ObjectDisposedException.ThrowIf(_isDisposed, this);
-        _logger.DeletingJob(job);
+        _logger.CreatingJob(job.JobId, job.Payload.GetType());
 
-        try
+        lock (_jobsToCreate)
         {
-            var jobIdBytes = job.Value.ToByteArray();
-
-            using var connection = CreateConnection();
-            using var transaction = connection.BeginTransaction();
-            using var command = connection.CreateCommand();
-
-            command.CommandText = "DELETE FROM Jobs WHERE JobId = @jobId";
-            command.Parameters.AddWithValue("@jobId", jobIdBytes);
-            command.ExecuteNonQuery();
-            transaction.Commit();
+            _jobsToCreate.Enqueue(job);
         }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Exception while ending job {JobId}", job.Value);
-        }
-
-        UpdateJobTimestamp();
     }
 
     /// <inheritdoc />
@@ -462,25 +536,22 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
         ObjectDisposedException.ThrowIf(_isDisposed, this);
         _logger.UpdatingJobProgress(jobId, value);
 
-        try
+        lock (_jobsToUpdate)
         {
-            var jobIdBytes = jobId.Value.ToByteArray();
-
-            using var connection = CreateConnection();
-            using var transaction = connection.BeginTransaction();
-            using var command = connection.CreateCommand();
-            command.CommandText = "UPDATE Jobs SET Progress = @progress WHERE JobId = @jobId";
-            command.Parameters.AddWithValue("@progress", value.Value);
-            command.Parameters.AddWithValue("@jobId", jobIdBytes);
-            command.ExecuteNonQuery();
-            transaction.Commit();
+            _jobsToUpdate.Enqueue((jobId, value));
         }
-        catch (Exception e)
+    }
+
+    /// <inheritdoc />
+    public void EndJob(JobId job)
+    {
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
+        _logger.DeletingJob(job);
+
+        lock (_jobsToDelete)
         {
-            _logger.LogError(e, "Exception while updating job {JobId}", jobId);
+            _jobsToDelete.Enqueue(job);
         }
-
-        UpdateJobTimestamp();
     }
 
     /// <inheritdoc/>

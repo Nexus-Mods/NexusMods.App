@@ -85,8 +85,7 @@ public class InterprocessTests : IDisposable
         var magic = Random.Shared.Next();
         var updates = new List<(int Adds, int Updates, int Removes)>();
 
-        // SqliteIPC polls every 100ms
-        var timeout = TimeSpan.FromMilliseconds(300);
+        var timeout = SqliteIPC.ReaderLoopInterval * 2;
 
         _jobManager.Jobs
             .Filter(job => job.Payload is TestEntity testEntity && testEntity.Value == magic)
@@ -97,19 +96,12 @@ public class InterprocessTests : IDisposable
 
         using (var job = InterprocessJob.Create(_jobManager, new TestEntity { Value = magic }))
         {
-            // waits for the IPC to pickup the newly created job
-            Thread.Sleep(timeout);
-
             for (var x = 0.0; x < 1; x += 0.1)
             {
                 job.Progress = new Percent(x);
-
-                // waits for the IPC to pickup the update
-                Thread.Sleep(timeout);
             }
         }
 
-        // waits for the IPC to pickup the removed job
         Thread.Sleep(timeout);
 
         // The IPC should have picked up every addition, update and removal
