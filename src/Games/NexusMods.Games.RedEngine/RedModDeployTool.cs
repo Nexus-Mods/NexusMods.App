@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.RedEngine;
@@ -21,7 +22,7 @@ public class RedModDeployTool : ITool
 
     public IEnumerable<GameDomain> Domains => new[] { Cyberpunk2077.StaticDomain };
 
-    public async Task Execute(Loadout loadout)
+    public async Task Execute(Loadout loadout, ApplyPlan applyPlan, CancellationToken cancellationToken)
     {
         var exe = RedModPath.CombineChecked(loadout.Installation);
 

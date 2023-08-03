@@ -47,7 +47,7 @@ public class ToolManager : IToolManager
         var plan = await _loadoutSynchronizer.MakeApplySteps(loadout, token);
         await _loadoutSynchronizer.Apply(plan, token);
 
-        await tool.Execute(loadout);
+        await tool.Execute(loadout, plan, token);
         var modName = $"{tool.Name} Generated Files";
 
         if (generatedFilesMod == null)
