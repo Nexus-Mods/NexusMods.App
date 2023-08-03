@@ -46,7 +46,7 @@ namespace NexusMods.Networking.HttpDownloader
         /// </summary>
         private readonly Size _chunkSize = Size.MB * 128;
 
-        private const int MaxRetries = 4;
+        private const int MaxRetries = 16;
 
         /// <summary>
         /// The size of the buffer used to read from the network stream, no need to make this too large as
@@ -409,6 +409,7 @@ namespace NexusMods.Networking.HttpDownloader
             {
                 var rented = _memoryPool.Rent((int)_readBlockSize.Value);
                 var filledBuffer = await FillBuffer(stream, rented.Memory, chunk.RemainingToRead, cancel);
+
                 var lastRead = Size.FromLong(filledBuffer.Length);
                 if (lastRead == Size.Zero) break;
 
