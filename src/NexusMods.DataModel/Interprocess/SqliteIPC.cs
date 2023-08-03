@@ -25,7 +25,7 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
 {
     // NOTE(erri120): Microsoft.Data.Sqlite has a hardcoded timeout of 150ms.
     // This timeout is used when the database is busy.
-    private static readonly TimeSpan SqliteDefaultTimeout = TimeSpan.FromMilliseconds(150);
+    internal static readonly TimeSpan SqliteDefaultTimeout = TimeSpan.FromMilliseconds(150);
 
     private static readonly TimeSpan RetentionTime = TimeSpan.FromSeconds(10); // Keep messages for 10 seconds
     private static readonly TimeSpan CleanupInterval = TimeSpan.FromMinutes(10); // Cleanup every 10 minutes
@@ -72,7 +72,7 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
 
     // Written to by the WriterLoop and read by the ReaderLoop.
     // This is used to prevent the ReaderLoop from broadcasting the same message twice.
-    private readonly List<long> WrittenMessageIds = new(16);
+    private readonly List<long> _writtenMessageIds = new(16);
 
     /// <summary>
     /// Allows you to subscribe to newly incoming IPC messages.
@@ -81,6 +81,11 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
 
     /// <inheritdoc />
     public IObservable<IChangeSet<IInterprocessJob, JobId>> Jobs => _jobs.Connect();
+
+    /// <summary>
+    /// WaitHandle used by the writer loop to signal a successful write.
+    /// </summary>
+    internal readonly EventWaitHandle WriterLoopFinished = new(initialState: false, EventResetMode.ManualReset);
 
     /// <summary>
     /// DI Constructor
@@ -249,6 +254,7 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
         while (!cancellationToken.IsCancellationRequested)
         {
             sw.Restart();
+            WriterLoopFinished.Reset();
 
             try
             {
@@ -259,6 +265,8 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
             {
                 _logger.LogError(e, "Exception while writing to the database");
             }
+
+            WriterLoopFinished.Set();
 
             var elapsed = sw.Elapsed;
             if (elapsed > SqliteDefaultTimeout)
@@ -311,7 +319,7 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
 
             var result = command.ExecuteScalar();
             newLastId = result == DBNull.Value ? newLastId : Convert.ToUInt64(result);
-            WrittenMessageIds.Add((long)newLastId);
+            _writtenMessageIds.Add((long)newLastId);
         }
 
         transaction.Commit();
@@ -449,8 +457,8 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
     {
         ObjectDisposedException.ThrowIf(_isDisposed, this);
 
-        var writtenIds = WrittenMessageIds.ToArray();
-        WrittenMessageIds.Clear();
+        var writtenIds = _writtenMessageIds.ToArray();
+        _writtenMessageIds.Clear();
 
         try
         {
@@ -719,5 +727,8 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
         _insertSemaphore.Dispose();
         _updateSemaphore.Dispose();
         _deleteSemaphore.Dispose();
+        _messageSemaphore.Dispose();
+
+        WriterLoopFinished.Dispose();
     }
 }

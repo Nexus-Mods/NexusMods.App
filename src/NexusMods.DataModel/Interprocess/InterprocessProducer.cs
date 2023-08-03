@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using System.Reactive.Linq;
+
 namespace NexusMods.DataModel.Interprocess;
 
 /// <summary>
@@ -47,5 +50,22 @@ public sealed class InterprocessProducer<T> : IMessageProducer<T>, IDisposable w
         Span<byte> buffer = stackalloc byte[T.MaxSize];
         var used = message.Write(buffer);
         _sqliteIpc.Send(_queueName, buffer[..used]);
+    }
+
+    /// <inheritdoc/>
+    public void EnsureWrite(CancellationToken cancellationToken)
+    {
+        var timeout = SqliteIPC.WriterLoopInterval + SqliteIPC.SqliteDefaultTimeout;
+        Thread.Sleep(timeout);
+
+        const int maxIterations = 10;
+        var i = 0;
+
+        while (i < maxIterations && !cancellationToken.IsCancellationRequested)
+        {
+            var signaled = _sqliteIpc.WriterLoopFinished.WaitOne(timeout);
+            if (signaled) break;
+            i += 1;
+        }
     }
 }
