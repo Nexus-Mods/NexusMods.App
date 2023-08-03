@@ -212,27 +212,6 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
         UpdateJobTimestamp();
     }
 
-    private async Task ReaderLoop(long lastId, CancellationToken shutdownTokenToken)
-    {
-        var sw = new Stopwatch();
-        while (!shutdownTokenToken.IsCancellationRequested)
-        {
-            sw.Restart();
-
-            lastId = ProcessMessages(lastId);
-            ProcessJobs();
-
-            var elapsed = sw.Elapsed;
-            if (elapsed > SqliteDefaultTimeout)
-            {
-                _logger.LogDebug("ReaderLoop was locked by Sqlite for {}ms", elapsed.TotalMilliseconds);
-                continue;
-            }
-
-            await Task.Delay(ReaderLoopInterval - elapsed, shutdownTokenToken);
-        }
-    }
-
     private async Task WriterLoop(CancellationToken cancellationToken)
     {
         var sw = new Stopwatch();
@@ -357,6 +336,27 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
         {
             jobIdParameter.Value = jobId.Value.ToByteArray();
             deleteCommand.ExecuteNonQuery();
+        }
+    }
+
+    private async Task ReaderLoop(long lastId, CancellationToken shutdownTokenToken)
+    {
+        var sw = new Stopwatch();
+        while (!shutdownTokenToken.IsCancellationRequested)
+        {
+            sw.Restart();
+
+            lastId = ProcessMessages(lastId);
+            ProcessJobs();
+
+            var elapsed = sw.Elapsed;
+            if (elapsed > SqliteDefaultTimeout)
+            {
+                _logger.LogDebug("ReaderLoop was locked by Sqlite for {}ms", elapsed.TotalMilliseconds);
+                continue;
+            }
+
+            await Task.Delay(ReaderLoopInterval - elapsed, shutdownTokenToken);
         }
     }
 
@@ -512,24 +512,7 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
             _logger.LogError(e, "Exception while inserting a new message");
         }
 
-        var prevId = _syncArray.Get(0);
-        while (true)
-        {
-            if (prevId >= lastId) break;
-            if (_syncArray.CompareAndSwap(0, prevId, lastId)) break;
-            prevId = _syncArray.Get(0);
-        }
-    }
-
-    private void UpdateJobTimestamp()
-    {
-        var prevTimeStamp = _syncArray.Get(1);
-        while (true)
-        {
-            if (_syncArray.CompareAndSwap(1, prevTimeStamp, (ulong)DateTime.UtcNow.ToFileTimeUtc()))
-                break;
-            prevTimeStamp = _syncArray.Get(1);
-        }
+        UpdateLastMessageId(lastId);
     }
 
     /// <summary>
@@ -604,6 +587,28 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
         else
         {
             _logger.LogDebug("Failed to enter the delete semaphore within {}ms", SemaphoreMaxWait.TotalMilliseconds);
+        }
+    }
+
+    private void UpdateLastMessageId(ulong lastId)
+    {
+        var prevId = _syncArray.Get(0);
+        while (true)
+        {
+            if (prevId >= lastId) break;
+            if (_syncArray.CompareAndSwap(0, prevId, lastId)) break;
+            prevId = _syncArray.Get(0);
+        }
+    }
+
+    private void UpdateJobTimestamp()
+    {
+        var prevTimeStamp = _syncArray.Get(1);
+        while (true)
+        {
+            if (_syncArray.CompareAndSwap(1, prevTimeStamp, (ulong)DateTime.UtcNow.ToFileTimeUtc()))
+                break;
+            prevTimeStamp = _syncArray.Get(1);
         }
     }
 
