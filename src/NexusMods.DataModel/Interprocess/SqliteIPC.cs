@@ -32,6 +32,8 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
     internal static readonly TimeSpan ReaderLoopInterval = SqliteDefaultTimeout + TimeSpan.FromMilliseconds(50);
     internal static readonly TimeSpan WriterLoopInterval = TimeSpan.FromMilliseconds(50);
 
+    private static readonly ProcessId OwnProcessId = ProcessId.From((uint)Environment.ProcessId);
+
     private bool _isDisposed;
 
     private readonly ILogger<SqliteIPC> _logger;
@@ -414,7 +416,9 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
             using var _ = connection.BeginTransaction();
             using var command = connection.CreateCommand();
 
-            command.CommandText = "SELECT JobId, ProcessId, Progress, StartTime, Data FROM Jobs";
+            command.CommandText = "SELECT JobId, ProcessId, Progress, StartTime, Data FROM Jobs WHERE ProcessId != @processId";
+            command.Parameters.AddWithValue("@processId", OwnProcessId.Value);
+
             var reader = command.ExecuteReader();
 
             while (reader.Read())
@@ -452,7 +456,7 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
                 seen.Add(jobId);
 
                 var item = editable.Lookup(jobId);
-                if (!item.HasValue || item.Value.Progress == progress) continue;
+                if (!item.HasValue || item.Value.Progress >= progress) continue;
 
                 item.Value.Progress = progress;
                 _logger.JobProgress(jobId, progress);
@@ -567,7 +571,7 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
             if (!optional.HasValue) return;
 
             var existing = optional.Value;
-            if (existing.Progress == value) return;
+            if (existing.Progress >= value) return;
 
             existing.Progress = value;
             updater.AddOrUpdate(existing);
