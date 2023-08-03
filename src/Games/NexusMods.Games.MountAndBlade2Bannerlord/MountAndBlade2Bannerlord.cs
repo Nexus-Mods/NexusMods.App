@@ -23,7 +23,7 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
     private readonly LauncherManagerFactory _launcherManagerFactory;
     private IReadOnlyCollection<GameInstallation>? _installations;
 
-    public IEnumerable<int> SteamIds => new[] { 261550 };
+    public IEnumerable<uint> SteamIds => new[] { 261550u };
     public IEnumerable<long> GogIds => new long[] { 1802539526, 1564781494 };
     public IEnumerable<string> EpicCatalogItemId => new[] { "Chickadee" };
     public IEnumerable<string> XboxIds => new[] { "TaleWorldsEntertainment.MountBladeIIBannerlord" };
@@ -72,7 +72,7 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
     {
         var documentsFolder = fileSystem.GetKnownPath(KnownPath.MyDocumentsDirectory);
         yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);
-        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Saves, documentsFolder.CombineChecked(@$"{DocumentsFolderName}\Game Saves"));
-        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Preferences, documentsFolder.CombineChecked(@$"{DocumentsFolderName}\Configs"));
+        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Saves, documentsFolder.Combine(@$"{DocumentsFolderName}/Game Saves"));
+        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Preferences, documentsFolder.Combine(@$"{DocumentsFolderName}/Configs"));
     }
 }

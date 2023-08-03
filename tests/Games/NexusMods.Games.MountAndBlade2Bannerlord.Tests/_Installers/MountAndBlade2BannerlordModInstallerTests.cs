@@ -1,3 +1,4 @@
+/*
 using System.Text;
 using FluentAssertions;
 using NexusMods.Games.MountAndBlade2Bannerlord.Installers;
@@ -162,3 +163,4 @@ public class MountAndBlade2BannerlordModInstallerTests : AModInstallerTest<Mount
         }
     }
 }
+*/

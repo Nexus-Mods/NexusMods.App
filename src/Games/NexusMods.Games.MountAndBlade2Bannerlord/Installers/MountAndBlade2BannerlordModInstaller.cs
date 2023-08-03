@@ -10,8 +10,7 @@ using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Sorting.Rules;
-using NexusMods.Games.MountAndBlade2Bannerlord.Analyzers;
-using NexusMods.Games.MountAndBlade2Bannerlord.Loadouts;
+using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 using NexusMods.Games.MountAndBlade2Bannerlord.Services;
 using NexusMods.Games.MountAndBlade2Bannerlord.Sorters;
 using NexusMods.Hashing.xxHash64;
@@ -70,7 +69,7 @@ public sealed class MountAndBlade2BannerlordModInstaller : IModInstaller
                 var relativePath = instruction.Source.ToRelativePath();
                 var file = files[relativePath];
                 var hasSubModule = relativePath.Equals(SubModuleFile);
-                IEnumerable<IModFileMetadata> GetMetadata()
+                IEnumerable<IMetadata> GetMetadata()
                 {
                     yield return new OriginalPathMetadata { OriginalRelativePath = relativePath.Path };
                     if (hasSubModule) yield return new ModuleInfoMetadata { ModuleInfo = moduleInfo };
@@ -81,7 +80,7 @@ public sealed class MountAndBlade2BannerlordModInstaller : IModInstaller
                     To = new GamePath(GameFolderType.Game, ModFolder.Join(relativePath)),
                     Hash = file.Hash,
                     Size = file.Size,
-                    Metadata = ImmutableHashSet.CreateRange(GetMetadata())
+                    Metadata = ImmutableList.CreateRange(GetMetadata())
                 };
             });
             return new ModInstallerResult

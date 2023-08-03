@@ -6,18 +6,23 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
     <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Bannerlord.LauncherManager" Version="1.0.76" />
-    <PackageReference Include="FetchBannerlordVersion" Version="1.0.6.39" />
+    <PackageReference Include="Avalonia" />
+    <PackageReference Include="Bannerlord.LauncherManager" />
+    <PackageReference Include="FetchBannerlordVersion" />
+    <PackageReference Include="System.Linq.Async" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\game_image.jpg" />
     <EmbeddedResource Include="Resources\icon.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="NexusMods.Games.MountAndBlade2Bannerlord.Tests" />
   </ItemGroup>
 
 </Project>

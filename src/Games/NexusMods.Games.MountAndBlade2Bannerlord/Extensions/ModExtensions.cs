@@ -1,6 +1,6 @@
 ﻿using Bannerlord.ModuleManager;
 using NexusMods.DataModel.Loadouts.Mods;
-using NexusMods.Games.MountAndBlade2Bannerlord.Loadouts;
+using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
 

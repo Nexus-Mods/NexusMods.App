@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
     <PropertyGroup>
         <XunitStartupAssembly>NexusMods.Games.MountAndBlade2Bannerlord.Tests</XunitStartupAssembly>
     </PropertyGroup>

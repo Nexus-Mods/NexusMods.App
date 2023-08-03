@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.Games.MountAndBlade2Bannerlord.Extensions;
 using static NexusMods.Games.MountAndBlade2Bannerlord.Utils.GamePathProvier;
 
@@ -19,7 +20,7 @@ public class RunLauncherTool : ITool
         _logger = logger;
     }
 
-    public async Task Execute(Loadout loadout)
+    public async Task Execute(Loadout loadout, ApplyPlan applyPlan, CancellationToken ct)
     {
         if (!loadout.Installation.Is<MountAndBlade2Bannerlord>()) return;
 
@@ -48,7 +49,7 @@ public class RunLauncherTool : ITool
             return;
         }
 
-        await process.WaitForExitAsync();
+        await process.WaitForExitAsync(ct);
         _logger.LogInformation("Finished running {Program}", program);
     }
 }
