@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using NexusMods.CLI;
 using NexusMods.CLI.DataOutputs;
+using NexusMods.Common.UserInput;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
@@ -23,14 +24,21 @@ public class StressTest : AVerb<IGame, AbsolutePath>
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly IHttpDownloader _downloader;
 
+    /// <summary>
+    /// Max file size to download and test
+    /// </summary>
+    public static Size MaxFileSize = Size.MB * 512;
+
     public StressTest(ILogger<StressTest> logger, Configurator configurator,
         LoadoutManager loadoutManager, Client client,
         TemporaryFileManager temporaryFileManager, 
         IHttpDownloader downloader,
         IArchiveAnalyzer archiveAnalyzer,
         IArchiveInstaller archiveInstaller,
-        IEnumerable<IGameLocator> gameLocators)
+        IEnumerable<IGameLocator> gameLocators,
+        IOptionSelector optionSelector)
     {
+        ((CliOptionSelector)optionSelector).AutoFail = true;
         _archiveAnalyzer = archiveAnalyzer;
         _archiveInstaller = archiveInstaller;
         _downloader = downloader;
@@ -85,7 +93,7 @@ public class StressTest : AVerb<IGame, AbsolutePath>
                 }
 
                 var hash = Hash.Zero;
-                foreach (var file in files.Data.Files)
+                foreach (var file in files.Data.Files.Where(f => Size.FromLong(f.SizeInBytes ?? 0) < MaxFileSize))
                 {
                     try
                     {
