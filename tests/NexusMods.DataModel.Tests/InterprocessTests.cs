@@ -63,9 +63,6 @@ public sealed class InterprocessTests : IDisposable
             await _producer.Write(new Message { Value = i }, CancellationToken.None);
         }
 
-        // Wait for the IPC reader loop to finish
-        await Task.Delay(TimeSpan.FromMilliseconds(500));
-
         dest.Should().BeEquivalentTo(src);
     }
 

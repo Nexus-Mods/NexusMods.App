@@ -57,13 +57,22 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
     // This timeout should be higher than the maximum time it takes for the writer loop to complete.
     // Taking the Sqlite timeout into account, setting this to 1 second should be enough.
     private static readonly TimeSpan SemaphoreMaxTimeout = TimeSpan.FromSeconds(1);
+
+    // SemaphoreSlim is used for lightweight synchronization across threads.
     private readonly SemaphoreSlim _insertSemaphore = new(1, 1);
     private readonly SemaphoreSlim _updateSemaphore = new(1, 1);
     private readonly SemaphoreSlim _deleteSemaphore = new(1, 1);
+    private readonly SemaphoreSlim _messageSemaphore = new(1, 1);
 
+    // Queues for the WriterLoop.
+    private readonly Queue<(string queue, byte[] bytes, long timestamp)> _messagesToSend = new(32);
     private readonly Queue<IInterprocessJob> _jobsToInsert = new(16);
-    private readonly Queue<(JobId, Percent)> _jobsToUpdate = new(64);
+    private readonly Queue<(JobId jobId, Percent progress)> _jobsToUpdate = new(64);
     private readonly Queue<JobId> _jobsToDelete = new(32);
+
+    // Written to by the WriterLoop and read by the ReaderLoop.
+    // This is used to prevent the ReaderLoop from broadcasting the same message twice.
+    private readonly List<long> WrittenMessageIds = new(16);
 
     /// <summary>
     /// Allows you to subscribe to newly incoming IPC messages.
@@ -236,13 +245,15 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
         // process, but we use a Sqlite DB for inter-process communications (IPC).
 
         var sw = new Stopwatch();
+        ulong lastId = 0;
         while (!cancellationToken.IsCancellationRequested)
         {
             sw.Restart();
 
             try
             {
-                WriteToDatabase(cancellationToken);
+                WriteJobsToDatabase(cancellationToken);
+                lastId = WriteMessagesToDatabase(lastId, cancellationToken);
             }
             catch (Exception e)
             {
@@ -260,7 +271,56 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
         }
     }
 
-    private void WriteToDatabase(CancellationToken cancellationToken)
+    private ulong WriteMessagesToDatabase(ulong lastId, CancellationToken cancellationToken)
+    {
+        using var waiter = _messageSemaphore.CustomWait(SemaphoreMaxTimeout, cancellationToken);
+        if (!waiter.HasEntered)
+        {
+            _logger.LogDebug("Failed to enter the message semaphore in the WriterLoop within {}ms", SemaphoreMaxTimeout.TotalMilliseconds);
+            return lastId;
+        }
+
+        // Nothing to do
+        if (_messagesToSend.Count == 0) return lastId;
+
+        using var connection = CreateConnection();
+        using var transaction = connection.BeginTransaction();
+        using var command = connection.CreateCommand();
+
+        command.CommandText = "INSERT INTO Ipc (Queue, Data, TimeStamp) VALUES (@queue, @data, @timestamp); SELECT last_insert_rowid();";
+
+        var queueParameter = command.CreateParameter();
+        queueParameter.ParameterName = "@queue";
+        command.Parameters.Add(queueParameter);
+
+        var dataParameter = command.CreateParameter();
+        dataParameter.ParameterName = "@data";
+        command.Parameters.Add(dataParameter);
+
+        var timestampParameter = command.CreateParameter();
+        timestampParameter.ParameterName = "@timestamp";
+        command.Parameters.Add(timestampParameter);
+
+        var newLastId = lastId;
+        while (_messagesToSend.TryDequeue(out var tuple))
+        {
+            var (queue, bytes, timestamp) = tuple;
+            queueParameter.Value = queue;
+            dataParameter.Value = bytes;
+            timestampParameter.Value = timestamp;
+
+            var result = command.ExecuteScalar();
+            newLastId = result == DBNull.Value ? newLastId : Convert.ToUInt64(result);
+            WrittenMessageIds.Add((long)newLastId);
+        }
+
+        transaction.Commit();
+
+        UpdateLastMessageId(newLastId);
+        return newLastId;
+    }
+
+    private void WriteJobsToDatabase(CancellationToken cancellationToken)
     {
         using var insertWaiter = _insertSemaphore.CustomWait(SemaphoreMaxTimeout, cancellationToken);
         using var updateWaiter = _updateSemaphore.CustomWait(SemaphoreMaxTimeout, cancellationToken);
@@ -389,6 +449,9 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
     {
         ObjectDisposedException.ThrowIf(_isDisposed, this);
 
+        var writtenIds = WrittenMessageIds.ToArray();
+        WrittenMessageIds.Clear();
+
         try
         {
             using var connection = CreateConnection();
@@ -402,6 +465,9 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
             while (reader.Read())
             {
                 lastId = long.Max(lastId, reader.GetInt64(0));
+
+                // Don't broadcast the same id twice.
+                if (Array.BinarySearch(writtenIds, lastId) >= 0) continue;
 
                 var queue = reader.GetString(1);
 
@@ -519,30 +585,18 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
     {
         ObjectDisposedException.ThrowIf(_isDisposed, this);
 
-        ulong lastId = 0;
+        var bytes = message.ToArray();
+        _subject.OnNext((queue, bytes));
 
-        try
+        using var waiter = _messageSemaphore.CustomWait(SemaphoreMaxTimeout);
+        if (waiter.HasEntered)
         {
-            using var connection = CreateConnection();
-            using var transaction = connection.BeginTransaction();
-            using var command = connection.CreateCommand();
-
-            command.CommandText = "INSERT INTO Ipc (Queue, Data, TimeStamp) VALUES (@queue, @data, @timestamp); SELECT last_insert_rowid();";
-            command.Parameters.AddWithValue("@queue", queue);
-            command.Parameters.AddWithValue("@data", message.ToArray());
-            command.Parameters.AddWithValue("@timestamp",DateTime.UtcNow.ToFileTimeUtc());
-
-            var result = command.ExecuteScalar();
-            transaction.Commit();
-
-            lastId = result == DBNull.Value ? 0 : Convert.ToUInt64(result);
+            _messagesToSend.Enqueue((queue, bytes, DateTime.UtcNow.ToFileTimeUtc()));
         }
-        catch (Exception e)
+        else
         {
-            _logger.LogError(e, "Exception while inserting a new message");
+            _logger.LogDebug("Failed to enter the message semaphore within {}ms", SemaphoreMaxTimeout.TotalMilliseconds);
         }
-
-        UpdateLastMessageId(lastId);
     }
 
     /// <summary>
