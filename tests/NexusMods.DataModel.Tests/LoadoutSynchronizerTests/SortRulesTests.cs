@@ -65,27 +65,6 @@ public class SortRulesTests : ALoadoutSynrchonizerTest<SortRulesTests>
     }
 
     [Fact]
-    public async Task StaticRulesAreConsidered()
-    {
-        var lastMod = new Mod()
-        {
-            Id = ModId.New(),
-            Name = "zz Last Mod",
-            Files = EntityDictionary<ModFileId, AModFile>.Empty(DataStore),
-            SortRules = new ISortRule<Mod, ModId>[]
-            {
-                new First<Mod, ModId>()
-            }.ToImmutableList()
-        };
-
-        var loadout = await CreateTestLoadout();
-        loadout.Add(lastMod);
-
-        await LoadoutSynchronizer.Invoking(_ => LoadoutSynchronizer.SortMods(loadout.Value))
-            .Should().ThrowAsync<InvalidOperationException>("rule conflicts with generated rules");
-    }
-
-    [Fact]
     public async Task SortRulesAreCached()
     {
         var loadout = await CreateTestLoadout(2);

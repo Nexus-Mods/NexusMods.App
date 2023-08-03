@@ -9,12 +9,13 @@ namespace NexusMods.Games.BethesdaGameStudios.Tests.Installers;
 /// <summary>
 /// Tests for the Skyrim installer.
 /// </summary>
-public abstract class SkyrimInstallerTests<TGame> : AGameTest<TGame> where TGame : AGame
+public abstract class GenericFolderMatchInstallerTests<TGame> : AGameTest<TGame> where TGame : AGame
 {
     private readonly TestModDownloader _downloader;
     private readonly IFileSystem _realFs;
 
-    protected SkyrimInstallerTests(IServiceProvider serviceProvider, TestModDownloader downloader, IFileSystem realFs) : base(serviceProvider)
+    protected GenericFolderMatchInstallerTests(IServiceProvider serviceProvider, TestModDownloader downloader,
+        IFileSystem realFs) : base(serviceProvider)
     {
         _downloader = downloader;
         _realFs = realFs;
@@ -55,13 +56,13 @@ public abstract class SkyrimInstallerTests<TGame> : AGameTest<TGame> where TGame
     [Fact]
     public async Task InstallMod_WithEspInSubfolder() => await TestLooseFileCommon("HasEsp_InSubfolder");
 
-    protected async Task TestLooseFileCommon(string folderName)
+    [Fact]
+    public async Task InstallMod_WithScriptExtender()
     {
-        // TODO: Technically these tests don't cover where the file is sourced from, some code could be added here to do this.
         var loadout = await CreateLoadout(indexGameFiles: false);
-        var path = BethesdaTestHelpers.GetDownloadableModFolder(_realFs, folderName);
+        var path = BethesdaTestHelpers.GetDownloadableModFolder(_realFs, "HasScriptExtender");
         var downloaded = await _downloader.DownloadFromManifestAsync(path, _realFs);
-        
+
         var mod = await InstallModFromArchiveIntoLoadout(
             loadout,
             downloaded.Path,
@@ -69,7 +70,29 @@ public abstract class SkyrimInstallerTests<TGame> : AGameTest<TGame> where TGame
 
         var files = mod.Files;
         files.Count.Should().BeGreaterThan(0);
-        
+        files.Values.Where(f => f is FromArchive fromArchive && fromArchive.To.Path.Equals("skse_loader.exe")).Should()
+            .HaveCount(1);
+        files.Values.Where(f => f is FromArchive fromArchive && fromArchive.To.Path.StartsWith("Data/scripts")).Should()
+            .HaveCount(120);
+        files.Values.Where(f => f is FromArchive fromArchive && fromArchive.To.Path.StartsWith("src")).Should()
+            .HaveCount(0);
+    }
+
+    protected async Task TestLooseFileCommon(string folderName)
+    {
+        // TODO: Technically these tests don't cover where the file is sourced from, some code could be added here to do this.
+        var loadout = await CreateLoadout(indexGameFiles: false);
+        var path = BethesdaTestHelpers.GetDownloadableModFolder(_realFs, folderName);
+        var downloaded = await _downloader.DownloadFromManifestAsync(path, _realFs);
+
+        var mod = await InstallModFromArchiveIntoLoadout(
+            loadout,
+            downloaded.Path,
+            downloaded.Manifest.Name);
+
+        var files = mod.Files;
+        files.Count.Should().BeGreaterThan(0);
+
         foreach (var file in files)
         {
             if (file.Value is FromArchive fromArchive)

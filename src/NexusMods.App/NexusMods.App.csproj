@@ -35,9 +35,4 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Downloaders\" />
-      <Folder Include="Models\" />
-    </ItemGroup>
 </Project>

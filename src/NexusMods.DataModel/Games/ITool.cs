@@ -1,4 +1,5 @@
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 
 namespace NexusMods.DataModel.Games;
 
@@ -22,5 +23,7 @@ public interface ITool
     /// Executes this tool.
     /// </summary>
     /// <param name="loadout">The collection of mods (loadout) to be used with this tool.</param>
-    public Task Execute(Loadout loadout);
+    /// <param name="applyPlan">The plan applied before this tool was executed</param>
+    /// <param name="cancellationToken"></param>
+    public Task Execute(Loadout loadout, ApplyPlan applyPlan, CancellationToken cancellationToken);
 }

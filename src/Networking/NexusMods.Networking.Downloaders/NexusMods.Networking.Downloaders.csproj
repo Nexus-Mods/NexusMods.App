@@ -7,4 +7,7 @@
       <ProjectReference Include="..\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <InternalsVisibleTo Include="NexusMods.Networking.Downloaders.Tests" />
+    </ItemGroup>
 </Project>

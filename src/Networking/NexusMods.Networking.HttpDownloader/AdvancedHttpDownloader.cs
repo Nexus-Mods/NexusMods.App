@@ -1,5 +1,7 @@
 using System.Buffers;
+using System.Diagnostics;
 using System.Net.Http.Headers;
+using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Channels;
@@ -43,6 +45,8 @@ namespace NexusMods.Networking.HttpDownloader
         /// before trying other sources and/or threads
         /// </summary>
         private readonly Size _chunkSize = Size.MB * 128;
+
+        private const int MaxRetries = 4;
 
         /// <summary>
         /// The size of the buffer used to read from the network stream, no need to make this too large as
@@ -91,7 +95,7 @@ namespace NexusMods.Networking.HttpDownloader
             }
 
             // Note: All data eventually is piped into primary job (when writing to destination), so we can just use that to track everything as a whole.
-            downloaderState.Jobs.Add(primaryJob);
+            downloaderState.Job = primaryJob;
 
             var state = await InitiateState(destination, size.Value, sources, cancel);
             state.Sources = sources.Select((source, idx) => new Source { Request = source, Priority = idx }).ToArray();
@@ -293,17 +297,37 @@ namespace NexusMods.Networking.HttpDownloader
             return CancellationTokenSource.CreateLinkedTokenSource(new[] { chunk.Cancel.Token, cancel }).Token;
         }
 
-        private async Task<HttpResponseMessage?> SendRangeRequest(ChunkState chunk, CancellationToken cancel)
+        private async Task<HttpResponseMessage?> SendRangeRequest(DownloadState state, ChunkState chunk, CancellationToken cancel)
         {
             // Caller passes a full http request but we need to adjust the headers so need a copy
             var request = chunk.Source!.Request!.Copy();
 
             var from = chunk.Offset + chunk.Read;
             var to = chunk.Offset + chunk.Size - Size.One;
+
+            Debug.Assert(to < state.TotalSize);
             request.Headers.Range = new RangeHeaderValue((long)from.Value, (long)to.Value);
 
+            HttpResponseMessage response;
+            int retries = 0;
 
-            var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancel);
+            while(true)
+            {
+                try
+                {
+                    response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancel);
+                    break;
+
+                }
+                catch (HttpRequestException)
+                {
+                    if (retries >= MaxRetries)
+                        throw;
+                    retries += 1;
+                    request = request.Copy();
+                    continue;
+                }
+            }
 
             if (!response.IsSuccessStatusCode)
             {
@@ -321,6 +345,8 @@ namespace NexusMods.Networking.HttpDownloader
 
             HttpResponseMessage? response = null;
 
+            int retries = 0;
+
             while (!chunk.IsReadComplete)
             {
                 _logger.LogInformation("Remaining : {ToRead}", chunk.RemainingToRead);
@@ -330,7 +356,7 @@ namespace NexusMods.Networking.HttpDownloader
                     // this is not an endless loop, TakeSource will throw an exception if all sources were tried and rejected
                     chunk.Source = TakeSource(download);
 
-                    response = await SendRangeRequest(chunk, cancel);
+                    response = await SendRangeRequest(download, chunk, cancel);
                     sourceValid = response != null;
                     if (!sourceValid)
                     {
@@ -341,11 +367,20 @@ namespace NexusMods.Networking.HttpDownloader
                 if (response != null)
                 {
                     var start = DateTime.Now;
-                    await using var stream = await response.Content.ReadAsStreamAsync(cancel);
-                    await ReadStreamToEnd(job, stream, chunk, writes, cancel);
-                    _logger.LogInformation("chunk {}-{} @ {} took {} ms => {} kb/s",
-                        chunk.Offset + chunk.Read, chunk.Offset + chunk.Size, chunk.Source,
-                        (int)((DateTime.Now - start).TotalMilliseconds), chunk.BytesPerSecond);
+                    try
+                    {
+                        await using var stream = await response.Content.ReadAsStreamAsync(cancel);
+                        await ReadStreamToEnd(job, stream, chunk, writes, cancel);
+                        _logger.LogInformation("chunk {}-{} @ {} took {} ms => {} kb/s",
+                            chunk.Offset + chunk.Read, chunk.Offset + chunk.Size, chunk.Source,
+                            (int)((DateTime.Now - start).TotalMilliseconds), chunk.BytesPerSecond);
+                    }
+                    catch (SocketException _)
+                    {
+                        if (retries > MaxRetries)
+                            throw;
+                        retries += 1;
+                    }
                 }
 
             }

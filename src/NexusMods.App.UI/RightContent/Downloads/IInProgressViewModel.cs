@@ -3,7 +3,6 @@ using System.Windows.Input;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.RightContent.DownloadGrid;
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
-using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 
 namespace NexusMods.App.UI.RightContent.Downloads;
 
@@ -20,6 +19,11 @@ public interface IInProgressViewModel : IRightContentViewModel
     /// This command cancels the currently selected task.
     /// </summary>
     void CancelSelectedTask();
+
+    /// <summary>
+    /// This command suspends the currently selected task.
+    /// </summary>
+    void SuspendSelectedTask();
 
     /// <summary>
     /// True if download is running, else false.
@@ -52,7 +56,22 @@ public interface IInProgressViewModel : IRightContentViewModel
     void Cancel() => SelectedTask?.Cancel();
 
     /// <summary>
+    /// Suspends the selected task.
+    /// </summary>
+    void Suspend() => SelectedTask?.Suspend();
+
+    /// <summary>
     /// Shows the cancel 'dialog' to the user.
     /// </summary>
     ICommand ShowCancelDialog { get; }
+
+    /// <summary>
+    /// Suspends the current task.
+    /// </summary>
+    ICommand SuspendCurrentTask { get; }
+
+    /// <summary>
+    /// Suspends all the tasks.
+    /// </summary>
+    ICommand SuspendAllTasks { get; }
 }

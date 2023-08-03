@@ -1,5 +1,5 @@
 using NexusMods.DataModel.RateLimiting;
-using NexusMods.Paths;
+using NexusMods.Networking.Downloaders.Tasks.State;
 
 namespace NexusMods.Networking.Downloaders.Interfaces;
 
@@ -9,20 +9,27 @@ namespace NexusMods.Networking.Downloaders.Interfaces;
 public interface IDownloadTask
 {
     /// <summary>
-    /// Gets all download jobs associated with this task for the purpose of calculating throughput.
+    /// Total size of items currently downloaded.
     /// </summary>
-    IEnumerable<IJob<Size>> DownloadJobs { get; }
-    
+    /// <returns>0 if unknown.</returns>
+    long DownloadedSizeBytes { get; }
+
+    /// <summary>
+    /// Calculates the download speed of the current job.
+    /// </summary>
+    /// <returns>Current speed in terms of bytes per second.</returns>
+    long CalculateThroughput<TDateTimeProvider>(TDateTimeProvider provider) where TDateTimeProvider : IDateTimeProvider;
+
     /// <summary>
     /// Service this task is associated with.
     /// </summary>
-    DownloadService Owner { get; }
-    
+    IDownloadService Owner { get; }
+
     /// <summary>
     /// Status of the current task.
     /// </summary>
-    DownloadTaskStatus Status { get; }
-    
+    DownloadTaskStatus Status { get; set; }
+
     /// <summary>
     /// Friendly name for the task.
     /// </summary>
@@ -42,14 +49,20 @@ public interface IDownloadTask
     void Cancel();
 
     /// <summary>
-    /// Pauses a download task.
+    /// Pauses a download task, by saving the current state and temporarily cancelling it.
     /// </summary>
-    void Pause();
+    void Suspend();
 
     /// <summary>
     /// Resumes a download task.
     /// </summary>
-    void Resume();
+    Task Resume();
+
+    /// <summary>
+    /// Exports state for performing a suspend operation.
+    /// </summary>
+    /// <remarks>Suspend means 'pause download by terminating it, leaving partial download intact'.</remarks>
+    DownloaderState ExportState();
 }
 
 // TODO: These statuses need unit tests for individual downloaders.
@@ -63,19 +76,19 @@ public enum DownloadTaskStatus
     /// The task is not yet initialized.
     /// </summary>
     Idle,
-    
+
     /// <summary>
     /// The download was paused.
     /// </summary>
     Paused,
-    
+
     /// <summary>
     /// The mod is currently being downloaded.
     /// </summary>
     Downloading,
-    
+
     /// <summary>
-    /// The mod is being installed to a loadout.
+    /// The mod is being archived (and possibly installed) to a loadout.
     /// </summary>
     Installing,
 

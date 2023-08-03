@@ -1,8 +1,11 @@
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Games.GameCapabilities;
+using NexusMods.DataModel.Games.GameCapabilities.AFolderMatchInstallerCapability;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.FileExtractor.StreamFactories;
+using NexusMods.Games.BethesdaGameStudios.Capabilities;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.BethesdaGameStudios;
@@ -50,6 +53,15 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame, IXboxGame
         };
     }
 
+    public override Dictionary<GameCapabilityId, IGameCapability> SupportedCapabilities => new()
+    {
+        {
+            // Support for installing simple Data and GameRoot level mods. 
+            AFolderMatchInstallerCapability.CapabilityId, new BethesdaFolderMatchInstallerCapability()
+        }
+    };
+
+
     public IEnumerable<uint> SteamIds => new[] { 489830u };
 
     public IEnumerable<long> GogIds => new long[]
@@ -62,8 +74,10 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame, IXboxGame
     public IEnumerable<string> XboxIds => new[] { "BethesdaSoftworks.SkyrimSE-PC" };
 
     public override IStreamFactory Icon =>
-        new EmbededResourceStreamFactory<SkyrimSpecialEdition>("NexusMods.Games.BethesdaGameStudios.Resources.SkyrimSpecialEdition.icon.jpg");
+        new EmbededResourceStreamFactory<SkyrimSpecialEdition>(
+            "NexusMods.Games.BethesdaGameStudios.Resources.SkyrimSpecialEdition.icon.jpg");
 
     public override IStreamFactory GameImage =>
-        new EmbededResourceStreamFactory<SkyrimSpecialEdition>("NexusMods.Games.BethesdaGameStudios.Resources.SkyrimSpecialEdition.game_image.png");
+        new EmbededResourceStreamFactory<SkyrimSpecialEdition>(
+            "NexusMods.Games.BethesdaGameStudios.Resources.SkyrimSpecialEdition.game_image.png");
 }

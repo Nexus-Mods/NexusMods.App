@@ -59,7 +59,7 @@ public class ModEnabledViewModel : AViewModel<IModEnabledViewModel>, IModEnabled
                 $"Setting {mod.Name} from {oldState} to {newState}",
                 mod =>
                 {
-                    if (mod?.Enabled == Enabled) return mod;
+                    if (mod?.Enabled == enabled) return mod;
                     return mod! with { Enabled = enabled };
                 });
             return Unit.Default;

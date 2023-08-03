@@ -90,6 +90,7 @@ public class MakeIngestPlanTests : ALoadoutSynrchonizerTest<MakeIngestPlanTests>
         var absPath = loadout.Installation.Locations[GameFolderType.Game].Combine("0x00001.dat");
 
         var fileOne = (from mod in loadout.Mods
+            where mod.Value.Enabled == true
             from file in mod.Value.Files
             where file.Value is IFromArchive
             select (mod.Key, file.Key, file.Value)).First();

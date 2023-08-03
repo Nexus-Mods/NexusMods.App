@@ -1,18 +1,16 @@
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.IO.Compression;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
-using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Interprocess.Jobs;
-using NexusMods.DataModel.Interprocess.Messages;
 using NexusMods.DataModel.Loadouts.Cursors;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Loadouts.Markers;
+using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.Sorting.Rules;
@@ -131,7 +129,8 @@ public class LoadoutManager
             Files = new EntityDictionary<ModFileId, AModFile>(Store),
             Version = installation.Version.ToString(),
             ModCategory = Mod.GameFilesCategory,
-            SortRules = ImmutableList<ISortRule<Mod, ModId>>.Empty.Add(new First<Mod, ModId>())
+            SortRules = ImmutableList<ISortRule<Mod, ModId>>.Empty.Add(new First<Mod, ModId>()),
+            Enabled = true
         }.WithPersist(Store);
 
         var loadoutId = LoadoutId.Create();
@@ -206,7 +205,16 @@ public class LoadoutManager
         }
 
         managementJob.Progress = new Percent(0.5);
-        gameFiles.AddRange(installation.Game.GetGameFiles(installation, Store));
+        var generatedFiles = installation.Game.GetGameFiles(installation, Store).ToArray();
+
+        // Generated files should override any existing files that were indexed
+        var byTo = gameFiles.OfType<IToFile>().ToLookup(l => l.To);
+        foreach (var generatedFile in generatedFiles.OfType<IToFile>())
+        {
+            foreach (var conflict in byTo[generatedFile.To])
+                gameFiles.Remove((AModFile)conflict);
+        }
+        gameFiles.AddRange(generatedFiles);
 
         Registry.Alter(loadout.LoadoutId, mod.Id, "Add game files",
             m => m! with
