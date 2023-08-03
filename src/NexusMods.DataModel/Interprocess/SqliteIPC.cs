@@ -23,14 +23,21 @@ namespace NexusMods.DataModel.Interprocess;
 // ReSharper disable once InconsistentNaming
 public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
 {
+    // NOTE(erri120): Microsoft.Data.Sqlite has a hardcoded timeout of 150ms.
+    // This timeout is used when the database is busy.
     private static readonly TimeSpan SqliteDefaultTimeout = TimeSpan.FromMilliseconds(150);
 
     private static readonly TimeSpan RetentionTime = TimeSpan.FromSeconds(10); // Keep messages for 10 seconds
     private static readonly TimeSpan CleanupInterval = TimeSpan.FromMinutes(10); // Cleanup every 10 minutes
     private const int CleanupJitter = 2000; // Jitter cleanup by up to 2 second
 
+    // The Reader and Writer loops are the only places that read/write to the database.
+    // As such, they are the only places that can timeout due to the database being busy.
+    // To prevent this, we can set the interval for both loops, so that they are out of sync and hopefully
+    // are not active when the other is doing something.
+    // This is ofc limited to the current process only.
     internal static readonly TimeSpan ReaderLoopInterval = SqliteDefaultTimeout + TimeSpan.FromMilliseconds(50);
-    internal static readonly TimeSpan WriterLoopInterval = TimeSpan.FromMilliseconds(50);
+    internal static readonly TimeSpan WriterLoopInterval = SqliteDefaultTimeout;
 
     private static readonly ProcessId OwnProcessId = ProcessId.From((uint)Environment.ProcessId);
 
@@ -42,12 +49,14 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
 
     private readonly string _connectionString;
     private readonly ISharedArray _syncArray;
-    private readonly SqliteConnection? _globalConnection;
+    private readonly SqliteConnection? _globalConnection; // only for in-memory connections
 
     private readonly Subject<(string Queue, byte[] Message)> _subject = new();
     private readonly SourceCache<IInterprocessJob, JobId> _jobs = new(x => x.JobId);
 
-    private static readonly TimeSpan SemaphoreMaxWait = TimeSpan.FromSeconds(5);
+    // This timeout should be higher than the maximum time it takes for the writer loop to complete.
+    // Taking the Sqlite timeout into account, setting this to 1 second should be enough.
+    private static readonly TimeSpan SemaphoreMaxTimeout = TimeSpan.FromSeconds(1);
     private readonly SemaphoreSlim _insertSemaphore = new(1, 1);
     private readonly SemaphoreSlim _updateSemaphore = new(1, 1);
     private readonly SemaphoreSlim _deleteSemaphore = new(1, 1);
@@ -76,12 +85,16 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
         _jsonSettings = jsonSettings;
         _shutdownToken = new CancellationTokenSource();
 
+        // 0 = last message id
+        // 1 = last job timestamp
         const int syncSlots = 2;
 
         var builder = new SqliteConnectionStringBuilder
         {
+            // Microsoft.Data.Sqlite has in-built pooling.
             Pooling = true,
-            ForeignKeys = true
+            // The IPC doesn't use foreign keys.
+            ForeignKeys = false
         };
 
         if (settings.UseInMemoryDataModel)
@@ -117,7 +130,7 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
             _globalConnection = CreateConnection();
         }
 
-        EnsureTables();
+        EnsureTables(settings.UseInMemoryDataModel);
 
         var startId = GetStartId();
         Task.Run(() => ReaderLoop(startId, _shutdownToken.Token));
@@ -133,11 +146,15 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
         return connection;
     }
 
-    private void EnsureTables()
+    private void EnsureTables(bool isInMemory)
     {
         using var connection = CreateConnection();
-        using (var pragmaCommand = connection.CreateCommand())
+
+        // in-memory connections use a shared-cache instead of the WAL
+        if (!isInMemory)
         {
+            // Changing the journal mode to write-ahead log can't be done within a transaction.
+            using var pragmaCommand = connection.CreateCommand();
             pragmaCommand.CommandText = "PRAGMA journal_mode = WAL";
             pragmaCommand.ExecuteNonQuery();
         }
@@ -214,6 +231,10 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
 
     private async Task WriterLoop(CancellationToken cancellationToken)
     {
+        // The writer loop takes all outstanding changes and writes them to Sqlite.
+        // These changes have already been broadcasted to subscribers in the CURRENT
+        // process, but we use a Sqlite DB for inter-process communications (IPC).
+
         var sw = new Stopwatch();
         while (!cancellationToken.IsCancellationRequested)
         {
@@ -241,9 +262,9 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
 
     private void WriteToDatabase(CancellationToken cancellationToken)
     {
-        using var insertWaiter = _insertSemaphore.CustomWait(SemaphoreMaxWait, cancellationToken);
-        using var updateWaiter = _updateSemaphore.CustomWait(SemaphoreMaxWait, cancellationToken);
-        using var deleteWaiter = _deleteSemaphore.CustomWait(SemaphoreMaxWait, cancellationToken);
+        using var insertWaiter = _insertSemaphore.CustomWait(SemaphoreMaxTimeout, cancellationToken);
+        using var updateWaiter = _updateSemaphore.CustomWait(SemaphoreMaxTimeout, cancellationToken);
+        using var deleteWaiter = _deleteSemaphore.CustomWait(SemaphoreMaxTimeout, cancellationToken);
         if (!insertWaiter.HasEntered || !updateWaiter.HasEntered || !deleteWaiter.HasEntered)
         {
             _logger.LogDebug("Failed to enter one or more semaphores!");
@@ -290,6 +311,7 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
         dataParameter.ParameterName = "@data";
         insertCommand.Parameters.Add(dataParameter);
 
+        // re-using parameter definitions for performance
         while (jobsToCreate.TryDequeue(out var job))
         {
             jobIdParameter.Value = job.JobId.Value.ToByteArray();
@@ -313,6 +335,7 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
         progressParameter.ParameterName = "@progress";
         updateCommand.Parameters.Add(progressParameter);
 
+        // re-using parameter definitions for performance
         while (jobsToUpdate.TryDequeue(out var tuple))
         {
             var (jobId, percent) = tuple;
@@ -332,6 +355,7 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
         jobIdParameter.ParameterName = "@jobId";
         deleteCommand.Parameters.Add(jobIdParameter);
 
+        // re-using parameter definitions for performance
         while (jobsToDelete.TryDequeue(out var jobId))
         {
             jobIdParameter.Value = jobId.Value.ToByteArray();
@@ -416,6 +440,9 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
             using var _ = connection.BeginTransaction();
             using var command = connection.CreateCommand();
 
+            // NOTE (erri120): We're only reading jobs from other processes. Jobs changes within the current process
+            // have already been broadcasted.
+
             command.CommandText = "SELECT JobId, ProcessId, Progress, StartTime, Data FROM Jobs WHERE ProcessId != @processId";
             command.Parameters.AddWithValue("@processId", OwnProcessId.Value);
 
@@ -446,6 +473,9 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
             _logger.LogError(ex, "Failed to read jobs from the database");
         }
 
+        // early exist if nothing changed
+        if (_updatedJobs.Count == 0 && _newJobs.Count == 0) return;
+
         _jobs.Edit(editable =>
         {
             var seen = new HashSet<JobId>();
@@ -475,9 +505,9 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
                 _logger.RemovingJob(key);
                 editable.Remove(key);
             }
-
-            _logger.DoneProcessing();
         });
+
+        _logger.DoneProcessing();
     }
 
     /// <summary>
@@ -531,14 +561,14 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
             updater.AddOrUpdate(newJob);
         });
 
-        using var waiter = _insertSemaphore.CustomWait(SemaphoreMaxWait);
+        using var waiter = _insertSemaphore.CustomWait(SemaphoreMaxTimeout);
         if (waiter.HasEntered)
         {
             _jobsToInsert.Enqueue(job);
         }
         else
         {
-            _logger.LogDebug("Failed to enter the insert semaphore within {}ms", SemaphoreMaxWait.TotalMilliseconds);
+            _logger.LogDebug("Failed to enter the insert semaphore within {}ms", SemaphoreMaxTimeout.TotalMilliseconds);
         }
     }
 
@@ -560,14 +590,14 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
             updater.AddOrUpdate(existing);
         });
 
-        using var waiter = _updateSemaphore.CustomWait(SemaphoreMaxWait);
+        using var waiter = _updateSemaphore.CustomWait(SemaphoreMaxTimeout);
         if (waiter.HasEntered)
         {
             _jobsToUpdate.Enqueue((jobId, value));
         }
         else
         {
-            _logger.LogDebug("Failed to enter the update semaphore within {}ms", SemaphoreMaxWait.TotalMilliseconds);
+            _logger.LogDebug("Failed to enter the update semaphore within {}ms", SemaphoreMaxTimeout.TotalMilliseconds);
         }
     }
 
@@ -579,14 +609,14 @@ public sealed class SqliteIPC : IDisposable, IInterprocessJobManager
 
         _jobs.Edit(updater => updater.Remove(job));
 
-        using var waiter = _deleteSemaphore.CustomWait(SemaphoreMaxWait);
+        using var waiter = _deleteSemaphore.CustomWait(SemaphoreMaxTimeout);
         if (waiter.HasEntered)
         {
             _jobsToDelete.Enqueue(job);
         }
         else
         {
-            _logger.LogDebug("Failed to enter the delete semaphore within {}ms", SemaphoreMaxWait.TotalMilliseconds);
+            _logger.LogDebug("Failed to enter the delete semaphore within {}ms", SemaphoreMaxTimeout.TotalMilliseconds);
         }
     }
 
