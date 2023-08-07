@@ -2,7 +2,6 @@ using System.Buffers;
 using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Net.Sockets;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
@@ -143,7 +142,7 @@ namespace NexusMods.Networking.HttpDownloader
             throw new Exception("No valid server");
         }
 
-        private async Task<Hash> FinalizeDownload(DownloadState state, CancellationToken cancel)
+        private static async Task<Hash> FinalizeDownload(DownloadState state, CancellationToken cancel)
         {
             var tempPath = state.TempFilePath;
 
@@ -180,7 +179,7 @@ namespace NexusMods.Networking.HttpDownloader
                     // _bufferPool.Return(order.Data);
                     await job.ReportAsync(Size.FromLong(order.Data.Length), cancel);
                 }
-                catch (ChannelClosedException _)
+                catch (ChannelClosedException)
                 {
                     break;
                 }
@@ -222,17 +221,12 @@ namespace NexusMods.Networking.HttpDownloader
         private ChunkState PickNextChunk(DownloadState state, ChunkState chunk)
         {
             var slowChunk = FindSlowChunk(state.UnfinishedChunks, chunk.Source!, chunk.BytesPerSecond);
-            if (slowChunk != null)
-            {
-                _logger.LogInformation("canceling chunk {}-{} @ {}, downloading at {} kb/s",
-                    slowChunk.Offset, slowChunk.Offset + slowChunk.Size, slowChunk.Source,
-                    slowChunk.BytesPerSecond);
+            if (slowChunk == null) return chunk;
 
-                chunk = StealWork(slowChunk);
-                lock (state)
-                {
-                    state.Chunks.Add(chunk);
-                }
+            chunk = StealWork(slowChunk);
+            lock (state)
+            {
+                state.Chunks.Add(chunk);
             }
 
             return chunk;
@@ -271,7 +265,7 @@ namespace NexusMods.Networking.HttpDownloader
             });
         }
 
-        private ChunkState StealWork(ChunkState slowChunk)
+        private static ChunkState StealWork(ChunkState slowChunk)
         {
             slowChunk.Cancel?.Cancel();
 
@@ -291,7 +285,7 @@ namespace NexusMods.Networking.HttpDownloader
             return newChunk;
         }
 
-        private CancellationToken MakeChunkCancelToken(ChunkState chunk, CancellationToken cancel)
+        private static CancellationToken MakeChunkCancelToken(ChunkState chunk, CancellationToken cancel)
         {
             chunk.Cancel = new CancellationTokenSource();
             return CancellationTokenSource.CreateLinkedTokenSource(new[] { chunk.Cancel.Token, cancel }).Token;
@@ -309,7 +303,7 @@ namespace NexusMods.Networking.HttpDownloader
             request.Headers.Range = new RangeHeaderValue((long)from.Value, (long)to.Value);
 
             HttpResponseMessage response;
-            int retries = 0;
+            var retries = 0;
 
             while(true)
             {
@@ -321,11 +315,9 @@ namespace NexusMods.Networking.HttpDownloader
                 }
                 catch (HttpRequestException)
                 {
-                    if (retries >= MaxRetries)
-                        throw;
+                    if (retries >= MaxRetries) throw;
                     retries += 1;
                     request = request.Copy();
-                    continue;
                 }
             }
 
@@ -341,16 +333,12 @@ namespace NexusMods.Networking.HttpDownloader
 
         private async Task DownloadChunk(DLJob job, DownloadState download, ChunkState chunk, ChannelWriter<WriteOrder> writes, CancellationToken cancel)
         {
-            var sourceValid = false;
-
             HttpResponseMessage? response = null;
 
-            int retries = 0;
-
+            var retries = 0;
             while (!chunk.IsReadComplete)
             {
-                _logger.LogInformation("Remaining : {ToRead}", chunk.RemainingToRead);
-                sourceValid = false;
+                var sourceValid = false;
                 while (!sourceValid)
                 {
                     // this is not an endless loop, TakeSource will throw an exception if all sources were tried and rejected
@@ -364,38 +352,31 @@ namespace NexusMods.Networking.HttpDownloader
                     }
                 }
 
-                if (response != null)
-                {
-                    var start = DateTime.Now;
-                    try
-                    {
-                        await using var stream = await response.Content.ReadAsStreamAsync(cancel);
-                        await ReadStreamToEnd(job, stream, chunk, writes, cancel);
-                        _logger.LogInformation("chunk {}-{} @ {} took {} ms => {} kb/s",
-                            chunk.Offset + chunk.Read, chunk.Offset + chunk.Size, chunk.Source,
-                            (int)((DateTime.Now - start).TotalMilliseconds), chunk.BytesPerSecond);
-                    }
-                    catch (SocketException _)
-                    {
-                        if (retries > MaxRetries)
-                            throw;
-                        retries += 1;
-                    }
-                }
+                if (response == null) continue;
 
+                try
+                {
+                    await using var stream = await response.Content.ReadAsStreamAsync(cancel);
+                    await ReadStreamToEnd(job, stream, chunk, writes, cancel);
+                }
+                catch (SocketException)
+                {
+                    if (retries > MaxRetries) throw;
+                    retries += 1;
+                }
             }
         }
 
-        private Source TakeSource(DownloadState download)
+        private static Source TakeSource(DownloadState download)
         {
             lock (download)
             {
                 var res = download.Sources?.Aggregate((prev, iter) => iter.Priority < prev.Priority ? iter : prev);
-                if ((res == null) || (res.Priority == int.MaxValue))
+                if (res == null || res.Priority == int.MaxValue)
                 {
                     throw new InvalidOperationException("no valid download sources");
                 }
-                res.Priority += download.Sources?.Count() ?? 0;
+                res.Priority += download.Sources?.Length ?? 0;
                 return res;
             }
         }
@@ -413,20 +394,17 @@ namespace NexusMods.Networking.HttpDownloader
                 if (lastRead == Size.Zero) break;
 
                 await job.ReportAsync(lastRead, cancel);
-                _logger.LogInformation("Copied {Bytes} of data at {Offset} remaining {Remain}", lastRead, offset,  upperBounds - offset);
-                if (lastRead > Size.Zero)
-                {
-                    chunk.Read += lastRead;
+                if (lastRead <= Size.Zero) continue;
+                chunk.Read += lastRead;
 
-                    await writes.WriteAsync(new WriteOrder
-                    {
-                        Offset = offset,
-                        Data = filledBuffer,
-                        Owner = rented,
-                        Chunk = chunk
-                    }, cancel);
-                    offset += lastRead;
-                }
+                await writes.WriteAsync(new WriteOrder
+                {
+                    Offset = offset,
+                    Data = filledBuffer,
+                    Owner = rented,
+                    Chunk = chunk
+                }, cancel);
+                offset += lastRead;
             }
         }
 
@@ -439,15 +417,13 @@ namespace NexusMods.Networking.HttpDownloader
         /// <param name="totalSize"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        private async ValueTask<Memory<byte>> FillBuffer(Stream stream, Memory<byte> data, Size totalSize, CancellationToken token)
+        private static async ValueTask<Memory<byte>> FillBuffer(Stream stream, Memory<byte> data, Size totalSize, CancellationToken token)
         {
             var totalRead = 0;
             while (totalRead < data.Length && totalRead < (long)totalSize.Value)
             {
                 var read = await stream.ReadAsync(data[totalRead..], token);
-                if (read == 0)
-                    break;
-
+                if (read == 0) break;
                 totalRead += read;
             }
             return data[..totalRead];
@@ -527,7 +503,7 @@ namespace NexusMods.Networking.HttpDownloader
             }
         }
 
-        private async ValueTask<DownloadState> DeserializeDownloadState(AbsolutePath path, CancellationToken token)
+        private static async ValueTask<DownloadState> DeserializeDownloadState(AbsolutePath path, CancellationToken token)
         {
             await using var fs = path.Read();
             var res = await JsonSerializer.DeserializeAsync<DownloadState>(fs, JsonSerializerOptions.Default, token);
