@@ -1,7 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
+
 // ReSharper disable InconsistentNaming
 
-namespace NexusMods.CLI;
+namespace NexusMods.Abstractions.CLI;
 
 /// <summary>
 /// Represents an individual action, e.g. 'Analyze Game'
@@ -33,7 +34,7 @@ public interface IVerb
     /// The function that is ran to execute it.
     /// </summary>
     public Delegate Delegate { get; }
-    
+
     /// <summary>
     /// Describes the verb; its name, description and options.
     /// </summary>
@@ -46,7 +47,7 @@ public interface IVerb
 public interface AVerb : IVerb
 {
     Delegate IVerb.Delegate => Run;
-    
+
     /// <summary>
     /// Runs the verb
     /// </summary>
@@ -62,7 +63,7 @@ public interface AVerb : IVerb
 public interface AVerb<in T> : IVerb
 {
     Delegate IVerb.Delegate => Run;
-    
+
     /// <summary>
     /// Runs the verb
     /// </summary>
@@ -80,7 +81,7 @@ public interface AVerb<in T> : IVerb
 public interface AVerb<in T1, in T2> : IVerb
 {
     Delegate IVerb.Delegate => Run;
-    
+
     /// <summary>
     /// Runs the verb
     /// </summary>
@@ -100,7 +101,7 @@ public interface AVerb<in T1, in T2> : IVerb
 public interface AVerb<in T1, in T2, in T3> : IVerb
 {
     Delegate IVerb.Delegate => Run;
-    
+
     /// <summary>
     /// Runs the verb
     /// </summary>
@@ -112,35 +113,3 @@ public interface AVerb<in T1, in T2, in T3> : IVerb
     public Task<int> Run(T1 a, T2 b, T3 c, CancellationToken token);
 }
 
-/// <summary>
-/// The definition of a verb, its name, description and options.
-/// </summary>
-/// <param name="Name"></param>
-/// <param name="Description"></param>
-/// <param name="Options"></param>
-public record VerbDefinition(string Name, string Description, OptionDefinition[] Options);
-
-/// <summary>
-/// Extension methods for the <see cref="IServiceCollection"/> class.
-/// </summary>
-public static class ServiceExtensions
-{
-    /// <summary>
-    /// Adds a verb to the service collection
-    /// </summary>
-    /// <param name="services"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    public static IServiceCollection AddVerb<T>(this IServiceCollection services) where T : IVerb
-    {
-        services.AddSingleton(new Verb
-        {
-            Definition = T.Definition,
-            Run = o => ((T)o).Delegate,
-            Type = typeof(T)
-        });
-
-        services.AddSingleton(typeof(T));
-        return services;
-    }
-}

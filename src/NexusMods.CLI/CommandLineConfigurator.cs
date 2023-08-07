@@ -16,9 +16,9 @@ public class CommandLineConfigurator
 
     /// <summary/>
     /// <param name="verbs">
-    ///     List of supported verbs.  
+    ///     List of supported verbs.
     ///     This is populated by DI; multiple registrations using to <see cref="IServiceCollection"/> is resolved as
-    ///     an enumerable of verbs.  
+    ///     an enumerable of verbs.
     /// </param>
     /// <param name="provider">Instance of dependency injection container.</param>
     public CommandLineConfigurator(IEnumerable<Verb> verbs, IServiceProvider provider)
@@ -28,7 +28,7 @@ public class CommandLineConfigurator
     }
 
     /// <summary>
-    /// Creates the main verb-less root command the application executes. 
+    /// Creates the main verb-less root command the application executes.
     /// </summary>
     public RootCommand MakeRoot()
     {
@@ -63,6 +63,21 @@ public class CommandLineConfigurator
         return command;
     }
 
+    /// <inheritdoc />
+    public static Option GetOption<T>(IServiceProvider provider, ...)
+    {
+        var converter = provider.GetService<IOptionParser<T>>();
+
+        if (converter == null)
+            return new Option<T>(Aliases, description: Description);
+
+        var opt = new Option<T>(Aliases, description: Description,
+            parseArgument: x => converter.Parse(x.Tokens.Single().Value, this));
+
+        opt.AddCompletions(x => converter.GetOptions(x.WordToComplete));
+        return opt;
+    }
+
     private class HandlerDelegate : ICommandHandler
     {
         // ReSharper disable once MemberHidesStaticFromOuterClass
@@ -95,49 +110,4 @@ public class CommandLineConfigurator
             return handler.InvokeAsync(context);
         }
     }
-}
-
-/// <summary>
-/// Defines a option the user can pass to the command line
-/// </summary>
-/// <param name="ShortOption"></param>
-/// <param name="LongOption"></param>
-/// <param name="Description"></param>
-/// <typeparam name="T"></typeparam>
-public record OptionDefinition<T>(string ShortOption, string LongOption, string Description) : OptionDefinition(ShortOption, LongOption, Description)
-{
-    /// <inheritdoc />
-    public override Option GetOption(IServiceProvider provider)
-    {
-        var converter = provider.GetService<IOptionParser<T>>();
-
-        if (converter == null)
-            return new Option<T>(Aliases, description: Description);
-
-        var opt = new Option<T>(Aliases, description: Description,
-            parseArgument: x => converter.Parse(x.Tokens.Single().Value, this));
-
-        opt.AddCompletions(x => converter.GetOptions(x.WordToComplete));
-        return opt;
-    }
-}
-/// <summary>
-/// Defines a option the user can pass to the command line
-/// </summary>
-/// <param name="ShortOption"></param>
-/// <param name="LongOption"></param>
-/// <param name="Description"></param>
-public abstract record OptionDefinition(string ShortOption, string LongOption, string Description)
-{
-    /// <summary>
-    /// Aliases for the option
-    /// </summary>
-    protected string[] Aliases => new[] { "-" + ShortOption, "--" + LongOption };
-
-    /// <summary>
-    /// Creates the option
-    /// </summary>
-    /// <param name="provider"></param>
-    /// <returns></returns>
-    public abstract Option GetOption(IServiceProvider provider);
 }
