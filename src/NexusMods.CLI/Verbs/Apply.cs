@@ -1,4 +1,5 @@
 using DynamicData;
+using NexusMods.Abstractions.CLI;
 using NexusMods.CLI.DataOutputs;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ApplySteps;

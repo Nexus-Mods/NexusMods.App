@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.CLI;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.Paths;

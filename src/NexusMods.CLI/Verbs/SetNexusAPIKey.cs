@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.CLI;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.NMA;
 

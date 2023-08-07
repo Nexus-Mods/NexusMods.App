@@ -11,6 +11,7 @@ using NexusMods.DataModel.RateLimiting;
 using NexusMods.FileExtractor.Extractors;
 using NexusMods.Paths;
 using System.Runtime.InteropServices;
+using NexusMods.Abstractions.CLI;
 using NexusMods.CLI.Types;
 using NexusMods.CLI.Types.DownloadHandlers;
 using NexusMods.CLI.Types.IpcHandlers;

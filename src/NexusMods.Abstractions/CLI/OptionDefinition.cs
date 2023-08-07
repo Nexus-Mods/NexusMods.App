@@ -8,10 +8,6 @@
 /// <param name="Description"></param>
 public abstract record OptionDefinition(string ShortOption, string LongOption, string Description)
 {
-    /// <summary>
-    /// Aliases for the option
-    /// </summary>
-    protected string[] Aliases => new[] { "-" + ShortOption, "--" + LongOption };
 
     /// <summary>
     /// Returns the type this option is parsed into

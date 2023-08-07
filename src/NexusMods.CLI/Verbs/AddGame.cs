@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.CLI;
 using NexusMods.DataModel.Games;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators;
@@ -25,7 +26,7 @@ public class AddGame : AVerb<IGame, Version, AbsolutePath>
     }
 
     /// <inheritdoc />
-    public static VerbDefinition Definition => new VerbDefinition("add-game",
+    public static VerbDefinition Definition => new("add-game",
         "Manually register a game in the database", new OptionDefinition[]
         {
             new OptionDefinition<IGame>("g", "game", "The game to add"),

@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.CLI;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts.Markers;

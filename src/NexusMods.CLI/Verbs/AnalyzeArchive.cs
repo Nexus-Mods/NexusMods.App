@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.CLI;
 using NexusMods.CLI.DataOutputs;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
@@ -14,7 +15,7 @@ public class AnalyzeArchive : AVerb<AbsolutePath>
 {
     private readonly IRenderer _renderer;
     private readonly IArchiveAnalyzer _archiveContentsCache;
-    
+
     /// <summary>
     /// DI constructor
     /// </summary>

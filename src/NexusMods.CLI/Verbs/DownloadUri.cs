@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using NexusMods.Abstractions.CLI;
 using NexusMods.CLI.DataOutputs;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Paths;

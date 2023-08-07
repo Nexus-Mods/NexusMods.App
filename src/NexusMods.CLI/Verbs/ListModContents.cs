@@ -1,4 +1,5 @@
 using DynamicData;
+using NexusMods.Abstractions.CLI;
 using NexusMods.CLI.DataOutputs;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -40,7 +41,7 @@ public class ListModContents : AVerb<LoadoutMarker, string>
             }
             else if (file is IToFile tf2 and IGeneratedFile gf)
                 rows.Add(new object[] { tf2, gf.GetType().ToString() });
-            else 
+            else
                 rows.Add(new object[] { file.GetType().ToString() });
         }
 

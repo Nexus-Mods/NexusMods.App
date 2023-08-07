@@ -12,6 +12,7 @@
         <ProjectReference Include="..\Networking\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.NexusWebApi.NMA\NexusMods.Networking.NexusWebApi.NMA.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
+        <ProjectReference Include="..\NexusMods.Abstractions\NexusMods.Abstractions.csproj" />
         <ProjectReference Include="..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
         <ProjectReference Include="..\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj" />
     </ItemGroup>

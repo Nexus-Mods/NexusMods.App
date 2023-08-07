@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using NexusMods.Abstractions.CLI;
 
 namespace NexusMods.CLI.OptionParsers;
 

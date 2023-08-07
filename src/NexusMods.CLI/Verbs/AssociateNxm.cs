@@ -1,4 +1,5 @@
-﻿using NexusMods.Common.ProtocolRegistration;
+﻿using NexusMods.Abstractions.CLI;
+using NexusMods.Common.ProtocolRegistration;
 
 namespace NexusMods.CLI.Verbs;
 

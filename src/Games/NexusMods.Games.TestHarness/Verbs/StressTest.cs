@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.CLI;
 using NexusMods.CLI;
 using NexusMods.CLI.DataOutputs;
 using NexusMods.Common.UserInput;
@@ -31,7 +32,7 @@ public class StressTest : AVerb<IGame, AbsolutePath>
 
     public StressTest(ILogger<StressTest> logger, Configurator configurator,
         LoadoutManager loadoutManager, Client client,
-        TemporaryFileManager temporaryFileManager, 
+        TemporaryFileManager temporaryFileManager,
         IHttpDownloader downloader,
         IArchiveAnalyzer archiveAnalyzer,
         IArchiveInstaller archiveInstaller,

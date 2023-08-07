@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.CLI;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 
