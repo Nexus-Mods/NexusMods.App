@@ -1,5 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.CLI;
+using NexusMods.CLI.Tests;
 using NexusMods.Common;
 using NexusMods.Games.Generic;
 using NexusMods.Games.TestFramework;
@@ -19,10 +21,11 @@ public class Startup
             .AddUniversalGameLocator<SkyrimLegendaryEdition>(new Version("1.9.32.0"))
             .AddBethesdaGameStudios()
             .AddGenericGameSupport()
+            .AddCLI()
+            .AddAllScoped<IRenderer, LoggingRenderer>()
             .Validate();
     }
 
     public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>
         loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(accessor, delegate { return true; }));
 }
-
