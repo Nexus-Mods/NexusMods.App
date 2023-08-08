@@ -16,7 +16,7 @@ using Noggog;
 
 namespace NexusMods.Games.BethesdaGameStudios;
 
-[PublicAPI]
+[UsedImplicitly]
 public class PluginAnalyzer : IFileAnalyzer
 {
     public FileAnalyzerId Id { get; } = FileAnalyzerId.New("9c673a4f-064f-4b1e-83e3-4bf0454575cd", 1);
