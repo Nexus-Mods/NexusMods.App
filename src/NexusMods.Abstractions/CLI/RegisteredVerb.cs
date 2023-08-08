@@ -1,14 +1,13 @@
 ﻿namespace NexusMods.Abstractions.CLI;
 
 /// <summary>
-/// Represents an individual action, e.g. 'Analyze Game'
+/// A collection of a VerbDefinition, Run delegate, and the type of a Verb used in the CLI.
+/// Due to the way type systems work, we must extract some of this information inside .AddVerb().
+/// Instead of later in the application when we need to use it, so this is a helper class to store the
+/// required information.
 /// </summary>
 public class RegisteredVerb
 {
-    /// <summary>
-    /// Renderer to use for this verb, will be set by the CLI .
-    /// </summary>
-    public IRenderer Renderer { get; set; } = null!;
     /// <summary>
     /// Describes the verb; its name, description and options.
     /// </summary>

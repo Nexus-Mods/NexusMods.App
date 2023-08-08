@@ -7,7 +7,6 @@ namespace NexusMods.Abstractions.CLI;
 /// <summary>
 /// Abstract class for a verb that takes no arguments
 /// </summary>
-/// <typeparam name="T"></typeparam>
 public interface AVerb : IVerb
 {
     Delegate IVerb.Delegate => Run;

@@ -12,7 +12,6 @@ public abstract record OptionDefinition(string ShortOption, string LongOption, s
     /// <summary>
     /// Returns the type this option is parsed into
     /// </summary>
-    /// <param name="provider"></param>
     /// <returns></returns>
     public abstract Type ReturnType { get; }
 }
