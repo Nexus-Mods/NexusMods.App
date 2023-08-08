@@ -1,4 +1,4 @@
-﻿using FomodInstaller.Interface;
+using FomodInstaller.Interface;
 using FomodInstaller.Interface.ui;
 using NexusMods.Common.UserInput;
 
@@ -6,7 +6,7 @@ namespace NexusMods.Games.FOMOD;
 
 public class InstallerDelegates : ICoreDelegates
 {
-    public IPluginDelegates plugin => throw new NotImplementedException();
+    public IPluginDelegates plugin => new PluginDelegates();
 
     public IContextDelegates context => throw new NotImplementedException();
 
@@ -21,6 +21,25 @@ public class InstallerDelegates : ICoreDelegates
     public InstallerDelegates(IOptionSelector optionSelector)
     {
         ui = new UiDelegate(optionSelector);
+    }
+}
+
+// TODO: This is a temporary implementation to avoid crashing on FOMOD installers that use these methods.
+public class PluginDelegates : IPluginDelegates
+{
+    public Task<string[]> GetAll(bool activeOnly)
+    {
+        return Task.FromResult(Array.Empty<string>());
+    }
+
+    public Task<bool> IsActive(string pluginName)
+    {
+        return Task.FromResult(true);
+    }
+
+    public Task<bool> IsPresent(string pluginName)
+    {
+        return Task.FromResult(true);
     }
 }
 
