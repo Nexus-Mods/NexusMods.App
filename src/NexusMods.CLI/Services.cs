@@ -40,7 +40,7 @@ public static class Services
         services.AddSingleton<IOptionParser<Version>, VersionParser>();
         services.AddSingleton<IOptionParser<Loadout>, LoadoutParser>();
         services.AddSingleton<IOptionParser<ITool>, ToolParser>();
-        services.AddSingleton<IOptionSelector, CliOptionSelector>();
+        services.AddAllSingleton<IOptionSelector, CliOptionSelector>();
 
         OSInformation.Shared.SwitchPlatform(
             ref services,
@@ -75,7 +75,6 @@ public static class Services
             .AddVerb<ListMods>()
             .AddVerb<ListTools>()
             .AddVerb<ManageGame>()
-            .AddVerb<NexusApiVerify>()
             .AddVerb<NexusGames>()
             .AddVerb<NexusLogin>()
             .AddVerb<NexusLogout>()

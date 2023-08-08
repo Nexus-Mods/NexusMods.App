@@ -15,7 +15,9 @@ public class CommandLineConfigurator
 {
     private static IServiceProvider _provider = null!;
     private readonly IEnumerable<RegisteredVerb> _verbs;
-    private MethodInfo _getOptionMethod;
+    private readonly MethodInfo _getOptionMethod;
+    private readonly IRenderer[] _renderers;
+    private readonly IRenderer _defaultConsoleRenderer;
 
     /// <summary/>
     /// <param name="verbs">
@@ -24,8 +26,12 @@ public class CommandLineConfigurator
     ///     an enumerable of verbs.
     /// </param>
     /// <param name="provider">Instance of dependency injection container.</param>
-    public CommandLineConfigurator(IEnumerable<RegisteredVerb> verbs, IServiceProvider provider)
+    /// <param name="selector"></param>
+    /// <param name="renderers"></param>
+    public CommandLineConfigurator(IEnumerable<RegisteredVerb> verbs, IServiceProvider provider, CliOptionSelector selector, IEnumerable<IRenderer> renderers)
     {
+        _renderers = renderers.ToArray();
+        _defaultConsoleRenderer = _renderers.FirstOrDefault(r => r.Name == "console") ?? _renderers.First();
         _provider = provider;
         _verbs = verbs.ToArray();
         _getOptionMethod = typeof(CommandLineConfigurator).GetMethod(nameof(GetOption), BindingFlags.Instance | BindingFlags.NonPublic)!;
@@ -67,7 +73,7 @@ public class CommandLineConfigurator
             command.Add(optionInstance);
         }
 
-        command.Handler = new HandlerDelegate(_provider, verbType, verbHandler);
+        command.Handler = new HandlerDelegate(_provider, verbType, verbHandler, _renderers, _defaultConsoleRenderer);
         return command;
     }
 
@@ -100,9 +106,13 @@ public class CommandLineConfigurator
         private readonly IServiceProvider _provider;
         private readonly Type _type;
         private readonly Func<object, Delegate> _delegate;
+        private readonly IRenderer _defaultConsoleRenderer;
+        private readonly IRenderer[] _renderers;
 
-        public HandlerDelegate(IServiceProvider provider, Type type, Func<object, Delegate> inner)
+        public HandlerDelegate(IServiceProvider provider, Type type, Func<object, Delegate> inner, IRenderer[] renderers, IRenderer defaultConsoleRenderer)
         {
+            _renderers = renderers;
+            _defaultConsoleRenderer = defaultConsoleRenderer;
             _provider = provider;
             _type = type;
             _delegate = inner;
@@ -133,13 +143,7 @@ public class CommandLineConfigurator
                 .Select(o => (IRenderer)o.GetValueOrDefault()!)
                 .FirstOrDefault();
 
-            if (renderer != null)
-                rv.Renderer = renderer;
-            else
-            {
-                var renderers = _provider.GetServices<IRenderer>().ToArray();
-                rv.Renderer = renderers.FirstOrDefault(r => r.Name == "console") ?? renderers.First();
-            }
+            rv.Renderer = renderer ?? _defaultConsoleRenderer;
 
             var noBanner = context.BindingContext.ParseResult.RootCommandResult.Children.OfType<OptionResult>()
                 .Where(o => o.Option.Name == "noBanner")

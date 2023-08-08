@@ -29,6 +29,9 @@ public static class ServiceExtensions
             Run = o => ((T)o).Delegate,
             Type = typeof(T)
         });
+
+        services.AddSingleton(typeof(T));
+
         return services;
     }
 }
