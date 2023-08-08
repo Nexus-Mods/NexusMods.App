@@ -45,17 +45,17 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
     [Fact]
     public async Task CanInstallAndApplyMostPopularMods()
     {
-        var skseModId = 30379;
-        var skseFileId = 323365;
-        var skseModName = "skse64";
+        const int skseModId = 30379;
+        const int skseFileId = 323365;
+        const string skseModName = "skse64";
 
-        var skyuiModId = 12604;
-        var skyuiFileId = 35407;
-        var skyuiModName = "skyui";
+        const int skyuiModId = 12604;
+        const int skyuiFileId = 35407;
+        const string skyuiModName = "skyui";
 
-        var ussepModId = 266;
-        var ussepFileId = 392477;
-        var ussepModName = "Unofficial skyrim special edition patch";
+        const int ussepModId = 266;
+        const int ussepFileId = 392477;
+        const string ussepModName = "Unofficial skyrim special edition patch";
 
         // manage the game
         // Note: can't create the loadout using CLI as it would index the game files,

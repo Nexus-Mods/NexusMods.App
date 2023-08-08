@@ -25,15 +25,15 @@ public class SkyrimLegendaryEditionTests : AGameTest<SkyrimLegendaryEdition>
 
         var sksePath = FileSystem.GetKnownPath(KnownPath.EntryDirectory)
             .Combine("Assets/DownloadableMods/HasScriptExtender/skse_1_07_03.zip");
-        var skseModName = "skse_1_07_03";
+        const string skseModName = "skse_1_07_03";
 
-        var skyuiModId = 3863;
-        var skyuiFileId = 1000172397;
-        var skyuiModName = "skyui";
+        const int skyuiModId = 3863;
+        const int skyuiFileId = 1000172397;
+        const string skyuiModName = "skyui";
 
-        var uslep = 71214;
-        var uslepFileId = 1000306031;
-        var uslepModName = "Unofficial skyrim legendary edition patch";
+        const int uslep = 71214;
+        const int uslepFileId = 1000306031;
+        const string uslepModName = "Unofficial skyrim legendary edition patch";
 
         // manage the game
         // Note: can't create the loadout using CLI as it would index the game files,
