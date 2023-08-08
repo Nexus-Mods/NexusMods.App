@@ -1,4 +1,5 @@
-using NexusMods.CLI.DataOutputs;
+using NexusMods.Abstractions.CLI;
+using NexusMods.Abstractions.CLI.DataOutputs;
 using NexusMods.Common.UserInput;
 
 namespace NexusMods.CLI;
@@ -14,21 +15,16 @@ public class CliOptionSelector : IOptionSelector
     private static readonly string[] TableOfGroupsHeaders = { "Key", "Group" };
     private static readonly object[] TableOfGroupsFooter = { ReturnInput, "Continue" };
 
-    private readonly IRenderer _renderer;
+    /// <summary>
+    /// The renderer to use for rendering the options.
+    /// </summary>
+    public IRenderer Renderer { get; set; } = null!;
 
     /// <summary>
     /// If true, all option selection will throw an error, useful for automated installers and tests
     /// </summary>
     public bool AutoFail { get; set; } = false;
 
-    /// <summary>
-    /// DI Constructor
-    /// </summary>
-    /// <param name="configurator"></param>
-    public CliOptionSelector(Configurator configurator)
-    {
-        _renderer = configurator.Renderer;
-    }
 
     /// <summary>
     /// Request a choice from the user.
@@ -55,7 +51,7 @@ public class CliOptionSelector : IOptionSelector
                 if (idx != null)
                     current[idx.Value].Type = ToggleState(current[idx.Value].Type);
 
-                _renderer.Render(TableOfOptions(current, query));
+                Renderer.Render(TableOfOptions(current, query));
             }
         }
         return Task.FromResult(current.Where(_ => _.Type is OptionState.Selected or OptionState.Required).Select(_ => _.Id));
@@ -66,7 +62,7 @@ public class CliOptionSelector : IOptionSelector
     {
         if (AutoFail)
             throw new Exception("AutoFail is enabled for this option selector.");
-        
+
         var selectedGroupIdx = -1;
         Tuple<TGroupId, IEnumerable<TOptionId>>? result = null;
         IList<Option<TOptionId>>? selectedGroup = null;
@@ -181,7 +177,7 @@ public class CliOptionSelector : IOptionSelector
         IEnumerable<ChoiceGroup<TGroupId, TOptionId>> groups,
         IList<Option<TOptionId>>? selectedGroup, string selectedGroupName)
     {
-        _renderer.Render(selectedGroup == null
+        Renderer.Render(selectedGroup == null
             ? TableOfGroups(groups)
             : TableOfOptions(selectedGroup, selectedGroupName));
     }

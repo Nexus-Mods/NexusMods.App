@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.CLI;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.Paths;
@@ -8,11 +9,13 @@ namespace NexusMods.CLI.Verbs;
 /// <summary>
 /// Installs a mod into a loadout
 /// </summary>
-public class InstallMod : AVerb<LoadoutMarker, AbsolutePath, string>
+public class InstallMod : AVerb<LoadoutMarker, AbsolutePath, string>, IRenderingVerb
 {
-    private readonly IRenderer _renderer;
     private readonly IArchiveInstaller _archiveInstaller;
     private readonly IArchiveAnalyzer _archiveAnalyzer;
+
+    /// <inheritdoc />
+    public IRenderer Renderer { get; set; } = null!;
 
     /// <summary>
     /// DI constructor
@@ -20,9 +23,8 @@ public class InstallMod : AVerb<LoadoutMarker, AbsolutePath, string>
     /// <param name="configurator"></param>
     /// <param name="archiveInstaller"></param>
     /// <param name="archiveAnalyzer"></param>
-    public InstallMod(Configurator configurator, IArchiveInstaller archiveInstaller, IArchiveAnalyzer archiveAnalyzer)
+    public InstallMod(IArchiveInstaller archiveInstaller, IArchiveAnalyzer archiveAnalyzer)
     {
-        _renderer = configurator.Renderer;
         _archiveInstaller = archiveInstaller;
         _archiveAnalyzer = archiveAnalyzer;
     }
@@ -38,7 +40,7 @@ public class InstallMod : AVerb<LoadoutMarker, AbsolutePath, string>
     /// <inheritdoc />
     public async Task<int> Run(LoadoutMarker loadout, AbsolutePath file, string name, CancellationToken token)
     {
-        await _renderer.WithProgress(token, async () =>
+        await Renderer.WithProgress(token, async () =>
         {
             var analyzedFile = await _archiveAnalyzer.AnalyzeFileAsync(file, token);
             await _archiveInstaller.AddMods(loadout.Value.LoadoutId, analyzedFile.Hash, token:token);

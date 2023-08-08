@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.CLI;
+using NexusMods.Abstractions.CLI.DataOutputs;
 using NexusMods.CLI;
-using NexusMods.CLI.DataOutputs;
 using NexusMods.Common.UserInput;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
@@ -17,9 +18,8 @@ using ModId = NexusMods.Networking.NexusWebApi.Types.ModId;
 
 namespace NexusMods.Games.TestHarness.Verbs;
 
-public class StressTest : AVerb<IGame, AbsolutePath>
+public class StressTest : AVerb<IGame, AbsolutePath>, IRenderingVerb
 {
-    private readonly IRenderer _renderer;
     private readonly Client _client;
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly IHttpDownloader _downloader;
@@ -29,9 +29,12 @@ public class StressTest : AVerb<IGame, AbsolutePath>
     /// </summary>
     public static Size MaxFileSize = Size.MB * 512;
 
-    public StressTest(ILogger<StressTest> logger, Configurator configurator,
+    /// <inheritdoc />
+    public IRenderer Renderer { get; set; } = null!;
+
+    public StressTest(ILogger<StressTest> logger,
         LoadoutManager loadoutManager, Client client,
-        TemporaryFileManager temporaryFileManager, 
+        TemporaryFileManager temporaryFileManager,
         IHttpDownloader downloader,
         IArchiveAnalyzer archiveAnalyzer,
         IArchiveInstaller archiveInstaller,
@@ -42,7 +45,6 @@ public class StressTest : AVerb<IGame, AbsolutePath>
         _archiveAnalyzer = archiveAnalyzer;
         _archiveInstaller = archiveInstaller;
         _downloader = downloader;
-        _renderer = configurator.Renderer;
         _loadoutManager = loadoutManager;
         _logger = logger;
         _client = client;
@@ -51,7 +53,7 @@ public class StressTest : AVerb<IGame, AbsolutePath>
     }
 
     public static VerbDefinition Definition =>
-        new VerbDefinition("stress-test", "Stress test the application by installing all recent mods for a given game",
+        new("stress-test", "Stress test the application by installing all recent mods for a given game",
             new OptionDefinition[]
             {
                 new OptionDefinition<IGame>("g", "game", "The game to install mods for"),
@@ -139,7 +141,7 @@ public class StressTest : AVerb<IGame, AbsolutePath>
                     r.FileName, r.ModId.ToString(), r.FileId.ToString(), r.Hash, r.Passed.ToString(),
                     r.exception?.Message ?? ""
                 }));
-            await _renderer.Render(table);
+            await Renderer.Render(table);
 
             var lines = new List<string>
             {

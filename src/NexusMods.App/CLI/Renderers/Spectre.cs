@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.CLI;
 using NexusMods.CLI;
 using NexusMods.DataModel.RateLimiting;
 using Spectre.Console;
@@ -126,7 +127,7 @@ public class Spectre : IRenderer
     {
         switch (o)
         {
-            case NexusMods.CLI.DataOutputs.Table t:
+            case Abstractions.CLI.DataOutputs.Table t:
                 await RenderTable(t);
                 break;
             default:
@@ -134,7 +135,7 @@ public class Spectre : IRenderer
         }
     }
 
-    private Task RenderTable(NexusMods.CLI.DataOutputs.Table table)
+    private Task RenderTable(Abstractions.CLI.DataOutputs.Table table)
     {
         var ot = new Table();
         if (!string.IsNullOrEmpty(table.Title))

@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.CLI;
 using NexusMods.Paths;
 
 namespace NexusMods.CLI.Verbs;

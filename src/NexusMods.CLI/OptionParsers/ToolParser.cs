@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.CLI;
 using NexusMods.DataModel.Games;
 
 namespace NexusMods.CLI.OptionParsers;

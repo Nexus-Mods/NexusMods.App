@@ -1,6 +1,7 @@
 using System.Text.Json;
+using NexusMods.Abstractions.CLI;
+using NexusMods.Abstractions.CLI.DataOutputs;
 using NexusMods.CLI;
-using NexusMods.CLI.DataOutputs;
 
 namespace NexusMods.App.CLI.Renderers;
 

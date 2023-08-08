@@ -1,4 +1,5 @@
-using NexusMods.CLI.DataOutputs;
+using NexusMods.Abstractions.CLI;
+using NexusMods.Abstractions.CLI.DataOutputs;
 using NexusMods.DataModel;
 using NexusMods.Paths;
 
@@ -8,20 +9,21 @@ namespace NexusMods.CLI.Verbs;
 /// <summary>
 /// Hashes the contents of a directory, caching the results
 /// </summary>
-public class HashFolder : AVerb<AbsolutePath>
+public class HashFolder : AVerb<AbsolutePath>, IRenderingVerb
 {
     private readonly FileHashCache _cache;
-    private readonly IRenderer _renderer;
+
+    /// <inheritdoc />
+    public IRenderer Renderer { get; set; } = null!;
 
     /// <summary>
     /// DI constructor
     /// </summary>
     /// <param name="cache"></param>
     /// <param name="configurator"></param>
-    public HashFolder(FileHashCache cache, Configurator configurator)
+    public HashFolder(FileHashCache cache)
     {
         _cache = cache;
-        _renderer = configurator.Renderer;
     }
 
     /// <inheritdoc />
@@ -36,7 +38,7 @@ public class HashFolder : AVerb<AbsolutePath>
     public async Task<int> Run(AbsolutePath folder, CancellationToken token)
     {
         var rows = new List<object[]>();
-        await _renderer.WithProgress(token, async () =>
+        await Renderer.WithProgress(token, async () =>
         {
             await foreach (var r in _cache.IndexFolderAsync(folder, token).WithCancellation(token))
                 rows.Add(new object[] { r.Path.RelativeTo(folder), r.Hash, r.Size, r.LastModified });
@@ -49,7 +51,7 @@ public class HashFolder : AVerb<AbsolutePath>
             Rows: rows.OrderBy(r => (RelativePath)r.First())
         );
 
-        await _renderer.Render(results);
+        await Renderer.Render(results);
         return 0;
     }
 }

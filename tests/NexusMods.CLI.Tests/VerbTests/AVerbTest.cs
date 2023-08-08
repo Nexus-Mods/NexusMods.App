@@ -1,7 +1,7 @@
 using System.CommandLine;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.CLI.DataOutputs;
+using NexusMods.Abstractions.CLI.DataOutputs;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 

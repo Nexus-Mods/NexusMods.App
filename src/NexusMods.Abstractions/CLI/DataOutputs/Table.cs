@@ -1,4 +1,4 @@
-namespace NexusMods.CLI.DataOutputs;
+namespace NexusMods.Abstractions.CLI.DataOutputs;
 
 /// <summary>
 /// Container for telling renderers that data should be outputted in a table format.
