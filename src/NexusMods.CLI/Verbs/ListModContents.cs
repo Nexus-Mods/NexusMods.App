@@ -1,6 +1,6 @@
 using DynamicData;
 using NexusMods.Abstractions.CLI;
-using NexusMods.CLI.DataOutputs;
+using NexusMods.Abstractions.CLI.DataOutputs;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.ModFiles;
 
@@ -10,14 +10,11 @@ namespace NexusMods.CLI.Verbs;
 /// <summary>
 /// Lists all the files in a mod
 /// </summary>
-public class ListModContents : AVerb<LoadoutMarker, string>
+public class ListModContents : AVerb<LoadoutMarker, string>, IRenderingVerb
 {
-    private readonly IRenderer _renderer;
-    /// <summary>
-    /// DI constructor
-    /// </summary>
-    /// <param name="configurator"></param>
-    public ListModContents(Configurator configurator) => _renderer = configurator.Renderer;
+    /// <inheritdoc />
+    public IRenderer Renderer { get; set; } = null!;
+
 
     /// <inheritdoc />
     public static VerbDefinition Definition => new("list-mod-contents", "Lists all the files in a mod",
@@ -45,7 +42,7 @@ public class ListModContents : AVerb<LoadoutMarker, string>
                 rows.Add(new object[] { file.GetType().ToString() });
         }
 
-        await _renderer.Render(new Table(new[] { "Name", "Source" }, rows));
+        await Renderer.Render(new Table(new[] { "Name", "Source" }, rows));
         return 0;
     }
 }

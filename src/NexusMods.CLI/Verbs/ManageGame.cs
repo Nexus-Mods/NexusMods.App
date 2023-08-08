@@ -8,20 +8,21 @@ namespace NexusMods.CLI.Verbs;
 /// <summary>
 /// Manage a game
 /// </summary>
-public class ManageGame : AVerb<IGame, Version, string>
+public class ManageGame : AVerb<IGame, Version, string>, IRenderingVerb
 {
     private readonly LoadoutManager _manager;
-    private readonly IRenderer _renderer;
+
+    /// <inheritdoc />
+    public IRenderer Renderer { get; set; } = null!;
 
     /// <summary>
     /// DI constructor
     /// </summary>
     /// <param name="manager"></param>
     /// <param name="configurator"></param>
-    public ManageGame(LoadoutManager manager, Configurator configurator)
+    public ManageGame(LoadoutManager manager)
     {
         _manager = manager;
-        _renderer = configurator.Renderer;
     }
 
     /// <inheritdoc />
@@ -40,7 +41,7 @@ public class ManageGame : AVerb<IGame, Version, string>
         if (installation == null)
             throw new Exception("Game not found");
 
-        await _renderer.WithProgress(token, async () =>
+        await Renderer.WithProgress(token, async () =>
         {
             await _manager.ManageGameAsync(installation, name, token);
             return 0;

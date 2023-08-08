@@ -23,14 +23,12 @@ public static class ServiceExtensions
     /// <returns></returns>
     public static IServiceCollection AddVerb<T>(this IServiceCollection services) where T : IVerb
     {
-        services.AddSingleton(new Verb
+        services.AddSingleton(new RegisteredVerb
         {
             Definition = T.Definition,
             Run = o => ((T)o).Delegate,
             Type = typeof(T)
         });
-
-        services.AddSingleton(typeof(T));
         return services;
     }
 }

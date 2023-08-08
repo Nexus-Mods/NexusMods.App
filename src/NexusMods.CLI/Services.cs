@@ -33,7 +33,6 @@ public static class Services
     /// <returns></returns>
     public static IServiceCollection AddCLI(this IServiceCollection services)
     {
-        services.AddScoped<Configurator>();
         services.AddScoped<CommandLineConfigurator>();
         services.AddSingleton<IOptionParser<AbsolutePath>, AbsolutePathParser>();
         services.AddSingleton<IOptionParser<IGame>, GameParser>();

@@ -1,31 +1,32 @@
 using NexusMods.Abstractions.CLI;
-using NexusMods.CLI.DataOutputs;
+using NexusMods.Abstractions.CLI.DataOutputs;
 using NexusMods.Networking.NexusWebApi;
 
 // Temporary until moved to CLI project.
 #pragma warning disable CS1591
 namespace NexusMods.CLI.Verbs;
 
-public class NexusGames : AVerb
+public class NexusGames : AVerb, IRenderingVerb
 {
     private readonly Client _client;
 
-    public NexusGames(Client client, Configurator configurator)
+    /// <inheritdoc />
+    public IRenderer Renderer { get; set; } = null!;
+
+    public NexusGames(Client client)
     {
         _client = client;
-        _renderer = configurator.Renderer;
     }
-    public static VerbDefinition Definition => new VerbDefinition("nexus-games", "Lists all games available on Nexus Mods",
+    public static VerbDefinition Definition => new("nexus-games", "Lists all games available on Nexus Mods",
         Array.Empty<OptionDefinition>());
 
-    private readonly IRenderer _renderer;
 
 
     public async Task<int> Run(CancellationToken token)
     {
         var results = await _client.Games(token);
 
-        await _renderer.Render(new Table(new[] { "Name", "Domain", "Downloads", "Files" },
+        await Renderer.Render(new Table(new[] { "Name", "Domain", "Downloads", "Files" },
             results.Data
                 .OrderByDescending(x => x.FileCount)
                 .Select(x => new object[] { x.Name, x.DomainName, x.Downloads, x.FileCount })));

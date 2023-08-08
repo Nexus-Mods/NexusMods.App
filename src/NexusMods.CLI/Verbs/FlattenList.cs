@@ -1,5 +1,5 @@
 using NexusMods.Abstractions.CLI;
-using NexusMods.CLI.DataOutputs;
+using NexusMods.Abstractions.CLI.DataOutputs;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Markers;
 
@@ -9,19 +9,20 @@ namespace NexusMods.CLI.Verbs;
 /// <summary>
 /// Displays a loadout
 /// </summary>
-public class FlattenList : AVerb<LoadoutMarker>
+public class FlattenList : AVerb<LoadoutMarker>, IRenderingVerb
 {
-    private readonly IRenderer _renderer;
     private readonly LoadoutSynchronizer _loadoutSyncronizer;
+
+    /// <inheritdoc />
+    public IRenderer Renderer { get; set; } = null!;
 
     /// <summary>
     /// DI constructor
     /// </summary>
     /// <param name="configurator"></param>
     /// <param name="loadoutSynchronizer"></param>
-    public FlattenList(Configurator configurator, LoadoutSynchronizer loadoutSynchronizer)
+    public FlattenList(LoadoutSynchronizer loadoutSynchronizer)
     {
-        _renderer = configurator.Renderer;
         _loadoutSyncronizer = loadoutSynchronizer;
     }
 
@@ -39,7 +40,7 @@ public class FlattenList : AVerb<LoadoutMarker>
         foreach (var (path, mod) in (await _loadoutSyncronizer.FlattenLoadout(loadout.Value)).Files)
             rows.Add(new object[] { mod.Mod.Name, path });
 
-        await _renderer.Render(new Table(new[] { "Mod", "To" }, rows));
+        await Renderer.Render(new Table(new[] { "Mod", "To" }, rows));
         return 0;
     }
 }

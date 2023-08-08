@@ -1,5 +1,5 @@
 using NexusMods.Abstractions.CLI;
-using NexusMods.CLI.DataOutputs;
+using NexusMods.Abstractions.CLI.DataOutputs;
 using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.CLI.Verbs;
@@ -8,20 +8,21 @@ namespace NexusMods.CLI.Verbs;
 /// <summary>
 /// List all the managed game instances (Loadouts) in the app
 /// </summary>
-public class ListManagedGames : AVerb
+public class ListManagedGames : AVerb, IRenderingVerb
 {
     private readonly LoadoutManager _manager;
-    private readonly IRenderer _renderer;
+
+    /// <inheritdoc />
+    public IRenderer Renderer { get; set; } = null!;
 
     /// <summary>
     /// DI constructor
     /// </summary>
     /// <param name="manager"></param>
     /// <param name="configurator"></param>
-    public ListManagedGames(LoadoutManager manager, Configurator configurator)
+    public ListManagedGames(LoadoutManager manager)
     {
         _manager = manager;
-        _renderer = configurator.Renderer;
     }
 
     /// <inheritdoc />
@@ -36,7 +37,7 @@ public class ListManagedGames : AVerb
         foreach (var list in _manager.Registry.AllLoadouts())
             rows.Add(new object[] { list.Name, list.Installation, list.LoadoutId, list.Mods.Count });
 
-        await _renderer.Render(new Table(new[] { "Name", "Game", "Id", "Mod Count" }, rows));
+        await Renderer.Render(new Table(new[] { "Name", "Game", "Id", "Mod Count" }, rows));
 
         return 0;
     }

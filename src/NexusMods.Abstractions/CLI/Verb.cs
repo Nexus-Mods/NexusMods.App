@@ -5,45 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 namespace NexusMods.Abstractions.CLI;
 
 /// <summary>
-/// Represents an individual action, e.g. 'Analyze Game'
+/// Abstract class for a verb that takes no arguments
 /// </summary>
-public class Verb
-{
-    /// <summary>
-    /// Describes the verb; its name, description and options.
-    /// </summary>
-    public required VerbDefinition Definition { get; init; }
-
-    /// <summary>
-    /// The function that is ran to execute it.
-    /// </summary>
-    public required Func<object, Delegate> Run { get; init; }
-
-    /// <summary>
-    /// Generic type of the class used.
-    /// </summary>
-    public required Type Type { get; init; }
-}
-
-/// <summary>
-/// Represents an individual action, e.g. 'Analyze Game'
-/// </summary>
-public interface IVerb
-{
-    /// <summary>
-    /// The function that is ran to execute it.
-    /// </summary>
-    public Delegate Delegate { get; }
-
-    /// <summary>
-    /// Describes the verb; its name, description and options.
-    /// </summary>
-    static abstract VerbDefinition Definition { get; }
-}
-
-/// <summary>
-/// Abstract class for a verb
-/// </summary>
+/// <typeparam name="T"></typeparam>
 public interface AVerb : IVerb
 {
     Delegate IVerb.Delegate => Run;
@@ -51,6 +15,7 @@ public interface AVerb : IVerb
     /// <summary>
     /// Runs the verb
     /// </summary>
+    /// <param name="a"></param>
     /// <param name="token"></param>
     /// <returns></returns>
     public Task<int> Run(CancellationToken token);

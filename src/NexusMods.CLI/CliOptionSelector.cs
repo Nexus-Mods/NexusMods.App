@@ -1,4 +1,5 @@
-using NexusMods.CLI.DataOutputs;
+using NexusMods.Abstractions.CLI;
+using NexusMods.Abstractions.CLI.DataOutputs;
 using NexusMods.Common.UserInput;
 
 namespace NexusMods.CLI;
@@ -25,7 +26,7 @@ public class CliOptionSelector : IOptionSelector
     /// DI Constructor
     /// </summary>
     /// <param name="configurator"></param>
-    public CliOptionSelector(Configurator configurator)
+    public CliOptionSelector(IEnumerable<IRenderer> renderers)
     {
         _renderer = configurator.Renderer;
     }
@@ -66,7 +67,7 @@ public class CliOptionSelector : IOptionSelector
     {
         if (AutoFail)
             throw new Exception("AutoFail is enabled for this option selector.");
-        
+
         var selectedGroupIdx = -1;
         Tuple<TGroupId, IEnumerable<TOptionId>>? result = null;
         IList<Option<TOptionId>>? selectedGroup = null;

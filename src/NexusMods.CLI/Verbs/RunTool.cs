@@ -9,19 +9,20 @@ namespace NexusMods.CLI.Verbs;
 /// <summary>
 /// Run a tool with a loadout
 /// </summary>
-public class RunTool : AVerb<ITool, LoadoutMarker>
+public class RunTool : AVerb<ITool, LoadoutMarker>, IRenderingVerb
 {
-    private readonly IRenderer _renderer;
     private readonly IToolManager _toolManager;
+
+    /// <inheritdoc />
+    public IRenderer Renderer { get; set; } = null!;
 
     /// <summary>
     /// DI constructor
     /// </summary>
     /// <param name="configurator"></param>
     /// <param name="toolManager"></param>
-    public RunTool(Configurator configurator, IToolManager toolManager)
+    public RunTool(IToolManager toolManager)
     {
-        _renderer = configurator.Renderer;
         _toolManager = toolManager;
     }
 
@@ -36,7 +37,7 @@ public class RunTool : AVerb<ITool, LoadoutMarker>
     /// <inheritdoc />
     public async Task<int> Run(ITool tool, LoadoutMarker loadout, CancellationToken token)
     {
-        await _renderer.WithProgress(token, async () =>
+        await Renderer.WithProgress(token, async () =>
         {
             await _toolManager.RunTool(tool, loadout.Value, token:token);
             return 0;

@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.CLI;
+using NexusMods.Abstractions.CLI.DataOutputs;
 using NexusMods.CLI;
-using NexusMods.CLI.DataOutputs;
 using NexusMods.Common.UserInput;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;

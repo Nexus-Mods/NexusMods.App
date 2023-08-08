@@ -1,6 +1,7 @@
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.NamingConventionBinder;
+using System.CommandLine.Parsing;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.CLI;
@@ -13,7 +14,7 @@ namespace NexusMods.CLI;
 public class CommandLineConfigurator
 {
     private static IServiceProvider _provider = null!;
-    private readonly IEnumerable<Verb> _verbs;
+    private readonly IEnumerable<RegisteredVerb> _verbs;
     private MethodInfo _getOptionMethod;
 
     /// <summary/>
@@ -23,7 +24,7 @@ public class CommandLineConfigurator
     ///     an enumerable of verbs.
     /// </param>
     /// <param name="provider">Instance of dependency injection container.</param>
-    public CommandLineConfigurator(IEnumerable<Verb> verbs, IServiceProvider provider)
+    public CommandLineConfigurator(IEnumerable<RegisteredVerb> verbs, IServiceProvider provider)
     {
         _provider = provider;
         _verbs = verbs.ToArray();
@@ -109,20 +110,44 @@ public class CommandLineConfigurator
 
         public int Invoke(InvocationContext context)
         {
-            var configurator = _provider.GetRequiredService<Configurator>();
-            configurator.Configure(context);
-            var service = _provider.GetRequiredService(_type);
-            var handler = CommandHandler.Create(_delegate(service));
+            var verb = (IVerb)_provider.GetRequiredService(_type);
+            Configure(context, verb);
+            var handler = CommandHandler.Create(_delegate(verb));
             return handler.Invoke(context);
         }
 
         public Task<int> InvokeAsync(InvocationContext context)
         {
-            var configurator = _provider.GetRequiredService<Configurator>();
-            configurator.Configure(context);
-            var service = _provider.GetRequiredService(_type);
-            var handler = CommandHandler.Create(_delegate(service));
+            var verb = (IVerb)_provider.GetRequiredService(_type);
+            Configure(context, verb);
+            var handler = CommandHandler.Create(_delegate(verb));
             return handler.InvokeAsync(context);
+        }
+
+        private void Configure(InvocationContext context, IVerb verb)
+        {
+            if (verb is not IRenderingVerb rv) return;
+
+            var renderer = context.BindingContext.ParseResult.RootCommandResult.Children.OfType<OptionResult>()
+                .Where(o => o.Option.Name == "renderer")
+                .Select(o => (IRenderer)o.GetValueOrDefault()!)
+                .FirstOrDefault();
+
+            if (renderer != null)
+                rv.Renderer = renderer;
+            else
+            {
+                var renderers = _provider.GetServices<IRenderer>().ToArray();
+                rv.Renderer = renderers.FirstOrDefault(r => r.Name == "console") ?? renderers.First();
+            }
+
+            var noBanner = context.BindingContext.ParseResult.RootCommandResult.Children.OfType<OptionResult>()
+                .Where(o => o.Option.Name == "noBanner")
+                .Select(o => (bool)o.GetValueOrDefault()!)
+                .FirstOrDefault();
+
+            if (!noBanner)
+                rv.Renderer.RenderBanner();
         }
     }
 }

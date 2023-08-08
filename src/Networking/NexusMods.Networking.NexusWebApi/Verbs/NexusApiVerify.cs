@@ -1,5 +1,5 @@
 using NexusMods.Abstractions.CLI;
-using NexusMods.CLI.DataOutputs;
+using NexusMods.Abstractions.CLI.DataOutputs;
 using NexusMods.Networking.NexusWebApi;
 
 // Temporary until moved to CLI project.

@@ -11,17 +11,19 @@ namespace NexusMods.CLI.Verbs;
 /// <summary>
 /// Downloads a mod with NXM protocol.
 /// </summary>
-public class DownloadAndInstallMod : AVerb<string, LoadoutMarker, string>
+public class DownloadAndInstallMod : AVerb<string, LoadoutMarker, string>, IRenderingVerb
 {
     private readonly IHttpDownloader _httpDownloader;
     private readonly TemporaryFileManager _temp;
     private readonly IEnumerable<IDownloadProtocolHandler> _handlers;
-    private readonly IRenderer _renderer;
     private readonly IArchiveAnalyzer _archiveAnalyzer;
     private readonly IArchiveInstaller _archiveInstaller;
 
+    /// <inheritdoc />
+    public IRenderer Renderer { get; set; } = null!;
+
     /// <summary/>
-    public DownloadAndInstallMod(IHttpDownloader httpDownloader, Configurator configurator, TemporaryFileManager temp,
+    public DownloadAndInstallMod(IHttpDownloader httpDownloader, TemporaryFileManager temp,
         IEnumerable<IDownloadProtocolHandler> handlers, IArchiveInstaller archiveInstaller, IArchiveAnalyzer archiveAnalyzer)
     {
         _archiveAnalyzer = archiveAnalyzer;
@@ -29,7 +31,6 @@ public class DownloadAndInstallMod : AVerb<string, LoadoutMarker, string>
         _httpDownloader = httpDownloader;
         _temp = temp;
         _handlers = handlers;
-        _renderer = configurator.Renderer;
     }
 
     /// <inheritdoc />
@@ -46,7 +47,7 @@ public class DownloadAndInstallMod : AVerb<string, LoadoutMarker, string>
     public async Task<int> Run(string url, LoadoutMarker loadout, string modName, CancellationToken token)
     {
         await using var temporaryPath = _temp.CreateFile();
-        await _renderer.WithProgress(token, async () =>
+        await Renderer.WithProgress(token, async () =>
         {
             var uri = new Uri(url);
             var handler = _handlers.FirstOrDefault(x => x.Protocol == uri.Scheme);
