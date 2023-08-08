@@ -291,9 +291,7 @@ public class FomodXmlInstallerTests
     {
         var tmpFile = _tmpFileManager.CreateFile(KnownExtensions.Sqlite);
         
-        var installer = new FomodXmlInstaller(
-            _serviceProvider.GetRequiredService<IDataStore>(),
-            _serviceProvider.GetRequiredService<ILogger<FomodXmlInstaller>>(),
+        var installer = new FomodXmlInstaller(_serviceProvider.GetRequiredService<ILogger<FomodXmlInstaller>>(),
             _coreDelegates
         );
 
