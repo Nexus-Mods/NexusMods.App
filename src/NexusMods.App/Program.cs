@@ -57,7 +57,7 @@ public class Program
         if (Environment.GetCommandLineArgs().Length != 0)
         {
             var updater = host.Services.GetRequiredService<UpdaterService>();
-            updater.Startup();
+            await updater.Startup();
         }
 
         Startup.Main(host.Services, args);

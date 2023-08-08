@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
 using System.IO.Compression;
+using CliWrap;
 using Microsoft.Extensions.Logging;
+using NexusMods.Common;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Paths;
 using NexusMods.Updater.DownloadSources;
@@ -19,18 +21,22 @@ public class UpdaterService
     private readonly Github _github;
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly IHttpDownloader _downloader;
+    private readonly IProcessFactory _processFactory;
+    private readonly AbsolutePath _appFolder;
 
     public UpdaterService(ILogger<UpdaterService> logger, IFileSystem fileSystem, Github github,
-        TemporaryFileManager temporaryFileManager, IHttpDownloader downloader)
+        TemporaryFileManager temporaryFileManager, IHttpDownloader downloader, IProcessFactory processFactory)
     {
         _logger = logger;
         _fileSystem = fileSystem;
-        _updateFolder = _fileSystem.GetKnownPath(KnownPath.EntryDirectory);
+        _appFolder = fileSystem.GetKnownPath(KnownPath.EntryDirectory);
+        _updateFolder = _appFolder.Combine(Constants.UpdateFolder);
         _github = github;
         _cancellationTokenSource = new CancellationTokenSource();
         _token = _cancellationTokenSource.Token;
         _temporaryFileManager = temporaryFileManager;
         _downloader = downloader;
+        _processFactory = processFactory;
     }
 
     public bool IsOnlyInstance()
@@ -58,9 +64,45 @@ public class UpdaterService
     }
 
 
-    public void Startup()
+    public async Task Startup()
     {
-        _runnerTask = Task.Run(async () => await RunLoop());
+        if (await IsUpdateReady())
+        {
+            await RunUpdate();
+        }
+#if DEBUG
+        _runnerTask = Task.Run(async () => await RunLoop(), _token);
+#endif
+    }
+
+    private async Task RunUpdate()
+    {
+        var updateProgram = _updateFolder.Combine(Constants.UpdateExecutable);
+
+        var cmd = new Command(updateProgram.ToString())
+            .WithWorkingDirectory(_updateFolder.Combine(Constants.UpdateExecutable).ToString())
+            .WithArguments(new[]
+            {
+                "copy-to-app-folder",
+                "-f", _updateFolder.ToString(),
+                "-t", _appFolder.ToString(),
+                "-p", Environment.ProcessId.ToString(),
+                "-c", _appFolder.Combine(Constants.UpdateExecutable).ToString()
+            });
+
+        var info = new ProcessStartInfo(cmd.TargetFilePath)
+        {
+            Arguments = cmd.Arguments,
+            WorkingDirectory = cmd.WorkingDirPath,
+
+        };
+        var process = Process.Start(info);
+        if (process == null)
+        {
+            _logger.LogError("Failed to start update process");
+            return;
+        }
+        Environment.Exit(0);
     }
 
     private async Task RunLoop()
