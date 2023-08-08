@@ -20,6 +20,7 @@
         <ProjectReference Include="..\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
         <ProjectReference Include="..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
         <ProjectReference Include="..\NexusMods.CLI\NexusMods.CLI.csproj" />
+        <ProjectReference Include="..\NexusMods.Updater\NexusMods.Updater.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -77,3 +77,26 @@ public interface AVerb<in T1, in T2, in T3> : IVerb
     public Task<int> Run(T1 a, T2 b, T3 c, CancellationToken token);
 }
 
+/// <summary>
+/// Abstract class for a verb that takes four arguments
+/// </summary>
+/// <typeparam name="T1"></typeparam>
+/// <typeparam name="T2"></typeparam>
+/// <typeparam name="T3"></typeparam>
+/// <typeparam name="T4"></typeparam>
+public interface AVerb<in T1, in T2, in T3, in T4> : IVerb
+{
+    Delegate IVerb.Delegate => Run;
+
+    /// <summary>
+    /// Runs the verb
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <param name="c"></param>
+    /// <param name="d"></param>
+    /// <param name="token"></param>
+    /// <returns></returns>
+    public Task<int> Run(T1 a, T2 b, T3 c, T4 d, CancellationToken token);
+}
+

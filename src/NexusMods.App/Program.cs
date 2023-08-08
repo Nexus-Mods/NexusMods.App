@@ -11,6 +11,7 @@ using NexusMods.App.UI;
 using NexusMods.CLI;
 using NexusMods.Common;
 using NexusMods.Paths;
+using NexusMods.Updater;
 using NLog.Extensions.Logging;
 using NLog.Targets;
 using ReactiveUI;
@@ -24,7 +25,7 @@ public class Program
     [STAThread]
     public static async Task<int> Main(string[] args)
     {
-        var host = BuildHost();
+        var host = BuildHost(args.Length == 0);
 
         _logger = host.Services.GetRequiredService<ILogger<Program>>();
         TaskScheduler.UnobservedTaskException += (_, e) =>
@@ -52,11 +53,18 @@ public class Program
 
         // Start listeners only available in GUI mode
         host.Services.GetRequiredService<NxmRpcListener>();
+
+        if (Environment.GetCommandLineArgs().Length != 0)
+        {
+            var updater = host.Services.GetRequiredService<UpdaterService>();
+            updater.Startup();
+        }
+
         Startup.Main(host.Services, args);
         return 0;
     }
 
-    public static IHost BuildHost()
+    public static IHost BuildHost(bool isGui = true)
     {
         // I'm not 100% sure how to wire this up to cleanly pass settings
         // to ConfigureLogging; since the DI container isn't built until the host is.
@@ -73,7 +81,12 @@ public class Program
                 config = JsonSerializer.Deserialize<AppConfig>(configJson)!;
                 config.Sanitize();
                 services.AddSingleton(config);
-                services.AddApp(new AppConfig()).Validate();
+
+                if (isGui)
+                    services.AddUpdater();
+
+                services.AddApp(new AppConfig())
+                    .Validate();
             })
             .ConfigureLogging((_, builder) => AddLogging(builder, config.LoggingSettings))
             .Build();

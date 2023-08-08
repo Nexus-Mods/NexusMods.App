@@ -38,23 +38,23 @@ that all the logic is contained inside the application itself, and yet still all
 ## Code Flow
 
 ### On CLI start
-* Look for a `_update` folder, and see if `UPDATE_READY` exists as a file in that folder
+* Look for a `__update__` folder, and see if `UPDATE_READY` exists as a file in that folder
 * If it does, log a message saying there's a pending update, the contents of the `UPDATE_READY` file contains the new version
 
 ### On normal app start
 * If any other process is running with the same process name as the current process, exit the update routine
-* If the `_update` folder exists, but does not contain the `UPDATE_READY` file, then delete the folder, and continue a normal launch
-* If the `_update` folder exists, and contains a `UPDATE_READY` file, launch the app with the `copy-to-parent` command,
+* If the `__update__` folder exists, but does not contain the `UPDATE_READY` file, then delete the folder, and continue a normal launch
+* If the `__update__` folder exists, and contains a `UPDATE_READY` file, launch the app with the `copy-app-to-folder` command,
   passing in the current app folder, and the current app process ID. Then exit the app.
 
 ### During normal app operation
 * Read the list of versions available from github
-* If the current version is not the latest version, extract the latest version to the `_update` folder
-* Create a `UPDATE_READY` file in the `_update` folder, and write the new version number to it
+* If the current version is not the latest version, extract the latest version to the `__update__` folder
+* Create a `UPDATE_READY` file in the `__update__` folder, and write the new version number to it
 * If the current version is the latest, cache the latest version for 6 hours (so future app restarts don't ping github)
 * Sleep for 6 hours
 
-### If the app is run with `copy-to-parent`
+### If the app is run with `copy-app-to-folder`
 * Wait for the parent process to exit
 * Copy everything in the current folder to the parent folder
 * Delete the `UPDATE_READY` file

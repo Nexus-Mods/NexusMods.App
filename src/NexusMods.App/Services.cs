@@ -33,7 +33,7 @@ public static class Services
         services.AddScoped<IRenderer, Json>();
         return services;
     }
-    
+
     public static IServiceCollection AddListeners(this IServiceCollection services)
     {
         services.AddSingleton<NxmRpcListener>();
