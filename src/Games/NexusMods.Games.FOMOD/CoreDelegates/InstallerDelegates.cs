@@ -6,7 +6,7 @@ using NexusMods.Common.UserInput;
 
 namespace NexusMods.Games.FOMOD.CoreDelegates;
 
-[PublicAPI]
+[UsedImplicitly]
 public sealed class InstallerDelegates : ICoreDelegates
 {
     public IContextDelegates context { get; }
