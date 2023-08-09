@@ -245,6 +245,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
             await using var entryStream = entry.Open();
             await using var ms = new MemoryStream(contents);
             await ms.CopyToAsync(entryStream);
+            await entryStream.FlushAsync();
         }
 
         await stream.FlushAsync();
