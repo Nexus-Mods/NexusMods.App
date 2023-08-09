@@ -1,4 +1,4 @@
-﻿using NexusMods.DataModel.Games.GameCapabilities.AFolderMatchInstallerCapability;
+﻿using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.BethesdaGameStudios.Capabilities;

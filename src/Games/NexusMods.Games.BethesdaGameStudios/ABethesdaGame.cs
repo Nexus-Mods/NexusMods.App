@@ -1,6 +1,6 @@
 ﻿using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Games.GameCapabilities;
-using NexusMods.DataModel.Games.GameCapabilities.AFolderMatchInstallerCapability;
+using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.DataModel.Games.GameCapabilities.FomodCustomInstallPathCapability;
 using NexusMods.Games.BethesdaGameStudios.Capabilities;
 
@@ -12,8 +12,11 @@ namespace NexusMods.Games.BethesdaGameStudios;
 /// </summary>
 public abstract class ABethesdaGame : AGame
 {
+
+    /// <inheritdoc />
     protected ABethesdaGame(IEnumerable<IGameLocator> gameLocators) : base(gameLocators) { }
 
+    /// <inheritdoc />
     public override Dictionary<GameCapabilityId, IGameCapability> SupportedCapabilities()
     {
         var capabilities = base.SupportedCapabilities();

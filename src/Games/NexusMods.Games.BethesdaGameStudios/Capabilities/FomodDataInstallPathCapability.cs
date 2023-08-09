@@ -1,14 +1,13 @@
 using NexusMods.DataModel.Games.GameCapabilities.FomodCustomInstallPathCapability;
 using NexusMods.Paths;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NexusMods.Games.BethesdaGameStudios.Capabilities
 {
-    internal class FomodDataInstallPathCapability : AFomodCustomInstallPathCapability
+
+    /// <summary>
+    /// Capability to install FOMODs to the Data folder instead of the GameRoot.
+    /// </summary>
+    public class FomodDataInstallPathCapability : AFomodCustomInstallPathCapability
     {
         public override GamePath ModInstallationPath()
         {

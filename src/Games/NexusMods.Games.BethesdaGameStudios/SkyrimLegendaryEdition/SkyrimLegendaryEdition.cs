@@ -1,9 +1,6 @@
 ﻿using NexusMods.Common;
 using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Games.GameCapabilities;
-using NexusMods.DataModel.Games.GameCapabilities.AFolderMatchInstallerCapability;
 using NexusMods.FileExtractor.StreamFactories;
-using NexusMods.Games.BethesdaGameStudios.Capabilities;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.BethesdaGameStudios;

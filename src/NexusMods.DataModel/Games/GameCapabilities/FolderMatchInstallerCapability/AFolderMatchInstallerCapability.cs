@@ -1,5 +1,5 @@
 ﻿
-namespace NexusMods.DataModel.Games.GameCapabilities.AFolderMatchInstallerCapability;
+namespace NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 
 /// <summary>
 ///    GameCapability for games that support installing mod archives by matching archive folder to a known folder structure.
@@ -19,7 +19,8 @@ public abstract class AFolderMatchInstallerCapability : IGameCapability
 
 
     /// <summary>
-    /// Collection of 
+    /// Collection of InstallFolderTargets to provide to the installer.
+    /// Reimplement this property to contain the InstallFolderTargets for a specific game or collection of games.
     /// </summary>
     /// <returns></returns>
     public IEnumerable<InstallFolderTarget> GetInstallFolderTargets()
