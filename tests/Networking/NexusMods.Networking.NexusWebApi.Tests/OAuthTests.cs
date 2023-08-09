@@ -1,9 +1,7 @@
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Interprocess;
-using Moq;
 using System.Net;
-using Moq.Protected;
 using NexusMods.Networking.NexusWebApi.Types;
 using System.Text.Json;
 using FluentAssertions;
@@ -12,33 +10,9 @@ using NexusMods.DataModel.Interprocess.Jobs;
 using NexusMods.Networking.NexusWebApi.DTOs.OAuth;
 using NexusMods.Networking.NexusWebApi.NMA;
 using NexusMods.Networking.NexusWebApi.NMA.Messages;
+using NSubstitute;
 
 namespace NexusMods.Networking.NexusWebApi.Tests;
-
-// TODO: Is this dead code?
-public class DelegatingHandlerStub : DelegatingHandler
-{
-    private readonly Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> _handlerFunc;
-    public DelegatingHandlerStub()
-    {
-        _handlerFunc = (request, _) =>
-        {
-            var resp = new HttpResponseMessage(HttpStatusCode.OK);
-            resp.RequestMessage = request;
-            return Task.FromResult(resp);
-        };
-    }
-
-    public DelegatingHandlerStub(Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> handlerFunc)
-    {
-        _handlerFunc = handlerFunc;
-    }
-
-    protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-    {
-        return _handlerFunc(request, cancellationToken);
-    }
-}
 
 public class OAuthTests
 {
@@ -48,7 +22,8 @@ public class OAuthTests
     private readonly IInterprocessJobManager _jobManager;
 
     // ReSharper disable once ContextualLoggerProblem
-    public OAuthTests(ILogger<OAuth> logger,
+    public OAuthTests(
+        ILogger<OAuth> logger,
         IMessageProducer<NXMUrlMessage> producer,
         IMessageConsumer<NXMUrlMessage> consumer,
         IInterprocessJobManager jobManager)
@@ -65,24 +40,25 @@ public class OAuthTests
         #region Setup
         var stateId = "00000000-0000-0000-0000-000000000000";
 
-        var messageHandler = new Mock<HttpMessageHandler>();
-        messageHandler.Protected()
-            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(new HttpResponseMessage
+        var messageHandler = Substitute.ForPartsOf<MockHttpMessageHandler>();
+        messageHandler
+            .SendMock(Arg.Any<HttpRequestMessage>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.OK,
                 Content = new StringContent(JsonSerializer.Serialize(ReplyToken)),
-            });
-        var httpClient = new HttpClient(messageHandler.Object);
+            }));
 
-        var idGen = new Mock<IIDGenerator>();
-        idGen.Setup(_ => _.UUIDv4()).Returns(stateId);
+        var httpClient = new HttpClient(messageHandler);
 
-        var os = new Mock<IOSInterop>();
+        var idGen = Substitute.For<IIDGenerator>();
+        idGen.UUIDv4().Returns(stateId);
+
+        var os = Substitute.For<IOSInterop>();
         #endregion
 
         #region Execution
-        var oauth = new OAuth(_logger, httpClient, idGen.Object, os.Object, _consumer, _jobManager);
+        var oauth = new OAuth(_logger, httpClient, idGen, os, _consumer, _jobManager);
         var tokenTask = oauth.AuthorizeRequest(CancellationToken.None);
 
         await _producer.Write(new NXMUrlMessage { Value = NXMUrl.Parse($"nxm://oauth/callback?state={stateId}&code=code") }, CancellationToken.None);
@@ -90,8 +66,9 @@ public class OAuthTests
         #endregion
 
         #region Verification
-        idGen.Verify(_ => _.UUIDv4(), Times.Exactly(2));
-        os.Verify(_ => _.OpenUrl(ExpectedAuthURL, It.IsAny<CancellationToken>()), Times.Once);
+
+        _ = idGen.Received(2).UUIDv4();
+        _ = os.Received(1).OpenUrl(ExpectedAuthURL, Arg.Any<CancellationToken>());
         result.Should().BeEquivalentTo(ReplyToken);
         #endregion
     }
@@ -102,31 +79,34 @@ public class OAuthTests
         #region Setup
         var stateId = "00000000-0000-0000-0000-000000000000";
 
-        var messageHandler = new Mock<HttpMessageHandler>();
-        messageHandler.Protected()
-            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(new HttpResponseMessage
+        var messageHandler = Substitute.ForPartsOf<MockHttpMessageHandler>();
+        messageHandler
+            .SendMock(Arg.Any<HttpRequestMessage>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.OK,
                 Content = new StringContent(JsonSerializer.Serialize(ReplyToken)),
-            });
-        var httpClient = new HttpClient(messageHandler.Object);
+            }));
 
-        var idGen = new Mock<IIDGenerator>();
-        idGen.Setup(_ => _.UUIDv4()).Returns(stateId);
+        var httpClient = new HttpClient(messageHandler);
 
-        var os = new Mock<IOSInterop>();
+        var idGen = Substitute.For<IIDGenerator>();
+        idGen.UUIDv4().Returns(stateId);
+
+        var os = Substitute.For<IOSInterop>();
         #endregion
 
         #region Execution
-        var oauth = new OAuth(_logger, httpClient, idGen.Object, os.Object, _consumer, _jobManager);
+        var oauth = new OAuth(_logger, httpClient, idGen, os, _consumer, _jobManager);
         var token = await oauth.RefreshToken("refresh_token", CancellationToken.None);
         #endregion
 
         #region Verification
-        idGen.Verify(_ => _.UUIDv4(), Times.Never);
-        os.Verify(_ => _.OpenUrl(It.IsAny<Uri>(), It.IsAny<CancellationToken>()), Times.Never);
+
+        _ = idGen.DidNotReceive().UUIDv4();
+        _ = os.DidNotReceive().OpenUrl(Arg.Any<Uri>(), Arg.Any<CancellationToken>());
         token.Should().BeEquivalentTo(ReplyToken);
+
         #endregion
     }
 
@@ -136,24 +116,25 @@ public class OAuthTests
         #region Setup
         var stateId = "00000000-0000-0000-0000-000000000000";
 
-        var messageHandler = new Mock<HttpMessageHandler>();
-        messageHandler.Protected()
-            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(new HttpResponseMessage
+        var messageHandler = Substitute.ForPartsOf<MockHttpMessageHandler>();
+        messageHandler
+            .SendMock(Arg.Any<HttpRequestMessage>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.OK,
-                Content = new StringContent("who dis?"),
-            });
-        var httpClient = new HttpClient(messageHandler.Object);
+                Content = new StringContent("foo"),
+            }));
 
-        var idGen = new Mock<IIDGenerator>();
-        idGen.Setup(_ => _.UUIDv4()).Returns(stateId);
+        var httpClient = new HttpClient(messageHandler);
 
-        var os = new Mock<IOSInterop>();
+        var idGen = Substitute.For<IIDGenerator>();
+        idGen.UUIDv4().Returns(stateId);
+
+        var os = Substitute.For<IOSInterop>();
         #endregion
 
         #region Execution
-        var oauth = new OAuth(_logger, httpClient, idGen.Object, os.Object, _consumer, _jobManager);
+        var oauth = new OAuth(_logger, httpClient, idGen, os, _consumer, _jobManager);
         Func<Task> call = () => oauth.AuthorizeRequest(CancellationToken.None);
         var tokenTask = call.Should().ThrowAsync<JsonException>();
 
@@ -168,18 +149,18 @@ public class OAuthTests
         #region Setup
         var stateId = "00000000-0000-0000-0000-000000000000";
 
-        var messageHandler = new Mock<HttpMessageHandler>();
-        var httpClient = new HttpClient(messageHandler.Object);
+        var messageHandler = Substitute.ForPartsOf<MockHttpMessageHandler>();
+        var httpClient = new HttpClient(messageHandler);
 
-        var idGen = new Mock<IIDGenerator>();
-        idGen.Setup(_ => _.UUIDv4()).Returns(stateId);
+        var idGen = Substitute.For<IIDGenerator>();
+        idGen.UUIDv4().Returns(stateId);
 
-        var os = new Mock<IOSInterop>();
+        var os = Substitute.For<IOSInterop>();
         var cts = new CancellationTokenSource();
         #endregion
 
         #region Execution
-        var oauth = new OAuth(_logger, httpClient, idGen.Object, os.Object, _consumer, _jobManager);
+        var oauth = new OAuth(_logger, httpClient, idGen, os, _consumer, _jobManager);
         Func<Task> call = () => oauth.AuthorizeRequest(cts.Token);
         var task = call.Should().ThrowAsync<OperationCanceledException>();
         cts.Cancel();
@@ -187,7 +168,7 @@ public class OAuthTests
         #endregion
     }
 
-    private JwtTokenReply ReplyToken =>
+    private static readonly JwtTokenReply ReplyToken =
         new()
         {
             AccessToken = "access_token",

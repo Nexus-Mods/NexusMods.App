@@ -1,49 +1,52 @@
 using Microsoft.Extensions.Logging;
-using Moq;
 using NexusMods.Common;
 using System.Net;
 using NexusMods.DataModel.Interprocess;
 using NexusMods.DataModel.Abstractions;
 using FluentAssertions;
-using Moq.Protected;
 using System.Text.Json;
 using NexusMods.Common.OSInterop;
 using NexusMods.DataModel.Interprocess.Jobs;
-using NexusMods.Networking.NexusWebApi.DTOs;
 using NexusMods.Networking.NexusWebApi.DTOs.OAuth;
 using NexusMods.Networking.NexusWebApi.NMA;
 using NexusMods.Networking.NexusWebApi.NMA.Messages;
+using NSubstitute;
 
 namespace NexusMods.Networking.NexusWebApi.Tests;
 
 public class OAuth2MessageFactoryTests
 {
-    private OAuth2MessageFactory _factory;
-    private Mock<IDataStore> _store;
-    private Mock<HttpMessageHandler> _handler;
+    private readonly OAuth2MessageFactory _factory;
+    private readonly IDataStore _store;
+    private readonly MockHttpMessageHandler _handler;
 
-    public OAuth2MessageFactoryTests(ILogger<OAuth2MessageFactoryTests> logger,
+    public OAuth2MessageFactoryTests(
+        ILoggerFactory loggerFactory,
         IMessageConsumer<NXMUrlMessage> consumer,
         IInterprocessJobManager jobManager)
     {
-        _handler = new Mock<HttpMessageHandler>();
-        var httpClient = new HttpClient(_handler.Object);
-        var idGen = new Mock<IIDGenerator>();
-        var os = new Mock<IOSInterop>();
-        _store = new Mock<IDataStore>();
+        _store = Substitute.For<IDataStore>();
 
-        var auth = new OAuth(logger.As<ILogger<OAuth>>(), httpClient, idGen.Object, os.Object, consumer, jobManager);
-        _factory = new OAuth2MessageFactory(_store.Object, auth);
+        _handler = Substitute.ForPartsOf<MockHttpMessageHandler>();
+        var httpClient = new HttpClient(_handler);
+
+        var idGen = Substitute.For<IIDGenerator>();
+        var os = Substitute.For<IOSInterop>();
+
+        var auth = new OAuth(loggerFactory.CreateLogger<OAuth>(), httpClient, idGen, os, consumer, jobManager);
+        _factory = new OAuth2MessageFactory(_store, auth);
     }
 
     [Fact]
     public async void AddsHeaderToRequest()
     {
-        _store.Setup(_ => _.Get<JWTTokenEntity>(JWTTokenEntity.StoreId, false)).Returns(() => new JWTTokenEntity
-        {
-            AccessToken = "access_token",
-            RefreshToken = "refresh_token"
-        });
+        _store
+            .Get<JWTTokenEntity>(JWTTokenEntity.StoreId, canCache: false)
+            .Returns(_ => new JWTTokenEntity
+            {
+                AccessToken = "access_token",
+                RefreshToken = "refresh_token"
+            });
 
         var request = await _factory.Create(HttpMethod.Get, new Uri("test://foobar"));
 
@@ -71,20 +74,21 @@ public class OAuth2MessageFactoryTests
     [Fact()]
     public async void RequestsRefreshOnTokenExpired()
     {
-        _store.Setup(_ => _.Get<JWTTokenEntity>(JWTTokenEntity.StoreId, false)).Returns(() => new JWTTokenEntity
-        {
-            AccessToken = "access_token",
-            RefreshToken = "refresh_token"
-        });
-
-        _handler.Protected()
-            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(new HttpResponseMessage
+        _store
+            .Get<JWTTokenEntity>(JWTTokenEntity.StoreId, canCache: false)
+            .Returns(_ => new JWTTokenEntity
             {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(JsonSerializer.Serialize(RefreshToken)),
+                AccessToken = "access_token",
+                RefreshToken = "refresh_token"
             });
 
+        _handler
+            .SendMock(Arg.Any<HttpRequestMessage>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonSerializer.Serialize(RefreshToken))
+            }));
 
         var msg = new HttpRequestMessage(HttpMethod.Get, "test://foobar");
         var ex = new HttpRequestException("Token has expired", null, HttpStatusCode.Unauthorized);
@@ -94,19 +98,14 @@ public class OAuth2MessageFactoryTests
         res.Headers.Authorization!.ToString().Should().Be("Bearer refreshed_access_token");
     }
 
-    private JwtTokenReply RefreshToken
-    {
-        get
+    private static readonly JwtTokenReply RefreshToken =
+        new()
         {
-            return new JwtTokenReply
-            {
-                AccessToken = "refreshed_access_token",
-                RefreshToken = "refresh_token",
-                Scope = "public",
-                Type = "Bearer",
-                CreatedAt = 1677143380,
-                ExpiresIn = 21600,
-            };
-        }
-    }
+            AccessToken = "refreshed_access_token",
+            RefreshToken = "refresh_token",
+            Scope = "public",
+            Type = "Bearer",
+            CreatedAt = 1677143380,
+            ExpiresIn = 21600,
+        };
 }
