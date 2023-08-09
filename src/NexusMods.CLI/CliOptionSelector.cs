@@ -28,6 +28,12 @@ public class CliOptionSelector : IOptionSelector
     /// </summary>
     public bool AutoFail { get; set; }
 
+    /// <inheritdoc/>
+    public void SetupSelector(string name) { }
+
+    /// <inheritdoc/>
+    public void CleanupSelector() { }
+
     /// <summary>
     /// Request a choice from the user.
     /// </summary>

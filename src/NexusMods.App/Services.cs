@@ -10,6 +10,7 @@ using NexusMods.FileExtractor;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.DarkestDungeon;
 using NexusMods.Games.FOMOD;
+using NexusMods.Games.FOMOD.UI;
 using NexusMods.Games.Generic;
 using NexusMods.Games.RedEngine;
 using NexusMods.Games.Reshade;
@@ -33,7 +34,7 @@ public static class Services
         services.AddScoped<IRenderer, Json>();
         return services;
     }
-    
+
     public static IServiceCollection AddListeners(this IServiceCollection services)
     {
         services.AddSingleton<NxmRpcListener>();
@@ -48,6 +49,7 @@ public static class Services
         services.AddCLI()
             .AddFileSystem()
             .AddUI()
+            .AddFomodInstallerUi()
             .AddFileExtractors(config.FileExtractorSettings)
             .AddDataModel(config.DataModelSettings)
             .AddBethesdaGameStudios()

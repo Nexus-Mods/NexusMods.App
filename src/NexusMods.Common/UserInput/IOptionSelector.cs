@@ -10,6 +10,17 @@ namespace NexusMods.Common.UserInput;
 public interface IOptionSelector
 {
     /// <summary>
+    /// Sets up the selector.
+    /// </summary>
+    /// <param name="name">Name of the new selection.</param>
+    public void SetupSelector(string name);
+
+    /// <summary>
+    /// Cleans up the selector.
+    /// </summary>
+    public void CleanupSelector();
+
+    /// <summary>
     /// Requests the user to make a choice from an individual group of choices.
     /// </summary>
     /// <param name="query">The prompt displayed to the user for this choice.</param>

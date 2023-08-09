@@ -32,7 +32,6 @@ public class UiDelegates : IUIDelegates
     private readonly ILogger<UiDelegates> _logger;
     private readonly IOptionSelector _optionSelector;
 
-    private string _moduleName = string.Empty;
     private SelectOptions _selectOptions = DummySelectOptions;
     private ContinueToNextStep _continueToNextStep = DummyContinueToNextStep;
 
@@ -49,16 +48,18 @@ public class UiDelegates : IUIDelegates
         Action<bool, int> cont,
         Action cancel)
     {
-        _moduleName = moduleName ?? string.Empty;
         _selectOptions = new SelectOptions(select);
         _continueToNextStep = new ContinueToNextStep(cont);
+
+        _optionSelector.SetupSelector(moduleName ?? string.Empty);
     }
 
     public void EndDialog()
     {
-        _moduleName = string.Empty;
         _selectOptions = DummySelectOptions;
         _continueToNextStep = DummyContinueToNextStep;
+
+        _optionSelector.CleanupSelector();
     }
 
     public void ReportError(
