@@ -10,7 +10,8 @@ namespace NexusMods.CLI.Tests.VerbTests;
 public class AVerbTest
 {
     // ReSharper disable InconsistentNaming
-    internal AbsolutePath Data7ZipLZMA2 => FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Resources/data_7zip_lzma2.7z");
+    internal AbsolutePath Data7ZipLZMA2 =>
+        FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Resources/data_7zip_lzma2.7z");
     // ReSharper restore InconsistentNaming
 
     private List<object> LastLog { get; set; } = new();
@@ -20,7 +21,7 @@ public class AVerbTest
 
     internal readonly IFileSystem FileSystem;
 
-    internal AVerbTest(TemporaryFileManager temporaryFileManager, IServiceProvider provider)
+    public AVerbTest(TemporaryFileManager temporaryFileManager, IServiceProvider provider)
     {
         _provider = provider;
         TemporaryFileManager = temporaryFileManager;
@@ -36,7 +37,7 @@ public class AVerbTest
         RunNoBannerFinish(id);
     }
 
-    internal async Task RunNoBannerAsync(params string[] args)
+    public async Task RunNoBannerAsync(params string[] args)
     {
         using var scope = RunNoBannerInit(out var builder);
         var id = await builder.MakeRoot().InvokeAsync(new[] { "--noBanner" }.Concat(args).ToArray());
@@ -56,10 +57,11 @@ public class AVerbTest
         var scope = _provider.CreateScope();
         _ = scope.ServiceProvider.GetRequiredService<LoggingRenderer>();
         LoggingRenderer.Logs.Value = new List<object>();
-        configurator = scope.ServiceProvider.GetRequiredService<CommandLineConfigurator>();;
+        configurator = scope.ServiceProvider.GetRequiredService<CommandLineConfigurator>();
+        ;
         return scope;
     }
 
     internal int LogSize => LastLog.Count;
-    internal Table LastTable => LastLog.OfType<Table>().First();
+    public Table LastTable => LastLog.OfType<Table>().First();
 }

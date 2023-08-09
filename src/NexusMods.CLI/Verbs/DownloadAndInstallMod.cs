@@ -40,7 +40,7 @@ public class DownloadAndInstallMod : AVerb<string, LoadoutMarker, string>, IRend
         {
             new OptionDefinition<string>("u", "url", "The URL to handle (nxm:// or direct link to file)"),
             new OptionDefinition<LoadoutMarker>("l", "loadout", "loadout to add the mod to"),
-            new OptionDefinition<string>("n", "name", "Name of the mod after installing")
+            new OptionDefinition<string>("n", "modName", "Name of the mod after installing")
         });
 
     /// <inheritdoc />
@@ -61,7 +61,8 @@ public class DownloadAndInstallMod : AVerb<string, LoadoutMarker, string>, IRend
                 temporaryPath, null, null, token);
 
             var analyzedFile = await _archiveAnalyzer.AnalyzeFileAsync(temporaryPath, token);
-            await _archiveInstaller.AddMods(loadout.Value.LoadoutId, analyzedFile.Hash, token:token);
+            await _archiveInstaller.AddMods(loadout.Value.LoadoutId, analyzedFile.Hash,
+                string.IsNullOrWhiteSpace(modName) ? null : modName, token: token);
             return 0;
         });
 

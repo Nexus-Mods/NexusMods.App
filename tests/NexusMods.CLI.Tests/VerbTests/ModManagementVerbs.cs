@@ -8,7 +8,8 @@ public class ModManagementVerbs : AVerbTest
 {
     private readonly StubbedGame _stubbedGame;
 
-    public ModManagementVerbs(TemporaryFileManager temporaryFileManager, StubbedGame stubbedGame, IServiceProvider provider) : base(temporaryFileManager, provider)
+    public ModManagementVerbs(TemporaryFileManager temporaryFileManager, StubbedGame stubbedGame,
+        IServiceProvider provider) : base(temporaryFileManager, provider)
     {
         _stubbedGame = stubbedGame;
     }
@@ -18,7 +19,8 @@ public class ModManagementVerbs : AVerbTest
     {
         var listName = Guid.NewGuid().ToString();
 
-        await RunNoBannerAsync("manage-game", "-g", "stubbed-game", "-v", _stubbedGame.Installations.First().Version.ToString(), "-n", listName);
+        await RunNoBannerAsync("manage-game", "-g", "stubbed-game", "-v",
+            _stubbedGame.Installations.First().Version.ToString(), "-n", listName);
 
         await RunNoBannerAsync("list-managed-games");
 
@@ -40,5 +42,6 @@ public class ModManagementVerbs : AVerbTest
         LastTable.Rows.Count().Should().Be(7);
 
         await RunNoBannerAsync("apply", "-l", listName, "-r", "false");
+        LastTable.Rows.Count().Should().Be(3);
     }
 }
