@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using NexusMods.Abstractions.CLI;
 using NexusMods.CLI;
 using NexusMods.DataModel.RateLimiting;
@@ -21,7 +22,9 @@ public class Spectre : IRenderer
     public string Name => "console";
     public void RenderBanner()
     {
-        //AnsiConsole.Write(new FigletText("NexusMods.App") {Color = NexusColor});
+        AnsiConsole.Write(new FigletText("NexusMods.App") {Color = NexusColor});
+        var version = Process.GetCurrentProcess().MainModule?.FileVersionInfo?.ProductVersion;
+        AnsiConsole.Write(new Text($"v: {version}\n", new Style(NexusColor)));
     }
 
     public async Task<T> WithProgress<T>(CancellationToken token, Func<Task<T>> f, bool showSize = true)

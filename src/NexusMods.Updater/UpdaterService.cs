@@ -66,11 +66,11 @@ public class UpdaterService
 
     public async Task Startup()
     {
+#if !DEBUG
         if (await IsUpdateReady())
         {
             await RunUpdate();
         }
-#if DEBUG
         _runnerTask = Task.Run(async () => await RunLoop(), _token);
 #endif
     }

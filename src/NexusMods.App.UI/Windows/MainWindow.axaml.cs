@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia;
@@ -17,6 +18,8 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         #if DEBUG
         this.AttachDevTools();
         #endif
+
+        Title = "Nexus Mods App - v" + Process.GetCurrentProcess().MainModule?.FileVersionInfo?.ProductVersion ?? "Unknown";
 
         this.WhenActivated(disposables =>
         {
