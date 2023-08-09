@@ -42,7 +42,7 @@ public class GenericFolderMatchInstaller : IModInstaller
         if (!installation.Game.SupportedCapabilities().TryGetValue(RequiredGameCapability, out var capability))
             return Priority.None;
         var folderMatchInstallerCapability = (AFolderMatchInstallerCapability)capability;
-        var installFolderTargets = folderMatchInstallerCapability.GetInstallFolderTargets();
+        var installFolderTargets = folderMatchInstallerCapability.InstallFolderTargets();
 
         var filePaths = archiveFiles.Keys;
 
@@ -65,7 +65,7 @@ public class GenericFolderMatchInstaller : IModInstaller
         }
 
         var folderMatchInstallerCapability = (AFolderMatchInstallerCapability)capability;
-        var installFolderTargets = folderMatchInstallerCapability.GetInstallFolderTargets();
+        var installFolderTargets = folderMatchInstallerCapability.InstallFolderTargets();
 
         List<RelativePath> missedFiles = new();
 

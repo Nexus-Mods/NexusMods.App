@@ -15,16 +15,6 @@ public abstract class AFolderMatchInstallerCapability : IGameCapability
     /// Collection of InstallFolderTargets to provide to the installer.
     /// Reimplement this property to contain the InstallFolderTargets for a specific game or collection of games.
     /// </summary>
-    protected abstract IEnumerable<InstallFolderTarget> InstallFolderTargets { get; }
+    public abstract IEnumerable<InstallFolderTarget> InstallFolderTargets();
 
-
-    /// <summary>
-    /// Collection of InstallFolderTargets to provide to the installer.
-    /// Reimplement this property to contain the InstallFolderTargets for a specific game or collection of games.
-    /// </summary>
-    /// <returns></returns>
-    public IEnumerable<InstallFolderTarget> GetInstallFolderTargets()
-    {
-        return InstallFolderTargets;
-    }
 }
