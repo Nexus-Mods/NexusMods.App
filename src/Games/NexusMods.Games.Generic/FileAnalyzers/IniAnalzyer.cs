@@ -16,7 +16,7 @@ public class IniAnalzyer : IFileAnalyzer
     public FileAnalyzerId Id { get; } = FileAnalyzerId.New("904bca7b-fbd6-4350-b4e2-6fdbd034ec76", 1);
     public IEnumerable<FileType> FileTypes => new[] { FileType.INI };
 
-    private static readonly IniParserConfiguration Config = new()
+    public static readonly IniParserConfiguration Config = new()
     {
         AllowDuplicateKeys = true,
         AllowDuplicateSections = true,
