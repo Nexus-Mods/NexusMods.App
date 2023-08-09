@@ -19,7 +19,7 @@ namespace NexusMods.Games.Generic.Installers;
 /// (<see cref="InstallFolderTarget"/>).
 /// Requires the game to support <see cref="AFolderMatchInstallerCapability"/>.
 /// Tries to match the mod archive folder structure to <see cref="InstallFolderTarget"/> offered by the capability.
-/// 
+///
 /// Example: myMod/Textures/myTexture.dds -> Skyrim/Data/Textures/myTexture.dds
 /// </summary>
 public class GenericFolderMatchInstaller : IModInstaller
@@ -39,13 +39,13 @@ public class GenericFolderMatchInstaller : IModInstaller
     public Priority GetPriority(GameInstallation installation,
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        if (!installation.Game.SupportedCapabilities.TryGetValue(RequiredGameCapability, out var capability))
+        if (!installation.Game.SupportedCapabilities().TryGetValue(RequiredGameCapability, out var capability))
             return Priority.None;
         var folderMatchInstallerCapability = (AFolderMatchInstallerCapability)capability;
         var installFolderTargets = folderMatchInstallerCapability.GetInstallFolderTargets();
 
         var filePaths = archiveFiles.Keys;
-        
+
         if (filePaths.Any(filePath => PathMatchesAnyTarget(filePath, installFolderTargets)))
         {
             return Priority.Normal;
@@ -58,7 +58,7 @@ public class GenericFolderMatchInstaller : IModInstaller
         Hash srcArchiveHash,
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles, CancellationToken cancellationToken = default)
     {
-        if (!gameInstallation.Game.SupportedCapabilities.TryGetValue(RequiredGameCapability, out var capability))
+        if (!gameInstallation.Game.SupportedCapabilities().TryGetValue(RequiredGameCapability, out var capability))
         {
             throw new NotSupportedException(
                 $"Game {gameInstallation.Game.Name} does not support GenericFolderMatchInstaller capability.");
@@ -76,7 +76,7 @@ public class GenericFolderMatchInstaller : IModInstaller
             modFiles.AddRange(GetModFilesForTarget(archiveFiles, target, missedFiles));
             if (modFiles.Any())
             {
-                // If any file matched target, ignore other targets. 
+                // If any file matched target, ignore other targets.
                 // no support for multiple targets from the same archive.
                 break;
             }
@@ -319,7 +319,7 @@ public class GenericFolderMatchInstaller : IModInstaller
 
     /// <summary>
     /// Returns whether the path contains the subPath.
-    /// 
+    ///
     /// Example: path: "skse_1_07_03/src/skse/skse.sln" subPath: "src/skse"
     /// </summary>
     /// <param name="path"></param>

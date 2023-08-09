@@ -53,10 +53,10 @@ public interface IGame
     /// Stream factory for the game's image, should be close to 16:9 aspect ratio.
     /// </summary>
     public IStreamFactory GameImage { get; }
-    
-    
+
+
     /// <summary>
     /// Collection of <see cref="IGameCapability"/> that this game supports.
     /// </summary>
-    public Dictionary<GameCapabilityId, IGameCapability> SupportedCapabilities { get; }
+    public Dictionary<GameCapabilityId, IGameCapability> SupportedCapabilities();
 }

@@ -10,7 +10,7 @@ using NexusMods.Paths;
 
 namespace NexusMods.Games.BethesdaGameStudios;
 
-public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame, IXboxGame
+public class SkyrimSpecialEdition : ABethesdaGame, ISteamGame, IGogGame, IXboxGame
 {
     // ReSharper disable InconsistentNaming
     public static Extension ESL = new(".esl");
@@ -52,15 +52,6 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame, IXboxGame
             To = new GamePath(GameFolderType.AppData, "plugins.txt")
         };
     }
-
-    public override Dictionary<GameCapabilityId, IGameCapability> SupportedCapabilities => new()
-    {
-        {
-            // Support for installing simple Data and GameRoot level mods. 
-            AFolderMatchInstallerCapability.CapabilityId, new BethesdaFolderMatchInstallerCapability()
-        }
-    };
-
 
     public IEnumerable<uint> SteamIds => new[] { 489830u };
 

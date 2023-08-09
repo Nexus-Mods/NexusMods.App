@@ -51,10 +51,10 @@ public class UnknownGame : IGame
     {
         return Array.Empty<AModFile>();
     }
-    
+
     /// <inheritdoc />
-    public virtual Dictionary<GameCapabilityId, IGameCapability> SupportedCapabilities { get; } = new();
-    
+    public virtual Dictionary<GameCapabilityId, IGameCapability> SupportedCapabilities() => new();
+
 
     /// <inheritdoc />
     public IStreamFactory Icon => throw new NotImplementedException("No icon provided for this game.");
