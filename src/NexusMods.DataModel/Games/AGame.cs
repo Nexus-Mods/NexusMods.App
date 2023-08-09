@@ -52,10 +52,7 @@ public abstract class AGame : IGame
         throw new NotImplementedException("No game image provided for this game.");
 
     /// <inheritdoc />
-    public virtual Dictionary<GameCapabilityId, IGameCapability> SupportedCapabilities()
-    {
-        return new Dictionary<GameCapabilityId, IGameCapability>();
-    }
+    public virtual Dictionary<GameCapabilityId, IGameCapability> SupportedCapabilities() => new();
 
     private Version GetVersion(GameLocatorResult installation)
     {
