@@ -26,5 +26,5 @@ public record ChoiceGroup<TId, TOptionId>
     /// <summary>
     /// Contains all the items the user can select from.
     /// </summary>
-    public required IEnumerable<Option<TOptionId>> Options { get; init; }
+    public required Option<TOptionId>[] Options { get; init; }
 }

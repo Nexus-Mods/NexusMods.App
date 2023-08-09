@@ -99,7 +99,7 @@ public class UiDelegates : IUIDelegates
             Id = group.id,
             Type = ConvertChoiceType(group.type),
             Query = group.name,
-            Options = ToOptions(group.options),
+            Options = ToOptions(group.options).ToArray(),
         });
     }
 
@@ -112,7 +112,7 @@ public class UiDelegates : IUIDelegates
             Description = option.description,
             ImageUrl = option.image != null ? AssetUrl.From(option.image) : null,
             Type = MakeOptionState(option),
-        }).ToArray();
+        });
     }
 
     private static OptionState MakeOptionState(Option option)

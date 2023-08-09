@@ -17,7 +17,7 @@ public interface IOptionSelector
     /// <param name="options">The items the user can select from.</param>
     /// <typeparam name="TOptionId">Unique ID for each option.</typeparam>
     /// <returns>Number of picked options by the user.</returns>
-    public Task<IEnumerable<TOptionId>> RequestChoice<TOptionId>(string query, ChoiceType type, IEnumerable<Option<TOptionId>> options);
+    public Task<TOptionId[]> RequestChoice<TOptionId>(string query, ChoiceType type, Option<TOptionId>[] options);
 
     /// <summary>
     /// Requests the user to make a series of choices from multiple groups of choices.
@@ -26,5 +26,5 @@ public interface IOptionSelector
     /// <typeparam name="TGroupId">Unique ID for each group.</typeparam>
     /// <typeparam name="TOptionId">Unique ID for each option.</typeparam>
     /// <returns></returns>
-    public Task<Tuple<TGroupId, IEnumerable<TOptionId>>?> RequestMultipleChoices<TGroupId, TOptionId>(IEnumerable<ChoiceGroup<TGroupId, TOptionId>> choices);
+    public Task<Tuple<TGroupId, TOptionId[]>?> RequestMultipleChoices<TGroupId, TOptionId>(ChoiceGroup<TGroupId, TOptionId>[] choices);
 }

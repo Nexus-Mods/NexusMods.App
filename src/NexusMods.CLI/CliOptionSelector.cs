@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using JetBrains.Annotations;
 using NexusMods.Abstractions.CLI;
 using NexusMods.Abstractions.CLI.DataOutputs;
 using NexusMods.Common.UserInput;
@@ -7,6 +9,7 @@ namespace NexusMods.CLI;
 /// <summary>
 /// Implementation of an option selector for the CLI.
 /// </summary>
+[UsedImplicitly]
 public class CliOptionSelector : IOptionSelector
 {
     private const string ReturnInput = "x";
@@ -18,13 +21,12 @@ public class CliOptionSelector : IOptionSelector
     /// <summary>
     /// The renderer to use for rendering the options.
     /// </summary>
-    public IRenderer Renderer { get; set; } = null!;
+    private IRenderer Renderer { get; set; } = null!;
 
     /// <summary>
     /// If true, all option selection will throw an error, useful for automated installers and tests
     /// </summary>
-    public bool AutoFail { get; set; } = false;
-
+    public bool AutoFail { get; set; }
 
     /// <summary>
     /// Request a choice from the user.
@@ -34,10 +36,10 @@ public class CliOptionSelector : IOptionSelector
     /// <param name="options"></param>
     /// <typeparam name="TOptionId"></typeparam>
     /// <returns></returns>
-    public Task<IEnumerable<TOptionId>> RequestChoice<TOptionId>(string query, ChoiceType type, IEnumerable<Option<TOptionId>> options)
+    public Task<TOptionId[]> RequestChoice<TOptionId>(string query, ChoiceType type, Option<TOptionId>[] options)
     {
         var done = false;
-        var current = options.ToList();
+        var current = options;
         while (!done)
         {
             var input = GetUserInput();
@@ -54,47 +56,52 @@ public class CliOptionSelector : IOptionSelector
                 Renderer.Render(TableOfOptions(current, query));
             }
         }
-        return Task.FromResult(current.Where(_ => _.Type is OptionState.Selected or OptionState.Required).Select(_ => _.Id));
+
+        var res = current
+            .Where(x => x.Type is OptionState.Selected or OptionState.Required)
+            .Select(x => x.Id)
+            .ToArray();
+
+        return Task.FromResult(res);
     }
 
     /// <inheritdoc />
-    public Task<Tuple<TGroupId, IEnumerable<TOptionId>>?> RequestMultipleChoices<TGroupId, TOptionId>(IEnumerable<ChoiceGroup<TGroupId, TOptionId>> groups)
+    public Task<Tuple<TGroupId, TOptionId[]>?> RequestMultipleChoices<TGroupId, TOptionId>(ChoiceGroup<TGroupId, TOptionId>[] groups)
     {
-        if (AutoFail)
-            throw new Exception("AutoFail is enabled for this option selector.");
+        if (AutoFail) throw new Exception("AutoFail is enabled for this option selector.");
 
         var selectedGroupIdx = -1;
-        Tuple<TGroupId, IEnumerable<TOptionId>>? result = null;
+        Tuple<TGroupId, TOptionId[]>? result = null;
         IList<Option<TOptionId>>? selectedGroup = null;
-        string selectedGroupName = "";
-        var groupsArr = groups.ToArray();
+        var selectedGroupName = "";
 
         while (true)
         {
-            RenderOptions(groupsArr, selectedGroup, selectedGroupName);
+            RenderOptions(groups, selectedGroup, selectedGroupName);
             var input = GetUserInput();
 
             if (selectedGroupIdx < 0)
             {
-                selectedGroupIdx = ParseNumericalUserInput(input, groupsArr.Length) ?? selectedGroupIdx;
+                selectedGroupIdx = ParseNumericalUserInput(input, groups.Length) ?? selectedGroupIdx;
                 if (selectedGroupIdx >= 0)
                 {
-                    var group = groupsArr.ElementAt(selectedGroupIdx);
-                    selectedGroup = group.Options.ToList();
+                    var group = groups.ElementAt(selectedGroupIdx);
+                    selectedGroup = group.Options;
                     selectedGroupName = group.Query;
                 }
             }
             else
             {
                 if (input == ReturnInput)
-                    result = CreateResult(groupsArr, selectedGroupIdx, selectedGroup!);
+                    result = CreateResult(groups, selectedGroupIdx, selectedGroup!);
                 else
-                    UpdatedSelectedGroup(ref selectedGroup, groupsArr, selectedGroupIdx, input);
+                    UpdatedSelectedGroup(ref selectedGroup, groups, selectedGroupIdx, input);
             }
 
             if (input == ReturnInput)
                 break;
         }
+
         return Task.FromResult(result);
     }
 
@@ -121,15 +128,16 @@ public class CliOptionSelector : IOptionSelector
         return (Console.ReadLine() ?? "").Trim();
     }
 
-    private static Tuple<TGroupId, IEnumerable<TOptionId>> CreateResult<TGroupId, TOptionId>(IEnumerable<ChoiceGroup<TGroupId, TOptionId>> groups,
-                                                                                             int selectedGroupIdx,
-                                                                                             IEnumerable<Option<TOptionId>> selectedGroup)
+    private static Tuple<TGroupId, TOptionId[]> CreateResult<TGroupId, TOptionId>(
+        IEnumerable<ChoiceGroup<TGroupId, TOptionId>> groups,
+        int selectedGroupIdx,
+        IEnumerable<Option<TOptionId>> selectedGroup)
     {
         var updatedOptions = selectedGroup
-                                .Where(_ => _.Type is OptionState.Selected or OptionState.Required)
-                                .Select(_ => _.Id);
+            .Where(x => x.Type is OptionState.Selected or OptionState.Required)
+            .Select(x => x.Id);
 
-        return new Tuple<TGroupId, IEnumerable<TOptionId>>(groups.ElementAt(selectedGroupIdx).Id, updatedOptions);
+        return new Tuple<TGroupId, TOptionId[]>(groups.ElementAt(selectedGroupIdx).Id, updatedOptions.ToArray());
     }
 
     private static void FixSelection<TOptionId>(ref IList<Option<TOptionId>> list, ChoiceType groupType, int lastChangeIdx)
@@ -137,12 +145,12 @@ public class CliOptionSelector : IOptionSelector
         switch (groupType)
         {
             case ChoiceType.ExactlyOne or ChoiceType.AtMostOne
-            when (list[lastChangeIdx].Type == OptionState.Selected):
+            when list[lastChangeIdx].Type == OptionState.Selected:
                 DeselectAllBut(ref list, lastChangeIdx);
                 return;
 
             case ChoiceType.ExactlyOne or ChoiceType.AtLeastOne
-            when list.All(_ => _.Type != OptionState.Selected):
+            when list.All(x => x.Type != OptionState.Selected):
                 list[lastChangeIdx].Type = OptionState.Selected;
                 break;
         }
@@ -152,7 +160,7 @@ public class CliOptionSelector : IOptionSelector
     {
         for (var i = 0; i < list.Count; ++i)
         {
-            if ((i != lastChangeIdx) && (list[lastChangeIdx].Type == OptionState.Selected))
+            if (i != lastChangeIdx && list[lastChangeIdx].Type == OptionState.Selected)
             {
                 list[i].Type = OptionState.Available;
             }
@@ -164,7 +172,7 @@ public class CliOptionSelector : IOptionSelector
         try
         {
             var idx = int.Parse(input) - 1;
-            if ((idx >= 0) && (idx < upperLimit))
+            if (idx >= 0 && idx < upperLimit)
                 return idx;
         }
         catch (FormatException) { /* ignored */ }
@@ -185,10 +193,10 @@ public class CliOptionSelector : IOptionSelector
     private Table TableOfOptions<TOptionId>(
         IEnumerable<Option<TOptionId>> current, string selectedGroupName)
     {
-        var row = new List<object[]>();
         var key = 1;
-        foreach (var item in current)
-            row.Add(new object[] { key++, RenderOptionState(item.Type), item.Name, item.Description ?? "" });
+        var row = current
+            .Select(item => new object[] { key++, RenderOptionState(item.Type), item.Name, item.Description ?? "" })
+            .ToList();
 
         row.Add(TableOfOptionsFooter);
         return new Table(TableOfOptionsHeaders, row, selectedGroupName);
@@ -196,10 +204,10 @@ public class CliOptionSelector : IOptionSelector
 
     private static Table TableOfGroups<TGroupId, TOptionId>(IEnumerable<ChoiceGroup<TGroupId, TOptionId>> groups)
     {
-        var row = new List<object[]>();
         var key = 1;
-        foreach (var item in groups)
-            row.Add(new object[] { key++, item.Query });
+        var row = groups
+            .Select(item => new object[] { key++, item.Query })
+            .ToList();
 
         row.Add(TableOfGroupsFooter);
         return new Table(TableOfGroupsHeaders, row, "Select a Group");
@@ -207,6 +215,8 @@ public class CliOptionSelector : IOptionSelector
 
     private static OptionState ToggleState(OptionState old)
     {
+        Debug.Assert(Enum.IsDefined(typeof(OptionState), old));
+
         return old switch
         {
             OptionState.Available => OptionState.Selected,
@@ -217,13 +227,15 @@ public class CliOptionSelector : IOptionSelector
 
     private static string RenderOptionState(OptionState state)
     {
+        Debug.Assert(Enum.IsDefined(typeof(OptionState), state));
+
         return state switch
         {
             OptionState.Disabled => "Disabled",
             OptionState.Available => "Off",
             OptionState.Required => "Required",
             OptionState.Selected => "On",
-            _ => throw new NotImplementedException()
+            _ => throw new UnreachableException()
         };
     }
 }
