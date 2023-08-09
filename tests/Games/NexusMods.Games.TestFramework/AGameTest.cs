@@ -234,8 +234,12 @@ public abstract class AGameTest<TGame> where TGame : AGame
     {
         var file = TemporaryFileManager.CreateFile();
 
-        await using var stream = FileSystem.OpenFile(file.Path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
-        using var zipArchive = new ZipArchive(stream, ZipArchiveMode.Create);
+        await using var stream = file.Path.Create();
+
+        // Don't put this in Create mode, because for some reason it will create broken Zips that are not prefixed
+        // with the ZIP magic number. Not sure why and I can't reproduce it in a simple test case, but if you open
+        // in create mode all your zip archives will be prefixed with 0x0000FFFF04034B50 instead of 0x04034B50.
+        using var zipArchive = new ZipArchive(stream, ZipArchiveMode.Update);
 
         foreach (var kv in filesToZip)
         {
