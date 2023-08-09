@@ -80,10 +80,10 @@ public class UpdaterService
         var updateProgram = _updateFolder.Combine(Constants.UpdateExecutable);
 
         var cmd = new Command(updateProgram.ToString())
-            .WithWorkingDirectory(_updateFolder.Combine(Constants.UpdateExecutable).ToString())
+            .WithWorkingDirectory(_updateFolder.ToString())
             .WithArguments(new[]
             {
-                "copy-to-app-folder",
+                "copy-app-to-folder",
                 "-f", _updateFolder.ToString(),
                 "-t", _appFolder.ToString(),
                 "-p", Environment.ProcessId.ToString(),
