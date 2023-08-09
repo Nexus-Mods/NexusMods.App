@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using FomodInstaller.Interface;
 using FomodInstaller.Scripting.XmlScript;
 using Microsoft.Extensions.Logging;
@@ -6,6 +6,7 @@ using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Games.GameCapabilities.FomodCustomInstallPathCapability;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.ModInstallers;
@@ -40,6 +41,13 @@ public class FomodXmlInstaller : IModInstaller
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
         CancellationToken cancellationToken = default)
     {
+
+        // TODO: For now FOMOD installer is enabled for all games and assumes the Game Root folder as the install path.
+        // Consider changing this in the future so games need to opt-in to FOMOD installers and provide a custom install path.
+        var gameTargetPath = gameInstallation.Game.SupportedCapabilities
+            .OfType<AFomodCustomInstallPathCapability>()
+            .FirstOrDefault()?.ModInstallationPath() ?? new GamePath(GameFolderType.Game,"");
+
         // the component dealing with FOMODs is built to support all kinds of mods, including those without a script.
         // for those cases, stop patterns can be way more complex to deduce the intended installation structure. In our case, where
         // we only intend to support xml scripted FOMODs, this should be good enough
@@ -76,12 +84,12 @@ public class FomodXmlInstaller : IModInstaller
             new ModInstallerResult
             {
                 Id = baseModId,
-                Files = InstructionsToModFiles(instructions, srcArchiveHash, archiveFiles)
+                Files = InstructionsToModFiles(instructions, srcArchiveHash, archiveFiles, gameTargetPath)
             }
         };
     }
 
-    private IEnumerable<AModFile> InstructionsToModFiles(IEnumerable<Instruction> instructions, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
+    private IEnumerable<AModFile> InstructionsToModFiles(IEnumerable<Instruction> instructions, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files, GamePath gameTargetPath)
     {
         var groupedInstructions = instructions.Aggregate(new Dictionary<string, List<Instruction>>(), (prev, instruction) => {
             if (prev.TryGetValue(instruction.type, out var existing))
@@ -101,19 +109,19 @@ public class FomodXmlInstaller : IModInstaller
 
         var result = new List<AModFile>();
         foreach (var type in groupedInstructions)
-            result.AddRange(ConvertInstructions(type.Value, files));
+            result.AddRange(ConvertInstructions(type.Value, files, gameTargetPath));
 
         return result;
     }
 
-    private static IEnumerable<AModFile> ConvertInstructions(IList<Instruction> instructions, EntityDictionary<RelativePath, AnalyzedFile> files)
+    private static IEnumerable<AModFile> ConvertInstructions(IList<Instruction> instructions, EntityDictionary<RelativePath, AnalyzedFile> files, GamePath gameTargetPath)
     {
         if (!instructions.Any()) return new List<AModFile>();
 
         return instructions.First().type switch
         {
-            "copy" => ConvertInstructionCopy(instructions, files),
-            "mkdir" => ConvertInstructionMkdir(instructions),
+            "copy" => ConvertInstructionCopy(instructions, files, gameTargetPath),
+            "mkdir" => ConvertInstructionMkdir(instructions, gameTargetPath),
             // TODO: "enableallplugins",
             // "iniedit" - only supported by c# script and modscript installers atm
             // "generatefile" - only supported by c# script installers
@@ -122,7 +130,7 @@ public class FomodXmlInstaller : IModInstaller
         };
     }
 
-    private static IEnumerable<AModFile> ConvertInstructionCopy(IEnumerable<Instruction> instructions, EntityDictionary<RelativePath, AnalyzedFile> files)
+    private static IEnumerable<AModFile> ConvertInstructionCopy(IEnumerable<Instruction> instructions, EntityDictionary<RelativePath, AnalyzedFile> files, GamePath gameTargetPath)
     {
         return instructions.Select(instruction =>
         {
@@ -131,19 +139,19 @@ public class FomodXmlInstaller : IModInstaller
             return new FromArchive
             {
                 Id = ModFileId.New(),
-                To = new GamePath(GameFolderType.Game, instruction.destination),
+                To = new GamePath(gameTargetPath.Type, gameTargetPath.Path.Join(instruction.destination)),
                 Hash = file.Value.Hash,
                 Size = file.Value.Size
             };
         });
     }
 
-    private static IEnumerable<AModFile> ConvertInstructionMkdir(IEnumerable<Instruction> instructions)
+    private static IEnumerable<AModFile> ConvertInstructionMkdir(IEnumerable<Instruction> instructions, GamePath gameTargetPath)
     {
         return instructions.Select(instruction => new EmptyDirectory
         {
             Id = ModFileId.New(),
-            Directory = new GamePath(GameFolderType.Game, instruction.destination)
+            Directory = new GamePath(gameTargetPath.Type, gameTargetPath.Path.Join(instruction.destination))
         });
     }
 }
