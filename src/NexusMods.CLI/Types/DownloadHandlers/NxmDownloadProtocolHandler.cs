@@ -52,6 +52,6 @@ public class NxmDownloadProtocolHandler : IDownloadProtocolHandler
         
         await _downloader.DownloadAsync(downloadUris, tempPath, null, null, token);
         var hash = await _archiveAnalyzer.AnalyzeFileAsync(tempPath, token);
-        await _archiveInstaller.AddMods(loadout.Value.LoadoutId, hash.Hash, token:token);
+        await _archiveInstaller.AddMods(loadout.Value.LoadoutId, hash.Hash, modName, token:token);
     }
 }
