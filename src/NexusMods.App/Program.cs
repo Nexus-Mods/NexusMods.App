@@ -6,6 +6,7 @@ using Avalonia;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.CLI;
 using NexusMods.App.Listeners;
 using NexusMods.App.UI;
 using NexusMods.CLI;
@@ -48,6 +49,12 @@ public class Program
                 .Build();
 
             return await builder.InvokeAsync(args);
+        }
+        else
+        {
+            var selector = host.Services.GetRequiredService<CliOptionSelector>();
+            var renderers = host.Services.GetServices<IRenderer>();
+            selector.Renderer = renderers.FirstOrDefault(r => r.Name == "console") ?? renderers.First();
         }
 
         // Start listeners only available in GUI mode

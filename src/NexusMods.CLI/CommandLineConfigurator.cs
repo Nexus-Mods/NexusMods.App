@@ -35,6 +35,7 @@ public class CommandLineConfigurator
         _provider = provider;
         _verbs = verbs.ToArray();
         _getOptionMethod = typeof(CommandLineConfigurator).GetMethod(nameof(GetOption), BindingFlags.Instance | BindingFlags.NonPublic)!;
+        selector.Renderer = _defaultConsoleRenderer;
     }
 
     /// <summary>
