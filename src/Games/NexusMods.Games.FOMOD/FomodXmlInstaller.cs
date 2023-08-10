@@ -45,7 +45,7 @@ public class FomodXmlInstaller : IModInstaller
 
         // TODO: For now FOMOD installer is enabled for all games and assumes the Game Root folder as the install path.
         // Consider changing this in the future so games need to opt-in to FOMOD installers and provide a custom install path.
-        var gameTargetPath = gameInstallation.Game.SupportedCapabilities().Values
+        var gameTargetPath = gameInstallation.Game.SupportedCapabilities.Values
             .OfType<AFomodCustomInstallPathCapability>()
             .FirstOrDefault()?.ModInstallationPath() ?? new GamePath(GameFolderType.Game,"");
 

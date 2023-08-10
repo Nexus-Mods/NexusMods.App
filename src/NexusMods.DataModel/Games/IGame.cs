@@ -58,5 +58,5 @@ public interface IGame
     /// <summary>
     /// Collection of <see cref="IGameCapability"/> that this game supports.
     /// </summary>
-    public Dictionary<GameCapabilityId, IGameCapability> SupportedCapabilities();
+    public IDictionary<GameCapabilityId, IGameCapability> SupportedCapabilities { get; }
 }

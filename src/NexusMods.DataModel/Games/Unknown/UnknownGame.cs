@@ -42,9 +42,7 @@ public class UnknownGame : IGame
     };
 
     /// <inheritdoc />
-    public void ResetInstallations()
-    {
-    }
+    public void ResetInstallations() { }
 
     /// <inheritdoc />
     public IEnumerable<AModFile> GetGameFiles(GameInstallation installation, IDataStore store)
@@ -53,7 +51,8 @@ public class UnknownGame : IGame
     }
 
     /// <inheritdoc />
-    public virtual Dictionary<GameCapabilityId, IGameCapability> SupportedCapabilities() => new();
+    public virtual IDictionary<GameCapabilityId, IGameCapability> SupportedCapabilities { get; } =
+        new Dictionary<GameCapabilityId, IGameCapability>();
 
 
     /// <inheritdoc />

@@ -12,20 +12,18 @@ namespace NexusMods.Games.BethesdaGameStudios;
 /// </summary>
 public abstract class ABethesdaGame : AGame
 {
+    private readonly IDictionary<GameCapabilityId, IGameCapability> _capabilities;
 
     /// <inheritdoc />
-    protected ABethesdaGame(IEnumerable<IGameLocator> gameLocators) : base(gameLocators) { }
-
-    /// <inheritdoc />
-    public override Dictionary<GameCapabilityId, IGameCapability> SupportedCapabilities()
+    protected ABethesdaGame(IEnumerable<IGameLocator> gameLocators) : base(gameLocators)
     {
-        var capabilities = base.SupportedCapabilities();
-
+        _capabilities = base.SupportedCapabilities;
         // Support for installing simple Data and GameRoot level mods.
-        capabilities.Add(AFolderMatchInstallerCapability.CapabilityId, new BethesdaFolderMatchInstallerCapability());
+        _capabilities[AFolderMatchInstallerCapability.CapabilityId] = new BethesdaFolderMatchInstallerCapability();
         // Configure FOMOD install to install to Data folder instead of GameRoot.
-        capabilities.Add(AFomodCustomInstallPathCapability.CapabilityId, new FomodDataInstallPathCapability());
-
-        return capabilities;
+        _capabilities[AFomodCustomInstallPathCapability.CapabilityId] = new FomodDataInstallPathCapability();
     }
+
+    /// <inheritdoc />
+    public override IDictionary<GameCapabilityId, IGameCapability> SupportedCapabilities => _capabilities;
 }
