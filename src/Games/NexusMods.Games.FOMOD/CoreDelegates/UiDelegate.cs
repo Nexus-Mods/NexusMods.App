@@ -60,8 +60,7 @@ public class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates
         _continueToNextStep = new ContinueToNextStep(cont);
         _cancelInstaller = new CancelInstaller(cancel);
 
-        // TODO: consider passing moduleName along
-        _guidedInstaller.SetupInstaller();
+        _guidedInstaller.SetupInstaller(moduleName ?? "FOMOD Installer");
     }
 
     public void EndDialog()

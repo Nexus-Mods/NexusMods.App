@@ -11,7 +11,8 @@ public interface IGuidedInstaller
     /// <summary>
     /// Sets up the installer.
     /// </summary>
-    public void SetupInstaller();
+    /// <param name="name">Name of the installer.</param>
+    public void SetupInstaller(string name);
 
     /// <summary>
     /// Cleans up the installer.

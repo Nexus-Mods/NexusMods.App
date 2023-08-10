@@ -49,7 +49,7 @@ public static class Services
         services.AddCLI()
             .AddFileSystem()
             .AddUI()
-            .AddFomodInstallerUi()
+            // .AddFomodInstallerUi()
             .AddFileExtractors(config.FileExtractorSettings)
             .AddDataModel(config.DataModelSettings)
             .AddBethesdaGameStudios()

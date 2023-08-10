@@ -18,14 +18,14 @@ public sealed class UiOptionSelector : IGuidedInstaller, IDisposable
         _serviceProvider = serviceProvider;
     }
 
-    public void SetupInstaller()
+    public void SetupInstaller(string windowName)
     {
         Debug.Assert(_currentScope is null);
         _currentScope = _serviceProvider.CreateScope();
 
         // TODO: create/show window?
         _windowViewModel = _currentScope.ServiceProvider.GetRequiredService<IGuidedInstallerWindowViewModel>();
-        // _windowViewModel.WindowName = windowName;
+        _windowViewModel.WindowName = windowName;
     }
 
     public void CleanupInstaller()

@@ -30,7 +30,7 @@ public class CliGuidedInstaller : IGuidedInstaller
     public bool SkipAll { get; set; }
 
     /// <inheritdoc/>
-    public void SetupInstaller() { }
+    public void SetupInstaller(string name) { }
 
     /// <inheritdoc/>
     public void CleanupInstaller() { }
