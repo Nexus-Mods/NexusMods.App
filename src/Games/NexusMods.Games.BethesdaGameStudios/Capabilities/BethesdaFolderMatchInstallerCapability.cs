@@ -1,4 +1,4 @@
-﻿using NexusMods.DataModel.Games.GameCapabilities.AFolderMatchInstallerCapability;
+﻿using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.BethesdaGameStudios.Capabilities;
@@ -96,8 +96,11 @@ public class BethesdaFolderMatchInstallerCapability : AFolderMatchInstallerCapab
         }
     };
 
-    protected override IEnumerable<InstallFolderTarget> InstallFolderTargets { get; } = new[]
+    private static readonly InstallFolderTarget[] Targets = { GameRootInstallFolderTarget };
+
+    /// <inheritdoc />
+    public override IEnumerable<InstallFolderTarget> InstallFolderTargets()
     {
-        GameRootInstallFolderTarget
-    };
+        return Targets;
+    }
 }

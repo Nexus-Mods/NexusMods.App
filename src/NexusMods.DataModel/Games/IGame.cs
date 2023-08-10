@@ -1,6 +1,7 @@
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games.GameCapabilities;
+using NexusMods.DataModel.Games.GameCapabilities.FomodCustomInstallPathCapability;
 using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.DataModel.Games;
@@ -53,10 +54,10 @@ public interface IGame
     /// Stream factory for the game's image, should be close to 16:9 aspect ratio.
     /// </summary>
     public IStreamFactory GameImage { get; }
-    
-    
+
+
     /// <summary>
     /// Collection of <see cref="IGameCapability"/> that this game supports.
     /// </summary>
-    public Dictionary<GameCapabilityId, IGameCapability> SupportedCapabilities { get; }
+    public GameCapabilityCollection SupportedCapabilities { get; }
 }
