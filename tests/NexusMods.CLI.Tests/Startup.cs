@@ -36,10 +36,8 @@ public class Startup
                 .AddAllScoped<IRenderer, LoggingRenderer>()
                 .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
                 .AddSingleton<LocalHttpServer>()
+                .AddLogging(builder => builder.AddXUnit())
                 .Validate();
     }
-
-    public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>
-        loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(accessor, delegate { return true; }));
 }
 

@@ -20,9 +20,7 @@ public class Startup
             .AddSingleton<TemporaryFileManager>()
             .AddStubbedGameLocators()
             .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
+            .AddLogging(builder => builder.AddXUnit())
             .Validate();
     }
-
-    public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>
-        loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(accessor, delegate { return true; }));
 }

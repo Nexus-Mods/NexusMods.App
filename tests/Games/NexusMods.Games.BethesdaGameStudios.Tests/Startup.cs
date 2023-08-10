@@ -24,9 +24,7 @@ public class Startup
             .AddGenericGameSupport()
             .AddCLI()
             .AddAllScoped<IRenderer, LoggingRenderer>()
+            .AddLogging(builder => builder.AddXUnit())
             .Validate();
     }
-
-    public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>
-        loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(accessor, delegate { return true; }));
 }

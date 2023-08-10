@@ -76,9 +76,6 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
         Game = provider1.GetRequiredService<StubbedGame>();
         Install = Game.Installations.First();
-
-        startup.Configure(provider1.GetRequiredService<ILoggerFactory>(), provider.GetRequiredService<ITestOutputHelperAccessor>());
-
     }
 
     public void Dispose()

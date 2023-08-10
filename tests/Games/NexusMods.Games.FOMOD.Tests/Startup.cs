@@ -21,10 +21,7 @@ public class Startup
             .AddDefaultServicesForTesting()
             .AddFomod()
             .AddSingleton<ICoreDelegates, MockDelegates>()
+            .AddLogging(builder => builder.AddXUnit())
             .Validate();
     }
-
-    // ReSharper disable once UnusedMember.Global
-    public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>
-        loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(accessor, delegate { return true;}));
 }
