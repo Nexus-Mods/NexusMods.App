@@ -38,10 +38,10 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
         TestFingerprintCacheInstance = new TestFingerprintCache<Mod, CachedModSortRules>();
         TestGeneratedFileFingerprintCache = new TestFingerprintCache<IGeneratedFile, CachedGeneratedFileData>();
         TestSyncronizer = new LoadoutSynchronizer(
-            provider.GetRequiredService<ILogger<LoadoutSynchronizer>>(), 
-            TestFingerprintCacheInstance, 
-            TestIndexer, 
-            TestArchiveManagerInstance, 
+            provider.GetRequiredService<ILogger<LoadoutSynchronizer>>(),
+            TestFingerprintCacheInstance,
+            TestIndexer,
+            TestArchiveManagerInstance,
             TestGeneratedFileFingerprintCache,
             LoadoutManager.Registry);
     }
@@ -143,7 +143,7 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
             SortRules = ImmutableList<ISortRule<Mod, ModId>>.Empty,
             Enabled = true
         };
-        
+
         disabledFiles = files.With(new FromArchive
         {
             Id = ModFileId.New(),
@@ -151,7 +151,7 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
             Size = Size.From(0x10001),
             To = new GamePath(GameFolderType.Game, "shouldNotExist/0x00001.dat"),
         }, m => m.Id);
-        
+
         var disabledMod = new Mod
         {
             Id = ModId.New(),
@@ -160,8 +160,8 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
             SortRules = ImmutableList<ISortRule<Mod, ModId>>.Empty,
             Enabled = false,
         };
-        
-        
+
+
         loadout.Add(mod);
         loadout.Add(disabledMod);
         loadout.Remove(mainMod);
@@ -236,9 +236,9 @@ public record TestGeneratedFile : AModFile, IGeneratedFile, IToFile, ITriggerFil
         using var printer = Fingerprinter.Create();
         foreach (var mod in plan.Loadout.Mods)
         {
-            if (mod.Value.Enabled == false) 
+            if (mod.Value.Enabled == false)
                 continue;
-            
+
             foreach (var file in mod.Value.Files)
                 if (!file.Value.Id.Equals(self.File.Id))
                     printer.Add(file.Value.DataStoreId);
@@ -257,7 +257,9 @@ public class AlphabeticalSort : IGeneratedSortRule, ISortRule<Mod, ModId>, ITrig
 {
     public ITriggerFilter<ModId, Loadout> TriggerFilter => this;
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
     public async IAsyncEnumerable<ISortRule<Mod, ModId>> GenerateSortRules(ModId selfId, Loadout loadout)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
     {
         var thisMod = loadout.Mods[selfId];
         foreach (var (modId, other) in loadout.Mods)
