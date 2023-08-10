@@ -29,7 +29,8 @@ public class FomodXmlInstaller : IModInstaller
         _logger = logger;
     }
 
-    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
+    public Priority GetPriority(GameInstallation installation,
+        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
         var hasScript = archiveFiles.Keys.Any(x => x.EndsWith(FomodConstants.XmlConfigRelativePath));
         return hasScript ? Priority.High : Priority.None;
@@ -42,12 +43,13 @@ public class FomodXmlInstaller : IModInstaller
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
         CancellationToken cancellationToken = default)
     {
-
         // TODO: For now FOMOD installer is enabled for all games and assumes the Game Root folder as the install path.
         // Consider changing this in the future so games need to opt-in to FOMOD installers and provide a custom install path.
-        var gameTargetPath = gameInstallation.Game.SupportedCapabilities.Values
-            .OfType<AFomodCustomInstallPathCapability>()
-            .FirstOrDefault()?.ModInstallationPath() ?? new GamePath(GameFolderType.Game,"");
+        gameInstallation.Game.SupportedCapabilities.TryGetValue(AFomodCustomInstallPathCapability.CapabilityId,
+            out var capability);
+        var gameTargetPath = capability is AFomodCustomInstallPathCapability fomodCapability
+            ? fomodCapability.ModInstallationPath()
+            : new GamePath(GameFolderType.Game, "");
 
         // the component dealing with FOMODs is built to support all kinds of mods, including those without a script.
         // for those cases, stop patterns can be way more complex to deduce the intended installation structure. In our case, where
@@ -55,10 +57,12 @@ public class FomodXmlInstaller : IModInstaller
         var stopPattern = new List<string> { "fomod" };
 
         if (!archiveFiles.Keys.TryGetFirst(x => x.EndsWith(FomodConstants.XmlConfigRelativePath), out var xmlFile))
-            throw new UnreachableException($"$[{nameof(FomodXmlInstaller)}] XML file not found. This should never be true and is indicative of a bug.");
+            throw new UnreachableException(
+                $"$[{nameof(FomodXmlInstaller)}] XML file not found. This should never be true and is indicative of a bug.");
 
         if (!archiveFiles.TryGetValue(xmlFile, out var analyzedFile))
-            throw new UnreachableException($"$[{nameof(FomodXmlInstaller)}] XML data not found. This should never be true and is indicative of a bug.");
+            throw new UnreachableException(
+                $"$[{nameof(FomodXmlInstaller)}] XML data not found. This should never be true and is indicative of a bug.");
 
         var analyzerInfo = analyzedFile.AnalysisData.OfType<FomodAnalyzerInfo>().FirstOrDefault();
         if (analyzerInfo == default) return Array.Empty<ModInstallerResult>();
@@ -90,23 +94,26 @@ public class FomodXmlInstaller : IModInstaller
         };
     }
 
-    private IEnumerable<AModFile> InstructionsToModFiles(IEnumerable<Instruction> instructions, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files, GamePath gameTargetPath)
+    private IEnumerable<AModFile> InstructionsToModFiles(IEnumerable<Instruction> instructions, Hash srcArchive,
+        EntityDictionary<RelativePath, AnalyzedFile> files, GamePath gameTargetPath)
     {
-        var groupedInstructions = instructions.Aggregate(new Dictionary<string, List<Instruction>>(), (prev, instruction) => {
-            if (prev.TryGetValue(instruction.type, out var existing))
+        var groupedInstructions = instructions.Aggregate(new Dictionary<string, List<Instruction>>(),
+            (prev, instruction) =>
             {
-                existing.Add(instruction);
-            }
-            else
-            {
-                prev[instruction.type] = new List<Instruction>
+                if (prev.TryGetValue(instruction.type, out var existing))
                 {
-                    instruction
-                };
-            }
+                    existing.Add(instruction);
+                }
+                else
+                {
+                    prev[instruction.type] = new List<Instruction>
+                    {
+                        instruction
+                    };
+                }
 
-            return prev;
-        });
+                return prev;
+            });
 
         var result = new List<AModFile>();
         foreach (var type in groupedInstructions)
@@ -115,7 +122,8 @@ public class FomodXmlInstaller : IModInstaller
         return result;
     }
 
-    private static IEnumerable<AModFile> ConvertInstructions(IList<Instruction> instructions, EntityDictionary<RelativePath, AnalyzedFile> files, GamePath gameTargetPath)
+    private static IEnumerable<AModFile> ConvertInstructions(IList<Instruction> instructions,
+        EntityDictionary<RelativePath, AnalyzedFile> files, GamePath gameTargetPath)
     {
         if (!instructions.Any()) return new List<AModFile>();
 
@@ -131,7 +139,8 @@ public class FomodXmlInstaller : IModInstaller
         };
     }
 
-    private static IEnumerable<AModFile> ConvertInstructionCopy(IEnumerable<Instruction> instructions, EntityDictionary<RelativePath, AnalyzedFile> files, GamePath gameTargetPath)
+    private static IEnumerable<AModFile> ConvertInstructionCopy(IEnumerable<Instruction> instructions,
+        EntityDictionary<RelativePath, AnalyzedFile> files, GamePath gameTargetPath)
     {
         return instructions.Select(instruction =>
         {
@@ -147,7 +156,8 @@ public class FomodXmlInstaller : IModInstaller
         });
     }
 
-    private static IEnumerable<AModFile> ConvertInstructionMkdir(IEnumerable<Instruction> instructions, GamePath gameTargetPath)
+    private static IEnumerable<AModFile> ConvertInstructionMkdir(IEnumerable<Instruction> instructions,
+        GamePath gameTargetPath)
     {
         return instructions.Select(instruction => new EmptyDirectory
         {
