@@ -221,7 +221,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
         var analyzedFile = await ArchiveAnalyzer.AnalyzeFileAsync(path);
         if (analyzedFile is AnalyzedArchive analyzedArchive)
             return analyzedArchive;
-        throw new ArgumentException($"File at {path} is not an archive!", nameof(path));
+        throw new ArgumentException($"File at {path} is not an archive! Instead is {analyzedFile}", nameof(path));
     }
 
     /// <summary>
