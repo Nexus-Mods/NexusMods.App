@@ -39,12 +39,15 @@ public class GenericFolderMatchInstaller : IModInstaller
     public Priority GetPriority(GameInstallation installation,
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        installation.Game.SupportedCapabilities.TryGetValue(RequiredGameCapability, out var gameCapability);
 
-        if (gameCapability is not AFolderMatchInstallerCapability folderMatchInstallerCapability)
+
+        if (!installation.Game.SupportedCapabilities.TryGetCapability<AFolderMatchInstallerCapability>(
+                RequiredGameCapability, out var folderMatchInstallerCapability))
+        {
             return Priority.None;
+        }
 
-        var installFolderTargets = folderMatchInstallerCapability.InstallFolderTargets();
+        var installFolderTargets = folderMatchInstallerCapability!.InstallFolderTargets();
 
         var filePaths = archiveFiles.Keys;
 
@@ -60,15 +63,14 @@ public class GenericFolderMatchInstaller : IModInstaller
         Hash srcArchiveHash,
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles, CancellationToken cancellationToken = default)
     {
-        gameInstallation.Game.SupportedCapabilities.TryGetValue(RequiredGameCapability, out var gameCapability);
-
-        if (gameCapability is not AFolderMatchInstallerCapability folderMatchInstallerCapability)
+        if (!gameInstallation.Game.SupportedCapabilities.TryGetCapability<AFolderMatchInstallerCapability>(
+                RequiredGameCapability, out var folderMatchInstallerCapability))
         {
             throw new NotSupportedException(
                 $"Game {gameInstallation.Game.Name} does not support GenericFolderMatchInstaller capability.");
         }
 
-        var installFolderTargets = folderMatchInstallerCapability.InstallFolderTargets();
+        var installFolderTargets = folderMatchInstallerCapability!.InstallFolderTargets();
 
         List<RelativePath> missedFiles = new();
 

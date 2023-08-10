@@ -1,6 +1,7 @@
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games.GameCapabilities;
+using NexusMods.DataModel.Games.GameCapabilities.FomodCustomInstallPathCapability;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Paths;
 
@@ -51,8 +52,7 @@ public class UnknownGame : IGame
     }
 
     /// <inheritdoc />
-    public virtual IDictionary<GameCapabilityId, IGameCapability> SupportedCapabilities { get; } =
-        new Dictionary<GameCapabilityId, IGameCapability>();
+    public virtual GameCapabilityCollection SupportedCapabilities { get; } = new();
 
 
     /// <inheritdoc />

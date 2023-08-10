@@ -1,6 +1,7 @@
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games.GameCapabilities;
+using NexusMods.DataModel.Games.GameCapabilities.FomodCustomInstallPathCapability;
 using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.DataModel.Games;
@@ -58,5 +59,5 @@ public interface IGame
     /// <summary>
     /// Collection of <see cref="IGameCapability"/> that this game supports.
     /// </summary>
-    public IDictionary<GameCapabilityId, IGameCapability> SupportedCapabilities { get; }
+    public GameCapabilityCollection SupportedCapabilities { get; }
 }
