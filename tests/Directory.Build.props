@@ -6,12 +6,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Moq" />
+        <PackageReference Include="NSubstitute" />
+        <PackageReference Include="NSubstitute.Analyzers.CSharp"/>
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="AutoFixture" />
-        <PackageReference Include="AutoFixture.AutoMoq" />
         <PackageReference Include="AutoFixture.Xunit2" />
     </ItemGroup>
 

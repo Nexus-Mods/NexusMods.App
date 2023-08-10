@@ -29,7 +29,7 @@ public class NxmDownloadTaskTests
         // This test fails if mock throws.
         // DownloadTasks report their results to IDownloadService, so we intercept them from there.
         var downloadService = DownloadTasksCommon.CreateMockWithConfirmFileReceive();
-        var task = new NxmDownloadTask(_temporaryFileManager, _nexusClient, _httpDownloader, downloadService.Object);
+        var task = new NxmDownloadTask(_temporaryFileManager, _nexusClient, _httpDownloader, downloadService);
 
         var uri = $"nxm://{gameDomain}/mods/{modId}/files/{fileId}";
         task.Init(NXMUrl.Parse(uri));
@@ -45,7 +45,7 @@ public class NxmDownloadTaskTests
         // This test fails if mock throws.
         // DownloadTasks report their results to IDownloadService, so we intercept them from there.
         var downloadService = DownloadTasksCommon.CreateMockWithConfirmFileReceive();
-        var task = new NxmDownloadTask(_temporaryFileManager, _nexusClient, _httpDownloader, downloadService.Object);
+        var task = new NxmDownloadTask(_temporaryFileManager, _nexusClient, _httpDownloader, downloadService);
 
         var uri = $"nxm://{gameDomain}/mods/{modId}/files/{fileId}";
         task.Init(NXMUrl.Parse(uri));
@@ -62,14 +62,14 @@ public class NxmDownloadTaskTests
         // This test fails if mock throws.
         // DownloadTasks report their results to IDownloadService, so we intercept them from there.
         var downloadService = DownloadTasksCommon.CreateMockWithConfirmFileReceive();
-        var task = new NxmDownloadTask(_temporaryFileManager, _nexusClient, _httpDownloader, downloadService.Object);
+        var task = new NxmDownloadTask(_temporaryFileManager, _nexusClient, _httpDownloader, downloadService);
 
         var uri = $"nxm://{gameDomain}/mods/{modId}/files/{fileId}";
         task.Init(NXMUrl.Parse(uri));
         await task.StartSuspended();
 
         // Oops our app rebooted!
-        var newTask = new NxmDownloadTask(_temporaryFileManager, _nexusClient, _httpDownloader, downloadService.Object);
+        var newTask = new NxmDownloadTask(_temporaryFileManager, _nexusClient, _httpDownloader, downloadService);
         newTask.RestoreFromSuspend(task.ExportState());
         await newTask.Resume();
     }

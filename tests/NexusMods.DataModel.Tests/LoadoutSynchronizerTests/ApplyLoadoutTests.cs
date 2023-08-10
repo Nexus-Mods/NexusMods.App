@@ -1,19 +1,15 @@
-﻿using System.Text;
-using FluentAssertions;
-using Moq;
+﻿using FluentAssertions;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
-using NexusMods.DataModel.Extensions;
-using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ApplySteps;
 using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.DataModel.TriggerFilter;
-using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using NSubstitute;
 
 namespace NexusMods.DataModel.Tests.LoadoutSynchronizerTests;
 
@@ -62,15 +58,15 @@ public class ApplyLoadoutTests : ALoadoutSynrchonizerTest<ApplyLoadoutTests>
 
         var file = GetFirstModFile(loadout);
 
-        var mfilesystem = new Mock<IFileSystem>();
-        mfilesystem.Setup(f => f.DeleteFile(file));
+        var counter = 0;
+        var fileSystem = Substitute.For<IFileSystem>();
+        var file1 = file;
+        fileSystem.When(x => x.DeleteFile(file1)).Do(_ => counter++);
 
-
-
-        file = file.WithFileSystem(mfilesystem.Object);
+        file = file.WithFileSystem(fileSystem);
         var plan = new IApplyStep[]
         {
-            new DeleteFile()
+            new DeleteFile
             {
                 To = file,
                 Hash = Hash.From(0x424),
@@ -85,8 +81,8 @@ public class ApplyLoadoutTests : ALoadoutSynrchonizerTest<ApplyLoadoutTests>
             Mods = Array.Empty<Mod>(),
             Flattened = new Dictionary<GamePath, ModFilePair>()
         });
-        
-        mfilesystem.Verify(f => f.DeleteFile(file), Times.Once);
+
+        counter.Should().Be(1);
     }
 
     [Fact]
@@ -95,7 +91,7 @@ public class ApplyLoadoutTests : ALoadoutSynrchonizerTest<ApplyLoadoutTests>
         var loadout = await CreateApplyPlanTestLoadout();
 
         var file = GetFirstModFile(loadout);
-        
+
         var plan = new IApplyStep[]
         {
             new ExtractFile
@@ -113,8 +109,6 @@ public class ApplyLoadoutTests : ALoadoutSynrchonizerTest<ApplyLoadoutTests>
             Mods = Array.Empty<Mod>(),
             Flattened = new Dictionary<GamePath, ModFilePair>()
         });
-
-        var fileFactory = new NativeFileStreamFactory(file);
 
         TestArchiveManagerInstance.Extracted.Should().ContainKey(Hash.From(0x424));
     }
@@ -139,7 +133,7 @@ public class ApplyLoadoutTests : ALoadoutSynrchonizerTest<ApplyLoadoutTests>
     public async Task GeneratedFilesAreGenerated()
     {
         var loadout = await CreateApplyPlanTestLoadout(true);
-        
+
         var dest = loadout.Installation.Locations[GameFolderType.Game].Combine("generated.txt");
         var gFile = new TestGeneratedFile();
 
@@ -153,7 +147,7 @@ public class ApplyLoadoutTests : ALoadoutSynrchonizerTest<ApplyLoadoutTests>
                 Source = gFile
             }
         };
-        
+
         await TestSyncronizer.Apply(new ApplyPlan
         {
             Steps = plan,
@@ -161,7 +155,7 @@ public class ApplyLoadoutTests : ALoadoutSynrchonizerTest<ApplyLoadoutTests>
             Mods = Array.Empty<Mod>(),
             Flattened = new Dictionary<GamePath, ModFilePair>()
         });
-        
+
         dest.FileExists.Should().BeTrue();
         (await dest.ReadAllTextAsync()).Should().Be("Hello World!");
 

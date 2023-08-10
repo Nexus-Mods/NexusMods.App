@@ -1,8 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Moq;
 using NexusMods.Common;
-using NexusMods.Common.OSInterop;
 using NexusMods.DataModel;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.HttpDownloader.Tests;
@@ -17,8 +15,6 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        var mockOsInterop = new Mock<IOSInterop>();
-
         services
             .AddFileSystem()
             .AddSingleton<HttpClient>()
@@ -26,7 +22,6 @@ public class Startup
             .AddHttpDownloader()
             .AddSingleton<TemporaryFileManager>()
             .AddSingleton<IProcessFactory, ProcessFactory>()
-            .AddSingleton(mockOsInterop.Object)
             .AddSingleton<LocalHttpServer>()
             .AddNexusWebApi()
             .AddNexusWebApiNmaIntegration(true)
