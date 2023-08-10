@@ -50,10 +50,12 @@ public class ArchiveInstaller : IArchiveInstaller
     /// <inheritdoc />
     public async Task<ModId[]> AddMods(LoadoutId loadoutId, Hash archiveHash, string? defaultModName = null, CancellationToken token = default)
     {
-        if (_archiveAnalyzer.GetAnalysisData(archiveHash) is not AnalyzedArchive analysisData)
+        var data = _archiveAnalyzer.GetAnalysisData(archiveHash);
+        if (data is not AnalyzedArchive analysisData)
         {
             _logger.LogError("Could not find analysis data for archive {ArchiveHash} or file is not an archive", archiveHash);
-            throw new InvalidOperationException("Could not find analysis data for archive");
+
+            throw new InvalidOperationException($"Could not find analysis data for archive, got {data}");
         }
 
         // Get the loadout and create the mod so we can use it in the job.
