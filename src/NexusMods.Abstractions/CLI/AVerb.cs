@@ -14,7 +14,6 @@ public interface AVerb : IVerb
     /// <summary>
     /// Runs the verb
     /// </summary>
-    /// <param name="a"></param>
     /// <param name="token"></param>
     /// <returns></returns>
     public Task<int> Run(CancellationToken token);

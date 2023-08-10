@@ -19,7 +19,6 @@ public class FlattenList : AVerb<LoadoutMarker>, IRenderingVerb
     /// <summary>
     /// DI constructor
     /// </summary>
-    /// <param name="configurator"></param>
     /// <param name="loadoutSynchronizer"></param>
     public FlattenList(LoadoutSynchronizer loadoutSynchronizer)
     {

@@ -21,7 +21,6 @@ public class AnalyzeArchive : AVerb<AbsolutePath>, IRenderingVerb
     /// <summary>
     /// DI constructor
     /// </summary>
-    /// <param name="configurator"></param>
     /// <param name="archiveContentsCache"></param>
     /// <param name="logger"></param>
     public AnalyzeArchive(IArchiveAnalyzer archiveContentsCache, ILogger<AnalyzeArchive> logger)

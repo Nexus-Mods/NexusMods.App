@@ -15,7 +15,6 @@ public class ChunkState
     /// </summary>
     /// <param name="start"></param>
     /// <param name="size"></param>
-    /// <param name="initChunk"></param>
     /// <returns></returns>
     public static ChunkState Create(Size start, Size size)
     {
