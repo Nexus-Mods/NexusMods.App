@@ -239,6 +239,8 @@ public abstract class AGameTest<TGame> where TGame : AGame
         // Don't put this in Create mode, because for some reason it will create broken Zips that are not prefixed
         // with the ZIP magic number. Not sure why and I can't reproduce it in a simple test case, but if you open
         // in create mode all your zip archives will be prefixed with 0x0000FFFF04034B50 instead of 0x04034B50.
+        // See https://github.com/dotnet/runtime/blob/23886f158cf925e13c72e661b9891df704806746/src/libraries/System.IO.Compression/src/System/IO/Compression/ZipArchiveEntry.cs#L949-L956
+        // for where this bug occurs 
         using var zipArchive = new ZipArchive(stream, ZipArchiveMode.Update);
 
         foreach (var kv in filesToZip)
