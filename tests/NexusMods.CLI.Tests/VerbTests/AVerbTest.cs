@@ -1,7 +1,10 @@
 using System.CommandLine;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.CLI.DataOutputs;
+using NexusMods.App.CLI.Renderers;
+using NexusMods.DataModel.RateLimiting;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 
@@ -20,9 +23,11 @@ public class AVerbTest
     private readonly IServiceProvider _provider;
 
     internal readonly IFileSystem FileSystem;
+    private readonly ILogger<AVerbTest> _logger;
 
     public AVerbTest(TemporaryFileManager temporaryFileManager, IServiceProvider provider)
     {
+        _logger = _provider.GetRequiredService<ILogger<AVerbTest>>();
         _provider = provider;
         TemporaryFileManager = temporaryFileManager;
         FileSystem = provider.GetRequiredService<IFileSystem>();
@@ -47,9 +52,16 @@ public class AVerbTest
     private void RunNoBannerFinish(int id)
     {
         if (id != 0)
-            throw new Exception($"Bad Run Result: {id}");
+        {
+            var spectre = new App.CLI.Renderers.Spectre(Array.Empty<IResource>());
+            foreach (var item in LoggingRenderer.Logs.Value!)
+            {
+                Task.Run(async () => { await spectre.Render(item);}).Wait();
+            }
 
-        LastLog = LoggingRenderer.Logs.Value!;
+            throw new Exception($"Bad Run Result: {id}");
+        }
+
     }
 
     private IServiceScope RunNoBannerInit(out CommandLineConfigurator configurator)
