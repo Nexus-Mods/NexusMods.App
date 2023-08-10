@@ -30,10 +30,7 @@ public class Startup
             .AddDefaultServicesForTesting()
             .AddUniversalGameLocator<StardewValley>(new Version(1, 0), gameFiles)
             .AddStardewValley()
+            .AddLogging(builder => builder.AddXUnit())
             .Validate();
     }
-
-    [SuppressMessage("ReSharper", "UnusedMember.Global")]
-    public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor)
-        => loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(accessor, delegate { return true; }));
 }

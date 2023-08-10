@@ -15,7 +15,6 @@ public class ChunkState
     /// </summary>
     /// <param name="start"></param>
     /// <param name="size"></param>
-    /// <param name="initChunk"></param>
     /// <returns></returns>
     public static ChunkState Create(Size start, Size size)
     {
@@ -55,6 +54,9 @@ public class ChunkState
     [JsonIgnore]
     public Source? Source { get; set; }
 
+    /// <summary>
+    /// The source URL of the chunk
+    /// </summary>
     [PublicAPI]
     public string SourceUrl => Source?.Request?.RequestUri?.AbsoluteUri ?? "No URL";
 

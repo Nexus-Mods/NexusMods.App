@@ -9,10 +9,9 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection container)
     {
-        container.AddSkippableFactSupport();
+        container
+            .AddSkippableFactSupport()
+            .AddLogging(builder => builder.AddXUnit());
     }
-
-    public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>
-        loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(accessor, delegate { return true; }));
 }
 

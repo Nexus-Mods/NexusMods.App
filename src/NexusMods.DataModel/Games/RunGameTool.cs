@@ -33,6 +33,7 @@ where T : AGame
     /// <summary/>
     /// <param name="logger">The logger used to log execution.</param>
     /// <param name="game">The game to execute.</param>
+    /// <param name="processFactory"></param>
     /// <remarks>
     ///    This constructor is usually called from DI.
     /// </remarks>
@@ -66,12 +67,12 @@ where T : AGame
 
         // In the case of a preloader, we need to wait for the actual game file to exit
         // before we completely exit this routine. So get a list of all the processes with a give
-        // name at the start, after the preloader finishes find any other processes with the same set of 
+        // name at the start, after the preloader finishes find any other processes with the same set of
         // names, and then we wait for those to exit.
-        
+
         // In the case of something like Skyrim this means we will start with loading skse64_loader.exe then
         // notice that SkyrimSE.exe is running and wait for that to exit.
-        
+
         var existing = FindMatchingProcesses(names).Select(p => p.Id).ToHashSet();
 
         var stdOut = new StringBuilder();
@@ -81,8 +82,8 @@ where T : AGame
             .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErr))
             .WithValidation(CommandResultValidation.None)
             .WithWorkingDirectory(program.Parent.ToString());
-        
-        
+
+
         var result = await _processFactory.ExecuteAsync(command, cancellationToken);
         if (result.ExitCode != 0)
             _logger.LogError("While Running {Filename} : {Error} {Output}", program, stdErr, stdOut);
@@ -90,7 +91,7 @@ where T : AGame
         var newProcesses = FindMatchingProcesses(names)
             .Where(p => !existing.Contains(p.Id))
             .ToHashSet();
-        
+
         if (newProcesses.Count > 0)
         {
             _logger.LogInformation("Waiting for {Count} processes to exit", newProcesses.Count);

@@ -338,7 +338,11 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
         text.Should().Contain("plugin_test.esp", "plugin_test.esp is installed");
 
         LoadoutRegistry.Alter(loadout.Value.LoadoutId, pluginTest.Id, "disable plugin",
-            mod => mod with { Enabled = false });
+            mod =>
+            {
+                mod.Should().NotBeNull();
+                return mod! with { Enabled = false };
+            });
 
         text = await GetPluginOrder(pluginFilePath);
 
@@ -353,7 +357,11 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
         text.Should().NotContain("plugin_test.esp", "plugin_test.esp is disabled");
 
         LoadoutRegistry.Alter(loadout.Value.LoadoutId, pluginTest.Id, "enable plugin",
-            mod => mod with { Enabled = true });
+            mod =>
+            {
+                mod.Should().NotBeNull();
+                return mod! with { Enabled = true };
+            });
 
         await Apply(loadout.Value);
 

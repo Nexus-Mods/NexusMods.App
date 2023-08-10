@@ -24,15 +24,13 @@ public class Startup
                 UseInMemoryDataModel = true
             }
         };
-        
+
         services.AddUniversalGameLocator<Cyberpunk2077>(new Version("1.61"))
                 .AddApp(config: config)
                 .AddStubbedGameLocators()
                 .AddSingleton<AvaloniaApp>()
+                .AddLogging(builder => builder.AddXUnit())
                 .Validate();
     }
-
-    public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>
-        loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(accessor, delegate { return true; }));
 }
 

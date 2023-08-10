@@ -22,7 +22,6 @@ public class Apply : AVerb<LoadoutMarker, bool, bool>, IRenderingVerb
     /// <summary>
     /// DI constructor
     /// </summary>
-    /// <param name="configurator"></param>
     /// <param name="loadoutSynchronizer"></param>
     public Apply(LoadoutSynchronizer loadoutSynchronizer)
     {
