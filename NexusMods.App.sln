@@ -129,6 +129,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.Generic.Tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Updater.Tests", "tests\NexusMods.Updater.Tests\NexusMods.Updater.Tests.csproj", "{1A9F310A-BA79-44C0-95E8-A3A66BD691AC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.Generic.Tests", "tests\Games\NexusMods.Games.Generic.Tests\NexusMods.Games.Generic.Tests.csproj", "{AA95B93F-23AC-46D5-83B3-2E7AE4BD309C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
