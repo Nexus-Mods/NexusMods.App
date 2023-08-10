@@ -96,9 +96,11 @@ public class BethesdaFolderMatchInstallerCapability : AFolderMatchInstallerCapab
         }
     };
 
+    private static readonly InstallFolderTarget[] Targets = { GameRootInstallFolderTarget };
+
     /// <inheritdoc />
     public override IEnumerable<InstallFolderTarget> InstallFolderTargets()
     {
-        return new[] { GameRootInstallFolderTarget };
+        return Targets;
     }
 }
