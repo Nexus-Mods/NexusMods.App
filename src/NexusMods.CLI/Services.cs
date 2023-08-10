@@ -11,6 +11,7 @@ using NexusMods.DataModel.RateLimiting;
 using NexusMods.FileExtractor.Extractors;
 using NexusMods.Paths;
 using System.Runtime.InteropServices;
+using NexusMods.Abstractions.CLI;
 using NexusMods.CLI.Types;
 using NexusMods.CLI.Types.DownloadHandlers;
 using NexusMods.CLI.Types.IpcHandlers;
@@ -32,7 +33,6 @@ public static class Services
     /// <returns></returns>
     public static IServiceCollection AddCLI(this IServiceCollection services)
     {
-        services.AddScoped<Configurator>();
         services.AddScoped<CommandLineConfigurator>();
         services.AddSingleton<IOptionParser<AbsolutePath>, AbsolutePathParser>();
         services.AddSingleton<IOptionParser<IGame>, GameParser>();
@@ -40,7 +40,7 @@ public static class Services
         services.AddSingleton<IOptionParser<Version>, VersionParser>();
         services.AddSingleton<IOptionParser<Loadout>, LoadoutParser>();
         services.AddSingleton<IOptionParser<ITool>, ToolParser>();
-        services.AddSingleton<IOptionSelector, CliOptionSelector>();
+        services.AddAllSingleton<IOptionSelector, CliOptionSelector>();
 
         OSInformation.Shared.SwitchPlatform(
             ref services,
@@ -75,7 +75,6 @@ public static class Services
             .AddVerb<ListMods>()
             .AddVerb<ListTools>()
             .AddVerb<ManageGame>()
-            .AddVerb<NexusApiVerify>()
             .AddVerb<NexusGames>()
             .AddVerb<NexusLogin>()
             .AddVerb<NexusLogout>()

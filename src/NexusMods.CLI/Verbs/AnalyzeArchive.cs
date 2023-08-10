@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
-using NexusMods.CLI.DataOutputs;
+using NexusMods.Abstractions.CLI;
+using NexusMods.Abstractions.CLI.DataOutputs;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.Paths;
@@ -10,21 +11,22 @@ namespace NexusMods.CLI.Verbs;
 /// <summary>
 /// Analyzes the contents of an archive caches them, and outputs them
 /// </summary>
-public class AnalyzeArchive : AVerb<AbsolutePath>
+public class AnalyzeArchive : AVerb<AbsolutePath>, IRenderingVerb
 {
-    private readonly IRenderer _renderer;
     private readonly IArchiveAnalyzer _archiveContentsCache;
-    
+
+    /// <inheritdoc />
+    public IRenderer Renderer { get; set; } = null!;
+
     /// <summary>
     /// DI constructor
     /// </summary>
     /// <param name="configurator"></param>
     /// <param name="archiveContentsCache"></param>
     /// <param name="logger"></param>
-    public AnalyzeArchive(Configurator configurator, IArchiveAnalyzer archiveContentsCache, ILogger<AnalyzeArchive> logger)
+    public AnalyzeArchive(IArchiveAnalyzer archiveContentsCache, ILogger<AnalyzeArchive> logger)
     {
         _logger = logger;
-        _renderer = configurator.Renderer;
         _archiveContentsCache = archiveContentsCache;
     }
 
@@ -43,7 +45,7 @@ public class AnalyzeArchive : AVerb<AbsolutePath>
     {
         try
         {
-            var results = await _renderer.WithProgress(token, async () =>
+            var results = await Renderer.WithProgress(token, async () =>
             {
                 var file = await _archiveContentsCache.AnalyzeFileAsync(inputFile, token) as AnalyzedArchive;
                 if (file == null) return Array.Empty<object[]>();
@@ -57,7 +59,7 @@ public class AnalyzeArchive : AVerb<AbsolutePath>
                 });
             });
 
-            await _renderer.Render(new Table(new[] { "Path", "Size", "Hash", "Signatures" },
+            await Renderer.Render(new Table(new[] { "Path", "Size", "Hash", "Signatures" },
                 results.OrderBy(e => (RelativePath)e[0])));
         }
         catch (Exception ex)
@@ -68,5 +70,4 @@ public class AnalyzeArchive : AVerb<AbsolutePath>
 
         return 0;
     }
-
 }

@@ -1,4 +1,5 @@
-using NexusMods.CLI.DataOutputs;
+using NexusMods.Abstractions.CLI;
+using NexusMods.Abstractions.CLI.DataOutputs;
 using NexusMods.DataModel.Loadouts.Markers;
 
 namespace NexusMods.CLI.Verbs;
@@ -7,14 +8,10 @@ namespace NexusMods.CLI.Verbs;
 /// <summary>
 /// List all the mods in a given managed game
 /// </summary>
-public class ListMods : AVerb<LoadoutMarker>
+public class ListMods : AVerb<LoadoutMarker>, IRenderingVerb
 {
-    private readonly IRenderer _renderer;
-    /// <summary>
-    /// DI constructor
-    /// </summary>
-    /// <param name="configurator"></param>
-    public ListMods(Configurator configurator) => _renderer = configurator.Renderer;
+    /// <inheritdoc />
+    public IRenderer Renderer { get; set; } = null!;
 
     /// <inheritdoc />
     public static VerbDefinition Definition => new("list-mods",
@@ -31,7 +28,7 @@ public class ListMods : AVerb<LoadoutMarker>
         foreach (var mod in loadout.Value.Mods.Values)
             rows.Add(new object[] { mod.Name, mod.Files.Count });
 
-        await _renderer.Render(new Table(new[] { "Name", "File Count" }, rows));
+        await Renderer.Render(new Table(new[] { "Name", "File Count" }, rows));
         return 0;
     }
 }

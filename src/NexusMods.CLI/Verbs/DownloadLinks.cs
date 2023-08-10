@@ -1,4 +1,5 @@
-using NexusMods.CLI.DataOutputs;
+using NexusMods.Abstractions.CLI;
+using NexusMods.Abstractions.CLI.DataOutputs;
 using NexusMods.DataModel.Games;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.NMA.Extensions;
@@ -9,15 +10,16 @@ using NexusMods.Networking.NexusWebApi.Types;
 
 namespace NexusMods.CLI.Verbs;
 
-public class DownloadLinks : AVerb<GameDomain, ModId, FileId>
+public class DownloadLinks : AVerb<GameDomain, ModId, FileId>, IRenderingVerb
 {
     private readonly Client _client;
-    private readonly IRenderer _renderer;
 
-    public DownloadLinks(Client client, Configurator configurator)
+    /// <inheritdoc />
+    public IRenderer Renderer { get; set; } = null!;
+
+    public DownloadLinks(Client client)
     {
         _client = client;
-        _renderer = configurator.Renderer;
     }
 
     public static VerbDefinition Definition => new VerbDefinition("nexus-download-links",
@@ -33,7 +35,7 @@ public class DownloadLinks : AVerb<GameDomain, ModId, FileId>
     {
         var links = await _client.DownloadLinksAsync(gameDomain, modId, fileId, token);
 
-        await _renderer.Render(new Table(new[] { "Source", "Link" },
+        await Renderer.Render(new Table(new[] { "Source", "Link" },
             links.Data.Select(x => new object[] { x.ShortName, x.Uri })));
         return 0;
     }

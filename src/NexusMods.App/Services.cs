@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.CLI;
 using NexusMods.App.CLI.Renderers;
 using NexusMods.App.Listeners;
 using NexusMods.App.UI;

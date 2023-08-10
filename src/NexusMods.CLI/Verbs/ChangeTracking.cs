@@ -1,4 +1,5 @@
-using NexusMods.CLI.DataOutputs;
+using NexusMods.Abstractions.CLI;
+using NexusMods.Abstractions.CLI.DataOutputs;
 using NexusMods.DataModel.Abstractions;
 
 namespace NexusMods.CLI.Verbs;
@@ -7,18 +8,19 @@ namespace NexusMods.CLI.Verbs;
 /// <summary>
 /// Displays changes to the datastore waiting for each new change
 /// </summary>
-public class ChangeTracking : AVerb
+public class ChangeTracking : AVerb, IRenderingVerb
 {
-    private readonly IRenderer _renderer;
+
+    /// <inheritdoc />
+    public IRenderer Renderer { get; set; } = null!;
 
     /// <summary>
     /// DI constructor
     /// </summary>
     /// <param name="configurator"></param>
     /// <param name="store"></param>
-    public ChangeTracking(Configurator configurator, IDataStore store)
+    public ChangeTracking(IDataStore store)
     {
-        _renderer = configurator.Renderer;
         _store = store;
     }
 
@@ -43,5 +45,5 @@ public class ChangeTracking : AVerb
         return 0;
     }
 
-    private void HandleEvent(Table entity) => _renderer.Render(entity);
+    private void HandleEvent(Table entity) => Renderer.Render(entity);
 }

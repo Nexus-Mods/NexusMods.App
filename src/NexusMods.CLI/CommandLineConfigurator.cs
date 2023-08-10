@@ -1,8 +1,10 @@
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.NamingConventionBinder;
+using System.CommandLine.Parsing;
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.CLI.OptionParsers;
+using NexusMods.Abstractions.CLI;
 
 namespace NexusMods.CLI;
 
@@ -12,23 +14,31 @@ namespace NexusMods.CLI;
 public class CommandLineConfigurator
 {
     private static IServiceProvider _provider = null!;
-    private readonly IEnumerable<Verb> _verbs;
+    private readonly IEnumerable<RegisteredVerb> _verbs;
+    private readonly MethodInfo _getOptionMethod;
+    private readonly IRenderer[] _renderers;
+    private readonly IRenderer _defaultConsoleRenderer;
 
     /// <summary/>
     /// <param name="verbs">
-    ///     List of supported verbs.  
+    ///     List of supported verbs.
     ///     This is populated by DI; multiple registrations using to <see cref="IServiceCollection"/> is resolved as
-    ///     an enumerable of verbs.  
+    ///     an enumerable of verbs.
     /// </param>
     /// <param name="provider">Instance of dependency injection container.</param>
-    public CommandLineConfigurator(IEnumerable<Verb> verbs, IServiceProvider provider)
+    /// <param name="selector"></param>
+    /// <param name="renderers"></param>
+    public CommandLineConfigurator(IEnumerable<RegisteredVerb> verbs, IServiceProvider provider, CliOptionSelector selector, IEnumerable<IRenderer> renderers)
     {
+        _renderers = renderers.ToArray();
+        _defaultConsoleRenderer = _renderers.FirstOrDefault(r => r.Name == "console") ?? _renderers.First();
         _provider = provider;
         _verbs = verbs.ToArray();
+        _getOptionMethod = typeof(CommandLineConfigurator).GetMethod(nameof(GetOption), BindingFlags.Instance | BindingFlags.NonPublic)!;
     }
 
     /// <summary>
-    /// Creates the main verb-less root command the application executes. 
+    /// Creates the main verb-less root command the application executes.
     /// </summary>
     public RootCommand MakeRoot()
     {
@@ -57,10 +67,37 @@ public class CommandLineConfigurator
         var command = new Command(definition.Name, definition.Description);
 
         foreach (var option in definition.Options)
-            command.Add(option.GetOption(_provider));
+        {
+            var optionInstance = (Option)_getOptionMethod.MakeGenericMethod(option.ReturnType)
+                .Invoke(this, new object[] { _provider, option })!;
+            command.Add(optionInstance);
+        }
 
-        command.Handler = new HandlerDelegate(_provider, verbType, verbHandler);
+        command.Handler = new HandlerDelegate(_provider, verbType, verbHandler, _renderers, _defaultConsoleRenderer);
         return command;
+    }
+
+    /// <summary>
+    /// Converts a <see cref="OptionDefinition{T}"/> into a <see cref="Option{T}"/>
+    /// </summary>
+    /// <param name="provider"></param>
+    /// <param name="definition"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    // ReSharper disable once UnusedMember.Local
+    private Option GetOption<T>(IServiceProvider provider, OptionDefinition<T> definition)
+    {
+        var converter = provider.GetService<IOptionParser<T>>();
+
+        var aliases = new[] { "-" + definition.ShortOption, "--" + definition.LongOption };
+        if (converter == null)
+            return new Option<T>(aliases, description: definition.Description);
+
+        var opt = new Option<T>(aliases, description: definition.Description,
+            parseArgument: x => converter.Parse(x.Tokens.Single().Value, definition));
+
+        opt.AddCompletions(x => converter.GetOptions(x.WordToComplete));
+        return opt;
     }
 
     private class HandlerDelegate : ICommandHandler
@@ -69,9 +106,13 @@ public class CommandLineConfigurator
         private readonly IServiceProvider _provider;
         private readonly Type _type;
         private readonly Func<object, Delegate> _delegate;
+        private readonly IRenderer _defaultConsoleRenderer;
+        private readonly IRenderer[] _renderers;
 
-        public HandlerDelegate(IServiceProvider provider, Type type, Func<object, Delegate> inner)
+        public HandlerDelegate(IServiceProvider provider, Type type, Func<object, Delegate> inner, IRenderer[] renderers, IRenderer defaultConsoleRenderer)
         {
+            _renderers = renderers;
+            _defaultConsoleRenderer = defaultConsoleRenderer;
             _provider = provider;
             _type = type;
             _delegate = inner;
@@ -79,65 +120,38 @@ public class CommandLineConfigurator
 
         public int Invoke(InvocationContext context)
         {
-            var configurator = _provider.GetRequiredService<Configurator>();
-            configurator.Configure(context);
-            var service = _provider.GetRequiredService(_type);
-            var handler = CommandHandler.Create(_delegate(service));
+            var verb = (IVerb)_provider.GetRequiredService(_type);
+            Configure(context, verb);
+            var handler = CommandHandler.Create(_delegate(verb));
             return handler.Invoke(context);
         }
 
         public Task<int> InvokeAsync(InvocationContext context)
         {
-            var configurator = _provider.GetRequiredService<Configurator>();
-            configurator.Configure(context);
-            var service = _provider.GetRequiredService(_type);
-            var handler = CommandHandler.Create(_delegate(service));
+            var verb = (IVerb)_provider.GetRequiredService(_type);
+            Configure(context, verb);
+            var handler = CommandHandler.Create(_delegate(verb));
             return handler.InvokeAsync(context);
         }
+
+        private void Configure(InvocationContext context, IVerb verb)
+        {
+            if (verb is not IRenderingVerb rv) return;
+
+            var renderer = context.BindingContext.ParseResult.RootCommandResult.Children.OfType<OptionResult>()
+                .Where(o => o.Option.Name == "renderer")
+                .Select(o => (IRenderer)o.GetValueOrDefault()!)
+                .FirstOrDefault();
+
+            rv.Renderer = renderer ?? _defaultConsoleRenderer;
+
+            var noBanner = context.BindingContext.ParseResult.RootCommandResult.Children.OfType<OptionResult>()
+                .Where(o => o.Option.Name == "noBanner")
+                .Select(o => (bool)o.GetValueOrDefault()!)
+                .FirstOrDefault();
+
+            if (!noBanner)
+                rv.Renderer.RenderBanner();
+        }
     }
-}
-
-/// <summary>
-/// Defines a option the user can pass to the command line
-/// </summary>
-/// <param name="ShortOption"></param>
-/// <param name="LongOption"></param>
-/// <param name="Description"></param>
-/// <typeparam name="T"></typeparam>
-public record OptionDefinition<T>(string ShortOption, string LongOption, string Description) : OptionDefinition(ShortOption, LongOption, Description)
-{
-    /// <inheritdoc />
-    public override Option GetOption(IServiceProvider provider)
-    {
-        var converter = provider.GetService<IOptionParser<T>>();
-
-        if (converter == null)
-            return new Option<T>(Aliases, description: Description);
-
-        var opt = new Option<T>(Aliases, description: Description,
-            parseArgument: x => converter.Parse(x.Tokens.Single().Value, this));
-
-        opt.AddCompletions(x => converter.GetOptions(x.WordToComplete));
-        return opt;
-    }
-}
-/// <summary>
-/// Defines a option the user can pass to the command line
-/// </summary>
-/// <param name="ShortOption"></param>
-/// <param name="LongOption"></param>
-/// <param name="Description"></param>
-public abstract record OptionDefinition(string ShortOption, string LongOption, string Description)
-{
-    /// <summary>
-    /// Aliases for the option
-    /// </summary>
-    protected string[] Aliases => new[] { "-" + ShortOption, "--" + LongOption };
-
-    /// <summary>
-    /// Creates the option
-    /// </summary>
-    /// <param name="provider"></param>
-    /// <returns></returns>
-    public abstract Option GetOption(IServiceProvider provider);
 }

@@ -1,16 +1,18 @@
-using NexusMods.CLI.DataOutputs;
+using NexusMods.Abstractions.CLI;
+using NexusMods.Abstractions.CLI.DataOutputs;
 using NexusMods.Networking.NexusWebApi;
 
 // Temporary until moved to CLI project.
 #pragma warning disable CS1591
 namespace NexusMods.CLI.Verbs;
 
-public class NexusApiVerify : AVerb
+public class NexusApiVerify : AVerb, IRenderingVerb
 {
-    public NexusApiVerify(Configurator configurator, Client client, IAuthenticatingMessageFactory messageFactory)
+    public IRenderer Renderer { get; set; } = null!;
+
+    public NexusApiVerify(Client client, IAuthenticatingMessageFactory messageFactory)
     {
         _client = client;
-        _renderer = configurator.Renderer;
         _messageFactory = messageFactory;
     }
 
@@ -19,13 +21,12 @@ public class NexusApiVerify : AVerb
         Array.Empty<OptionDefinition>());
 
     private readonly Client _client;
-    private readonly IRenderer _renderer;
     private readonly IAuthenticatingMessageFactory _messageFactory;
 
     public async Task<int> Run(CancellationToken token)
     {
         var userInfo = await _messageFactory.Verify(_client, token);
-        await _renderer.Render(new Table(new[] { "Name", "Premium", "Supporter" },
+        await Renderer.Render(new Table(new[] { "Name", "Premium", "Supporter" },
             new[]
             {
                 new object[]
@@ -38,4 +39,5 @@ public class NexusApiVerify : AVerb
 
         return 0;
     }
+
 }

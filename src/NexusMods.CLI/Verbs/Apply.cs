@@ -1,5 +1,6 @@
 using DynamicData;
-using NexusMods.CLI.DataOutputs;
+using NexusMods.Abstractions.CLI;
+using NexusMods.Abstractions.CLI.DataOutputs;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ApplySteps;
 using NexusMods.DataModel.Loadouts.Markers;
@@ -11,19 +12,20 @@ namespace NexusMods.CLI.Verbs;
 /// <summary>
 /// Compute and potentially run the steps needed to apply a Loadout to a game folder
 /// </summary>
-public class Apply : AVerb<LoadoutMarker, bool, bool>
+public class Apply : AVerb<LoadoutMarker, bool, bool>, IRenderingVerb
 {
-    private readonly IRenderer _renderer;
     private readonly LoadoutSynchronizer _loadoutSyncronizer;
+
+    /// <inheritdoc />
+    public IRenderer Renderer { get; set; } = null!;
 
     /// <summary>
     /// DI constructor
     /// </summary>
     /// <param name="configurator"></param>
     /// <param name="loadoutSynchronizer"></param>
-    public Apply(Configurator configurator, LoadoutSynchronizer loadoutSynchronizer)
+    public Apply(LoadoutSynchronizer loadoutSynchronizer)
     {
-        _renderer = configurator.Renderer;
         _loadoutSyncronizer = loadoutSynchronizer;
     }
 
@@ -49,7 +51,7 @@ public class Apply : AVerb<LoadoutMarker, bool, bool>
                     {
                         g.Key.Name, g.Count(), g.OfType<IStaticFileStep>().Aggregate((Size)0L, (o, n) => o + n.Size)
                     });
-            await _renderer.Render(new Table(new[] { "Action", "Count", "Size" }, rows));
+            await Renderer.Render(new Table(new[] { "Action", "Count", "Size" }, rows));
         }
         else
         {
@@ -74,12 +76,12 @@ public class Apply : AVerb<LoadoutMarker, bool, bool>
                         throw new InvalidOperationException($"Unknown step type ({step.GetType()}) encountered, this should never happen.");
                 }
             }
-            await _renderer.Render(new Table(new[] { "Action", "To", "Hash", "Size" }, rows));
+            await Renderer.Render(new Table(new[] { "Action", "To", "Hash", "Size" }, rows));
         }
 
         if (run)
         {
-            await _renderer.WithProgress(token, async () =>
+            await Renderer.WithProgress(token, async () =>
             {
                 await _loadoutSyncronizer.Apply(plan, token);
                 return plan.Steps;

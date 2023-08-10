@@ -1,4 +1,4 @@
-namespace NexusMods.CLI;
+namespace NexusMods.Abstractions.CLI;
 
 /// <summary>
 /// Generic interface used by CLI verbs to output data and progress updates.

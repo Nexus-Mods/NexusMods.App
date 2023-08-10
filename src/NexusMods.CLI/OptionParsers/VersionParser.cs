@@ -1,3 +1,5 @@
+using NexusMods.Abstractions.CLI;
+
 namespace NexusMods.CLI.OptionParsers;
 
 /// <summary>

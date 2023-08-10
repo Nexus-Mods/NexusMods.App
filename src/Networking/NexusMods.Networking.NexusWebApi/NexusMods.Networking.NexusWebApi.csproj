@@ -12,4 +12,8 @@
     <ItemGroup>
         <PackageReference Include="Vogen" />
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\NexusMods.Abstractions\NexusMods.Abstractions.csproj" />
+    </ItemGroup>
 </Project>

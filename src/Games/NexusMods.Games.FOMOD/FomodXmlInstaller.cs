@@ -1,11 +1,10 @@
-﻿using FomodInstaller.Interface;
+﻿using System.Diagnostics;
+using FomodInstaller.Interface;
 using FomodInstaller.Scripting.XmlScript;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.ArchiveContents;
-using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -18,14 +17,12 @@ namespace NexusMods.Games.FOMOD;
 
 public class FomodXmlInstaller : IModInstaller
 {
-    private readonly IDataStore _dataStore;
     private readonly ICoreDelegates _delegates;
     private readonly XmlScriptType _scriptType = new();
     private readonly ILogger<FomodXmlInstaller> _logger;
 
-    public FomodXmlInstaller(IDataStore dataStore, ILogger<FomodXmlInstaller> logger, ICoreDelegates coreDelegates)
+    public FomodXmlInstaller(ILogger<FomodXmlInstaller> logger, ICoreDelegates coreDelegates)
     {
-        _dataStore = dataStore;
         _delegates = coreDelegates;
         _logger = logger;
     }
@@ -43,20 +40,19 @@ public class FomodXmlInstaller : IModInstaller
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
         CancellationToken cancellationToken = default)
     {
-        // the component dealing with fomods is built to support all kinds of mods, including those without a script.
+        // the component dealing with FOMODs is built to support all kinds of mods, including those without a script.
         // for those cases, stop patterns can be way more complex to deduce the intended installation structure. In our case, where
-        // we only intend to support xml scripted fomods, this should be good enough
+        // we only intend to support xml scripted FOMODs, this should be good enough
         var stopPattern = new List<string> { "fomod" };
 
         if (!archiveFiles.Keys.TryGetFirst(x => x.EndsWith(FomodConstants.XmlConfigRelativePath), out var xmlFile))
-            throw new Exception($"$[{nameof(FomodXmlInstaller)}] XML file not found. This should never be true and is indicative of a bug.");
+            throw new UnreachableException($"$[{nameof(FomodXmlInstaller)}] XML file not found. This should never be true and is indicative of a bug.");
 
         if (!archiveFiles.TryGetValue(xmlFile, out var analyzedFile))
-            throw new Exception($"$[{nameof(FomodXmlInstaller)}] XML data not found. This should never be true and is indicative of a bug.");
+            throw new UnreachableException($"$[{nameof(FomodXmlInstaller)}] XML data not found. This should never be true and is indicative of a bug.");
 
         var analyzerInfo = analyzedFile.AnalysisData.OfType<FomodAnalyzerInfo>().FirstOrDefault();
-        if (analyzerInfo == default)
-            return Array.Empty<ModInstallerResult>(); // <= invalid FOMOD, so no analyzer info dumped
+        if (analyzerInfo == default) return Array.Empty<ModInstallerResult>();
 
         // Setup mod, exclude script path so it doesn't get picked up and thus double read from disk
         var modFiles = archiveFiles.Keys.Select(x => x.ToString()).ToList();
@@ -67,13 +63,12 @@ public class FomodXmlInstaller : IModInstaller
         var installScript = _scriptType.LoadScript(analyzerInfo.XmlScript, true);
         var instructions = await executor.Execute(installScript, "", null);
 
-        var errors = instructions.Where(_ => _.type == "error");
-        if (errors.Any())
-            throw new Exception(string.Join("; ", errors.Select(_ => _.source)));
+        var errors = instructions.Where(instruction => instruction.type == "error").ToArray();
+        if (errors.Any()) throw new Exception(string.Join("; ", errors.Select(err => err.source)));
 
         // I don't think this can happen on xml installers, afaik this would only happen on c# scripts that
         // try to directly change the plugin load order
-        foreach (var warning in instructions.Where(_ => _.type == "unsupported"))
+        foreach (var warning in instructions.Where(instruction => instruction.type == "unsupported"))
             _logger.LogWarning("Installer uses unsupported function: {}", warning.source);
 
         return new[]
@@ -88,41 +83,50 @@ public class FomodXmlInstaller : IModInstaller
 
     private IEnumerable<AModFile> InstructionsToModFiles(IEnumerable<Instruction> instructions, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
-        var groupedInstructions = instructions.Aggregate(new Dictionary<string, List<Instruction>>(), (prev, iter) => {
-            SetDefault(prev, iter.type, new List<Instruction>()).Add(iter);
+        var groupedInstructions = instructions.Aggregate(new Dictionary<string, List<Instruction>>(), (prev, instruction) => {
+            if (prev.TryGetValue(instruction.type, out var existing))
+            {
+                existing.Add(instruction);
+            }
+            else
+            {
+                prev[instruction.type] = new List<Instruction>
+                {
+                    instruction
+                };
+            }
+
             return prev;
         });
 
         var result = new List<AModFile>();
         foreach (var type in groupedInstructions)
-            result.AddRange(ConvertInstructions(type.Value, srcArchive, files));
+            result.AddRange(ConvertInstructions(type.Value, files));
 
         return result;
     }
 
-    private IEnumerable<AModFile> ConvertInstructions(IEnumerable<Instruction> instructions, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
+    private static IEnumerable<AModFile> ConvertInstructions(IList<Instruction> instructions, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
-        if (!instructions.Any())
-            return new List<AModFile>();
+        if (!instructions.Any()) return new List<AModFile>();
 
-        switch (instructions.First().type)
+        return instructions.First().type switch
         {
-            case "copy": return ConvertInstructionCopy(instructions, srcArchive, files);
-            case "mkdir": return ConvertInstructionMkdir(instructions);
-            case "enableallplugins": return ConvertInstructionEnableAllPlugins(instructions);
+            "copy" => ConvertInstructionCopy(instructions, files),
+            "mkdir" => ConvertInstructionMkdir(instructions),
+            // TODO: "enableallplugins",
             // "iniedit" - only supported by c# script and modscript installers atm
             // "generatefile" - only supported by c# script installers
             // "enableplugin" - supported in the fomod-installer module but doesn't seem to be emitted anywhere
-        }
-
-        return new List<AModFile>();
+            _ => new List<AModFile>()
+        };
     }
 
-    private IEnumerable<AModFile> ConvertInstructionCopy(IEnumerable<Instruction> instructions, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
+    private static IEnumerable<AModFile> ConvertInstructionCopy(IEnumerable<Instruction> instructions, EntityDictionary<RelativePath, AnalyzedFile> files)
     {
         return instructions.Select(instruction =>
         {
-            var file = files.First(_ => _.Key.Equals(RelativePath.FromUnsanitizedInput(instruction.source)));
+            var file = files.First(file => file.Key.Equals(RelativePath.FromUnsanitizedInput(instruction.source)));
 
             return new FromArchive
             {
@@ -134,25 +138,12 @@ public class FomodXmlInstaller : IModInstaller
         });
     }
 
-    private IEnumerable<AModFile> ConvertInstructionMkdir(IEnumerable<Instruction> instructions)
+    private static IEnumerable<AModFile> ConvertInstructionMkdir(IEnumerable<Instruction> instructions)
     {
         return instructions.Select(instruction => new EmptyDirectory
         {
             Id = ModFileId.New(),
             Directory = new GamePath(GameFolderType.Game, instruction.destination)
         });
-    }
-
-    private IEnumerable<AModFile> ConvertInstructionEnableAllPlugins(IEnumerable<Instruction> instruction)
-    {
-        return new List<AModFile>();
-    }
-
-    private TValue SetDefault<TKey, TValue>(IDictionary<TKey, TValue> dict, TKey key, TValue def) where TValue : class?
-    {
-        if (!dict.ContainsKey(key))
-            dict.Add(key, def);
-
-        return dict[key];
     }
 }
