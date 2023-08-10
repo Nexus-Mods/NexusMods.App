@@ -9,7 +9,7 @@ public static class Services
     public static IServiceCollection AddFomodInstallerUi(this IServiceCollection serviceCollection)
     {
         return serviceCollection
-            .AddTransient<IGuidedInstaller, UiOptionSelector>()
+            .AddTransient<IGuidedInstaller, GuidedInstallerUi>()
             .AddViewModel<GuidedInstallerStepViewModel, IGuidedInstallerStepViewModel>()
             .AddViewModel<GuidedInstallerWindowViewModel, IGuidedInstallerWindowViewModel>();
     }

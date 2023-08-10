@@ -6,14 +6,14 @@ using NexusMods.Common.GuidedInstaller;
 namespace NexusMods.Games.FOMOD.UI;
 
 [UsedImplicitly]
-public sealed class UiOptionSelector : IGuidedInstaller, IDisposable
+public sealed class GuidedInstallerUi : IGuidedInstaller, IDisposable
 {
     private readonly IServiceProvider _serviceProvider;
 
     private IServiceScope? _currentScope;
     private IGuidedInstallerWindowViewModel? _windowViewModel;
 
-    public UiOptionSelector(IServiceProvider serviceProvider)
+    public GuidedInstallerUi(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
     }
