@@ -29,11 +29,19 @@ public class UiDelegates : IUIDelegates
     private delegate void ContinueToNextStep(bool forward, int currentStepId);
     private static void DummyContinueToNextStep(bool forward, int currentStepId) { }
 
+    /// <summary>
+    /// Created by the executor, this delegate notifies the executor that the installer
+    /// should exist.
+    /// </summary>
+    private delegate void CancelInstaller();
+    private static void DummyCancelInstaller() { }
+
     private readonly ILogger<UiDelegates> _logger;
     private readonly IOptionSelector _optionSelector;
 
     private SelectOptions _selectOptions = DummySelectOptions;
     private ContinueToNextStep _continueToNextStep = DummyContinueToNextStep;
+    private CancelInstaller _cancelInstaller = DummyCancelInstaller;
 
     public UiDelegates(ILogger<UiDelegates> logger, IOptionSelector optionSelector)
     {
@@ -50,6 +58,7 @@ public class UiDelegates : IUIDelegates
     {
         _selectOptions = new SelectOptions(select);
         _continueToNextStep = new ContinueToNextStep(cont);
+        _cancelInstaller = new CancelInstaller(cancel);
 
         _optionSelector.SetupSelector(moduleName ?? string.Empty);
     }
@@ -79,17 +88,35 @@ public class UiDelegates : IUIDelegates
             .RequestMultipleChoices(choices)
             .ContinueWith(task =>
             {
-                var tuple = task.Result;
-                if (tuple is null)
+                var result = task.Result;
+                _logger.LogDebug("Status: {TaskStatus}", task.Status);
+
+                // TODO: figure out how to go backwards. Our internal API doesn't support this concept.
+                if (result is null)
                 {
-                    _logger.LogDebug("Status: {TaskStatus}", task.Status);
-                    _continueToNextStep(forward: true, currentStepId);
+                    // Result is null, the user wants to cancel installation.
+                    _cancelInstaller();
+                    return;
                 }
-                else
+
+                // NOTE(erri120): This _selectOptions delegate we got from the executor is
+                // fucking weird. It only accepts the selected options from a single group.
+                // Vortex: https://github.com/Nexus-Mods/Vortex/blob/82e8ad3e051ab4ad41df43d11803ee43d399a85f/src/extensions/installer_fomod/views/InstallerDialog.tsx#L450-L461
+                // This is "supposed" to be called whenever the user clicks on a button in the UI.
+                // However, this explicit relationship doesn't work in our case and is generally
+                // pretty stupid. As such, we get the "final" result from the implementation
+                // and push those all at once to the executor.
+
+                foreach (var kv in result)
                 {
-                    var (selectedGroupId, selectedOptionIds) = tuple;
-                    _selectOptions(currentStepId, selectedGroupId, selectedOptionIds.ToArray());
+                    var (selectedGroupId, selectedOptionIds) = kv;
+                    _selectOptions(currentStepId, selectedGroupId, selectedOptionIds);
                 }
+
+                // We need to explicitly call this, since our implementations
+                // return from RequestMultipleChoices when the user wants to go
+                // to the next step. Once again, the API is ass.
+                _continueToNextStep(forward: true, currentStepId);
             });
     }
 

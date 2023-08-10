@@ -72,15 +72,16 @@ public class CliOptionSelector : IOptionSelector
     }
 
     /// <inheritdoc />
-    public Task<Tuple<TGroupId, TOptionId[]>?> RequestMultipleChoices<TGroupId, TOptionId>(ChoiceGroup<TGroupId, TOptionId>[] groups)
+    public Task<KeyValuePair<TGroupId, TOptionId[]>[]?> RequestMultipleChoices<TGroupId, TOptionId>(ChoiceGroup<TGroupId, TOptionId>[] groups)
     {
         if (AutoFail) throw new Exception("AutoFail is enabled for this option selector.");
 
         var selectedGroupIdx = -1;
-        Tuple<TGroupId, TOptionId[]>? result = null;
+        KeyValuePair<TGroupId, TOptionId[]>[]? result = null;
         IList<Option<TOptionId>>? selectedGroup = null;
         var selectedGroupName = "";
 
+        // TODO: update this to support selecting options from multiple groups
         while (true)
         {
             RenderOptions(groups, selectedGroup, selectedGroupName);
@@ -99,7 +100,7 @@ public class CliOptionSelector : IOptionSelector
             else
             {
                 if (input == ReturnInput)
-                    result = CreateResult(groups, selectedGroupIdx, selectedGroup!);
+                    result = new[] { CreateResult(groups, selectedGroupIdx, selectedGroup!) };
                 else
                     UpdatedSelectedGroup(ref selectedGroup, groups, selectedGroupIdx, input);
             }
@@ -134,7 +135,7 @@ public class CliOptionSelector : IOptionSelector
         return (Console.ReadLine() ?? "").Trim();
     }
 
-    private static Tuple<TGroupId, TOptionId[]> CreateResult<TGroupId, TOptionId>(
+    private static KeyValuePair<TGroupId, TOptionId[]> CreateResult<TGroupId, TOptionId>(
         IEnumerable<ChoiceGroup<TGroupId, TOptionId>> groups,
         int selectedGroupIdx,
         IEnumerable<Option<TOptionId>> selectedGroup)
@@ -143,7 +144,7 @@ public class CliOptionSelector : IOptionSelector
             .Where(x => x.Type is OptionState.Selected or OptionState.Required)
             .Select(x => x.Id);
 
-        return new Tuple<TGroupId, TOptionId[]>(groups.ElementAt(selectedGroupIdx).Id, updatedOptions.ToArray());
+        return new KeyValuePair<TGroupId, TOptionId[]>(groups.ElementAt(selectedGroupIdx).Id, updatedOptions.ToArray());
     }
 
     private static void FixSelection<TOptionId>(ref IList<Option<TOptionId>> list, ChoiceType groupType, int lastChangeIdx)

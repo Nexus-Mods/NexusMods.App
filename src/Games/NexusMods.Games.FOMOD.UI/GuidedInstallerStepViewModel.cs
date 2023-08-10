@@ -1,6 +1,5 @@
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Reactive.Disposables;
 using JetBrains.Annotations;
 using NexusMods.App.UI;
 using NexusMods.Common.UserInput;
@@ -13,10 +12,10 @@ namespace NexusMods.Games.FOMOD.UI;
 public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewModel>, IGuidedInstallerStepViewModel
 {
     [Reactive]
-    public ChoiceGroup<int, int>[] Choices { get; set; } = Array.Empty<ChoiceGroup<int, int>>();
+    public ChoiceGroup<int, int>[] AvailableChoices { get; set; } = Array.Empty<ChoiceGroup<int, int>>();
 
     [Reactive]
-    public TaskCompletionSource<Tuple<int, int[]>?>? TaskCompletionSource { get; set; }
+    public TaskCompletionSource<KeyValuePair<int, int[]>[]?>? TaskCompletionSource { get; set; }
 
     public ReactiveCommand<Unit, Unit> NextStepCommand { get; }
 
@@ -26,12 +25,12 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
         var hasTaskCompletionSource = this
             .WhenAnyValue(vm => vm.TaskCompletionSource)
             .OnUI()
-            .Select(tsc => tsc is not null);
+            .Select(tcs => tcs is not null);
 
         NextStepCommand = ReactiveCommand.Create(() =>
         {
             // TODO: set result
-            TaskCompletionSource?.TrySetResult(new Tuple<int, int[]>(0, Array.Empty<int>()));
+            TaskCompletionSource?.TrySetResult(Array.Empty<KeyValuePair<int, int[]>>());
         }, hasTaskCompletionSource);
     }
 }

@@ -7,9 +7,9 @@ namespace NexusMods.Games.FOMOD.UI;
 
 public interface IGuidedInstallerStepViewModel : IViewModelInterface
 {
-    public ChoiceGroup<int, int>[] Choices { get; set; }
+    public ChoiceGroup<int, int>[] AvailableChoices { get; set; }
 
-    public TaskCompletionSource<Tuple<int, int[]>?>? TaskCompletionSource { get; set; }
+    public TaskCompletionSource<KeyValuePair<int, int[]>[]?>? TaskCompletionSource { get; set; }
 
     public ReactiveCommand<Unit, Unit> NextStepCommand { get; }
 }

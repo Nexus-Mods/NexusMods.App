@@ -37,5 +37,5 @@ public interface IOptionSelector
     /// <typeparam name="TGroupId">Unique ID for each group.</typeparam>
     /// <typeparam name="TOptionId">Unique ID for each option.</typeparam>
     /// <returns></returns>
-    public Task<Tuple<TGroupId, TOptionId[]>?> RequestMultipleChoices<TGroupId, TOptionId>(ChoiceGroup<TGroupId, TOptionId>[] choices);
+    public Task<KeyValuePair<TGroupId, TOptionId[]>[]?> RequestMultipleChoices<TGroupId, TOptionId>(ChoiceGroup<TGroupId, TOptionId>[] choices);
 }

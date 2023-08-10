@@ -49,7 +49,7 @@ public sealed class UiOptionSelector : IOptionSelector, IDisposable
         throw new NotImplementedException();
     }
 
-    public async Task<Tuple<TGroupId, TOptionId[]>?> RequestMultipleChoices<TGroupId, TOptionId>(
+    public async Task<KeyValuePair<TGroupId, TOptionId[]>[]?> RequestMultipleChoices<TGroupId, TOptionId>(
         ChoiceGroup<TGroupId, TOptionId>[] choices)
     {
         Debug.Assert(_currentScope is not null);
@@ -58,9 +58,9 @@ public sealed class UiOptionSelector : IOptionSelector, IDisposable
         _windowViewModel.ActiveStepViewModel ??= _currentScope.ServiceProvider.GetRequiredService<IGuidedInstallerStepViewModel>();
 
         var activeStepViewModel = _windowViewModel.ActiveStepViewModel;
-        activeStepViewModel.Choices = CastChoices(choices);
+        activeStepViewModel.AvailableChoices = CastChoices(choices);
 
-        var tcs = new TaskCompletionSource<Tuple<int, int[]>?>();
+        var tcs = new TaskCompletionSource<KeyValuePair<int, int[]>[]?>();
         activeStepViewModel.TaskCompletionSource = tcs;
 
         await tcs.Task;
@@ -77,7 +77,7 @@ public sealed class UiOptionSelector : IOptionSelector, IDisposable
         return (ChoiceGroup<int, int>[])Convert.ChangeType(choices, typeof(ChoiceGroup<int, int>));
     }
 
-    private static Tuple<TGroupId, TOptionId[]>? CastResult<TGroupId, TOptionId>(Tuple<int, int[]>? result)
+    private static KeyValuePair<TGroupId, TOptionId[]>[]? CastResult<TGroupId, TOptionId>(KeyValuePair<int, int[]>[]? result)
     {
         // NOTE(erri120): FOMOD uses integer for IDs. This is the only thing currently supported.
         Debug.Assert(typeof(TGroupId) == typeof(int));
@@ -86,7 +86,7 @@ public sealed class UiOptionSelector : IOptionSelector, IDisposable
         if (result is null) return null;
 
         // TODO: verify this actually works
-        return (Tuple<TGroupId, TOptionId[]>?)Convert.ChangeType(result, typeof(Tuple<TGroupId, TOptionId[]>));
+        return (KeyValuePair<TGroupId, TOptionId[]>[]?)Convert.ChangeType(result, typeof(KeyValuePair<TGroupId, TOptionId[]>[]));
     }
 
     public void Dispose() => CleanupSelector();
