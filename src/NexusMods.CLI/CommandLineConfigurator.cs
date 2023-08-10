@@ -28,7 +28,7 @@ public class CommandLineConfigurator
     /// <param name="provider">Instance of dependency injection container.</param>
     /// <param name="selector"></param>
     /// <param name="renderers"></param>
-    public CommandLineConfigurator(IEnumerable<RegisteredVerb> verbs, IServiceProvider provider, CliOptionSelector selector, IEnumerable<IRenderer> renderers)
+    public CommandLineConfigurator(IEnumerable<RegisteredVerb> verbs, IServiceProvider provider, CliGuidedInstaller selector, IEnumerable<IRenderer> renderers)
     {
         _renderers = renderers.ToArray();
         _defaultConsoleRenderer = _renderers.FirstOrDefault(r => r.Name == "console") ?? _renderers.First();

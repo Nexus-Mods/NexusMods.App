@@ -2,7 +2,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using JetBrains.Annotations;
 using NexusMods.App.UI;
-using NexusMods.Common.UserInput;
+using NexusMods.Common.GuidedInstaller;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -12,12 +12,14 @@ namespace NexusMods.Games.FOMOD.UI;
 public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewModel>, IGuidedInstallerStepViewModel
 {
     [Reactive]
-    public ChoiceGroup<int, int>[] AvailableChoices { get; set; } = Array.Empty<ChoiceGroup<int, int>>();
+    public GuidedInstallationStep? InstallationStep { get; set; }
 
     [Reactive]
-    public TaskCompletionSource<KeyValuePair<int, int[]>[]?>? TaskCompletionSource { get; set; }
+    public TaskCompletionSource<UserChoice>? TaskCompletionSource { get; set; }
 
-    public ReactiveCommand<Unit, Unit> NextStepCommand { get; }
+    public ReactiveCommand<Unit, Unit> NextStepCommand { get; set; }
+    public ReactiveCommand<Unit, Unit> PreviousStepCommand { get; set; }
+    public ReactiveCommand<Unit, Unit> CancelInstallerCommand { get; set; }
 
     public GuidedInstallerStepViewModel()
     {
@@ -30,7 +32,18 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
         NextStepCommand = ReactiveCommand.Create(() =>
         {
             // TODO: set result
-            TaskCompletionSource?.TrySetResult(Array.Empty<KeyValuePair<int, int[]>>());
+            var selectedOptions = Array.Empty<SelectedOption>();
+            TaskCompletionSource?.TrySetResult(new UserChoice(new UserChoice.GoToNextStep(selectedOptions)));
+        }, hasTaskCompletionSource);
+
+        PreviousStepCommand = ReactiveCommand.Create(() =>
+        {
+            TaskCompletionSource?.TrySetResult(new UserChoice(new UserChoice.GoToPreviousStep()));
+        }, hasTaskCompletionSource);
+
+        CancelInstallerCommand = ReactiveCommand.Create(() =>
+        {
+            TaskCompletionSource?.TrySetResult(new UserChoice(new UserChoice.CancelInstallation()));
         }, hasTaskCompletionSource);
     }
 }

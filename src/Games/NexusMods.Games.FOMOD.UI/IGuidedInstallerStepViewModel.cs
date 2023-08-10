@@ -1,15 +1,19 @@
 using System.Reactive;
 using NexusMods.App.UI;
-using NexusMods.Common.UserInput;
+using NexusMods.Common.GuidedInstaller;
 using ReactiveUI;
 
 namespace NexusMods.Games.FOMOD.UI;
 
 public interface IGuidedInstallerStepViewModel : IViewModelInterface
 {
-    public ChoiceGroup<int, int>[] AvailableChoices { get; set; }
+    public GuidedInstallationStep? InstallationStep { get; set; }
 
-    public TaskCompletionSource<KeyValuePair<int, int[]>[]?>? TaskCompletionSource { get; set; }
+    public TaskCompletionSource<UserChoice>? TaskCompletionSource { get; set; }
 
-    public ReactiveCommand<Unit, Unit> NextStepCommand { get; }
+    public ReactiveCommand<Unit, Unit> NextStepCommand { get; set; }
+
+    public ReactiveCommand<Unit, Unit> PreviousStepCommand { get; set; }
+
+    public ReactiveCommand<Unit, Unit> CancelInstallerCommand { get; set; }
 }

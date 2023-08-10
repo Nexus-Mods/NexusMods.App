@@ -13,8 +13,8 @@ using NexusMods.Abstractions.CLI;
 using NexusMods.CLI.Types;
 using NexusMods.CLI.Types.DownloadHandlers;
 using NexusMods.CLI.Types.IpcHandlers;
+using NexusMods.Common.GuidedInstaller;
 using NexusMods.Common.ProtocolRegistration;
-using NexusMods.Common.UserInput;
 
 namespace NexusMods.CLI;
 
@@ -38,7 +38,7 @@ public static class Services
         services.AddSingleton<IOptionParser<Version>, VersionParser>();
         services.AddSingleton<IOptionParser<Loadout>, LoadoutParser>();
         services.AddSingleton<IOptionParser<ITool>, ToolParser>();
-        services.AddAllSingleton<IOptionSelector, CliOptionSelector>();
+        services.AddAllSingleton<IGuidedInstaller, CliGuidedInstaller>();
 
         OSInformation.Shared.SwitchPlatform(
             ref services,
