@@ -54,6 +54,9 @@ public class ChunkState
     [JsonIgnore]
     public Source? Source { get; set; }
 
+    /// <summary>
+    /// The source URL of the chunk
+    /// </summary>
     [PublicAPI]
     public string SourceUrl => Source?.Request?.RequestUri?.AbsoluteUri ?? "No URL";
 

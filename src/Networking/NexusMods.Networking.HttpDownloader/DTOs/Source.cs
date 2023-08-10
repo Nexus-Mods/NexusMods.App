@@ -15,6 +15,7 @@ public class Source
     /// </summary>
     public int Priority { get; set; }
 
+    /// <inheritdoc />
     public override string ToString()
     {
         return Request?.RequestUri?.AbsoluteUri ?? "No URL";

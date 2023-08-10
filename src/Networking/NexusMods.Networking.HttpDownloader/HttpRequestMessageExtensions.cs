@@ -1,5 +1,8 @@
 ﻿namespace NexusMods.Networking.HttpDownloader;
 
+/// <summary>
+/// Extensions for <see cref="HttpRequestMessage"/>
+/// </summary>
 public static class HttpRequestMessageExtensions
 {
     /// <summary>
