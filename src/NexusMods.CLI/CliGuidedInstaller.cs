@@ -61,12 +61,8 @@ public class CliGuidedInstaller : IGuidedInstaller
                 {
                     currentGroup = installationStep.Groups[groupIndex];
                     selectedOptions = currentGroup.Options
-                        .Where(x => x.OptionType == OptionType.PreSelected)
-                        .Select(x => new SelectedOption
-                        {
-                            GroupId = currentGroup.Id,
-                            OptionId = x.Id
-                        })
+                        .Where(x => x.Type == OptionType.PreSelected)
+                        .Select(x => new SelectedOption(currentGroup.Id, x.Id))
                         .ToList();
                 }
             }
@@ -76,12 +72,8 @@ public class CliGuidedInstaller : IGuidedInstaller
                 if (input == ReturnInput)
                 {
                     var requiredOptions = currentGroup.Options
-                        .Where(x => x.OptionType == OptionType.Required)
-                        .Select(x => new SelectedOption
-                        {
-                            GroupId = currentGroup.Id,
-                            OptionId = x.Id
-                        });
+                        .Where(x => x.Type == OptionType.Required)
+                        .Select(x => new SelectedOption(currentGroup.Id, x.Id));
 
                     selectedOptions.AddRange(requiredOptions);
 
@@ -122,7 +114,7 @@ public class CliGuidedInstaller : IGuidedInstaller
                 return new object[]
                 {
                     key++,
-                    RenderOptionState(hasSelected, option.OptionType),
+                    RenderOptionState(hasSelected, option.Type),
                     option.Name,
                     option.Description
                 };
@@ -169,6 +161,9 @@ public class CliGuidedInstaller : IGuidedInstaller
 
         var targetOption = currentGroup.Options[optionIndex];
 
+        // can't toggle disabled or required options
+        if (targetOption.Type is OptionType.Disabled or OptionType.Required) return;
+
         var hasSelected = selectedOptions.TryGetFirst(x => x.OptionId == targetOption.Id, out var selectedOption);
         if (hasSelected)
         {
@@ -178,17 +173,13 @@ public class CliGuidedInstaller : IGuidedInstaller
         }
 
         // the target option is not selected, the user wants to select it
-        if (currentGroup.OptionGroupType is OptionGroupType.ExactlyOne or OptionGroupType.AtMostOne)
+        if (currentGroup.Type is OptionGroupType.ExactlyOne or OptionGroupType.AtMostOne)
         {
             // "deselect" everything
             selectedOptions.Clear();
         }
 
-        selectedOptions.Add(new SelectedOption
-        {
-            GroupId = currentGroup.Id,
-            OptionId = targetOption.Id
-        });
+        selectedOptions.Add(new SelectedOption(currentGroup.Id, targetOption.Id));
     }
 
     private static string GetUserInput()

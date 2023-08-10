@@ -3,10 +3,19 @@ using NexusMods.Common.GuidedInstaller.ValueObjects;
 
 namespace NexusMods.Common.GuidedInstaller;
 
+/// <summary>
+/// Represents a single step during installation.
+/// </summary>
 [PublicAPI]
 public record GuidedInstallationStep
 {
+    /// <summary>
+    /// Gets the unique identifier of the step.
+    /// </summary>
     public required StepId Id { get; init; }
 
+    /// <summary>
+    /// Gets one or multiple option groups.
+    /// </summary>
     public required OptionGroup[] Groups { get; init; }
 }

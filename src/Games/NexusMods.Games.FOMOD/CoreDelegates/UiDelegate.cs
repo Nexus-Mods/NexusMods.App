@@ -150,7 +150,7 @@ public class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates
             return new OptionGroup
             {
                 Id = groupId,
-                OptionGroupType = ConvertOptionGroupType(group.type),
+                Type = ConvertOptionGroupType(group.type),
                 Description = group.name,
                 Options = ToOptions(group.options, optionIdMappings).ToArray(),
             };
@@ -178,7 +178,7 @@ public class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates
                 Name = option.name,
                 Description = option.description,
                 ImageUrl = option.image != null ? AssetUrl.From(option.image) : null,
-                OptionType = MakeOptionType(option),
+                Type = MakeOptionType(option),
             };
         });
     }

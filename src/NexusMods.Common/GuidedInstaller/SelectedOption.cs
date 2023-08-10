@@ -3,13 +3,25 @@ using NexusMods.Common.GuidedInstaller.ValueObjects;
 
 namespace NexusMods.Common.GuidedInstaller;
 
+/// <summary>
+/// Represents a selected option.
+/// </summary>
 [PublicAPI]
 public readonly struct SelectedOption
 {
-    public readonly GroupId GroupId { get; init; }
+    /// <summary>
+    /// Gets the unique identifier of the group that contains the selected option.
+    /// </summary>
+    public readonly GroupId GroupId;
 
-    public readonly OptionId OptionId { get; init; }
+    /// <summary>
+    /// Gets the unique identifier of the selected option.
+    /// </summary>
+    public readonly OptionId OptionId;
 
+    /// <summary>
+    /// Constructor.
+    /// </summary>
     public SelectedOption(GroupId groupId, OptionId optionId)
     {
         GroupId = groupId;
