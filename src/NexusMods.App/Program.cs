@@ -82,8 +82,7 @@ public class Program
                 config.Sanitize();
                 services.AddSingleton(config);
 
-                if (isGui)
-                    services.AddUpdater();
+                services.AddUpdater();
 
                 services.AddApp(new AppConfig())
                     .Validate();

@@ -15,28 +15,26 @@ public class UpdaterService
     private readonly ILogger<UpdaterService> _logger;
     private readonly IFileSystem _fileSystem;
     private Task? _runnerTask;
-    private readonly AbsolutePath _updateFolder;
     private readonly CancellationTokenSource _cancellationTokenSource;
     private readonly CancellationToken _token;
     private readonly Github _github;
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly IHttpDownloader _downloader;
-    private readonly IProcessFactory _processFactory;
-    private readonly AbsolutePath _appFolder;
+    public readonly AbsolutePath AppFolder;
+    public readonly AbsolutePath UpdateFolder;
 
     public UpdaterService(ILogger<UpdaterService> logger, IFileSystem fileSystem, Github github,
-        TemporaryFileManager temporaryFileManager, IHttpDownloader downloader, IProcessFactory processFactory)
+        TemporaryFileManager temporaryFileManager, IHttpDownloader downloader)
     {
         _logger = logger;
         _fileSystem = fileSystem;
-        _appFolder = fileSystem.GetKnownPath(KnownPath.EntryDirectory);
-        _updateFolder = _appFolder.Combine(Constants.UpdateFolder);
+        AppFolder = fileSystem.GetKnownPath(KnownPath.EntryDirectory);
+        UpdateFolder = AppFolder.Combine(Constants.UpdateFolder);
         _github = github;
         _cancellationTokenSource = new CancellationTokenSource();
         _token = _cancellationTokenSource.Token;
         _temporaryFileManager = temporaryFileManager;
         _downloader = downloader;
-        _processFactory = processFactory;
     }
 
     public bool IsOnlyInstance()
@@ -54,10 +52,10 @@ public class UpdaterService
         if (updateMarkerFile.FileExists)
             return true;
 
-        if (_updateFolder.DirectoryExists())
+        if (UpdateFolder.DirectoryExists())
         {
             _logger.LogDebug($"Old update folder exists, deleting...");
-            _updateFolder.DeleteDirectory();
+            UpdateFolder.DeleteDirectory();
         }
 
         return false;
@@ -77,17 +75,19 @@ public class UpdaterService
 
     private async Task RunUpdate()
     {
-        var updateProgram = _updateFolder.Combine(Constants.UpdateExecutable);
+        var updateProgram = UpdateFolder.Combine(Constants.UpdateExecutable);
 
+        // We're letting CLIWrap escape all the variables for us, but we want to use
+        // Process.Start because we don't want to wait for the process to exit.
         var cmd = new Command(updateProgram.ToString())
-            .WithWorkingDirectory(_updateFolder.ToString())
+            .WithWorkingDirectory(UpdateFolder.ToString())
             .WithArguments(new[]
             {
                 "copy-app-to-folder",
-                "-f", _updateFolder.ToString(),
-                "-t", _appFolder.ToString(),
+                "-f", UpdateFolder.ToString(),
+                "-t", AppFolder.ToString(),
                 "-p", Environment.ProcessId.ToString(),
-                "-c", _appFolder.Combine(Constants.UpdateExecutable).ToString()
+                "-c", AppFolder.Combine(Constants.UpdateExecutable).ToString()
             });
 
         var info = new ProcessStartInfo(cmd.TargetFilePath)
@@ -113,25 +113,33 @@ public class UpdaterService
             if (!Version.TryParse(currentVersionString, out var version))
                 version = new Version(0, 0, 0, 1);
 
-            var latestRelease = await _github.GetLatestRelease("Nexus-Mods", "NexusMods.App");
-            if (latestRelease != null)
+            await DownloadAndExtractUpdate(version);
+            await Task.Delay(TimeSpan.FromHours(6), _token);
+        }
+    }
+
+    /// <summary>
+    /// Downloads and prepares for installation the latest update of the app, assuming the latest
+    /// version is newer than the given version.
+    /// </summary>
+    /// <param name="version"></param>
+    public async Task DownloadAndExtractUpdate(Version version)
+    {
+        var latestRelease = await _github.GetLatestRelease("Nexus-Mods", "NexusMods.App");
+        if (latestRelease != null)
+        {
+            if (Version.TryParse(latestRelease.Tag.TrimStart('v'), out var latestVersion))
             {
-                if (Version.TryParse(latestRelease.Tag.TrimStart('v'), out var latestVersion))
+                if (latestVersion > version)
                 {
-                    if (latestVersion > version)
+                    _logger.LogInformation("New version available: {LatestVersion}", latestVersion);
+                    await using var file = await DownloadRelease(latestRelease);
+                    if (file != null)
                     {
-                        _logger.LogInformation("New version available: {LatestVersion}", latestVersion);
-                        await using var file = await DownloadRelease(latestRelease);
-                        if (file != null)
-                        {
-                            await ExtractRelease(file.Value.Path, latestVersion);
-                        }
-
-
+                        await ExtractRelease(file.Value.Path, latestVersion);
                     }
                 }
             }
-            await Task.Delay(TimeSpan.FromHours(6), _token);
         }
     }
 
@@ -147,7 +155,7 @@ public class UpdaterService
 
         _logger.LogInformation("Extracting new version ({Version}) of the app", newVersion);
         using var archive = new ZipArchive(file.Read(), ZipArchiveMode.Read, false);
-        _updateFolder.CreateDirectory();
+        UpdateFolder.CreateDirectory();
 
         foreach (var entry in archive.Entries)
         {

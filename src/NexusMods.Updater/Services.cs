@@ -11,6 +11,7 @@ public static class Services
     {
         return services.AddSingleton<UpdaterService>()
             .AddVerb<CopyAppToFolder>()
+            .AddVerb<ForceAppUpdate>()
             .AddSingleton<Github>();
     }
 
