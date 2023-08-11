@@ -162,9 +162,17 @@ public class SqliteDataStore : IDataStore, IDisposable
         ms.Position = 0;
         cmd.Parameters.AddWithValue("@data", ms.ToArray());
         cmd.ExecuteNonQuery();
+        Commit(conn);
 
         if (!_immutableFields[id.Category])
             _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
+    }
+
+    private void Commit(ObjectPoolDisposable<SqliteConnection> conn)
+    {
+        var cmd = conn.Value.CreateCommand();
+        cmd.CommandText = "COMMIT";
+        cmd.ExecuteNonQuery();
     }
 
     /// <inheritdoc />
@@ -224,6 +232,8 @@ public class SqliteDataStore : IDataStore, IDisposable
         cmd.Parameters.AddWithValueUntagged("@id", id);
         cmd.Parameters.AddWithValue("@data", val.ToArray());
         cmd.ExecuteNonQuery();
+        Commit(conn);
+
 
         if (!_immutableFields[id.Category])
             _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
