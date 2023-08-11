@@ -2,8 +2,6 @@
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.Games.TestFramework;
-using Xunit.DependencyInjection;
-using Xunit.DependencyInjection.Logging;
 
 namespace NexusMods.Games.Generic.Tests;
 

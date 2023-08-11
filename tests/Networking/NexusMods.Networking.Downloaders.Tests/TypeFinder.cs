@@ -1,6 +1,4 @@
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
-using NexusMods.Networking.Downloaders.Interfaces;
-using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Networking.Downloaders.Tests.Serialization;
 
 namespace NexusMods.Networking.Downloaders.Tests;

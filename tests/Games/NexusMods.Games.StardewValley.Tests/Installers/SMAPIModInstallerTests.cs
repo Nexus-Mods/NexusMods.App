@@ -1,7 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using NexusMods.Common;
-using NexusMods.DataModel;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Games.StardewValley.Installers;

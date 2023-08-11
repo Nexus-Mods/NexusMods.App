@@ -1,14 +1,10 @@
 using FluentAssertions;
-using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Loadouts.ApplySteps;
 using NexusMods.DataModel.Loadouts.IngestSteps;
-using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using BackupFile = NexusMods.DataModel.Loadouts.ApplySteps.BackupFile;
-using RemoveFromLoadout = NexusMods.DataModel.Loadouts.ApplySteps.RemoveFromLoadout;
 
 namespace NexusMods.DataModel.Tests;
 

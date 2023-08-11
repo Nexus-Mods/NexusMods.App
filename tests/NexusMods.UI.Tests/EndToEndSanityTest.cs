@@ -1,5 +1,4 @@
 ﻿using Avalonia.Controls;
-using Avalonia.Markup.Parsers;
 using FluentAssertions;
 using NexusMods.UI.Tests.Framework;
 

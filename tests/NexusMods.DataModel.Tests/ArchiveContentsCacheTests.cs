@@ -1,12 +1,4 @@
-using FluentAssertions;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Ids;
-using NexusMods.DataModel.ArchiveContents;
-using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Tests.Harness;
-using NexusMods.FileExtractor.FileSignatures;
-using NexusMods.Hashing.xxHash64;
-using NexusMods.Paths.Extensions;
 
 namespace NexusMods.DataModel.Tests;
 

@@ -1,5 +1,4 @@
-﻿using NexusMods.DataModel;
-using NexusMods.DataModel.Abstractions;
+﻿using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;

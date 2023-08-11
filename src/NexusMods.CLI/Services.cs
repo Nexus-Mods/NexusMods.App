@@ -1,4 +1,3 @@
-using System.Globalization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.CLI.OptionParsers;
 using NexusMods.CLI.Verbs;
@@ -10,7 +9,6 @@ using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.FileExtractor.Extractors;
 using NexusMods.Paths;
-using System.Runtime.InteropServices;
 using NexusMods.Abstractions.CLI;
 using NexusMods.CLI.Types;
 using NexusMods.CLI.Types.DownloadHandlers;

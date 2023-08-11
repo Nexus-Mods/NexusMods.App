@@ -1,5 +1,3 @@
-using Vogen;
-
 namespace NexusMods.Common.UserInput;
 
 /// <summary>

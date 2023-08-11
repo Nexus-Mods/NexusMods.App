@@ -5,7 +5,6 @@ using Avalonia.Controls;
 using FluentAssertions;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.DataModel.RateLimiting;
-using NexusMods.UI.Tests.Framework;
 using ReactiveUI;
 
 namespace NexusMods.UI.Tests.Controls;

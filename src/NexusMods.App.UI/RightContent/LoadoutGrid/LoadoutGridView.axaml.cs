@@ -1,10 +1,5 @@
-﻿using System.Collections.ObjectModel;
-using System.Reactive.Disposables;
-using Avalonia;
+﻿using System.Reactive.Disposables;
 using Avalonia.Controls;
-using Avalonia.Data;
-using Avalonia.Markup.Xaml;
-using Avalonia.Markup.Xaml.Templates;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using NexusMods.DataModel.Loadouts;

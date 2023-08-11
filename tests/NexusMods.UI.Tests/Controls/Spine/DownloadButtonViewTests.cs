@@ -3,8 +3,6 @@ using Avalonia.Controls.Shapes;
 using FluentAssertions;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.DataModel.RateLimiting;
-using NexusMods.UI.Tests.Framework;
-using ReactiveUI;
 
 namespace NexusMods.UI.Tests.Controls.Spine;
 

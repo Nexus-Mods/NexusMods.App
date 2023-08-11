@@ -1,5 +1,4 @@
 ﻿using Avalonia.Controls;
-using NexusMods.App.UI.RightContent.LoadoutGrid;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.DataGrid;
