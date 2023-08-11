@@ -153,6 +153,7 @@ public class SqliteDataStore : IDataStore, IDisposable
             throw new ObjectDisposedException(nameof(SqliteDataStore));
 
         using var conn = _pool.RentDisposable();
+        Begin(conn);
         using var cmd = conn.Value.CreateCommand();
         cmd.CommandText = _putStatements[value.Category];
 
@@ -172,6 +173,13 @@ public class SqliteDataStore : IDataStore, IDisposable
     {
         var cmd = conn.Value.CreateCommand();
         cmd.CommandText = "COMMIT";
+        cmd.ExecuteNonQuery();
+    }
+
+    private void Begin(ObjectPoolDisposable<SqliteConnection> conn)
+    {
+        var cmd = conn.Value.CreateCommand();
+        cmd.CommandText = "BEGIN";
         cmd.ExecuteNonQuery();
     }
 
@@ -226,6 +234,7 @@ public class SqliteDataStore : IDataStore, IDisposable
             throw new ObjectDisposedException(nameof(SqliteDataStore));
 
         using var conn = _pool.RentDisposable();
+        Begin(conn);
         using var cmd = conn.Value.CreateCommand();
         cmd.CommandText = _putStatements[id.Category];
 
