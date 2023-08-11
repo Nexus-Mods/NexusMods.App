@@ -28,17 +28,18 @@ public class ConnectionPoolPolicy : IPooledObjectPolicy<SqliteConnection>, IDisp
     /// <inheritdoc />
     public SqliteConnection Create()
     {
+        Monitor.Enter(_connections);
         var conn = new SqliteConnection(_connectionString);
         conn.Open();
 
-        lock(_connections)
-            _connections.Add(conn);
+        _connections.Add(conn);
         return conn;
     }
 
     /// <inheritdoc />
     public bool Return(SqliteConnection obj)
     {
+        Monitor.Exit(_connections);
         return true;
     }
 

@@ -40,9 +40,7 @@ public class SqliteDataStore : IDataStore, IDisposable
     private readonly IMessageProducer<IdUpdated> _idPutProducer;
     private readonly IMessageConsumer<IdUpdated> _idPutConsumer;
     private readonly Dictionary<EntityCategory, bool> _immutableFields;
-    private readonly ObjectPool<SqliteConnection> _pool;
-    private readonly ConnectionPoolPolicy _poolPolicy;
-    private readonly ObjectPoolDisposable<SqliteConnection> _globalHandle;
+    private readonly SqliteConnection _conn;
 
     /// <summary/>
     /// <param name="logger">Logs events.</param>
@@ -69,12 +67,8 @@ public class SqliteDataStore : IDataStore, IDisposable
 
         connectionString = string.Intern(connectionString);
 
-        _poolPolicy = new ConnectionPoolPolicy(connectionString);
-        _pool = ObjectPool.Create(_poolPolicy);
-
-        // We do this so that while the app is running we never fully close the DB, this is needed
-        // if we're using a in-memory store, as closing the final connection will delete the DB.
-        _globalHandle = _pool.RentDisposable();
+        _conn = new SqliteConnection(connectionString);
+        _conn.Open();
 
         _getStatements = new Dictionary<EntityCategory, string>();
         _putStatements = new Dictionary<EntityCategory, string>();
@@ -109,32 +103,35 @@ public class SqliteDataStore : IDataStore, IDisposable
 
     private void EnsureTables()
     {
-
-        using var conn = _pool.RentDisposable();
-
-        using (var pragma = conn.Value.CreateCommand())
+        lock (_conn)
         {
-            pragma.CommandText = "PRAGMA journal_mode = WAL";
-            pragma.ExecuteNonQuery();
-        }
 
-        foreach (var table in EntityCategoryExtensions.GetValues())
-        {
-            var tableName = table.ToStringFast();
+            using (var pragma = _conn.CreateCommand())
+            {
+                pragma.CommandText = "PRAGMA journal_mode = WAL";
+                pragma.ExecuteNonQuery();
+            }
 
-            using var cmd = conn.Value.CreateCommand();
-            cmd.CommandText = $"CREATE TABLE IF NOT EXISTS {tableName} (Id BLOB PRIMARY KEY, Data BLOB)";
-            cmd.ExecuteNonQuery();
+            foreach (var table in EntityCategoryExtensions.GetValues())
+            {
+                var tableName = table.ToStringFast();
 
-            _getStatements[table] = $"SELECT Data FROM [{tableName}] WHERE Id = @id";
-            _putStatements[table] = $"INSERT OR REPLACE INTO [{tableName}] (Id, Data) VALUES (@id, @data)";
-            _allIdsStatements[table] = $"SELECT Id FROM [{tableName}]";
-            _casStatements[table] = $"UPDATE [{tableName}] SET Data = @newData WHERE Data = @oldData AND Id = @id RETURNING *;";
-            _prefixStatements[table] = $"SELECT Id, Data FROM [{tableName}] WHERE Id >= @prefix ORDER BY Id ASC";
-            _deleteStatements[table] = $"DELETE FROM [{tableName}] WHERE Id = @id";
+                using var cmd = _conn.CreateCommand();
+                cmd.CommandText = $"CREATE TABLE IF NOT EXISTS {tableName} (Id BLOB PRIMARY KEY, Data BLOB)";
+                cmd.ExecuteNonQuery();
 
-            var memberInfo = typeof(EntityCategory).GetField(Enum.GetName(table)!)!;
-            _immutableFields[table] = memberInfo.CustomAttributes.Any(x => x.AttributeType == typeof(ImmutableAttribute));
+                _getStatements[table] = $"SELECT Data FROM [{tableName}] WHERE Id = @id";
+                _putStatements[table] = $"INSERT OR REPLACE INTO [{tableName}] (Id, Data) VALUES (@id, @data)";
+                _allIdsStatements[table] = $"SELECT Id FROM [{tableName}]";
+                _casStatements[table] =
+                    $"UPDATE [{tableName}] SET Data = @newData WHERE Data = @oldData AND Id = @id RETURNING *;";
+                _prefixStatements[table] = $"SELECT Id, Data FROM [{tableName}] WHERE Id >= @prefix ORDER BY Id ASC";
+                _deleteStatements[table] = $"DELETE FROM [{tableName}] WHERE Id = @id";
+
+                var memberInfo = typeof(EntityCategory).GetField(Enum.GetName(table)!)!;
+                _immutableFields[table] =
+                    memberInfo.CustomAttributes.Any(x => x.AttributeType == typeof(ImmutableAttribute));
+            }
         }
     }
 
@@ -152,36 +149,23 @@ public class SqliteDataStore : IDataStore, IDisposable
         if (_isDisposed)
             throw new ObjectDisposedException(nameof(SqliteDataStore));
 
-        using var conn = _pool.RentDisposable();
-        Begin(conn);
-        using var cmd = conn.Value.CreateCommand();
-        cmd.CommandText = _putStatements[value.Category];
+        lock (_conn)
+        {
+            using var cmd = _conn.CreateCommand();
+            cmd.CommandText = _putStatements[value.Category];
 
-        cmd.Parameters.AddWithValueUntagged("@id", id);
-        var ms = new MemoryStream();
-        JsonSerializer.Serialize(ms, value, _jsonOptions.Value);
-        ms.Position = 0;
-        cmd.Parameters.AddWithValue("@data", ms.ToArray());
-        cmd.ExecuteNonQuery();
-        Commit(conn);
+            cmd.Parameters.AddWithValueUntagged("@id", id);
+            var ms = new MemoryStream();
+            JsonSerializer.Serialize(ms, value, _jsonOptions.Value);
+            ms.Position = 0;
+            cmd.Parameters.AddWithValue("@data", ms.ToArray());
+            cmd.ExecuteNonQuery();
 
-        if (!_immutableFields[id.Category])
-            _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
+            if (!_immutableFields[id.Category])
+                _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
+        }
     }
 
-    private void Commit(ObjectPoolDisposable<SqliteConnection> conn)
-    {
-        var cmd = conn.Value.CreateCommand();
-        cmd.CommandText = "COMMIT";
-        cmd.ExecuteNonQuery();
-    }
-
-    private void Begin(ObjectPoolDisposable<SqliteConnection> conn)
-    {
-        var cmd = conn.Value.CreateCommand();
-        cmd.CommandText = "BEGIN";
-        cmd.ExecuteNonQuery();
-    }
 
     /// <inheritdoc />
     public T? Get<T>(IId id, bool canCache) where T : Entity
@@ -193,23 +177,26 @@ public class SqliteDataStore : IDataStore, IDisposable
             return (T)cached;
 
         _logger.GetIdOfType(id, typeof(T).Name);
-        using var conn = _pool.RentDisposable();
-        using var cmd = conn.Value.CreateCommand();
-        cmd.CommandText = _getStatements[id.Category];
+        lock (_conn)
+        {
+            using var cmd = _conn.CreateCommand();
+            cmd.CommandText = _getStatements[id.Category];
 
-        cmd.Parameters.AddWithValueUntagged("@id", id);
-        using var reader = cmd.ExecuteReader();
-        if (!reader.Read())
-            return null;
+            cmd.Parameters.AddWithValueUntagged("@id", id);
+            using var reader = cmd.ExecuteReader();
+            if (!reader.Read())
+                return null;
 
-        var value = (T?)JsonSerializer.Deserialize<Entity>(reader.GetBlob(0), _jsonOptions.Value);
-        if (value == null) return null;
-        value.DataStoreId = id;
+            var value = (T?)JsonSerializer.Deserialize<Entity>(reader.GetBlob(0), _jsonOptions.Value);
+            if (value == null) return null;
+            value.DataStoreId = id;
 
-        if (canCache)
-            _cache.AddOrUpdate(id, value);
+            if (canCache)
+                _cache.AddOrUpdate(id, value);
 
-        return value;
+
+            return value;
+        }
     }
 
     /// <inheritdoc />
@@ -218,13 +205,16 @@ public class SqliteDataStore : IDataStore, IDisposable
         if (_isDisposed)
             throw new ObjectDisposedException(nameof(SqliteDataStore));
 
-        using var conn = _pool.RentDisposable();
-        using var cmd = conn.Value.CreateCommand();
-        cmd.CommandText = _getStatements[id.Category];
+        lock (_conn)
+        {
 
-        cmd.Parameters.AddWithValueUntagged("@id", id);
-        using var reader = cmd.ExecuteReader();
-        return !reader.Read() ? null : reader.GetBlob(0).ToArray();
+            using var cmd = _conn.CreateCommand();
+            cmd.CommandText = _getStatements[id.Category];
+
+            cmd.Parameters.AddWithValueUntagged("@id", id);
+            using var reader = cmd.ExecuteReader();
+            return !reader.Read() ? null : reader.GetBlob(0).ToArray();
+        }
     }
 
     /// <inheritdoc />
@@ -233,19 +223,21 @@ public class SqliteDataStore : IDataStore, IDisposable
         if (_isDisposed)
             throw new ObjectDisposedException(nameof(SqliteDataStore));
 
-        using var conn = _pool.RentDisposable();
-        Begin(conn);
-        using var cmd = conn.Value.CreateCommand();
-        cmd.CommandText = _putStatements[id.Category];
+        lock (_conn)
+        {
 
-        cmd.Parameters.AddWithValueUntagged("@id", id);
-        cmd.Parameters.AddWithValue("@data", val.ToArray());
-        cmd.ExecuteNonQuery();
-        Commit(conn);
+            using var cmd = _conn.CreateCommand();
+            cmd.CommandText = _putStatements[id.Category];
+
+            cmd.Parameters.AddWithValueUntagged("@id", id);
+            cmd.Parameters.AddWithValue("@data", val.ToArray());
+            cmd.ExecuteNonQuery();
 
 
-        if (!_immutableFields[id.Category])
-            _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
+            if (!_immutableFields[id.Category])
+                _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
+
+        }
     }
 
     /// <inheritdoc />
@@ -254,29 +246,33 @@ public class SqliteDataStore : IDataStore, IDisposable
         if (_isDisposed)
             throw new ObjectDisposedException(nameof(SqliteDataStore));
 
-        using var conn = _pool.RentDisposable();
-        using var transaction = conn.Value.BeginTransaction();
-
-        using (var cmd = conn.Value.CreateCommand())
+        lock (_conn)
         {
-            cmd.CommandText = _getStatements[id.Category];
-            cmd.Parameters.AddWithValueUntagged("@id", id);
-            using var reader = cmd.ExecuteReader();
-            if (reader.Read() && !reader.GetBlob(0).SequenceEqual(expected))
-                return false;
-        }
 
-        using (var cmd = conn.Value.CreateCommand()) {
-            cmd.CommandText = _putStatements[id.Category];
-            cmd.Parameters.AddWithValueUntagged("@id", id);
-            cmd.Parameters.AddWithValue("@data", val.ToArray());
-            cmd.ExecuteNonQuery();
-            transaction.Commit();
-        }
+            using var transaction = _conn.BeginTransaction();
 
-        if (!_immutableFields[id.Category])
-            _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
-        return true;
+            using (var cmd = _conn.CreateCommand())
+            {
+                cmd.CommandText = _getStatements[id.Category];
+                cmd.Parameters.AddWithValueUntagged("@id", id);
+                using var reader = cmd.ExecuteReader();
+                if (reader.Read() && !reader.GetBlob(0).SequenceEqual(expected))
+                    return false;
+            }
+
+            using (var cmd = _conn.CreateCommand())
+            {
+                cmd.CommandText = _putStatements[id.Category];
+                cmd.Parameters.AddWithValueUntagged("@id", id);
+                cmd.Parameters.AddWithValue("@data", val.ToArray());
+                cmd.ExecuteNonQuery();
+                transaction.Commit();
+            }
+
+            if (!_immutableFields[id.Category])
+                _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Put, id));
+            return true;
+        }
     }
 
     /// <inheritdoc />
@@ -285,14 +281,17 @@ public class SqliteDataStore : IDataStore, IDisposable
         if (_isDisposed)
             throw new ObjectDisposedException(nameof(SqliteDataStore));
 
-        using var conn = _pool.RentDisposable();
-        using var cmd = conn.Value.CreateCommand();
-        cmd.CommandText = _deleteStatements[id.Category];
-        cmd.Parameters.AddWithValueUntagged("@id", id);
-        cmd.ExecuteNonQuery();
+        lock (_conn)
+        {
 
-        if (!_immutableFields[id.Category])
-            _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Delete, id));
+            using var cmd = _conn.CreateCommand();
+            cmd.CommandText = _deleteStatements[id.Category];
+            cmd.Parameters.AddWithValueUntagged("@id", id);
+            cmd.ExecuteNonQuery();
+
+            if (!_immutableFields[id.Category])
+                _pendingIdPuts.Enqueue(new IdUpdated(IdUpdated.UpdateType.Delete, id));
+        }
     }
 
     /// <inheritdoc />
@@ -306,11 +305,10 @@ public class SqliteDataStore : IDataStore, IDisposable
         var totalLoaded = 0L;
         var done = false;
 
-        using var conn = _pool.RentDisposable();
         while (true)
         {
             {
-                await using var tx = conn.Value.BeginTransaction();
+                await using var tx = _conn.BeginTransaction();
 
                 while (processed < 100)
                 {
@@ -321,7 +319,7 @@ public class SqliteDataStore : IDataStore, IDisposable
                     }
 
                     var (id, val) = iterator.Current;
-                    await using var cmd = conn.Value.CreateCommand();
+                    await using var cmd = _conn.CreateCommand();
                     cmd.CommandText = _putStatements[id.Category];
 
                     cmd.Parameters.AddWithValueUntagged("@id", id);
@@ -352,25 +350,27 @@ public class SqliteDataStore : IDataStore, IDisposable
         if (_isDisposed)
             throw new ObjectDisposedException(nameof(SqliteDataStore));
 
-        using var conn = _pool.RentDisposable();
-        using var cmd = conn.Value.CreateCommand();
-        cmd.CommandText = _prefixStatements[prefix.Category];
-
-        cmd.Parameters.AddWithValueUntagged("@prefix", prefix);
-        using var reader = cmd.ExecuteReader();
-        while (reader.Read())
+        lock (_conn)
         {
-            var id = reader.GetId(prefix.Category, 0);
-            if (!id.IsPrefixedBy(prefix))
+            using var cmd = _conn.CreateCommand();
+            cmd.CommandText = _prefixStatements[prefix.Category];
+
+            cmd.Parameters.AddWithValueUntagged("@prefix", prefix);
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
             {
-                yield break;
+                var id = reader.GetId(prefix.Category, 0);
+                if (!id.IsPrefixedBy(prefix))
+                {
+                    yield break;
+                }
+
+                var value = JsonSerializer.Deserialize<Entity>(reader.GetBlob(1), _jsonOptions.Value);
+                if (value is not T tc) continue;
+
+                value.DataStoreId = id;
+                yield return tc;
             }
-
-            var value = JsonSerializer.Deserialize<Entity>(reader.GetBlob(1), _jsonOptions.Value);
-            if (value is not T tc) continue;
-
-            value.DataStoreId = id;
-            yield return tc;
         }
     }
 
@@ -383,13 +383,15 @@ public class SqliteDataStore : IDataStore, IDisposable
         if (_isDisposed)
             throw new ObjectDisposedException(nameof(SqliteDataStore));
 
-        using var conn = _pool.RentDisposable();
-        using var cmd = conn.Value.CreateCommand();
-        cmd.CommandText = _allIdsStatements[category];
-        var reader = cmd.ExecuteReader();
-        while (reader.Read())
+        lock (_conn)
         {
-            yield return reader.GetId(category, 0);
+            using var cmd = _conn.CreateCommand();
+            cmd.CommandText = _allIdsStatements[category];
+            var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                yield return reader.GetId(category, 0);
+            }
         }
     }
 
@@ -444,11 +446,7 @@ public class SqliteDataStore : IDataStore, IDisposable
         if (_isDisposed) return;
         if (disposing)
         {
-            _globalHandle.Dispose();
-            _enqueuerTcs.Dispose();
-            if (_pool is IDisposable disposable)
-                disposable.Dispose();
-            _poolPolicy.Dispose();
+            _conn.Dispose();
         }
         _isDisposed = true;
     }
