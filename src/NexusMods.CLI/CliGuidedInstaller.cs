@@ -134,9 +134,12 @@ public class CliGuidedInstaller : IGuidedInstaller
         return type switch
         {
             OptionType.Disabled => "Disabled",
-            OptionType.Available => "Off",
+            // NOTE (erri120): These are the "initial" states.
+            // The user can toggle a pre-selected option, which
+            // won't change the type but the "hasSelected" value.
+            OptionType.Available or OptionType.PreSelected => "Off",
             OptionType.Required => "Required",
-            _ => throw new UnreachableException()
+            _ => throw new UnreachableException($"hasSelected: {hasSelected}, type: {type}")
         };
     }
 
