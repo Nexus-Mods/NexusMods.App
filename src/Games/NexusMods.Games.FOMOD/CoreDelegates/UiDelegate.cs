@@ -31,7 +31,7 @@ public class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates
 
     /// <summary>
     /// Created by the executor, this delegate notifies the executor that the installer
-    /// should exist.
+    /// should exit.
     /// </summary>
     private delegate void CancelInstaller();
     private static void DummyCancelInstaller() { }
