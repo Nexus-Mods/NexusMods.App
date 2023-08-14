@@ -22,7 +22,7 @@ public class CliGuidedInstaller : IGuidedInstaller
     /// <summary>
     /// The renderer to use for rendering the options.
     /// </summary>
-    private IRenderer Renderer { get; set; } = null!;
+    public IRenderer Renderer { get; set; } = null!;
 
     /// <summary>
     /// If true, all option selection will select the first choice.
