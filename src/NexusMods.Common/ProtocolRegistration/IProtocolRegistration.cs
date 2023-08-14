@@ -24,9 +24,10 @@ public interface IProtocolRegistration
     /// </summary>
     /// <param name="protocol">The protocol to register for</param>
     /// <param name="friendlyName">Arbitrary friendly name for the protocol</param>
-    /// <param name="commandLine"></param>
+    /// <param name="workingDirectory">The directory inside which the program is executed</param>
+    /// <param name="commandLine">The full commandline</param>
     /// <returns>the previous handler, if any</returns>
-    Task<string?> Register(string protocol, string friendlyName, string commandLine);
+    Task<string?> Register(string protocol, string friendlyName, string workingDirectory, string commandLine);
 
     /// <summary>
     /// determine if this application is the handler for a protocol. This is based on the full url
