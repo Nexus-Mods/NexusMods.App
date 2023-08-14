@@ -95,7 +95,6 @@ public class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates
             .RequestUserChoice(guidedInstallationStep, new CancellationToken())
             .ContinueWith(task =>
             {
-                _logger.LogDebug("Status: {TaskStatus}", task.Status);
                 var result = task.Result;
 
                 if (result.IsCancelInstallation)

@@ -56,15 +56,18 @@ public class CliGuidedInstaller : IGuidedInstaller
             // the user has to select which group they want to use
             if (currentGroup is null)
             {
-                var groupIndex = ParseNumericalUserInput(input, installationStep.Groups.Length) ?? -1;
-                if (groupIndex >= 0)
+                var groupIndex = ParseNumericalUserInput(input, installationStep.Groups.Length);
+                if (groupIndex < 0)
                 {
-                    currentGroup = installationStep.Groups[groupIndex];
-                    selectedOptions = currentGroup.Options
-                        .Where(x => x.Type == OptionType.PreSelected)
-                        .Select(x => new SelectedOption(currentGroup.Id, x.Id))
-                        .ToList();
+                    // "Continue" with nothing selected.
+                    return Task.FromResult(new UserChoice(new UserChoice.GoToNextStep(Array.Empty<SelectedOption>())));
                 }
+
+                currentGroup = installationStep.Groups[groupIndex];
+                selectedOptions = currentGroup.Options
+                    .Where(x => x.Type == OptionType.PreSelected)
+                    .Select(x => new SelectedOption(currentGroup.Id, x.Id))
+                    .ToList();
             }
             else
             {
@@ -159,7 +162,7 @@ public class CliGuidedInstaller : IGuidedInstaller
         ICollection<SelectedOption> selectedOptions,
         string input)
     {
-        var optionIndex = ParseNumericalUserInput(input, currentGroup.Options.Length) ?? -1;
+        var optionIndex = ParseNumericalUserInput(input, currentGroup.Options.Length);
         if (optionIndex < 0) return;
 
         var targetOption = currentGroup.Options[optionIndex];
@@ -190,7 +193,7 @@ public class CliGuidedInstaller : IGuidedInstaller
         return (Console.ReadLine() ?? "").Trim();
     }
 
-    private static int? ParseNumericalUserInput(string input, int upperLimit)
+    private static int ParseNumericalUserInput(string input, int upperLimit)
     {
         try
         {
@@ -198,9 +201,11 @@ public class CliGuidedInstaller : IGuidedInstaller
             if (idx >= 0 && idx < upperLimit)
                 return idx;
         }
-        catch (FormatException) { /* ignored */ }
+        catch (FormatException)
+        {
+            return -1;
+        }
 
-        // input invalid or out of range
-        return null;
+        return -1;
     }
 }
