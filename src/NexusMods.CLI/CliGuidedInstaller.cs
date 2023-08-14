@@ -15,9 +15,10 @@ public class CliGuidedInstaller : IGuidedInstaller
 {
     private const string ReturnInput = "x";
     private static readonly string[] TableOfOptionsHeaders = { "Key", "State", "Name", "Description" };
-    private static readonly object[] TableOfOptionsFooter = { ReturnInput, "", "Back", "" };
+    private static readonly object[] TableOfOptionsFooterBack = { ReturnInput, "", "Back", "" };
     private static readonly string[] TableOfGroupsHeaders = { "Key", "Group" };
-    private static readonly object[] TableOfGroupsFooter = { ReturnInput, "Continue" };
+    private static readonly object[] TableOfGroupsFooterContinue = { ReturnInput, "Continue" };
+    private static readonly object[] TableOfGroupsFooterFinish = { ReturnInput, "Finish" };
 
     /// <summary>
     /// The renderer to use for rendering the options.
@@ -100,11 +101,12 @@ public class CliGuidedInstaller : IGuidedInstaller
         IReadOnlyCollection<SelectedOption> selectedOptions)
     {
         Renderer.Render(currentGroup is null
-            ? TableOfGroups(installationStep.Groups)
-            : TableOfOptions(currentGroup, selectedOptions));
+            ? TableOfGroups(installationStep)
+            : TableOfOptions(installationStep, currentGroup, selectedOptions));
     }
 
     private static Table TableOfOptions(
+        GuidedInstallationStep installationStep,
         OptionGroup group,
         IReadOnlyCollection<SelectedOption> selectedOptions)
     {
@@ -121,11 +123,11 @@ public class CliGuidedInstaller : IGuidedInstaller
                     option.Name,
                     option.Description
                 };
-            })
-            .Append(TableOfOptionsFooter)
-            .ToArray();
+            });
 
-        return new Table(TableOfOptionsHeaders, row, group.Description);
+        if (installationStep.HasPreviousStep) row = row.Append(TableOfOptionsFooterBack);
+
+        return new Table(TableOfOptionsHeaders, row.ToArray(), group.Description);
     }
 
     private static string RenderOptionState(bool hasSelected, OptionType type)
@@ -146,13 +148,15 @@ public class CliGuidedInstaller : IGuidedInstaller
         };
     }
 
-    private static Table TableOfGroups(IEnumerable<OptionGroup> groups)
+    private static Table TableOfGroups(GuidedInstallationStep installationStep)
     {
         var key = 1;
-        var row = groups
+        var row = installationStep.Groups
             .Select(group => new object[] { key++, group.Description })
-            .Append(TableOfGroupsFooter)
-            .ToArray();
+            .Append(installationStep.HasNextStep
+                ? TableOfGroupsFooterContinue
+                : TableOfGroupsFooterFinish
+            ).ToArray();
 
         return new Table(TableOfGroupsHeaders, row, "Select a Group");
     }

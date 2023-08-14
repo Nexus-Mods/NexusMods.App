@@ -18,4 +18,14 @@ public record GuidedInstallationStep
     /// Gets one or multiple option groups.
     /// </summary>
     public required OptionGroup[] Groups { get; init; }
+
+    /// <summary>
+    /// Gets whether or not there is a previous step.
+    /// </summary>
+    public bool HasPreviousStep { get; init; }
+
+    /// <summary>
+    /// Gets whether or not there is a next step.
+    /// </summary>
+    public bool HasNextStep { get; init; }
 }

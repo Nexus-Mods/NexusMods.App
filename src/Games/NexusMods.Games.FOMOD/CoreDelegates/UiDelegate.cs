@@ -1,7 +1,10 @@
+using System.Diagnostics;
 using FomodInstaller.Interface;
+using FomodInstaller.Interface.ui;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common.GuidedInstaller;
 using NexusMods.Common.GuidedInstaller.ValueObjects;
+using Option = NexusMods.Common.GuidedInstaller.Option;
 
 namespace NexusMods.Games.FOMOD.CoreDelegates;
 
@@ -81,12 +84,15 @@ public class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates
 
     public void UpdateState(FomodInstaller.Interface.ui.InstallerStep[] installSteps, int currentStepId)
     {
+        Debug.Assert(currentStepId >= 0 && currentStepId < installSteps.Length);
+
         var currentStep = installSteps[currentStepId];
         var groupIdMappings = new List<KeyValuePair<int, GroupId>>();
         var optionIdMappings = new List<KeyValuePair<int, OptionId>>();
 
         var guidedInstallationStep = ToGuidedInstallationStep(
-            currentStep.optionalFileGroups,
+            installSteps,
+            currentStepId,
             groupIdMappings,
             optionIdMappings
         );
@@ -137,10 +143,13 @@ public class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates
     }
 
     private static GuidedInstallationStep ToGuidedInstallationStep(
-        FomodInstaller.Interface.ui.GroupList groups,
+        IList<InstallerStep> installSteps,
+        int currentStepId,
         ICollection<KeyValuePair<int, GroupId>> groupIdMapping,
         ICollection<KeyValuePair<int, OptionId>> optionIdMappings)
     {
+        var groups = installSteps[currentStepId].optionalFileGroups;
+
         var stepGroups = groups.group.Select(group =>
         {
             var groupId = GroupId.From(Guid.NewGuid());
@@ -158,7 +167,9 @@ public class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates
         return new GuidedInstallationStep
         {
             Id = StepId.From(Guid.NewGuid()),
-            Groups = stepGroups.ToArray()
+            Groups = stepGroups.ToArray(),
+            HasPreviousStep = currentStepId != 0,
+            HasNextStep = currentStepId != installSteps.Count - 1,
         };
     }
 
