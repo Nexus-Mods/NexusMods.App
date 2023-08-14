@@ -57,7 +57,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected ADataModelTest(IServiceProvider provider)
     {
         var startup = new Startup();
-        _host = Host.CreateDefaultBuilder(Environment.GetCommandLineArgs())
+        _host = new HostBuilder()
             .ConfigureServices((_, service) => startup.ConfigureServices(service))
             .Build();
         var provider1 = _host.Services;
