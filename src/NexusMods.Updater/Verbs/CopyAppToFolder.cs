@@ -47,10 +47,11 @@ public class CopyAppToFolder : AVerb<AbsolutePath, AbsolutePath, AbsolutePath, i
 
             var relativePath = file.RelativeTo(from);
             var toFile = to.Combine(relativePath);
+            toFile.Parent.CreateDirectory();
             await Renderer.Render($"Copying {relativePath}");
             await using var fromStream = file.Open(FileMode.Open, FileAccess.Read, FileShare.Read);
             await using var toStream = toFile.Open(FileMode.Create, FileAccess.Write, FileShare.None);
-            await fromStream.CopyToAsync(toStream);
+            await fromStream.CopyToAsync(toStream, token);
         }
 
         markerFile.Delete();
@@ -58,7 +59,7 @@ public class CopyAppToFolder : AVerb<AbsolutePath, AbsolutePath, AbsolutePath, i
         var command = new Command(onComplete.ToString())
             .WithWorkingDirectory(onComplete.Parent.ToString());
 
-        _ = _processFactory.ExecuteAsync(command, token);
+        _ = _processFactory.ExecuteAndDetach(command);
         return 0;
     }
 }

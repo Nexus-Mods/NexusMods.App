@@ -133,6 +133,9 @@ public class Spectre : IRenderer
             case Abstractions.CLI.DataOutputs.Table t:
                 await RenderTable(t);
                 break;
+            case string s:
+                AnsiConsole.MarkupLine(s);
+                break;
             default:
                 throw new NotImplementedException();
         }

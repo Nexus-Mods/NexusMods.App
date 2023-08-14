@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using CliWrap;
 
 namespace NexusMods.Common;
@@ -12,5 +13,17 @@ public class ProcessFactory : IProcessFactory
         CancellationToken cancellationToken = default)
     {
         return await command.ExecuteAsync(cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public Process? ExecuteAndDetach(Command command)
+    {
+        var info = new ProcessStartInfo(command.TargetFilePath)
+        {
+            Arguments = command.Arguments,
+            WorkingDirectory = command.WorkingDirPath,
+
+        };
+        return Process.Start(info);
     }
 }

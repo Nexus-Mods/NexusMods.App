@@ -1,10 +1,11 @@
 using System.Buffers;
+using System.Diagnostics;
 using System.Text;
 using CliWrap;
 
 namespace NexusMods.Common;
 
-internal class FakeProcessFactory : IProcessFactory
+public class FakeProcessFactory : IProcessFactory
 {
     private readonly int _exitCode;
 
@@ -13,6 +14,8 @@ internal class FakeProcessFactory : IProcessFactory
 
     public string? StandardOutput { get; set; }
     public string? StandardError { get; set; }
+
+    public List<Command> Commands { get; } = new();
 
     public FakeProcessFactory(int exitCode)
     {
@@ -45,6 +48,25 @@ internal class FakeProcessFactory : IProcessFactory
             _exitCode,
             DateTimeOffset.Now,
             DateTimeOffset.Now));
+    }
+
+    /// <inheritdoc />
+    public Process? ExecuteAndDetach(Command command)
+    {
+        throw new ExecuteAndDetatchException(command);
+    }
+
+    /// <summary>
+    /// Thrown when <see cref="IProcessFactory.ExecuteAndDetach"/> is called. Used to test that the
+    /// correct command was passed to the factory.
+    /// </summary>
+    public class ExecuteAndDetatchException : Exception
+    {
+        public Command Command { get; }
+        public ExecuteAndDetatchException(Command command) : base("Executed command and detached from it")
+        {
+            Command = command;
+        }
     }
 
     private static async Task WriteStringToPipe(string text, PipeTarget pipe, CancellationToken cancellationToken = default)

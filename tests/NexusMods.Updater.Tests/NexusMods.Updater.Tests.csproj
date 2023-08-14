@@ -23,6 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\src\NexusMods.App\NexusMods.App.csproj" />
       <ProjectReference Include="..\..\src\NexusMods.Updater\NexusMods.Updater.csproj" />
     </ItemGroup>
 

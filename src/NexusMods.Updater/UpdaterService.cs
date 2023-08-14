@@ -22,9 +22,10 @@ public class UpdaterService
     private readonly IHttpDownloader _downloader;
     public readonly AbsolutePath AppFolder;
     public readonly AbsolutePath UpdateFolder;
+    private readonly IProcessFactory _processFactory;
 
     public UpdaterService(ILogger<UpdaterService> logger, IFileSystem fileSystem, Github github,
-        TemporaryFileManager temporaryFileManager, IHttpDownloader downloader)
+        TemporaryFileManager temporaryFileManager, IHttpDownloader downloader, IProcessFactory processFactory)
     {
         _logger = logger;
         _fileSystem = fileSystem;
@@ -35,6 +36,7 @@ public class UpdaterService
         _token = _cancellationTokenSource.Token;
         _temporaryFileManager = temporaryFileManager;
         _downloader = downloader;
+        _processFactory = processFactory;
     }
 
     public bool IsOnlyInstance()
@@ -90,13 +92,7 @@ public class UpdaterService
                 "-c", AppFolder.Combine(Constants.UpdateExecutable).ToString()
             });
 
-        var info = new ProcessStartInfo(cmd.TargetFilePath)
-        {
-            Arguments = cmd.Arguments,
-            WorkingDirectory = cmd.WorkingDirPath,
-
-        };
-        var process = Process.Start(info);
+        var process = _processFactory.ExecuteAndDetach(cmd);
         if (process == null)
         {
             _logger.LogError("Failed to start update process");
