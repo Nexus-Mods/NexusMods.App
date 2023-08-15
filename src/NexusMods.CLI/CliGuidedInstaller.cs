@@ -18,13 +18,13 @@ public class CliGuidedInstaller : IGuidedInstaller
     private const string NextInput = "n";
 
     private static readonly string[] TableOfGroupsHeaders = { "Key", "Group" };
-    private static readonly object[] TableOfGroupsFooterNextGroup = { NextInput, "Next" };
-    private static readonly object[] TableOfGroupsFooterFinish = { NextInput, "Finish" };
-    private static readonly object[] TableOfGroupsFooterGoBack = { BackInput, "Back" };
-    private static readonly object[] TableOfGroupsFooterCancel = { CancelInput, "Cancel" };
+    private static readonly object[] TableOfGroupsFooterNextGroup = { NextInput, "Next Step" };
+    private static readonly object[] TableOfGroupsFooterFinish = { NextInput, "Finish Installation" };
+    private static readonly object[] TableOfGroupsFooterGoBack = { BackInput, "Previous Step" };
+    private static readonly object[] TableOfGroupsFooterCancel = { CancelInput, "Cancel Installation" };
 
     private static readonly string[] TableOfOptionsHeaders = { "Key", "State", "Name", "Description" };
-    private static readonly object[] TableOfOptionsFooterBackToGroupSelection = { BackInput, "", "Back", "Back to group selection" };
+    private static readonly object[] TableOfOptionsFooterBackToGroupSelection = { BackInput, "", "Back", "Back to the group selection" };
     private static readonly object[] TableOfOptionsFooterCancel = { CancelInput, "", "Cancel", "Cancel the installation" };
 
     /// <summary>
