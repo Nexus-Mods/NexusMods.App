@@ -33,7 +33,7 @@ public static class Services
         services.AddScoped<IRenderer, Json>();
         return services;
     }
-    
+
     public static IServiceCollection AddListeners(this IServiceCollection services)
     {
         services.AddSingleton<NxmRpcListener>();
@@ -47,7 +47,7 @@ public static class Services
 
         services.AddCLI()
             .AddFileSystem()
-            .AddUI()
+            .AddUI(config.LauncherSettings)
             .AddFileExtractors(config.FileExtractorSettings)
             .AddDataModel(config.DataModelSettings)
             .AddBethesdaGameStudios()

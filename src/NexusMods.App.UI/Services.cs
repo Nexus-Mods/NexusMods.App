@@ -34,6 +34,7 @@ using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModVersion;
 using NexusMods.App.UI.RightContent.MyGames;
 using NexusMods.App.UI.Routing;
 using NexusMods.App.UI.Windows;
+using NexusMods.Common;
 using ReactiveUI;
 using DownloadGameNameView = NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadGameName.DownloadGameNameView;
 using DownloadNameView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadName.DownloadNameView;
@@ -51,8 +52,13 @@ namespace NexusMods.App.UI;
 public static class Services
 {
     // ReSharper disable once InconsistentNaming
-    public static IServiceCollection AddUI(this IServiceCollection c)
+    public static IServiceCollection AddUI(this IServiceCollection c, ILauncherSettings? settings)
     {
+        if (settings == null)
+            c.AddSingleton<ILauncherSettings, LauncherSettings>();
+        else
+            c.AddSingleton(settings);
+
         return c.AddTransient<MainWindow>()
 
             // Services

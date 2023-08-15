@@ -15,10 +15,12 @@ namespace NexusMods.App.UI;
 public class App : Application
 {
     private readonly IServiceProvider _provider;
+    private readonly ILauncherSettings _launcherSettings;
 
-    public App(IServiceProvider provider)
+    public App(IServiceProvider provider, ILauncherSettings launcherSettings)
     {
         _provider = provider;
+        _launcherSettings = launcherSettings;
     }
 
     public override void Initialize()
@@ -28,8 +30,9 @@ public class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        // TODO: Switch Language from Config
-        // Language.Culture = new CultureInfo("pl");
+        if (!string.IsNullOrEmpty(_launcherSettings.LocaleOverride))
+            Language.Culture = new CultureInfo(_launcherSettings.LocaleOverride);
+
         Locator.CurrentMutable.UnregisterCurrent(typeof(IViewLocator));
         Locator.CurrentMutable.Register(() => _provider.GetRequiredService<InjectedViewLocator>(), typeof(IViewLocator));
 
