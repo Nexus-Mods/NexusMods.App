@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using NexusMods.App.UI.Icons;
 using NexusMods.App.UI.LeftMenu.Items;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.RightContent;
 using NexusMods.App.UI.RightContent.MyGames;
 using ReactiveUI;
@@ -20,17 +21,17 @@ public class HomeLeftMenuViewModel : AViewModel<IHomeLeftMenuViewModel>, IHomeLe
     {
         var items = new ILeftMenuItemViewModel[]
         {
-            new IconViewModel { Name = "Newsfeed", Icon = IconType.News, Activate = ReactiveCommand.Create(
+            new IconViewModel { Name = Language.Newsfeed, Icon = IconType.News, Activate = ReactiveCommand.Create(
                 () =>
                 {
                     RightContent = Initializers.IRightContent;
                 })},
-            new IconViewModel { Name = "My Games", Icon = IconType.Bookmark, Activate = ReactiveCommand.Create(
+            new IconViewModel { Name = Language.MyGames, Icon = IconType.Bookmark, Activate = ReactiveCommand.Create(
                 () =>
                 {
                     RightContent = myGamesViewModel;
                 }) },
-            new IconViewModel { Name = "Browse Games", Icon = IconType.Game, Activate = ReactiveCommand.Create(
+            new IconViewModel { Name = Language.BrowseGames, Icon = IconType.Game, Activate = ReactiveCommand.Create(
                 () =>
                 {
                     RightContent = foundGamesViewModel;

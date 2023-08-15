@@ -1,8 +1,10 @@
+using System.Globalization;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using ReactiveUI;
 using Splat;
@@ -18,7 +20,7 @@ public class App : Application
     {
         _provider = provider;
     }
-    
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -26,6 +28,8 @@ public class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
+        // TODO: Switch Language from Config
+        // Language.Culture = new CultureInfo("pl");
         Locator.CurrentMutable.UnregisterCurrent(typeof(IViewLocator));
         Locator.CurrentMutable.Register(() => _provider.GetRequiredService<InjectedViewLocator>(), typeof(IViewLocator));
 

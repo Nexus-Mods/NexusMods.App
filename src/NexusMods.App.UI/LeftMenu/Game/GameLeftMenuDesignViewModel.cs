@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Icons;
 using NexusMods.App.UI.LeftMenu.Items;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.RightContent;
 using NexusMods.DataModel.Games;
 using ReactiveUI.Fody.Helpers;
