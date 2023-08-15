@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.CLI;
 using NexusMods.Abstractions.CLI.DataOutputs;
 using NexusMods.Common;
@@ -26,6 +27,16 @@ public class CliGuidedInstaller : IGuidedInstaller
     private static readonly string[] TableOfOptionsHeaders = { "Key", "State", "Name", "Description" };
     private static readonly object[] TableOfOptionsFooterBackToGroupSelection = { BackInput, "", "Back", "Back to the group selection" };
     private static readonly object[] TableOfOptionsFooterCancel = { CancelInput, "", "Cancel", "Cancel the installation" };
+
+    private readonly ILogger<CliGuidedInstaller> _logger;
+
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    public CliGuidedInstaller(ILogger<CliGuidedInstaller> logger)
+    {
+        _logger = logger;
+    }
 
     /// <summary>
     /// The renderer to use for rendering the options.

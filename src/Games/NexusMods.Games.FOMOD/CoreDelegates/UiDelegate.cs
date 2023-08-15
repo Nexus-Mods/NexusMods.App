@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
+using NexusMods.Common;
 using NexusMods.Common.GuidedInstaller;
 using NexusMods.Common.GuidedInstaller.ValueObjects;
 using Option = NexusMods.Common.GuidedInstaller.Option;
@@ -44,6 +45,8 @@ public class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates
     private ContinueToNextStep _continueToNextStep = DummyContinueToNextStep;
     private CancelInstaller _cancelInstaller = DummyCancelInstaller;
 
+    private readonly SemaphoreSlim _semaphoreSlim = new (1, 1);
+
     public UiDelegates(ILogger<UiDelegates> logger, IGuidedInstaller guidedInstaller)
     {
         _logger = logger;
@@ -82,6 +85,13 @@ public class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates
 
     public void UpdateState(FomodInstaller.Interface.ui.InstallerStep[] installSteps, int currentStepId)
     {
+        // NOTE (erri120): The FOMOD library we're using was designed for threading in JavaScript.
+        // A semaphore is required because the library can spawn multiple tasks on different threads
+        // that will call this method multiple times. This can lead to double-state and it's
+        // just a complete mess. This is what you get when you write a .NET library for JavaScript...
+        using var waiter = _semaphoreSlim.CustomWait(TimeSpan.Zero);
+        if (!waiter.HasEntered) return;
+
         Debug.Assert(currentStepId >= 0 && currentStepId < installSteps.Length);
 
         var groupIdMappings = new List<KeyValuePair<int, GroupId>>();
