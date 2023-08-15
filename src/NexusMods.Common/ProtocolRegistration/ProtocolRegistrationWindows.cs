@@ -26,7 +26,7 @@ public class ProtocolRegistrationWindows : IProtocolRegistration
     }
 
     /// <inheritdoc/>
-    public Task<string?> Register(string protocol, string friendlyName, string commandLine)
+    public Task<string?> Register(string protocol, string friendlyName, string workingDirectory, string commandLine)
     {
         using var key = GetClassKey(protocol);
         key.SetValue("", "URL:" + friendlyName);
@@ -36,6 +36,7 @@ public class ProtocolRegistrationWindows : IProtocolRegistration
 
         var res = (string?)commandKey.GetValue("");
         commandKey.SetValue("", commandLine);
+        commandKey.SetValue("WorkingDirectory", workingDirectory);
 
         return Task.FromResult(res);
     }
@@ -43,7 +44,8 @@ public class ProtocolRegistrationWindows : IProtocolRegistration
     /// <inheritdoc/>
     public Task<string?> RegisterSelf(string protocol)
     {
-        return Register(protocol, "NMA", GetOwnExe() + " protocol-invoke --url \"%1\"");
+        var exePath = GetOwnExe();
+        return Register(protocol, "NMA", Path.GetDirectoryName(exePath)!, exePath + " protocol-invoke --url \"%1\"");
     }
 
     private static string GetOwnExe()

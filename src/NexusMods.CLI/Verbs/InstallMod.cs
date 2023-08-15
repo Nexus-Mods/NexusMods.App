@@ -20,7 +20,6 @@ public class InstallMod : AVerb<LoadoutMarker, AbsolutePath, string>, IRendering
     /// <summary>
     /// DI constructor
     /// </summary>
-    /// <param name="configurator"></param>
     /// <param name="archiveInstaller"></param>
     /// <param name="archiveAnalyzer"></param>
     public InstallMod(IArchiveInstaller archiveInstaller, IArchiveAnalyzer archiveAnalyzer)

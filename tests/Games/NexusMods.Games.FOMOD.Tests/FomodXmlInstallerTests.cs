@@ -7,16 +7,12 @@ using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Interprocess;
-using NexusMods.DataModel.Interprocess.Messages;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
 using Xunit;
-using Mod = NexusMods.DataModel.Loadouts.Mods.Mod;
 
 namespace NexusMods.Games.FOMOD.Tests;
 
@@ -147,7 +143,7 @@ public class FomodXmlInstallerTests
                 x => x.To.FileName == "g2p1f1.out.esp"
             );
     }
-    
+
     [Fact]
     public async Task InstallFilesNestedWithImages()
     {
@@ -168,7 +164,7 @@ public class FomodXmlInstallerTests
                 x => x.To.FileName == "g2p2f1.out.esp"
             );
     }
-    
+
     [Fact]
     public async Task InstallFilesMultipleNestedWithImages()
     {
@@ -209,7 +205,7 @@ public class FomodXmlInstallerTests
                 x => x.To.FileName == "g2p2f1.out.esp"
             );
     }
-    
+
     [Fact]
     public async Task ResilientToCaseInconsistencies()
     {
@@ -290,7 +286,7 @@ public class FomodXmlInstallerTests
     private async Task<TestState> SetupTestFromDirectoryAsync(string testName)
     {
         var tmpFile = _tmpFileManager.CreateFile(KnownExtensions.Sqlite);
-        
+
         var installer = new FomodXmlInstaller(_serviceProvider.GetRequiredService<ILogger<FomodXmlInstaller>>(),
             _coreDelegates
         );
@@ -323,7 +319,7 @@ public class FomodXmlInstallerTests
         public async ValueTask<IEnumerable<AModFile>> GetFilesToExtractAsync()
         {
             var mods = (await Installer.GetModsAsync(
-                new GameInstallation(),
+                new GameInstallation{ Game = new UnknownGame(GameDomain.From(""), new Version()) },
                 ModId.New(),
                 AnalysisResults.Hash,
                 AnalysisResults.Contents)).ToArray();

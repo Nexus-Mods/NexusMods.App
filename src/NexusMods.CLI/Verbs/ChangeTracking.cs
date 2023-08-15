@@ -17,7 +17,6 @@ public class ChangeTracking : AVerb, IRenderingVerb
     /// <summary>
     /// DI constructor
     /// </summary>
-    /// <param name="configurator"></param>
     /// <param name="store"></param>
     public ChangeTracking(IDataStore store)
     {

@@ -1,10 +1,7 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using Avalonia.Controls;
 using Avalonia.ReactiveUI;
-using Avalonia.VisualTree;
 using ReactiveUI;
-using Image = Avalonia.Controls.Image;
 
 namespace NexusMods.App.UI.Controls.TopBar;
 

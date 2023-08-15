@@ -25,7 +25,6 @@ public class ListGames : AVerb, IRenderingVerb
     /// DI constructor
     /// </summary>
     /// <param name="games"></param>
-    /// <param name="configurator"></param>
     public ListGames(IEnumerable<IGame> games)
     {
         _games = games;

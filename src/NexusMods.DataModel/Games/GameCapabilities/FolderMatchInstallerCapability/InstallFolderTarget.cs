@@ -1,6 +1,6 @@
 ﻿using NexusMods.Paths;
 
-namespace NexusMods.DataModel.Games.GameCapabilities.AFolderMatchInstallerCapability;
+namespace NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 
 /// <summary>
 /// Represents a target path for installing simple mods archives

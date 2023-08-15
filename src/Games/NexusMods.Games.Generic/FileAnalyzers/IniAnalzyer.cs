@@ -6,7 +6,6 @@ using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Games.Generic.Entities;
-using NexusMods.Paths;
 
 namespace NexusMods.Games.Generic.FileAnalyzers;
 

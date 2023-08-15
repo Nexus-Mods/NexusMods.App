@@ -2,7 +2,6 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.RateLimiting;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.TestFramework;
 using NexusMods.Networking.Downloaders.Interfaces;
@@ -11,7 +10,6 @@ using NexusMods.Networking.Downloaders.Tasks.State;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.HttpDownloader.Tests;
 using NexusMods.Paths;
-using Size = NexusMods.Paths.Size;
 
 namespace NexusMods.Networking.Downloaders.Tests;
 

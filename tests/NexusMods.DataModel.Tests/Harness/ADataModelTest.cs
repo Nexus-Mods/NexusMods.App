@@ -8,9 +8,8 @@ using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using NexusMods.Paths.Utilities;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
-using Xunit.DependencyInjection;
+
 // ReSharper disable StaticMemberInGenericType
 
 namespace NexusMods.DataModel.Tests.Harness;
@@ -57,7 +56,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected ADataModelTest(IServiceProvider provider)
     {
         var startup = new Startup();
-        _host = Host.CreateDefaultBuilder(Environment.GetCommandLineArgs())
+        _host = new HostBuilder()
             .ConfigureServices((_, service) => startup.ConfigureServices(service))
             .Build();
         var provider1 = _host.Services;
@@ -76,9 +75,6 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
         Game = provider1.GetRequiredService<StubbedGame>();
         Install = Game.Installations.First();
-
-        startup.Configure(provider1.GetRequiredService<ILoggerFactory>(), provider.GetRequiredService<ITestOutputHelperAccessor>());
-
     }
 
     public void Dispose()

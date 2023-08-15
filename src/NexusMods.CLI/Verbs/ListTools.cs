@@ -22,7 +22,6 @@ public class ListTools : AVerb, IRenderingVerb
     /// <summary>
     /// DI constructor
     /// </summary>
-    /// <param name="configurator"></param>
     /// <param name="tools"></param>
     public ListTools(IEnumerable<ITool> tools)
     {

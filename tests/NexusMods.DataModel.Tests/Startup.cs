@@ -10,8 +10,6 @@ using NexusMods.FileExtractor.Extractors;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
-using Xunit.DependencyInjection;
-using Xunit.DependencyInjection.Logging;
 
 namespace NexusMods.DataModel.Tests;
 
@@ -40,10 +38,9 @@ public class Startup
             .AddSingleton<ILoadoutDiagnosticEmitter, DummyLoadoutDiagnosticEmitter>()
             .AddSingleton<IModDiagnosticEmitter, DummyModDiagnosticEmitter>()
 
+            .AddLogging(builder => builder.AddXUnit())
+
             .Validate();
     }
-
-    public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>
-        loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(accessor, delegate { return true; }));
 }
 

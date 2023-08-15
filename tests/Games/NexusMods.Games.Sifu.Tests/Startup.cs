@@ -1,11 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
-using NexusMods.Games.Sifu;
 using NexusMods.Games.TestFramework;
 using NexusMods.StandardGameLocators.TestHelpers;
-using Xunit.DependencyInjection;
-using Xunit.DependencyInjection.Logging;
 
 namespace NexusMods.Games.Sifu.Tests;
 
@@ -17,10 +14,7 @@ public class Startup
             .AddDefaultServicesForTesting()
             .AddUniversalGameLocator<Sifu>(new Version())
             .AddSifu()
+            .AddLogging(builder => builder.AddXUnit())
             .Validate();
     }
-
-    // ReSharper disable once UnusedMember.Global
-    public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>
-        loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(accessor, delegate { return true;}));
 }

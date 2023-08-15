@@ -1,6 +1,4 @@
-﻿using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.Markers;
-using NexusMods.Paths;
+﻿using NexusMods.Paths;
 
 namespace NexusMods.Games.BethesdaGameStudios.Tests;
 

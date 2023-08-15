@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using NexusMods.Abstractions.CLI;
-using NexusMods.CLI;
 using NexusMods.DataModel.RateLimiting;
 using Spectre.Console;
 using Spectre.Console.Rendering;

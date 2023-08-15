@@ -3,8 +3,6 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.Games.TestFramework;
 using NexusMods.StandardGameLocators.TestHelpers;
-using Xunit.DependencyInjection;
-using Xunit.DependencyInjection.Logging;
 
 namespace NexusMods.Games.RedEngine.Tests;
 
@@ -16,10 +14,8 @@ public class Startup
             .AddDefaultServicesForTesting()
             .AddUniversalGameLocator<Cyberpunk2077>(new Version("1.61"))
             .AddRedEngineGames()
+            .AddLogging(builder => builder.AddXUnit())
             .Validate();
     }
-
-    public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>
-        loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(accessor, delegate { return true; }));
 }
 

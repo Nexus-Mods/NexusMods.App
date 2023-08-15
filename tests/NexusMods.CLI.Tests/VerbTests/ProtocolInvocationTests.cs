@@ -1,9 +1,9 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Moq;
 using NexusMods.CLI.Types;
 using NexusMods.CLI.Verbs;
+using NSubstitute;
 
 namespace NexusMods.CLI.Tests.VerbTests;
 
@@ -21,18 +21,18 @@ public class ProtocolInvocationTests
     [InlineData("second://path", 0, 1)]
     public async void WillForwardToRightHandler(string url, int firstTimes, int secondTimes)
     {
-        var firstHandler = new Mock<IIpcProtocolHandler>();
-        firstHandler.Setup(_ => _.Protocol).Returns("first");
-        var secondHandler = new Mock<IIpcProtocolHandler>();
-        secondHandler.Setup(_ => _.Protocol).Returns("second");
+        var firstHandler = Substitute.For<IIpcProtocolHandler>();
+        firstHandler.Protocol.Returns("first");
 
-        var invoke = new ProtocolInvoke(_logger,
-            new List<IIpcProtocolHandler> { firstHandler.Object, secondHandler.Object });
+        var secondHandler = Substitute.For<IIpcProtocolHandler>();
+        secondHandler.Protocol.Returns("second");
+
+        var invoke = new ProtocolInvoke(_logger, new List<IIpcProtocolHandler> { firstHandler, secondHandler });
         var res = await invoke.Run(url, CancellationToken.None);
 
         res.Should().Be(0);
-        firstHandler.Verify(_ => _.Handle(url, CancellationToken.None), Times.Exactly(firstTimes));
-        secondHandler.Verify(_ => _.Handle(url, CancellationToken.None), Times.Exactly(secondTimes));
+        await firstHandler.Received(firstTimes).Handle(url, CancellationToken.None);
+        await secondHandler.Received(secondTimes).Handle(url, CancellationToken.None);
     }
 
     [Fact]

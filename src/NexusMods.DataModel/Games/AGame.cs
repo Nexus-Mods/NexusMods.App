@@ -1,6 +1,6 @@
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Games.GameCapabilities;
+using NexusMods.DataModel.Games.GameCapabilities.FomodCustomInstallPathCapability;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Paths;
 
@@ -52,7 +52,7 @@ public abstract class AGame : IGame
         throw new NotImplementedException("No game image provided for this game.");
 
     /// <inheritdoc />
-    public virtual Dictionary<GameCapabilityId, IGameCapability> SupportedCapabilities { get; } = new();
+    public virtual GameCapabilityCollection SupportedCapabilities { get; } = new();
 
     private Version GetVersion(GameLocatorResult installation)
     {

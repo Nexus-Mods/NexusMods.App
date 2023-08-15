@@ -20,7 +20,6 @@ public class HashFolder : AVerb<AbsolutePath>, IRenderingVerb
     /// DI constructor
     /// </summary>
     /// <param name="cache"></param>
-    /// <param name="configurator"></param>
     public HashFolder(FileHashCache cache)
     {
         _cache = cache;

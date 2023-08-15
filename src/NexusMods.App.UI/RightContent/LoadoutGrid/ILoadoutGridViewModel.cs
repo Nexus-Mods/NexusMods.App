@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using NexusMods.App.UI.Controls.DataGrid;
-using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
 

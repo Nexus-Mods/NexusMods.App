@@ -1,4 +1,3 @@
-using System.Text;
 using FluentAssertions;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;

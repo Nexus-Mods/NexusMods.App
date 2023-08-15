@@ -6,8 +6,6 @@ using NexusMods.Games.RedEngine;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers;
 using NexusMods.UI.Tests.Framework;
-using Xunit.DependencyInjection;
-using Xunit.DependencyInjection.Logging;
 
 namespace NexusMods.UI.Tests;
 
@@ -24,15 +22,13 @@ public class Startup
                 UseInMemoryDataModel = true
             }
         };
-        
+
         services.AddUniversalGameLocator<Cyberpunk2077>(new Version("1.61"))
                 .AddApp(config: config)
                 .AddStubbedGameLocators()
                 .AddSingleton<AvaloniaApp>()
+                .AddLogging(builder => builder.AddXUnit())
                 .Validate();
     }
-
-    public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>
-        loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(accessor, delegate { return true; }));
 }
 

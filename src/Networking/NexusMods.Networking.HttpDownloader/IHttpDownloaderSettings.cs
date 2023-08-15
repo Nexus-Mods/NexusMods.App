@@ -1,5 +1,4 @@
 ﻿using JetBrains.Annotations;
-using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Networking.HttpDownloader;
 

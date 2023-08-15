@@ -2,7 +2,6 @@ using System.Runtime.Versioning;
 using System.Text;
 using CliWrap;
 using NexusMods.Paths;
-using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Common.ProtocolRegistration;
 
@@ -36,11 +35,12 @@ public class ProtocolRegistrationLinux : IProtocolRegistration
         return await Register(
             protocol,
             $"{BaseId}-{protocol}.desktop",
+            Path.GetDirectoryName(executable)!,
             $"{executable} protocol-invoke --url %u");
     }
 
     /// <inheritdoc/>
-    public async Task<string?> Register(string protocol, string friendlyName, string commandLine)
+    public async Task<string?> Register(string protocol, string friendlyName, string workingDirectory, string commandLine)
     {
         var applicationsFolder = _fileSystem.GetKnownPath(KnownPath.HomeDirectory)
             .Combine(".local/share/applications");
@@ -54,6 +54,7 @@ public class ProtocolRegistrationLinux : IProtocolRegistration
         sb.AppendLine($"Name=NexusMods.App {protocol.ToUpper()} Handler");
         sb.AppendLine("Terminal=false");
         sb.AppendLine("Type=Application");
+        sb.AppendLine($"Path={workingDirectory}");
         sb.AppendLine($"Exec={commandLine}");
         sb.AppendLine($"MimeType=x-scheme-handler/{protocol}");
 

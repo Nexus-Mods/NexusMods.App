@@ -1,6 +1,4 @@
-﻿using System.Collections.Immutable;
-using FluentAssertions;
-using NexusMods.DataModel.Abstractions;
+﻿using FluentAssertions;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Mods;

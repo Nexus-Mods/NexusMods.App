@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Interprocess.Jobs;
-using NexusMods.DataModel.Interprocess.Messages;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.RateLimiting;

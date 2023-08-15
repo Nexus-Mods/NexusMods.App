@@ -1,5 +1,4 @@
-﻿using System.Collections.Concurrent;
-using Microsoft.Data.Sqlite;
+﻿using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.ObjectPool;
 
 namespace NexusMods.DataModel;
