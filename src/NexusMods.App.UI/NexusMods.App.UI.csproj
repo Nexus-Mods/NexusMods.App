@@ -315,7 +315,7 @@
 
     <ItemGroup>
       <EmbeddedResource Update="Resources\Language.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
+        <Generator>PublicResXFileCodeGenerator</Generator>
         <LastGenOutput>Language.Designer.cs</LastGenOutput>
       </EmbeddedResource>
     </ItemGroup>
