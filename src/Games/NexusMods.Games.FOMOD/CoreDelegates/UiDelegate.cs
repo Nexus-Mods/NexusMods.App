@@ -45,7 +45,7 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
 
     private readonly SemaphoreSlim _semaphoreSlim = new (1, 1);
     private readonly EventWaitHandle _waitHandle = new ManualResetEvent(initialState: false);
-    private long _taskFuckeryState;
+    private long _taskWaitingState;
 
     private const long Ready = 0;
     private const long WaitingForCallback = 1;
@@ -92,7 +92,7 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
         if (currentStepId < 0 || currentStepId >= installSteps.Length) return;
 
         // NOTE(erri120): This fuckery is explained further below when we call _selectOptions()
-        if (Interlocked.Read(ref _taskFuckeryState) == WaitingForCallback)
+        if (Interlocked.Read(ref _taskWaitingState) == WaitingForCallback)
         {
             if (!_waitHandle.Set())
             {
@@ -158,7 +158,7 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
                         // NOTE(erri120): Once again, the FOMOD library we're using is complete ass and expects
                         // to be used in a JavaScript environment. However, this isn't JavaScript this is C#.
                         // When calling _selectOptions, the library spawns a new Task that runs in the background.
-                        // This means that after calling _selectOptions, we state hasn't been updated YET.
+                        // This means that after calling _selectOptions, the state hasn't been updated YET.
                         // Inside _selectOptions, the library wants to get the next step, however, if we
                         // call _continueToNextStep, then the next step variable has already been updated.
                         // The library doesn't do any checks to prevent this and can throw an exception
@@ -170,14 +170,14 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
                         // updated its internal state. This behavior allows us to use an EventWaitHandle to "wait" for
                         // the library to call us back.
                         // We're also using CAS to set our state into "waiting" mode.
-                        if (Interlocked.CompareExchange(ref _taskFuckeryState, WaitingForCallback, Ready) != Ready)
+                        if (Interlocked.CompareExchange(ref _taskWaitingState, WaitingForCallback, Ready) != Ready)
                             _logger.LogWarning("Unable to CAS!");
 
                         _selectOptions(currentStepId, selectedGroupId, selectedOptionIds);
                         _waitHandle.WaitOne(TimeSpan.FromMilliseconds(200), exitContext: false);
                         _waitHandle.Reset();
 
-                        if (Interlocked.CompareExchange(ref _taskFuckeryState, Ready, WaitingForCallback) != WaitingForCallback)
+                        if (Interlocked.CompareExchange(ref _taskWaitingState, Ready, WaitingForCallback) != WaitingForCallback)
                             _logger.LogWarning("Unable to CAS!");
                     }
 

@@ -15,13 +15,14 @@ namespace NexusMods.CLI;
 public class CliGuidedInstaller : IGuidedInstaller
 {
     private const string CancelInput = "x";
+    private const string PreviousInput = "p";
     private const string BackInput = "b";
     private const string NextInput = "n";
 
     private static readonly string[] TableOfGroupsHeaders = { "Key", "Group" };
-    private static readonly object[] TableOfGroupsFooterNextGroup = { NextInput, "Next Step" };
+    private static readonly object[] TableOfGroupsFooterNextStep = { NextInput, "Next Step" };
     private static readonly object[] TableOfGroupsFooterFinish = { NextInput, "Finish Installation" };
-    private static readonly object[] TableOfGroupsFooterGoBack = { BackInput, "Previous Step" };
+    private static readonly object[] TableOfGroupsFooterPreviousStep = { PreviousInput, "Previous Step" };
     private static readonly object[] TableOfGroupsFooterCancel = { CancelInput, "Cancel Installation" };
 
     private static readonly string[] TableOfOptionsHeaders = { "Key", "State", "Name", "Description" };
@@ -69,9 +70,7 @@ public class CliGuidedInstaller : IGuidedInstaller
         {
             if (currentGroup is null)
             {
-                // if the installation step has multiple groups
-                // the user has to select which group they want to use
-
+                // the user hasn't selected a group yet
                 RenderTableOfGroups(installationStep);
 
                 var input = SkipAll ? NextInput : GetUserInput();
@@ -80,7 +79,7 @@ public class CliGuidedInstaller : IGuidedInstaller
                 {
                     case CancelInput:
                         return Task.FromResult(new UserChoice(new UserChoice.CancelInstallation()));
-                    case BackInput:
+                    case PreviousInput:
                         return Task.FromResult(new UserChoice(new UserChoice.GoToPreviousStep()));
                     case NextInput:
                     {
@@ -95,12 +94,16 @@ public class CliGuidedInstaller : IGuidedInstaller
                         // proceed to the next step
                         return Task.FromResult(new UserChoice(new UserChoice.GoToNextStep(selectedOptions.ToArray())));
                     }
+                    default:
+                    {
+                        var groupIndex = ParseNumericalUserInput(input, installationStep.Groups.Length);
+                        if (groupIndex < 0) continue;
+
+                        currentGroup = installationStep.Groups[groupIndex];
+                        break;
+                    }
                 }
 
-                var groupIndex = ParseNumericalUserInput(input, installationStep.Groups.Length);
-                if (groupIndex < 0) continue;
-
-                currentGroup = installationStep.Groups[groupIndex];
             }
             else
             {
@@ -133,11 +136,11 @@ public class CliGuidedInstaller : IGuidedInstaller
         var row = installationStep.Groups
             .Select(group => new object[] { key++, group.Description })
             .Append(installationStep.HasNextStep
-                ? TableOfGroupsFooterNextGroup
+                ? TableOfGroupsFooterNextStep
                 : TableOfGroupsFooterFinish
             );
 
-        if (installationStep.HasPreviousStep) row = row.Append(TableOfGroupsFooterGoBack);
+        if (installationStep.HasPreviousStep) row = row.Append(TableOfGroupsFooterPreviousStep);
         row = row.Append(TableOfGroupsFooterCancel);
 
         var table = new Table(TableOfGroupsHeaders, row.ToArray(), "Select a Group");
@@ -227,6 +230,8 @@ public class CliGuidedInstaller : IGuidedInstaller
     {
         try
         {
+            // method returns a zero-based index for use as the option index
+            // the user inputs a one-based index, as it's easier to understand
             var idx = int.Parse(input) - 1;
             if (idx >= 0 && idx < upperLimit)
                 return idx;
