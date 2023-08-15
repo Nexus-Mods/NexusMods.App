@@ -1,6 +1,4 @@
 using System.Diagnostics;
-using FomodInstaller.Interface;
-using FomodInstaller.Interface.ui;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common.GuidedInstaller;
 using NexusMods.Common.GuidedInstaller.ValueObjects;
@@ -54,7 +52,7 @@ public class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates
 
     public void StartDialog(
         string? moduleName,
-        HeaderImage image,
+        FomodInstaller.Interface.HeaderImage image,
         Action<int, int, int[]> select,
         Action<bool, int> cont,
         Action cancel)
@@ -86,7 +84,6 @@ public class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates
     {
         Debug.Assert(currentStepId >= 0 && currentStepId < installSteps.Length);
 
-        var currentStep = installSteps[currentStepId];
         var groupIdMappings = new List<KeyValuePair<int, GroupId>>();
         var optionIdMappings = new List<KeyValuePair<int, OptionId>>();
 
@@ -143,7 +140,7 @@ public class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates
     }
 
     private static GuidedInstallationStep ToGuidedInstallationStep(
-        IList<InstallerStep> installSteps,
+        IList<FomodInstaller.Interface.ui.InstallerStep> installSteps,
         int currentStepId,
         ICollection<KeyValuePair<int, GroupId>> groupIdMapping,
         ICollection<KeyValuePair<int, OptionId>> optionIdMappings)

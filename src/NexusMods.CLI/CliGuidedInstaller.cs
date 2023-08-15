@@ -13,12 +13,19 @@ namespace NexusMods.CLI;
 [UsedImplicitly]
 public class CliGuidedInstaller : IGuidedInstaller
 {
-    private const string ReturnInput = "x";
-    private static readonly string[] TableOfOptionsHeaders = { "Key", "State", "Name", "Description" };
-    private static readonly object[] TableOfOptionsFooterBack = { ReturnInput, "", "Back", "" };
+    private const string CancelInput = "x";
+    private const string BackInput = "b";
+    private const string NextInput = "n";
+
     private static readonly string[] TableOfGroupsHeaders = { "Key", "Group" };
-    private static readonly object[] TableOfGroupsFooterContinue = { ReturnInput, "Continue" };
-    private static readonly object[] TableOfGroupsFooterFinish = { ReturnInput, "Finish" };
+    private static readonly object[] TableOfGroupsFooterNextGroup = { NextInput, "Next" };
+    private static readonly object[] TableOfGroupsFooterFinish = { NextInput, "Finish" };
+    private static readonly object[] TableOfGroupsFooterGoBack = { BackInput, "Back" };
+    private static readonly object[] TableOfGroupsFooterCancel = { CancelInput, "Cancel" };
+
+    private static readonly string[] TableOfOptionsHeaders = { "Key", "State", "Name", "Description" };
+    private static readonly object[] TableOfOptionsFooterBackToGroupSelection = { BackInput, "", "Back", "Back to group selection" };
+    private static readonly object[] TableOfOptionsFooterCancel = { CancelInput, "", "Cancel", "Cancel the installation" };
 
     /// <summary>
     /// The renderer to use for rendering the options.
@@ -39,74 +46,94 @@ public class CliGuidedInstaller : IGuidedInstaller
     /// <inheritdoc />
     public Task<UserChoice> RequestUserChoice(GuidedInstallationStep installationStep, CancellationToken cancellationToken)
     {
-        var currentGroup = installationStep.Groups.Length == 1
-            ? installationStep.Groups[0]
-            : null;
+        OptionGroup? currentGroup = null;
 
-        var selectedOptions = new List<SelectedOption>();
+        var selectedOptions = installationStep.Groups
+            .SelectMany(group => group.Options
+                .Where(option => option.Type == OptionType.PreSelected)
+                .Select(option => new SelectedOption(group.Id, option.Id))
+            ).ToList();
 
         while (true)
         {
-            RenderStep(installationStep, currentGroup, selectedOptions);
-            var input = SkipAll ? "0" : GetUserInput();
-
-            // TODO: the current implementation doesn't support selecting many options from many groups
-            // see https://github.com/Nexus-Mods/NexusMods.App/issues/544
-
-            // if the installation step has multiple groups
-            // the user has to select which group they want to use
             if (currentGroup is null)
             {
-                var groupIndex = ParseNumericalUserInput(input, installationStep.Groups.Length);
-                if (groupIndex < 0)
+                // if the installation step has multiple groups
+                // the user has to select which group they want to use
+
+                RenderTableOfGroups(installationStep);
+
+                var input = SkipAll ? NextInput : GetUserInput();
+
+                switch (input)
                 {
-                    // "Continue" with nothing selected.
-                    return Task.FromResult(new UserChoice(new UserChoice.GoToNextStep(Array.Empty<SelectedOption>())));
+                    case CancelInput:
+                        return Task.FromResult(new UserChoice(new UserChoice.CancelInstallation()));
+                    case BackInput:
+                        return Task.FromResult(new UserChoice(new UserChoice.GoToPreviousStep()));
+                    case NextInput:
+                    {
+                        var requiredOptions = installationStep.Groups
+                            .SelectMany(group => group.Options
+                                .Where(option => option.Type == OptionType.Required)
+                                .Select(option => new SelectedOption(group.Id, option.Id))
+                            );
+
+                        selectedOptions.AddRange(requiredOptions);
+
+                        // proceed to the next step
+                        return Task.FromResult(new UserChoice(new UserChoice.GoToNextStep(selectedOptions.ToArray())));
+                    }
                 }
 
+                var groupIndex = ParseNumericalUserInput(input, installationStep.Groups.Length);
+                if (groupIndex < 0) continue;
+
                 currentGroup = installationStep.Groups[groupIndex];
-                selectedOptions = currentGroup.Options
-                    .Where(x => x.Type == OptionType.PreSelected)
-                    .Select(x => new SelectedOption(currentGroup.Id, x.Id))
-                    .ToList();
             }
             else
             {
                 // if the user has selected a group, the input will be for the options they want to use
-                if (input == ReturnInput)
+                RenderTableOfOptions(
+                    currentGroup,
+                    selectedOptions
+                );
+
+                var input = GetUserInput();
+
+                switch (input)
                 {
-                    var requiredOptions = currentGroup.Options
-                        .Where(x => x.Type == OptionType.Required)
-                        .Select(x => new SelectedOption(currentGroup.Id, x.Id));
-
-                    selectedOptions.AddRange(requiredOptions);
-
-                    // proceed to the next step
-                    return Task.FromResult(new UserChoice(new UserChoice.GoToNextStep(selectedOptions.ToArray())));
+                    case CancelInput:
+                        return Task.FromResult(new UserChoice(new UserChoice.CancelInstallation()));
+                    case BackInput:
+                        currentGroup = null;
+                        continue;
+                    default:
+                        UpdatedSelectedGroup(currentGroup, selectedOptions, input);
+                        break;
                 }
-
-                UpdatedSelectedGroup(currentGroup, selectedOptions, input);
             }
-
-            if (input == ReturnInput) break;
         }
-
-        // The user aborted the installation
-        return Task.FromResult(new UserChoice(new UserChoice.CancelInstallation()));
     }
 
-    private void RenderStep(
-        GuidedInstallationStep installationStep,
-        OptionGroup? currentGroup,
-        IReadOnlyCollection<SelectedOption> selectedOptions)
+    private void RenderTableOfGroups(GuidedInstallationStep installationStep)
     {
-        Renderer.Render(currentGroup is null
-            ? TableOfGroups(installationStep)
-            : TableOfOptions(installationStep, currentGroup, selectedOptions));
+        var key = 1;
+        var row = installationStep.Groups
+            .Select(group => new object[] { key++, group.Description })
+            .Append(installationStep.HasNextStep
+                ? TableOfGroupsFooterNextGroup
+                : TableOfGroupsFooterFinish
+            );
+
+        if (installationStep.HasPreviousStep) row = row.Append(TableOfGroupsFooterGoBack);
+        row = row.Append(TableOfGroupsFooterCancel);
+
+        var table = new Table(TableOfGroupsHeaders, row.ToArray(), "Select a Group");
+        Renderer.Render(table);
     }
 
-    private static Table TableOfOptions(
-        GuidedInstallationStep installationStep,
+    private void RenderTableOfOptions(
         OptionGroup group,
         IReadOnlyCollection<SelectedOption> selectedOptions)
     {
@@ -123,11 +150,12 @@ public class CliGuidedInstaller : IGuidedInstaller
                     option.Name,
                     option.Description
                 };
-            });
+            })
+            .Append(TableOfOptionsFooterBackToGroupSelection)
+            .Append(TableOfOptionsFooterCancel);
 
-        if (installationStep.HasPreviousStep) row = row.Append(TableOfOptionsFooterBack);
-
-        return new Table(TableOfOptionsHeaders, row.ToArray(), group.Description);
+        var table = new Table(TableOfOptionsHeaders, row.ToArray(), group.Description);
+        Renderer.Render(table);
     }
 
     private static string RenderOptionState(bool hasSelected, OptionType type)
@@ -146,19 +174,6 @@ public class CliGuidedInstaller : IGuidedInstaller
             OptionType.Required => "Required",
             _ => throw new UnreachableException($"hasSelected: {hasSelected}, type: {type}")
         };
-    }
-
-    private static Table TableOfGroups(GuidedInstallationStep installationStep)
-    {
-        var key = 1;
-        var row = installationStep.Groups
-            .Select(group => new object[] { key++, group.Description })
-            .Append(installationStep.HasNextStep
-                ? TableOfGroupsFooterContinue
-                : TableOfGroupsFooterFinish
-            ).ToArray();
-
-        return new Table(TableOfGroupsHeaders, row, "Select a Group");
     }
 
     private static void UpdatedSelectedGroup(
