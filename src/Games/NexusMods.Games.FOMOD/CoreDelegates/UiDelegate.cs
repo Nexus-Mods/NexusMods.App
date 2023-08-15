@@ -85,14 +85,15 @@ public class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates
 
     public void UpdateState(FomodInstaller.Interface.ui.InstallerStep[] installSteps, int currentStepId)
     {
+        // NOTE (erri120): The FOMOD library we're using can send us stupid inputs.
+        if (currentStepId < 0 || currentStepId >= installSteps.Length) return;
+
         // NOTE (erri120): The FOMOD library we're using was designed for threading in JavaScript.
         // A semaphore is required because the library can spawn multiple tasks on different threads
         // that will call this method multiple times. This can lead to double-state and it's
         // just a complete mess. This is what you get when you write a .NET library for JavaScript...
         using var waiter = _semaphoreSlim.CustomWait(TimeSpan.Zero);
         if (!waiter.HasEntered) return;
-
-        Debug.Assert(currentStepId >= 0 && currentStepId < installSteps.Length);
 
         var groupIdMappings = new List<KeyValuePair<int, GroupId>>();
         var optionIdMappings = new List<KeyValuePair<int, OptionId>>();
