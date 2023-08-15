@@ -1,5 +1,4 @@
 using NetEscapades.EnumGenerators;
-using NexusMods.DataModel.Attributes;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.FileExtractor.FileSignatures;

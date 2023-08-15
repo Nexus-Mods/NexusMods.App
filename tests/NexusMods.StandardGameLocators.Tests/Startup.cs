@@ -4,8 +4,6 @@ using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers;
-using Xunit.DependencyInjection;
-using Xunit.DependencyInjection.Logging;
 
 namespace NexusMods.StandardGameLocators.Tests;
 

@@ -1,6 +1,3 @@
-using System.Diagnostics;
-using System.Reactive.Linq;
-
 namespace NexusMods.DataModel.Interprocess;
 
 /// <summary>

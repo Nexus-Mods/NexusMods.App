@@ -1,9 +1,7 @@
 ﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using NexusMods.App.UI.Extensions;
-using NexusMods.App.UI.Helpers;
 using ReactiveUI;
 using static NexusMods.App.UI.Helpers.StyleConstants.SpineDownloadButton;
 

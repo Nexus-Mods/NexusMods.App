@@ -1,5 +1,4 @@
 using Humanizer.Bytes;
-using NexusMods.Paths;
 
 namespace NexusMods.App.UI.Helpers;
 

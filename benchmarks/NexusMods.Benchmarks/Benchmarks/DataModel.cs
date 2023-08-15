@@ -14,7 +14,6 @@ using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using NexusMods.Paths.Utilities;
 using Hash = NexusMods.Hashing.xxHash64.Hash;
 
 namespace NexusMods.Benchmarks.Benchmarks;

@@ -1,9 +1,7 @@
-﻿using Avalonia.Automation.Peers;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using Avalonia.Threading;
 using NexusMods.App.UI;
-using ReactiveUI;
 
 namespace NexusMods.UI.Tests.Framework;
 

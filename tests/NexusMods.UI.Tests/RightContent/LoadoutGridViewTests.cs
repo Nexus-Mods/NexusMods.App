@@ -6,7 +6,6 @@ using FluentAssertions;
 using NexusMods.App.UI.RightContent.LoadoutGrid;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
-using NexusMods.UI.Tests.Framework;
 
 namespace NexusMods.UI.Tests;
 

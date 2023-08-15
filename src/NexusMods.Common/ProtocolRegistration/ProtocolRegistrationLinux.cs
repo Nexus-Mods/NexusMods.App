@@ -2,7 +2,6 @@ using System.Runtime.Versioning;
 using System.Text;
 using CliWrap;
 using NexusMods.Paths;
-using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Common.ProtocolRegistration;
 

@@ -3,8 +3,6 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.Games.TestFramework;
 using NexusMods.StandardGameLocators.TestHelpers;
-using Xunit.DependencyInjection;
-using Xunit.DependencyInjection.Logging;
 
 namespace NexusMods.Games.RedEngine.Tests;
 
