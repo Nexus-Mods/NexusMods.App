@@ -1,13 +1,11 @@
-using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.Common.GuidedInstaller;
 using NexusMods.Common.GuidedInstaller.ValueObjects;
-using Option = NexusMods.Common.GuidedInstaller.Option;
 
 namespace NexusMods.Games.FOMOD.CoreDelegates;
 
-public class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates
+public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDisposable
 {
     /// <summary>
     /// Created by the executor, this delegate notifies the executor about which options the
@@ -46,6 +44,11 @@ public class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates
     private CancelInstaller _cancelInstaller = DummyCancelInstaller;
 
     private readonly SemaphoreSlim _semaphoreSlim = new (1, 1);
+    private readonly EventWaitHandle _waitHandle = new ManualResetEvent(initialState: false);
+    private long _taskFuckeryState;
+
+    private const long Ready = 0;
+    private const long WaitingForCallback = 1;
 
     public UiDelegates(ILogger<UiDelegates> logger, IGuidedInstaller guidedInstaller)
     {
@@ -85,10 +88,21 @@ public class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates
 
     public void UpdateState(FomodInstaller.Interface.ui.InstallerStep[] installSteps, int currentStepId)
     {
-        // NOTE (erri120): The FOMOD library we're using can send us stupid inputs.
+        // NOTE(erri120): The FOMOD library we're using can send us stupid inputs.
         if (currentStepId < 0 || currentStepId >= installSteps.Length) return;
 
-        // NOTE (erri120): The FOMOD library we're using was designed for threading in JavaScript.
+        // NOTE(erri120): This fuckery is explained further below when we call _selectOptions()
+        if (Interlocked.Read(ref _taskFuckeryState) == WaitingForCallback)
+        {
+            if (!_waitHandle.Set())
+            {
+                _logger.LogWarning("Unable to signal completion!");
+            }
+
+            return;
+        }
+
+        // NOTE(erri120): The FOMOD library we're using was designed for threading in JavaScript.
         // A semaphore is required because the library can spawn multiple tasks on different threads
         // that will call this method multiple times. This can lead to double-state and it's
         // just a complete mess. This is what you get when you write a .NET library for JavaScript...
@@ -113,8 +127,10 @@ public class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates
 
                 if (result.IsCancelInstallation)
                 {
-                    // TODO: verify that this calls EndDialog
                     _cancelInstaller();
+
+                    // NOTE(erri120): We have to manually call this method.
+                    EndDialog();
                 } else if (result.IsGoToPreviousStep)
                 {
                     _continueToNextStep(forward: false, currentStepId);
@@ -139,10 +155,33 @@ public class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates
                             .Select(x => optionIdMappings.FirstOrDefault(kv => kv.Value == x.OptionId).Key)
                             .ToArray();
 
+                        // NOTE(erri120): Once again, the FOMOD library we're using is complete ass and expects
+                        // to be used in a JavaScript environment. However, this isn't JavaScript this is C#.
+                        // When calling _selectOptions, the library spawns a new Task that runs in the background.
+                        // This means that after calling _selectOptions, we state hasn't been updated YET.
+                        // Inside _selectOptions, the library wants to get the next step, however, if we
+                        // call _continueToNextStep, then the next step variable has already been updated.
+                        // The library doesn't do any checks to prevent this and can throw an exception
+                        // if we're at the last step and continue. In that case, the step variable will be set to -1
+                        // and steps[-1] will throw an exception.
+                        // As such, we're required to use our own synchronization. Thankfully, we can abuse the stupid
+                        // behavior of the library. As explained earlier, the library expects us to call _selectOptions
+                        // when the user clicks on a button. The method _selectOptions will call us back, once it has
+                        // updated its internal state. This behavior allows us to use an EventWaitHandle to "wait" for
+                        // the library to call us back.
+                        // We're also using CAS to set our state into "waiting" mode.
+                        if (Interlocked.CompareExchange(ref _taskFuckeryState, WaitingForCallback, Ready) != Ready)
+                            _logger.LogWarning("Unable to CAS!");
+
                         _selectOptions(currentStepId, selectedGroupId, selectedOptionIds);
+                        _waitHandle.WaitOne(TimeSpan.FromMilliseconds(200), exitContext: false);
+                        _waitHandle.Reset();
+
+                        if (Interlocked.CompareExchange(ref _taskFuckeryState, Ready, WaitingForCallback) != WaitingForCallback)
+                            _logger.LogWarning("Unable to CAS!");
                     }
 
-                    // We need to explicitly call this, since our implementations
+                    // NOTE(erri120): We need to explicitly call this, since our implementations
                     // return from RequestMultipleChoices when the user wants to go
                     // to the next step. Once again, the API is ass.
                     _continueToNextStep(forward: true, currentStepId);
@@ -223,5 +262,11 @@ public class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates
             "SelectExactlyOne" => OptionGroupType.ExactlyOne,
             _ => OptionGroupType.Any
         };
+    }
+
+    public void Dispose()
+    {
+        _semaphoreSlim.Dispose();
+        _waitHandle.Dispose();
     }
 }
