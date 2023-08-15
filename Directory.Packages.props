@@ -1,7 +1,7 @@
 <Project>
     <ItemGroup>
         <!-- Custom Packages -->
-        <PackageVersion Include="NexusMods.Paths" Version="0.1.1" />
+        <PackageVersion Include="NexusMods.Paths" Version="0.1.2" />
         <PackageVersion Include="NexusMods.Archives.Nx" Version="0.3.3-preview" />
         <PackageVersion Include="FomodInstaller.Interface" Version="1.2.0" />
         <PackageVersion Include="FomodInstaller.Scripting.XmlScript" Version="1.0.0" />
@@ -84,7 +84,7 @@
         <PackageVersion Include="BitFaster.Caching" Version="2.2.0" />
         <PackageVersion Include="CliWrap" Version="3.6.4" />
         <PackageVersion Include="DynamicData" Version="7.14.2" />
-        <PackageVersion Include="GameFinder" Version="3.2.1" />
+        <PackageVersion Include="GameFinder" Version="3.2.2" />
         <PackageVersion Include="Humanizer" Version="2.14.1" />
         <PackageVersion Include="ini-parser-netstandard" Version="2.5.2" />
         <PackageVersion Include="Mutagen.Bethesda.Skyrim" Version="0.41.0-pr002" />

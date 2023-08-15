@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.IngestSteps;
 using NexusMods.DataModel.Loadouts.ModFiles;

@@ -6,8 +6,6 @@ using NexusMods.Games.RedEngine;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers;
 using NexusMods.UI.Tests.Framework;
-using Xunit.DependencyInjection;
-using Xunit.DependencyInjection.Logging;
 
 namespace NexusMods.UI.Tests;
 

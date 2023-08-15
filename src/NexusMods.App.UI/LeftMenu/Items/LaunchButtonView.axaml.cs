@@ -1,8 +1,6 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
-using NexusMods.App.UI.Icons;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.LeftMenu.Items;

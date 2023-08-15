@@ -1,7 +1,6 @@
 using FluentAssertions;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using System.Text.Json;
 using NexusMods.Networking.HttpDownloader.DTOs;
 
 namespace NexusMods.Networking.HttpDownloader.Tests;

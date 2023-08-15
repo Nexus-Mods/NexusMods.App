@@ -1,6 +1,5 @@
 ﻿using DynamicData;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Interprocess.Messages;
 using NexusMods.DataModel.RateLimiting;
 
 namespace NexusMods.DataModel.Interprocess.Jobs;

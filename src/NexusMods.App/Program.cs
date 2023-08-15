@@ -68,7 +68,7 @@ public class Program
         // I'm not 100% sure how to wire this up to cleanly pass settings
         // to ConfigureLogging; since the DI container isn't built until the host is.
         var config = new AppConfig();
-        var host = Host.CreateDefaultBuilder(Environment.GetCommandLineArgs())
+        var host = new HostBuilder()
             .ConfigureServices(services =>
             {
                 // Bind the AppSettings class to the configuration and register it as a singleton service
@@ -80,7 +80,7 @@ public class Program
                 config = JsonSerializer.Deserialize<AppConfig>(configJson)!;
                 config.Sanitize();
                 services.AddSingleton(config);
-                services.AddApp(new AppConfig()).Validate();
+                services.AddApp(config).Validate();
             })
             .ConfigureLogging((_, builder) => AddLogging(builder, config.LoggingSettings))
             .Build();

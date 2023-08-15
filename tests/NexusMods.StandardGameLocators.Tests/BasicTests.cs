@@ -1,6 +1,5 @@
 using FluentAssertions;
 using NexusMods.DataModel.Games;
-using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators.Tests;
 

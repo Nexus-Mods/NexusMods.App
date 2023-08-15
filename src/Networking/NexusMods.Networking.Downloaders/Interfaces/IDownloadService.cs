@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using DynamicData;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Hashing.xxHash64;

@@ -1,5 +1,3 @@
-using NexusMods.Paths.Extensions;
-
 namespace NexusMods.DataModel.RateLimiting;
 
 /// <summary>

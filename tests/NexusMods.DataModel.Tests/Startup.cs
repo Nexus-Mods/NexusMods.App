@@ -10,8 +10,6 @@ using NexusMods.FileExtractor.Extractors;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
-using Xunit.DependencyInjection;
-using Xunit.DependencyInjection.Logging;
 
 namespace NexusMods.DataModel.Tests;
 
