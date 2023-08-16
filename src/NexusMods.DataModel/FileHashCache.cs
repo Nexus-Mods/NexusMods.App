@@ -1,5 +1,6 @@
 using System.Buffers.Binary;
 using System.Text;
+using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.RateLimiting;
@@ -107,7 +108,7 @@ public class FileHashCache
                 }
             }
 
-            var hashed = await entry.Path.XxHash64Async(token, async m => await job.ReportAsync(Size.FromLong(m.Length), token));
+            var hashed = await entry.Path.XxHash64Async(job, token);
             PutCachedAsync(entry.Path, new FileHashCacheEntry(entry.LastWriteTimeUtc, hashed, entry.Size));
             return new HashedEntry(entry, hashed);
         }, token, "Hashing Files");
@@ -139,7 +140,7 @@ public class FileHashCache
         }
 
         using var job = await _limiter.BeginAsync($"Hashing {file.FileName}", size, token);
-        var hashed = await file.XxHash64Async(token, async m => await job.ReportAsync(Size.FromLong(m.Length), token));
+        var hashed = await file.XxHash64Async(job, token);
         PutCachedAsync(file, new FileHashCacheEntry(info.LastWriteTimeUtc, hashed, size));
         return new HashedEntry(file, hashed, info.LastWriteTimeUtc, size);
     }

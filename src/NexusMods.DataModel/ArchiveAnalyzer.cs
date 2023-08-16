@@ -153,7 +153,7 @@ public class ArchiveAnalyzer : IArchiveAnalyzer
                 else
                 {
                     using var job = await _limiter.BeginAsync($"Hashing {sFn.Name.FileName}", sFn.Size, token);
-                    hash = await hashStream.XxHash64Async(token,  async m => await job.ReportAsync(Size.FromLong(m.Length), token));
+                    hash = await hashStream.XxHash64Async(job, token);
                 }
             }
             else

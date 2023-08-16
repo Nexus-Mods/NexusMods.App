@@ -21,4 +21,17 @@ public static class StreamExtensions
         return await inputStream.HashingCopyAsync(outputStream, token, async m => await job.ReportAsync(Size.FromLong(m.Length), token));
     }
 
+    /// <summary>
+    /// Helper method to calculate the hash of a given stream, reporting progress to the given job.
+    /// </summary>
+    /// <param name="inputStream"></param>
+    /// <param name="job"></param>
+    /// <param name="token"></param>
+    /// <returns></returns>
+    public static async Task<Hash> XxHash64Async(this Stream inputStream, IJob<Size> job,
+        CancellationToken token)
+    {
+        return await inputStream.HashingCopyAsync(Stream.Null, token, async m => await job.ReportAsync(Size.FromLong(m.Length), token));
+    }
+
 }
