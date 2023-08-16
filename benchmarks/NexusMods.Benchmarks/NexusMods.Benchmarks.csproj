@@ -4,7 +4,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\NexusMods.Hashing.xxHash64\NexusMods.Hashing.xxHash64.csproj" />
         <ProjectReference Include="..\..\src\NexusMods.DataModel\NexusMods.DataModel.csproj" />
     </ItemGroup>
 

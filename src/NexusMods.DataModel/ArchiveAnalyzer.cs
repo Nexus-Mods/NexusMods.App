@@ -94,12 +94,12 @@ public class ArchiveAnalyzer : IArchiveAnalyzer
         // Analyze the archive and cache the info
         var result = await AnalyzeFileInnerAsync(new NativeFileStreamFactory(path), path.FileName, token);
 
-        
+
         if (result is AnalyzedArchive archive)
-        {   
+        {
             // Only persist AnalyzedData if it's an archive
             result.EnsurePersisted(_store);
-            
+
             // Save the source of this archive so we can use it later
             var metaData = FileArchiveMetaData.Create(path, archive);
             metaData.EnsurePersisted(_store);
@@ -153,7 +153,7 @@ public class ArchiveAnalyzer : IArchiveAnalyzer
                 else
                 {
                     using var job = await _limiter.BeginAsync($"Hashing {sFn.Name.FileName}", sFn.Size, token);
-                    hash = await hashStream.XxHash64Async(token, job);
+                    hash = await hashStream.XxHash64Async(token,  async m => await job.ReportAsync(Size.FromLong(m.Length), token));
                 }
             }
             else

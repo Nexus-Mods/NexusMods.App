@@ -5,7 +5,6 @@
     <ItemGroup>
         <ProjectReference Include="..\..\NexusMods.Common\NexusMods.Common.csproj" />
         <ProjectReference Include="..\..\NexusMods.DataModel.RateLimiting\NexusMods.DataModel.RateLimiting.csproj" />
-        <ProjectReference Include="..\..\NexusMods.Hashing.xxHash64\NexusMods.Hashing.xxHash64.csproj" />
     </ItemGroup>
 
     <ItemGroup>

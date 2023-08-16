@@ -136,7 +136,7 @@ namespace NexusMods.Networking.HttpDownloader
 
                 await using var of = destination.Create();
                 await using var stream = await response.Content.ReadAsStreamAsync(cancel);
-                return await stream.HashingCopyAsync(of, cancel, primaryJob);
+                return await stream.HashingCopyAsync(of, cancel, async m => await primaryJob.ReportAsync(Size.FromLong(m.Length), cancel));
             }
 
             throw new Exception("No valid server");
