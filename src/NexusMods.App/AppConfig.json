@@ -5,9 +5,9 @@
     "ArchiveLocations": [
       "{EntryFolder}/Archives"
     ],
-    "MaxHashingJobs": 24,
-    "LoadoutDeploymentJobs": 24,
-    "MaxHashingThroughputBytesPerSecond": 0
+    "MaxHashingJobs": -1,
+    "LoadoutDeploymentJobs": -1,
+    "MaxHashingThroughputBytesPerSecond": -1
   },
   "FileExtractorSettings": {
     "TempFolderLocation": "{EntryFolder}/Temp"
