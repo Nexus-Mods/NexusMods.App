@@ -1,6 +1,5 @@
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Data;
+using Avalonia.Markup.Xaml.MarkupExtensions;
 using FluentAssertions;
 using NexusMods.App.UI.Localization;
 
@@ -19,14 +18,14 @@ public class BasicLocalizedTests
     {
         var localized = new LocalizedExtension("MyGames");
 
-        var originalString = GetStringFromBinding((Binding) localized.ProvideValue(_provider));
+        var originalString = GetStringFromBinding((CompiledBindingExtension) localized.ProvideValue(_provider));
         Localizer.Instance.LoadLanguage("pl");
-        var newString = GetStringFromBinding((Binding) localized.ProvideValue(_provider));
+        var newString = GetStringFromBinding((CompiledBindingExtension) localized.ProvideValue(_provider));
 
         newString.Should().NotBe(originalString);
     }
 
-    private string GetStringFromBinding(Binding binding)
+    private string GetStringFromBinding(CompiledBindingExtension binding)
     {
         // Good info: https://github.com/AvaloniaUI/Avalonia/discussions/11401
         var dummy = new TextBlock();

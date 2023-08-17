@@ -1,6 +1,8 @@
 using Avalonia.Data;
+using Avalonia.Data.Core;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.MarkupExtensions;
+using Avalonia.Markup.Xaml.MarkupExtensions.CompiledBindings;
 
 namespace NexusMods.App.UI.Localization;
 
@@ -24,10 +26,22 @@ public class LocalizedExtension : MarkupExtension
     public override object ProvideValue(IServiceProvider serviceProvider)
     {
         // Tip: This binds the [] method of the Localizer class.
+        // Build binding for '$"[{Key}]"'.
 
         // Note: CompiledBindingExtension would be nicer to use, for performance reasons; but the things
         // needed to manually create one, are internal :(
-        var binding = new ReflectionBindingExtension($"[{Key}]")
+
+        var x = new CompiledBindingPathBuilder();
+        x = x.SetRawSource(Localizer.Instance);
+        x = x.Property(
+            new ClrPropertyInfo(
+                "Item",
+                obj => ((Localizer)obj)[Key],
+                null,
+                typeof(string)),
+            PropertyInfoAccessorFactory.CreateInpcPropertyAccessor);
+
+        var binding = new CompiledBindingExtension(x.Build())
         {
             Mode = BindingMode.OneWay,
             Source = Localizer.Instance,
