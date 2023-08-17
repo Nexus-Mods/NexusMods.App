@@ -68,16 +68,13 @@ string.Format(Resources.Hello, user)
 
 ### Reference from XAML
 
-[Official Docs Here](https://docs.avaloniaui.net/docs/next/guides/implementation-guides/localizing)
-
-Use the `x:Static` markup extension to reference a static element.
+Use the custom `LocalizedExtension` markup extension to reference a localizable string.
 
 ```xaml
-<TextBlock Text="{x:Static assets:Resources.GreetingText}"/>
+<TextBlock Text="{localization:Localized HelloWorld}"/>
 ```
 
 If formatting is required, please do so in the code behind for the element to be consistent with the existing Reactive based code.
-```
 
 ### Overriding the Language at Boot Time
 
@@ -89,7 +86,7 @@ This file is in the `NexusMods.App` project at time of writing and is copied to 
 Language can be switched at runtime with the following code:
 
 ```
-Language.Culture = new CultureInfo(/* locale */);
+Localizer.Instance.LoadLanguage(new CultureInfo(/* locale */));
 ```
 
 We run this code at startup in `OnFrameworkInitializationCompleted` to set the language at startup.
