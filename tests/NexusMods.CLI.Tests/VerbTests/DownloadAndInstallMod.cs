@@ -1,10 +1,7 @@
-﻿using System.Runtime.InteropServices;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Games.TestFramework;
 using NexusMods.Networking.HttpDownloader.Tests;
-using NexusMods.Networking.NexusWebApi.NMA.Extensions;
-using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 

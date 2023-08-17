@@ -7,8 +7,6 @@ using NexusMods.Common;
 using NexusMods.Games.Generic;
 using NexusMods.Games.TestFramework;
 using NexusMods.StandardGameLocators.TestHelpers;
-using Xunit.DependencyInjection;
-using Xunit.DependencyInjection.Logging;
 
 namespace NexusMods.Games.BethesdaGameStudios.Tests;
 

@@ -8,6 +8,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Games\NexusMods.Games.BethesdaGameStudios\NexusMods.Games.BethesdaGameStudios.csproj" />
         <ProjectReference Include="..\Games\NexusMods.Games.DarkestDungeon\NexusMods.Games.DarkestDungeon.csproj" />
+        <ProjectReference Include="..\Games\NexusMods.Games.FOMOD.UI\NexusMods.Games.FOMOD.UI.csproj" />
         <ProjectReference Include="..\Games\NexusMods.Games.StardewValley\NexusMods.Games.StardewValley.csproj" />
         <ProjectReference Include="..\Games\NexusMods.Games.FOMOD\NexusMods.Games.FOMOD.csproj" />
         <ProjectReference Include="..\Games\NexusMods.Games.Generic\NexusMods.Games.Generic.csproj" />

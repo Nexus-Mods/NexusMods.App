@@ -1,6 +1,5 @@
 ﻿using JetBrains.Annotations;
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
-using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Overlays;
 

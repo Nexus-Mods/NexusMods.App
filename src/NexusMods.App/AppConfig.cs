@@ -1,10 +1,8 @@
-﻿using NexusMods.App.UI;
+using NexusMods.App.UI;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Paths;
-using NexusMods.Paths.Utilities;
-// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 
 namespace NexusMods.App;
 

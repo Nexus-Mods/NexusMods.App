@@ -52,8 +52,8 @@ public class Program
         }
         else
         {
-            var selector = host.Services.GetRequiredService<CliOptionSelector>();
-            var renderers = host.Services.GetServices<IRenderer>();
+            var selector = host.Services.GetRequiredService<CliGuidedInstaller>();
+            var renderers = host.Services.GetServices<IRenderer>().ToArray();
             selector.Renderer = renderers.FirstOrDefault(r => r.Name == "console") ?? renderers.First();
         }
 

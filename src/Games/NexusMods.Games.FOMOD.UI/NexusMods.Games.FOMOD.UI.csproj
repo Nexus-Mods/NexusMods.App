@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <ItemGroup>
+        <ProjectReference Include="..\..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <Compile Update="GuidedInstallerWindowViewModel.cs">
+        <DependentUpon>IGuidedInstallerWindowViewModel.cs</DependentUpon>
+      </Compile>
+      <Compile Update="GuidedInstallerStepViewModel.cs">
+        <DependentUpon>IGuidedInstallerStepViewModel.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+</Project>

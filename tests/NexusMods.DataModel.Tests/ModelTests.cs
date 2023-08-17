@@ -1,17 +1,9 @@
-using System.Collections.Immutable;
-using System.IO.Compression;
 using FluentAssertions;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
-using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
-using NexusMods.Paths.Utilities;
-using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
 namespace NexusMods.DataModel.Tests;
 

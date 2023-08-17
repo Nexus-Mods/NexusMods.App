@@ -1,11 +1,5 @@
-using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
 using NexusMods.Paths;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NexusMods.Games.Sifu;
 

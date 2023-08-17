@@ -1,8 +1,7 @@
-﻿{
+{
   "DataModelSettings": {
-    "UseInMemoryDataModel": false,
-    "DataStoreFilePath": "{EntryFolder}/DataModel.sqlite",
-    "IpcDataStoreFilePath": "{EntryFolder}/DataModel_IPC.sqlite",
+    "DataStoreFilePath": "{EntryFolder}/DataModel/DataModel.sqlite",
+    "IpcDataStoreFilePath": "{EntryFolder}/DataModel/DataModel_IPC.sqlite",
     "ArchiveLocations": [
       "{EntryFolder}/Archives"
     ],

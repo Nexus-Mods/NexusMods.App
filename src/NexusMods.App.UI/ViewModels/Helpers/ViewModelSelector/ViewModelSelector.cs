@@ -1,5 +1,4 @@
-﻿using System.Windows.Input;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
 
 namespace NexusMods.App.UI.ViewModels.Helpers.ViewModelSelector;

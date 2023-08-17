@@ -2,7 +2,6 @@
 using FluentAssertions;
 using NexusMods.App.UI.LeftMenu.Downloads;
 using NexusMods.App.UI.RightContent.Downloads;
-using NexusMods.UI.Tests.Framework;
 
 namespace NexusMods.UI.Tests.LeftMenu;
 

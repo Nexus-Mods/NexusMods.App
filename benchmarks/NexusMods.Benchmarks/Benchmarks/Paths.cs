@@ -1,7 +1,6 @@
 using BenchmarkDotNet.Attributes;
 using NexusMods.Benchmarks.Interfaces;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Benchmarks.Benchmarks;

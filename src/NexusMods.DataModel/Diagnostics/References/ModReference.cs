@@ -1,6 +1,5 @@
 using JetBrains.Annotations;
 using NexusMods.DataModel.Abstractions.Ids;
-using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
 using NexusMods.DataModel.Loadouts.Mods;
 

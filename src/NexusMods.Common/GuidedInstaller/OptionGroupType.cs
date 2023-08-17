@@ -1,9 +1,9 @@
-namespace NexusMods.Common.UserInput;
+namespace NexusMods.Common.GuidedInstaller;
 
 /// <summary>
 /// The rules used with regards to making a choice among multiple possibilities.
 /// </summary>
-public enum ChoiceType
+public enum OptionGroupType
 {
     /// <summary>
     /// Select 1 from the group.

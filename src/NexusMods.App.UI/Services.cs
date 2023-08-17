@@ -22,7 +22,6 @@ using NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadStatus;
 using NexusMods.App.UI.RightContent.Downloads;
 using NexusMods.App.UI.RightContent.Home;
 using NexusMods.App.UI.RightContent.LoadoutGrid;
-using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadName;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadSize;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadVersion;
