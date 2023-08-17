@@ -36,15 +36,14 @@ public class Localizer : INotifyPropertyChanged // <= INotifyPropertyChanged is 
     /// <param name="locale">The new locale to apply.</param>
     public void LoadLanguage(string locale)
     {
-        var item = new CultureInfo(locale);
-        Language.Culture = item;
+        Language.Culture = new CultureInfo(locale);
         Invalidate();
     }
 
     /// <summary>
     /// Retrieves a string associated with current language, by key.
     /// </summary>
-    public string this[string key] => Language.ResourceManager.GetString(key)!;
+    public string this[string key] => Language.ResourceManager.GetString(key, Language.Culture)!;
 
     private void Invalidate()
     {
