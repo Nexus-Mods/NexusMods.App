@@ -27,10 +27,6 @@ public class LocalizedExtension : MarkupExtension
     {
         // Tip: This binds the [] method of the Localizer class.
         // Build binding for '$"[{Key}]"'.
-
-        // Note: CompiledBindingExtension would be nicer to use, for performance reasons; but the things
-        // needed to manually create one, are internal :(
-
         var x = new CompiledBindingPathBuilder();
         x = x.SetRawSource(Localizer.Instance);
         x = x.Property(

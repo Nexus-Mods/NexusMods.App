@@ -25,6 +25,40 @@ public class BasicLocalizedTests
         newString.Should().NotBe(originalString);
     }
 
+    [Fact]
+    public void ProvideValue_NewStringIsReturnedViaObservable_WhenLanguageIsChanged()
+    {
+        var localized = new LocalizedExtension("MyGames");
+        var binding = (CompiledBindingExtension)localized.ProvideValue(_provider);
+
+        var dummy = new TextBlock();
+        var instanced = binding.Initiate(dummy, TextBlock.TextProperty);
+        var result = "";
+        IDisposable disposable = null!;
+        if (instanced?.Source is { } observable)
+        {
+            disposable = observable.Subscribe(s =>
+            {
+                result = (string)s!;
+            });
+        }
+        else
+        {
+            Assert.Fail("Observable is null");
+        }
+
+        // Ensure we have default value.
+        result.Should().NotBeNullOrEmpty();
+        var lastValue = result;
+
+        // Change the locale, this should emit a new value in the observable.
+        Localizer.Instance.LoadLanguage("pl");
+        var currentValue = result;
+
+        lastValue.Should().NotBe(currentValue);
+        disposable.Dispose();
+    }
+
     private string GetStringFromBinding(CompiledBindingExtension binding)
     {
         // Good info: https://github.com/AvaloniaUI/Avalonia/discussions/11401
