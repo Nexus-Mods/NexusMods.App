@@ -2,7 +2,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.CLI;
 using NexusMods.Abstractions.CLI.DataOutputs;
 using NexusMods.CLI;
-using NexusMods.Common.UserInput;
+using NexusMods.Common.GuidedInstaller;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
@@ -39,9 +39,9 @@ public class StressTest : AVerb<IGame, AbsolutePath>, IRenderingVerb
         IArchiveAnalyzer archiveAnalyzer,
         IArchiveInstaller archiveInstaller,
         IEnumerable<IGameLocator> gameLocators,
-        IOptionSelector optionSelector)
+        IGuidedInstaller optionSelector)
     {
-        ((CliOptionSelector)optionSelector).AutoFail = true;
+        ((CliGuidedInstaller)optionSelector).SkipAll = true;
         _archiveAnalyzer = archiveAnalyzer;
         _archiveInstaller = archiveInstaller;
         _downloader = downloader;
