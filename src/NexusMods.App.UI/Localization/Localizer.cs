@@ -13,9 +13,14 @@ namespace NexusMods.App.UI.Localization;
 public class Localizer : INotifyPropertyChanged // <= INotifyPropertyChanged is required, so we can't be static
 {
     /// <summary>
-    /// Singleton instance of the
+    /// Singleton instance of the localizer.
     /// </summary>
     public static Localizer Instance { get; set; } = new();
+
+    /// <summary>
+    /// This is called when the locale of an element is changed.
+    /// </summary>
+    public event Action? LocaleChanged;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -38,6 +43,7 @@ public class Localizer : INotifyPropertyChanged // <= INotifyPropertyChanged is 
     {
         Language.Culture = new CultureInfo(locale);
         Invalidate();
+        LocaleChanged?.Invoke();
     }
 
     /// <summary>

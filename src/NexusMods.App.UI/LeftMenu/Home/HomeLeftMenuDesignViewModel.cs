@@ -15,9 +15,9 @@ public class HomeLeftMenuDesignViewModel : AViewModel<IHomeLeftMenuViewModel>, I
     {
         var items = new ILeftMenuItemViewModel[]
         {
-            new IconViewModel { Name = Language.Newsfeed, Icon = IconType.News},
-            new IconViewModel { Name = Language.MyGames, Icon = IconType.Bookmark },
-            new IconViewModel { Name = Language.BrowseGames, Icon = IconType.Game }
+            new IconViewModel(() => Language.Newsfeed) { Icon = IconType.News},
+            new IconViewModel(() => Language.MyGames) { Icon = IconType.Bookmark },
+            new IconViewModel(() => Language.BrowseGames) { Icon = IconType.Game }
         };
         Items = new ReadOnlyObservableCollection<ILeftMenuItemViewModel>(new ObservableCollection<ILeftMenuItemViewModel>(items));
     }
