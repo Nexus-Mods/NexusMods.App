@@ -46,24 +46,32 @@ public class DownloadAndInstallMod : AVerb<string, LoadoutMarker, string>, IRend
     public async Task<int> Run(string url, LoadoutMarker loadout, string modName, CancellationToken token)
     {
         await using var temporaryPath = _temp.CreateFile();
-        await Renderer.WithProgress(token, async () =>
+        try
         {
-            var uri = new Uri(url);
-            var handler = _handlers.FirstOrDefault(x => x.Protocol == uri.Scheme);
-            if (handler != null)
+            await Renderer.WithProgress(token, async () =>
             {
-                await handler.Handle(url, loadout, modName, default);
+                var uri = new Uri(url);
+                var handler = _handlers.FirstOrDefault(x => x.Protocol == uri.Scheme);
+                if (handler != null)
+                {
+                    await handler.Handle(url, loadout, modName, default);
+                    return 0;
+                }
+
+                await _httpDownloader.DownloadAsync(new[] { new HttpRequestMessage(HttpMethod.Get, uri) },
+                    temporaryPath, null, null, token);
+
+                var analyzedFile = await _archiveAnalyzer.AnalyzeFileAsync(temporaryPath, token);
+                await _archiveInstaller.AddMods(loadout.Value.LoadoutId, analyzedFile.Hash,
+                    string.IsNullOrWhiteSpace(modName) ? null : modName, token: token);
                 return 0;
-            }
-
-            await _httpDownloader.DownloadAsync(new[] { new HttpRequestMessage(HttpMethod.Get, uri) },
-                temporaryPath, null, null, token);
-
-            var analyzedFile = await _archiveAnalyzer.AnalyzeFileAsync(temporaryPath, token);
-            await _archiveInstaller.AddMods(loadout.Value.LoadoutId, analyzedFile.Hash,
-                string.IsNullOrWhiteSpace(modName) ? null : modName, token: token);
-            return 0;
-        });
+            });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+            await Renderer.Render(ex.ToString());
+        }
 
         return 0;
     }
