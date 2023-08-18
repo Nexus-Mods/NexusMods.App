@@ -7,6 +7,7 @@ using NexusMods.Common;
 using NexusMods.Games.Generic;
 using NexusMods.Games.TestFramework;
 using NexusMods.StandardGameLocators.TestHelpers;
+using Xunit.DependencyInjection.Logging;
 
 namespace NexusMods.Games.BethesdaGameStudios.Tests;
 
@@ -22,7 +23,7 @@ public class Startup
             .AddGenericGameSupport()
             .AddCLI()
             .AddAllScoped<IRenderer, LoggingRenderer>()
-            .AddLogging(builder => builder.AddXUnit())
+            .AddLogging(builder => builder.AddXunitOutput())
             .Validate();
     }
 }
