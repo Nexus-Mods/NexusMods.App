@@ -80,6 +80,41 @@ public class ChunkedReaderTests
         Encoding.UTF8.GetString(outStream.ToArray()).Should().Be("Hello World");
     }
 
+    [Theory]
+    [InlineData(0, 128)]
+    [InlineData(3, 128)]
+    [InlineData(1024, 2)]
+    [InlineData(1024 * 1024, 1024)]
+    public async Task CanSeekAsync(int position, int size)
+    {
+        var chunked = new ChunkedStream(new ChunkedMemoryStream(_ms, 16));
+        var buffer1 = new byte[size];
+        chunked.Position = position;
+        await chunked.ReadExactlyAsync(buffer1);
+        _ms.Position = position;
+        var buffer2 = new byte[size];
+        await _ms.ReadExactlyAsync(buffer2);
+        buffer1.Should().BeEquivalentTo(buffer2);
+    }
+
+    [Theory]
+    [InlineData(0, 128)]
+    [InlineData(3, 128)]
+    [InlineData(1024, 2)]
+    [InlineData(1024 * 1024, 1024)]
+    public void CanSeek(int position, int size)
+    {
+        var chunked = new ChunkedStream(new ChunkedMemoryStream(_ms, 16));
+        var buffer1 = new byte[size];
+        chunked.Position = position;
+        chunked.ReadExactly(buffer1);
+        _ms.Position = position;
+        var buffer2 = new byte[size];
+        _ms.ReadExactly(buffer2);
+        buffer1.Should().BeEquivalentTo(buffer2);
+    }
+
+
     [Fact]
     public async Task CopyingAfterEndOfStreamReturnsZero()
     {
