@@ -1,4 +1,4 @@
-﻿<reactiveUi:ReactiveUserControl 
+﻿<reactiveUi:ReactiveUserControl
     x:TypeArguments="download:IDownloadButtonViewModel"
 
     xmlns="https://github.com/avaloniaui"
@@ -19,8 +19,8 @@
             <Arc x:Name="ProgressArc"></Arc>
             <avalonia:Icon Classes="Download"/>
             <StackPanel>
-                <TextBlock Text="48" Classes="Number" x:Name="NumberTextBlock"/>
-                <TextBlock Text="MINS" Classes="Units" x:Name="UnitsTextBlock"/>
+                <TextBlock Classes="Number" x:Name="NumberTextBlock"/>
+                <TextBlock Classes="Units" x:Name="UnitsTextBlock"/>
             </StackPanel>
         </Grid>
     </Button>

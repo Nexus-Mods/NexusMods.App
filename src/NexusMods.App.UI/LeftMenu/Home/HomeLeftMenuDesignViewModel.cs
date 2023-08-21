@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using NexusMods.App.UI.Icons;
 using NexusMods.App.UI.LeftMenu.Items;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.RightContent;
 
 namespace NexusMods.App.UI.LeftMenu.Home;
@@ -14,9 +15,9 @@ public class HomeLeftMenuDesignViewModel : AViewModel<IHomeLeftMenuViewModel>, I
     {
         var items = new ILeftMenuItemViewModel[]
         {
-            new IconViewModel { Name = "Newsfeed", Icon = IconType.News},
-            new IconViewModel { Name = "My Games", Icon = IconType.Bookmark },
-            new IconViewModel { Name = "Browse Games", Icon = IconType.Game }
+            new IconViewModel(() => Language.Newsfeed) { Icon = IconType.News},
+            new IconViewModel(() => Language.MyGames) { Icon = IconType.Bookmark },
+            new IconViewModel(() => Language.BrowseGames) { Icon = IconType.Game }
         };
         Items = new ReadOnlyObservableCollection<ILeftMenuItemViewModel>(new ObservableCollection<ILeftMenuItemViewModel>(items));
     }

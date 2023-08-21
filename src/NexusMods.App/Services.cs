@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.CLI;
 using NexusMods.App.CLI.Renderers;
@@ -48,7 +49,7 @@ public static class Services
 
         services.AddCLI()
             .AddFileSystem()
-            .AddUI()
+            .AddUI(config.LauncherSettings)
             // .AddFomodInstallerUi()
             .AddFileExtractors(config.FileExtractorSettings)
             .AddDataModel(config.DataModelSettings)

@@ -1,6 +1,10 @@
 using System.Collections.ObjectModel;
+using System.Reactive.Disposables;
+using Avalonia.Utilities;
 using NexusMods.App.UI.Icons;
 using NexusMods.App.UI.LeftMenu.Items;
+using NexusMods.App.UI.Localization;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.RightContent;
 using NexusMods.App.UI.RightContent.MyGames;
 using ReactiveUI;
@@ -10,33 +14,38 @@ namespace NexusMods.App.UI.LeftMenu.Home;
 
 public class HomeLeftMenuViewModel : AViewModel<IHomeLeftMenuViewModel>, IHomeLeftMenuViewModel
 {
-    public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items { get; }
+    static ReadOnlyObservableCollection<ILeftMenuItemViewModel> _empty = new ReadOnlyObservableCollection<ILeftMenuItemViewModel>(new ObservableCollection<ILeftMenuItemViewModel>());
+
+    public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items { get; private set; } = _empty;
 
     [Reactive]
-    public IRightContentViewModel RightContent { get; set; } =
-        Initializers.IRightContent;
+    public IRightContentViewModel RightContent { get; set; } = Initializers.IRightContent;
 
     public HomeLeftMenuViewModel(IMyGamesViewModel myGamesViewModel, IFoundGamesViewModel foundGamesViewModel)
     {
-        var items = new ILeftMenuItemViewModel[]
+        this.WhenActivated(disposable =>
         {
-            new IconViewModel { Name = "Newsfeed", Icon = IconType.News, Activate = ReactiveCommand.Create(
-                () =>
-                {
-                    RightContent = Initializers.IRightContent;
-                })},
-            new IconViewModel { Name = "My Games", Icon = IconType.Bookmark, Activate = ReactiveCommand.Create(
-                () =>
-                {
-                    RightContent = myGamesViewModel;
-                }) },
-            new IconViewModel { Name = "Browse Games", Icon = IconType.Game, Activate = ReactiveCommand.Create(
-                () =>
-                {
-                    RightContent = foundGamesViewModel;
-                })}
-        };
-        Items = new ReadOnlyObservableCollection<ILeftMenuItemViewModel>(
-            new ObservableCollection<ILeftMenuItemViewModel>(items));
+            var items = new ILeftMenuItemViewModel[]
+            {
+                new IconViewModel(() => Language.Newsfeed) { Icon = IconType.News, Activate = ReactiveCommand.Create(
+                    () =>
+                    {
+                        RightContent = Initializers.IRightContent;
+                    })}.DisposeWith(disposable),
+                new IconViewModel(() => Language.MyGames) { Icon = IconType.Bookmark, Activate = ReactiveCommand.Create(
+                    () =>
+                    {
+                        RightContent = myGamesViewModel;
+                    }) }.DisposeWith(disposable),
+                new IconViewModel(() => Language.BrowseGames) { Icon = IconType.Game, Activate = ReactiveCommand.Create(
+                    () =>
+                    {
+                        RightContent = foundGamesViewModel;
+                    })}.DisposeWith(disposable)
+            };
+
+            Items = new ReadOnlyObservableCollection<ILeftMenuItemViewModel>(
+                new ObservableCollection<ILeftMenuItemViewModel>(items));
+        });
     }
 }

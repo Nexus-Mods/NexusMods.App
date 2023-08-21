@@ -1,4 +1,5 @@
-﻿using NexusMods.DataModel;
+using NexusMods.App.UI;
+using NexusMods.DataModel;
 using NexusMods.FileExtractor;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Paths;
@@ -10,14 +11,12 @@ namespace NexusMods.App;
 /// </summary>
 public class AppConfig
 {
-    private readonly IFileSystem _fileSystem;
-
     public AppConfig()
     {
-        _fileSystem = FileSystem.Shared;
-        DataModelSettings = new DataModelSettings(_fileSystem);
-        FileExtractorSettings = new FileExtractorSettings(_fileSystem);
-        LoggingSettings = new LoggingSettings(_fileSystem);
+        var fileSystem = FileSystem.Shared;
+        DataModelSettings = new DataModelSettings(fileSystem);
+        FileExtractorSettings = new FileExtractorSettings(fileSystem);
+        LoggingSettings = new LoggingSettings(fileSystem);
     }
     /*
         Default Value Rules:
@@ -46,6 +45,7 @@ public class AppConfig
     public FileExtractorSettings FileExtractorSettings { get; set; }
     public HttpDownloaderSettings HttpDownloaderSettings { get; set; } = new();
     public LoggingSettings LoggingSettings { get; set; }
+    public LauncherSettings LauncherSettings { get; set; } = new();
 
     /// <summary>
     /// Sanitizes the config; e.g.
@@ -80,7 +80,7 @@ public class LoggingSettings : ILoggingSettings
 {
     private const string LogFileName = "nexusmods.app.current.log";
     private const string LogFileNameTemplate = "nexusmods.app.{##}.log";
-    
+
     /// <inheritdoc/>
     public ConfigurationPath FilePath { get; set; }
 
@@ -89,7 +89,7 @@ public class LoggingSettings : ILoggingSettings
 
     /// <inheritdoc/>
     public int MaxArchivedFiles { get; set; }
-    
+
     /// <summary>
     /// Default constructor for serialization.
     /// </summary>
@@ -98,7 +98,7 @@ public class LoggingSettings : ILoggingSettings
     /// <summary>
     /// Creates the default logger with logs stored in the entry directory.
     /// </summary>
-    /// <param name="baseDirectory">The base directory to use.</param>
+    /// <param name="fileSystem">The FileSystem implementation to use.</param>
     public LoggingSettings(IFileSystem fileSystem)
     {
         var baseFolder = fileSystem.GetKnownPath(KnownPath.EntryDirectory);

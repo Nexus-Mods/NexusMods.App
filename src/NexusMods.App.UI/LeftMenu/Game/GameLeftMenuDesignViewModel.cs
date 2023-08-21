@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Icons;
 using NexusMods.App.UI.LeftMenu.Items;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.RightContent;
 using NexusMods.DataModel.Games;
 using ReactiveUI.Fody.Helpers;
@@ -32,9 +33,9 @@ public class GameLeftMenuDesignViewModel : AViewModel<IGameLeftMenuViewModel>, I
 
         var items = new ILeftMenuItemViewModel[]
         {
-            new IconViewModel { Name = "Newsfeed", Icon = IconType.News},
-            new IconViewModel { Name = "My loadout 1", Icon = IconType.ChevronRight },
-            new IconViewModel { Name = "My other loadout", Icon = IconType.ChevronRight },
+            new IconViewModel(() => "Newsfeed") { Icon = IconType.News},
+            new IconViewModel(() => "My loadout 1") { Icon = IconType.ChevronRight },
+            new IconViewModel(() => "My other loadout") { Icon = IconType.ChevronRight },
         };
         Items = items.ToReadOnlyObservableCollection();
     }

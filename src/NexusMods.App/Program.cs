@@ -79,7 +79,6 @@ public class Program
                 // Note: suppressed because invalid config will throw.
                 config = JsonSerializer.Deserialize<AppConfig>(configJson)!;
                 config.Sanitize();
-                services.AddSingleton(config);
                 services.AddApp(config).Validate();
             })
             .ConfigureLogging((_, builder) => AddLogging(builder, config.LoggingSettings))

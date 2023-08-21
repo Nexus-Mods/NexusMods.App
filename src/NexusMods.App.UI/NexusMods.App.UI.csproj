@@ -281,6 +281,11 @@
         <Compile Update="Overlays\Generic\MessageBox\OkCancel\MessageBoxOkCancelViewModel.cs">
           <DependentUpon>IMessageBoxOkCancelViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Resources\Language.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>Language.resx</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
@@ -306,5 +311,12 @@
       <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadSize\DownloadSizeView.axaml" />
       <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadStatus\DownloadStatusView.axaml" />
       <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadVersion\DownloadVersionView.axaml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="Resources\Language.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>Language.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
     </ItemGroup>
 </Project>
