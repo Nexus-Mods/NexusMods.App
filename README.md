@@ -2,7 +2,7 @@
 
 [![Test Coverage](https://codecov.io/gh/Nexus-Mods/NexusMods.App/branch/main/graph/badge.svg?token=RR2Lic1E0M)](https://codecov.io/gh/Nexus-Mods/NexusMods.App)
 [![CI Tests](https://github.com/Nexus-Mods/NexusMods.App/actions/workflows/clean_environment_tests.yaml/badge.svg)](https://github.com/Nexus-Mods/NexusMods.App/actions/workflows/clean_environment_tests.yaml)
-[![Discord](https://img.shields.io/discord/1134149061080002713)](https://discord.gg/3VhgbJEQ)
+[![Discord](https://img.shields.io/discord/1134149061080002713)](https://discord.gg/JsbY3pxX)
 
 
 This is the repository for the Nexus Mods App, a mod installer, creator and manager for all your popular games
