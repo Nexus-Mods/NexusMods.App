@@ -1,5 +1,6 @@
 using System.Buffers.Binary;
 using System.Text;
+using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.RateLimiting;
@@ -76,7 +77,7 @@ public class FileHashCache
     ///    Entries are pulled from cache if they already exist and we
     ///    can verify cached entry is accurate.
     /// </remarks>
-    public IAsyncEnumerable<HashedEntry> IndexFolderAsync(AbsolutePath path, CancellationToken? token)
+    public IAsyncEnumerable<HashedEntry> IndexFolderAsync(AbsolutePath path, CancellationToken token = default)
     {
         return IndexFoldersAsync(new[] { path }, token);
     }
@@ -91,10 +92,8 @@ public class FileHashCache
     ///    Entries are pulled from cache if they already exist and we
     ///    can verify cached entry is accurate.
     /// </remarks>
-    public async IAsyncEnumerable<HashedEntry> IndexFoldersAsync(IEnumerable<AbsolutePath> paths, CancellationToken? token)
+    public async IAsyncEnumerable<HashedEntry> IndexFoldersAsync(IEnumerable<AbsolutePath> paths, CancellationToken token = default)
     {
-        token ??= CancellationToken.None;
-        
         // Don't want to error via a empty folder
         paths = paths.Where(p => p.DirectoryExists());
 
@@ -109,7 +108,7 @@ public class FileHashCache
                 }
             }
 
-            var hashed = await entry.Path.XxHash64Async(token, job);
+            var hashed = await entry.Path.XxHash64Async(job, token);
             PutCachedAsync(entry.Path, new FileHashCacheEntry(entry.LastWriteTimeUtc, hashed, entry.Size));
             return new HashedEntry(entry, hashed);
         }, token, "Hashing Files");
@@ -128,7 +127,7 @@ public class FileHashCache
     ///    Entry is pulled from cache if it already exists in the cache and we
     ///    can verify cached entry is accurate.
     /// </remarks>
-    public async ValueTask<HashedEntry> IndexFileAsync(AbsolutePath file, CancellationToken? token = null)
+    public async ValueTask<HashedEntry> IndexFileAsync(AbsolutePath file, CancellationToken token = default)
     {
         var info = file.FileInfo;
         var size = info.Size;
@@ -140,8 +139,8 @@ public class FileHashCache
             }
         }
 
-        using var job = await _limiter.BeginAsync($"Hashing {file.FileName}", size, token ?? CancellationToken.None);
-        var hashed = await file.XxHash64Async(token, job);
+        using var job = await _limiter.BeginAsync($"Hashing {file.FileName}", size, token);
+        var hashed = await file.XxHash64Async(job, token);
         PutCachedAsync(file, new FileHashCacheEntry(info.LastWriteTimeUtc, hashed, size));
         return new HashedEntry(file, hashed, info.LastWriteTimeUtc, size);
     }

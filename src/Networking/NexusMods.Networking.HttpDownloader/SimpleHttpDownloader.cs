@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using NexusMods.Common;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -50,7 +51,7 @@ public class SimpleHttpDownloader : IHttpDownloader
 
             await using var stream = await response.Content.ReadAsStreamAsync(token);
             await using var file = destination.Create();
-            return await stream.HashingCopyAsync(file, token, job);
+            return await stream.HashingCopyAsync(file, job, token);
         }
 
         throw new Exception($"Could not download {destination.FileName}");

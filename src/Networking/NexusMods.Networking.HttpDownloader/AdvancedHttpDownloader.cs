@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Text.Json;
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
+using NexusMods.Common;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.HttpDownloader.DTOs;
@@ -136,7 +137,7 @@ namespace NexusMods.Networking.HttpDownloader
 
                 await using var of = destination.Create();
                 await using var stream = await response.Content.ReadAsStreamAsync(cancel);
-                return await stream.HashingCopyAsync(of, cancel, primaryJob);
+                return await stream.HashingCopyAsync(of, primaryJob, cancel);
             }
 
             throw new Exception("No valid server");

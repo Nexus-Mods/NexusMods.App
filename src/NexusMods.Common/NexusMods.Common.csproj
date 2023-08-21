@@ -3,6 +3,7 @@
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
     <ItemGroup>
+        <PackageReference Include="NexusMods.Hashing.xxHash64" />
         <PackageReference Include="NexusMods.Paths" />
         <PackageReference Include="CliWrap" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
@@ -11,5 +12,9 @@
 
     <ItemGroup>
         <InternalsVisibleTo Include="NexusMods.Common.Tests" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\NexusMods.DataModel.RateLimiting\NexusMods.DataModel.RateLimiting.csproj" />
     </ItemGroup>
 </Project>
