@@ -46,7 +46,7 @@ public class ChunkedReaderTests
     [InlineData(11)] // Same as the input data
     [InlineData(16)]
     [InlineData(32)]
-    public async Task CanCopySmallStream(int chunkSize)
+    public async Task CanCopySmallStreamAsync(int chunkSize)
     {
         var ms = new MemoryStream();
         ms.Position = 0;
@@ -55,6 +55,27 @@ public class ChunkedReaderTests
 
         var outStream = new MemoryStream();
         await chunked.CopyToAsync(outStream);
+        outStream.Length.Should().Be(ms.Length);
+        Encoding.UTF8.GetString(outStream.ToArray()).Should().Be("Hello World");
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(4)]
+    [InlineData(8)]
+    [InlineData(11)] // Same as the input data
+    [InlineData(16)]
+    [InlineData(32)]
+    public void CanCopySmallStream(int chunkSize)
+    {
+        var ms = new MemoryStream();
+        ms.Position = 0;
+        ms.Write("Hello World"u8);
+        var chunked = new ChunkedStream(new ChunkedMemoryStream(ms, chunkSize));
+
+        var outStream = new MemoryStream();
+        chunked.CopyTo(outStream);
         outStream.Length.Should().Be(ms.Length);
         Encoding.UTF8.GetString(outStream.ToArray()).Should().Be("Hello World");
     }
