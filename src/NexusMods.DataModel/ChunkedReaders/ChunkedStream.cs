@@ -39,6 +39,11 @@ public class ChunkedStream : Stream
     /// <exception cref="NotImplementedException"></exception>
     public override int Read(byte[] buffer, int offset, int count)
     {
+        if (_position >= _source.Size.Value)
+        {
+            return 0;
+        }
+
         var chunkIdx = _position / _source.ChunkSize.Value;
         var chunkOffset = _position % _source.ChunkSize.Value;
         var chunk = GetChunk(chunkIdx);

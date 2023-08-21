@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Text;
+using FluentAssertions;
 using NexusMods.DataModel.ChunkedReaders;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -31,10 +32,41 @@ public class ChunkedReaderTests
     }
 
     [Fact]
-    public async Task CanCopyStream()
+    public async Task CanCopyLargeStream()
     {
         var chunked = new ChunkedStream(new ChunkedMemoryStream(_ms, 1024));
         (await chunked.HashingCopyAsync(Stream.Null, CancellationToken.None)).Should().Be(_hash);
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(4)]
+    [InlineData(8)]
+    [InlineData(16)]
+    [InlineData(32)]
+    public async Task CanCopySmallStream(int chunkSize)
+    {
+        var ms = new MemoryStream();
+        ms.Position = 0;
+        ms.Write("Hello World"u8);
+        var chunked = new ChunkedStream(new ChunkedMemoryStream(ms, chunkSize));
+
+        var outStream = new MemoryStream();
+        await chunked.CopyToAsync(outStream);
+        outStream.Length.Should().Be(ms.Length);
+        Encoding.UTF8.GetString(outStream.ToArray()).Should().Be("Hello World");
+    }
+
+    [Fact]
+    public async Task CopyingAfterEndOfStreamReturnsZero()
+    {
+        var ms = new MemoryStream();
+        ms.Write(new byte[16]);
+        ms.Position = 0;
+        var chunked = new ChunkedStream(new ChunkedMemoryStream(ms, 16));
+        chunked.Read(new byte[16]).Should().Be(16);
+        chunked.Read(new byte[16]).Should().Be(0);
     }
 
 
