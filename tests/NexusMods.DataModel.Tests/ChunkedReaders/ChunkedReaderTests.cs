@@ -43,6 +43,7 @@ public class ChunkedReaderTests
     [InlineData(2)]
     [InlineData(4)]
     [InlineData(8)]
+    [InlineData(11)] // Same as the input data
     [InlineData(16)]
     [InlineData(32)]
     public async Task CanCopySmallStream(int chunkSize)

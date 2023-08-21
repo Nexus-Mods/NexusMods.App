@@ -46,8 +46,18 @@ public class ChunkedStream : Stream
 
         var chunkIdx = _position / _source.ChunkSize.Value;
         var chunkOffset = _position % _source.ChunkSize.Value;
+        var isLastChunk = chunkIdx == _source.ChunkCount - 1;
         var chunk = GetChunk(chunkIdx);
+
         var toRead = Math.Min(count, (int)(_source.ChunkSize.Value - chunkOffset));
+        if (isLastChunk)
+        {
+            var lastChunkExtraSize = _source.Size.Value % _source.ChunkSize.Value;
+            if (lastChunkExtraSize > 0)
+            {
+                toRead = Math.Min(toRead, (int)lastChunkExtraSize);
+            }
+        }
         chunk.Slice((int)chunkOffset, toRead)
             .Span
             .CopyTo(buffer.AsSpan(offset, toRead));
