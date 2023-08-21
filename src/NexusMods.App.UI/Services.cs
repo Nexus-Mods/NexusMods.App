@@ -16,6 +16,7 @@ using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.Download.Cancel;
 using NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel;
 using NexusMods.App.UI.Overlays.Login;
+using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.RightContent;
 using NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadGameName;
 using NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadStatus;
@@ -102,6 +103,7 @@ public static class Services
             .AddViewModel<DownloadStatusViewModel, IDownloadStatusViewModel>()
             .AddViewModel<CancelDownloadOverlayViewModel, ICancelDownloadOverlayViewModel>()
             .AddViewModel<MessageBoxOkCancelViewModel, IMessageBoxOkCancelViewModel>()
+            .AddViewModel<MetricsOptInViewModel, IMetricsOptInViewModel>()
 
             // Views
             .AddView<CompletedView, ICompletedViewModel>()
