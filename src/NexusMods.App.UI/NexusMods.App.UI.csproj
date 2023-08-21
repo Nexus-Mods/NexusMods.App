@@ -286,6 +286,7 @@
           <AutoGen>True</AutoGen>
           <DependentUpon>Language.resx</DependentUpon>
         </Compile>
+        <Compile Remove="Overlays\MetricsOptIn\MetricsOptInView.axaml.cs" />
     </ItemGroup>
 
     <ItemGroup>
@@ -302,6 +303,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Overlays\MetricsOptIn\" />
       <Folder Include="RightContent\DownloadGrid\Columns\" />
     </ItemGroup>
 
