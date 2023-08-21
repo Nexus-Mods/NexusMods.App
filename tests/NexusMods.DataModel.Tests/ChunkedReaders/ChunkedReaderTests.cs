@@ -15,7 +15,7 @@ public class ChunkedReaderTests
     {
         _ms = new MemoryStream();
         CreateData();
-        _hash = _ms.GetBuffer().AsSpan().XxHash64();
+        _hash = _ms.ToArray().AsSpan().XxHash64();
     }
 
     private void CreateData()
