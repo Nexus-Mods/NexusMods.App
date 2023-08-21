@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using BitFaster.Caching;
 using BitFaster.Caching.Lru;
+using NexusMods.Paths.Extensions;
 
 namespace NexusMods.DataModel.ChunkedReaders;
 
@@ -63,6 +64,35 @@ public class ChunkedStream : Stream
             .CopyTo(buffer.AsSpan(offset, toRead));
         _position += (ulong)toRead;
         return toRead;
+    }
+
+    public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = new CancellationToken())
+    {
+        if (_position >= _source.Size.Value)
+        {
+            return 0;
+        }
+
+        var chunkIdx = _position / _source.ChunkSize.Value;
+        var chunkOffset = _position % _source.ChunkSize.Value;
+        var isLastChunk = chunkIdx == _source.ChunkCount - 1;
+        var chunk = await GetChunkAsync(chunkIdx, cancellationToken);
+
+        var toRead = Math.Min(buffer.Length, (int)(_source.ChunkSize.Value - chunkOffset));
+        if (isLastChunk)
+        {
+            var lastChunkExtraSize = _source.Size.Value % _source.ChunkSize.Value;
+            if (lastChunkExtraSize > 0)
+            {
+                toRead = Math.Min(toRead, (int)lastChunkExtraSize);
+            }
+        }
+        chunk.Slice((int)chunkOffset, toRead)
+            .Span
+            .CopyTo(buffer.Span.SliceFast(0, toRead));
+        _position += (ulong)toRead;
+        return toRead;
+
     }
 
     private async ValueTask<Memory<byte>> GetChunkAsync(ulong index, CancellationToken token)

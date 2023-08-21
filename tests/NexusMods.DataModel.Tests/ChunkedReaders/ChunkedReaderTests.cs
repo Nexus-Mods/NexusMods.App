@@ -86,9 +86,11 @@ public class ChunkedReaderTests
         public Size Size => Size.FromLong(_ms.Length);
         public Size ChunkSize => Size.FromLong(_chunkSize);
         public ulong ChunkCount => (ulong)Math.Ceiling(_ms.Length / (double)_chunkSize);
-        public Task ReadChunkAsync(Memory<byte> buffer, ulong chunkIndex, CancellationToken token = default)
+        public async Task ReadChunkAsync(Memory<byte> buffer, ulong chunkIndex, CancellationToken token = default)
         {
-            throw new NotImplementedException();
+            var offset = chunkIndex * (ulong)_chunkSize;
+            _ms.Position = (long)offset;
+            await _ms.ReadAsync(buffer, token);
         }
 
         public void ReadChunk(Span<byte> buffer, ulong chunkIndex)
