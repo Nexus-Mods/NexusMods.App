@@ -2,7 +2,7 @@
 
 [![Test Coverage](https://codecov.io/gh/Nexus-Mods/NexusMods.App/branch/main/graph/badge.svg?token=RR2Lic1E0M)](https://codecov.io/gh/Nexus-Mods/NexusMods.App)
 [![CI Tests](https://github.com/Nexus-Mods/NexusMods.App/actions/workflows/clean_environment_tests.yaml/badge.svg)](https://github.com/Nexus-Mods/NexusMods.App/actions/workflows/clean_environment_tests.yaml)
-[![Discord](https://img.shields.io/discord/1134149061080002713)](https://discord.gg/JsbY3pxX)
+[![Discord]([https://img.shields.io/discord/1134149061080002713](https://img.shields.io/discord/1134149061080002713?logo=discord&logoColor=white&color=7289da))](https://discord.gg/JsbY3pxX)
 
 
 This is the repository for the Nexus Mods App, a mod installer, creator and manager for all your popular games
@@ -47,7 +47,7 @@ Further Reading: [Comparison of File Management Systems](/docs/ComparisonOfFileM
 
 **Q:** What is this? A replacement for Vortex?
 
-**A:** Eventually, yes. But not for quite some time, at the moment this software should be considered "pre-alpha". Do not ask for support for these tools until official annoucements and a product launch is made. Feel free to direct any questions to halgari in the meantime. 
+**A:** Eventually, yes. But not for quite some time, at the moment this software should be considered "pre-alpha". Do not ask for support for these tools until official annoucements and a product launch is made. Feel free to direct any questions to halgari in the meantime.
 
 
 **Q:** Why is this being done, why a new platform, design, etc.?
@@ -63,8 +63,3 @@ Further Reading: [Comparison of File Management Systems](/docs/ComparisonOfFileM
 **Q:** I see tests run on Linux, Windows and OSX, are you targeting all those platforms?
 
 **A:** Yes, the CLI runs on these platforms and we run our CI on each of these OSes. What games are supported on these platforms (e.g. do we support Skyrim through Wine on Linux?) is yet to be determined. 
-
-
-**Q:** I want to help, how do I start coding?
-
-**A:** This project is still in the pretty early phases, but check back in a month or so and we may have opportunities for 3rd party devs to add support for additional games, mod formats, and tools. 
