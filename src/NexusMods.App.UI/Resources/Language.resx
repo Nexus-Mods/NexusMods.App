@@ -27,4 +27,22 @@
     <data name="BrowseGames" xml:space="preserve">
         <value>Browse Games</value>
     </data>
+    <data name="MetricsOptIn_ALLOW" xml:space="preserve">
+        <value>ALLOW</value>
+    </data>
+    <data name="MetricsOptIn_DENY" xml:space="preserve">
+        <value>DENY</value>
+    </data>
+    <data name="MetricsOptIn_OverlayTitle" xml:space="preserve">
+        <value>Diagnostics and usage data</value>
+    </data>
+    <data name="MetricsOptIn_MoreInfoAboutTheDataWeTrack" xml:space="preserve">
+        <value>More info about the data we track</value>
+    </data>
+    <data name="MetricsOptIn_MainMessage" xml:space="preserve">
+        <value>Help us provide you with the best modding experience.&#x0a;&#x0a;With your permission, we will collect analytics information and send it to our team to help us improve quality and performance.&#x0a;&#x0a;This information is sent anonymously and will never be shared with a 3rd party.</value>
+    </data>
+    <data name="MetricsOptIn_OverlayTitle" xml:space="preserve">
+        <value>Diagnostics and usage data</value>
+    </data>
 </root>

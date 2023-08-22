@@ -7,6 +7,7 @@
     xmlns:base="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:metricsOptIn="clr-namespace:NexusMods.App.UI.Overlays.MetricsOptIn"
+    xmlns:localization="clr-namespace:NexusMods.App.UI.Localization"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Overlays.MetricsOptIn.MetricsOptInView">
    <base:MessageBoxBackground MinWidth="576" MaxWidth="576">
@@ -14,15 +15,15 @@
             <StackPanel Orientation="Vertical" Margin="16, 24, 24, 24" Spacing="16">
 
                 <TextBlock Classes="H6MontserratSemi"
-                           Text="Diagnostics and usage data"/>
+                           Text="{localization:Localized MetricsOptIn_OverlayTitle}"/>
 
                 <!-- Message -->
                 <StackPanel Spacing="8">
                     <TextBlock TextWrapping="WrapWithOverflow"
-                               Text="Help us provide you with the best modding experience.&#x0a;&#x0a;With your permission, we will collect analytics information and send it to our team to help us improve quality and performance.&#x0a;&#x0a;This information is sent anonymously and will never be shared with a 3rd party."
+                               Text="{localization:Localized MetricsOptIn_MainMessage}"
                                Classes="Body_MD_Normal UsesBrandWhiteColor" />
 
-                    <Button Classes="Hyperlink"><TextBlock Classes="Body_MD_Normal">More info about the data we track</TextBlock></Button>
+                    <Button Classes="Hyperlink"><TextBlock Classes="Body_MD_Normal" Text="{localization:Localized MetricsOptIn_MoreInfoAboutTheDataWeTrack}"></TextBlock></Button>
                 </StackPanel>
             </StackPanel>
 
@@ -33,10 +34,10 @@
             <!-- Buttons -->
             <StackPanel Orientation="Horizontal" Margin="24" HorizontalAlignment="Right" Spacing="8">
                 <Button x:Name="DenyButton" Classes="Button Secondary" HorizontalAlignment="Stretch">
-                    <TextBlock Text="DENY" />
+                    <TextBlock Text="{localization:Localized MetricsOptIn_DENY}" />
                 </Button>
                 <Button x:Name="AllowButton" Classes="Button Primary" HorizontalAlignment="Stretch">
-                    <TextBlock Text="ALLOW"/>
+                    <TextBlock Text="{localization:Localized MetricsOptIn_ALLOW}"/>
                 </Button>
             </StackPanel>
 
