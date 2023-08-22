@@ -32,10 +32,10 @@
 
             <!-- Buttons -->
             <StackPanel Orientation="Horizontal" Margin="24" HorizontalAlignment="Right" Spacing="8">
-                <Button x:Name="AllowButton" Classes="Button Secondary" HorizontalAlignment="Stretch">
+                <Button x:Name="DenyButton" Classes="Button Secondary" HorizontalAlignment="Stretch">
                     <TextBlock Text="DENY" />
                 </Button>
-                <Button x:Name="DenyButton" Classes="Button Primary" HorizontalAlignment="Stretch">
+                <Button x:Name="AllowButton" Classes="Button Primary" HorizontalAlignment="Stretch">
                     <TextBlock Text="ALLOW"/>
                 </Button>
             </StackPanel>

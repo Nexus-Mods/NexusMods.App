@@ -121,6 +121,7 @@ public static class Services
             .AddView<LaunchButtonView, ILaunchButtonViewModel>()
             .AddView<LeftMenuView, ILeftMenuViewModel>()
             .AddView<LoadoutGridView, ILoadoutGridViewModel>()
+            .AddView<MetricsOptInView, IMetricsOptInViewModel>()
             .AddView<ModCategoryView, IModCategoryViewModel>()
             .AddView<ModEnabledView, IModEnabledViewModel>()
             .AddView<ModInstalledView, IModInstalledViewModel>()

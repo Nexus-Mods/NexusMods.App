@@ -34,4 +34,8 @@ public class MetricsOptInDesignerViewModel : AViewModel<IMetricsOptInViewModel>,
             IsActive = false;
         });
     }
+    public void MaybeShow()
+    {
+        throw new NotImplementedException();
+    }
 }

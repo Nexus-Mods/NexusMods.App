@@ -10,6 +10,9 @@ namespace NexusMods.App.UI.Overlays.MetricsOptIn;
 /// </summary>
 public class MetricsOptInViewModel : AViewModel<IMetricsOptInViewModel>, IMetricsOptInViewModel
 {
+    private readonly IOverlayController _overlayController;
+    private readonly GlobalSettingsManager _globalSettingsManager;
+
     [Reactive]
     public bool IsActive { get; set; }
     public ICommand Allow { get; }
@@ -19,8 +22,10 @@ public class MetricsOptInViewModel : AViewModel<IMetricsOptInViewModel>, IMetric
     /// DI Constructor
     /// </summary>
     /// <param name="globalSettingsManager"></param>
-    public MetricsOptInViewModel(GlobalSettingsManager globalSettingsManager)
+    public MetricsOptInViewModel(GlobalSettingsManager globalSettingsManager, IOverlayController overlayController)
     {
+        _overlayController = overlayController;
+        _globalSettingsManager = globalSettingsManager;
         Allow = ReactiveCommand.Create(() =>
         {
             globalSettingsManager.SetMetricsOptIn(true);
@@ -32,5 +37,13 @@ public class MetricsOptInViewModel : AViewModel<IMetricsOptInViewModel>, IMetric
             globalSettingsManager.SetMetricsOptIn(false);
             IsActive = false;
         });
+    }
+
+    public void MaybeShow()
+    {
+        if (_globalSettingsManager.IsMetricsOptInSet())
+            return;
+
+        _overlayController.SetOverlayContent(new SetOverlayItem(this));
     }
 }

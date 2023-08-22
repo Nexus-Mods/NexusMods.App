@@ -47,4 +47,13 @@ public class GlobalSettingsManager
         _logger.LogDebug("Setting MetricsOptIn to {Value}", value);
         _dataStore.PutRaw(Ids.MetricsOptIn, new [] { value ? (byte) 1 : (byte) 0 });
     }
+
+    /// <summary>
+    /// Returns whether the user has made a decision on metrics collection. If not set, the user has not made a decision.
+    /// </summary>
+    /// <returns></returns>
+    public bool IsMetricsOptInSet()
+    {
+        return _dataStore.GetRaw(Ids.MetricsOptIn) != null;
+    }
 }
