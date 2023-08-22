@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using FluentAssertions;
-using NexusMods.DataModel.ChunkedReaders;
+using NexusMods.DataModel.ChunkedStreams;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
@@ -127,7 +127,7 @@ public class ChunkedReaderTests
     }
 
 
-    class ChunkedMemoryStream : IChunkedReaderSource
+    class ChunkedMemoryStream : IChunkedStreamSource
     {
         private readonly MemoryStream _ms;
         private readonly int _chunkSize;

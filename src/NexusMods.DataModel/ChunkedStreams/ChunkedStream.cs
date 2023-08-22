@@ -1,9 +1,7 @@
 ﻿using System.Buffers;
-using BitFaster.Caching;
-using BitFaster.Caching.Lru;
 using NexusMods.Paths.Extensions;
 
-namespace NexusMods.DataModel.ChunkedReaders;
+namespace NexusMods.DataModel.ChunkedStreams;
 
 /// <summary>
 /// A stream that reads data in chunks, caching the chunks in a cache and allowing
@@ -12,11 +10,16 @@ namespace NexusMods.DataModel.ChunkedReaders;
 public class ChunkedStream : Stream
 {
     private ulong _position;
-    private readonly IChunkedReaderSource _source;
+    private readonly IChunkedStreamSource _source;
     private LightweightLRUCache<ulong, IMemoryOwner<byte>> _cache;
     private readonly MemoryPool<byte> _pool;
 
-    public ChunkedStream(IChunkedReaderSource source, int capacity = 16)
+    /// <summary>
+    /// Main constructor, creates a new Chunked stream from the given source, and with a LRU cache of the given size
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="capacity"></param>
+    public ChunkedStream(IChunkedStreamSource source, int capacity = 16)
     {
         _position = 0;
         _source = source;

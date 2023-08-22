@@ -5,7 +5,7 @@ using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.ArchiveContents;
-using NexusMods.DataModel.ChunkedReaders;
+using NexusMods.DataModel.ChunkedStreams;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
@@ -150,14 +150,14 @@ public class ZipArchiveManager : IArchiveManager
         var file = archivePath.Read();
         var archive = new ZipArchive(file, ZipArchiveMode.Read, true, System.Text.Encoding.UTF8);
 
-        return new ChunkedStream(new ChunkedArchiveReader(archive, hash));
+        return new ChunkedStream(new ChunkedArchiveStream(archive, hash));
     }
 
-    private class ChunkedArchiveReader : IChunkedReaderSource
+    private class ChunkedArchiveStream : IChunkedStreamSource
     {
         private readonly ZipArchiveEntry[] _entries;
 
-        public ChunkedArchiveReader(ZipArchive archive, Hash hash)
+        public ChunkedArchiveStream(ZipArchive archive, Hash hash)
         {
             var prefix = hash.ToHex() + "_";
             _entries = archive.Entries.Where(entry => entry.Name.StartsWith(prefix))

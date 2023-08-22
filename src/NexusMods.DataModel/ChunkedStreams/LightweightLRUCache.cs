@@ -1,4 +1,4 @@
-﻿namespace NexusMods.DataModel.ChunkedReaders;
+﻿namespace NexusMods.DataModel.ChunkedStreams;
 
 /// <summary>
 /// An extremely lightweight LRU cache that is not thread safe. All values are expected

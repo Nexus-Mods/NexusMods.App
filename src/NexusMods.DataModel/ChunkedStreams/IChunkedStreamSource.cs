@@ -1,11 +1,11 @@
 ﻿using NexusMods.Paths;
 
-namespace NexusMods.DataModel.ChunkedReaders;
+namespace NexusMods.DataModel.ChunkedStreams;
 
 /// <summary>
-/// A source of data for a <see cref="ChunkedReader{T}"/>
+/// A source of data for a <see cref="ChunkedStream"/>
 /// </summary>
-public interface IChunkedReaderSource
+public interface IChunkedStreamSource
 {
     /// <summary>
     /// Gets the size of the source in bytes.
