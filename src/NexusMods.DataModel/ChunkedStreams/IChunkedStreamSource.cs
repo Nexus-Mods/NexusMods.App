@@ -3,7 +3,8 @@
 namespace NexusMods.DataModel.ChunkedStreams;
 
 /// <summary>
-/// A source of data for a <see cref="ChunkedStream"/>
+/// A source of data for a <see cref="ChunkedStream{T}"/>. Sizes of chunks should be no larger
+/// than 1MB or the chunked stream should be updated to not use a memory pool in those cases.
 /// </summary>
 public interface IChunkedStreamSource
 {
