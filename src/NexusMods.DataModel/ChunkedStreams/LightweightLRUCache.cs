@@ -1,4 +1,6 @@
-﻿namespace NexusMods.DataModel.ChunkedStreams;
+﻿using NexusMods.Paths.Extensions;
+
+namespace NexusMods.DataModel.ChunkedStreams;
 
 /// <summary>
 /// An extremely lightweight LRU cache that is not thread safe. All values are expected
@@ -54,12 +56,15 @@ public struct LightweightLRUCache<TK, TV>
     private void Touch(int index)
     {
         if (index == 0) return;
-        var key = _keys[index];
-        var val = _values[index];
-        Array.Copy(_keys, 0, _keys, 1, index);
-        Array.Copy(_values, 0, _values, 1, index);
-        _keys[0] = key;
-        _values[0] = val;
+        var keys = _keys.AsSpan();
+        var values = _values.AsSpan();
+
+        var key = keys[index];
+        var val = values[index];
+        keys.SliceFast(0, index).CopyTo(keys.SliceFast(1, index));
+        values.SliceFast(0, index).CopyTo(values.SliceFast(1, index));
+        keys[0] = key;
+        values[0] = val;
     }
 
     /// <summary>
@@ -83,6 +88,9 @@ public struct LightweightLRUCache<TK, TV>
     /// <param name="val"></param>
     public void Add(TK key, TV val)
     {
+        var keys = _keys.AsSpan();
+        var values = _values.AsSpan();
+
         // Is the cache empty?
         if (_count == 0)
         {
@@ -94,28 +102,28 @@ public struct LightweightLRUCache<TK, TV>
         else if (Find(key) is var i && i != -1)
         {
             Touch(i);
-            var oldVal = _values[0];
-            _values[0] = val;
+            var oldVal = values[0];
+            values[0] = val;
             (oldVal as IDisposable)?.Dispose();
         }
         // Is the cache full?
         else if (_count == _size)
         {
             // Evict the last item.
-            (_values[_size - 1] as IDisposable)?.Dispose();
-            Array.Copy(_keys, 0, _keys, 1, _count - 1);
-            Array.Copy(_values, 0, _values, 1, _count - 1);
-            _keys[0] = key;
-            _values[0] = val;
+            (values[_size - 1] as IDisposable)?.Dispose();
+            keys.SliceFast(0, _count - 1).CopyTo(keys.SliceFast(1, _count - 1));
+            values.SliceFast(0, _count - 1).CopyTo(values.SliceFast(1, _count - 1));
+            keys[0] = key;
+            values[0] = val;
         }
         // else add it to the front.
         else
         {
-            Array.Copy(_keys, 0, _keys, 1, _count);
-            Array.Copy(_values, 0, _values, 1, _count);
+            keys.SliceFast(0, _count).CopyTo(keys.SliceFast(1, _count));
+            values.SliceFast(0, _count).CopyTo(values.SliceFast(1, _count));
             _count++;
-            _keys[0] = key;
-            _values[0] = val;
+            keys[0] = key;
+            values[0] = val;
         }
     }
 }
