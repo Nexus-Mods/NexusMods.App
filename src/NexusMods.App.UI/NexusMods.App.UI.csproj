@@ -72,6 +72,8 @@
         <AvaloniaResource Include="Theme\ProgressBar.xaml" />
         <None Remove="Theme\ButtonStyles\Spine\DownloadButton.xaml" />
         <AvaloniaResource Include="Theme\ButtonStyles\Spine\DownloadButton.xaml" />
+        <None Remove="Theme\ButtonStyles\Hyperlink.xaml" />
+        <AvaloniaResource Include="Theme\ButtonStyles\Hyperlink.xaml" />
     </ItemGroup>
 
     <ItemGroup>

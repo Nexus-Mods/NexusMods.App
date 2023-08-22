@@ -1,0 +1,46 @@
+﻿<reactiveUi:ReactiveUserControl
+    x:TypeArguments="metricsOptIn:IMetricsOptInViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:base="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:metricsOptIn="clr-namespace:NexusMods.App.UI.Overlays.MetricsOptIn"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="NexusMods.App.UI.Overlays.MetricsOptIn.MetricsOptInView">
+   <base:MessageBoxBackground MinWidth="576" MaxWidth="576">
+        <base:MessageBoxBackground.TopContent>
+            <StackPanel Orientation="Vertical" Margin="16, 24, 24, 24" Spacing="16">
+
+                <TextBlock Classes="H6MontserratSemi"
+                           Text="Diagnostics and usage data"/>
+
+                <!-- Message -->
+                <StackPanel Spacing="8">
+                    <TextBlock TextWrapping="WrapWithOverflow"
+                               Text="Help us provide you with the best modding experience.&#x0a;&#x0a;With your permission, we will collect analytics information and send it to our team to help us improve quality and performance.&#x0a;&#x0a;This information is sent anonymously and will never be shared with a 3rd party."
+                               Classes="Body_MD_Normal UsesBrandWhiteColor" />
+
+                    <Button Classes="Hyperlink"><TextBlock Classes="Body_MD_Normal">More info about the data we track</TextBlock></Button>
+                </StackPanel>
+            </StackPanel>
+
+        </base:MessageBoxBackground.TopContent>
+
+        <base:MessageBoxBackground.BottomContent>
+
+            <!-- Buttons -->
+            <StackPanel Orientation="Horizontal" Margin="24" HorizontalAlignment="Right" Spacing="8">
+                <Button x:Name="AllowButton" Classes="Button Secondary" HorizontalAlignment="Stretch">
+                    <TextBlock Text="DENY" />
+                </Button>
+                <Button x:Name="DenyButton" Classes="Button Primary" HorizontalAlignment="Stretch">
+                    <TextBlock Text="ALLOW"/>
+                </Button>
+            </StackPanel>
+
+        </base:MessageBoxBackground.BottomContent>
+    </base:MessageBoxBackground>
+</reactiveUi:ReactiveUserControl>
+

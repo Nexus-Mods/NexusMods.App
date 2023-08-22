@@ -1,6 +1,7 @@
 ﻿using System.Windows.Input;
 using NexusMods.DataModel.GlobalSettings;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Overlays.MetricsOptIn;
 
@@ -9,6 +10,7 @@ namespace NexusMods.App.UI.Overlays.MetricsOptIn;
 /// </summary>
 public class MetricsOptInViewModel : AViewModel<IMetricsOptInViewModel>, IMetricsOptInViewModel
 {
+    [Reactive]
     public bool IsActive { get; set; }
     public ICommand Allow { get; }
     public ICommand Deny { get; }
