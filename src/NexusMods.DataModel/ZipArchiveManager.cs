@@ -54,7 +54,7 @@ public class ZipArchiveManager : IArchiveManager
         var id = guid.ToString();
         var distinct = backups.DistinctBy(d => d.Item2).ToArray();
 
-        using var buffer = MemoryPool<byte>.Shared.Rent();
+        using var buffer = MemoryPool<byte>.Shared.Rent((int)_chunkSize);
         var outputPath = _archiveLocations.First().Combine(id).AppendExtension(KnownExtensions.Tmp);
         {
             await using var archiveStream = outputPath.Create();
@@ -119,6 +119,7 @@ public class ZipArchiveManager : IArchiveManager
         foreach (var (src, dest) in files)
         {
             await using var srcStream = await GetFileStream(src, token);
+            dest.Parent.CreateDirectory();
             await using var destStream = dest.Create();
             await srcStream.CopyToAsync(destStream, token);
         }
@@ -129,7 +130,7 @@ public class ZipArchiveManager : IArchiveManager
     {
         var results = new Dictionary<Hash, byte[]>();
 
-        foreach (var hash in files)
+        foreach (var hash in files.Distinct())
         {
             await using var srcStream = await GetFileStream(hash, token);
             await using var destStream = new MemoryStream();
@@ -173,13 +174,13 @@ public class ZipArchiveManager : IArchiveManager
         public async Task ReadChunkAsync(Memory<byte> buffer, ulong chunkIndex, CancellationToken token = default)
         {
             await using var stream = _entries[chunkIndex].Open();
-            await stream.ReadExactlyAsync(buffer, token);
+            await stream.ReadAtLeastAsync(buffer, buffer.Length, false, token);
         }
 
         public void ReadChunk(Span<byte> buffer, ulong chunkIndex)
         {
             using var stream = _entries[chunkIndex].Open();
-            stream.ReadExactly(buffer);
+            stream.ReadAtLeast(buffer, buffer.Length, false);
         }
     }
 
