@@ -7,10 +7,10 @@ namespace NexusMods.DataModel.ChunkedStreams;
 /// A stream that reads data in chunks, caching the chunks in a cache and allowing
 /// for random access to the chunks presented as a stream.
 /// </summary>
-public class ChunkedStream : Stream
+public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
 {
     private ulong _position;
-    private readonly IChunkedStreamSource _source;
+    private readonly T _source;
     private LightweightLRUCache<ulong, IMemoryOwner<byte>> _cache;
     private readonly MemoryPool<byte> _pool;
 
@@ -19,7 +19,7 @@ public class ChunkedStream : Stream
     /// </summary>
     /// <param name="source"></param>
     /// <param name="capacity"></param>
-    public ChunkedStream(IChunkedStreamSource source, int capacity = 16)
+    public ChunkedStream(T source, int capacity = 16)
     {
         _position = 0;
         _source = source;
