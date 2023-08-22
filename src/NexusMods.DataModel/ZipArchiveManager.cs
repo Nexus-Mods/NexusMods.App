@@ -150,7 +150,7 @@ public class ZipArchiveManager : IArchiveManager
         var file = archivePath.Read();
         var archive = new ZipArchive(file, ZipArchiveMode.Read, true, System.Text.Encoding.UTF8);
 
-        return new ChunkedStream(new ChunkedArchiveStream(archive, hash));
+        return new ChunkedStream<ChunkedArchiveStream>(new ChunkedArchiveStream(archive, hash));
     }
 
     private class ChunkedArchiveStream : IChunkedStreamSource

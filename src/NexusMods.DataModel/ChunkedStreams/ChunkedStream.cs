@@ -33,14 +33,7 @@ public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
     }
 
 
-    /// <summary>
-    /// ChunkedStream is async only, so this will throw.
-    /// </summary>
-    /// <param name="buffer"></param>
-    /// <param name="offset"></param>
-    /// <param name="count"></param>
-    /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
+    /// <inheritdoc />
     public override int Read(byte[] buffer, int offset, int count)
     {
         if (_position >= _source.Size.Value)
@@ -69,6 +62,8 @@ public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
         return toRead;
     }
 
+
+    /// <inheritdoc />
     public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = new CancellationToken())
     {
         if (_position >= _source.Size.Value)

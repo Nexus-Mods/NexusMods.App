@@ -34,7 +34,7 @@ public class ChunkedReaderTests
     [Fact]
     public async Task CanCopyLargeStream()
     {
-        var chunked = new ChunkedStream(new ChunkedMemoryStream(_ms, 1024));
+        var chunked = new ChunkedStream<ChunkedMemoryStream>(new ChunkedMemoryStream(_ms, 1024));
         (await chunked.HashingCopyAsync(Stream.Null, CancellationToken.None)).Should().Be(_hash);
     }
 
@@ -51,7 +51,7 @@ public class ChunkedReaderTests
         var ms = new MemoryStream();
         ms.Position = 0;
         ms.Write("Hello World"u8);
-        var chunked = new ChunkedStream(new ChunkedMemoryStream(ms, chunkSize));
+        var chunked = new ChunkedStream<ChunkedMemoryStream>(new ChunkedMemoryStream(ms, chunkSize));
 
         var outStream = new MemoryStream();
         await chunked.CopyToAsync(outStream);
@@ -72,7 +72,7 @@ public class ChunkedReaderTests
         var ms = new MemoryStream();
         ms.Position = 0;
         ms.Write("Hello World"u8);
-        var chunked = new ChunkedStream(new ChunkedMemoryStream(ms, chunkSize));
+        var chunked = new ChunkedStream<ChunkedMemoryStream>(new ChunkedMemoryStream(ms, chunkSize));
 
         var outStream = new MemoryStream();
         chunked.CopyTo(outStream);
@@ -87,7 +87,7 @@ public class ChunkedReaderTests
     [InlineData(1024 * 1024, 1024)]
     public async Task CanSeekAsync(int position, int size)
     {
-        var chunked = new ChunkedStream(new ChunkedMemoryStream(_ms, 16));
+        var chunked = new ChunkedStream<ChunkedMemoryStream>(new ChunkedMemoryStream(_ms, 16));
         var buffer1 = new byte[size];
         chunked.Position = position;
         await chunked.ReadExactlyAsync(buffer1);
@@ -104,7 +104,7 @@ public class ChunkedReaderTests
     [InlineData(1024 * 1024, 1024)]
     public void CanSeek(int position, int size)
     {
-        var chunked = new ChunkedStream(new ChunkedMemoryStream(_ms, 16));
+        var chunked = new ChunkedStream<ChunkedMemoryStream>(new ChunkedMemoryStream(_ms, 16));
         var buffer1 = new byte[size];
         chunked.Position = position;
         chunked.ReadExactly(buffer1);
@@ -121,7 +121,7 @@ public class ChunkedReaderTests
         var ms = new MemoryStream();
         ms.Write(new byte[16]);
         ms.Position = 0;
-        var chunked = new ChunkedStream(new ChunkedMemoryStream(ms, 16));
+        var chunked = new ChunkedStream<ChunkedMemoryStream>(new ChunkedMemoryStream(ms, 16));
         chunked.Read(new byte[16]).Should().Be(16);
         chunked.Read(new byte[16]).Should().Be(0);
     }
