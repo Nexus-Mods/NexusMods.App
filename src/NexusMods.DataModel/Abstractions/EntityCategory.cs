@@ -107,9 +107,14 @@ public enum EntityCategory : byte
     /// See <see cref="Diagnostics"/>.
     /// </summary>
     Diagnostics = 14,
-    
+
     /// <summary>
     /// Downloader resume/suspend state.
     /// </summary>
     DownloadStates = 15,
+
+    /// <summary>
+    /// Global settings for things like metrics opt-in and the like.
+    /// </summary>
+    GlobalSettings = 16,
 }

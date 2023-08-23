@@ -5,6 +5,7 @@ using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.TopBar;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.Overlays;
+using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Hashing.xxHash64;
@@ -30,6 +31,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
         IOverlayController controller,
         IDownloadService downloadService,
         IArchiveInstaller archiveInstaller,
+        IMetricsOptInViewModel metricsOptInViewModel,
         LoadoutRegistry registry)
     {
         TopBar = topBarViewModel;
@@ -98,8 +100,11 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
                         right);
                     return right;
                 }).BindTo(this, vm => vm.RightContent);
+
+            metricsOptInViewModel.MaybeShow();
         });
     }
+
 
     private async Task HandleDownloadedAnalyzedArchive(IDownloadTask task, Hash analyzedHash, string modName)
     {

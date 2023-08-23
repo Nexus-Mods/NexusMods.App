@@ -54,7 +54,7 @@
         <Setter Property="LineHeight" Value="16.41" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
     </Style>
-    
+
     <Style Selector="TextBlock.H5MontserratSemi">
         <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
         <Setter Property="FontWeight" Value="600" />
@@ -62,13 +62,21 @@
         <Setter Property="LineHeight" Value="33" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
     </Style>
-    
+
     <Style Selector="TextBlock.H6MontserratSemi">
         <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
         <Setter Property="FontWeight" Value="600" />
         <Setter Property="FontSize" Value="18" />
         <Setter Property="LineHeight" Value="25" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+
+    <Style Selector="TextBlock.Body_MD_Normal">
+        <Setter Property="FontFamily" Value="{DynamicResource FontSecondaryRegular}" />
+        <Setter Property="FontWeight" Value="400" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="LineHeight" Value="12" />
     </Style>
 
     <Style Selector="TextBlock.CaptionMontserratSemi">
@@ -79,7 +87,7 @@
         <Setter Property="LetterSpacing" Value="0.6" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
     </Style>
-    
+
     <Style Selector="TextBlock.ButtonMontserratSemi">
         <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
         <Setter Property="FontWeight" Value="600" />
@@ -88,7 +96,7 @@
         <Setter Property="LetterSpacing" Value="0.7" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
     </Style>
-    
+
     <Style Selector="TextBlock.Body2RobotoRegular">
         <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
         <Setter Property="FontWeight" Value="400" />
@@ -96,7 +104,7 @@
         <Setter Property="LineHeight" Value="21" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
     </Style>
-    
+
     <Style Selector="TextBlock.Body2RobotoRegularBold">
         <Setter Property="FontFamily" Value="{DynamicResource FontSecondaryBold}" />
         <Setter Property="FontWeight" Value="700" />
@@ -104,8 +112,12 @@
         <Setter Property="LineHeight" Value="21" />
         <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryColor}" />
     </Style>
-    
+
     <Style Selector="TextBlock.UsesAccentLighterColor">
         <Setter Property="Foreground" Value="{DynamicResource BrandAccentLighter}" />
+    </Style>
+
+    <Style Selector="TextBlock.UsesBrandWhiteColor">
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
     </Style>
 </Styles>
