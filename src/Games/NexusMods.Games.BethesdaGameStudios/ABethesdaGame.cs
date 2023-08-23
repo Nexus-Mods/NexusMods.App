@@ -1,7 +1,9 @@
 ﻿using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.DataModel.Games.GameCapabilities.FomodCustomInstallPathCapability;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.Games.BethesdaGameStudios.Capabilities;
+using NexusMods.Games.Generic.Installers;
 
 namespace NexusMods.Games.BethesdaGameStudios;
 
@@ -11,16 +13,18 @@ namespace NexusMods.Games.BethesdaGameStudios;
 /// </summary>
 public abstract class ABethesdaGame : AGame
 {
-    private readonly GameCapabilityCollection _capabilities;
+    private readonly IModInstaller[] _installers;
 
     /// <inheritdoc />
-    protected ABethesdaGame(IEnumerable<IGameLocator> gameLocators) : base(gameLocators)
+    protected ABethesdaGame(IEnumerable<IGameLocator> gameLocators, IServiceProvider provider) : base(gameLocators)
     {
-        _capabilities = base.SupportedCapabilities;
-        // Configure FOMOD install to install to Data folder instead of GameRoot.
-        _capabilities.Register(AFomodCustomInstallPathCapability.CapabilityId, new FomodDataInstallPathCapability());
+        _installers = new IModInstaller[]
+        {
+            // Handles common installs to the game folder and other common directories like `Data`
+            GenericFolderMatchInstaller.Create(provider, BethesdaInstallFolderTargets.InstallFolderTargets()),
+        };
     }
 
     /// <inheritdoc />
-    public override GameCapabilityCollection SupportedCapabilities => _capabilities;
+    public override IEnumerable<IModInstaller> Installers => _installers;
 }
