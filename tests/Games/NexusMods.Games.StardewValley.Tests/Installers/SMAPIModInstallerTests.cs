@@ -17,30 +17,6 @@ public class SMAPIModInstallerTests : AModInstallerTest<StardewValley, SMAPIModI
 {
     public SMAPIModInstallerTests(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
-    [Fact]
-    public async Task Test_Priority_WithoutManifest()
-    {
-        var testFiles = new Dictionary<RelativePath, byte[]>();
-        await using var path = await CreateTestArchive(testFiles);
-
-        var priority = await GetPriorityFromInstaller(path);
-        priority.Should().Be(Priority.None);
-    }
-
-    [Fact]
-    public async Task Test_Priority_WithManifest()
-    {
-        var testFiles = new Dictionary<RelativePath, byte[]>
-        {
-            { "manifest.json", TestHelper.CreateManifest(out _) }
-        };
-
-        await using var path = await CreateTestArchive(testFiles);
-
-        var priority = await GetPriorityFromInstaller(path);
-        priority.Should().Be(Priority.Highest);
-    }
-
     [Theory]
     [InlineData("")]
     [InlineData("foo/bar/baz/")]

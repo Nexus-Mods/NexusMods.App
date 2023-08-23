@@ -38,6 +38,24 @@ public static class EnumerableExtensions
             yield return await fn(itm);
     }
 
+
+    /// <summary>
+    /// Returns the first item in the collection that matches the predicate or the default value of the type.
+    /// </summary>
+    /// <param name="coll"></param>
+    /// <param name="predicate"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public static async ValueTask<T> FirstOrDefault<T>(this IAsyncEnumerable<T> coll, Func<T, bool> predicate)
+    {
+        await foreach (var itm in coll)
+        {
+            if (!predicate(itm)) continue;
+            return itm;
+        }
+        return default!;
+    }
+
     /// <summary>
     /// Reduces a <see cref="IAsyncEnumerable{T}"/> of <see cref="KeyValuePair{TKey,TValue}"/> into a <see cref="Dictionary{TKey,TValue}"/>.
     /// </summary>
@@ -53,7 +71,7 @@ public static class EnumerableExtensions
 
         return dict;
     }
-    
+
     /// <summary>
     /// Reduces a <see cref="IEnumerable{T}"/> of <see cref="KeyValuePair{TKey,TValue}"/> into a <see cref="Dictionary{TKey,TValue}"/>.
     /// </summary>

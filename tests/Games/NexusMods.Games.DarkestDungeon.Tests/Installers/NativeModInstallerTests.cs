@@ -17,30 +17,6 @@ public class NativeModInstallerTests : AModInstallerTest<DarkestDungeon, NativeM
 {
     public NativeModInstallerTests(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
-    [Fact]
-    public async Task Test_Priority_WithoutProjectFile()
-    {
-        var testFiles = new Dictionary<RelativePath, byte[]>();
-        await using var path = await CreateTestArchive(testFiles);
-
-        var priority = await GetPriorityFromInstaller(path);
-        priority.Should().Be(Priority.None);
-    }
-
-    [Fact]
-    public async Task Test_Priority_WithProjectFile()
-    {
-        var testFiles = new Dictionary<RelativePath, byte[]>
-        {
-            { "project.xml", CreateModProject(out _) }
-        };
-
-        await using var path = await CreateTestArchive(testFiles);
-
-        var priority = await GetPriorityFromInstaller(path);
-        priority.Should().Be(Priority.Highest);
-    }
-
     [Theory]
     [InlineData("")]
     [InlineData("foo/bar/baz/")]

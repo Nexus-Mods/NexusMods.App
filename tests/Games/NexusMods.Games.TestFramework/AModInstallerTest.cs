@@ -61,24 +61,6 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     }
 
     /// <summary>
-    /// Runs the <typeparamref name="TModInstaller"/> and returns the priority
-    /// for the given archive.
-    /// </summary>
-    /// <param name="path">Path to the archive to extract.</param>
-    /// <returns></returns>
-    protected async Task<Priority> GetPriorityFromInstaller(AbsolutePath path)
-    {
-        var analyzedArchive = await AnalyzeArchive(path);
-
-        var priority = ModInstaller.GetPriority(
-            GameInstallation,
-            analyzedArchive.Contents);
-
-        return priority;
-    }
-
-
-    /// <summary>
     /// Runs <typeparamref name="TModInstaller"/> and returns all mods to be installed.
     /// </summary>
     /// <param name="archivePath"></param>
@@ -256,16 +238,6 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
         BuildAndInstall(Priority expectedPriority, IEnumerable<ModInstallerExampleFile> files)
     {
         var description = BuildArchiveDescription(files);
-
-        var priority = ModInstaller.GetPriority(GameInstallation, description);
-
-        if (expectedPriority == Priority.None)
-        {
-            priority.Should().Be(expectedPriority, "because the installer doesn't support these files");
-            return Array.Empty<(ulong Hash, GameFolderType FolderType, string Path)>();
-        }
-
-        priority.Should().Be(expectedPriority, "because the priority should be correct");
 
         var mods = (await ModInstaller.GetModsAsync(
             GameInstallation,
