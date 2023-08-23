@@ -9,7 +9,7 @@ namespace NexusMods.App.UI.Overlays;
 public class OverlayController : IOverlayController
 {
     /// <summary>
-    /// The current stack of overlays. The overlays 
+    /// The current stack of overlays. The overlays
     /// </summary>
     private Queue<SetOverlayItem> Overlays { get; } = new();
 
@@ -24,7 +24,7 @@ public class OverlayController : IOverlayController
     {
         return _currentOverlayViewModel;
     }
-    
+
     private void QueueOrSetOverlayViewModel(SetOverlayItem vm)
     {
         if (_currentOverlayViewModel != null)
@@ -34,7 +34,7 @@ public class OverlayController : IOverlayController
             SetOverlayViewModel(vm);
         }
     }
-    
+
     private void SetOverlayViewModel(SetOverlayItem? vm)
     {
         _started.OnNext(vm);
@@ -50,7 +50,7 @@ public class OverlayController : IOverlayController
         await tcs.Task;
         return vm.DialogResult;
     }
-    
+
     /// <summary>
     /// Sets the overlay to display to the screen.
     /// </summary>
@@ -58,9 +58,12 @@ public class OverlayController : IOverlayController
     /// <param name="tcs">Signals completion. This field is optional for tests only.</param>
     public void SetOverlayContent(SetOverlayItem item, TaskCompletionSource<bool>? tcs = null)
     {
+        // Make sure IsActive is true, if it's initialized to false it breaks the overlay.
+        item.VM.IsActive = true;
+
         // Register overlay close.
         var unsubscribeToken = new CancellationTokenSource();
-        
+
         // Note(Sewer): This throws a warning because vm is a POCO that doesn't emit change notification.
         // This is however irrelevant because VM is member of record, it is readonly; the element inside successfully emits
         // change notifications. I just don't know how to suppress warning here from WhenAnyValue
@@ -68,20 +71,20 @@ public class OverlayController : IOverlayController
             .OnUI()
             .Subscribe(b =>
             {
-                if (b) 
+                if (b)
                     return;
-                
+
                 // On unsubscribe (IsActive == false), pop next overlay from stack.
                 SetOverlayViewModel(null);
                 if (Overlays.TryDequeue(out var result))
                     QueueOrSetOverlayViewModel(result);
-                
+
                 unsubscribeToken.Cancel();
-                
+
                 // Complete the task if it exists.
                 tcs?.TrySetResult(true);
             }, unsubscribeToken.Token);
-        
+
         // Set the new overlay.
         QueueOrSetOverlayViewModel(item);
     }

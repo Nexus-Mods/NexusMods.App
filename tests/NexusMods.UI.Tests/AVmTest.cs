@@ -2,6 +2,7 @@
 using NexusMods.App.UI;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
+using NexusMods.DataModel.GlobalSettings;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.Paths;
@@ -29,6 +30,7 @@ where TVm : IViewModelInterface
 
     protected IArchiveAnalyzer ArchiveAnalyzer { get; }
     protected IArchiveInstaller ArchiveInstaller { get; }
+    protected GlobalSettingsManager GlobalSettingsManager { get; }
 
 
     private LoadoutId? _loadoutId;
@@ -47,6 +49,7 @@ where TVm : IViewModelInterface
         FileSystem = provider.GetRequiredService<IFileSystem>();
         ArchiveAnalyzer = provider.GetRequiredService<IArchiveAnalyzer>();
         ArchiveInstaller = provider.GetRequiredService<IArchiveInstaller>();
+        GlobalSettingsManager = provider.GetRequiredService<GlobalSettingsManager>();
     }
 
 

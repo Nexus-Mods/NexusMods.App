@@ -72,6 +72,8 @@
         <AvaloniaResource Include="Theme\ProgressBar.xaml" />
         <None Remove="Theme\ButtonStyles\Spine\DownloadButton.xaml" />
         <AvaloniaResource Include="Theme\ButtonStyles\Spine\DownloadButton.xaml" />
+        <None Remove="Theme\ButtonStyles\Hyperlink.xaml" />
+        <AvaloniaResource Include="Theme\ButtonStyles\Hyperlink.xaml" />
     </ItemGroup>
 
     <ItemGroup>
@@ -280,6 +282,12 @@
         </Compile>
         <Compile Update="Overlays\Generic\MessageBox\OkCancel\MessageBoxOkCancelViewModel.cs">
           <DependentUpon>IMessageBoxOkCancelViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Overlays\MetricsOptIn\MetricsOptInDesignerViewModel.cs">
+          <DependentUpon>IMetricsOptInViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Overlays\MetricsOptIn\MetricsOptInViewModel.cs">
+          <DependentUpon>IMetricsOptInViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Resources\Language.Designer.cs">
           <DesignTime>True</DesignTime>

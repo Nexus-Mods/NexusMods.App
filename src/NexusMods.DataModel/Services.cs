@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Diagnostics;
+using NexusMods.DataModel.GlobalSettings;
 using NexusMods.DataModel.Interprocess;
 using NexusMods.DataModel.Interprocess.Jobs;
 using NexusMods.DataModel.JsonConverters;
@@ -68,6 +69,7 @@ public static class Services
         coll.AddSingleton<IDirectoryIndexer, DirectoryIndexer>();
         coll.AddSingleton<LoadoutSynchronizer>();
         coll.AddSingleton<FileHashCache>();
+        coll.AddSingleton<GlobalSettingsManager>();
         coll.AddSingleton<IArchiveAnalyzer, ArchiveAnalyzer>();
         coll.AddSingleton<IArchiveInstaller, ArchiveInstaller>();
         coll.AddSingleton<IToolManager, ToolManager>();
