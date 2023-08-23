@@ -111,6 +111,7 @@ public class AdvancedHttpDownloaderTests
     }
 
     [Fact]
+    [Trait("FlakeyTest", "True")]
     public async Task CanDownloadFromUnreliableSource()
     {
         await using var path = _temporaryFileManager.CreateFile();
