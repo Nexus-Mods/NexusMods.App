@@ -103,7 +103,7 @@ public class ArchiveInstaller : IArchiveInstaller
                         return (Array.Empty<ModInstallerResult>(), modInstaller);
                     }
                 })
-                .FirstOrDefault(result => result.Item1.Any(x => x.Id.Equals(baseMod.Id))));
+                .FirstOrDefault(result => result.Item1.Any()));
 
 
             if (!results.Any())
