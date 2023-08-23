@@ -67,17 +67,17 @@ public class NxArchiveManager : IArchiveManager
         var guid = Guid.NewGuid();
         var id = guid.ToString();
         var outputPath = _archiveLocations.First().Combine(id).AppendExtension(KnownExtensions.Tmp);
-        
+
         await using (var outputStream = outputPath.Create()){
             builder.WithOutput(outputStream);
             builder.Build();
         }
-        
+
         foreach (var stream in streams)
             await stream.DisposeAsync();
 
         var finalPath = outputPath.ReplaceExtension(KnownExtensions.Nx);
-        
+
         await outputPath.MoveToAsync(finalPath, token: token);
         await using var os = finalPath.Read();
         var unpacker = new NxUnpacker(new FromStreamProvider(os));
@@ -105,7 +105,7 @@ public class NxArchiveManager : IArchiveManager
                     File = finalPath.FileName,
                     FileEntryData = buffer.ToArray()
                 };
-                
+
                 // TODO: Consider a bulk-put operation here
                 _store.Put(dbId, dbEntry);
             }
@@ -124,12 +124,12 @@ public class NxArchiveManager : IArchiveManager
     public async Task ExtractFiles(IEnumerable<(Hash Src, AbsolutePath Dest)> files, CancellationToken token = default)
     {
         var grouped = files.Distinct()
-            .Select(input => TryGetLocation(input.Src, out var archivePath, out var fileEntry) 
-                ? (true, Hash:input.Src, ArchivePath:archivePath, FileEntry:fileEntry, input.Dest) 
+            .Select(input => TryGetLocation(input.Src, out var archivePath, out var fileEntry)
+                ? (true, Hash:input.Src, ArchivePath:archivePath, FileEntry:fileEntry, input.Dest)
                 : default)
             .Where(x => x.Item1)
             .ToLookup(l => l.ArchivePath, l => (l.Hash, l.FileEntry, l.Dest));
-        
+
         if (grouped[default].Any())
             throw new Exception($"Missing archive for {grouped[default].First().Hash.ToHex()}");
 
@@ -167,14 +167,14 @@ public class NxArchiveManager : IArchiveManager
     public Task<IDictionary<Hash, byte[]>> ExtractFiles(IEnumerable<Hash> files, CancellationToken token = default)
     {
         var results = new Dictionary<Hash, byte[]>();
-        
+
         var grouped = files.Distinct()
-            .Select(hash => TryGetLocation(hash, out var archivePath, out var fileEntry) 
-                ? (true, Hash:hash, ArchivePath:archivePath, FileEntry:fileEntry) 
+            .Select(hash => TryGetLocation(hash, out var archivePath, out var fileEntry)
+                ? (true, Hash:hash, ArchivePath:archivePath, FileEntry:fileEntry)
                 : default)
             .Where(x => x.Item1)
             .ToLookup(l => l.ArchivePath, l => (l.Hash, l.FileEntry));
-        
+
         if (grouped[default].Any())
             throw new Exception($"Missing archive for {grouped[default].First().Hash.ToHex()}");
 
@@ -187,7 +187,7 @@ public class NxArchiveManager : IArchiveManager
             var unpacker = new NxUnpacker(provider);
 
             var infos = group.Select(entry => (entry.Hash, new OutputArrayProvider("", entry.FileEntry))).ToList();
-            
+
             unpacker.ExtractFiles(infos.Select(o => (IOutputDataProvider)o.Item2).ToArray(), settings);
             foreach (var info in infos)
             {
@@ -196,6 +196,11 @@ public class NxArchiveManager : IArchiveManager
         }
 
         return Task.FromResult<IDictionary<Hash, byte[]>>(results);
+    }
+
+    public Task<Stream> GetFileStream(Hash hash, CancellationToken token = default)
+    {
+        throw new NotImplementedException();
     }
 
     private unsafe bool TryGetLocation(Hash hash, out AbsolutePath archivePath, out FileEntry fileEntry)
@@ -214,7 +219,7 @@ public class NxArchiveManager : IArchiveManager
                 {
                     var reader = new LittleEndianReader(ptr);
                     FileEntry tmpEntry = default;
-                    
+
                     tmpEntry.FromReaderV1(ref reader);
                     fileEntry = tmpEntry;
                     return true;

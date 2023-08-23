@@ -85,6 +85,11 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
             throw new NotImplementedException();
         }
 
+        public Task<Stream> GetFileStream(Hash hash, CancellationToken token = default)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task ExtractFiles(IEnumerable<(Hash Src, IStreamFactory Dest)> files, CancellationToken token = default)
         {
             foreach (var entry in files)

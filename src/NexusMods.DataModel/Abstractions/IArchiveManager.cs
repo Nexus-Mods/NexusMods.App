@@ -24,17 +24,17 @@ public interface IArchiveManager
     /// <param name="backups"></param>
     /// <param name="token"></param>
     Task BackupFiles(IEnumerable<(IStreamFactory, Hash, Size)> backups, CancellationToken token = default);
-    
-    
+
+
     /// <summary>
     /// Extract the given files to the given disk locations, provide as a less-abstract interface incase
-    /// the extractor needs more direct access (such as memory mapping). 
+    /// the extractor needs more direct access (such as memory mapping).
     /// </summary>
     /// <param name="files"></param>
     /// <param name="token"></param>
     /// <returns></returns>
     Task ExtractFiles(IEnumerable<(Hash Src, AbsolutePath Dest)> files, CancellationToken token = default);
-    
+
     /// <summary>
     /// Extract the given files from archives.
     /// </summary>
@@ -42,4 +42,12 @@ public interface IArchiveManager
     /// <param name="token"></param>
     /// <returns></returns>
     Task<IDictionary<Hash, byte[]>> ExtractFiles(IEnumerable<Hash> files, CancellationToken token = default);
+
+    /// <summary>
+    /// Gets a read-only seekable stream for the given file.
+    /// </summary>
+    /// <param name="hash"></param>
+    /// <param name="token"></param>
+    /// <returns></returns>
+    Task<Stream> GetFileStream(Hash hash, CancellationToken token = default);
 }
