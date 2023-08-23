@@ -41,6 +41,7 @@ public class IngestChangesTest : ALoadoutSynrchonizerTest<IngestChangesTest>
     }
 
     [Fact]
+    [Trait("FlakeyTest", "True")]
     public async Task RemovedFilesAreRemoved()
     {
         var loadout = await CreateApplyPlanTestLoadout();
