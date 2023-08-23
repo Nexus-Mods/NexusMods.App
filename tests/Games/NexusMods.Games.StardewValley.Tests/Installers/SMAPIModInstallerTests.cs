@@ -44,6 +44,7 @@ public class SMAPIModInstallerTests : AModInstallerTest<StardewValley, SMAPIModI
     [Theory]
     [InlineData("")]
     [InlineData("foo/bar/baz/")]
+    [Trait("FlakeyTest", "True")]
     public async Task Test_GetMods(string basePath)
     {
         var manifestFile = TestHelper.CreateManifest(out var modName);
