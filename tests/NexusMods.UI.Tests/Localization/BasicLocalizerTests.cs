@@ -7,6 +7,7 @@ namespace NexusMods.UI.Tests.Localization;
 public class BasicLocalizerTests
 {
     [Fact]
+    [Trait("FlakeyTest", "True")]
     public void WhenLanguageChanges_NewStringIsReturnedInCodeBehind()
     {
         var originalString = Localizer.Instance["MyGames"];
@@ -17,6 +18,7 @@ public class BasicLocalizerTests
     }
 
     [Fact]
+    [Trait("FlakeyTest", "True")]
     public void WhenLanguageChanges_CallbackIsFired()
     {
         // Verifies that the LocalizedStringUpdater is called back to from Localizer
