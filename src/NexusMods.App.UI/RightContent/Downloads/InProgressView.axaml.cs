@@ -1,4 +1,4 @@
-﻿using System.Reactive.Disposables;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
 using DynamicData.Binding;
@@ -78,7 +78,16 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
                 .Subscribe(_ =>
                 {
                     var vm = ViewModel!;
-                    BoldMinutesRemainingTextBlock.Text = StringFormatters.ToTimeRemainingShort(vm.SecondsRemaining);
+                    if (vm.SecondsRemaining == 0)
+                    {
+                        BoldMinutesRemainingTextBlock.Text = "";
+                        MinutesRemainingTextBlock.Text = "";
+                    }
+                    else
+                    {
+                        BoldMinutesRemainingTextBlock.Text = StringFormatters.ToTimeRemainingShort(vm.SecondsRemaining);
+                        MinutesRemainingTextBlock.Text = "Remaining";
+                    }
                 })
                 .DisposeWith(d);
 
