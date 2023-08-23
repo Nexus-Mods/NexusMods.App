@@ -81,7 +81,12 @@ public class SimpleOverlayModInstaller : IModInstaller
         Hash srcArchiveHash,
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        var root = RootFolder(archiveFiles).First();
+        var roots = RootFolder(archiveFiles);
+
+        if (roots.Count == 0)
+            yield break;
+
+        var root = roots.First();
 
         var modFiles = archiveFiles
             .Where(kv => !Helpers.IgnoreExtensions.Contains(kv.Key.Extension))

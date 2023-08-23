@@ -173,10 +173,10 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     /// <param name="expectedPriority"></param>
     /// <param name="files"></param>
     /// <returns></returns>
-    protected Task<IEnumerable<(ulong Hash, GameFolderType FolderType, string Path)>> BuildAndInstall(Priority expectedPriority,
+    protected Task<IEnumerable<(ulong Hash, GameFolderType FolderType, string Path)>> BuildAndInstall(
         params (ulong Hash, string Name)[] files)
     {
-        return BuildAndInstall(expectedPriority, files.Select(f =>
+        return BuildAndInstall(files.Select(f =>
             new ModInstallerExampleFile()
             {
                 Name = f.Name,
@@ -194,10 +194,10 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     /// <param name="expectedPriority"></param>
     /// <param name="files"></param>
     /// <returns></returns>
-    protected Task<IEnumerable<(ulong Hash, GameFolderType FolderType, string Path)>> BuildAndInstall(Priority expectedPriority,
+    protected Task<IEnumerable<(ulong Hash, GameFolderType FolderType, string Path)>> BuildAndInstall(
         params (ulong Hash, string Name, IFileAnalysisData? Data)[] files)
     {
-        return BuildAndInstall(expectedPriority, files.Select(f =>
+        return BuildAndInstall(files.Select(f =>
             new ModInstallerExampleFile()
             {
                 Name = f.Name,
@@ -218,7 +218,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     protected Task<IEnumerable<(ulong Hash, GameFolderType FolderType, string Path)>> BuildAndInstall(Priority expectedPriority,
         params (ulong Hash, string Name, FileType FileType)[] files)
     {
-        return BuildAndInstall(expectedPriority, files.Select(f => new ModInstallerExampleFile()
+        return BuildAndInstall(files.Select(f => new ModInstallerExampleFile()
         {
            Name = f.Name,
            Hash = f.Hash,
@@ -231,11 +231,10 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     /// the metadata of the files to extract. Supplied FileTypes are assigned to the
     /// generated AnalyzedFile instances.
     /// </summary>
-    /// <param name="expectedPriority"></param>
     /// <param name="files"></param>
     /// <returns></returns>
     protected async Task<IEnumerable<(ulong Hash, GameFolderType FolderType, string Path)>>
-        BuildAndInstall(Priority expectedPriority, IEnumerable<ModInstallerExampleFile> files)
+        BuildAndInstall(IEnumerable<ModInstallerExampleFile> files)
     {
         var description = BuildArchiveDescription(files);
 
@@ -244,6 +243,9 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
             ModId.New(),
             Hash.From(0xDEADBEEF),
             description)).ToArray();
+
+        if (mods.Length == 0)
+            return Array.Empty<(ulong Hash, GameFolderType FolderType, string Path)>();
 
         mods.Should().ContainSingle();
         var contents = mods.First().Files;
