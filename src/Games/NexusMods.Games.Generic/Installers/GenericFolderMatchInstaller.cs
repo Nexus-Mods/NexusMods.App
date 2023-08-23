@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
@@ -25,58 +26,38 @@ namespace NexusMods.Games.Generic.Installers;
 public class GenericFolderMatchInstaller : IModInstaller
 {
     private readonly ILogger<GenericFolderMatchInstaller> _logger;
+    private readonly IEnumerable<InstallFolderTarget> _installFolderTargets;
 
+    /// <summary>
+    /// Creates a new instance of <see cref="GenericFolderMatchInstaller"/> with the provided <paramref name="installFolderTargets"/>.
+    /// </summary>
+    /// <param name="provider"></param>
+    /// <param name="installFolderTargets"></param>
+    /// <returns></returns>
+    public static GenericFolderMatchInstaller Create(IServiceProvider provider, IEnumerable<InstallFolderTarget> installFolderTargets)
+    {
+        return new GenericFolderMatchInstaller(provider.GetRequiredService<ILogger<GenericFolderMatchInstaller>>(), installFolderTargets);
+    }
 
-    public GameCapabilityId RequiredGameCapability => AFolderMatchInstallerCapability.CapabilityId;
-
-    public GenericFolderMatchInstaller(ILogger<GenericFolderMatchInstaller> logger)
+    private GenericFolderMatchInstaller(ILogger<GenericFolderMatchInstaller> logger, IEnumerable<InstallFolderTarget> installFolderTargets)
     {
         _logger = logger;
+        _installFolderTargets = installFolderTargets;
     }
 
     #region IModInstaller
-
-    public Priority GetPriority(GameInstallation installation,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
-    {
-
-
-        if (!installation.Game.SupportedCapabilities.TryGetCapability<AFolderMatchInstallerCapability>(
-                RequiredGameCapability, out var folderMatchInstallerCapability))
-        {
-            return Priority.None;
-        }
-
-        var installFolderTargets = folderMatchInstallerCapability!.InstallFolderTargets();
-
-        var filePaths = archiveFiles.Keys;
-
-        if (filePaths.Any(filePath => PathMatchesAnyTarget(filePath, installFolderTargets)))
-        {
-            return Priority.Normal;
-        }
-
-        return Priority.None;
-    }
 
     public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(GameInstallation gameInstallation, ModId baseModId,
         Hash srcArchiveHash,
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles, CancellationToken cancellationToken = default)
     {
-        if (!gameInstallation.Game.SupportedCapabilities.TryGetCapability<AFolderMatchInstallerCapability>(
-                RequiredGameCapability, out var folderMatchInstallerCapability))
-        {
-            throw new NotSupportedException(
-                $"Game {gameInstallation.Game.Name} does not support GenericFolderMatchInstaller capability.");
-        }
 
-        var installFolderTargets = folderMatchInstallerCapability!.InstallFolderTargets();
 
         List<RelativePath> missedFiles = new();
 
         List<FromArchive> modFiles = new();
 
-        foreach (var target in installFolderTargets)
+        foreach (var target in _installFolderTargets)
         {
             modFiles.AddRange(GetModFilesForTarget(archiveFiles, target, missedFiles));
             if (modFiles.Any())

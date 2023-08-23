@@ -56,7 +56,7 @@ public abstract class AGame : IGame
     public virtual GameCapabilityCollection SupportedCapabilities { get; } = new();
 
     /// <inheritdoc />
-    public IEnumerable<IModInstaller> Installers { get; } = Array.Empty<IModInstaller>();
+    public virtual IEnumerable<IModInstaller> Installers { get; } = Array.Empty<IModInstaller>();
 
     private Version GetVersion(GameLocatorResult installation)
     {

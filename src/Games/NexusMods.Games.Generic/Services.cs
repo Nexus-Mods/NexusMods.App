@@ -13,7 +13,6 @@ public static class Services
     public static IServiceCollection AddGenericGameSupport(this IServiceCollection services)
     {
         services.AddSingleton<IFileAnalyzer, IniAnalzyer>();
-        services.AddSingleton<IModInstaller, GenericFolderMatchInstaller>();
         services.AddSingleton<IniAnalysisData>();
         services.AddSingleton<ITypeFinder, TypeFinder>();
         return services;

@@ -17,8 +17,6 @@ public abstract class ABethesdaGame : AGame
     protected ABethesdaGame(IEnumerable<IGameLocator> gameLocators) : base(gameLocators)
     {
         _capabilities = base.SupportedCapabilities;
-        // Support for installing simple Data and GameRoot level mods.
-        _capabilities.Register(AFolderMatchInstallerCapability.CapabilityId, new BethesdaFolderMatchInstallerCapability());
         // Configure FOMOD install to install to Data folder instead of GameRoot.
         _capabilities.Register(AFomodCustomInstallPathCapability.CapabilityId, new FomodDataInstallPathCapability());
     }

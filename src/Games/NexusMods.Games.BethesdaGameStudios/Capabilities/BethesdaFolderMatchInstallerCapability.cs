@@ -6,13 +6,13 @@ namespace NexusMods.Games.BethesdaGameStudios.Capabilities;
 /// <summary>
 /// Capability to support installing simple Data and GameRoot level mods for Bethesda games.
 /// </summary>
-public class BethesdaFolderMatchInstallerCapability : AFolderMatchInstallerCapability
+public static class BethesdaInstallFolderTargets
 {
-    protected static readonly RelativePath DataFolder = new RelativePath("data");
+    static readonly RelativePath DataFolder = new("data");
 
     // TODO: make this only contain values common for all bethesda games, let games add their own values
     // find good way to do that
-    protected static readonly InstallFolderTarget DataInstallFolderTarget = new()
+    static readonly InstallFolderTarget DataInstallFolderTarget = new()
     {
         DestinationGamePath = new GamePath(GameFolderType.Game, DataFolder),
 
@@ -67,7 +67,7 @@ public class BethesdaFolderMatchInstallerCapability : AFolderMatchInstallerCapab
         }
     };
 
-    protected static readonly InstallFolderTarget GameRootInstallFolderTarget = new()
+    static readonly InstallFolderTarget GameRootInstallFolderTarget = new()
     {
         DestinationGamePath = new GamePath(GameFolderType.Game, RelativePath.Empty),
 
@@ -99,7 +99,7 @@ public class BethesdaFolderMatchInstallerCapability : AFolderMatchInstallerCapab
     private static readonly InstallFolderTarget[] Targets = { GameRootInstallFolderTarget };
 
     /// <inheritdoc />
-    public override IEnumerable<InstallFolderTarget> InstallFolderTargets()
+    public static IEnumerable<InstallFolderTarget> InstallFolderTargets()
     {
         return Targets;
     }

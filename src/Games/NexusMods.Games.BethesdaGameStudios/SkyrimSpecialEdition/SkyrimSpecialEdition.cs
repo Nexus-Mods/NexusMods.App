@@ -2,7 +2,10 @@ using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.StreamFactories;
+using NexusMods.Games.BethesdaGameStudios.Capabilities;
+using NexusMods.Games.Generic.Installers;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.BethesdaGameStudios;
@@ -16,12 +19,19 @@ public class SkyrimSpecialEdition : ABethesdaGame, ISteamGame, IGogGame, IXboxGa
     // ReSharper restore InconsistentNaming
 
     public static HashSet<Extension> PluginExtensions = new() { ESL, ESM, ESP };
+    private readonly IModInstaller[] _installers;
     public static GameDomain StaticDomain => GameDomain.From("skyrimspecialedition");
     public override string Name => "Skyrim Special Edition";
     public override GameDomain Domain => StaticDomain;
     public override GamePath GetPrimaryFile(GameStore store) => new(GameFolderType.Game, "SkyrimSE.exe");
 
-    public SkyrimSpecialEdition(IEnumerable<IGameLocator> gameLocators) : base(gameLocators) { }
+    public SkyrimSpecialEdition(IEnumerable<IGameLocator> gameLocators, IServiceProvider provider) : base(gameLocators)
+    {
+        _installers = new IModInstaller[]
+        {
+            GenericFolderMatchInstaller.Create(provider, BethesdaInstallFolderTargets.InstallFolderTargets()),
+        };
+    }
 
     protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(
         IFileSystem fileSystem,
@@ -68,4 +78,7 @@ public class SkyrimSpecialEdition : ABethesdaGame, ISteamGame, IGogGame, IXboxGa
     public override IStreamFactory GameImage =>
         new EmbededResourceStreamFactory<SkyrimSpecialEdition>(
             "NexusMods.Games.BethesdaGameStudios.Resources.SkyrimSpecialEdition.game_image.png");
+
+
+    public override IEnumerable<IModInstaller> Installers => _installers;
 }
