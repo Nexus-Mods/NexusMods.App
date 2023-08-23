@@ -106,7 +106,7 @@ public class ArchiveInstaller : IArchiveInstaller
                 .FirstOrDefault(result => result.Item1.Any()));
 
 
-            if (!results.Any())
+            if (results == null || !results.Any())
             {
                 _logger.LogError("No Installer found for {Name}", archiveName);
                 _registry.Alter(cursor, $"Failed to install mod {archiveName}",m => m! with { Status = ModStatus.Failed });

@@ -1,7 +1,10 @@
 using JetBrains.Annotations;
 using NexusMods.Common;
+using NexusMods.DataModel;
 using NexusMods.DataModel.Games;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.StreamFactories;
+using NexusMods.Games.StardewValley.Installers;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.StardewValley;
@@ -11,6 +14,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
 {
     private readonly IOSInformation _osInformation;
     private readonly IFileSystem _fileSystem;
+    private readonly FileHashCache _hashCache;
 
     public IEnumerable<uint> SteamIds => new[] { 413150u };
     public IEnumerable<long> GogIds => new long[] { 1453375253 };
@@ -24,10 +28,12 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
     public StardewValley(
         IOSInformation osInformation,
         IFileSystem fileSystem,
-        IEnumerable<IGameLocator> gameLocators) : base(gameLocators)
+        IEnumerable<IGameLocator> gameLocators,
+        FileHashCache hashCache) : base(gameLocators)
     {
         _osInformation = osInformation;
         _fileSystem = fileSystem;
+        _hashCache = hashCache;
     }
 
     public override GamePath GetPrimaryFile(GameStore store)
@@ -80,4 +86,11 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
     public override IStreamFactory Icon => new EmbededResourceStreamFactory<StardewValley>("NexusMods.Games.StardewValley.Resources.icon.png");
 
     public override IStreamFactory GameImage => new EmbededResourceStreamFactory<StardewValley>("NexusMods.Games.StardewValley.Resources.game_image.jpg");
+
+    public override IEnumerable<IModInstaller> Installers => new IModInstaller[]
+    {
+        new SMAPIInstaller(_osInformation, _hashCache),
+        new SMAPIModInstaller()
+    };
+
 }
