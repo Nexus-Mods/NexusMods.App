@@ -42,6 +42,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
     }
 
     [Fact]
+    [Trait("FlakeyTest", "True")]
     public async Task CanInstallAndApplyMostPopularMods()
     {
         const int skseModId = 30379;

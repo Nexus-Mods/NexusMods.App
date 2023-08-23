@@ -19,6 +19,7 @@ public class SkyrimLegendaryEditionTests : AGameTest<SkyrimLegendaryEdition>
     }
 
     [Fact]
+    [Trait("FlakeyTest", "True")]
     public async Task CanInstallAndApplyMostPopularMods()
     {
 

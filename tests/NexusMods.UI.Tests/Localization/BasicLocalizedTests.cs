@@ -14,6 +14,8 @@ public class BasicLocalizedTests
     }
 
     [Fact]
+    [Trait("FlakeyTest", "True")]
+
     public void ProvideValue_NewStringIsReturnedInCodeBehind()
     {
         var localized = new LocalizedExtension("MyGames");
@@ -26,6 +28,7 @@ public class BasicLocalizedTests
     }
 
     [Fact]
+    [Trait("FlakeyTest", "True")]
     public void ProvideValue_NewStringIsReturnedViaObservable_WhenLanguageIsChanged()
     {
         var localized = new LocalizedExtension("MyGames");
