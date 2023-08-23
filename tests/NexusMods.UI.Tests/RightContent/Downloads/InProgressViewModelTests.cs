@@ -203,7 +203,8 @@ public class InProgressViewModelTests : AViewTest<InProgressView, InProgressDesi
         
             // Check the total completion is correct with 0 elements.
             var originalTimeRemaining = StringFormatters.ToTimeRemainingShort(ViewModel.SecondsRemaining);
-            View.BoldMinutesRemainingTextBlock.Text.Should().Be(originalTimeRemaining);
+            // Time remaining text is empty when no downloads occuring
+            View.BoldMinutesRemainingTextBlock.Text.Should().Be("");
             
             // Check the total completion is correct with 1 element.
             ViewModel.AddDownload(new DownloadTaskDesignViewModel()
