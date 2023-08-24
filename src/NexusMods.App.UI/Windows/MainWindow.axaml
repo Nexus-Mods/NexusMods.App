@@ -23,7 +23,7 @@
         <windows:MainWindowViewModel />
     </Design.DataContext>
 
-    <Grid ColumnDefinitions="72, 216, *" RowDefinitions="62, *">
+    <Grid ColumnDefinitions="72, 216, *" RowDefinitions="62, *, 48">
         <Border
             Background="#CC2A2C2B"
             Grid.Column="0"
@@ -69,6 +69,12 @@
             x:Name="LeftMenuViewModelHost" />
 
         <reactiveUi:ViewModelViewHost Grid.Column="2" Grid.Row="1" x:Name="RightContent" />
+
+        <reactiveUi:ViewModelViewHost
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            Grid.Row="2"
+            x:Name="DevelopmentBuildBanner" />
     </Grid>
 
 

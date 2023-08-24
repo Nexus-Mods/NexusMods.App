@@ -1,0 +1,25 @@
+﻿<reactiveUi:ReactiveUserControl
+    d:DesignHeight="48"
+    d:DesignWidth="800"
+    mc:Ignorable="d"
+    x:Class="NexusMods.App.UI.Controls.DevelopmentBuildBanner.DevelopmentBuildBannerView"
+    x:TypeArguments="developmentBuildBanner:IDevelopmentBuildBannerViewModel"
+    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:developmentBuildBanner="clr-namespace:NexusMods.App.UI.Controls.DevelopmentBuildBanner">
+    <Design.DataContext>
+        <developmentBuildBanner:DevelopmentBuildBannerViewModel />
+    </Design.DataContext>
+    <StackPanel Orientation="Horizontal" Background="#A30000" >
+        <avalonia:Icon Classes="Alert" Foreground="{DynamicResource BrandWhite}" FontSize="20" Margin="30 2 8 2" VerticalAlignment="Center" />
+        <TextBlock
+            Foreground="{DynamicResource BrandWhite}"
+            FontFamily="{DynamicResource FontPrimaryBold}"
+            Text="{Binding Text, RelativeSource={RelativeSource AncestorType={x:Type developmentBuildBanner:DevelopmentBuildBannerView}}}"
+            VerticalAlignment="Center" />
+    </StackPanel>
+</reactiveUi:ReactiveUserControl>
