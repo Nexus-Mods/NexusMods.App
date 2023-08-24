@@ -13,14 +13,14 @@ namespace NexusMods.Games.StardewValley;
 
 public static class Services
 {
-    public static IServiceCollection AddStardewValley(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddStardewValley(this IServiceCollection services)
     {
-        serviceCollection.AddAllSingleton<IGame, StardewValley>();
-        serviceCollection.AddSingleton<IFileAnalyzer, SMAPIManifestAnalyzer>();
-        serviceCollection.AddSingleton<SMAPIInstaller>();
-        serviceCollection.AddSingleton<SMAPIModInstaller>();
-        serviceCollection.AddSingleton<ILoadoutDiagnosticEmitter, MissingDependenciesEmitter>();
-        serviceCollection.AddSingleton<ITypeFinder, TypeFinder>();
-        return serviceCollection;
+        services.AddAllSingleton<IGame, StardewValley>()
+            .AddSingleton<IFileAnalyzer, SMAPIManifestAnalyzer>()
+            .AddSingleton<SMAPIInstaller>()
+            .AddSingleton<SMAPIModInstaller>()
+            .AddSingleton<ILoadoutDiagnosticEmitter, MissingDependenciesEmitter>()
+            .AddSingleton<ITypeFinder, TypeFinder>();
+        return services;
     }
 }
