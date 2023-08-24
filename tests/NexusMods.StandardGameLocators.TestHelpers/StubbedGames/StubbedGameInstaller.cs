@@ -12,18 +12,6 @@ namespace NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
 public class StubbedGameInstaller : IModInstaller
 {
-    private readonly IDataStore _dataStore;
-
-    public StubbedGameInstaller(IDataStore store)
-    {
-        _dataStore = store;
-    }
-
-    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
-    {
-        return installation.Game is StubbedGame ? Priority.Normal : Priority.None;
-    }
-
     public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
         ModId baseModId,

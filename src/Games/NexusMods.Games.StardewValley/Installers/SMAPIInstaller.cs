@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
@@ -55,16 +56,6 @@ public class SMAPIInstaller : IModInstaller
         return installDataFiles;
     }
 
-    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
-    {
-        if (!installation.Is<StardewValley>()) return Priority.None;
-
-        var installDataFiles = GetInstallDataFiles(archiveFiles);
-        return installDataFiles.Length == 3
-            ? Priority.Highest
-            : Priority.None;
-    }
-
     public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
         ModId baseModId,
@@ -84,7 +75,7 @@ public class SMAPIInstaller : IModInstaller
         var modFiles = new List<AModFile>();
 
         var installDataFiles = GetInstallDataFiles(archiveFiles);
-        if (installDataFiles.Length != 3) throw new UnreachableException($"{nameof(SMAPIInstaller)} should guarantee with {nameof(GetPriority)} that {nameof(GetInstallDataFiles)} returns 3 files when called from {nameof(GetModsAsync)} but it has {installDataFiles.Length} files instead!");
+        if (installDataFiles.Length != 3) throw new UnreachableException($"{nameof(SMAPIInstaller)} should guarantee that {nameof(GetInstallDataFiles)} returns 3 files when called from {nameof(GetModsAsync)} but it has {installDataFiles.Length} files instead!");
 
         var installDataFile = _osInformation.MatchPlatform(
             state: ref installDataFiles,
@@ -141,5 +132,13 @@ public class SMAPIInstaller : IModInstaller
             Id = baseModId,
             Files = modFiles
         };
+    }
+
+    public static SMAPIInstaller Create(IServiceProvider serviceProvider)
+    {
+        return new SMAPIInstaller(
+            serviceProvider.GetRequiredService<IOSInformation>(),
+            serviceProvider.GetRequiredService<FileHashCache>()
+        );
     }
 }

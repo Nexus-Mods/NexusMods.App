@@ -13,9 +13,7 @@ namespace NexusMods.Games.StardewValley;
 public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
 {
     private readonly IOSInformation _osInformation;
-    private readonly IFileSystem _fileSystem;
-    private readonly FileHashCache _hashCache;
-
+    private readonly IServiceProvider _serviceProvider;
     public IEnumerable<uint> SteamIds => new[] { 413150u };
     public IEnumerable<long> GogIds => new long[] { 1453375253 };
     public IEnumerable<string> XboxIds => new[] { "ConcernedApe.StardewValleyPC" };
@@ -27,13 +25,11 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
 
     public StardewValley(
         IOSInformation osInformation,
-        IFileSystem fileSystem,
         IEnumerable<IGameLocator> gameLocators,
-        FileHashCache hashCache) : base(gameLocators)
+        IServiceProvider provider) : base(gameLocators)
     {
         _osInformation = osInformation;
-        _fileSystem = fileSystem;
-        _hashCache = hashCache;
+        _serviceProvider = provider;
     }
 
     public override GamePath GetPrimaryFile(GameStore store)
@@ -89,7 +85,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
 
     public override IEnumerable<IModInstaller> Installers => new IModInstaller[]
     {
-        new SMAPIInstaller(_osInformation, _hashCache),
+        SMAPIInstaller.Create(_serviceProvider),
         new SMAPIModInstaller()
     };
 

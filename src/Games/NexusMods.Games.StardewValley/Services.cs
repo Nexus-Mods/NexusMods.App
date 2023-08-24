@@ -17,6 +17,8 @@ public static class Services
     {
         serviceCollection.AddAllSingleton<IGame, StardewValley>();
         serviceCollection.AddSingleton<IFileAnalyzer, SMAPIManifestAnalyzer>();
+        serviceCollection.AddSingleton<SMAPIInstaller>();
+        serviceCollection.AddSingleton<SMAPIModInstaller>();
         serviceCollection.AddSingleton<ILoadoutDiagnosticEmitter, MissingDependenciesEmitter>();
         serviceCollection.AddSingleton<ITypeFinder, TypeFinder>();
         return serviceCollection;
