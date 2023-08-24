@@ -1,0 +1,96 @@
+﻿<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="BrowseGames" xml:space="preserve">
+        <value>Esplora Giochi</value>
+    </data>
+    <data name="CancelDownloadOverlayView_Description_download_will_be_cancelled" xml:space="preserve">
+        <value>Il download {0} sarà cancellato e i file saranno eliminati.</value>
+    </data>
+    <data name="CancelDownloadOverlayView_Title" xml:space="preserve">
+        <value>Cancellare ed eliminare il download?</value>
+    </data>
+    <data name="DownloadTaskViewModel_Field_Unknown" xml:space="preserve">
+        <value>Sconosciuto</value>
+    </data>
+    <data name="DownloadTaskViewModel_Version_Unknown" xml:space="preserve">
+        <value>Sconosciuto</value>
+    </data>
+    <data name="Helpers_GenerateHeader_CATEGORY" xml:space="preserve">
+        <value>CATEGORIA</value>
+    </data>
+    <data name="Helpers_GenerateHeader_GAME" xml:space="preserve">
+        <value>GIOCO</value>
+    </data>
+    <data name="Helpers_GenerateHeader_INSTALLED" xml:space="preserve">
+        <value>INSTALLATO</value>
+    </data>
+    <data name="Helpers_GenerateHeader_MOD_NAME" xml:space="preserve">
+        <value>NOME MOD</value>
+    </data>
+    <data name="Helpers_GenerateHeader_NAME" xml:space="preserve">
+        <value>NOME</value>
+    </data>
+    <data name="Helpers_GenerateHeader_SIZE" xml:space="preserve">
+        <value>DIMENSIONE</value>
+    </data>
+    <data name="Helpers_GenerateHeader_STATUS" xml:space="preserve">
+        <value>STATO</value>
+    </data>
+    <data name="Helpers_GenerateHeader_VERSION" xml:space="preserve">
+        <value>VERSIONE</value>
+    </data>
+    <data name="LoadoutGridView_AddMod_FilePicker_Title" xml:space="preserve">
+        <value>Seleziona una mod da installare.</value>
+    </data>
+    <data name="LoadoutGridView_AddMod_FileType_Archive" xml:space="preserve">
+        <value>Archivio</value>
+    </data>
+    <data name="MessageBox_Button_No" xml:space="preserve">
+        <value>NO</value>
+    </data>
+    <data name="MessageBox_Button_Yes" xml:space="preserve">
+        <value>Sì</value>
+    </data>
+    <data name="MetricsOptIn_ALLOW" xml:space="preserve">
+        <value>PERMETTI</value>
+    </data>
+    <data name="MetricsOptIn_DENY" xml:space="preserve">
+        <value>RIFIUTA</value>
+    </data>
+    <data name="MetricsOptIn_MainMessage" xml:space="preserve">
+        <value>Aiutaci ad offirti la migliore esperienza di modding.
+
+Con il tuo permesso, raccoglieremo informazioni analitiche da mandare al team di sviluppo per aiutarci a migliorare la stabilità, qualità e performance dell'applicazione.
+
+Questi dati sono raccolti in maniera anonima e non saranno mai condivisi con terze parti.</value>
+    </data>
+    <data name="MetricsOptIn_MoreInfoAboutTheDataWeTrack" xml:space="preserve">
+        <value>Più informazioni riguardanti i dati che raccogliamo.</value>
+    </data>
+    <data name="MetricsOptIn_OverlayTitle" xml:space="preserve">
+        <value>Dati diagnostici e di utilizzo</value>
+    </data>
+    <data name="MyGames" xml:space="preserve">
+        <value>I Miei Giochi</value>
+    </data>
+    <data name="Newsfeed" xml:space="preserve">
+        <value>Novità</value>
+    </data>
+    <data name="LaunchButtonViewModel_LaunchGame_LAUNCH" xml:space="preserve">
+        <value>ESEGUI</value>
+    </data>
+    <data name="LaunchButtonViewModel_LaunchGame_RUNNING" xml:space="preserve">
+        <value>IN ESECUZIONE</value>
+    </data>
+</root>

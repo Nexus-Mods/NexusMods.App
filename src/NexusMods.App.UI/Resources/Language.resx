@@ -45,4 +45,58 @@
     <data name="MetricsOptIn_OverlayTitle" xml:space="preserve">
         <value>Diagnostics and usage data</value>
     </data>
+    <data name="LoadoutGridView_AddMod_FilePicker_Title" xml:space="preserve">
+        <value>Please select a mod file to install.</value>
+    </data>
+    <data name="LoadoutGridView_AddMod_FileType_Archive" xml:space="preserve">
+        <value>Archive</value>
+    </data>
+    <data name="DownloadTaskViewModel_Version_Unknown" xml:space="preserve">
+        <value>Unknown</value>
+    </data>
+    <data name="DownloadTaskViewModel_Field_Unknown" xml:space="preserve">
+        <value>Unknown</value>
+    </data>
+    <data name="MessageBox_Button_Yes" xml:space="preserve">
+        <value>YES</value>
+    </data>
+    <data name="MessageBox_Button_No" xml:space="preserve">
+        <value>NO</value>
+    </data>
+    <data name="CancelDownloadOverlayView_Description_download_will_be_cancelled" xml:space="preserve">
+        <value>{0} download will be cancelled and the files will be deleted.</value>
+    </data>
+    <data name="CancelDownloadOverlayView_Title" xml:space="preserve">
+        <value>Cancel and delete download?</value>
+    </data>
+    <data name="Helpers_GenerateHeader_NAME" xml:space="preserve">
+        <value>NAME</value>
+    </data>
+    <data name="Helpers_GenerateHeader_VERSION" xml:space="preserve">
+        <value>VERSION</value>
+    </data>
+    <data name="Helpers_GenerateHeader_CATEGORY" xml:space="preserve">
+        <value>CATEGORY</value>
+    </data>
+    <data name="Helpers_GenerateHeader_INSTALLED" xml:space="preserve">
+        <value>INSTALLED</value>
+    </data>
+    <data name="Helpers_GenerateHeader_MOD_NAME" xml:space="preserve">
+        <value>MOD NAME</value>
+    </data>
+    <data name="Helpers_GenerateHeader_GAME" xml:space="preserve">
+        <value>GAME</value>
+    </data>
+    <data name="Helpers_GenerateHeader_SIZE" xml:space="preserve">
+        <value>SIZE</value>
+    </data>
+    <data name="Helpers_GenerateHeader_STATUS" xml:space="preserve">
+        <value>STATUS</value>
+    </data>
+    <data name="LaunchButtonViewModel_LaunchGame_RUNNING" xml:space="preserve">
+        <value>RUNNING...</value>
+    </data>
+    <data name="LaunchButtonViewModel_LaunchGame_LAUNCH" xml:space="preserve">
+        <value>LAUNCH</value>
+    </data>
 </root>

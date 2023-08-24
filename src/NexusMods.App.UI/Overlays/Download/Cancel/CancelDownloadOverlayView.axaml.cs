@@ -1,4 +1,5 @@
 using Avalonia.ReactiveUI;
+using NexusMods.App.UI.Resources;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Overlays.Download.Cancel;
@@ -10,8 +11,9 @@ public partial class CancelDownloadOverlayView : ReactiveUserControl<ICancelDown
         InitializeComponent();
         this.WhenActivated(_ =>
         {
-            OkCancelView.Description = $"\"{ViewModel?.DownloadTask.Name}\" download will be cancelled and the files will be deleted.";
+            OkCancelView.Description =
+                string.Format(Language.CancelDownloadOverlayView_Description_download_will_be_cancelled,
+                    ViewModel?.DownloadTask.Name);
         });
     }
 }
-

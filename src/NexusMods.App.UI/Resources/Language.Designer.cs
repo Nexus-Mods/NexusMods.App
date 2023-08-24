@@ -69,6 +69,168 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} download will be cancelled and the files will be deleted..
+        /// </summary>
+        public static string CancelDownloadOverlayView_Description_download_will_be_cancelled {
+            get {
+                return ResourceManager.GetString("CancelDownloadOverlayView_Description_download_will_be_cancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel and delete download?.
+        /// </summary>
+        public static string CancelDownloadOverlayView_Title {
+            get {
+                return ResourceManager.GetString("CancelDownloadOverlayView_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unknown.
+        /// </summary>
+        public static string DownloadTaskViewModel_Field_Unknown {
+            get {
+                return ResourceManager.GetString("DownloadTaskViewModel_Field_Unknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unknown.
+        /// </summary>
+        public static string DownloadTaskViewModel_Version_Unknown {
+            get {
+                return ResourceManager.GetString("DownloadTaskViewModel_Version_Unknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CATEGORY.
+        /// </summary>
+        public static string Helpers_GenerateHeader_CATEGORY {
+            get {
+                return ResourceManager.GetString("Helpers_GenerateHeader_CATEGORY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GAME.
+        /// </summary>
+        public static string Helpers_GenerateHeader_GAME {
+            get {
+                return ResourceManager.GetString("Helpers_GenerateHeader_GAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to INSTALLED.
+        /// </summary>
+        public static string Helpers_GenerateHeader_INSTALLED {
+            get {
+                return ResourceManager.GetString("Helpers_GenerateHeader_INSTALLED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MOD NAME.
+        /// </summary>
+        public static string Helpers_GenerateHeader_MOD_NAME {
+            get {
+                return ResourceManager.GetString("Helpers_GenerateHeader_MOD_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to NAME.
+        /// </summary>
+        public static string Helpers_GenerateHeader_NAME {
+            get {
+                return ResourceManager.GetString("Helpers_GenerateHeader_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SIZE.
+        /// </summary>
+        public static string Helpers_GenerateHeader_SIZE {
+            get {
+                return ResourceManager.GetString("Helpers_GenerateHeader_SIZE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to STATUS.
+        /// </summary>
+        public static string Helpers_GenerateHeader_STATUS {
+            get {
+                return ResourceManager.GetString("Helpers_GenerateHeader_STATUS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to VERSION.
+        /// </summary>
+        public static string Helpers_GenerateHeader_VERSION {
+            get {
+                return ResourceManager.GetString("Helpers_GenerateHeader_VERSION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to LAUNCH.
+        /// </summary>
+        public static string LaunchButtonViewModel_LaunchGame_LAUNCH {
+            get {
+                return ResourceManager.GetString("LaunchButtonViewModel_LaunchGame_LAUNCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RUNNING....
+        /// </summary>
+        public static string LaunchButtonViewModel_LaunchGame_RUNNING {
+            get {
+                return ResourceManager.GetString("LaunchButtonViewModel_LaunchGame_RUNNING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please select a mod file to install..
+        /// </summary>
+        public static string LoadoutGridView_AddMod_FilePicker_Title {
+            get {
+                return ResourceManager.GetString("LoadoutGridView_AddMod_FilePicker_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Archive.
+        /// </summary>
+        public static string LoadoutGridView_AddMod_FileType_Archive {
+            get {
+                return ResourceManager.GetString("LoadoutGridView_AddMod_FileType_Archive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to NO.
+        /// </summary>
+        public static string MessageBox_Button_No {
+            get {
+                return ResourceManager.GetString("MessageBox_Button_No", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to YES.
+        /// </summary>
+        public static string MessageBox_Button_Yes {
+            get {
+                return ResourceManager.GetString("MessageBox_Button_Yes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ALLOW.
         /// </summary>
         public static string MetricsOptIn_ALLOW {

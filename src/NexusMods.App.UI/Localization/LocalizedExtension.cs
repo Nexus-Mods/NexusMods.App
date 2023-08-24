@@ -25,6 +25,13 @@ public class LocalizedExtension : MarkupExtension
     /// <inheritdoc/>
     public override object ProvideValue(IServiceProvider serviceProvider)
     {
+        var binding = GetBindingForKey(Key);
+
+        return binding.ProvideValue(serviceProvider);
+    }
+
+    internal static CompiledBindingExtension GetBindingForKey(string key)
+    {
         // Tip: This binds the [] method of the Localizer class.
         // Build binding for '$"[{Key}]"'.
         var x = new CompiledBindingPathBuilder();
@@ -32,7 +39,7 @@ public class LocalizedExtension : MarkupExtension
         x = x.Property(
             new ClrPropertyInfo(
                 "Item",
-                obj => ((Localizer)obj)[Key],
+                obj => ((Localizer)obj)[key],
                 null,
                 typeof(string)),
             PropertyInfoAccessorFactory.CreateInpcPropertyAccessor);
@@ -42,7 +49,6 @@ public class LocalizedExtension : MarkupExtension
             Mode = BindingMode.OneWay,
             Source = Localizer.Instance,
         };
-
-        return binding.ProvideValue(serviceProvider);
+        return binding;
     }
 }

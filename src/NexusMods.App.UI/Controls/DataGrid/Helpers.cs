@@ -1,5 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using Avalonia.Controls;
+using Avalonia.Data;
+using NexusMods.App.UI.Localization;
 using NexusMods.App.UI.RightContent.DownloadGrid;
 using NexusMods.App.UI.RightContent.LoadoutGrid;
 
@@ -13,8 +15,8 @@ public static class Helpers
         return factory.OnUI()
             .SubscribeWithErrorLogging(default, c => GenerateColumnsImpl(target, c));
     }
-    
-    private static void GenerateColumnsImpl<TColumnType>(Avalonia.Controls.DataGrid target, ReadOnlyObservableCollection<IDataGridColumnFactory<TColumnType>> columns) 
+
+    private static void GenerateColumnsImpl<TColumnType>(Avalonia.Controls.DataGrid target, ReadOnlyObservableCollection<IDataGridColumnFactory<TColumnType>> columns)
         where TColumnType : struct, Enum
     {
         target.Columns.Clear();
@@ -32,7 +34,7 @@ public static class Helpers
         {
             LoadoutColumn loadoutColumn => loadoutColumn switch
             {
-                LoadoutColumn.Name => new TextBlock { Text = "NAME" },
+                LoadoutColumn.Name => new TextBlock { [!TextBlock.TextProperty] = LocalizedExtension.GetBindingForKey("Helpers_GenerateHeader_NAME") },
                 LoadoutColumn.Version => new TextBlock { Text = "VERSION" },
                 LoadoutColumn.Category => new TextBlock { Text = "CATEGORY" },
                 LoadoutColumn.Installed => new TextBlock { Text = "INSTALLED" },

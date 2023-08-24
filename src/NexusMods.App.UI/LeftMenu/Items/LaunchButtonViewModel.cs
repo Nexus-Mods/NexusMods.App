@@ -4,6 +4,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
 using Microsoft.Extensions.Logging;
+using NexusMods.App.UI.Resources;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Interprocess.Jobs;
@@ -22,7 +23,7 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
 
     [Reactive] public ReactiveCommand<Unit, Unit> Command { get; set; } = Initializers.ReactiveCommandUnitUnit;
 
-    [Reactive] public string Label { get; set; } = "Launch";
+    [Reactive] public string Label { get; set; } = Language.LaunchButtonViewModel_LaunchGame_LAUNCH;
 
     [Reactive]
     public Percent? Progress { get; set; }
@@ -32,7 +33,7 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
     private readonly LoadoutRegistry _loadoutRegistry;
     private readonly IToolManager _toolManager;
 
-    public LaunchButtonViewModel(ILogger<LaunchButtonViewModel> logger, IToolManager toolManager, 
+    public LaunchButtonViewModel(ILogger<LaunchButtonViewModel> logger, IToolManager toolManager,
         IInterprocessJobManager manager, LoadoutRegistry loadoutRegistry)
     {
         _toolManager = toolManager;
@@ -61,10 +62,10 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
 
     private async Task LaunchGame(CancellationToken token)
     {
-        Label = "RUNNING...";
+        Label = Language.LaunchButtonViewModel_LaunchGame_RUNNING;
         var marker = new LoadoutMarker(_loadoutRegistry, LoadoutId);
         var tool = _toolManager.GetTools(marker.Value).OfType<IRunGameTool>().First();
         await _toolManager.RunTool(tool, marker.Value, token:token);
-        Label = "LAUNCH";
+        Label = Language.LaunchButtonViewModel_LaunchGame_LAUNCH;
     }
 }
