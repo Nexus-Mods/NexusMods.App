@@ -19,15 +19,6 @@ public class FolderlessModInstaller : IModInstaller
 {
     private static readonly RelativePath Destination = "archive/pc/mod".ToRelativePath();
 
-    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
-    {
-        if (!installation.Is<Cyberpunk2077>()) return Priority.None;
-
-        return archiveFiles.All(f => Helpers.IgnoreExtensions.Contains(f.Key.Extension) || f.Key.Extension == KnownExtensions.Archive)
-            ? Priority.Low
-            : Priority.None;
-    }
-
     public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
         ModId baseModId,
@@ -51,7 +42,11 @@ public class FolderlessModInstaller : IModInstaller
                 return file.ToFromArchive(
                     new GamePath(GameFolderType.Game, Destination.Join(path.FileName))
                 );
-            });
+            })
+            .ToArray();
+
+        if (!modFiles.Any())
+            yield break;
 
         yield return new ModInstallerResult
         {

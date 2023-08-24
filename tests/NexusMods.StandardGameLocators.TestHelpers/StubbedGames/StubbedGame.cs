@@ -1,8 +1,10 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -31,12 +33,16 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
             d => (d.FileName.ToString().XxHash64AsUtf8(), Size.FromLong(d.FileName.ToString().Length)));
 
     private readonly IFileSystem _fileSystem;
+    private readonly IDataStore _dataStore;
+    private readonly IServiceProvider _provider;
 
-    public StubbedGame(ILogger<StubbedGame> logger, IEnumerable<IGameLocator> locators, IFileSystem fileSystem) : base(locators)
+    public StubbedGame(ILogger<StubbedGame> logger, IEnumerable<IGameLocator> locators,
+        IFileSystem fileSystem, IServiceProvider provider) : base(locators)
     {
         _logger = logger;
         _locators = locators;
         _fileSystem = fileSystem;
+        _provider = provider;
     }
 
     public override GamePath GetPrimaryFile(GameStore store) => new(GameFolderType.Game, "");
@@ -103,4 +109,9 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
     public IEnumerable<string> EpicCatalogItemId => new[] { "epic-game-id" };
     public IEnumerable<string> OriginGameIds => new[] { "origin-game-id" };
     public IEnumerable<string> XboxIds => new[] { "xbox-game-id" };
+
+    public override IEnumerable<IModInstaller> Installers => new IModInstaller[]
+    {
+        new StubbedGameInstaller()
+    };
 }

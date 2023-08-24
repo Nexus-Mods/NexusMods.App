@@ -19,17 +19,6 @@ public class LooseFilesModInstaller : IModInstaller
 {
     private static readonly RelativePath ModsFolder = "mods".ToRelativePath();
 
-    public Priority GetPriority(
-        GameInstallation installation,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
-    {
-        if (!installation.Is<DarkestDungeon>()) return Priority.None;
-        if (NativeModInstaller.GetModProjects(archiveFiles).Any()) return Priority.None;
-
-        // TODO: invalid directory structures: https://github.com/Nexus-Mods/NexusMods.App/issues/325
-        return Priority.Lowest;
-    }
-
     public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
         ModId baseModId,

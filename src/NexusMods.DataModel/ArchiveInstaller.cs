@@ -26,7 +26,6 @@ public class ArchiveInstaller : IArchiveInstaller
     private readonly IDataStore _dataStore;
     private readonly IArchiveAnalyzer _archiveAnalyzer;
     private readonly LoadoutRegistry _registry;
-    private readonly IModInstaller[] _modInstallers;
     private readonly IInterprocessJobManager _jobManager;
 
     /// <summary>
@@ -36,7 +35,6 @@ public class ArchiveInstaller : IArchiveInstaller
         IArchiveAnalyzer archiveAnalyzer,
         IDataStore dataStore,
         LoadoutRegistry registry,
-        IEnumerable<IModInstaller> modInstallers,
         IInterprocessJobManager jobManager)
     {
         _logger = logger;
@@ -44,7 +42,6 @@ public class ArchiveInstaller : IArchiveInstaller
         _registry = registry;
         _archiveAnalyzer = archiveAnalyzer;
         _jobManager = jobManager;
-        _modInstallers = modInstallers.ToArray();
     }
 
     /// <inheritdoc />
@@ -87,27 +84,34 @@ public class ArchiveInstaller : IArchiveInstaller
             });
 
             // Step 3: Run the archive through the installers.
-            var installer = _modInstallers
-                .Select(i => (Installer: i, Priority: i.GetPriority(loadout.Value.Installation, analysisData.Contents)))
-                .Where(p => p.Priority != Priority.None)
-                .OrderBy(p => p.Priority)
-                .FirstOrDefault();
+            var (results, modInstaller) = (await loadout.Value.Installation.Game.Installers
+                .SelectAsync(async modInstaller =>
+                {
+                    try
+                    {
+                        var modResults = (await modInstaller.GetModsAsync(
+                            loadout.Value.Installation,
+                            baseMod.Id,
+                            analysisData.Hash,
+                            analysisData.Contents,
+                            token)).ToArray();
+                        return (modResults, modInstaller);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to get mods from installer {Installer}", modInstaller.GetType());
+                        return (Array.Empty<ModInstallerResult>(), modInstaller);
+                    }
+                })
+                .FirstOrDefault(result => result.Item1.Any()));
 
-            if (installer == default)
+
+            if (results == null || !results.Any())
             {
                 _logger.LogError("No Installer found for {Name}", archiveName);
                 _registry.Alter(cursor, $"Failed to install mod {archiveName}",m => m! with { Status = ModStatus.Failed });
                 throw new NotSupportedException($"No Installer found for {archiveName}");
             }
-
-            // Step 4: Install the mods.
-            var results = await installer.Installer.GetModsAsync(
-                loadout.Value.Installation,
-                baseMod.Id,
-                analysisData.Hash,
-                analysisData.Contents,
-                token
-            );
 
             var mods = results.Select(result => new Mod
             {
@@ -144,7 +148,7 @@ public class ArchiveInstaller : IArchiveInstaller
                 : null;
 
             var modIds = mods.Select(mod => mod.Id).ToHashSet();
-            Debug.Assert(modIds.Count == mods.Length, $"The installer {installer.Installer.GetType()} returned mods with non-unique ids.");
+            Debug.Assert(modIds.Count == mods.Length, $"The installer {modInstaller.GetType()} returned mods with non-unique ids.");
 
             foreach (var mod in mods)
             {

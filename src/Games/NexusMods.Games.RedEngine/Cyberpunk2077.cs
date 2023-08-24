@@ -1,6 +1,8 @@
 using NexusMods.Common;
 using NexusMods.DataModel.Games;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.StreamFactories;
+using NexusMods.Games.RedEngine.ModInstallers;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.RedEngine;
@@ -44,4 +46,14 @@ public class Cyberpunk2077 : AGame, ISteamGame, IGogGame, IEpicGame
 
     public override IStreamFactory GameImage =>
         new EmbededResourceStreamFactory<Cyberpunk2077>("NexusMods.Games.RedEngine.Resources.Cyberpunk2077.game_image.jpg");
+
+
+    /// <inheritdoc />
+    public override IEnumerable<IModInstaller> Installers => new IModInstaller[]
+    {
+        new RedModInstaller(),
+        new SimpleOverlayModInstaller(),
+        new AppearancePreset(),
+        new FolderlessModInstaller()
+    };
 }

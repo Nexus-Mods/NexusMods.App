@@ -1,7 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.CLI;
 using NexusMods.Common;
+using NexusMods.Common.GuidedInstaller;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using NexusMods.Games.BethesdaGameStudios;
+using NexusMods.Games.FOMOD;
 using NexusMods.Games.Generic;
 using NexusMods.Games.RedEngine;
 using NexusMods.Games.TestFramework;
@@ -22,9 +25,11 @@ public class Startup
             .AddBethesdaGameStudios()
             .AddGenericGameSupport()
             .AddRedEngineGames()
+            .AddFomod()
             .AddDownloaders()
             .AddAllSingleton<ITypeFinder, TypeFinder>()
             .AddSingleton<LocalHttpServer>()
+            .AddAllSingleton<IGuidedInstaller, CliGuidedInstaller>()
             .Validate();
     }
 }

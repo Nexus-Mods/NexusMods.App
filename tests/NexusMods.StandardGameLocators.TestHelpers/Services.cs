@@ -24,7 +24,6 @@ public static class Services
     public static IServiceCollection AddStubbedGameLocators(this IServiceCollection coll)
     {
         coll.AddAllSingleton<IGame, StubbedGame>();
-        coll.AddAllSingleton<IModInstaller, StubbedGameInstaller>();
         coll.AddAllSingleton<ITool, ListFilesTool>();
         coll.AddSingleton<AHandler<EADesktopGame, EADesktopGameId>>(s =>
             new StubbedGameLocator<EADesktopGame, EADesktopGameId>(s.GetRequiredService<TemporaryFileManager>(),

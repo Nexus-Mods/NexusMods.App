@@ -39,14 +39,6 @@ public class SMAPIModInstaller : IModInstaller
         });
     }
 
-    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
-    {
-        if (!installation.Is<StardewValley>()) return Priority.None;
-        return GetManifestFiles(archiveFiles).Any()
-            ? Priority.Highest
-            : Priority.None;
-    }
-
     public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
         ModId baseModId,
@@ -63,7 +55,7 @@ public class SMAPIModInstaller : IModInstaller
     {
         var manifestFiles = GetManifestFiles(archiveFiles).ToArray();
         if (!manifestFiles.Any())
-            throw new UnreachableException($"{nameof(SMAPIModInstaller)} should guarantee with {nameof(GetPriority)} that {nameof(GetModsAsync)} is never called for archives that don't have a SMAPI manifest file.");
+            throw new UnreachableException($"{nameof(SMAPIModInstaller)} should guarantee that {nameof(GetModsAsync)} is never called for archives that don't have a SMAPI manifest file.");
 
         var mods = manifestFiles
             .Select(manifestFile =>
