@@ -2,6 +2,7 @@
     <ItemGroup>
         <ProjectReference Include="..\..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
         <ProjectReference Include="..\..\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj" />
+        <ProjectReference Include="..\NexusMods.Games.FOMOD\NexusMods.Games.FOMOD.csproj" />
         <ProjectReference Include="..\NexusMods.Games.Generic\NexusMods.Games.Generic.csproj" />
     </ItemGroup>
 

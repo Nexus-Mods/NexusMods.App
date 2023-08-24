@@ -1,6 +1,9 @@
 ﻿using NexusMods.DataModel.Games;
 using NexusMods.DataModel.ModInstallers;
+using NexusMods.Games.FOMOD;
 using NexusMods.Games.Generic.Installers;
+using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
 
 namespace NexusMods.Games.BethesdaGameStudios;
 
@@ -17,6 +20,8 @@ public abstract class ABethesdaGame : AGame
     {
         _installers = new IModInstaller[]
         {
+            // Default installer for FOMODs
+            FomodXmlInstaller.Create(provider, new GamePath(GameFolderType.Game, "Data".ToRelativePath())),
             // Handles common installs to the game folder and other common directories like `Data`
             GenericFolderMatchInstaller.Create(provider, BethesdaInstallFolderTargets.InstallFolderTargets()),
         };

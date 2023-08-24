@@ -18,7 +18,6 @@ public static class Services
     public static IServiceCollection AddFomod(this IServiceCollection services)
     {
         services.AddAllSingleton<IFileAnalyzer, FomodAnalyzer>();
-        services.AddAllSingleton<IModInstaller, FomodXmlInstaller>();
         services.AddAllSingleton<ITypeFinder, TypeFinder>();
         services.AddAllSingleton<ICoreDelegates, InstallerDelegates>();
         return services;

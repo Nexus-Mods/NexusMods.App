@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using FomodInstaller.Interface;
 using FomodInstaller.Scripting.XmlScript;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
@@ -21,6 +22,19 @@ public class FomodXmlInstaller : IModInstaller
     private readonly XmlScriptType _scriptType = new();
     private readonly ILogger<FomodXmlInstaller> _logger;
     private readonly GamePath _fomodInstallationPath;
+
+    /// <summary>
+    /// Creates a new instance of <see cref="FomodXmlInstaller"/> given the provided <paramref name="provider"/> and <paramref name="fomodInstallationPath"/>.
+    /// </summary>
+    /// <param name="provider"></param>
+    /// <param name="fomodInstallationPath"></param>
+    /// <returns></returns>
+    public static FomodXmlInstaller Create(IServiceProvider provider, GamePath fomodInstallationPath)
+    {
+        return new FomodXmlInstaller(provider.GetRequiredService<ILogger<FomodXmlInstaller>>(),
+            provider.GetRequiredService<ICoreDelegates>(),
+            fomodInstallationPath);
+    }
 
     public FomodXmlInstaller(ILogger<FomodXmlInstaller> logger, ICoreDelegates coreDelegates, GamePath fomodInstallationPath)
     {
