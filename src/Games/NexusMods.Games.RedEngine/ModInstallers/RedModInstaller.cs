@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
@@ -9,17 +11,18 @@ using NexusMods.Games.RedEngine.FileAnalyzers;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
+using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.RedEngine.ModInstallers;
 
-public class RedModInstaller : IModInstaller
+public class RedModInstaller : IModInstaller, IModInstallerEx
 {
     private static readonly RelativePath InfoJson = "info.json".ToRelativePath();
     private static readonly RelativePath Mods = "mods".ToRelativePath();
 
     private static bool IsInfoJson(KeyValuePair<RelativePath, AnalyzedFile> file)
     {
-        return file.Key.FileName == InfoJson && file.Value.AnalysisData.OfType<RedModInfo>().Any();
+        return file.Key.FileName == FileAnalyzers.InfoJson && file.Value.AnalysisData.OfType<RedModInfo>().Any();
     }
 
     public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
@@ -65,4 +68,28 @@ public class RedModInstaller : IModInstaller
             Files = modFiles
         };
     }
+
+    public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsyncEx(GameInstallation gameInstallation, ModId baseModId, Hash srcArchiveHash,
+        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles, CancellationToken cancellationToken = default)
+    {
+        var infos = archiveFiles.GetAllDescendentFiles()
+            .Where(f => f.Path.FileName == InfoJson)
+            .SelectAsync(async f => (File: f, InfoJson: await ReadInfoJson(f.Value)))
+            .Where(node => node.InfoJson != null)
+
+    }
+
+    private async Task<InfoJson?> ReadInfoJson(ModSourceFileEntry entry)
+    {
+        await using var stream = await entry.Open();
+        return await JsonSerializer.DeserializeAsync<InfoJson>(stream);
+    }
+
+
+}
+
+internal class InfoJson
+{
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = string.Empty;
 }
