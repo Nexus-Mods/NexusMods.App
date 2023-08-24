@@ -51,4 +51,24 @@ public class LocalizedExtension : MarkupExtension
         };
         return binding;
     }
+
+    internal static CompiledBindingExtension GetBindingFor(Func<string> getString)
+    {
+        var x = new CompiledBindingPathBuilder();
+        x = x.SetRawSource(Localizer.Instance);
+        x = x.Property(
+            new ClrPropertyInfo(
+                "Item",
+                obj => getString(),
+                null,
+                typeof(string)),
+            PropertyInfoAccessorFactory.CreateInpcPropertyAccessor);
+
+        var binding = new CompiledBindingExtension(x.Build())
+        {
+            Mode = BindingMode.OneWay,
+            Source = Localizer.Instance,
+        };
+        return binding;
+    }
 }

@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Data;
 using NexusMods.App.UI.Localization;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.RightContent.DownloadGrid;
 using NexusMods.App.UI.RightContent.LoadoutGrid;
 
@@ -34,15 +35,15 @@ public static class Helpers
         {
             LoadoutColumn loadoutColumn => loadoutColumn switch
             {
-                LoadoutColumn.Name => new TextBlock { [!TextBlock.TextProperty] = LocalizedExtension.GetBindingForKey("Helpers_GenerateHeader_NAME") },
-                LoadoutColumn.Version => new TextBlock { Text = "VERSION" },
-                LoadoutColumn.Category => new TextBlock { Text = "CATEGORY" },
-                LoadoutColumn.Installed => new TextBlock { Text = "INSTALLED" },
+                LoadoutColumn.Name => new TextBlock { [!TextBlock.TextProperty] = LocalizedExtension.GetBindingFor(() => Language.Helpers_GenerateHeader_NAME) },
+                LoadoutColumn.Version => new TextBlock { [!TextBlock.TextProperty] = LocalizedExtension.GetBindingForKey("Helpers_GenerateHeader_VERSION") },
+                LoadoutColumn.Category => new TextBlock { [!TextBlock.TextProperty] = LocalizedExtension.GetBindingForKey("Helpers_GenerateHeader_CATEGORY") },
+                LoadoutColumn.Installed => new TextBlock { [!TextBlock.TextProperty] = LocalizedExtension.GetBindingForKey("Helpers_GenerateHeader_INSTALLED") },
                 LoadoutColumn.Enabled => new RightContent.LoadoutGrid.Columns.ModEnabled.ModEnabledHeader()
             },
             DownloadColumn downloadColumn => downloadColumn switch
             {
-                DownloadColumn.DownloadName => new TextBlock { Text = "MOD NAME" },
+                DownloadColumn.DownloadName => new TextBlock { [!TextBlock.TextProperty] = LocalizedExtension.GetBindingFor(() => Language.Helpers_GenerateHeader_MOD_NAME) },
                 DownloadColumn.DownloadVersion => new TextBlock { Text = "VERSION" },
                 DownloadColumn.DownloadGameName => new TextBlock { Text = "GAME" },
                 DownloadColumn.DownloadSize => new TextBlock { Text = "SIZE" },
