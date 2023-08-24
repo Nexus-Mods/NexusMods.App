@@ -176,7 +176,7 @@ public class InProgressCommonViewModel : AViewModel<IInProgressViewModel>, IInPr
         // Calculate Remaining Time.
         var throughput = Tasks.Sum(x => x.Throughput);
         var remainingBytes = totalSizeBytes - totalDownloadedBytes;
-        SecondsRemaining = (int)(remainingBytes / Math.Max(throughput, 1));
+        SecondsRemaining = throughput < 1.0 ? 0 : (int)(remainingBytes / Math.Max(throughput, 1));
     }
 
     private void UpdateWindowInfoInternal(object? sender, object? state) => UpdateWindowInfo();
