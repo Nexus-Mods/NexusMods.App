@@ -1,11 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Games.GameCapabilities;
 using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -191,27 +189,6 @@ public class GenericFolderMatchInstaller : IModInstaller
         }
 
         return prefix;
-    }
-
-    /// <summary>
-    /// Returns true if any file matches any target or sub-target.
-    /// </summary>
-    /// <param name="filePath"></param>
-    /// <param name="installFolderTargets"></param>
-    /// <returns></returns>
-    private bool PathMatchesAnyTarget(RelativePath filePath,
-        IEnumerable<InstallFolderTarget> installFolderTargets)
-    {
-        foreach (var target in installFolderTargets)
-        {
-            if (PathMatchesTarget(filePath, target))
-                return true;
-
-            if (PathMatchesAnyTarget(filePath, target.SubTargets))
-                return true;
-        }
-
-        return false;
     }
 
     /// <summary>

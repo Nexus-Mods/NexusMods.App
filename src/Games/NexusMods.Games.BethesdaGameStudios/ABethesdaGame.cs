@@ -1,8 +1,5 @@
 ﻿using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
-using NexusMods.DataModel.Games.GameCapabilities.FomodCustomInstallPathCapability;
 using NexusMods.DataModel.ModInstallers;
-using NexusMods.Games.BethesdaGameStudios.Capabilities;
 using NexusMods.Games.Generic.Installers;
 
 namespace NexusMods.Games.BethesdaGameStudios;

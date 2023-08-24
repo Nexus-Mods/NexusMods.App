@@ -6,7 +6,6 @@ using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Games.GameCapabilities.FomodCustomInstallPathCapability;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.ModInstallers;
@@ -21,10 +20,12 @@ public class FomodXmlInstaller : IModInstaller
     private readonly ICoreDelegates _delegates;
     private readonly XmlScriptType _scriptType = new();
     private readonly ILogger<FomodXmlInstaller> _logger;
+    private readonly GamePath _fomodInstallationPath;
 
-    public FomodXmlInstaller(ILogger<FomodXmlInstaller> logger, ICoreDelegates coreDelegates)
+    public FomodXmlInstaller(ILogger<FomodXmlInstaller> logger, ICoreDelegates coreDelegates, GamePath fomodInstallationPath)
     {
         _delegates = coreDelegates;
+        _fomodInstallationPath = fomodInstallationPath;
         _logger = logger;
     }
 
@@ -42,11 +43,6 @@ public class FomodXmlInstaller : IModInstaller
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
         CancellationToken cancellationToken = default)
     {
-        // TODO: For now FOMOD installer is enabled for all games and assumes the Game Root folder as the install path.
-        // Consider changing this in the future so games need to opt-in to FOMOD installers and provide a custom install path.
-        var fomodCapability = gameInstallation.Game.SupportedCapabilities
-            .GetByIdOrDefault<AFomodCustomInstallPathCapability>(AFomodCustomInstallPathCapability.CapabilityId);
-        var gameTargetPath = fomodCapability?.ModInstallationPath() ?? new GamePath(GameFolderType.Game, "");
 
         // the component dealing with FOMODs is built to support all kinds of mods, including those without a script.
         // for those cases, stop patterns can be way more complex to deduce the intended installation structure. In our case, where
@@ -86,7 +82,7 @@ public class FomodXmlInstaller : IModInstaller
             new ModInstallerResult
             {
                 Id = baseModId,
-                Files = InstructionsToModFiles(instructions, srcArchiveHash, archiveFiles, gameTargetPath)
+                Files = InstructionsToModFiles(instructions, srcArchiveHash, archiveFiles, _fomodInstallationPath)
             }
         };
     }

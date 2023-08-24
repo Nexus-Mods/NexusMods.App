@@ -4,7 +4,6 @@ using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.StreamFactories;
-using NexusMods.Games.BethesdaGameStudios.Capabilities;
 using NexusMods.Games.Generic.Installers;
 using NexusMods.Paths;
 

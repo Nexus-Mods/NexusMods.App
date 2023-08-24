@@ -288,7 +288,8 @@ public class FomodXmlInstallerTests
         var tmpFile = _tmpFileManager.CreateFile(KnownExtensions.Sqlite);
 
         var installer = new FomodXmlInstaller(_serviceProvider.GetRequiredService<ILogger<FomodXmlInstaller>>(),
-            _coreDelegates
+            _coreDelegates,
+            new GamePath(GameFolderType.Game, "")
         );
 
         var analyzer = new FomodAnalyzer(

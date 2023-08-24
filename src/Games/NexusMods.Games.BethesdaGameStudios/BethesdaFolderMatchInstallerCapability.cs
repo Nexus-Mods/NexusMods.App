@@ -1,7 +1,7 @@
 ﻿using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.Paths;
 
-namespace NexusMods.Games.BethesdaGameStudios.Capabilities;
+namespace NexusMods.Games.BethesdaGameStudios;
 
 /// <summary>
 /// Capability to support installing simple Data and GameRoot level mods for Bethesda games.
