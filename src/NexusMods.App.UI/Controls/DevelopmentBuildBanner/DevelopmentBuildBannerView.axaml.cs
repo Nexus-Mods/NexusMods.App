@@ -28,6 +28,6 @@ public partial class DevelopmentBuildBannerView : ReactiveUserControl<IDevelopme
         #if DEBUG
             return "Debug build";
         #endif
-        return $"v{Process.GetCurrentProcess().MainModule!.FileVersionInfo.FileVersion}";
+        return $"v{Process.GetCurrentProcess().MainModule!.FileVersionInfo.ProductVersion}";
     }
 }
