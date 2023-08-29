@@ -17,13 +17,6 @@ public class RedModInstaller : IModInstaller
     private static readonly RelativePath InfoJson = "info.json".ToRelativePath();
     private static readonly RelativePath Mods = "mods".ToRelativePath();
 
-    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
-    {
-        if (!installation.Is<Cyberpunk2077>()) return Priority.None;
-
-        return archiveFiles.Any(IsInfoJson) ? Priority.High : Priority.None;
-    }
-
     private static bool IsInfoJson(KeyValuePair<RelativePath, AnalyzedFile> file)
     {
         return file.Key.FileName == InfoJson && file.Value.AnalysisData.OfType<RedModInfo>().Any();
@@ -60,7 +53,11 @@ public class RedModInstaller : IModInstaller
                             new GamePath(GameFolderType.Game, Mods.Join(parentName).Join(path.RelativeTo(parent)))
                         );
                     });
-            });
+            })
+            .ToArray();
+
+        if (!modFiles.Any())
+            yield break;
 
         yield return new ModInstallerResult
         {

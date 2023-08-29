@@ -1,8 +1,7 @@
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Games.GameCapabilities;
-using NexusMods.DataModel.Games.GameCapabilities.FomodCustomInstallPathCapability;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.ModInstallers;
 
 namespace NexusMods.DataModel.Games;
 
@@ -55,9 +54,9 @@ public interface IGame
     /// </summary>
     public IStreamFactory GameImage { get; }
 
-
     /// <summary>
-    /// Collection of <see cref="IGameCapability"/> that this game supports.
+    /// A collection of all <see cref="IModInstaller"/>s that this game supports. The installers
+    /// will be tested against a mod's files in the order they are returned by this property.
     /// </summary>
-    public GameCapabilityCollection SupportedCapabilities { get; }
+    public IEnumerable<IModInstaller> Installers { get; }
 }

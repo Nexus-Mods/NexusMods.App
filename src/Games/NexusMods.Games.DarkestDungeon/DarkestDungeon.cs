@@ -1,7 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 using NexusMods.Common;
 using NexusMods.DataModel.Games;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.StreamFactories;
+using NexusMods.Games.DarkestDungeon.Installers;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.DarkestDungeon;
@@ -81,5 +83,10 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame, IEpicGame
         new EmbededResourceStreamFactory<DarkestDungeon>("NexusMods.Games.DarkestDungeon.Resources.DarkestDungeon.game_image.jpg");
 
 
-
+    /// <inheritdoc />
+    public override IEnumerable<IModInstaller> Installers => new IModInstaller[]
+    {
+        new NativeModInstaller(),
+        new LooseFilesModInstaller(),
+    };
 }

@@ -24,13 +24,6 @@ public class SimpleOverlayModInstaller : IModInstaller
         .Select(x => x.ToRelativePath())
         .ToArray();
 
-    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
-    {
-        if (!installation.Is<Cyberpunk2077>()) return Priority.None;
-
-        var sets = RootFolder(archiveFiles);
-        return sets.Count != 1 ? Priority.None : Priority.Normal;
-    }
 
     private static HashSet<int> RootFolder(EntityDictionary<RelativePath, AnalyzedFile> files)
     {
@@ -88,7 +81,12 @@ public class SimpleOverlayModInstaller : IModInstaller
         Hash srcArchiveHash,
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
-        var root = RootFolder(archiveFiles).First();
+        var roots = RootFolder(archiveFiles);
+
+        if (roots.Count == 0)
+            yield break;
+
+        var root = roots.First();
 
         var modFiles = archiveFiles
             .Where(kv => !Helpers.IgnoreExtensions.Contains(kv.Key.Extension))
@@ -98,7 +96,11 @@ public class SimpleOverlayModInstaller : IModInstaller
                 return file.ToFromArchive(
                     new GamePath(GameFolderType.Game, path.DropFirst(root))
                 );
-            });
+            })
+            .ToArray();
+
+        if (!modFiles.Any())
+            yield break;
 
         yield return new ModInstallerResult
         {

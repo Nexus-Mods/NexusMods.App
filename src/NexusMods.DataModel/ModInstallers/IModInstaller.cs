@@ -17,16 +17,6 @@ namespace NexusMods.DataModel.ModInstallers;
 public interface IModInstaller
 {
     /// <summary>
-    /// Determines the priority of this installer given the game installation
-    /// and contents of an archive. The installer with the highest returned priority
-    /// will be used to deploy an archive.
-    /// </summary>
-    /// <param name="installation">The installation of the game to use.</param>
-    /// <param name="archiveFiles">All of the files within an archive.</param>
-    /// <returns>Priority.</returns>
-    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles);
-
-    /// <summary>
     /// Finds all mods inside the provided archive.
     /// </summary>
     /// <param name="gameInstallation">The game installation.</param>

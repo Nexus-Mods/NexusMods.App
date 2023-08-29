@@ -294,6 +294,12 @@
           <AutoGen>True</AutoGen>
           <DependentUpon>Language.resx</DependentUpon>
         </Compile>
+        <Compile Update="Controls\DevelopmentBuildBanner\DevelopmentBuildBannerViewModel.cs">
+          <DependentUpon>IDevelopmentBuildBannerViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\DevelopmentBuildBanner\DevelopmentBuildBannerView.axaml.cs">
+          <DependentUpon>DevelopmentBuildBannerView.axaml</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
@@ -315,6 +321,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <AdditionalFiles Include="Controls\DevelopmentBuildBanner\DevelopmentBuildBannerView.axaml" />
       <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadGameName\DownloadGameNameView.axaml" />
       <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadName\DownloadNameView.axaml" />
       <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadSize\DownloadSizeView.axaml" />

@@ -20,17 +20,6 @@ public class AppearancePreset : IModInstaller
         "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/male".ToRelativePath()
     };
 
-    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
-    {
-        if (!installation.Is<Cyberpunk2077>()) return Priority.None;
-
-        return archiveFiles.All(f => Helpers.IgnoreExtensions.Contains(f.Key.Extension) ||
-                                     (f.Value.FileTypes.Contains(FileType.Cyberpunk2077AppearancePreset) &&
-                                      f.Key.Extension == KnownExtensions.Preset))
-            ? Priority.Normal
-            : Priority.None;
-    }
-
     public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
         ModId baseModId,
@@ -54,7 +43,10 @@ public class AppearancePreset : IModInstaller
                 return Paths.Select(relPath => file.ToFromArchive(
                     new GamePath(GameFolderType.Game, relPath.Join(path))
                 ));
-            });
+            }).ToArray();
+
+        if (!modFiles.Any())
+            yield break;
 
         yield return new ModInstallerResult
         {

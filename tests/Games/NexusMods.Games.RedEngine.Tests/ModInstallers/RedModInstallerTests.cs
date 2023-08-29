@@ -17,8 +17,8 @@ public class
     public async Task ModsAreDetectedAndInstalled()
     {
         var (hash1, hash2) = Next2Hash();
-        
-        var files = await BuildAndInstall(Priority.High,
+
+        var files = await BuildAndInstall(
             (hash1, "mymod/info.json", new RedModInfo { Name = "My Mod" }),
             (hash2, "mymod/blerg.archive", null));
 
@@ -35,8 +35,8 @@ public class
     {
         var (hash1, hash2, hash3) = Next3Hash();
         var (hash4, hash5, hash6) = Next3Hash();
-        
-        var files = await BuildAndInstall(Priority.High,
+
+        var files = await BuildAndInstall(
             (hash1, "mymod1/info.json", new RedModInfo { Name = "My Mod1" }),
             (hash2, "mymod1/blerg.archive", null),
             (hash3, "mymod2/info.json", new RedModInfo { Name = "My Mod2" }),

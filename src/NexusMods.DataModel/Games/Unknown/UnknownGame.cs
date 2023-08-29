@@ -1,7 +1,7 @@
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Games.GameCapabilities.FomodCustomInstallPathCapability;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Games;
@@ -51,7 +51,7 @@ public class UnknownGame : IGame
     }
 
     /// <inheritdoc />
-    public virtual GameCapabilityCollection SupportedCapabilities { get; } = new();
+    public IEnumerable<IModInstaller> Installers => Array.Empty<IModInstaller>();
 
 
     /// <inheritdoc />

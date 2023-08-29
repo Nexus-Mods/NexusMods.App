@@ -2,7 +2,9 @@ using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.StreamFactories;
+using NexusMods.Games.Generic.Installers;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.BethesdaGameStudios;
@@ -21,8 +23,7 @@ public class SkyrimSpecialEdition : ABethesdaGame, ISteamGame, IGogGame, IXboxGa
     public override GameDomain Domain => StaticDomain;
     public override GamePath GetPrimaryFile(GameStore store) => new(GameFolderType.Game, "SkyrimSE.exe");
 
-    public SkyrimSpecialEdition(IEnumerable<IGameLocator> gameLocators) : base(gameLocators) { }
-
+    public SkyrimSpecialEdition(IEnumerable<IGameLocator> gameLocators, IServiceProvider provider) : base(gameLocators, provider) {}
     protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(
         IFileSystem fileSystem,
         IGameLocator locator,
@@ -68,4 +69,5 @@ public class SkyrimSpecialEdition : ABethesdaGame, ISteamGame, IGogGame, IXboxGa
     public override IStreamFactory GameImage =>
         new EmbededResourceStreamFactory<SkyrimSpecialEdition>(
             "NexusMods.Games.BethesdaGameStudios.Resources.SkyrimSpecialEdition.game_image.png");
+
 }

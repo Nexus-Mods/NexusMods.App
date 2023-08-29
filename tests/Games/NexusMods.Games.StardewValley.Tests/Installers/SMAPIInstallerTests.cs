@@ -15,32 +15,6 @@ public class SMAPIInstallerTests : AModInstallerTest<StardewValley, SMAPIInstall
 {
     public SMAPIInstallerTests(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
-    [Fact]
-    public async Task Test_Priority_WithFiles()
-    {
-        var zipSignature = new byte[] {0x50, 0x4B, 0x03, 0x04};
-        var testFiles = new Dictionary<RelativePath, byte[]>
-        {
-            { "linux/install.dat", zipSignature },
-            { "windows/install.dat", zipSignature },
-            { "macOS/install.dat", zipSignature }
-        };
-
-        await using var path = await CreateTestArchive(testFiles);
-
-        var priority = await GetPriorityFromInstaller(path.Path);
-        priority.Should().Be(Priority.Highest);
-    }
-
-    [Fact]
-    public async Task Test_Priority_WithoutFiles()
-    {
-        var testFiles = new Dictionary<RelativePath, byte[]>();
-        await using var path = await CreateTestArchive(testFiles);
-
-        var priority = await GetPriorityFromInstaller(path.Path);
-        priority.Should().Be(Priority.None);
-    }
 
     [Fact]
     [Trait("RequiresNetworking", "True")]

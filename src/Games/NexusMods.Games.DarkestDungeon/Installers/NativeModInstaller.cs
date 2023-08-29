@@ -38,16 +38,6 @@ public class NativeModInstaller : IModInstaller
         });
     }
 
-    public Priority GetPriority(
-        GameInstallation installation,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
-    {
-        if (!installation.Is<DarkestDungeon>()) return Priority.None;
-        return GetModProjects(archiveFiles).Any()
-            ? Priority.Highest
-            : Priority.None;
-    }
-
     public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
         ModId baseModId,
@@ -64,7 +54,7 @@ public class NativeModInstaller : IModInstaller
     {
         var modProjectFiles = GetModProjects(archiveFiles).ToArray();
         if (!modProjectFiles.Any())
-            throw new UnreachableException($"{nameof(NativeModInstaller)} should guarantee with {nameof(GetPriority)} that {nameof(GetModsAsync)} is never called for archives that don't have a project.xml file.");
+            return Array.Empty<ModInstallerResult>();
 
         var mods = modProjectFiles
             .Select(modProjectFile =>
