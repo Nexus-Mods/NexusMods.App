@@ -4,6 +4,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
 using Microsoft.Extensions.Logging;
+using NexusMods.App.UI.Localization;
 using NexusMods.App.UI.Resources;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
@@ -18,15 +19,15 @@ namespace NexusMods.App.UI.LeftMenu.Items;
 
 public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunchButtonViewModel
 {
-    [Reactive]
-    public LoadoutId LoadoutId { get; set; } = Initializers.LoadoutId;
+    [Reactive] public LoadoutId LoadoutId { get; set; } = Initializers.LoadoutId;
 
     [Reactive] public ReactiveCommand<Unit, Unit> Command { get; set; } = Initializers.ReactiveCommandUnitUnit;
 
-    [Reactive] public string Label { get; set; } = Language.LaunchButtonViewModel_LaunchGame_LAUNCH;
+    [Reactive] public string Label { get; set; } = "";
 
-    [Reactive]
-    public Percent? Progress { get; set; }
+    private bool _isRunning = false;
+
+    [Reactive] public Percent? Progress { get; set; }
 
     private ReadOnlyObservableCollection<IInterprocessJob> _jobs = new(new ObservableCollection<IInterprocessJob>());
 
@@ -41,12 +42,19 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
 
         this.WhenActivated(d =>
         {
+            new LocalizedStringUpdater(() =>
+            {
+                Label = _isRunning
+                    ? Language.LaunchButtonViewModel_LaunchGame_RUNNING
+                    : Language.LaunchButtonViewModel_LaunchGame_LAUNCH;
+            }).DisposeWith(d);
 
             var lockedLoadouts = manager.Jobs
                 .Filter(m => m.Payload is ILoadoutJob);
 
             var selectedLoadoutFns = this.WhenAnyValue(vm => vm.LoadoutId)
-                .Select<LoadoutId, Func<IInterprocessJob, bool>>(loadoutId => job => loadoutId == ((ILoadoutJob)job.Payload).LoadoutId);
+                .Select<LoadoutId, Func<IInterprocessJob, bool>>(loadoutId =>
+                    job => loadoutId == ((ILoadoutJob)job.Payload).LoadoutId);
 
             lockedLoadouts.Filter(selectedLoadoutFns)
                 .Bind(out _jobs)
@@ -56,16 +64,17 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
             var canExecute = _jobs.WhenAnyValue(coll => coll.Count, count => count == 0);
 
             Command = ReactiveCommand.CreateFromTask(LaunchGame, canExecute.OnUI());
-
         });
     }
 
     private async Task LaunchGame(CancellationToken token)
     {
+        _isRunning = true;
         Label = Language.LaunchButtonViewModel_LaunchGame_RUNNING;
         var marker = new LoadoutMarker(_loadoutRegistry, LoadoutId);
         var tool = _toolManager.GetTools(marker.Value).OfType<IRunGameTool>().First();
-        await _toolManager.RunTool(tool, marker.Value, token:token);
+        await _toolManager.RunTool(tool, marker.Value, token: token);
         Label = Language.LaunchButtonViewModel_LaunchGame_LAUNCH;
+        _isRunning = false;
     }
 }

@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Globalization;
+using System.Reactive.Subjects;
 using System.Text;
 using Avalonia;
 using Avalonia.Data;
@@ -82,20 +83,19 @@ public class Localizer : INotifyPropertyChanged // <= INotifyPropertyChanged is 
         return binding;
     }
 
-
-
     /// <summary>
-    /// Creates a dynamic binding for a localized string.
-    /// The binding will update when the locale is changed.
-    /// The new localized value will be retrieved using the provided function.
+    /// Creates a compiled avalonia binding for a localized string.
+    /// The binding will update the string when the locale is changed.
+    /// The new localized value will be retrieved using the provided <paramref name="getLocalizedString"/> function.
     /// </summary>
     /// <example>
     /// <code>
-    /// [!TextBlock.TextProperty] = Localizer.CreateBinding(() => Language.Helpers_GenerateHeader_NAME)
+    /// [!TextBlock.TextProperty] = Localizer.CreateAvaloniaBinding(() => Language.Helpers_GenerateHeader_NAME)
     /// </code>
     /// </example>
     /// <param name="getLocalizedString">A function that returns a string localized for the current locale.</param>
-    public static CompiledBindingExtension CreateBinding(Func<string> getLocalizedString)
+    /// <returns>A compiled avalonia binding to dynamic localized string.</returns>
+    public static CompiledBindingExtension CreateAvaloniaBinding(Func<string> getLocalizedString)
     {
         var x = new CompiledBindingPathBuilder();
         x = x.SetRawSource(Localizer.Instance);
@@ -114,4 +114,5 @@ public class Localizer : INotifyPropertyChanged // <= INotifyPropertyChanged is 
         };
         return binding;
     }
+
 }

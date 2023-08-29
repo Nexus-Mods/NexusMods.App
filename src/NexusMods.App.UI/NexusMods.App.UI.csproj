@@ -316,7 +316,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controls\Localizable\" />
       <Folder Include="RightContent\DownloadGrid\Columns\" />
     </ItemGroup>
 

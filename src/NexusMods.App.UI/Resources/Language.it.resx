@@ -33,7 +33,7 @@
         <value>GIOCO</value>
     </data>
     <data name="Helpers_GenerateHeader_INSTALLED" xml:space="preserve">
-        <value>INSTALLATO</value>
+        <value>INSTALLAZIONE</value>
     </data>
     <data name="Helpers_GenerateHeader_MOD_NAME" xml:space="preserve">
         <value>NOME MOD</value>
