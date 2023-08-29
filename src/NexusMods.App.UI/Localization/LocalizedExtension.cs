@@ -25,50 +25,10 @@ public class LocalizedExtension : MarkupExtension
     /// <inheritdoc/>
     public override object ProvideValue(IServiceProvider serviceProvider)
     {
-        var binding = GetBindingForKey(Key);
+        var binding = Localizer.GetBindingForKey(Key);
 
         return binding.ProvideValue(serviceProvider);
     }
 
-    internal static CompiledBindingExtension GetBindingForKey(string key)
-    {
-        // Tip: This binds the [] method of the Localizer class.
-        // Build binding for '$"[{Key}]"'.
-        var x = new CompiledBindingPathBuilder();
-        x = x.SetRawSource(Localizer.Instance);
-        x = x.Property(
-            new ClrPropertyInfo(
-                "Item",
-                obj => ((Localizer)obj)[key],
-                null,
-                typeof(string)),
-            PropertyInfoAccessorFactory.CreateInpcPropertyAccessor);
 
-        var binding = new CompiledBindingExtension(x.Build())
-        {
-            Mode = BindingMode.OneWay,
-            Source = Localizer.Instance,
-        };
-        return binding;
-    }
-
-    internal static CompiledBindingExtension GetBindingFor(Func<string> getString)
-    {
-        var x = new CompiledBindingPathBuilder();
-        x = x.SetRawSource(Localizer.Instance);
-        x = x.Property(
-            new ClrPropertyInfo(
-                "Item",
-                obj => getString(),
-                null,
-                typeof(string)),
-            PropertyInfoAccessorFactory.CreateInpcPropertyAccessor);
-
-        var binding = new CompiledBindingExtension(x.Build())
-        {
-            Mode = BindingMode.OneWay,
-            Source = Localizer.Instance,
-        };
-        return binding;
-    }
 }

@@ -35,15 +35,15 @@ public static class Helpers
         {
             LoadoutColumn loadoutColumn => loadoutColumn switch
             {
-                LoadoutColumn.Name => new TextBlock { [!TextBlock.TextProperty] = LocalizedExtension.GetBindingFor(() => Language.Helpers_GenerateHeader_NAME) },
-                LoadoutColumn.Version => new TextBlock { [!TextBlock.TextProperty] = LocalizedExtension.GetBindingForKey("Helpers_GenerateHeader_VERSION") },
-                LoadoutColumn.Category => new TextBlock { [!TextBlock.TextProperty] = LocalizedExtension.GetBindingForKey("Helpers_GenerateHeader_CATEGORY") },
-                LoadoutColumn.Installed => new TextBlock { [!TextBlock.TextProperty] = LocalizedExtension.GetBindingForKey("Helpers_GenerateHeader_INSTALLED") },
+                LoadoutColumn.Name => new TextBlock { [!TextBlock.TextProperty] = Localizer.CreateBinding(() => Language.Helpers_GenerateHeader_NAME) },
+                LoadoutColumn.Version => new TextBlock { [!TextBlock.TextProperty] = Localizer.GetBindingForKey("Helpers_GenerateHeader_VERSION") },
+                LoadoutColumn.Category => new TextBlock { [!TextBlock.TextProperty] = Localizer.GetBindingForKey("Helpers_GenerateHeader_CATEGORY") },
+                LoadoutColumn.Installed => new TextBlock { [!TextBlock.TextProperty] = Localizer.GetBindingForKey("Helpers_GenerateHeader_INSTALLED") },
                 LoadoutColumn.Enabled => new RightContent.LoadoutGrid.Columns.ModEnabled.ModEnabledHeader()
             },
             DownloadColumn downloadColumn => downloadColumn switch
             {
-                DownloadColumn.DownloadName => new TextBlock { [!TextBlock.TextProperty] = LocalizedExtension.GetBindingFor(() => Language.Helpers_GenerateHeader_MOD_NAME) },
+                DownloadColumn.DownloadName => new TextBlock { [!TextBlock.TextProperty] = Localizer.CreateBinding(() => Language.Helpers_GenerateHeader_MOD_NAME) },
                 DownloadColumn.DownloadVersion => new TextBlock { Text = "VERSION" },
                 DownloadColumn.DownloadGameName => new TextBlock { Text = "GAME" },
                 DownloadColumn.DownloadSize => new TextBlock { Text = "SIZE" },
