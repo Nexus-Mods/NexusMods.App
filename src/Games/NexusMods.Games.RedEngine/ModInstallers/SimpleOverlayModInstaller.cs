@@ -8,10 +8,11 @@ using NexusMods.DataModel.ModInstallers;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
+using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.RedEngine.ModInstallers;
 
-public class SimpleOverlayModInstaller : IModInstaller
+public class SimpleOverlayModInstaller : IModInstaller, IModInstallerEx
 {
     private static readonly RelativePath[] RootPaths = new[]
         {
@@ -107,5 +108,11 @@ public class SimpleOverlayModInstaller : IModInstaller
             Id = baseModId,
             Files = modFiles
         };
+    }
+
+    public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsyncEx(GameInstallation gameInstallation, ModId baseModId, Hash srcArchiveHash,
+        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles, CancellationToken cancellationToken = default)
+    {
+
     }
 }
