@@ -93,4 +93,16 @@ Questi dati sono raccolti in maniera anonima e non saranno mai condivisi con ter
     <data name="LaunchButtonViewModel_LaunchGame_RUNNING" xml:space="preserve">
         <value>IN ESECUZIONE</value>
     </data>
+    <data name="StringFormatters__SecondsRemaining_secs" xml:space="preserve">
+        <value>{0} secondi</value>
+    </data>
+    <data name="StringFormatters__MinutesRemaining_mins" xml:space="preserve">
+        <value>{0} minuti</value>
+    </data>
+    <data name="StringFormatters__HoursRemaining__hours" xml:space="preserve">
+        <value>{0} ore</value>
+    </data>
+    <data name="StringFormatters__In_progress__numDownloads" xml:space="preserve">
+        <value>In corso ({0})</value>
+    </data>
 </root>

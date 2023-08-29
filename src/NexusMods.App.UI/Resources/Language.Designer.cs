@@ -296,5 +296,41 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("Newsfeed", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} hours.
+        /// </summary>
+        public static string StringFormatters__HoursRemaining__hours {
+            get {
+                return ResourceManager.GetString("StringFormatters__HoursRemaining__hours", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In progress ({0}).
+        /// </summary>
+        public static string StringFormatters__In_progress__numDownloads {
+            get {
+                return ResourceManager.GetString("StringFormatters__In_progress__numDownloads", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} mins.
+        /// </summary>
+        public static string StringFormatters__MinutesRemaining_mins {
+            get {
+                return ResourceManager.GetString("StringFormatters__MinutesRemaining_mins", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} secs.
+        /// </summary>
+        public static string StringFormatters__SecondsRemaining_secs {
+            get {
+                return ResourceManager.GetString("StringFormatters__SecondsRemaining_secs", resourceCulture);
+            }
+        }
     }
 }

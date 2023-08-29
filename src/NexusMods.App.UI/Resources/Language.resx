@@ -99,4 +99,16 @@
     <data name="LaunchButtonViewModel_LaunchGame_LAUNCH" xml:space="preserve">
         <value>LAUNCH</value>
     </data>
+    <data name="StringFormatters__SecondsRemaining_secs" xml:space="preserve">
+        <value>{0} secs</value>
+    </data>
+    <data name="StringFormatters__MinutesRemaining_mins" xml:space="preserve">
+        <value>{0} mins</value>
+    </data>
+    <data name="StringFormatters__HoursRemaining__hours" xml:space="preserve">
+        <value>{0} hours</value>
+    </data>
+    <data name="StringFormatters__In_progress__numDownloads" xml:space="preserve">
+        <value>In progress ({0})</value>
+    </data>
 </root>
