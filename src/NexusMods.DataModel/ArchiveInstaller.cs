@@ -14,6 +14,8 @@ using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.Hashing.xxHash64;
+using NexusMods.Paths;
+using NexusMods.Paths.FileTree;
 
 namespace NexusMods.DataModel;
 
@@ -27,6 +29,7 @@ public class ArchiveInstaller : IArchiveInstaller
     private readonly IArchiveAnalyzer _archiveAnalyzer;
     private readonly LoadoutRegistry _registry;
     private readonly IInterprocessJobManager _jobManager;
+    private readonly IArchiveManager _archiveManager;
 
     /// <summary>
     /// DI Constructor
@@ -35,12 +38,14 @@ public class ArchiveInstaller : IArchiveInstaller
         IArchiveAnalyzer archiveAnalyzer,
         IDataStore dataStore,
         LoadoutRegistry registry,
+        IArchiveManager archiveManager,
         IInterprocessJobManager jobManager)
     {
         _logger = logger;
         _dataStore = dataStore;
         _registry = registry;
         _archiveAnalyzer = archiveAnalyzer;
+        _archiveManager = archiveManager;
         _jobManager = jobManager;
     }
 
@@ -89,13 +94,35 @@ public class ArchiveInstaller : IArchiveInstaller
                 {
                     try
                     {
-                        var modResults = (await modInstaller.GetModsAsync(
-                            loadout.Value.Installation,
-                            baseMod.Id,
-                            analysisData.Hash,
-                            analysisData.Contents,
-                            token)).ToArray();
-                        return (modResults, modInstaller);
+                        if (modInstaller is IModInstallerEx exInstaller)
+                        {
+                            var tree = FileTreeNode<RelativePath, ModSourceFileEntry>.CreateTree(analysisData.Contents
+                                .Select(f =>
+                                    KeyValuePair.Create(f.Key,
+                                        new ModSourceFileEntry(_archiveManager)
+                                        {
+                                            Hash = f.Value.Hash,
+                                            Size = f.Value.Size
+                                        })));
+                            var modResults = (await exInstaller.GetModsAsyncEx(
+                                loadout.Value.Installation,
+                                baseMod.Id,
+                                analysisData.Hash,
+                                tree,
+                                token)).ToArray();
+
+                            return (modResults, modInstaller);
+                        }
+                        else
+                        {
+                            var modResults = (await modInstaller.GetModsAsync(
+                                loadout.Value.Installation,
+                                baseMod.Id,
+                                analysisData.Hash,
+                                analysisData.Contents,
+                                token)).ToArray();
+                            return (modResults, modInstaller);
+                        }
                     }
                     catch (Exception ex)
                     {

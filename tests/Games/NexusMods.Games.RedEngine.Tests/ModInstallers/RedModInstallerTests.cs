@@ -1,6 +1,4 @@
 ﻿using FluentAssertions;
-using NexusMods.Common;
-using NexusMods.Games.RedEngine.FileAnalyzers;
 using NexusMods.Games.RedEngine.ModInstallers;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
@@ -19,7 +17,7 @@ public class
         var (hash1, hash2) = Next2Hash();
 
         var files = await BuildAndInstall(
-            (hash1, "mymod/info.json", new RedModInfo { Name = "My Mod" }),
+            (hash1, "mymod/info.json", null),
             (hash2, "mymod/blerg.archive", null));
 
         files.Should()
@@ -37,12 +35,11 @@ public class
         var (hash4, hash5, hash6) = Next3Hash();
 
         var files = await BuildAndInstall(
-            (hash1, "mymod1/info.json", new RedModInfo { Name = "My Mod1" }),
+            (hash1, "mymod1/info.json", null),
             (hash2, "mymod1/blerg.archive", null),
-            (hash3, "mymod2/info.json", new RedModInfo { Name = "My Mod2" }),
+            (hash3, "mymod2/info.json", null),
             (hash4, "mymod2/blerg.archive", null),
-            (hash5, "optional/mymod3/info.json",
-                new RedModInfo { Name = "My Mod3" }),
+            (hash5, "optional/mymod3/info.json",null),
             (hash6, "optional/mymod3/blerg.archive", null)
         );
 

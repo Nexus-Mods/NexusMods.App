@@ -14,6 +14,7 @@ using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
+using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.TestFramework;
 
@@ -237,12 +238,31 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
         BuildAndInstall(IEnumerable<ModInstallerExampleFile> files)
     {
         var description = BuildArchiveDescription(files);
+        ModInstallerResult[] mods;
 
-        var mods = (await ModInstaller.GetModsAsync(
-            GameInstallation,
-            ModId.New(),
-            Hash.From(0xDEADBEEF),
-            description)).ToArray();
+        if (ModInstaller is IModInstallerEx exInstaller)
+        {
+            var tree = FileTreeNode<RelativePath, ModSourceFileEntry>.CreateTree(description
+                .Select(f =>
+                    KeyValuePair.Create(f.Key,
+                        new ModSourceFileEntry(ArchiveManager)
+                        {
+                            Hash = f.Value.Hash,
+                            Size = f.Value.Size
+                        })));
+            mods = (await exInstaller.GetModsAsyncEx(
+                GameInstallation,
+                ModId.New(),
+                Hash.From(0xDEADBEEF),
+                tree)).ToArray();
+        }
+        else {
+                mods = (await ModInstaller.GetModsAsync(
+                    GameInstallation,
+                    ModId.New(),
+                    Hash.From(0xDEADBEEF),
+                    description)).ToArray();
+        }
 
         if (mods.Length == 0)
             return Array.Empty<(ulong Hash, GameFolderType FolderType, string Path)>();

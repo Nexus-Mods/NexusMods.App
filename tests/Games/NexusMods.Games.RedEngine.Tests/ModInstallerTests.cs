@@ -109,9 +109,6 @@ public class ModInstallerTests : AGameTest<Cyberpunk2077>
             {
                 "mods/PanamRomancedEnhanced/archives/PanamRomancedEnhanced.archive",
                 "mods/PanamRomancedEnhanced/info.json",
-                "mods/PanamRomancedEnhancedPrivacy/archives/PanamPrivacy.archive",
-                "mods/PanamRomancedEnhancedPrivacy/archives/PanamRomancedEnhancedPrivacy.archive",
-                "mods/PanamRomancedEnhancedPrivacy/info.json"
             }.Select(p => new GamePath(GameFolderType.Game, p))
         },
         new object[]
