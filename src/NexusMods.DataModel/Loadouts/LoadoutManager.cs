@@ -50,7 +50,6 @@ public class LoadoutManager
 
     private readonly IFileSystem _fileSystem;
     private readonly IModInstaller[] _installers;
-    private readonly IArchiveAnalyzer _analyzer;
     private readonly ILookup<GameDomain, ITool> _tools;
     private readonly IInterprocessJobManager _jobManager;
 
@@ -66,7 +65,6 @@ public class LoadoutManager
         IDataStore store,
         FileHashCache fileHashCache,
         IEnumerable<IModInstaller> installers,
-        IArchiveAnalyzer analyzer,
         IEnumerable<ITool> tools,
         IInterprocessJobManager jobManager)
     {
@@ -79,7 +77,6 @@ public class LoadoutManager
         Store = store;
         _jobManager = jobManager;
         _installers = installers.ToArray();
-        _analyzer = analyzer;
         _tools = tools.SelectMany(t => t.Domains.Select(d => (Tool: t, Domain: d)))
             .ToLookup(t => t.Domain, t => t.Tool);
     }

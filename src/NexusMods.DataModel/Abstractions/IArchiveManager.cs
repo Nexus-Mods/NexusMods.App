@@ -51,15 +51,6 @@ public interface IArchiveManager
     /// <param name="token"></param>
     /// <returns></returns>
     Task<Stream> GetFileStream(Hash hash, CancellationToken token = default);
-
-
-    /// <summary>
-    /// Given a archive hash (as returned from BackupFiles), return the file paths, sizes and hash that were given to <see cref="BackupFiles"/>.
-    /// </summary>
-    /// <param name="hash"></param>
-    /// <param name="token"></param>
-    /// <returns></returns>
-    ValueTask<FileTreeNode<RelativePath, ArchivedFileEntry>> GetFileTree(ArchiveId archiveId, CancellationToken token = default);
 }
 
 
@@ -71,4 +62,4 @@ public interface IArchiveManager
 /// <param name="Hash"></param>
 /// <param name="Size"></param>
 /// <param name="Path"></param>
-public readonly record struct ArchivedFileEntry(IStreamFactory StreamFactory, Hash Hash, Size Size, RelativePath? Path = null);
+public readonly record struct ArchivedFileEntry(IStreamFactory StreamFactory, Hash Hash, Size Size);

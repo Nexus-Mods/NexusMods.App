@@ -98,6 +98,13 @@ public interface IId
         return new IdVariableLength(category, mem);
     }
 
+    public static IId From(EntityCategory category, Guid guid)
+    {
+        Span<byte> span = stackalloc byte[16];
+        guid.TryWriteBytes(span);
+        return FromSpan(category, span);
+    }
+
     /// <summary>
     /// Converts the current Span to a tagged span; which embeds the category
     /// of the item in the first byte of the span.

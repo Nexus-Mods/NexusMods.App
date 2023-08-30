@@ -119,7 +119,7 @@ public enum EntityCategory : byte
     GlobalSettings = 16,
 
     /// <summary>
-    /// Table of contents for archives.
+    /// Information about registered downloads
     /// </summary>
-    ArchiveTableOfContents = 17,
+    DownloadMetadata = 17,
 }

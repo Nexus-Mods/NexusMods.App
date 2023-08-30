@@ -6,6 +6,7 @@ using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using NexusMods.Paths.FileTree;
 
 namespace NexusMods.DataModel.ModInstallers;
 
@@ -28,7 +29,6 @@ public interface IModInstaller
     public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
         ModId baseModId,
-        Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
+        FileTreeNode<RelativePath, ArchivedFileEntry> archiveFiles,
         CancellationToken cancellationToken = default);
 }

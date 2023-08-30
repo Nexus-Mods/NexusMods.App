@@ -13,11 +13,14 @@ public static class AbsolutePathExtensions
     /// <param name="job"></param>
     /// <param name="token"></param>
     /// <returns></returns>
-    public static async Task<Hash> XxHash64Async(this AbsolutePath input, IJob<Size> job,
-        CancellationToken token)
+    public static async Task<Hash> XxHash64Async(this AbsolutePath input, IJob<Size>? job = null,
+        CancellationToken token = default)
     {
         await using var inputStream = input.Read();
-        return await inputStream.HashingCopyAsync(Stream.Null, token, async m => await job.ReportAsync(Size.FromLong(m.Length), token));
+        if (job == null)
+            return await inputStream.HashingCopyAsync(Stream.Null, token, async m => await Task.CompletedTask);
+        else
+            return await inputStream.HashingCopyAsync(Stream.Null, token, async m => await job.ReportAsync(Size.FromLong(m.Length), token));
     }
 
 }

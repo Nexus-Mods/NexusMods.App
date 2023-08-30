@@ -15,17 +15,17 @@ public abstract record AArchiveMetaData : Entity
     /// A human readable name for the archive.
     /// </summary>
     public string Name { get; init; } = string.Empty;
-    
+
     /// <summary>
     /// The size of the archive.
     /// </summary>
     public required Size Size { get; init; }
-    
+
     /// <summary>
     /// The hash of the archive.
     /// </summary>
     public required Hash Hash { get; init; }
-    
+
     /// <summary>
     /// How accurate is this metadata? Data from a file on disk is more generic than data
     /// from a NexusMods API call.
@@ -34,6 +34,11 @@ public abstract record AArchiveMetaData : Entity
 
     /// <inheritdoc />
     public override EntityCategory Category => EntityCategory.ArchiveMetaData;
+
+    /// <summary>
+    /// The contents of the archive.
+    /// </summary>
+    public ArchivedFileEntry[] Contents { get; init; } = Array.Empty<ArchivedFileEntry>();
 
     /// <inheritdoc />
     protected override IId Persist(IDataStore store)

@@ -50,18 +50,12 @@ public class ArchiveInstaller : IArchiveInstaller
     }
 
     /// <inheritdoc />
-    public async Task<ModId[]> AddMods(LoadoutId loadoutId, Hash archiveHash, string? defaultModName = null, CancellationToken token = default)
+    public async Task<ModId[]> AddMods(LoadoutId loadoutId, ArchiveId archiveId, string? defaultModName = null, CancellationToken token = default)
     {
-        if (_archiveAnalyzer.GetAnalysisData(archiveHash) is not AnalyzedArchive analysisData)
-        {
-            _logger.LogError("Could not find analysis data for archive {ArchiveHash} or file is not an archive", archiveHash);
-            throw new InvalidOperationException("Could not find analysis data for archive");
-        }
-
         // Get the loadout and create the mod so we can use it in the job.
         var loadout = _registry.GetMarker(loadoutId);
 
-        var metaData = AArchiveMetaData.GetMetaDatas(_dataStore, archiveHash).FirstOrDefault();
+        var metaData = AArchiveMetaData.GetMetaDatas(_dataStore, arch).FirstOrDefault();
         var archiveName = "<unknown>";
         if (metaData is not null && defaultModName == null)
         {
@@ -94,35 +88,12 @@ public class ArchiveInstaller : IArchiveInstaller
                 {
                     try
                     {
-                        if (modInstaller is IModInstallerEx exInstaller)
-                        {
-                            var tree = FileTreeNode<RelativePath, ModSourceFileEntry>.CreateTree(analysisData.Contents
-                                .Select(f =>
-                                    KeyValuePair.Create(f.Key,
-                                        new ModSourceFileEntry(_archiveManager)
-                                        {
-                                            Hash = f.Value.Hash,
-                                            Size = f.Value.Size
-                                        })));
-                            var modResults = (await exInstaller.GetModsAsyncEx(
-                                loadout.Value.Installation,
-                                baseMod.Id,
-                                analysisData.Hash,
-                                tree,
-                                token)).ToArray();
-
-                            return (modResults, modInstaller);
-                        }
-                        else
-                        {
-                            var modResults = (await modInstaller.GetModsAsync(
-                                loadout.Value.Installation,
-                                baseMod.Id,
-                                analysisData.Hash,
-                                analysisData.Contents,
-                                token)).ToArray();
-                            return (modResults, modInstaller);
-                        }
+                        var modResults = (await modInstaller.GetModsAsync(
+                            loadout.Value.Installation,
+                            baseMod.Id,
+                            analysisData.Contents,
+                            token)).ToArray();
+                        return (modResults, modInstaller);
                     }
                     catch (Exception ex)
                     {
