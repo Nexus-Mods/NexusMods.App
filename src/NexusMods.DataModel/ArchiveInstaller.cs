@@ -26,7 +26,6 @@ public class ArchiveInstaller : IArchiveInstaller
 {
     private readonly ILogger<ArchiveInstaller> _logger;
     private readonly IDataStore _dataStore;
-    private readonly IArchiveAnalyzer _archiveAnalyzer;
     private readonly LoadoutRegistry _registry;
     private readonly IInterprocessJobManager _jobManager;
     private readonly IArchiveManager _archiveManager;

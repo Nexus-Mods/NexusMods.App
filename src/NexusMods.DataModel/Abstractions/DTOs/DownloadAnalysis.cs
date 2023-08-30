@@ -42,7 +42,7 @@ public record DownloadAnalysis : Entity
     /// <inheritdoc />
     protected override IId Persist(IDataStore store)
     {
-        var id = IId.From(EntityCategory.DownloadMetadata, ArchiveId.Value);
+        var id = IId.From(EntityCategory.DownloadMetadata, DownloadId.Value);
         store.Put(id, this);
         return id;
     }

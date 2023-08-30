@@ -9,6 +9,7 @@ using NexusMods.DataModel.Loadouts.IngestSteps;
 using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.DataModel.TriggerFilter;
@@ -39,7 +40,7 @@ public class LoadoutSynchronizer
     /// <param name="archiveManager"></param>
     /// <param name="generatedFileFingerprintCache"></param>
     /// <param name="loadoutRegistry"></param>
-    public LoadoutSynchronizer(ILogger<LoadoutSynchronizer> logger, 
+    public LoadoutSynchronizer(ILogger<LoadoutSynchronizer> logger,
         IFingerprintCache<Mod, CachedModSortRules> modSortRulesFingerprintCache,
         IDirectoryIndexer directoryIndexer,
         IArchiveManager archiveManager,
@@ -71,7 +72,7 @@ public class LoadoutSynchronizer
         {
             if (!mod.Enabled)
                 continue;
-            
+
             foreach (var (_, file) in mod.Files)
             {
                 if (file is not IToFile toFile)
@@ -98,7 +99,7 @@ public class LoadoutSynchronizer
             .ToDictionaryAsync(r => r.Id, r => r.Item2);
         if (modRules.Count == 0)
             return Array.Empty<Mod>();
-        
+
         var sorted = Sorter.Sort<Mod, ModId>(mods, m => m.Id, m => modRules[m.Id]);
         return sorted;
     }
@@ -231,7 +232,7 @@ public class LoadoutSynchronizer
             });
             return;
         }
-        
+
         // If the file is generated
         if (pair.File is IGeneratedFile generatedFile)
         {
@@ -322,7 +323,7 @@ public class LoadoutSynchronizer
                 {
                     await EmitIngestReplacePlan(plan, planFile, existing);
                 }
-                // TODO: Fix this, it doesn't contain support for IGeneratedFile, 
+                // TODO: Fix this, it doesn't contain support for IGeneratedFile,
                 // once we re-design apply/ingest this should be implemented
                 continue;
             }
@@ -413,7 +414,7 @@ public class LoadoutSynchronizer
 
         var backups = byType[typeof(BackupFile)]
             .OfType<BackupFile>()
-            .Select(f => ((IStreamFactory)new NativeFileStreamFactory(f.To), f.Hash, f.Size))
+            .Select(f => new ArchivedFileEntry(new NativeFileStreamFactory(f.To), f.Hash, f.Size))
             .ToList();
 
         if (backups.Any())
@@ -460,7 +461,7 @@ public class LoadoutSynchronizer
         var byType = plan.Steps.ToLookup(t => t.GetType());
         var backupFiles = byType[typeof(IngestSteps.BackupFile)]
             .OfType<IngestSteps.BackupFile>()
-            .Select(f => ((IStreamFactory)new NativeFileStreamFactory(f.Source), f.Hash, f.Size));
+            .Select(f => new ArchivedFileEntry(new NativeFileStreamFactory(f.Source), f.Hash, f.Size));
         await _archiveManager.BackupFiles(backupFiles);
 
         return _loadoutRegistry.Alter(plan.Loadout.LoadoutId, commitMessage, new IngestVisitor(byType, plan));

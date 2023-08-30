@@ -6,7 +6,7 @@ namespace NexusMods.DataModel;
 /// Id for a registered download
 /// </summary>
 [ValueObject<Guid>]
-public struct DownloadId
+public partial struct DownloadId
 {
     /// <summary>
     /// Create a new download id, randomly generated

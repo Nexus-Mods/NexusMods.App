@@ -86,26 +86,7 @@ public class ZipArchiveManager : IArchiveManager
 
         await outputPath.MoveToAsync(finalPath, token: token);
         UpdateReverseIndexes(distinct, archiveId, finalPath);
-        UpdateTableOfContents(backupsList, archiveId, finalPath);
         return archiveId;
-    }
-
-    private void UpdateTableOfContents(List<ArchivedFileEntry> backupsList, ArchiveId archiveId, AbsolutePath finalPath)
-    {
-        var toc = new ArchiveTableOfContents
-        {
-            ArchiveId = archiveId,
-            Entries = backupsList
-                .Where(f => f.Path != null)
-                .Select(f => new ArchiveEntry
-            {
-                Hash = f.Hash,
-                Size = f.Size,
-                Path = f.Path!.Value
-            }).ToArray()
-        };
-
-        toc.EnsurePersisted(_store);
     }
 
     private void UpdateReverseIndexes(IEnumerable<ArchivedFileEntry> distinct, ArchiveId archiveId,
@@ -172,25 +153,6 @@ public class ZipArchiveManager : IArchiveManager
         var archive = new ZipArchive(file, ZipArchiveMode.Read, true, System.Text.Encoding.UTF8);
 
         return new ChunkedStream<ChunkedArchiveStream>(new ChunkedArchiveStream(archive, hash));
-    }
-
-
-    /// <inheritdoc />
-    public async ValueTask<FileTreeNode<RelativePath, ArchivedFileEntry>> GetFileTree(ArchiveId archiveId, CancellationToken token = default)
-    {
-        var toc = _store.Get<ArchiveTableOfContents>(ArchiveTableOfContents.IdFor(archiveId));
-        if (toc is null)
-            throw new Exception($"Missing table of contents for {archiveId}");
-
-        return FileTreeNode<RelativePath, ArchivedFileEntry>.CreateTree(toc.Entries.Select(e =>
-            KeyValuePair.Create(
-                e.Path,
-                new ArchivedFileEntry
-        {
-            Hash = e.Hash,
-            Size = e.Size,
-            Path = e.Path
-        })));
     }
 
     private class ChunkedArchiveStream : IChunkedStreamSource

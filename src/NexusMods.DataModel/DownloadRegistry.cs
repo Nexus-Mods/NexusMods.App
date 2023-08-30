@@ -89,6 +89,6 @@ public class DownloadRegistry : IDownloadRegistry
     /// <inheritdoc />
     public async ValueTask<DownloadAnalysis> Get(DownloadId id)
     {
-        return _dataStore.Get<DownloadAnalysis>(IId.From(EntityCategory.DownloadMetadata, id.Value));
+        return _dataStore.Get<DownloadAnalysis>(IId.From(EntityCategory.DownloadMetadata, id.Value))!;
     }
 }

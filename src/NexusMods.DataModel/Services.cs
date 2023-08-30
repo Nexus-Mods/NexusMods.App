@@ -70,7 +70,6 @@ public static class Services
         coll.AddSingleton<LoadoutSynchronizer>();
         coll.AddSingleton<FileHashCache>();
         coll.AddSingleton<GlobalSettingsManager>();
-        coll.AddSingleton<IArchiveAnalyzer, ArchiveAnalyzer>();
         coll.AddSingleton<IArchiveInstaller, ArchiveInstaller>();
         coll.AddSingleton<IToolManager, ToolManager>();
 
@@ -84,7 +83,6 @@ public static class Services
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<AModMetadata>>();
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<Entity>>();
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<IMetadata>>();
-        coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<IFileAnalysisData>>();
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<ISortRule<Mod, ModId>>>();
 
         coll.AddSingleton(s =>

@@ -48,6 +48,11 @@ public class NxArchiveManager : IArchiveManager
         return ValueTask.FromResult(TryGetLocation(hash, out _, out _));
     }
 
+    public Task<ArchiveId> BackupFiles(IEnumerable<ArchivedFileEntry> backups, CancellationToken token = default)
+    {
+        throw new NotImplementedException();
+    }
+
     /// <inheritdoc />
     public async Task BackupFiles(IEnumerable<(IStreamFactory, Hash, Size)> backups, CancellationToken token = default)
     {
