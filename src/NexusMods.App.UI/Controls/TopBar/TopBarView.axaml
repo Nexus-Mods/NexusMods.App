@@ -12,11 +12,12 @@
     xmlns:pills="clr-namespace:NexusMods.App.UI.Controls.Pills"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:topBar="clr-namespace:NexusMods.App.UI.Controls.TopBar"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:localization="clr-namespace:NexusMods.App.UI.Localization">
     <Design.DataContext>
         <topBar:TopBarDesignViewModel ShowWindowControls="True" />
     </Design.DataContext>
-    
+
     <Grid ColumnDefinitions="163, Auto, *, Auto, Auto" x:Name="MainGrid">
         <Svg
             Grid.Column="0"
@@ -25,11 +26,11 @@
             HorizontalAlignment="Center"
             Path="avares://NexusMods.App.UI/Assets/nexus-logo-with-text.svg"
             VerticalAlignment="Center"/>
-        
+
         <Button Classes="Pill Light" Grid.Column="1" Grid.Row="0" x:Name="Premium">
             <StackPanel>
                 <avalonia:Icon Classes="Star" />
-                <TextBlock Text="PREMIUM"></TextBlock>
+                <TextBlock Text="{localization:Localized Nexus_Premium_Status__Premium}"></TextBlock>
             </StackPanel>
         </Button>
 
@@ -52,14 +53,14 @@
                     Foreground="{DynamicResource StructuralBorderBrush}"
                     HorizontalAlignment="Left"
                     Margin="7,0"
-                    Text="Search"
+                    Text="{localization:Localized SearchBox__Search}"
                     VerticalAlignment="Center" />
             </StackPanel>
         </Border>
 
         <StackPanel Grid.Column="3" Classes="TopBarActions">
             <Button Classes="Action">
-                <avalonia:Icon Classes="Help" /> 
+                <avalonia:Icon Classes="Help" />
             </Button>
             <Button Classes="Action">
                 <avalonia:Icon Classes="Cog"></avalonia:Icon>
@@ -68,12 +69,12 @@
                 Classes="Standard Primary"
                 x:Name="LoginButton">
                 <StackPanel>
-                    <TextBlock>LOG IN</TextBlock>
+                    <TextBlock
+                        Text="{localization:Localized TobBarActions__LOG_IN}">
+                    </TextBlock>
                 </StackPanel>
             </Button>
         </StackPanel>
-
-
 
         <Border
             BorderBrush="{DynamicResource StructuralBorderBrush}"

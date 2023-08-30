@@ -140,7 +140,7 @@ public class DownloadTaskViewModelTests
         //mockTask.Setup(t => t.DownloadJobs.GetTotalCompletion()).Returns(Size.From(5000));
         //mockTask.Setup(t => t.DownloadJobs.GetTotalThroughput(It.IsAny<IDateTimeProvider>())).Returns(Size.From(1000));
         task.FriendlyName.Returns("TestName2");
-        task.Status.Returns(DownloadTaskStatus.Completed);
+        task.Status.Returns(DownloadTaskStatus.Downloading);
         (task as IHaveDownloadVersion)!.Version.Returns("2.0");
         (task as IHaveGameName)!.GameName.Returns("GameName2");
         (task as IHaveFileSize)!.SizeBytes.Returns(2000);
@@ -148,6 +148,12 @@ public class DownloadTaskViewModelTests
         var viewModel = new DownloadTaskViewModel(task, false);
         var propertyChangedCounter = 0;
         viewModel.PropertyChanged += (sender, args) => propertyChangedCounter++;
+
+        task.FriendlyName.Returns("TestName3");
+        task.Status.Returns(DownloadTaskStatus.Completed);
+        (task as IHaveDownloadVersion)!.Version.Returns("3.0");
+        (task as IHaveGameName)!.GameName.Returns("GameName3");
+        (task as IHaveFileSize)!.SizeBytes.Returns(3000);
 
         // Act
         viewModel.Poll();

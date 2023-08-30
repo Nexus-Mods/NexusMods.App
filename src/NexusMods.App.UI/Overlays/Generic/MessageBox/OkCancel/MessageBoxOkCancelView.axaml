@@ -8,7 +8,8 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:okCancel="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel"
-    xmlns:base="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base">
+    xmlns:base="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base"
+    xmlns:localization="clr-namespace:NexusMods.App.UI.Localization">
 
     <base:MessageBoxBackground MinWidth="300" MaxWidth="450">
             <base:MessageBoxBackground.TopContent>
@@ -44,10 +45,10 @@
                 <!-- Buttons -->
                 <StackPanel Orientation="Vertical" Margin="24" HorizontalAlignment="Stretch">
                     <Button x:Name="OkButton" Classes="Primary" HorizontalAlignment="Stretch" Margin="0,0,0,10">
-                        <TextBlock Text="YES"/>
+                        <TextBlock Text="{localization:Localized MessageBox_Button_Yes}"/>
                     </Button>
                     <Button x:Name="CancelButton" Classes="LeftMenuItem" HorizontalAlignment="Stretch">
-                        <TextBlock Text="NO" />
+                        <TextBlock Text="{localization:Localized MessageBox_Button_No}" />
                     </Button>
                 </StackPanel>
 

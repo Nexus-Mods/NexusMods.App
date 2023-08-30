@@ -1,9 +1,15 @@
 using System.ComponentModel;
 using System.Globalization;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Text;
 using Avalonia;
+using Avalonia.Data;
+using Avalonia.Data.Core;
 using Avalonia.Markup.Xaml.MarkupExtensions;
+using Avalonia.Markup.Xaml.MarkupExtensions.CompiledBindings;
 using NexusMods.App.UI.Resources;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Localization;
 
@@ -46,6 +52,8 @@ public class Localizer : INotifyPropertyChanged // <= INotifyPropertyChanged is 
         LocaleChanged?.Invoke();
     }
 
+
+
     /// <summary>
     /// Retrieves a string associated with current language, by key.
     /// </summary>
@@ -56,4 +64,59 @@ public class Localizer : INotifyPropertyChanged // <= INotifyPropertyChanged is 
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(IndexerName));
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(IndexerArrayName));
     }
+
+    internal static CompiledBindingExtension GetBindingForKey(string key)
+    {
+        // Tip: This binds the [] method of the Localizer class.
+        // Build binding for '$"[{Key}]"'.
+        var x = new CompiledBindingPathBuilder();
+        x = x.SetRawSource(Localizer.Instance);
+        x = x.Property(
+            new ClrPropertyInfo(
+                "Item",
+                obj => ((Localizer)obj)[key],
+                null,
+                typeof(string)),
+            PropertyInfoAccessorFactory.CreateInpcPropertyAccessor);
+
+        var binding = new CompiledBindingExtension(x.Build())
+        {
+            Mode = BindingMode.OneWay,
+            Source = Localizer.Instance,
+        };
+        return binding;
+    }
+
+    /// <summary>
+    /// Creates a compiled avalonia binding for a localized string.
+    /// The binding will update the string when the locale is changed.
+    /// The new localized value will be retrieved using the provided <paramref name="getLocalizedString"/> function.
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// [!TextBlock.TextProperty] = Localizer.CreateAvaloniaBinding(() => Language.Helpers_GenerateHeader_NAME)
+    /// </code>
+    /// </example>
+    /// <param name="getLocalizedString">A function that returns a string localized for the current locale.</param>
+    /// <returns>A compiled avalonia binding to dynamic localized string.</returns>
+    public static CompiledBindingExtension CreateAvaloniaBinding(Func<string> getLocalizedString)
+    {
+        var x = new CompiledBindingPathBuilder();
+        x = x.SetRawSource(Localizer.Instance);
+        x = x.Property(
+            new ClrPropertyInfo(
+                "Item",
+                obj => getLocalizedString(),
+                null,
+                typeof(string)),
+            PropertyInfoAccessorFactory.CreateInpcPropertyAccessor);
+
+        var binding = new CompiledBindingExtension(x.Build())
+        {
+            Mode = BindingMode.OneWay,
+            Source = Localizer.Instance,
+        };
+        return binding;
+    }
+
 }

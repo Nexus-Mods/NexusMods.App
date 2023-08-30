@@ -5,6 +5,7 @@ using DynamicData.Binding;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Helpers;
+using NexusMods.App.UI.Resources;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.RightContent.Downloads;
@@ -42,7 +43,7 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
                 .OnUI()
                 .BindToClasses(BoldMinutesRemainingTextBlock, StyleConstants.TextBlock.UsesAccentLighterColor)
                 .DisposeWith(d);
-                
+
             this.WhenAnyValue(view => view.ViewModel!.IsRunning)
                 .OnUI()
                 .BindToClasses(MinutesRemainingTextBlock, StyleConstants.TextBlock.UsesAccentLighterColor)
@@ -86,7 +87,7 @@ public partial class InProgressView : ReactiveUserControl<IInProgressViewModel>
                     else
                     {
                         BoldMinutesRemainingTextBlock.Text = StringFormatters.ToTimeRemainingShort(vm.SecondsRemaining);
-                        MinutesRemainingTextBlock.Text = "Remaining";
+                        MinutesRemainingTextBlock.Text = Language.InProgressView_InProgressView_Remaining;
                     }
                 })
                 .DisposeWith(d);
