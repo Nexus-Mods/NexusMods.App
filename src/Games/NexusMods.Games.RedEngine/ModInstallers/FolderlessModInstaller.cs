@@ -16,29 +16,11 @@ namespace NexusMods.Games.RedEngine.ModInstallers;
 /// <summary>
 /// Matches mods that have all the .archive files in the base folder, optionally with other documentation files.
 /// </summary>
-public class FolderlessModInstaller : IModInstaller, IModInstallerEx
+public class FolderlessModInstaller : IModInstaller
 {
     private static readonly RelativePath Destination = "archive/pc/mod".ToRelativePath();
 
-    public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
-        GameInstallation gameInstallation,
-        ModId baseModId,
-        Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
-        CancellationToken cancellationToken = default)
-    {
-        return ValueTask.FromResult(GetMods(baseModId, srcArchiveHash, archiveFiles));
-    }
-
-    private IEnumerable<ModInstallerResult> GetMods(
-        ModId baseModId,
-        Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsyncEx(GameInstallation gameInstallation, ModId baseModId, Hash srcArchiveHash,
+    public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(GameInstallation gameInstallation, ModId baseModId,
         FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles, CancellationToken cancellationToken = default)
     {
 

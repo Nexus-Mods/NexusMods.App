@@ -14,31 +14,12 @@ using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.RedEngine.ModInstallers;
 
-public class RedModInstaller : IModInstaller, IModInstallerEx
+public class RedModInstaller : IModInstaller
 {
     private static readonly RelativePath InfoJson = "info.json".ToRelativePath();
     private static readonly RelativePath Mods = "mods".ToRelativePath();
 
-
-    public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
-        GameInstallation gameInstallation,
-        ModId baseModId,
-        Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
-        CancellationToken cancellationToken = default)
-    {
-        return ValueTask.FromResult(GetMods(baseModId, srcArchiveHash, archiveFiles));
-    }
-
-    private IEnumerable<ModInstallerResult> GetMods(
-        ModId baseModId,
-        Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
-    {
-        throw new NotImplementedException();
-    }
-
-    public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsyncEx(GameInstallation gameInstallation, ModId baseModId, Hash srcArchiveHash,
+    public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(GameInstallation gameInstallation, ModId baseModId,
         FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles, CancellationToken cancellationToken = default)
     {
         var infos = archiveFiles.GetAllDescendentFiles()
