@@ -1,4 +1,6 @@
-﻿using NexusMods.DataModel.Abstractions;
+﻿using NexusMods.Common;
+using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
@@ -16,18 +18,20 @@ public class NxmDownloadProtocolHandler : IDownloadProtocolHandler
     private readonly Client _client;
     private readonly IHttpDownloader _downloader;
     private readonly TemporaryFileManager _temp;
-    private readonly IArchiveAnalyzer _archiveAnalyzer;
     private readonly IArchiveInstaller _archiveInstaller;
+    private readonly IDownloadRegistry _downloaderRegistry;
 
     /// <summary/>
-    public NxmDownloadProtocolHandler(Client client, 
-        IHttpDownloader downloader, TemporaryFileManager temp, 
-        IArchiveInstaller archiveInstaller, IArchiveAnalyzer archiveAnalyzer)
+    public NxmDownloadProtocolHandler(Client client,
+        IHttpDownloader downloader,
+        TemporaryFileManager temp,
+        IArchiveInstaller archiveInstaller,
+        IDownloadRegistry downloadRegistry)
     {
-        _archiveAnalyzer = archiveAnalyzer;
         _archiveInstaller = archiveInstaller;
         _client = client;
         _downloader = downloader;
+        _downloaderRegistry = downloadRegistry;
         _temp = temp;
     }
 
@@ -39,7 +43,7 @@ public class NxmDownloadProtocolHandler : IDownloadProtocolHandler
     {
         await using var tempPath = _temp.CreateFile();
         var parsed = NXMUrl.Parse(url);
-        
+
         // Note: Normally we should probably source domains from the loadout, but in this case, this is okay.
         Response<DownloadLink[]> links;
         if (parsed.Key == null)
@@ -48,9 +52,10 @@ public class NxmDownloadProtocolHandler : IDownloadProtocolHandler
             links = await _client.DownloadLinksAsync(parsed.Mod.Game, parsed.Mod.ModId, parsed.Mod.FileId, parsed.Key.Value, parsed.ExpireTime!.Value, token);
 
         var downloadUris = links.Data.Select(u => new HttpRequestMessage(HttpMethod.Get, u.Uri)).ToArray();
-        
+
         await _downloader.DownloadAsync(downloadUris, tempPath, null, null, token);
-        var hash = await _archiveAnalyzer.AnalyzeFileAsync(tempPath, token);
-        await _archiveInstaller.AddMods(loadout.Value.LoadoutId, hash.Hash, modName, token:token);
+        var downloadId = await _downloaderRegistry.RegisterDownload(tempPath.Path, new FilePathMetadata
+            { OriginalName = tempPath.Path.Name, Quality = Quality.Low }, token);
+        await _archiveInstaller.AddMods(loadout.Value.LoadoutId, downloadId, modName, token:token);
     }
 }

@@ -1,8 +1,10 @@
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.CLI;
 using NexusMods.Abstractions.CLI.DataOutputs;
+using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.Paths;
 
 namespace NexusMods.CLI.Verbs;
@@ -13,7 +15,8 @@ namespace NexusMods.CLI.Verbs;
 /// </summary>
 public class AnalyzeArchive : AVerb<AbsolutePath>, IRenderingVerb
 {
-    private readonly IArchiveAnalyzer _archiveContentsCache;
+    private readonly ILogger<AnalyzeArchive> _logger;
+    private readonly IDownloadRegistry _downloadRegistry;
 
     /// <inheritdoc />
     public IRenderer Renderer { get; set; } = null!;
@@ -23,10 +26,10 @@ public class AnalyzeArchive : AVerb<AbsolutePath>, IRenderingVerb
     /// </summary>
     /// <param name="archiveContentsCache"></param>
     /// <param name="logger"></param>
-    public AnalyzeArchive(IArchiveAnalyzer archiveContentsCache, ILogger<AnalyzeArchive> logger)
+    public AnalyzeArchive(ILogger<AnalyzeArchive> logger, IDownloadRegistry downloadRegistry)
     {
         _logger = logger;
-        _archiveContentsCache = archiveContentsCache;
+        _downloadRegistry = downloadRegistry;
     }
 
     /// <inheritdoc />
@@ -37,7 +40,6 @@ public class AnalyzeArchive : AVerb<AbsolutePath>, IRenderingVerb
             new OptionDefinition<AbsolutePath>("i", "inputFile", "File to Analyze")
         });
 
-    private readonly ILogger<AnalyzeArchive> _logger;
 
     /// <inheritdoc />
     public async Task<int> Run(AbsolutePath inputFile, CancellationToken token)
@@ -46,19 +48,21 @@ public class AnalyzeArchive : AVerb<AbsolutePath>, IRenderingVerb
         {
             var results = await Renderer.WithProgress(token, async () =>
             {
-                var file = await _archiveContentsCache.AnalyzeFileAsync(inputFile, token) as AnalyzedArchive;
-                if (file == null) return Array.Empty<object[]>();
-                return file.Contents.Select(kv =>
+                var downloadId = await _downloadRegistry.RegisterDownload(inputFile, new FilePathMetadata
+                {
+                    OriginalName = inputFile.Name, Quality = Quality.Low
+                }, token);
+                var metadata = await _downloadRegistry.Get(downloadId);
+                return metadata.Contents.Select(kv =>
                 {
                     return new object[]
                     {
-                        kv.Key, kv.Value.Size, kv.Value.Hash,
-                        string.Join(", ", kv.Value.FileTypes.Select(Enum.GetName))
+                        kv.Path, kv.Size, kv.Hash
                     };
                 });
             });
 
-            await Renderer.Render(new Table(new[] { "Path", "Size", "Hash", "Signatures" },
+            await Renderer.Render(new Table(new[] { "Path", "Size", "Hash"},
                 results.OrderBy(e => (RelativePath)e[0])));
         }
         catch (Exception ex)

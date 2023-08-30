@@ -17,31 +17,31 @@ public class AppearancePresetTests : AModInstallerTest<Cyberpunk2077, Appearance
     {
         var hash = NextHash();
         var files = await BuildAndInstall(Priority.Normal,
-            (hash, "cool_choom.preset", FileType.Cyberpunk2077AppearancePreset));
+            (hash, "cool_choom.preset"));
 
         files.Should()
             .BeEquivalentTo(new[]
             {
-                (hash, GameFolderType.Game, "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/female/cool_choom.preset"), 
+                (hash, GameFolderType.Game, "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/female/cool_choom.preset"),
                 (hash, GameFolderType.Game, "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/male/cool_choom.preset")
             });
     }
-    
+
     [Fact]
     public async Task DocumentationFilesAreIgnored()
     {
         var hash = NextHash();
         var files = await BuildAndInstall(Priority.Normal,
-            (hash, "cool_choom.preset", FileType.Cyberpunk2077AppearancePreset),
-            (NextHash(), "README.md", FileType.TXT),
-            (NextHash(), "README.txt", FileType.TXT),
-            (NextHash(), "README.md", FileType.TXT),
-            (NextHash(), "README.pdf", FileType.TXT));
+            (hash, "cool_choom.preset"),
+            (NextHash(), "README.md"),
+            (NextHash(), "README.txt"),
+            (NextHash(), "README.md"),
+            (NextHash(), "README.pdf"));
 
         files.Should()
             .BeEquivalentTo(new[]
             {
-                (hash, GameFolderType.Game, "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/female/cool_choom.preset"), 
+                (hash, GameFolderType.Game, "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/female/cool_choom.preset"),
                 (hash, GameFolderType.Game, "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/male/cool_choom.preset")
             });
     }

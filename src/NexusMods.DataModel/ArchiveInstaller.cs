@@ -87,10 +87,11 @@ public class ArchiveInstaller : IArchiveInstaller
                 .Select(entry =>
                 KeyValuePair.Create(
                     entry.Path,
-                    new ModSourceFileEntry(_archiveManager)
+                    new ModSourceFileEntry
                     {
                         Hash = entry.Hash,
                         Size = entry.Size,
+                        StreamFactory = new ArchiveManagerStreamFactory(_archiveManager, entry.Hash) {Name = entry.Path, Size = entry.Size}
                     })));
 
             // Step 3: Run the archive through the installers.

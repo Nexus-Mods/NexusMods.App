@@ -110,4 +110,10 @@ public class DownloadRegistry : IDownloadRegistry
     {
         return _dataStore.Get<DownloadAnalysis>(IId.From(EntityCategory.DownloadMetadata, id.Value))!;
     }
+
+    /// <inheritdoc />
+    public IEnumerable<DownloadAnalysis> GetAll()
+    {
+        return _dataStore.GetByPrefix<DownloadAnalysis>(new Id64(EntityCategory.DownloadMetadata, 0));
+    }
 }

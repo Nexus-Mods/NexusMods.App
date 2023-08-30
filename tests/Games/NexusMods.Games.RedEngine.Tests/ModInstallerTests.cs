@@ -20,8 +20,8 @@ public class ModInstallerTests : AGameTest<Cyberpunk2077>
         Hash hash, IEnumerable<GamePath> files)
     {
         var loadout = await CreateLoadout(indexGameFiles:false);
-        await DownloadAndCacheMod(GameInstallation.Game.Domain, modId, fileId, hash);
-        var mod = await InstallModFromArchiveIntoLoadout(loadout, hash, name);
+        var id = await DownloadAndCacheMod(GameInstallation.Game.Domain, modId, fileId, hash);
+        var mod = await InstallModFromArchiveIntoLoadout(loadout, id, name);
 
         mod.Files.Values
             .OfType<IToFile>()

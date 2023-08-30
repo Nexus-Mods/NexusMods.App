@@ -33,4 +33,11 @@ public interface IDownloadRegistry
     /// <param name="id"></param>
     /// <returns></returns>
     public ValueTask<DownloadAnalysis> Get(DownloadId id);
+
+
+    /// <summary>
+    /// Get the analysis of all downloads
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerable<DownloadAnalysis> GetAll();
 }

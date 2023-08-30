@@ -1,13 +1,10 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.ModInstallers;
-using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.FileTree;
@@ -22,16 +19,18 @@ public class RedModInstaller : IModInstaller
     public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(GameInstallation gameInstallation, ModId baseModId,
         FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles, CancellationToken cancellationToken = default)
     {
-        var infos = archiveFiles.GetAllDescendentFiles()
-            .Where(f => f.Path.FileName == InfoJson)
-            .SelectAsync(async f => (File: f, InfoJson: await ReadInfoJson(f.Value!)))
-            .Where(node => node.InfoJson != null);
+        var infos = (await archiveFiles.GetAllDescendentFiles()
+                .Where(f => f.Path.FileName == InfoJson)
+                .SelectAsync(async f => (File: f, InfoJson: await ReadInfoJson(f.Value!)))
+                .ToArrayAsync())
+            .Where(node => node.InfoJson != null)
+            .ToArray();
 
 
         List<ModInstallerResult> results = new();
 
         var baseIdUsed = false;
-        await foreach (var node in infos)
+        foreach (var node in infos)
         {
             var modFolder = node.File.Parent;
             var parentName = modFolder.Name;

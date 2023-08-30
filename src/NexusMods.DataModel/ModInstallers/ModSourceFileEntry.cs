@@ -1,4 +1,4 @@
-﻿using NexusMods.DataModel.Abstractions;
+﻿using NexusMods.Common;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Hashing.xxHash64;
@@ -6,18 +6,15 @@ using NexusMods.Paths;
 
 namespace NexusMods.DataModel.ModInstallers;
 
+/// <summary>
+/// A helper class for providing information about a mod file to an installer
+/// </summary>
 public class ModSourceFileEntry
 {
-    private IArchiveManager _manager;
-
     /// <summary>
-    /// Creates a new instance of <see cref="ModSourceFileEntry"/> given the provided <paramref name="manager"/>.
+    /// A factory that can be used to open the file and read its contents
     /// </summary>
-    /// <param name="manager"></param>
-    public ModSourceFileEntry(IArchiveManager manager)
-    {
-        _manager = manager;
-    }
+    public required IStreamFactory StreamFactory { get; init; }
 
     /// <summary>
     /// The hash of the file
@@ -35,7 +32,7 @@ public class ModSourceFileEntry
     /// <returns></returns>
     public async ValueTask<Stream> Open()
     {
-        return await _manager.GetFileStream(Hash);
+        return await StreamFactory.GetStreamAsync();
     }
 
     /// <summary>

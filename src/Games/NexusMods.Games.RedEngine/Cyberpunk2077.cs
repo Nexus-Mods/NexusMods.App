@@ -11,10 +11,12 @@ public class Cyberpunk2077 : AGame, ISteamGame, IGogGame, IEpicGame
 {
     public static readonly GameDomain StaticDomain = GameDomain.From("cyberpunk2077");
     private readonly IFileSystem _fileSystem;
+    private readonly IServiceProvider _serviceProvider;
 
-    public Cyberpunk2077(IEnumerable<IGameLocator> gameLocators, IFileSystem fileSystem) : base(gameLocators)
+    public Cyberpunk2077(IEnumerable<IGameLocator> gameLocators, IFileSystem fileSystem, IServiceProvider provider) : base(gameLocators)
     {
         _fileSystem = fileSystem;
+        _serviceProvider = provider;
     }
 
     public override string Name => "Cyberpunk 2077";
@@ -53,7 +55,7 @@ public class Cyberpunk2077 : AGame, ISteamGame, IGogGame, IEpicGame
     {
         new RedModInstaller(),
         new SimpleOverlayModInstaller(),
-        new AppearancePreset(),
+        new AppearancePreset(_serviceProvider),
         new FolderlessModInstaller()
     };
 }
