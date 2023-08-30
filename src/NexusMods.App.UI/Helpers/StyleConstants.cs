@@ -1,3 +1,6 @@
+using Microsoft.CodeAnalysis.CSharp;
+using NexusMods.App.UI.Resources;
+
 namespace NexusMods.App.UI.Helpers;
 
 /// <summary>
@@ -8,11 +11,5 @@ public static class StyleConstants
     public static class TextBlock
     {
         public const string UsesAccentLighterColor = "UsesAccentLighterColor";
-    }
-    
-    public static class SpineDownloadButton
-    {
-        public const string Idle = "Idle";
-        public const string Progress = "Progress";
     }
 }

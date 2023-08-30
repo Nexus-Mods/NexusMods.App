@@ -78,9 +78,6 @@ Questi dati sono raccolti in maniera anonima e non saranno mai condivisi con ter
     <data name="MetricsOptIn_MoreInfoAboutTheDataWeTrack" xml:space="preserve">
         <value>Più informazioni riguardanti i dati che raccogliamo.</value>
     </data>
-    <data name="MetricsOptIn_OverlayTitle" xml:space="preserve">
-        <value>Dati diagnostici e di utilizzo</value>
-    </data>
     <data name="MyGames" xml:space="preserve">
         <value>I Miei Giochi</value>
     </data>
@@ -104,5 +101,14 @@ Questi dati sono raccolti in maniera anonima e non saranno mai condivisi con ter
     </data>
     <data name="StringFormatters__In_progress__numDownloads" xml:space="preserve">
         <value>In corso ({0})</value>
+    </data>
+    <data name="DownloadStatus_Idle" xml:space="preserve">
+        <value>Inattivo</value>
+    </data>
+    <data name="DownloadStatus_Progress" xml:space="preserve">
+        <value>Progresso</value>
+    </data>
+    <data name="MetricsOptIn_OverlayTitle" xml:space="preserve">
+        <value>Dati diagnostici e di utilizzo</value>
     </data>
 </root>

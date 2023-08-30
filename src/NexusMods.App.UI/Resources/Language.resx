@@ -42,9 +42,6 @@
     <data name="MetricsOptIn_MainMessage" xml:space="preserve">
         <value>Help us provide you with the best modding experience.&#x0a;&#x0a;With your permission, we will collect analytics information and send it to our team to help us improve quality and performance.&#x0a;&#x0a;This information is sent anonymously and will never be shared with a 3rd party.</value>
     </data>
-    <data name="MetricsOptIn_OverlayTitle" xml:space="preserve">
-        <value>Diagnostics and usage data</value>
-    </data>
     <data name="LoadoutGridView_AddMod_FilePicker_Title" xml:space="preserve">
         <value>Please select a mod file to install.</value>
     </data>
@@ -110,5 +107,11 @@
     </data>
     <data name="StringFormatters__In_progress__numDownloads" xml:space="preserve">
         <value>In progress ({0})</value>
+    </data>
+    <data name="DownloadStatus_Idle" xml:space="preserve">
+        <value>Idle</value>
+    </data>
+    <data name="DownloadStatus_Progress" xml:space="preserve">
+        <value>Progress</value>
     </data>
 </root>

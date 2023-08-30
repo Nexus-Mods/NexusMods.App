@@ -87,6 +87,24 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Idle.
+        /// </summary>
+        public static string DownloadStatus_Idle {
+            get {
+                return ResourceManager.GetString("DownloadStatus_Idle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Progress.
+        /// </summary>
+        public static string DownloadStatus_Progress {
+            get {
+                return ResourceManager.GetString("DownloadStatus_Progress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unknown.
         /// </summary>
         public static string DownloadTaskViewModel_Field_Unknown {

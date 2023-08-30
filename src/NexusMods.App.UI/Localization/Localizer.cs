@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Globalization;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
 using Avalonia;
@@ -8,6 +9,7 @@ using Avalonia.Data.Core;
 using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Markup.Xaml.MarkupExtensions.CompiledBindings;
 using NexusMods.App.UI.Resources;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Localization;
 
@@ -49,6 +51,8 @@ public class Localizer : INotifyPropertyChanged // <= INotifyPropertyChanged is 
         Invalidate();
         LocaleChanged?.Invoke();
     }
+
+
 
     /// <summary>
     /// Retrieves a string associated with current language, by key.
