@@ -1,3 +1,4 @@
+using System.Reactive.Disposables;
 using NexusMods.App.UI.Localization;
 using NexusMods.App.UI.Resources;
 using NexusMods.DataModel.RateLimiting;
@@ -8,7 +9,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.RightContent.Downloads.ViewModels;
 
-public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownloadTaskViewModel
+public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownloadTaskViewModel, IDisposable
 {
     public IDownloadTask Task => _task;
     private readonly IDownloadTask _task;
@@ -17,7 +18,7 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
     public DownloadTaskViewModel(IDownloadTask task, bool initPreviousStates = true)
     {
         _task = task;
-        _localizedStringUpdater = new LocalizedStringUpdater(() => Poll());
+        _localizedStringUpdater = new LocalizedStringUpdater(Poll);
 
         // Initialize the previous states
         if (!initPreviousStates)
@@ -131,4 +132,6 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
             this.RaisePropertyChanged(nameof(Throughput));
         }
     }
+
+    public void Dispose() => _localizedStringUpdater.Dispose();
 }
