@@ -29,6 +29,6 @@ public interface IModInstaller
     public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
         ModId baseModId,
-        FileTreeNode<RelativePath, ArchivedFileEntry> archiveFiles,
+        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         CancellationToken cancellationToken = default);
 }

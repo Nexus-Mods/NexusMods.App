@@ -30,12 +30,13 @@ public class ArchiveInstaller : IArchiveInstaller
     private readonly LoadoutRegistry _registry;
     private readonly IInterprocessJobManager _jobManager;
     private readonly IArchiveManager _archiveManager;
+    private readonly IDownloadRegistry _downloadRegistry;
 
     /// <summary>
     /// DI Constructor
     /// </summary>
     public ArchiveInstaller(ILogger<ArchiveInstaller> logger,
-        IArchiveAnalyzer archiveAnalyzer,
+        IDownloadRegistry downloadRegistry,
         IDataStore dataStore,
         LoadoutRegistry registry,
         IArchiveManager archiveManager,
@@ -43,23 +44,23 @@ public class ArchiveInstaller : IArchiveInstaller
     {
         _logger = logger;
         _dataStore = dataStore;
+        _downloadRegistry = downloadRegistry;
         _registry = registry;
-        _archiveAnalyzer = archiveAnalyzer;
         _archiveManager = archiveManager;
         _jobManager = jobManager;
     }
 
     /// <inheritdoc />
-    public async Task<ModId[]> AddMods(LoadoutId loadoutId, ArchiveId archiveId, string? defaultModName = null, CancellationToken token = default)
+    public async Task<ModId[]> AddMods(LoadoutId loadoutId, DownloadId downloadId, string? defaultModName = null, CancellationToken token = default)
     {
         // Get the loadout and create the mod so we can use it in the job.
         var loadout = _registry.GetMarker(loadoutId);
 
-        var metaData = AArchiveMetaData.GetMetaDatas(_dataStore, arch).FirstOrDefault();
+        var download = await _downloadRegistry.Get(downloadId);
         var archiveName = "<unknown>";
-        if (metaData is not null && defaultModName == null)
+        if (download.MetaData is not null && defaultModName == null)
         {
-            archiveName = metaData.Name;
+            archiveName = download.MetaData.Name;
         }
 
         var baseMod = new Mod
@@ -82,6 +83,17 @@ public class ArchiveInstaller : IArchiveInstaller
                 LoadoutId = loadoutId
             });
 
+            // Create a tree so installers can find the file easily.
+            var tree = FileTreeNode<RelativePath, ModSourceFileEntry>.CreateTree(download.Contents
+                .Select(entry =>
+                KeyValuePair.Create(
+                    entry.Path,
+                    new ModSourceFileEntry(_archiveManager)
+                    {
+                        Hash = entry.Hash,
+                        Size = entry.Size,
+                    })));
+
             // Step 3: Run the archive through the installers.
             var (results, modInstaller) = (await loadout.Value.Installation.Game.Installers
                 .SelectAsync(async modInstaller =>
@@ -91,7 +103,7 @@ public class ArchiveInstaller : IArchiveInstaller
                         var modResults = (await modInstaller.GetModsAsync(
                             loadout.Value.Installation,
                             baseMod.Id,
-                            analysisData.Contents,
+                            tree,
                             token)).ToArray();
                         return (modResults, modInstaller);
                     }
