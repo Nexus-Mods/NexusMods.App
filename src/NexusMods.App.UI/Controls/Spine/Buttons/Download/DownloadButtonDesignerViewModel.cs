@@ -1,5 +1,4 @@
 ﻿using System.Windows.Input;
-using NexusMods.App.UI.Resources;
 using NexusMods.DataModel.RateLimiting;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -22,12 +21,6 @@ public class DownloadButtonDesignerViewModel : AViewModel<IDownloadButtonViewMod
 
     [Reactive]
     public bool IsActive { get; set; }
-
-    [Reactive]
-    public string IdleText { get; set; } = Language.DownloadStatus_Idle;
-
-    [Reactive]
-    public string ProgressText { get; set; } = Language.DownloadStatus_Progress;
 
     public DownloadButtonDesignerViewModel()
     {
