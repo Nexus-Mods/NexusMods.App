@@ -186,6 +186,60 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Complete.
+        /// </summary>
+        public static string DownloadStatusDesignViewModel_FormatStatus_Complete {
+            get {
+                return ResourceManager.GetString("DownloadStatusDesignViewModel_FormatStatus_Complete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Downloading.
+        /// </summary>
+        public static string DownloadStatusDesignViewModel_FormatStatus_Downloading {
+            get {
+                return ResourceManager.GetString("DownloadStatusDesignViewModel_FormatStatus_Downloading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installing.
+        /// </summary>
+        public static string DownloadStatusDesignViewModel_FormatStatus_Installing {
+            get {
+                return ResourceManager.GetString("DownloadStatusDesignViewModel_FormatStatus_Installing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Paused.
+        /// </summary>
+        public static string DownloadStatusDesignViewModel_FormatStatus_Paused {
+            get {
+                return ResourceManager.GetString("DownloadStatusDesignViewModel_FormatStatus_Paused", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Queued.
+        /// </summary>
+        public static string DownloadStatusDesignViewModel_FormatStatus_Queued {
+            get {
+                return ResourceManager.GetString("DownloadStatusDesignViewModel_FormatStatus_Queued", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Queued 0%.
+        /// </summary>
+        public static string DownloadStatusDesignViewModel_Text_Queued_0_ {
+            get {
+                return ResourceManager.GetString("DownloadStatusDesignViewModel_Text_Queued_0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Completed.
         /// </summary>
         public static string DownloadsView__Completed {
@@ -555,6 +609,15 @@ namespace NexusMods.App.UI.Resources {
         public static string NexusLoginOverlayView_Please_copy_url {
             get {
                 return ResourceManager.GetString("NexusLoginOverlayView_Please_copy_url", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total {1:0}%.
+        /// </summary>
+        public static string ProgressBar_ProgressTextFormat__Total_1_0 {
+            get {
+                return ResourceManager.GetString("ProgressBar_ProgressTextFormat__Total_1_0", resourceCulture);
             }
         }
         

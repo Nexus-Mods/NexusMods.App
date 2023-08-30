@@ -2,6 +2,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using NexusMods.App.UI.Controls.DataGrid;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.RightContent.Downloads.ViewModels;
 using NexusMods.Networking.Downloaders.Interfaces;
 using ReactiveUI;
@@ -15,7 +16,7 @@ public class DownloadStatusDesignViewModel : AViewModel<IDownloadStatusViewModel
     public IDownloadTaskViewModel Row { get; set; } = new DownloadTaskDesignViewModel();
 
     [Reactive]
-    public string Text { get; set; } = "Queued 0%";
+    public string Text { get; set; } = Language.DownloadStatusDesignViewModel_Text_Queued_0_;
 
     [Reactive]
     public float CurrentValue { get; set; }
@@ -31,7 +32,7 @@ public class DownloadStatusDesignViewModel : AViewModel<IDownloadStatusViewModel
 
     public DownloadStatusDesignViewModel()
     {
-        PauseOrResume = ReactiveCommand.Create(() => {    
+        PauseOrResume = ReactiveCommand.Create(() => {
             if (Row.Status != DownloadTaskStatus.Paused)
                 Row.Suspend();
             else if (Row.Status != DownloadTaskStatus.Downloading || Row.Status != DownloadTaskStatus.Idle)
@@ -67,11 +68,11 @@ public class DownloadStatusDesignViewModel : AViewModel<IDownloadStatusViewModel
         var percent = Math.Round((usedBytes / (float)Math.Max(1, totalBytes) * 100));
         var status = state switch
         {
-            DownloadTaskStatus.Idle => "Queued",
-            DownloadTaskStatus.Paused => "Paused",
-            DownloadTaskStatus.Downloading => "Downloading",
-            DownloadTaskStatus.Installing => "Installing",
-            DownloadTaskStatus.Completed => "Complete",
+            DownloadTaskStatus.Idle => Language.DownloadStatusDesignViewModel_FormatStatus_Queued,
+            DownloadTaskStatus.Paused => Language.DownloadStatusDesignViewModel_FormatStatus_Paused,
+            DownloadTaskStatus.Downloading => Language.DownloadStatusDesignViewModel_FormatStatus_Downloading,
+            DownloadTaskStatus.Installing => Language.DownloadStatusDesignViewModel_FormatStatus_Installing,
+            DownloadTaskStatus.Completed => Language.DownloadStatusDesignViewModel_FormatStatus_Complete,
             _ => throw new ArgumentOutOfRangeException(nameof(state), state, null)
         };
 

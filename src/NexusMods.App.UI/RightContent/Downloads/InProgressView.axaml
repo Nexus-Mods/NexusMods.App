@@ -23,7 +23,7 @@
                     <Button x:Name="CancelButton">
                         <StackPanel>
                             <avalonia:Icon Classes="RemoveCircleOutline" />
-                            <TextBlock Text="{localization:Localized DownloadInProgressView__IN_PROGRESS}"></TextBlock>
+                            <TextBlock Text="{localization:Localized DownloadInProgressView__Cancel}"></TextBlock>
                         </StackPanel>
                     </Button>
                     <Button x:Name="PauseButton">
