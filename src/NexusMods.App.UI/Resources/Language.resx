@@ -114,4 +114,91 @@
     <data name="DownloadStatus_Progress" xml:space="preserve">
         <value>Progress</value>
     </data>
+    <data name="Nexus_Premium_Status__Premium" xml:space="preserve">
+        <value>PREMIUM</value>
+    </data>
+    <data name="SearchBox__Search" xml:space="preserve">
+        <value>Search</value>
+    </data>
+    <data name="TopBarActions__LOG_IN" xml:space="preserve">
+        <value>LOG IN</value>
+    </data>
+    <data name="GameWidget__Add_game" xml:space="preserve">
+        <value>Add game</value>
+    </data>
+    <data name="DownloadsView__DOWNLOADS" xml:space="preserve">
+        <value>DOWNLOADS</value>
+    </data>
+    <data name="DownloadsView__In_Progress" xml:space="preserve">
+        <value>In Progress</value>
+    </data>
+    <data name="DownloadsView__Completed" xml:space="preserve">
+        <value>Completed</value>
+    </data>
+    <data name="DownloadsView__Download_history" xml:space="preserve">
+        <value>Download history</value>
+    </data>
+    <data name="NexusLoginOverlayView__Please_Click_Authorize" xml:space="preserve">
+        <value>PLEASE CLICK &amp;quot;AUTHORIZE&amp;quot; ON THE WEBSITE</value>
+    </data>
+    <data name="NexusLoginOverlayView__BROWSER_DIDNT_OPEN" xml:space="preserve">
+        <value>BROWSER DIDN'T OPEN AUTOMATICALLY?</value>
+    </data>
+    <data name="NexusLoginOverlayView_Please_copy_url" xml:space="preserve">
+        <value>Please copy the following URL into your browser window. We support Chrome, Safari, Firefox and Edge.</value>
+    </data>
+    <data name="DownloadCompleted_COMPLETED" xml:space="preserve">
+        <value>COMPLETED</value>
+    </data>
+    <data name="DownloadCompleted_Clear_All" xml:space="preserve">
+        <value>Clear All</value>
+    </data>
+    <data name="DownloadHistoryView__HISTORY" xml:space="preserve">
+        <value>HISTORY</value>
+    </data>
+    <data name="DownloadInProgressView__IN_PROGRESS" xml:space="preserve">
+        <value>IN PROGRESS</value>
+    </data>
+    <data name="DownloadInProgressView__Cancel" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="DownloadInPorgressView__Pause" xml:space="preserve">
+        <value>Pause</value>
+    </data>
+    <data name="DownloadInProgressView__Pause_All" xml:space="preserve">
+        <value>Pause all</value>
+    </data>
+    <data name="InProgressTitleTextBlock" xml:space="preserve">
+        <value>In progress (0)</value>
+    </data>
+    <data name="BoldMinutesRemainingTextBlock" xml:space="preserve">
+        <value>0 mins</value>
+    </data>
+    <data name="MinutesRemainingTextBlock" xml:space="preserve">
+        <value>remaining</value>
+    </data>
+    <data name="InProgressView_InProgressView_Remaining" xml:space="preserve">
+        <value>remaining</value>
+    </data>
+    <data name="HomeView__We_found_games" xml:space="preserve">
+        <value>We found games ready to mod!</value>
+    </data>
+    <data name="HomeView__CANT_SEE_YOUR_GAME" xml:space="preserve">
+        <value>CAN'T SEE YOUR GAME</value>
+    </data>
+    <data name="HomeView__BROWSE_ALL_GAMES" xml:space="preserve">
+        <value>BROWSE ALL GAMES</value>
+    </data>
+    <data name="LoadoutGridView__Add_Mod" xml:space="preserve">
+        <value>Add Mod</value>
+    </data>
+    <data name="MyGamesView__Ready_to_mod" xml:space="preserve">
+        <value>Ready to mod</value>
+    </data>
+    <data name="MyGamesView__Detected_games" xml:space="preserve">
+        <value>Detected games</value>
+    </data>
+    <data name="Button_Manage" xml:space="preserve">
+        <value>Manage</value>
+    </data>
 </root>

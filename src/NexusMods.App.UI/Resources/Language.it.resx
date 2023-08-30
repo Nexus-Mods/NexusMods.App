@@ -111,4 +111,91 @@ Questi dati sono raccolti in maniera anonima e non saranno mai condivisi con ter
     <data name="MetricsOptIn_OverlayTitle" xml:space="preserve">
         <value>Dati diagnostici e di utilizzo</value>
     </data>
+    <data name="Nexus_Premium_Status__Premium" xml:space="preserve">
+        <value>PREMIUM</value>
+    </data>
+    <data name="SearchBox__Search" xml:space="preserve">
+        <value>Cerca</value>
+    </data>
+    <data name="TopBarActions__LOG_IN" xml:space="preserve">
+        <value>LOGIN</value>
+    </data>
+    <data name="GameWidget__Add_game" xml:space="preserve">
+        <value>Aggiungi gioco</value>
+    </data>
+    <data name="DownloadsView__DOWNLOADS" xml:space="preserve">
+        <value>DOWNLOAD</value>
+    </data>
+    <data name="DownloadsView__In_Progress" xml:space="preserve">
+        <value>In Corso</value>
+    </data>
+    <data name="DownloadsView__Completed" xml:space="preserve">
+        <value>Completati</value>
+    </data>
+    <data name="DownloadsView__Download_history" xml:space="preserve">
+        <value>Cronologia Download</value>
+    </data>
+    <data name="NexusLoginOverlayView__Please_Click_Authorize" xml:space="preserve">
+        <value>CLICCA &amp;quot;AUTHORIZE&amp;quot; SUL SITO PER PROCEDERE</value>
+    </data>
+    <data name="NexusLoginOverlayView__BROWSER_DIDNT_OPEN" xml:space="preserve">
+        <value>BROWSER NON SI È APERTO AUTOMATICAMENTE?</value>
+    </data>
+    <data name="NexusLoginOverlayView_Please_copy_url" xml:space="preserve">
+        <value>Copia il seguente URL nella finestra del browser. Supportiamo Chrome, Safari, Firefox e Edge.</value>
+    </data>
+    <data name="DownloadCompleted_COMPLETED" xml:space="preserve">
+        <value>Completati</value>
+    </data>
+    <data name="DownloadCompleted_Clear_All" xml:space="preserve">
+        <value>Cancella Tutto</value>
+    </data>
+    <data name="DownloadHistoryView__HISTORY" xml:space="preserve">
+        <value>CRONOLOGIA</value>
+    </data>
+    <data name="DownloadInProgressView__IN_PROGRESS" xml:space="preserve">
+        <value>IN CORSO</value>
+    </data>
+    <data name="DownloadInProgressView__Cancel" xml:space="preserve">
+        <value>Annulla</value>
+    </data>
+    <data name="DownloadInPorgressView__Pause" xml:space="preserve">
+        <value>Pausa</value>
+    </data>
+    <data name="DownloadInProgressView__Pause_All" xml:space="preserve">
+        <value>Pausa tutti</value>
+    </data>
+    <data name="InProgressTitleTextBlock" xml:space="preserve">
+        <value>In corso (0)</value>
+    </data>
+    <data name="BoldMinutesRemainingTextBlock" xml:space="preserve">
+        <value>0 minuti</value>
+    </data>
+    <data name="MinutesRemainingTextBlock" xml:space="preserve">
+        <value>rimanenti</value>
+    </data>
+    <data name="InProgressView_InProgressView_Remaining" xml:space="preserve">
+        <value>rimanenti</value>
+    </data>
+    <data name="HomeView__We_found_games" xml:space="preserve">
+        <value>Abbiamo trovato giochi pronti per modding!</value>
+    </data>
+    <data name="HomeView__CANT_SEE_YOUR_GAME" xml:space="preserve">
+        <value>GIOCO NON TROVATO</value>
+    </data>
+    <data name="HomeView__BROWSE_ALL_GAMES" xml:space="preserve">
+        <value>SFOGLIA TUTTI I GIOCHI</value>
+    </data>
+    <data name="LoadoutGridView__Add_Mod" xml:space="preserve">
+        <value>Aggiungi Mod</value>
+    </data>
+    <data name="MyGamesView__Detected_games" xml:space="preserve">
+        <value>Giochi rilevati</value>
+    </data>
+    <data name="MyGamesView__Ready_to_mod" xml:space="preserve">
+        <value>Pronti per modding</value>
+    </data>
+    <data name="Button_Manage" xml:space="preserve">
+        <value>Gestisci</value>
+    </data>
 </root>

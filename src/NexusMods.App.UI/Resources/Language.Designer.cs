@@ -60,11 +60,29 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 0 mins.
+        /// </summary>
+        public static string BoldMinutesRemainingTextBlock {
+            get {
+                return ResourceManager.GetString("BoldMinutesRemainingTextBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Browse Games.
         /// </summary>
         public static string BrowseGames {
             get {
                 return ResourceManager.GetString("BrowseGames", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manage.
+        /// </summary>
+        public static string Button_Manage {
+            get {
+                return ResourceManager.GetString("Button_Manage", resourceCulture);
             }
         }
         
@@ -87,6 +105,69 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Clear All.
+        /// </summary>
+        public static string DownloadCompleted_Clear_All {
+            get {
+                return ResourceManager.GetString("DownloadCompleted_Clear_All", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to COMPLETED.
+        /// </summary>
+        public static string DownloadCompleted_COMPLETED {
+            get {
+                return ResourceManager.GetString("DownloadCompleted_COMPLETED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HISTORY.
+        /// </summary>
+        public static string DownloadHistoryView__HISTORY {
+            get {
+                return ResourceManager.GetString("DownloadHistoryView__HISTORY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pause.
+        /// </summary>
+        public static string DownloadInPorgressView__Pause {
+            get {
+                return ResourceManager.GetString("DownloadInPorgressView__Pause", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string DownloadInProgressView__Cancel {
+            get {
+                return ResourceManager.GetString("DownloadInProgressView__Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IN PROGRESS.
+        /// </summary>
+        public static string DownloadInProgressView__IN_PROGRESS {
+            get {
+                return ResourceManager.GetString("DownloadInProgressView__IN_PROGRESS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pause all.
+        /// </summary>
+        public static string DownloadInProgressView__Pause_All {
+            get {
+                return ResourceManager.GetString("DownloadInProgressView__Pause_All", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Idle.
         /// </summary>
         public static string DownloadStatus_Idle {
@@ -105,6 +186,42 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Completed.
+        /// </summary>
+        public static string DownloadsView__Completed {
+            get {
+                return ResourceManager.GetString("DownloadsView__Completed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download history.
+        /// </summary>
+        public static string DownloadsView__Download_history {
+            get {
+                return ResourceManager.GetString("DownloadsView__Download_history", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DOWNLOADS.
+        /// </summary>
+        public static string DownloadsView__DOWNLOADS {
+            get {
+                return ResourceManager.GetString("DownloadsView__DOWNLOADS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In Progress.
+        /// </summary>
+        public static string DownloadsView__In_Progress {
+            get {
+                return ResourceManager.GetString("DownloadsView__In_Progress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unknown.
         /// </summary>
         public static string DownloadTaskViewModel_Field_Unknown {
@@ -119,6 +236,15 @@ namespace NexusMods.App.UI.Resources {
         public static string DownloadTaskViewModel_Version_Unknown {
             get {
                 return ResourceManager.GetString("DownloadTaskViewModel_Version_Unknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add game.
+        /// </summary>
+        public static string GameWidget__Add_game {
+            get {
+                return ResourceManager.GetString("GameWidget__Add_game", resourceCulture);
             }
         }
         
@@ -195,6 +321,51 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to BROWSE ALL GAMES.
+        /// </summary>
+        public static string HomeView__BROWSE_ALL_GAMES {
+            get {
+                return ResourceManager.GetString("HomeView__BROWSE_ALL_GAMES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CAN&apos;T SEE YOUR GAME.
+        /// </summary>
+        public static string HomeView__CANT_SEE_YOUR_GAME {
+            get {
+                return ResourceManager.GetString("HomeView__CANT_SEE_YOUR_GAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to We found games ready to mod!.
+        /// </summary>
+        public static string HomeView__We_found_games {
+            get {
+                return ResourceManager.GetString("HomeView__We_found_games", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In progress (0).
+        /// </summary>
+        public static string InProgressTitleTextBlock {
+            get {
+                return ResourceManager.GetString("InProgressTitleTextBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to remaining.
+        /// </summary>
+        public static string InProgressView_InProgressView_Remaining {
+            get {
+                return ResourceManager.GetString("InProgressView_InProgressView_Remaining", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to LAUNCH.
         /// </summary>
         public static string LaunchButtonViewModel_LaunchGame_LAUNCH {
@@ -209,6 +380,15 @@ namespace NexusMods.App.UI.Resources {
         public static string LaunchButtonViewModel_LaunchGame_RUNNING {
             get {
                 return ResourceManager.GetString("LaunchButtonViewModel_LaunchGame_RUNNING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add Mod.
+        /// </summary>
+        public static string LoadoutGridView__Add_Mod {
+            get {
+                return ResourceManager.GetString("LoadoutGridView__Add_Mod", resourceCulture);
             }
         }
         
@@ -298,6 +478,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to remaining.
+        /// </summary>
+        public static string MinutesRemainingTextBlock {
+            get {
+                return ResourceManager.GetString("MinutesRemainingTextBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to My Games.
         /// </summary>
         public static string MyGames {
@@ -307,11 +496,74 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Detected games.
+        /// </summary>
+        public static string MyGamesView__Detected_games {
+            get {
+                return ResourceManager.GetString("MyGamesView__Detected_games", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ready to mod.
+        /// </summary>
+        public static string MyGamesView__Ready_to_mod {
+            get {
+                return ResourceManager.GetString("MyGamesView__Ready_to_mod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Newsfeed.
         /// </summary>
         public static string Newsfeed {
             get {
                 return ResourceManager.GetString("Newsfeed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PREMIUM.
+        /// </summary>
+        public static string Nexus_Premium_Status__Premium {
+            get {
+                return ResourceManager.GetString("Nexus_Premium_Status__Premium", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BROWSER DIDN&apos;T OPEN AUTOMATICALLY?.
+        /// </summary>
+        public static string NexusLoginOverlayView__BROWSER_DIDNT_OPEN {
+            get {
+                return ResourceManager.GetString("NexusLoginOverlayView__BROWSER_DIDNT_OPEN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PLEASE CLICK &amp;quot;AUTHORIZE&amp;quot; ON THE WEBSITE.
+        /// </summary>
+        public static string NexusLoginOverlayView__Please_Click_Authorize {
+            get {
+                return ResourceManager.GetString("NexusLoginOverlayView__Please_Click_Authorize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please copy the following URL into your browser window. We support Chrome, Safari, Firefox and Edge..
+        /// </summary>
+        public static string NexusLoginOverlayView_Please_copy_url {
+            get {
+                return ResourceManager.GetString("NexusLoginOverlayView_Please_copy_url", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search.
+        /// </summary>
+        public static string SearchBox__Search {
+            get {
+                return ResourceManager.GetString("SearchBox__Search", resourceCulture);
             }
         }
         
@@ -348,6 +600,15 @@ namespace NexusMods.App.UI.Resources {
         public static string StringFormatters__SecondsRemaining_secs {
             get {
                 return ResourceManager.GetString("StringFormatters__SecondsRemaining_secs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to LOG IN.
+        /// </summary>
+        public static string TopBarActions__LOG_IN {
+            get {
+                return ResourceManager.GetString("TopBarActions__LOG_IN", resourceCulture);
             }
         }
     }

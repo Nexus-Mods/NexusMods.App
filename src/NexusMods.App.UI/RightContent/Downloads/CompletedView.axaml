@@ -6,6 +6,7 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:downloads="clr-namespace:NexusMods.App.UI.RightContent.Downloads"
                                 xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+                                xmlns:localization="clr-namespace:NexusMods.App.UI.Localization"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.RightContent.Downloads.CompletedView">
     <Design.DataContext>
@@ -14,12 +15,12 @@
     <StackPanel>
         <Border Classes="Toolbar">
             <Grid ColumnDefinitions="*, Auto">
-                <TextBlock Grid.Column="0" Text="COMPLETED"></TextBlock>
+                <TextBlock Grid.Column="0" Text="{localization:Localized DownloadCompleted_COMPLETED}"></TextBlock>
                 <StackPanel Grid.Column="1">
                     <Button x:Name="ClearAllButton">
                         <StackPanel>
                             <avalonia:Icon Classes="ClearAll" />
-                            <TextBlock Text="Clear All"></TextBlock>
+                            <TextBlock Text="{localization:Localized DownloadCompleted_Clear_All}"></TextBlock>
                         </StackPanel>
                     </Button>
                     <Line />
