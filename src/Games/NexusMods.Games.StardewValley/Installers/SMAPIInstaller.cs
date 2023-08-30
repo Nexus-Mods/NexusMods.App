@@ -12,6 +12,7 @@ using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
+using NexusMods.Paths.FileTree;
 
 // ReSharper disable IdentifierTypo
 // ReSharper disable InconsistentNaming
@@ -38,39 +39,30 @@ public class SMAPIInstaller : IModInstaller
         _fileHashCache = fileHashCache;
     }
 
-    private static KeyValuePair<RelativePath, AnalyzedFile>[] GetInstallDataFiles(EntityDictionary<RelativePath, AnalyzedFile> files)
+    private static FileTreeNode<RelativePath, ModSourceFileEntry>[] GetInstallDataFiles(FileTreeNode<RelativePath, ModSourceFileEntry> files)
     {
-        var installDataFiles = files.Where(kv =>
+        var installDataFiles = files.GetAllDescendentFiles()
+            .Where(kv =>
         {
             var (path, file) = kv;
             var fileName = path.FileName;
             var parent = path.Parent.FileName;
 
-            return file.FileTypes.Contains(FileType.ZIP) &&
-                   fileName.Equals(InstallDatFile) &&
+            return fileName.Equals(InstallDatFile) &&
                    (parent.Equals(LinuxFolder) ||
                     parent.Equals(MacOSFolder) ||
                     parent.Equals(WindowsFolder));
-        }).ToArray();
+        })
+            .ToArray();
 
         return installDataFiles;
     }
 
-    public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
+    public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
         ModId baseModId,
-        Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
+        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         CancellationToken cancellationToken = default)
-    {
-        return ValueTask.FromResult(GetMods(gameInstallation, baseModId, srcArchiveHash, archiveFiles));
-    }
-
-    private IEnumerable<ModInstallerResult> GetMods(
-        GameInstallation gameInstallation,
-        ModId baseModId,
-        Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
         var modFiles = new List<AModFile>();
 
@@ -79,9 +71,9 @@ public class SMAPIInstaller : IModInstaller
 
         var installDataFile = _osInformation.MatchPlatform(
             state: ref installDataFiles,
-            onWindows: (ref KeyValuePair<RelativePath, AnalyzedFile>[] dataFiles) => dataFiles.First(kv => kv.Key.Parent.FileName.Equals("windows")),
-            onLinux: (ref KeyValuePair<RelativePath, AnalyzedFile>[] dataFiles) => dataFiles.First(kv => kv.Key.Parent.FileName.Equals("linux")),
-            onOSX: (ref KeyValuePair<RelativePath, AnalyzedFile>[] dataFiles) => dataFiles.First(kv => kv.Key.Parent.FileName.Equals("macOS"))
+            onWindows: (ref FileTreeNode<RelativePath, ModSourceFileEntry>[] dataFiles) => dataFiles.First(kv => kv.Path.Parent.FileName.Equals("windows")),
+            onLinux: (ref FileTreeNode<RelativePath, ModSourceFileEntry>[] dataFiles) => dataFiles.First(kv => kv.Path.Parent.FileName.Equals("linux")),
+            onOSX: (ref FileTreeNode<RelativePath, ModSourceFileEntry>[] dataFiles) => dataFiles.First(kv => kv.Path.Parent.FileName.Equals("macOS"))
         );
 
         var (path, file) = installDataFile;

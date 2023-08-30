@@ -2,7 +2,7 @@
   <ItemGroup>
     <!-- Custom Packages -->
     <PackageVersion Include="NexusMods.Hashing.xxHash64" Version="1.0.0" />
-    <PackageVersion Include="NexusMods.Paths" Version="0.1.5" />
+    <PackageVersion Include="NexusMods.Paths" Version="0.1.6" />
     <PackageVersion Include="NexusMods.Archives.Nx" Version="0.3.3-preview" />
     <PackageVersion Include="FomodInstaller.Interface" Version="1.2.0" />
     <PackageVersion Include="FomodInstaller.Scripting.XmlScript" Version="1.0.0" />

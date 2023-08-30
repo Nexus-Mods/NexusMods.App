@@ -1,4 +1,5 @@
 ﻿using NexusMods.DataModel.Games;
+using NexusMods.DataModel.JsonConverters;
 using NexusMods.Networking.NexusWebApi.Types;
 
 namespace NexusMods.DataModel.ArchiveMetaData;
@@ -6,6 +7,7 @@ namespace NexusMods.DataModel.ArchiveMetaData;
 /// <summary>
 /// Archive metadata for a download that was installed from a NexusMods mod.
 /// </summary>
+[JsonName("NexusMods.DataModel.ArchiveMetaData.NexusModsArchiveMetadata")]
 public record NexusModsArchiveMetadata : AArchiveMetaData
 {
     /// <summary>
