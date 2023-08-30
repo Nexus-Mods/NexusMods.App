@@ -35,7 +35,6 @@ public class AppearancePresetTests : AModInstallerTest<Cyberpunk2077, Appearance
             (hash, "cool_choom.preset"),
             (NextHash(), "README.md"),
             (NextHash(), "README.txt"),
-            (NextHash(), "README.md"),
             (NextHash(), "README.pdf"));
 
         files.Should()

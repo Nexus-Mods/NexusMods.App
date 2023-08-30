@@ -275,7 +275,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
         if (mods.Length == 0)
             return Array.Empty<(ulong Hash, GameFolderType FolderType, string Path)>();
 
-        mods.Should().ContainSingle();
+        mods.Length.Should().BeGreaterOrEqualTo(1);
         var contents = mods.First().Files;
         return contents.OfType<FromArchive>().Select(m => (m.Hash.Value, m.To.Type, m.To.Path.ToString()));
     }

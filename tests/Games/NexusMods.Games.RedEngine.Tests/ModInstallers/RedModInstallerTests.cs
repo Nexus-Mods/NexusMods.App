@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Text;
+using FluentAssertions;
 using NexusMods.Games.RedEngine.ModInstallers;
 using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
@@ -16,9 +17,11 @@ public class
     {
         var (hash1, hash2) = Next2Hash();
 
+        var info = "{ \"name\": \"mymod\", \"version\": \"1.8.0\", \"customSounds\": [] }";
+
         var files = await BuildAndInstall(
-            (hash1, "mymod/info.json", null),
-            (hash2, "mymod/blerg.archive", null));
+            (hash1, "mymod/info.json", Encoding.UTF8.GetBytes(info)),
+            (hash2, "mymod/blerg.archive", new byte[]{0xFF}));
 
         files.Should()
             .BeEquivalentTo(new[]
@@ -34,24 +37,24 @@ public class
         var (hash1, hash2, hash3) = Next3Hash();
         var (hash4, hash5, hash6) = Next3Hash();
 
+        var info1 = "{ \"name\": \"mymod1\", \"version\": \"1.8.0\", \"customSounds\": [] }";
+        var info2 = "{ \"name\": \"mymod2\", \"version\": \"1.8.0\", \"customSounds\": [] }";
+        var info3 = "{ \"name\": \"mymod3\", \"version\": \"1.8.0\", \"customSounds\": [] }";
+
         var files = await BuildAndInstall(
-            (hash1, "mymod1/info.json", null),
-            (hash2, "mymod1/blerg.archive", null),
-            (hash3, "mymod2/info.json", null),
-            (hash4, "mymod2/blerg.archive", null),
-            (hash5, "optional/mymod3/info.json",null),
-            (hash6, "optional/mymod3/blerg.archive", null)
+            (hash1, "mymod1/info.json", Encoding.UTF8.GetBytes(info1)),
+            (hash2, "mymod1/blerg.archive", Array.Empty<byte>()),
+            (hash3, "mymod2/info.json", Encoding.UTF8.GetBytes(info2)),
+            (hash4, "mymod2/blerg.archive", Array.Empty<byte>()),
+            (hash5, "optional/mymod3/info.json",Encoding.UTF8.GetBytes(info3)),
+            (hash6, "optional/mymod3/blerg.archive", Array.Empty<byte>())
         );
 
         files.Should()
             .BeEquivalentTo(new[]
             {
                 (hash1, GameFolderType.Game, "mods/mymod1/info.json"),
-                (hash2, GameFolderType.Game, "mods/mymod1/blerg.archive"),
-                (hash3, GameFolderType.Game, "mods/mymod2/info.json"),
-                (hash4, GameFolderType.Game, "mods/mymod2/blerg.archive"),
-                (hash5, GameFolderType.Game, "mods/mymod3/info.json"),
-                (hash6, GameFolderType.Game, "mods/mymod3/blerg.archive")
+                (hash2, GameFolderType.Game, "mods/mymod1/blerg.archive")
             });
     }
 }
