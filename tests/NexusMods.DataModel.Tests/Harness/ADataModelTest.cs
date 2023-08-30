@@ -68,7 +68,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         FileHashCache = provider1.GetRequiredService<FileHashCache>();
         FileSystem = provider1.GetRequiredService<IFileSystem>();
         DataStore = provider1.GetRequiredService<IDataStore>();
-        DownloadRegistry = provider1.GetRequiredService<DownloadRegistry>();
+        DownloadRegistry = provider1.GetRequiredService<IDownloadRegistry>();
         Logger = provider1.GetRequiredService<ILogger<T>>();
         LoadoutSynchronizer = provider1.GetRequiredService<LoadoutSynchronizer>();
         TemporaryFileManager = provider1.GetRequiredService<TemporaryFileManager>();

@@ -1,6 +1,7 @@
 ﻿using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
+using NexusMods.DataModel.JsonConverters;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
@@ -9,6 +10,7 @@ namespace NexusMods.DataModel.ArchiveMetaData;
 /// <summary>
 /// Info for a mod archive describing where it came from and the suggested name of the file
 /// </summary>
+[JsonName("NexusMods.DataModel.ArchiveMetaData.AArchiveMetaData")]
 public abstract record AArchiveMetaData
 {
     /// <summary>

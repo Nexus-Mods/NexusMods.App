@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Diagnostics;
 using NexusMods.DataModel.GlobalSettings;
 using NexusMods.DataModel.Interprocess;
@@ -67,6 +68,7 @@ public static class Services
         coll.AddSingleton<LoadoutManager>();
         coll.AddSingleton<LoadoutRegistry>();
         coll.AddSingleton<IDirectoryIndexer, DirectoryIndexer>();
+        coll.AddSingleton<IDownloadRegistry, DownloadRegistry>();
         coll.AddSingleton<LoadoutSynchronizer>();
         coll.AddSingleton<FileHashCache>();
         coll.AddSingleton<GlobalSettingsManager>();
@@ -84,6 +86,7 @@ public static class Services
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<Entity>>();
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<IMetadata>>();
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<ISortRule<Mod, ModId>>>();
+        coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<AArchiveMetaData>>();
 
         coll.AddSingleton(s =>
         {

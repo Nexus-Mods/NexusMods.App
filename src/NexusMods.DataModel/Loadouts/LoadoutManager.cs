@@ -194,6 +194,7 @@ public class LoadoutManager
 
             foreach (var (type, path) in installation.Locations)
             {
+                if (!path.DirectoryExists()) continue;
                 var download = await _downloadRegistry.RegisterFolder(path, meta, token);
 
                 var toc = await _downloadRegistry.Get(download);

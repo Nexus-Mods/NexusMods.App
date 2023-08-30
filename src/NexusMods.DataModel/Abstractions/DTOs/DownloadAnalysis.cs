@@ -1,5 +1,6 @@
 ﻿using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.ArchiveMetaData;
+using NexusMods.DataModel.JsonConverters;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
@@ -9,6 +10,7 @@ namespace NexusMods.DataModel.Abstractions.DTOs;
 /// <summary>
 /// Analysis of the contents of a download
 /// </summary>
+[JsonName("NexusMods.DataModel.Abstractions.DTOs.DownloadAnalysis")]
 public record DownloadAnalysis : Entity
 {
     /// <summary>
