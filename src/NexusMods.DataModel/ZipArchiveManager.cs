@@ -1,7 +1,6 @@
 ﻿using System.Buffers;
 using System.Buffers.Binary;
 using System.IO.Compression;
-using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.ArchiveContents;
@@ -9,6 +8,7 @@ using NexusMods.DataModel.ChunkedStreams;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
+using NexusMods.Paths.FileTree;
 using NexusMods.Paths.Utilities;
 
 namespace NexusMods.DataModel;
@@ -48,11 +48,12 @@ public class ZipArchiveManager : IArchiveManager
     }
 
     /// <inheritdoc/>
-    public async Task BackupFiles(IEnumerable<(IStreamFactory, Hash, Size)> backups, CancellationToken token = default)
+    public async Task<ArchiveId> BackupFiles(IEnumerable<ArchivedFileEntry> backups, CancellationToken token = default)
     {
-        var guid = Guid.NewGuid();
-        var id = guid.ToString();
-        var distinct = backups.DistinctBy(d => d.Item2).ToArray();
+        var archiveId = ArchiveId.From(Guid.NewGuid());
+        var id = archiveId.Value.ToString();
+        var backupsList = backups.ToList();
+        var distinct = backupsList.DistinctBy(d => d.Hash).ToList();
 
         using var buffer = MemoryPool<byte>.Shared.Rent((int)_chunkSize);
         var outputPath = _archiveLocations.First().Combine(id).AppendExtension(KnownExtensions.Tmp);
@@ -62,18 +63,18 @@ public class ZipArchiveManager : IArchiveManager
 
             foreach (var backup in distinct)
             {
-                await using var srcStream = await backup.Item1.GetStreamAsync();
-                var chunkCount = (int)(backup.Item3.Value / _chunkSize);
-                if (backup.Item3.Value % _chunkSize > 0)
+                await using var srcStream = await backup.StreamFactory.GetStreamAsync();
+                var chunkCount = (int)(backup.Size.Value / _chunkSize);
+                if (backup.Size.Value % _chunkSize > 0)
                     chunkCount++;
 
-                var hexName = backup.Item2.ToHex();
+                var hexName = backup.Hash.ToHex();
                 for (var chunkIdx = 0; chunkIdx < chunkCount; chunkIdx++)
                 {
                     var entry = builder.CreateEntry($"{hexName}_{chunkIdx}", CompressionLevel.Optimal);
                     await using var entryStream = entry.Open();
 
-                    var toCopy = (int)Math.Min(_chunkSize, (long)backup.Item3.Value - (chunkIdx * _chunkSize));
+                    var toCopy = (int)Math.Min(_chunkSize, (long)backup.Size.Value - (chunkIdx * _chunkSize));
                     await srcStream.ReadExactlyAsync(buffer.Memory[..toCopy], token);
                     await entryStream.WriteAsync(buffer.Memory[..toCopy], token);
                     await entryStream.FlushAsync(token);
@@ -84,15 +85,35 @@ public class ZipArchiveManager : IArchiveManager
         var finalPath = outputPath.ReplaceExtension(KnownExtensions.Zip);
 
         await outputPath.MoveToAsync(finalPath, token: token);
-        UpdateIndexes(distinct, guid, finalPath);
+        UpdateReverseIndexes(distinct, archiveId, finalPath);
+        UpdateTableOfContents(backupsList, archiveId, finalPath);
+        return archiveId;
     }
 
-    private void UpdateIndexes((IStreamFactory, Hash, Size)[] distinct, Guid guid,
+    private void UpdateTableOfContents(List<ArchivedFileEntry> backupsList, ArchiveId archiveId, AbsolutePath finalPath)
+    {
+        var toc = new ArchiveTableOfContents
+        {
+            ArchiveId = archiveId,
+            Entries = backupsList
+                .Where(f => f.Path != null)
+                .Select(f => new ArchiveEntry
+            {
+                Hash = f.Hash,
+                Size = f.Size,
+                Path = f.Path!.Value
+            }).ToArray()
+        };
+
+        toc.EnsurePersisted(_store);
+    }
+
+    private void UpdateReverseIndexes(IEnumerable<ArchivedFileEntry> distinct, ArchiveId archiveId,
         AbsolutePath finalPath)
     {
         foreach (var entry in distinct)
         {
-            var dbId = IdFor(entry.Item2, guid);
+            var dbId = IdFor(entry.Hash, archiveId);
 
             var dbEntry = new ArchivedFiles
             {
@@ -105,11 +126,11 @@ public class ZipArchiveManager : IArchiveManager
         }
     }
 
-    private IId IdFor(Hash hash, Guid guid)
+    private IId IdFor(Hash hash, ArchiveId archiveId)
     {
         Span<byte> buffer = stackalloc byte[24];
         BinaryPrimitives.WriteUInt64BigEndian(buffer, hash.Value);
-        guid.TryWriteBytes(buffer.SliceFast(8));
+        archiveId.Value.TryWriteBytes(buffer.SliceFast(8));
         return IId.FromSpan(EntityCategory.ArchivedFiles, buffer);
     }
 
@@ -151,6 +172,25 @@ public class ZipArchiveManager : IArchiveManager
         var archive = new ZipArchive(file, ZipArchiveMode.Read, true, System.Text.Encoding.UTF8);
 
         return new ChunkedStream<ChunkedArchiveStream>(new ChunkedArchiveStream(archive, hash));
+    }
+
+
+    /// <inheritdoc />
+    public async ValueTask<FileTreeNode<RelativePath, ArchivedFileEntry>> GetFileTree(ArchiveId archiveId, CancellationToken token = default)
+    {
+        var toc = _store.Get<ArchiveTableOfContents>(ArchiveTableOfContents.IdFor(archiveId));
+        if (toc is null)
+            throw new Exception($"Missing table of contents for {archiveId}");
+
+        return FileTreeNode<RelativePath, ArchivedFileEntry>.CreateTree(toc.Entries.Select(e =>
+            KeyValuePair.Create(
+                e.Path,
+                new ArchivedFileEntry
+        {
+            Hash = e.Hash,
+            Size = e.Size,
+            Path = e.Path
+        })));
     }
 
     private class ChunkedArchiveStream : IChunkedStreamSource

@@ -1,6 +1,7 @@
 ﻿using NexusMods.Common;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using NexusMods.Paths.FileTree;
 
 namespace NexusMods.DataModel.Abstractions;
 
@@ -23,7 +24,7 @@ public interface IArchiveManager
     /// </summary>
     /// <param name="backups"></param>
     /// <param name="token"></param>
-    Task BackupFiles(IEnumerable<(IStreamFactory, Hash, Size)> backups, CancellationToken token = default);
+    Task<ArchiveId> BackupFiles(IEnumerable<ArchivedFileEntry> backups, CancellationToken token = default);
 
 
     /// <summary>
@@ -50,4 +51,24 @@ public interface IArchiveManager
     /// <param name="token"></param>
     /// <returns></returns>
     Task<Stream> GetFileStream(Hash hash, CancellationToken token = default);
+
+
+    /// <summary>
+    /// Given a archive hash (as returned from BackupFiles), return the file paths, sizes and hash that were given to <see cref="BackupFiles"/>.
+    /// </summary>
+    /// <param name="hash"></param>
+    /// <param name="token"></param>
+    /// <returns></returns>
+    ValueTask<FileTreeNode<RelativePath, ArchivedFileEntry>> GetFileTree(ArchiveId archiveId, CancellationToken token = default);
 }
+
+
+/// <summary>
+/// A helper class for <see cref="IArchiveManager"/> that represents a file to be backed up. The Path is optional,
+/// but should be provided if it is expected that the paths will be used for extraction or mod installation.
+/// </summary>
+/// <param name="Stream"></param>
+/// <param name="Hash"></param>
+/// <param name="Size"></param>
+/// <param name="Path"></param>
+public readonly record struct ArchivedFileEntry(IStreamFactory StreamFactory, Hash Hash, Size Size, RelativePath? Path = null);

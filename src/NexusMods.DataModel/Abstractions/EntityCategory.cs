@@ -117,4 +117,9 @@ public enum EntityCategory : byte
     /// Global settings for things like metrics opt-in and the like.
     /// </summary>
     GlobalSettings = 16,
+
+    /// <summary>
+    /// Table of contents for archives.
+    /// </summary>
+    ArchiveTableOfContents = 17,
 }
