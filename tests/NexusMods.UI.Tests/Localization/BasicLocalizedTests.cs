@@ -5,6 +5,7 @@ using NexusMods.App.UI.Localization;
 
 namespace NexusMods.UI.Tests.Localization;
 
+[Collection("Localization")]
 public class BasicLocalizedTests
 {
     private readonly IServiceProvider _provider;
@@ -15,16 +16,17 @@ public class BasicLocalizedTests
 
     [Fact]
     [Trait("FlakeyTest", "True")]
-
     public void ProvideValue_NewStringIsReturnedInCodeBehind()
     {
         var localized = new LocalizedExtension("MyGames");
-
         var originalString = GetStringFromBinding((CompiledBindingExtension) localized.ProvideValue(_provider));
         Localizer.Instance.LoadLanguage("pl");
         var newString = GetStringFromBinding((CompiledBindingExtension) localized.ProvideValue(_provider));
 
         newString.Should().NotBe(originalString);
+
+        // Restore the language after the test.
+        Localizer.Instance.LoadLanguage("en");
     }
 
     [Fact]
@@ -60,6 +62,9 @@ public class BasicLocalizedTests
 
         lastValue.Should().NotBe(currentValue);
         disposable.Dispose();
+
+        // Restore the language after the test.
+        Localizer.Instance.LoadLanguage("en");
     }
 
     private string GetStringFromBinding(CompiledBindingExtension binding)

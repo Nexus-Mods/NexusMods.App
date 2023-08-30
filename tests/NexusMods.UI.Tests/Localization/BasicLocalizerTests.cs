@@ -4,10 +4,10 @@ using NexusMods.App.UI.Resources;
 
 namespace NexusMods.UI.Tests.Localization;
 
+[Collection("Localization")]
 public class BasicLocalizerTests
 {
     [Fact]
-    [Trait("FlakeyTest", "True")]
     public void WhenLanguageChanges_NewStringIsReturnedInCodeBehind()
     {
         var originalString = Localizer.Instance["MyGames"];
@@ -15,10 +15,12 @@ public class BasicLocalizerTests
         var newString = Localizer.Instance["MyGames"];
 
         newString.Should().NotBe(originalString);
+
+        // Restore the language after the test.
+        Localizer.Instance.LoadLanguage("en");
     }
 
     [Fact]
-    [Trait("FlakeyTest", "True")]
     public void WhenLanguageChanges_CallbackIsFired()
     {
         // Verifies that the LocalizedStringUpdater is called back to from Localizer
@@ -32,5 +34,8 @@ public class BasicLocalizerTests
         // Now change the locale, verify the string was changed.
         Localizer.Instance.LoadLanguage("pl");
         original.Should().NotBe(newString);
+
+        // Restore the language after the test.
+        Localizer.Instance.LoadLanguage("en");
     }
 }
