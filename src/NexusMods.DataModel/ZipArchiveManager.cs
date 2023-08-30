@@ -48,7 +48,7 @@ public class ZipArchiveManager : IArchiveManager
     }
 
     /// <inheritdoc/>
-    public async Task<ArchiveId> BackupFiles(IEnumerable<ArchivedFileEntry> backups, CancellationToken token = default)
+    public async Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, CancellationToken token = default)
     {
         var archiveId = ArchiveId.From(Guid.NewGuid());
         var id = archiveId.Value.ToString();
@@ -86,7 +86,6 @@ public class ZipArchiveManager : IArchiveManager
 
         await outputPath.MoveToAsync(finalPath, token: token);
         UpdateReverseIndexes(distinct, archiveId, finalPath);
-        return archiveId;
     }
 
     private void UpdateReverseIndexes(IEnumerable<ArchivedFileEntry> distinct, ArchiveId archiveId,

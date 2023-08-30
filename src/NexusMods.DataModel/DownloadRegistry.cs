@@ -45,12 +45,17 @@ public class DownloadRegistry : IDownloadRegistry
         await using var tmpFolder = _temporaryFileManager.CreateFolder();
 
         await _extractor.ExtractAllAsync(path, tmpFolder.Path, token);
+        return await RegisterFolder(path, metaData, token);
+    }
 
+    /// <inheritdoc />
+    public async ValueTask<DownloadId> RegisterFolder(AbsolutePath path, AArchiveMetaData metaData, CancellationToken token = default)
+    {
         List<ArchivedFileEntry> files = new();
         List<RelativePath> paths = new();
 
         _logger.LogInformation("Analyzing archive: {Name}", path);
-        foreach (var file in tmpFolder.Path.EnumerateFiles())
+        foreach (var file in path.EnumerateFiles())
         {
             // TODO: report this as progress
             var hash = await file.XxHash64Async(token: token);
@@ -61,7 +66,7 @@ public class DownloadRegistry : IDownloadRegistry
                 Size = file.FileInfo.Size,
                 StreamFactory = new NativeFileStreamFactory(file)
             });
-            paths.Add(file.RelativeTo(tmpFolder));
+            paths.Add(file.RelativeTo(path));
         }
 
         _logger.LogInformation("Archiving {Count} files and {Size} of data", files.Count, files.Sum(f => f.Size));
@@ -84,6 +89,7 @@ public class DownloadRegistry : IDownloadRegistry
         };
         analysis.EnsurePersisted(_dataStore);
         return analysis.DownloadId;
+
     }
 
     /// <inheritdoc />

@@ -24,7 +24,7 @@ public interface IArchiveManager
     /// </summary>
     /// <param name="backups"></param>
     /// <param name="token"></param>
-    Task<ArchiveId> BackupFiles(IEnumerable<ArchivedFileEntry> backups, CancellationToken token = default);
+    Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, CancellationToken token = default);
 
 
     /// <summary>

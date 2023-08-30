@@ -6,6 +6,7 @@ using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Paths;
+using NexusMods.Paths.FileTree;
 using Hash = NexusMods.Hashing.xxHash64.Hash;
 
 namespace NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
@@ -15,19 +16,17 @@ public class StubbedGameInstaller : IModInstaller
     public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
         ModId baseModId,
-        Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
+        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         CancellationToken cancellationToken = default)
     {
-        return ValueTask.FromResult(GetMods(baseModId, srcArchiveHash, archiveFiles));
+        return ValueTask.FromResult(GetMods(baseModId, archiveFiles));
     }
 
     private IEnumerable<ModInstallerResult> GetMods(
         ModId baseModId,
-        Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
+        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles)
     {
-        var modFiles = archiveFiles
+        var modFiles = archiveFiles.GetAllDescendentFiles()
             .Select(kv =>
             {
                 var (path, file) = kv;
