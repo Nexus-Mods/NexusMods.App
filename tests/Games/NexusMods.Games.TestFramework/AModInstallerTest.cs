@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using FluentAssertions;
 using JetBrains.Annotations;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
@@ -33,7 +34,8 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     /// </summary>
     protected AModInstallerTest(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        ModInstaller = serviceProvider.FindImplementationInContainer<TModInstaller, IModInstaller>();
+        var game = serviceProvider.GetServices<IGame>().OfType<TGame>().Single();
+        ModInstaller = game.Installers.OfType<TModInstaller>().Single();
     }
 
     /// <summary>

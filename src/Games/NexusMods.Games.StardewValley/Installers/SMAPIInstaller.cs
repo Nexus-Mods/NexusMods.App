@@ -4,6 +4,7 @@ using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -32,11 +33,14 @@ public class SMAPIInstaller : AModInstaller
 
     private readonly IOSInformation _osInformation;
     private readonly FileHashCache _fileHashCache;
+    private readonly IDownloadRegistry _downloadRegistry;
 
-    public SMAPIInstaller(IOSInformation osInformation, FileHashCache fileHashCache, IServiceProvider serviceProvider) : base(serviceProvider)
+    private SMAPIInstaller(IOSInformation osInformation, FileHashCache fileHashCache, IDownloadRegistry downloadRegistry, IServiceProvider serviceProvider)
+        : base(serviceProvider)
     {
         _osInformation = osInformation;
         _fileHashCache = fileHashCache;
+        _downloadRegistry = downloadRegistry;
     }
 
     private static FileTreeNode<RelativePath, ModSourceFileEntry>[] GetInstallDataFiles(FileTreeNode<RelativePath, ModSourceFileEntry> files)
@@ -58,7 +62,7 @@ public class SMAPIInstaller : AModInstaller
         return installDataFiles;
     }
 
-    public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
+    public override async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
         ModId baseModId,
         FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
@@ -67,7 +71,8 @@ public class SMAPIInstaller : AModInstaller
         var modFiles = new List<AModFile>();
 
         var installDataFiles = GetInstallDataFiles(archiveFiles);
-        if (installDataFiles.Length != 3) throw new UnreachableException($"{nameof(SMAPIInstaller)} should guarantee that {nameof(GetInstallDataFiles)} returns 3 files when called from {nameof(GetModsAsync)} but it has {installDataFiles.Length} files instead!");
+        if (installDataFiles.Length != 3)
+            return NoResults;
 
         var installDataFile = _osInformation.MatchPlatform(
             state: ref installDataFiles,
@@ -77,26 +82,29 @@ public class SMAPIInstaller : AModInstaller
         );
 
         var (path, file) = installDataFile;
-        if (file is not AnalyzedArchive archive)
-            throw new UnreachableException($"{nameof(AnalyzedFile)} that has the file type {nameof(FileType.ZIP)} is not a {nameof(AnalyzedArchive)}");
+
+        DownloadId? downloadId = _downloadRegistry.GetByHash(file!.Hash).FirstOrDefault();
+        if (downloadId == null)
+            downloadId = await RegisterDataFile(path, file, cancellationToken);
+
 
         var gameFolderPath = gameInstallation.Locations
             .First(x => x.Key == GameFolderType.Game).Value;
 
-        var archiveContents = archive.Contents;
+        var archiveContents = (await _downloadRegistry.Get(downloadId.Value)).GetFileTree();
 
         // TODO: install.dat is an archive inside an archive see https://github.com/Nexus-Mods/NexusMods.App/issues/244
         // the basicFiles have to be extracted from the nested archive and put inside the game folder
         // https://github.com/Pathoschild/SMAPI/blob/9763bc7484e29cbc9e7f37c61121d794e6720e75/src/SMAPI.Installer/InteractiveInstaller.cs#L380-L384
-        var basicFiles = archiveContents
-            .Where(kv => !kv.Key.Equals("unix-launcher.sh")).ToArray();
+        var basicFiles = archiveContents.GetAllDescendentFiles()
+            .Where(kv => !kv.Path.Equals("unix-launcher.sh")).ToArray();
 
         if (_osInformation.IsLinux || _osInformation.IsOSX)
         {
             // TODO: Replace game launcher (StardewValley) with unix-launcher.sh by overwriting the game file
             // https://github.com/Pathoschild/SMAPI/blob/9763bc7484e29cbc9e7f37c61121d794e6720e75/src/SMAPI.Installer/InteractiveInstaller.cs#L386-L417
-            var modLauncherScriptFile = archiveContents
-                .First(kv => kv.Key.FileName.Equals("unix-launcher.sh"));
+            var modLauncherScriptFile = archiveContents.GetAllDescendentFiles()
+                .First(kv => kv.Path.FileName.Equals("unix-launcher.sh"));
 
             var gameLauncherScriptFilePath = gameFolderPath.Combine("StardewValley");
         }
@@ -119,11 +127,16 @@ public class SMAPIInstaller : AModInstaller
         });
 
         // TODO: consider adding Name and Version
-        yield return new ModInstallerResult
+        return new [] { new ModInstallerResult
         {
             Id = baseModId,
             Files = modFiles
-        };
+        }};
+    }
+
+    private async ValueTask<DownloadId> RegisterDataFile(RelativePath filename, ModSourceFileEntry file, CancellationToken token)
+    {
+        return await _downloadRegistry.RegisterDownload(file.StreamFactory, new FilePathMetadata { OriginalName = filename.FileName, Quality = Quality.Low}, token);
     }
 
     public static SMAPIInstaller Create(IServiceProvider serviceProvider)
@@ -131,6 +144,7 @@ public class SMAPIInstaller : AModInstaller
         return new SMAPIInstaller(
             serviceProvider.GetRequiredService<IOSInformation>(),
             serviceProvider.GetRequiredService<FileHashCache>(),
+            serviceProvider.GetRequiredService<IDownloadRegistry>(),
             serviceProvider
         );
     }

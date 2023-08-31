@@ -76,7 +76,7 @@ public class SMAPIModInstaller : AModInstaller
                     {
                         var (path, file) = kv;
                         return file!.ToFromArchive(
-                            new GamePath(GameFolderType.Game, ModsFolder.Join(path.DropFirst(parent.Depth)))
+                            new GamePath(GameFolderType.Game, ModsFolder.Join(path.DropFirst(parent.Depth - 1)))
                         );
                     });
 

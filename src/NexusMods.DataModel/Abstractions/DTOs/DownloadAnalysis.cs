@@ -3,6 +3,7 @@ using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using NexusMods.Paths.FileTree;
 
 namespace NexusMods.DataModel.Abstractions.DTOs;
 
@@ -32,6 +33,16 @@ public record DownloadAnalysis : Entity
     /// The files contained in the download
     /// </summary>
     public required IReadOnlyCollection<DownloadContentEntry> Contents { get; init; }
+
+    /// <summary>
+    /// Returns a file tree of the contents of the download
+    /// </summary>
+    /// <returns></returns>
+    public FileTreeNode<RelativePath, DownloadContentEntry> GetFileTree()
+    {
+        return FileTreeNode<RelativePath, DownloadContentEntry>.CreateTree(
+            Contents.Select(c => new KeyValuePair<RelativePath, DownloadContentEntry>(c.Path, c)));
+    }
 
     /// <summary>
     /// Meta data for the download

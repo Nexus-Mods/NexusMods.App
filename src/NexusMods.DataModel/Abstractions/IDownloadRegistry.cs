@@ -1,5 +1,7 @@
-﻿using NexusMods.DataModel.Abstractions.DTOs;
+﻿using NexusMods.Common;
+using NexusMods.DataModel.Abstractions.DTOs;
 using NexusMods.DataModel.ArchiveMetaData;
+using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Abstractions;
@@ -9,6 +11,16 @@ namespace NexusMods.DataModel.Abstractions;
 /// </summary>
 public interface IDownloadRegistry
 {
+    /// <summary>
+    /// Register a download with the registry, sourced from a stream, returns a download id that can be used to retrieve the download later.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="metaData"></param>
+    /// <param name="token"></param>
+    /// <returns></returns>
+    public ValueTask<DownloadId> RegisterDownload(IStreamFactory factory, AArchiveMetaData metaData, CancellationToken token = default);
+
+
     /// <summary>
     /// Register a download with the registry, returns a download id that can be used to retrieve the download later.
     /// </summary>
@@ -40,4 +52,12 @@ public interface IDownloadRegistry
     /// </summary>
     /// <returns></returns>
     public IEnumerable<DownloadAnalysis> GetAll();
+
+
+    /// <summary>
+    /// Finds all downloads that have the given hash
+    /// </summary>
+    /// <param name="hash"></param>
+    /// <returns></returns>
+    public IEnumerable<DownloadId> GetByHash(Hash hash);
 }

@@ -1,6 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using NexusMods.CLI.Verbs;
 using NexusMods.Common;
+using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Games.StardewValley.Installers;
@@ -69,7 +72,8 @@ public class SMAPIModInstallerTests : AModInstallerTest<StardewValley, SMAPIModI
             hash.Should().Be(Hash.From(0xCBE810C4B0C82C7A));
 
             // var mods = await GetModsFromInstaller(path);
-            var mods = await InstallModsFromArchiveIntoLoadout(loadout, path);
+            var download = await DownloadRegistry.RegisterDownload(path, new FilePathMetadata { OriginalName = path.Path.Name, Quality = Quality.Low });
+            var mods = await InstallModsFromArchiveIntoLoadout(loadout, download);
             mods
                 .Should().HaveCount(3)
                 .And.AllSatisfy(x =>

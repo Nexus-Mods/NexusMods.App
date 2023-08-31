@@ -13,8 +13,6 @@ public static class Services
     public static IServiceCollection AddStardewValley(this IServiceCollection services)
     {
         services.AddAllSingleton<IGame, StardewValley>()
-            .AddSingleton<SMAPIInstaller>()
-            .AddSingleton<SMAPIModInstaller>()
             .AddSingleton<ILoadoutDiagnosticEmitter, MissingDependenciesEmitter>()
             .AddSingleton<ITypeFinder, TypeFinder>();
         return services;

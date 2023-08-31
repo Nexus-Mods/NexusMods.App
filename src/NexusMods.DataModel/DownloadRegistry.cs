@@ -39,11 +39,17 @@ public class DownloadRegistry : IDownloadRegistry
         _dataStore = store;
     }
 
+    public async ValueTask<DownloadId> RegisterDownload(IStreamFactory factory, AArchiveMetaData metaData, CancellationToken token = default)
+    {
+        await using var tmpFolder = _temporaryFileManager.CreateFolder();
+        await _extractor.ExtractAllAsync(factory, tmpFolder.Path, token);
+        return await RegisterFolder(tmpFolder.Path, metaData, token);
+    }
+
     /// <inheritdoc />
     public async ValueTask<DownloadId> RegisterDownload(AbsolutePath path, AArchiveMetaData metaData, CancellationToken token = default)
     {
         await using var tmpFolder = _temporaryFileManager.CreateFolder();
-
         await _extractor.ExtractAllAsync(path, tmpFolder.Path, token);
         return await RegisterFolder(tmpFolder.Path, metaData, token);
     }
@@ -115,5 +121,12 @@ public class DownloadRegistry : IDownloadRegistry
     public IEnumerable<DownloadAnalysis> GetAll()
     {
         return _dataStore.GetByPrefix<DownloadAnalysis>(new Id64(EntityCategory.DownloadMetadata, 0));
+    }
+
+    public IEnumerable<DownloadId> GetByHash(Hash hash)
+    {
+        return GetAll()
+            .Where(d => d.Hash == hash)
+            .Select(d => d.DownloadId);
     }
 }
