@@ -136,7 +136,7 @@ Questi dati sono raccolti in maniera anonima e non saranno mai condivisi con ter
         <value>Cronologia Download</value>
     </data>
     <data name="NexusLoginOverlayView__Please_Click_Authorize" xml:space="preserve">
-        <value>CLICCA &amp;quot;AUTHORIZE&amp;quot; SUL SITO PER PROCEDERE</value>
+        <value>CLICCA "AUTHORIZE" SUL SITO PER PROCEDERE</value>
     </data>
     <data name="NexusLoginOverlayView__BROWSER_DIDNT_OPEN" xml:space="preserve">
         <value>BROWSER NON SI È APERTO AUTOMATICAMENTE?</value>
