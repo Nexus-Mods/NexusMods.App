@@ -23,7 +23,7 @@ namespace NexusMods.Games.StardewValley.Installers;
 /// <see cref="IModInstaller"/> for SMAPI itself. This is different from <see cref="SMAPIModInstaller"/>,
 /// which is an implementation of <see cref="IModInstaller"/> for mods that use SMAPI.
 /// </summary>
-public class SMAPIInstaller : IModInstaller
+public class SMAPIInstaller : AModInstaller
 {
     private static readonly RelativePath InstallDatFile = "install.dat".ToRelativePath();
     private static readonly RelativePath LinuxFolder = "linux".ToRelativePath();
@@ -33,7 +33,7 @@ public class SMAPIInstaller : IModInstaller
     private readonly IOSInformation _osInformation;
     private readonly FileHashCache _fileHashCache;
 
-    public SMAPIInstaller(IOSInformation osInformation, FileHashCache fileHashCache)
+    public SMAPIInstaller(IOSInformation osInformation, FileHashCache fileHashCache, IServiceProvider serviceProvider) : base(serviceProvider)
     {
         _osInformation = osInformation;
         _fileHashCache = fileHashCache;
@@ -130,7 +130,8 @@ public class SMAPIInstaller : IModInstaller
     {
         return new SMAPIInstaller(
             serviceProvider.GetRequiredService<IOSInformation>(),
-            serviceProvider.GetRequiredService<FileHashCache>()
+            serviceProvider.GetRequiredService<FileHashCache>(),
+            serviceProvider
         );
     }
 }

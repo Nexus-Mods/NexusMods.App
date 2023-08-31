@@ -1,15 +1,13 @@
-using System.Diagnostics;
+using System.Text.Json;
 using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveContents;
-using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Games.StardewValley.Models;
-using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
+using NexusMods.Paths.FileTree;
+
 // ReSharper disable IdentifierTypo
 // ReSharper disable InconsistentNaming
 
@@ -18,61 +16,66 @@ namespace NexusMods.Games.StardewValley.Installers;
 /// <summary>
 /// <see cref="IModInstaller"/> for mods that use the Stardew Modding API (SMAPI).
 /// </summary>
-public class SMAPIModInstaller : IModInstaller
+public class SMAPIModInstaller : AModInstaller
 {
     private static readonly RelativePath ModsFolder = "Mods".ToRelativePath();
     private static readonly RelativePath ManifestFile = "manifest.json".ToRelativePath();
 
-    private static IEnumerable<KeyValuePair<RelativePath, AnalyzedFile>> GetManifestFiles(
-        EntityDictionary<RelativePath, AnalyzedFile> files)
+    /// <summary>
+    /// DI Constructor
+    /// </summary>
+    /// <param name="serviceProvider"></param>
+    private SMAPIModInstaller(IServiceProvider serviceProvider) : base(serviceProvider) { }
+
+    /// <summary>
+    /// Creates a new instance of <see cref="SMAPIModInstaller"/>.
+    /// </summary>
+    /// <param name="serviceProvider"></param>
+    /// <returns></returns>
+    public static SMAPIModInstaller Create(IServiceProvider serviceProvider) => new(serviceProvider);
+
+    private static IAsyncEnumerable<(FileTreeNode<RelativePath, ModSourceFileEntry>, SMAPIManifest)> GetManifestFiles(
+        FileTreeNode<RelativePath, ModSourceFileEntry> files)
     {
-        return files.Where(kv =>
+        return files.GetAllDescendentFiles()
+            .SelectAsync(async kv =>
         {
             var (path, file) = kv;
 
-            if (!path.FileName.Equals(ManifestFile)) return false;
-            var manifest = file.AnalysisData
-                .OfType<SMAPIManifest>()
-                .FirstOrDefault();
+            if (!path.FileName.Equals(ManifestFile))
+                return default;
 
-            return manifest is not null;
-        });
+            await using var stream = await file!.Open();
+
+            return (kv, await JsonSerializer.DeserializeAsync<SMAPIManifest>(stream));
+        })
+            .Where(manifest => manifest.Item2 != null)
+            .Select(m => (m.kv, m.Item2!));
     }
 
-    public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
+    public override async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
         ModId baseModId,
-        Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
+        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         CancellationToken cancellationToken = default)
     {
-        return ValueTask.FromResult(GetMods(srcArchiveHash, archiveFiles));
-    }
+        var manifestFiles = await GetManifestFiles(archiveFiles)
+            .ToArrayAsync(cancellationToken: cancellationToken);
 
-    private IEnumerable<ModInstallerResult> GetMods(
-        Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
-    {
-        var manifestFiles = GetManifestFiles(archiveFiles).ToArray();
         if (!manifestFiles.Any())
-            throw new UnreachableException($"{nameof(SMAPIModInstaller)} should guarantee that {nameof(GetModsAsync)} is never called for archives that don't have a SMAPI manifest file.");
+            return NoResults;
 
         var mods = manifestFiles
-            .Select(manifestFile =>
+            .Select(found =>
             {
-                var parent = manifestFile.Key.Parent;
-                var manifest = manifestFile.Value.AnalysisData
-                    .OfType<SMAPIManifest>()
-                    .FirstOrDefault();
+                var (manifestFile, manifest) = found;
+                var parent = manifestFile.Parent;
 
-                if (manifest is null) throw new UnreachableException();
-
-                var modFiles = archiveFiles
-                    .Where(kv => kv.Key.InFolder(parent))
+                var modFiles = parent.GetAllDescendentFiles()
                     .Select(kv =>
                     {
                         var (path, file) = kv;
-                        return file.ToFromArchive(
+                        return file!.ToFromArchive(
                             new GamePath(GameFolderType.Game, ModsFolder.Join(path.DropFirst(parent.Depth)))
                         );
                     });
@@ -88,4 +91,5 @@ public class SMAPIModInstaller : IModInstaller
 
         return mods;
     }
+
 }
