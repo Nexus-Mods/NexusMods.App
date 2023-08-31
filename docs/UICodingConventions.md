@@ -19,7 +19,7 @@ Visual Studio and JetBrains Rider both have avalonia extensions that allow previ
 - Visual Studio:  https://marketplace.visualstudio.com/items?itemName=AvaloniaTeam.AvaloniaVS
 - Rider: https://plugins.jetbrains.com/plugin/14839-avaloniarider
 
-Both are extensions can be found directly from the IDE plugin/extension managers.
+Both extensions can be found directly from the IDE plugin/extension managers.
 Using these extension is recommended for easier development. 
 
 ## MVVM
