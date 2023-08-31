@@ -2,7 +2,7 @@
 
 - Name: Skyrim Special Edition
 - Release Date: 2016
-- Engine: 'Creation (Gamebryo)
+- Engine: Creation (Gamebryo)
 
 ## Code Injection Dependency Chart
 
@@ -53,7 +53,7 @@ Mods can ship as 'loose files' or '.esp+.bsa' pairs
 
 ### Plugins.txt
 
-Found in: `%LOCALAPPDATA%\Skyrim`.
+Found in: `%LOCALAPPDATA%\Skyrim Special Edition`.
 
 The `plugins.txt` file in Skyrim lists plugin files with the ".esp" and ".esm" extensions that are loaded after the game's own.
 
@@ -94,7 +94,7 @@ This can however be increased with [engine-fixes](#engine-fixes).
 
 ### LoadOrder.txt
 
-Found in: `%LOCALAPPDATA%\Skyrim`.
+Found in: `%LOCALAPPDATA%\Skyrim Special Edition`.
 
 Typical file looks like:
 ```txt
@@ -127,11 +127,11 @@ These masters are usually `.esm`, files but can also technically be other `.esp`
 
 BSAs are a collection of archived files that are loaded either if there is a plugin with the same name
 
-`Unofficial Skyrim Legendary Edition Patch.esp` -> `Unofficial Skyrim Legendary Edition Patch.bsa`
+`Unofficial Skyrim Special Edition Patch.esp` -> `Unofficial Skyrim Special Edition Patch.bsa`
 
 or same name followed by ellipsis: `<pluginName> - <something>.bsa`:
 
-eg. `Unofficial Skyrim Legendary Edition Patch - Textures.BSA`
+eg. `Unofficial Skyrim Special Edition Patch - Textures.BSA`
 
 (Note: different bethesda games have different loading behaviour for BSA files)
 
