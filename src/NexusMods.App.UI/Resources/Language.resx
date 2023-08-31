@@ -139,7 +139,7 @@
         <value>Download history</value>
     </data>
     <data name="NexusLoginOverlayView__Please_Click_Authorize" xml:space="preserve">
-        <value>PLEASE CLICK &amp;quot;AUTHORIZE&amp;quot; ON THE WEBSITE</value>
+        <value>PLEASE CLICK "AUTHORIZE" ON THE WEBSITE</value>
     </data>
     <data name="NexusLoginOverlayView__BROWSER_DIDNT_OPEN" xml:space="preserve">
         <value>BROWSER DIDN'T OPEN AUTOMATICALLY?</value>
