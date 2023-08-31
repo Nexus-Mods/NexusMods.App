@@ -10,11 +10,14 @@ using NexusMods.Games.Generic.Entities;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
+using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.Reshade;
 
-public class ReshadePresetInstaller : IModInstaller
+public class ReshadePresetInstaller : AModInstaller
 {
+
+
     private static readonly HashSet<RelativePath> IgnoreFiles = new[]
         {
             "readme.txt",
@@ -24,69 +27,33 @@ public class ReshadePresetInstaller : IModInstaller
         .Select(t => t.ToRelativePath())
         .ToHashSet();
 
-    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
-    {
-        var filtered = archiveFiles
-            .Where(f => !IgnoreFiles.Contains(f.Key.FileName))
-            .ToList();
+    public ReshadePresetInstaller(IServiceProvider serviceProvider) : base(serviceProvider) {}
 
-        // We have to be able to find the game's executable
-        if (installation.Game is not AGame)
-            return Priority.None;
-
-        // We only support ini files for now
-        if (!filtered.All(f => f.Value.FileTypes.Contains(FileType.INI)))
-            return Priority.None;
-
-        // Get all the ini data
-        var iniData = filtered
-            .Select(f => f.Value.AnalysisData
-                .OfType<IniAnalysisData>()
-                .FirstOrDefault())
-            .Where(d => d is not null)
-            .Select(d => d!)
-            .ToList();
-
-        // All the files must have ini data
-        if (iniData.Count != filtered.Count)
-            return Priority.None;
-
-        // All the files must have a section that ends with .fx marking them as likely a reshade preset
-        if (!iniData.All(f => f.Sections.All(x => x.EndsWith(".fx", StringComparison.CurrentCultureIgnoreCase))))
-            return Priority.None;
-
-        return Priority.Low;
-    }
-
-    public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
+    public override async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
         ModId baseModId,
-        Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
+        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         CancellationToken cancellationToken = default)
     {
-        return ValueTask.FromResult(GetMods(baseModId, srcArchiveHash, archiveFiles));
-    }
-
-    private IEnumerable<ModInstallerResult> GetMods(
-        ModId baseModId,
-        Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
-    {
-        var modFiles = archiveFiles
-            .Where(kv => !IgnoreFiles.Contains(kv.Key.FileName))
+        var modFiles = archiveFiles.GetAllDescendentFiles()
+            .Where(kv => !IgnoreFiles.Contains(kv.Name.FileName))
             .Select(kv =>
             {
                 var (path, file) = kv;
-                return file.ToFromArchive(
+                return file!.ToFromArchive(
                     new GamePath(GameFolderType.Game, path.FileName)
                 );
-            });
+            }).ToArray();
 
-        yield return new ModInstallerResult
+        if (!modFiles.Any())
+            return NoResults;
+
+        return new [] { new ModInstallerResult
         {
             Id = baseModId,
             Files = modFiles
-        };
+        }};
     }
+
+
 }
