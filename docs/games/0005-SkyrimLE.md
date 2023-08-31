@@ -124,7 +124,7 @@ Very [Useful information about load ordering here](https://loot.github.io/docs/h
 
 Considered essential in scope of Skyrim and requires implementation for MVP.
 
-### [xEdit (SSEEdit)](http://tes5edit.github.io)
+### [xEdit (TES5Edit)](http://tes5edit.github.io)
 
 xEdit is a modding tool for Skyrim that allows you to edit masters, plugins and the
 data structured contained within those files.
