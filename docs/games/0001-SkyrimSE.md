@@ -92,30 +92,6 @@ so you can never realistically consume all possible ~4350 items without hitting 
 
 This can however be increased with [engine-fixes](#engine-fixes).
 
-### LoadOrder.txt
-
-Found in: `%LOCALAPPDATA%\Skyrim Special Edition`.
-
-Typical file looks like:
-```txt
-Skyrim.esm
-Update.esm
-Dawnguard.esm
-HearthFires.esm
-Dragonborn.esm
-ccBGSSSE001-Fish.esm
-ccQDRSSE001-SurvivalMode.esl
-ccBGSSSE037-Curios.esl
-ccBGSSSE025-AdvDSGS.esm
-```
-
-This file declares the order in which all `.esm`, `.esp` and `.esl` files are loaded relative for each other.
-It has no effect on the game's runtime (this stores disabled mods, too); it is only used for book keeping.
-Usually used for preserving order of mods when re-enabling them once they have been disabled.
-
-With regards to load order in general, item that loads last, wins.
-NMA shouldn't need to generate this file.
-
 ### Masters (Dependencies)
 
 Plugins (`.esp`, `.esl`), can have 'Masters'; these are effectively dependencies.
