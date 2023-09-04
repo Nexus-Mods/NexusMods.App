@@ -6,7 +6,7 @@ namespace NexusMods.Games.FOMOD.UI;
 
 public static class Services
 {
-    public static IServiceCollection AddFomodInstallerUi(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddGuidedInstallerUi(this IServiceCollection serviceCollection)
     {
         return serviceCollection
             .AddTransient<IGuidedInstaller, GuidedInstallerUi>()

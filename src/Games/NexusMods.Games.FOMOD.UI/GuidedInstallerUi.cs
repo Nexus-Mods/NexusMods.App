@@ -1,6 +1,11 @@
 using System.Diagnostics;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using Avalonia.ReactiveUI;
+using Avalonia.Rendering;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.App.UI;
 using NexusMods.Common.GuidedInstaller;
 
 namespace NexusMods.Games.FOMOD.UI;
@@ -12,6 +17,7 @@ public sealed class GuidedInstallerUi : IGuidedInstaller, IDisposable
 
     private IServiceScope? _currentScope;
     private IGuidedInstallerWindowViewModel? _windowViewModel;
+    private ReactiveWindow<IGuidedInstallerWindowViewModel>? _window;
 
     public GuidedInstallerUi(IServiceProvider serviceProvider)
     {
@@ -23,16 +29,43 @@ public sealed class GuidedInstallerUi : IGuidedInstaller, IDisposable
         Debug.Assert(_currentScope is null);
         _currentScope = _serviceProvider.CreateScope();
 
-        // TODO: create/show window?
         _windowViewModel = _currentScope.ServiceProvider.GetRequiredService<IGuidedInstallerWindowViewModel>();
         _windowViewModel.WindowName = windowName;
+
+        // TODO: figure out a better approach than this
+        AvaloniaScheduler.Instance.Schedule(
+            _windowViewModel,
+            AvaloniaScheduler.Instance.Now,
+            (_, viewModel) =>
+            {
+                SetupWindow(viewModel);
+                return Disposable.Empty;
+            });
+    }
+
+    private void SetupWindow(IGuidedInstallerWindowViewModel viewModel)
+    {
+        _window = new GuidedInstallerWindow
+        {
+            ViewModel = viewModel
+        };
+
+        _window.Show();
+
+        // TODO: cancel installation if the user closes the window
+        var closed = Observable.FromEventPattern(
+            addHandler => _window.Closed += addHandler,
+            removeHandler => _window.Closed -= removeHandler
+        );
     }
 
     public void CleanupInstaller()
     {
         if (_windowViewModel is not null)
         {
-            // TODO: dispose window?
+            _window?.Close();
+            _window = null;
+
             _windowViewModel.CloseCommand.Execute();
             _windowViewModel.ActiveStepViewModel = null;
             _windowViewModel = null;

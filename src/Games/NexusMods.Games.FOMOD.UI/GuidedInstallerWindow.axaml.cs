@@ -7,7 +7,7 @@ using ReactiveUI;
 
 namespace NexusMods.Games.FOMOD.UI;
 
-public partial class GuidedInstallerWindow : ReactiveWindow<GuidedInstallerWindowViewModel>
+public partial class GuidedInstallerWindow : ReactiveWindow<IGuidedInstallerWindowViewModel>
 {
     public GuidedInstallerWindow()
     {

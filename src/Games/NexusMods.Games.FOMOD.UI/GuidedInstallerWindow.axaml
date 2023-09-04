@@ -7,7 +7,7 @@
     xmlns:ui="clr-namespace:NexusMods.Games.FOMOD.UI"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.Games.FOMOD.UI.GuidedInstallerWindow"
-    x:TypeArguments="ui:GuidedInstallerWindowViewModel"
+    x:TypeArguments="ui:IGuidedInstallerWindowViewModel"
     Title="GuidedInstallerWindow">
     Welcome to Avalonia!
 </reactiveUi:ReactiveWindow>
