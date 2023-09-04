@@ -1,13 +1,11 @@
-<reactiveUi:ReactiveWindow
-    xmlns="https://github.com/avaloniaui"
+<reactiveUi:ReactiveUserControl
+    x:TypeArguments="ui:IGuidedInstallerStepViewModel" xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:ui="clr-namespace:NexusMods.Games.FOMOD.UI"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-    x:Class="NexusMods.Games.FOMOD.UI.GuidedInstallerWindow"
-    x:TypeArguments="ui:IGuidedInstallerWindowViewModel"
-    Title="GuidedInstallerWindow">
+    x:Class="NexusMods.Games.FOMOD.UI.GuidedInstallerStepView">
     Welcome to Avalonia!
-</reactiveUi:ReactiveWindow>
+</reactiveUi:ReactiveUserControl>

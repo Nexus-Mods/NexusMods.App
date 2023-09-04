@@ -10,7 +10,10 @@ public static class Services
     {
         return serviceCollection
             .AddTransient<IGuidedInstaller, GuidedInstallerUi>()
+
             .AddViewModel<GuidedInstallerStepViewModel, IGuidedInstallerStepViewModel>()
-            .AddViewModel<GuidedInstallerWindowViewModel, IGuidedInstallerWindowViewModel>();
+            .AddViewModel<GuidedInstallerWindowViewModel, IGuidedInstallerWindowViewModel>()
+
+            .AddView<GuidedInstallerStepView, IGuidedInstallerStepViewModel>();
     }
 }

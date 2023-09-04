@@ -22,6 +22,9 @@ public partial class GuidedInstallerWindow : ReactiveWindow<IGuidedInstallerWind
             this.OneWayBind(ViewModel, vm => vm.WindowName, view => view.Title)
                 .DisposeWith(disposables);
 
+            this.OneWayBind(ViewModel, vm => vm.ActiveStepViewModel, view => view.StepViewHost.ViewModel)
+                .DisposeWith(disposables);
+
             this.WhenAnyValue(view => view.ViewModel!.CloseCommand.IsExecuting)
                 .SelectMany(e => e)
                 .Where(e => e)
