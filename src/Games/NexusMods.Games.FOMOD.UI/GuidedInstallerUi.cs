@@ -32,7 +32,8 @@ public sealed class GuidedInstallerUi : IGuidedInstaller, IDisposable
     {
         if (_windowViewModel is not null)
         {
-            // TODO: dispose & close window?
+            // TODO: dispose window?
+            _windowViewModel.CloseCommand.Execute();
             _windowViewModel.ActiveStepViewModel = null;
             _windowViewModel = null;
         }
