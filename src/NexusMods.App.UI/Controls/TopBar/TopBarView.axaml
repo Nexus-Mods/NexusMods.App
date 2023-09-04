@@ -70,7 +70,7 @@
                 x:Name="LoginButton">
                 <StackPanel>
                     <TextBlock
-                        Text="{localization:Localized TobBarActions__LOG_IN}">
+                        Text="{localization:Localized TopBarActions__LOG_IN}">
                     </TextBlock>
                 </StackPanel>
             </Button>
