@@ -8,6 +8,12 @@ This involves creating a relevant `.resx` file in every project for the base lan
 
 Working with these files requires a supported IDE such as Rider or Visual Studio
 
+### Live translation updates
+While the current translations are implemented to support live update after a user changes the app language, this might not remain the case in the future.
+The app will likely ask the user to restart the app to apply the change, which will take care of updating all the strings, making live update of localizable strings superfluous.
+
+If ensuring live update proves hard to sustain in the future, a discussion can be had to revert to static references.
+
 ## Creating a New Language File
 
 - Create a folder called `Resources`, if it does not already exist.
