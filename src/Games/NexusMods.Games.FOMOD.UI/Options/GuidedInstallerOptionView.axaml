@@ -1,0 +1,21 @@
+<reactiveUi:ReactiveUserControl
+    x:TypeArguments="ui:IGuidedInstallerOptionViewModel" xmlns="https://github.com/avaloniaui"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="clr-namespace:NexusMods.Games.FOMOD.UI"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="NexusMods.Games.FOMOD.UI.GuidedInstallerOptionView">
+
+    <Design.DataContext>
+        <ui:GuidedInstallerOptionDesignViewModel />
+    </Design.DataContext>
+
+    <StackPanel>
+        <CheckBox x:Name="CheckBox">
+            <TextBlock Classes="ButtonMontserratSemi" x:Name="CheckBoxTextBlock"/>
+        </CheckBox>
+    </StackPanel>
+
+</reactiveUi:ReactiveUserControl>
