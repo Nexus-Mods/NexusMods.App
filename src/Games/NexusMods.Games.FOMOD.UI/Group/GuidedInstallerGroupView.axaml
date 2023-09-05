@@ -14,7 +14,7 @@
     </Design.DataContext>
 
     <StackPanel>
-        <TextBlock x:Name="GroupName" />
+        <TextBlock Classes="Small" x:Name="GroupName" />
     </StackPanel>
 
 </reactiveUi:ReactiveUserControl>

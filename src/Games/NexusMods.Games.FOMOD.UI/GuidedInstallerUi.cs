@@ -6,7 +6,9 @@ using Avalonia.Rendering;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI;
+using NexusMods.Common;
 using NexusMods.Common.GuidedInstaller;
+using ReactiveUI;
 
 namespace NexusMods.Games.FOMOD.UI;
 
@@ -18,6 +20,8 @@ public sealed class GuidedInstallerUi : IGuidedInstaller, IDisposable
     private IServiceScope? _currentScope;
     private IGuidedInstallerWindowViewModel? _windowViewModel;
     private ReactiveWindow<IGuidedInstallerWindowViewModel>? _window;
+
+    private readonly EventWaitHandle _waitHandle = new ManualResetEvent(initialState: false);
 
     public GuidedInstallerUi(IServiceProvider serviceProvider)
     {
@@ -32,15 +36,23 @@ public sealed class GuidedInstallerUi : IGuidedInstaller, IDisposable
         _windowViewModel = _currentScope.ServiceProvider.GetRequiredService<IGuidedInstallerWindowViewModel>();
         _windowViewModel.WindowName = windowName;
 
-        // NOTE: AvaloniaScheduler has to be used to do work on the UI thread
+        // NOTE(erri120): AvaloniaScheduler has to be used to do work on the UI thread
         AvaloniaScheduler.Instance.Schedule(
             this,
             AvaloniaScheduler.Instance.Now,
             (_, state) =>
             {
                 SetupWindow(state);
+                _waitHandle.Set();
+
                 return Disposable.Empty;
             });
+
+        // NOTE(erri120): We need to wait for the window to be created.
+        // Otherwise, the _window field isn't set when we want to request the
+        // first user choice.
+        _waitHandle.WaitOne(timeout: TimeSpan.FromSeconds(1));
+        _waitHandle.Reset();
     }
 
     private static void SetupWindow(GuidedInstallerUi state)
@@ -117,5 +129,9 @@ public sealed class GuidedInstallerUi : IGuidedInstaller, IDisposable
         activeStepViewModel.TaskCompletionSource = tcs;
     }
 
-    public void Dispose() => CleanupInstaller();
+    public void Dispose()
+    {
+        CleanupInstaller();
+        _waitHandle.Dispose();
+    }
 }

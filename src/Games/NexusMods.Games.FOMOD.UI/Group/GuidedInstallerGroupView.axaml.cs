@@ -1,5 +1,4 @@
 using System.Reactive.Disposables;
-using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
@@ -18,4 +17,3 @@ public partial class GuidedInstallerGroupView : ReactiveUserControl<IGuidedInsta
         });
     }
 }
-

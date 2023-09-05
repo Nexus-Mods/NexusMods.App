@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using System.Reactive;
 using NexusMods.App.UI;
 using NexusMods.Common.GuidedInstaller;
@@ -11,7 +10,7 @@ public class GuidedInstallerStepDesignViewModel : AViewModel<IGuidedInstallerSte
 {
     public GuidedInstallationStep? InstallationStep { get; set; }
     public TaskCompletionSource<UserChoice>? TaskCompletionSource { get; set; }
-    public ReadOnlyObservableCollection<IGuidedInstallerGroupViewModel> Groups { get; set; }
+    public IGuidedInstallerGroupViewModel[] Groups { get; set; }
 
     public ReactiveCommand<Unit, Unit> NextStepCommand { get; set; } = Initializers.ReactiveCommandUnitUnit;
     public ReactiveCommand<Unit, Unit> PreviousStepCommand { get; set; } = Initializers.ReactiveCommandUnitUnit;
@@ -22,11 +21,9 @@ public class GuidedInstallerStepDesignViewModel : AViewModel<IGuidedInstallerSte
         var step = SetupInstallationStep();
 
         InstallationStep = step;
-        Groups = new ReadOnlyObservableCollection<IGuidedInstallerGroupViewModel>(new
-            ObservableCollection<IGuidedInstallerGroupViewModel>(
-                step.Groups.Select(group => new GuidedInstallerGroupDesignViewModel(group))
-            )
-        );
+        Groups = step.Groups
+            .Select(group => (IGuidedInstallerGroupViewModel)new GuidedInstallerGroupDesignViewModel(group))
+            .ToArray();
     }
 
     private static GuidedInstallationStep SetupInstallationStep()
