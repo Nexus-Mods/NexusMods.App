@@ -2,6 +2,7 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 using NexusMods.App.UI;
 using NexusMods.Common.GuidedInstaller;
 using ReactiveUI;
@@ -25,7 +26,7 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
     public ReactiveCommand<Unit, Unit> PreviousStepCommand { get; set; }
     public ReactiveCommand<Unit, Unit> CancelInstallerCommand { get; set; }
 
-    public GuidedInstallerStepViewModel()
+    public GuidedInstallerStepViewModel(ILogger<GuidedInstallerStepViewModel> logger)
     {
         // TODO: other validation
         var hasTaskCompletionSource = this
@@ -54,14 +55,12 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
         {
             this.WhenAnyValue(x => x.InstallationStep)
                 .WhereNotNull()
-                .Select(installationStep =>
+                .SubscribeWithErrorLogging(logger, installationStep =>
                 {
-                    return installationStep.Groups
+                    Groups = installationStep.Groups
                         .Select(group => (IGuidedInstallerGroupViewModel)new GuidedInstallerGroupViewModel(group))
                         .ToArray();
                 })
-                .OnUI()
-                .ToProperty(this, x => x.Groups, initialValue: Array.Empty<IGuidedInstallerGroupViewModel>())
                 .DisposeWith(disposables);
         });
     }
