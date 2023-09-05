@@ -10,6 +10,10 @@
     x:TypeArguments="ui:IGuidedInstallerWindowViewModel"
     Title="GuidedInstallerWindow">
 
+    <Design.DataContext>
+        <ui:GuidedInstallerWindowDesignViewModel />
+    </Design.DataContext>
+
     <reactiveUi:ViewModelViewHost x:Name="StepViewHost"/>
 
 </reactiveUi:ReactiveWindow>
