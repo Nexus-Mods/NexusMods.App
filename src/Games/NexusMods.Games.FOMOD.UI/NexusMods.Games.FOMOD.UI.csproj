@@ -29,6 +29,13 @@
         <Compile Update="Step\GuidedInstallerStepDesignViewModel.cs">
           <DependentUpon>IGuidedInstallerStepViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Group\GuidedInstallerGroupViewModel.cs">
+          <DependentUpon>IGuidedInstallerGroupViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Group\GuidedInstallerGroupDesignViewModel.cs">
+          <DependentUpon>IGuidedInstallerGroupViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
+
 
 </Project>

@@ -1,4 +1,6 @@
+using System.Collections.ObjectModel;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using JetBrains.Annotations;
 using NexusMods.App.UI;
@@ -16,6 +18,9 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
 
     [Reactive]
     public TaskCompletionSource<UserChoice>? TaskCompletionSource { get; set; }
+
+    [Reactive]
+    public ReadOnlyObservableCollection<IGuidedInstallerGroupViewModel> Groups { get; set; } = Initializers.ReadOnlyObservableCollection<IGuidedInstallerGroupViewModel>();
 
     public ReactiveCommand<Unit, Unit> NextStepCommand { get; set; }
     public ReactiveCommand<Unit, Unit> PreviousStepCommand { get; set; }
@@ -45,5 +50,19 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
         {
             TaskCompletionSource?.TrySetResult(new UserChoice(new UserChoice.CancelInstallation()));
         }, hasTaskCompletionSource);
+
+        this.WhenActivated(disposables =>
+        {
+            this.WhenAnyValue(x => x.InstallationStep)
+                .OnUI()
+                .WhereNotNull()
+                .Select(installationStep =>
+                {
+                    return installationStep.Groups.Select(group => (IGuidedInstallerGroupViewModel)new GuidedInstallerGroupViewModel(group));
+                })
+                .Select(x => new ReadOnlyObservableCollection<IGuidedInstallerGroupViewModel>(new ObservableCollection<IGuidedInstallerGroupViewModel>(x)))
+                .ToProperty(this, x => x.Groups)
+                .DisposeWith(disposables);
+        });
     }
 }

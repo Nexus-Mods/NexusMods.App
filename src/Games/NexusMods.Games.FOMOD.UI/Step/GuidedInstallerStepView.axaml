@@ -14,6 +14,14 @@
 
     <StackPanel>
         <TextBlock Classes="Subheading" x:Name="StepName" />
+
+        <ItemsControl x:Name="GroupItemsControl">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
     </StackPanel>
 
 </reactiveUi:ReactiveUserControl>

@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Reactive;
 using NexusMods.App.UI;
 using NexusMods.Common.GuidedInstaller;
@@ -8,6 +9,8 @@ namespace NexusMods.Games.FOMOD.UI;
 public interface IGuidedInstallerStepViewModel : IViewModelInterface
 {
     public GuidedInstallationStep? InstallationStep { get; set; }
+
+    public ReadOnlyObservableCollection<IGuidedInstallerGroupViewModel> Groups { get; set; }
 
     public TaskCompletionSource<UserChoice>? TaskCompletionSource { get; set; }
 

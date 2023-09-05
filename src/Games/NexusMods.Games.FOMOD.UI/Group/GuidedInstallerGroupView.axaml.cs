@@ -1,0 +1,21 @@
+using System.Reactive.Disposables;
+using Avalonia.Controls;
+using Avalonia.ReactiveUI;
+using ReactiveUI;
+
+namespace NexusMods.Games.FOMOD.UI;
+
+public partial class GuidedInstallerGroupView : ReactiveUserControl<IGuidedInstallerGroupViewModel>
+{
+    public GuidedInstallerGroupView()
+    {
+        InitializeComponent();
+
+        this.WhenActivated(disposables =>
+        {
+            this.OneWayBind(ViewModel, vm => vm.Group.Description, view => view.GroupName.Text)
+                .DisposeWith(disposables);
+        });
+    }
+}
+
