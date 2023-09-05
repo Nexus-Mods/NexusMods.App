@@ -7,8 +7,8 @@ using Mutagen.Bethesda.Plugins.Binary.Streams;
 using Mutagen.Bethesda.Plugins.Meta;
 using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Skyrim;
-using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
@@ -17,7 +17,7 @@ using Noggog;
 namespace NexusMods.Games.BethesdaGameStudios;
 
 [UsedImplicitly]
-public class PluginAnalyzer : IFileAnalyzer
+public class PluginAnalyzer
 {
     public FileAnalyzerId Id { get; } = FileAnalyzerId.New("9c673a4f-064f-4b1e-83e3-4bf0454575cd", 1);
 
@@ -37,10 +37,10 @@ public class PluginAnalyzer : IFileAnalyzer
     }
 
 #pragma warning disable CS1998
-    public async IAsyncEnumerable<IFileAnalysisData> AnalyzeAsync(FileAnalyzerInfo info, [EnumeratorCancellation] CancellationToken ct = default)
+    public async IAsyncEnumerable<PluginAnalysisData> AnalyzeAsync(RelativePath path, ModSourceFileEntry info, [EnumeratorCancellation] CancellationToken ct = default)
 #pragma warning restore CS1998
     {
-        var extension = info.FileName.ToRelativePath().Extension;
+        var extension = path.Extension;
         if (ValidExtensions[0] != extension && ValidExtensions[1] != extension && ValidExtensions[2] != extension) yield break;
 
         // NOTE(erri120): The GameConstant specifies the header length.
@@ -54,24 +54,24 @@ public class PluginAnalyzer : IFileAnalyzer
         // The current solution just tries different GameConstants, which isn't ideal and
         // should be replaced with an identification step that finds the correct GameConstant.
 
-        var startPos = info.Stream.Position;
-        var fileAnalysisData = Analyze(GameConstants.SkyrimLE, info);
+        await using var stream = await info.Open();
+        var fileAnalysisData = Analyze(path, GameConstants.SkyrimLE, stream);
         if (fileAnalysisData is null)
         {
-            info.Stream.Position = startPos;
-            fileAnalysisData = Analyze(GameConstants.Oblivion, info);
+            stream.Position = 0;
+            fileAnalysisData = Analyze(path, GameConstants.Oblivion, stream);
             if (fileAnalysisData is null) yield break;
         }
 
         yield return fileAnalysisData;
     }
 
-    private IFileAnalysisData? Analyze(GameConstants targetGame, FileAnalyzerInfo info)
+    private PluginAnalysisData? Analyze(RelativePath path, GameConstants targetGame, Stream stream)
     {
         try
         {
             using var readStream = new MutagenInterfaceReadStream(
-                new BinaryReadStream(info.Stream, dispose: false),
+                new BinaryReadStream(stream, dispose: false),
                 new ParsingBundle(targetGame, masterReferences: null!)
                 {
                     ModKey = ModKey.Null
@@ -102,7 +102,7 @@ public class PluginAnalyzer : IFileAnalyzer
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Exception while parsing {} ({})", info.FileName, info.RelativePath);
+            _logger.LogError(e, "Exception while parsing {} ({})", path.FileName, path);
             return null;
         }
     }
