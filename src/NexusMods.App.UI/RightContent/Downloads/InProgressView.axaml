@@ -7,7 +7,7 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:downloads="clr-namespace:NexusMods.App.UI.RightContent.Downloads"
     xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
-    xmlns:localization="clr-namespace:NexusMods.App.UI.Localization"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     mc:Ignorable="d" d:DesignWidth="920" d:DesignHeight="664"
     x:Class="NexusMods.App.UI.RightContent.Downloads.InProgressView">
     <Design.DataContext>
@@ -17,26 +17,26 @@
         <!-- ToolBar -->
         <Border Classes="Toolbar" Grid.Row="0">
             <Grid ColumnDefinitions="*, Auto">
-                <TextBlock Grid.Column="0" Text="{localization:Localized DownloadInProgressView__IN_PROGRESS}">
+                <TextBlock Grid.Column="0" Text="{x:Static resources:Language.DownloadInProgressView__IN_PROGRESS}">
                 </TextBlock>
                 <StackPanel Grid.Column="1">
                     <Button x:Name="CancelButton">
                         <StackPanel>
                             <avalonia:Icon Classes="RemoveCircleOutline" />
-                            <TextBlock Text="{localization:Localized DownloadInProgressView__Cancel}"></TextBlock>
+                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Cancel}"></TextBlock>
                         </StackPanel>
                     </Button>
                     <Button x:Name="PauseButton">
                         <StackPanel>
                             <avalonia:Icon Classes="PauseCircleOutline" />
-                            <TextBlock Text="{localization:Localized DownloadInProgressView__Pause}"></TextBlock>
+                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Pause}"></TextBlock>
                         </StackPanel>
                     </Button>
                     <Line />
                     <Button x:Name="PauseAllButton">
                         <StackPanel>
                             <avalonia:Icon Classes="PauseCircleFilled" />
-                            <TextBlock Text="{localization:Localized DownloadInProgressView__Pause_All}"></TextBlock>
+                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Pause_All}"></TextBlock>
                         </StackPanel>
                     </Button>
                     <Line />
@@ -56,7 +56,7 @@
             <DockPanel LastChildFill="True" HorizontalAlignment="Stretch" Grid.Row="0">
                 <TextBlock DockPanel.Dock="Left"
                            Classes="H5MontserratSemi"
-                           Text="{localization:Localized InProgressTitleTextBlock}"
+                           Text="{x:Static resources:Language.InProgressTitleTextBlock}"
                            x:Name="InProgressTitleTextBlock"
                            Margin="0,0,0,16" />
 
@@ -70,12 +70,12 @@
                     <!-- Note: Can use 'run' here, but don't want to make separate styles for 'run' -->
                     <TextBlock VerticalAlignment="Center"
                                Classes="Body2RobotoRegularBold"
-                               Text="{localization:Localized BoldMinutesRemainingTextBlock}" Margin="0,0,4,0"
+                               Text="{x:Static resources:Language.BoldMinutesRemainingTextBlock}" Margin="0,0,4,0"
                                x:Name="BoldMinutesRemainingTextBlock" />
 
                     <TextBlock VerticalAlignment="Center"
                                Classes="Body2RobotoRegular"
-                               Text="{localization:Localized MinutesRemainingTextBlock}"
+                               Text="{x:Static resources:Language.MinutesRemainingTextBlock}"
                                x:Name="MinutesRemainingTextBlock" />
 
                 </StackPanel>

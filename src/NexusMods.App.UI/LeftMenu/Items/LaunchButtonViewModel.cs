@@ -23,9 +23,7 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
 
     [Reactive] public ReactiveCommand<Unit, Unit> Command { get; set; } = Initializers.ReactiveCommandUnitUnit;
 
-    [Reactive] public string Label { get; set; } = "";
-
-    private bool _isRunning = false;
+    [Reactive] public string Label { get; set; } = Language.LaunchButtonViewModel_LaunchGame_LAUNCH;
 
     [Reactive] public Percent? Progress { get; set; }
 
@@ -42,13 +40,6 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
 
         this.WhenActivated(d =>
         {
-            new LocalizedStringUpdater(() =>
-            {
-                Label = _isRunning
-                    ? Language.LaunchButtonViewModel_LaunchGame_RUNNING
-                    : Language.LaunchButtonViewModel_LaunchGame_LAUNCH;
-            }).DisposeWith(d);
-
             var lockedLoadouts = manager.Jobs
                 .Filter(m => m.Payload is ILoadoutJob);
 
@@ -69,12 +60,10 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
 
     private async Task LaunchGame(CancellationToken token)
     {
-        _isRunning = true;
         Label = Language.LaunchButtonViewModel_LaunchGame_RUNNING;
         var marker = new LoadoutMarker(_loadoutRegistry, LoadoutId);
         var tool = _toolManager.GetTools(marker.Value).OfType<IRunGameTool>().First();
         await _toolManager.RunTool(tool, marker.Value, token: token);
         Label = Language.LaunchButtonViewModel_LaunchGame_LAUNCH;
-        _isRunning = false;
     }
 }

@@ -6,7 +6,7 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:downloads="clr-namespace:NexusMods.App.UI.LeftMenu.Downloads"
                                 xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
-                                xmlns:localization="clr-namespace:NexusMods.App.UI.Localization"
+                                xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
                                 mc:Ignorable="d" d:DesignWidth="287"
                                 d:DesignHeight="664"
                                 x:Class="NexusMods.App.UI.LeftMenu.Downloads.DownloadsView">
@@ -15,25 +15,25 @@
     </Design.DataContext>
     <StackPanel Classes="LeftPane">
         <Border Classes="LeftPaneTitle">
-            <TextBlock Classes="LeftPaneTitle" Text="{localization:Localized DownloadsView__DOWNLOADS}"></TextBlock>
+            <TextBlock Classes="LeftPaneTitle" Text="{x:Static resources:Language.DownloadsView__DOWNLOADS}"></TextBlock>
         </Border>
         <StackPanel Classes="LeftPaneButtonList">
             <Button x:Name="InProgressButton" Classes="LeftMenuItem">
                 <StackPanel Orientation="Horizontal">
                     <avalonia:Icon Classes="ProgressDownload"/>
-                    <TextBlock Text="{localization:Localized DownloadsView__In_Progress}"></TextBlock>
+                    <TextBlock Text="{x:Static resources:Language.DownloadsView__In_Progress}"></TextBlock>
                 </StackPanel>
             </Button>
             <Button x:Name="CompletedButton" Classes="LeftMenuItem">
                 <StackPanel Orientation="Horizontal">
                     <avalonia:Icon Classes="CheckUnderline"/>
-                    <TextBlock Text="{localization:Localized DownloadsView__Completed}"></TextBlock>
+                    <TextBlock Text="{x:Static resources:Language.DownloadsView__Completed}"></TextBlock>
                 </StackPanel>
             </Button>
             <Button x:Name="HistoryButton" Classes="LeftMenuItem">
                 <StackPanel Orientation="Horizontal">
                     <avalonia:Icon Classes="History"/>
-                    <TextBlock Text="{localization:Localized DownloadsView__Download_history}"></TextBlock>
+                    <TextBlock Text="{x:Static resources:Language.DownloadsView__Download_history}"></TextBlock>
                 </StackPanel>
             </Button>
         </StackPanel>

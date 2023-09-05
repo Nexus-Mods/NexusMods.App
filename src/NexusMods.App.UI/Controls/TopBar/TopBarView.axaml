@@ -9,11 +9,10 @@
     xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:pills="clr-namespace:NexusMods.App.UI.Controls.Pills"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:topBar="clr-namespace:NexusMods.App.UI.Controls.TopBar"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:localization="clr-namespace:NexusMods.App.UI.Localization">
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
     <Design.DataContext>
         <topBar:TopBarDesignViewModel ShowWindowControls="True" />
     </Design.DataContext>
@@ -30,7 +29,7 @@
         <Button Classes="Pill Light" Grid.Column="1" Grid.Row="0" x:Name="Premium">
             <StackPanel>
                 <avalonia:Icon Classes="Star" />
-                <TextBlock Text="{localization:Localized Nexus_Premium_Status__Premium}"></TextBlock>
+                <TextBlock Text="{x:Static resources:Language.Nexus_Premium_Status__Premium}"></TextBlock>
             </StackPanel>
         </Button>
 
@@ -53,7 +52,7 @@
                     Foreground="{DynamicResource StructuralBorderBrush}"
                     HorizontalAlignment="Left"
                     Margin="7,0"
-                    Text="{localization:Localized SearchBox__Search}"
+                    Text="{x:Static resources:Language.SearchBox__Search}"
                     VerticalAlignment="Center" />
             </StackPanel>
         </Border>
@@ -70,7 +69,7 @@
                 x:Name="LoginButton">
                 <StackPanel>
                     <TextBlock
-                        Text="{localization:Localized TopBarActions__LOG_IN}">
+                        Text="{x:Static resources:Language.TopBarActions__LOG_IN}">
                     </TextBlock>
                 </StackPanel>
             </Button>

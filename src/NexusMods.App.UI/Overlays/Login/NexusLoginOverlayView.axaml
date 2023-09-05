@@ -11,7 +11,7 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:login="clr-namespace:NexusMods.App.UI.Overlays.Login"
-    xmlns:localization="clr-namespace:NexusMods.App.UI.Localization">
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
     <Design.DataContext>
         <login:NexusLoginOverlayDesignerViewModel />
     </Design.DataContext>
@@ -39,7 +39,7 @@
                 Classes="ButtonMontserratSemi"
                 HorizontalAlignment="Center"
                 Margin="0,27"
-                Text="{localization:Localized NexusLoginOverlayView__Please_Click_Authorize}"
+                Text="{x:Static resources:Language.NexusLoginOverlayView__Please_Click_Authorize}"
                 VerticalAlignment="Center" />
             <Border
                 Background="{DynamicResource BackgroundTertiaryBrush}"
@@ -48,11 +48,11 @@
                 <StackPanel Margin="24">
                     <TextBlock
                         Classes="CaptionMontserratSemi"
-                        Text="{localization:Localized NexusLoginOverlayView__BROWSER_DIDNT_OPEN}" />
+                        Text="{x:Static resources:Language.NexusLoginOverlayView__BROWSER_DIDNT_OPEN}" />
                     <TextBlock
                         Classes="Body2RobotoRegular"
                         Margin="0,16,0,0"
-                        Text="{localization:Localized NexusLoginOverlayView__Please_copy_url}"
+                        Text="{x:Static resources:Language.NexusLoginOverlayView_Please_copy_url}"
                         Foreground="{DynamicResource FontDarkSecondaryColor}"
                         TextWrapping="Wrap" />
                     <Border

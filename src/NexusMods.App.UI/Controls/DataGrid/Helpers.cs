@@ -1,8 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using Avalonia.Controls;
-using Avalonia.Data;
-using NexusMods.App.UI.Helpers;
-using NexusMods.App.UI.Localization;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.RightContent.DownloadGrid;
 using NexusMods.App.UI.RightContent.LoadoutGrid;
@@ -39,46 +36,19 @@ public static class Helpers
         {
             LoadoutColumn loadoutColumn => loadoutColumn switch
             {
-                LoadoutColumn.Name => new TextBlock
-                {
-                    [!TextBlock.TextProperty] = Localizer.CreateAvaloniaBinding(() => Language.Helpers_GenerateHeader_NAME)
-                },
-                LoadoutColumn.Version => new TextBlock
-                {
-                    [!TextBlock.TextProperty] = Localizer.CreateAvaloniaBinding(() => Language.Helpers_GenerateHeader_VERSION)
-                },
-                LoadoutColumn.Category => new TextBlock
-                {
-                    [!TextBlock.TextProperty] = Localizer.CreateAvaloniaBinding(() => Language.Helpers_GenerateHeader_CATEGORY)
-                },
-                LoadoutColumn.Installed => new TextBlock
-                {
-                    [!TextBlock.TextProperty] = Localizer.CreateAvaloniaBinding(() => Language.Helpers_GenerateHeader_INSTALLED)
-                },
+                LoadoutColumn.Name => new TextBlock { Text = Language.Helpers_GenerateHeader_NAME },
+                LoadoutColumn.Version => new TextBlock { Text = Language.Helpers_GenerateHeader_VERSION },
+                LoadoutColumn.Category => new TextBlock { Text = Language.Helpers_GenerateHeader_CATEGORY },
+                LoadoutColumn.Installed => new TextBlock { Text = Language.Helpers_GenerateHeader_INSTALLED },
                 LoadoutColumn.Enabled => new RightContent.LoadoutGrid.Columns.ModEnabled.ModEnabledHeader()
             },
             DownloadColumn downloadColumn => downloadColumn switch
             {
-                DownloadColumn.DownloadName => new TextBlock
-                {
-                    [!TextBlock.TextProperty] = Localizer.CreateAvaloniaBinding(() => Language.Helpers_GenerateHeader_MOD_NAME)
-                },
-                DownloadColumn.DownloadVersion => new TextBlock
-                {
-                    [!TextBlock.TextProperty] = Localizer.CreateAvaloniaBinding(() => Language.Helpers_GenerateHeader_VERSION)
-                },
-                DownloadColumn.DownloadGameName => new TextBlock
-                {
-                    [!TextBlock.TextProperty] = Localizer.CreateAvaloniaBinding(() => Language.Helpers_GenerateHeader_GAME)
-                },
-                DownloadColumn.DownloadSize => new TextBlock
-                {
-                    [!TextBlock.TextProperty] = Localizer.CreateAvaloniaBinding(() => Language.Helpers_GenerateHeader_SIZE)
-                },
-                DownloadColumn.DownloadStatus => new TextBlock
-                {
-                    [!TextBlock.TextProperty] = Localizer.CreateAvaloniaBinding(() => Language.Helpers_GenerateHeader_STATUS)
-                },
+                DownloadColumn.DownloadName => new TextBlock { Text = Language.Helpers_GenerateHeader_MOD_NAME },
+                DownloadColumn.DownloadVersion => new TextBlock { Text = Language.Helpers_GenerateHeader_VERSION },
+                DownloadColumn.DownloadGameName => new TextBlock { Text = Language.Helpers_GenerateHeader_GAME },
+                DownloadColumn.DownloadSize => new TextBlock { Text = Language.Helpers_GenerateHeader_SIZE },
+                DownloadColumn.DownloadStatus => new TextBlock { Text = Language.Helpers_GenerateHeader_STATUS },
             },
             _ => throw new ArgumentOutOfRangeException(nameof(column), column, null)
         };

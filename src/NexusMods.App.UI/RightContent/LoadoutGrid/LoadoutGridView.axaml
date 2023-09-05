@@ -11,7 +11,7 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
-    xmlns:localization="clr-namespace:NexusMods.App.UI.Localization">
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
     <Design.DataContext>
         <loadoutGrid:LoadoutGridDesignViewModel />
     </Design.DataContext>
@@ -29,7 +29,7 @@
                     <Button x:Name="AddModButton">
                         <StackPanel>
                             <avalonia:Icon Classes="PlusCircleOutline" />
-                            <TextBlock Text="{localization:Localized LoadoutGridView__Add_Mod}"></TextBlock>
+                            <TextBlock Text="{x:Static resources:Language.LoadoutGridView__Add_Mod}"></TextBlock>
                         </StackPanel>
                     </Button>
                 </StackPanel>
