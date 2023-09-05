@@ -11,4 +11,5 @@
         <EmbeddedResource Include="Resources\DarkestDungeon\icon.png" />
     </ItemGroup>
 
+
 </Project>
