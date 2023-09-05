@@ -32,40 +32,43 @@ public sealed class GuidedInstallerUi : IGuidedInstaller, IDisposable
         _windowViewModel = _currentScope.ServiceProvider.GetRequiredService<IGuidedInstallerWindowViewModel>();
         _windowViewModel.WindowName = windowName;
 
-        // TODO: figure out a better approach than this
+        // NOTE: AvaloniaScheduler has to be used to do work on the UI thread
         AvaloniaScheduler.Instance.Schedule(
-            _windowViewModel,
+            this,
             AvaloniaScheduler.Instance.Now,
-            (_, viewModel) =>
+            (_, state) =>
             {
-                SetupWindow(viewModel);
+                SetupWindow(state);
                 return Disposable.Empty;
             });
     }
 
-    private void SetupWindow(IGuidedInstallerWindowViewModel viewModel)
+    private static void SetupWindow(GuidedInstallerUi state)
     {
-        _window = new GuidedInstallerWindow
+        state._window = new GuidedInstallerWindow
         {
-            ViewModel = viewModel
+            ViewModel = state._windowViewModel
         };
 
-        _window.Show();
+        state._window.Show();
 
         // TODO: cancel installation if the user closes the window
-        var closed = Observable.FromEventPattern(
-            addHandler => _window.Closed += addHandler,
-            removeHandler => _window.Closed -= removeHandler
-        );
+        // var closed = Observable.FromEventPattern(
+        //     addHandler => state._window.Closed += addHandler,
+        //     removeHandler => state._window.Closed -= removeHandler
+        // );
     }
 
     public void CleanupInstaller()
     {
+        if (_window is not null)
+        {
+            _window.Close();
+            _window = null;
+        }
+
         if (_windowViewModel is not null)
         {
-            _window?.Close();
-            _window = null;
-
             _windowViewModel.CloseCommand.Execute();
             _windowViewModel.ActiveStepViewModel = null;
             _windowViewModel = null;
@@ -79,19 +82,39 @@ public sealed class GuidedInstallerUi : IGuidedInstaller, IDisposable
         GuidedInstallationStep installationStep,
         CancellationToken cancellationToken)
     {
+        // TODO: do something with the cancellation token
         Debug.Assert(_currentScope is not null);
         Debug.Assert(_windowViewModel is not null);
-
-        _windowViewModel.ActiveStepViewModel ??= _currentScope.ServiceProvider.GetRequiredService<IGuidedInstallerStepViewModel>();
-
-        var activeStepViewModel = _windowViewModel.ActiveStepViewModel;
-        activeStepViewModel.InstallationStep = installationStep;
+        Debug.Assert(_window is not null);
 
         var tcs = new TaskCompletionSource<UserChoice>();
-        activeStepViewModel.TaskCompletionSource = tcs;
+
+        // NOTE: AvaloniaScheduler has to be used to do work on the UI thread
+        AvaloniaScheduler.Instance.Schedule(
+            (_currentScope, _windowViewModel, tcs, installationStep),
+            AvaloniaScheduler.Instance.Now,
+            (_, tuple) =>
+            {
+                SetupStep(tuple._currentScope, tuple._windowViewModel, tuple.tcs, tuple.installationStep);
+                return Disposable.Empty;
+            });
 
         await tcs.Task;
         return tcs.Task.Result;
+    }
+
+    private static void SetupStep(
+        IServiceScope currentScope,
+        IGuidedInstallerWindowViewModel viewModel,
+        TaskCompletionSource<UserChoice> tcs,
+        GuidedInstallationStep installationStep)
+    {
+        viewModel.ActiveStepViewModel ??= currentScope.ServiceProvider.GetRequiredService<IGuidedInstallerStepViewModel>();
+
+        var activeStepViewModel = viewModel.ActiveStepViewModel;
+        activeStepViewModel.InstallationStep = installationStep;
+
+        activeStepViewModel.TaskCompletionSource = tcs;
     }
 
     public void Dispose() => CleanupInstaller();

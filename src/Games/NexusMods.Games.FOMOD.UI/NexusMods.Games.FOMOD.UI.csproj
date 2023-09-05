@@ -5,6 +5,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="ReactiveUI.Fody" />
+    </ItemGroup>
+
+    <ItemGroup>
         <Compile Update="Step\GuidedInstallerStepView.axaml.cs">
             <DependentUpon>GuidedInstallerStepView.axaml</DependentUpon>
             <SubType>Code</SubType>
