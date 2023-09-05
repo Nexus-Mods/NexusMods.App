@@ -1,4 +1,5 @@
 using DynamicData;
+using NexusMods.DataModel;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.NexusWebApi.Types;
@@ -52,7 +53,7 @@ public interface IDownloadService : IDisposable
     /// This gets fired whenever a download is complete and an archive has been analyzed.
     /// You can use this callback to gather additional metadata about the archive, or install the mods within.
     /// </summary>
-    IObservable<(IDownloadTask task, Hash analyzedHash, string modName)> AnalyzedArchives { get; }
+    IObservable<(IDownloadTask task, DownloadId analyzedHash, string modName)> AnalyzedArchives { get; }
 
     /// <summary>
     /// Adds a task that will download from a NXM link.

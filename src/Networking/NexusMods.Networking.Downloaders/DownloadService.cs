@@ -3,8 +3,11 @@ using System.Reactive.Subjects;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Common;
+using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
+using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.Downloaders.Interfaces;
@@ -27,23 +30,23 @@ public class DownloadService : IDownloadService
     private readonly ILogger<DownloadService> _logger;
     private readonly IServiceProvider _provider;
     private readonly IDataStore _store;
-    private readonly IArchiveAnalyzer _archiveAnalyzer;
     private readonly Subject<IDownloadTask> _started = new();
     private readonly Subject<IDownloadTask> _completed = new();
     private readonly Subject<IDownloadTask> _cancelled = new();
     private readonly Subject<IDownloadTask> _paused = new();
     private readonly Subject<IDownloadTask> _resumed = new();
-    private readonly Subject<(IDownloadTask task, Hash analyzedHash, string modName)> _analyzed = new();
+    private readonly Subject<(IDownloadTask task, DownloadId analyzedHash, string modName)> _analyzed = new();
     private readonly IObservable<IChangeSet<IDownloadTask>> _tasksChangeSet;
     private readonly ReadOnlyObservableCollection<IDownloadTask> _currentDownloads;
     private bool _isDisposed = false;
+    private readonly IDownloadRegistry _downloadRegistry;
 
-    public DownloadService(ILogger<DownloadService> logger, IServiceProvider provider, IDataStore store, IArchiveAnalyzer archiveAnalyzer)
+    public DownloadService(ILogger<DownloadService> logger, IServiceProvider provider, IDataStore store, IDownloadRegistry downloadRegistry)
     {
         _logger = logger;
         _provider = provider;
         _store = store;
-        _archiveAnalyzer = archiveAnalyzer;
+        _downloadRegistry = downloadRegistry;
 
         _tasks = new SourceList<IDownloadTask>();
         _tasksChangeSet = _tasks.Connect();
@@ -104,7 +107,7 @@ public class DownloadService : IDownloadService
     public IObservable<IDownloadTask> ResumedTasks => _resumed;
 
     /// <inheritdoc />
-    public IObservable<(IDownloadTask task, Hash analyzedHash, string modName)> AnalyzedArchives => _analyzed;
+    public IObservable<(IDownloadTask task, DownloadId analyzedHash, string modName)> AnalyzedArchives => _analyzed;
 
     /// <inheritdoc />
     public Task AddNxmTask(NXMUrl url)
@@ -155,7 +158,7 @@ public class DownloadService : IDownloadService
     }
 
     /// <inheritdoc />
-    public void OnPaused(IDownloadTask task) 
+    public void OnPaused(IDownloadTask task)
     {
         _paused.OnNext(task);
         UpdatePersistedState(task);
@@ -165,9 +168,9 @@ public class DownloadService : IDownloadService
     public void OnResumed(IDownloadTask task) => _resumed.OnNext(task);
 
     /// <inheritdoc />
-    public Size GetThroughput() 
+    public Size GetThroughput()
     {
-        var provider = DateTimeProvider.Instance; 
+        var provider = DateTimeProvider.Instance;
         var totalThroughput = 0L;
         foreach (var download in _currentDownloads)
             totalThroughput += download.CalculateThroughput(provider);
@@ -185,8 +188,14 @@ public class DownloadService : IDownloadService
 
         try
         {
-            var analyzed = await _archiveAnalyzer.AnalyzeFileAsync(path);
-            _analyzed.OnNext((task, analyzed.Hash, modName));
+            // TODO: Fix this
+            var downloadId = await _downloadRegistry.RegisterDownload(path.Path, new FilePathMetadata
+            {
+                Name = modName,
+                OriginalName = modName,
+                Quality = Quality.Low
+            });
+            _analyzed.OnNext((task, downloadId, modName));
         }
         catch (Exception e)
         {
@@ -227,11 +236,11 @@ public class DownloadService : IDownloadService
     {
         if (_isDisposed)
             return;
-        
+
         // Pause all tasks, which persists them to datastore.
         foreach (var task in _currentDownloads)
             task.Suspend();
-        
+
         _isDisposed = true;
         _tasks.Dispose();
         _started.Dispose();

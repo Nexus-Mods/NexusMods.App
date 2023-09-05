@@ -6,6 +6,7 @@ using NexusMods.App.UI.Controls.TopBar;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.MetricsOptIn;
+using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Hashing.xxHash64;
@@ -106,7 +107,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
     }
 
 
-    private async Task HandleDownloadedAnalyzedArchive(IDownloadTask task, Hash analyzedHash, string modName)
+    private async Task HandleDownloadedAnalyzedArchive(IDownloadTask task, DownloadId downloadId, string modName)
     {
         var loadouts = Array.Empty<LoadoutId>();
         if (task is IHaveGameDomain gameDomain)
@@ -120,9 +121,9 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
         await Task.Run(async () =>
         {
             if (loadouts.Length > 0)
-                await _archiveInstaller.AddMods(loadouts[0], analyzedHash, modName);
+                await _archiveInstaller.AddMods(loadouts[0], downloadId, modName);
             else
-                await _archiveInstaller.AddMods(_registry.AllLoadouts().First().LoadoutId, analyzedHash, modName);
+                await _archiveInstaller.AddMods(_registry.AllLoadouts().First().LoadoutId, downloadId, modName);
         });
     }
 
