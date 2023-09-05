@@ -36,12 +36,12 @@ public class PluginAnalyzer
         _logger = logger;
     }
 
-#pragma warning disable CS1998
-    public async IAsyncEnumerable<PluginAnalysisData> AnalyzeAsync(RelativePath path, ModSourceFileEntry info, [EnumeratorCancellation] CancellationToken ct = default)
-#pragma warning restore CS1998
+    public async Task<PluginAnalysisData?> AnalyzeAsync(RelativePath path, Stream stream, [EnumeratorCancellation] CancellationToken ct = default)
     {
         var extension = path.Extension;
-        if (ValidExtensions[0] != extension && ValidExtensions[1] != extension && ValidExtensions[2] != extension) yield break;
+        if (ValidExtensions[0] != extension && ValidExtensions[1] != extension &&
+            ValidExtensions[2] != extension)
+            return null;
 
         // NOTE(erri120): The GameConstant specifies the header length.
         // - Oblivion: 20 bytes
@@ -54,16 +54,16 @@ public class PluginAnalyzer
         // The current solution just tries different GameConstants, which isn't ideal and
         // should be replaced with an identification step that finds the correct GameConstant.
 
-        await using var stream = await info.Open();
         var fileAnalysisData = Analyze(path, GameConstants.SkyrimLE, stream);
         if (fileAnalysisData is null)
         {
             stream.Position = 0;
             fileAnalysisData = Analyze(path, GameConstants.Oblivion, stream);
-            if (fileAnalysisData is null) yield break;
+            if (fileAnalysisData is null)
+                return null;
         }
 
-        yield return fileAnalysisData;
+        return fileAnalysisData;
     }
 
     private PluginAnalysisData? Analyze(RelativePath path, GameConstants targetGame, Stream stream)
