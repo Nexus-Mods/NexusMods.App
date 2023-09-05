@@ -36,7 +36,8 @@ public class FomodXmlInstaller : IModInstaller
             fomodInstallationPath);
     }
 
-    public FomodXmlInstaller(ILogger<FomodXmlInstaller> logger, ICoreDelegates coreDelegates, GamePath fomodInstallationPath)
+    public FomodXmlInstaller(ILogger<FomodXmlInstaller> logger, ICoreDelegates coreDelegates,
+        GamePath fomodInstallationPath)
     {
         _delegates = coreDelegates;
         _fomodInstallationPath = fomodInstallationPath;
@@ -57,7 +58,6 @@ public class FomodXmlInstaller : IModInstaller
         EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
         CancellationToken cancellationToken = default)
     {
-
         // the component dealing with FOMODs is built to support all kinds of mods, including those without a script.
         // for those cases, stop patterns can be way more complex to deduce the intended installation structure. In our case, where
         // we only intend to support xml scripted FOMODs, this should be good enough
@@ -156,7 +156,8 @@ public class FomodXmlInstaller : IModInstaller
             return new FromArchive
             {
                 Id = ModFileId.New(),
-                To = new GamePath(gameTargetPath.Type, gameTargetPath.Path.Join(instruction.destination)),
+                To = new GamePath(gameTargetPath.Type,
+                    gameTargetPath.Path.Join(RelativePath.FromUnsanitizedInput(instruction.destination))),
                 Hash = file.Value.Hash,
                 Size = file.Value.Size
             };
@@ -169,7 +170,7 @@ public class FomodXmlInstaller : IModInstaller
         return instructions.Select(instruction => new EmptyDirectory
         {
             Id = ModFileId.New(),
-            Directory = new GamePath(gameTargetPath.Type, gameTargetPath.Path.Join(instruction.destination))
+            Directory = new GamePath(gameTargetPath.Type, gameTargetPath.Path.Join(RelativePath.FromUnsanitizedInput(instruction.destination)))
         });
     }
 }
