@@ -1,4 +1,15 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    <Design.PreviewWith>
+        <StackPanel Orientation="Vertical" Spacing="4">
+            <CheckBox IsChecked="False">
+                <TextBlock Classes="ButtonMontserratSemi">Not Checked</TextBlock>
+            </CheckBox>
+            <CheckBox IsChecked="True">
+                <TextBlock Classes="ButtonMontserratSemi">Checked</TextBlock>
+            </CheckBox>
+        </StackPanel>
+    </Design.PreviewWith>
+
     <Style Selector="CheckBox" />
 </Styles>
