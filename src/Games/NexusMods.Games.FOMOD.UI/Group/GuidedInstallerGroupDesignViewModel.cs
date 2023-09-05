@@ -8,9 +8,22 @@ public class GuidedInstallerGroupDesignViewModel : AViewModel<IGuidedInstallerGr
 {
     public OptionGroup Group { get; }
 
-    public GuidedInstallerGroupDesignViewModel()
+    public IGuidedInstallerOptionViewModel[] Options { get; set; }
+
+    public GuidedInstallerGroupDesignViewModel() : this(SetupGroup()) { }
+
+    public GuidedInstallerGroupDesignViewModel(OptionGroup group)
     {
-        Group = new OptionGroup
+        Group = group;
+
+        Options = group.Options
+            .Select(option => (IGuidedInstallerOptionViewModel)new GuidedInstallerOptionDesignViewModel(option))
+            .ToArray();
+    }
+
+    private static OptionGroup SetupGroup()
+    {
+        return new OptionGroup
         {
             Id = GroupId.From(Guid.NewGuid()),
             Description = "Test Group",
@@ -26,10 +39,5 @@ public class GuidedInstallerGroupDesignViewModel : AViewModel<IGuidedInstallerGr
                 }
             }
         };
-    }
-
-    public GuidedInstallerGroupDesignViewModel(OptionGroup group)
-    {
-        Group = group;
     }
 }

@@ -7,8 +7,14 @@ public class GuidedInstallerGroupViewModel : AViewModel<IGuidedInstallerGroupVie
 {
     public OptionGroup Group { get; }
 
+    public IGuidedInstallerOptionViewModel[] Options { get; set; }
+
     public GuidedInstallerGroupViewModel(OptionGroup group)
     {
         Group = group;
+
+        Options = group.Options
+            .Select(option => (IGuidedInstallerOptionViewModel) new GuidedInstallerOptionViewModel(option))
+            .ToArray();
     }
 }

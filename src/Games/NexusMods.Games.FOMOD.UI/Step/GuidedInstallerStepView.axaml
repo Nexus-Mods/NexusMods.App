@@ -12,16 +12,18 @@
         <ui:GuidedInstallerStepDesignViewModel />
     </Design.DataContext>
 
-    <StackPanel>
-        <TextBlock Classes="Subheading" x:Name="StepName" />
+    <ScrollViewer>
+        <StackPanel>
+            <TextBlock Classes="Subheading" x:Name="StepName" />
 
-        <ItemsControl x:Name="GroupItemsControl">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-        </ItemsControl>
-    </StackPanel>
+            <ItemsControl x:Name="GroupItemsControl">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </StackPanel>
+    </ScrollViewer>
 
 </reactiveUi:ReactiveUserControl>

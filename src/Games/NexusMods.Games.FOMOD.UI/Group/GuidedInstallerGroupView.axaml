@@ -15,6 +15,14 @@
 
     <StackPanel>
         <TextBlock Classes="Small" x:Name="GroupName" />
+
+        <ItemsControl x:Name="OptionItemsControl">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
     </StackPanel>
 
 </reactiveUi:ReactiveUserControl>

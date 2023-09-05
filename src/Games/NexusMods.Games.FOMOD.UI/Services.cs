@@ -15,6 +15,7 @@ public static class Services
             .AddViewModel<GuidedInstallerWindowViewModel, IGuidedInstallerWindowViewModel>()
 
             .AddView<GuidedInstallerStepView, IGuidedInstallerStepViewModel>()
-            .AddView<GuidedInstallerGroupView, IGuidedInstallerGroupViewModel>();
+            .AddView<GuidedInstallerGroupView, IGuidedInstallerGroupViewModel>()
+            .AddView<GuidedInstallerOptionView, IGuidedInstallerOptionViewModel>();
     }
 }
