@@ -114,8 +114,10 @@ public class CliGuidedInstaller : IGuidedInstaller
                         if (invalidGroups.Any())
                         {
                             _logger.LogError(
-                                "Some groups have invalid selection, please correct them. Invalid groups: {InvalidGroups}",
-                                invalidGroups);
+                                "Some groups have invalid selection, please correct them. Invalid groups:\n {InvalidGroups} \n",
+                                installationStep.Groups.Select((group, index) => new { group, index })
+                                    .Where(x => invalidGroups.Contains(x.group.Id))
+                                    .Select(x => $"{x.index + 1} - {x.group.Description} \n"));
                             continue;
                         }
 
@@ -151,8 +153,8 @@ public class CliGuidedInstaller : IGuidedInstaller
                         if (!GuidedInstallerValidation.IsValidGroupSelection(currentGroup, selectedOptions))
                         {
                             _logger.LogError(
-                                "Selection is invalid for group {GroupId}",
-                                currentGroup.Id);
+                                "Selection is invalid for group {GroupIndex} \n",
+                                Array.IndexOf(installationStep.Groups, currentGroup) + 1);
                             continue;
                         }
 
