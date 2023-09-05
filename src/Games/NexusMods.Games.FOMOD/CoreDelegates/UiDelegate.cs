@@ -214,6 +214,7 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
         return new GuidedInstallationStep
         {
             Id = StepId.From(Guid.NewGuid()),
+            Name = installSteps[currentStepId].name ?? string.Empty,
             Groups = stepGroups.ToArray(),
             HasPreviousStep = currentStepId != 0,
             HasNextStep = currentStepId != installSteps.Count - 1,
