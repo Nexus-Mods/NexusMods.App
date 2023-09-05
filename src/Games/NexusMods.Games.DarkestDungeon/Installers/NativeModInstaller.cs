@@ -34,7 +34,7 @@ public class NativeModInstaller : IModInstaller
             .GetAllDescendentFiles()
             .SelectAsync(async kv =>
             {
-                if (kv.Path.FileName == ProjectFile)
+                if (kv.Path.FileName != ProjectFile)
                     return default;
 
                 await using var stream = await kv.Value!.Open();
@@ -61,6 +61,9 @@ public class NativeModInstaller : IModInstaller
     {
         var modProjectFiles = (await GetModProjects(archiveFiles)).ToArray();
         if (!modProjectFiles.Any())
+            return Array.Empty<ModInstallerResult>();
+
+        if (modProjectFiles.Length > 1)
             return Array.Empty<ModInstallerResult>();
 
         var mods = modProjectFiles
