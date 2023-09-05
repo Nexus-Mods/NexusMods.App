@@ -3,46 +3,30 @@ using System.Text;
 using FomodInstaller.Scripting.XmlScript;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
+using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.JsonConverters;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Paths;
+using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.FOMOD;
 
-public class FomodAnalyzer : IFileAnalyzer
+public class FomodAnalyzer
 {
-    public FileAnalyzerId Id { get; } = FileAnalyzerId.New("e5dcce84-ad7c-4882-8873-4f6a2e45a279", 1);
-
-    private readonly ILogger<FomodAnalyzer> _logger;
-    private readonly IFileSystem _fileSystem;
-
-    // Note: No type for .fomod because FOMODs are existing archive types listed below.
-    public FomodAnalyzer(ILogger<FomodAnalyzer> logger, IFileSystem fileSystem)
+    public static async ValueTask<FomodAnalyzerInfo?> AnalyzeAsync(RelativePath path, ModSourceFileEntry source,
+        FileTreeNode<RelativePath, ModSourceFileEntry> allFiles, IFileSystem fileSystem,
+        [EnumeratorCancellation] CancellationToken ct = default)
     {
-        _logger = logger;
-        _fileSystem = fileSystem;
-    }
-
-    public IEnumerable<FileType> FileTypes { get; } = new [] { FileType.XML };
-
-    public async IAsyncEnumerable<IFileAnalysisData> AnalyzeAsync(FileAnalyzerInfo info, [EnumeratorCancellation] CancellationToken ct = default)
-    {
-        // Not sourced from an archive.
-        if (info.RelativePath == null)
-            yield break;
 
         // Check if file path is "fomod/ModuleConfig.xml"
-        if (!info.RelativePath.Value.EndsWith(FomodConstants.XmlConfigRelativePath))
-            yield break;
+        if (!path.EndsWith(FomodConstants.XmlConfigRelativePath))
+            return null;
 
-        // If not from inside an archive, this is probably not a FOMOD.
-        if (info.ParentArchive == null)
-            yield break;
-        
         // If the fomod folder is not at first level, find the prefix.
-        var pathPrefix = info.RelativePath.Value.Parent.Parent;
+        var pathPrefix = path.Parent.Parent;
 
         // Now get the actual items out.
         // Determine if this is a supported FOMOD.
@@ -51,7 +35,8 @@ public class FomodAnalyzer : IFileAnalyzer
 
         try
         {
-            using var streamReader = new StreamReader(info.Stream, leaveOpen:true);
+            await using var stream = await source.Open();
+            using var streamReader = new StreamReader(stream, leaveOpen:true);
             data = await streamReader.ReadToEndAsync(ct);
             var xmlScript = new XmlScriptType();
             var script = (XmlScript)xmlScript.LoadScript(data, true);
@@ -62,16 +47,19 @@ public class FomodAnalyzer : IFileAnalyzer
                 if (string.IsNullOrEmpty(imagePathFragment))
                     return;
                 var imagePath = pathPrefix.Join(RelativePath.FromUnsanitizedInput(imagePathFragment));
-                
-                var path = info.ParentArchive!.Value.Path.Combine(imagePath);
+
                 byte[] bytes;
                 try
                 {
-                    bytes = await path.ReadAllBytesAsync(ct);
+                    var node = allFiles.FindNode(imagePath);
+                    await using var imageStream = await node!.Value!.Open();
+                    using var ms = new MemoryStream();
+                    await imageStream.CopyToAsync(ms, ct);
+                    bytes = ms.ToArray();
                 }
                 catch (FileNotFoundException)
                 {
-                    bytes = await GetPlaceholderImage(ct);
+                    bytes = await fileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Assets/InvalidImagePlaceholder.png").ReadAllBytesAsync(ct);
                 }
 
                 images!.Add(new FomodAnalyzerInfo.FomodAnalyzerImage(imagePath, bytes));
@@ -85,28 +73,20 @@ public class FomodAnalyzer : IFileAnalyzer
         }
         catch (Exception e)
         {
-            _logger.LogError("Failed to Parse FOMOD: {EMessage}\\n{EStackTrace}", e.Message, e.StackTrace);
-            yield break;
+            return null;
         }
 
         // TODO: We use Base64 here, which is really, really inefficient. We should zip up the images and store them separately in a non-SOLID archive.
         // Add all images to analysis output.
-        yield return new FomodAnalyzerInfo()
+        return new FomodAnalyzerInfo
         {
             XmlScript = data!,
             Images = images
         };
     }
-
-    internal async Task<byte[]> GetPlaceholderImage(CancellationToken ct = default)
-    {
-        return await _fileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Assets/InvalidImagePlaceholder.png")
-            .ReadAllBytesAsync(ct);
-    }
 }
 
-[JsonName("NexusMods.Games.FOMOD.FomodAnalyzerInfo")]
-public record FomodAnalyzerInfo : IFileAnalysisData
+public record FomodAnalyzerInfo
 {
     public required string XmlScript { get; init; }
     public required List<FomodAnalyzerImage> Images { get; init; }
