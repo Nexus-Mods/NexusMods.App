@@ -17,17 +17,14 @@ public static class GuidedInstallerValidation
     /// <param name="installationStep">The installation step containing all the groups</param>
     /// <param name="selectedOptions">A collection of <see cref="SelectedOption"/> for all the groups.</param>
     /// <returns>
-    /// A collection of <see cref="GroupId"/>s that have invalid selections.
-    /// An empty collection means all groups have valid selections.
+    /// An array of <see cref="GroupId"/>s that have invalid selections.
+    /// An empty array means all groups have valid selections.
     /// </returns>
-    public static IEnumerable<GroupId> ValidateStepSelections(GuidedInstallationStep installationStep,
-        IEnumerable<SelectedOption> selectedOptions)
+    public static GroupId[] ValidateStepSelections(GuidedInstallationStep installationStep,
+        IReadOnlyCollection<SelectedOption> selectedOptions)
     {
-        var selectedOptionsList = selectedOptions.ToArray();
-
-        return (from @group in installationStep.Groups
-            where !IsValidGroupSelection(@group, selectedOptionsList)
-            select @group.Id).ToList();
+        return installationStep.Groups.Where(group => !IsValidGroupSelection(group, selectedOptions))
+            .Select(group => group.Id).ToArray();
     }
 
     /// <summary>
@@ -41,19 +38,18 @@ public static class GuidedInstallerValidation
     /// A collection of <see cref="SelectedOption"/>, could contain selections for other groups as well
     /// </param>
     /// <returns>True if the group has a valid selection, false otherwise</returns>
-    public static bool IsValidGroupSelection(OptionGroup group, IEnumerable<SelectedOption> selectedOptions)
+    public static bool IsValidGroupSelection(OptionGroup group, IReadOnlyCollection<SelectedOption> selectedOptions)
     {
-        var selectedOptionsList = selectedOptions.ToArray();
         return group.Type switch
         {
-            OptionGroupType.ExactlyOne => selectedOptionsList.Count(
+            OptionGroupType.ExactlyOne => selectedOptions.Count(
                 selectedOption => selectedOption.GroupId == group.Id) == 1,
 
             OptionGroupType.AtMostOne =>
-                selectedOptionsList.Count(selectedOption => selectedOption.GroupId == group.Id) <= 1,
+                selectedOptions.Count(selectedOption => selectedOption.GroupId == group.Id) <= 1,
 
             OptionGroupType.AtLeastOne =>
-                selectedOptionsList.Any(selectedOption => selectedOption.GroupId == group.Id),
+                selectedOptions.Any(selectedOption => selectedOption.GroupId == group.Id),
 
             _ => true
         };
