@@ -65,6 +65,64 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
                         .ToArray();
                 })
                 .DisposeWith(disposables);
+
+            this.WhenAnyValue(x => x.Groups)
+                .Where(x => x.Length != 0)
+                .Select(groupVMs => groupVMs
+                    .Select(groupVM => groupVM
+                        .WhenAnyValue(x => x.HighlightedOption)
+                    )
+                    .CombineLatest()
+                )
+                .SubscribeWithErrorLogging(logger: default, observable =>
+                {
+                    // TODO: clean this up
+                    observable
+                        .SubscribeWithErrorLogging(logger: default, options =>
+                        {
+                            HighlightedOption = options.FirstOrDefault();
+                        })
+                        .DisposeWith(disposables);
+                })
+                .DisposeWith(disposables);
+
+            // Groups
+            //     .Select(groupVM => groupVM
+            //         .WhenAnyValue(x => x.HighlightedOption)
+            //     )
+            //     .CombineLatest()
+            //     // .SelectMany(x => x)
+            //     .SubscribeWithErrorLogging(logger: default, options =>
+            //     {
+            //         HighlightedOption = options.FirstOrDefault(x => x is not null);
+            //     })
+            //     .DisposeWith(disposables);
+
+            // Groups
+            //     .Select(groupVM => groupVM
+            //         .WhenAnyValue(x => x.HighlightedOption)
+            //         .Select(x => (groupVM, option: x))
+            //     )
+            //     .CombineLatest()
+            //     .SubscribeWithErrorLogging(logger: default, options =>
+            //     {
+            //         var previousOption = HighlightedOption;
+            //         if (previousOption is null)
+            //         {
+            //             HighlightedOption = options
+            //                 .Select(x => x.option)
+            //                 .FirstOrDefault(x => x is not null);
+            //             return;
+            //         }
+            //
+            //         var highlightedOptions = options
+            //             .Where(x => x.option is not null)
+            //             .Select(x => x)
+            //             .ToArray();
+            //
+            //
+            //     })
+            //     .DisposeWith(disposables);
         });
     }
 }

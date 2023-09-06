@@ -1,4 +1,6 @@
 using System.Reactive;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using NexusMods.App.UI;
 using NexusMods.Common.GuidedInstaller;
 using NexusMods.Common.GuidedInstaller.ValueObjects;
@@ -25,7 +27,19 @@ public class GuidedInstallerStepDesignViewModel : AViewModel<IGuidedInstallerSte
         Groups = step.Groups
             .Select(group => (IGuidedInstallerGroupViewModel)new GuidedInstallerGroupDesignViewModel(group))
             .ToArray();
-        HighlightedOption = step.Groups[0].Options[0];
+
+        this.WhenActivated(disposables =>
+        {
+            Groups
+                .Select(groupVM => groupVM
+                    .WhenAnyValue(x => x.HighlightedOption))
+                .CombineLatest()
+                .SubscribeWithErrorLogging(logger: default, options =>
+                {
+                    HighlightedOption = options.FirstOrDefault();
+                })
+                .DisposeWith(disposables);
+        });
     }
 
     private static GuidedInstallationStep SetupInstallationStep()
