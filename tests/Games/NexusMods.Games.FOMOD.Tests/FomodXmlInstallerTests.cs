@@ -6,58 +6,67 @@ using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.RateLimiting;
+using NexusMods.Games.BethesdaGameStudios;
+using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
+using NexusMods.Paths.FileTree;
 using NexusMods.Paths.Utilities;
 using Xunit;
 
 namespace NexusMods.Games.FOMOD.Tests;
 
-public class FomodXmlInstallerTests
+public class FomodXmlInstallerTests : AModInstallerTest<SkyrimSpecialEdition, FomodXmlInstaller>
 {
-    private TemporaryFileManager _tmpFileManager;
-    private ICoreDelegates _coreDelegates;
+    public FomodXmlInstallerTests(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
-    private readonly IServiceProvider _serviceProvider;
-    private readonly IDataStore _store;
-
-    public FomodXmlInstallerTests(IServiceProvider serviceProvider,
-        TemporaryFileManager tmpFileManager,
-        ICoreDelegates coreDelegates,
-        IDataStore store)
+    private async Task<IEnumerable<ModInstallerResult>> GetResultsFromDirectory(string testCase)
     {
-        _serviceProvider = serviceProvider;
-        _tmpFileManager = tmpFileManager;
-        _coreDelegates = coreDelegates;
-        _store = store;
-    }
-/*
-    [Fact]
-    public async Task WillIgnoreIfMissingScript()
-    {
-        using var testCase = await SetupTestFromDirectoryAsync("NotAFomod");
-        var prio = testCase.GetPriority();
-        prio.Should().Be(Priority.None);
+        var relativePath = $"TestCasesPacked/{testCase}.fomod";
+        var fullPath = FileSystem.GetKnownPath(KnownPath.EntryDirectory)
+            .Combine(relativePath);
+        var downloadId = await DownloadRegistry.RegisterDownload(fullPath, new FilePathMetadata {
+            OriginalName = fullPath.FileName,
+            Quality = Quality.Low});
+        var analysis = await DownloadRegistry.Get(downloadId);
+        var installer = FomodXmlInstaller.Create(ServiceProvider, new GamePath(GameFolderType.Game, ""));
+        var tree =
+            FileTreeNode<RelativePath, ModSourceFileEntry>.CreateTree(analysis.Contents
+            .Select(f => KeyValuePair.Create(
+            f.Path,
+            new ModSourceFileEntry
+            {
+                Size = f.Size,
+                Hash = f.Hash,
+                StreamFactory = new ArchiveManagerStreamFactory(ArchiveManager, f.Hash)
+                {
+                    Name = f.Path,
+                    Size = f.Size
+                }
+            }
+        )));
+        return await installer.GetModsAsync(GameInstallation, ModId.New(), tree);
     }
 
     [Fact]
     public async Task PriorityHighIfScriptExists()
     {
-        using var testCase = await SetupTestFromDirectoryAsync("SimpleInstaller");
-        var prio = testCase.GetPriority();
-        prio.Should().Be(Priority.High);
+        var results = await GetResultsFromDirectory("SimpleInstaller");
+        results.Should().NotBeEmpty();
     }
+
+
 
     [Fact]
     public async Task InstallsFilesSimple()
     {
-        using var testData = await SetupTestFromDirectoryAsync("SimpleInstaller");
-        var installedFiles = (await testData.GetFilesToExtractAsync()).ToArray();
-
-        installedFiles
+        var results = await GetResultsFromDirectory("SimpleInstaller");
+        results.SelectMany(f => f.Files)
             .Should()
             .AllBeAssignableTo<IToFile>()
             .Which
@@ -68,6 +77,8 @@ public class FomodXmlInstallerTests
                 x => x.To.FileName == "g2p1f1.out.esp"
             );
     }
+
+    /*
 
     [Fact]
     public async Task InstallsFilesComplex_WithImages()

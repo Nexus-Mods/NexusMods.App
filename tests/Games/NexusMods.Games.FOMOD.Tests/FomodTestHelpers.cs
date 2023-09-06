@@ -23,6 +23,7 @@ public static class FomodTestHelpers
         var relativePath = $"TestCases/{testCase}".ToRelativePath();
         var baseFolder = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory)
             .Combine(relativePath);
+
         var entries = baseFolder
             .EnumerateFileEntries()
             .SelectAsync(async entry => KeyValuePair.Create(entry.Path.RelativeTo(baseFolder),
