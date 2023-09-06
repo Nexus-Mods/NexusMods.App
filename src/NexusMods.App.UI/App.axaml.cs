@@ -4,7 +4,6 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.App.UI.Localization;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using ReactiveUI;
@@ -32,7 +31,7 @@ public class App : Application
     public override void OnFrameworkInitializationCompleted()
     {
         if (!string.IsNullOrEmpty(_launcherSettings.LocaleOverride))
-            Localizer.Instance.LoadLanguage(_launcherSettings.LocaleOverride);
+            Language.Culture = new CultureInfo(_launcherSettings.LocaleOverride);
 
         Locator.CurrentMutable.UnregisterCurrent(typeof(IViewLocator));
         Locator.CurrentMutable.Register(() => _provider.GetRequiredService<InjectedViewLocator>(), typeof(IViewLocator));
