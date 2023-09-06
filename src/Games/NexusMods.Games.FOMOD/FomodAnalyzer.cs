@@ -16,17 +16,16 @@ namespace NexusMods.Games.FOMOD;
 
 public class FomodAnalyzer
 {
-    public static async ValueTask<FomodAnalyzerInfo?> AnalyzeAsync(RelativePath path, ModSourceFileEntry source,
-        FileTreeNode<RelativePath, ModSourceFileEntry> allFiles, IFileSystem fileSystem,
-        [EnumeratorCancellation] CancellationToken ct = default)
+    public static async ValueTask<FomodAnalyzerInfo?> AnalyzeAsync(FileTreeNode<RelativePath, ModSourceFileEntry> allFiles, IFileSystem fileSystem,
+        CancellationToken ct = default)
     {
 
-        // Check if file path is "fomod/ModuleConfig.xml"
-        if (!path.EndsWith(FomodConstants.XmlConfigRelativePath))
+        if (!allFiles.GetAllDescendentFiles()
+                .TryGetFirst(x => x.Path.EndsWith(FomodConstants.XmlConfigRelativePath), out var xmlNode))
             return null;
 
         // If the fomod folder is not at first level, find the prefix.
-        var pathPrefix = path.Parent.Parent;
+        var pathPrefix = xmlNode!.Parent.Parent;
 
         // Now get the actual items out.
         // Determine if this is a supported FOMOD.
@@ -35,7 +34,7 @@ public class FomodAnalyzer
 
         try
         {
-            await using var stream = await source.Open();
+            await using var stream = await xmlNode.Value!.Open();
             using var streamReader = new StreamReader(stream, leaveOpen:true);
             data = await streamReader.ReadToEndAsync(ct);
             var xmlScript = new XmlScriptType();
@@ -46,7 +45,7 @@ public class FomodAnalyzer
             {
                 if (string.IsNullOrEmpty(imagePathFragment))
                     return;
-                var imagePath = pathPrefix.Join(RelativePath.FromUnsanitizedInput(imagePathFragment));
+                var imagePath = pathPrefix.Path.Join(RelativePath.FromUnsanitizedInput(imagePathFragment));
 
                 byte[] bytes;
                 try

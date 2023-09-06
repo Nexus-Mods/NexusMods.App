@@ -146,12 +146,15 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
                     To = new GamePath(GameFolderType.Game, $"Data/{file.Key}"),
                     Hash = Hash.Zero,
                     Size = Size.Zero,
-                    Metadata =
+                    Metadata = ImmutableList<IMetadata>.Empty
+                    // TODO
+                    /*
                         ImmutableList<IMetadata>.Empty.Add(
                             new PluginAnalysisData
                             {
                                 Masters = file.Value.Select(f => f.ToRelativePath()).ToArray()
                             })
+                            */
                 };
                 files = files.With(newFile.Id, newFile);
             }

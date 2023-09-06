@@ -62,16 +62,11 @@ public class FomodXmlInstaller : AModInstaller
         // we only intend to support xml scripted FOMODs, this should be good enough
         var stopPattern = new List<string> { "fomod" };
 
-        if (!archiveFiles.GetAllDescendentFiles()
-                .TryGetFirst(x => x.Path.EndsWith(FomodConstants.XmlConfigRelativePath), out var xmlFile))
-            return NoResults;
-
-        await using var tmpFolder = _tempoaryFileManager.CreateFolder();
-
-        var analyzerInfo = await FomodAnalyzer.AnalyzeAsync(xmlFile!.Path, xmlFile.Value!, archiveFiles, _fileSystem,
-            cancellationToken);
+        var analyzerInfo = await FomodAnalyzer.AnalyzeAsync(archiveFiles, _fileSystem, cancellationToken);
         if (analyzerInfo == default)
             return Array.Empty<ModInstallerResult>();
+
+        await using var tmpFolder = _tempoaryFileManager.CreateFolder();
 
         await analyzerInfo.DumpToFileSystemAsync(tmpFolder);
 
