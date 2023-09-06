@@ -26,7 +26,7 @@ public class GuidedInstallerGroupDesignViewModel : AViewModel<IGuidedInstallerGr
         return new OptionGroup
         {
             Id = GroupId.From(Guid.NewGuid()),
-            Description = "Test Group",
+            Name = "Test Group",
             Type = OptionGroupType.Any,
             Options = new[]
             {

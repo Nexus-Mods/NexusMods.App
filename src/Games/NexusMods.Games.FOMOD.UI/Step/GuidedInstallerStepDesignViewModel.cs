@@ -39,7 +39,7 @@ public class GuidedInstallerStepDesignViewModel : AViewModel<IGuidedInstallerSte
                 new OptionGroup
                 {
                     Id = GroupId.From(Guid.NewGuid()),
-                    Description = "Group 1",
+                    Name = "Group 1",
                     Type = OptionGroupType.Any,
                     Options = new[]
                     {

@@ -206,7 +206,7 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
             {
                 Id = groupId,
                 Type = ConvertOptionGroupType(group.type),
-                Description = group.name,
+                Name = group.name,
                 Options = ToOptions(group.options, optionIdMappings).ToArray(),
             };
         });

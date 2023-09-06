@@ -167,7 +167,7 @@ public class CliGuidedInstaller : IGuidedInstaller
     {
         var key = 1;
         var row = installationStep.Groups
-            .Select(group => new object[] { key++, group.Description })
+            .Select(group => new object[] { key++, group.Name })
             .Append(installationStep.HasNextStep
                 ? TableOfGroupsFooterNextStep
                 : TableOfGroupsFooterFinish
@@ -201,7 +201,7 @@ public class CliGuidedInstaller : IGuidedInstaller
             .Append(TableOfOptionsFooterBackToGroupSelection)
             .Append(TableOfOptionsFooterCancel);
 
-        var table = new Table(TableOfOptionsHeaders, row.ToArray(), group.Description);
+        var table = new Table(TableOfOptionsHeaders, row.ToArray(), group.Name);
         Renderer.Render(table);
     }
 
