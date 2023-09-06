@@ -27,6 +27,7 @@ public class GuidedInstallerOptionDesignViewModel : AViewModel<IGuidedInstallerO
             Name = "Test Option",
             Type = OptionType.Available,
             Description = "An option",
+            HoverText = "This is some hover text"
         };
     }
 }
