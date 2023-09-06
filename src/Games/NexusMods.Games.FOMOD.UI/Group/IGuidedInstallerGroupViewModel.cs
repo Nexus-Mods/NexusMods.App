@@ -9,5 +9,5 @@ public interface IGuidedInstallerGroupViewModel : IViewModel
 
     public IGuidedInstallerOptionViewModel[] Options { get; }
 
-    public Option? HighlightedOption { get; set;  }
+    public IGuidedInstallerOptionViewModel? HighlightedOption { get; set;  }
 }

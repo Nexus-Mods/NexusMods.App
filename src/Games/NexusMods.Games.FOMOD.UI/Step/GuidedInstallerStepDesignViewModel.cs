@@ -27,19 +27,6 @@ public class GuidedInstallerStepDesignViewModel : AViewModel<IGuidedInstallerSte
         Groups = step.Groups
             .Select(group => (IGuidedInstallerGroupViewModel)new GuidedInstallerGroupDesignViewModel(group))
             .ToArray();
-
-        this.WhenActivated(disposables =>
-        {
-            Groups
-                .Select(groupVM => groupVM
-                    .WhenAnyValue(x => x.HighlightedOption))
-                .CombineLatest()
-                .SubscribeWithErrorLogging(logger: default, options =>
-                {
-                    HighlightedOption = options.FirstOrDefault();
-                })
-                .DisposeWith(disposables);
-        });
     }
 
     private static GuidedInstallationStep SetupInstallationStep()
@@ -57,38 +44,15 @@ public class GuidedInstallerStepDesignViewModel : AViewModel<IGuidedInstallerSte
                     Id = GroupId.From(Guid.NewGuid()),
                     Name = "Group 1",
                     Type = OptionGroupType.Any,
-                    Options = new[]
-                    {
-                        new Option
-                        {
-                            Id = OptionId.From(Guid.NewGuid()),
-                            Name = "Available Option",
-                            Type = OptionType.Available,
-                            Description = "This option is available",
-                        },
-                        new Option
-                        {
-                            Id = OptionId.From(Guid.NewGuid()),
-                            Name = "Pre-selected Option",
-                            Type = OptionType.PreSelected,
-                            Description = "This option is pre-selected"
-                        },
-                        new Option
-                        {
-                            Id = OptionId.From(Guid.NewGuid()),
-                            Name = "Required Option",
-                            Type = OptionType.Required,
-                            Description = "This option is required"
-                        },
-                        new Option
-                        {
-                            Id = OptionId.From(Guid.NewGuid()),
-                            Name = "Disabled Option",
-                            Type = OptionType.Disabled,
-                            Description = "This option is disabled"
-                        },
-                    }
-                }
+                    Options = GuidedInstallerGroupDesignViewModel.GenerateOptions()
+                },
+                new OptionGroup
+                {
+                    Id = GroupId.From(Guid.NewGuid()),
+                    Name = "Group 2",
+                    Type = OptionGroupType.Any,
+                    Options = GuidedInstallerGroupDesignViewModel.GenerateOptions()
+                },
             }
         };
     }

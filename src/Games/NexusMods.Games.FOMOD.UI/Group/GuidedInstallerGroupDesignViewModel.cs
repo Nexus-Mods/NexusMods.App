@@ -16,16 +16,42 @@ public class GuidedInstallerGroupDesignViewModel : GuidedInstallerGroupViewModel
             Id = GroupId.From(Guid.NewGuid()),
             Name = "Test Group",
             Type = OptionGroupType.Any,
-            Options = new[]
+            Options = GenerateOptions()
+        };
+    }
+
+    internal static Option[] GenerateOptions()
+    {
+        return new[]
+        {
+            new Option
             {
-                new Option
-                {
-                    Id = OptionId.From(Guid.NewGuid()),
-                    Name = "Option 1",
-                    Type = OptionType.Available,
-                    Description = "This is a description"
-                }
-            }
+                Id = OptionId.From(Guid.NewGuid()),
+                Name = "Available Option",
+                Type = OptionType.Available,
+                Description = "This option is available",
+            },
+            new Option
+            {
+                Id = OptionId.From(Guid.NewGuid()),
+                Name = "Pre-selected Option",
+                Type = OptionType.PreSelected,
+                Description = "This option is pre-selected"
+            },
+            new Option
+            {
+                Id = OptionId.From(Guid.NewGuid()),
+                Name = "Required Option",
+                Type = OptionType.Required,
+                Description = "This option is required"
+            },
+            new Option
+            {
+                Id = OptionId.From(Guid.NewGuid()),
+                Name = "Disabled Option",
+                Type = OptionType.Disabled,
+                Description = "This option is disabled"
+            },
         };
     }
 }

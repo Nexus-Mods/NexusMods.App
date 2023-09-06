@@ -16,20 +16,10 @@ public class GuidedInstallerOptionViewModel : AViewModel<IGuidedInstallerOptionV
     [Reactive]
     public bool IsSelected { get; set; }
 
-    [Reactive]
-    public bool IsHighlighted { get; set; }
-
-    public ReactiveCommand<Unit, Unit> OptionPressed { get; }
-
     public GuidedInstallerOptionViewModel(Option option)
     {
         Option = option;
         IsEnabled = option.Type is not OptionType.Disabled and not OptionType.Required;
         IsSelected = option.Type is OptionType.PreSelected or OptionType.Required;
-
-        OptionPressed = ReactiveCommand.Create(() =>
-        {
-            IsHighlighted = !IsHighlighted;
-        });
     }
 }

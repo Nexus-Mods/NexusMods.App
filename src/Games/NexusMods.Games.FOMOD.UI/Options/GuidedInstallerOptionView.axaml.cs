@@ -1,10 +1,7 @@
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using Avalonia.Controls;
-using Avalonia.Input;
 using Avalonia.ReactiveUI;
 using NexusMods.App.UI;
-using NexusMods.Common.GuidedInstaller;
 using ReactiveUI;
 
 namespace NexusMods.Games.FOMOD.UI;
@@ -22,16 +19,6 @@ public partial class GuidedInstallerOptionView : ReactiveUserControl<IGuidedInst
 
             this.OneWayBind(ViewModel, vm => vm.IsEnabled, view => view.CheckBox.IsEnabled)
                 .DisposeWith(disposables);
-
-            this.BindCommand(ViewModel, vm => vm.OptionPressed, view => view.CheckBoxTextBlock, toEvent: PointerPressedEvent.Name)
-                .DisposeWith(disposables);
-
-            this.WhenAnyValue(x => x.ViewModel!.IsHighlighted)
-                .SubscribeWithErrorLogging(logger: default, isHighlighted =>
-                {
-                    if (isHighlighted) CheckBoxTextBlock.Classes.Add("customHighlighted");
-                    else CheckBoxTextBlock.Classes.Remove("customHighlighted");
-                });
 
             this.WhenAnyValue(x => x.ViewModel!.Option)
                 .WhereNotNull()

@@ -15,7 +15,10 @@ public partial class GuidedInstallerGroupView : ReactiveUserControl<IGuidedInsta
             this.OneWayBind(ViewModel, vm => vm.Group.Name, view => view.GroupName.Text)
                 .DisposeWith(disposables);
 
-            this.OneWayBind(ViewModel, vm => vm.Options, view => view.OptionItemsControl.ItemsSource)
+            this.OneWayBind(ViewModel, vm => vm.Options, view => view.OptionsListBox.ItemsSource)
+                .DisposeWith(disposables);
+
+            this.Bind(ViewModel, vm => vm.HighlightedOption, view => view.OptionsListBox.SelectedItem)
                 .DisposeWith(disposables);
         });
     }

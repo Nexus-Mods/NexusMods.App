@@ -16,13 +16,19 @@
     <StackPanel>
         <TextBlock Classes="Small" x:Name="GroupName" />
 
-        <ItemsControl x:Name="OptionItemsControl">
-            <ItemsControl.ItemsPanel>
+        <ListBox SelectionMode="Single" x:Name="OptionsListBox">
+            <ListBox.Styles>
+                <Style Selector="ListBox">
+                    <Setter Property="Background" Value="Transparent"/>
+                </Style>
+            </ListBox.Styles>
+
+            <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel />
                 </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-        </ItemsControl>
+            </ListBox.ItemsPanel>
+        </ListBox>
     </StackPanel>
 
 </reactiveUi:ReactiveUserControl>

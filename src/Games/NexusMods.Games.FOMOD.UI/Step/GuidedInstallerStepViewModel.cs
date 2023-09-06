@@ -54,37 +54,37 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
             TaskCompletionSource?.TrySetResult(new UserChoice(new UserChoice.CancelInstallation()));
         }, hasTaskCompletionSource);
 
-        this.WhenActivated(disposables =>
-        {
-            this.WhenAnyValue(x => x.InstallationStep)
-                .WhereNotNull()
-                .SubscribeWithErrorLogging(logger, installationStep =>
-                {
-                    Groups = installationStep.Groups
-                        .Select(group => (IGuidedInstallerGroupViewModel)new GuidedInstallerGroupViewModel(group))
-                        .ToArray();
-                })
-                .DisposeWith(disposables);
-
-            this.WhenAnyValue(x => x.Groups)
-                .Where(x => x.Length != 0)
-                .Select(groupVMs => groupVMs
-                    .Select(groupVM => groupVM
-                        .WhenAnyValue(x => x.HighlightedOption)
-                    )
-                    .CombineLatest()
-                )
-                .SubscribeWithErrorLogging(logger: default, observable =>
-                {
-                    // TODO: clean this up
-                    observable
-                        .SubscribeWithErrorLogging(logger: default, options =>
-                        {
-                            HighlightedOption = options.FirstOrDefault();
-                        })
-                        .DisposeWith(disposables);
-                })
-                .DisposeWith(disposables);
+        // this.WhenActivated(disposables =>
+        // {
+            // this.WhenAnyValue(x => x.InstallationStep)
+            //     .WhereNotNull()
+            //     .SubscribeWithErrorLogging(logger, installationStep =>
+            //     {
+            //         Groups = installationStep.Groups
+            //             .Select(group => (IGuidedInstallerGroupViewModel)new GuidedInstallerGroupViewModel(group))
+            //             .ToArray();
+            //     })
+            //     .DisposeWith(disposables);
+            //
+            // this.WhenAnyValue(x => x.Groups)
+            //     .Where(x => x.Length != 0)
+            //     .Select(groupVMs => groupVMs
+            //         .Select(groupVM => groupVM
+            //             .WhenAnyValue(x => x.HighlightedOption)
+            //         )
+            //         .CombineLatest()
+            //     )
+            //     .SubscribeWithErrorLogging(logger: default, observable =>
+            //     {
+            //         // TODO: clean this up
+            //         observable
+            //             .SubscribeWithErrorLogging(logger: default, options =>
+            //             {
+            //                 HighlightedOption = options.FirstOrDefault();
+            //             })
+            //             .DisposeWith(disposables);
+            //     })
+            //     .DisposeWith(disposables);
 
             // Groups
             //     .Select(groupVM => groupVM
@@ -123,6 +123,6 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
             //
             //     })
             //     .DisposeWith(disposables);
-        });
+        // });
     }
 }
