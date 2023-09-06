@@ -18,7 +18,6 @@
         <Setter Property="Foreground" Value="{DynamicResource BrandAccentDarker}"/>
         <Setter Property="Background" Value="#330555b8"/>
         <Setter Property="MinWidth" Value="100"/>
-        <Setter Property="ProgressTextFormat" Value="{x:Static resources:Language.ProgressBar_ProgressTextFormat__Total_1_0}"/>
     </Style>
 
     <Style Selector="ProgressBar.DisabledDownloadBar">
