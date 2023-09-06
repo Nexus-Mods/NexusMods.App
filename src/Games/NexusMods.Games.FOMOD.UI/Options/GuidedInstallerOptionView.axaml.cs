@@ -26,6 +26,13 @@ public partial class GuidedInstallerOptionView : ReactiveUserControl<IGuidedInst
             this.BindCommand(ViewModel, vm => vm.OptionPressed, view => view.CheckBoxTextBlock, toEvent: PointerPressedEvent.Name)
                 .DisposeWith(disposables);
 
+            this.WhenAnyValue(x => x.ViewModel!.IsHighlighted)
+                .SubscribeWithErrorLogging(logger: default, isHighlighted =>
+                {
+                    if (isHighlighted) CheckBoxTextBlock.Classes.Add("customHighlighted");
+                    else CheckBoxTextBlock.Classes.Remove("customHighlighted");
+                });
+
             this.WhenAnyValue(x => x.ViewModel!.Option)
                 .WhereNotNull()
                 .SubscribeWithErrorLogging(logger: default, option =>

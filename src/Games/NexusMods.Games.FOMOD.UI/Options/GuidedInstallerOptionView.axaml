@@ -13,6 +13,12 @@
     </Design.DataContext>
 
     <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto">
+        <Grid.Styles>
+            <Style Selector="TextBlock.customHighlighted">
+                <Setter Property="Background" Value="Gray"/>
+            </Style>
+        </Grid.Styles>
+
         <CheckBox Grid.Column="0" x:Name="CheckBox"/>
         <TextBlock Margin="0, 6, 0, 0" Grid.Column="1" Classes="ButtonMontserratSemi" x:Name="CheckBoxTextBlock" />
     </Grid>
