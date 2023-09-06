@@ -234,7 +234,7 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
             {
                 Id = optionId,
                 Name = option.name,
-                Description = option.description,
+                Description = string.IsNullOrWhiteSpace(option.description) ? null : option.description,
                 ImageUrl = option.image != null ? AssetUrl.From(option.image) : null,
                 Type = MakeOptionType(option),
             };

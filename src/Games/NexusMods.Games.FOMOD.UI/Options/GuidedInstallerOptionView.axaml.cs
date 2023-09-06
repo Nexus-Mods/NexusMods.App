@@ -19,7 +19,7 @@ public partial class GuidedInstallerOptionView : ReactiveUserControl<IGuidedInst
                 .DisposeWith(disposables);
 
             this.WhenAnyValue(x => x.ViewModel!.Option)
-                .Where(option => !string.IsNullOrWhiteSpace(option.HoverText))
+                .WhereNotNull()
                 .SubscribeWithErrorLogging(logger: default, option => ToolTip.SetTip(CheckBoxTextBlock, option.HoverText))
                 .DisposeWith(disposables);
 

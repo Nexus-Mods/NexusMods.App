@@ -195,7 +195,7 @@ public class CliGuidedInstaller : IGuidedInstaller
                     key++,
                     RenderOptionState(hasSelected, option.Type),
                     option.Name,
-                    option.Description
+                    option.Description ?? string.Empty
                 };
             })
             .Append(TableOfOptionsFooterBackToGroupSelection)
