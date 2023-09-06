@@ -1,25 +1,13 @@
-using NexusMods.App.UI;
 using NexusMods.Common.GuidedInstaller;
 using NexusMods.Common.GuidedInstaller.ValueObjects;
 
 namespace NexusMods.Games.FOMOD.UI;
 
-public class GuidedInstallerGroupDesignViewModel : AViewModel<IGuidedInstallerGroupViewModel>, IGuidedInstallerGroupViewModel
+public class GuidedInstallerGroupDesignViewModel : GuidedInstallerGroupViewModel
 {
-    public OptionGroup Group { get; }
-
-    public IGuidedInstallerOptionViewModel[] Options { get; set; }
-
     public GuidedInstallerGroupDesignViewModel() : this(SetupGroup()) { }
 
-    public GuidedInstallerGroupDesignViewModel(OptionGroup group)
-    {
-        Group = group;
-
-        Options = group.Options
-            .Select(option => (IGuidedInstallerOptionViewModel)new GuidedInstallerOptionDesignViewModel(option))
-            .ToArray();
-    }
+    public GuidedInstallerGroupDesignViewModel(OptionGroup group) : base(group, option => new GuidedInstallerOptionDesignViewModel(option)) { }
 
     private static OptionGroup SetupGroup()
     {
