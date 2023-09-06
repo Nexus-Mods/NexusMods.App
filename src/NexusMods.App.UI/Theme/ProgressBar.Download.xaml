@@ -1,7 +1,6 @@
 ﻿<Styles
     xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.PreviewWith>
         <StackPanel Width="200" Spacing="8" Margin="8">
             <ProgressBar Classes="DownloadBar" Minimum="0" Maximum="1"/>
