@@ -4,7 +4,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
 using Microsoft.Extensions.Logging;
-using NexusMods.App.UI.Localization;
 using NexusMods.App.UI.Resources;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
