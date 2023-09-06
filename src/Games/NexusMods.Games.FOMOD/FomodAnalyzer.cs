@@ -56,9 +56,9 @@ public class FomodAnalyzer
                     await imageStream.CopyToAsync(ms, ct);
                     bytes = ms.ToArray();
                 }
-                catch (FileNotFoundException)
+                catch (Exception)
                 {
-                    bytes = await fileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Assets/InvalidImagePlaceholder.png").ReadAllBytesAsync(ct);
+                    bytes = await GetPlaceholderImage(fileSystem, ct);
                 }
 
                 images!.Add(new FomodAnalyzerInfo.FomodAnalyzerImage(imagePath, bytes));
@@ -70,7 +70,7 @@ public class FomodAnalyzer
             foreach (var option in optionGroup.Options)
                 await AddImageIfValid(option.ImagePath);
         }
-        catch (Exception e)
+        catch (Exception)
         {
             return null;
         }
@@ -82,6 +82,11 @@ public class FomodAnalyzer
             XmlScript = data!,
             Images = images
         };
+    }
+
+    public static Task<byte[]> GetPlaceholderImage(IFileSystem fileSystem, CancellationToken ct = default)
+    {
+        return fileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Assets/InvalidImagePlaceholder.png").ReadAllBytesAsync(ct);
     }
 }
 

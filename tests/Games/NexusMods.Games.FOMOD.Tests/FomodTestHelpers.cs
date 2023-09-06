@@ -20,10 +20,10 @@ public static class FomodTestHelpers
     /// <returns></returns>
     public static async ValueTask<FileTreeNode<RelativePath, ModSourceFileEntry>> GetFomodTree(string testCase)
     {
-        var relativePath = $"TestCases/{testCase}/".ToRelativePath();
-        var baseFolder = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory);
+        var relativePath = $"TestCases/{testCase}".ToRelativePath();
+        var baseFolder = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory)
+            .Combine(relativePath);
         var entries = baseFolder
-            .Combine(relativePath)
             .EnumerateFileEntries()
             .SelectAsync(async entry => KeyValuePair.Create(entry.Path.RelativeTo(baseFolder),
                 new ModSourceFileEntry
