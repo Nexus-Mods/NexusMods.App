@@ -30,7 +30,7 @@ public class PluginAnalysisTests : AGameTest<SkyrimSpecialEdition>
     {
         await using var stream = path.Read();
         var resultData = await _pluginAnalyzer.AnalyzeAsync(path.FileName, stream);
-        resultData.Should().Be(new PluginAnalysisData
+        resultData.Should().BeEquivalentTo(new PluginAnalysisData
         {
             IsLightMaster = true,
             Masters = new[] { "Skyrim.esm".ToRelativePath() },
