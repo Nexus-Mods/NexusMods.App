@@ -9,6 +9,7 @@ namespace NexusMods.Games.FOMOD.UI;
 public class GuidedInstallerStepDesignViewModel : AViewModel<IGuidedInstallerStepViewModel>, IGuidedInstallerStepViewModel
 {
     public GuidedInstallationStep? InstallationStep { get; set; }
+    public Option? HighlightedOption { get; set; }
     public TaskCompletionSource<UserChoice>? TaskCompletionSource { get; set; }
     public IGuidedInstallerGroupViewModel[] Groups { get; set; }
 
@@ -24,6 +25,7 @@ public class GuidedInstallerStepDesignViewModel : AViewModel<IGuidedInstallerSte
         Groups = step.Groups
             .Select(group => (IGuidedInstallerGroupViewModel)new GuidedInstallerGroupDesignViewModel(group))
             .ToArray();
+        HighlightedOption = step.Groups[0].Options[0];
     }
 
     private static GuidedInstallationStep SetupInstallationStep()
@@ -46,10 +48,31 @@ public class GuidedInstallerStepDesignViewModel : AViewModel<IGuidedInstallerSte
                         new Option
                         {
                             Id = OptionId.From(Guid.NewGuid()),
-                            Name = "Option 1",
+                            Name = "Available Option",
                             Type = OptionType.Available,
-                            Description = "This is an option",
-                        }
+                            Description = "This option is available",
+                        },
+                        new Option
+                        {
+                            Id = OptionId.From(Guid.NewGuid()),
+                            Name = "Pre-selected Option",
+                            Type = OptionType.PreSelected,
+                            Description = "This option is pre-selected"
+                        },
+                        new Option
+                        {
+                            Id = OptionId.From(Guid.NewGuid()),
+                            Name = "Required Option",
+                            Type = OptionType.Required,
+                            Description = "This option is required"
+                        },
+                        new Option
+                        {
+                            Id = OptionId.From(Guid.NewGuid()),
+                            Name = "Disabled Option",
+                            Type = OptionType.Disabled,
+                            Description = "This option is disabled"
+                        },
                     }
                 }
             }

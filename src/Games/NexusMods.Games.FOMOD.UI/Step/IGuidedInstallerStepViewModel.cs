@@ -9,6 +9,8 @@ public interface IGuidedInstallerStepViewModel : IViewModelInterface
 {
     public GuidedInstallationStep? InstallationStep { get; set; }
 
+    public Option? HighlightedOption { get; set; }
+
     public IGuidedInstallerGroupViewModel[] Groups { get; set; }
 
     public TaskCompletionSource<UserChoice>? TaskCompletionSource { get; set; }

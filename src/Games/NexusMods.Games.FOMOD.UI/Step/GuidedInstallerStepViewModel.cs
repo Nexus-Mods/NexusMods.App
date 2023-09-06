@@ -17,6 +17,9 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
     public GuidedInstallationStep? InstallationStep { get; set; }
 
     [Reactive]
+    public Option? HighlightedOption { get; set; }
+
+    [Reactive]
     public TaskCompletionSource<UserChoice>? TaskCompletionSource { get; set; }
 
     [Reactive]

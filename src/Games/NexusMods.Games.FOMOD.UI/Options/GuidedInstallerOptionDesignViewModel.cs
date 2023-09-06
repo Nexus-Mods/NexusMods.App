@@ -1,23 +1,13 @@
-using NexusMods.App.UI;
 using NexusMods.Common.GuidedInstaller;
 using NexusMods.Common.GuidedInstaller.ValueObjects;
-using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.Games.FOMOD.UI;
 
-public class GuidedInstallerOptionDesignViewModel : AViewModel<IGuidedInstallerOptionViewModel>, IGuidedInstallerOptionViewModel
+public class GuidedInstallerOptionDesignViewModel : GuidedInstallerOptionViewModel
 {
-    public Option Option { get; }
+    public GuidedInstallerOptionDesignViewModel() : base(GenerateOption()) { }
 
-    [Reactive]
-    public bool IsSelected { get; set; }
-
-    public GuidedInstallerOptionDesignViewModel() : this(GenerateOption()) { }
-
-    public GuidedInstallerOptionDesignViewModel(Option option)
-    {
-        Option = option;
-    }
+    public GuidedInstallerOptionDesignViewModel(Option option) : base(option) { }
 
     private static Option GenerateOption()
     {

@@ -5,17 +5,16 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="clr-namespace:NexusMods.Games.FOMOD.UI"
-    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="80"
     x:Class="NexusMods.Games.FOMOD.UI.GuidedInstallerOptionView">
 
     <Design.DataContext>
         <ui:GuidedInstallerOptionDesignViewModel />
     </Design.DataContext>
 
-    <StackPanel>
-        <CheckBox x:Name="CheckBox">
-            <TextBlock Classes="ButtonMontserratSemi" x:Name="CheckBoxTextBlock"/>
-        </CheckBox>
-    </StackPanel>
+    <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto">
+        <CheckBox Grid.Column="0" x:Name="CheckBox"/>
+        <TextBlock Margin="0, 6, 0, 0" Grid.Column="1" Classes="ButtonMontserratSemi" x:Name="CheckBoxTextBlock" />
+    </Grid>
 
 </reactiveUi:ReactiveUserControl>
