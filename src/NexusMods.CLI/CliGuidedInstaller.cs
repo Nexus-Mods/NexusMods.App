@@ -112,7 +112,7 @@ public class CliGuidedInstaller : IGuidedInstaller
                                 "Some groups have invalid selection, please correct them. Invalid groups:\n {InvalidGroups} \n",
                                 installationStep.Groups.Select((group, index) => new { group, index })
                                     .Where(x => invalidGroups.Contains(x.group.Id))
-                                    .Select(x => $"{x.index + 1} - {x.group.Description} - ${x.group.Type} \n"));
+                                    .Select(x => $"{x.index + 1} - {x.group.Name} - ${x.group.Type} \n"));
                             continue;
                         }
 
