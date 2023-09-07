@@ -33,6 +33,7 @@ public class SimpleOverlayModInstaller : IModInstaller
         FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         CancellationToken cancellationToken = default)
     {
+
         var roots = RootPaths
             .SelectMany(archiveFiles.FindSubPath)
             .OrderBy(node => node.Depth)

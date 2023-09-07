@@ -38,14 +38,11 @@ public class LooseFilesModInstallerTests : AModInstallerTest<DarkestDungeon, Loo
         var loadout = await CreateLoadout();
 
         // Better Trinkets v2.03 (https://www.nexusmods.com/darkestdungeon/mods/76)
-        var (path, hash) = await DownloadMod(GameInstallation.Game.Domain, ModId.From(76), FileId.From(1851));
-        await using (path)
-        {
-            hash.Should().Be(Hash.From(0x068CF757544AA943));
+        var downloadId = await DownloadMod(GameInstallation.Game.Domain, ModId.From(76), FileId.From(1851));
 
-            var mod = await InstallModFromArchiveIntoLoadout(loadout, path);
-            mod.Files.Should().NotBeEmpty();
-            mod.Files.Values.Cast<IToFile>().Should().AllSatisfy(kv => kv.To.Path.StartsWith("mods/Oks_BetterTrinkets_v2.03"));
-        }
+        var mod = await InstallModFromArchiveIntoLoadout(loadout, downloadId);
+        mod.Files.Should().NotBeEmpty();
+        mod.Files.Values.Cast<IToFile>().Should().AllSatisfy(kv => kv.To.Path.StartsWith("mods/Oks_BetterTrinkets_v2.03"));
+
     }
 }

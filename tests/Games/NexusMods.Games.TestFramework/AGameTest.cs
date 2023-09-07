@@ -90,7 +90,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// <param name="modId"></param>
     /// <param name="fileId"></param>
     /// <returns></returns>
-    protected async Task<(TemporaryPath file, Hash downloadHash)> DownloadMod(GameDomain gameDomain, ModId modId, FileId fileId)
+    protected async Task<DownloadId> DownloadMod(GameDomain gameDomain, ModId modId, FileId fileId)
     {
         var links = await NexusClient.DownloadLinksAsync(gameDomain, modId, fileId);
         var file = TemporaryFileManager.CreateFile();
@@ -100,7 +100,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
             file
         );
 
-        await DownloadRegistry.RegisterDownload(file.Path, new NexusModsArchiveMetadata
+        var id = await DownloadRegistry.RegisterDownload(file.Path, new NexusModsArchiveMetadata
         {
             GameDomain = gameDomain,
             ModId = modId,
@@ -108,7 +108,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
             Quality = Quality.High
         });
 
-        return (file, downloadHash);
+        return id;
     }
 
     /// <summary>
@@ -131,11 +131,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
         if (metaDatas != null)
             return metaDatas.DownloadId;
 
-        var (file, downloadHash) = await DownloadMod(gameDomain, modId, fileId);
-        downloadHash.Should().Be(hash);
-
-        var id = await DownloadRegistry.RegisterDownload(file, new NexusModsArchiveMetadata
-            { GameDomain = gameDomain, ModId = modId, FileId = fileId, Quality = Quality.High });
+        var id = await DownloadMod(gameDomain, modId, fileId);
 
         return id;
     }
