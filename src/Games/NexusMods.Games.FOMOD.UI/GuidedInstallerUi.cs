@@ -101,7 +101,7 @@ public sealed class GuidedInstallerUi : IGuidedInstaller, IDisposable
         GuidedInstallationStep installationStep,
         CancellationToken cancellationToken)
     {
-        // TODO: do something with the cancellation token
+        // TODO: maybe do something with the cancellation token
         Debug.Assert(_currentScope is not null);
         Debug.Assert(_windowViewModel is not null);
         Debug.Assert(_window is not null);
@@ -131,8 +131,8 @@ public sealed class GuidedInstallerUi : IGuidedInstaller, IDisposable
         viewModel.ActiveStepViewModel ??= currentScope.ServiceProvider.GetRequiredService<IGuidedInstallerStepViewModel>();
 
         var activeStepViewModel = viewModel.ActiveStepViewModel;
+        activeStepViewModel.ModName = viewModel.WindowName;
         activeStepViewModel.InstallationStep = installationStep;
-
         activeStepViewModel.TaskCompletionSource = tcs;
     }
 

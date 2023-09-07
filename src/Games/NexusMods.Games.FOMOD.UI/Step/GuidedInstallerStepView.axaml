@@ -15,7 +15,8 @@
     <Grid ColumnDefinitions="*,*" RowDefinitions="*,Auto">
         <ScrollViewer Grid.Row="0" Grid.Column="0">
             <StackPanel>
-                <TextBlock Classes="Subheading" x:Name="StepName" />
+                <TextBlock Classes="H1" x:Name="ModName"/>
+                <TextBlock Classes="TopTitle" x:Name="StepName" />
 
                 <ItemsControl x:Name="GroupItemsControl">
                     <ItemsControl.ItemsPanel>

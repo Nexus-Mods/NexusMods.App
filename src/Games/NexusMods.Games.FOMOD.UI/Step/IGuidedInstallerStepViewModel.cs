@@ -7,6 +7,7 @@ namespace NexusMods.Games.FOMOD.UI;
 
 public interface IGuidedInstallerStepViewModel : IViewModelInterface
 {
+    public string? ModName { get; set; }
     public GuidedInstallationStep? InstallationStep { get; set; }
 
     public IGuidedInstallerOptionViewModel? HighlightedOptionViewModel { get; set; }

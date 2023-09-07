@@ -9,6 +9,8 @@ namespace NexusMods.Games.FOMOD.UI;
 
 public class GuidedInstallerStepDesignViewModel : AViewModel<IGuidedInstallerStepViewModel>, IGuidedInstallerStepViewModel
 {
+    public string? ModName { get; set; } = "Example Mod";
+
     public GuidedInstallationStep? InstallationStep { get; set; }
 
     [Reactive]
