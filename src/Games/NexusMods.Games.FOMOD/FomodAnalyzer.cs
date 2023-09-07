@@ -25,8 +25,8 @@ public class FomodAnalyzer
             return null;
 
         // If not from inside an archive, this is probably not a FOMOD.
-        if (info.ParentArchive == null)
-            yield break;
+        if (xmlNode!.IsTreeRoot)
+            return null;
 
         // If the fomod folder is not at first level, find the prefix.
         var pathPrefix = xmlNode!.Parent.Parent;
@@ -62,10 +62,6 @@ public class FomodAnalyzer
                 catch (Exception)
                 {
                     bytes = await GetPlaceholderImage(fileSystem, ct);
-                }
-                catch (DirectoryNotFoundException)
-                {
-                    bytes = await GetPlaceholderImage(ct);
                 }
 
                 images!.Add(new FomodAnalyzerInfo.FomodAnalyzerImage(imagePath, bytes));
