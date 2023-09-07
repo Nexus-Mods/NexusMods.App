@@ -162,7 +162,7 @@ public class ZipArchiveManager : IArchiveManager
         {
             var prefix = hash.ToHex() + "_";
             _entries = archive.Entries.Where(entry => entry.Name.StartsWith(prefix))
-                .Order()
+                .OrderBy(a => a.Name)
                 .ToArray();
             Size = Size.FromLong(_entries.Sum(e => e.Length));
             ChunkSize = Size.FromLong(_chunkSize);

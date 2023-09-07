@@ -83,15 +83,20 @@ public class SMAPIInstaller : AModInstaller
 
         var (path, file) = installDataFile;
 
-        DownloadId? downloadId = _downloadRegistry.GetByHash(file!.Hash).FirstOrDefault();
-        if (downloadId == null)
+        var found = _downloadRegistry.GetByHash(file!.Hash).ToArray();
+        DownloadId downloadId;
+        if (!found.Any())
             downloadId = await RegisterDataFile(path, file, cancellationToken);
+        else
+        {
+            downloadId = found.First();
+        }
 
 
         var gameFolderPath = gameInstallation.Locations
             .First(x => x.Key == GameFolderType.Game).Value;
 
-        var archiveContents = (await _downloadRegistry.Get(downloadId.Value)).GetFileTree();
+        var archiveContents = (await _downloadRegistry.Get(downloadId)).GetFileTree();
 
         // TODO: install.dat is an archive inside an archive see https://github.com/Nexus-Mods/NexusMods.App/issues/244
         // the basicFiles have to be extracted from the nested archive and put inside the game folder
