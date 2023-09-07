@@ -252,8 +252,13 @@ public class CliGuidedInstaller : IGuidedInstaller
         // the target option is not selected, the user wants to select it
         if (currentGroup.Type is OptionGroupType.ExactlyOne or OptionGroupType.AtMostOne)
         {
-            // "deselect" everything
-            selectedOptions.Clear();
+            // "deselect" all other options in the group
+            var groupSelections = selectedOptions
+                .Where(x => x.GroupId == currentGroup.Id)
+                .ToArray();
+
+            foreach (var selection in groupSelections)
+                selectedOptions.Remove(selection);
         }
 
         selectedOptions.Add(new SelectedOption(currentGroup.Id, targetOption.Id));
