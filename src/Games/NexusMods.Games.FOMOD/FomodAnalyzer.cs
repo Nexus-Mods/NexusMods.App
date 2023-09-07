@@ -40,7 +40,7 @@ public class FomodAnalyzer : IFileAnalyzer
         // If not from inside an archive, this is probably not a FOMOD.
         if (info.ParentArchive == null)
             yield break;
-        
+
         // If the fomod folder is not at first level, find the prefix.
         var pathPrefix = info.RelativePath.Value.Parent.Parent;
 
@@ -62,7 +62,7 @@ public class FomodAnalyzer : IFileAnalyzer
                 if (string.IsNullOrEmpty(imagePathFragment))
                     return;
                 var imagePath = pathPrefix.Join(RelativePath.FromUnsanitizedInput(imagePathFragment));
-                
+
                 var path = info.ParentArchive!.Value.Path.Combine(imagePath);
                 byte[] bytes;
                 try
@@ -70,6 +70,10 @@ public class FomodAnalyzer : IFileAnalyzer
                     bytes = await path.ReadAllBytesAsync(ct);
                 }
                 catch (FileNotFoundException)
+                {
+                    bytes = await GetPlaceholderImage(ct);
+                }
+                catch (DirectoryNotFoundException)
                 {
                     bytes = await GetPlaceholderImage(ct);
                 }
