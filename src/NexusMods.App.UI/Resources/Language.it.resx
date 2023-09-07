@@ -157,9 +157,9 @@ Questi dati sono raccolti in maniera anonima e non saranno mai condivisi con ter
         <value>IN CORSO</value>
     </data>
     <data name="DownloadInProgressView__Cancel" xml:space="preserve">
-        <value>Annulla</value>
+        <value>Cancella</value>
     </data>
-    <data name="DownloadInPorgressView__Pause" xml:space="preserve">
+    <data name="DownloadInProgressView__Pause" xml:space="preserve">
         <value>Pausa</value>
     </data>
     <data name="DownloadInProgressView__Pause_All" xml:space="preserve">

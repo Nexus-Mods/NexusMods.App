@@ -9,14 +9,14 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:okCancel="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel"
     xmlns:cancel="clr-namespace:NexusMods.App.UI.Overlays.Download.Cancel"
-    xmlns:localization="clr-namespace:NexusMods.App.UI.Localization">
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
 
     <Design.DataContext>
         <cancel:CancelDownloadOverlayViewModel />
     </Design.DataContext>
 
     <okCancel:MessageBoxOkCancelView MinWidth="300" MaxWidth="450"
-                                     Title="{localization:Localized CancelDownloadOverlayView_Title}"
+                                     Title="{x:Static resources:Language.CancelDownloadOverlayView_Title}"
                                      x:Name="OkCancelView" />
 
 </reactiveUi:ReactiveUserControl>

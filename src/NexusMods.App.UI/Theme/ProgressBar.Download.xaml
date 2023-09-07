@@ -1,8 +1,6 @@
 ﻿<Styles
     xmlns="https://github.com/avaloniaui"
-    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:localization="clr-namespace:NexusMods.App.UI.Localization">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.PreviewWith>
         <StackPanel Width="200" Spacing="8" Margin="8">
             <ProgressBar Classes="DownloadBar" Minimum="0" Maximum="1"/>
@@ -19,7 +17,6 @@
         <Setter Property="Foreground" Value="{DynamicResource BrandAccentDarker}"/>
         <Setter Property="Background" Value="#330555b8"/>
         <Setter Property="MinWidth" Value="100"/>
-        <Setter Property="ProgressTextFormat" Value="{localization:Localized ProgressBar_ProgressTextFormat__Total_1_0}"/>
     </Style>
 
     <Style Selector="ProgressBar.DisabledDownloadBar">

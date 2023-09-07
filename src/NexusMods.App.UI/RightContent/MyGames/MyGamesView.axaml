@@ -10,18 +10,18 @@
     xmlns:myGames="clr-namespace:NexusMods.App.UI.RightContent.MyGames"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:localization="clr-namespace:NexusMods.App.UI.Localization">
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
     <Design.DataContext>
         <myGames:MyGamesDesignViewModel />
     </Design.DataContext>
     <StackPanel Margin="24" Orientation="Vertical">
-        <TextBlock Classes="H5MontserratSemi" Text="{localization:Localized MyGamesView__Ready_to_mod}" />
+        <TextBlock Classes="H5MontserratSemi" Text="{x:Static resources:Language.MyGamesView__Ready_to_mod}" />
         <reactiveUi:ViewModelViewHost Margin="0,12,0,0" x:Name="FoundGamesViewHost" />
 
         <TextBlock
             Classes="H5MontserratSemi"
             Margin="0,24,0,0"
-            Text="{localization:Localized MyGamesView__Detected_games}" />
+            Text="{x:Static resources:Language.MyGamesView__Detected_games}" />
         <reactiveUi:ViewModelViewHost Margin="0,12,0,0" x:Name="AllGamesViewHost" />
     </StackPanel>
 </reactiveUi:ReactiveUserControl>

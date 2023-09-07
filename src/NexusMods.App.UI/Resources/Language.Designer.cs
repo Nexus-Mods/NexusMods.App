@@ -132,15 +132,6 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Pause.
-        /// </summary>
-        public static string DownloadInPorgressView__Pause {
-            get {
-                return ResourceManager.GetString("DownloadInPorgressView__Pause", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string DownloadInProgressView__Cancel {
@@ -155,6 +146,15 @@ namespace NexusMods.App.UI.Resources {
         public static string DownloadInProgressView__IN_PROGRESS {
             get {
                 return ResourceManager.GetString("DownloadInProgressView__IN_PROGRESS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pause.
+        /// </summary>
+        public static string DownloadInProgressView__Pause {
+            get {
+                return ResourceManager.GetString("DownloadInProgressView__Pause", resourceCulture);
             }
         }
         
