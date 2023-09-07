@@ -5,19 +5,29 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="clr-namespace:NexusMods.Games.FOMOD.UI"
-    mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="80"
+    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="35"
     x:Class="NexusMods.Games.FOMOD.UI.GuidedInstallerOptionView">
 
     <Design.DataContext>
         <ui:GuidedInstallerOptionDesignViewModel />
     </Design.DataContext>
 
-    <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto">
+    <Grid ColumnDefinitions="Auto, *, Auto, Auto" RowDefinitions="Auto">
+        <Grid.Styles>
+            <Style Selector="icons|Icon">
+                <Setter Property="FontSize" Value="20"></Setter>
+                <Setter Property="Foreground" Value="White"></Setter>
+            </Style>
+        </Grid.Styles>
+
         <StackPanel Grid.Column="0">
             <CheckBox IsVisible="False" x:Name="CheckBox" />
             <RadioButton IsVisible="False" x:Name="RadioButton"/>
         </StackPanel>
         <TextBlock Margin="0, 6, 0, 0" Grid.Column="1" Classes="ButtonMontserratSemi" x:Name="OptionNameTextBlock" />
+        <icons:Icon Classes="Image" IsVisible="False" Grid.Column="2" x:Name="ImageIcon"/>
+        <icons:Icon Margin="8, 0, 0, 0" Classes="Description" IsVisible="False" Grid.Column="3" x:Name="DescriptionIcon"/>
     </Grid>
 
 </reactiveUi:ReactiveUserControl>

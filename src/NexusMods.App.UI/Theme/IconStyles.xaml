@@ -29,6 +29,8 @@
             <icons:Icon Classes="Star"></icons:Icon>
             <icons:Icon Classes="TrashCanOutline"></icons:Icon>
             <icons:Icon Classes="PlayCircleOutline"></icons:Icon>
+            <icons:Icon Classes="Image"></icons:Icon>
+            <icons:Icon Classes="Description"></icons:Icon>
         </WrapPanel>
     </Design.PreviewWith>
 
@@ -103,5 +105,13 @@
 
     <Style Selector="icons|Icon.PlayCircleOutline">
         <Setter Property="Value" Value="mdi-play-circle-outline"/>
+    </Style>
+
+    <Style Selector="icons|Icon.Image">
+        <Setter Property="Value" Value="mdi-image"/>
+    </Style>
+
+    <Style Selector="icons|Icon.Description">
+        <Setter Property="Value" Value="mdi-text-box"/>
     </Style>
 </Styles>

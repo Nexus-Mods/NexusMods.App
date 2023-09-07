@@ -23,12 +23,19 @@ public class GuidedInstallerGroupDesignViewModel : GuidedInstallerGroupViewModel
     internal static Option[] GenerateOptions(int count = 3)
     {
         return Enumerable.Range(0, count)
-            .Select(i => new Option
+            .Select(i =>
             {
-                Id = OptionId.From(Guid.NewGuid()),
-                Name = $"Option {(i + 1)}",
-                Type = OptionType.Available,
-                Description = $"This is option {(i + 1)}"
+                var description = Random.Shared.Next(0, 100) > 50 ? null : $"This is option {i + 1}";
+                AssetUrl? assetUrl = Random.Shared.Next(0, 100) > 50 ? null : AssetUrl.From("https://http.cat/images/418.jpg");
+
+                return new Option
+                {
+                    Id = OptionId.From(Guid.NewGuid()),
+                    Name = $"Option {i + 1}",
+                    Type = OptionType.Available,
+                    Description = description,
+                    ImageUrl = assetUrl
+                };
             })
             .ToArray();
     }

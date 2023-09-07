@@ -1,7 +1,6 @@
 using System.Reactive.Disposables;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
-using NexusMods.App.UI;
 using NexusMods.Common.GuidedInstaller;
 using ReactiveUI;
 
@@ -16,11 +15,6 @@ public partial class GuidedInstallerOptionView : ReactiveUserControl<IGuidedInst
         this.WhenActivated(disposables =>
         {
             OptionNameTextBlock.Text = ViewModel?.Option.Name;
-            var hoverText = ViewModel?.Option.HoverText;
-            if (hoverText is not null)
-            {
-                ToolTip.SetTip(OptionNameTextBlock, hoverText);
-            }
 
             var groupType = ViewModel?.Group.Type ?? OptionGroupType.Any;
             var useRadioButton = groupType switch
@@ -53,6 +47,15 @@ public partial class GuidedInstallerOptionView : ReactiveUserControl<IGuidedInst
 
                 this.Bind(ViewModel, vm => vm.IsSelected, view => view.CheckBox.IsChecked)
                     .DisposeWith(disposables);
+            }
+
+            ImageIcon.IsVisible = ViewModel?.Option.ImageUrl is not null;
+            DescriptionIcon.IsVisible = ViewModel?.Option.Description is not null;
+
+            var hoverText = ViewModel?.Option.HoverText;
+            if (hoverText is not null)
+            {
+                ToolTip.SetTip(OptionNameTextBlock, hoverText);
             }
         });
     }
