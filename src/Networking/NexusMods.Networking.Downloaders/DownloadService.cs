@@ -192,7 +192,7 @@ public class DownloadService : IDownloadService
             var downloadId = await _downloadRegistry.RegisterDownload(path.Path, new FilePathMetadata
             {
                 Name = modName,
-                OriginalName = modName,
+                OriginalName = path.Path.FileName,
                 Quality = Quality.Low
             });
             _analyzed.OnNext((task, downloadId, modName));

@@ -17,14 +17,14 @@ public class AnalyzeArchive : AVerbTest
         await RunNoBannerAsync("analyze-archive", "-i", Data7ZipLZMA2.ToString());
 
         LogSize.Should().Be(1);
-        LastTable.Columns.Should().BeEquivalentTo("Path", "Size", "Hash", "Signatures");
+        LastTable.Columns.Should().BeEquivalentTo("Path", "Size", "Hash");
         LastTable.Rows
             .Should()
             .BeEquivalentTo(new[]
             {
-                new object[] {"deepFolder/deepFolder2/deepFolder3/deepFolder4/deepFile.txt".ToRelativePath(), (Size)12L, (Hash)0xE405A7CFA6ABBDE3, "TXT"},
-                new object[] {"folder1/folder1file.txt".ToRelativePath(), (Size)15L, (Hash)0xC9E47B1523162066, "TXT"},
-                new object[] {"rootFile.txt".ToRelativePath(), (Size)12L, (Hash)0x33DDBF7930BA002A, "TXT"}
+                new object[] {"deepFolder/deepFolder2/deepFolder3/deepFolder4/deepFile.txt".ToRelativePath(), (Size)12L, (Hash)0xE405A7CFA6ABBDE3},
+                new object[] {"folder1/folder1file.txt".ToRelativePath(), (Size)15L, (Hash)0xC9E47B1523162066},
+                new object[] {"rootFile.txt".ToRelativePath(), (Size)12L, (Hash)0x33DDBF7930BA002A}
             });
     }
 }
