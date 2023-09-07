@@ -1,6 +1,4 @@
 using System.Reactive;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using NexusMods.App.UI;
 using NexusMods.Common.GuidedInstaller;
 using NexusMods.Common.GuidedInstaller.ValueObjects;
@@ -50,15 +48,29 @@ public class GuidedInstallerStepDesignViewModel : AViewModel<IGuidedInstallerSte
                 new OptionGroup
                 {
                     Id = GroupId.From(Guid.NewGuid()),
-                    Name = "Group 1",
+                    Name = "Group 1 (Any)",
                     Type = OptionGroupType.Any,
+                    Options = GuidedInstallerGroupDesignViewModel.GenerateAllOptionTypes()
+                },
+                new OptionGroup
+                {
+                    Id = GroupId.From(Guid.NewGuid()),
+                    Name = "Group 2 (Exactly One)",
+                    Type = OptionGroupType.ExactlyOne,
                     Options = GuidedInstallerGroupDesignViewModel.GenerateOptions()
                 },
                 new OptionGroup
                 {
                     Id = GroupId.From(Guid.NewGuid()),
-                    Name = "Group 2",
-                    Type = OptionGroupType.Any,
+                    Name = "Group 3 (At Most One)",
+                    Type = OptionGroupType.AtMostOne,
+                    Options = GuidedInstallerGroupDesignViewModel.GenerateOptions()
+                },
+                new OptionGroup
+                {
+                    Id = GroupId.From(Guid.NewGuid()),
+                    Name = "Group 4 (At Least One)",
+                    Type = OptionGroupType.AtLeastOne,
                     Options = GuidedInstallerGroupDesignViewModel.GenerateOptions()
                 },
             }

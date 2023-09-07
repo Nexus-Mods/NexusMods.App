@@ -16,11 +16,24 @@ public class GuidedInstallerGroupDesignViewModel : GuidedInstallerGroupViewModel
             Id = GroupId.From(Guid.NewGuid()),
             Name = "Test Group",
             Type = OptionGroupType.Any,
-            Options = GenerateOptions()
+            Options = GenerateAllOptionTypes()
         };
     }
 
-    internal static Option[] GenerateOptions()
+    internal static Option[] GenerateOptions(int count = 3)
+    {
+        return Enumerable.Range(0, count)
+            .Select(i => new Option
+            {
+                Id = OptionId.From(Guid.NewGuid()),
+                Name = $"Option {(i + 1)}",
+                Type = OptionType.Available,
+                Description = $"This is option {(i + 1)}"
+            })
+            .ToArray();
+    }
+
+    internal static Option[] GenerateAllOptionTypes()
     {
         return new[]
         {
