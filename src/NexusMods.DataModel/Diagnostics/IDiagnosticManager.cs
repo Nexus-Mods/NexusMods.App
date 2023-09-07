@@ -29,5 +29,5 @@ public interface IDiagnosticManager : IDisposable
     /// <summary>
     /// Callback for loadout changes.
     /// </summary>
-    void OnLoadoutChanged(Loadout loadout);
+    ValueTask OnLoadoutChanged(Loadout loadout);
 }

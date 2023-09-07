@@ -3,6 +3,7 @@ using DynamicData;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Diagnostics.Emitters;
@@ -67,9 +68,9 @@ internal sealed class DiagnosticManager : IDiagnosticManager
     public IObservable<IChangeSet<Diagnostic, IId>> DiagnosticChanges => _diagnosticCache.Connect();
     public IEnumerable<Diagnostic> ActiveDiagnostics => _diagnosticCache.Items;
 
-    public void OnLoadoutChanged(Loadout loadout)
+    public async ValueTask OnLoadoutChanged(Loadout loadout)
     {
-        RefreshLoadoutDiagnostics(loadout);
+        await RefreshLoadoutDiagnostics(loadout);
         RefreshModDiagnostics(loadout);
     }
 
@@ -78,7 +79,7 @@ internal sealed class DiagnosticManager : IDiagnosticManager
         _diagnosticCache.Edit(updater => updater.Clear());
     }
 
-    internal void RefreshLoadoutDiagnostics(Loadout loadout)
+    internal async Task RefreshLoadoutDiagnostics(Loadout loadout)
     {
         // Remove outdated diagnostics for previous revisions of the loadout
         RemoveDiagnostics(kv => kv.Value.DataReferences
@@ -89,11 +90,11 @@ internal sealed class DiagnosticManager : IDiagnosticManager
             )
         );
 
-        var newDiagnostics = _loadoutDiagnosticEmitters
-            .SelectMany(emitter => emitter.Diagnose(loadout))
-            .ToArray();
+        var newDiagnostics = await _loadoutDiagnosticEmitters
+            .SelectAsync(async emitter => await emitter.Diagnose(loadout).ToArrayAsync())
+            .ToArrayAsync();
 
-        AddDiagnostics(newDiagnostics);
+        AddDiagnostics(newDiagnostics.SelectMany(vals => vals));
     }
 
     internal void RefreshModDiagnostics(Loadout loadout)

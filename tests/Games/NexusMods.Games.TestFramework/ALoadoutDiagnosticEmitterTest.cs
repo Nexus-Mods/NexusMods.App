@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NexusMods.DataModel.Diagnostics;
 using NexusMods.DataModel.Diagnostics.Emitters;
+using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 
@@ -17,14 +18,14 @@ public class ALoadoutDiagnosticEmitterTest<TGame, TEmitter> : AGameTest<TGame>
         Emitter = serviceProvider.FindImplementationInContainer<TEmitter, ILoadoutDiagnosticEmitter>();
     }
 
-    protected Diagnostic[] GetAllDiagnostics(Loadout loadout)
+    protected async ValueTask<Diagnostic[]> GetAllDiagnostics(Loadout loadout)
     {
-        return Emitter.Diagnose(loadout).ToArray();
+        return await Emitter.Diagnose(loadout).ToArrayAsync();
     }
 
-    protected Diagnostic GetSingleDiagnostic(Loadout loadout)
+    protected async ValueTask<Diagnostic> GetSingleDiagnostic(Loadout loadout)
     {
-        var diagnostics = GetAllDiagnostics(loadout);
+        var diagnostics = await GetAllDiagnostics(loadout);
         diagnostics.Should().ContainSingle();
         return diagnostics.First();
     }

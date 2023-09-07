@@ -18,8 +18,7 @@ namespace NexusMods.Games.StardewValley.Installers;
 /// </summary>
 public class SMAPIModInstaller : AModInstaller
 {
-    private static readonly RelativePath ModsFolder = "Mods".ToRelativePath();
-    private static readonly RelativePath ManifestFile = "manifest.json".ToRelativePath();
+
 
     /// <summary>
     /// DI Constructor
@@ -42,7 +41,7 @@ public class SMAPIModInstaller : AModInstaller
         {
             var (path, file) = kv;
 
-            if (!path.FileName.Equals(ManifestFile))
+            if (!path.FileName.Equals(Constants.ManifestFile))
                 return default;
 
             await using var stream = await file!.Open();
@@ -76,7 +75,7 @@ public class SMAPIModInstaller : AModInstaller
                     {
                         var (path, file) = kv;
                         return file!.ToFromArchive(
-                            new GamePath(GameFolderType.Game, ModsFolder.Join(path.DropFirst(parent.Depth - 1)))
+                            new GamePath(GameFolderType.Game, Constants.ModsFolder.Join(path.DropFirst(parent.Depth - 1)))
                         );
                     });
 

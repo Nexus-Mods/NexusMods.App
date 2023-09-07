@@ -1,6 +1,11 @@
+using System.Text.Json;
+using NexusMods.Common;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Diagnostics;
 using NexusMods.DataModel.Diagnostics.Emitters;
+using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.Games.StardewValley.Models;
 
@@ -8,14 +13,21 @@ namespace NexusMods.Games.StardewValley.Emitters;
 
 public class MissingDependenciesEmitter : ILoadoutDiagnosticEmitter
 {
-    public IEnumerable<Diagnostic> Diagnose(Loadout loadout)
+    private readonly IArchiveManager _archiveManager;
+
+    public MissingDependenciesEmitter(IArchiveManager archiveManager)
+    {
+        _archiveManager = archiveManager;
+    }
+
+    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout loadout)
     {
         // TODO: check the versions
 
-        var modIdToManifest = loadout.Mods
-            .Select(kv => (Id: kv.Key, Manifest: GetManifest(kv.Value)))
+        var modIdToManifest = await loadout.Mods
+            .SelectAsync(async kv => (Id: kv.Key, Manifest: await GetManifest(kv.Value)))
             .Where(tuple => tuple.Manifest is not null)
-            .ToDictionary(x => x.Id, x => x.Manifest!);
+            .ToDictionaryAsync(x => x.Id, x => x.Manifest!);
 
         var knownUniqueIds = modIdToManifest
             .Select(x => x.Value.UniqueID)
@@ -54,16 +66,26 @@ public class MissingDependenciesEmitter : ILoadoutDiagnosticEmitter
         return requiredDependencies;
     }
 
-    private static SMAPIManifest? GetManifest(Mod mod)
+    private async ValueTask<SMAPIManifest?> GetManifest(Mod mod)
     {
-        var manifest = mod.Files.Select(kv =>
-        {
-            var (_, file) = kv;
-            var manifest = file.Metadata
-                .OfType<SMAPIManifest>()
-                .FirstOrDefault();
-            return manifest;
-        }).FirstOrDefault(x => x is not null);
+
+        var manifest = await mod.Files
+            .Values
+            .OfType<IToFile>()
+            .Where(f => f.To.FileName == Constants.ManifestFile)
+            .OfType<FromArchive>()
+            .SelectAsync<FromArchive, SMAPIManifest?>(async fa =>
+            {
+                try
+                {
+                    await using var stream = await _archiveManager.GetFileStream(fa.Hash);
+                    return await JsonSerializer.DeserializeAsync<SMAPIManifest>(stream);
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
+            }).FirstOrDefaultAsync(m => m != null);
         return manifest;
     }
 }
