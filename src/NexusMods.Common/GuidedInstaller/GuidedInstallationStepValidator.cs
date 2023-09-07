@@ -13,6 +13,7 @@ public static class GuidedInstallerValidation
     /// </summary>
     /// <remarks>
     /// A group is valid if its selection satisfies the <see cref="OptionGroup.Type"/> requirements.
+    /// Note: Required options should be included in the <paramref name="selectedOptions"/> collection.
     /// </remarks>
     /// <param name="installationStep">The installation step containing all the groups</param>
     /// <param name="selectedOptions">A collection of <see cref="SelectedOption"/> for all the groups.</param>
