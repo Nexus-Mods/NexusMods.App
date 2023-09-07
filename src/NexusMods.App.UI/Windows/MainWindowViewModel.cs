@@ -1,6 +1,7 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Microsoft.Extensions.Logging;
+using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.TopBar;
 using NexusMods.App.UI.LeftMenu;
@@ -29,6 +30,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
         IOSInformation osInformation,
         ISpineViewModel spineViewModel,
         ITopBarViewModel topBarViewModel,
+        IDevelopmentBuildBannerViewModel developmentBuildBannerViewModel,
         IOverlayController controller,
         IDownloadService downloadService,
         IArchiveInstaller archiveInstaller,
@@ -37,6 +39,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
     {
         TopBar = topBarViewModel;
         Spine = spineViewModel;
+        DevelopmentBuildBanner = developmentBuildBannerViewModel;
         _overlayController = controller;
         _archiveInstaller = archiveInstaller;
         _registry = registry;
@@ -145,6 +148,9 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
 
     [Reactive]
     public ITopBarViewModel TopBar { get; set; }
+
+    [Reactive]
+    public IDevelopmentBuildBannerViewModel DevelopmentBuildBanner { get; set; }
 
     [Reactive]
     public IOverlayViewModel? OverlayContent { get; set; }

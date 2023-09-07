@@ -56,7 +56,6 @@ public class FomodXmlInstaller : AModInstaller
         ModId baseModId, FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         CancellationToken cancellationToken = default)
     {
-
         // the component dealing with FOMODs is built to support all kinds of mods, including those without a script.
         // for those cases, stop patterns can be way more complex to deduce the intended installation structure. In our case, where
         // we only intend to support xml scripted FOMODs, this should be good enough
@@ -156,6 +155,7 @@ public class FomodXmlInstaller : AModInstaller
                 Id = ModFileId.New(),
                 To = new GamePath(gameTargetPath.Type, gameTargetPath.Path.Join(instruction.destination)),
                 Hash = file.Value!.Hash,
+
                 Size = file.Value.Size
             };
         });
@@ -167,7 +167,7 @@ public class FomodXmlInstaller : AModInstaller
         return instructions.Select(instruction => new EmptyDirectory
         {
             Id = ModFileId.New(),
-            Directory = new GamePath(gameTargetPath.Type, gameTargetPath.Path.Join(instruction.destination))
+            Directory = new GamePath(gameTargetPath.Type, gameTargetPath.Path.Join(RelativePath.FromUnsanitizedInput(instruction.destination)))
         });
     }
 }

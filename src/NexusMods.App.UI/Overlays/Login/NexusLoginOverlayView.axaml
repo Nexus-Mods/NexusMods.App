@@ -10,7 +10,8 @@
     xmlns:overlays="clr-namespace:NexusMods.App.UI.Overlays"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:login="clr-namespace:NexusMods.App.UI.Overlays.Login">
+    xmlns:login="clr-namespace:NexusMods.App.UI.Overlays.Login"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
     <Design.DataContext>
         <login:NexusLoginOverlayDesignerViewModel />
     </Design.DataContext>
@@ -38,18 +39,20 @@
                 Classes="ButtonMontserratSemi"
                 HorizontalAlignment="Center"
                 Margin="0,27"
-                Text="PLEASE CLICK &quot;AUTHORIZE&quot; ON THE WEBSITE"
+                Text="{x:Static resources:Language.NexusLoginOverlayView__Please_Click_Authorize}"
                 VerticalAlignment="Center" />
             <Border
                 Background="{DynamicResource BackgroundTertiaryBrush}"
                 CornerRadius="8"
                 VerticalAlignment="Stretch">
                 <StackPanel Margin="24">
-                    <TextBlock Classes="CaptionMontserratSemi" Text="BROWSER DIDN'T OPEN AUTOMATICALLY?" />
+                    <TextBlock
+                        Classes="CaptionMontserratSemi"
+                        Text="{x:Static resources:Language.NexusLoginOverlayView__BROWSER_DIDNT_OPEN}" />
                     <TextBlock
                         Classes="Body2RobotoRegular"
                         Margin="0,16,0,0"
-                        Text="Please copy the following URL into your browser window. We support Chrome, Safari, Firefox and Edge."
+                        Text="{x:Static resources:Language.NexusLoginOverlayView_Please_copy_url}"
                         Foreground="{DynamicResource FontDarkSecondaryColor}"
                         TextWrapping="Wrap" />
                     <Border

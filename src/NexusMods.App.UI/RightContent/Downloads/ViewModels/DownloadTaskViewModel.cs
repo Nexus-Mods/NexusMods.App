@@ -1,3 +1,4 @@
+using NexusMods.App.UI.Resources;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Interfaces.Traits;
@@ -28,6 +29,7 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
     }
 
     public string Name => _task.FriendlyName;
+
     public string Version
     {
         get
@@ -35,7 +37,7 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
              if (_task is IHaveDownloadVersion version)
                  return version.Version;
 
-             return "Unknown";
+             return Language.DownloadTaskViewModel_Field_Unknown;
         }
     }
 
@@ -46,7 +48,7 @@ public class DownloadTaskViewModel : AViewModel<IDownloadTaskViewModel>, IDownlo
             if (_task is IHaveGameName name)
                 return name.GameName;
 
-            return "Unknown";
+            return Language.DownloadTaskViewModel_Field_Unknown;
         }
     }
 

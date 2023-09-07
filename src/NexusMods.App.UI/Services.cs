@@ -1,6 +1,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.Controls.DataGrid;
+using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.GameWidget;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
@@ -72,6 +73,7 @@ public static class Services
             .AddSingleton<IViewLocator, InjectedViewLocator>()
 
             .AddViewModel<CompletedViewModel, ICompletedViewModel>()
+            .AddViewModel<DevelopmentBuildBannerViewModel, IDevelopmentBuildBannerViewModel>()
             .AddViewModel<DownloadsViewModel, IDownloadsViewModel>()
             .AddViewModel<FoundGamesViewModel, IFoundGamesViewModel>()
             .AddViewModel<GameLeftMenuViewModel, IGameLeftMenuViewModel>()
@@ -107,6 +109,7 @@ public static class Services
 
             // Views
             .AddView<CompletedView, ICompletedViewModel>()
+            .AddView<DevelopmentBuildBannerView, IDevelopmentBuildBannerViewModel>()
             .AddView<DownloadsView, IDownloadsViewModel>()
             .AddView<FoundGamesView, IFoundGamesViewModel>()
             .AddView<GameLeftMenuView, IGameLeftMenuViewModel>()

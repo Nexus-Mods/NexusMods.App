@@ -2,18 +2,18 @@
 
 - Name: Skyrim Legendary Edition
 - Release Date: 2011
-- Engine: 'Gamebryo'
+- Engine: Creation (Gamebryo)
 
 ## Uploaded Files Structure
 
 [Using popular mods as examples.]
 
-Uploaded Skyrim SE mods can appear in the following form:
+Uploaded Skyrim LE mods can appear in the following form:
 
 https://www.nexusmods.com/skyrim/mods/13722?tab=files
 
 - Files Targeting Data Subfolder
-  - [Unofficial Skyrim Legndary Edition Patch](https://www.nexusmods.com/skyrim/mods/71214?tab=files)
+  - [Unofficial Skyrim Legendary Edition Patch](https://www.nexusmods.com/skyrim/mods/71214?tab=files)
   - Root of archive maps to data.
   - e.g. `/Unofficial Skyrim Legendary Edition Patch.bsa` maps to `Data/Unofficial Skyrim Legendary Edition Patch.bsa`.
 
@@ -124,7 +124,7 @@ Very [Useful information about load ordering here](https://loot.github.io/docs/h
 
 Considered essential in scope of Skyrim and requires implementation for MVP.
 
-### [xEdit (SSEEdit)](http://tes5edit.github.io)
+### [xEdit (TES5Edit)](http://tes5edit.github.io)
 
 xEdit is a modding tool for Skyrim that allows you to edit masters, plugins and the
 data structured contained within those files.

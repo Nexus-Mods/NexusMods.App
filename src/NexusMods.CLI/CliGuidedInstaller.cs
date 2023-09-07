@@ -26,8 +26,12 @@ public class CliGuidedInstaller : IGuidedInstaller
     private static readonly object[] TableOfGroupsFooterCancel = { CancelInput, "Cancel Installation" };
 
     private static readonly string[] TableOfOptionsHeaders = { "Key", "State", "Name", "Description" };
-    private static readonly object[] TableOfOptionsFooterBackToGroupSelection = { BackInput, "", "Back", "Back to the group selection" };
-    private static readonly object[] TableOfOptionsFooterCancel = { CancelInput, "", "Cancel", "Cancel the installation" };
+
+    private static readonly object[] TableOfOptionsFooterBackToGroupSelection =
+        { BackInput, "", "Back", "Back to the group selection" };
+
+    private static readonly object[] TableOfOptionsFooterCancel =
+        { CancelInput, "", "Cancel", "Cancel the installation" };
 
     private readonly ILogger<CliGuidedInstaller> _logger;
 
@@ -56,7 +60,8 @@ public class CliGuidedInstaller : IGuidedInstaller
     public void CleanupInstaller() { }
 
     /// <inheritdoc />
-    public Task<UserChoice> RequestUserChoice(GuidedInstallationStep installationStep, CancellationToken cancellationToken)
+    public Task<UserChoice> RequestUserChoice(GuidedInstallationStep installationStep,
+        CancellationToken cancellationToken)
     {
         OptionGroup? currentGroup = null;
 
@@ -75,6 +80,18 @@ public class CliGuidedInstaller : IGuidedInstaller
 
                 var input = SkipAll ? NextInput : GetUserInput();
 
+                if (SkipAll)
+                {
+                    // We still need to make valid selections during skip all
+                    var atLeastOneGroups = installationStep.Groups
+                        .Where(group => group.Type is OptionGroupType.AtLeastOne or OptionGroupType.ExactlyOne)
+                        .ToArray();
+
+                    // Select the first option in "AtLeastOne" and "ExactlyOne" groups
+                    selectedOptions.AddRange(atLeastOneGroups.Select(group =>
+                        new SelectedOption(group.Id, group.Options[0].Id)));
+                }
+
                 switch (input)
                 {
                     case CancelInput:
@@ -91,6 +108,19 @@ public class CliGuidedInstaller : IGuidedInstaller
 
                         selectedOptions.AddRange(requiredOptions);
 
+                        var invalidGroups =
+                            GuidedInstallerValidation.ValidateStepSelections(installationStep, selectedOptions);
+
+                        if (invalidGroups.Any())
+                        {
+                            _logger.LogError(
+                                "Some groups have invalid selection, please correct them. Invalid groups:\n {InvalidGroups} \n",
+                                installationStep.Groups.Select((group, index) => new { group, index })
+                                    .Where(x => invalidGroups.Contains(x.group.Id))
+                                    .Select(x => $"{x.index + 1} - {x.group.Description} \n"));
+                            continue;
+                        }
+
                         // proceed to the next step
                         return Task.FromResult(new UserChoice(new UserChoice.GoToNextStep(selectedOptions.ToArray())));
                     }
@@ -103,7 +133,6 @@ public class CliGuidedInstaller : IGuidedInstaller
                         break;
                     }
                 }
-
             }
             else
             {
@@ -120,6 +149,15 @@ public class CliGuidedInstaller : IGuidedInstaller
                     case CancelInput:
                         return Task.FromResult(new UserChoice(new UserChoice.CancelInstallation()));
                     case BackInput:
+
+                        if (!GuidedInstallerValidation.IsValidGroupSelection(currentGroup, selectedOptions))
+                        {
+                            _logger.LogError(
+                                "Selection is invalid for group {GroupIndex} \n",
+                                Array.IndexOf(installationStep.Groups, currentGroup) + 1);
+                            continue;
+                        }
+
                         currentGroup = null;
                         continue;
                     default:

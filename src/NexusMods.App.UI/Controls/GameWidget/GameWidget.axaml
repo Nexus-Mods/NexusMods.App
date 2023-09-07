@@ -11,7 +11,8 @@
     xmlns:gameWidget="clr-namespace:NexusMods.App.UI.Controls.GameWidget"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
     <Design.DataContext>
         <gameWidget:GameWidgetDesignViewModel />
     </Design.DataContext>
@@ -84,7 +85,11 @@
                             <Button Classes="Rounded" x:Name="PrimaryButton">
                                 <StackPanel Orientation="Horizontal">
                                     <avalonia:Icon Foreground="#FFFFFF" Value="mdi-plus-circle" />
-                                    <TextBlock Classes="Body2RobotoRegular" Margin="6,9.5,12,9.5">Add game</TextBlock>
+                                    <TextBlock
+                                        Classes="Body2RobotoRegular"
+                                        Margin="6,9.5,12,9.5"
+                                        Text="{x:Static resources:Language.GameWidget__Add_game}">
+                                    </TextBlock>
                                 </StackPanel>
                             </Button>
                         </StackPanel>

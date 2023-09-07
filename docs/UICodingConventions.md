@@ -14,6 +14,14 @@ the MVVM pattern to bind the UI to the underlying data model.
 * Reactive Extensions (Rx) - A library for composing asynchronous and event-based programs using observable sequences and LINQ-style query operators. In normal Linq, items are pulled "through" the Linq chain, in Rx they are "Pushed" through the chain, events vs enumeration.
 * Dynamic Data - A library for creating observable collections from observable sources. It provides a set of operators for transforming, filtering, aggregating and joining observable collections. This can take a stream of "updates" and turn it into a cached collection of the aggregate state.
 
+## Useful tools:
+Visual Studio and JetBrains Rider both have avalonia extensions that allow previewing ui designs (.axaml files).
+- Visual Studio:  https://marketplace.visualstudio.com/items?itemName=AvaloniaTeam.AvaloniaVS
+- Rider: https://plugins.jetbrains.com/plugin/14839-avaloniarider
+
+Both extensions can be found directly from the IDE plugin/extension managers.
+Using these extension is recommended for easier development. 
+
 ## MVVM
 The MVVM pattern is a UI design pattern that consists of three major parts
 

@@ -48,6 +48,8 @@ public class ToolManager : IToolManager
         await _loadoutSynchronizer.Apply(plan, token);
 
         await tool.Execute(loadout, plan, token);
+
+        // TODO: make the name of the generated files mod user configurable
         var modName = $"{tool.Name} Generated Files";
 
         if (generatedFilesMod == null)
@@ -69,10 +71,10 @@ public class ToolManager : IToolManager
             generatedFilesMod = mod.Id;
         }
 
-        // We don't yet properly support ingesting data. The issue is if a bad apply occurs, the ingest can 
-        // delete files we don't yet have a way of recreating. Also we have no way to create branches, roll back the 
+        // We don't yet properly support ingesting data. The issue is if a bad apply occurs, the ingest can
+        // delete files we don't yet have a way of recreating. Also we have no way to create branches, roll back the
         // ingest, etc. in the loadout. So for now we just don't ingest.
-        
+
         //var ingestPlan = await _loadoutSynchronizer.MakeIngestPlan(loadout, _ => generatedFilesMod.Value, token);
         //return await _loadoutSynchronizer.Ingest(ingestPlan, $"Updating {tool.Name} Generated Files");
         return loadout;

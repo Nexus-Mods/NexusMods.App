@@ -9,7 +9,8 @@
     xmlns:home="clr-namespace:NexusMods.App.UI.RightContent.Home"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
     <Design.DataContext>
         <home:HomeViewDesignerViewModel />
     </Design.DataContext>
@@ -25,7 +26,7 @@
                 Classes="H5MontserratSemi"
                 Grid.Row="0"
                 Margin="24,27,0,0"
-                Text="We found games ready to mod!" />
+                Text="{x:Static resources:Language.HomeView__We_found_games}" />
             <reactiveUi:ViewModelViewHost
                 Grid.Column="0"
                 Grid.ColumnSpan="2"
@@ -36,14 +37,14 @@
                 Grid.Column="0"
                 Grid.Row="2"
                 Margin="24,10"
-                Text="CAN'T SEE YOUR GAME" />
+                Text="{x:Static resources:Language.HomeView__CANT_SEE_YOUR_GAME}" />
             <Button
                 Classes="SecondaryOutlined"
                 Grid.Column="0"
                 Grid.ColumnSpan="2"
                 Grid.Row="3"
                 Margin="24,0,0,0">
-                <TextBlock Text="BROWSE ALL GAMES" />
+                <TextBlock Text="{x:Static resources:Language.HomeView__BROWSE_ALL_GAMES}" />
             </Button>
         </Grid>
     </Border>

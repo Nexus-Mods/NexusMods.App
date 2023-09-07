@@ -10,7 +10,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia">
+    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
     <Design.DataContext>
         <loadoutGrid:LoadoutGridDesignViewModel />
     </Design.DataContext>
@@ -21,14 +22,14 @@
                 <StackPanel Grid.Column="1">
                     <Button x:Name="DeleteModsButton">
                         <StackPanel>
-                            <avalonia:Icon Classes="TrashCanOutline" /> 
+                            <avalonia:Icon Classes="TrashCanOutline" />
                         </StackPanel>
                     </Button>
                     <Line/>
                     <Button x:Name="AddModButton">
                         <StackPanel>
                             <avalonia:Icon Classes="PlusCircleOutline" />
-                            <TextBlock Text="Add Mod"></TextBlock>
+                            <TextBlock Text="{x:Static resources:Language.LoadoutGridView__Add_Mod}"></TextBlock>
                         </StackPanel>
                     </Button>
                 </StackPanel>

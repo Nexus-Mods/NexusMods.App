@@ -60,11 +60,425 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 0 mins.
+        /// </summary>
+        public static string BoldMinutesRemainingTextBlock {
+            get {
+                return ResourceManager.GetString("BoldMinutesRemainingTextBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Browse Games.
         /// </summary>
         public static string BrowseGames {
             get {
                 return ResourceManager.GetString("BrowseGames", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manage.
+        /// </summary>
+        public static string Button_Manage {
+            get {
+                return ResourceManager.GetString("Button_Manage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} download will be cancelled and the files will be deleted..
+        /// </summary>
+        public static string CancelDownloadOverlayView_Description_download_will_be_cancelled {
+            get {
+                return ResourceManager.GetString("CancelDownloadOverlayView_Description_download_will_be_cancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel and delete download?.
+        /// </summary>
+        public static string CancelDownloadOverlayView_Title {
+            get {
+                return ResourceManager.GetString("CancelDownloadOverlayView_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clear All.
+        /// </summary>
+        public static string DownloadCompleted_Clear_All {
+            get {
+                return ResourceManager.GetString("DownloadCompleted_Clear_All", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to COMPLETED.
+        /// </summary>
+        public static string DownloadCompleted_COMPLETED {
+            get {
+                return ResourceManager.GetString("DownloadCompleted_COMPLETED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HISTORY.
+        /// </summary>
+        public static string DownloadHistoryView__HISTORY {
+            get {
+                return ResourceManager.GetString("DownloadHistoryView__HISTORY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string DownloadInProgressView__Cancel {
+            get {
+                return ResourceManager.GetString("DownloadInProgressView__Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IN PROGRESS.
+        /// </summary>
+        public static string DownloadInProgressView__IN_PROGRESS {
+            get {
+                return ResourceManager.GetString("DownloadInProgressView__IN_PROGRESS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pause.
+        /// </summary>
+        public static string DownloadInProgressView__Pause {
+            get {
+                return ResourceManager.GetString("DownloadInProgressView__Pause", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pause all.
+        /// </summary>
+        public static string DownloadInProgressView__Pause_All {
+            get {
+                return ResourceManager.GetString("DownloadInProgressView__Pause_All", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Idle.
+        /// </summary>
+        public static string DownloadStatus_Idle {
+            get {
+                return ResourceManager.GetString("DownloadStatus_Idle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Progress.
+        /// </summary>
+        public static string DownloadStatus_Progress {
+            get {
+                return ResourceManager.GetString("DownloadStatus_Progress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Complete.
+        /// </summary>
+        public static string DownloadStatusDesignViewModel_FormatStatus_Complete {
+            get {
+                return ResourceManager.GetString("DownloadStatusDesignViewModel_FormatStatus_Complete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Downloading.
+        /// </summary>
+        public static string DownloadStatusDesignViewModel_FormatStatus_Downloading {
+            get {
+                return ResourceManager.GetString("DownloadStatusDesignViewModel_FormatStatus_Downloading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installing.
+        /// </summary>
+        public static string DownloadStatusDesignViewModel_FormatStatus_Installing {
+            get {
+                return ResourceManager.GetString("DownloadStatusDesignViewModel_FormatStatus_Installing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Paused.
+        /// </summary>
+        public static string DownloadStatusDesignViewModel_FormatStatus_Paused {
+            get {
+                return ResourceManager.GetString("DownloadStatusDesignViewModel_FormatStatus_Paused", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Queued.
+        /// </summary>
+        public static string DownloadStatusDesignViewModel_FormatStatus_Queued {
+            get {
+                return ResourceManager.GetString("DownloadStatusDesignViewModel_FormatStatus_Queued", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Queued 0%.
+        /// </summary>
+        public static string DownloadStatusDesignViewModel_Text_Queued_0_ {
+            get {
+                return ResourceManager.GetString("DownloadStatusDesignViewModel_Text_Queued_0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Completed.
+        /// </summary>
+        public static string DownloadsView__Completed {
+            get {
+                return ResourceManager.GetString("DownloadsView__Completed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download history.
+        /// </summary>
+        public static string DownloadsView__Download_history {
+            get {
+                return ResourceManager.GetString("DownloadsView__Download_history", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DOWNLOADS.
+        /// </summary>
+        public static string DownloadsView__DOWNLOADS {
+            get {
+                return ResourceManager.GetString("DownloadsView__DOWNLOADS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In Progress.
+        /// </summary>
+        public static string DownloadsView__In_Progress {
+            get {
+                return ResourceManager.GetString("DownloadsView__In_Progress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unknown.
+        /// </summary>
+        public static string DownloadTaskViewModel_Field_Unknown {
+            get {
+                return ResourceManager.GetString("DownloadTaskViewModel_Field_Unknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unknown.
+        /// </summary>
+        public static string DownloadTaskViewModel_Version_Unknown {
+            get {
+                return ResourceManager.GetString("DownloadTaskViewModel_Version_Unknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add game.
+        /// </summary>
+        public static string GameWidget__Add_game {
+            get {
+                return ResourceManager.GetString("GameWidget__Add_game", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CATEGORY.
+        /// </summary>
+        public static string Helpers_GenerateHeader_CATEGORY {
+            get {
+                return ResourceManager.GetString("Helpers_GenerateHeader_CATEGORY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GAME.
+        /// </summary>
+        public static string Helpers_GenerateHeader_GAME {
+            get {
+                return ResourceManager.GetString("Helpers_GenerateHeader_GAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to INSTALLED.
+        /// </summary>
+        public static string Helpers_GenerateHeader_INSTALLED {
+            get {
+                return ResourceManager.GetString("Helpers_GenerateHeader_INSTALLED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MOD NAME.
+        /// </summary>
+        public static string Helpers_GenerateHeader_MOD_NAME {
+            get {
+                return ResourceManager.GetString("Helpers_GenerateHeader_MOD_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to NAME.
+        /// </summary>
+        public static string Helpers_GenerateHeader_NAME {
+            get {
+                return ResourceManager.GetString("Helpers_GenerateHeader_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SIZE.
+        /// </summary>
+        public static string Helpers_GenerateHeader_SIZE {
+            get {
+                return ResourceManager.GetString("Helpers_GenerateHeader_SIZE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to STATUS.
+        /// </summary>
+        public static string Helpers_GenerateHeader_STATUS {
+            get {
+                return ResourceManager.GetString("Helpers_GenerateHeader_STATUS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to VERSION.
+        /// </summary>
+        public static string Helpers_GenerateHeader_VERSION {
+            get {
+                return ResourceManager.GetString("Helpers_GenerateHeader_VERSION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BROWSE ALL GAMES.
+        /// </summary>
+        public static string HomeView__BROWSE_ALL_GAMES {
+            get {
+                return ResourceManager.GetString("HomeView__BROWSE_ALL_GAMES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CAN&apos;T SEE YOUR GAME.
+        /// </summary>
+        public static string HomeView__CANT_SEE_YOUR_GAME {
+            get {
+                return ResourceManager.GetString("HomeView__CANT_SEE_YOUR_GAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to We found games ready to mod!.
+        /// </summary>
+        public static string HomeView__We_found_games {
+            get {
+                return ResourceManager.GetString("HomeView__We_found_games", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In progress (0).
+        /// </summary>
+        public static string InProgressTitleTextBlock {
+            get {
+                return ResourceManager.GetString("InProgressTitleTextBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to remaining.
+        /// </summary>
+        public static string InProgressView_InProgressView_Remaining {
+            get {
+                return ResourceManager.GetString("InProgressView_InProgressView_Remaining", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to LAUNCH.
+        /// </summary>
+        public static string LaunchButtonViewModel_LaunchGame_LAUNCH {
+            get {
+                return ResourceManager.GetString("LaunchButtonViewModel_LaunchGame_LAUNCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RUNNING....
+        /// </summary>
+        public static string LaunchButtonViewModel_LaunchGame_RUNNING {
+            get {
+                return ResourceManager.GetString("LaunchButtonViewModel_LaunchGame_RUNNING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add Mod.
+        /// </summary>
+        public static string LoadoutGridView__Add_Mod {
+            get {
+                return ResourceManager.GetString("LoadoutGridView__Add_Mod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please select a mod file to install..
+        /// </summary>
+        public static string LoadoutGridView_AddMod_FilePicker_Title {
+            get {
+                return ResourceManager.GetString("LoadoutGridView_AddMod_FilePicker_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Archive.
+        /// </summary>
+        public static string LoadoutGridView_AddMod_FileType_Archive {
+            get {
+                return ResourceManager.GetString("LoadoutGridView_AddMod_FileType_Archive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to NO.
+        /// </summary>
+        public static string MessageBox_Button_No {
+            get {
+                return ResourceManager.GetString("MessageBox_Button_No", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to YES.
+        /// </summary>
+        public static string MessageBox_Button_Yes {
+            get {
+                return ResourceManager.GetString("MessageBox_Button_Yes", resourceCulture);
             }
         }
         
@@ -118,6 +532,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to remaining.
+        /// </summary>
+        public static string MinutesRemainingTextBlock {
+            get {
+                return ResourceManager.GetString("MinutesRemainingTextBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to My Games.
         /// </summary>
         public static string MyGames {
@@ -127,11 +550,128 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Detected games.
+        /// </summary>
+        public static string MyGamesView__Detected_games {
+            get {
+                return ResourceManager.GetString("MyGamesView__Detected_games", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ready to mod.
+        /// </summary>
+        public static string MyGamesView__Ready_to_mod {
+            get {
+                return ResourceManager.GetString("MyGamesView__Ready_to_mod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Newsfeed.
         /// </summary>
         public static string Newsfeed {
             get {
                 return ResourceManager.GetString("Newsfeed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PREMIUM.
+        /// </summary>
+        public static string Nexus_Premium_Status__Premium {
+            get {
+                return ResourceManager.GetString("Nexus_Premium_Status__Premium", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BROWSER DIDN&apos;T OPEN AUTOMATICALLY?.
+        /// </summary>
+        public static string NexusLoginOverlayView__BROWSER_DIDNT_OPEN {
+            get {
+                return ResourceManager.GetString("NexusLoginOverlayView__BROWSER_DIDNT_OPEN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PLEASE CLICK &quot;AUTHORIZE&quot; ON THE WEBSITE.
+        /// </summary>
+        public static string NexusLoginOverlayView__Please_Click_Authorize {
+            get {
+                return ResourceManager.GetString("NexusLoginOverlayView__Please_Click_Authorize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please copy the following URL into your browser window. We support Chrome, Safari, Firefox and Edge..
+        /// </summary>
+        public static string NexusLoginOverlayView_Please_copy_url {
+            get {
+                return ResourceManager.GetString("NexusLoginOverlayView_Please_copy_url", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total {1:0}%.
+        /// </summary>
+        public static string ProgressBar_ProgressTextFormat__Total_1_0 {
+            get {
+                return ResourceManager.GetString("ProgressBar_ProgressTextFormat__Total_1_0", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search.
+        /// </summary>
+        public static string SearchBox__Search {
+            get {
+                return ResourceManager.GetString("SearchBox__Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} hours.
+        /// </summary>
+        public static string StringFormatters__HoursRemaining__hours {
+            get {
+                return ResourceManager.GetString("StringFormatters__HoursRemaining__hours", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In progress ({0}).
+        /// </summary>
+        public static string StringFormatters__In_progress__numDownloads {
+            get {
+                return ResourceManager.GetString("StringFormatters__In_progress__numDownloads", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} mins.
+        /// </summary>
+        public static string StringFormatters__MinutesRemaining_mins {
+            get {
+                return ResourceManager.GetString("StringFormatters__MinutesRemaining_mins", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} secs.
+        /// </summary>
+        public static string StringFormatters__SecondsRemaining_secs {
+            get {
+                return ResourceManager.GetString("StringFormatters__SecondsRemaining_secs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to LOG IN.
+        /// </summary>
+        public static string TopBarActions__LOG_IN {
+            get {
+                return ResourceManager.GetString("TopBarActions__LOG_IN", resourceCulture);
             }
         }
     }
