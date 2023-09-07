@@ -39,8 +39,7 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
 
         NextStepCommand = ReactiveCommand.Create(() =>
         {
-            // TODO: set result
-            var selectedOptions = Array.Empty<SelectedOption>();
+            var selectedOptions = this.GatherSelectedOptions();
             TaskCompletionSource?.TrySetResult(new UserChoice(new UserChoice.GoToNextStep(selectedOptions)));
         }, hasTaskCompletionSource);
 
@@ -60,6 +59,7 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
                 .WhereNotNull()
                 .SubscribeWithErrorLogging(logger, installationStep =>
                 {
+                    HighlightedOptionViewModel = null;
                     Groups = installationStep.Groups
                         .Select(group => (IGuidedInstallerGroupViewModel)new GuidedInstallerGroupViewModel(group))
                         .ToArray();

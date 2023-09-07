@@ -25,6 +25,12 @@ public partial class GuidedInstallerStepView : ReactiveUserControl<IGuidedInstal
 
             this.OneWayBind(ViewModel, vm => vm.Groups, view => view.GroupItemsControl.ItemsSource)
                 .DisposeWith(disposables);
+
+            this.BindCommand(ViewModel, vm => vm.PreviousStepCommand, view => view.PreviousButton)
+                .DisposeWith(disposables);
+
+            this.BindCommand(ViewModel, vm => vm.NextStepCommand, view => view.NextButton)
+                .DisposeWith(disposables);
         });
     }
 }

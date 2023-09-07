@@ -1,6 +1,7 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using NexusMods.App.UI;
+using NexusMods.Common.GuidedInstaller;
 using ReactiveUI;
 
 namespace NexusMods.Games.FOMOD.UI;
@@ -46,5 +47,16 @@ internal static class GuidedInstallerStepViewModelHelpers
                     .DisposeWith(disposables);
             })
             .DisposeWith(disposables);
+    }
+
+    public static SelectedOption[] GatherSelectedOptions<T>(this T viewModel)
+    where T : IGuidedInstallerStepViewModel
+    {
+        return viewModel.Groups
+            .SelectMany(groupVM => groupVM.Options
+                .Where(optionVM => optionVM.IsSelected)
+                .Select(optionVM => new SelectedOption(groupVM.Group.Id, optionVM.Option.Id))
+            )
+            .ToArray();
     }
 }

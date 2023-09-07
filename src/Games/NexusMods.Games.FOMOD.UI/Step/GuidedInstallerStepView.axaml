@@ -12,8 +12,8 @@
         <ui:GuidedInstallerStepDesignViewModel />
     </Design.DataContext>
 
-    <Grid ColumnDefinitions="*,*">
-        <ScrollViewer Grid.Column="0">
+    <Grid ColumnDefinitions="*,*" RowDefinitions="*,Auto">
+        <ScrollViewer Grid.Row="0" Grid.Column="0">
             <StackPanel>
                 <TextBlock Classes="Subheading" x:Name="StepName" />
 
@@ -27,11 +27,16 @@
             </StackPanel>
         </ScrollViewer>
 
-        <ScrollViewer Grid.Column="1">
+        <ScrollViewer Grid.Row="0" Grid.Column="1">
             <StackPanel>
                 <TextBlock Classes="Small" x:Name="HighlightedOptionDescription" />
             </StackPanel>
         </ScrollViewer>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+            <Button Classes="Primary" x:Name="PreviousButton"><TextBlock>Previous</TextBlock></Button>
+            <Button Classes="Primary" x:Name="NextButton"><TextBlock>Next</TextBlock></Button>
+        </StackPanel>
     </Grid>
 
 </reactiveUi:ReactiveUserControl>
