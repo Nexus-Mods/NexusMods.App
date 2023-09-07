@@ -65,9 +65,10 @@ public class CliGuidedInstaller : IGuidedInstaller
     {
         OptionGroup? currentGroup = null;
 
+        // Select all pre-selected and required options
         var selectedOptions = installationStep.Groups
             .SelectMany(group => group.Options
-                .Where(option => option.Type == OptionType.PreSelected)
+                .Where(option => option.Type is OptionType.PreSelected or OptionType.Required)
                 .Select(option => new SelectedOption(group.Id, option.Id))
             ).ToList();
 
@@ -82,14 +83,16 @@ public class CliGuidedInstaller : IGuidedInstaller
 
                 if (SkipAll)
                 {
-                    // We still need to make valid selections during skip all
+                    // For AtLeastOne and ExactlyOne groups, make sure at least one option is selected.
                     var atLeastOneGroups = installationStep.Groups
                         .Where(group => group.Type is OptionGroupType.AtLeastOne or OptionGroupType.ExactlyOne)
                         .ToArray();
 
-                    // Select the first option in "AtLeastOne" and "ExactlyOne" groups
-                    selectedOptions.AddRange(atLeastOneGroups.Select(group =>
-                        new SelectedOption(group.Id, group.Options[0].Id)));
+                    foreach (var atLeastOneGroup in atLeastOneGroups)
+                    {
+                        if (selectedOptions.Any(x => x.GroupId == atLeastOneGroup.Id)) continue;
+                        selectedOptions.Add(new SelectedOption(atLeastOneGroup.Id, atLeastOneGroup.Options[0].Id));
+                    }
                 }
 
                 switch (input)
@@ -100,14 +103,6 @@ public class CliGuidedInstaller : IGuidedInstaller
                         return Task.FromResult(new UserChoice(new UserChoice.GoToPreviousStep()));
                     case NextInput:
                     {
-                        var requiredOptions = installationStep.Groups
-                            .SelectMany(group => group.Options
-                                .Where(option => option.Type == OptionType.Required)
-                                .Select(option => new SelectedOption(group.Id, option.Id))
-                            );
-
-                        selectedOptions.AddRange(requiredOptions);
-
                         var invalidGroups =
                             GuidedInstallerValidation.ValidateStepSelections(installationStep, selectedOptions);
 
@@ -117,7 +112,7 @@ public class CliGuidedInstaller : IGuidedInstaller
                                 "Some groups have invalid selection, please correct them. Invalid groups:\n {InvalidGroups} \n",
                                 installationStep.Groups.Select((group, index) => new { group, index })
                                     .Where(x => invalidGroups.Contains(x.group.Id))
-                                    .Select(x => $"{x.index + 1} - {x.group.Description} \n"));
+                                    .Select(x => $"{x.index + 1} - {x.group.Description} - ${x.group.Type} \n"));
                             continue;
                         }
 
@@ -153,8 +148,8 @@ public class CliGuidedInstaller : IGuidedInstaller
                         if (!GuidedInstallerValidation.IsValidGroupSelection(currentGroup, selectedOptions))
                         {
                             _logger.LogError(
-                                "Selection is invalid for group {GroupIndex} \n",
-                                Array.IndexOf(installationStep.Groups, currentGroup) + 1);
+                                "Selection is invalid for group {GroupIndex}: {GroupType}\n",
+                                Array.IndexOf(installationStep.Groups, currentGroup) + 1, currentGroup.Type);
                             continue;
                         }
 
@@ -212,8 +207,6 @@ public class CliGuidedInstaller : IGuidedInstaller
 
     private static string RenderOptionState(bool hasSelected, OptionType type)
     {
-        if (hasSelected) return "Selected";
-
         Debug.Assert(Enum.IsDefined(typeof(OptionType), type));
 
         return type switch
@@ -222,7 +215,7 @@ public class CliGuidedInstaller : IGuidedInstaller
             // NOTE (erri120): These are the "initial" states.
             // The user can toggle a pre-selected option, which
             // won't change the type but the "hasSelected" value.
-            OptionType.Available or OptionType.PreSelected => "Off",
+            OptionType.Available or OptionType.PreSelected => hasSelected ? "Selected" : "Off",
             OptionType.Required => "Required",
             _ => throw new UnreachableException($"hasSelected: {hasSelected}, type: {type}")
         };
@@ -242,6 +235,7 @@ public class CliGuidedInstaller : IGuidedInstaller
         if (targetOption.Type is OptionType.Disabled or OptionType.Required) return;
 
         var hasSelected = selectedOptions.TryGetFirst(x => x.OptionId == targetOption.Id, out var selectedOption);
+
         if (hasSelected)
         {
             // the target option is already selected, the user wants to "toggle" it
@@ -252,8 +246,21 @@ public class CliGuidedInstaller : IGuidedInstaller
         // the target option is not selected, the user wants to select it
         if (currentGroup.Type is OptionGroupType.ExactlyOne or OptionGroupType.AtMostOne)
         {
-            // "deselect" everything
-            selectedOptions.Clear();
+            // "deselect" all other options in the group that aren't required
+            var selectionsToRemove = selectedOptions.Where(x => x.GroupId == currentGroup.Id)
+                .Where(x =>
+                {
+                    var extractedOption = currentGroup.Options.FirstOrDefault(option => option.Id == x.OptionId);
+
+                    // this should never happen, but if we have a selected option that doesn't exist in the group, remove it
+                    if (extractedOption is null) return true;
+
+                    return extractedOption.Type is not OptionType.Required;
+                })
+                .ToArray();
+
+            foreach (var selection in selectionsToRemove)
+                selectedOptions.Remove(selection);
         }
 
         selectedOptions.Add(new SelectedOption(currentGroup.Id, targetOption.Id));
