@@ -2,13 +2,10 @@ using System.Diagnostics;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
-using Avalonia.Rendering;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI;
-using NexusMods.Common;
 using NexusMods.Common.GuidedInstaller;
-using ReactiveUI;
 
 namespace NexusMods.Games.FOMOD.UI;
 
@@ -16,6 +13,7 @@ namespace NexusMods.Games.FOMOD.UI;
 public sealed class GuidedInstallerUi : IGuidedInstaller, IDisposable
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly CompositeDisposable _compositeDisposable;
 
     private IServiceScope? _currentScope;
     private IGuidedInstallerWindowViewModel? _windowViewModel;
@@ -26,6 +24,7 @@ public sealed class GuidedInstallerUi : IGuidedInstaller, IDisposable
     public GuidedInstallerUi(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
+        _compositeDisposable = new CompositeDisposable();
     }
 
     public void SetupInstaller(string windowName)
@@ -64,11 +63,19 @@ public sealed class GuidedInstallerUi : IGuidedInstaller, IDisposable
 
         state._window.Show();
 
-        // TODO: cancel installation if the user closes the window
-        // var closed = Observable.FromEventPattern(
-        //     addHandler => state._window.Closed += addHandler,
-        //     removeHandler => state._window.Closed -= removeHandler
-        // );
+        Observable
+            .FromEventPattern(
+                addHandler => state._window.Closed += addHandler,
+                removeHandler => state._window.Closed -= removeHandler
+            )
+            .SubscribeWithErrorLogging(logger: default, eventPattern =>
+            {
+                if (eventPattern.Sender is not GuidedInstallerWindow window) return;
+                var tcs = window.ViewModel?.ActiveStepViewModel?.TaskCompletionSource;
+                if (tcs is null) return;
+                tcs.TrySetResult(new UserChoice(new UserChoice.CancelInstallation()));
+            })
+            .DisposeWith(state._compositeDisposable);
     }
 
     public void CleanupInstaller()
@@ -133,5 +140,6 @@ public sealed class GuidedInstallerUi : IGuidedInstaller, IDisposable
     {
         CleanupInstaller();
         _waitHandle.Dispose();
+        _compositeDisposable.Dispose();
     }
 }
