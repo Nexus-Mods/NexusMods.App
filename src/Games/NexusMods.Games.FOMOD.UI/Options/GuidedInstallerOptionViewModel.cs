@@ -7,6 +7,7 @@ namespace NexusMods.Games.FOMOD.UI;
 public class GuidedInstallerOptionViewModel : AViewModel<IGuidedInstallerOptionViewModel>, IGuidedInstallerOptionViewModel
 {
     public Option Option { get; }
+    public OptionGroup Group { get; }
 
     [Reactive]
     public bool IsEnabled { get; set; }
@@ -14,9 +15,10 @@ public class GuidedInstallerOptionViewModel : AViewModel<IGuidedInstallerOptionV
     [Reactive]
     public bool IsSelected { get; set; }
 
-    public GuidedInstallerOptionViewModel(Option option)
+    public GuidedInstallerOptionViewModel(Option option, OptionGroup group)
     {
         Option = option;
+        Group = group;
         IsEnabled = option.Type is not OptionType.Disabled and not OptionType.Required;
         IsSelected = option.Type is OptionType.PreSelected or OptionType.Required;
     }

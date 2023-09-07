@@ -2,6 +2,7 @@ using System.Reactive.Disposables;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using NexusMods.App.UI;
+using NexusMods.Common.GuidedInstaller;
 using ReactiveUI;
 
 namespace NexusMods.Games.FOMOD.UI;
@@ -14,22 +15,45 @@ public partial class GuidedInstallerOptionView : ReactiveUserControl<IGuidedInst
 
         this.WhenActivated(disposables =>
         {
-            this.OneWayBind(ViewModel, vm => vm.Option.Name, view => view.CheckBoxTextBlock.Text)
-                .DisposeWith(disposables);
+            OptionNameTextBlock.Text = ViewModel?.Option.Name;
+            var hoverText = ViewModel?.Option.HoverText;
+            if (hoverText is not null)
+            {
+                ToolTip.SetTip(OptionNameTextBlock, hoverText);
+            }
 
-            this.OneWayBind(ViewModel, vm => vm.IsEnabled, view => view.CheckBox.IsEnabled)
-                .DisposeWith(disposables);
+            var groupType = ViewModel?.Group.Type ?? OptionGroupType.Any;
+            var useRadioButton = groupType switch
+            {
+                OptionGroupType.ExactlyOne => true,
+                OptionGroupType.AtMostOne => true,
+                _ => false
+            };
 
-            this.WhenAnyValue(x => x.ViewModel!.Option)
-                .WhereNotNull()
-                .SubscribeWithErrorLogging(logger: default, option =>
-                {
-                    ToolTip.SetTip(CheckBoxTextBlock, option.HoverText);
-                })
-                .DisposeWith(disposables);
+            if (useRadioButton)
+            {
+                RadioButton.IsVisible = true;
+                CheckBox.IsVisible = false;
 
-            this.Bind(ViewModel, vm => vm.IsSelected, view => view.CheckBox.IsChecked)
-                .DisposeWith(disposables);
+                RadioButton.GroupName = ViewModel?.Group.Id.ToString() ?? Guid.NewGuid().ToString();
+
+                this.OneWayBind(ViewModel, vm => vm.IsEnabled, view => view.RadioButton.IsEnabled)
+                    .DisposeWith(disposables);
+
+                this.Bind(ViewModel, vm => vm.IsSelected, view => view.RadioButton.IsChecked)
+                    .DisposeWith(disposables);
+            }
+            else
+            {
+                CheckBox.IsVisible = true;
+                RadioButton.IsVisible = false;
+
+                this.OneWayBind(ViewModel, vm => vm.IsEnabled, view => view.CheckBox.IsEnabled)
+                    .DisposeWith(disposables);
+
+                this.Bind(ViewModel, vm => vm.IsSelected, view => view.CheckBox.IsChecked)
+                    .DisposeWith(disposables);
+            }
         });
     }
 }

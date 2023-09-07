@@ -13,7 +13,7 @@ public class GuidedInstallerGroupViewModel : AViewModel<IGuidedInstallerGroupVie
     [Reactive]
     public IGuidedInstallerOptionViewModel? HighlightedOption { get; set; }
 
-    public GuidedInstallerGroupViewModel(OptionGroup group) : this(group, option => new GuidedInstallerOptionViewModel(option)) { }
+    public GuidedInstallerGroupViewModel(OptionGroup group) : this(group, option => new GuidedInstallerOptionViewModel(option, group)) { }
 
     protected GuidedInstallerGroupViewModel(OptionGroup group, Func<Option, IGuidedInstallerOptionViewModel> factory)
     {

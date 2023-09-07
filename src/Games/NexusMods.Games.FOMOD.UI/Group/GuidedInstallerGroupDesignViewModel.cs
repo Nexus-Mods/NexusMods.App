@@ -7,7 +7,7 @@ public class GuidedInstallerGroupDesignViewModel : GuidedInstallerGroupViewModel
 {
     public GuidedInstallerGroupDesignViewModel() : this(SetupGroup()) { }
 
-    public GuidedInstallerGroupDesignViewModel(OptionGroup group) : base(group, option => new GuidedInstallerOptionDesignViewModel(option)) { }
+    public GuidedInstallerGroupDesignViewModel(OptionGroup group) : base(group, option => new GuidedInstallerOptionDesignViewModel(option, group)) { }
 
     private static OptionGroup SetupGroup()
     {

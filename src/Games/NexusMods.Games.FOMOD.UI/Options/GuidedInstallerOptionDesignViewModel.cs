@@ -5,9 +5,20 @@ namespace NexusMods.Games.FOMOD.UI;
 
 public class GuidedInstallerOptionDesignViewModel : GuidedInstallerOptionViewModel
 {
-    public GuidedInstallerOptionDesignViewModel() : base(GenerateOption()) { }
+    public GuidedInstallerOptionDesignViewModel() : base(GenerateOption(), GenerateGroup()) { }
 
-    public GuidedInstallerOptionDesignViewModel(Option option) : base(option) { }
+    public GuidedInstallerOptionDesignViewModel(Option option, OptionGroup group) : base(option, group) { }
+
+    private static OptionGroup GenerateGroup()
+    {
+        return new OptionGroup
+        {
+            Id = GroupId.From(Guid.NewGuid()),
+            Name = "Group",
+            Options = Array.Empty<Option>(),
+            Type = OptionGroupType.Any
+        };
+    }
 
     private static Option GenerateOption()
     {

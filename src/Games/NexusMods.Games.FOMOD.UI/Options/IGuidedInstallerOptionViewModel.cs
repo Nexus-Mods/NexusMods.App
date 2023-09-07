@@ -7,6 +7,8 @@ public interface IGuidedInstallerOptionViewModel : IViewModel
 {
     public Option Option { get; }
 
+    public OptionGroup Group { get; }
+
     public bool IsEnabled { get; set; }
 
     public bool IsSelected { get; set; }

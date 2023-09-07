@@ -13,8 +13,11 @@
     </Design.DataContext>
 
     <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto">
-        <CheckBox Grid.Column="0" x:Name="CheckBox"/>
-        <TextBlock Margin="0, 6, 0, 0" Grid.Column="1" Classes="ButtonMontserratSemi" x:Name="CheckBoxTextBlock" />
+        <StackPanel Grid.Column="0">
+            <CheckBox IsVisible="False" x:Name="CheckBox" />
+            <RadioButton IsVisible="False" x:Name="RadioButton"/>
+        </StackPanel>
+        <TextBlock Margin="0, 6, 0, 0" Grid.Column="1" Classes="ButtonMontserratSemi" x:Name="OptionNameTextBlock" />
     </Grid>
 
 </reactiveUi:ReactiveUserControl>
