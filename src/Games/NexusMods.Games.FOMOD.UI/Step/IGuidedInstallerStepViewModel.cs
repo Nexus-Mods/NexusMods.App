@@ -9,7 +9,7 @@ public interface IGuidedInstallerStepViewModel : IViewModelInterface
 {
     public GuidedInstallationStep? InstallationStep { get; set; }
 
-    public Option? HighlightedOption { get; set; }
+    public IGuidedInstallerOptionViewModel? HighlightedOptionViewModel { get; set; }
 
     public IGuidedInstallerGroupViewModel[] Groups { get; set; }
 

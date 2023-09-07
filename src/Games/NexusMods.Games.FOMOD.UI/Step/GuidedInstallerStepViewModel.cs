@@ -17,8 +17,7 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
     public GuidedInstallationStep? InstallationStep { get; set; }
 
     [Reactive]
-    public Option? HighlightedOption { get; set; }
-    private IGuidedInstallerOptionViewModel? _highlightedOptionViewModel;
+    public IGuidedInstallerOptionViewModel? HighlightedOptionViewModel { get; set; }
 
     [Reactive]
     public TaskCompletionSource<UserChoice>? TaskCompletionSource { get; set; }
@@ -67,45 +66,7 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
                 })
                 .DisposeWith(disposables);
 
-            this.WhenAnyValue(x => x.Groups)
-                .Select(groupVMs => groupVMs
-                    .Select(groupVM => groupVM
-                        .WhenAnyValue(x => x.HighlightedOption)
-                    )
-                    .CombineLatest()
-                )
-                .SubscribeWithErrorLogging(logger: default, observable =>
-                {
-                    observable
-                        .SubscribeWithErrorLogging(logger: default, list =>
-                        {
-                            var previous = HighlightedOption;
-                            var previousVM = _highlightedOptionViewModel;
-                            if (previous is null || previousVM is null)
-                            {
-                                _highlightedOptionViewModel = list.FirstOrDefault(x => x is not null);
-                                HighlightedOption = _highlightedOptionViewModel?.Option;
-                                return;
-                            }
-
-                            var highlightedOptionVMs = list
-                                .Where(x => x is not null)
-                                .Select(x => x!)
-                                .ToArray();
-
-                            var newVM = highlightedOptionVMs.First(x => x.Option.Id != previous.Id);
-                            _highlightedOptionViewModel = newVM;
-                            HighlightedOption = newVM.Option;
-
-                            foreach (var groupVM in Groups)
-                            {
-                                if (groupVM.HighlightedOption != previousVM) continue;
-                                groupVM.HighlightedOption = null;
-                            }
-                        })
-                        .DisposeWith(disposables);
-                })
-                .DisposeWith(disposables);
+            this.SetupCrossGroupOptionHighlighting(disposables);
         });
     }
 }

@@ -16,7 +16,7 @@ public partial class GuidedInstallerStepView : ReactiveUserControl<IGuidedInstal
             this.OneWayBind(ViewModel, vm => vm.InstallationStep!.Name, view => view.StepName.Text)
                 .DisposeWith(disposables);
 
-            this.WhenAnyValue(x => x.ViewModel!.HighlightedOption)
+            this.WhenAnyValue(x => x.ViewModel!.HighlightedOptionViewModel!.Option)
                 .SubscribeWithErrorLogging(logger: default, option =>
                 {
                     HighlightedOptionDescription.Text = option?.Description ?? string.Empty;

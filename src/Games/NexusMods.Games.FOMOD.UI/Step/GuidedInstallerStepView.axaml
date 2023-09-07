@@ -27,9 +27,11 @@
             </StackPanel>
         </ScrollViewer>
 
-        <StackPanel Grid.Column="1">
-            <TextBlock Classes="Small" x:Name="HighlightedOptionDescription"/>
-        </StackPanel>
+        <ScrollViewer Grid.Column="1">
+            <StackPanel>
+                <TextBlock Classes="Small" x:Name="HighlightedOptionDescription" />
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 
 </reactiveUi:ReactiveUserControl>
