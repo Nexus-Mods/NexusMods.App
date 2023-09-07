@@ -1,7 +1,5 @@
-using System.Reactive;
 using NexusMods.App.UI;
 using NexusMods.Common.GuidedInstaller;
-using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.Games.FOMOD.UI;

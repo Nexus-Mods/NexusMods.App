@@ -18,6 +18,7 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
 
     [Reactive]
     public Option? HighlightedOption { get; set; }
+    private IGuidedInstallerOptionViewModel? _highlightedOptionViewModel;
 
     [Reactive]
     public TaskCompletionSource<UserChoice>? TaskCompletionSource { get; set; }
@@ -54,75 +55,57 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
             TaskCompletionSource?.TrySetResult(new UserChoice(new UserChoice.CancelInstallation()));
         }, hasTaskCompletionSource);
 
-        // this.WhenActivated(disposables =>
-        // {
-            // this.WhenAnyValue(x => x.InstallationStep)
-            //     .WhereNotNull()
-            //     .SubscribeWithErrorLogging(logger, installationStep =>
-            //     {
-            //         Groups = installationStep.Groups
-            //             .Select(group => (IGuidedInstallerGroupViewModel)new GuidedInstallerGroupViewModel(group))
-            //             .ToArray();
-            //     })
-            //     .DisposeWith(disposables);
-            //
-            // this.WhenAnyValue(x => x.Groups)
-            //     .Where(x => x.Length != 0)
-            //     .Select(groupVMs => groupVMs
-            //         .Select(groupVM => groupVM
-            //             .WhenAnyValue(x => x.HighlightedOption)
-            //         )
-            //         .CombineLatest()
-            //     )
-            //     .SubscribeWithErrorLogging(logger: default, observable =>
-            //     {
-            //         // TODO: clean this up
-            //         observable
-            //             .SubscribeWithErrorLogging(logger: default, options =>
-            //             {
-            //                 HighlightedOption = options.FirstOrDefault();
-            //             })
-            //             .DisposeWith(disposables);
-            //     })
-            //     .DisposeWith(disposables);
+        this.WhenActivated(disposables =>
+        {
+            this.WhenAnyValue(x => x.InstallationStep)
+                .WhereNotNull()
+                .SubscribeWithErrorLogging(logger, installationStep =>
+                {
+                    Groups = installationStep.Groups
+                        .Select(group => (IGuidedInstallerGroupViewModel)new GuidedInstallerGroupViewModel(group))
+                        .ToArray();
+                })
+                .DisposeWith(disposables);
 
-            // Groups
-            //     .Select(groupVM => groupVM
-            //         .WhenAnyValue(x => x.HighlightedOption)
-            //     )
-            //     .CombineLatest()
-            //     // .SelectMany(x => x)
-            //     .SubscribeWithErrorLogging(logger: default, options =>
-            //     {
-            //         HighlightedOption = options.FirstOrDefault(x => x is not null);
-            //     })
-            //     .DisposeWith(disposables);
+            this.WhenAnyValue(x => x.Groups)
+                .Select(groupVMs => groupVMs
+                    .Select(groupVM => groupVM
+                        .WhenAnyValue(x => x.HighlightedOption)
+                    )
+                    .CombineLatest()
+                )
+                .SubscribeWithErrorLogging(logger: default, observable =>
+                {
+                    observable
+                        .SubscribeWithErrorLogging(logger: default, list =>
+                        {
+                            var previous = HighlightedOption;
+                            var previousVM = _highlightedOptionViewModel;
+                            if (previous is null || previousVM is null)
+                            {
+                                _highlightedOptionViewModel = list.FirstOrDefault(x => x is not null);
+                                HighlightedOption = _highlightedOptionViewModel?.Option;
+                                return;
+                            }
 
-            // Groups
-            //     .Select(groupVM => groupVM
-            //         .WhenAnyValue(x => x.HighlightedOption)
-            //         .Select(x => (groupVM, option: x))
-            //     )
-            //     .CombineLatest()
-            //     .SubscribeWithErrorLogging(logger: default, options =>
-            //     {
-            //         var previousOption = HighlightedOption;
-            //         if (previousOption is null)
-            //         {
-            //             HighlightedOption = options
-            //                 .Select(x => x.option)
-            //                 .FirstOrDefault(x => x is not null);
-            //             return;
-            //         }
-            //
-            //         var highlightedOptions = options
-            //             .Where(x => x.option is not null)
-            //             .Select(x => x)
-            //             .ToArray();
-            //
-            //
-            //     })
-            //     .DisposeWith(disposables);
-        // });
+                            var highlightedOptionVMs = list
+                                .Where(x => x is not null)
+                                .Select(x => x!)
+                                .ToArray();
+
+                            var newVM = highlightedOptionVMs.First(x => x.Option.Id != previous.Id);
+                            _highlightedOptionViewModel = newVM;
+                            HighlightedOption = newVM.Option;
+
+                            foreach (var groupVM in Groups)
+                            {
+                                if (groupVM.HighlightedOption != previousVM) continue;
+                                groupVM.HighlightedOption = null;
+                            }
+                        })
+                        .DisposeWith(disposables);
+                })
+                .DisposeWith(disposables);
+        });
     }
 }
