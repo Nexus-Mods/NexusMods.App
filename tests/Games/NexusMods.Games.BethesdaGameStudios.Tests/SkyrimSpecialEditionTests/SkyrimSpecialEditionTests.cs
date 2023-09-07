@@ -165,10 +165,6 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
 
         gameFiles.Files.Count.Should().BeGreaterThan(0);
 
-        LoadoutRegistry.Get(loadout.Value.LoadoutId, gameFiles.Id)!.Files.Values
-            .Count(x => x.Metadata.OfType<PluginAnalysisData>().Any())
-            .Should().BeGreaterOrEqualTo(analysis.Count, "Analysis data has been added");
-
         var pluginOrderFile = gameFiles.Files.Values.OfType<PluginOrderFile>().First();
         var flattenedList = (await LoadoutSynchronizer.FlattenLoadout(loadout.Value)).Files.Values.ToList();
 

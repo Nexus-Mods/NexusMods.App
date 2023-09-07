@@ -47,7 +47,7 @@ public class InstallMod : AVerb<LoadoutMarker, AbsolutePath, string>, IRendering
             {
                 OriginalName = file.Name, Quality = Quality.Low
             }, token);
-            await _archiveInstaller.AddMods(loadout.Value.LoadoutId, downloadId, token:token);
+            await _archiveInstaller.AddMods(loadout.Value.LoadoutId, downloadId, name, token:token);
             return file;
         });
         return 0;
