@@ -7,6 +7,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.UI;
 using NexusMods.Common.GuidedInstaller;
+using NexusMods.DataModel.RateLimiting;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -32,6 +33,9 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
 
     [Reactive]
     public TaskCompletionSource<UserChoice>? TaskCompletionSource { get; set; }
+
+    [Reactive]
+    public Percent Progress { get; set; } = Percent.Zero;
 
     [Reactive]
     public IGuidedInstallerGroupViewModel[] Groups { get; set; } = Array.Empty<IGuidedInstallerGroupViewModel>();

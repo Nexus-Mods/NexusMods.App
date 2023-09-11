@@ -5,6 +5,7 @@ using NexusMods.Abstractions.CLI;
 using NexusMods.Abstractions.CLI.DataOutputs;
 using NexusMods.Common;
 using NexusMods.Common.GuidedInstaller;
+using NexusMods.DataModel.RateLimiting;
 
 namespace NexusMods.CLI;
 
@@ -60,7 +61,9 @@ public sealed class CliGuidedInstaller : IGuidedInstaller
     public void CleanupInstaller() { }
 
     /// <inheritdoc />
-    public Task<UserChoice> RequestUserChoice(GuidedInstallationStep installationStep,
+    public Task<UserChoice> RequestUserChoice(
+        GuidedInstallationStep installationStep,
+        Percent progress,
         CancellationToken cancellationToken)
     {
         OptionGroup? currentGroup = null;

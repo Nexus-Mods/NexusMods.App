@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using NexusMods.DataModel.RateLimiting;
 
 namespace NexusMods.Common.GuidedInstaller;
 
@@ -22,8 +23,5 @@ public interface IGuidedInstaller : IDisposable
     /// <summary>
     /// Requests the user for a choice.
     /// </summary>
-    /// <param name="installationStep"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    public Task<UserChoice> RequestUserChoice(GuidedInstallationStep installationStep, CancellationToken cancellationToken);
+    public Task<UserChoice> RequestUserChoice(GuidedInstallationStep installationStep, Percent progress, CancellationToken cancellationToken);
 }

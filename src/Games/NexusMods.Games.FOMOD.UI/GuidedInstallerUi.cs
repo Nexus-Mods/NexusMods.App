@@ -6,6 +6,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI;
 using NexusMods.Common.GuidedInstaller;
+using NexusMods.DataModel.RateLimiting;
 using ReactiveUI;
 
 namespace NexusMods.Games.FOMOD.UI;
@@ -94,6 +95,7 @@ public sealed class GuidedInstallerUi : IGuidedInstaller
 
     public async Task<UserChoice> RequestUserChoice(
         GuidedInstallationStep installationStep,
+        Percent progress,
         CancellationToken cancellationToken)
     {
         Debug.Assert(_currentScope is not null);
@@ -101,9 +103,9 @@ public sealed class GuidedInstallerUi : IGuidedInstaller
 
         var tcs = new TaskCompletionSource<UserChoice>();
 
-        OnUi((_currentScope, _window, tcs, installationStep), tuple =>
+        OnUi((_currentScope, _window, tcs, installationStep, progress), tuple =>
         {
-            SetupStep(tuple._currentScope, tuple._window, tuple.tcs, tuple.installationStep);
+            SetupStep(tuple._currentScope, tuple._window, tuple.tcs, tuple.installationStep, tuple.progress);
         });
 
         await tcs.Task;
@@ -114,7 +116,8 @@ public sealed class GuidedInstallerUi : IGuidedInstaller
         IServiceScope currentScope,
         IViewFor<IGuidedInstallerWindowViewModel> window,
         TaskCompletionSource<UserChoice> tcs,
-        GuidedInstallationStep installationStep)
+        GuidedInstallationStep installationStep,
+        Percent progress)
     {
         var viewModel = window.ViewModel!;
         viewModel.ActiveStepViewModel ??= currentScope.ServiceProvider.GetRequiredService<IGuidedInstallerStepViewModel>();
@@ -123,6 +126,7 @@ public sealed class GuidedInstallerUi : IGuidedInstaller
         activeStepViewModel.ModName = viewModel.WindowName;
         activeStepViewModel.InstallationStep = installationStep;
         activeStepViewModel.TaskCompletionSource = tcs;
+        activeStepViewModel.Progress = progress;
     }
 
     private static void OnUi<TState>(TState state, Action<TState> action)

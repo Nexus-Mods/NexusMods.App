@@ -2,6 +2,7 @@ using System.Reactive;
 using Avalonia.Media;
 using NexusMods.App.UI;
 using NexusMods.Common.GuidedInstaller;
+using NexusMods.DataModel.RateLimiting;
 using ReactiveUI;
 
 namespace NexusMods.Games.FOMOD.UI;
@@ -20,6 +21,8 @@ public interface IGuidedInstallerStepViewModel : IViewModelInterface
     public IGuidedInstallerGroupViewModel[] Groups { get; set; }
 
     public TaskCompletionSource<UserChoice>? TaskCompletionSource { get; set; }
+
+    public Percent Progress { get; set; }
 
     public ReactiveCommand<Unit, Unit> NextStepCommand { get; set; }
 

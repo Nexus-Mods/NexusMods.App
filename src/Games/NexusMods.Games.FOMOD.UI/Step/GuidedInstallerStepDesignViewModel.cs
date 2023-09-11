@@ -4,6 +4,7 @@ using Avalonia.Media;
 using NexusMods.App.UI;
 using NexusMods.Common.GuidedInstaller;
 using NexusMods.Common.GuidedInstaller.ValueObjects;
+using NexusMods.DataModel.RateLimiting;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -25,6 +26,8 @@ public class GuidedInstallerStepDesignViewModel : AViewModel<IGuidedInstallerSte
     public IObservable<IImage> HighlightedOptionImageObservable => _highlightedOptionImageSubject;
 
     public TaskCompletionSource<UserChoice>? TaskCompletionSource { get; set; }
+
+    public Percent Progress { get; set; } = Percent.CreateClamped(4, 10);
 
     [Reactive]
     public IGuidedInstallerGroupViewModel[] Groups { get; set; }

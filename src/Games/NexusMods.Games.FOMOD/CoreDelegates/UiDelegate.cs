@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.Common.GuidedInstaller;
 using NexusMods.Common.GuidedInstaller.ValueObjects;
+using NexusMods.DataModel.RateLimiting;
 
 namespace NexusMods.Games.FOMOD.CoreDelegates;
 
@@ -119,8 +120,10 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
             optionIdMappings
         );
 
+        var progress = Percent.CreateClamped(currentStepId + 1, installSteps.Length + 1);
+
         _guidedInstaller
-            .RequestUserChoice(guidedInstallationStep, CancellationToken.None)
+            .RequestUserChoice(guidedInstallationStep, progress, CancellationToken.None)
             .ContinueWith(task =>
             {
                 var result = task.Result;
