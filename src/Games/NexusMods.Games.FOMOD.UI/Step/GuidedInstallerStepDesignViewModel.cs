@@ -1,4 +1,5 @@
 using System.Reactive;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Avalonia.Media;
 using NexusMods.App.UI;
@@ -33,7 +34,7 @@ public class GuidedInstallerStepDesignViewModel : AViewModel<IGuidedInstallerSte
     public IGuidedInstallerGroupViewModel[] Groups { get; set; }
 
     public ReactiveCommand<Unit, Unit> NextStepCommand { get; set; } = Initializers.ReactiveCommandUnitUnit;
-    public ReactiveCommand<Unit, Unit> PreviousStepCommand { get; set; } = Initializers.ReactiveCommandUnitUnit;
+    public ReactiveCommand<Unit, Unit> PreviousStepCommand { get; set; }
     public ReactiveCommand<Unit, Unit> CancelInstallerCommand { get; set; } = Initializers.ReactiveCommandUnitUnit;
 
     public GuidedInstallerStepDesignViewModel()
@@ -44,6 +45,8 @@ public class GuidedInstallerStepDesignViewModel : AViewModel<IGuidedInstallerSte
         Groups = step.Groups
             .Select(group => (IGuidedInstallerGroupViewModel)new GuidedInstallerGroupDesignViewModel(group))
             .ToArray();
+
+        PreviousStepCommand = ReactiveCommand.Create(() => { }, Observable.Return(false));
 
         this.WhenActivated(disposables =>
         {
