@@ -40,9 +40,9 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
     [Reactive]
     public IGuidedInstallerGroupViewModel[] Groups { get; set; } = Array.Empty<IGuidedInstallerGroupViewModel>();
 
-    public ReactiveCommand<Unit, Unit> NextStepCommand { get; set; } = Initializers.ReactiveCommandUnitUnit;
-    public ReactiveCommand<Unit, Unit> PreviousStepCommand { get; set; } = Initializers.ReactiveCommandUnitUnit;
-    public ReactiveCommand<Unit, Unit> CancelInstallerCommand { get; set; } = Initializers.ReactiveCommandUnitUnit;
+    public ReactiveCommand<Unit, Unit> NextStepCommand { get; set; } = Initializers.EnabledReactiveCommand;
+    public ReactiveCommand<Unit, Unit> PreviousStepCommand { get; set; } = Initializers.EnabledReactiveCommand;
+    public ReactiveCommand<Unit, Unit> CancelInstallerCommand { get; set; } = Initializers.EnabledReactiveCommand;
 
     public GuidedInstallerStepViewModel(ILogger<GuidedInstallerStepViewModel> logger)
     {

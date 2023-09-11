@@ -10,5 +10,5 @@ public class GuidedInstallerWindowDesignViewModel : AViewModel<IGuidedInstallerW
 
     public IGuidedInstallerStepViewModel? ActiveStepViewModel { get; set; }
 
-    public ReactiveCommand<Unit, Unit> CloseCommand => Initializers.ReactiveCommandUnitUnit;
+    public ReactiveCommand<Unit, Unit> CloseCommand => Initializers.EnabledReactiveCommand;
 }
