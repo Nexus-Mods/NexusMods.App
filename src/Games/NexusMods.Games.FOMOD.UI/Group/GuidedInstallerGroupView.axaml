@@ -15,6 +15,7 @@
 
     <StackPanel>
         <TextBlock Classes="Small" x:Name="GroupName" />
+        <TextBlock Classes="Small" x:Name="GroupType" IsVisible="False">(Select at least one)</TextBlock>
 
         <ListBox SelectionMode="Single" x:Name="OptionsListBox">
             <ListBox.Styles>
