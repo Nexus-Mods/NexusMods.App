@@ -20,7 +20,7 @@
         </Button>
         <ProgressBar Classes="DownloadBar" Minimum="0" Maximum="1" Grid.Column="1" x:Name="ProgressBar"></ProgressBar>
         <Button Classes="Primary" Grid.Column="2" x:Name="GoToNextButton">
-            <TextBlock>Next</TextBlock>
+            <TextBlock x:Name="GoToNextButtonTextBlock">Next</TextBlock>
         </Button>
     </Grid>
 

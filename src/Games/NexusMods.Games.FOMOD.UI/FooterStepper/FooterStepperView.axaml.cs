@@ -1,5 +1,6 @@
 using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
+using NexusMods.App.UI;
 using ReactiveUI;
 
 namespace NexusMods.Games.FOMOD.UI;
@@ -19,6 +20,13 @@ public partial class FooterStepperView : ReactiveUserControl<IFooterStepperViewM
                 .DisposeWith(disposable);
 
             this.BindCommand(ViewModel, vm => vm.GoToNextCommand, view => view.GoToNextButton)
+                .DisposeWith(disposable);
+
+            this.WhenAnyValue(x => x.ViewModel!.IsLastStep)
+                .SubscribeWithErrorLogging(logger: default, isFinalStep =>
+                {
+                    GoToNextButtonTextBlock.Text = isFinalStep ? "Finish" : "Next";
+                })
                 .DisposeWith(disposable);
         });
     }
