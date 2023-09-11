@@ -120,7 +120,7 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
             optionIdMappings
         );
 
-        var progress = Percent.CreateClamped(currentStepId + 1, installSteps.Length + 1);
+        var progress = Percent.CreateClamped(currentStepId, installSteps.Length);
 
         _guidedInstaller
             .RequestUserChoice(guidedInstallationStep, progress, CancellationToken.None)
