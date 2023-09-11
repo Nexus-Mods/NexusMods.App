@@ -35,10 +35,7 @@
             </StackPanel>
         </ScrollViewer>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
-            <Button Classes="Primary" x:Name="PreviousButton"><TextBlock>Previous</TextBlock></Button>
-            <Button Classes="Primary" x:Name="NextButton"><TextBlock>Next</TextBlock></Button>
-        </StackPanel>
+        <reactiveUi:ViewModelViewHost Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" x:Name="FooterStepperViewHost"/>
     </Grid>
 
 </reactiveUi:ReactiveUserControl>

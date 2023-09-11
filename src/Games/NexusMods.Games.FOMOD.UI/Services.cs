@@ -11,9 +11,10 @@ public static class Services
         return serviceCollection
             .AddTransient<IGuidedInstaller, GuidedInstallerUi>()
 
-            .AddViewModel<GuidedInstallerStepViewModel, IGuidedInstallerStepViewModel>()
             .AddViewModel<GuidedInstallerWindowViewModel, IGuidedInstallerWindowViewModel>()
+            .AddViewModel<GuidedInstallerStepViewModel, IGuidedInstallerStepViewModel>()
 
+            .AddView<FooterStepperView, IFooterStepperViewModel>()
             .AddView<GuidedInstallerStepView, IGuidedInstallerStepViewModel>()
             .AddView<GuidedInstallerGroupView, IGuidedInstallerGroupViewModel>()
             .AddView<GuidedInstallerOptionView, IGuidedInstallerOptionViewModel>();

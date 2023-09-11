@@ -24,9 +24,5 @@ public interface IGuidedInstallerStepViewModel : IViewModelInterface
 
     public Percent Progress { get; set; }
 
-    public ReactiveCommand<Unit, Unit> NextStepCommand { get; set; }
-
-    public ReactiveCommand<Unit, Unit> PreviousStepCommand { get; set; }
-
-    public ReactiveCommand<Unit, Unit> CancelInstallerCommand { get; set; }
+    public IFooterStepperViewModel FooterStepperViewModel { get; }
 }

@@ -40,9 +40,7 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
     [Reactive]
     public IGuidedInstallerGroupViewModel[] Groups { get; set; } = Array.Empty<IGuidedInstallerGroupViewModel>();
 
-    public ReactiveCommand<Unit, Unit> NextStepCommand { get; set; } = Initializers.EnabledReactiveCommand;
-    public ReactiveCommand<Unit, Unit> PreviousStepCommand { get; set; } = Initializers.EnabledReactiveCommand;
-    public ReactiveCommand<Unit, Unit> CancelInstallerCommand { get; set; } = Initializers.EnabledReactiveCommand;
+    public IFooterStepperViewModel FooterStepperViewModel { get; } = new FooterStepperViewModel();
 
     public GuidedInstallerStepViewModel(ILogger<GuidedInstallerStepViewModel> logger)
     {
@@ -62,12 +60,13 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
             this.SetupCrossGroupOptionHighlighting(disposables);
             this.SetupHighlightedOption(_highlightedOptionImageSubject, disposables);
 
+            // TODO: figure out how to do a "finish" button
             var canGoNext = this.WhenAnyValue(
                 x => x.TaskCompletionSource,
                 x => x.InstallationStep,
-                (tcs, step) => tcs is not null && step is not null && step.HasNextStep);
+                (tcs, step) => tcs is not null);
 
-            NextStepCommand = ReactiveCommand.Create(() =>
+            var goToNextStepCommand = ReactiveCommand.Create(() =>
             {
                 var selectedOptions = this.GatherSelectedOptions();
                 TaskCompletionSource?.TrySetResult(new UserChoice(new UserChoice.GoToNextStep(selectedOptions)));
@@ -78,19 +77,19 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
                 x => x.InstallationStep,
                 (tcs, step) => tcs is not null && step is not null && step.HasPreviousStep);
 
-            PreviousStepCommand = ReactiveCommand.Create(() =>
+            var goToPrevStepCommand = ReactiveCommand.Create(() =>
             {
                 TaskCompletionSource?.TrySetResult(new UserChoice(new UserChoice.GoToPreviousStep()));
             }, canGoPrev).DisposeWith(disposables);
 
-            var canCancel = this
-                .WhenAnyValue(x => x.TaskCompletionSource)
-                .Select(x => x is not null);
+            FooterStepperViewModel.GoToNextCommand = goToNextStepCommand;
+            FooterStepperViewModel.GoToPrevCommand = goToPrevStepCommand;
 
-            CancelInstallerCommand = ReactiveCommand.Create(() =>
-            {
-                TaskCompletionSource?.TrySetResult(new UserChoice(new UserChoice.CancelInstallation()));
-            }, canCancel).DisposeWith(disposables);
+            this.WhenAnyValue(x => x.Progress)
+                .SubscribeWithErrorLogging(logger: default, progress =>
+                {
+                    FooterStepperViewModel.Progress = progress;
+                });
         });
     }
 }

@@ -1,0 +1,27 @@
+<reactiveUi:ReactiveUserControl
+    x:TypeArguments="ui:IFooterStepperViewModel" xmlns="https://github.com/avaloniaui"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="clr-namespace:NexusMods.Games.FOMOD.UI"
+    mc:Ignorable="d"
+    d:DesignWidth="1232"
+    d:DesignHeight="84"
+    x:Class="NexusMods.Games.FOMOD.UI.FooterStepperView">
+
+    <Design.DataContext>
+        <ui:FooterStepperDesignViewModel />
+    </Design.DataContext>
+
+    <Grid ColumnDefinitions="*, *, *">
+        <Button Classes="Primary" Grid.Column="0" x:Name="GoToPrevButton">
+            <TextBlock>Previous</TextBlock>
+        </Button>
+        <TextBlock Classes="H1" Grid.Column="1" x:Name="ProgressTextBlock"/>
+        <Button Classes="Primary" Grid.Column="2" x:Name="GoToNextButton">
+            <TextBlock>Next</TextBlock>
+        </Button>
+    </Grid>
+
+</reactiveUi:ReactiveUserControl>
