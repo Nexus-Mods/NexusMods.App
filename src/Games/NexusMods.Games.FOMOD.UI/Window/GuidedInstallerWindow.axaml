@@ -5,15 +5,41 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:ui="clr-namespace:NexusMods.Games.FOMOD.UI"
-    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    mc:Ignorable="d" d:DesignWidth="1232" d:DesignHeight="672"
     x:Class="NexusMods.Games.FOMOD.UI.GuidedInstallerWindow"
     x:TypeArguments="ui:IGuidedInstallerWindowViewModel"
-    Title="GuidedInstallerWindow">
+    Title="GuidedInstallerWindow"
+    MinHeight="672" MinWidth="1232" MaxHeight="818" MaxWidth="1500">
 
     <Design.DataContext>
         <ui:GuidedInstallerWindowDesignViewModel />
     </Design.DataContext>
+    <Border Background="{DynamicResource BorderContainerColor}" Padding="24, 16, 24,24">
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
+            <Border Padding="0,0,0,16">
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel.Styles>
+                        <Style Selector="icons|Icon">
+                            <Setter Property="FontSize" Value="18"/>
+                            <Setter Property="Margin" Value="0,0,8,0"/>
+                            <Setter Property="Foreground" Value="{DynamicResource BrandWhite}"/>
+                        </Style>
+                        <Style Selector="TextBlock">
+                        </Style>
+                    </StackPanel.Styles>
 
-    <reactiveUi:ViewModelViewHost x:Name="StepViewHost"/>
+                    <icons:Icon Classes="Tune" VerticalAlignment="Center"></icons:Icon>
+
+                    <TextBlock Text="Multi-Option Mod" Classes="BodyLGBold" />
+
+                </StackPanel>
+            </Border>
+
+
+            <reactiveUi:ViewModelViewHost x:Name="StepViewHost" />
+        </StackPanel>
+    </Border>
+
 
 </reactiveUi:ReactiveWindow>
