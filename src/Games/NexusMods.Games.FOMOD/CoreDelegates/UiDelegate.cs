@@ -205,12 +205,14 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
             var groupId = GroupId.From(Guid.NewGuid());
             groupIdMapping.Add(new KeyValuePair<int, GroupId>(group.id, groupId));
 
+            var groupType = ConvertOptionGroupType(group.type);
+
             return new OptionGroup
             {
                 Id = groupId,
-                Type = ConvertOptionGroupType(group.type),
+                Type = groupType,
                 Name = group.name,
-                Options = ToOptions(group.options, optionIdMappings).ToArray(),
+                Options = ToOptions(group.options, optionIdMappings, groupType).ToArray(),
             };
         });
 
@@ -225,13 +227,24 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
     }
 
     private static IEnumerable<Option> ToOptions(
-        IEnumerable<FomodInstaller.Interface.ui.Option> options,
-        ICollection<KeyValuePair<int, OptionId>> optionIdMappings)
+        IReadOnlyCollection<FomodInstaller.Interface.ui.Option> options,
+        ICollection<KeyValuePair<int, OptionId>> optionIdMappings,
+        OptionGroupType optionGroupType)
     {
         return options.Select(option =>
         {
             var optionId = OptionId.From(Guid.NewGuid());
             optionIdMappings.Add(new KeyValuePair<int, OptionId>(option.id, optionId));
+
+            var optionType = MakeOptionType(option);
+
+            // NOTE(erri120): If the group only contains a single option that is required by the group type,
+            // the option type should be set to required. Some authors and FOMOD builders aren't doing this
+            // automatically, so we have to change the type to required afterwards.
+            if (options.Count == 1 && optionGroupType == OptionGroupType.ExactlyOne || optionGroupType == OptionGroupType.AtLeastOne)
+            {
+                optionType = OptionType.Required;
+            }
 
             return new Option
             {
@@ -239,7 +252,7 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
                 Name = option.name,
                 Description = string.IsNullOrWhiteSpace(option.description) ? null : option.description,
                 ImageUrl = option.image != null ? AssetUrl.From(option.image) : null,
-                Type = MakeOptionType(option),
+                Type = optionType,
             };
         });
     }
