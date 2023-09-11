@@ -11,5 +11,5 @@ public interface IGuidedInstallerOptionViewModel : IViewModel
 
     public bool IsEnabled { get; set; }
 
-    public bool IsSelected { get; set; }
+    public bool IsChecked { get; set; }
 }

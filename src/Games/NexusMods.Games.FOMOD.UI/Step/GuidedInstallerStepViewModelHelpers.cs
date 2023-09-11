@@ -107,7 +107,7 @@ internal static class GuidedInstallerStepViewModelHelpers
     {
         return viewModel.Groups
             .SelectMany(groupVM => groupVM.Options
-                .Where(optionVM => optionVM.IsSelected)
+                .Where(optionVM => optionVM.IsChecked)
                 // NOTE(erri120): The "None" option gets added programatically
                 // and allows the user to make no choice at all. As such,
                 // we must not forward this option as selected.

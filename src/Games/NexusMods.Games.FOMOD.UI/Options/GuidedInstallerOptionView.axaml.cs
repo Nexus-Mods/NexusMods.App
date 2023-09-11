@@ -34,7 +34,7 @@ public partial class GuidedInstallerOptionView : ReactiveUserControl<IGuidedInst
                 this.OneWayBind(ViewModel, vm => vm.IsEnabled, view => view.RadioButton.IsEnabled)
                     .DisposeWith(disposables);
 
-                this.Bind(ViewModel, vm => vm.IsSelected, view => view.RadioButton.IsChecked)
+                this.Bind(ViewModel, vm => vm.IsChecked, view => view.RadioButton.IsChecked)
                     .DisposeWith(disposables);
             }
             else
@@ -45,7 +45,7 @@ public partial class GuidedInstallerOptionView : ReactiveUserControl<IGuidedInst
                 this.OneWayBind(ViewModel, vm => vm.IsEnabled, view => view.CheckBox.IsEnabled)
                     .DisposeWith(disposables);
 
-                this.Bind(ViewModel, vm => vm.IsSelected, view => view.CheckBox.IsChecked)
+                this.Bind(ViewModel, vm => vm.IsChecked, view => view.CheckBox.IsChecked)
                     .DisposeWith(disposables);
             }
 

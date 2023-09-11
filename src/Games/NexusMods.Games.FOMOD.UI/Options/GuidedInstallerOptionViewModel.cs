@@ -13,13 +13,13 @@ public class GuidedInstallerOptionViewModel : AViewModel<IGuidedInstallerOptionV
     public bool IsEnabled { get; set; }
 
     [Reactive]
-    public bool IsSelected { get; set; }
+    public bool IsChecked { get; set; }
 
     public GuidedInstallerOptionViewModel(Option option, OptionGroup group)
     {
         Option = option;
         Group = group;
         IsEnabled = option.Type is not OptionType.Disabled and not OptionType.Required;
-        IsSelected = option.Type is OptionType.PreSelected or OptionType.Required;
+        IsChecked = option.Type is OptionType.PreSelected or OptionType.Required;
     }
 }
