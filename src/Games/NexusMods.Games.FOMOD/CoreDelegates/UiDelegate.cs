@@ -120,7 +120,7 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
         );
 
         _guidedInstaller
-            .RequestUserChoice(guidedInstallationStep, new CancellationToken())
+            .RequestUserChoice(guidedInstallationStep, CancellationToken.None)
             .ContinueWith(task =>
             {
                 var result = task.Result;
@@ -267,6 +267,7 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
 
     public void Dispose()
     {
+        _guidedInstaller.Dispose();
         _semaphoreSlim.Dispose();
         _waitHandle.Dispose();
     }

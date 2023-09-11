@@ -6,17 +6,17 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI;
 using NexusMods.Common.GuidedInstaller;
+using ReactiveUI;
 
 namespace NexusMods.Games.FOMOD.UI;
 
 [UsedImplicitly]
-public sealed class GuidedInstallerUi : IGuidedInstaller, IDisposable
+public sealed class GuidedInstallerUi : IGuidedInstaller
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly CompositeDisposable _compositeDisposable;
 
     private IServiceScope? _currentScope;
-    private IGuidedInstallerWindowViewModel? _windowViewModel;
     private ReactiveWindow<IGuidedInstallerWindowViewModel>? _window;
 
     private readonly EventWaitHandle _waitHandle = new ManualResetEvent(initialState: false);
@@ -29,15 +29,17 @@ public sealed class GuidedInstallerUi : IGuidedInstaller, IDisposable
 
     public void SetupInstaller(string windowName)
     {
+        Debug.Assert(_window is null);
         Debug.Assert(_currentScope is null);
         _currentScope = _serviceProvider.CreateScope();
 
-        _windowViewModel = _currentScope.ServiceProvider.GetRequiredService<IGuidedInstallerWindowViewModel>();
-        _windowViewModel.WindowName = windowName;
+        var windowViewModel = _currentScope.ServiceProvider.GetRequiredService<IGuidedInstallerWindowViewModel>();
+        windowViewModel.WindowName = windowName;
 
-        OnUi(this, state =>
+        OnUi((windowViewModel, this), tuple =>
         {
-            SetupWindow(state);
+            var (innerViewModel, state) = tuple;
+            SetupWindow(innerViewModel, state);
             state._waitHandle.Set();
         });
 
@@ -48,11 +50,13 @@ public sealed class GuidedInstallerUi : IGuidedInstaller, IDisposable
         _waitHandle.Reset();
     }
 
-    private static void SetupWindow(GuidedInstallerUi state)
+    private static void SetupWindow(
+        IGuidedInstallerWindowViewModel windowViewModel,
+        GuidedInstallerUi state)
     {
         state._window = new GuidedInstallerWindow
         {
-            ViewModel = state._windowViewModel
+            ViewModel = windowViewModel
         };
 
         state._window.Show();
@@ -76,18 +80,12 @@ public sealed class GuidedInstallerUi : IGuidedInstaller, IDisposable
     {
         if (_window is not null)
         {
-            OnUi(_window, window => window.Close());
-            _window = null;
-        }
-
-        if (_windowViewModel is not null)
-        {
-            OnUi(_windowViewModel, windowVM =>
+            OnUi(_window, window =>
             {
-                windowVM.CloseCommand.Execute();
-                windowVM.ActiveStepViewModel = null;
+                if (_window.ViewModel is not null) _window.ViewModel.ActiveStepViewModel = null;
+                window.Close();
             });
-            _windowViewModel = null;
+            _window = null;
         }
 
         _currentScope?.Dispose();
@@ -98,16 +96,14 @@ public sealed class GuidedInstallerUi : IGuidedInstaller, IDisposable
         GuidedInstallationStep installationStep,
         CancellationToken cancellationToken)
     {
-        // TODO: maybe do something with the cancellation token
         Debug.Assert(_currentScope is not null);
-        Debug.Assert(_windowViewModel is not null);
         Debug.Assert(_window is not null);
 
         var tcs = new TaskCompletionSource<UserChoice>();
 
-        OnUi((_currentScope, _windowViewModel, tcs, installationStep), tuple =>
+        OnUi((_currentScope, _window, tcs, installationStep), tuple =>
         {
-            SetupStep(tuple._currentScope, tuple._windowViewModel, tuple.tcs, tuple.installationStep);
+            SetupStep(tuple._currentScope, tuple._window, tuple.tcs, tuple.installationStep);
         });
 
         await tcs.Task;
@@ -116,10 +112,11 @@ public sealed class GuidedInstallerUi : IGuidedInstaller, IDisposable
 
     private static void SetupStep(
         IServiceScope currentScope,
-        IGuidedInstallerWindowViewModel viewModel,
+        IViewFor<IGuidedInstallerWindowViewModel> window,
         TaskCompletionSource<UserChoice> tcs,
         GuidedInstallationStep installationStep)
     {
+        var viewModel = window.ViewModel!;
         viewModel.ActiveStepViewModel ??= currentScope.ServiceProvider.GetRequiredService<IGuidedInstallerStepViewModel>();
 
         var activeStepViewModel = viewModel.ActiveStepViewModel;

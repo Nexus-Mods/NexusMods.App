@@ -12,7 +12,7 @@ namespace NexusMods.CLI;
 /// Implementation of an option selector for the CLI.
 /// </summary>
 [UsedImplicitly]
-public class CliGuidedInstaller : IGuidedInstaller
+public sealed class CliGuidedInstaller : IGuidedInstaller
 {
     private const string CancelInput = "x";
     private const string PreviousInput = "p";
@@ -288,4 +288,7 @@ public class CliGuidedInstaller : IGuidedInstaller
 
         return -1;
     }
+
+    /// <inheritdoc/>
+    public void Dispose() { }
 }

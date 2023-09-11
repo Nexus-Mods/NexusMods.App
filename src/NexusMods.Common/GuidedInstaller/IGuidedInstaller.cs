@@ -6,7 +6,7 @@ namespace NexusMods.Common.GuidedInstaller;
 /// Interface for a guided installer.
 /// </summary>
 [PublicAPI]
-public interface IGuidedInstaller
+public interface IGuidedInstaller : IDisposable
 {
     /// <summary>
     /// Sets up the installer.
