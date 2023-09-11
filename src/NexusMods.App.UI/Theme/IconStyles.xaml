@@ -31,6 +31,7 @@
             <icons:Icon Classes="PlayCircleOutline"></icons:Icon>
             <icons:Icon Classes="Image"></icons:Icon>
             <icons:Icon Classes="Description"></icons:Icon>
+            <icons:Icon Classes="Tune"></icons:Icon>
         </WrapPanel>
     </Design.PreviewWith>
 
@@ -39,6 +40,7 @@
        Material icon names are not standardized well, use this site to look them up:
        https://pictogrammers.com/library/mdi/
      -->
+
     <Style Selector="icons|Icon.Alert">
         <Setter Property="Value" Value="mdi-alert"></Setter>
     </Style>
@@ -114,4 +116,10 @@
     <Style Selector="icons|Icon.Description">
         <Setter Property="Value" Value="mdi-text-box"/>
     </Style>
+
+    <Style Selector="icons|Icon.Tune">
+        <Setter Property="Value" Value="mdi-tune"/>
+    </Style>
+
+
 </Styles>
