@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -66,16 +67,32 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
             this.SetupHighlightedOption(_highlightedOptionImageSubject, disposables);
 
             var canGoNext = this
-                .WhenAnyValue(x => x.TaskCompletionSource)
-                .Select(x => x is not null);
+                .WhenAnyValue(
+                    x => x.TaskCompletionSource,
+                    x => x.InstallationStep,
+                    (tcs, step) => tcs is not null && step is not null);
 
             var goToNextStepCommand = ReactiveCommand.Create(() =>
             {
                 var selectedOptions = this.GatherSelectedOptions();
-                // TODO: run validation
+                var failedGroupIds = GuidedInstallerValidation.ValidateStepSelections(InstallationStep!, selectedOptions);
+
+                if (failedGroupIds.Length != 0)
+                {
+                    for (var i = 0; i < failedGroupIds.Length; i++)
+                    {
+                        var tmp = i;
+                        var groupVM = Groups.FirstOrDefault(x => failedGroupIds[tmp] == x.Group.Id);
+
+                        if (groupVM is null) continue;
+                        groupVM.HasValidSelection = false;
+                    }
+
+                    return;
+                }
 
                 // NOTE(erri120): On the last step, we don't set the result but instead show a "installation complete"-screen.
-                if ((InstallationStep?.HasNextStep ?? false) || ShowInstallationCompleteScreen)
+                if (InstallationStep!.HasNextStep || ShowInstallationCompleteScreen)
                 {
                     TaskCompletionSource?.TrySetResult(new UserChoice(new UserChoice.GoToNextStep(selectedOptions)));
                 }

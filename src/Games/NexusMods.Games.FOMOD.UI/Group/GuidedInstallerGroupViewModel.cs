@@ -7,6 +7,9 @@ namespace NexusMods.Games.FOMOD.UI;
 
 public class GuidedInstallerGroupViewModel : AViewModel<IGuidedInstallerGroupViewModel>, IGuidedInstallerGroupViewModel
 {
+    [Reactive]
+    public bool HasValidSelection { get; set; }
+
     public OptionGroup Group { get; }
 
     public IGuidedInstallerOptionViewModel[] Options { get; }
