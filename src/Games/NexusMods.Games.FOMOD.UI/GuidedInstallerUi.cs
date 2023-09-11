@@ -35,17 +35,11 @@ public sealed class GuidedInstallerUi : IGuidedInstaller, IDisposable
         _windowViewModel = _currentScope.ServiceProvider.GetRequiredService<IGuidedInstallerWindowViewModel>();
         _windowViewModel.WindowName = windowName;
 
-        // NOTE(erri120): AvaloniaScheduler has to be used to do work on the UI thread
-        AvaloniaScheduler.Instance.Schedule(
-            this,
-            AvaloniaScheduler.Instance.Now,
-            (_, state) =>
-            {
-                SetupWindow(state);
-                _waitHandle.Set();
-
-                return Disposable.Empty;
-            });
+        OnUi(this, state =>
+        {
+            SetupWindow(state);
+            state._waitHandle.Set();
+        });
 
         // NOTE(erri120): We need to wait for the window to be created.
         // Otherwise, the _window field isn't set when we want to request the
@@ -82,14 +76,17 @@ public sealed class GuidedInstallerUi : IGuidedInstaller, IDisposable
     {
         if (_window is not null)
         {
-            _window.Close();
+            OnUi(_window, window => window.Close());
             _window = null;
         }
 
         if (_windowViewModel is not null)
         {
-            _windowViewModel.CloseCommand.Execute();
-            _windowViewModel.ActiveStepViewModel = null;
+            OnUi(_windowViewModel, windowVM =>
+            {
+                windowVM.CloseCommand.Execute();
+                windowVM.ActiveStepViewModel = null;
+            });
             _windowViewModel = null;
         }
 
@@ -108,15 +105,10 @@ public sealed class GuidedInstallerUi : IGuidedInstaller, IDisposable
 
         var tcs = new TaskCompletionSource<UserChoice>();
 
-        // NOTE: AvaloniaScheduler has to be used to do work on the UI thread
-        AvaloniaScheduler.Instance.Schedule(
-            (_currentScope, _windowViewModel, tcs, installationStep),
-            AvaloniaScheduler.Instance.Now,
-            (_, tuple) =>
-            {
-                SetupStep(tuple._currentScope, tuple._windowViewModel, tuple.tcs, tuple.installationStep);
-                return Disposable.Empty;
-            });
+        OnUi((_currentScope, _windowViewModel, tcs, installationStep), tuple =>
+        {
+            SetupStep(tuple._currentScope, tuple._windowViewModel, tuple.tcs, tuple.installationStep);
+        });
 
         await tcs.Task;
         return tcs.Task.Result;
@@ -134,6 +126,20 @@ public sealed class GuidedInstallerUi : IGuidedInstaller, IDisposable
         activeStepViewModel.ModName = viewModel.WindowName;
         activeStepViewModel.InstallationStep = installationStep;
         activeStepViewModel.TaskCompletionSource = tcs;
+    }
+
+    private static void OnUi<TState>(TState state, Action<TState> action)
+    {
+        // NOTE: AvaloniaScheduler has to be used to do work on the UI thread
+        AvaloniaScheduler.Instance.Schedule(
+            (action, state),
+            AvaloniaScheduler.Instance.Now,
+            (_, tuple) =>
+            {
+                var (innerAction, innerState) = tuple;
+                innerAction(innerState);
+                return Disposable.Empty;
+            });
     }
 
     public void Dispose()
