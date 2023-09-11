@@ -12,7 +12,7 @@ public partial class FooterStepperView : ReactiveUserControl<IFooterStepperViewM
 
         this.WhenActivated(disposable =>
         {
-            this.OneWayBind(ViewModel, vm => vm.Progress, view => view.ProgressTextBlock.Text, progress => progress.ToString())
+            this.OneWayBind(ViewModel, vm => vm.Progress, view => view.ProgressBar.Value, progress => progress.Value)
                 .DisposeWith(disposable);
 
             this.BindCommand(ViewModel, vm => vm.GoToPrevCommand, view => view.GoToPrevButton)
