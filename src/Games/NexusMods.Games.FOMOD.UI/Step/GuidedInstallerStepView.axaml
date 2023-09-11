@@ -12,12 +12,16 @@
         <ui:GuidedInstallerStepDesignViewModel />
     </Design.DataContext>
 
-    <Grid ColumnDefinitions="*,*" RowDefinitions="*,Auto">
-        <ScrollViewer Grid.Row="0" Grid.Column="0">
-            <StackPanel>
-                <TextBlock Classes="H1" x:Name="ModName"/>
-                <TextBlock Classes="TopTitle" x:Name="StepName" />
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
+        <TextBlock Classes="H1" Grid.Row="0" Grid.Column="0" x:Name="ModName" />
+        <TextBlock Classes="TopTitle" Grid.Row="1" Grid.Column="0" x:Name="StepName" />
 
+        <TextBlock Classes="TopTitle" VerticalAlignment="Top" Grid.Row="2" x:Name="InstallationCompleteScreenTextBlock" IsVisible="False">
+            You can change these options anytime by clicking the TODO button in the mod list.
+        </TextBlock>
+
+        <Grid Grid.Row="2" ColumnDefinitions="*,*" x:Name="GroupsGrid">
+            <ScrollViewer Grid.Column="0">
                 <ItemsControl x:Name="GroupItemsControl">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -25,17 +29,17 @@
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
-            </StackPanel>
-        </ScrollViewer>
+            </ScrollViewer>
 
-        <ScrollViewer Grid.Row="0" Grid.Column="1">
-            <StackPanel>
-                <TextBlock Classes="Small" x:Name="HighlightedOptionDescription" />
-                <Image Stretch="Uniform" IsVisible="False" x:Name="HighlightedOptionImage"/>
-            </StackPanel>
-        </ScrollViewer>
+            <ScrollViewer Grid.Column="1">
+                <StackPanel>
+                    <TextBlock Classes="Small" x:Name="HighlightedOptionDescription" />
+                    <Image Stretch="Uniform" IsVisible="False" x:Name="HighlightedOptionImage" />
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
 
-        <reactiveUi:ViewModelViewHost Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" x:Name="FooterStepperViewHost"/>
+        <reactiveUi:ViewModelViewHost Grid.Row="3" Grid.Column="0" x:Name="FooterStepperViewHost" />
     </Grid>
 
 </reactiveUi:ReactiveUserControl>

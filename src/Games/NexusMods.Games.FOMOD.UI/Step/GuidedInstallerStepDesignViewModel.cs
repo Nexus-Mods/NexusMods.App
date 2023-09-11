@@ -1,3 +1,5 @@
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Avalonia.Media;
 using NexusMods.App.UI;
@@ -26,12 +28,15 @@ public class GuidedInstallerStepDesignViewModel : AViewModel<IGuidedInstallerSte
 
     public TaskCompletionSource<UserChoice>? TaskCompletionSource { get; set; }
 
-    public Percent Progress { get; set; } = Percent.CreateClamped(4, 10);
-
     [Reactive]
     public IGuidedInstallerGroupViewModel[] Groups { get; set; }
 
-    public IFooterStepperViewModel FooterStepperViewModel { get; } = new FooterStepperDesignViewModel();
+    public Percent Progress { get; set; }
+
+    public IFooterStepperViewModel FooterStepperViewModel { get; }
+
+    [Reactive]
+    public bool ShowInstallationCompleteScreen { get; set; }
 
     public GuidedInstallerStepDesignViewModel()
     {
@@ -42,12 +47,28 @@ public class GuidedInstallerStepDesignViewModel : AViewModel<IGuidedInstallerSte
             .Select(group => (IGuidedInstallerGroupViewModel)new GuidedInstallerGroupDesignViewModel(group))
             .ToArray();
 
-        FooterStepperViewModel.Progress = Progress;
+        FooterStepperViewModel = new FooterStepperDesignViewModel(Percent.Zero);
 
         this.WhenActivated(disposables =>
         {
             this.SetupCrossGroupOptionHighlighting(disposables);
             this.SetupHighlightedOption(_highlightedOptionImageSubject, disposables);
+
+            FooterStepperViewModel.GoToNextCommand = ReactiveCommand.Create(() =>
+            {
+                ShowInstallationCompleteScreen = true;
+                FooterStepperViewModel.Progress = Percent.One;
+            }).DisposeWith(disposables);
+
+            var canGoToPrev = this
+                .WhenAnyValue(x => x.ShowInstallationCompleteScreen)
+                .Select(x => x);
+
+            FooterStepperViewModel.GoToPrevCommand = ReactiveCommand.Create(() =>
+            {
+                ShowInstallationCompleteScreen = false;
+                FooterStepperViewModel.Progress = Percent.Zero;
+            }, canGoToPrev).DisposeWith(disposables);
         });
     }
 

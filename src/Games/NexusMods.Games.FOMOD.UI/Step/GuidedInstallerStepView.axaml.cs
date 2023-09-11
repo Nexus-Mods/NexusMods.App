@@ -41,6 +41,23 @@ public partial class GuidedInstallerStepView : ReactiveUserControl<IGuidedInstal
 
             this.OneWayBind(ViewModel, vm => vm.FooterStepperViewModel, view => view.FooterStepperViewHost.ViewModel)
                 .DisposeWith(disposables);
+
+            this.WhenAnyValue(x => x.ViewModel!.ShowInstallationCompleteScreen)
+                .SubscribeWithErrorLogging(logger: default, showInstallationCompleteScreen =>
+                {
+                    if (showInstallationCompleteScreen)
+                    {
+                        GroupsGrid.IsVisible = false;
+                        InstallationCompleteScreenTextBlock.IsVisible = true;
+                        StepName.Text = "Installation complete";
+                    }
+                    else
+                    {
+                        InstallationCompleteScreenTextBlock.IsVisible = false;
+                        GroupsGrid.IsVisible = true;
+                        StepName.Text = ViewModel?.InstallationStep?.Name;
+                    }
+                });
         });
     }
 }

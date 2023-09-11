@@ -24,5 +24,7 @@ public interface IGuidedInstallerStepViewModel : IViewModelInterface
 
     public Percent Progress { get; set; }
 
+    public bool ShowInstallationCompleteScreen { get; set; }
+
     public IFooterStepperViewModel FooterStepperViewModel { get; }
 }

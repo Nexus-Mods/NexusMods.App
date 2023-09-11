@@ -11,6 +11,11 @@ public class FooterStepperDesignViewModel : FooterStepperViewModel
 {
     [Reactive] public int CurrentValue { get; set; } = 5;
 
+    public FooterStepperDesignViewModel(Percent progress)
+    {
+        Progress = progress;
+    }
+
     public FooterStepperDesignViewModel()
     {
         this.WhenActivated(disposable =>

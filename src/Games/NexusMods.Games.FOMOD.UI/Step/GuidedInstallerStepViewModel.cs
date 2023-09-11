@@ -35,12 +35,17 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
     public TaskCompletionSource<UserChoice>? TaskCompletionSource { get; set; }
 
     [Reactive]
+    public IGuidedInstallerGroupViewModel[] Groups { get; set; } = Array.Empty<IGuidedInstallerGroupViewModel>();
+
+    [Reactive]
     public Percent Progress { get; set; } = Percent.Zero;
 
     [Reactive]
-    public IGuidedInstallerGroupViewModel[] Groups { get; set; } = Array.Empty<IGuidedInstallerGroupViewModel>();
+    public bool ShowInstallationCompleteScreen { get; set; }
 
     public IFooterStepperViewModel FooterStepperViewModel { get; } = new FooterStepperViewModel();
+
+    private Percent _previousProgress = Percent.Zero;
 
     public GuidedInstallerStepViewModel(ILogger<GuidedInstallerStepViewModel> logger)
     {
@@ -60,26 +65,45 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
             this.SetupCrossGroupOptionHighlighting(disposables);
             this.SetupHighlightedOption(_highlightedOptionImageSubject, disposables);
 
-            // TODO: figure out how to do a "finish" button
-            var canGoNext = this.WhenAnyValue(
-                x => x.TaskCompletionSource,
-                x => x.InstallationStep,
-                (tcs, step) => tcs is not null);
+            var canGoNext = this
+                .WhenAnyValue(x => x.TaskCompletionSource)
+                .Select(x => x is not null);
 
             var goToNextStepCommand = ReactiveCommand.Create(() =>
             {
                 var selectedOptions = this.GatherSelectedOptions();
-                TaskCompletionSource?.TrySetResult(new UserChoice(new UserChoice.GoToNextStep(selectedOptions)));
+                // TODO: run validation
+
+                // NOTE(erri120): On the last step, we don't set the result but instead show a "installation complete"-screen.
+                if ((InstallationStep?.HasNextStep ?? false) || ShowInstallationCompleteScreen)
+                {
+                    TaskCompletionSource?.TrySetResult(new UserChoice(new UserChoice.GoToNextStep(selectedOptions)));
+                }
+                else
+                {
+                    _previousProgress = Progress;
+                    Progress = Percent.One;
+                    ShowInstallationCompleteScreen = true;
+                }
             }, canGoNext).DisposeWith(disposables);
 
             var canGoPrev = this.WhenAnyValue(
                 x => x.TaskCompletionSource,
                 x => x.InstallationStep,
-                (tcs, step) => tcs is not null && step is not null && step.HasPreviousStep);
+                x => x.ShowInstallationCompleteScreen,
+                (tcs, step, showInstallationCompleteScreen) => showInstallationCompleteScreen || (tcs is not null && step is not null && step.HasPreviousStep));
 
             var goToPrevStepCommand = ReactiveCommand.Create(() =>
             {
-                TaskCompletionSource?.TrySetResult(new UserChoice(new UserChoice.GoToPreviousStep()));
+                if (ShowInstallationCompleteScreen)
+                {
+                    ShowInstallationCompleteScreen = false;
+                    Progress = _previousProgress;
+                }
+                else
+                {
+                    TaskCompletionSource?.TrySetResult(new UserChoice(new UserChoice.GoToPreviousStep()));
+                }
             }, canGoPrev).DisposeWith(disposables);
 
             FooterStepperViewModel.GoToNextCommand = goToNextStepCommand;
