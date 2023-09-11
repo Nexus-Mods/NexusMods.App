@@ -83,7 +83,7 @@ public sealed class GuidedInstallerUi : IGuidedInstaller
         {
             OnUi(_window, window =>
             {
-                if (_window.ViewModel is not null) _window.ViewModel.ActiveStepViewModel = null;
+                if (window.ViewModel is not null) window.ViewModel.ActiveStepViewModel = null;
                 window.Close();
             });
             _window = null;
