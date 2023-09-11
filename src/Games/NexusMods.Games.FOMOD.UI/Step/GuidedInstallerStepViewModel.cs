@@ -40,34 +40,12 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
     [Reactive]
     public IGuidedInstallerGroupViewModel[] Groups { get; set; } = Array.Empty<IGuidedInstallerGroupViewModel>();
 
-    public ReactiveCommand<Unit, Unit> NextStepCommand { get; set; }
-    public ReactiveCommand<Unit, Unit> PreviousStepCommand { get; set; }
-    public ReactiveCommand<Unit, Unit> CancelInstallerCommand { get; set; }
+    public ReactiveCommand<Unit, Unit> NextStepCommand { get; set; } = Initializers.ReactiveCommandUnitUnit;
+    public ReactiveCommand<Unit, Unit> PreviousStepCommand { get; set; } = Initializers.ReactiveCommandUnitUnit;
+    public ReactiveCommand<Unit, Unit> CancelInstallerCommand { get; set; } = Initializers.ReactiveCommandUnitUnit;
 
     public GuidedInstallerStepViewModel(ILogger<GuidedInstallerStepViewModel> logger)
     {
-        // TODO: other validation
-        var hasTaskCompletionSource = this
-            .WhenAnyValue(vm => vm.TaskCompletionSource)
-            .OnUI()
-            .Select(tcs => tcs is not null);
-
-        NextStepCommand = ReactiveCommand.Create(() =>
-        {
-            var selectedOptions = this.GatherSelectedOptions();
-            TaskCompletionSource?.TrySetResult(new UserChoice(new UserChoice.GoToNextStep(selectedOptions)));
-        }, hasTaskCompletionSource);
-
-        PreviousStepCommand = ReactiveCommand.Create(() =>
-        {
-            TaskCompletionSource?.TrySetResult(new UserChoice(new UserChoice.GoToPreviousStep()));
-        }, hasTaskCompletionSource);
-
-        CancelInstallerCommand = ReactiveCommand.Create(() =>
-        {
-            TaskCompletionSource?.TrySetResult(new UserChoice(new UserChoice.CancelInstallation()));
-        }, hasTaskCompletionSource);
-
         this.WhenActivated(disposables =>
         {
             this.WhenAnyValue(x => x.InstallationStep)
@@ -83,6 +61,36 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
 
             this.SetupCrossGroupOptionHighlighting(disposables);
             this.SetupHighlightedOption(_highlightedOptionImageSubject, disposables);
+
+            var canGoNext = this.WhenAnyValue(
+                x => x.TaskCompletionSource,
+                x => x.InstallationStep,
+                (tcs, step) => tcs is not null && step is not null && step.HasNextStep);
+
+            NextStepCommand = ReactiveCommand.Create(() =>
+            {
+                var selectedOptions = this.GatherSelectedOptions();
+                TaskCompletionSource?.TrySetResult(new UserChoice(new UserChoice.GoToNextStep(selectedOptions)));
+            }, canGoNext).DisposeWith(disposables);
+
+            var canGoPrev = this.WhenAnyValue(
+                x => x.TaskCompletionSource,
+                x => x.InstallationStep,
+                (tcs, step) => tcs is not null && step is not null && step.HasPreviousStep);
+
+            PreviousStepCommand = ReactiveCommand.Create(() =>
+            {
+                TaskCompletionSource?.TrySetResult(new UserChoice(new UserChoice.GoToPreviousStep()));
+            }, canGoPrev).DisposeWith(disposables);
+
+            var canCancel = this
+                .WhenAnyValue(x => x.TaskCompletionSource)
+                .Select(x => x is not null);
+
+            CancelInstallerCommand = ReactiveCommand.Create(() =>
+            {
+                TaskCompletionSource?.TrySetResult(new UserChoice(new UserChoice.CancelInstallation()));
+            }, canCancel).DisposeWith(disposables);
         });
     }
 }
