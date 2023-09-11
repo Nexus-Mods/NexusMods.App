@@ -1,6 +1,8 @@
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using Avalonia.Media;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.UI;
@@ -21,6 +23,12 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
 
     [Reactive]
     public IGuidedInstallerOptionViewModel? HighlightedOptionViewModel { get; set; }
+
+    [Reactive]
+    public string? HighlightedOptionDescription { get; set; }
+
+    private readonly Subject<IImage> _highlightedOptionImageSubject = new();
+    public IObservable<IImage> HighlightedOptionImageObservable => _highlightedOptionImageSubject;
 
     [Reactive]
     public TaskCompletionSource<UserChoice>? TaskCompletionSource { get; set; }
@@ -70,6 +78,7 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
                 .DisposeWith(disposables);
 
             this.SetupCrossGroupOptionHighlighting(disposables);
+            this.SetupHighlightedOption(_highlightedOptionImageSubject, disposables);
         });
     }
 }

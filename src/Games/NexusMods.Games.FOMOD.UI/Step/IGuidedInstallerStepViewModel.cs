@@ -1,4 +1,5 @@
 using System.Reactive;
+using Avalonia.Media;
 using NexusMods.App.UI;
 using NexusMods.Common.GuidedInstaller;
 using ReactiveUI;
@@ -11,6 +12,10 @@ public interface IGuidedInstallerStepViewModel : IViewModelInterface
     public GuidedInstallationStep? InstallationStep { get; set; }
 
     public IGuidedInstallerOptionViewModel? HighlightedOptionViewModel { get; set; }
+
+    public string? HighlightedOptionDescription { get; set; }
+
+    public IObservable<IImage> HighlightedOptionImageObservable { get; }
 
     public IGuidedInstallerGroupViewModel[] Groups { get; set; }
 

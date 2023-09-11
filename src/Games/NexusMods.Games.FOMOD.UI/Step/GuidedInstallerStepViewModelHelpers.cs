@@ -1,5 +1,8 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using NexusMods.App.UI;
 using NexusMods.Common.GuidedInstaller;
 using NexusMods.Common.GuidedInstaller.ValueObjects;
@@ -50,10 +53,57 @@ internal static class GuidedInstallerStepViewModelHelpers
             .DisposeWith(disposables);
     }
 
+    public static void SetupHighlightedOption<T>(
+        this T viewModel,
+        Subject<IImage> highlightedOptionImageSubject,
+        CompositeDisposable disposables)
+        where T : IGuidedInstallerStepViewModel
+    {
+        viewModel
+            .WhenAnyValue(x => x.HighlightedOptionViewModel)
+            .WhereNotNull()
+            .Select(optionVM => optionVM.Option)
+            .Where(option =>
+            {
+                viewModel.HighlightedOptionDescription = option.Description;
+                return option.ImageUrl is not null;
+            })
+            .OffUi()
+            .Select(option =>
+            {
+                // TODO: local files (see issue #614)
+                var imageUrl = option.ImageUrl!.Value.Value;
+                return !Uri.TryCreate(imageUrl, UriKind.Absolute, out var uri) ? null : uri;
+            })
+            .WhereNotNull()
+            .OffUi()
+            .Select(uri => Observable.FromAsync(() => LoadRemoteImage(uri, cancellationToken: default)))
+            .Concat()
+            .WhereNotNull()
+            .OnUI()
+            .SubscribeWithErrorLogging(logger: default, highlightedOptionImageSubject.OnNext)
+            .DisposeWith(disposables);
+    }
+
+    private static async Task<Bitmap?> LoadRemoteImage(Uri uri, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var client = new HttpClient();
+            var stream = await client.GetByteArrayAsync(uri, cancellationToken);
+            return new Bitmap(new MemoryStream(stream));
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return null;
+        }
+    }
+
     public static readonly OptionId NoneOptionId = OptionId.From(Guid.Empty);
 
     public static SelectedOption[] GatherSelectedOptions<T>(this T viewModel)
-    where T : IGuidedInstallerStepViewModel
+        where T : IGuidedInstallerStepViewModel
     {
         return viewModel.Groups
             .SelectMany(groupVM => groupVM.Options
