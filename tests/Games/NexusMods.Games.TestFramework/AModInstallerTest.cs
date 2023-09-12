@@ -163,7 +163,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
         var mods = await GetModsFromInstaller(archivePath, cancellationToken);
         mods.Should().ContainSingle();
 
-        var mod = mods.First();
+        var mod = mods.OrderBy(m => m.Name).First();
         return (mod, mod.Files.Values.ToArray());
     }
 
