@@ -1,0 +1,26 @@
+<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <StackPanel Width="825" Spacing="8">
+            <StackPanel.Styles>
+                <Style Selector="StackPanel">
+                    <Setter Property="Background" Value="{DynamicResource StructuralBorderColor}"/>
+                </Style>
+            </StackPanel.Styles>
+
+            <ProgressBar Margin="8" Classes="Stepper" Minimum="0" Maximum="1"/>
+            <ProgressBar Margin="8, 4" Classes="Stepper" Minimum="0" Maximum="1" Value="0.5"/>
+            <ProgressBar Margin="8" Classes="Stepper" Minimum="0" Maximum="1" Value="1"/>
+        </StackPanel>
+    </Design.PreviewWith>
+
+    <Style Selector="ProgressBar.Stepper">
+        <Setter Property="ShowProgressText" Value="False"/>
+        <Setter Property="Height" Value="16"/>
+        <Setter Property="Foreground" Value="{DynamicResource BrandPrimary}"/>
+        <Setter Property="Background" Value="{DynamicResource BorderContainerColor}"/>
+        <Setter Property="CornerRadius" Value="45"/>
+    </Style>
+</Styles>

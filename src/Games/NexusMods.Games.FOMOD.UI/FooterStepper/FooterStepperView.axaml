@@ -29,7 +29,7 @@
                 <TextBlock Grid.Column="1" Text="{x:Static resources:Language.FooterStepperView_FooterStepperView_Previous}"/>
             </Grid>
         </Button>
-        <ProgressBar Classes="DownloadBar" Minimum="0" Maximum="1" Grid.Column="1" x:Name="ProgressBar"></ProgressBar>
+        <ProgressBar Classes="Stepper" Minimum="0" Maximum="1" Grid.Column="1" x:Name="ProgressBar"></ProgressBar>
         <Button Classes="Primary" Grid.Column="2" x:Name="GoToNextButton">
             <Grid ColumnDefinitions="Auto, Auto">
                 <TextBlock Grid.Column="0" x:Name="GoToNextButtonTextBlock" Text="{x:Static resources:Language.FooterStepperView_FooterStepperView_Next}"/>
