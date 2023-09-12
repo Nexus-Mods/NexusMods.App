@@ -16,6 +16,7 @@
             <TextBlock Classes="BodyLGBold" Text="Sample Text BodyLGBold" />
             <TextBlock Classes="HeadingMDSemi" Text="Sample Text HeadingMDSemi" />
             <TextBlock Classes="BodyXLBold" Text="Sample Text BodyXLBold" />
+            <TextBlock Classes="BodyMDNormal" Text="Sample Text BodyMDNormal" />
             <TextBlock Classes="UsesBrandWhiteColor" Text="Sample Text UsesBrandWhiteColor" />
 
         </StackPanel>
@@ -149,6 +150,14 @@
         <Setter Property="FontWeight" Value="700" />
         <Setter Property="FontSize" Value="18" />
         <Setter Property="LineHeight" Value="27" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="TextBlock.BodyMDNormal">
+        <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
+        <Setter Property="FontWeight" Value="400" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="LineHeight" Value="21" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
     </Style>
 
