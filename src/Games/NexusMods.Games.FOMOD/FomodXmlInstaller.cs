@@ -12,6 +12,7 @@ using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using NexusMods.Paths.Utilities;
 using OneOf.Types;
 using Mod = FomodInstaller.Interface.Mod;
 
@@ -81,7 +82,7 @@ public class FomodXmlInstaller : IModInstaller
         await mod.InitializeWithoutLoadingScript();
 
         var executor = _scriptType.CreateExecutor(mod, _delegates);
-        var installScript = _scriptType.LoadScript(analyzerInfo.XmlScript, true);
+        var installScript = _scriptType.LoadScript(FixXmlScript(analyzerInfo.XmlScript), true);
         var instructions = await executor.Execute(installScript, "", null);
 
         var errors = instructions.Where(instruction => instruction.type == "error").ToArray();
@@ -100,6 +101,15 @@ public class FomodXmlInstaller : IModInstaller
                 Files = InstructionsToModFiles(instructions, archiveFiles, _fomodInstallationPath)
             }
         };
+    }
+
+    private static string FixXmlScript(string input)
+    {
+        // NOTE(erri120): The FOMOD library we're using is once again complete ass
+        // and can't handle paths with the forward slash directory separator.
+        // This solution is completely stupid, but apparently works fine.
+        // See https://github.com/Nexus-Mods/NexusMods.App/issues/625 for details.
+        return input.Replace('\\', PathHelpers.DirectorySeparatorChar);
     }
 
     private IEnumerable<AModFile> InstructionsToModFiles(
