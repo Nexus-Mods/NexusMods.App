@@ -12,6 +12,7 @@ using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using OneOf.Types;
 using Mod = FomodInstaller.Interface.Mod;
 
 namespace NexusMods.Games.FOMOD;
@@ -96,81 +97,66 @@ public class FomodXmlInstaller : IModInstaller
             new ModInstallerResult
             {
                 Id = baseModId,
-                Files = InstructionsToModFiles(instructions, srcArchiveHash, archiveFiles, _fomodInstallationPath)
+                Files = InstructionsToModFiles(instructions, archiveFiles, _fomodInstallationPath)
             }
         };
     }
 
-    private IEnumerable<AModFile> InstructionsToModFiles(IEnumerable<Instruction> instructions, Hash srcArchive,
-        EntityDictionary<RelativePath, AnalyzedFile> files, GamePath gameTargetPath)
+    private IEnumerable<AModFile> InstructionsToModFiles(
+        IList<Instruction> instructions,
+        EntityDictionary<RelativePath, AnalyzedFile> files,
+        GamePath gameTargetPath)
     {
-        var groupedInstructions = instructions.Aggregate(new Dictionary<string, List<Instruction>>(),
-            (prev, instruction) =>
+        var res = instructions.Select(instruction =>
+        {
+            return instruction.type switch
             {
-                if (prev.TryGetValue(instruction.type, out var existing))
-                {
-                    existing.Add(instruction);
-                }
-                else
-                {
-                    prev[instruction.type] = new List<Instruction>
-                    {
-                        instruction
-                    };
-                }
+                "copy" => ConvertInstructionCopy(instruction, files, gameTargetPath),
+                "mkdir" => ConvertInstructionMkdir(instruction, gameTargetPath),
+                // TODO: "enableallplugins",
+                // "iniedit" - only supported by c# script and modscript installers atm
+                // "generatefile" - only supported by c# script installers
+                // "enableplugin" - supported in the fomod-installer module but doesn't seem to be emitted anywhere
+                _ => ReportUnknownType(instruction.type),
+            };
+        }).Where(x => x is not null).Select(x => x!).ToArray();
 
-                return prev;
-            });
-
-        var result = new List<AModFile>();
-        foreach (var type in groupedInstructions)
-            result.AddRange(ConvertInstructions(type.Value, files, gameTargetPath));
-
-        return result;
+        return res;
     }
 
-    private static IEnumerable<AModFile> ConvertInstructions(IList<Instruction> instructions,
-        EntityDictionary<RelativePath, AnalyzedFile> files, GamePath gameTargetPath)
+    private AModFile? ReportUnknownType(string instructionType)
     {
-        if (!instructions.Any()) return new List<AModFile>();
+        _logger.LogWarning("Unknown FOMOD instruction type: {Type}", instructionType);
+        return null;
+    }
 
-        return instructions.First().type switch
+    private static AModFile ConvertInstructionCopy(
+        Instruction instruction,
+        EntityDictionary<RelativePath, AnalyzedFile> files,
+        GamePath gameTargetPath)
+    {
+        var src = RelativePath.FromUnsanitizedInput(instruction.source);
+        var dest = RelativePath.FromUnsanitizedInput(instruction.destination);
+
+        var file = files[src];
+        return new FromArchive
         {
-            "copy" => ConvertInstructionCopy(instructions, files, gameTargetPath),
-            "mkdir" => ConvertInstructionMkdir(instructions, gameTargetPath),
-            // TODO: "enableallplugins",
-            // "iniedit" - only supported by c# script and modscript installers atm
-            // "generatefile" - only supported by c# script installers
-            // "enableplugin" - supported in the fomod-installer module but doesn't seem to be emitted anywhere
-            _ => new List<AModFile>()
+            Id = ModFileId.New(),
+            To = new GamePath(gameTargetPath.Type, gameTargetPath.Path.Join(dest)),
+            Hash = file.Hash,
+            Size = file.Size
         };
     }
 
-    private static IEnumerable<AModFile> ConvertInstructionCopy(IEnumerable<Instruction> instructions,
-        EntityDictionary<RelativePath, AnalyzedFile> files, GamePath gameTargetPath)
-    {
-        return instructions.Select(instruction =>
-        {
-            var file = files.First(file => file.Key.Equals(RelativePath.FromUnsanitizedInput(instruction.source)));
-
-            return new FromArchive
-            {
-                Id = ModFileId.New(),
-                To = new GamePath(gameTargetPath.Type,
-                    gameTargetPath.Path.Join(RelativePath.FromUnsanitizedInput(instruction.destination))),
-                Hash = file.Value.Hash,
-                Size = file.Value.Size
-            };
-        });
-    }
-
-    private static IEnumerable<AModFile> ConvertInstructionMkdir(IEnumerable<Instruction> instructions,
+    private static AModFile ConvertInstructionMkdir(
+        Instruction instruction,
         GamePath gameTargetPath)
     {
-        return instructions.Select(instruction => new EmptyDirectory
+        var dest = RelativePath.FromUnsanitizedInput(instruction.destination);
+        return new EmptyDirectory
         {
             Id = ModFileId.New(),
-            Directory = new GamePath(gameTargetPath.Type, gameTargetPath.Path.Join(RelativePath.FromUnsanitizedInput(instruction.destination)))
-        });
+            Directory = new GamePath(gameTargetPath.Type, gameTargetPath.Path.Join(dest))
+        };
     }
 }
