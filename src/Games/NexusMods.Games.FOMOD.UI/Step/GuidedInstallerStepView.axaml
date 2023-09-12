@@ -29,15 +29,24 @@
                 <Setter Property="Background" Value="{DynamicResource StructuralBorderColor}" />
                 <Setter Property="CornerRadius" Value="8,8, 8,8" />
                 <Setter Property="Padding" Value="8,8,8,8" />
+                <Setter Property="Margin" Value="0,0,16,0" />
             </Style>
             <Style Selector="Border.WhiteRounded">
                 <Setter Property="BorderThickness" Value="1" />
-                <Setter Property="BorderBrush" Value="{DynamicResource BrandWhite}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource BrandTertiaryDarker}" />
+            </Style>
+            <Style Selector="Border#PreviewTitleBorder">
+                <Setter Property="Padding" Value="16,12,16,12" />
+                <Setter Property="CornerRadius" Value="8,8,0,0" />
+            </Style>
+            <Style Selector="Border#PreviewContentBorder">
+                <Setter Property="Padding" Value="16,12,16,12" />
+                <Setter Property="CornerRadius" Value="0,0,8,8" />
             </Style>
         </Grid.Styles>
 
         <Border Grid.Row="0" x:Name="TopPart" Padding="24, 16, 24,24">
-            <Grid x:Name="TopPartGrid" RowDefinitions="Auto,*" >
+            <Grid x:Name="TopPartGrid" RowDefinitions="Auto,*">
                 <Border Grid.Row="0" x:Name="MultiOptionHeaderBorder" Padding="0,0,0,16">
                     <StackPanel x:Name="MultiOptionHeaderStackPanel" Orientation="Horizontal">
 
@@ -76,21 +85,22 @@
                             </Border>
 
 
-                            <StackPanel Grid.Column="1" x:Name="PreviewStackPanel" Orientation="Vertical">
-                                <Border x:Name="PreviewTitleBorder" Classes="WhiteRounded">
+                            <Grid Grid.Column="1" x:Name="PreviewStackPanel" RowDefinitions="Auto,*">
+                                <Border Grid.Row="0" x:Name="PreviewTitleBorder" Classes="WhiteRounded">
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="Option 1"/>
+                                        <TextBlock Text="Option 1" />
                                     </StackPanel>
                                 </Border>
-                                <Border x:Name="PreviewContentBorder" Classes="WhiteRounded">
+                                <Border Grid.Row="1" x:Name="PreviewContentBorder" Classes="WhiteRounded">
                                     <ScrollViewer>
-                                        <StackPanel Orientation="Vertical">
+                                        <StackPanel Orientation="Vertical" VerticalAlignment="Stretch">
+
                                             <Image Stretch="Uniform" IsVisible="False" x:Name="HighlightedOptionImage" />
-                                            <TextBlock Classes="Small" x:Name="HighlightedOptionDescription" />
+                                            <TextBlock Classes="Small" x:Name="HighlightedOptionDescription" Text="No additional details"/>
                                         </StackPanel>
                                     </ScrollViewer>
                                 </Border>
-                            </StackPanel>
+                            </Grid>
 
                         </Grid>
                     </Grid>
