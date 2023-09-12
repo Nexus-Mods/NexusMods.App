@@ -49,7 +49,7 @@ public class SifuModInstaller : AModInstaller
         {
             Id = baseModId,
             Files = modFiles,
-            Name = pakPath.Name
+            Name = pakPath.Name.FileName
         }};
     }
 
