@@ -32,6 +32,7 @@
             </Style>
             <Style Selector="RadioButton">
                 <Setter Property="Margin" Value="8,0,8,0" />
+                <Setter Property="VerticalAlignment" Value="Center" />
             </Style>
         </Border.Styles>
         <Grid ColumnDefinitions="Auto, *, Auto, Auto" RowDefinitions="Auto">
@@ -42,7 +43,8 @@
             </StackPanel>
             <TextBlock Grid.Column="1" Classes="BodyMDNormal" x:Name="OptionNameTextBlock" VerticalAlignment="Center" />
             <icons:Icon Classes="Image" IsVisible="False" Grid.Column="2" x:Name="ImageIcon" VerticalAlignment="Center" />
-            <icons:Icon Classes="Description" IsVisible="False" Grid.Column="3" x:Name="DescriptionIcon" VerticalAlignment="Center" />
+            <icons:Icon Classes="Description" IsVisible="False" Grid.Column="3" x:Name="DescriptionIcon"
+                        VerticalAlignment="Center" />
         </Grid>
     </Border>
 </reactiveUi:ReactiveUserControl>
