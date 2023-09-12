@@ -16,7 +16,7 @@
         <ui:FooterStepperDesignViewModel />
     </Design.DataContext>
 
-    <Grid ColumnDefinitions="Auto, *, Auto" Background="{DynamicResource StructuralBorderColor}">
+    <Grid Height="84" ColumnDefinitions="Auto, *, Auto" Background="{DynamicResource StructuralBorderColor}">
         <Grid.Styles>
             <Style Selector="avalonia|Icon">
                 <Setter Property="Foreground" Value="White" />
