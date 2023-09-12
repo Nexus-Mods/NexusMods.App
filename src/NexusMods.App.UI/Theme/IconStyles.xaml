@@ -32,6 +32,8 @@
             <icons:Icon Classes="Image"></icons:Icon>
             <icons:Icon Classes="Description"></icons:Icon>
             <icons:Icon Classes="Tune"></icons:Icon>
+            <icons:Icon Classes="ArrowLeft"></icons:Icon>
+            <icons:Icon Classes="ArrowRight"></icons:Icon>
         </WrapPanel>
     </Design.PreviewWith>
 
@@ -121,5 +123,11 @@
         <Setter Property="Value" Value="mdi-tune"/>
     </Style>
 
+    <Style Selector="icons|Icon.ArrowLeft">
+        <Setter Property="Value" Value="mdi-arrow-left"/>
+    </Style>
 
+    <Style Selector="icons|Icon.ArrowRight">
+        <Setter Property="Value" Value="mdi-arrow-right"/>
+    </Style>
 </Styles>
