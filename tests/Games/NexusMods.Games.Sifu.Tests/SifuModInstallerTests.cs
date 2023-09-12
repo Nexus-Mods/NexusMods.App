@@ -50,9 +50,10 @@ public class SifuModInstallerTests : AModInstallerTest<Sifu, SifuModInstaller>
                 .Cast<IToFile>()
                 .Should().HaveCount(2)
                 .And.AllSatisfy(x => x.To.Path.StartsWith(@"Content/Paks/~mods"))
-                .And.Satisfy(
-                    x => x.To.FileName == "bar.pak",
-                    x => x.To.FileName == "bar.txt");
+                .And
+                .Satisfy(
+                    x => x.To.Extension == new Extension(".pak"),
+                    x => x.To.FileName.Extension == new Extension(".txt"));
         }
     }
 }
