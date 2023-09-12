@@ -1,6 +1,8 @@
 using NexusMods.App.UI;
 using NexusMods.Common.GuidedInstaller;
 using NexusMods.Common.GuidedInstaller.ValueObjects;
+using NexusMods.Games.FOMOD.UI.Resources;
+using NexusMods.Games.FOMOD.UI.Resources;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.Games.FOMOD.UI;
@@ -30,10 +32,10 @@ public class GuidedInstallerGroupViewModel : AViewModel<IGuidedInstallerGroupVie
                 .Prepend(factory(new Option
                 {
                     Id = GuidedInstallerStepViewModelHelpers.NoneOptionId,
-                    Name = "None",
+                    Name = Language.GuidedInstallerGroupViewModel_GuidedInstallerGroupViewModel_None,
                     Type = OptionType.Available,
-                    Description = "Select nothing",
-                    HoverText = "Use this option to select nothing"
+                    Description = Language.GuidedInstallerGroupViewModel_GuidedInstallerGroupViewModel_Select_nothing,
+                    HoverText = Language.GuidedInstallerGroupViewModel_GuidedInstallerGroupViewModel_Use_this_option_to_select_nothing
                 }))
                 .ToArray();
         }

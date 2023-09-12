@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:ui="clr-namespace:NexusMods.Games.FOMOD.UI"
+    xmlns:resources="clr-namespace:NexusMods.Games.FOMOD.UI.Resources"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.Games.FOMOD.UI.GuidedInstallerGroupView">
 
@@ -15,7 +16,7 @@
 
     <StackPanel>
         <TextBlock Classes="Small" x:Name="GroupName" />
-        <TextBlock Classes="Small" x:Name="GroupType" IsVisible="False">(Select at least one)</TextBlock>
+        <TextBlock Classes="Small" x:Name="GroupType" IsVisible="False" Text="{x:Static resources:Language.GuidedInstallerGroupView_SelectAtLeastOne}"/>
 
         <ListBox SelectionMode="Single" x:Name="OptionsListBox">
             <ListBox.Styles>

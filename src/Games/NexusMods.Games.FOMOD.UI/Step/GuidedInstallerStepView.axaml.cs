@@ -1,6 +1,7 @@
 using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
 using NexusMods.App.UI;
+using NexusMods.Games.FOMOD.UI.Resources;
 using ReactiveUI;
 
 namespace NexusMods.Games.FOMOD.UI;
@@ -49,7 +50,7 @@ public partial class GuidedInstallerStepView : ReactiveUserControl<IGuidedInstal
                     {
                         GroupsGrid.IsVisible = false;
                         InstallationCompleteScreenTextBlock.IsVisible = true;
-                        StepName.Text = "Installation complete";
+                        StepName.Text = Language.GuidedInstallerStepView_GuidedInstallerStepView_Installation_complete;
                     }
                     else
                     {
