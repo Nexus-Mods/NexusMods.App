@@ -1,21 +1,22 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.PreviewWith>
         <StackPanel>
-            <TextBlock Classes="Small" Text="Sample Text Small"/>
-            <TextBlock Classes="H1" Text="Sample Text H1"/>
-            <TextBlock Classes="TopTitle" Text="Sample Text Top Title"/>
-            <TextBlock Classes="Body2RobotoRegular" Text="Sample Text Body2RobotoRegular"/>
-            <TextBlock Classes="Subheading" Text="Sample Text Subheading"/>
-            <TextBlock Classes="H5MontserratSemi" Text="Sample Text H5MontserratSemi"/>
-            <TextBlock Classes="H6MontserratSemi" Text="Sample Text H6MontserratSemi"/>
-            <TextBlock Classes="Body_MD_Normal" Text="Sample Text Body_MD_Normal"/>
-            <TextBlock Classes="CaptionMontserratSemi" Text="Sample Text CaptionMontserratSemi"/>
-            <TextBlock Classes="ButtonMontserratSemi" Text="Sample Text ButtonMontserratSemi"/>
-            <TextBlock Classes="Body2RobotoRegularBold" Text="Sample Text Body2RobotoRegularBold"/>
-            <TextBlock Classes="UsesAccentLighterColor" Text="Sample Text UsesAccentLighterColor"/>
-            <TextBlock Classes="BodyLGBold" Text="Sample Text BodyLGBold"/>
-            <TextBlock Classes="HeadingMDSemi" Text="Sample Text HeadingMDSemi"/>
-            <TextBlock Classes="UsesBrandWhiteColor" Text="Sample Text UsesBrandWhiteColor"/>
+            <TextBlock Classes="Small" Text="Sample Text Small" />
+            <TextBlock Classes="H1" Text="Sample Text H1" />
+            <TextBlock Classes="TopTitle" Text="Sample Text Top Title" />
+            <TextBlock Classes="Body2RobotoRegular" Text="Sample Text Body2RobotoRegular" />
+            <TextBlock Classes="Subheading" Text="Sample Text Subheading" />
+            <TextBlock Classes="H5MontserratSemi" Text="Sample Text H5MontserratSemi" />
+            <TextBlock Classes="H6MontserratSemi" Text="Sample Text H6MontserratSemi" />
+            <TextBlock Classes="Body_MD_Normal" Text="Sample Text Body_MD_Normal" />
+            <TextBlock Classes="CaptionMontserratSemi" Text="Sample Text CaptionMontserratSemi" />
+            <TextBlock Classes="ButtonMontserratSemi" Text="Sample Text ButtonMontserratSemi" />
+            <TextBlock Classes="Body2RobotoRegularBold" Text="Sample Text Body2RobotoRegularBold" />
+            <TextBlock Classes="UsesAccentLighterColor" Text="Sample Text UsesAccentLighterColor" />
+            <TextBlock Classes="BodyLGBold" Text="Sample Text BodyLGBold" />
+            <TextBlock Classes="HeadingMDSemi" Text="Sample Text HeadingMDSemi" />
+            <TextBlock Classes="BodyXLBold" Text="Sample Text BodyXLBold" />
+            <TextBlock Classes="UsesBrandWhiteColor" Text="Sample Text UsesBrandWhiteColor" />
 
         </StackPanel>
     </Design.PreviewWith>
@@ -140,6 +141,14 @@
         <Setter Property="FontWeight" Value="500" />
         <Setter Property="FontSize" Value="28" />
         <Setter Property="LineHeight" Value="37.5" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="TextBlock.BodyXLBold">
+        <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
+        <Setter Property="FontWeight" Value="700" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="LineHeight" Value="27" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
     </Style>
 
