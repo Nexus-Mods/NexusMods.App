@@ -26,6 +26,7 @@ public partial class FooterStepperView : ReactiveUserControl<IFooterStepperViewM
                 .SubscribeWithErrorLogging(logger: default, isFinalStep =>
                 {
                     GoToNextButtonTextBlock.Text = isFinalStep ? "Finish" : "Next";
+                    IconArrowRight.IsVisible = !isFinalStep;
                 })
                 .DisposeWith(disposable);
         });

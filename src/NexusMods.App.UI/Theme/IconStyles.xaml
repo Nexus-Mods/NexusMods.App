@@ -31,6 +31,8 @@
             <icons:Icon Classes="PlayCircleOutline"></icons:Icon>
             <icons:Icon Classes="Image"></icons:Icon>
             <icons:Icon Classes="Description"></icons:Icon>
+            <icons:Icon Classes="ArrowLeft"></icons:Icon>
+            <icons:Icon Classes="ArrowRight"></icons:Icon>
         </WrapPanel>
     </Design.PreviewWith>
 
@@ -113,5 +115,13 @@
 
     <Style Selector="icons|Icon.Description">
         <Setter Property="Value" Value="mdi-text-box"/>
+    </Style>
+
+    <Style Selector="icons|Icon.ArrowLeft">
+        <Setter Property="Value" Value="mdi-arrow-left"/>
+    </Style>
+
+    <Style Selector="icons|Icon.ArrowRight">
+        <Setter Property="Value" Value="mdi-arrow-right"/>
     </Style>
 </Styles>

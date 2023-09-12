@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="clr-namespace:NexusMods.Games.FOMOD.UI"
+    xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
     mc:Ignorable="d"
     d:DesignWidth="1232"
     d:DesignHeight="84"
@@ -15,12 +16,24 @@
     </Design.DataContext>
 
     <Grid ColumnDefinitions="*, *, *">
+        <Grid.Styles>
+            <Style Selector="avalonia|Icon">
+                <Setter Property="Foreground" Value="White"/>
+            </Style>
+        </Grid.Styles>
+
         <Button Classes="Primary" Grid.Column="0" x:Name="GoToPrevButton">
-            <TextBlock>Previous</TextBlock>
+            <Grid ColumnDefinitions="Auto, Auto">
+                <avalonia:Icon Grid.Column="0" Classes="ArrowLeft"/>
+                <TextBlock Grid.Column="1">Previous</TextBlock>
+            </Grid>
         </Button>
         <ProgressBar Classes="DownloadBar" Minimum="0" Maximum="1" Grid.Column="1" x:Name="ProgressBar"></ProgressBar>
         <Button Classes="Primary" Grid.Column="2" x:Name="GoToNextButton">
-            <TextBlock x:Name="GoToNextButtonTextBlock">Next</TextBlock>
+            <Grid ColumnDefinitions="Auto, Auto">
+                <TextBlock Grid.Column="0" x:Name="GoToNextButtonTextBlock">Next</TextBlock>
+                <avalonia:Icon Grid.Column="1" Classes="ArrowRight" x:Name="IconArrowRight"/>
+            </Grid>
         </Button>
     </Grid>
 
