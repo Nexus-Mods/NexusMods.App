@@ -77,7 +77,7 @@ public class FomodXmlInstaller : IModInstaller
         if (analyzerInfo == default) return Array.Empty<ModInstallerResult>();
 
         // Setup mod, exclude script path so it doesn't get picked up and thus double read from disk
-        var modFiles = archiveFiles.Keys.Select(x => x.ToString()).ToList();
+        var modFiles = archiveFiles.Keys.Select(x => x.ToNativeSeparators(OSInformation.Shared)).ToList();
         var mod = new Mod(modFiles, stopPattern, xmlFile, string.Empty, _scriptType);
         await mod.InitializeWithoutLoadingScript();
 
@@ -105,11 +105,11 @@ public class FomodXmlInstaller : IModInstaller
 
     private static string FixXmlScript(string input)
     {
-        // NOTE(erri120): The FOMOD library we're using is once again complete ass
-        // and can't handle paths with the forward slash directory separator.
-        // This solution is completely stupid, but apparently works fine.
+        // NOTE(erri120): The FOMOD library we're using does some really funky path normalization.
+        // These don't really work well with our internal path representation and on systems
+        // where the main directory separator character is the forward slash.
         // See https://github.com/Nexus-Mods/NexusMods.App/issues/625 for details.
-        return input.Replace('\\', PathHelpers.DirectorySeparatorChar);
+        return Path.DirectorySeparatorChar == PathHelpers.DirectorySeparatorChar ? input.Replace('\\', PathHelpers.DirectorySeparatorChar) : input;
     }
 
     private IEnumerable<AModFile> InstructionsToModFiles(
