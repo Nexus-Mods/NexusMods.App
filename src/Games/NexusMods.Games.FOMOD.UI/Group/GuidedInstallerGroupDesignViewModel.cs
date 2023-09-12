@@ -70,7 +70,8 @@ public class GuidedInstallerGroupDesignViewModel : GuidedInstallerGroupViewModel
                 Id = OptionId.From(Guid.NewGuid()),
                 Name = "Disabled Option",
                 Type = OptionType.Disabled,
-                Description = "This option is disabled"
+                Description = "This option is disabled",
+                ImageUrl = AssetUrl.From("https://http.cat/images/418.jpg")
             },
         };
     }

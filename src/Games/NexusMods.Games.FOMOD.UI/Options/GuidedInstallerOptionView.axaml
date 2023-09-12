@@ -18,7 +18,7 @@
             <Style Selector="icons|Icon">
                 <Setter Property="FontSize" Value="18"></Setter>
                 <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryColor}" />
-                <Setter Property="Margin" Value="10,10,10,10" />
+                <Setter Property="Margin" Value="0,10,10,10" />
             </Style>
             <Style Selector="TextBlock.BodyMDNormal">
                 <Setter Property="Foreground" Value="{DynamicResource FontDarkPrimary}" />
@@ -32,11 +32,9 @@
             </Style>
             <Style Selector="RadioButton">
                 <Setter Property="Margin" Value="8,0,8,0" />
-                <Setter Property="Height" Value="18" />
-                <Setter Property="Width" Value="18" />
             </Style>
         </Border.Styles>
-        <Grid ColumnDefinitions="Auto, *, Auto" RowDefinitions="Auto">
+        <Grid ColumnDefinitions="Auto, *, Auto, Auto" RowDefinitions="Auto">
 
             <StackPanel Grid.Column="0" VerticalAlignment="Center">
                 <CheckBox IsVisible="False" x:Name="CheckBox" />
@@ -44,7 +42,7 @@
             </StackPanel>
             <TextBlock Grid.Column="1" Classes="BodyMDNormal" x:Name="OptionNameTextBlock" VerticalAlignment="Center" />
             <icons:Icon Classes="Image" IsVisible="False" Grid.Column="2" x:Name="ImageIcon" VerticalAlignment="Center" />
-            <icons:Icon Classes="Description" IsVisible="False" Grid.Column="2" x:Name="DescriptionIcon" VerticalAlignment="Center" />
+            <icons:Icon Classes="Description" IsVisible="False" Grid.Column="3" x:Name="DescriptionIcon" VerticalAlignment="Center" />
         </Grid>
     </Border>
 </reactiveUi:ReactiveUserControl>
