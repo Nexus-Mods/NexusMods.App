@@ -1,4 +1,24 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <StackPanel>
+            <TextBlock Classes="Small" Text="Sample Text Small"/>
+            <TextBlock Classes="H1" Text="Sample Text H1"/>
+            <TextBlock Classes="TopTitle" Text="Sample Text Top Title"/>
+            <TextBlock Classes="Body2RobotoRegular" Text="Sample Text Body2RobotoRegular"/>
+            <TextBlock Classes="Subheading" Text="Sample Text Subheading"/>
+            <TextBlock Classes="H5MontserratSemi" Text="Sample Text H5MontserratSemi"/>
+            <TextBlock Classes="H6MontserratSemi" Text="Sample Text H6MontserratSemi"/>
+            <TextBlock Classes="Body_MD_Normal" Text="Sample Text Body_MD_Normal"/>
+            <TextBlock Classes="CaptionMontserratSemi" Text="Sample Text CaptionMontserratSemi"/>
+            <TextBlock Classes="ButtonMontserratSemi" Text="Sample Text ButtonMontserratSemi"/>
+            <TextBlock Classes="Body2RobotoRegularBold" Text="Sample Text Body2RobotoRegularBold"/>
+            <TextBlock Classes="UsesAccentLighterColor" Text="Sample Text UsesAccentLighterColor"/>
+            <TextBlock Classes="BodyLGBold" Text="Sample Text BodyLGBold"/>
+            <TextBlock Classes="HeadingMDSemi" Text="Sample Text HeadingMDSemi"/>
+            <TextBlock Classes="UsesBrandWhiteColor" Text="Sample Text UsesBrandWhiteColor"/>
+
+        </StackPanel>
+    </Design.PreviewWith>
 
     <Style Selector="TextBlock.Small">
         <Setter Property="FontSize" Value="10" />
@@ -11,7 +31,6 @@
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
-
 
 
     <Style Selector="TextBlock.H1">
@@ -97,14 +116,6 @@
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
     </Style>
 
-    <Style Selector="TextBlock.Body2RobotoRegular">
-        <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
-        <Setter Property="FontWeight" Value="400" />
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="LineHeight" Value="21" />
-        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
-    </Style>
-
     <Style Selector="TextBlock.Body2RobotoRegularBold">
         <Setter Property="FontFamily" Value="{DynamicResource FontSecondaryBold}" />
         <Setter Property="FontWeight" Value="700" />
@@ -115,6 +126,21 @@
 
     <Style Selector="TextBlock.UsesAccentLighterColor">
         <Setter Property="Foreground" Value="{DynamicResource BrandAccentLighter}" />
+    </Style>
+
+    <Style Selector="TextBlock.BodyLGBold">
+        <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
+        <Setter Property="FontWeight" Value="600" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="TextBlock.HeadingMDSemi">
+        <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemi}" />
+        <Setter Property="FontWeight" Value="500" />
+        <Setter Property="FontSize" Value="28" />
+        <Setter Property="LineHeight" Value="37.5" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
     </Style>
 
     <Style Selector="TextBlock.UsesBrandWhiteColor">

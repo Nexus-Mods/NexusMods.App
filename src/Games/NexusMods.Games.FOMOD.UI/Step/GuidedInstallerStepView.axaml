@@ -5,6 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:ui="clr-namespace:NexusMods.Games.FOMOD.UI"
+    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
     mc:Ignorable="d" d:DesignWidth="1232" d:DesignHeight="672"
     x:Class="NexusMods.Games.FOMOD.UI.GuidedInstallerStepView">
 
@@ -12,34 +13,105 @@
         <ui:GuidedInstallerStepDesignViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="Auto,Auto,*,Auto">
-        <TextBlock Classes="H1" Grid.Row="0" Grid.Column="0" x:Name="ModName" />
-        <TextBlock Classes="TopTitle" Grid.Row="1" Grid.Column="0" x:Name="StepName" />
+    <Grid RowDefinitions="*,Auto">
+        <Grid.Styles>
+            <Style Selector="icons|Icon#MultiOptionHeaderIcon">
+                <Setter Property="FontSize" Value="18" />
+                <Setter Property="Margin" Value="0,0,8,0" />
+                <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+            </Style>
 
-        <TextBlock Classes="TopTitle" VerticalAlignment="Top" Grid.Row="2" x:Name="InstallationCompleteScreenTextBlock" IsVisible="False">
-            You can change these options anytime by clicking the TODO button in the mod list.
-        </TextBlock>
+            <Style Selector="Border#TopPart">
+                <Setter Property="Background" Value="{DynamicResource BorderContainerColor}" />
+            </Style>
 
-        <Grid Grid.Row="2" ColumnDefinitions="*,*" x:Name="GroupsGrid">
-            <ScrollViewer Grid.Column="0">
-                <ItemsControl x:Name="GroupItemsControl">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
-            </ScrollViewer>
+            <Style Selector="Border#GroupsBorder">
+                <Setter Property="Background" Value="{DynamicResource StructuralBorderColor}" />
+                <Setter Property="CornerRadius" Value="8,8, 8,8" />
+                <Setter Property="Padding" Value="8,8,8,8" />
+                <Setter Property="Margin" Value="0,0,16,0" />
+            </Style>
+            <Style Selector="Border.WhiteRounded">
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="BorderBrush" Value="{DynamicResource BrandTertiaryDarker}" />
+            </Style>
+            <Style Selector="Border#PreviewTitleBorder">
+                <Setter Property="Padding" Value="16,12,16,12" />
+                <Setter Property="CornerRadius" Value="8,8,0,0" />
+            </Style>
+            <Style Selector="Border#PreviewContentBorder">
+                <Setter Property="Padding" Value="16,12,16,12" />
+                <Setter Property="CornerRadius" Value="0,0,8,8" />
+            </Style>
+        </Grid.Styles>
 
-            <ScrollViewer Grid.Column="1">
-                <StackPanel>
-                    <TextBlock Classes="Small" x:Name="HighlightedOptionDescription" />
-                    <Image Stretch="Uniform" IsVisible="False" x:Name="HighlightedOptionImage" />
-                </StackPanel>
-            </ScrollViewer>
-        </Grid>
+        <Border Grid.Row="0" x:Name="TopPart" Padding="24, 16, 24,24">
+            <Grid x:Name="TopPartGrid" RowDefinitions="Auto,*">
+                <Border Grid.Row="0" x:Name="MultiOptionHeaderBorder" Padding="0,0,0,16">
+                    <StackPanel x:Name="MultiOptionHeaderStackPanel" Orientation="Horizontal">
 
-        <reactiveUi:ViewModelViewHost Grid.Row="3" Grid.Column="0" x:Name="FooterStepperViewHost" />
+
+                        <icons:Icon x:Name="MultiOptionHeaderIcon" Classes="Tune" VerticalAlignment="Center"></icons:Icon>
+                        <TextBlock x:Name="MultiOptionHeaderTextBlock" Text="Multi-Option Mod" Classes="BodyLGBold" />
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="1" x:Name="BodyBorder">
+                    <Grid x:Name="BodyStackPanel" RowDefinitions="Auto, *">
+                        <Border Grid.Row="0" x:Name="HeadingAndSubHeadingBorder" Padding="0,0,0,16">
+                            <StackPanel x:Name="HeadingAndSubHeadingStackPanel">
+                                <TextBlock Classes="H6MontserratSemi" x:Name="ModName" />
+                                <TextBlock Classes="HeadingMDSemi" x:Name="StepName" />
+                            </StackPanel>
+                        </Border>
+
+
+                        <TextBlock Grid.Row="1" Classes="TopTitle" VerticalAlignment="Top"
+                                   x:Name="InstallationCompleteScreenTextBlock" IsVisible="False">
+                            You can change these options anytime by clicking the TODO button in the mod list.
+                        </TextBlock>
+
+                        <Grid Grid.Row="1" x:Name="GroupsGrid" ColumnDefinitions="*,*">
+                            <Border Grid.Column="0" x:Name="GroupsBorder">
+                                <ScrollViewer x:Name="GroupsScrollViewer">
+                                    <ItemsControl x:Name="GroupItemsControl">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                            </Border>
+
+
+                            <Grid Grid.Column="1" x:Name="PreviewStackPanel" RowDefinitions="Auto,*">
+                                <Border Grid.Row="0" x:Name="PreviewTitleBorder" Classes="WhiteRounded">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Option 1" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Grid.Row="1" x:Name="PreviewContentBorder" Classes="WhiteRounded">
+                                    <ScrollViewer>
+                                        <StackPanel Orientation="Vertical" VerticalAlignment="Stretch">
+
+                                            <Image Stretch="Uniform" IsVisible="False" x:Name="HighlightedOptionImage" />
+                                            <TextBlock Classes="Small" x:Name="HighlightedOptionDescription" Text="No additional details"/>
+                                        </StackPanel>
+                                    </ScrollViewer>
+                                </Border>
+                            </Grid>
+
+                        </Grid>
+                    </Grid>
+
+
+                </Border>
+
+            </Grid>
+        </Border>
+        <reactiveUi:ViewModelViewHost Grid.Row="1" x:Name="FooterStepperViewHost" />
     </Grid>
+
 
 </reactiveUi:ReactiveUserControl>

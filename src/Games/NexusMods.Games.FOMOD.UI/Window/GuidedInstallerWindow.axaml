@@ -5,15 +5,16 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:ui="clr-namespace:NexusMods.Games.FOMOD.UI"
-    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    mc:Ignorable="d" d:DesignWidth="1232" d:DesignHeight="672"
     x:Class="NexusMods.Games.FOMOD.UI.GuidedInstallerWindow"
     x:TypeArguments="ui:IGuidedInstallerWindowViewModel"
-    Title="GuidedInstallerWindow">
+    Title="GuidedInstallerWindow"
+    MinHeight="672" MinWidth="1232" MaxHeight="818" MaxWidth="1500">
 
     <Design.DataContext>
         <ui:GuidedInstallerWindowDesignViewModel />
     </Design.DataContext>
 
-    <reactiveUi:ViewModelViewHost x:Name="StepViewHost"/>
+    <reactiveUi:ViewModelViewHost x:Name="StepViewHost" />
 
 </reactiveUi:ReactiveWindow>
