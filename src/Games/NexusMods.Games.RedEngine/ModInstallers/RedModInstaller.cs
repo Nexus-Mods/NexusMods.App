@@ -46,7 +46,8 @@ public class RedModInstaller : IModInstaller
             results.Add(new ModInstallerResult
             {
                 Id = baseIdUsed ? ModId.New() : baseModId,
-                Files = files
+                Files = files,
+                Name = node.InfoJson?.Name ?? "<unknown>"
             });
             baseIdUsed = true;
         }

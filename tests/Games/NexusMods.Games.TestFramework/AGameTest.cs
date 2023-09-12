@@ -177,7 +177,8 @@ public abstract class AGameTest<TGame> where TGame : AGame
             cancellationToken);
 
         mods.Length.Should().BeGreaterOrEqualTo(1);
-        return mods.First();
+        // Sort the mods so we have consistent results
+        return mods.OrderBy(m => m.Name).First();
     }
 
     /// <summary>
