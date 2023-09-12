@@ -44,7 +44,12 @@ public class GuidedInstallerStepDesignViewModel : AViewModel<IGuidedInstallerSte
 
         InstallationStep = step;
         Groups = step.Groups
-            .Select(group => (IGuidedInstallerGroupViewModel)new GuidedInstallerGroupDesignViewModel(group))
+            .Select(group =>
+            {
+                var vm = (IGuidedInstallerGroupViewModel)new GuidedInstallerGroupDesignViewModel(group);
+                if (group.Type == OptionGroupType.AtLeastOne) vm.HasValidSelection = false;
+                return vm;
+            })
             .ToArray();
 
         FooterStepperViewModel = new FooterStepperDesignViewModel(Percent.Zero);

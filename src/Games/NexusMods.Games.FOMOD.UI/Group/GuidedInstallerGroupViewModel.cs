@@ -3,6 +3,7 @@ using NexusMods.Common.GuidedInstaller;
 using NexusMods.Common.GuidedInstaller.ValueObjects;
 using NexusMods.Games.FOMOD.UI.Resources;
 using NexusMods.Games.FOMOD.UI.Resources;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.Games.FOMOD.UI;
@@ -10,7 +11,7 @@ namespace NexusMods.Games.FOMOD.UI;
 public class GuidedInstallerGroupViewModel : AViewModel<IGuidedInstallerGroupViewModel>, IGuidedInstallerGroupViewModel
 {
     [Reactive]
-    public bool HasValidSelection { get; set; }
+    public bool HasValidSelection { get; set; } = true;
 
     public OptionGroup Group { get; }
 
@@ -43,5 +44,14 @@ public class GuidedInstallerGroupViewModel : AViewModel<IGuidedInstallerGroupVie
         {
             Options = options.ToArray();
         }
+
+        this.WhenAnyValue(x => x.HasValidSelection)
+            .SubscribeWithErrorLogging(logger: default, isValid =>
+            {
+                foreach (var optionVM in Options)
+                {
+                    optionVM.IsValid = isValid;
+                }
+            });
     }
 }

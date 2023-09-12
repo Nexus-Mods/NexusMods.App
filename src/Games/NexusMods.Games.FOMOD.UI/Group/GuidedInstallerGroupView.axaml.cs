@@ -1,5 +1,6 @@
 using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
+using NexusMods.App.UI;
 using NexusMods.Common.GuidedInstaller;
 using ReactiveUI;
 
@@ -15,6 +16,19 @@ public partial class GuidedInstallerGroupView : ReactiveUserControl<IGuidedInsta
         {
             GroupName.Text = ViewModel?.Group.Name;
             GroupType.IsVisible = ViewModel?.Group.Type == OptionGroupType.AtLeastOne;
+
+            this.WhenAnyValue(x => x.ViewModel!.HasValidSelection)
+                .SubscribeWithErrorLogging(logger: default, isValid =>
+                {
+                    if (isValid)
+                    {
+                        GroupType.Classes.Remove("StatusDangerDarker");
+                    }
+                    else
+                    {
+                        GroupType.Classes.Add("StatusDangerDarker");
+                    }
+                });
 
             this.OneWayBind(ViewModel, vm => vm.Options, view => view.OptionsListBox.ItemsSource)
                 .DisposeWith(disposables);
