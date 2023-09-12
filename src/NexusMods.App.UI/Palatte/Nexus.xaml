@@ -3,7 +3,7 @@
         <Color x:Key="BrandPrimary">#D98F40</Color>
         <Color x:Key="BrandPrimaryLighter">#E0A362</Color>
         <Color x:Key="BrandPrimaryDarker">#C87B28</Color>
-        
+
         <Color x:Key="BrandAccent">#388FFA</Color>
         <Color x:Key="BrandAccentLighter">#60A5FB</Color>
         <Color x:Key="BrandAccentDarker">#0555B8</Color>
@@ -38,6 +38,13 @@
         <SolidColorBrush Color="{DynamicResource StatusSuccessLighter}" x:Key="StatusSuccessLighterBrush" />
         <SolidColorBrush Color="{DynamicResource StatusSuccessDarker}" x:Key="StatusSuccessDarkerBrush" />
 
+        <Color x:Key="StatusDanger">#CC0000</Color>
+        <Color x:Key="StatusDangerDarker">#A30000</Color>
+        <Color x:Key="StatusDangerLighter">#FF585B</Color>
+
+        <SolidColorBrush Color="{DynamicResource StatusDanger}" x:Key="StatusDangerBrush" />
+        <SolidColorBrush Color="{DynamicResource StatusDangerLighter}" x:Key="StatusDangerLighterBrush" />
+        <SolidColorBrush Color="{DynamicResource StatusDangerDarker}" x:Key="StatusDangerDarkerBrush" />
 
         <Color x:Key="ContentSecondary">#2b2d2f</Color>
         <SolidColorBrush Color="{DynamicResource ContentSecondary}" x:Key="ContentSecondaryBrush" />
@@ -45,9 +52,9 @@
 
         <Color x:Key="BrandWhite">#FFFFFF</Color>
         <SolidColorBrush Color="{DynamicResource BrandWhite}" x:Key="BrandWhiteBrush" />
-        
+
         <Color x:Key="BrandWhite30Percent">#4CFFFFFF</Color>
-        
+
         <Color x:Key="FontLightPrimary">#303030</Color>
         <Color x:Key="FontLightSecondary">#666666</Color>
         <Color x:Key="FontDarkPrimary">#FFFFFF</Color>
@@ -57,13 +64,13 @@
 
         <Color x:Key="ThemeBackgroundColor">#101010</Color>
         <SolidColorBrush Color="{DynamicResource ThemeBackgroundColor}" x:Key="ThemeBackgroundBrush" />
-        
+
         <Color x:Key="BackgroundPrimaryColor">#101010</Color>
         <SolidColorBrush Color="{DynamicResource BackgroundPrimaryColor}" x:Key="BackgroundPrimaryBrush" />
 
         <Color x:Key="BackgroundSecondaryColor">#181818</Color>
         <SolidColorBrush Color="{DynamicResource BackgroundSecondaryColor}" x:Key="BackgroundSecondaryBrush" />
-        
+
         <Color x:Key="BackgroundSecondaryDarkerColor">#161717</Color>
         <SolidColorBrush Color="{DynamicResource BackgroundSecondaryDarkerColor}" x:Key="BackgroundSecondaryDarker" />
 
@@ -101,7 +108,7 @@
 
         <Color x:Key="FontDarkSecondaryColor">#AAAAAA</Color>
         <SolidColorBrush Color="{DynamicResource FontDarkSecondaryColor}" x:Key="FontDarkSecondaryBrush" />
-        
+
         <Color x:Key="OffWhiteTextColor">#E2E2E2</Color>
         <SolidColorBrush Color="{DynamicResource OffWhiteTextColor}" x:Key="OffWhiteTextBrush" />
 

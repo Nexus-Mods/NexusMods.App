@@ -1,6 +1,7 @@
 using System.Reactive.Disposables;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
+using NexusMods.App.UI;
 using NexusMods.Common.GuidedInstaller;
 using ReactiveUI;
 
@@ -57,6 +58,19 @@ public partial class GuidedInstallerOptionView : ReactiveUserControl<IGuidedInst
             {
                 ToolTip.SetTip(OptionNameTextBlock, hoverText);
             }
+
+            this.WhenAnyValue(x => x.ViewModel!.IsValid)
+                .SubscribeWithErrorLogging(logger: default, isValid =>
+                {
+                    if (isValid)
+                    {
+                        OptionNameTextBlock.Classes.Remove("StatusDangerDarker");
+                    }
+                    else
+                    {
+                        OptionNameTextBlock.Classes.Add("StatusDangerDarker");
+                    }
+                });
         });
     }
 }
