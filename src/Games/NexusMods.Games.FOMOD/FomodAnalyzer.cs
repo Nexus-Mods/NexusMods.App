@@ -83,7 +83,8 @@ public class FomodAnalyzer
         return new FomodAnalyzerInfo
         {
             XmlScript = data!,
-            Images = images
+            Images = images,
+            PathPrefix = pathPrefix.Path
         };
     }
 
@@ -98,19 +99,19 @@ public record FomodAnalyzerInfo
     public required string XmlScript { get; init; }
     public required List<FomodAnalyzerImage> Images { get; init; }
 
+    public required RelativePath PathPrefix { get; init; }
+
     public record struct FomodAnalyzerImage(string Path, byte[] Image);
 
     // Keeping in case this is ever needed. We can remove this once all FOMOD stuff is done.
     [PublicAPI]
-    public async Task DumpToFileSystemAsync(TemporaryPath fomodFolder)
+    public async Task DumpToFileSystemAsync(AbsolutePath fomodFolder)
     {
         var fs = FileSystem.Shared;
-        var path = fomodFolder.Path;
-
         // Dump Item
         async Task DumpItem(string relativePath, byte[] data)
         {
-            var finalPath = path.Combine(relativePath);
+            var finalPath = fomodFolder.Combine(relativePath);
             fs.CreateDirectory(finalPath.Parent);
             await fs.WriteAllBytesAsync(finalPath, data);
         }

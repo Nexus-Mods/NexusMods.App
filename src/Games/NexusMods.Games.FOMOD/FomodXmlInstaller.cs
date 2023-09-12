@@ -67,12 +67,12 @@ public class FomodXmlInstaller : AModInstaller
 
         await using var tmpFolder = _tempoaryFileManager.CreateFolder();
 
-        await analyzerInfo.DumpToFileSystemAsync(tmpFolder);
+        await analyzerInfo.DumpToFileSystemAsync(tmpFolder.Path.Combine(analyzerInfo.PathPrefix));
 
-        var xmlPath = tmpFolder.Path.Combine(FomodConstants.XmlConfigRelativePath);
+        var xmlPath = analyzerInfo.PathPrefix.Join(FomodConstants.XmlConfigRelativePath);
 
         // Setup mod, exclude script path so it doesn't get picked up and thus double read from disk
-        var modFiles = archiveFiles.GetAllDescendentFiles().Select(x => x.Path.ToString()).ToList();
+        var modFiles = archiveFiles.GetAllDescendentFiles().Select(x => x.Path.ToNativeSeparators(OSInformation.Shared)).ToList();
         var mod = new Mod(modFiles, stopPattern, xmlPath.ToString(), string.Empty, _scriptType);
         await mod.InitializeWithoutLoadingScript();
 
