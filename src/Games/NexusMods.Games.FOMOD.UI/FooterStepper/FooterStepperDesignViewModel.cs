@@ -9,7 +9,7 @@ namespace NexusMods.Games.FOMOD.UI;
 
 public class FooterStepperDesignViewModel : FooterStepperViewModel
 {
-    [Reactive] public int CurrentValue { get; set; } = 5;
+    [Reactive] private int CurrentValue { get; set; } = 5;
 
     public FooterStepperDesignViewModel(Percent progress)
     {
@@ -18,14 +18,12 @@ public class FooterStepperDesignViewModel : FooterStepperViewModel
 
     public FooterStepperDesignViewModel()
     {
-        this.WhenActivated(disposable =>
+        this.WhenActivated(disposables =>
         {
             this.WhenAnyValue(x => x.CurrentValue)
-                .SubscribeWithErrorLogging(logger: default, current =>
-                {
-                    Progress = Percent.CreateClamped(current, 10);
-                })
-                .DisposeWith(disposable);
+                .Select(current => Percent.CreateClamped(current, 10))
+                .Subscribe(progress => Progress = progress)
+                .DisposeWith(disposables);
 
             var canGoToNext = this
                 .WhenAnyValue(x => x.CurrentValue)
@@ -34,7 +32,7 @@ public class FooterStepperDesignViewModel : FooterStepperViewModel
             GoToNextCommand = ReactiveCommand.Create(() =>
             {
                 CurrentValue += 1;
-            }, canGoToNext).DisposeWith(disposable);
+            }, canGoToNext).DisposeWith(disposables);
 
             var canGoToPrev = this
                 .WhenAnyValue(x => x.CurrentValue)
@@ -43,7 +41,7 @@ public class FooterStepperDesignViewModel : FooterStepperViewModel
             GoToPrevCommand = ReactiveCommand.Create(() =>
             {
                 CurrentValue -= 1;
-            }, canGoToPrev).DisposeWith(disposable);
+            }, canGoToPrev).DisposeWith(disposables);
         });
     }
 }

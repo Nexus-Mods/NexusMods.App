@@ -1,5 +1,6 @@
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using NexusMods.App.UI;
 using NexusMods.DataModel.RateLimiting;
 using ReactiveUI;
@@ -10,7 +11,7 @@ namespace NexusMods.Games.FOMOD.UI;
 public class FooterStepperViewModel : AViewModel<IFooterStepperViewModel>, IFooterStepperViewModel
 {
     [Reactive]
-    public bool IsLastStep { get; set; }
+    public bool IsLastStep { get; private set; }
 
     [Reactive]
     public Percent Progress { get; set; } = Percent.Zero;
@@ -23,11 +24,12 @@ public class FooterStepperViewModel : AViewModel<IFooterStepperViewModel>, IFoot
 
     public FooterStepperViewModel()
     {
-        this.WhenActivated(disposable =>
+        this.WhenActivated(disposables =>
         {
             this.WhenAnyValue(x => x.Progress)
-                .SubscribeWithErrorLogging(logger: default, progress => { IsLastStep = progress == Percent.One; })
-                .DisposeWith(disposable);
+                .Select(progress => progress == Percent.One)
+                .SubscribeWithErrorLogging(isLastStep => IsLastStep = isLastStep)
+                .DisposeWith(disposables);
         });
     }
 }
