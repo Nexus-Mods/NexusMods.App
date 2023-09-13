@@ -31,12 +31,17 @@
             <Style Selector="TextBlock#GroupType">
                 <Setter Property="Margin" Value="0,4,0,0" />
             </Style>
-            <Style Selector="ListBox">
-                <Setter Property="Background" Value="Transparent" />
-            </Style>
             <Style Selector="ListBoxItem">
                 <Setter Property="Padding" Value="0 0 0 0" />
+                <Setter Property="Background" Value="{DynamicResource StructuralBorderColor}" />
             </Style>
+            <Style Selector="ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{DynamicResource BrandPrimary}" />
+            </Style>
+            <Style Selector="ListBoxItem:pointerover:not(:selected) /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{DynamicResource BorderContainerColor}" />
+            </Style>
+
         </StackPanel.Styles>
 
         <Border x:Name="GroupNameBorder">
