@@ -20,9 +20,6 @@ public class GuidedInstallerStepDesignViewModel : AViewModel<IGuidedInstallerSte
     [Reactive]
     public IGuidedInstallerOptionViewModel? HighlightedOptionViewModel { get; set; }
 
-    [Reactive]
-    public string? HighlightedOptionDescription { get; set; }
-
     private readonly Subject<IImage> _highlightedOptionImageSubject = new();
     public IObservable<IImage> HighlightedOptionImageObservable => _highlightedOptionImageSubject;
 

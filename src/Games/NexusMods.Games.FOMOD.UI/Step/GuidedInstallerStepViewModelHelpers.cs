@@ -63,11 +63,7 @@ internal static class GuidedInstallerStepViewModelHelpers
             .WhenAnyValue(x => x.HighlightedOptionViewModel)
             .WhereNotNull()
             .Select(optionVM => optionVM.Option)
-            .Where(option =>
-            {
-                viewModel.HighlightedOptionDescription = option.Description;
-                return option.ImageUrl is not null;
-            })
+            .Where(option => option.ImageUrl is not null)
             .OffUi()
             .Select(option =>
             {

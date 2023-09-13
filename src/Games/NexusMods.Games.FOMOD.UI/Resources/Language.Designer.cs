@@ -9,8 +9,8 @@
 
 namespace NexusMods.Games.FOMOD.UI.Resources {
     using System;
-    
-    
+
+
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -22,15 +22,15 @@ namespace NexusMods.Games.FOMOD.UI.Resources {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Language {
-        
+
         private static global::System.Resources.ResourceManager resourceMan;
-        
+
         private static global::System.Globalization.CultureInfo resourceCulture;
-        
+
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal Language() {
         }
-        
+
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
@@ -44,7 +44,7 @@ namespace NexusMods.Games.FOMOD.UI.Resources {
                 return resourceMan;
             }
         }
-        
+
         /// <summary>
         ///   Overrides the current thread's CurrentUICulture property for all
         ///   resource lookups using this strongly typed resource class.
@@ -58,7 +58,7 @@ namespace NexusMods.Games.FOMOD.UI.Resources {
                 resourceCulture = value;
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Finish.
         /// </summary>
@@ -67,7 +67,7 @@ namespace NexusMods.Games.FOMOD.UI.Resources {
                 return ResourceManager.GetString("FooterStepperView_FooterStepperView_Finish", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Next.
         /// </summary>
@@ -76,7 +76,7 @@ namespace NexusMods.Games.FOMOD.UI.Resources {
                 return ResourceManager.GetString("FooterStepperView_FooterStepperView_Next", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Previous.
         /// </summary>
@@ -85,7 +85,7 @@ namespace NexusMods.Games.FOMOD.UI.Resources {
                 return ResourceManager.GetString("FooterStepperView_FooterStepperView_Previous", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to (SELECT AT LEAST ONE).
         /// </summary>
@@ -94,7 +94,7 @@ namespace NexusMods.Games.FOMOD.UI.Resources {
                 return ResourceManager.GetString("GuidedInstallerGroupView_SelectAtLeastOne", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to None.
         /// </summary>
@@ -103,7 +103,7 @@ namespace NexusMods.Games.FOMOD.UI.Resources {
                 return ResourceManager.GetString("GuidedInstallerGroupViewModel_GuidedInstallerGroupViewModel_None", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Select nothing.
         /// </summary>
@@ -112,7 +112,7 @@ namespace NexusMods.Games.FOMOD.UI.Resources {
                 return ResourceManager.GetString("GuidedInstallerGroupViewModel_GuidedInstallerGroupViewModel_Select_nothing", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Use this option to select nothing.
         /// </summary>
@@ -122,7 +122,16 @@ namespace NexusMods.Games.FOMOD.UI.Resources {
                         "lect_nothing", resourceCulture);
             }
         }
-        
+
+        public static string GuidedInstallerStepView_GuidedInstallerStepView_No_additional_details_available
+        {
+            get
+            {
+                return ResourceManager.GetString(
+                    "GuidedInstallerStepView_GuidedInstallerStepView_No_additional_details_available", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Installation complete.
         /// </summary>
