@@ -18,13 +18,7 @@ public partial class GuidedInstallerOptionView : ReactiveUserControl<IGuidedInst
 
         this.WhenActivated(disposables =>
         {
-            var useRadioButton = ViewModel!.Group.Type switch
-            {
-                OptionGroupType.ExactlyOne => true,
-                OptionGroupType.AtMostOne => true,
-                _ => false
-            };
-
+            var useRadioButton = ViewModel!.Group.Type.UsesRadioButtons();
             PopulateFromViewModel(ViewModel!, useRadioButton);
 
             if (useRadioButton)

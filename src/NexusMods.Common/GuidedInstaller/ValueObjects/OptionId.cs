@@ -8,4 +8,10 @@ namespace NexusMods.Common.GuidedInstaller.ValueObjects;
 /// </summary>
 [PublicAPI]
 [ValueObject<Guid>]
-public readonly partial struct OptionId { }
+public readonly partial struct OptionId
+{
+    /// <summary>
+    /// The "None" option.
+    /// </summary>
+    public static readonly OptionId None = From(Guid.Empty);
+}

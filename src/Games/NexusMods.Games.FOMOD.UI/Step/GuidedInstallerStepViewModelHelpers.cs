@@ -96,18 +96,12 @@ internal static class GuidedInstallerStepViewModelHelpers
         }
     }
 
-    public static readonly OptionId NoneOptionId = OptionId.From(Guid.Empty);
-
     public static SelectedOption[] GatherSelectedOptions<T>(this T viewModel)
         where T : IGuidedInstallerStepViewModel
     {
         return viewModel.Groups
             .SelectMany(groupVM => groupVM.Options
-                .Where(optionVM => optionVM.IsChecked)
-                // NOTE(erri120): The "None" option gets added programatically
-                // and allows the user to make no choice at all. As such,
-                // we must not forward this option as selected.
-                .Where(optionVM => optionVM.Option.Id != NoneOptionId)
+                .Where(optionVM => optionVM.IsChecked && optionVM.Option.Id != OptionId.None)
                 .Select(optionVM => new SelectedOption(groupVM.Group.Id, optionVM.Option.Id))
             )
             .ToArray();

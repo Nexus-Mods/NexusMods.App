@@ -1,11 +1,13 @@
 using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
+using JetBrains.Annotations;
 using NexusMods.App.UI;
 using NexusMods.Common.GuidedInstaller;
 using ReactiveUI;
 
 namespace NexusMods.Games.FOMOD.UI;
 
+[UsedImplicitly]
 public partial class GuidedInstallerGroupView : ReactiveUserControl<IGuidedInstallerGroupViewModel>
 {
     public GuidedInstallerGroupView()
@@ -14,11 +16,10 @@ public partial class GuidedInstallerGroupView : ReactiveUserControl<IGuidedInsta
 
         this.WhenActivated(disposables =>
         {
-            GroupName.Text = ViewModel?.Group.Name.ToUpperInvariant();
-            GroupType.IsVisible = ViewModel?.Group.Type == OptionGroupType.AtLeastOne;
+            PopulateFromViewModel(ViewModel!);
 
             this.WhenAnyValue(x => x.ViewModel!.HasValidSelection)
-                .SubscribeWithErrorLogging(logger: default, isValid =>
+                .SubscribeWithErrorLogging(isValid =>
                 {
                     if (isValid)
                     {
@@ -28,7 +29,8 @@ public partial class GuidedInstallerGroupView : ReactiveUserControl<IGuidedInsta
                     {
                         GroupType.Classes.Add("StatusDangerLighter");
                     }
-                });
+                })
+                .DisposeWith(disposables);
 
             this.OneWayBind(ViewModel, vm => vm.Options, view => view.OptionsListBox.ItemsSource)
                 .DisposeWith(disposables);
@@ -36,5 +38,11 @@ public partial class GuidedInstallerGroupView : ReactiveUserControl<IGuidedInsta
             this.Bind(ViewModel, vm => vm.HighlightedOption, view => view.OptionsListBox.SelectedItem)
                 .DisposeWith(disposables);
         });
+    }
+
+    private void PopulateFromViewModel(IGuidedInstallerGroupViewModel viewModel)
+    {
+        GroupName.Text = viewModel.Group.Name.ToUpperInvariant();
+        GroupType.IsVisible = viewModel.Group.Type == OptionGroupType.AtLeastOne;
     }
 }
