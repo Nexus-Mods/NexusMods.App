@@ -17,6 +17,13 @@ public partial class GuidedInstallerOptionView : ReactiveUserControl<IGuidedInst
         {
             OptionNameTextBlock.Text = ViewModel?.Option.Name;
 
+            if (ViewModel?.Option.Type == OptionType.Disabled)
+            {
+                OptionNameTextBlock.Classes.Add("DisabledOption");
+                CheckBox.Classes.Add("DisabledOption");
+                RadioButton.Classes.Add("DisabledOption");
+            }
+
             var groupType = ViewModel?.Group.Type ?? OptionGroupType.Any;
             var useRadioButton = groupType switch
             {
