@@ -25,6 +25,9 @@
                 <Setter Property="TextTrimming" Value="CharacterEllipsis" />
                 <Setter Property="Padding" Value="8,3,8,0" />
             </Style>
+            <Style Selector="TextBlock.StatusDangerLighter">
+                <Setter Property="Foreground" Value="{DynamicResource StatusDangerLighter}"/>
+            </Style>
             <Style Selector="CheckBox">
                 <Setter Property="Margin" Value="8,0,8,0" />
                 <Setter Property="Height" Value="24" />

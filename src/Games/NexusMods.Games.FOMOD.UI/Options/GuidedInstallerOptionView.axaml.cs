@@ -64,13 +64,14 @@ public partial class GuidedInstallerOptionView : ReactiveUserControl<IGuidedInst
                 {
                     if (isValid)
                     {
-                        OptionNameTextBlock.Classes.Remove("StatusDangerDarker");
+                        OptionNameTextBlock.Classes.Remove("StatusDangerLighter");
                     }
                     else
                     {
-                        OptionNameTextBlock.Classes.Add("StatusDangerDarker");
+                        OptionNameTextBlock.Classes.Add("StatusDangerLighter");
                     }
-                });
+                })
+                .DisposeWith(disposables);
         });
     }
 }
