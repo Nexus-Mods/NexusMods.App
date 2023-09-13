@@ -6,28 +6,45 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="clr-namespace:NexusMods.Games.FOMOD.UI"
     xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
-    mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="35"
+    mc:Ignorable="d" d:DesignWidth="544" d:DesignHeight="44"
     x:Class="NexusMods.Games.FOMOD.UI.GuidedInstallerOptionView">
 
     <Design.DataContext>
         <ui:GuidedInstallerOptionDesignViewModel />
     </Design.DataContext>
 
-    <Grid ColumnDefinitions="Auto, *, Auto, Auto" RowDefinitions="Auto">
-        <Grid.Styles>
+    <Border Background="{DynamicResource BorderContainerColor}">
+        <Border.Styles>
             <Style Selector="icons|Icon">
-                <Setter Property="FontSize" Value="20"></Setter>
-                <Setter Property="Foreground" Value="White"></Setter>
+                <Setter Property="FontSize" Value="18"></Setter>
+                <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryColor}" />
+                <Setter Property="Margin" Value="0,10,10,10" />
             </Style>
-        </Grid.Styles>
+            <Style Selector="TextBlock.BodyMDNormal">
+                <Setter Property="Foreground" Value="{DynamicResource FontDarkPrimary}" />
+                <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                <Setter Property="Padding" Value="8,3,8,0" />
+            </Style>
+            <Style Selector="CheckBox">
+                <Setter Property="Margin" Value="8,0,8,0" />
+                <Setter Property="Height" Value="24" />
+                <Setter Property="Width" Value="24" />
+            </Style>
+            <Style Selector="RadioButton">
+                <Setter Property="Margin" Value="8,0,8,0" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+            </Style>
+        </Border.Styles>
+        <Grid ColumnDefinitions="Auto, *, Auto, Auto" RowDefinitions="Auto">
 
-        <StackPanel Grid.Column="0">
-            <CheckBox IsVisible="False" x:Name="CheckBox" />
-            <RadioButton IsVisible="False" x:Name="RadioButton"/>
-        </StackPanel>
-        <TextBlock Margin="0, 6, 0, 0" Grid.Column="1" Classes="ButtonMontserratSemi" x:Name="OptionNameTextBlock" />
-        <icons:Icon Classes="Image" IsVisible="False" Grid.Column="2" x:Name="ImageIcon"/>
-        <icons:Icon Margin="8, 0, 0, 0" Classes="Description" IsVisible="False" Grid.Column="3" x:Name="DescriptionIcon"/>
-    </Grid>
-
+            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                <CheckBox IsVisible="False" x:Name="CheckBox" />
+                <RadioButton IsVisible="False" x:Name="RadioButton" />
+            </StackPanel>
+            <TextBlock Grid.Column="1" Classes="BodyMDNormal" x:Name="OptionNameTextBlock" VerticalAlignment="Center" />
+            <icons:Icon Classes="Image" IsVisible="False" Grid.Column="2" x:Name="ImageIcon" VerticalAlignment="Center" />
+            <icons:Icon Classes="Description" IsVisible="False" Grid.Column="3" x:Name="DescriptionIcon"
+                        VerticalAlignment="Center" />
+        </Grid>
+    </Border>
 </reactiveUi:ReactiveUserControl>

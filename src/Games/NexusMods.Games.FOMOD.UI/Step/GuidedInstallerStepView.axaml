@@ -39,10 +39,22 @@
                 <Setter Property="Padding" Value="16,12,16,12" />
                 <Setter Property="CornerRadius" Value="8,8,0,0" />
             </Style>
+            <Style Selector="icons|Icon.PreviewIcon">
+                <Setter Property="FontSize" Value="18"></Setter>
+                <Setter Property="Foreground" Value="{DynamicResource FontDarkPrimary}" />
+                <Setter Property="Margin" Value="8,0,0,0" />
+            </Style>
+
             <Style Selector="Border#PreviewContentBorder">
-                <Setter Property="Padding" Value="16,12,16,12" />
+                <Setter Property="Padding" Value="16,16,8,0" />
                 <Setter Property="CornerRadius" Value="0,0,8,8" />
             </Style>
+            <Style Selector="TextBlock#HighlightedOptionDescription">
+                <Setter Property="Margin" Value="0,16,0,0" />
+            </Style>
+            <Style Selector="StackPanel#PreviewContentsStackPanel">
+                <Setter Property="Margin" Value="0,0,12,0" />
+                </Style>
         </Grid.Styles>
 
         <Border Grid.Row="0" x:Name="TopPart" Padding="24, 16, 24,24">
@@ -87,16 +99,20 @@
 
                             <Grid Grid.Column="1" x:Name="PreviewStackPanel" RowDefinitions="Auto,*">
                                 <Border Grid.Row="0" x:Name="PreviewTitleBorder" Classes="WhiteRounded">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="Option 1" />
-                                    </StackPanel>
+                                    <Grid ColumnDefinitions="*, Auto, Auto">
+                                        <TextBlock Grid.Column="0" x:Name="PreviewTitleTextBox" Classes="BodyXLBold"
+                                                   Text="Option 1 Has no extra details" />
+                                        <icons:Icon Grid.Column="2" x:Name="PreviewHeaderDescriptionIcon" Classes="Description PreviewIcon" VerticalAlignment="Center" />
+                                        <icons:Icon Grid.Column="1" x:Name="PreviewHeaderImageIcon" Classes="Image PreviewIcon" VerticalAlignment="Center" />
+                                    </Grid>
                                 </Border>
                                 <Border Grid.Row="1" x:Name="PreviewContentBorder" Classes="WhiteRounded">
-                                    <ScrollViewer>
-                                        <StackPanel Orientation="Vertical" VerticalAlignment="Stretch">
+                                    <ScrollViewer x:Name="PreviewScrollViewer">
+                                        <StackPanel x:Name="PreviewContentsStackPanel" Orientation="Vertical" VerticalAlignment="Stretch">
 
                                             <Image Stretch="Uniform" IsVisible="False" x:Name="HighlightedOptionImage" />
-                                            <TextBlock Classes="Small" x:Name="HighlightedOptionDescription" Text="No additional details"/>
+                                            <TextBlock Classes="BodyMDNormal" x:Name="HighlightedOptionDescription"
+                                                       Text="No additional details" />
                                         </StackPanel>
                                     </ScrollViewer>
                                 </Border>
