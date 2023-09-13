@@ -23,9 +23,6 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
     [Reactive]
     public IGuidedInstallerOptionViewModel? HighlightedOptionViewModel { get; set; }
 
-    [Reactive]
-    public string? HighlightedOptionDescription { get; set; }
-
     private readonly Subject<IImage> _highlightedOptionImageSubject = new();
     public IObservable<IImage> HighlightedOptionImageObservable => _highlightedOptionImageSubject;
 
@@ -53,10 +50,14 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
                 .WhereNotNull()
                 .SubscribeWithErrorLogging(logger, installationStep =>
                 {
-                    HighlightedOptionViewModel = null;
                     Groups = installationStep.Groups
                         .Select(group => (IGuidedInstallerGroupViewModel)new GuidedInstallerGroupViewModel(group))
                         .ToArray();
+
+                    // highlight the first option when the user changes steps
+                    var group = Groups.First();
+                    group.HighlightedOption = group.Options.First();
+                    HighlightedOptionViewModel = group.HighlightedOption;
                 })
                 .DisposeWith(disposables);
 
