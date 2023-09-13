@@ -1,7 +1,6 @@
+using System.Reactive.Disposables;
 using NexusMods.App.UI;
 using NexusMods.Common.GuidedInstaller;
-using NexusMods.Common.GuidedInstaller.ValueObjects;
-using NexusMods.Games.FOMOD.UI.Resources;
 using NexusMods.Games.FOMOD.UI.Resources;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -45,13 +44,17 @@ public class GuidedInstallerGroupViewModel : AViewModel<IGuidedInstallerGroupVie
             Options = options.ToArray();
         }
 
-        this.WhenAnyValue(x => x.HasValidSelection)
-            .SubscribeWithErrorLogging(logger: default, isValid =>
-            {
-                foreach (var optionVM in Options)
+        this.WhenActivated(disposable =>
+        {
+            this.WhenAnyValue(x => x.HasValidSelection)
+                .SubscribeWithErrorLogging(logger: default, isValid =>
                 {
-                    optionVM.IsValid = isValid;
-                }
-            });
+                    foreach (var optionVM in Options)
+                    {
+                        optionVM.IsValid = isValid;
+                    }
+                })
+                .DisposeWith(disposable);
+        });
     }
 }

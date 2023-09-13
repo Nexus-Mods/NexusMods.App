@@ -70,7 +70,8 @@ public partial class GuidedInstallerOptionView : ReactiveUserControl<IGuidedInst
                     {
                         OptionNameTextBlock.Classes.Add("StatusDangerDarker");
                     }
-                });
+                })
+                .DisposeWith(disposables);
         });
     }
 }
