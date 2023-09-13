@@ -68,11 +68,20 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
             this.SetupCrossGroupOptionHighlighting(disposables);
             this.SetupHighlightedOption(_highlightedOptionImageSubject, disposables);
 
-            Groups
-                .Select(groupVM => groupVM.WhenAnyValue(x => x.HasValidSelection))
-                .CombineLatest()
-                .Select(x => x.Any(b => !b))
-                .SubscribeWithErrorLogging(logger: default, value => HasValidSelections = !value)
+            this.WhenAnyValue(x => x.Groups)
+                .Select(groupVMs => groupVMs
+                    .Select(groupVM => groupVM
+                        .WhenAnyValue(x => x.HasValidSelection)
+                    )
+                    .CombineLatest()
+                    .Select(list => list.All(isValid => isValid))
+                )
+                .SubscribeWithErrorLogging(logger: default, observable =>
+                {
+                    observable
+                        .SubscribeWithErrorLogging(logger: default, allValid => HasValidSelections = allValid)
+                        .DisposeWith(disposables);
+                })
                 .DisposeWith(disposables);
 
             var canGoNext = this

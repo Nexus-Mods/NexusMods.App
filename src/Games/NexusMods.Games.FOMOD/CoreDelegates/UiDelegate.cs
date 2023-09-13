@@ -241,7 +241,7 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
             // NOTE(erri120): If the group only contains a single option that is required by the group type,
             // the option type should be set to required. Some authors and FOMOD builders aren't doing this
             // automatically, so we have to change the type to required afterwards.
-            if (options.Count == 1 && optionGroupType == OptionGroupType.ExactlyOne || optionGroupType == OptionGroupType.AtLeastOne)
+            if (options.Count == 1 && optionGroupType is OptionGroupType.ExactlyOne or OptionGroupType.AtLeastOne)
             {
                 optionType = OptionType.Required;
             }
