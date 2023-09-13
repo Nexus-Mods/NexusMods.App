@@ -1,4 +1,5 @@
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using NexusMods.App.UI;
 using NexusMods.Common.GuidedInstaller;
 using NexusMods.Games.FOMOD.UI.Resources;
@@ -55,6 +56,26 @@ public class GuidedInstallerGroupViewModel : AViewModel<IGuidedInstallerGroupVie
                     }
                 })
                 .DisposeWith(disposable);
+
+            if (Group.Type is OptionGroupType.ExactlyOne or OptionGroupType.AtLeastOne)
+            {
+                Options
+                    .Select(optionVM => optionVM
+                        .WhenAnyValue(x => x.IsChecked)
+                        .Select(isChecked => (optionVM.Option.Id, isChecked)))
+                    .CombineLatest()
+                    .SubscribeWithErrorLogging(logger: default, values =>
+                    {
+                        var selectedOptions = values
+                            .Where(tuple => tuple.isChecked)
+                            .Select(tuple => tuple.Id)
+                            .Select(optionId => new SelectedOption(Group.Id, optionId))
+                            .ToArray();
+
+                        HasValidSelection = GuidedInstallerValidation.IsValidGroupSelection(Group, selectedOptions);
+                    })
+                    .DisposeWith(disposable);
+            }
         });
     }
 }
