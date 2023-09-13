@@ -14,7 +14,7 @@ public partial class GuidedInstallerGroupView : ReactiveUserControl<IGuidedInsta
 
         this.WhenActivated(disposables =>
         {
-            GroupName.Text = ViewModel?.Group.Name;
+            GroupName.Text = ViewModel?.Group.Name.ToUpperInvariant();
             GroupType.IsVisible = ViewModel?.Group.Type == OptionGroupType.AtLeastOne;
 
             this.WhenAnyValue(x => x.ViewModel!.HasValidSelection)
