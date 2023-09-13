@@ -14,8 +14,11 @@
         <ui:GuidedInstallerGroupDesignViewModel />
     </Design.DataContext>
 
-    <StackPanel>
+    <StackPanel x:Name="GroupViewContainer">
         <StackPanel.Styles>
+            <Style Selector="StackPanel#GroupViewContainer">
+                <Setter Property="Margin" Value="0,0,0,32" />
+            </Style>
             <Style Selector="TextBlock.StatusDangerLighter">
                 <Setter Property="Foreground" Value="{DynamicResource StatusDangerLighter}" />
             </Style>
