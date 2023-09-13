@@ -15,14 +15,20 @@
 
     <Grid RowDefinitions="*,Auto">
         <Grid.Styles>
+            <Style Selector="Border#TopPart">
+                <Setter Property="Padding" Value="24, 16, 24, 24" />
+                <Setter Property="Background" Value="{DynamicResource BorderContainerColor}" />
+            </Style>
+            <Style Selector="Border#MultiOptionHeaderBorder">
+                <Setter Property="Padding" Value="0,0,0,16" />
+            </Style>
             <Style Selector="icons|Icon#MultiOptionHeaderIcon">
-                <Setter Property="FontSize" Value="18" />
-                <Setter Property="Margin" Value="0,0,8,0" />
+                <Setter Property="FontSize" Value="20" />
+                <Setter Property="Margin" Value="0,0,8,8" />
                 <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
             </Style>
-
-            <Style Selector="Border#TopPart">
-                <Setter Property="Background" Value="{DynamicResource BorderContainerColor}" />
+            <Style Selector="Border#HeadingAndSubHeadingBorder">
+                <Setter Property="Padding" Value="0,0,0,16" />
             </Style>
 
             <Style Selector="Border#GroupsBorder">
@@ -57,20 +63,20 @@
             </Style>
         </Grid.Styles>
 
-        <Border Grid.Row="0" x:Name="TopPart" Padding="24, 16, 24,24">
+        <Border Grid.Row="0" x:Name="TopPart">
             <Grid x:Name="TopPartGrid" RowDefinitions="Auto,*">
-                <Border Grid.Row="0" x:Name="MultiOptionHeaderBorder" Padding="0,0,0,16">
+                <Border Grid.Row="0" x:Name="MultiOptionHeaderBorder" >
                     <StackPanel x:Name="MultiOptionHeaderStackPanel" Orientation="Horizontal">
 
 
-                        <icons:Icon x:Name="MultiOptionHeaderIcon" Classes="Tune" VerticalAlignment="Center"></icons:Icon>
-                        <TextBlock x:Name="MultiOptionHeaderTextBlock" Text="Multi-Option Mod" Classes="BodyLGBold" />
+                        <icons:Icon x:Name="MultiOptionHeaderIcon" Classes="Tune"></icons:Icon>
+                        <TextBlock x:Name="MultiOptionHeaderTextBlock" Classes="BodyLGBold" Text="Multi-Option Mod" />
                     </StackPanel>
                 </Border>
 
                 <Border Grid.Row="1" x:Name="BodyBorder">
                     <Grid x:Name="BodyStackPanel" RowDefinitions="Auto, *">
-                        <Border Grid.Row="0" x:Name="HeadingAndSubHeadingBorder" Padding="0,0,0,16">
+                        <Border Grid.Row="0" x:Name="HeadingAndSubHeadingBorder">
                             <StackPanel x:Name="HeadingAndSubHeadingStackPanel">
                                 <TextBlock Classes="H6MontserratSemi" x:Name="ModName" />
                                 <TextBlock Classes="HeadingMDSemi" x:Name="StepName" />
