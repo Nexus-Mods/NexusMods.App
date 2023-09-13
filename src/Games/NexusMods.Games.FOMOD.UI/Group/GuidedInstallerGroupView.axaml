@@ -17,17 +17,36 @@
     <StackPanel>
         <StackPanel.Styles>
             <Style Selector="TextBlock.StatusDangerLighter">
-                <Setter Property="Foreground" Value="{DynamicResource StatusDangerLighter}"/>
+                <Setter Property="Foreground" Value="{DynamicResource StatusDangerLighter}" />
+            </Style>
+            <Style Selector="TextBlock#GroupName">
+                <Setter Property="Foreground" Value="{DynamicResource StatusDangerLight}" />
+            </Style>
+            <Style Selector="Border#GroupNameBorder">
+                <Setter Property="Margin" Value="0,0,0,16" />
+            </Style>
+            <Style Selector="TextBlock#GroupType">
+                <Setter Property="Margin" Value="0,4,0,0" />
             </Style>
         </StackPanel.Styles>
 
-        <TextBlock Classes="TitleSMSemi" x:Name="GroupName" />
-        <TextBlock Classes="TitleXSSemi" x:Name="GroupType" IsVisible="False" Text="{x:Static resources:Language.GuidedInstallerGroupView_SelectAtLeastOne}"/>
+        <Border x:Name="GroupNameBorder">
+            <StackPanel Orientation="Vertical">
+                <TextBlock Classes="TitleSMSemi" x:Name="GroupName" />
+                <TextBlock Classes="TitleXSSemi" x:Name="GroupType" IsVisible="False"
+                           Text="{x:Static resources:Language.GuidedInstallerGroupView_SelectAtLeastOne}" />
+            </StackPanel>
+
+        </Border>
+
 
         <ListBox SelectionMode="Single" x:Name="OptionsListBox">
             <ListBox.Styles>
                 <Style Selector="ListBox">
-                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Background" Value="Transparent" />
+                </Style>
+                <Style Selector="ListBoxItem">
+                    <Setter Property="Padding" Value="0 0 0 0" />
                 </Style>
             </ListBox.Styles>
 
@@ -40,4 +59,3 @@
     </StackPanel>
 
 </reactiveUi:ReactiveUserControl>
-
