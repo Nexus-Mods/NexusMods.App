@@ -45,6 +45,31 @@ public class GuidedInstallerGroupViewModel : AViewModel<IGuidedInstallerGroupVie
             Options = options.ToArray();
         }
 
+        if (group.Type is OptionGroupType.ExactlyOne or OptionGroupType.AtMostOne)
+        {
+            // NOTE(erri120): These two group types are represented using radio buttons
+            // in our UI. If none of the options are pre-selected, we select the first valid one.
+            var hasPreSelectedOptions = Options.Any(x => x.IsChecked);
+            if (!hasPreSelectedOptions)
+            {
+                var firstOption = Options.FirstOrDefault(x => x.IsEnabled);
+                if (firstOption is not null)
+                {
+                    firstOption.IsChecked = true;
+                }
+            }
+
+            // NOTE(erri120): If one option is checked and disabled, we must disable the entire group.
+            var hasDisabledCheckedOption = Options.Any(x => x is { IsChecked: true, IsEnabled: false });
+            if (hasDisabledCheckedOption)
+            {
+                foreach (var optionVM in Options)
+                {
+                    optionVM.IsEnabled = false;
+                }
+            }
+        }
+
         this.WhenActivated(disposable =>
         {
             this.WhenAnyValue(x => x.HasValidSelection)
@@ -57,7 +82,7 @@ public class GuidedInstallerGroupViewModel : AViewModel<IGuidedInstallerGroupVie
                 })
                 .DisposeWith(disposable);
 
-            if (Group.Type is OptionGroupType.ExactlyOne or OptionGroupType.AtLeastOne)
+            if (Group.Type is OptionGroupType.AtLeastOne)
             {
                 Options
                     .Select(optionVM => optionVM
@@ -69,6 +94,7 @@ public class GuidedInstallerGroupViewModel : AViewModel<IGuidedInstallerGroupVie
                         var selectedOptions = values
                             .Where(tuple => tuple.isChecked)
                             .Select(tuple => tuple.Id)
+                            .Where(tuple => tuple != GuidedInstallerStepViewModelHelpers.NoneOptionId)
                             .Select(optionId => new SelectedOption(Group.Id, optionId))
                             .ToArray();
 

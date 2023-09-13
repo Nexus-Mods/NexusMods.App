@@ -35,6 +35,9 @@ public class GuidedInstallerStepDesignViewModel : AViewModel<IGuidedInstallerSte
     [Reactive]
     public bool ShowInstallationCompleteScreen { get; set; }
 
+    [Reactive]
+    public bool HasValidSelections { get; set; }
+
     public GuidedInstallerStepDesignViewModel()
     {
         var step = SetupInstallationStep();
@@ -56,11 +59,18 @@ public class GuidedInstallerStepDesignViewModel : AViewModel<IGuidedInstallerSte
             this.SetupCrossGroupOptionHighlighting(disposables);
             this.SetupHighlightedOption(_highlightedOptionImageSubject, disposables);
 
+            Groups
+                .Select(groupVM => groupVM.WhenAnyValue(x => x.HasValidSelection))
+                .CombineLatest()
+                .Select(x => x.Any(b => !b))
+                .SubscribeWithErrorLogging(logger: default, value => HasValidSelections = !value)
+                .DisposeWith(disposables);
+
             FooterStepperViewModel.GoToNextCommand = ReactiveCommand.Create(() =>
             {
                 ShowInstallationCompleteScreen = true;
                 FooterStepperViewModel.Progress = Percent.One;
-            }).DisposeWith(disposables);
+            }, this.WhenAnyValue(x => x.HasValidSelections)).DisposeWith(disposables);
 
             var canGoToPrev = this
                 .WhenAnyValue(x => x.ShowInstallationCompleteScreen)

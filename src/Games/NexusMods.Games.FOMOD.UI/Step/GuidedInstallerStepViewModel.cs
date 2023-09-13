@@ -1,4 +1,5 @@
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Avalonia.Media;
 using JetBrains.Annotations;
@@ -42,6 +43,9 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
 
     private Percent _previousProgress = Percent.Zero;
 
+    [Reactive]
+    public bool HasValidSelections { get; set; }
+
     public GuidedInstallerStepViewModel(ILogger<GuidedInstallerStepViewModel> logger)
     {
         this.WhenActivated(disposables =>
@@ -64,34 +68,35 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
             this.SetupCrossGroupOptionHighlighting(disposables);
             this.SetupHighlightedOption(_highlightedOptionImageSubject, disposables);
 
+            this.WhenAnyValue(x => x.Groups)
+                .Select(groupVMs => groupVMs
+                    .Select(groupVM => groupVM
+                        .WhenAnyValue(x => x.HasValidSelection)
+                    )
+                    .CombineLatest()
+                    .Select(list => list.All(isValid => isValid))
+                )
+                .SubscribeWithErrorLogging(logger: default, observable =>
+                {
+                    observable
+                        .SubscribeWithErrorLogging(logger: default, allValid => HasValidSelections = allValid)
+                        .DisposeWith(disposables);
+                })
+                .DisposeWith(disposables);
+
             var canGoNext = this
                 .WhenAnyValue(
                     x => x.TaskCompletionSource,
                     x => x.InstallationStep,
-                    (tcs, step) => tcs is not null && step is not null);
+                    x => x.HasValidSelections,
+                    (tcs, step, hasValidSelections) => tcs is not null && step is not null && hasValidSelections);
 
             var goToNextStepCommand = ReactiveCommand.Create(() =>
             {
-                var selectedOptions = this.GatherSelectedOptions();
-                var failedGroupIds = GuidedInstallerValidation.ValidateStepSelections(InstallationStep!, selectedOptions);
-
-                if (failedGroupIds.Length != 0)
-                {
-                    for (var i = 0; i < failedGroupIds.Length; i++)
-                    {
-                        var tmp = i;
-                        var groupVM = Groups.FirstOrDefault(x => failedGroupIds[tmp] == x.Group.Id);
-
-                        if (groupVM is null) continue;
-                        groupVM.HasValidSelection = false;
-                    }
-
-                    return;
-                }
-
                 // NOTE(erri120): On the last step, we don't set the result but instead show a "installation complete"-screen.
                 if (InstallationStep!.HasNextStep || ShowInstallationCompleteScreen)
                 {
+                    var selectedOptions = this.GatherSelectedOptions();
                     TaskCompletionSource?.TrySetResult(new UserChoice(new UserChoice.GoToNextStep(selectedOptions)));
                 }
                 else

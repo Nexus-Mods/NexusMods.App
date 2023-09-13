@@ -1,4 +1,5 @@
 using System.Reactive.Disposables;
+using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using NexusMods.App.UI;
 using NexusMods.Games.FOMOD.UI.Resources;
@@ -59,7 +60,8 @@ public partial class GuidedInstallerStepView : ReactiveUserControl<IGuidedInstal
                         GroupsGrid.IsVisible = true;
                         StepName.Text = ViewModel?.InstallationStep?.Name;
                     }
-                });
+                })
+                .DisposeWith(disposables);
         });
     }
 }

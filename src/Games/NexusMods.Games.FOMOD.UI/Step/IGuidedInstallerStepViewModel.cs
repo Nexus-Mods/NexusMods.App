@@ -23,4 +23,6 @@ public interface IGuidedInstallerStepViewModel : IViewModelInterface
     public bool ShowInstallationCompleteScreen { get; set; }
 
     public IFooterStepperViewModel FooterStepperViewModel { get; }
+
+    public bool HasValidSelections { get; set; }
 }
