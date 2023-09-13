@@ -7,9 +7,9 @@ namespace NexusMods.Games.FOMOD.UI;
 
 public interface IFooterStepperViewModel : IViewModel
 {
-    public bool IsLastStep { get; set; }
-
     public Percent Progress { get; set; }
+
+    public bool IsLastStep { get; }
 
     public ReactiveCommand<Unit, Unit> GoToNextCommand { get; set; }
 

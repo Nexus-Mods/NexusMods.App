@@ -1,12 +1,15 @@
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
+using JetBrains.Annotations;
 using NexusMods.App.UI;
 using NexusMods.Common.GuidedInstaller;
 using ReactiveUI;
 
 namespace NexusMods.Games.FOMOD.UI;
 
+[UsedImplicitly]
 public partial class GuidedInstallerOptionView : ReactiveUserControl<IGuidedInstallerOptionViewModel>
 {
     public GuidedInstallerOptionView()
@@ -15,30 +18,11 @@ public partial class GuidedInstallerOptionView : ReactiveUserControl<IGuidedInst
 
         this.WhenActivated(disposables =>
         {
-            OptionNameTextBlock.Text = ViewModel?.Option.Name;
-
-            if (ViewModel?.Option.Type == OptionType.Disabled)
-            {
-                OptionNameTextBlock.Classes.Add("DisabledOption");
-                CheckBox.Classes.Add("DisabledOption");
-                RadioButton.Classes.Add("DisabledOption");
-            }
-
-            var groupType = ViewModel?.Group.Type ?? OptionGroupType.Any;
-            var useRadioButton = groupType switch
-            {
-                OptionGroupType.ExactlyOne => true,
-                OptionGroupType.AtMostOne => true,
-                _ => false
-            };
+            var useRadioButton = ViewModel!.Group.Type.UsesRadioButtons();
+            PopulateFromViewModel(ViewModel!, useRadioButton);
 
             if (useRadioButton)
             {
-                RadioButton.IsVisible = true;
-                CheckBox.IsVisible = false;
-
-                RadioButton.GroupName = ViewModel?.Group.Id.ToString() ?? Guid.NewGuid().ToString();
-
                 this.OneWayBind(ViewModel, vm => vm.IsEnabled, view => view.RadioButton.IsEnabled)
                     .DisposeWith(disposables);
 
@@ -47,9 +31,6 @@ public partial class GuidedInstallerOptionView : ReactiveUserControl<IGuidedInst
             }
             else
             {
-                CheckBox.IsVisible = true;
-                RadioButton.IsVisible = false;
-
                 this.OneWayBind(ViewModel, vm => vm.IsEnabled, view => view.CheckBox.IsEnabled)
                     .DisposeWith(disposables);
 
@@ -57,17 +38,8 @@ public partial class GuidedInstallerOptionView : ReactiveUserControl<IGuidedInst
                     .DisposeWith(disposables);
             }
 
-            ImageIcon.IsVisible = ViewModel?.Option.ImageUrl is not null;
-            DescriptionIcon.IsVisible = ViewModel?.Option.Description is not null;
-
-            var hoverText = ViewModel?.Option.HoverText;
-            if (hoverText is not null)
-            {
-                ToolTip.SetTip(OptionNameTextBlock, hoverText);
-            }
-
             this.WhenAnyValue(x => x.ViewModel!.IsValid)
-                .SubscribeWithErrorLogging(logger: default, isValid =>
+                .SubscribeWithErrorLogging(isValid =>
                 {
                     if (isValid)
                     {
@@ -80,6 +52,28 @@ public partial class GuidedInstallerOptionView : ReactiveUserControl<IGuidedInst
                 })
                 .DisposeWith(disposables);
         });
+    }
+
+    private void PopulateFromViewModel(IGuidedInstallerOptionViewModel viewModel, bool useRadioButton)
+    {
+        OptionNameTextBlock.Text = viewModel.Option.Name;
+
+        if (useRadioButton)
+        {
+            RadioButton.IsVisible = true;
+            CheckBox.IsVisible = false;
+
+            RadioButton.GroupName = viewModel.Group.Id.ToString();
+        }
+        else
+        {
+            CheckBox.IsVisible = true;
+            RadioButton.IsVisible = false;
+        }
+
+        ImageIcon.IsVisible = viewModel.Option.ImageUrl is not null;
+        DescriptionIcon.IsVisible = viewModel.Option.Description is not null;
+        ToolTip.SetTip(OptionNameTextBlock, viewModel.Option.HoverText);
     }
 }
 

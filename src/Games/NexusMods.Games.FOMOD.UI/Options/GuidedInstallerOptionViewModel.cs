@@ -9,12 +9,8 @@ public class GuidedInstallerOptionViewModel : AViewModel<IGuidedInstallerOptionV
     public Option Option { get; }
     public OptionGroup Group { get; }
 
-    [Reactive]
-    public bool IsEnabled { get; set; }
-
-    [Reactive]
-    public bool IsChecked { get; set; }
-
+    [Reactive] public bool IsEnabled { get; set; }
+    [Reactive] public bool IsChecked { get; set; }
     [Reactive] public bool IsValid { get; set; } = true;
 
     public GuidedInstallerOptionViewModel(Option option, OptionGroup group)
