@@ -36,7 +36,7 @@
                 <Setter Property="Background" Value="{DynamicResource StructuralBorderColor}" />
             </Style>
             <Style Selector="ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
-                <Setter Property="Background" Value="{DynamicResource BrandPrimary}" />
+                <Setter Property="Background" Value="{DynamicResource BorderContainerColor}" />
             </Style>
             <Style Selector="ListBoxItem:pointerover:not(:selected) /template/ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="Background" Value="{DynamicResource BorderContainerColor}" />
