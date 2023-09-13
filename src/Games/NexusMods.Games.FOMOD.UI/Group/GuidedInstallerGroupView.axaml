@@ -31,6 +31,12 @@
             <Style Selector="TextBlock#GroupType">
                 <Setter Property="Margin" Value="0,4,0,0" />
             </Style>
+            <Style Selector="ListBox">
+                <Setter Property="Background" Value="Transparent" />
+            </Style>
+            <Style Selector="ListBoxItem">
+                <Setter Property="Padding" Value="0 0 0 0" />
+            </Style>
         </StackPanel.Styles>
 
         <Border x:Name="GroupNameBorder">
@@ -44,15 +50,6 @@
 
 
         <ListBox SelectionMode="Single" x:Name="OptionsListBox">
-            <ListBox.Styles>
-                <Style Selector="ListBox">
-                    <Setter Property="Background" Value="Transparent" />
-                </Style>
-                <Style Selector="ListBoxItem">
-                    <Setter Property="Padding" Value="0 0 0 0" />
-                </Style>
-            </ListBox.Styles>
-
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel />
