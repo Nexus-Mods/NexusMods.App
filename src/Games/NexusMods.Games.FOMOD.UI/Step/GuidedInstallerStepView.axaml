@@ -54,7 +54,7 @@
             </Style>
             <Style Selector="StackPanel#PreviewContentsStackPanel">
                 <Setter Property="Margin" Value="0,0,12,0" />
-                </Style>
+            </Style>
         </Grid.Styles>
 
         <Border Grid.Row="0" x:Name="TopPart" Padding="24, 16, 24,24">
@@ -102,13 +102,16 @@
                                     <Grid ColumnDefinitions="*, Auto, Auto">
                                         <TextBlock Grid.Column="0" x:Name="PreviewTitleTextBox" Classes="BodyXLBold"
                                                    Text="Option 1 Has no extra details" />
-                                        <icons:Icon Grid.Column="2" x:Name="PreviewHeaderDescriptionIcon" Classes="Description PreviewIcon" VerticalAlignment="Center" />
-                                        <icons:Icon Grid.Column="1" x:Name="PreviewHeaderImageIcon" Classes="Image PreviewIcon" VerticalAlignment="Center" />
+                                        <icons:Icon Grid.Column="2" x:Name="PreviewHeaderDescriptionIcon"
+                                                    Classes="Description PreviewIcon" VerticalAlignment="Center" />
+                                        <icons:Icon Grid.Column="1" x:Name="PreviewHeaderImageIcon"
+                                                    Classes="Image PreviewIcon" VerticalAlignment="Center" />
                                     </Grid>
                                 </Border>
                                 <Border Grid.Row="1" x:Name="PreviewContentBorder" Classes="WhiteRounded">
                                     <ScrollViewer x:Name="PreviewScrollViewer">
-                                        <StackPanel x:Name="PreviewContentsStackPanel" Orientation="Vertical" VerticalAlignment="Stretch">
+                                        <StackPanel x:Name="PreviewContentsStackPanel" Orientation="Vertical"
+                                                    VerticalAlignment="Stretch">
 
                                             <Image Stretch="Uniform" IsVisible="False" x:Name="HighlightedOptionImage" />
                                             <TextBlock Classes="BodyMDNormal" x:Name="HighlightedOptionDescription"

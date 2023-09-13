@@ -14,23 +14,47 @@
         <ui:GuidedInstallerGroupDesignViewModel />
     </Design.DataContext>
 
-    <StackPanel>
+    <StackPanel x:Name="GroupViewContainer">
         <StackPanel.Styles>
-            <Style Selector="TextBlock.StatusDangerLighter">
-                <Setter Property="Foreground" Value="{DynamicResource StatusDangerLighter}"/>
+            <Style Selector="StackPanel#GroupViewContainer">
+                <Setter Property="Margin" Value="0,0,0,32" />
             </Style>
+            <Style Selector="TextBlock.StatusDangerLighter">
+                <Setter Property="Foreground" Value="{DynamicResource StatusDangerLighter}" />
+            </Style>
+            <Style Selector="TextBlock#GroupName">
+                <Setter Property="Foreground" Value="{DynamicResource StatusDangerLight}" />
+            </Style>
+            <Style Selector="Border#GroupNameBorder">
+                <Setter Property="Margin" Value="0,0,0,16" />
+            </Style>
+            <Style Selector="TextBlock#GroupType">
+                <Setter Property="Margin" Value="0,4,0,0" />
+            </Style>
+            <Style Selector="ListBoxItem">
+                <Setter Property="Padding" Value="0 0 0 0" />
+                <Setter Property="Background" Value="{DynamicResource StructuralBorderColor}" />
+            </Style>
+            <Style Selector="ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{DynamicResource BrandPrimary}" />
+            </Style>
+            <Style Selector="ListBoxItem:pointerover:not(:selected) /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{DynamicResource BorderContainerColor}" />
+            </Style>
+
         </StackPanel.Styles>
 
-        <TextBlock Classes="TitleSMSemi" x:Name="GroupName" />
-        <TextBlock Classes="TitleXSSemi" x:Name="GroupType" IsVisible="False" Text="{x:Static resources:Language.GuidedInstallerGroupView_SelectAtLeastOne}"/>
+        <Border x:Name="GroupNameBorder">
+            <StackPanel Orientation="Vertical">
+                <TextBlock Classes="TitleSMSemi" x:Name="GroupName" />
+                <TextBlock Classes="TitleXSSemi" x:Name="GroupType" IsVisible="False"
+                           Text="{x:Static resources:Language.GuidedInstallerGroupView_SelectAtLeastOne}" />
+            </StackPanel>
+
+        </Border>
+
 
         <ListBox SelectionMode="Single" x:Name="OptionsListBox">
-            <ListBox.Styles>
-                <Style Selector="ListBox">
-                    <Setter Property="Background" Value="Transparent"/>
-                </Style>
-            </ListBox.Styles>
-
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel />
@@ -40,4 +64,3 @@
     </StackPanel>
 
 </reactiveUi:ReactiveUserControl>
-

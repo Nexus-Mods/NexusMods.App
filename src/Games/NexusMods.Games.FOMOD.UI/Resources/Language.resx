@@ -3,7 +3,7 @@
 <root>
     <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
         <xsd:element name="root" msdata:IsDataSet="true">
-            
+
         </xsd:element>
     </xsd:schema>
     <resheader name="resmimetype">
@@ -31,7 +31,7 @@
         <value>Previous</value>
     </data>
     <data name="GuidedInstallerGroupView_SelectAtLeastOne" xml:space="preserve">
-        <value>(Select at least one)</value>
+        <value>(SELECT AT LEAST ONE)</value>
     </data>
     <data name="GuidedInstallerGroupViewModel_GuidedInstallerGroupViewModel_None" xml:space="preserve">
         <value>None</value>
