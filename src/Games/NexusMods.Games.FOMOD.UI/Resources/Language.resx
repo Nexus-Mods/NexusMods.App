@@ -42,4 +42,7 @@
     <data name="GuidedInstallerGroupViewModel_GuidedInstallerGroupViewModel_Use_this_option_to_select_nothing" xml:space="preserve">
         <value>Use this option to select nothing</value>
     </data>
+    <data name="GuidedInstallerStepView_GuidedInstallerStepView_No_additional_details_available" xml:space="preserve">
+        <value>No additional details available</value>
+    </data>
 </root>

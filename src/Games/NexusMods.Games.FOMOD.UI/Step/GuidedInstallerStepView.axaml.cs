@@ -20,9 +20,6 @@ public partial class GuidedInstallerStepView : ReactiveUserControl<IGuidedInstal
             this.OneWayBind(ViewModel, vm => vm.InstallationStep!.Name, view => view.StepName.Text)
                 .DisposeWith(disposables);
 
-            this.OneWayBind(ViewModel, vm => vm.HighlightedOptionDescription, view => view.HighlightedOptionDescription.Text)
-                .DisposeWith(disposables);
-
             ViewModel?.HighlightedOptionImageObservable
                 .SubscribeWithErrorLogging(logger: default, image =>
                 {
@@ -34,6 +31,7 @@ public partial class GuidedInstallerStepView : ReactiveUserControl<IGuidedInstal
             this.WhenAnyValue(x => x.ViewModel!.HighlightedOptionViewModel)
                 .SubscribeWithErrorLogging(logger: default, optionVM =>
                 {
+                    HighlightedOptionDescription.Text = optionVM?.Option.Description ?? Language.GuidedInstallerStepView_GuidedInstallerStepView_No_additional_details_available;
                     HighlightedOptionImage.IsVisible = false;
                     PreviewTitleTextBox.Text = optionVM?.Option.Name;
                     PreviewHeaderDescriptionIcon.IsVisible = optionVM?.Option.Description is not null;

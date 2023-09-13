@@ -12,8 +12,6 @@ public interface IGuidedInstallerStepViewModel : IViewModelInterface
 
     public IGuidedInstallerOptionViewModel? HighlightedOptionViewModel { get; set; }
 
-    public string? HighlightedOptionDescription { get; set; }
-
     public IObservable<IImage> HighlightedOptionImageObservable { get; }
 
     public IGuidedInstallerGroupViewModel[] Groups { get; set; }

@@ -93,5 +93,11 @@ namespace NexusMods.Games.FOMOD.UI.Resources {
                         "lect_nothing", resourceCulture);
             }
         }
+        
+        public static string GuidedInstallerStepView_GuidedInstallerStepView_No_additional_details_available {
+            get {
+                return ResourceManager.GetString("GuidedInstallerStepView_GuidedInstallerStepView_No_additional_details_available", resourceCulture);
+            }
+        }
     }
 }
