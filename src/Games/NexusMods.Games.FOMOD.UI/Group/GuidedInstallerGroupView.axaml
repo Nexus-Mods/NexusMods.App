@@ -15,6 +15,12 @@
     </Design.DataContext>
 
     <StackPanel>
+        <StackPanel.Styles>
+            <Style Selector="TextBlock.StatusDangerLighter">
+                <Setter Property="Foreground" Value="{DynamicResource StatusDangerLighter}"/>
+            </Style>
+        </StackPanel.Styles>
+
         <TextBlock Classes="TitleSMSemi" x:Name="GroupName" />
         <TextBlock Classes="TitleXSSemi" x:Name="GroupType" IsVisible="False" Text="{x:Static resources:Language.GuidedInstallerGroupView_SelectAtLeastOne}"/>
 

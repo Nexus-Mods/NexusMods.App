@@ -22,11 +22,11 @@ public partial class GuidedInstallerGroupView : ReactiveUserControl<IGuidedInsta
                 {
                     if (isValid)
                     {
-                        GroupType.Classes.Remove("StatusDangerDarker");
+                        GroupType.Classes.Remove("StatusDangerLighter");
                     }
                     else
                     {
-                        GroupType.Classes.Add("StatusDangerDarker");
+                        GroupType.Classes.Add("StatusDangerLighter");
                     }
                 });
 

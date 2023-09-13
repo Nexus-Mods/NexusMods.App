@@ -283,8 +283,4 @@
     <Style Selector="TextBlock.UsesBrandWhiteColor">
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
     </Style>
-
-    <Style Selector="TextBlock.StatusDangerDarker">
-        <Setter Property="Foreground" Value="{DynamicResource StatusDangerDarker}"></Setter>
-    </Style>
 </Styles>
