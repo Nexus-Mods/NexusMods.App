@@ -13,7 +13,7 @@
         <ui:GuidedInstallerOptionDesignViewModel />
     </Design.DataContext>
 
-    <Border Background="{DynamicResource BorderContainerColor}">
+    <Border Background="{DynamicResource StructuralBorderColor}">
         <Border.Styles>
             <Style Selector="icons|Icon">
                 <Setter Property="FontSize" Value="18"></Setter>
