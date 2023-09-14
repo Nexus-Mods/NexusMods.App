@@ -25,7 +25,7 @@ persistence mechanism here is crucial.
 
 ## Decision Outcome
 
-Storing saving the mappings to our Data Store (`IDataStore`) is the preferred approach. We will
+Saving the mappings to our Data Store (`IDataStore`) is the preferred approach. We will
 associate the settings with each individual Mod within a loadout; more details on that later.
 
 ### Consequences
