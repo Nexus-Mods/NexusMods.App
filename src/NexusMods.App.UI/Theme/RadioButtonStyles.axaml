@@ -4,16 +4,16 @@
         <Border Padding="20">
             <StackPanel Orientation="Vertical" Spacing="4" Margin="8">
                 <RadioButton IsChecked="False" GroupName="g1">
-                    <TextBlock Classes="ButtonMontserratSemi">Not Checked</TextBlock>
+                    <TextBlock Classes="ButtonMontserratSemi">Unchecked</TextBlock>
                 </RadioButton>
                 <RadioButton IsChecked="True" GroupName="g2">
                     <TextBlock Classes="ButtonMontserratSemi">Checked</TextBlock>
                 </RadioButton>
                 <RadioButton IsChecked="True" IsEnabled="False" GroupName="g3">
-                    <TextBlock Classes="ButtonMontserratSemi">Checked</TextBlock>
+                    <TextBlock Classes="ButtonMontserratSemi">Checked Disabled</TextBlock>
                 </RadioButton>
                 <RadioButton IsChecked="False" IsEnabled="False" GroupName="g4">
-                    <TextBlock Classes="ButtonMontserratSemi">Checked</TextBlock>
+                    <TextBlock Classes="ButtonMontserratSemi">Unchecked Disabled</TextBlock>
                 </RadioButton>
             </StackPanel>
         </Border>
