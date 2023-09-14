@@ -224,14 +224,19 @@ public struct DeploymentData
     public IEnumerable<AModFile> EmitOperations(EntityDictionary<RelativePath, AnalyzedFile> files, GamePath gameTargetPath)
     {
         // Written like this for clarity, use array in actual code.
+        // Just an example, might not compile.
         foreach (var mapping in _archiveToOutputMap)
         {
+            // find file in `files` input.
+            var file = files.First(file => file.Key.Equals(RelativePath.FromUnsanitizedInput(mapping.Key)));
+
             yield return new FromArchive
             {
-                Id = ModFileId.New(),
-                To = new GamePath(gameTargetPath.Type, mapping.Value),
-                Hash = ComputeHash(mapping.Key),
-                Size = ComputeSize(mapping.Key)
+                Id = ModId.New(),
+                To = new GamePath(gameTargetPath.Type,
+                    gameTargetPath.Path.Join(RelativePath.FromUnsanitizedInput(mapping.Value))),
+                Hash = file.Value.Hash,
+                Size = file.Value.Size
             };
         }
     }
