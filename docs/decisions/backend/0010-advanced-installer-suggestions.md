@@ -1,5 +1,8 @@
 # Advanced Installer: Suggestions
 
+( Tracked by: <I'll Add A Link Here Right before Merging> )
+( Note: The filtering algorithms here are considered an iterative improvement, not part of Min Viable Product for this feature )
+
 This document describes the design of the 'Suggestions' system within Advanced Installer, pictured
 in the following mockup below:
 
@@ -28,8 +31,55 @@ as that system already has required metadata.
 - [Good] Strong code reuse as `InstallFolderTarget` already has required metadata to support this functionality.
 - [Neutral] Each `InstallFolderTarget` folder will now need a description.
 - [Neutral] All games will need to be converted to new `InstallFolderTarget` system.
+- [Negative] The `InstallFolderTarget` list may not contain all folders that the user may want to drop their files manually to.
 
-## Implementation Algorithm (Directories)
+## Implementation: Reuse of `InstallFolderTarget`
+
+The parts of `InstallFolderTarget` which are usable by the suggestion system will be lifted out into a new interface,
+shown below:
+
+```csharp
+/// <summary>
+/// Represents a target used for suggestions for installing mods within the Advanced Installer.
+/// </summary>
+public interface ISuggestionFolder
+{
+    /// <summary>
+    /// GamePath to which the relative mod file paths should appended to.
+    /// </summary>
+    public GamePath DestinationGamePath { get; init; }
+
+    /// <summary>
+    /// List of known recognizable file extensions for direct children of the target <see cref="DestinationGamePath"/>.
+    /// NOTE: Only include file extensions that are only likely to appear at this level of the folder hierarchy.
+    /// </summary>
+    public IEnumerable<Extension> KnownValidFileExtensions { get; init; }
+
+    /// <summary>
+    /// List of file extensions to discard when installing to this target.
+    /// </summary>
+    public IEnumerable<Extension> FileExtensionsToDiscard { get; init; }
+
+    /// <summary>
+    /// Collection of Targets that are nested paths relative to <see cref="DestinationGamePath"/>.
+    /// </summary>
+    public IEnumerable<ISuggestionFolder> SubTargets { get; init; }
+}
+```
+
+## Acquiring `ISuggestionFolder`(s) During Deploy Step (a.k.a. `GetModsAsync`)
+
+Extend the `IGame` interface to expose a property which returns `ISuggestionFolder`(s) for the game's most common directories.
+
+This property is populated with the following elements:
+- All `GamePath` entries (i.e. Game folder, Save folder, Config folder, etc.)
+- All `InstallFolderTarget` entries (e.g. `Data` folder for Skyrim.), as `ISuggestionFolder`.
+- Custom `ISuggestionFolder`(s) defined on a per game basis.
+- Apply the filtering steps detailed below. (Not MVP, will be iteratively added later)
+
+This interface can be accessed during the deploy step under `GameInstallation` structure.
+
+## Filtering Suggestions (Directories)
 
 Note: String comparisons performed here adhere to ![Paths Doc](./0003-paths.md). [Case insensitive + / separator]
 
@@ -64,18 +114,10 @@ We keep removing the first directory in the path, until there's at least 1 match
 
 tl;dr Include any folders where any `substring` of the in-archive directory path, matches an `InstallFolderTarget`.
 
-## Implementation Algorithm (Files)
+## Filtering Suggestions (Files)
 
-The suggestion algorithm for files functions in the following manner:
+The filtering algorithm for suggestions where to place a file functions in the following manner:
 
-- Create initial list of 'suggestions' from all `InstallFolderTarget`(s) recursively.
 - Filter by `KnownValidFileExtensions`. (Remove if unknown extension).
 - Filter by `FileExtensionsToDiscard`. (Remove if extension to discard).
 - Add any directories from [Implementation Algorithm (Directories)](#implementation-algorithm-directories)
-
-## Acquiring `InstallFolderTarget` During Deploy Step (a.k.a. `GetModsAsync`)
-
-Extend the `IGame` interface to expose `InstallFolderTarget` for the game's most common directories.
-Then populate that with `InstallFolderTarget`(s) used in the game's common mod installers.
-
-This interface can be accessed during the deploy step under `GameInstallation` structure.
