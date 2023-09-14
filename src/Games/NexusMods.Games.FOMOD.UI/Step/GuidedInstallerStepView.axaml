@@ -119,8 +119,9 @@
                                                     VerticalAlignment="Stretch">
 
                                             <Image Stretch="Uniform" IsVisible="False" x:Name="HighlightedOptionImage" />
-                                            <TextBlock Classes="BodyMDNormal" x:Name="HighlightedOptionDescription"
+                                            <TextBlock Classes="BodyMDNormal" x:Name="HighlightedOptionDescription" TextWrapping="Wrap"
                                                        Text="{x:Static resources:Language.HighlightedOptionDescription_No_Extra_Details}" />
+
                                         </StackPanel>
                                     </ScrollViewer>
                                 </Border>
