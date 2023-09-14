@@ -1,27 +1,24 @@
-# Persistence/Restore Functionality for Advanced Installer
+# Persistence/Restore Functionality for Installers
 
-Manual installs need to be remembered across different deployments to avoid the user having to remap them every time
-between installations.
+( Tracked by: <I'll Add A Link Here Right before Merging> )
+
+This document outlines the mechanisms for Installers to remember settings across re-deployments. For example, when the
+end user wants to change the settings in a FOMOD, or the Advanced Installer.
+
+(Note: This document was originally written for the Advanced Installer, but applies to all installers.)
 
 ## Context and Problem Statement
 
 After manually installing a mod via the Advanced Installer, the application needs to save the details of the user's
 last set of choices made in the Installer.
 
-This is such that, when the application needs to perform a re-deployment occurs, the end user does not have to go through
-the manual installation steps again.
-
-Note: Re-deployment can happen due to a variety of factors, such as a mod deployed before the Advanced Installed mod
-being removed from a loadout. Not all re-deployments are due to the user's direct actions/expectations. Therefore a
-persistence mechanism here is crucial.
+This is such that, when the application wants to edit the deployment options of an Advanced Installed mod, the end user
+does not have to go through the manual installation steps again.
 
 ## Decision Drivers & Requirements
 
 - Ease of Use: A key aspect of the user experience is minimizing repetitive tasks.
   Having to re-enter manual mappings is ***slow, and error-prone***.
-
-- Maintainability: The persistence system should be easy to reuse in other installers that are similar to the Advanced
-  Installer (i.e. installers with multiple 'Variants'), such as FOMOD.
 
 ## Decision Outcome
 
@@ -120,8 +117,7 @@ A new item type would also need allocating in the `DataModel`.
 
 #### Design: Save Format Reuse
 
-The proposed save data can be reused, across other types of deployment that are similar in nature to `Advanced Installer`
-such as FOMOD deployment.
+The proposed save data can be reused, across other types of deployment that are similar in nature to `Advanced Installer`.
 
 The `Advanced Installer` settings structure is intended for reuse through the use of composition, as a structure embedded
 within another structure, for example:
