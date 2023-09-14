@@ -43,11 +43,13 @@ public partial class GuidedInstallerOptionView : ReactiveUserControl<IGuidedInst
                 {
                     if (isValid)
                     {
-                        OptionNameTextBlock.Classes.Remove("StatusDangerLighter");
+                        RadioButtonTextBlock.Classes.Remove("StatusDangerLighter");
+                        CheckBoxTextBlock.Classes.Remove("StatusDangerLighter");
                     }
                     else
                     {
-                        OptionNameTextBlock.Classes.Add("StatusDangerLighter");
+                        RadioButtonTextBlock.Classes.Add("StatusDangerLighter");
+                        CheckBoxTextBlock.Classes.Add("StatusDangerLighter");
                     }
                 })
                 .DisposeWith(disposables);
@@ -56,10 +58,10 @@ public partial class GuidedInstallerOptionView : ReactiveUserControl<IGuidedInst
 
     private void PopulateFromViewModel(IGuidedInstallerOptionViewModel viewModel, bool useRadioButton)
     {
-        OptionNameTextBlock.Text = viewModel.Option.Name;
-
         if (useRadioButton)
         {
+            RadioButtonTextBlock.Text = viewModel.Option.Name;
+
             RadioButton.IsVisible = true;
             CheckBox.IsVisible = false;
 
@@ -67,13 +69,14 @@ public partial class GuidedInstallerOptionView : ReactiveUserControl<IGuidedInst
         }
         else
         {
+            CheckBoxTextBlock.Text = viewModel.Option.Name;
+
             CheckBox.IsVisible = true;
             RadioButton.IsVisible = false;
         }
 
         ImageIcon.IsVisible = viewModel.Option.ImageUrl is not null;
         DescriptionIcon.IsVisible = viewModel.Option.Description is not null;
-        ToolTip.SetTip(OptionNameTextBlock, viewModel.Option.HoverText);
     }
 }
 
