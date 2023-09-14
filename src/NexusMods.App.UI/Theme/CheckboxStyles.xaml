@@ -1,15 +1,23 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Design.PreviewWith>
-        <StackPanel Orientation="Vertical" Spacing="4">
+        <StackPanel Orientation="Vertical" Spacing="4" Margin="8">
             <CheckBox IsChecked="False">
-                <TextBlock Classes="ButtonMontserratSemi">Not Checked</TextBlock>
+                <TextBlock Classes="ButtonMontserratSemi">Unchecked</TextBlock>
             </CheckBox>
             <CheckBox IsChecked="True">
                 <TextBlock Classes="ButtonMontserratSemi">Checked</TextBlock>
             </CheckBox>
+            <CheckBox IsChecked="True" IsEnabled="False">
+                <TextBlock Classes="ButtonMontserratSemi">Checked Disabled</TextBlock>
+            </CheckBox>
+            <CheckBox IsChecked="False" IsEnabled="False">
+                <TextBlock Classes="ButtonMontserratSemi">Unchecked Disabled</TextBlock>
+            </CheckBox>
         </StackPanel>
     </Design.PreviewWith>
 
-    <Style Selector="CheckBox" />
+    <Style Selector="CheckBox:disabled" >
+        <Setter Property="Opacity" Value="0.4"/>
+    </Style>
 </Styles>

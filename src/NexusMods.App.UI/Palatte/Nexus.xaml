@@ -119,8 +119,37 @@
         <SolidColorBrush Color="{DynamicResource BrandSecondaryLighter}" x:Key="TextControlSelectionHighlightColor" />
         <SolidColorBrush Color="{DynamicResource BrandPrimary}" x:Key="TextControlBorderBrushFocused" />
         <SolidColorBrush Color="{DynamicResource BrandSecondary}" x:Key="SystemControlBackgroundAltHighBrush" />
+
+        <!-- CheckBox Unchecked state-->
+        <SolidColorBrush Color="{DynamicResource BrandTertiary}" x:Key="CheckBoxCheckBackgroundStrokeUnchecked" />
+        <SolidColorBrush Color="{DynamicResource BrandSecondaryDarker}" x:Key="CheckBoxCheckBackgroundFillUnchecked" />
+
+        <!-- CheckBox Unchecked Disabled state-->
+        <SolidColorBrush Color="{DynamicResource BrandTertiary}" x:Key="CheckBoxCheckBackgroundStrokeUncheckedDisabled" />
+        <SolidColorBrush Color="{DynamicResource BrandSecondaryDarker}" x:Key="CheckBoxCheckBackgroundFillUncheckedDisabled" />
+
+        <!-- CheckBox Unchecked PointerOver state-->
+        <SolidColorBrush Color="{DynamicResource BrandWhite}" x:Key="CheckBoxCheckBackgroundStrokeUncheckedPointerOver" />
+        <SolidColorBrush Color="{DynamicResource BackgroundTertiaryColor}" x:Key="CheckBoxCheckBackgroundFillUncheckedPointerOver" />
+
+        <!-- CheckBox Unchecked Pressed state-->
+        <SolidColorBrush Color="{DynamicResource FontDarkSecondaryColor}" x:Key="CheckBoxCheckBackgroundStrokeUncheckedPressed" />
+        <SolidColorBrush Color="{DynamicResource FontLightSecondary}" x:Key="CheckBoxCheckBackgroundFillUncheckedPressed" />
+
+        <!--  Checked state-->
         <SolidColorBrush Color="{DynamicResource BrandPrimary}" x:Key="CheckBoxCheckBackgroundFillChecked" />
+
+        <!-- CheckBox Checked Disabled state-->
+        <SolidColorBrush Color="{DynamicResource BrandPrimary}" x:Key="CheckBoxCheckBackgroundFillCheckedDisabled" />
+
+        <!-- CheckBox Checked PointerOver state-->
+        <SolidColorBrush Color="{DynamicResource FontDarkSecondaryColor}" x:Key="CheckBoxCheckBackgroundStrokeCheckedPointerOver" />
         <SolidColorBrush Color="{DynamicResource BrandPrimaryLighter}" x:Key="CheckBoxCheckBackgroundFillCheckedPointerOver" />
+
+        <!-- CheckBox Checked Pressed state-->
+        <SolidColorBrush Color="{DynamicResource FontLightSecondary}" x:Key="CheckBoxCheckBackgroundStrokeCheckedPressed" />
+        <SolidColorBrush Color="{DynamicResource BrandPrimaryDarker}" x:Key="CheckBoxCheckBackgroundFillCheckedPressed" />
+
 
         <!-- RadioButton Unchecked state-->
         <SolidColorBrush Color="{DynamicResource FontDarkSecondaryColor}" x:Key="RadioButtonBorderBrush" />
