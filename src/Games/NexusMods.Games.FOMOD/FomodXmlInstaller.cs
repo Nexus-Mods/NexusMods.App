@@ -148,7 +148,7 @@ public class FomodXmlInstaller : IModInstaller
         var src = RelativePath.FromUnsanitizedInput(instruction.source);
         var dest = RelativePath.FromUnsanitizedInput(instruction.destination);
 
-        var file = files[src];
+        var file = files.First(x => x.Key.Equals(src)).Value;
         return new FromArchive
         {
             Id = ModFileId.New(),
