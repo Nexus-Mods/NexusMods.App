@@ -1,42 +1,15 @@
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using Avalonia.Media;
-using NexusMods.App.UI;
 using NexusMods.Common.GuidedInstaller;
 using NexusMods.Common.GuidedInstaller.ValueObjects;
 using NexusMods.DataModel.RateLimiting;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.Games.FOMOD.UI;
 
-public class GuidedInstallerStepDesignViewModel : AViewModel<IGuidedInstallerStepViewModel>, IGuidedInstallerStepViewModel
+public class GuidedInstallerStepDesignViewModel : AGuidedInstallerStepViewModel
 {
-    public string? ModName { get; set; } = "Example Mod";
-
-    public GuidedInstallationStep? InstallationStep { get; set; }
-
-    [Reactive]
-    public IGuidedInstallerOptionViewModel? HighlightedOptionViewModel { get; set; }
-
-    private readonly Subject<IImage> _highlightedOptionImageSubject = new();
-    public IObservable<IImage> HighlightedOptionImageObservable => _highlightedOptionImageSubject;
-
-    public TaskCompletionSource<UserChoice>? TaskCompletionSource { get; set; }
-
-    [Reactive]
-    public IGuidedInstallerGroupViewModel[] Groups { get; set; }
-
-    public Percent Progress { get; set; }
-
-    public IFooterStepperViewModel FooterStepperViewModel { get; }
-
-    [Reactive]
-    public bool ShowInstallationCompleteScreen { get; set; }
-
-    [Reactive]
-    public bool HasValidSelections { get; set; }
+    public override string? ModName { get; set; } = "Example Mod";
+    public override IFooterStepperViewModel FooterStepperViewModel { get; } = new FooterStepperDesignViewModel(Percent.Zero);
 
     public GuidedInstallerStepDesignViewModel()
     {
@@ -52,30 +25,16 @@ public class GuidedInstallerStepDesignViewModel : AViewModel<IGuidedInstallerSte
             })
             .ToArray();
 
-        FooterStepperViewModel = new FooterStepperDesignViewModel(Percent.Zero);
-
         this.WhenActivated(disposables =>
         {
-            this.SetupCrossGroupOptionHighlighting(disposables);
-            this.SetupHighlightedOption(_highlightedOptionImageSubject, disposables);
-
-            Groups
-                .Select(groupVM => groupVM.WhenAnyValue(x => x.HasValidSelection))
-                .CombineLatest()
-                .Select(x => x.Any(b => !b))
-                .SubscribeWithErrorLogging(logger: default, value => HasValidSelections = !value)
-                .DisposeWith(disposables);
-
+            var canGoNext = this.WhenAnyValue(x => x.HasValidSelections);
             FooterStepperViewModel.GoToNextCommand = ReactiveCommand.Create(() =>
             {
                 ShowInstallationCompleteScreen = true;
                 FooterStepperViewModel.Progress = Percent.One;
-            }, this.WhenAnyValue(x => x.HasValidSelections)).DisposeWith(disposables);
+            }, canGoNext).DisposeWith(disposables);
 
-            var canGoToPrev = this
-                .WhenAnyValue(x => x.ShowInstallationCompleteScreen)
-                .Select(x => x);
-
+            var canGoToPrev = this.WhenAnyValue(x => x.ShowInstallationCompleteScreen);
             FooterStepperViewModel.GoToPrevCommand = ReactiveCommand.Create(() =>
             {
                 ShowInstallationCompleteScreen = false;

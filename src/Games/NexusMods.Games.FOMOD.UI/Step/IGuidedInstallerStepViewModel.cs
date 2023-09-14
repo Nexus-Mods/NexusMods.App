@@ -8,21 +8,16 @@ namespace NexusMods.Games.FOMOD.UI;
 public interface IGuidedInstallerStepViewModel : IViewModelInterface
 {
     public string? ModName { get; set; }
+
+    public bool ShowInstallationCompleteScreen { get; }
     public GuidedInstallationStep? InstallationStep { get; set; }
 
+    public IGuidedInstallerGroupViewModel[] Groups { get; }
     public IGuidedInstallerOptionViewModel? HighlightedOptionViewModel { get; set; }
-
     public IObservable<IImage> HighlightedOptionImageObservable { get; }
 
-    public IGuidedInstallerGroupViewModel[] Groups { get; set; }
-
-    public TaskCompletionSource<UserChoice>? TaskCompletionSource { get; set; }
-
-    public Percent Progress { get; set; }
-
-    public bool ShowInstallationCompleteScreen { get; set; }
-
+    public Percent Progress { set; }
     public IFooterStepperViewModel FooterStepperViewModel { get; }
 
-    public bool HasValidSelections { get; set; }
+    public TaskCompletionSource<UserChoice>? TaskCompletionSource { get; set; }
 }

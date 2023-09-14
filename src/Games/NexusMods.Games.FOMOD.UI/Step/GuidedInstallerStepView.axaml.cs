@@ -21,8 +21,11 @@ public partial class GuidedInstallerStepView : ReactiveUserControl<IGuidedInstal
             this.OneWayBind(ViewModel, vm => vm.InstallationStep!.Name, view => view.StepName.Text)
                 .DisposeWith(disposables);
 
+            this.OneWayBind(ViewModel, vm => vm.Groups, view => view.GroupItemsControl.ItemsSource)
+                .DisposeWith(disposables);
+
             ViewModel?.HighlightedOptionImageObservable
-                .SubscribeWithErrorLogging(logger: default, image =>
+                .SubscribeWithErrorLogging(image =>
                 {
                     HighlightedOptionImage.IsVisible = true;
                     HighlightedOptionImage.Source = image;
@@ -30,23 +33,19 @@ public partial class GuidedInstallerStepView : ReactiveUserControl<IGuidedInstal
                 .DisposeWith(disposables);
 
             this.WhenAnyValue(x => x.ViewModel!.HighlightedOptionViewModel)
-                .SubscribeWithErrorLogging(logger: default, optionVM =>
+                .SubscribeWithErrorLogging(optionVM =>
                 {
-                    HighlightedOptionDescription.Text = optionVM?.Option.Description ?? Language.GuidedInstallerStepView_GuidedInstallerStepView_No_additional_details_available;
                     HighlightedOptionImage.IsVisible = false;
+                    HighlightedOptionDescription.Text = optionVM?.Option.Description ?? Language.GuidedInstallerStepView_GuidedInstallerStepView_No_additional_details_available;
+
                     PreviewTitleTextBox.Text = optionVM?.Option.Name;
                     PreviewHeaderDescriptionIcon.IsVisible = optionVM?.Option.Description is not null;
                     PreviewHeaderImageIcon.IsVisible = optionVM?.Option.ImageUrl is not null;
-                });
-
-            this.OneWayBind(ViewModel, vm => vm.Groups, view => view.GroupItemsControl.ItemsSource)
-                .DisposeWith(disposables);
-
-            this.OneWayBind(ViewModel, vm => vm.FooterStepperViewModel, view => view.FooterStepperViewHost.ViewModel)
+                })
                 .DisposeWith(disposables);
 
             this.WhenAnyValue(x => x.ViewModel!.ShowInstallationCompleteScreen)
-                .SubscribeWithErrorLogging(logger: default, showInstallationCompleteScreen =>
+                .SubscribeWithErrorLogging(showInstallationCompleteScreen =>
                 {
                     if (showInstallationCompleteScreen)
                     {
@@ -61,6 +60,9 @@ public partial class GuidedInstallerStepView : ReactiveUserControl<IGuidedInstal
                         StepName.Text = ViewModel?.InstallationStep?.Name;
                     }
                 })
+                .DisposeWith(disposables);
+
+            this.OneWayBind(ViewModel, vm => vm.FooterStepperViewModel, view => view.FooterStepperViewHost.ViewModel)
                 .DisposeWith(disposables);
         });
     }
