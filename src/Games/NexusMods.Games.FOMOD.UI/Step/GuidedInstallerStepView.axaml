@@ -121,7 +121,7 @@
 
                                             <Image Stretch="Uniform" IsVisible="False" x:Name="HighlightedOptionImage" />
                                             <TextBlock Classes="BodyMDNormal" x:Name="HighlightedOptionDescription"
-                                                       Text="No additional details" />
+                                                       Text="No additional details" TextWrapping="Wrap" />
                                         </StackPanel>
                                     </ScrollViewer>
                                 </Border>
