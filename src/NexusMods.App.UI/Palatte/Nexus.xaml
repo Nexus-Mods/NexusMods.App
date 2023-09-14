@@ -122,24 +122,41 @@
         <SolidColorBrush Color="{DynamicResource BrandPrimary}" x:Key="CheckBoxCheckBackgroundFillChecked" />
         <SolidColorBrush Color="{DynamicResource BrandPrimaryLighter}" x:Key="CheckBoxCheckBackgroundFillCheckedPointerOver" />
 
+        <!-- RadioButton Unchecked state-->
         <SolidColorBrush Color="{DynamicResource FontDarkSecondaryColor}" x:Key="RadioButtonBorderBrush" />
-        <SolidColorBrush Color="{DynamicResource FontDarkSecondaryColor}" x:Key="RadioButtonForeground" />
         <SolidColorBrush Color="{DynamicResource FontDarkSecondaryColor}" x:Key="RadioButtonOuterEllipseStroke" />
-
         <SolidColorBrush Color="{DynamicResource BackgroundTertiaryColor}" x:Key="RadioButtonOuterEllipseFill" />
 
-        <SolidColorBrush Color="{DynamicResource BrandWhite}" x:Key="RadioButtonForegroundPointerOver" />
+        <!-- RadioButton Unchecked Disabled state-->
+        <SolidColorBrush Color="{DynamicResource FontDarkSecondaryColor}" x:Key="RadioButtonBorderBrushDisabled" />
+        <SolidColorBrush Color="{DynamicResource FontDarkSecondaryColor}" x:Key="RadioButtonOuterEllipseStrokeDisabled" />
+        <SolidColorBrush Color="{DynamicResource BackgroundTertiaryColor}" x:Key="RadioButtonOuterEllipseFillDisabled" />
+
+        <!-- RadioButton Unchecked PointerOver state-->
         <SolidColorBrush Color="{DynamicResource BrandWhite}" x:Key="RadioButtonBorderBrushPointerOver" />
         <SolidColorBrush Color="{DynamicResource BrandWhite}" x:Key="RadioButtonOuterEllipseStrokePointerOver" />
 
-        <SolidColorBrush Color="{DynamicResource BrandPrimaryDarker}" x:Key="RadioButtonOuterEllipseCheckedFillPressed" />
+        <!-- RadioButton Unchecked Pressed state-->
         <SolidColorBrush Color="{DynamicResource FontLightSecondary}" x:Key="RadioButtonOuterEllipseStrokePressed" />
-        <SolidColorBrush Color="{DynamicResource FontLightSecondary}" x:Key="RadioButtonOuterEllipseCheckedStrokePressed" />
 
+        <!-- RadioButton Checked state-->
         <SolidColorBrush Color="{DynamicResource BrandPrimary}" x:Key="RadioButtonOuterEllipseCheckedStroke" />
         <SolidColorBrush Color="{DynamicResource BrandPrimary}" x:Key="RadioButtonOuterEllipseCheckedFill" />
+
+        <!-- RadioButton Checked Disabled state-->
+        <SolidColorBrush Color="{DynamicResource BrandPrimaryDarker}" x:Key="RadioButtonOuterEllipseCheckedStrokeDisabled" />
+        <SolidColorBrush Color="{DynamicResource BrandPrimary}" x:Key="RadioButtonOuterEllipseCheckedFillDisabled" />
+        <SolidColorBrush Color="{DynamicResource BrandWhite}" x:Key="RadioButtonCheckGlyphStrokeDisabled" />
+
+        <!-- RadioButton Checked PointerOver state-->
         <SolidColorBrush Color="{DynamicResource FontDarkSecondaryColor}" x:Key="RadioButtonOuterEllipseCheckedStrokePointerOver" />
         <SolidColorBrush Color="{DynamicResource BrandPrimaryLighter}" x:Key="RadioButtonOuterEllipseCheckedFillPointerOver" />
+
+        <!-- RadioButton Checked Pressed state-->
+        <SolidColorBrush Color="{DynamicResource BrandPrimaryDarker}" x:Key="RadioButtonOuterEllipseCheckedFillPressed" />
+        <SolidColorBrush Color="{DynamicResource FontLightSecondary}" x:Key="RadioButtonOuterEllipseCheckedStrokePressed" />
+
+
 
         <SolidColorBrush Color="{DynamicResource BrandPrimaryDarker}" x:Key="ToggleSwitchFillOn" />
         <SolidColorBrush Color="{DynamicResource BrandPrimary}" x:Key="ToggleSwitchKnobFillOn" />
