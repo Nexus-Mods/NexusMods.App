@@ -48,4 +48,13 @@
     <data name="FooterStepperView_FooterStepperView_One_or_more_groups_failed_validation_" xml:space="preserve">
         <value>One or more groups failed validation.</value>
     </data>
+    <data name="MultiOptionHeader_Multi_Otion_Mod" xml:space="preserve">
+        <value>Multi-Option Mod</value>
+    </data>
+    <data name="InstallationCompleteScreenText" xml:space="preserve">
+        <value>You can change these options anytime by reinstalling this mod.</value>
+    </data>
+    <data name="HighlightedOptionDescription_No_Extra_Details" xml:space="preserve">
+        <value>No additional details</value>
+    </data>
 </root>

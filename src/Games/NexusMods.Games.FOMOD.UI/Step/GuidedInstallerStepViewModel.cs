@@ -56,7 +56,9 @@ public sealed class GuidedInstallerStepViewModel : AGuidedInstallerStepViewModel
                 x => x.TaskCompletionSource,
                 x => x.InstallationStep,
                 x => x.ShowInstallationCompleteScreen,
-                (tcs, step, showInstallationCompleteScreen) => showInstallationCompleteScreen || (tcs is not null && step is not null && step.HasPreviousStep));
+                (tcs, step, showInstallationCompleteScreen) => showInstallationCompleteScreen ||
+                                                               (tcs is not null && step is not null &&
+                                                                step.HasPreviousStep));
 
             var goToPrevStepCommand = ReactiveCommand.Create(() =>
             {
@@ -75,10 +77,7 @@ public sealed class GuidedInstallerStepViewModel : AGuidedInstallerStepViewModel
             FooterStepperViewModel.GoToPrevCommand = goToPrevStepCommand;
 
             this.WhenAnyValue(x => x.Progress)
-                .SubscribeWithErrorLogging(logger: default, progress =>
-                {
-                    FooterStepperViewModel.Progress = progress;
-                })
+                .SubscribeWithErrorLogging(logger: default, progress => { FooterStepperViewModel.Progress = progress; })
                 .DisposeWith(disposables);
         });
     }

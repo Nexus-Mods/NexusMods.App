@@ -11,17 +11,16 @@ namespace NexusMods.Games.FOMOD.UI;
 
 public class GuidedInstallerGroupViewModel : AViewModel<IGuidedInstallerGroupViewModel>, IGuidedInstallerGroupViewModel
 {
-    [Reactive]
-    public bool HasValidSelection { get; set; } = true;
+    [Reactive] public bool HasValidSelection { get; set; } = true;
 
     public OptionGroup Group { get; }
 
     public IGuidedInstallerOptionViewModel[] Options { get; }
 
-    [Reactive]
-    public IGuidedInstallerOptionViewModel? HighlightedOption { get; set; }
+    [Reactive] public IGuidedInstallerOptionViewModel? HighlightedOption { get; set; }
 
-    public GuidedInstallerGroupViewModel(OptionGroup group) : this(group, option => new GuidedInstallerOptionViewModel(option, group)) { }
+    public GuidedInstallerGroupViewModel(OptionGroup group) : this(group,
+        option => new GuidedInstallerOptionViewModel(option, group)) { }
 
     protected GuidedInstallerGroupViewModel(OptionGroup group, Func<Option, IGuidedInstallerOptionViewModel> factory)
     {
@@ -37,7 +36,8 @@ public class GuidedInstallerGroupViewModel : AViewModel<IGuidedInstallerGroupVie
                     Name = Language.GuidedInstallerGroupViewModel_GuidedInstallerGroupViewModel_None,
                     Type = OptionType.Available,
                     Description = Language.GuidedInstallerGroupViewModel_GuidedInstallerGroupViewModel_Select_nothing,
-                    HoverText = Language.GuidedInstallerGroupViewModel_GuidedInstallerGroupViewModel_Use_this_option_to_select_nothing
+                    HoverText = Language
+                        .GuidedInstallerGroupViewModel_GuidedInstallerGroupViewModel_Use_this_option_to_select_nothing
                 }))
                 .ToArray();
         }

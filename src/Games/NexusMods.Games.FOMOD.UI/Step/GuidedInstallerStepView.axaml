@@ -6,6 +6,7 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:ui="clr-namespace:NexusMods.Games.FOMOD.UI"
     xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:resources="clr-namespace:NexusMods.Games.FOMOD.UI.Resources"
     mc:Ignorable="d" d:DesignWidth="1232" d:DesignHeight="672"
     x:Class="NexusMods.Games.FOMOD.UI.GuidedInstallerStepView">
 
@@ -70,7 +71,7 @@
 
 
                         <icons:Icon x:Name="MultiOptionHeaderIcon" Classes="Tune"></icons:Icon>
-                        <TextBlock x:Name="MultiOptionHeaderTextBlock" Classes="BodyLGBold" Text="Multi-Option Mod" />
+                        <TextBlock x:Name="MultiOptionHeaderTextBlock" Classes="BodyLGBold" Text="{x:Static resources:Language.MultiOptionHeader_Multi_Otion_Mod}" />
                     </StackPanel>
                 </Border>
 
@@ -85,8 +86,7 @@
 
 
                         <TextBlock Grid.Row="1" Classes="TopTitle" VerticalAlignment="Top"
-                                   x:Name="InstallationCompleteScreenTextBlock" IsVisible="False">
-                            You can change these options anytime by clicking the TODO button in the mod list.
+                                   x:Name="InstallationCompleteScreenTextBlock" IsVisible="False" Text="{x:Static resources:Language.InstallationCompleteScreenText}">
                         </TextBlock>
 
                         <Grid Grid.Row="1" x:Name="GroupsGrid" ColumnDefinitions="*,*">
@@ -106,8 +106,7 @@
                             <Grid Grid.Column="1" x:Name="PreviewStackPanel" RowDefinitions="Auto,*">
                                 <Border Grid.Row="0" x:Name="PreviewTitleBorder" Classes="WhiteRounded">
                                     <Grid ColumnDefinitions="*, Auto, Auto">
-                                        <TextBlock Grid.Column="0" x:Name="PreviewTitleTextBox" Classes="BodyXLBold"
-                                                   Text="Option 1 Has no extra details" />
+                                        <TextBlock Grid.Column="0" x:Name="PreviewTitleTextBox" Classes="BodyXLBold"/>
                                         <icons:Icon Grid.Column="2" x:Name="PreviewHeaderDescriptionIcon"
                                                     Classes="Description PreviewIcon" VerticalAlignment="Center" />
                                         <icons:Icon Grid.Column="1" x:Name="PreviewHeaderImageIcon"
@@ -121,7 +120,7 @@
 
                                             <Image Stretch="Uniform" IsVisible="False" x:Name="HighlightedOptionImage" />
                                             <TextBlock Classes="BodyMDNormal" x:Name="HighlightedOptionDescription"
-                                                       Text="No additional details" />
+                                                       Text="{x:Static resources:Language.HighlightedOptionDescription_No_Extra_Details}" />
                                         </StackPanel>
                                     </ScrollViewer>
                                 </Border>
