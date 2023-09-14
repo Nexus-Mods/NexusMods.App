@@ -28,9 +28,13 @@
             <Style Selector="TextBlock.StatusDangerLighter">
                 <Setter Property="Foreground" Value="{DynamicResource StatusDangerLighter}" />
             </Style>
+            <Style Selector="TextBlock.Disabled">
+                <Setter Property="Opacity" Value="0.4"/>
+            </Style>
             <Style Selector="CheckBox">
                 <Setter Property="Margin" Value="8,0,8,0" />
                 <Setter Property="Height" Value="24" />
+                <Setter Property="Width" Value="24" />
             </Style>
             <Style Selector="RadioButton">
                 <Setter Property="Margin" Value="8,0,8,0" />
@@ -38,20 +42,17 @@
             </Style>
         </Border.Styles>
         <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto">
-
             <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                <CheckBox IsVisible="False" x:Name="CheckBox">
-                    <TextBlock Classes="BodyMDNormal" x:Name="CheckBoxTextBlock" />
-                </CheckBox>
-                <RadioButton IsVisible="False" x:Name="RadioButton">
-                    <TextBlock Classes="BodyMDNormal" x:Name="RadioButtonTextBlock" />
-                </RadioButton>
+                <CheckBox IsVisible="False" x:Name="CheckBox" />
+                <RadioButton IsVisible="False" x:Name="RadioButton" />
             </StackPanel>
             <Border x:Name="SelectionHighlightBorder" Classes="OptionHighlighting" Grid.Column="1">
-                <Grid ColumnDefinitions="Auto,Auto" HorizontalAlignment="Right">
-                    <icons:Icon Classes="Image" IsVisible="False" Grid.Column="0" x:Name="ImageIcon"
+                <Grid ColumnDefinitions="*,Auto,Auto">
+                    <TextBlock Grid.Column="0" Classes="BodyMDNormal" x:Name="OptionNameTextBlock"
+                               VerticalAlignment="Center" />
+                    <icons:Icon Classes="Image" IsVisible="False" Grid.Column="1" x:Name="ImageIcon"
                                 VerticalAlignment="Center" />
-                    <icons:Icon Classes="Description" IsVisible="False" Grid.Column="1" x:Name="DescriptionIcon"
+                    <icons:Icon Classes="Description" IsVisible="False" Grid.Column="2" x:Name="DescriptionIcon"
                                 VerticalAlignment="Center" />
                 </Grid>
             </Border>
