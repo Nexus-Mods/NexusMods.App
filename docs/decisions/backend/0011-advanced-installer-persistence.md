@@ -37,7 +37,7 @@ associate the settings with each individual Mod within a loadout; more details o
 
 #### Design: Save Format (Proposed)
 
-Create a class named `AdvancedInstallState` (or similar), used to serialize and deserialize deployment
+Create a class named `AdvancedInstallSettings` (or similar), used to serialize and deserialize deployment
 information across runs.
 
 ```csharp
