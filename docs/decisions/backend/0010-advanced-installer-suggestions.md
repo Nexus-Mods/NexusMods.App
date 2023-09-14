@@ -72,3 +72,10 @@ The suggestion algorithm for files functions in the following manner:
 - Filter by `KnownValidFileExtensions`. (Remove if unknown extension).
 - Filter by `FileExtensionsToDiscard`. (Remove if extension to discard).
 - Add any directories from [Implementation Algorithm (Directories)](#implementation-algorithm-directories)
+
+## Acquiring `InstallFolderTarget` During Deploy Step (a.k.a. `GetModsAsync`)
+
+Extend the `IGame` interface to expose `InstallFolderTarget` for the game's most common directories.
+Then populate that with `InstallFolderTarget`(s) used in the game's common mod installers.
+
+This interface can be accessed during the deploy step under `GameInstallation` structure.
