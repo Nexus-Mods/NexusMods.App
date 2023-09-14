@@ -150,7 +150,7 @@ i.e.
 
 ```csharp
 // Note the use of nominal typing.
-public Dictionary<RelativePath, RelativePath> ArchiveToOutputMap;
+public Dictionary<RelativePath, GamePath> ArchiveToOutputMap;
 ```
 
 When the user selects a `target`, we simply add the mapping to the dictionary. Accordingly, we remove the mapping when the
@@ -183,7 +183,7 @@ public struct DeploymentData
     /// <remarks>
     /// Paths follow internal Nexus Mods App path standards: they use a "/" as a separator, trim whitespace, and do not alter "..".
     /// </remarks>
-    private Dictionary<RelativePath, RelativePath> _archiveToOutputMap { get; init; } = new();
+    private Dictionary<RelativePath, GamePath> _archiveToOutputMap { get; init; } = new();
 
     /// <summary>
     /// Adds a new mapping from a source file in the archive to a target path in the game directory.

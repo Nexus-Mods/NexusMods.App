@@ -76,7 +76,7 @@ public class DeploymentDataExtensions
 }
 ```
 
-Note: We convert between `Dictionary<RelativePath, RelativePath>` and `Dictionary<string, string>` during the serialize/deserialize operations.
+Note: We convert between `Dictionary<RelativePath, GamePath>` and `Dictionary<string, string>` during the serialize/deserialize operations.
 This might have minor overhead, though zero cost unsafe cast might be possible.
 
 #### Design: Save Format Storage
