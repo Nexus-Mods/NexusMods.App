@@ -47,6 +47,9 @@
         <Compile Update="FooterStepper\FooterStepperDesignViewModel.cs">
           <DependentUpon>IFooterStepperViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Step\AGuidedInstallerStepViewModel.cs">
+          <DependentUpon>IGuidedInstallerStepViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
