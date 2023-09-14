@@ -41,18 +41,16 @@
             <Style Selector="ListBoxItem:pointerover:not(:selected) /template/ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="Background" Value="{DynamicResource BorderContainerColor}" />
             </Style>
-
         </StackPanel.Styles>
 
         <Border x:Name="GroupNameBorder">
             <StackPanel Orientation="Vertical">
+
                 <TextBlock Classes="TitleSMSemi" x:Name="GroupName" />
                 <TextBlock Classes="TitleXSSemi" x:Name="GroupType" IsVisible="False"
                            Text="{x:Static resources:Language.GuidedInstallerGroupView_SelectAtLeastOne}" />
             </StackPanel>
-
         </Border>
-
 
         <ListBox SelectionMode="Single" x:Name="OptionsListBox">
             <ListBox.ItemsPanel>
