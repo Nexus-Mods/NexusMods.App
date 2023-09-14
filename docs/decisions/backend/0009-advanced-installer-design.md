@@ -224,7 +224,7 @@ public struct DeploymentData
     public IEnumerable<AModFile> EmitOperations(EntityDictionary<RelativePath, AnalyzedFile> files, GamePath gameTargetPath)
     {
         // Written like this for clarity, use array in actual code.
-        foreach (var mapping in ArchiveToOutputMap)
+        foreach (var mapping in _archiveToOutputMap)
         {
             yield return new FromArchive
             {
