@@ -72,3 +72,14 @@ where TVm : IViewModelInterface
         return Task.CompletedTask;
     }
 }
+
+public class AVmTest<TVm, TVmInterface> : AVmTest<TVmInterface> where TVmInterface : IViewModelInterface
+where TVm : TVmInterface
+{
+    public AVmTest(IServiceProvider provider) : base(provider) { }
+
+    /// <summary>
+    /// The concrete view model, not the interface.
+    /// </summary>
+    public TVm ConcreteVm => (TVm) Vm;
+}

@@ -11,6 +11,6 @@ public static class ApplicationConstants
     /// The current version of the app.
     /// </summary>
     public static Version CurrentVersion => Process.GetCurrentProcess().MainModule?.FileVersionInfo.FileVersion is not null
-        ? Version.Parse(Process.GetCurrentProcess().MainModule!.FileVersionInfo.FileVersion!)
+        ? Version.TryParse(Process.GetCurrentProcess().MainModule!.FileVersionInfo.FileVersion!, out var version) ? version : Version.Parse("0.0.0.0")
         : Version.Parse("0.0.0.0");
 }

@@ -46,6 +46,26 @@ public class UpdaterViewModel : AViewModel<IUpdaterViewModel>, IUpdaterViewModel
         {
             var releases = await GetReleases();
 
+            var latestRelease = releases.Where(r => r is { IsDraft: false, IsPrerelease: false })
+                .MaxBy(r => r.Version);
+
+            if (latestRelease is null)
+            {
+                _logger.LogInformation("No releases available");
+                return false;
+            }
+
+            if (latestRelease.Version < OldVersion)
+            {
+                _logger.LogInformation("No new release available");
+                return false;
+            }
+
+            _logger.LogInformation("New version available: {Version}", latestRelease.Version);
+
+            // TODO: find the right asset
+
+
             return true;
         }
         catch (Exception ex)
@@ -58,7 +78,11 @@ public class UpdaterViewModel : AViewModel<IUpdaterViewModel>, IUpdaterViewModel
 
     private async Task<Release[]> GetReleases()
     {
-        await using var data = await _client.GetStreamAsync(_githubRepo);
+        var msg = new HttpRequestMessage(HttpMethod.Get, _githubRepo);
+        msg.Headers.Add("User-Agent", "NexusMods.App");
+        using var response = await _client.SendAsync(msg);
+        response.EnsureSuccessStatusCode();
+        await using var data = await response.Content.ReadAsStreamAsync();
         return await JsonSerializer.DeserializeAsync<Release[]>(data) ?? Array.Empty<Release>();
     }
 }
@@ -72,9 +96,42 @@ public class Release
     [JsonPropertyName("tag_name")] public string Tag { get; set; } = "";
 
     /// <summary>
+    /// The name of the release.
+    /// </summary>
+    [JsonPropertyName("name")] public string Name { get; set; } = "";
+
+    /// <summary>
+    /// The body of the release.
+    /// </summary>
+    [JsonPropertyName("body")] public string Body { get; set; } = "";
+
+    /// <summary>
+    /// The URL of the release, for use in browsers.
+    /// </summary>
+    [JsonPropertyName("html_url")] public Uri HtmlUrl { get; set; } = new("https://github.com");
+
+    /// <summary>
     /// The assets of the release.
     /// </summary>
     [JsonPropertyName("assets")] public Asset[] Assets { get; set; } = Array.Empty<Asset>();
+
+    /// <summary>
+    /// The prerelease status of the release.
+    /// </summary>
+    [JsonPropertyName("prerelease")] public bool IsPrerelease { get; set; } = false;
+
+    /// <summary>
+    /// The draft status of the release.
+    /// </summary>
+    [JsonPropertyName("draft")] public bool IsDraft { get; set; } = false;
+
+    /// <summary>
+    /// The parsed version of the release.
+    /// </summary>
+    [JsonIgnore]
+    public Version Version =>
+        Version.TryParse(Tag.TrimStart('v'), out var version) ?
+            version : Version.Parse("0.0.0.0");
 }
 
 
