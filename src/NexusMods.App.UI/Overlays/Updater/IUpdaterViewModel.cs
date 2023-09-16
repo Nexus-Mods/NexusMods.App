@@ -13,5 +13,4 @@ public interface IUpdaterViewModel : IOverlayViewModel
     public ICommand UpdateCommand { get; }
 
     public bool ShowSystemUpdateMessage { get; }
-    public bool ShouldShow { get; }
 }
