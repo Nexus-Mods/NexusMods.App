@@ -54,4 +54,20 @@ public class UpdaterViewTests : AViewTest<UpdaterView, UpdaterDesignViewModel, I
             ViewModel.ChangelogShown.Should().BeTrue();
         });
     }
+
+    [Fact]
+    public async Task ClickingLaterClosesTheOverlay()
+    {
+        ViewModel.IsActive = true;
+        ViewModel.IsActive.Should().BeTrue();
+
+        var btn = await Host.GetViewControl<Button>("LaterButton");
+        await Click(btn);
+
+        await EventuallyOnUi(() =>
+        {
+            ViewModel.IsActive.Should().BeFalse();
+        });
+
+    }
 }

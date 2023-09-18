@@ -18,6 +18,8 @@ public class UpdaterDesignViewModel : AViewModel<IUpdaterViewModel>, IUpdaterVie
     [Reactive]
     public Version OldVersion { get; set; } = Version.Parse("0.1.0");
 
+
+    public ICommand LaterCommand { get; }
     public ICommand UpdateCommand { get; }
     public ICommand ShowChangelog { get;}
 
@@ -41,6 +43,11 @@ public class UpdaterDesignViewModel : AViewModel<IUpdaterViewModel>, IUpdaterVie
                 .Select(c => !c)
                 .BindToUi(this, view => view.ShowSystemUpdateMessage)
                 .DisposeWith(d);
+        });
+
+        LaterCommand = ReactiveCommand.Create(() =>
+        {
+            IsActive = false;
         });
 
         UpdateCommand = ReactiveCommand.Create(() =>

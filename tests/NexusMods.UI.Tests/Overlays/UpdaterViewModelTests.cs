@@ -68,4 +68,14 @@ public class UpdaterViewModelTests : AVmTest<UpdaterViewModel, IUpdaterViewModel
         ConcreteVm.UpdateCommand.Execute(null);
         ConcreteVm.IsActive.Should().BeFalse();
     }
+
+    [Fact]
+    public async Task ClickingTheLaterButtonClosesTheWindow()
+    {
+        ConcreteVm.IsActive = true;
+        ConcreteVm.IsActive.Should().BeTrue();
+
+        ConcreteVm.LaterCommand.Execute(null);
+        ConcreteVm.IsActive.Should().BeFalse();
+    }
 }

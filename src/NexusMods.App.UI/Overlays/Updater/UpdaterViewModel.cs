@@ -31,6 +31,8 @@ public class UpdaterViewModel : AViewModel<IUpdaterViewModel>, IUpdaterViewModel
     [Reactive] public Version OldVersion { get; set; }
     public ICommand UpdateCommand { get; }
 
+    public ICommand LaterCommand { get; }
+
     public ICommand ShowChangelog { get; }
 
     [Reactive]
@@ -50,6 +52,11 @@ public class UpdaterViewModel : AViewModel<IUpdaterViewModel>, IUpdaterViewModel
         _overlayController = overlayController;
         OldVersion = ApplicationConstants.CurrentVersion;
         Method = CompileConstants.InstallationMethod;
+
+        LaterCommand = ReactiveCommand.Create(() =>
+        {
+            IsActive = false;
+        });
 
         UpdateCommand = ReactiveCommand.Create(() =>
         {
@@ -104,6 +111,11 @@ public class UpdaterViewModel : AViewModel<IUpdaterViewModel>, IUpdaterViewModel
             _logger.LogInformation("Asset found: {Asset}", asset.Name);
             UpdateUrl = asset.BrowserDownloadUrl;
             NewVersion = latestRelease.Version;
+
+            if (Method is InstallationMethod.AppImage or InstallationMethod.Flatpak)
+            {
+                ShowSystemUpdateMessage = true;
+            }
 
             return true;
         }

@@ -30,6 +30,11 @@ public interface IUpdaterViewModel : IOverlayViewModel
     public ICommand UpdateCommand { get; }
 
     /// <summary>
+    /// Closes the overlay without updating
+    /// </summary>
+    public ICommand LaterCommand { get; }
+
+    /// <summary>
     /// The command to show the changelog
     /// </summary>
     public ICommand ShowChangelog { get; }
