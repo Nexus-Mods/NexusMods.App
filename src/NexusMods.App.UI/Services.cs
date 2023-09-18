@@ -65,6 +65,7 @@ public static class Services
             // Services
             .AddSingleton<IRouter, ReactiveMessageRouter>()
             .AddSingleton<IOverlayController, OverlayController>()
+            .AddTransient<IImageCache, ImageCache>()
 
             // View Models
             .AddTransient<MainWindowViewModel>()
