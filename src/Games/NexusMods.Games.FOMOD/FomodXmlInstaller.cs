@@ -131,23 +131,30 @@ public class FomodXmlInstaller : AModInstaller
         return res;
     }
 
-    private static IEnumerable<AModFile> ConvertInstructionCopy(IEnumerable<Instruction> instructions,
-        FileTreeNode<RelativePath, ModSourceFileEntry> files, GamePath gameTargetPath)
+    private AModFile? ReportUnknownType(string instructionType)
     {
-        return instructions.Select(instruction =>
-        {
-            var file = files.GetAllDescendentFiles().First(file => file.Path.Equals(RelativePath.FromUnsanitizedInput(instruction.source)));
-
-            return new FromArchive
-            {
-                Id = ModFileId.New(),
-                To = new GamePath(gameTargetPath.Type, gameTargetPath.Path.Join(RelativePath.FromUnsanitizedInput(instruction.destination))),
-                Hash = file.Value!.Hash,
-
-                Size = file.Value.Size
-            };
-        });
+        _logger.LogWarning("Unknown FOMOD instruction type: {Type}", instructionType);
+        return null;
     }
+
+    private static AModFile ConvertInstructionCopy(
+        Instruction instruction,
+        FileTreeNode<RelativePath, ModSourceFileEntry>  files,
+        GamePath gameTargetPath)
+    {
+        var src = RelativePath.FromUnsanitizedInput(instruction.source);
+        var dest = RelativePath.FromUnsanitizedInput(instruction.destination);
+
+        var file = files.FindNode(src)!.Value;
+        return new FromArchive
+        {
+            Id = ModFileId.New(),
+            To = new GamePath(gameTargetPath.Type, gameTargetPath.Path.Join(dest)),
+            Hash = file!.Hash,
+            Size = file.Size
+        };
+    }
+
 
     private static AModFile ConvertInstructionMkdir(
         Instruction instruction,
