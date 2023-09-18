@@ -153,7 +153,7 @@ public class FomodXmlInstaller : AModInstaller
             return new FromArchive
             {
                 Id = ModFileId.New(),
-                To = new GamePath(gameTargetPath.Type, gameTargetPath.Path.Join(instruction.destination)),
+                To = new GamePath(gameTargetPath.Type, gameTargetPath.Path.Join(RelativePath.FromUnsanitizedInput(instruction.destination))),
                 Hash = file.Value!.Hash,
 
                 Size = file.Value.Size

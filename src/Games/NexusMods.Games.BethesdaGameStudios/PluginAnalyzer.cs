@@ -23,11 +23,11 @@ public class PluginAnalyzer
 
     public IEnumerable<FileType> FileTypes => new[] { FileType.TES4 };
 
-    private static readonly Extension[] ValidExtensions = {
-        new(".esp"),
-        new(".esm"),
-        new(".esl"),
-    };
+    private static readonly HashSet<Extension> ValidExtensions = new Extension[] {
+        new (".esp"),
+        new (".esm"),
+        new (".esl"),
+    }.ToHashSet();
 
     private readonly ILogger<PluginAnalyzer> _logger;
 
@@ -39,8 +39,7 @@ public class PluginAnalyzer
     public async Task<PluginAnalysisData?> AnalyzeAsync(RelativePath path, Stream stream, [EnumeratorCancellation] CancellationToken ct = default)
     {
         var extension = path.Extension;
-        if (ValidExtensions[0] != extension && ValidExtensions[1] != extension &&
-            ValidExtensions[2] != extension)
+        if (ValidExtensions.Contains(extension))
             return null;
 
         // NOTE(erri120): The GameConstant specifies the header length.

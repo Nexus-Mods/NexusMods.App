@@ -8,6 +8,10 @@ using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Games.RedEngine.ModInstallers;
 
+/// <summary>
+/// This mod installer is used to install appearance presets for Cyberpunk 2077, they are installed into a specific
+/// folder under the cyber engine tweaks mod's subfolder for the appearance change unlocker.
+/// </summary>
 public class AppearancePreset : AModInstaller
 {
     private static readonly RelativePath[] Paths = {

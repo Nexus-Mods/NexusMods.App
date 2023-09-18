@@ -24,10 +24,6 @@ public class FomodAnalyzer
                 .TryGetFirst(x => x.Path.EndsWith(FomodConstants.XmlConfigRelativePath), out var xmlNode))
             return null;
 
-        // If not from inside an archive, this is probably not a FOMOD.
-        if (xmlNode!.IsTreeRoot)
-            return null;
-
         // If the fomod folder is not at first level, find the prefix.
         var pathPrefix = xmlNode!.Parent.Parent;
 
