@@ -1,8 +1,12 @@
+using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.Common.GuidedInstaller;
 using NexusMods.Common.GuidedInstaller.ValueObjects;
+using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.RateLimiting;
+using NexusMods.Paths;
 
 namespace NexusMods.Games.FOMOD.CoreDelegates;
 
@@ -51,7 +55,11 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
     private const long Ready = 0;
     private const long WaitingForCallback = 1;
 
-    public UiDelegates(ILogger<UiDelegates> logger, IGuidedInstaller guidedInstaller)
+    public EntityDictionary<RelativePath, AnalyzedFile>? CurrentArchiveFiles;
+
+    public UiDelegates(
+        ILogger<UiDelegates> logger,
+        IGuidedInstaller guidedInstaller)
     {
         _logger = logger;
         _guidedInstaller = guidedInstaller;
@@ -75,6 +83,8 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
     {
         _selectOptions = DummySelectOptions;
         _continueToNextStep = DummyContinueToNextStep;
+        _cancelInstaller = DummyCancelInstaller;
+        CurrentArchiveFiles = null;
 
         _guidedInstaller.CleanupInstaller();
     }
@@ -192,7 +202,7 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
             });
     }
 
-    private static GuidedInstallationStep ToGuidedInstallationStep(
+    private GuidedInstallationStep ToGuidedInstallationStep(
         IList<FomodInstaller.Interface.ui.InstallerStep> installSteps,
         int currentStepId,
         ICollection<KeyValuePair<int, GroupId>> groupIdMapping,
@@ -226,7 +236,7 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
         };
     }
 
-    private static IEnumerable<Option> ToOptions(
+    private IEnumerable<Option> ToOptions(
         IReadOnlyCollection<FomodInstaller.Interface.ui.Option> options,
         ICollection<KeyValuePair<int, OptionId>> optionIdMappings,
         OptionGroupType optionGroupType)
@@ -251,10 +261,29 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
                 Id = optionId,
                 Name = option.name,
                 Description = string.IsNullOrWhiteSpace(option.description) ? null : option.description,
-                ImageUrl = option.image != null ? AssetUrl.From(option.image) : null,
+                Image = CreateOptionImage(option),
                 Type = optionType,
             };
         });
+    }
+
+    private OptionImage? CreateOptionImage(FomodInstaller.Interface.ui.Option option)
+    {
+        var image = option.image;
+        if (image is null) return null;
+        if (Uri.TryCreate(image, UriKind.Absolute, out var uri)) return new OptionImage(uri);
+
+        Debug.Assert(CurrentArchiveFiles is not null);
+        if (CurrentArchiveFiles is null) return null;
+
+        var asPath = RelativePath.FromUnsanitizedInput(image);
+        if (CurrentArchiveFiles.Value.TryGetValue(asPath, out var analyzedFile))
+        {
+            return new OptionImage(new OptionImage.ImageFromArchive(analyzedFile.Hash));
+        }
+
+        _logger.LogDebug("Image path {Path} doesn't exist in archive!", asPath);
+        return null;
     }
 
     private static OptionType MakeOptionType(FomodInstaller.Interface.ui.Option option)

@@ -26,7 +26,7 @@ public class GuidedInstallerGroupDesignViewModel : GuidedInstallerGroupViewModel
             .Select(i =>
             {
                 var description = Random.Shared.Next(0, 100) > 50 ? null : $"This is option {i + 1}";
-                AssetUrl? assetUrl = Random.Shared.Next(0, 100) > 50 ? null : AssetUrl.From("https://http.cat/images/418.jpg");
+                var image = Random.Shared.Next(0, 100) > 50 ? null : new OptionImage(new Uri("https://http.cat/images/418.jpg"));
 
                 return new Option
                 {
@@ -34,7 +34,7 @@ public class GuidedInstallerGroupDesignViewModel : GuidedInstallerGroupViewModel
                     Name = $"Option {i + 1}",
                     Type = OptionType.Available,
                     Description = description,
-                    ImageUrl = assetUrl
+                    Image = image,
                 };
             })
             .ToArray();
@@ -71,7 +71,7 @@ public class GuidedInstallerGroupDesignViewModel : GuidedInstallerGroupViewModel
                 Name = "Disabled Option",
                 Type = OptionType.Disabled,
                 Description = "This option is disabled",
-                ImageUrl = AssetUrl.From("https://http.cat/images/418.jpg")
+                Image = new OptionImage(new Uri("https://http.cat/images/418.jpg")),
             },
         };
     }

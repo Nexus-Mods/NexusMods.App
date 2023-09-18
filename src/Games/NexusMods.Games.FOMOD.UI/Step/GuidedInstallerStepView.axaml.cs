@@ -1,5 +1,4 @@
 using System.Reactive.Disposables;
-using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using NexusMods.App.UI;
 using NexusMods.Games.FOMOD.UI.Resources;
@@ -40,7 +39,7 @@ public partial class GuidedInstallerStepView : ReactiveUserControl<IGuidedInstal
 
                     PreviewTitleTextBox.Text = optionVM?.Option.Name;
                     PreviewHeaderDescriptionIcon.IsVisible = optionVM?.Option.Description is not null;
-                    PreviewHeaderImageIcon.IsVisible = optionVM?.Option.ImageUrl is not null;
+                    PreviewHeaderImageIcon.IsVisible = optionVM?.Option.Image is not null;
                 })
                 .DisposeWith(disposables);
 

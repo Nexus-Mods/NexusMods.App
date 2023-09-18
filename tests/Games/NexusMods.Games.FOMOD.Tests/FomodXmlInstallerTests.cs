@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using FomodInstaller.Interface;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
@@ -14,6 +13,7 @@ using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.TestFramework;
+using NexusMods.Games.FOMOD.CoreDelegates;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
 using NexusMods.Paths.FileTree;

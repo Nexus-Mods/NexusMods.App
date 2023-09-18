@@ -1,4 +1,5 @@
 using System.Reactive.Disposables;
+using NexusMods.App.UI;
 using NexusMods.Common.GuidedInstaller;
 using NexusMods.Common.GuidedInstaller.ValueObjects;
 using NexusMods.DataModel.RateLimiting;
@@ -11,7 +12,7 @@ public class GuidedInstallerStepDesignViewModel : AGuidedInstallerStepViewModel
     public override string? ModName { get; set; } = "Example Mod";
     public override IFooterStepperViewModel FooterStepperViewModel { get; } = new FooterStepperDesignViewModel(Percent.Zero);
 
-    public GuidedInstallerStepDesignViewModel()
+    public GuidedInstallerStepDesignViewModel(IImageCache imageCache) : base(imageCache)
     {
         var step = SetupInstallationStep();
 

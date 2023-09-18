@@ -1,10 +1,7 @@
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using NexusMods.App.UI;
-using NexusMods.Common.GuidedInstaller;
 using ReactiveUI;
 
 namespace NexusMods.Games.FOMOD.UI;
@@ -75,7 +72,7 @@ public partial class GuidedInstallerOptionView : ReactiveUserControl<IGuidedInst
             RadioButton.IsVisible = false;
         }
 
-        ImageIcon.IsVisible = viewModel.Option.ImageUrl is not null;
+        ImageIcon.IsVisible = viewModel.Option.Image is not null;
         DescriptionIcon.IsVisible = viewModel.Option.Description is not null;
     }
 }
