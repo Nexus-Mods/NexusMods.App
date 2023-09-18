@@ -30,9 +30,9 @@ public record Option
     public string? Description { get; init; }
 
     /// <summary>
-    /// Gets the <see cref="AssetUrl"/> of the image.
+    /// Gets the image of the option.
     /// </summary>
-    public AssetUrl? ImageUrl { get; init; }
+    public OptionImage? Image { get; init; }
 
     /// <summary>
     /// Gets the hover text of the option.
