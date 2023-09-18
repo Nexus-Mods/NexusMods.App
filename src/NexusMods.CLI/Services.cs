@@ -82,7 +82,6 @@ public static class Services
             .AddVerb<SetNexusAPIKey>();
 
         services.AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ => new Resource<IExtractor, Size>("File Extraction"));
-        services.AddAllSingleton<IResource, IResource<ArchiveAnalyzer, Size>>(_ => new Resource<ArchiveAnalyzer, Size>("File Analysis"));
         return services;
     }
 

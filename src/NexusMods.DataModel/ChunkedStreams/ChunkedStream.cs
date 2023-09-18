@@ -75,8 +75,10 @@ public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
         var chunkOffset = _position % _source.ChunkSize.Value;
         var isLastChunk = chunkIdx == _source.ChunkCount - 1;
         var chunk = await GetChunkAsync(chunkIdx, cancellationToken);
+        var readToEnd = Math.Clamp(_source.Size.Value - _position, 0, Int32.MaxValue);
 
         var toRead = Math.Min(buffer.Length, (int)(_source.ChunkSize.Value - chunkOffset));
+        toRead = Math.Min(toRead, (int)readToEnd);
         if (isLastChunk)
         {
             var lastChunkExtraSize = _source.Size.Value % _source.ChunkSize.Value;

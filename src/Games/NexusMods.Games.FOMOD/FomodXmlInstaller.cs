@@ -12,18 +12,21 @@ using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using NexusMods.Paths.FileTree;
 using NexusMods.Paths.Utilities;
 using OneOf.Types;
 using Mod = FomodInstaller.Interface.Mod;
 
 namespace NexusMods.Games.FOMOD;
 
-public class FomodXmlInstaller : IModInstaller
+public class FomodXmlInstaller : AModInstaller
 {
     private readonly ICoreDelegates _delegates;
     private readonly XmlScriptType _scriptType = new();
     private readonly ILogger<FomodXmlInstaller> _logger;
     private readonly GamePath _fomodInstallationPath;
+    private readonly IFileSystem _fileSystem;
+    private readonly TemporaryFileManager _tempoaryFileManager;
 
     /// <summary>
     /// Creates a new instance of <see cref="FomodXmlInstaller"/> given the provided <paramref name="provider"/> and <paramref name="fomodInstallationPath"/>.
@@ -34,30 +37,25 @@ public class FomodXmlInstaller : IModInstaller
     public static FomodXmlInstaller Create(IServiceProvider provider, GamePath fomodInstallationPath)
     {
         return new FomodXmlInstaller(provider.GetRequiredService<ILogger<FomodXmlInstaller>>(),
-            provider.GetRequiredService<ICoreDelegates>(),
-            fomodInstallationPath);
+            provider.GetRequiredService<ICoreDelegates>(), provider.GetRequiredService<IFileSystem>(),
+            provider.GetRequiredService<TemporaryFileManager>(),
+
+            fomodInstallationPath, provider);
     }
 
     public FomodXmlInstaller(ILogger<FomodXmlInstaller> logger, ICoreDelegates coreDelegates,
-        GamePath fomodInstallationPath)
+        IFileSystem fileSystem, TemporaryFileManager temporaryFileManager, GamePath fomodInstallationPath,
+        IServiceProvider serviceProvider) : base(serviceProvider)
     {
         _delegates = coreDelegates;
         _fomodInstallationPath = fomodInstallationPath;
         _logger = logger;
+        _tempoaryFileManager = temporaryFileManager;
+        _fileSystem = fileSystem;
     }
 
-    public Priority GetPriority(GameInstallation installation,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
-    {
-        var hasScript = archiveFiles.Keys.Any(x => x.EndsWith(FomodConstants.XmlConfigRelativePath));
-        return hasScript ? Priority.High : Priority.None;
-    }
-
-    public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
-        GameInstallation gameInstallation,
-        ModId baseModId,
-        Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
+    public override async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(GameInstallation gameInstallation,
+        ModId baseModId, FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         CancellationToken cancellationToken = default)
     {
         // the component dealing with FOMODs is built to support all kinds of mods, including those without a script.
@@ -65,20 +63,19 @@ public class FomodXmlInstaller : IModInstaller
         // we only intend to support xml scripted FOMODs, this should be good enough
         var stopPattern = new List<string> { "fomod" };
 
-        if (!archiveFiles.Keys.TryGetFirst(x => x.EndsWith(FomodConstants.XmlConfigRelativePath), out var xmlFile))
-            throw new UnreachableException(
-                $"$[{nameof(FomodXmlInstaller)}] XML file not found. This should never be true and is indicative of a bug.");
+        var analyzerInfo = await FomodAnalyzer.AnalyzeAsync(archiveFiles, _fileSystem, cancellationToken);
+        if (analyzerInfo == default)
+            return Array.Empty<ModInstallerResult>();
 
-        if (!archiveFiles.TryGetValue(xmlFile, out var analyzedFile))
-            throw new UnreachableException(
-                $"$[{nameof(FomodXmlInstaller)}] XML data not found. This should never be true and is indicative of a bug.");
+        await using var tmpFolder = _tempoaryFileManager.CreateFolder();
 
-        var analyzerInfo = analyzedFile.AnalysisData.OfType<FomodAnalyzerInfo>().FirstOrDefault();
-        if (analyzerInfo == default) return Array.Empty<ModInstallerResult>();
+        await analyzerInfo.DumpToFileSystemAsync(tmpFolder.Path.Combine(analyzerInfo.PathPrefix));
+
+        var xmlPath = analyzerInfo.PathPrefix.Join(FomodConstants.XmlConfigRelativePath);
 
         // Setup mod, exclude script path so it doesn't get picked up and thus double read from disk
-        var modFiles = archiveFiles.Keys.Select(x => x.ToNativeSeparators(OSInformation.Shared)).ToList();
-        var mod = new Mod(modFiles, stopPattern, xmlFile, string.Empty, _scriptType);
+        var modFiles = archiveFiles.GetAllDescendentFiles().Select(x => x.Path.ToNativeSeparators(OSInformation.Shared)).ToList();
+        var mod = new Mod(modFiles, stopPattern, xmlPath.ToString(), string.Empty, _scriptType);
         await mod.InitializeWithoutLoadingScript();
 
         var executor = _scriptType.CreateExecutor(mod, _delegates);
@@ -114,7 +111,7 @@ public class FomodXmlInstaller : IModInstaller
 
     private IEnumerable<AModFile> InstructionsToModFiles(
         IList<Instruction> instructions,
-        EntityDictionary<RelativePath, AnalyzedFile> files,
+        FileTreeNode<RelativePath, ModSourceFileEntry> files,
         GamePath gameTargetPath)
     {
         var res = instructions.Select(instruction =>
@@ -142,21 +139,22 @@ public class FomodXmlInstaller : IModInstaller
 
     private static AModFile ConvertInstructionCopy(
         Instruction instruction,
-        EntityDictionary<RelativePath, AnalyzedFile> files,
+        FileTreeNode<RelativePath, ModSourceFileEntry>  files,
         GamePath gameTargetPath)
     {
         var src = RelativePath.FromUnsanitizedInput(instruction.source);
         var dest = RelativePath.FromUnsanitizedInput(instruction.destination);
 
-        var file = files.First(x => x.Key.Equals(src)).Value;
+        var file = files.FindNode(src)!.Value;
         return new FromArchive
         {
             Id = ModFileId.New(),
             To = new GamePath(gameTargetPath.Type, gameTargetPath.Path.Join(dest)),
-            Hash = file.Hash,
+            Hash = file!.Hash,
             Size = file.Size
         };
     }
+
 
     private static AModFile ConvertInstructionMkdir(
         Instruction instruction,

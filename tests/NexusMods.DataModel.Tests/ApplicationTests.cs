@@ -1,4 +1,6 @@
 using FluentAssertions;
+using NexusMods.Common;
+using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Loadouts.ApplySteps;
 using NexusMods.DataModel.Loadouts.IngestSteps;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -20,14 +22,15 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
     public async Task CanApplyGame()
     {
         var mainList = await LoadoutManager.ManageGameAsync(Install, "MainList", CancellationToken.None);
-        var hash = await ArchiveAnalyzer.AnalyzeFileAsync(DataZipLzma, CancellationToken.None);
-        await ArchiveInstaller.AddMods(mainList.Value.LoadoutId, hash.Hash, "First Mod", CancellationToken.None);
+        var downloadId = await DownloadRegistry.RegisterDownload(DataZipLzma,
+            new FilePathMetadata {OriginalName = DataZipLzma.FileName, Quality = Quality.Low}, CancellationToken.None);
+        await ArchiveInstaller.AddMods(mainList.Value.LoadoutId, downloadId, "First Mod", CancellationToken.None);
 
         var plan = await LoadoutSynchronizer.MakeApplySteps(mainList.Value, CancellationToken.None);
         plan.Steps.OfType<ExtractFile>().Count().Should().Be(3);
 
         await LoadoutSynchronizer.Apply(plan, CancellationToken.None);
-        
+
         var gameFolder = Install.Locations[GameFolderType.Game];
         foreach (var file in DataNames)
         {
@@ -48,9 +51,9 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
 
         var originalPlan = await LoadoutSynchronizer.MakeApplySteps(mainList.Value, Token);
         originalPlan.Steps.OfType<ExtractFile>().Count().Should().Be(3, "Files override each other");
-        
+
         await LoadoutSynchronizer.Apply(originalPlan, Token);
-        
+
         var gameFolder = Install.Locations[GameFolderType.Game];
         foreach (var file in DataNames)
         {
@@ -65,8 +68,8 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
         var modifiedHash = "modified".XxHash64AsUtf8();
 
         var firstMod = mainList.Value.Mods.Values.First();
-        var ingestPlan = await LoadoutSynchronizer.MakeIngestPlan(mainList.Value, _ => firstMod.Id, CancellationToken.None); 
-            
+        var ingestPlan = await LoadoutSynchronizer.MakeIngestPlan(mainList.Value, _ => firstMod.Id, CancellationToken.None);
+
         ingestPlan.Steps.Should().BeEquivalentTo(new IIngestStep[]
         {
             new Loadouts.IngestSteps.BackupFile
@@ -92,7 +95,7 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
         (await LoadoutSynchronizer.FlattenLoadout(mainList.Value)).Files.Count.Should().Be(7, "because no changes are applied yet");
 
         await LoadoutSynchronizer.Ingest(ingestPlan);
-        
+
         var flattened = (await LoadoutSynchronizer.FlattenLoadout(mainList.Value)).Files.Count;
         flattened.Should().Be(6, "Because we've deleted one file");
 

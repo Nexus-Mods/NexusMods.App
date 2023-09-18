@@ -14,7 +14,7 @@ public static class Services
         services.AddAllSingleton<IGame, SkyrimLegendaryEdition>();
         services.AddSingleton<ITool, SkyrimLegendaryEditionGameTool>();
         services.AddSingleton<ITool, SkyrimSpecialEditionGameTool>();
-        services.AddAllSingleton<IFileAnalyzer, PluginAnalyzer>();
+        services.AddSingleton<PluginAnalyzer>();
         services.AddAllSingleton<ITypeFinder, TypeFinder>();
         return services;
     }

@@ -1,5 +1,7 @@
 using NexusMods.Abstractions.CLI;
+using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.Paths;
 
@@ -12,7 +14,7 @@ namespace NexusMods.CLI.Verbs;
 public class InstallMod : AVerb<LoadoutMarker, AbsolutePath, string>, IRenderingVerb
 {
     private readonly IArchiveInstaller _archiveInstaller;
-    private readonly IArchiveAnalyzer _archiveAnalyzer;
+    private readonly IDownloadRegistry _downloadRegistry;
 
     /// <inheritdoc />
     public IRenderer Renderer { get; set; } = null!;
@@ -22,10 +24,10 @@ public class InstallMod : AVerb<LoadoutMarker, AbsolutePath, string>, IRendering
     /// </summary>
     /// <param name="archiveInstaller"></param>
     /// <param name="archiveAnalyzer"></param>
-    public InstallMod(IArchiveInstaller archiveInstaller, IArchiveAnalyzer archiveAnalyzer)
+    public InstallMod(IArchiveInstaller archiveInstaller, IDownloadRegistry archiveAnalyzer)
     {
         _archiveInstaller = archiveInstaller;
-        _archiveAnalyzer = archiveAnalyzer;
+        _downloadRegistry = archiveAnalyzer;
     }
 
     /// <inheritdoc />
@@ -41,8 +43,13 @@ public class InstallMod : AVerb<LoadoutMarker, AbsolutePath, string>, IRendering
     {
         await Renderer.WithProgress(token, async () =>
         {
-            var analyzedFile = await _archiveAnalyzer.AnalyzeFileAsync(file, token);
-            await _archiveInstaller.AddMods(loadout.Value.LoadoutId, analyzedFile.Hash, token:token);
+            var downloadId = await _downloadRegistry.RegisterDownload(file, new FilePathMetadata
+            {
+                OriginalName = file.Name,
+                Quality = Quality.Low,
+                Name = name
+            }, token);
+            await _archiveInstaller.AddMods(loadout.Value.LoadoutId, downloadId, name, token:token);
             return file;
         });
         return 0;

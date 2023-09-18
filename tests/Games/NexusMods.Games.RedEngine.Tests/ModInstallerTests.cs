@@ -20,8 +20,8 @@ public class ModInstallerTests : AGameTest<Cyberpunk2077>
         Hash hash, IEnumerable<GamePath> files)
     {
         var loadout = await CreateLoadout(indexGameFiles:false);
-        await DownloadAndCacheMod(GameInstallation.Game.Domain, modId, fileId, hash);
-        var mod = await InstallModFromArchiveIntoLoadout(loadout, hash, name);
+        var id = await DownloadAndCacheMod(GameInstallation.Game.Domain, modId, fileId, hash);
+        var mod = await InstallModFromArchiveIntoLoadout(loadout, id, name);
 
         mod.Files.Values
             .OfType<IToFile>()
@@ -49,6 +49,7 @@ public class ModInstallerTests : AGameTest<Cyberpunk2077>
                 "bin/x64/plugins/cyber_engine_tweaks/fonts/NotoSansTC-Regular.otf",
                 "bin/x64/plugins/cyber_engine_tweaks/fonts/NotoSansThai-Regular.ttf",
                 "bin/x64/plugins/cyber_engine_tweaks/scripts/json/LICENSE",
+                "bin/x64/plugins/cyber_engine_tweaks/scripts/json/README.md",
                 "bin/x64/plugins/cyber_engine_tweaks/scripts/json/json.lua",
                 "bin/x64/plugins/cyber_engine_tweaks/tweakdb/tweakdbstr.kark",
                 "bin/x64/plugins/cyber_engine_tweaks/tweakdb/usedhashes.kark",
@@ -109,9 +110,6 @@ public class ModInstallerTests : AGameTest<Cyberpunk2077>
             {
                 "mods/PanamRomancedEnhanced/archives/PanamRomancedEnhanced.archive",
                 "mods/PanamRomancedEnhanced/info.json",
-                "mods/PanamRomancedEnhancedPrivacy/archives/PanamPrivacy.archive",
-                "mods/PanamRomancedEnhancedPrivacy/archives/PanamRomancedEnhancedPrivacy.archive",
-                "mods/PanamRomancedEnhancedPrivacy/info.json"
             }.Select(p => new GamePath(GameFolderType.Game, p))
         },
         new object[]
@@ -535,6 +533,7 @@ public class ModInstallerTests : AGameTest<Cyberpunk2077>
                 "bin/x64/plugins/cyber_engine_tweaks/mods/cyberscript/mod/data/entitieshash.lua",
                 "bin/x64/plugins/cyber_engine_tweaks/mods/cyberscript/mod/data/facial.json",
                 "bin/x64/plugins/cyber_engine_tweaks/mods/cyberscript/mod/data/fact.lua",
+                "bin/x64/plugins/cyber_engine_tweaks/mods/cyberscript/mod/data/factdump.txt",
                 "bin/x64/plugins/cyber_engine_tweaks/mods/cyberscript/mod/data/fasttravelmarkref.json",
                 "bin/x64/plugins/cyber_engine_tweaks/mods/cyberscript/mod/data/gameaffinity.json",
                 "bin/x64/plugins/cyber_engine_tweaks/mods/cyberscript/mod/data/gamesounds.json",

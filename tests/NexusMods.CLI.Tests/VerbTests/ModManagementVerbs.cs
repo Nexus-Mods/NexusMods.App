@@ -30,7 +30,7 @@ public class ModManagementVerbs : AVerbTest
         await RunNoBannerAsync("list-mods", "-l", listName);
         LastTable.Rows.Count().Should().Be(1);
 
-        await RunNoBannerAsync("install-mod", "-l", listName, "-f", Data7ZipLZMA2.ToString());
+        await RunNoBannerAsync("install-mod", "-l", listName, "-f", Data7ZipLZMA2.ToString(), "-n", Data7ZipLZMA2.GetFileNameWithoutExtension());
 
         await RunNoBannerAsync("list-mods", "-l", listName);
         LastTable.Rows.Count().Should().Be(2);

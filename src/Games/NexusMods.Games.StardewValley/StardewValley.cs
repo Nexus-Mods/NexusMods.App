@@ -86,7 +86,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
     public override IEnumerable<IModInstaller> Installers => new IModInstaller[]
     {
         SMAPIInstaller.Create(_serviceProvider),
-        new SMAPIModInstaller()
+        SMAPIModInstaller.Create(_serviceProvider)
     };
 
 }

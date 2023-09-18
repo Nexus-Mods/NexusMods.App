@@ -18,5 +18,5 @@ public interface ILoadoutDiagnosticEmitter
     /// Diagnoses a loadout and creates instances of <see cref="Diagnostic"/>.
     /// </summary>
     /// <param name="loadout">The current loadout.</param>
-    IEnumerable<Diagnostic> Diagnose(Loadout loadout);
+    IAsyncEnumerable<Diagnostic> Diagnose(Loadout loadout);
 }

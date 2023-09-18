@@ -117,4 +117,9 @@ public enum EntityCategory : byte
     /// Global settings for things like metrics opt-in and the like.
     /// </summary>
     GlobalSettings = 16,
+
+    /// <summary>
+    /// Information about registered downloads
+    /// </summary>
+    DownloadMetadata = 17,
 }

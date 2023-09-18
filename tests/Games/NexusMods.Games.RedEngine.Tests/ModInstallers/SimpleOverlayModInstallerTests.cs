@@ -78,24 +78,4 @@ public class SimpleOverlayModInstallerTests : AModInstallerTest<Cyberpunk2077, S
                 (hash5, GameFolderType.Game, "archive/pc/mod/foo.archive")
             });
     }
-
-    [Fact]
-    public async Task IgnoredExtensionsAreIgnored()
-    {
-        var (hash1, hash2, hash3) = Next3Hash();
-        var (hash4, hash5) = Next2Hash();
-
-        var files = await BuildAndInstall(
-            (hash1, "bin/x64/foo.exe"),
-            (hash2, "file.txt"),
-            (hash3, "docs/file.md"),
-            (hash4, "bin/x64/file.pdf"),
-            (hash5, "bin/x64/file.png"));
-
-        files.Should()
-            .BeEquivalentTo(new[]
-            {
-                (hash1, GameFolderType.Game, "bin/x64/foo.exe")
-            });
-    }
 }

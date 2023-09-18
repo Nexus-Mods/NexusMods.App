@@ -9,6 +9,7 @@ using NexusMods.Games.DarkestDungeon.Models;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
+using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.DarkestDungeon.Installers;
 
@@ -19,26 +20,18 @@ public class LooseFilesModInstaller : IModInstaller
 {
     private static readonly RelativePath ModsFolder = "mods".ToRelativePath();
 
-    public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
+    public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
         ModId baseModId,
-        Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
+        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         CancellationToken cancellationToken = default)
     {
-        return ValueTask.FromResult(GetMods(baseModId, srcArchiveHash, archiveFiles));
-    }
-
-    private IEnumerable<ModInstallerResult> GetMods(
-        ModId baseModId,
-        Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
-    {
         var files = archiveFiles
+            .GetAllDescendentFiles()
             .Select(kv =>
             {
                 var (path, file) = kv;
-                return file.ToFromArchive(
+                return file!.ToFromArchive(
                     new GamePath(GameFolderType.Game, ModsFolder.Join(path))
                 );
             });
@@ -47,13 +40,13 @@ public class LooseFilesModInstaller : IModInstaller
         // this needs to be serialized to XML and added to the files enumerable
         var modProject = new ModProject
         {
-            Title = archiveFiles.First().Key.TopParent.ToString()
+            Title = archiveFiles.Path.TopParent.ToString()
         };
 
-        yield return new ModInstallerResult
+        return new [] { new ModInstallerResult
         {
             Id = baseModId,
             Files = files,
-        };
+        }};
     }
 }

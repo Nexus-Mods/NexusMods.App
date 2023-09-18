@@ -4,11 +4,14 @@ using NexusMods.Paths;
 
 namespace NexusMods.Common;
 
+/// <summary>
+/// Extensions for <see cref="Stream"/>.
+/// </summary>
 public static class StreamExtensions
 {
     /// <summary>
     /// Helper method to calculate the hash of a given stream while copying it to another stream. This method will
-    /// update the <see cref="IJob{TSize}.Progress"/> property of the job as it progresses.
+    /// update the IJob.Process property of the job as it progresses.
     /// </summary>
     /// <param name="inputStream"></param>
     /// <param name="outputStream"></param>

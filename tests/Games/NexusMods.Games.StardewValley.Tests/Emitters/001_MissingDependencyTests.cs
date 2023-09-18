@@ -39,7 +39,7 @@ public class MissingDependenciesEmitterTests : ALoadoutDiagnosticEmitterTest<Sta
 
         var modA = await InstallModFromArchiveIntoLoadout(loadoutMarker, modAPath);
 
-        var diagnostic = GetSingleDiagnostic(loadoutMarker.Value);
+        var diagnostic = await GetSingleDiagnostic(loadoutMarker.Value);
         diagnostic.Id.Should().Be(new DiagnosticId(Diagnostics.Source, 1));
         diagnostic.Severity.Should().Be(DiagnosticSeverity.Warning);
         diagnostic.Message.Should().Be(DiagnosticMessage.From($"Mod 'ModA' is missing required dependency 'ModB'"));
@@ -64,7 +64,7 @@ public class MissingDependenciesEmitterTests : ALoadoutDiagnosticEmitterTest<Sta
 
         await InstallModFromArchiveIntoLoadout(loadoutMarker, modBPath);
 
-        var diagnostics = GetAllDiagnostics(loadoutMarker.Value);
+        var diagnostics = await GetAllDiagnostics(loadoutMarker.Value);
         diagnostics.Should().BeEmpty();
     }
 }

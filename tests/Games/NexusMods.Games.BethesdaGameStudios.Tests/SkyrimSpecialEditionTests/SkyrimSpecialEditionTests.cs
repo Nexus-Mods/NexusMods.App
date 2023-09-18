@@ -146,12 +146,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
                     To = new GamePath(GameFolderType.Game, $"Data/{file.Key}"),
                     Hash = Hash.Zero,
                     Size = Size.Zero,
-                    Metadata =
-                        ImmutableList<IMetadata>.Empty.Add(
-                            new PluginAnalysisData
-                            {
-                                Masters = file.Value.Select(f => f.ToRelativePath()).ToArray()
-                            })
+                    Metadata = ImmutableList<IMetadata>.Empty
                 };
                 files = files.With(newFile.Id, newFile);
             }
@@ -161,10 +156,6 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
 
 
         gameFiles.Files.Count.Should().BeGreaterThan(0);
-
-        LoadoutRegistry.Get(loadout.Value.LoadoutId, gameFiles.Id)!.Files.Values
-            .Count(x => x.Metadata.OfType<PluginAnalysisData>().Any())
-            .Should().BeGreaterOrEqualTo(analysis.Count, "Analysis data has been added");
 
         var pluginOrderFile = gameFiles.Files.Values.OfType<PluginOrderFile>().First();
         var flattenedList = (await LoadoutSynchronizer.FlattenLoadout(loadout.Value)).Files.Values.ToList();
