@@ -1,4 +1,6 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Windows.Input;
 using Microsoft.Extensions.Logging;
@@ -63,17 +65,38 @@ public class UpdaterViewModel : AViewModel<IUpdaterViewModel>, IUpdaterViewModel
 
             _logger.LogInformation("New version available: {Version}", latestRelease.Version);
 
-            // TODO: find the right asset
+            var asset = FindAsset(latestRelease);
 
+            _logger.LogInformation("Asset found: {Asset}", asset.Name);
+            UpdateUrl = asset.BrowserDownloadUrl;
 
             return true;
         }
         catch (Exception ex)
         {
-
+            _logger.LogError(ex, "Failed to check for updates");
             return false;
         }
 
+    }
+
+    private Asset FindAsset(Release latestRelease)
+    {
+        switch (Method)
+        {
+            case InstallationMethod.Flatpak:
+                throw new UnreachableException("Flatpak is not supported yet");
+            case InstallationMethod.InnoSetup:
+                return latestRelease.Assets.First(r => r.Name.EndsWith(".exe"));
+            case InstallationMethod.Archive when RuntimeInformation.IsOSPlatform(OSPlatform.Windows) &&
+                                                 RuntimeInformation.OSArchitecture == Architecture.X64:
+                return latestRelease.Assets.First(r => r.Name.EndsWith(".win-x64.zip"));
+            case InstallationMethod.Archive when RuntimeInformation.IsOSPlatform(OSPlatform.Linux) &&
+                                                 RuntimeInformation.OSArchitecture == Architecture.X64:
+                return latestRelease.Assets.First(r => r.Name.EndsWith(".linux-x64.zip"));
+            default:
+                throw new UnreachableException("Unsupported installation method");
+        }
     }
 
     private async Task<Release[]> GetReleases()
