@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Mutagen.Bethesda;
@@ -8,7 +7,6 @@ using Mutagen.Bethesda.Plugins.Meta;
 using Mutagen.Bethesda.Plugins.Records;
 using Mutagen.Bethesda.Skyrim;
 using NexusMods.DataModel.Abstractions.Ids;
-using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
@@ -19,10 +17,6 @@ namespace NexusMods.Games.BethesdaGameStudios;
 [UsedImplicitly]
 public class PluginAnalyzer
 {
-    public FileAnalyzerId Id { get; } = FileAnalyzerId.New("9c673a4f-064f-4b1e-83e3-4bf0454575cd", 1);
-
-    public IEnumerable<FileType> FileTypes => new[] { FileType.TES4 };
-
     private static readonly HashSet<Extension> ValidExtensions = new Extension[] {
         new (".esp"),
         new (".esm"),
@@ -39,7 +33,7 @@ public class PluginAnalyzer
     public async Task<PluginAnalysisData?> AnalyzeAsync(RelativePath path, Stream stream, CancellationToken ct = default)
     {
         var extension = path.Extension;
-        if (ValidExtensions.Contains(extension))
+        if (!ValidExtensions.Contains(extension))
             return null;
 
         // NOTE(erri120): The GameConstant specifies the header length.

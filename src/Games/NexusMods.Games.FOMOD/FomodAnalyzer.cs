@@ -1,14 +1,8 @@
-﻿using System.Runtime.CompilerServices;
-using System.Text;
+﻿using System.Text;
 using FomodInstaller.Scripting.XmlScript;
 using JetBrains.Annotations;
-using Microsoft.Extensions.Logging;
 using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Ids;
-using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.ModInstallers;
-using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 
