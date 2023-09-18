@@ -18,15 +18,23 @@ public class UpdaterViewModel : AViewModel<IUpdaterViewModel>, IUpdaterViewModel
     private readonly HttpClient _client;
     private readonly ILogger<UpdaterViewModel> _logger;
     public bool IsActive { get; set; }
-    public InstallationMethod Method { get; }
-    public Version NewVersion { get; } = Version.Parse("0.0.0.0");
-    public Version OldVersion { get; }
+
+    [Reactive]
+    public InstallationMethod Method { get; set; }
+
+    [Reactive]
+    public Version NewVersion { get; set; } = Version.Parse("0.0.0.0");
+
+    [Reactive]
+    public Version OldVersion { get; set; }
     public ICommand UpdateCommand { get; }
 
     public ICommand ShowChangelog { get; }
 
+    [Reactive]
     public Uri UpdateUrl { get; set; } = new("https://github.com/Nexus-Mods/NexusMods.App/releases/latest");
 
+    [Reactive]
     public Uri ChangelogUrl { get; set; } = new("https://github.com/Nexus-Mods/NexusMods.App/releases/latest");
 
     [Reactive] public bool ShowSystemUpdateMessage { get; set; } = false;
@@ -66,6 +74,8 @@ public class UpdaterViewModel : AViewModel<IUpdaterViewModel>, IUpdaterViewModel
                 return false;
             }
 
+            ChangelogUrl = latestRelease.HtmlUrl;
+
             if (latestRelease.Version < OldVersion)
             {
                 _logger.LogInformation("No new release available");
@@ -78,6 +88,7 @@ public class UpdaterViewModel : AViewModel<IUpdaterViewModel>, IUpdaterViewModel
 
             _logger.LogInformation("Asset found: {Asset}", asset.Name);
             UpdateUrl = asset.BrowserDownloadUrl;
+            NewVersion = latestRelease.Version;
 
             return true;
         }
