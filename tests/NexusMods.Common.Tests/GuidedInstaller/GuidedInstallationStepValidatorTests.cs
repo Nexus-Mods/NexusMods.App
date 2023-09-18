@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NexusMods.Common.GuidedInstaller;
 using NexusMods.Common.GuidedInstaller.ValueObjects;
 
@@ -45,13 +44,14 @@ public class GuidedInstallationStepValidatorTests
         return new()
         {
             Id = StepId.From(new Guid("E0B0B0A0-0A0A-0A0A-0A0A-0A0A0A0A0A0A")),
+            Name = "Step",
             Groups = new[]
             {
                 CreateOptionGroup(groupType),
                 new OptionGroup()
                 {
                     Id = GroupId.From(new Guid("513C6470-639B-44E1-AB0B-DE410871E15D")),
-                    Description = "Other Group",
+                    Name = "Other Group",
                     Type = OptionGroupType.Any,
                     Options = new []
                     {
@@ -80,7 +80,7 @@ public class GuidedInstallationStepValidatorTests
         return new()
         {
             Id = GroupId.From(new Guid("54DDF485-124A-4E6E-B4B8-1A9B94533EC0")),
-            Description = "Test group",
+            Name = "Test group",
             Type = groupType,
             Options = new[]
             {

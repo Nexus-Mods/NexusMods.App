@@ -1,5 +1,7 @@
+using System.Reactive;
 using JetBrains.Annotations;
 using NexusMods.App.UI;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.Games.FOMOD.UI;
@@ -11,4 +13,6 @@ public class GuidedInstallerWindowViewModel : AViewModel<IGuidedInstallerWindowV
 
     [Reactive]
     public IGuidedInstallerStepViewModel? ActiveStepViewModel { get; set; }
+
+    public ReactiveCommand<Unit, Unit> CloseCommand => ReactiveCommand.Create(() => { });
 }

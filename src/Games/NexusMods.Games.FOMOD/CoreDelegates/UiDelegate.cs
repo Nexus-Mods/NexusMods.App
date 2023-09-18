@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.Common.GuidedInstaller;
 using NexusMods.Common.GuidedInstaller.ValueObjects;
+using NexusMods.DataModel.RateLimiting;
 
 namespace NexusMods.Games.FOMOD.CoreDelegates;
 
@@ -119,8 +120,10 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
             optionIdMappings
         );
 
+        var progress = Percent.CreateClamped(currentStepId, installSteps.Length);
+
         _guidedInstaller
-            .RequestUserChoice(guidedInstallationStep, new CancellationToken())
+            .RequestUserChoice(guidedInstallationStep, progress, CancellationToken.None)
             .ContinueWith(task =>
             {
                 var result = task.Result;
@@ -202,18 +205,21 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
             var groupId = GroupId.From(Guid.NewGuid());
             groupIdMapping.Add(new KeyValuePair<int, GroupId>(group.id, groupId));
 
+            var groupType = ConvertOptionGroupType(group.type);
+
             return new OptionGroup
             {
                 Id = groupId,
-                Type = ConvertOptionGroupType(group.type),
-                Description = group.name,
-                Options = ToOptions(group.options, optionIdMappings).ToArray(),
+                Type = groupType,
+                Name = group.name,
+                Options = ToOptions(group.options, optionIdMappings, groupType).ToArray(),
             };
         });
 
         return new GuidedInstallationStep
         {
             Id = StepId.From(Guid.NewGuid()),
+            Name = installSteps[currentStepId].name ?? string.Empty,
             Groups = stepGroups.ToArray(),
             HasPreviousStep = currentStepId != 0,
             HasNextStep = currentStepId != installSteps.Count - 1,
@@ -221,21 +227,32 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
     }
 
     private static IEnumerable<Option> ToOptions(
-        IEnumerable<FomodInstaller.Interface.ui.Option> options,
-        ICollection<KeyValuePair<int, OptionId>> optionIdMappings)
+        IReadOnlyCollection<FomodInstaller.Interface.ui.Option> options,
+        ICollection<KeyValuePair<int, OptionId>> optionIdMappings,
+        OptionGroupType optionGroupType)
     {
         return options.Select(option =>
         {
             var optionId = OptionId.From(Guid.NewGuid());
             optionIdMappings.Add(new KeyValuePair<int, OptionId>(option.id, optionId));
 
+            var optionType = MakeOptionType(option);
+
+            // NOTE(erri120): If the group only contains a single option that is required by the group type,
+            // the option type should be set to required. Some authors and FOMOD builders aren't doing this
+            // automatically, so we have to change the type to required afterwards.
+            if (options.Count == 1 && optionGroupType is OptionGroupType.ExactlyOne or OptionGroupType.AtLeastOne)
+            {
+                optionType = OptionType.Required;
+            }
+
             return new Option
             {
                 Id = optionId,
                 Name = option.name,
-                Description = option.description,
+                Description = string.IsNullOrWhiteSpace(option.description) ? null : option.description,
                 ImageUrl = option.image != null ? AssetUrl.From(option.image) : null,
-                Type = MakeOptionType(option),
+                Type = optionType,
             };
         });
     }
@@ -266,6 +283,7 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
 
     public void Dispose()
     {
+        _guidedInstaller.Dispose();
         _semaphoreSlim.Dispose();
         _waitHandle.Dispose();
     }

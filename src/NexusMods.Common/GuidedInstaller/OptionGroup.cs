@@ -15,9 +15,9 @@ public record OptionGroup
     public required GroupId Id { get; init; }
 
     /// <summary>
-    /// Gets the description of the group.
+    /// Gets the name of the group.
     /// </summary>
-    public required string Description { get; init; }
+    public required string Name { get; init; }
 
     /// <summary>
     /// Gets the type of the group.

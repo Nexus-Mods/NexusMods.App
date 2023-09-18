@@ -9,7 +9,7 @@
             <ProgressBar Classes="LaunchButton" Minimum="0" Maximum="1" IsIndeterminate="True" ProgressTextFormat="RUNNING..."></ProgressBar>
         </StackPanel>
     </Design.PreviewWith>
-    
+
     <Style Selector="ProgressBar.LaunchButton">
         <Setter Property="ShowProgressText" Value="True"></Setter>
         <Setter Property="Height" Value="34"></Setter>
@@ -18,7 +18,7 @@
         <Setter Property="BorderBrush" Value="{DynamicResource BrandPrimary}"></Setter>
         <Setter Property="MinWidth" Value="100"></Setter>
     </Style>
-    
+
     <Style Selector="ProgressBar.LaunchButton TextBlock">
         <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}"></Setter>
         <Setter Property="FontWeight" Value="600"></Setter>
@@ -27,6 +27,4 @@
         <Setter Property="LineHeight" Value="14"></Setter>
         <Setter Property="LetterSpacing" Value="0.7"></Setter>
     </Style>
-
-
 </Styles>

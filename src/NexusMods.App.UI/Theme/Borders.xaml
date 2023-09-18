@@ -5,9 +5,12 @@
             <Border Classes="LeftPaneTitle">
                 <TextBlock Text="TITLE"></TextBlock>
             </Border>
+            <Border Classes="HighlightedArea">
+                <TextBlock Text="CONTENT"></TextBlock>
+            </Border>
         </StackPanel>
     </Design.PreviewWith>
-    
+
     <Style Selector="Border.HighlightedArea">
         <Setter Property="Background" Value="{DynamicResource StatusInfoTransparentBrush}" />
         <Setter Property="CornerRadius" Value="8" />
@@ -15,13 +18,13 @@
         <Setter Property="BorderThickness" Value="2" />
         <Setter Property="BoxShadow" Value="inset 0 0 8 #1079f9" />
     </Style>
-    
+
     <Style Selector="Border.LeftPaneTitle">
         <Setter Property="Background" Value="{DynamicResource BrandSecondaryDarker}"></Setter>
         <Setter Property="Padding" Value="24, 13.5"></Setter>
         <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
     </Style>
-    
+
     <Style Selector="Border.LeftPaneTitle TextBlock">
         <Setter Property="FontFamily" Value="{DynamicResource FontPrimaryBold}" />
         <Setter Property="FontSize" Value="18"></Setter>

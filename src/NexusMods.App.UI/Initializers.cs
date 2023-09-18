@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
+using System.Reactive.Linq;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Media;
@@ -22,8 +23,8 @@ public static class Initializers
     public static readonly ILeftMenuViewModel ILeftMenuViewModel = new HomeLeftMenuDesignViewModel();
     public static readonly IRightContentViewModel IRightContent = new PlaceholderDesignViewModel();
 
-    public static readonly ReactiveCommand<Unit, Unit> ReactiveCommandUnitUnit =
-        ReactiveCommand.Create(() => { });
+    public static readonly ReactiveCommand<Unit, Unit> EnabledReactiveCommand = ReactiveCommand.Create(() => { }, Observable.Return(true));
+    public static readonly ReactiveCommand<Unit, Unit> DisabledReactiveCommand = ReactiveCommand.Create(() => { }, Observable.Return(false));
 
     public static readonly ModCursor ModCursor = new(LoadoutId,
         ModId.From(new Guid("00000000-0000-0000-0000-000000000002")));

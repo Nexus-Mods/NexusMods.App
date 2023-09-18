@@ -29,6 +29,11 @@
             <icons:Icon Classes="Star"></icons:Icon>
             <icons:Icon Classes="TrashCanOutline"></icons:Icon>
             <icons:Icon Classes="PlayCircleOutline"></icons:Icon>
+            <icons:Icon Classes="Image"></icons:Icon>
+            <icons:Icon Classes="Description"></icons:Icon>
+            <icons:Icon Classes="Tune"></icons:Icon>
+            <icons:Icon Classes="ArrowLeft"></icons:Icon>
+            <icons:Icon Classes="ArrowRight"></icons:Icon>
         </WrapPanel>
     </Design.PreviewWith>
 
@@ -37,6 +42,7 @@
        Material icon names are not standardized well, use this site to look them up:
        https://pictogrammers.com/library/mdi/
      -->
+
     <Style Selector="icons|Icon.Alert">
         <Setter Property="Value" Value="mdi-alert"></Setter>
     </Style>
@@ -103,5 +109,25 @@
 
     <Style Selector="icons|Icon.PlayCircleOutline">
         <Setter Property="Value" Value="mdi-play-circle-outline"/>
+    </Style>
+
+    <Style Selector="icons|Icon.Image">
+        <Setter Property="Value" Value="mdi-image"/>
+    </Style>
+
+    <Style Selector="icons|Icon.Description">
+        <Setter Property="Value" Value="mdi-text-box"/>
+    </Style>
+
+    <Style Selector="icons|Icon.Tune">
+        <Setter Property="Value" Value="mdi-tune"/>
+    </Style>
+
+    <Style Selector="icons|Icon.ArrowLeft">
+        <Setter Property="Value" Value="mdi-arrow-left"/>
+    </Style>
+
+    <Style Selector="icons|Icon.ArrowRight">
+        <Setter Property="Value" Value="mdi-arrow-right"/>
     </Style>
 </Styles>
