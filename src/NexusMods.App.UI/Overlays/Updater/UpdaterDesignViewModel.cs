@@ -18,7 +18,8 @@ public class UpdaterDesignViewModel : AViewModel<IUpdaterViewModel>, IUpdaterVie
     [Reactive]
     public Version OldVersion { get; set; } = Version.Parse("0.1.0");
 
-    [Reactive] public ICommand UpdateCommand { get; set; }
+    public ICommand UpdateCommand { get; }
+    public ICommand ShowChangelog { get;}
 
     [Reactive]
     public bool ShowSystemUpdateMessage { get; set; }
@@ -42,10 +43,18 @@ public class UpdaterDesignViewModel : AViewModel<IUpdaterViewModel>, IUpdaterVie
             IsActive = false;
             UpdateClicked = true;
         });
+
+        ShowChangelog = ReactiveCommand.Create(() =>
+        {
+            ChangelogShown = true;
+        });
     }
 
     [Reactive]
     public bool UpdateClicked { get; set; }
+
+    [Reactive]
+    public bool ChangelogShown { get; set; }
 
     [Reactive]
     public bool IsActive { get; set; }

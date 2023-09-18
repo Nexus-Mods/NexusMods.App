@@ -36,6 +36,10 @@ public partial class UpdaterView : ReactiveUserControl<IUpdaterViewModel>
                 .BindToUi(this, view => view.UseSystemUpdater.IsVisible)
                 .DisposeWith(d);
 
+            this.WhenAnyValue(view => view.ViewModel!.ShowChangelog)
+                .BindToUi(this, view => view.ChangelogButton.Command)
+                .DisposeWith(d);
+
         });
     }
 }

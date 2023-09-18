@@ -33,11 +33,22 @@ public class UpdaterViewTests : AViewTest<UpdaterView, UpdaterDesignViewModel, I
         var useSystemUpdater = await Host.GetViewControl<TextBlock>("UseSystemUpdater");
         var updateButton = await Host.GetViewControl<Button>("UpdateButton");
 
-
         await EventuallyOnUi(() =>
         {
             useSystemUpdater.IsVisible.Should().BeTrue();
             updateButton.IsEnabled.Should().BeFalse();
+        });
+    }
+
+    [Fact]
+    public async Task ShowChangelogIsWiredCorrectly()
+    {
+        var btn = await Host.GetViewControl<Button>("ChangelogButton");
+        await Click(btn);
+
+        await EventuallyOnUi(() =>
+        {
+            ViewModel.ChangelogShown.Should().BeTrue();
         });
     }
 }

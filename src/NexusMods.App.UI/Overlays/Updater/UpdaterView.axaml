@@ -39,7 +39,7 @@
                                Text="{x:Static resources:Language.Updater_UseSystemUpdater}"
                                Classes="Body_MD_Normal UsesBrandWhiteColor" />
 
-                    <Button Classes="Hyperlink"><TextBlock Classes="Body_MD_Normal" Text="{x:Static resources:Language.Updater_ViewChangelog}"></TextBlock></Button>
+                    <Button Classes="Hyperlink" x:Name="ChangelogButton"><TextBlock Classes="Body_MD_Normal" Text="{x:Static resources:Language.Updater_ViewChangelog}"></TextBlock></Button>
                 </StackPanel>
             </StackPanel>
 

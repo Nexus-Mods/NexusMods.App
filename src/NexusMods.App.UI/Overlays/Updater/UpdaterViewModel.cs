@@ -23,7 +23,11 @@ public class UpdaterViewModel : AViewModel<IUpdaterViewModel>, IUpdaterViewModel
     public Version OldVersion { get; }
     public ICommand UpdateCommand { get; }
 
+    public ICommand ShowChangelog { get; }
+
     public Uri UpdateUrl { get; set; } = new("https://github.com/Nexus-Mods/NexusMods.App/releases/latest");
+
+    public Uri ChangelogUrl { get; set; } = new("https://github.com/Nexus-Mods/NexusMods.App/releases/latest");
 
     [Reactive] public bool ShowSystemUpdateMessage { get; set; } = false;
 
@@ -38,6 +42,11 @@ public class UpdaterViewModel : AViewModel<IUpdaterViewModel>, IUpdaterViewModel
         {
             IsActive = false;
             interop.OpenUrl(UpdateUrl);
+        });
+
+        ShowChangelog = ReactiveCommand.Create(() =>
+        {
+            interop.OpenUrl(ChangelogUrl);
         });
     }
 

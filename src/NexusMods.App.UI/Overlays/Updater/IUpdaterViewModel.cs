@@ -12,5 +12,7 @@ public interface IUpdaterViewModel : IOverlayViewModel
 
     public ICommand UpdateCommand { get; }
 
+    public ICommand ShowChangelog { get; }
+
     public bool ShowSystemUpdateMessage { get; }
 }
