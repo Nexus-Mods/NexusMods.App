@@ -49,7 +49,9 @@ public class AnalyzeArchive : AVerb<AbsolutePath>, IRenderingVerb
             {
                 var downloadId = await _downloadRegistry.RegisterDownload(inputFile, new FilePathMetadata
                 {
-                    OriginalName = inputFile.Name, Quality = Quality.Low
+                    OriginalName = inputFile.Name,
+                    Quality = Quality.Low,
+                    Name = inputFile.Name
                 }, token);
                 var metadata = await _downloadRegistry.Get(downloadId);
                 return metadata.Contents.Select(kv =>

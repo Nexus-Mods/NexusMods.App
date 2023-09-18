@@ -63,7 +63,12 @@ public class DownloadAndInstallMod : AVerb<string, LoadoutMarker, string>, IRend
                 temporaryPath, null, null, token);
 
             var downloadId = await _downloadRegistry.RegisterDownload(temporaryPath,
-                new FilePathMetadata { OriginalName = temporaryPath.Path.Name, Quality = Quality.Low }, token);
+                new FilePathMetadata
+                {
+                    OriginalName = temporaryPath.Path.Name,
+                    Quality = Quality.Low,
+                    Name = modName
+                }, token);
             await _archiveInstaller.AddMods(loadout.Value.LoadoutId, downloadId,
                 string.IsNullOrWhiteSpace(modName) ? null : modName, token: token);
             return 0;

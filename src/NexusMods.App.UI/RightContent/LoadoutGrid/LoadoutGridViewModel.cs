@@ -127,7 +127,12 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
         var _ = Task.Run(async () =>
         {
             var downloadId = await _downloadRegistry.RegisterDownload(file,
-                new FilePathMetadata { OriginalName = file.FileName, Quality = Quality.Low });
+                new FilePathMetadata
+                {
+                    OriginalName = file.FileName,
+                    Quality = Quality.Low,
+                    Name = file.FileName
+                });
             await _archiveInstaller.AddMods(LoadoutId, downloadId, token: CancellationToken.None);
         });
 

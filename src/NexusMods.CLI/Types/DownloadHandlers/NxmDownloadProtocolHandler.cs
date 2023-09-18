@@ -55,7 +55,11 @@ public class NxmDownloadProtocolHandler : IDownloadProtocolHandler
 
         await _downloader.DownloadAsync(downloadUris, tempPath, null, null, token);
         var downloadId = await _downloaderRegistry.RegisterDownload(tempPath.Path, new FilePathMetadata
-            { OriginalName = tempPath.Path.Name, Quality = Quality.Low }, token);
+            {
+                OriginalName = tempPath.Path.Name,
+                Quality = Quality.Low,
+                Name = tempPath.Path.Name
+            }, token);
         await _archiveInstaller.AddMods(loadout.Value.LoadoutId, downloadId, modName, token:token);
     }
 }

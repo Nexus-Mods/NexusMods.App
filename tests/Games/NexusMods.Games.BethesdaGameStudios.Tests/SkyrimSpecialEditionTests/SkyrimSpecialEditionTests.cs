@@ -147,14 +147,6 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
                     Hash = Hash.Zero,
                     Size = Size.Zero,
                     Metadata = ImmutableList<IMetadata>.Empty
-                    // TODO
-                    /*
-                        ImmutableList<IMetadata>.Empty.Add(
-                            new PluginAnalysisData
-                            {
-                                Masters = file.Value.Select(f => f.ToRelativePath()).ToArray()
-                            })
-                            */
                 };
                 files = files.With(newFile.Id, newFile);
             }

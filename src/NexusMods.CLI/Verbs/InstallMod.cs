@@ -45,7 +45,9 @@ public class InstallMod : AVerb<LoadoutMarker, AbsolutePath, string>, IRendering
         {
             var downloadId = await _downloadRegistry.RegisterDownload(file, new FilePathMetadata
             {
-                OriginalName = file.Name, Quality = Quality.Low
+                OriginalName = file.Name,
+                Quality = Quality.Low,
+                Name = name
             }, token);
             await _archiveInstaller.AddMods(loadout.Value.LoadoutId, downloadId, name, token:token);
             return file;
