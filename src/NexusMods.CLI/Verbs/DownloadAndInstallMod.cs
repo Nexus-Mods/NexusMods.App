@@ -1,6 +1,8 @@
 ﻿using NexusMods.Abstractions.CLI;
 using NexusMods.CLI.Types;
+using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Paths;
@@ -15,18 +17,19 @@ public class DownloadAndInstallMod : AVerb<string, LoadoutMarker, string>, IRend
     private readonly IHttpDownloader _httpDownloader;
     private readonly TemporaryFileManager _temp;
     private readonly IEnumerable<IDownloadProtocolHandler> _handlers;
-    private readonly IArchiveAnalyzer _archiveAnalyzer;
     private readonly IArchiveInstaller _archiveInstaller;
+    private readonly IDownloadRegistry _downloadRegistry;
 
     /// <inheritdoc />
     public IRenderer Renderer { get; set; } = null!;
 
     /// <summary/>
     public DownloadAndInstallMod(IHttpDownloader httpDownloader, TemporaryFileManager temp,
-        IEnumerable<IDownloadProtocolHandler> handlers, IArchiveInstaller archiveInstaller, IArchiveAnalyzer archiveAnalyzer)
+        IEnumerable<IDownloadProtocolHandler> handlers, IArchiveInstaller archiveInstaller,
+        IDownloadRegistry downloadRegistry)
     {
-        _archiveAnalyzer = archiveAnalyzer;
         _archiveInstaller = archiveInstaller;
+        _downloadRegistry = downloadRegistry;
         _httpDownloader = httpDownloader;
         _temp = temp;
         _handlers = handlers;
@@ -59,8 +62,14 @@ public class DownloadAndInstallMod : AVerb<string, LoadoutMarker, string>, IRend
             await _httpDownloader.DownloadAsync(new[] { new HttpRequestMessage(HttpMethod.Get, uri) },
                 temporaryPath, null, null, token);
 
-            var analyzedFile = await _archiveAnalyzer.AnalyzeFileAsync(temporaryPath, token);
-            await _archiveInstaller.AddMods(loadout.Value.LoadoutId, analyzedFile.Hash,
+            var downloadId = await _downloadRegistry.RegisterDownload(temporaryPath,
+                new FilePathMetadata
+                {
+                    OriginalName = temporaryPath.Path.Name,
+                    Quality = Quality.Low,
+                    Name = modName
+                }, token);
+            await _archiveInstaller.AddMods(loadout.Value.LoadoutId, downloadId,
                 string.IsNullOrWhiteSpace(modName) ? null : modName, token: token);
             return 0;
         });

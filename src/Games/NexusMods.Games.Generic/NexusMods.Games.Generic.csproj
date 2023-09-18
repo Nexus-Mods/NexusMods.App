@@ -6,4 +6,8 @@
     <ItemGroup>
         <PackageReference Include="ini-parser-netstandard" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Entities\" />
+    </ItemGroup>
 </Project>

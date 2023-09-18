@@ -21,11 +21,14 @@ public static class GuidedInstallerValidation
     /// An array of <see cref="GroupId"/>s that have invalid selections.
     /// An empty array means all groups have valid selections.
     /// </returns>
-    public static GroupId[] ValidateStepSelections(GuidedInstallationStep installationStep,
+    public static GroupId[] ValidateStepSelections(
+        GuidedInstallationStep installationStep,
         IReadOnlyCollection<SelectedOption> selectedOptions)
     {
-        return installationStep.Groups.Where(group => !IsValidGroupSelection(group, selectedOptions))
-            .Select(group => group.Id).ToArray();
+        return installationStep.Groups
+            .Where(group => !IsValidGroupSelection(group, selectedOptions))
+            .Select(group => group.Id)
+            .ToArray();
     }
 
     /// <summary>
@@ -39,19 +42,13 @@ public static class GuidedInstallerValidation
     /// A collection of <see cref="SelectedOption"/>, could contain selections for other groups as well
     /// </param>
     /// <returns>True if the group has a valid selection, false otherwise</returns>
-    public static bool IsValidGroupSelection(OptionGroup group, IReadOnlyCollection<SelectedOption> selectedOptions)
+    public static bool IsValidGroupSelection(OptionGroup group, IEnumerable<SelectedOption> selectedOptions)
     {
         return group.Type switch
         {
-            OptionGroupType.ExactlyOne => selectedOptions.Count(
-                selectedOption => selectedOption.GroupId == group.Id) == 1,
-
-            OptionGroupType.AtMostOne =>
-                selectedOptions.Count(selectedOption => selectedOption.GroupId == group.Id) <= 1,
-
-            OptionGroupType.AtLeastOne =>
-                selectedOptions.Any(selectedOption => selectedOption.GroupId == group.Id),
-
+            OptionGroupType.ExactlyOne => selectedOptions.Count(selectedOption => selectedOption.GroupId == group.Id) == 1,
+            OptionGroupType.AtMostOne => selectedOptions.Count(selectedOption => selectedOption.GroupId == group.Id) <= 1,
+            OptionGroupType.AtLeastOne => selectedOptions.Any(selectedOption => selectedOption.GroupId == group.Id),
             _ => true
         };
     }

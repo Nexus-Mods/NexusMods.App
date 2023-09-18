@@ -1,13 +1,16 @@
+using DynamicData;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
+using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.RedEngine.ModInstallers;
 
@@ -24,88 +27,49 @@ public class SimpleOverlayModInstaller : IModInstaller
         .Select(x => x.ToRelativePath())
         .ToArray();
 
-
-    private static HashSet<int> RootFolder(EntityDictionary<RelativePath, AnalyzedFile> files)
-    {
-        var filtered = files.Where(f => !Helpers.IgnoreExtensions.Contains(f.Key.Extension));
-
-        var sets = filtered.Select(f => RootPaths.SelectMany(root => GetOffsets(f.Key, root)).ToHashSet())
-            .Aggregate((set, x) =>
-            {
-                set.IntersectWith(x);
-                return set;
-            });
-        return sets;
-    }
-
-    /// <summary>
-    /// Returns the offsets of which subSection is a subfolder of basePath.
-    /// </summary>
-    /// <param name="basePath"></param>
-    /// <param name="subSection"></param>
-    /// <returns></returns>
-    private static IEnumerable<int> GetOffsets(RelativePath basePath, RelativePath subSection)
-    {
-        var depth = 0;
-        while (true)
-        {
-            if (basePath.Depth == 0) // root
-                yield break;
-
-            if (basePath.Depth < subSection.Depth)
-                yield break;
-
-            if (basePath == subSection)
-                yield return depth;
-
-            if (basePath.StartsWith(subSection))
-                yield return depth;
-
-            basePath = basePath.DropFirst();
-            depth++;
-        }
-    }
-
-    public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
+    public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
         ModId baseModId,
-        Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
+        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         CancellationToken cancellationToken = default)
     {
-        return ValueTask.FromResult(GetMods(baseModId, srcArchiveHash, archiveFiles));
-    }
 
-    private IEnumerable<ModInstallerResult> GetMods(
-        ModId baseModId,
-        Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
-    {
-        var roots = RootFolder(archiveFiles);
-
-        if (roots.Count == 0)
-            yield break;
-
-        var root = roots.First();
-
-        var modFiles = archiveFiles
-            .Where(kv => !Helpers.IgnoreExtensions.Contains(kv.Key.Extension))
-            .Select(kv =>
-            {
-                var (path, file) = kv;
-                return file.ToFromArchive(
-                    new GamePath(GameFolderType.Game, path.DropFirst(root))
-                );
-            })
+        var roots = RootPaths
+            .SelectMany(archiveFiles.FindSubPath)
+            .OrderBy(node => node.Depth)
             .ToArray();
 
-        if (!modFiles.Any())
-            yield break;
+        if (roots.Length == 0)
+            return Array.Empty<ModInstallerResult>();
 
-        yield return new ModInstallerResult
+        var highestRoot = roots.First();
+        var siblings= roots.Where(root => root.Depth == highestRoot.Depth)
+            .ToArray();
+
+        var newFiles = new List<FromArchive>();
+
+        foreach (var node in siblings)
+        {
+            foreach (var (filePath, fileInfo) in node.GetAllDescendentFiles())
+            {
+                var relativePath = filePath.DropFirst(node.Path.Depth);
+                newFiles.Add(new FromArchive()
+                {
+                    Id = ModFileId.New(),
+                    Hash = fileInfo!.Hash,
+                    Size = fileInfo.Size,
+                    To = new GamePath(GameFolderType.Game, relativePath)
+                });
+            }
+        }
+
+        if (!newFiles.Any())
+            return Array.Empty<ModInstallerResult>();
+
+        return new ModInstallerResult[]{ new()
         {
             Id = baseModId,
-            Files = modFiles
-        };
+            Files = newFiles
+        }};
     }
 }

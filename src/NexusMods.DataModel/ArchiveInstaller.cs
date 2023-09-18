@@ -14,53 +14,52 @@ using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.Hashing.xxHash64;
+using NexusMods.Paths;
+using NexusMods.Paths.FileTree;
 
 namespace NexusMods.DataModel;
 
 /// <summary>
-/// Installs mods from archives previously analyzed by <see cref="IArchiveAnalyzer"/>.
+/// Installs mods from archives
 /// </summary>
 public class ArchiveInstaller : IArchiveInstaller
 {
     private readonly ILogger<ArchiveInstaller> _logger;
     private readonly IDataStore _dataStore;
-    private readonly IArchiveAnalyzer _archiveAnalyzer;
     private readonly LoadoutRegistry _registry;
     private readonly IInterprocessJobManager _jobManager;
+    private readonly IArchiveManager _archiveManager;
+    private readonly IDownloadRegistry _downloadRegistry;
 
     /// <summary>
     /// DI Constructor
     /// </summary>
     public ArchiveInstaller(ILogger<ArchiveInstaller> logger,
-        IArchiveAnalyzer archiveAnalyzer,
+        IDownloadRegistry downloadRegistry,
         IDataStore dataStore,
         LoadoutRegistry registry,
+        IArchiveManager archiveManager,
         IInterprocessJobManager jobManager)
     {
         _logger = logger;
         _dataStore = dataStore;
+        _downloadRegistry = downloadRegistry;
         _registry = registry;
-        _archiveAnalyzer = archiveAnalyzer;
+        _archiveManager = archiveManager;
         _jobManager = jobManager;
     }
 
     /// <inheritdoc />
-    public async Task<ModId[]> AddMods(LoadoutId loadoutId, Hash archiveHash, string? defaultModName = null, CancellationToken token = default)
+    public async Task<ModId[]> AddMods(LoadoutId loadoutId, DownloadId downloadId, string? defaultModName = null, CancellationToken token = default)
     {
-        if (_archiveAnalyzer.GetAnalysisData(archiveHash) is not AnalyzedArchive analysisData)
-        {
-            _logger.LogError("Could not find analysis data for archive {ArchiveHash} or file is not an archive", archiveHash);
-            throw new InvalidOperationException("Could not find analysis data for archive");
-        }
-
         // Get the loadout and create the mod so we can use it in the job.
         var loadout = _registry.GetMarker(loadoutId);
 
-        var metaData = AArchiveMetaData.GetMetaDatas(_dataStore, archiveHash).FirstOrDefault();
+        var download = await _downloadRegistry.Get(downloadId);
         var archiveName = "<unknown>";
-        if (metaData is not null && defaultModName == null)
+        if (download.MetaData is not null && defaultModName == null)
         {
-            archiveName = metaData.Name;
+            archiveName = download.MetaData.Name;
         }
 
         var baseMod = new Mod
@@ -83,6 +82,18 @@ public class ArchiveInstaller : IArchiveInstaller
                 LoadoutId = loadoutId
             });
 
+            // Create a tree so installers can find the file easily.
+            var tree = FileTreeNode<RelativePath, ModSourceFileEntry>.CreateTree(download.Contents
+                .Select(entry =>
+                KeyValuePair.Create(
+                    entry.Path,
+                    new ModSourceFileEntry
+                    {
+                        Hash = entry.Hash,
+                        Size = entry.Size,
+                        StreamFactory = new ArchiveManagerStreamFactory(_archiveManager, entry.Hash) {Name = entry.Path, Size = entry.Size}
+                    })));
+
             // Step 3: Run the archive through the installers.
             var (results, modInstaller) = (await loadout.Value.Installation.Game.Installers
                 .SelectAsync(async modInstaller =>
@@ -92,8 +103,7 @@ public class ArchiveInstaller : IArchiveInstaller
                         var modResults = (await modInstaller.GetModsAsync(
                             loadout.Value.Installation,
                             baseMod.Id,
-                            analysisData.Hash,
-                            analysisData.Contents,
+                            tree,
                             token)).ToArray();
                         return (modResults, modInstaller);
                     }

@@ -5,8 +5,8 @@ namespace NexusMods.Games.TestFramework;
 
 public record ModInstallerExampleFile
 {
-    public ulong Hash { get; init; }
-    public string Name { get; init; } = string.Empty;
-    public FileType[] Filetypes { get; init; } = Array.Empty<FileType>();
-    public IFileAnalysisData[] AnalysisData { get; init; } = Array.Empty<IFileAnalysisData>();
+    public required ulong Hash { get; init; }
+    public required string Name { get; init; } = string.Empty;
+
+    public required byte[] Data { get; init; } = Array.Empty<byte>();
 };

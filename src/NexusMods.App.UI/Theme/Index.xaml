@@ -8,13 +8,15 @@
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/LabelStyles.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/MainWindow.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/PillStyles.xaml" />
-    <StyleInclude Source="avares://NexusMods.App.UI/Theme/ProgressBar.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/ProgressBar.Download.xaml" />
+    <StyleInclude Source="avares://NexusMods.App.UI/Theme/ProgressBar.LaunchButton.xaml" />
+    <StyleInclude Source="avares://NexusMods.App.UI/Theme/ProgressBar.Stepper.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/SelectableTextBlock.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/StackPanelStyles.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/TextBlockStyles.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/ToggleSwitchStyles.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/Toolbar.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/WindowStyles.xaml" />
-
+    <StyleInclude Source="avares://NexusMods.App.UI/Theme/CheckboxStyles.xaml" />
+    <StyleInclude Source="avares://NexusMods.App.UI/Theme/RadioButtonStyles.axaml" />
 </Styles>

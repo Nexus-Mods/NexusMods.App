@@ -1,6 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using NexusMods.CLI.Verbs;
 using NexusMods.Common;
+using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.Games.StardewValley.Installers;
@@ -45,15 +48,11 @@ public class SMAPIModInstallerTests : AModInstallerTest<StardewValley, SMAPIModI
         var loadout = await CreateLoadout();
 
         // NPC Map Locations 2.11.3 (https://www.nexusmods.com/stardewvalley/mods/239)
-        var (path, hash) = await DownloadMod(GameInstallation.Game.Domain, ModId.From(239), FileId.From(68865));
-        await using (path)
-        {
-            hash.Should().Be(Hash.From(0x59112FD2E58BD042));
+        var downloadId = await DownloadMod(GameInstallation.Game.Domain, ModId.From(239), FileId.From(68865));
 
-            var mod = await InstallModFromArchiveIntoLoadout(loadout, path);
-            mod.Files.Should().NotBeEmpty();
-            mod.Files.Values.Cast<IToFile>().Should().AllSatisfy(kv => kv.To.Path.StartsWith("Mods/NPCMapLocations"));
-        }
+        var mod = await InstallModFromArchiveIntoLoadout(loadout, downloadId);
+        mod.Files.Should().NotBeEmpty();
+        mod.Files.Values.Cast<IToFile>().Should().AllSatisfy(kv => kv.To.Path.StartsWith("Mods/NPCMapLocations"));
     }
 
     [Fact]
@@ -63,25 +62,22 @@ public class SMAPIModInstallerTests : AModInstallerTest<StardewValley, SMAPIModI
         var loadout = await CreateLoadout();
 
         // Raised Garden Beds 1.0.5 (https://www.nexusmods.com/stardewvalley/mods/5305)
-        var (path, hash) = await DownloadMod(GameInstallation.Game.Domain, ModId.From(5305), FileId.From(68056));
-        await using (path)
-        {
-            hash.Should().Be(Hash.From(0xCBE810C4B0C82C7A));
+        var downloadId = await DownloadMod(GameInstallation.Game.Domain, ModId.From(5305), FileId.From(68056));
 
-            // var mods = await GetModsFromInstaller(path);
-            var mods = await InstallModsFromArchiveIntoLoadout(loadout, path);
-            mods
-                .Should().HaveCount(3)
-                .And.AllSatisfy(x =>
-                {
-                    x.Metadata.Should().BeOfType<GroupMetadata>();
-                    x.Version.Should().Be("1.0.5");
-                })
-                .And.Satisfy(
-                    x => x.Name == "Raised Garden Beds",
-                    x => x.Name == "[CP] Raised Garden Beds Translation: English",
-                    x => x.Name == "[RGB] Raised Garden Beds"
-                );
-        }
+        // var mods = await GetModsFromInstaller(path);
+        var mods = await InstallModsFromArchiveIntoLoadout(loadout, downloadId);
+        mods
+            .Should().HaveCount(3)
+            .And.AllSatisfy(x =>
+            {
+                x.Metadata.Should().BeOfType<GroupMetadata>();
+                x.Version.Should().Be("1.0.5");
+            })
+            .And.Satisfy(
+                x => x.Name == "Raised Garden Beds",
+                x => x.Name == "[CP] Raised Garden Beds Translation: English",
+                x => x.Name == "[RGB] Raised Garden Beds"
+            );
+
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
+using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Interprocess.Jobs;
@@ -50,9 +51,9 @@ public class LoadoutManager
 
     private readonly IFileSystem _fileSystem;
     private readonly IModInstaller[] _installers;
-    private readonly IArchiveAnalyzer _analyzer;
     private readonly ILookup<GameDomain, ITool> _tools;
     private readonly IInterprocessJobManager _jobManager;
+    private readonly IDownloadRegistry _downloadRegistry;
 
     /// <summary/>
     /// <remarks>
@@ -63,10 +64,10 @@ public class LoadoutManager
         LoadoutRegistry registry,
         IResource<LoadoutManager, Size> limiter,
         IArchiveManager archiveManager,
+        IDownloadRegistry downloadRegistry,
         IDataStore store,
         FileHashCache fileHashCache,
         IEnumerable<IModInstaller> installers,
-        IArchiveAnalyzer analyzer,
         IEnumerable<ITool> tools,
         IInterprocessJobManager jobManager)
     {
@@ -79,7 +80,7 @@ public class LoadoutManager
         Store = store;
         _jobManager = jobManager;
         _installers = installers.ToArray();
-        _analyzer = analyzer;
+        _downloadRegistry = downloadRegistry;
         _tools = tools.SelectMany(t => t.Domains.Select(d => (Tool: t, Domain: d)))
             .ToLookup(t => t.Domain, t => t.Tool);
     }
@@ -185,21 +186,29 @@ public class LoadoutManager
 
         if (indexGameFiles)
         {
+            var meta = new GameArchiveMetadata()
+            {
+                Installation = installation,
+                Quality = Quality.High,
+            };
+
             foreach (var (type, path) in installation.Locations)
             {
-                if (!_fileSystem.DirectoryExists(path)) continue;
+                if (!path.DirectoryExists()) continue;
+                var download = await _downloadRegistry.RegisterFolder(path, meta, token);
 
-                await foreach (var result in FileHashCache
-                                   .IndexFolderAsync(path, token)
-                                   .WithCancellation(token))
+                var toc = await _downloadRegistry.Get(download);
+                var indexed = toc.Contents.ToDictionary(c => c.Path);
+                foreach (var file in path.EnumerateFiles())
                 {
-                    var analyzedFile = await _analyzer.AnalyzeFileAsync(result.Path, token);
-
-                    var file = analyzedFile
-                        .ToGameFile(new GamePath(type, result.Path.RelativeTo(path)), installation)
-                        .WithPersist(Store);
-
-                    gameFiles.Add(file);
+                    var found = indexed[file.RelativeTo(path)];
+                    gameFiles.Add(new FromArchive()
+                    {
+                        Id = ModFileId.New(),
+                        Hash = found.Hash,
+                        Size = found.Size,
+                        To = new GamePath(type, found.Path)
+                    });
                 }
             }
         }

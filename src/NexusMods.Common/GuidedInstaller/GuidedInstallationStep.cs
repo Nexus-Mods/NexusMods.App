@@ -15,6 +15,11 @@ public record GuidedInstallationStep
     public required StepId Id { get; init; }
 
     /// <summary>
+    /// Gets the name of the step.
+    /// </summary>
+    public required string Name { get; init; }
+
+    /// <summary>
     /// Gets one or multiple option groups.
     /// </summary>
     public required OptionGroup[] Groups { get; init; }

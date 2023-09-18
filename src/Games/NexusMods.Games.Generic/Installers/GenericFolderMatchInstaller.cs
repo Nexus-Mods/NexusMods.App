@@ -1,15 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveContents;
-using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.ModInstallers;
-using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.Generic.Installers;
 
@@ -21,7 +18,7 @@ namespace NexusMods.Games.Generic.Installers;
 ///
 /// Example: myMod/Textures/myTexture.dds -> Skyrim/Data/Textures/myTexture.dds
 /// </summary>
-public class GenericFolderMatchInstaller : IModInstaller
+public class GenericFolderMatchInstaller : AModInstaller
 {
     private readonly ILogger<GenericFolderMatchInstaller> _logger;
     private readonly IEnumerable<InstallFolderTarget> _installFolderTargets;
@@ -34,10 +31,11 @@ public class GenericFolderMatchInstaller : IModInstaller
     /// <returns></returns>
     public static GenericFolderMatchInstaller Create(IServiceProvider provider, IEnumerable<InstallFolderTarget> installFolderTargets)
     {
-        return new GenericFolderMatchInstaller(provider.GetRequiredService<ILogger<GenericFolderMatchInstaller>>(), installFolderTargets);
+        return new GenericFolderMatchInstaller(provider.GetRequiredService<ILogger<GenericFolderMatchInstaller>>(), installFolderTargets, provider);
     }
 
-    private GenericFolderMatchInstaller(ILogger<GenericFolderMatchInstaller> logger, IEnumerable<InstallFolderTarget> installFolderTargets)
+    private GenericFolderMatchInstaller(ILogger<GenericFolderMatchInstaller> logger, IEnumerable<InstallFolderTarget> installFolderTargets, IServiceProvider serviceProvider)
+        : base(serviceProvider)
     {
         _logger = logger;
         _installFolderTargets = installFolderTargets;
@@ -45,11 +43,10 @@ public class GenericFolderMatchInstaller : IModInstaller
 
     #region IModInstaller
 
-    public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(GameInstallation gameInstallation, ModId baseModId,
-        Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles, CancellationToken cancellationToken = default)
+    public override ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(GameInstallation gameInstallation,
+        ModId baseModId, FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+        CancellationToken cancellationToken = default)
     {
-
 
         List<RelativePath> missedFiles = new();
 
@@ -94,7 +91,7 @@ public class GenericFolderMatchInstaller : IModInstaller
     /// <param name="target"></param>
     /// <param name="missedFiles"></param>
     /// <returns></returns>
-    private IEnumerable<FromArchive> GetModFilesForTarget(EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
+    private IEnumerable<FromArchive> GetModFilesForTarget(FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         InstallFolderTarget target, List<RelativePath> missedFiles)
     {
         List<FromArchive> modFiles = new();
@@ -102,9 +99,10 @@ public class GenericFolderMatchInstaller : IModInstaller
         // TODO: Currently just assumes that the prefix of the first file that matches the target structure is the correct one.
         // Consider checking that each file matches the target at the found location before adding it.
 
-        if (TryFindPrefixToDrop(target, archiveFiles.Keys, out var prefixToDrop))
+        if (TryFindPrefixToDrop(target, archiveFiles.GetAllDescendentFiles().Select(f => f.Path),
+                out var prefixToDrop))
         {
-            foreach (var (filePath, fileData) in archiveFiles)
+            foreach (var (filePath, fileData) in archiveFiles.GetAllDescendentFiles())
             {
                 var trimmedPath = filePath;
 
@@ -128,7 +126,7 @@ public class GenericFolderMatchInstaller : IModInstaller
                 var modPath = new GamePath(target.DestinationGamePath.Type,
                     target.DestinationGamePath.Path.Join(trimmedPath));
 
-                modFiles.Add(fileData.ToFromArchive(modPath));
+                modFiles.Add(fileData!.ToFromArchive(modPath));
             }
 
             return modFiles;

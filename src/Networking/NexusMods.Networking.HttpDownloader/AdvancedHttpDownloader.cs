@@ -151,7 +151,7 @@ namespace NexusMods.Networking.HttpDownloader
 
             state.StateFilePath.Delete();
             File.Move(tempPath.ToString(), state.Destination.ToString(), true);
-            return await state.Destination.XxHash64Async(cancel);
+            return await state.Destination.XxHash64Async(token: cancel);
         }
 
         #region Output Writing

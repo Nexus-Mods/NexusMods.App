@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
@@ -33,16 +32,13 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
             d => (d.FileName.ToString().XxHash64AsUtf8(), Size.FromLong(d.FileName.ToString().Length)));
 
     private readonly IFileSystem _fileSystem;
-    private readonly IDataStore _dataStore;
-    private readonly IServiceProvider _provider;
 
     public StubbedGame(ILogger<StubbedGame> logger, IEnumerable<IGameLocator> locators,
-        IFileSystem fileSystem, IServiceProvider provider) : base(locators)
+        IFileSystem fileSystem) : base(locators)
     {
         _logger = logger;
         _locators = locators;
         _fileSystem = fileSystem;
-        _provider = provider;
     }
 
     public override GamePath GetPrimaryFile(GameStore store) => new(GameFolderType.Game, "");

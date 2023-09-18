@@ -1,6 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI;
+using NexusMods.Common;
+using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.GlobalSettings;
 using NexusMods.DataModel.Loadouts;
@@ -27,9 +30,9 @@ where TVm : IViewModelInterface
     protected LoadoutRegistry LoadoutRegistry { get; }
 
     protected IDataStore DataStore { get; }
-
-    protected IArchiveAnalyzer ArchiveAnalyzer { get; }
     protected IArchiveInstaller ArchiveInstaller { get; }
+
+    protected IDownloadRegistry DownloadRegistry { get; }
     protected GlobalSettingsManager GlobalSettingsManager { get; }
 
 
@@ -47,8 +50,8 @@ where TVm : IViewModelInterface
         Game = provider.GetRequiredService<StubbedGame>();
         Install = Game.Installations.First();
         FileSystem = provider.GetRequiredService<IFileSystem>();
-        ArchiveAnalyzer = provider.GetRequiredService<IArchiveAnalyzer>();
         ArchiveInstaller = provider.GetRequiredService<IArchiveInstaller>();
+        DownloadRegistry = provider.GetRequiredService<IDownloadRegistry>();
         GlobalSettingsManager = provider.GetRequiredService<GlobalSettingsManager>();
     }
 
@@ -62,8 +65,9 @@ where TVm : IViewModelInterface
 
     protected async Task<ModId[]> InstallMod(AbsolutePath path)
     {
-        var analyzedFile = await ArchiveAnalyzer.AnalyzeFileAsync(path);
-        return await ArchiveInstaller.AddMods(Loadout.Value.LoadoutId, analyzedFile.Hash);
+        var downloadId = await DownloadRegistry.RegisterDownload(path,
+            new FilePathMetadata() { OriginalName = path.FileName, Quality = Quality.Normal });
+        return await ArchiveInstaller.AddMods(Loadout.Value.LoadoutId, downloadId);
     }
 
     public Task DisposeAsync()

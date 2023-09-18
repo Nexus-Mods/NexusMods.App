@@ -13,6 +13,8 @@
         <AvaloniaResource Include="Theme\Index.xaml" />
         <AvaloniaResource Include="Theme\LabelStyles.xaml" />
         <AvaloniaResource Include="Theme\ProgressBar.Download.xaml" />
+        <AvaloniaResource Include="Theme\ProgressBar.LaunchButton.xaml" />
+        <AvaloniaResource Include="Theme\ProgressBar.Stepper.xaml" />
         <AvaloniaResource Include="Theme\TextBlockStyles.xaml" />
         <AvaloniaResource Include="Theme\TextBox.xaml" />
         <AvaloniaResource Include="Theme\ToggleSwitchStyles.xaml" />
@@ -68,8 +70,6 @@
         <AvaloniaResource Include="Theme\MainWindow.xaml" />
         <None Remove="Theme\ButtonStyles\Standard.xaml" />
         <AvaloniaResource Include="Theme\ButtonStyles\Standard.xaml" />
-        <None Remove="Theme\ProgressBar.xaml" />
-        <AvaloniaResource Include="Theme\ProgressBar.xaml" />
         <None Remove="Theme\ButtonStyles\Spine\DownloadButton.xaml" />
         <AvaloniaResource Include="Theme\ButtonStyles\Spine\DownloadButton.xaml" />
         <None Remove="Theme\ButtonStyles\Hyperlink.xaml" />

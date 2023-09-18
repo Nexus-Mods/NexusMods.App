@@ -50,7 +50,7 @@ public static class Services
         services.AddCLI()
             .AddFileSystem()
             .AddUI(config.LauncherSettings)
-            // .AddFomodInstallerUi()
+            .AddGuidedInstallerUi()
             .AddFileExtractors(config.FileExtractorSettings)
             .AddDataModel(config.DataModelSettings)
             .AddBethesdaGameStudios()

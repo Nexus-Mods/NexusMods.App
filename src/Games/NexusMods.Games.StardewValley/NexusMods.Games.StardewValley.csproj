@@ -15,4 +15,5 @@
         <InternalsVisibleTo Include="NexusMods.Games.StardewValley.Tests" />
     </ItemGroup>
 
+
 </Project>
