@@ -1,0 +1,20 @@
+<reactiveUi:ReactiveWindow
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:ui="clr-namespace:NexusMods.Games.FOMOD.UI"
+    mc:Ignorable="d" d:DesignWidth="1232" d:DesignHeight="672"
+    x:Class="NexusMods.Games.FOMOD.UI.GuidedInstallerWindow"
+    x:TypeArguments="ui:IGuidedInstallerWindowViewModel"
+    Title="GuidedInstallerWindow"
+    MinHeight="672" MinWidth="1232" MaxHeight="818" MaxWidth="1500">
+
+    <Design.DataContext>
+        <ui:GuidedInstallerWindowDesignViewModel />
+    </Design.DataContext>
+
+    <reactiveUi:ViewModelViewHost x:Name="StepViewHost" />
+
+</reactiveUi:ReactiveWindow>

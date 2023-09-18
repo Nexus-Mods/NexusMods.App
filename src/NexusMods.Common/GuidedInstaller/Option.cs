@@ -27,7 +27,7 @@ public record Option
     /// <summary>
     /// Gets the description of the option.
     /// </summary>
-    public string Description { get; init; } = string.Empty;
+    public string? Description { get; init; }
 
     /// <summary>
     /// Gets the <see cref="AssetUrl"/> of the image.
@@ -37,5 +37,5 @@ public record Option
     /// <summary>
     /// Gets the hover text of the option.
     /// </summary>
-    public string HoverText { get; init; } = string.Empty;
+    public string? HoverText { get; init; }
 }

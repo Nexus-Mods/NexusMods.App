@@ -5,6 +5,7 @@ using NexusMods.Abstractions.CLI;
 using NexusMods.Abstractions.CLI.DataOutputs;
 using NexusMods.Common;
 using NexusMods.Common.GuidedInstaller;
+using NexusMods.DataModel.RateLimiting;
 
 namespace NexusMods.CLI;
 
@@ -12,7 +13,7 @@ namespace NexusMods.CLI;
 /// Implementation of an option selector for the CLI.
 /// </summary>
 [UsedImplicitly]
-public class CliGuidedInstaller : IGuidedInstaller
+public sealed class CliGuidedInstaller : IGuidedInstaller
 {
     private const string CancelInput = "x";
     private const string PreviousInput = "p";
@@ -60,7 +61,9 @@ public class CliGuidedInstaller : IGuidedInstaller
     public void CleanupInstaller() { }
 
     /// <inheritdoc />
-    public Task<UserChoice> RequestUserChoice(GuidedInstallationStep installationStep,
+    public Task<UserChoice> RequestUserChoice(
+        GuidedInstallationStep installationStep,
+        Percent progress,
         CancellationToken cancellationToken)
     {
         OptionGroup? currentGroup = null;
@@ -112,7 +115,7 @@ public class CliGuidedInstaller : IGuidedInstaller
                                 "Some groups have invalid selection, please correct them. Invalid groups:\n {InvalidGroups} \n",
                                 installationStep.Groups.Select((group, index) => new { group, index })
                                     .Where(x => invalidGroups.Contains(x.group.Id))
-                                    .Select(x => $"{x.index + 1} - {x.group.Description} - ${x.group.Type} \n"));
+                                    .Select(x => $"{x.index + 1} - {x.group.Name} - ${x.group.Type} \n"));
                             continue;
                         }
 
@@ -167,7 +170,7 @@ public class CliGuidedInstaller : IGuidedInstaller
     {
         var key = 1;
         var row = installationStep.Groups
-            .Select(group => new object[] { key++, group.Description })
+            .Select(group => new object[] { key++, group.Name })
             .Append(installationStep.HasNextStep
                 ? TableOfGroupsFooterNextStep
                 : TableOfGroupsFooterFinish
@@ -195,13 +198,13 @@ public class CliGuidedInstaller : IGuidedInstaller
                     key++,
                     RenderOptionState(hasSelected, option.Type),
                     option.Name,
-                    option.Description
+                    option.Description ?? string.Empty
                 };
             })
             .Append(TableOfOptionsFooterBackToGroupSelection)
             .Append(TableOfOptionsFooterCancel);
 
-        var table = new Table(TableOfOptionsHeaders, row.ToArray(), group.Description);
+        var table = new Table(TableOfOptionsHeaders, row.ToArray(), group.Name);
         Renderer.Render(table);
     }
 
@@ -288,4 +291,7 @@ public class CliGuidedInstaller : IGuidedInstaller
 
         return -1;
     }
+
+    /// <inheritdoc/>
+    public void Dispose() { }
 }

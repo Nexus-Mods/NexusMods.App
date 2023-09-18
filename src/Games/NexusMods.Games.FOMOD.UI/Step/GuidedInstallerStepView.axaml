@@ -1,0 +1,146 @@
+<reactiveUi:ReactiveUserControl
+    x:TypeArguments="ui:IGuidedInstallerStepViewModel" xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:ui="clr-namespace:NexusMods.Games.FOMOD.UI"
+    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:resources="clr-namespace:NexusMods.Games.FOMOD.UI.Resources"
+    mc:Ignorable="d" d:DesignWidth="1232" d:DesignHeight="672"
+    x:Class="NexusMods.Games.FOMOD.UI.GuidedInstallerStepView">
+
+    <Design.DataContext>
+        <ui:GuidedInstallerStepDesignViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="*,Auto">
+        <Grid.Styles>
+            <Style Selector="Border#TopPart">
+                <Setter Property="Padding" Value="24, 16, 24, 24" />
+                <Setter Property="Background" Value="{DynamicResource BorderContainerColor}" />
+            </Style>
+            <Style Selector="Border#MultiOptionHeaderBorder">
+                <Setter Property="Padding" Value="0,0,0,16" />
+            </Style>
+            <Style Selector="icons|Icon#MultiOptionHeaderIcon">
+                <Setter Property="FontSize" Value="20" />
+                <Setter Property="Margin" Value="0,0,8,8" />
+                <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+            </Style>
+            <Style Selector="Border#HeadingAndSubHeadingBorder">
+                <Setter Property="Padding" Value="0,0,0,16" />
+            </Style>
+
+            <Style Selector="Border#GroupsBorder">
+                <Setter Property="Background" Value="{DynamicResource StructuralBorderColor}" />
+                <Setter Property="CornerRadius" Value="8,8, 8,8" />
+                <Setter Property="Padding" Value="8,8,8,8" />
+                <Setter Property="Margin" Value="0,0,16,0" />
+            </Style>
+
+            <Style Selector="Border.WhiteRounded">
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="BorderBrush" Value="{DynamicResource BrandTertiaryDarker}" />
+            </Style>
+            <Style Selector="Border#PreviewTitleBorder">
+                <Setter Property="Padding" Value="16,12,16,12" />
+                <Setter Property="CornerRadius" Value="8,8,0,0" />
+            </Style>
+            <Style Selector="icons|Icon.PreviewIcon">
+                <Setter Property="FontSize" Value="18"></Setter>
+                <Setter Property="Foreground" Value="{DynamicResource FontDarkPrimary}" />
+                <Setter Property="Margin" Value="8,0,0,0" />
+            </Style>
+            <Style Selector="Border#PreviewContentBorder">
+                <Setter Property="Padding" Value="16,16,8,0" />
+                <Setter Property="CornerRadius" Value="0,0,8,8" />
+            </Style>
+            <Style Selector="TextBlock#HighlightedOptionDescription">
+                <Setter Property="Margin" Value="0,16,0,0" />
+            </Style>
+            <Style Selector="StackPanel#PreviewContentsStackPanel">
+                <Setter Property="Margin" Value="0,0,12,0" />
+            </Style>
+        </Grid.Styles>
+
+        <Border Grid.Row="0" x:Name="TopPart">
+            <Grid x:Name="TopPartGrid" RowDefinitions="Auto,*">
+                <Border Grid.Row="0" x:Name="MultiOptionHeaderBorder">
+                    <StackPanel x:Name="MultiOptionHeaderStackPanel" Orientation="Horizontal">
+
+                        <icons:Icon x:Name="MultiOptionHeaderIcon" Classes="Tune"></icons:Icon>
+                        <TextBlock x:Name="MultiOptionHeaderTextBlock" Classes="BodyLGBold"
+                                   Text="{x:Static resources:Language.MultiOptionHeader_Multi_Otion_Mod}" />
+
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="1" x:Name="BodyBorder">
+                    <Grid x:Name="BodyStackPanel" RowDefinitions="Auto, *">
+                        <Border Grid.Row="0" x:Name="HeadingAndSubHeadingBorder">
+                            <StackPanel x:Name="HeadingAndSubHeadingStackPanel">
+
+                                <TextBlock Classes="H6MontserratSemi" x:Name="ModName" />
+                                <TextBlock Classes="HeadingMDSemi" x:Name="StepName" />
+
+                            </StackPanel>
+                        </Border>
+
+                        <TextBlock Grid.Row="1" Classes="TopTitle" VerticalAlignment="Top"
+                                   x:Name="InstallationCompleteScreenTextBlock" IsVisible="False"
+                                   Text="{x:Static resources:Language.InstallationCompleteScreenText}" />
+
+                        <Grid Grid.Row="1" x:Name="GroupsGrid" ColumnDefinitions="*,*">
+
+                            <Border Grid.Column="0" x:Name="GroupsBorder">
+                                <ScrollViewer x:Name="GroupsScrollViewer">
+                                    <ItemsControl x:Name="GroupItemsControl">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                            </Border>
+
+                            <Grid Grid.Column="1" x:Name="PreviewStackPanel" RowDefinitions="Auto,*">
+                                <Border Grid.Row="0" x:Name="PreviewTitleBorder" Classes="WhiteRounded">
+                                    <Grid ColumnDefinitions="*, Auto, Auto">
+
+                                        <TextBlock Grid.Column="0" x:Name="PreviewTitleTextBox" Classes="BodyXLBold" />
+                                        <icons:Icon Grid.Column="2" x:Name="PreviewHeaderDescriptionIcon"
+                                                    Classes="Description PreviewIcon" VerticalAlignment="Center" />
+                                        <icons:Icon Grid.Column="1" x:Name="PreviewHeaderImageIcon"
+                                                    Classes="Image PreviewIcon" VerticalAlignment="Center" />
+
+                                    </Grid>
+                                </Border>
+
+                                <Border Grid.Row="1" x:Name="PreviewContentBorder" Classes="WhiteRounded">
+                                    <ScrollViewer x:Name="PreviewScrollViewer">
+                                        <StackPanel x:Name="PreviewContentsStackPanel" Orientation="Vertical"
+                                                    VerticalAlignment="Stretch">
+
+                                            <Image Stretch="Uniform" IsVisible="False" x:Name="HighlightedOptionImage" />
+                                            <TextBlock Classes="BodyMDNormal" x:Name="HighlightedOptionDescription"
+                                                       TextWrapping="Wrap"
+                                                       Text="{x:Static resources:Language.HighlightedOptionDescription_No_Extra_Details}" />
+
+                                        </StackPanel>
+                                    </ScrollViewer>
+                                </Border>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+
+        <reactiveUi:ViewModelViewHost Grid.Row="1" x:Name="FooterStepperViewHost" />
+
+    </Grid>
+
+
+</reactiveUi:ReactiveUserControl>
