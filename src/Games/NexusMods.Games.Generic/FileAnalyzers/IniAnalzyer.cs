@@ -24,7 +24,7 @@ public class IniAnalzyer
         SkipInvalidLines = true,
     };
 
-    public async IAsyncEnumerable<IniAnalysisData> AnalyzeAsync(IStreamFactory info, [EnumeratorCancellation] CancellationToken token = default)
+    public static async Task<IniAnalysisData> AnalyzeAsync(IStreamFactory info)
     {
         await using var os = await info.GetStreamAsync();
         var data = new StreamIniDataParser(new IniDataParser(Config)).ReadData(new StreamReader(os));
@@ -32,7 +32,7 @@ public class IniAnalzyer
         var keys = data.Global.Select(k => k.KeyName)
             .Concat(data.Sections.SelectMany(d => d.Keys).Select(kv => kv.KeyName))
             .ToHashSet();
-        yield return new IniAnalysisData
+        return new IniAnalysisData
         {
             Sections = sections,
             Keys = keys
