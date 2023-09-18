@@ -8,6 +8,8 @@ This document lists the requirements for the given functionality, as well as som
 Associated UI Design:
 - https://www.figma.com/proto/Ntr9PttR5VrqpTRwwZHzLu/%F0%9F%93%B1-Mod-list?page-id=1826%3A5125&type=design&node-id=1826-5126&viewport=579%2C196%2C0.23&t=A6zTbYWd3oKZP1wF-1&scaling=min-zoom&starting-point-node-id=1826%3A5161
 
+![](./images/0009-advanced-installer-location.png)
+
 ## Context and Problem Statement
 
 There may be some situations where automated installation of a given mod might fail,
