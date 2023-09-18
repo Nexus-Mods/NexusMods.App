@@ -42,7 +42,8 @@ In the presence of these scenarios, the mod manager must still have a way to ins
 
 - Must support arbitrary path mapping.
 
-  This system must support mapping any path from the source archive into any location in the target game directorie(s).
+  This system must support mapping any path from the source archive into any location in the target game directorie(s)
+  [Including AppData, Save Location, etc.]
 
   This includes mapping multiple files in the same folder to different locations, in case the modder provides
   multiple files side by side when you are only supposed to pick 1.
