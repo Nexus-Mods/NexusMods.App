@@ -24,6 +24,11 @@ public class UpdaterDesignViewModel : AViewModel<IUpdaterViewModel>, IUpdaterVie
     [Reactive]
     public bool ShowSystemUpdateMessage { get; set; }
 
+    public async Task<bool> MaybeShow()
+    {
+        return true;
+    }
+
     [Reactive]
     public bool ShouldShow { get; set; } = true;
 

@@ -40,6 +40,10 @@ public partial class UpdaterView : ReactiveUserControl<IUpdaterViewModel>
                 .BindToUi(this, view => view.ChangelogButton.Command)
                 .DisposeWith(d);
 
+            this.WhenAnyValue(view => view.ViewModel!.UpdateCommand)
+                .BindToUi(this, view => view.UpdateButton.Command)
+                .DisposeWith(d);
+
         });
     }
 }

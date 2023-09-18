@@ -45,11 +45,27 @@ public class UpdaterViewModelTests : AVmTest<UpdaterViewModel, IUpdaterViewModel
     {
         ConcreteVm.Method = InstallationMethod.AppImage;
         ConcreteVm.OldVersion = Version.Parse("0.0.0.0");
-        (await ConcreteVm.ShouldShow()).Should().BeFalse();
+        (await ConcreteVm.ShouldShow()).Should().BeTrue();
         ConcreteVm.NewVersion.Should().BeGreaterThan(ConcreteVm.OldVersion);
         ConcreteVm.ChangelogUrl.Should().NotBeNull();
         ConcreteVm.UpdateUrl.Should().NotBeNull();
 
         ConcreteVm.UpdateUrl.ToString().Should().EndWith(".AppImage");
+    }
+
+    [Fact]
+    public async Task DontShowDialogWhenThereIsNoNewVersion()
+    {
+        ConcreteVm.Method = InstallationMethod.Archive;
+        ConcreteVm.OldVersion = Version.Parse("9999.9.9.9");
+        (await ConcreteVm.ShouldShow()).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task ClickingTheUpdateButtonClosesTheWindow()
+    {
+        ConcreteVm.Method = InstallationMethod.Manually;
+        ConcreteVm.UpdateCommand.Execute(null);
+        ConcreteVm.IsActive.Should().BeFalse();
     }
 }

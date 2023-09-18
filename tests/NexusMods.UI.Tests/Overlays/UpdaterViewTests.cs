@@ -12,11 +12,14 @@ public class UpdaterViewTests : AViewTest<UpdaterView, UpdaterDesignViewModel, I
     [Fact]
     public async Task ClickingUpdateCallsTheCommand()
     {
+
         ViewModel.IsActive = true;
         ViewModel.IsActive.Should().BeTrue();
 
         var btn = await Host.GetViewControl<Button>("UpdateButton");
         await Click(btn);
+
+        await Task.Delay(10000);
 
         await EventuallyOnUi(() =>
         {

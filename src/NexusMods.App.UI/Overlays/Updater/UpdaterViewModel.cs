@@ -17,6 +17,9 @@ public class UpdaterViewModel : AViewModel<IUpdaterViewModel>, IUpdaterViewModel
 
     private readonly HttpClient _client;
     private readonly ILogger<UpdaterViewModel> _logger;
+    private readonly IOverlayController _overlayController;
+
+    [Reactive]
     public bool IsActive { get; set; }
 
     [Reactive]
@@ -25,8 +28,7 @@ public class UpdaterViewModel : AViewModel<IUpdaterViewModel>, IUpdaterViewModel
     [Reactive]
     public Version NewVersion { get; set; } = Version.Parse("0.0.0.0");
 
-    [Reactive]
-    public Version OldVersion { get; set; }
+    [Reactive] public Version OldVersion { get; set; }
     public ICommand UpdateCommand { get; }
 
     public ICommand ShowChangelog { get; }
@@ -39,10 +41,13 @@ public class UpdaterViewModel : AViewModel<IUpdaterViewModel>, IUpdaterViewModel
 
     [Reactive] public bool ShowSystemUpdateMessage { get; set; } = false;
 
-    public UpdaterViewModel(ILogger<UpdaterViewModel> logger, IOSInterop interop, HttpClient client)
+
+    public UpdaterViewModel(ILogger<UpdaterViewModel> logger, IOSInterop interop, HttpClient client,
+        IOverlayController overlayController)
     {
         _client = client;
         _logger = logger;
+        _overlayController = overlayController;
         OldVersion = ApplicationConstants.CurrentVersion;
         Method = CompileConstants.InstallationMethod;
 
@@ -58,11 +63,21 @@ public class UpdaterViewModel : AViewModel<IUpdaterViewModel>, IUpdaterViewModel
         });
     }
 
+    public async Task<bool> MaybeShow()
+    {
+        if (!await ShouldShow()) return false;
+
+        _overlayController.SetOverlayContent(new SetOverlayItem(this));
+        return true;
+    }
+
     public async Task<bool> ShouldShow()
     {
         _logger.LogInformation("Checking for updates from GitHub");
         try
         {
+            if (Method == InstallationMethod.Manually) return false;
+
             var releases = await GetReleases();
 
             var latestRelease = releases.Where(r => r is { IsDraft: false, IsPrerelease: false })
@@ -114,6 +129,8 @@ public class UpdaterViewModel : AViewModel<IUpdaterViewModel>, IUpdaterViewModel
             case InstallationMethod.Archive when RuntimeInformation.IsOSPlatform(OSPlatform.Linux) &&
                                                  RuntimeInformation.OSArchitecture == Architecture.X64:
                 return latestRelease.Assets.First(r => r.Name.EndsWith(".linux-x64.zip"));
+            case InstallationMethod.AppImage:
+                return latestRelease.Assets.First(r => r.Name.EndsWith(".AppImage"));
             default:
                 throw new UnreachableException("Unsupported installation method");
         }
