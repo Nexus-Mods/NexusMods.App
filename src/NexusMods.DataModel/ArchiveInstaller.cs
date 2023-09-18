@@ -20,7 +20,7 @@ using NexusMods.Paths.FileTree;
 namespace NexusMods.DataModel;
 
 /// <summary>
-/// Installs mods from archives previously analyzed by <see cref="IArchiveAnalyzer"/>.
+/// Installs mods from archives
 /// </summary>
 public class ArchiveInstaller : IArchiveInstaller
 {

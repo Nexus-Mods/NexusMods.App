@@ -98,6 +98,12 @@ public interface IId
         return new IdVariableLength(category, mem);
     }
 
+    /// <summary>
+    /// Creates an ID from a category and a GUID.
+    /// </summary>
+    /// <param name="category"></param>
+    /// <param name="guid"></param>
+    /// <returns></returns>
     public static IId From(EntityCategory category, Guid guid)
     {
         Span<byte> span = stackalloc byte[16];

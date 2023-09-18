@@ -1,4 +1,5 @@
 using System.Buffers.Binary;
+using System.Runtime.CompilerServices;
 using System.Text;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
@@ -92,7 +93,7 @@ public class FileHashCache
     ///    Entries are pulled from cache if they already exist and we
     ///    can verify cached entry is accurate.
     /// </remarks>
-    public async IAsyncEnumerable<HashedEntry> IndexFoldersAsync(IEnumerable<AbsolutePath> paths, CancellationToken token = default)
+    public async IAsyncEnumerable<HashedEntry> IndexFoldersAsync(IEnumerable<AbsolutePath> paths, [EnumeratorCancellation] CancellationToken token = default)
     {
         // Don't want to error via a empty folder
         paths = paths.Where(p => p.DirectoryExists());

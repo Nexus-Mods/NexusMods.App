@@ -30,7 +30,7 @@ public class StubbedGameInstaller : IModInstaller
             .Select(kv =>
             {
                 var (path, file) = kv;
-                return file.ToFromArchive(
+                return file!.ToFromArchive(
                     new GamePath(GameFolderType.Game, path)
                 );
             });

@@ -107,7 +107,7 @@ public class DownloadService : IDownloadService
     public IObservable<IDownloadTask> ResumedTasks => _resumed;
 
     /// <inheritdoc />
-    public IObservable<(IDownloadTask task, DownloadId analyzedHash, string modName)> AnalyzedArchives => _analyzed;
+    public IObservable<(IDownloadTask task, DownloadId downloadId, string modName)> AnalyzedArchives => _analyzed;
 
     /// <inheritdoc />
     public Task AddNxmTask(NXMUrl url)

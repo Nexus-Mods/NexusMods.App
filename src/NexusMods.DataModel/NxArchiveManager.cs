@@ -48,14 +48,16 @@ public class NxArchiveManager : IArchiveManager
         return ValueTask.FromResult(TryGetLocation(hash, out _, out _));
     }
 
+    /// <inheritdoc />
     public Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, CancellationToken token = default)
     {
         throw new NotImplementedException();
     }
 
-    /// <inheritdoc />
-    public async Task BackupFiles(IEnumerable<(IStreamFactory, Hash, Size)> backups, CancellationToken token = default)
+
+    private async Task BackupFiles(IEnumerable<(IStreamFactory, Hash, Size)> backups, CancellationToken token = default)
     {
+        // TODO: port this to the new format
         var builder = new NxPackerBuilder();
         var distinct = backups.DistinctBy(d => d.Item2).ToArray();
         var streams = new List<Stream>();
@@ -203,6 +205,7 @@ public class NxArchiveManager : IArchiveManager
         return Task.FromResult<IDictionary<Hash, byte[]>>(results);
     }
 
+    /// <inheritdoc />
     public Task<Stream> GetFileStream(Hash hash, CancellationToken token = default)
     {
         throw new NotImplementedException();

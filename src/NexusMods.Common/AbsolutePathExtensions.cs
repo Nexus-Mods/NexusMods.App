@@ -4,12 +4,15 @@ using NexusMods.Paths;
 
 namespace NexusMods.Common;
 
+/// <summary>
+/// Extensions for <see cref="AbsolutePath"/>.
+/// </summary>
 public static class AbsolutePathExtensions
 {
     /// <summary>
     /// Helper method to calculate the hash of a given file, reporting progress to the given job.
     /// </summary>
-    /// <param name="inputStream"></param>
+    /// <param name="input"></param>
     /// <param name="job"></param>
     /// <param name="token"></param>
     /// <returns></returns>

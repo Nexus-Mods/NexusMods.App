@@ -36,7 +36,7 @@ public class PluginAnalyzer
         _logger = logger;
     }
 
-    public async Task<PluginAnalysisData?> AnalyzeAsync(RelativePath path, Stream stream, [EnumeratorCancellation] CancellationToken ct = default)
+    public async Task<PluginAnalysisData?> AnalyzeAsync(RelativePath path, Stream stream, CancellationToken ct = default)
     {
         var extension = path.Extension;
         if (ValidExtensions.Contains(extension))

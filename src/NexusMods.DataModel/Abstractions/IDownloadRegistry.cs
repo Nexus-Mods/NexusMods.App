@@ -14,7 +14,7 @@ public interface IDownloadRegistry
     /// <summary>
     /// Register a download with the registry, sourced from a stream, returns a download id that can be used to retrieve the download later.
     /// </summary>
-    /// <param name="path"></param>
+    /// <param name="factory"></param>
     /// <param name="metaData"></param>
     /// <param name="token"></param>
     /// <returns></returns>

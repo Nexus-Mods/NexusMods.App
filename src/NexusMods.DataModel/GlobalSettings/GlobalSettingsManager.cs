@@ -4,11 +4,19 @@ using NexusMods.DataModel.Abstractions.Ids;
 
 namespace NexusMods.DataModel.GlobalSettings;
 
+/// <summary>
+/// A manager for global settings that affect the application as a whole.
+/// </summary>
 public class GlobalSettingsManager
 {
     private readonly ILogger<GlobalSettingsManager> _logger;
     private readonly IDataStore _dataStore;
 
+    /// <summary>
+    /// DI Constructor
+    /// </summary>
+    /// <param name="logger"></param>
+    /// <param name="dataStore"></param>
     public GlobalSettingsManager(ILogger<GlobalSettingsManager> logger,  IDataStore dataStore)
     {
         _logger = logger;

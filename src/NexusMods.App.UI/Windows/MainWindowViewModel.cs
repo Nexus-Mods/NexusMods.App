@@ -61,7 +61,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
             downloadService.AnalyzedArchives.Subscribe(tuple =>
             {
                 // Because HandleDownloadedAnalyzedArchive is an async task, it begins automatically.
-                HandleDownloadedAnalyzedArchive(tuple.task, tuple.analyzedHash, tuple.modName).ContinueWith(t =>
+                HandleDownloadedAnalyzedArchive(tuple.task, tuple.downloadId, tuple.modName).ContinueWith(t =>
                 {
                     if (t.Exception != null)
                         logger.LogError(t.Exception, "Error while installing downloaded analyzed archive");

@@ -39,6 +39,7 @@ public class DownloadRegistry : IDownloadRegistry
         _dataStore = store;
     }
 
+    /// <inheritdoc />
     public async ValueTask<DownloadId> RegisterDownload(IStreamFactory factory, AArchiveMetaData metaData, CancellationToken token = default)
     {
         await using var tmpFolder = _temporaryFileManager.CreateFolder();
@@ -123,6 +124,7 @@ public class DownloadRegistry : IDownloadRegistry
         return _dataStore.GetByPrefix<DownloadAnalysis>(new Id64(EntityCategory.DownloadMetadata, 0));
     }
 
+    /// <inheritdoc />
     public IEnumerable<DownloadId> GetByHash(Hash hash)
     {
         return GetAll()
