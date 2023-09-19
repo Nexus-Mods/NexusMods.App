@@ -1,17 +1,12 @@
-using System.Diagnostics;
 using FomodInstaller.Interface;
 using FomodInstaller.Scripting.XmlScript;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Games.FOMOD.CoreDelegates;
-using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 using NexusMods.Paths.Utilities;
@@ -26,7 +21,7 @@ public class FomodXmlInstaller : AModInstaller
     private readonly ILogger<FomodXmlInstaller> _logger;
     private readonly GamePath _fomodInstallationPath;
     private readonly IFileSystem _fileSystem;
-    private readonly TemporaryFileManager _tempoaryFileManager;
+    private readonly TemporaryFileManager _temporaryFileManager;
 
     /// <summary>
     /// Creates a new instance of <see cref="FomodXmlInstaller"/> given the provided <paramref name="provider"/> and <paramref name="fomodInstallationPath"/>.
@@ -50,12 +45,14 @@ public class FomodXmlInstaller : AModInstaller
         _delegates = coreDelegates;
         _fomodInstallationPath = fomodInstallationPath;
         _logger = logger;
-        _tempoaryFileManager = temporaryFileManager;
+        _temporaryFileManager = temporaryFileManager;
         _fileSystem = fileSystem;
     }
 
-    public override async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(GameInstallation gameInstallation,
-        ModId baseModId, FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+    public override async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
+        GameInstallation gameInstallation,
+        ModId baseModId,
+        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         CancellationToken cancellationToken = default)
     {
         // the component dealing with FOMODs is built to support all kinds of mods, including those without a script.
@@ -67,8 +64,7 @@ public class FomodXmlInstaller : AModInstaller
         if (analyzerInfo == default)
             return Array.Empty<ModInstallerResult>();
 
-        await using var tmpFolder = _tempoaryFileManager.CreateFolder();
-
+        await using var tmpFolder = _temporaryFileManager.CreateFolder();
         await analyzerInfo.DumpToFileSystemAsync(tmpFolder.Path.Combine(analyzerInfo.PathPrefix));
 
         var xmlPath = analyzerInfo.PathPrefix.Join(FomodConstants.XmlConfigRelativePath);

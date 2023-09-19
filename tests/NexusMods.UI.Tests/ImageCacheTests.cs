@@ -1,14 +1,12 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI;
-using NexusMods.Common;
 using NexusMods.Common.GuidedInstaller;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using OneOf;
 
 namespace NexusMods.UI.Tests;
 
@@ -70,9 +68,9 @@ public class ImageCacheTests : AUiTest
         var size = Size.FromLong(bytes.LongLength);
         var streamFactory = new MemoryStreamFactory("cat.jpg".ToRelativePath(), new MemoryStream(bytes));
 
-        await archiveManager.BackupFiles(new (IStreamFactory, Hash, Size)[]
+        await archiveManager.BackupFiles(new ArchivedFileEntry[]
         {
-            (streamFactory, hash, size)
+            new(streamFactory, hash, size)
         });
 
         var hasFile = await archiveManager.HaveFile(hash);

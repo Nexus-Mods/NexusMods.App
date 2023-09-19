@@ -3,10 +3,10 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.Common.GuidedInstaller;
 using NexusMods.Common.GuidedInstaller.ValueObjects;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.Paths;
+using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.FOMOD.CoreDelegates;
 
@@ -55,7 +55,7 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
     private const long Ready = 0;
     private const long WaitingForCallback = 1;
 
-    public EntityDictionary<RelativePath, AnalyzedFile>? CurrentArchiveFiles;
+    public FileTreeNode<RelativePath, ModSourceFileEntry>? CurrentArchiveFiles;
 
     public UiDelegates(
         ILogger<UiDelegates> logger,
@@ -277,13 +277,14 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
         if (CurrentArchiveFiles is null) return null;
 
         var asPath = RelativePath.FromUnsanitizedInput(image);
-        if (CurrentArchiveFiles.Value.TryGetValue(asPath, out var analyzedFile))
+        var node = CurrentArchiveFiles.FindNode(asPath);
+        if (node?.Value is null)
         {
-            return new OptionImage(new OptionImage.ImageFromArchive(analyzedFile.Hash));
+            _logger.LogDebug("Image path {Path} doesn't exist in archive!", asPath);
+            return null;
         }
 
-        _logger.LogDebug("Image path {Path} doesn't exist in archive!", asPath);
-        return null;
+        return new OptionImage(new OptionImage.ImageFromArchive(node.Value.Hash));
     }
 
     private static OptionType MakeOptionType(FomodInstaller.Interface.ui.Option option)
