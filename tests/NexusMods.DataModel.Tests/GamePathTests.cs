@@ -56,8 +56,8 @@ public class GamePathTests
     {
         var pathA = new GamePath(GameFolderType.Game, "foo/bar.zip");
         var pathB = new GamePath(GameFolderType.Saves, "foo/ba.zip");
-        Assert.Equal("{Game}/foo/bar.zip", pathA.ToString());
-        Assert.Equal("{Saves}/foo/ba.zip", pathB.ToString());
+        Assert.Equal("{0}/foo/bar.zip", pathA.ToString());
+        Assert.Equal("{1}/foo/ba.zip", pathB.ToString());
     }
 
     [Fact]
