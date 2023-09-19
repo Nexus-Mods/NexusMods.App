@@ -1,5 +1,9 @@
 using System.ComponentModel;
+using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.ModFiles;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.Paths;
+using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.AdvancedInstaller;
 
@@ -79,31 +83,28 @@ public struct DeploymentData
         OutputToArchiveMap.Clear();
     }
 
-    /*
     /// <summary>
     /// Emits a series of AModFile instructions based on the current mappings.
     /// </summary>
-    /// <param name="gameTargetPath">Path to the game folder.</param>
     /// <param name="archiveFiles">Files from the archive.</param>
     /// <returns>An IEnumerable of AModFile, representing the files to be moved and their target paths.</returns>
-    public IEnumerable<AModFile> EmitOperations(FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles, GamePath gameTargetPath)
+    public IEnumerable<AModFile> EmitOperations(FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles)
     {
         // Written like this for clarity, use array in actual code.
         // Just an example, might not compile.
-        foreach (var mapping in _archiveToOutputMap)
+        foreach (var mapping in ArchiveToOutputMap)
         {
             // find file in `files` input.
-            var file = files.First(file => file.Key.Equals(RelativePath.FromUnsanitizedInput(mapping.Key)));
+            var src = RelativePath.FromUnsanitizedInput(mapping.Key);
+            var file = archiveFiles.FindNode(src)!.Value;
 
             yield return new FromArchive
             {
-                Id = ModId.New(),
-                To = new GamePath(gameTargetPath.Type,
-                    gameTargetPath.Path.Join(RelativePath.FromUnsanitizedInput(mapping.Value))),
-                Hash = file.Value.Hash,
-                Size = file.Value.Size
+                Id = ModFileId.New(),
+                To = mapping.Value,
+                Hash = file!.Hash,
+                Size = file.Size
             };
         }
     }
-    */
 }

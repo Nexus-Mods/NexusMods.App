@@ -4,7 +4,7 @@ using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.Tests;
 
-public class DeploymentDataTests
+public partial class DeploymentDataTests
 {
     // Note: Paths use / as separator on all platforms to ensure conformance with our backend decisions.
     [Fact]

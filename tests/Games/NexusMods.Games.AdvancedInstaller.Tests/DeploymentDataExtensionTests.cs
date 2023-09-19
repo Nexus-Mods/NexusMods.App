@@ -4,7 +4,7 @@ using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.AdvancedInstaller.Tests;
 
-public class DeploymentDataExtensionTests
+public partial class DeploymentDataTests
 {
     [Fact]
     public void AddFolderMapping_Should_MapAllChildrenCorrectly_WhenMappingToSubfolderInGamePath()
@@ -13,7 +13,7 @@ public class DeploymentDataExtensionTests
         var data = new DeploymentData();
 
         // Create a File Tree
-        var fileEntries = CreateTestFileTree();
+        var fileEntries = CreateExtensionTestFileTree();
         var folderNode = FileTreeNode<RelativePath, int>.CreateTree(fileEntries);
 
         // Act
@@ -32,7 +32,7 @@ public class DeploymentDataExtensionTests
         var data = new DeploymentData();
 
         // Create a File Tree
-        var fileEntries = CreateTestFileTree();
+        var fileEntries = CreateExtensionTestFileTree();
         var folderNode = FileTreeNode<RelativePath, int>.CreateTree(fileEntries).FindNode("folder")!;
 
         // Act
@@ -46,7 +46,7 @@ public class DeploymentDataExtensionTests
 
     private static GamePath MakeGamePath(string path) => new(GameFolderType.Game, path);
 
-    private static Dictionary<RelativePath, int> CreateTestFileTree()
+    private static Dictionary<RelativePath, int> CreateExtensionTestFileTree()
     {
         var fileEntries = new Dictionary<RelativePath, int>
         {
