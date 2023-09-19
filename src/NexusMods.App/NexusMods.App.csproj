@@ -4,6 +4,9 @@
         <ApplicationIcon>nexus-logo.ico</ApplicationIcon>
         <ApplicationManifest>app.manifest</ApplicationManifest>
     </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DefineConstants>TRACE;DEBUG</DefineConstants>
+    </PropertyGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Games\NexusMods.Games.BethesdaGameStudios\NexusMods.Games.BethesdaGameStudios.csproj" />

@@ -11,11 +11,11 @@ public class GamePathConverter : JsonConverter<GamePath>
     /// <inheritdoc />
     public override GamePath Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        if (reader.TokenType != JsonTokenType.StartArray)
-            throw new JsonException("While reading Game Path expected array start");
+        if (reader.TokenType != JsonTokenType.StartObject)
+            throw new JsonException("While reading Game Path expected object start");
 
         reader.Read();
-        var folder = Enum.Parse<GameFolderType>(reader.GetString()!);
+        var folder = GameFolderType.From(reader.GetInt32());
         reader.Read();
         var path = reader.GetString()!.ToRelativePath();
         reader.Read();
@@ -25,9 +25,9 @@ public class GamePathConverter : JsonConverter<GamePath>
     /// <inheritdoc />
     public override void Write(Utf8JsonWriter writer, GamePath value, JsonSerializerOptions options)
     {
-        writer.WriteStartArray();
-        writer.WriteStringValue(Enum.GetName(value.Type));
+        writer.WriteStartObject();
+        writer.WriteNumberValue(value.Type.Value);
         writer.WriteStringValue(value.Path.ToString());
-        writer.WriteEndArray();
+        writer.WriteEndObject();
     }
 }
