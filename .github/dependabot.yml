@@ -15,7 +15,7 @@ updates:
       - dependency-name: "System.*"
       - dependency-name: "Microsoft.*"
       - dependency-name: "NexusMods.*"
-      - dependency-name: "Avalonia.*"
+      - dependency-name: "Avalonia*"
     groups:
       System:
         patterns:
@@ -28,4 +28,4 @@ updates:
           - "NexusMods.*"
       Avalonia:
         patterns:
-          - "Avalonia.*"
+          - "Avalonia*"
