@@ -49,8 +49,11 @@ public abstract class AGuidedInstallerStepViewModel : AViewModel<IGuidedInstalle
     // changes. This CompositeDisposable allows for such behavior.
     private CompositeDisposable _groupDisposables = new();
 
-    protected AGuidedInstallerStepViewModel()
+    private readonly IImageCache _imageCache;
+    protected AGuidedInstallerStepViewModel(IImageCache imageCache)
     {
+        _imageCache = imageCache;
+
         this.WhenActivated(disposables =>
         {
             // group cleanup
@@ -82,17 +85,10 @@ public abstract class AGuidedInstallerStepViewModel : AViewModel<IGuidedInstalle
             this
                 .WhenAnyValue(x => x.HighlightedOptionViewModel)
                 .WhereNotNull()
-                .Select(optionVM => optionVM.Option)
-                .Where(option => option.ImageUrl is not null)
-                .OffUi()
-                .Select(option =>
-                {
-                    // TODO: local files (see issue #614)
-                    var imageUrl = option.ImageUrl!.Value.Value;
-                    return !Uri.TryCreate(imageUrl, UriKind.Absolute, out var uri) ? null : uri;
-                })
+                .Select(optionVM => optionVM.Option.Image)
                 .WhereNotNull()
-                .Select(uri => Observable.FromAsync(() => LoadRemoteImage(uri, cancellationToken: default)))
+                .OffUi()
+                .Select(optionImage => Observable.FromAsync(() => _imageCache.GetImage(optionImage, cancellationToken: default)))
                 .Concat()
                 .WhereNotNull()
                 .OnUI()
@@ -162,21 +158,6 @@ public abstract class AGuidedInstallerStepViewModel : AViewModel<IGuidedInstalle
                 })
                 .DisposeWith(disposables);
         });
-    }
-
-    private static async Task<Bitmap?> LoadRemoteImage(Uri uri, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            var client = new HttpClient();
-            var stream = await client.GetByteArrayAsync(uri, cancellationToken);
-            return new Bitmap(new MemoryStream(stream));
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            return null;
-        }
     }
 
     protected SelectedOption[] GatherSelectedOptions()

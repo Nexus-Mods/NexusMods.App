@@ -28,7 +28,7 @@ public class GuidedInstallerOptionDesignViewModel : GuidedInstallerOptionViewMod
             Name = "Test Option",
             Type = OptionType.Available,
             Description = "An option",
-            ImageUrl = AssetUrl.From("https://http.cat/images/418.jpg"),
+            Image = new OptionImage(new Uri("https://http.cat/images/418.jpg")),
             HoverText = "This is some hover text"
         };
     }

@@ -15,7 +15,9 @@ public sealed class GuidedInstallerStepViewModel : AGuidedInstallerStepViewModel
 
     private Percent _previousProgress = Percent.Zero;
 
-    public GuidedInstallerStepViewModel(ILogger<GuidedInstallerStepViewModel> logger)
+    public GuidedInstallerStepViewModel(
+        ILogger<GuidedInstallerStepViewModel> logger,
+        IImageCache imageCache) : base(imageCache)
     {
         this.WhenActivated(disposables =>
         {
