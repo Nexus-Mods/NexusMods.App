@@ -51,7 +51,7 @@ public readonly struct GamePath : IPath, IPath<GamePath>, IEquatable<GamePath>
     public override bool Equals(object? obj) => obj is GamePath other && Equals(other);
 
     /// <inheritdoc />
-    public override int GetHashCode() => Path.GetHashCode() ^ (int)Type;
+    public override int GetHashCode() => Path.GetHashCode() ^ Type.GetHashCode();
 
     /// <inheritdoc />
     public override string ToString() => "{" + Type + "}/" + Path;

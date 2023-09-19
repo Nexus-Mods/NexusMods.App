@@ -8,13 +8,13 @@ public class GamePathFileTreeNodeTests
 {
 
     [Theory]
-    [InlineData(0, "file1.txt", true, 1)]
-    [InlineData(0,"file2.txt", false, 2)]
-    [InlineData(0,"foo/file2.txt", true, 2)]
-    [InlineData(0,"foo/file3.txt", true, 3)]
-    [InlineData(0,"foo/bar/file4.txt", true, 4)]
-    [InlineData(0,"baz/bazer/file5.txt", true, 5)]
-    [InlineData(1,"baz/bazer/file5.txt", false, 5)]
+    [InlineData("Game", "file1.txt", true, 1)]
+    [InlineData("Game","file2.txt", false, 2)]
+    [InlineData("Game","foo/file2.txt", true, 2)]
+    [InlineData("Game","foo/file3.txt", true, 3)]
+    [InlineData("Game","foo/bar/file4.txt", true, 4)]
+    [InlineData("Game","baz/bazer/file5.txt", true, 5)]
+    [InlineData("Saves","baz/bazer/file5.txt", false, 5)]
     public void Test_FindNode(GameFolderType folderType, string path, bool found, int value)
     {
         var tree = MakeTestTree();

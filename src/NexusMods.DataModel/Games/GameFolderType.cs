@@ -7,13 +7,13 @@ namespace NexusMods.Paths
     /// <summary>
     ///     The base folder for the GamePath, more values can easily be added here as needed
     /// </summary>
-    [ValueObject<int>]
-    [Instance("Game", 0, "The path for the game installation.")]
-    [Instance("Saves", 1, "Path used to store the save data of a game.")]
-    [Instance("Preferences", 2, "Path used to store player settings/preferences.")]
-    [Instance("AppData", 3, "Path for game files located under LocalAppdata or equivalent")]
-    [Instance("AppDataRoaming", 4, "Path for game files located under Appdata/Roaming or equivalent")]
-    [Instance("Documents", 5,
+    [ValueObject<string>]
+    [Instance("Game", "Game", "The path for the game installation.")]
+    [Instance("Saves", "Saves", "Path used to store the save data of a game.")]
+    [Instance("Preferences", "Preferences", "Path used to store player settings/preferences.")]
+    [Instance("AppData", "AppData", "Path for game files located under LocalAppdata or equivalent")]
+    [Instance("AppDataRoaming", "AppDataRoaming", "Path for game files located under Appdata/Roaming or equivalent")]
+    [Instance("Documents", "Documents",
         "Path for game files located under Documents or equivalent (e.g. Documents/My Games/GameName)")]
-    public readonly partial struct GameFolderType {}
+    public readonly partial struct GameFolderType { }
 }

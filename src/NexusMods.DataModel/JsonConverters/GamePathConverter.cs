@@ -15,7 +15,7 @@ public class GamePathConverter : JsonConverter<GamePath>
             throw new JsonException("While reading Game Path expected object start");
 
         reader.Read();
-        var folder = GameFolderType.From(reader.GetInt32());
+        var folder = GameFolderType.From(reader.GetString());
         reader.Read();
         var path = reader.GetString()!.ToRelativePath();
         reader.Read();
@@ -26,7 +26,7 @@ public class GamePathConverter : JsonConverter<GamePath>
     public override void Write(Utf8JsonWriter writer, GamePath value, JsonSerializerOptions options)
     {
         writer.WriteStartArray();
-        writer.WriteNumberValue(value.Type.Value);
+        writer.WriteStringValue(value.Type.Value);
         writer.WriteStringValue(value.Path.ToString());
         writer.WriteEndArray();
     }
