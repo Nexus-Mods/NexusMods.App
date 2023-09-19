@@ -16,7 +16,7 @@ namespace NexusMods.Games.FOMOD;
 
 public class FomodXmlInstaller : AModInstaller
 {
-    private readonly InstallerDelegates _delegates;
+    private readonly ICoreDelegates _delegates;
     private readonly XmlScriptType _scriptType = new();
     private readonly ILogger<FomodXmlInstaller> _logger;
     private readonly GamePath _fomodInstallationPath;
@@ -32,13 +32,13 @@ public class FomodXmlInstaller : AModInstaller
     public static FomodXmlInstaller Create(IServiceProvider provider, GamePath fomodInstallationPath)
     {
         return new FomodXmlInstaller(provider.GetRequiredService<ILogger<FomodXmlInstaller>>(),
-            provider.GetRequiredService<InstallerDelegates>(), provider.GetRequiredService<IFileSystem>(),
+            provider.GetRequiredService<ICoreDelegates>(), provider.GetRequiredService<IFileSystem>(),
             provider.GetRequiredService<TemporaryFileManager>(),
 
             fomodInstallationPath, provider);
     }
 
-    public FomodXmlInstaller(ILogger<FomodXmlInstaller> logger, InstallerDelegates coreDelegates,
+    public FomodXmlInstaller(ILogger<FomodXmlInstaller> logger, ICoreDelegates coreDelegates,
         IFileSystem fileSystem, TemporaryFileManager temporaryFileManager, GamePath fomodInstallationPath,
         IServiceProvider serviceProvider) : base(serviceProvider)
     {
@@ -75,14 +75,21 @@ public class FomodXmlInstaller : AModInstaller
         await mod.InitializeWithoutLoadingScript();
 
         // NOTE(erri120): The FOMOD library calls us, so this is the only way we can pass data along.
-        _delegates.UiDelegates.CurrentArchiveFiles = archiveFiles;
+        var installerDelegates = _delegates as InstallerDelegates;
+        if (installerDelegates is not null)
+        {
+            installerDelegates.UiDelegates.CurrentArchiveFiles = archiveFiles;
+        }
 
         var executor = _scriptType.CreateExecutor(mod, _delegates);
         var installScript = _scriptType.LoadScript(FixXmlScript(analyzerInfo.XmlScript), true);
         var instructions = await executor.Execute(installScript, "", null);
 
         // NOTE(err120): Reset the previously provided data
-        _delegates.UiDelegates.CurrentArchiveFiles = null;
+        if (installerDelegates is not null)
+        {
+            installerDelegates.UiDelegates.CurrentArchiveFiles = archiveFiles;
+        }
 
         var errors = instructions.Where(instruction => instruction.type == "error").ToArray();
         if (errors.Any()) throw new Exception(string.Join("; ", errors.Select(err => err.source)));
