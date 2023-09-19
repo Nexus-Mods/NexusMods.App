@@ -47,7 +47,6 @@ public partial class UpdaterView : ReactiveUserControl<IUpdaterViewModel>
             this.WhenAnyValue(view => view.ViewModel!.LaterCommand)
                 .BindToUi(this, view => view.LaterButton.Command)
                 .DisposeWith(d);
-
         });
     }
 }

@@ -39,9 +39,8 @@ public class UpdaterDesignViewModel : AViewModel<IUpdaterViewModel>, IUpdaterVie
         this.WhenActivated(d =>
         {
             this.WhenAnyValue(vm => vm.Method)
-                .Select(m => m is InstallationMethod.Archive or InstallationMethod.InnoSetup)
-                .Select(c => !c)
-                .BindToUi(this, view => view.ShowSystemUpdateMessage)
+                .Select(m => m is not (InstallationMethod.Archive or InstallationMethod.InnoSetup))
+                .BindTo(this, view => view.ShowSystemUpdateMessage)
                 .DisposeWith(d);
         });
 
