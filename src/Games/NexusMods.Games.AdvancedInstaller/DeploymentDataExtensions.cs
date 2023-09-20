@@ -21,6 +21,7 @@ public static class DeploymentDataExtensions
     {
         // Check if said location is already mapped.
         // Get all of the children of the folder node.
+        // Note: We assume paths in the file tree are already sanitized, e.g. use / as separator.
         var substringLength = folderNode.Path.Path.Length;
         substringLength = substringLength == 0 ? 0 : substringLength + 1;
 
