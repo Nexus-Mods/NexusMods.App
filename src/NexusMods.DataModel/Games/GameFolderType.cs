@@ -8,6 +8,7 @@ namespace NexusMods.Paths
     ///     The base folder for the GamePath, more values can easily be added here as needed
     /// </summary>
     [ValueObject<string>]
+    [Instance("Unknown", "Unknown", "Unknown game folder type, used for default values.")]
     [Instance("Game", "Game", "The path for the game installation.")]
     [Instance("Saves", "Saves", "Path used to store the save data of a game.")]
     [Instance("Preferences", "Preferences", "Path used to store player settings/preferences.")]
