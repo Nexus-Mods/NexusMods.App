@@ -3,7 +3,7 @@ using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Games;
 
-public class GameLocationsRegister : IGameLocationRegister
+public class GameLocationsRegister
 {
     private Dictionary<GameFolderType, GameLocationDescriptor> _locations = new();
 
