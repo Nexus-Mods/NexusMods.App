@@ -86,7 +86,7 @@ public class GameLocationsRegister
 
     public GamePath ToGamePath(AbsolutePath absolutePath)
     {
-        return _locations.Values.Where(location => location.IsTopLevel && absolutePath.InFolder(location.ResolvedPath))
+        return _locations.Values.Where(location => absolutePath.InFolder(location.ResolvedPath))
             .Select(desc => new GamePath(desc.Id, absolutePath.RelativeTo(desc.ResolvedPath)))
             .MinBy(gamePath => gamePath.Path.Depth);
     }
