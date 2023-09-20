@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.Exceptions;
@@ -28,9 +29,4 @@ public class MappingAlreadyExistsException : Exception
         ExistingPath = existingPath;
         AttemptedPath = attemptedPath;
     }
-
-    /// <summary>
-    /// The path that was trying to be mapped.
-    /// </summary>
-    public RelativePath Path { get; private set; }
 }
