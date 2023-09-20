@@ -5,7 +5,7 @@ namespace NexusMods.DataModel.Games;
 
 public class GameLocationsRegister
 {
-    private Dictionary<GameFolderType, GameLocationDescriptor> _locations = new();
+    private readonly Dictionary<GameFolderType, GameLocationDescriptor> _locations = new();
 
     public AbsolutePath this[GameFolderType id] => _locations[id].ResolvedPath;
 
@@ -33,7 +33,7 @@ public class GameLocationsRegister
                 }
             }
 
-            var isDuplicate = _locations.TryAdd(newId, newLocation);
+            var isDuplicate = !_locations.TryAdd(newId, newLocation);
 
             Debug.Assert(isDuplicate == false,
                 $"Duplicate location found for {newId} at {_locations[newId].ResolvedPath}: {newPath}");
