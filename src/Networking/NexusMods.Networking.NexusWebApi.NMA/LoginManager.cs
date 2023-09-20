@@ -1,4 +1,5 @@
 using System.Reactive.Linq;
+using JetBrains.Annotations;
 using NexusMods.Common.ProtocolRegistration;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.Networking.NexusWebApi.Types;
@@ -8,6 +9,7 @@ namespace NexusMods.Networking.NexusWebApi.NMA;
 /// <summary>
 /// Component for handling login and logout from the Nexus Mods
 /// </summary>
+[PublicAPI]
 public class LoginManager
 {
     private readonly OAuth _oauth;
@@ -51,10 +53,9 @@ public class LoginManager
         _client = client;
         _dataStore = dataStore;
         _protocolRegistration = protocolRegistration;
+
         UserInfo = _dataStore.IdChanges
             .Where(id => id.Equals(JWTTokenEntity.StoreId))
-            .Select(_ => true)
-            .StartWith(true)
             .SelectMany(async _ => await Verify());
     }
 
@@ -75,10 +76,15 @@ public class LoginManager
         await _protocolRegistration.RegisterSelf("nxm");
 
         var jwtToken = await _oauth.AuthorizeRequest(token);
+        var createdAt = DateTimeOffset.FromUnixTimeSeconds(jwtToken.CreatedAt);
+        var expiresIn = TimeSpan.FromSeconds(jwtToken.ExpiresIn);
+        var expiresAt = createdAt + expiresIn;
+
         _dataStore.Put(JWTTokenEntity.StoreId, new JWTTokenEntity
         {
             RefreshToken = jwtToken.RefreshToken,
-            AccessToken = jwtToken.AccessToken
+            AccessToken = jwtToken.AccessToken,
+            ExpiresAt = expiresAt
         });
     }
 
