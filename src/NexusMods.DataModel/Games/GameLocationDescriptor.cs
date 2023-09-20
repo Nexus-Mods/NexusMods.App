@@ -8,7 +8,7 @@ namespace NexusMods.DataModel.Games;
 /// </summary>
 public struct GameLocationDescriptor
 {
-    private List<GameFolderType> _nestedLocations = new();
+    private readonly List<GameFolderType> _nestedLocations = new();
 
     /// <summary>
     /// Creates a new instance of <see cref="GameLocationDescriptor"/>.
@@ -34,7 +34,7 @@ public struct GameLocationDescriptor
     /// <summary>
     /// If true, no other game location contains this game location.
     /// </summary>
-    public bool IsTopLevel { get; set; } = true;
+    public bool IsTopLevel { get; private set; } = true;
 
     private GameFolderType? _topLevelParent = null;
 

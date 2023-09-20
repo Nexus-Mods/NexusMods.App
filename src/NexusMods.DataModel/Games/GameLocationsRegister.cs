@@ -125,11 +125,11 @@ public class GameLocationsRegister
     /// <summary>
     /// Returns a collection of <see cref="GameFolderType"/>s that are nested directories of the passed location.
     /// </summary>
-    /// <param name="Id"></param>
+    /// <param name="id"></param>
     /// <returns></returns>
-    public IReadOnlyCollection<GameFolderType> GetNestedLocations(GameFolderType Id)
+    public IReadOnlyCollection<GameFolderType> GetNestedLocations(GameFolderType id)
     {
-        return _locations[Id].NestedLocations.ToArray();
+        return _locations[id].NestedLocations.ToArray();
     }
 
     /// <summary>
