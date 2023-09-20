@@ -26,7 +26,7 @@
             Path="avares://NexusMods.App.UI/Assets/nexus-logo-with-text.svg"
             VerticalAlignment="Center"/>
 
-        <Button Classes="Pill Light" Grid.Column="1" Grid.Row="0" x:Name="Premium">
+        <Button Classes="Pill Light" Grid.Column="1" Grid.Row="0" x:Name="Premium" IsVisible="False">
             <StackPanel>
                 <avalonia:Icon Classes="Star" />
                 <TextBlock Text="{x:Static resources:Language.Nexus_Premium_Status__Premium}"></TextBlock>
@@ -79,7 +79,7 @@
             BorderBrush="{DynamicResource StructuralBorderBrush}"
             BorderThickness="1,0,0,0"
             Grid.Column="4"
-            x:Name="UserPanel">
+            x:Name="UserPanel" IsVisible="False">
             <StackPanel Orientation="Horizontal" Spacing="16" Margin="16, 0">
                 <Button
                     Classes="Action"
