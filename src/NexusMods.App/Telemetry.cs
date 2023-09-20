@@ -49,7 +49,7 @@ internal static class Telemetry
             var loginManager = serviceProvider.GetRequiredService<LoginManager>();
             loginManager.IsPremium.SubscribeWithErrorLogging(value => _isPremium = value);
 
-            _membershipCounter = Meter.CreateMembershipCounter(this, state => state._isPremium ? "premium" : "none");
+            _membershipCounter = Meter.CreateMembershipCounter(this, state => state._isPremium ? "premium" : "member");
         }
     }
 }
