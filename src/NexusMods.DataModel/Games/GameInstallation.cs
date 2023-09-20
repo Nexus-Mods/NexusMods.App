@@ -8,6 +8,9 @@ namespace NexusMods.DataModel.Games;
 /// </summary>
 public class GameInstallation
 {
+    private GameLocationRegister _locationRegister = new();
+    private Dictionary<GameFolderType, AbsolutePath> _locations = new();
+
     /// <summary>
     /// The Version installed.
     /// </summary>
@@ -16,8 +19,17 @@ public class GameInstallation
     /// <summary>
     /// The location on-disk of this game and it's associated paths [e.g. Saves].
     /// </summary>
-    public IReadOnlyDictionary<GameFolderType, AbsolutePath> Locations { get; init; } =
-        new Dictionary<GameFolderType, AbsolutePath>();
+    public IReadOnlyDictionary<GameFolderType, AbsolutePath> Locations
+    {
+        get => _locations;
+        init
+        {
+            _locations = value.ToDictionary(x => x.Key, x => x.Value);
+            _locationRegister.RegisterLocations(_locations);
+        }
+    }
+
+    public IGameLocationRegister LocationRegister => _locationRegister;
 
     /// <summary>
     /// The game to which this installation belongs.
@@ -41,15 +53,13 @@ public class GameInstallation
     public override string ToString() => $"{Game.Name} v{Version} ({Store.Value})";
 
     /// <summary>
-    /// Converts a <see cref="AbsolutePath"/> to a <see cref="GamePath"/> assuming the path exists under a game path.
+    /// Converts a <see cref="AbsolutePath"/> to a <see cref="GamePath"/> assuming the absolutePath exists under a game location.
     /// </summary>
-    /// <param name="path">The path to convert.</param>
+    /// <param name="absolutePath">The absolutePath to convert.</param>
     /// <returns>Path to the game.</returns>
-    public GamePath ToGamePath(AbsolutePath path)
+    public GamePath ToGamePath(AbsolutePath absolutePath)
     {
-        return Locations.Where(l => path.InFolder(l.Value))
-            .Select(l => new GamePath(l.Key, path.RelativeTo(l.Value)))
-            .MinBy(x => x.Path.Depth);
+        return LocationRegister.ToGamePath(absolutePath);
     }
 
     /// <summary>
