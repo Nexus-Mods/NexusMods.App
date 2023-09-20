@@ -49,25 +49,19 @@ public class NxArchiveManager : IArchiveManager
     }
 
     /// <inheritdoc />
-    public Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, CancellationToken token = default)
-    {
-        throw new NotImplementedException();
-    }
-
-
-    private async Task BackupFiles(IEnumerable<(IStreamFactory, Hash, Size)> backups, CancellationToken token = default)
+    public async Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, CancellationToken token = default)
     {
         // TODO: port this to the new format
         var builder = new NxPackerBuilder();
-        var distinct = backups.DistinctBy(d => d.Item2).ToArray();
+        var distinct = backups.DistinctBy(d => d.Hash).ToArray();
         var streams = new List<Stream>();
         foreach (var backup in distinct)
         {
-            var stream = await backup.Item1.GetStreamAsync();
+            var stream = await backup.StreamFactory.GetStreamAsync();
             streams.Add(stream);
             builder.AddFile(stream, new AddFileParams
             {
-                RelativePath = backup.Item2.ToHex(),
+                RelativePath = backup.Hash.ToHex(),
             });
         }
 
@@ -91,7 +85,7 @@ public class NxArchiveManager : IArchiveManager
         UpdateIndexes(unpacker, distinct, guid, finalPath);
     }
 
-    private unsafe void UpdateIndexes(NxUnpacker unpacker, (IStreamFactory, Hash, Size)[] distinct, Guid guid,
+    private unsafe void UpdateIndexes(NxUnpacker unpacker, ArchivedFileEntry[] distinct, Guid guid,
         AbsolutePath finalPath)
     {
         Span<byte> buffer = stackalloc byte[sizeof(NativeFileEntryV1)];
@@ -185,20 +179,25 @@ public class NxArchiveManager : IArchiveManager
         if (grouped[default].Any())
             throw new Exception($"Missing archive for {grouped[default].First().Hash.ToHex()}");
 
-        var settings = new UnpackerSettings();
-        settings.MaxNumThreads = 1;
+        var settings = new UnpackerSettings
+        {
+            MaxNumThreads = 1
+        };
         foreach (var group in grouped)
         {
             var file = group.Key.Read();
             var provider = new FromStreamProvider(file);
             var unpacker = new NxUnpacker(provider);
 
-            var infos = group.Select(entry => (entry.Hash, new OutputArrayProvider("", entry.FileEntry))).ToList();
+            var infos = group.Select(entry => (entry.Hash, new OutputArrayProvider("", entry.FileEntry), entry.FileEntry.DecompressedSize)).ToList();
 
             unpacker.ExtractFiles(infos.Select(o => (IOutputDataProvider)o.Item2).ToArray(), settings);
-            foreach (var info in infos)
+            foreach (var (hash, output, size) in infos)
             {
-                results.Add(info.Hash, info.Item2.Data);
+                if (size == 0)
+                    throw new Exception("bleh3");
+                if (output.Data.Length != (int)size) throw new Exception("bleh");
+                results.Add(hash, output.Data[..(int)size]);
             }
         }
 
