@@ -43,7 +43,7 @@ public class ListGames : AVerb, IRenderingVerb
 
         await Renderer.Render(
             new Table(new[] { "Game", "Version", "Path", "Store" },
-                installs.Select(i => new object[] { i.Game, i.Version, i.Locations[GameFolderType.Game], i.Store })));
+                installs.Select(i => new object[] { i.Game, i.Version, i.LocationsRegister[GameFolderType.Game], i.Store })));
 
         return 0;
     }

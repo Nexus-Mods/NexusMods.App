@@ -84,12 +84,13 @@ public abstract class AGame : IGame
                 select new GameInstallation
                 {
                     Game = this,
-                    Locations = new Dictionary<GameFolderType, AbsolutePath>(GetLocations(installation.Path.FileSystem,
-                        locator, installation)),
+                    LocationsRegister = new GameLocationsRegister(new Dictionary<GameFolderType, AbsolutePath>(
+                        GetLocations(installation.Path.FileSystem,
+                            locator, installation))),
                     Version = installation.Version ?? GetVersion(installation),
                     Store = installation.Store
                 })
-            .DistinctBy(g => g.Locations[GameFolderType.Game])
+            .DistinctBy(g => g.LocationsRegister[GameFolderType.Game])
             .ToList();
     }
 

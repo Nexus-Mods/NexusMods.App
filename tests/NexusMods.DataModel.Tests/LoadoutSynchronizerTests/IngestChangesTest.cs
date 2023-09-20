@@ -19,7 +19,7 @@ public class IngestChangesTest : ALoadoutSynrchonizerTest<IngestChangesTest>
     {
         var loadout = await CreateApplyPlanTestLoadout();
 
-        var absPath = loadout.Installation.Locations[GameFolderType.Game].Combine("0x00001.dat");
+        var absPath = loadout.Installation.LocationsRegister[GameFolderType.Game].Combine("0x00001.dat");
 
         await TestSyncronizer.Ingest(new IngestPlan()
         {
@@ -95,7 +95,7 @@ public class IngestChangesTest : ALoadoutSynrchonizerTest<IngestChangesTest>
 
         var firstMod = loadout.Mods.Values.First();
         var firstFile = firstMod.Files.Values.First();
-        var absPath = loadout.Installation.Locations[GameFolderType.Game].Combine("foo.bar");
+        var absPath = loadout.Installation.LocationsRegister[GameFolderType.Game].Combine("foo.bar");
 
         loadout = await TestSyncronizer.Ingest(new IngestPlan
         {
@@ -126,7 +126,7 @@ public class IngestChangesTest : ALoadoutSynrchonizerTest<IngestChangesTest>
     {
         var loadout = await CreateApplyPlanTestLoadout();
         var firstMod = loadout.Mods.Values.First();
-        var absPath = loadout.Installation.Locations[GameFolderType.Game].Combine("foo.bar");
+        var absPath = loadout.Installation.LocationsRegister[GameFolderType.Game].Combine("foo.bar");
 
         loadout = await TestSyncronizer.Ingest(new IngestPlan
         {

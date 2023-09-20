@@ -52,10 +52,10 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
                 .Select((i, idx) => new GameInstallation()
                 {
                     Game = this,
-                    Locations = new Dictionary<GameFolderType, AbsolutePath>()
+                    LocationsRegister = new GameLocationsRegister( new Dictionary<GameFolderType, AbsolutePath>()
                     {
                         { GameFolderType.Game, EnsureFiles(i.Path) }
-                    },
+                    }),
                     Version = Version.Parse($"0.0.{idx}.0"),
                     Store = GameStore.Unknown,
                 });
@@ -76,7 +76,7 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
     {
         return new[]
         {
-            new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, Installations.First().Locations[GameFolderType.Game])
+            new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, Installations.First().LocationsRegister[GameFolderType.Game])
         };
     }
 

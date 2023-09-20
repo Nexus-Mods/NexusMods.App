@@ -3,11 +3,13 @@ using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Games;
 
-public class GameLocationRegister : IGameLocationRegister
+public class GameLocationsRegister : IGameLocationRegister
 {
     private Dictionary<GameFolderType, GameLocationDescriptor> _locations = new();
 
-    public void RegisterLocations(IReadOnlyDictionary<GameFolderType, AbsolutePath> newLocations)
+    public AbsolutePath this[GameFolderType id] => _locations[id].ResolvedPath;
+
+    public GameLocationsRegister(IReadOnlyDictionary<GameFolderType, AbsolutePath> newLocations)
     {
         foreach (var (newId, newPath) in newLocations)
         {
@@ -55,6 +57,8 @@ public class GameLocationRegister : IGameLocationRegister
             : child.TopLevelParent.Value;
     }
 
+    public IReadOnlyDictionary<GameFolderType, GameLocationDescriptor> LocationDescriptors => _locations;
+
     public bool IsTopLevel(GameFolderType id)
     {
         return _locations[id].IsTopLevel;
@@ -79,8 +83,6 @@ public class GameLocationRegister : IGameLocationRegister
     {
         return _locations[Id].NestedLocations.ToArray();
     }
-
-    public IReadOnlyDictionary<GameFolderType, GameLocationDescriptor> LocationDescriptors => _locations;
 
     public GamePath ToGamePath(AbsolutePath absolutePath)
     {

@@ -8,28 +8,16 @@ namespace NexusMods.DataModel.Games;
 /// </summary>
 public class GameInstallation
 {
-    private GameLocationRegister _locationRegister = new();
-    private Dictionary<GameFolderType, AbsolutePath> _locations = new();
-
     /// <summary>
     /// The Version installed.
     /// </summary>
     public Version Version { get; init; } = new();
 
+
     /// <summary>
     /// The location on-disk of this game and it's associated paths [e.g. Saves].
     /// </summary>
-    public IReadOnlyDictionary<GameFolderType, AbsolutePath> Locations
-    {
-        get => _locations;
-        init
-        {
-            _locations = value.ToDictionary(x => x.Key, x => x.Value);
-            _locationRegister.RegisterLocations(_locations);
-        }
-    }
-
-    public IGameLocationRegister LocationRegister => _locationRegister;
+    public GameLocationsRegister LocationsRegister { get; init; } = null!;
 
     /// <summary>
     /// The game to which this installation belongs.
@@ -59,7 +47,7 @@ public class GameInstallation
     /// <returns>Path to the game.</returns>
     public GamePath ToGamePath(AbsolutePath absolutePath)
     {
-        return LocationRegister.ToGamePath(absolutePath);
+        return LocationsRegister.ToGamePath(absolutePath);
     }
 
     /// <summary>

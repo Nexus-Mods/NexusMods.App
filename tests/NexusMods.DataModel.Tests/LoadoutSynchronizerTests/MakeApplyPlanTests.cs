@@ -11,17 +11,17 @@ public class MakeApplyPlanTests : ALoadoutSynrchonizerTest<MakeApplyPlanTests>
 {
     public MakeApplyPlanTests(IServiceProvider provider) : base(provider) { }
 
-    
+
     #region Make Apply Plan Tests
 
     /// <summary>
-    /// If a file doesn't exist, it should be created 
+    /// If a file doesn't exist, it should be created
     /// </summary>
     [Fact]
     public async Task FilesThatDontExistAreCreatedByPlan()
     {
         var loadout = await CreateApplyPlanTestLoadout();
-        
+
         var plan = await TestSyncronizer.MakeApplySteps(loadout);
 
         var fileOne = loadout.Mods.Values.First().Files.Values.OfType<IFromArchive>()
@@ -29,12 +29,12 @@ public class MakeApplyPlanTests : ALoadoutSynrchonizerTest<MakeApplyPlanTests>
 
         plan.Steps.Should().ContainEquivalentOf(new ExtractFile
         {
-            To = loadout.Installation.Locations[GameFolderType.Game].Combine("0x00001.dat"),
+            To = loadout.Installation.LocationsRegister[GameFolderType.Game].Combine("0x00001.dat"),
             Hash = fileOne.Hash,
             Size = fileOne.Size
         });
     }
-    
+
     /// <summary>
     /// Files that are already in the correct state in the game folder shouldn't be re-extracted
     /// </summary>
@@ -42,34 +42,34 @@ public class MakeApplyPlanTests : ALoadoutSynrchonizerTest<MakeApplyPlanTests>
     public async Task FilesThatExistAreNotCreatedByPlan()
     {
         var loadout = await CreateApplyPlanTestLoadout();
-        
+
         var fileOne = loadout.Mods.Values.First().Files.Values.OfType<IFromArchive>()
             .First(f => f.Hash == Hash.From(0x00001));
 
 
-        var absPath = loadout.Installation.Locations[GameFolderType.Game].Combine("0x00001.dat");
+        var absPath = loadout.Installation.LocationsRegister[GameFolderType.Game].Combine("0x00001.dat");
 
         TestIndexer.Entries.Add(new HashedEntry(absPath, fileOne.Hash, DateTime.Now - TimeSpan.FromDays(1), fileOne.Size ));
-        
+
         var plan = await TestSyncronizer.MakeApplySteps(loadout);
-        
+
         plan.Steps.Should().NotContainEquivalentOf(new ExtractFile
         {
-            To = loadout.Installation.Locations[GameFolderType.Game].Combine("0x00001.dat"),
+            To = loadout.Installation.LocationsRegister[GameFolderType.Game].Combine("0x00001.dat"),
             Hash = fileOne.Hash,
             Size = fileOne.Size
         });
     }
-    
+
     /// <summary>
     /// Files that are in the game folders, but not in the plan should be backed up then deleted
     /// </summary>
     [Fact]
     public async Task ExtraFilesAreDeletedAndBackedUp()
-    { 
+    {
         var loadout = await CreateApplyPlanTestLoadout();
-        
-        var absPath = loadout.Installation.Locations[GameFolderType.Game].Combine("file_to_delete.dat");
+
+        var absPath = loadout.Installation.LocationsRegister[GameFolderType.Game].Combine("file_to_delete.dat");
         TestIndexer.Entries.Add(new HashedEntry(absPath, Hash.From(0x042), DateTime.Now - TimeSpan.FromDays(1), Size.From(0x33)));
 
         var plan = await TestSyncronizer.MakeApplySteps(loadout);
@@ -90,7 +90,7 @@ public class MakeApplyPlanTests : ALoadoutSynrchonizerTest<MakeApplyPlanTests>
     }
 
     /// <summary>
-    /// If a file is backed up, we shouldn't see a command to back it up again. 
+    /// If a file is backed up, we shouldn't see a command to back it up again.
     /// </summary>
     [Fact]
     public async Task FilesAreNotBackedUpIfAlreadyBackedUp()
@@ -98,7 +98,7 @@ public class MakeApplyPlanTests : ALoadoutSynrchonizerTest<MakeApplyPlanTests>
         var loadout = await CreateApplyPlanTestLoadout();
 
         TestArchiveManagerInstance.Archives.Add(Hash.From(0x042));
-        var absPath = loadout.Installation.Locations[GameFolderType.Game].Combine("file_to_delete.dat");
+        var absPath = loadout.Installation.LocationsRegister[GameFolderType.Game].Combine("file_to_delete.dat");
         TestIndexer.Entries.Add(new HashedEntry(absPath, Hash.From(0x042), DateTime.Now - TimeSpan.FromDays(1),
             Size.From(0x33)));
 
@@ -106,7 +106,7 @@ public class MakeApplyPlanTests : ALoadoutSynrchonizerTest<MakeApplyPlanTests>
 
         plan.Steps.OfType<BackupFile>().Should().BeEmpty();
     }
-    
+
     /// <summary>
     /// If a file in the plan differs from the one on disk, then back up the on-disk file, delete it
     /// then create the new file
@@ -119,13 +119,13 @@ public class MakeApplyPlanTests : ALoadoutSynrchonizerTest<MakeApplyPlanTests>
         var fileOne = loadout.Mods.Values.First(mod => mod.Enabled == true).Files.Values.OfType<IFromArchive>()
             .First(f => f.Hash == Hash.From(0x00001));
 
-        var absPath = loadout.Installation.Locations[GameFolderType.Game].Combine("0x00001.dat");
+        var absPath = loadout.Installation.LocationsRegister[GameFolderType.Game].Combine("0x00001.dat");
         TestIndexer.Entries.Add(new HashedEntry(absPath, Hash.From(0x042), DateTime.Now - TimeSpan.FromDays(1),
             Size.From(0x33)));
 
         var plan = await TestSyncronizer.MakeApplySteps(loadout);
-        
-        
+
+
 
         plan.Steps.Should().ContainEquivalentOf(new DeleteFile
         {
@@ -140,15 +140,15 @@ public class MakeApplyPlanTests : ALoadoutSynrchonizerTest<MakeApplyPlanTests>
             Hash = Hash.From(0x42),
             Size = Size.From(0x33)
         });
-        
+
         plan.Steps.Should().ContainEquivalentOf(new ExtractFile
         {
-            To = loadout.Installation.Locations[GameFolderType.Game].Combine("0x00001.dat"),
+            To = loadout.Installation.LocationsRegister[GameFolderType.Game].Combine("0x00001.dat"),
             Hash = fileOne.Hash,
             Size = fileOne.Size
         });
     }
-    
+
     /// <summary>
     /// Generated files that have never been generated before should be generated
     /// </summary>
@@ -160,8 +160,8 @@ public class MakeApplyPlanTests : ALoadoutSynrchonizerTest<MakeApplyPlanTests>
         var fileOne = loadout.Mods.Values.First().Files.Values.OfType<IGeneratedFile>()
             .First();
 
-        var absPath = loadout.Installation.Locations[GameFolderType.Game].Combine("0x00001.generated");
-        
+        var absPath = loadout.Installation.LocationsRegister[GameFolderType.Game].Combine("0x00001.generated");
+
         var plan = await TestSyncronizer.MakeApplySteps(loadout);
 
         var generateFile = plan.Steps.OfType<GenerateFile>().FirstOrDefault();
@@ -189,8 +189,8 @@ public class MakeApplyPlanTests : ALoadoutSynrchonizerTest<MakeApplyPlanTests>
 
         TestArchiveManagerInstance.Archives.Add(Hash.From(0x42));
 
-        var absPath = loadout.Installation.Locations[GameFolderType.Game].Combine("0x00001.generated");
-        
+        var absPath = loadout.Installation.LocationsRegister[GameFolderType.Game].Combine("0x00001.generated");
+
         var plan = await TestSyncronizer.MakeApplySteps(loadout);
 
         plan.Steps.Should().ContainEquivalentOf(new ExtractFile
@@ -200,7 +200,7 @@ public class MakeApplyPlanTests : ALoadoutSynrchonizerTest<MakeApplyPlanTests>
             Size = Size.From(0x43)
         });
     }
-    
+
     #endregion
 
 }
