@@ -90,16 +90,14 @@ public class NxArchiveManager : IArchiveManager
     {
         Span<byte> buffer = stackalloc byte[sizeof(NativeFileEntryV1)];
 
-        var paths = unpacker.GetPathedFileEntries();
-
-        foreach (var entry in unpacker.GetFileEntriesRaw())
+        foreach (var entry in unpacker.GetPathedFileEntries())
         {
             fixed (byte* ptr = buffer)
             {
                 var writer = new LittleEndianWriter(ptr);
-                entry.WriteAsV1(ref writer);
+                entry.Entry.WriteAsV1(ref writer);
 
-                var hash = Hash.FromHex(paths[entry.FilePathIndex].FileName);
+                var hash = Hash.FromHex(entry.FileName);
                 var dbId = IdFor(hash, guid);
                 var dbEntry = new ArchivedFiles
                 {
@@ -194,9 +192,6 @@ public class NxArchiveManager : IArchiveManager
             unpacker.ExtractFiles(infos.Select(o => (IOutputDataProvider)o.Item2).ToArray(), settings);
             foreach (var (hash, output, size) in infos)
             {
-                if (size == 0)
-                    throw new Exception("bleh3");
-                if (output.Data.Length != (int)size) throw new Exception("bleh");
                 results.Add(hash, output.Data[..(int)size]);
             }
         }
