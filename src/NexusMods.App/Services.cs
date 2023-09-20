@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.CLI;
 using NexusMods.App.CLI.Renderers;
@@ -6,6 +7,7 @@ using NexusMods.App.UI;
 using NexusMods.CLI;
 using NexusMods.Common;
 using NexusMods.DataModel;
+using NexusMods.DataModel.GlobalSettings;
 using NexusMods.FileExtractor;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.DarkestDungeon;
@@ -49,7 +51,9 @@ public static class Services
     {
         config ??= new AppConfig();
 
-        services.AddCLI()
+        services
+            .AddSingleton<IAppConfigManager, AppConfigManager>(provider => new AppConfigManager(config, provider.GetRequiredService<JsonSerializerOptions>()))
+            .AddCLI()
             .AddFileSystem()
             .AddUI(config.LauncherSettings)
             .AddGuidedInstallerUi()
@@ -78,7 +82,7 @@ public static class Services
 
         return OpenTelemetryRegistration.AddTelemetry(services, new OpenTelemetrySettings
         {
-            IsEnabled = config.EnableTelemetry,
+            IsEnabled = config.EnableTelemetry ?? false,
 
             EnableMetrics = true,
             EnableTracing = true,
