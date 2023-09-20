@@ -174,8 +174,8 @@ Note: Initial design, subject to change. Trivial method implementations already 
 public struct DeploymentData
 {
     /// <summary>
-    /// Gets or sets the ArchiveToOutputMap property.
-    /// This Dictionary maps relative paths of files in the mod archive to relative paths in the game directory.<br/>
+    /// This Dictionary maps relative paths of files in the mod archive to relative paths in the game directories.<br/>
+    ///
     /// Key: The relative path of a file within the mod archive.
     /// Value: The relative path where the file should be placed in the game directory.
     /// </summary>
@@ -186,7 +186,13 @@ public struct DeploymentData
     /// <remarks>
     /// Paths follow internal Nexus Mods App path standards: they use a "/" as a separator, trim whitespace, and do not alter "..".
     /// </remarks>
-    private Dictionary<RelativePath, GamePath> _archiveToOutputMap { get; init; } = new();
+    internal Dictionary<RelativePath, GamePath> ArchiveToOutputMap { get; init; } = new();
+
+    /// <summary>
+    /// This is a reverse lookup for the _archiveToOutputMap.<br/>.
+    /// We use this lookup to ensure that a file has not already been mapped to a given location.
+    /// </summary>
+    internal Dictionary<GamePath, RelativePath> OutputToArchiveMap { get; init; } = new();
 
     /// <summary>
     /// Adds a new mapping from a source file in the archive to a target path in the game directory.
@@ -194,29 +200,19 @@ public struct DeploymentData
     /// <param name="archivePath">The relative path of the source file within the mod archive.</param>
     /// <param name="outputPath">The relative path where the file should be placed in the game directory.</param>
     /// <returns>True if the mapping was added successfully, false if the key already exists.</returns>
-    public void AddMapping(RelativePath archivePath, RelativePath outputPath)
-    {
-        if (!_archiveToOutputMap.TryAdd(archivePath, outputPath))
-        {
-            // Error if already exists as sanity check.
-            ThrowHelper.MappingAlreadyExists(archivePath);
-        }
-    }
+    public void AddMapping(RelativePath archivePath, RelativePath outputPath);
 
     /// <summary>
     /// Removes a mapping based on the source file's relative path in the archive.
     /// </summary>
     /// <param name="archivePath">The relative path of the source file within the mod archive.</param>
     /// <returns>True if the mapping was removed successfully, false if the key does not exist.</returns>
-    public bool RemoveMapping(RelativePath archivePath)
-    {
-        return _archiveToOutputMap.Remove(archivePath);
-    }
+    public bool RemoveMapping(RelativePath archivePath);
 
     /// <summary>
     /// Clears all the existing mappings.
     /// </summary>
-    public void ClearMappings() => _archiveToOutputMap.Clear();
+    public void ClearMappings();
 
     /// <summary>
     /// Emits a series of AModFile instructions based on the current mappings.
@@ -224,25 +220,7 @@ public struct DeploymentData
     /// <param name="gameTargetPath">Path to the game folder.</param>
     /// <param name="files">Files from the archive.</param>
     /// <returns>An IEnumerable of AModFile, representing the files to be moved and their target paths.</returns>
-    public IEnumerable<AModFile> EmitOperations(EntityDictionary<RelativePath, AnalyzedFile> files, GamePath gameTargetPath)
-    {
-        // Written like this for clarity, use array in actual code.
-        // Just an example, might not compile.
-        foreach (var mapping in _archiveToOutputMap)
-        {
-            // find file in `files` input.
-            var file = files.First(file => file.Key.Equals(RelativePath.FromUnsanitizedInput(mapping.Key)));
-
-            yield return new FromArchive
-            {
-                Id = ModId.New(),
-                To = new GamePath(gameTargetPath.Type,
-                    gameTargetPath.Path.Join(RelativePath.FromUnsanitizedInput(mapping.Value))),
-                Hash = file.Value.Hash,
-                Size = file.Value.Size
-            };
-        }
-    }
+    public IEnumerable<AModFile> EmitOperations(EntityDictionary<RelativePath, AnalyzedFile> files, GamePath gameTargetPath);
 }
 ```
 
