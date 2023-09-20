@@ -101,8 +101,7 @@ public abstract class AGame : IGame
     /// <param name="locator">The locator used to find this game installation.</param>
     /// <param name="installation">An installation of the game found by the <paramref name="locator"/>.</param>
     /// <returns></returns>
-    protected abstract IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(
-        IFileSystem fileSystem,
+    protected abstract IReadOnlyDictionary<GameFolderType, AbsolutePath> GetLocations(IFileSystem fileSystem,
         IGameLocator locator,
         GameLocatorResult installation);
 

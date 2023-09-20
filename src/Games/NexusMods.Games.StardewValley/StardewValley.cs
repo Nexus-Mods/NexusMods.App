@@ -48,35 +48,25 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
         );
     }
 
-    protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(
-        IFileSystem fileSystem,
+    protected override IReadOnlyDictionary<GameFolderType, AbsolutePath> GetLocations(IFileSystem fileSystem,
         IGameLocator locator,
         GameLocatorResult installation)
     {
-        if (installation.Store == GameStore.XboxGamePass)
-        {
-            yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path.Combine("Content"));
-        }
-        else
-        {
-            yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);
-        }
-
+        // global data files (https://github.com/Pathoschild/SMAPI/blob/8d600e226960a81636137d9bf286c69ab39066ed/src/SMAPI/Framework/ModHelpers/DataHelper.cs#L163-L169)
         var stardewValleyAppDataPath = fileSystem
             .GetKnownPath(KnownPath.ApplicationDataDirectory)
             .Combine("StardewValley");
 
-        // base game saves
-        yield return new KeyValuePair<GameFolderType, AbsolutePath>(
-            GameFolderType.Saves,
-            stardewValleyAppDataPath.Combine("Saves")
-        );
-
-        // global data files (https://github.com/Pathoschild/SMAPI/blob/8d600e226960a81636137d9bf286c69ab39066ed/src/SMAPI/Framework/ModHelpers/DataHelper.cs#L163-L169)
-        yield return new KeyValuePair<GameFolderType, AbsolutePath>(
-            GameFolderType.AppData,
-            stardewValleyAppDataPath.Combine(".smapi")
-        );
+        var result = new Dictionary<GameFolderType, AbsolutePath>()
+        {
+            {
+                GameFolderType.Game,
+                installation.Store == GameStore.XboxGamePass ? installation.Path.Combine("Content") : installation.Path
+            },
+            { GameFolderType.AppData, stardewValleyAppDataPath.Combine(".smapi") },
+            { GameFolderType.Saves, stardewValleyAppDataPath.Combine("Saves") },
+        };
+        return result;
     }
 
     public override IStreamFactory Icon => new EmbededResourceStreamFactory<StardewValley>("NexusMods.Games.StardewValley.Resources.icon.png");

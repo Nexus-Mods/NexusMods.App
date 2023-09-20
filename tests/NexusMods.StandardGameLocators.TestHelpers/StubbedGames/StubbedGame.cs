@@ -72,12 +72,13 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
             "NexusMods.StandardGameLocators.TestHelpers.Resources.question_mark_game.png");
 
     public override IStreamFactory GameImage => throw new NotImplementedException("No game image for stubbed game.");
-    protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(IFileSystem fileSystem, IGameLocator locator, GameLocatorResult installation)
+    protected override IReadOnlyDictionary<GameFolderType, AbsolutePath> GetLocations(IFileSystem fileSystem,
+        IGameLocator locator, GameLocatorResult installation)
     {
-        return new[]
-        {
-            new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, Installations.First().LocationsRegister[GameFolderType.Game])
-        };
+        return new Dictionary<GameFolderType, AbsolutePath>()
+            {
+                { GameFolderType.Game, Installations.First().LocationsRegister[GameFolderType.Game] }
+            };
     }
 
     private AbsolutePath EnsureFiles(AbsolutePath path)
