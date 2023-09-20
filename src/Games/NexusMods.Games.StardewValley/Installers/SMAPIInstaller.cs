@@ -93,8 +93,7 @@ public class SMAPIInstaller : AModInstaller
         }
 
 
-        var gameFolderPath = gameInstallation.Locations
-            .First(x => x.Key == GameFolderType.Game).Value;
+        var gameFolderPath = gameInstallation.LocationsRegister[GameFolderType.Game];
 
         var archiveContents = (await _downloadRegistry.Get(downloadId)).GetFileTree();
 

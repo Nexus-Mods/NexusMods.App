@@ -11,21 +11,21 @@ public class ToolTests : ADataModelTest<ToolTests>
     public ToolTests(IServiceProvider provider) : base(provider)
     {
     }
-    
+
     [Fact]
     public async Task CanRunTools()
     {
         var name = Guid.NewGuid().ToString();
         var loadout = await LoadoutManager.ManageGameAsync(Install, name);
         await AddMods(loadout, Data7ZLzma2, "Mod1");
-        var gameFolder = loadout.Value.Installation.Locations[GameFolderType.Game];
+        var gameFolder = loadout.Value.Installation.LocationsRegister[GameFolderType.Game];
 
         gameFolder.Combine("files.txt").FileExists.Should().BeFalse("tool should not have run yet");
         gameFolder.Combine("rootFile.txt").FileExists.Should().BeFalse("loadout has not yet been applied");
 
         var tool = ToolManager.GetTools(loadout.Value).OfType<ListFilesTool>().First();
         await ToolManager.RunTool(tool, loadout.Value);
-        
+
         gameFolder.Combine("files.txt").FileExists.Should().BeTrue("tool should have run");
         gameFolder.Combine("rootFile.txt").FileExists.Should().BeTrue("loadout has been automatically applied");
 

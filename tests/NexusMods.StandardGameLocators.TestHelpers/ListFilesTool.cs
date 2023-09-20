@@ -11,7 +11,7 @@ public class ListFilesTool : ITool
 
     public async Task Execute(Loadout loadout, ApplyPlan applyPlan, CancellationToken cancellationToken)
     {
-        var listPath = loadout.Installation.Locations[GameFolderType.Game];
+        var listPath = loadout.Installation.LocationsRegister[GameFolderType.Game];
         var outPath = GeneratedFilePath.Combine(listPath);
 
         var lines = listPath.EnumerateFiles()

@@ -18,6 +18,6 @@ public static class GamePathExtensions
     /// </param>
     public static AbsolutePath CombineChecked(this GamePath path, GameInstallation installation)
     {
-        return path.Combine(installation.Locations[path.Type]);
+        return path.Combine(installation.LocationsRegister[path.Type]);
     }
 }

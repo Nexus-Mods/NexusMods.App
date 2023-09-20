@@ -5,6 +5,7 @@ using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Games.DarkestDungeon.Installers;
 using NexusMods.Paths;
+using OneOf.Types;
 
 namespace NexusMods.Games.DarkestDungeon;
 
@@ -45,22 +46,22 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame, IEpicGame
         );
     }
 
-    protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(
-        IFileSystem fileSystem,
+    protected override IReadOnlyDictionary<GameFolderType, AbsolutePath> GetLocations(IFileSystem fileSystem,
         IGameLocator locator,
         GameLocatorResult installation)
     {
-        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);
-
-
-        if (installation.Metadata is SteamLocatorResultMetadata { CloudSavesDirectory: not null } steamLocatorResultMetadata)
-            yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Saves, steamLocatorResultMetadata.CloudSavesDirectory.Value);
-
         var globalSettingsFile = fileSystem
             .GetKnownPath(KnownPath.LocalApplicationDataDirectory)
             .Combine("Red Hook Studios/Darkest/persist.options.json");
 
-        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Preferences, globalSettingsFile);
+        var result =  new Dictionary<GameFolderType, AbsolutePath>()
+        {
+            { GameFolderType.Game, installation.Path },
+            { GameFolderType.Preferences, globalSettingsFile }
+        };
+
+        if (installation.Metadata is SteamLocatorResultMetadata { CloudSavesDirectory: not null } steamLocatorResultMetadata)
+            result[GameFolderType.Saves] = steamLocatorResultMetadata.CloudSavesDirectory.Value;
 
         if (installation.Store == GameStore.Steam)
         {
@@ -72,8 +73,10 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame, IEpicGame
                 .GetKnownPath(KnownPath.MyDocumentsDirectory)
                 .Combine("Darkest");
 
-            yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Saves, savesDirectory);
+            result[GameFolderType.Saves] = savesDirectory;
         }
+
+        return result;
     }
 
     public override IStreamFactory Icon =>

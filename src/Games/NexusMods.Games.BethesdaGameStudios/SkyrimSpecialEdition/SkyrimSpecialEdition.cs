@@ -6,6 +6,7 @@ using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Games.Generic.Installers;
 using NexusMods.Paths;
+using Vogen;
 
 namespace NexusMods.Games.BethesdaGameStudios;
 
@@ -24,22 +25,20 @@ public class SkyrimSpecialEdition : ABethesdaGame, ISteamGame, IGogGame, IXboxGa
     public override GamePath GetPrimaryFile(GameStore store) => new(GameFolderType.Game, "SkyrimSE.exe");
 
     public SkyrimSpecialEdition(IEnumerable<IGameLocator> gameLocators, IServiceProvider provider) : base(gameLocators, provider) {}
-    protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(
-        IFileSystem fileSystem,
+    protected override IReadOnlyDictionary<GameFolderType, AbsolutePath> GetLocations(IFileSystem fileSystem,
         IGameLocator locator,
         GameLocatorResult installation)
     {
-        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);
-
-        var appData = installation.Store == GameStore.GOG
-            ? fileSystem
-                .GetKnownPath(KnownPath.LocalApplicationDataDirectory)
-                .Combine("Skyrim Special Edition GOG")
-            : fileSystem
-                .GetKnownPath(KnownPath.LocalApplicationDataDirectory)
-                .Combine("Skyrim Special Edition");
-
-        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.AppData, appData);
+        return new Dictionary<GameFolderType, AbsolutePath>()
+        {
+            { GameFolderType.Game, installation.Path },
+            {
+                GameFolderType.AppData, installation.Store == GameStore.GOG
+                    ? fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory)
+                        .Combine("Skyrim Special Edition GOG")
+                    : fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("Skyrim Special Edition")
+            }
+        };
     }
 
     public override IEnumerable<AModFile> GetGameFiles(GameInstallation installation, IDataStore store)

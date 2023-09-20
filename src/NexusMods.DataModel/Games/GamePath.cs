@@ -51,7 +51,7 @@ public readonly struct GamePath : IPath, IPath<GamePath>, IEquatable<GamePath>
     public override bool Equals(object? obj) => obj is GamePath other && Equals(other);
 
     /// <inheritdoc />
-    public override int GetHashCode() => Path.GetHashCode() ^ (int)Type;
+    public override int GetHashCode() => Path.GetHashCode() ^ Type.GetHashCode();
 
     /// <inheritdoc />
     public override string ToString() => "{" + Type + "}/" + Path;
@@ -110,30 +110,4 @@ public readonly struct GamePath : IPath, IPath<GamePath>, IEquatable<GamePath>
     {
         return Path.EndsWith(other);
     }
-}
-
-/// <summary>
-///     The base folder for the GamePath, more values can easily be added here as needed
-/// </summary>
-public enum GameFolderType : byte
-{
-    /// <summary>
-    /// Stores the path for the game.
-    /// </summary>
-    Game = 0,
-
-    /// <summary>
-    /// Path used to store the save data of a game.
-    /// </summary>
-    Saves,
-
-    /// <summary>
-    /// Path used to store player settings/preferences.
-    /// </summary>
-    Preferences,
-
-    /// <summary>
-    /// Stores other application data [sometimes including save data].
-    /// </summary>
-    AppData
 }

@@ -32,7 +32,7 @@ public class RedModDeployTool : ITool
         _logger.LogInformation("Running {Program}", exe);
         var result = await Cli.Wrap(exe.ToString())
             .WithArguments("deploy")
-            .WithWorkingDirectory(loadout.Installation.Locations[GameFolderType.Game].ToString())
+            .WithWorkingDirectory(loadout.Installation.LocationsRegister[GameFolderType.Game].ToString())
             .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer))
             .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
             .ExecuteAsync();

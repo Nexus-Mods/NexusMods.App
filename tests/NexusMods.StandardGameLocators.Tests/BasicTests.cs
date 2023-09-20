@@ -20,9 +20,9 @@ public class BasicTests
         _game.Installations.Should().SatisfyRespectively(
             steamInstallation =>
             {
-                steamInstallation.Locations
+                steamInstallation.LocationsRegister.LocationDescriptors
                     .Should().ContainSingle()
-                    .Which.Value
+                    .Which.Value.ResolvedPath
                     .ToString().Should().Contain("steam_game");
             });
     }
@@ -35,12 +35,18 @@ public class BasicTests
         _game.Installations
             .Should().HaveCount(6)
             .And.Satisfy(
-                eaInstallation => eaInstallation.Locations.First().Value.ToString().Contains("ea_game"),
-                epicInstallation => epicInstallation.Locations.First().Value.ToString().Contains("epic_game"),
-                originInstallation => originInstallation.Locations.First().Value.ToString().Contains("origin_game"),
-                gogInstallation => gogInstallation.Locations.First().Value.ToString().Contains("gog_game"),
-                steamInstallation => steamInstallation.Locations.First().Value.ToString().Contains("steam_game"),
-                xboxInstallation => xboxInstallation.Locations.First().Value.ToString().Contains("xbox_game")
+                eaInstallation => eaInstallation.LocationsRegister.LocationDescriptors.First().Value.ResolvedPath
+                    .ToString().Contains("ea_game"),
+                epicInstallation => epicInstallation.LocationsRegister.LocationDescriptors.First().Value.ResolvedPath
+                    .ToString().Contains("epic_game"),
+                originInstallation => originInstallation.LocationsRegister.LocationDescriptors.First().Value
+                    .ResolvedPath.ToString().Contains("origin_game"),
+                gogInstallation => gogInstallation.LocationsRegister.LocationDescriptors.First().Value.ResolvedPath
+                    .ToString().Contains("gog_game"),
+                steamInstallation => steamInstallation.LocationsRegister.LocationDescriptors.First().Value.ResolvedPath
+                    .ToString().Contains("steam_game"),
+                xboxInstallation => xboxInstallation.LocationsRegister.LocationDescriptors.First().Value.ResolvedPath
+                    .ToString().Contains("xbox_game")
             );
     }
 

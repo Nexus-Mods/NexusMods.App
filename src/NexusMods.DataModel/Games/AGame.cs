@@ -84,12 +84,13 @@ public abstract class AGame : IGame
                 select new GameInstallation
                 {
                     Game = this,
-                    Locations = new Dictionary<GameFolderType, AbsolutePath>(GetLocations(installation.Path.FileSystem,
-                        locator, installation)),
+                    LocationsRegister = new GameLocationsRegister(new Dictionary<GameFolderType, AbsolutePath>(
+                        GetLocations(installation.Path.FileSystem,
+                            locator, installation))),
                     Version = installation.Version ?? GetVersion(installation),
                     Store = installation.Store
                 })
-            .DistinctBy(g => g.Locations[GameFolderType.Game])
+            .DistinctBy(g => g.LocationsRegister[GameFolderType.Game])
             .ToList();
     }
 
@@ -100,8 +101,7 @@ public abstract class AGame : IGame
     /// <param name="locator">The locator used to find this game installation.</param>
     /// <param name="installation">An installation of the game found by the <paramref name="locator"/>.</param>
     /// <returns></returns>
-    protected abstract IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(
-        IFileSystem fileSystem,
+    protected abstract IReadOnlyDictionary<GameFolderType, AbsolutePath> GetLocations(IFileSystem fileSystem,
         IGameLocator locator,
         GameLocatorResult installation);
 

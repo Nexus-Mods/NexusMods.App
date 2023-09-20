@@ -52,10 +52,10 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
                 .Select((i, idx) => new GameInstallation()
                 {
                     Game = this,
-                    Locations = new Dictionary<GameFolderType, AbsolutePath>()
+                    LocationsRegister = new GameLocationsRegister( new Dictionary<GameFolderType, AbsolutePath>()
                     {
                         { GameFolderType.Game, EnsureFiles(i.Path) }
-                    },
+                    }),
                     Version = Version.Parse($"0.0.{idx}.0"),
                     Store = GameStore.Unknown,
                 });
@@ -72,12 +72,13 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
             "NexusMods.StandardGameLocators.TestHelpers.Resources.question_mark_game.png");
 
     public override IStreamFactory GameImage => throw new NotImplementedException("No game image for stubbed game.");
-    protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(IFileSystem fileSystem, IGameLocator locator, GameLocatorResult installation)
+    protected override IReadOnlyDictionary<GameFolderType, AbsolutePath> GetLocations(IFileSystem fileSystem,
+        IGameLocator locator, GameLocatorResult installation)
     {
-        return new[]
-        {
-            new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, Installations.First().Locations[GameFolderType.Game])
-        };
+        return new Dictionary<GameFolderType, AbsolutePath>()
+            {
+                { GameFolderType.Game, Installations.First().LocationsRegister[GameFolderType.Game] }
+            };
     }
 
     private AbsolutePath EnsureFiles(AbsolutePath path)

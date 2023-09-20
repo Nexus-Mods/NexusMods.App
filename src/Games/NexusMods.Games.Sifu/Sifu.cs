@@ -23,12 +23,14 @@ public class Sifu : AGame, ISteamGame, IEpicGame
         _serviceProvider = serviceProvider;
     }
 
-    protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(
-        IFileSystem fileSystem,
+    protected override IReadOnlyDictionary<GameFolderType, AbsolutePath> GetLocations(IFileSystem fileSystem,
         IGameLocator locator,
         GameLocatorResult installation)
     {
-        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);
+        return new Dictionary<GameFolderType, AbsolutePath>()
+        {
+            { GameFolderType.Game, installation.Path },
+        };
     }
 
     /// <inheritdoc />
