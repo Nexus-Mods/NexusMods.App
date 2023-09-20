@@ -46,6 +46,7 @@ public class AppConfig
     public HttpDownloaderSettings HttpDownloaderSettings { get; set; } = new();
     public LoggingSettings LoggingSettings { get; set; }
     public LauncherSettings LauncherSettings { get; set; } = new();
+    public bool EnableTelemetry { get; set; }
 
     /// <summary>
     /// Sanitizes the config; e.g.

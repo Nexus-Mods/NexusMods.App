@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.CLI;
 using NexusMods.App.CLI.Renderers;
@@ -24,6 +23,9 @@ using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.NMA;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators;
+using NexusMods.Telemetry;
+using NexusMods.Telemetry.OpenTelemetry;
+using OpenTelemetry.Exporter;
 
 namespace NexusMods.App;
 
@@ -74,6 +76,19 @@ public static class Services
         if (addStandardGameLocators)
             services.AddStandardGameLocators();
 
-        return services;
+        return OpenTelemetryRegistration.AddTelemetry(services, new OpenTelemetrySettings
+        {
+            IsEnabled = config.EnableTelemetry,
+
+            EnableMetrics = true,
+            EnableTracing = true,
+
+            ApplicationName = Telemetry.LibraryInfo.AssemblyName,
+            ApplicationVersion = Telemetry.LibraryInfo.AssemblyVersion,
+
+            ExporterProtocol = OtlpExportProtocol.HttpProtobuf,
+            ExporterMetricsEndpoint = new Uri("https://collector.nexusmods.com/v1/metrics"),
+            ExporterTracesEndpoint = new Uri("https://collector.nexusmods.com/v1/traces")
+        }).ConfigureTelemetry(Telemetry.LibraryInfo, configureMetrics: Telemetry.SetupTelemetry);
     }
 }
