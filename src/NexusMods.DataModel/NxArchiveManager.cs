@@ -309,7 +309,7 @@ public class NxArchiveManager : IArchiveManager
 
                     fixed(byte* ptr = buffer)
                     {
-                        Buffer.MemoryCopy(extractedPtr + start, ptr, length, length);
+                        Buffer.MemoryCopy(extractedPtr + _entry.DecompressedBlockOffset, ptr, length, length);
                     }
                 }
             }

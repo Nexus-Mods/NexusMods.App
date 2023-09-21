@@ -22,6 +22,8 @@ public class ArchiveManagerTests
     [Theory]
     [InlineData(2, 3)]
     [InlineData(1, 1024 * 1024)]
+    [InlineData(5, 1024 * 1024)]
+    [InlineData(5, 128)]
     [InlineData(24, 1024)]
     [InlineData(124, 1024)]
     public async Task CanArchiveFiles(int fileCount, int maxSize)
@@ -82,6 +84,17 @@ public class ArchiveManagerTests
             var data = await fullPaths[idx].ReadAllBytesAsync();
 
             data.Should().BeEquivalentTo(datas[idx]);
+        }
+
+        foreach (var idx in extractionIdxs)
+        {
+            await using var stream = await _manager.GetFileStream(hashes[idx]);
+            var ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+
+            var read = ms.ToArray();
+            read.Length.Should().Be(datas[idx].Length);
+            read.Should().BeEquivalentTo(datas[idx]);
         }
     }
 }
