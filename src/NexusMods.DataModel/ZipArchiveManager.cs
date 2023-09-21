@@ -172,6 +172,7 @@ public class ZipArchiveManager : IArchiveManager
         public Size Size { get; }
         public Size ChunkSize { get; }
         public ulong ChunkCount { get; }
+        public Size FirstChunkOffset => Size.Zero;
         public async Task ReadChunkAsync(Memory<byte> buffer, ulong chunkIndex, CancellationToken token = default)
         {
             await using var stream = _entries[chunkIndex].Open();

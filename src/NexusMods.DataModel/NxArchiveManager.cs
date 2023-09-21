@@ -1,5 +1,10 @@
-﻿using System.Buffers.Binary;
+﻿using System.Buffers;
+using System.Buffers.Binary;
+using System.IO.Compression;
+using System.Net.NetworkInformation;
+using System.Text;
 using NexusMods.Archives.Nx.FileProviders;
+using NexusMods.Archives.Nx.Headers;
 using NexusMods.Archives.Nx.Headers.Managed;
 using NexusMods.Archives.Nx.Headers.Native;
 using NexusMods.Archives.Nx.Interfaces;
@@ -10,6 +15,7 @@ using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.ArchiveContents;
+using NexusMods.DataModel.ChunkedStreams;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
@@ -200,9 +206,150 @@ public class NxArchiveManager : IArchiveManager
     }
 
     /// <inheritdoc />
-    public Task<Stream> GetFileStream(Hash hash, CancellationToken token = default)
+    public async Task<Stream> GetFileStream(Hash hash, CancellationToken token = default)
     {
-        throw new NotImplementedException();
+        if (!TryGetLocation(hash, out var archivePath, out var entry))
+            throw new Exception($"Missing archive for {hash.ToHex()}");
+
+        var file = archivePath.Read();
+
+        var provider = new FromStreamProvider(file);
+        var header = HeaderParser.ParseHeader(provider);
+
+        return new ChunkedStream<ChunkedArchiveStream>(new ChunkedArchiveStream(entry, header, provider));
+    }
+
+    private class ChunkedArchiveStream : IChunkedStreamSource
+    {
+        private FileEntry _entry;
+        private readonly ParsedHeader _header;
+        private readonly IFileDataProvider _provider;
+        private readonly List<ExtractableBlock> _blocks;
+
+
+        public ChunkedArchiveStream(FileEntry entry, ParsedHeader header, IFileDataProvider provider)
+        {
+            _entry = entry;
+            _header = header;
+            _provider = provider;
+            _blocks = new List<ExtractableBlock>();
+            MakeBlocks(_header.Header.ChunkSizeBytes);
+        }
+
+        public Size Size => Size.From(_entry.DecompressedSize);
+        public Size ChunkSize => Size.From((ulong)_header.Header.ChunkSizeBytes);
+        public ulong ChunkCount => (ulong)_entry.GetChunkCount(_header.Header.ChunkSizeBytes);
+        public Size FirstChunkOffset => Size.From((ulong)_entry.DecompressedBlockOffset);
+        public async Task ReadChunkAsync(Memory<byte> buffer, ulong chunkIndex, CancellationToken token = default)
+        {
+            // TODO Make this async
+            ReadChunk(buffer.Span, chunkIndex);
+        }
+
+        public void ReadChunk(Span<byte> buffer, ulong localIndex)
+        {
+            var extractable = _blocks[(int)localIndex];
+            var blockIndex = extractable.BlockIndex;
+            var chunkSize = _header.Header.ChunkSizeBytes;
+            var offset = _header.BlockOffsets[blockIndex];
+            var blockSize = _header.Blocks[blockIndex].CompressedSize;
+            var method = _header.BlockCompressions[blockIndex];
+
+            using var compressedBlock = _provider.GetFileData(offset, (uint)blockSize);
+
+            var canFastDecompress = true;
+        fallback:
+            if (canFastDecompress)
+            {
+                // This is a hot path in case of 1 output which starts at offset 0.
+                // This is common in the case of chunked files extracted to disk.
+
+                if (_entry.DecompressedBlockOffset != 0 || blockIndex == 0)
+                {
+                    // This mode is only supported if start of decompressed data is at offset 0 of decompressed buffer.
+                    // If this is unsupported (rarely in this hot path) we go back to 'slow' approach.
+                    canFastDecompress = false;
+                    goto fallback;
+                }
+
+                // Get block index.
+                var blockIndexOffset = extractable.BlockIndex - _entry.FirstBlockIndex;
+                var start = (long)chunkSize * blockIndexOffset;
+                var decompSizeInChunk = _entry.DecompressedSize - (ulong)start;
+                var length = Math.Min((long)decompSizeInChunk, chunkSize);
+
+                unsafe
+                {
+                    fixed (byte* ptr = buffer)
+                    {
+                        Compression.Decompress(method, compressedBlock.Data, blockSize, ptr, (int)buffer.Length);
+                    }
+                }
+                return;
+            }
+
+            // This is the logic in case of multiple outputs, e.g. if user specifies an Array + File output.
+            // It incurs additional memory copies, which may bottleneck when extraction is done purely in RAM.
+            // Decompress the needed bytes.
+            using var extractedBlock = MemoryPool<byte>.Shared.Rent(extractable.DecompressSize);
+            unsafe
+            {
+                fixed (byte* extractedPtr = extractedBlock.Memory.Span)
+                {
+                    // Decompress all.
+                    Compression.Decompress(method, compressedBlock.Data, blockSize, extractedPtr,
+                        extractable.DecompressSize);
+
+
+                    // Get block index.
+                    var blockIndexOffset = extractable.BlockIndex - _entry.FirstBlockIndex;
+                    var start = (long)chunkSize * blockIndexOffset;
+                    var decompSizeInChunk = _entry.DecompressedSize - (ulong)start;
+                    var length = Math.Min((long)decompSizeInChunk, chunkSize);
+
+                    fixed(byte* ptr = buffer)
+                    {
+                        Buffer.MemoryCopy(extractedPtr + start, ptr, length, length);
+                    }
+                }
+            }
+        }
+
+        private void MakeBlocks(int chunkSize)
+        {
+            // Slow due to copy to stack, but not that big a deal here.
+            var chunkCount = _entry.GetChunkCount(chunkSize);
+            var remainingDecompSize = _entry.DecompressedSize;
+
+            for (var chunkIndex = 0; chunkIndex < chunkCount; chunkIndex++)
+            {
+                var blockIndex = _entry.FirstBlockIndex + chunkIndex;
+                var block = new ExtractableBlock
+                {
+                    BlockIndex = blockIndex,
+                    DecompressSize = _entry.DecompressedBlockOffset + (int)Math.Min(remainingDecompSize, (ulong)chunkSize)
+                };
+
+                _blocks.Add(block);
+
+                remainingDecompSize -= (ulong)chunkSize;
+            }
+        }
+    }
+
+    internal struct ExtractableBlock
+    {
+        /// <summary>
+        ///     Index of block to decompress.
+        /// </summary>
+        public required int BlockIndex { get; init; }
+
+        /// <summary>
+        ///     Amount of data to decompress in this block.
+        ///     This is equivalent to largest <see cref="FileEntry.DecompressedBlockOffset" /> +
+        ///     <see cref="FileEntry.DecompressedSize" /> for a file within the block.
+        /// </summary>
+        public required int DecompressSize { get; set; }
     }
 
     private unsafe bool TryGetLocation(Hash hash, out AbsolutePath archivePath, out FileEntry fileEntry)
