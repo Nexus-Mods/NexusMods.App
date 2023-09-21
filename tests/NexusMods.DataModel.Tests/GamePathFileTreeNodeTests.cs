@@ -15,15 +15,15 @@ public class GamePathFileTreeNodeTests
     [InlineData("Game","foo/bar/file4.txt", true, 4)]
     [InlineData("Game","baz/bazer/file5.txt", true, 5)]
     [InlineData("Saves","baz/bazer/file5.txt", false, 5)]
-    public void Test_FindNode(LocationId locationId, string path, bool found, int value)
+    public void Test_FindNode(string locationId, string path, bool found, int value)
     {
         var tree = MakeTestTree();
 
-        var node = tree.FindNode(new GamePath(locationId, (RelativePath)path));
+        var node = tree.FindNode(new GamePath(LocationId.From(locationId), (RelativePath)path));
         if (found)
         {
             node.Should().NotBeNull();
-            node!.Path.Should().Be(new GamePath(locationId, (RelativePath)path));
+            node!.Path.Should().Be(new GamePath(LocationId.From(locationId), (RelativePath)path));
             node!.Value.Should().Be(value);
         }
         else
