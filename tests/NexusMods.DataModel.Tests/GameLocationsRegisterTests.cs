@@ -65,10 +65,10 @@ public class GameLocationsRegisterTests
     [InlineData("Preferences", "Preferences")]
     [InlineData("Documents", "Documents")]
     [InlineData("AppData", "AppData")]
-    public void GetTopLevelParentTest(string id, LocationId expected)
+    public void GetTopLevelParentTest(string id, string expected)
     {
         var locationsRegister = new GameLocationsRegister(CreateTestLocations());
-        locationsRegister.GetTopLevelParent(LocationId.From(id)).Should().Be(expected);
+        locationsRegister.GetTopLevelParent(LocationId.From(id)).Should().Be(LocationId.From(expected));
     }
 
     [Theory]
