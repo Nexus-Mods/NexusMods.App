@@ -37,10 +37,12 @@ public class GameLocationsRegister
             Debug.Assert(isDuplicate == false,
                 $"Duplicate location found for {newId} at {_locations[newId].ResolvedPath}: {newPath}");
 
+            // Detect Locations that are relative to each other and update nested locations and top level parent
             foreach (var existingId in _locations.Keys)
             {
                 if (existingId == newId) continue;
 
+                // Check if new location is nested to the existing location
                 if (this[existingId].GetFullPathLength() < newPath.GetFullPathLength())
                 {
                     if (!newPath.InFolder(this[existingId])) continue;
@@ -50,6 +52,7 @@ public class GameLocationsRegister
                 }
                 else
                 {
+                    // Check if existing location is nested to the new location
                     if (!this[existingId].InFolder(newPath)) continue;
 
                     newLocation.AddNestedLocation(_locations[existingId]);
@@ -57,8 +60,6 @@ public class GameLocationsRegister
                         .SetTopLevelParent(ComputeTopLevelParent(_locations[existingId], newLocation));
                 }
             }
-
-
         }
     }
 
