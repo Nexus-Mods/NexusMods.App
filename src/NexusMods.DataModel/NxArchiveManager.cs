@@ -2,6 +2,7 @@
 using System.Buffers.Binary;
 using System.IO.Compression;
 using System.Net.NetworkInformation;
+using System.Runtime.CompilerServices;
 using System.Text;
 using NexusMods.Archives.Nx.FileProviders;
 using NexusMods.Archives.Nx.Headers;
@@ -216,22 +217,22 @@ public class NxArchiveManager : IArchiveManager
         var provider = new FromStreamProvider(file);
         var header = HeaderParser.ParseHeader(provider);
 
-        return new ChunkedStream<ChunkedArchiveStream>(new ChunkedArchiveStream(entry, header, provider));
+        return new ChunkedStream<ChunkedArchiveStream>(new ChunkedArchiveStream(entry, header, file));
     }
 
     private class ChunkedArchiveStream : IChunkedStreamSource
     {
         private FileEntry _entry;
         private readonly ParsedHeader _header;
-        private readonly IFileDataProvider _provider;
         private readonly List<ExtractableBlock> _blocks;
+        private readonly Stream _stream;
 
 
-        public ChunkedArchiveStream(FileEntry entry, ParsedHeader header, IFileDataProvider provider)
+        public ChunkedArchiveStream(FileEntry entry, ParsedHeader header, Stream stream)
         {
             _entry = entry;
             _header = header;
-            _provider = provider;
+            _stream = stream;
             _blocks = new List<ExtractableBlock>();
             MakeBlocks(_header.Header.ChunkSizeBytes);
         }
@@ -239,23 +240,58 @@ public class NxArchiveManager : IArchiveManager
         public Size Size => Size.From(_entry.DecompressedSize);
         public Size ChunkSize => Size.From((ulong)_header.Header.ChunkSizeBytes);
         public ulong ChunkCount => (ulong)_entry.GetChunkCount(_header.Header.ChunkSizeBytes);
-        public Size FirstChunkOffset => Size.From((ulong)_entry.DecompressedBlockOffset);
-        public async Task ReadChunkAsync(Memory<byte> buffer, ulong chunkIndex, CancellationToken token = default)
+
+        public async Task ReadChunkAsync(Memory<byte> buffer, ulong localIndex, CancellationToken token = default)
         {
-            // TODO Make this async
-            ReadChunk(buffer.Span, chunkIndex);
+            var extractable = PreProcessBlock(localIndex, out var blockIndex, out var compressedBlockSize, out var offset);
+            _stream.Position = offset;
+            using var compressedBlock = MemoryPool<byte>.Shared.Rent(compressedBlockSize);
+            await _stream.ReadExactlyAsync(compressedBlock.Memory[..compressedBlockSize], token);
+            ProcessBlock(buffer.Span, blockIndex, extractable, compressedBlock.Memory.Span, compressedBlockSize);
         }
 
         public void ReadChunk(Span<byte> buffer, ulong localIndex)
         {
+            var extractable = PreProcessBlock(localIndex, out var blockIndex, out var compressedBlockSize, out var offset);
+            _stream.Position = offset;
+            using var compressedBlock = MemoryPool<byte>.Shared.Rent(compressedBlockSize);
+            _stream.ReadExactly(compressedBlock.Memory.Span[..compressedBlockSize]);
+            ProcessBlock(buffer, blockIndex, extractable, compressedBlock.Memory.Span, compressedBlockSize);
+        }
+
+        /// <summary>
+        /// Performs all the pre-processing logic for a block, which means calculating offsets and the like
+        /// </summary>
+        /// <param name="localIndex"></param>
+        /// <param name="blockIndex"></param>
+        /// <param name="compressedBlockSize"></param>
+        /// <param name="offset"></param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private ExtractableBlock PreProcessBlock(ulong localIndex, out int blockIndex, out int compressedBlockSize, out long offset)
+        {
             var extractable = _blocks[(int)localIndex];
-            var blockIndex = extractable.BlockIndex;
+            blockIndex = extractable.BlockIndex;
+            compressedBlockSize = _header.Blocks[blockIndex].CompressedSize;
+            offset = _header.BlockOffsets[blockIndex];
+            return extractable;
+        }
+
+        /// <summary>
+        /// All the post-processing logic for a block, including decompression, this is put in a function so it
+        /// can be called from both sync and async methods.
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="blockIndex"></param>
+        /// <param name="extractable"></param>
+        /// <param name="compressedBlock"></param>
+        /// <param name="blockSize"></param>
+        private unsafe void ProcessBlock(Span<byte> buffer, int blockIndex, ExtractableBlock extractable, Span<byte> compressedBlock,
+            int blockSize)
+        {
             var chunkSize = _header.Header.ChunkSizeBytes;
-            var offset = _header.BlockOffsets[blockIndex];
-            var blockSize = _header.Blocks[blockIndex].CompressedSize;
             var method = _header.BlockCompressions[blockIndex];
 
-            using var compressedBlock = _provider.GetFileData(offset, (uint)blockSize);
 
             var canFastDecompress = true;
         fallback:
@@ -264,7 +300,7 @@ public class NxArchiveManager : IArchiveManager
                 // This is a hot path in case of 1 output which starts at offset 0.
                 // This is common in the case of chunked files extracted to disk.
 
-                if (_entry.DecompressedBlockOffset != 0 || blockIndex == 0)
+                if (_entry.DecompressedBlockOffset != 0)
                 {
                     // This mode is only supported if start of decompressed data is at offset 0 of decompressed buffer.
                     // If this is unsupported (rarely in this hot path) we go back to 'slow' approach.
@@ -278,13 +314,12 @@ public class NxArchiveManager : IArchiveManager
                 var decompSizeInChunk = _entry.DecompressedSize - (ulong)start;
                 var length = Math.Min((long)decompSizeInChunk, chunkSize);
 
-                unsafe
+                fixed (byte* compressedPtr = compressedBlock)
+                fixed (byte* ptr = buffer)
                 {
-                    fixed (byte* ptr = buffer)
-                    {
-                        Compression.Decompress(method, compressedBlock.Data, blockSize, ptr, (int)buffer.Length);
-                    }
+                    Compression.Decompress(method, compressedPtr, blockSize, ptr, (int)length);
                 }
+
                 return;
             }
 
@@ -292,25 +327,24 @@ public class NxArchiveManager : IArchiveManager
             // It incurs additional memory copies, which may bottleneck when extraction is done purely in RAM.
             // Decompress the needed bytes.
             using var extractedBlock = MemoryPool<byte>.Shared.Rent(extractable.DecompressSize);
-            unsafe
+
+            fixed (byte* compressedPtr = compressedBlock)
+            fixed (byte* extractedPtr = extractedBlock.Memory.Span)
             {
-                fixed (byte* extractedPtr = extractedBlock.Memory.Span)
+                // Decompress all.
+                Compression.Decompress(method, compressedPtr, blockSize, extractedPtr,
+                    extractable.DecompressSize);
+
+
+                // Get block index.
+                var blockIndexOffset = extractable.BlockIndex - _entry.FirstBlockIndex;
+                var start = (long)chunkSize * blockIndexOffset;
+                var decompSizeInChunk = _entry.DecompressedSize - (ulong)start;
+                var length = Math.Min((long)decompSizeInChunk, chunkSize);
+
+                fixed (byte* ptr = buffer)
                 {
-                    // Decompress all.
-                    Compression.Decompress(method, compressedBlock.Data, blockSize, extractedPtr,
-                        extractable.DecompressSize);
-
-
-                    // Get block index.
-                    var blockIndexOffset = extractable.BlockIndex - _entry.FirstBlockIndex;
-                    var start = (long)chunkSize * blockIndexOffset;
-                    var decompSizeInChunk = _entry.DecompressedSize - (ulong)start;
-                    var length = Math.Min((long)decompSizeInChunk, chunkSize);
-
-                    fixed(byte* ptr = buffer)
-                    {
-                        Buffer.MemoryCopy(extractedPtr + _entry.DecompressedBlockOffset, ptr, length, length);
-                    }
+                    Buffer.MemoryCopy(extractedPtr + _entry.DecompressedBlockOffset, ptr, length, length);
                 }
             }
         }
