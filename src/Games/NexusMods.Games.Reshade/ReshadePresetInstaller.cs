@@ -61,7 +61,7 @@ public class ReshadePresetInstaller : AModInstaller
             {
                 var (path, file) = kv;
                 return file!.ToFromArchive(
-                    new GamePath(GameFolderType.Game, path.FileName)
+                    new GamePath(LocationId.Game, path.FileName)
                 );
             }).ToArray();
 

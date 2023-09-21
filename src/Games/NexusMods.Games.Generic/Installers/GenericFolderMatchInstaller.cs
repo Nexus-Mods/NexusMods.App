@@ -123,7 +123,7 @@ public class GenericFolderMatchInstaller : AModInstaller
                 if (PathIsExcluded(trimmedPath, target))
                     continue;
 
-                var modPath = new GamePath(target.DestinationGamePath.Type,
+                var modPath = new GamePath(target.DestinationGamePath.LocationId,
                     target.DestinationGamePath.Path.Join(trimmedPath));
 
                 modFiles.Add(fileData!.ToFromArchive(modPath));

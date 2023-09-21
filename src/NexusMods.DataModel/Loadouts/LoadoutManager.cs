@@ -192,7 +192,7 @@ public class LoadoutManager
                 Quality = Quality.High,
             };
 
-            foreach (var (type, path) in installation.Locations)
+            foreach (var (type, path) in installation.LocationsRegister.GetTopLevelLocations())
             {
                 if (!path.DirectoryExists()) continue;
                 var download = await _downloadRegistry.RegisterFolder(path, meta, token);

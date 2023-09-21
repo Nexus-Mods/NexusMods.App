@@ -31,7 +31,7 @@ public class StubbedGameInstaller : IModInstaller
             {
                 var (path, file) = kv;
                 return file!.ToFromArchive(
-                    new GamePath(GameFolderType.Game, path)
+                    new GamePath(LocationId.Game, path)
                 );
             });
 

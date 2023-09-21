@@ -195,7 +195,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     /// <param name="expectedPriority"></param>
     /// <param name="files"></param>
     /// <returns></returns>
-    protected Task<IEnumerable<(ulong Hash, GameFolderType FolderType, string Path)>> BuildAndInstall(
+    protected Task<IEnumerable<(ulong Hash, LocationId LocationId, string Path)>> BuildAndInstall(
         params (ulong Hash, string Name)[] files)
     {
         return BuildAndInstall(files.Select(f =>
@@ -216,7 +216,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     /// <param name="expectedPriority"></param>
     /// <param name="files"></param>
     /// <returns></returns>
-    protected Task<IEnumerable<(ulong Hash, GameFolderType FolderType, string Path)>> BuildAndInstall(
+    protected Task<IEnumerable<(ulong Hash, LocationId LocationId, string Path)>> BuildAndInstall(
         params (ulong Hash, string Name, byte[] data)[] files)
     {
         return BuildAndInstall(files.Select(f =>
@@ -237,7 +237,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     /// <param name="expectedPriority"></param>
     /// <param name="files"></param>
     /// <returns></returns>
-    protected Task<IEnumerable<(ulong Hash, GameFolderType FolderType, string Path)>> BuildAndInstall(Priority expectedPriority,
+    protected Task<IEnumerable<(ulong Hash, LocationId LocationId, string Path)>> BuildAndInstall(Priority expectedPriority,
         params (ulong Hash, string Name)[] files)
     {
         return BuildAndInstall(files.Select(f => new ModInstallerExampleFile
@@ -255,8 +255,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
     /// </summary>
     /// <param name="files"></param>
     /// <returns></returns>
-    protected async Task<IEnumerable<(ulong Hash, GameFolderType FolderType, string Path)>>
-        BuildAndInstall(IEnumerable<ModInstallerExampleFile> files)
+    protected async Task<IEnumerable<(ulong Hash, LocationId LocationId, string Path)>> BuildAndInstall(IEnumerable<ModInstallerExampleFile> files)
     {
         ModInstallerResult[] mods;
 
@@ -275,10 +274,10 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
             tree)).ToArray();
 
         if (mods.Length == 0)
-            return Array.Empty<(ulong Hash, GameFolderType FolderType, string Path)>();
+            return Array.Empty<(ulong Hash, LocationId LocationId, string Path)>();
 
         mods.Length.Should().BeGreaterOrEqualTo(1);
         var contents = mods.First().Files;
-        return contents.OfType<FromArchive>().Select(m => (m.Hash.Value, m.To.Type, m.To.Path.ToString()));
+        return contents.OfType<FromArchive>().Select(m => (m.Hash.Value, m.To.LocationId, m.To.Path.ToString()));
     }
 }

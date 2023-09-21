@@ -158,7 +158,7 @@ public class FomodXmlInstaller : AModInstaller
         return new FromArchive
         {
             Id = ModFileId.New(),
-            To = new GamePath(gameTargetPath.Type, gameTargetPath.Path.Join(dest)),
+            To = new GamePath(gameTargetPath.LocationId, gameTargetPath.Path.Join(dest)),
             Hash = file!.Hash,
             Size = file.Size
         };
@@ -173,7 +173,7 @@ public class FomodXmlInstaller : AModInstaller
         return new EmptyDirectory
         {
             Id = ModFileId.New(),
-            Directory = new GamePath(gameTargetPath.Type, gameTargetPath.Path.Join(dest))
+            Directory = new GamePath(gameTargetPath.LocationId, gameTargetPath.Path.Join(dest))
         };
     }
 }

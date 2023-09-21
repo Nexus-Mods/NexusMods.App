@@ -84,25 +84,26 @@ public abstract class AGame : IGame
                 select new GameInstallation
                 {
                     Game = this,
-                    Locations = new Dictionary<GameFolderType, AbsolutePath>(GetLocations(installation.Path.FileSystem,
-                        locator, installation)),
+                    LocationsRegister = new GameLocationsRegister(new Dictionary<LocationId, AbsolutePath>(
+                        GetLocations(installation.Path.FileSystem, installation))),
                     Version = installation.Version ?? GetVersion(installation),
                     Store = installation.Store
                 })
-            .DistinctBy(g => g.Locations[GameFolderType.Game])
+            .DistinctBy(g => g.LocationsRegister[LocationId.Game])
             .ToList();
     }
 
     /// <summary>
     /// Returns the locations of known game elements, such as save folder, etc.
     /// </summary>
+    /// <remarks>
+    /// TODO: (Al12rs) Games can return Locations that point to the same AbsolutePath, a way is needed to decide which to use.
+    /// Current code will use the first declared one but relies on undefined ordering of Dictionary.
+    /// </remarks>
     /// <param name="fileSystem">The file system where the game was found in. This comes from <paramref name="installation"/>.</param>
-    /// <param name="locator">The locator used to find this game installation.</param>
     /// <param name="installation">An installation of the game found by the <paramref name="locator"/>.</param>
     /// <returns></returns>
-    protected abstract IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(
-        IFileSystem fileSystem,
-        IGameLocator locator,
+    protected abstract IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
         GameLocatorResult installation);
 
     /// <inheritdoc />

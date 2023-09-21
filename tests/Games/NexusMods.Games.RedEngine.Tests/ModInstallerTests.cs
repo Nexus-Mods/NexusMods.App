@@ -54,7 +54,7 @@ public class ModInstallerTests : AGameTest<Cyberpunk2077>
                 "bin/x64/plugins/cyber_engine_tweaks/tweakdb/tweakdbstr.kark",
                 "bin/x64/plugins/cyber_engine_tweaks/tweakdb/usedhashes.kark",
                 "bin/x64/version.dll",
-            }.Select(p => new GamePath(GameFolderType.Game, p))
+            }.Select(p => new GamePath(LocationId.Game, p))
         },
         new object[]
         {
@@ -64,7 +64,7 @@ public class ModInstallerTests : AGameTest<Cyberpunk2077>
                 "engine/config/base/scripts.ini",
                 "engine/tools/scc.exe",
                 "r6/config/cybercmd/scc.toml"
-            }.Select(p => new GamePath(GameFolderType.Game, p))
+            }.Select(p => new GamePath(LocationId.Game, p))
         },
         new object[]
         {
@@ -72,7 +72,7 @@ public class ModInstallerTests : AGameTest<Cyberpunk2077>
             Hash.From(0xEE78A096C8565B99), new[]
             {
                 "bin/x64/plugins/cybercmd.asi",
-            }.Select(p => new GamePath(GameFolderType.Game, p))
+            }.Select(p => new GamePath(LocationId.Game, p))
         },
 
         new object[]
@@ -82,7 +82,7 @@ public class ModInstallerTests : AGameTest<Cyberpunk2077>
             {
                 "r6/scripts/ArchiveXL/ArchiveXL.reds",
                 "red4ext/plugins/ArchiveXL/ArchiveXL.dll"
-            }.Select(p => new GamePath(GameFolderType.Game, p))
+            }.Select(p => new GamePath(LocationId.Game, p))
         },
         new object[]
         {
@@ -91,7 +91,7 @@ public class ModInstallerTests : AGameTest<Cyberpunk2077>
             {
                 "r6/scripts/TweakXL/TweakXL.reds",
                 "red4ext/plugins/TweakXL/TweakXL.dll"
-            }.Select(p => new GamePath(GameFolderType.Game, p))
+            }.Select(p => new GamePath(LocationId.Game, p))
         },
         new object[]
         {
@@ -101,7 +101,7 @@ public class ModInstallerTests : AGameTest<Cyberpunk2077>
                 "archive/pc/mod/PanamPrivacy.archive",
                 "archive/pc/mod/PanamRomancedEnhanced.archive",
                 "archive/pc/mod/PanamRomancedEnhancedPrivacy.archive"
-            }.Select(p => new GamePath(GameFolderType.Game, p))
+            }.Select(p => new GamePath(LocationId.Game, p))
         },
         new object[]
         {
@@ -110,7 +110,7 @@ public class ModInstallerTests : AGameTest<Cyberpunk2077>
             {
                 "mods/PanamRomancedEnhanced/archives/PanamRomancedEnhanced.archive",
                 "mods/PanamRomancedEnhanced/info.json",
-            }.Select(p => new GamePath(GameFolderType.Game, p))
+            }.Select(p => new GamePath(LocationId.Game, p))
         },
         new object[]
         {
@@ -123,7 +123,7 @@ public class ModInstallerTests : AGameTest<Cyberpunk2077>
                 "archive/pc/mod/WINGDEER_FemV_HAIR_TARNISHED4_no1.archive",
                 "archive/pc/mod/WINGDEER_FemV_HAIR_TARNISHED5_no1.archive",
                 "archive/pc/mod/WINGDEER_FemV_HAIR_TARNISHED6_no1.archive"
-            }.Select(p => new GamePath(GameFolderType.Game, p))
+            }.Select(p => new GamePath(LocationId.Game, p))
         },
         new object[]
         {
@@ -132,7 +132,7 @@ public class ModInstallerTests : AGameTest<Cyberpunk2077>
             {
                 "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/female/SPICY VALENTINA.preset",
                 "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/male/SPICY VALENTINA.preset"
-            }.Select(p => new GamePath(GameFolderType.Game, p))
+            }.Select(p => new GamePath(LocationId.Game, p))
         },
         new object[]
         {
@@ -141,7 +141,7 @@ public class ModInstallerTests : AGameTest<Cyberpunk2077>
             {
                 "mods/OVE3RCHROME - Default EACO Diverse Weather/archives/OVE3RCHROME - Default EACO Diverse Weather.archive",
                 "mods/OVE3RCHROME - Default EACO Diverse Weather/info.json"
-            }.Select(p => new GamePath(GameFolderType.Game, p))
+            }.Select(p => new GamePath(LocationId.Game, p))
         },
         new object[]
         {
@@ -163,7 +163,7 @@ public class ModInstallerTests : AGameTest<Cyberpunk2077>
                 "archive/pc/mod/WINGDEER_FemV_bunwStrands_no37.archive",
                 "archive/pc/mod/WINGDEER_FemV_bunwStrands_NOchopstick_no37.archive",
                 "archive/pc/mod/WINGDEER_FemV_ChopsticBun_no28.archive"
-            }.Select(p => new GamePath(GameFolderType.Game, p))
+            }.Select(p => new GamePath(LocationId.Game, p))
         },
         new object[]
         {
@@ -613,7 +613,7 @@ public class ModInstallerTests : AGameTest<Cyberpunk2077>
                 "bin/x64/plugins/cyber_engine_tweaks/mods/cyberscript/user/sessions/placeholder",
                 "bin/x64/plugins/cyber_engine_tweaks/mods/cyberscript/user/settings/placeholder",
                 "bin/x64/plugins/cyber_engine_tweaks/mods/zzzzzz_cyberscript_amm_compatibility/init.lua"
-            }.Select(p => new GamePath(GameFolderType.Game, p))
+            }.Select(p => new GamePath(LocationId.Game, p))
         },
         new object[]
         {
@@ -649,7 +649,7 @@ public class ModInstallerTests : AGameTest<Cyberpunk2077>
                 "bin/x64/plugins/cyber_engine_tweaks/mods/radioExt/radios/Een Glish/Thrill.mp3",
                 "bin/x64/plugins/cyber_engine_tweaks/mods/radioExt/radios/Een Glish/Timmy Turner, Pt. 2.mp3",
                 "bin/x64/plugins/cyber_engine_tweaks/mods/radioExt/radios/Een Glish/Unprepared.mp3",
-            }.Select(p => new GamePath(GameFolderType.Game, p))
+            }.Select(p => new GamePath(LocationId.Game, p))
         }
     };
 }

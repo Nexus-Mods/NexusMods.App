@@ -26,7 +26,7 @@ public class MakeIngestPlanTests : ALoadoutSynrchonizerTest<MakeIngestPlanTests>
         var loadout = await CreateApplyPlanTestLoadout();
         var firstModId = loadout.Mods.Values.First().Id;
 
-        var absPath = loadout.Installation.Locations[GameFolderType.Game].Combine("0x00001.extra_file");
+        var absPath = loadout.Installation.LocationsRegister[LocationId.Game].Combine("0x00001.extra_file");
 
         TestIndexer.Entries.Add(new HashedEntry(absPath, Hash.From(0x4242), DateTime.Now - TimeSpan.FromMinutes(20), Size.From(10)));
 
@@ -57,7 +57,7 @@ public class MakeIngestPlanTests : ALoadoutSynrchonizerTest<MakeIngestPlanTests>
         var loadout = await CreateApplyPlanTestLoadout();
         var firstModId = loadout.Mods.Values.First().Id;
 
-        var absPath = loadout.Installation.Locations[GameFolderType.Game].Combine("0x00001.extra_file");
+        var absPath = loadout.Installation.LocationsRegister[LocationId.Game].Combine("0x00001.extra_file");
 
         TestIndexer.Entries.Add(new HashedEntry(absPath, Hash.From(0x4242), DateTime.Now - TimeSpan.FromMinutes(20), Size.From(10)));
         TestArchiveManagerInstance.Archives.Add(Hash.From(0x4242));
@@ -86,7 +86,7 @@ public class MakeIngestPlanTests : ALoadoutSynrchonizerTest<MakeIngestPlanTests>
     {
         var loadout = await CreateApplyPlanTestLoadout();
 
-        var absPath = loadout.Installation.Locations[GameFolderType.Game].Combine("0x00001.dat");
+        var absPath = loadout.Installation.LocationsRegister[LocationId.Game].Combine("0x00001.dat");
 
         var fileOne = (from mod in loadout.Mods
             where mod.Value.Enabled == true
@@ -123,7 +123,7 @@ public class MakeIngestPlanTests : ALoadoutSynrchonizerTest<MakeIngestPlanTests>
     {
         var loadout = await CreateApplyPlanTestLoadout();
 
-        var absPath = loadout.Installation.Locations[GameFolderType.Game].Combine("0x00001.dat");
+        var absPath = loadout.Installation.LocationsRegister[LocationId.Game].Combine("0x00001.dat");
 
         var plan = await TestSyncronizer.MakeIngestPlan(loadout, _nullFunc);
 

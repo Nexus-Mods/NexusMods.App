@@ -17,10 +17,10 @@ public class GamePathTests
     [Fact]
     public void CanComparePaths()
     {
-        var pathA = new GamePath(GameFolderType.Game, "foo/bar.zip");
-        var pathB = new GamePath(GameFolderType.Game, "Foo/bar.zip");
-        var pathC = new GamePath(GameFolderType.Preferences, "foo/bar.zip");
-        var pathD = new GamePath(GameFolderType.Game, "foo/bar.pex");
+        var pathA = new GamePath(LocationId.Game, "foo/bar.zip");
+        var pathB = new GamePath(LocationId.Game, "Foo/bar.zip");
+        var pathC = new GamePath(LocationId.Preferences, "foo/bar.zip");
+        var pathD = new GamePath(LocationId.Game, "foo/bar.pex");
 
         Assert.Equal(pathA, pathB);
         Assert.NotEqual(pathA, pathC);
@@ -34,7 +34,7 @@ public class GamePathTests
     [Fact]
     public void CanTreatLikeIPath()
     {
-        var pathA = new GamePath(GameFolderType.Game, "foo/bar.zip");
+        var pathA = new GamePath(LocationId.Game, "foo/bar.zip");
         var ipath = (IPath)pathA;
 
         Assert.Equal(KnownExtensions.Zip, ipath.Extension);
@@ -44,8 +44,8 @@ public class GamePathTests
     [Fact]
     public void CanGetHashCode()
     {
-        var pathA = new GamePath(GameFolderType.Game, "foo/bar.zip");
-        var pathB = new GamePath(GameFolderType.Game, "foo/ba.zip");
+        var pathA = new GamePath(LocationId.Game, "foo/bar.zip");
+        var pathB = new GamePath(LocationId.Game, "foo/ba.zip");
 
         Assert.Equal(pathA.GetHashCode(), pathA.GetHashCode());
         Assert.NotEqual(pathA.GetHashCode(), pathB.GetHashCode());
@@ -54,8 +54,8 @@ public class GamePathTests
     [Fact]
     public void CanConvertToString()
     {
-        var pathA = new GamePath(GameFolderType.Game, "foo/bar.zip");
-        var pathB = new GamePath(GameFolderType.Saves, "foo/ba.zip");
+        var pathA = new GamePath(LocationId.Game, "foo/bar.zip");
+        var pathB = new GamePath(LocationId.Saves, "foo/ba.zip");
         Assert.Equal("{Game}/foo/bar.zip", pathA.ToString());
         Assert.Equal("{Saves}/foo/ba.zip", pathB.ToString());
     }
@@ -64,139 +64,139 @@ public class GamePathTests
     public void CanGetPathRelativeTo()
     {
         var baseFolder = _fileSystem.GetKnownPath(KnownPath.CurrentDirectory);
-        var pathA = new GamePath(GameFolderType.Game, "foo/bar");
+        var pathA = new GamePath(LocationId.Game, "foo/bar");
         Assert.Equal(baseFolder.Combine("foo/bar"), pathA.Combine(baseFolder));
     }
 
     [Theory]
-    [InlineData(GameFolderType.Game, "", "")]
-    [InlineData(GameFolderType.Game, "foo", "foo")]
-    [InlineData(GameFolderType.Game, "foo/bar", "bar")]
-    public void Test_Name(GameFolderType folderType, string input, string expected)
+    [InlineData("Game", "", "")]
+    [InlineData("Game", "foo", "foo")]
+    [InlineData("Game", "foo/bar", "bar")]
+    public void Test_Name(string locationId, string input, string expected)
     {
-        var path = new GamePath(folderType, (RelativePath)input);
+        var path = new GamePath(LocationId.From(locationId), (RelativePath)input);
         path.Name.Should().Be(expected);
     }
 
 
     [Theory]
-    [InlineData(GameFolderType.Game, "", "")]
-    [InlineData(GameFolderType.Game, "foo", "")]
-    [InlineData(GameFolderType.Game, "foo/bar", "foo")]
-    [InlineData(GameFolderType.Game, "foo/bar/baz", "foo/bar")]
-    public void Test_Parent(GameFolderType folderType, string input, string expectedParent)
+    [InlineData("Game", "", "")]
+    [InlineData("Game", "foo", "")]
+    [InlineData("Game", "foo/bar", "foo")]
+    [InlineData("Game", "foo/bar/baz", "foo/bar")]
+    public void Test_Parent(string locationId, string input, string expectedParent)
     {
-        var path = new GamePath(folderType, (RelativePath)input);
-        path.Parent.Should().Be(new GamePath(folderType, (RelativePath)expectedParent));
+        var path = new GamePath(LocationId.From(locationId), (RelativePath)input);
+        path.Parent.Should().Be(new GamePath(LocationId.From(locationId), (RelativePath)expectedParent));
     }
 
     [Theory]
-    [InlineData(GameFolderType.Game, "", "")]
-    [InlineData(GameFolderType.Game, "foo", "")]
-    [InlineData(GameFolderType.AppData, "foo/bar", "")]
-    [InlineData(GameFolderType.Saves, "foo/bar/baz", "")]
-    public void Test_GetRootComponent(GameFolderType folderType, string input, string expectedRootComponent)
+    [InlineData("Game", "", "")]
+    [InlineData("Game", "foo", "")]
+    [InlineData("Preferences", "foo/bar", "")]
+    [InlineData("Saves", "foo/bar/baz", "")]
+    public void Test_GetRootComponent(string locationId, string input, string expectedRootComponent)
     {
-        var path = new GamePath(folderType, (RelativePath)input);
-        path.GetRootComponent.Should().Be(new GamePath(folderType, (RelativePath)expectedRootComponent));
+        var path = new GamePath(LocationId.From(locationId), (RelativePath)input);
+        path.GetRootComponent.Should().Be(new GamePath(LocationId.From(locationId), (RelativePath)expectedRootComponent));
     }
 
     [Theory]
-    [InlineData(GameFolderType.Game, "", new string[] { })]
-    [InlineData(GameFolderType.Game, "foo", new string[] { "foo" })]
-    [InlineData(GameFolderType.Game, "foo/bar", new string[] { "foo", "bar" })]
-    [InlineData(GameFolderType.Saves, "foo/bar/baz", new string[] { "foo", "bar", "baz" })]
-    public void Test_Parts(GameFolderType folderType, string input, string[] expectedParts)
+    [InlineData("Game", "", new string[] { })]
+    [InlineData("Game", "foo", new string[] { "foo" })]
+    [InlineData("Game", "foo/bar", new string[] { "foo", "bar" })]
+    [InlineData("Saves", "foo/bar/baz", new string[] { "foo", "bar", "baz" })]
+    public void Test_Parts(string locationId, string input, string[] expectedParts)
     {
-        var path = new GamePath(folderType, (RelativePath)input);
+        var path = new GamePath(LocationId.From(locationId), (RelativePath)input);
         path.Parts.Should().BeEquivalentTo(expectedParts.Select(x => new RelativePath(x)));
     }
 
     [Theory]
-    [InlineData(GameFolderType.Game, "", new string[] { ""})]
-    [InlineData(GameFolderType.Game, "foo", new string[] { "foo", "" })]
-    [InlineData(GameFolderType.Saves, "foo/bar", new string[] { "foo/bar", "foo", "" })]
-    [InlineData(GameFolderType.Game, "foo/bar/baz", new string[] { "foo/bar/baz", "foo/bar", "foo", "" })]
-    public void Test_GetAllParents(GameFolderType folderType, string input, string[] expectedParts)
+    [InlineData("Game", "", new string[] { ""})]
+    [InlineData("Game", "foo", new string[] { "foo", "" })]
+    [InlineData("Saves", "foo/bar", new string[] { "foo/bar", "foo", "" })]
+    [InlineData("Game", "foo/bar/baz", new string[] { "foo/bar/baz", "foo/bar", "foo", "" })]
+    public void Test_GetAllParents(string locationId, string input, string[] expectedParts)
     {
-        var path = new GamePath(folderType, (RelativePath)input);
+        var path = new GamePath(LocationId.From(locationId), (RelativePath)input);
         path.GetAllParents().Should()
-            .BeEquivalentTo(expectedParts.Select(x => new GamePath(folderType, (RelativePath)x)));
+            .BeEquivalentTo(expectedParts.Select(x => new GamePath(LocationId.From(locationId), (RelativePath)x)));
     }
 
     [Theory]
-    [InlineData(GameFolderType.Game, "", "")]
-    [InlineData(GameFolderType.Game, "foo", "foo")]
-    [InlineData(GameFolderType.AppData, "foo/bar", "foo/bar")]
-    [InlineData(GameFolderType.Saves, "foo/bar/baz", "foo/bar/baz")]
-    public void Test_GetNonRootPart(GameFolderType folderType, string input, string expected)
+    [InlineData("Game", "", "")]
+    [InlineData("Game", "foo", "foo")]
+    [InlineData("Preferences", "foo/bar", "foo/bar")]
+    [InlineData("Saves", "foo/bar/baz", "foo/bar/baz")]
+    public void Test_GetNonRootPart(string locationId, string input, string expected)
     {
-        var path = new GamePath(folderType, (RelativePath)input);
+        var path = new GamePath(LocationId.From(locationId), (RelativePath)input);
         path.GetNonRootPart().Should().Be((RelativePath)expected);
     }
 
     [Theory]
-    [InlineData(GameFolderType.Game, "", true)]
-    [InlineData(GameFolderType.Saves, "foo", true)]
-    [InlineData(GameFolderType.AppData, "foo/bar", true)]
-    public void Test_IsRooted(GameFolderType folderType, string input, bool expected)
+    [InlineData("Game", "", true)]
+    [InlineData("Saves", "foo", true)]
+    [InlineData("Preferences", "foo/bar", true)]
+    public void Test_IsRooted(string locationId, string input, bool expected)
     {
-        var path = new GamePath(folderType, (RelativePath)input);
+        var path = new GamePath(LocationId.From(locationId), (RelativePath)input);
         path.IsRooted.Should().Be(expected);
     }
 
     [Theory]
-    [InlineData(GameFolderType.Game, "foo", GameFolderType.Game, "bar", false)]
-    [InlineData(GameFolderType.Game, "foo/bar", GameFolderType.Game, "foo", true)]
-    [InlineData(GameFolderType.Game, "foo/bar/baz", GameFolderType.Game, "foo/bar", true)]
-    [InlineData(GameFolderType.Game, "foo", GameFolderType.Saves, "bar", false)]
-    [InlineData(GameFolderType.Saves, "foo/bar", GameFolderType.Game, "foo", false)]
-    [InlineData(GameFolderType.Game, "foo/bar/baz", GameFolderType.AppData, "foo/bar", false)]
-    public void Test_InFolder(GameFolderType folderTypeLeft, string left, GameFolderType folderTypeRight, string right,
+    [InlineData("Game", "foo", "Game", "bar", false)]
+    [InlineData("Game", "foo/bar", "Game", "foo", true)]
+    [InlineData("Game", "foo/bar/baz", "Game", "foo/bar", true)]
+    [InlineData("Game", "foo", "Saves", "bar", false)]
+    [InlineData("Saves", "foo/bar", "Game", "foo", false)]
+    [InlineData("Game", "foo/bar/baz", "Preferences", "foo/bar", false)]
+    public void Test_InFolder(string locationIdLeft, string left, string locationIdRight, string right,
         bool expected)
     {
-        var leftPath = new GamePath(folderTypeLeft, (RelativePath)left);
-        var rightPath = new GamePath(folderTypeRight, (RelativePath)right);
+        var leftPath = new GamePath(LocationId.From(locationIdLeft), (RelativePath)left);
+        var rightPath = new GamePath(LocationId.From(locationIdRight), (RelativePath)right);
         var actual = leftPath.InFolder(rightPath);
         actual.Should().Be(expected);
     }
 
     [Theory]
-    [InlineData(GameFolderType.Game,"",GameFolderType.Game, "", true)]
-    [InlineData(GameFolderType.Game,"",GameFolderType.Game, "foo", false)]
-    [InlineData(GameFolderType.Game,"foo",GameFolderType.Game, "bar", false)]
-    [InlineData(GameFolderType.Game,"foo",GameFolderType.Game, "", true)]
-    [InlineData(GameFolderType.Game,"foo/bar/baz",GameFolderType.Game, "", true)]
-    [InlineData(GameFolderType.Game,"foo/bar/baz",GameFolderType.Game, "foo", true)]
-    [InlineData(GameFolderType.Game,"foo/bar/baz",GameFolderType.Game, "foo/bar", true)]
-    [InlineData(GameFolderType.Game,"foobar",GameFolderType.Game, "foo", false)]
-    [InlineData(GameFolderType.Game,"foo/bar/baz",GameFolderType.Game, "foo/baz", false)]
-    [InlineData(GameFolderType.Game,"",GameFolderType.AppData, "", false)]
-    [InlineData(GameFolderType.Game,"foo/bar/baz",GameFolderType.AppData, "", false)]
-    [InlineData(GameFolderType.Game,"foo/bar/baz",GameFolderType.AppData, "foo", false)]
-    [InlineData(GameFolderType.Game,"foo/bar/baz",GameFolderType.AppData, "foo/bar", false)]
-    [InlineData(GameFolderType.Game,"foo",GameFolderType.AppData, "", false)]
-    public void Test_StartsWithGamePath(GameFolderType folderTypeChild, string child,GameFolderType folderTypeParent, string parent, bool expected)
+    [InlineData("Game","","Game", "", true)]
+    [InlineData("Game","","Game", "foo", false)]
+    [InlineData("Game","foo","Game", "bar", false)]
+    [InlineData("Game","foo","Game", "", true)]
+    [InlineData("Game","foo/bar/baz","Game", "", true)]
+    [InlineData("Game","foo/bar/baz","Game", "foo", true)]
+    [InlineData("Game","foo/bar/baz","Game", "foo/bar", true)]
+    [InlineData("Game","foobar","Game", "foo", false)]
+    [InlineData("Game","foo/bar/baz","Game", "foo/baz", false)]
+    [InlineData("Game","","Preferences", "", false)]
+    [InlineData("Game","foo/bar/baz","Preferences", "", false)]
+    [InlineData("Game","foo/bar/baz","Preferences", "foo", false)]
+    [InlineData("Game","foo/bar/baz","Preferences", "foo/bar", false)]
+    [InlineData("Game","foo","Preferences", "", false)]
+    public void Test_StartsWithGamePath(string locationIdChild, string child,string locationIdParent, string parent, bool expected)
     {
-        var childPath = new GamePath(folderTypeChild, (RelativePath)child);
-        var parentPath = new GamePath(folderTypeParent, (RelativePath)parent);
+        var childPath = new GamePath(LocationId.From(locationIdChild), (RelativePath)child);
+        var parentPath = new GamePath(LocationId.From(locationIdParent), (RelativePath)parent);
         var actual = childPath.StartsWith(parentPath);
         actual.Should().Be(expected);
     }
 
     [Theory]
-    [InlineData(GameFolderType.Game,"", "", true)]
-    [InlineData(GameFolderType.Game,"", "foo", false)]
-    [InlineData(GameFolderType.Game,"foo", "bar", false)]
-    [InlineData(GameFolderType.Game,"foo", "", true)]
-    [InlineData(GameFolderType.Game,"foo/bar/baz", "", true)]
-    [InlineData(GameFolderType.Game,"foo/bar/baz", "bar/baz", true)]
-    [InlineData(GameFolderType.Game,"foo/bar/baz", "foo/bar/baz", true)]
-    [InlineData(GameFolderType.Game,"foobar", "bar", false)]
-    [InlineData(GameFolderType.Game,"foo/bar/baz", "foo/baz", false)]
-    public void Test_EndsWithRelative(GameFolderType folderType,string child, string parent, bool expected)
+    [InlineData("Game","", "", true)]
+    [InlineData("Game","", "foo", false)]
+    [InlineData("Game","foo", "bar", false)]
+    [InlineData("Game","foo", "", true)]
+    [InlineData("Game","foo/bar/baz", "", true)]
+    [InlineData("Game","foo/bar/baz", "bar/baz", true)]
+    [InlineData("Game","foo/bar/baz", "foo/bar/baz", true)]
+    [InlineData("Game","foobar", "bar", false)]
+    [InlineData("Game","foo/bar/baz", "foo/baz", false)]
+    public void Test_EndsWithRelative(string locationId,string child, string parent, bool expected)
     {
-        var childPath = new GamePath(folderType, (RelativePath)child);
+        var childPath = new GamePath(LocationId.From(locationId), (RelativePath)child);
         var parentPath = (RelativePath)parent;
         var actual = childPath.EndsWith(parentPath);
         actual.Should().Be(expected);

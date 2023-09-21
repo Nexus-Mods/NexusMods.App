@@ -38,7 +38,7 @@ public class AppearancePreset : AModInstaller
             {
                 var (path, file) = kv;
                 return Paths.Select(relPath => file!.ToFromArchive(
-                    new GamePath(GameFolderType.Game, relPath.Join(path))
+                    new GamePath(LocationId.Game, relPath.Join(path))
                 ));
             }).ToArray();
 

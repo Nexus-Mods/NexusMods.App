@@ -37,7 +37,7 @@ public class FomodXmlInstallerTests : AModInstallerTest<SkyrimSpecialEdition, Fo
             OriginalName = fullPath.FileName,
             Quality = Quality.Low});
         var analysis = await DownloadRegistry.Get(downloadId);
-        var installer = FomodXmlInstaller.Create(ServiceProvider, new GamePath(GameFolderType.Game, ""));
+        var installer = FomodXmlInstaller.Create(ServiceProvider, new GamePath(LocationId.Game, ""));
         var tree =
             FileTreeNode<RelativePath, ModSourceFileEntry>.CreateTree(analysis.Contents
             .Select(f => KeyValuePair.Create(

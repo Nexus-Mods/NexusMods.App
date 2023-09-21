@@ -11,7 +11,7 @@ namespace NexusMods.Games.RedEngine;
 
 public class RedModDeployTool : ITool
 {
-    private static readonly GamePath RedModPath = new(GameFolderType.Game, "tools/redmod/bin/redmod.exe");
+    private static readonly GamePath RedModPath = new(LocationId.Game, "tools/redmod/bin/redmod.exe");
 
     private readonly ILogger<RedModDeployTool> _logger;
 
@@ -32,7 +32,7 @@ public class RedModDeployTool : ITool
         _logger.LogInformation("Running {Program}", exe);
         var result = await Cli.Wrap(exe.ToString())
             .WithArguments("deploy")
-            .WithWorkingDirectory(loadout.Installation.Locations[GameFolderType.Game].ToString())
+            .WithWorkingDirectory(loadout.Installation.LocationsRegister[LocationId.Game].ToString())
             .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer))
             .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
             .ExecuteAsync();

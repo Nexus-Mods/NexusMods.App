@@ -58,7 +58,7 @@ public class SimpleOverlayModInstaller : IModInstaller
                     Id = ModFileId.New(),
                     Hash = fileInfo!.Hash,
                     Size = fileInfo.Size,
-                    To = new GamePath(GameFolderType.Game, relativePath)
+                    To = new GamePath(LocationId.Game, relativePath)
                 });
             }
         }
