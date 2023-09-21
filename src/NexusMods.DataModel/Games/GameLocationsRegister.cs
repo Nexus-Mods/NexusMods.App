@@ -125,7 +125,7 @@ public class GameLocationsRegister
     /// <returns></returns>
     public AbsolutePath GetResolvedPath(GamePath path)
     {
-        return _locations[path.Type].ResolvedPath.Combine(path.Path);
+        return _locations[path.LocationId].ResolvedPath.Combine(path.Path);
     }
 
     /// <summary>

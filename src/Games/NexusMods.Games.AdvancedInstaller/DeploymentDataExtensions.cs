@@ -32,7 +32,7 @@ public static class DeploymentDataExtensions
         foreach (var child in folderNode.GetAllDescendentFiles())
         {
             var childPath = child.Path.Path.Substring(substringLength);
-            var newPath = new GamePath(outputFolder.Type, outputFolder.Path.Join(childPath));
+            var newPath = new GamePath(outputFolder.LocationId, outputFolder.Path.Join(childPath));
             data.AddMapping(child.Path, newPath);
         }
     }

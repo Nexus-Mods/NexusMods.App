@@ -26,7 +26,7 @@ public class GamePathConverter : JsonConverter<GamePath>
     public override void Write(Utf8JsonWriter writer, GamePath value, JsonSerializerOptions options)
     {
         writer.WriteStartArray();
-        writer.WriteStringValue(value.Type.Value);
+        writer.WriteStringValue(value.LocationId.Value);
         writer.WriteStringValue(value.Path.ToString());
         writer.WriteEndArray();
     }
