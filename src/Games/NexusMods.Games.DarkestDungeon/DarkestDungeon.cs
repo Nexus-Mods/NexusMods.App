@@ -61,11 +61,8 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame, IEpicGame
         };
 
         if (installation.Metadata is SteamLocatorResultMetadata { CloudSavesDirectory: not null } steamLocatorResultMetadata)
-            result[GameFolderType.Saves] = steamLocatorResultMetadata.CloudSavesDirectory.Value;
-
-        if (installation.Store == GameStore.Steam)
         {
-            // TODO: Steam Cloud Saves
+            result[GameFolderType.Saves] = steamLocatorResultMetadata.CloudSavesDirectory.Value;
         }
         else
         {
