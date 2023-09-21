@@ -30,23 +30,24 @@ public class GameLocationsRegister
     {
         foreach (var (newId, newPath) in newLocations)
         {
-            var newLocation = new GameLocationDescriptor { Id = newId, ResolvedPath = newPath };
+            var newLocation = new GameLocationDescriptor(newId, newPath);
 
-            foreach (var existingLocation in _locations.Values)
+            foreach (var existingId in _locations.Keys)
             {
-                if (existingLocation.ResolvedPath.GetFullPathLength() < newPath.GetFullPathLength())
+                if (this[existingId].GetFullPathLength() < newPath.GetFullPathLength())
                 {
-                    if (!newPath.InFolder(existingLocation.ResolvedPath)) continue;
+                    if (!newPath.InFolder(this[existingId])) continue;
 
-                    existingLocation.AddNestedLocation(newLocation);
-                    newLocation.SetTopLevelParent(ComputeTopLevelParent(newLocation, existingLocation));
+                    _locations[existingId].AddNestedLocation(newLocation);
+                    newLocation.SetTopLevelParent(ComputeTopLevelParent(newLocation, _locations[existingId]));
                 }
                 else
                 {
-                    if (!existingLocation.ResolvedPath.InFolder(newPath)) continue;
+                    if (!this[existingId].InFolder(newPath)) continue;
 
-                    newLocation.AddNestedLocation(existingLocation);
-                    existingLocation.SetTopLevelParent(ComputeTopLevelParent(existingLocation, newLocation));
+                    newLocation.AddNestedLocation(_locations[existingId]);
+                    _locations[existingId]
+                        .SetTopLevelParent(ComputeTopLevelParent(_locations[existingId], newLocation));
                 }
             }
 
