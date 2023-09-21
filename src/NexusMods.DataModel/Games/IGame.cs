@@ -1,5 +1,6 @@
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.ModInstallers;
 
@@ -59,4 +60,13 @@ public interface IGame
     /// will be tested against a mod's files in the order they are returned by this property.
     /// </summary>
     public IEnumerable<IModInstaller> Installers { get; }
+
+    /// <summary>
+    /// Provides a listing of folders user mods may be manually installed to when using human assisted installers
+    /// such as the Advanced Installer.
+    /// </summary>
+    /// <remarks>
+    ///     This is a flattened list.
+    /// </remarks>
+    public List<IModInstallDestination> InstallDestinations { get; }
 }

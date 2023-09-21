@@ -1,4 +1,6 @@
-﻿using NexusMods.DataModel.Games;
+﻿using NexusMods.DataModel.Extensions;
+using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.Generic.Installers;
@@ -29,4 +31,15 @@ public abstract class ABethesdaGame : AGame
 
     /// <inheritdoc />
     public override IEnumerable<IModInstaller> Installers => _installers;
+
+    // Note: Not cached because it's not used often
+    public override List<IModInstallDestination> InstallDestinations => GetInstallDestinations();
+
+    private List<IModInstallDestination> GetInstallDestinations()
+    {
+        var result = new List<IModInstallDestination>();
+        ModInstallDestinationHelpers.AddInstallFolderTargets(BethesdaInstallFolderTargets.InstallFolderTargets(), result);
+        ModInstallDestinationHelpers.AddCommonLocations(GetLocations(), result);
+        return result;
+    }
 }

@@ -1,5 +1,6 @@
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Paths;
@@ -53,6 +54,9 @@ public abstract class AGame : IGame
 
     /// <inheritdoc />
     public virtual IEnumerable<IModInstaller> Installers { get; } = Array.Empty<IModInstaller>();
+
+    /// <inheritdoc />
+    public virtual List<IModInstallDestination> InstallDestinations { get; } = new List<IModInstallDestination>();
 
     private Version GetVersion(GameLocatorResult installation)
     {
