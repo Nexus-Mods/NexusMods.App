@@ -49,7 +49,6 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
     }
 
     protected override IReadOnlyDictionary<GameFolderType, AbsolutePath> GetLocations(IFileSystem fileSystem,
-        IGameLocator locator,
         GameLocatorResult installation)
     {
         // global data files (https://github.com/Pathoschild/SMAPI/blob/8d600e226960a81636137d9bf286c69ab39066ed/src/SMAPI/Framework/ModHelpers/DataHelper.cs#L163-L169)

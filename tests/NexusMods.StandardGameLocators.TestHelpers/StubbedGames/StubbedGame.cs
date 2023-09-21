@@ -73,7 +73,7 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
 
     public override IStreamFactory GameImage => throw new NotImplementedException("No game image for stubbed game.");
     protected override IReadOnlyDictionary<GameFolderType, AbsolutePath> GetLocations(IFileSystem fileSystem,
-        IGameLocator locator, GameLocatorResult installation)
+        GameLocatorResult installation)
     {
         return new Dictionary<GameFolderType, AbsolutePath>()
             {

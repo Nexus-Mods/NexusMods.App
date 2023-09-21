@@ -16,7 +16,6 @@ public class SkyrimLegendaryEdition : ABethesdaGame, ISteamGame
     public override GamePath GetPrimaryFile(GameStore store) => new(GameFolderType.Game, "TESV.exe");
 
     protected override IReadOnlyDictionary<GameFolderType, AbsolutePath> GetLocations(IFileSystem fileSystem,
-        IGameLocator locator,
         GameLocatorResult installation)
     {
         return new Dictionary<GameFolderType, AbsolutePath>

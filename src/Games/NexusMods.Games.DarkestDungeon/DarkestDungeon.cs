@@ -47,7 +47,6 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame, IEpicGame
     }
 
     protected override IReadOnlyDictionary<GameFolderType, AbsolutePath> GetLocations(IFileSystem fileSystem,
-        IGameLocator locator,
         GameLocatorResult installation)
     {
         var globalSettingsFile = fileSystem

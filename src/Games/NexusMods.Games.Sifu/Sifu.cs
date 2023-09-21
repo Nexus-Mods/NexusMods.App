@@ -24,7 +24,6 @@ public class Sifu : AGame, ISteamGame, IEpicGame
     }
 
     protected override IReadOnlyDictionary<GameFolderType, AbsolutePath> GetLocations(IFileSystem fileSystem,
-        IGameLocator locator,
         GameLocatorResult installation)
     {
         return new Dictionary<GameFolderType, AbsolutePath>()
