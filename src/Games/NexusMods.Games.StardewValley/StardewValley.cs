@@ -41,14 +41,14 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
             state: ref store,
             onWindows: (ref GameStore gameStore) =>
                 gameStore == GameStore.XboxGamePass
-                    ? new GamePath(GameFolderType.Game, "Stardew Valley.exe")
-                    : new GamePath(GameFolderType.Game, "StardewModdingAPI.exe"),
-            onLinux: (ref GameStore _) => new GamePath(GameFolderType.Game, "StardewValley"),
-            onOSX: (ref GameStore _) => new GamePath(GameFolderType.Game, "Contents/MacOS/StardewValley")
+                    ? new GamePath(LocationId.Game, "Stardew Valley.exe")
+                    : new GamePath(LocationId.Game, "StardewModdingAPI.exe"),
+            onLinux: (ref GameStore _) => new GamePath(LocationId.Game, "StardewValley"),
+            onOSX: (ref GameStore _) => new GamePath(LocationId.Game, "Contents/MacOS/StardewValley")
         );
     }
 
-    protected override IReadOnlyDictionary<GameFolderType, AbsolutePath> GetLocations(IFileSystem fileSystem,
+    protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
         GameLocatorResult installation)
     {
         // global data files (https://github.com/Pathoschild/SMAPI/blob/8d600e226960a81636137d9bf286c69ab39066ed/src/SMAPI/Framework/ModHelpers/DataHelper.cs#L163-L169)
@@ -56,14 +56,14 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
             .GetKnownPath(KnownPath.ApplicationDataDirectory)
             .Combine("StardewValley");
 
-        var result = new Dictionary<GameFolderType, AbsolutePath>()
+        var result = new Dictionary<LocationId, AbsolutePath>()
         {
             {
-                GameFolderType.Game,
+                LocationId.Game,
                 installation.Store == GameStore.XboxGamePass ? installation.Path.Combine("Content") : installation.Path
             },
-            { GameFolderType.AppData, stardewValleyAppDataPath.Combine(".smapi") },
-            { GameFolderType.Saves, stardewValleyAppDataPath.Combine("Saves") },
+            { LocationId.AppData, stardewValleyAppDataPath.Combine(".smapi") },
+            { LocationId.Saves, stardewValleyAppDataPath.Combine("Saves") },
         };
         return result;
     }

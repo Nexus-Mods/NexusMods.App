@@ -18,7 +18,7 @@ public class ToolTests : ADataModelTest<ToolTests>
         var name = Guid.NewGuid().ToString();
         var loadout = await LoadoutManager.ManageGameAsync(Install, name);
         await AddMods(loadout, Data7ZLzma2, "Mod1");
-        var gameFolder = loadout.Value.Installation.LocationsRegister[GameFolderType.Game];
+        var gameFolder = loadout.Value.Installation.LocationsRegister[LocationId.Game];
 
         gameFolder.Combine("files.txt").FileExists.Should().BeFalse("tool should not have run yet");
         gameFolder.Combine("rootFile.txt").FileExists.Should().BeFalse("loadout has not yet been applied");

@@ -36,7 +36,7 @@ public class UnknownGame : IGame
         new GameInstallation
         {
             Game = this,
-            LocationsRegister = new GameLocationsRegister(new Dictionary<GameFolderType, AbsolutePath>()),
+            LocationsRegister = new GameLocationsRegister(new Dictionary<LocationId, AbsolutePath>()),
             Version = _version
         }
     };

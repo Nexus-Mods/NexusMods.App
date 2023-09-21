@@ -15,7 +15,7 @@ public class GamePathConverter : JsonConverter<GamePath>
             throw new JsonException("While reading Game Path expected object start");
 
         reader.Read();
-        var folder = GameFolderType.From(reader.GetString());
+        var folder = LocationId.From(reader.GetString());
         reader.Read();
         var path = reader.GetString()!.ToRelativePath();
         reader.Read();

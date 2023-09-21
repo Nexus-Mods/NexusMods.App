@@ -29,7 +29,7 @@ public class MakeApplyPlanTests : ALoadoutSynrchonizerTest<MakeApplyPlanTests>
 
         plan.Steps.Should().ContainEquivalentOf(new ExtractFile
         {
-            To = loadout.Installation.LocationsRegister[GameFolderType.Game].Combine("0x00001.dat"),
+            To = loadout.Installation.LocationsRegister[LocationId.Game].Combine("0x00001.dat"),
             Hash = fileOne.Hash,
             Size = fileOne.Size
         });
@@ -47,7 +47,7 @@ public class MakeApplyPlanTests : ALoadoutSynrchonizerTest<MakeApplyPlanTests>
             .First(f => f.Hash == Hash.From(0x00001));
 
 
-        var absPath = loadout.Installation.LocationsRegister[GameFolderType.Game].Combine("0x00001.dat");
+        var absPath = loadout.Installation.LocationsRegister[LocationId.Game].Combine("0x00001.dat");
 
         TestIndexer.Entries.Add(new HashedEntry(absPath, fileOne.Hash, DateTime.Now - TimeSpan.FromDays(1), fileOne.Size ));
 
@@ -55,7 +55,7 @@ public class MakeApplyPlanTests : ALoadoutSynrchonizerTest<MakeApplyPlanTests>
 
         plan.Steps.Should().NotContainEquivalentOf(new ExtractFile
         {
-            To = loadout.Installation.LocationsRegister[GameFolderType.Game].Combine("0x00001.dat"),
+            To = loadout.Installation.LocationsRegister[LocationId.Game].Combine("0x00001.dat"),
             Hash = fileOne.Hash,
             Size = fileOne.Size
         });
@@ -69,7 +69,7 @@ public class MakeApplyPlanTests : ALoadoutSynrchonizerTest<MakeApplyPlanTests>
     {
         var loadout = await CreateApplyPlanTestLoadout();
 
-        var absPath = loadout.Installation.LocationsRegister[GameFolderType.Game].Combine("file_to_delete.dat");
+        var absPath = loadout.Installation.LocationsRegister[LocationId.Game].Combine("file_to_delete.dat");
         TestIndexer.Entries.Add(new HashedEntry(absPath, Hash.From(0x042), DateTime.Now - TimeSpan.FromDays(1), Size.From(0x33)));
 
         var plan = await TestSyncronizer.MakeApplySteps(loadout);
@@ -98,7 +98,7 @@ public class MakeApplyPlanTests : ALoadoutSynrchonizerTest<MakeApplyPlanTests>
         var loadout = await CreateApplyPlanTestLoadout();
 
         TestArchiveManagerInstance.Archives.Add(Hash.From(0x042));
-        var absPath = loadout.Installation.LocationsRegister[GameFolderType.Game].Combine("file_to_delete.dat");
+        var absPath = loadout.Installation.LocationsRegister[LocationId.Game].Combine("file_to_delete.dat");
         TestIndexer.Entries.Add(new HashedEntry(absPath, Hash.From(0x042), DateTime.Now - TimeSpan.FromDays(1),
             Size.From(0x33)));
 
@@ -119,7 +119,7 @@ public class MakeApplyPlanTests : ALoadoutSynrchonizerTest<MakeApplyPlanTests>
         var fileOne = loadout.Mods.Values.First(mod => mod.Enabled == true).Files.Values.OfType<IFromArchive>()
             .First(f => f.Hash == Hash.From(0x00001));
 
-        var absPath = loadout.Installation.LocationsRegister[GameFolderType.Game].Combine("0x00001.dat");
+        var absPath = loadout.Installation.LocationsRegister[LocationId.Game].Combine("0x00001.dat");
         TestIndexer.Entries.Add(new HashedEntry(absPath, Hash.From(0x042), DateTime.Now - TimeSpan.FromDays(1),
             Size.From(0x33)));
 
@@ -143,7 +143,7 @@ public class MakeApplyPlanTests : ALoadoutSynrchonizerTest<MakeApplyPlanTests>
 
         plan.Steps.Should().ContainEquivalentOf(new ExtractFile
         {
-            To = loadout.Installation.LocationsRegister[GameFolderType.Game].Combine("0x00001.dat"),
+            To = loadout.Installation.LocationsRegister[LocationId.Game].Combine("0x00001.dat"),
             Hash = fileOne.Hash,
             Size = fileOne.Size
         });
@@ -160,7 +160,7 @@ public class MakeApplyPlanTests : ALoadoutSynrchonizerTest<MakeApplyPlanTests>
         var fileOne = loadout.Mods.Values.First().Files.Values.OfType<IGeneratedFile>()
             .First();
 
-        var absPath = loadout.Installation.LocationsRegister[GameFolderType.Game].Combine("0x00001.generated");
+        var absPath = loadout.Installation.LocationsRegister[LocationId.Game].Combine("0x00001.generated");
 
         var plan = await TestSyncronizer.MakeApplySteps(loadout);
 
@@ -189,7 +189,7 @@ public class MakeApplyPlanTests : ALoadoutSynrchonizerTest<MakeApplyPlanTests>
 
         TestArchiveManagerInstance.Archives.Add(Hash.From(0x42));
 
-        var absPath = loadout.Installation.LocationsRegister[GameFolderType.Game].Combine("0x00001.generated");
+        var absPath = loadout.Installation.LocationsRegister[LocationId.Game].Combine("0x00001.generated");
 
         var plan = await TestSyncronizer.MakeApplySteps(loadout);
 

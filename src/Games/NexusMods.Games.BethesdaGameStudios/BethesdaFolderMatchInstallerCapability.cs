@@ -14,7 +14,7 @@ public static class BethesdaInstallFolderTargets
     // find good way to do that
     static readonly InstallFolderTarget DataInstallFolderTarget = new()
     {
-        DestinationGamePath = new GamePath(GameFolderType.Game, DataFolder),
+        DestinationGamePath = new GamePath(LocationId.Game, DataFolder),
 
         KnownSourceFolderNames = new[] { "data" },
 
@@ -69,7 +69,7 @@ public static class BethesdaInstallFolderTargets
 
     static readonly InstallFolderTarget GameRootInstallFolderTarget = new()
     {
-        DestinationGamePath = new GamePath(GameFolderType.Game, RelativePath.Empty),
+        DestinationGamePath = new GamePath(LocationId.Game, RelativePath.Empty),
 
         KnownSourceFolderNames = new[]
         {

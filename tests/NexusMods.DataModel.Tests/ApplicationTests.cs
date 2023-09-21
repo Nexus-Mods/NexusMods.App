@@ -31,7 +31,7 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
 
         await LoadoutSynchronizer.Apply(plan, CancellationToken.None);
 
-        var gameFolder = Install.LocationsRegister[GameFolderType.Game];
+        var gameFolder = Install.LocationsRegister[LocationId.Game];
         foreach (var file in DataNames)
         {
             gameFolder.Combine(file).FileExists.Should().BeTrue("File has been applied");
@@ -54,7 +54,7 @@ public class ApplicationTests : ADataModelTest<ApplicationTests>
 
         await LoadoutSynchronizer.Apply(originalPlan, Token);
 
-        var gameFolder = Install.LocationsRegister[GameFolderType.Game];
+        var gameFolder = Install.LocationsRegister[LocationId.Game];
         foreach (var file in DataNames)
         {
             gameFolder.Combine(file).FileExists.Should().BeTrue("File has been applied");

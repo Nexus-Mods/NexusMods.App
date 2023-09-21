@@ -17,7 +17,7 @@ public class GameLocationsRegisterTests
     [InlineData("AppData", "/foo/qux/AppData/Local/Skyrim", true)]
     [InlineData("Unknown", "", false)]
     [InlineData("game", "", false)]
-    public void IndexTest(GameFolderType id, string expected, bool found)
+    public void IndexTest(LocationId id, string expected, bool found)
     {
         var locationsRegister = new GameLocationsRegister(CreateTestLocations());
         if (found)
@@ -35,11 +35,11 @@ public class GameLocationsRegisterTests
     {
         var locationsRegister = new GameLocationsRegister(CreateTestLocations());
         locationsRegister.GetTopLevelLocations().Should().BeEquivalentTo(
-            new KeyValuePair<GameFolderType, AbsolutePath>[]
+            new KeyValuePair<LocationId, AbsolutePath>[]
             {
-                new(GameFolderType.Game, CreateAbsPath("/foo/bar/Skyrim")),
-                new(GameFolderType.Preferences, CreateAbsPath("/foo/baz/documents/My Games/Skyrim")),
-                new(GameFolderType.AppData, CreateAbsPath("/foo/qux/AppData/Local/Skyrim")),
+                new(LocationId.Game, CreateAbsPath("/foo/bar/Skyrim")),
+                new(LocationId.Preferences, CreateAbsPath("/foo/baz/documents/My Games/Skyrim")),
+                new(LocationId.AppData, CreateAbsPath("/foo/qux/AppData/Local/Skyrim")),
             });
     }
 
@@ -51,7 +51,7 @@ public class GameLocationsRegisterTests
     [InlineData("Preferences", true)]
     [InlineData("Documents", true)]
     [InlineData("AppData", true)]
-    public void IsTopLevelTest(GameFolderType id, bool expected)
+    public void IsTopLevelTest(LocationId id, bool expected)
     {
         var locationsRegister = new GameLocationsRegister(CreateTestLocations());
         locationsRegister.IsTopLevel(id).Should().Be(expected);
@@ -65,7 +65,7 @@ public class GameLocationsRegisterTests
     [InlineData("Preferences", "Preferences")]
     [InlineData("Documents", "Documents")]
     [InlineData("AppData", "AppData")]
-    public void GetTopLevelParentTest(GameFolderType id, GameFolderType expected)
+    public void GetTopLevelParentTest(LocationId id, LocationId expected)
     {
         var locationsRegister = new GameLocationsRegister(CreateTestLocations());
         locationsRegister.GetTopLevelParent(id).Should().Be(expected);
@@ -86,7 +86,7 @@ public class GameLocationsRegisterTests
     [InlineData("Documents", "foo/bar", "/foo/baz/documents/My Games/Skyrim/foo/bar")]
     [InlineData("AppData", "", "/foo/qux/AppData/Local/Skyrim")]
     [InlineData("AppData", "foo/bar", "/foo/qux/AppData/Local/Skyrim/foo/bar")]
-    public void GetResolvedPathTest(GameFolderType id, string relativePath, string expected)
+    public void GetResolvedPathTest(LocationId id, string relativePath, string expected)
     {
         var locationsRegister = new GameLocationsRegister(CreateTestLocations());
         locationsRegister.GetResolvedPath(new GamePath(id, (RelativePath)relativePath)).Should()
@@ -101,11 +101,11 @@ public class GameLocationsRegisterTests
     [InlineData("Preferences", new string[] { "Saves" })]
     [InlineData("Documents", new string[] { "Saves" })]
     [InlineData("AppData", new string[] { })]
-    public void GetNestedLocationsTest(GameFolderType id, string[] expectedChildren)
+    public void GetNestedLocationsTest(LocationId id, string[] expectedChildren)
     {
         var locationsRegister = new GameLocationsRegister(CreateTestLocations());
         locationsRegister.GetNestedLocations(id).Should()
-            .BeEquivalentTo(expectedChildren.Select(GameFolderType.From));
+            .BeEquivalentTo(expectedChildren.Select(LocationId.From));
     }
 
     [Theory]
@@ -121,24 +121,24 @@ public class GameLocationsRegisterTests
     [InlineData("/foo/baz/documents/My Games/Skyrim/foo/bar", "Preferences", "foo/bar")]
     [InlineData("/foo/qux/AppData/Local/Skyrim", "AppData", "")]
     [InlineData("/foo/qux/AppData/Local/Skyrim/foo/bar", "AppData", "foo/bar")]
-    public void ToGamePathTest(string absolutePath, GameFolderType expectedFolderType, string expectedRelativePath)
+    public void ToGamePathTest(string absolutePath, LocationId expectedFolderType, string expectedRelativePath)
     {
         var locationsRegister = new GameLocationsRegister(CreateTestLocations());
         locationsRegister.ToGamePath(CreateAbsPath(absolutePath)).Should()
             .Be(new GamePath(expectedFolderType, (RelativePath)expectedRelativePath));
     }
 
-    private Dictionary<GameFolderType, AbsolutePath> CreateTestLocations()
+    private Dictionary<LocationId, AbsolutePath> CreateTestLocations()
     {
-        return new Dictionary<GameFolderType, AbsolutePath>()
+        return new Dictionary<LocationId, AbsolutePath>()
         {
-            { GameFolderType.Game, CreateAbsPath("/foo/bar/Skyrim") },
-            { GameFolderType.From("Data"), CreateAbsPath("/foo/bar/Skyrim/data") },
-            { GameFolderType.From("SKSE Plugins"), CreateAbsPath("/foo/bar/Skyrim/data/skse/plugins") },
-            { GameFolderType.Saves, CreateAbsPath("/foo/baz/documents/My Games/Skyrim/Saves") },
-            { GameFolderType.Preferences, CreateAbsPath("/foo/baz/documents/My Games/Skyrim") },
-            { GameFolderType.From("Documents"), CreateAbsPath("/foo/baz/documents/My Games/Skyrim") },
-            { GameFolderType.AppData, CreateAbsPath("/foo/qux/AppData/Local/Skyrim") },
+            { LocationId.Game, CreateAbsPath("/foo/bar/Skyrim") },
+            { LocationId.From("Data"), CreateAbsPath("/foo/bar/Skyrim/data") },
+            { LocationId.From("SKSE Plugins"), CreateAbsPath("/foo/bar/Skyrim/data/skse/plugins") },
+            { LocationId.Saves, CreateAbsPath("/foo/baz/documents/My Games/Skyrim/Saves") },
+            { LocationId.Preferences, CreateAbsPath("/foo/baz/documents/My Games/Skyrim") },
+            { LocationId.From("Documents"), CreateAbsPath("/foo/baz/documents/My Games/Skyrim") },
+            { LocationId.AppData, CreateAbsPath("/foo/qux/AppData/Local/Skyrim") },
         };
     }
 

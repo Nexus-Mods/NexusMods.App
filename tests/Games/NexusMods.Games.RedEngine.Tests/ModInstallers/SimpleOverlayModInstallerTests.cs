@@ -24,8 +24,8 @@ public class SimpleOverlayModInstallerTests : AModInstallerTest<Cyberpunk2077, S
         description.Should()
             .BeEquivalentTo(new[]
             {
-                (hash1, GameFolderType.Game, "bin/x64/foo.exe"),
-                (hash2, GameFolderType.Game, "archive/pc/mod/foo.archive")
+                (hash1, LocationId.Game, "bin/x64/foo.exe"),
+                (hash2, LocationId.Game, "archive/pc/mod/foo.archive")
             });
     }
 
@@ -41,8 +41,8 @@ public class SimpleOverlayModInstallerTests : AModInstallerTest<Cyberpunk2077, S
         description.Should()
             .BeEquivalentTo(new[]
             {
-                (hash1, GameFolderType.Game, "bin/x64/foo.exe"),
-                (hash2, GameFolderType.Game, "archive/pc/mod/foo.archive")
+                (hash1, LocationId.Game, "bin/x64/foo.exe"),
+                (hash2, LocationId.Game, "archive/pc/mod/foo.archive")
             });
     }
 
@@ -71,11 +71,11 @@ public class SimpleOverlayModInstallerTests : AModInstallerTest<Cyberpunk2077, S
         files.Should()
             .BeEquivalentTo(new[]
             {
-                (hash1, GameFolderType.Game, "bin/x64/foo.exe"),
-                (hash2, GameFolderType.Game, "engine/foo.exe"),
-                (hash3, GameFolderType.Game, "r6/foo.exe"),
-                (hash4, GameFolderType.Game, "red4ext/foo.exe"),
-                (hash5, GameFolderType.Game, "archive/pc/mod/foo.archive")
+                (hash1, LocationId.Game, "bin/x64/foo.exe"),
+                (hash2, LocationId.Game, "engine/foo.exe"),
+                (hash3, LocationId.Game, "r6/foo.exe"),
+                (hash4, LocationId.Game, "red4ext/foo.exe"),
+                (hash5, LocationId.Game, "archive/pc/mod/foo.archive")
             });
     }
 }

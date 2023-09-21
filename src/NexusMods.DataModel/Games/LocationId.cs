@@ -14,5 +14,5 @@ namespace NexusMods.Paths
     [Instance("Preferences", "Preferences", "Path used to store player settings/preferences.")]
     [Instance("AppData", "AppData", "Path for game files located under LocalAppdata or equivalent")]
     [Instance("AppDataRoaming", "AppDataRoaming", "Path for game files located under Appdata/Roaming or equivalent")]
-    public readonly partial struct GameFolderType { }
+    public readonly partial struct LocationId { }
 }

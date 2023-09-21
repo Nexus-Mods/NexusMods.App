@@ -26,8 +26,8 @@ public class
         files.Should()
             .BeEquivalentTo(new[]
             {
-                (hash1, GameFolderType.Game, "mods/mymod/info.json"),
-                (hash2, GameFolderType.Game, "mods/mymod/blerg.archive")
+                (hash1, LocationId.Game, "mods/mymod/info.json"),
+                (hash2, LocationId.Game, "mods/mymod/blerg.archive")
             });
     }
 
@@ -53,8 +53,8 @@ public class
         files.Should()
             .BeEquivalentTo(new[]
             {
-                (hash1, GameFolderType.Game, "mods/mymod1/info.json"),
-                (hash2, GameFolderType.Game, "mods/mymod1/blerg.archive")
+                (hash1, LocationId.Game, "mods/mymod1/info.json"),
+                (hash2, LocationId.Game, "mods/mymod1/blerg.archive")
             });
     }
 }

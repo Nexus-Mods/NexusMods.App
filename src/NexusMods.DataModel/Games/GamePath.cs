@@ -16,7 +16,7 @@ public readonly struct GamePath : IPath, IPath<GamePath>, IEquatable<GamePath>
     /// <summary>
     /// Type of folder stored in this instance.
     /// </summary>
-    public GameFolderType Type { get; }
+    public LocationId Type { get; }
 
     /// <inheritdoc />
     public Extension Extension => Path.Extension;
@@ -27,7 +27,7 @@ public readonly struct GamePath : IPath, IPath<GamePath>, IEquatable<GamePath>
     /// <summary/>
     /// <param name="type">Type of folder contained in this path.</param>
     /// <param name="path">The path to the item.</param>
-    public GamePath(GameFolderType type, RelativePath path)
+    public GamePath(LocationId type, RelativePath path)
     {
         Type = type;
         Path = path;
@@ -36,7 +36,7 @@ public readonly struct GamePath : IPath, IPath<GamePath>, IEquatable<GamePath>
     /// <summary/>
     /// <param name="type">Type of folder contained in this path.</param>
     /// <param name="path">The path to the item.</param>
-    public GamePath(GameFolderType type, string path) : this(type, path.ToRelativePath()) { }
+    public GamePath(LocationId type, string path) : this(type, path.ToRelativePath()) { }
 
     /// <inheritdoc />
     public bool Equals(GamePath other) => Type == other.Type && Path == other.Path;
