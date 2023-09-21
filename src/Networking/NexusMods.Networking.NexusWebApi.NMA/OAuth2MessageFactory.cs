@@ -1,9 +1,8 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json;
+using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Games;
 using NexusMods.Networking.NexusWebApi.DTOs.OAuth;
-using NexusMods.Networking.NexusWebApi.NMA.Extensions;
 using NexusMods.Networking.NexusWebApi.Types;
 
 namespace NexusMods.Networking.NexusWebApi.NMA;
@@ -13,117 +12,100 @@ namespace NexusMods.Networking.NexusWebApi.NMA;
 /// </summary>
 public class OAuth2MessageFactory : IAuthenticatingMessageFactory
 {
+    private readonly ILogger<OAuth2MessageFactory> _logger;
     private readonly IDataStore _store;
     private readonly OAuth _auth;
+    private readonly JwtSecurityTokenHandler _tokenHandler = new();
 
     /// <summary>
-    /// constructor
+    /// Constructor.
     /// </summary>
-    public OAuth2MessageFactory(IDataStore store, OAuth auth)
+    public OAuth2MessageFactory(
+        IDataStore store,
+        OAuth auth,
+        ILogger<OAuth2MessageFactory> logger)
     {
         _store = store;
         _auth = auth;
+        _logger = logger;
+    }
+
+    // TODO: listen to DB changes when the user wants to logout
+    private JWTTokenEntity? _cachedTokenEntity;
+    private UserInfo? _cachedUserInfo;
+
+    private async ValueTask<string?> GetOrRefreshToken(CancellationToken cancellationToken)
+    {
+        _cachedTokenEntity ??= _store.Get<JWTTokenEntity>(JWTTokenEntity.StoreId);
+        if (_cachedTokenEntity is null) return null;
+        if (!_cachedTokenEntity.HasExpired()) return _cachedTokenEntity.AccessToken;
+
+        _logger.LogDebug("Refreshing expired OAuth token");
+
+        var newToken = await _auth.RefreshToken(_cachedTokenEntity.RefreshToken, cancellationToken);
+        _cachedTokenEntity = new JWTTokenEntity
+        {
+            RefreshToken = newToken.RefreshToken,
+            AccessToken = newToken.AccessToken,
+            ExpiresAt = DateTimeOffset.UtcNow
+        };
+
+        _cachedUserInfo = null;
+        _store.Put(JWTTokenEntity.StoreId, _cachedTokenEntity);
+        return _cachedTokenEntity.AccessToken;
     }
 
     /// <inheritdoc/>
-    public ValueTask<HttpRequestMessage> Create(HttpMethod method, Uri uri)
-    {/*
-        if (uri.LocalPath == "/v1/users/validate.json")
-        {
-            // we shouldn't have tried to call this
-            throw new Exception("the validate endpoint does not work when using oauth");
-        }*/
+    public async ValueTask<HttpRequestMessage> Create(HttpMethod method, Uri uri)
+    {
+        var token = await GetOrRefreshToken(CancellationToken.None);
+        if (token is null) throw new Exception("Unauthorized!");
+
         var msg = new HttpRequestMessage(method, uri);
-        msg.Headers.Add("Authorization", $"Bearer {Token}");
-        return ValueTask.FromResult(msg);
+        msg.Headers.Add("Authorization", $"Bearer {token}");
+
+        return msg;
     }
 
     /// <inheritdoc/>
     public async ValueTask<bool> IsAuthenticated()
     {
-        var token = _store.Get<JWTTokenEntity>(JWTTokenEntity.StoreId);
-        return await ValueTask.FromResult(token != null);
+        var token = await GetOrRefreshToken(CancellationToken.None);
+        return token is not null;
     }
 
     /// <inheritdoc/>
     public async ValueTask<UserInfo?> Verify(Client client, CancellationToken cancel)
     {
-        // TODO: there is no dedicated api endpoint we can call just to check the oauth token.
-        //   Once graphql is implemented I recommend to fetch user info about the user the token belongs to
-        //   so we can report more details about them.
-        //   For now, any query will fail if the token is valid
-        await client.ModFilesAsync(GameDomain.From("site"), ModId.From(1), cancel);
+        if (_cachedUserInfo is not null) return _cachedUserInfo;
+        _logger.LogDebug("Renewing cached user info");
 
-        var tokens = _store.Get<JWTTokenEntity>(JWTTokenEntity.StoreId);
-        if (tokens == null)
-        {
-            return null;
-        }
+        var token = await GetOrRefreshToken(cancellationToken: cancel);
 
-        var handler = new JwtSecurityTokenHandler();
-        var tokenInfo = handler.ReadJwtToken(tokens.AccessToken);
+        var tokenInfo = _tokenHandler.ReadJwtToken(token);
         var userClaim = tokenInfo?.Claims.FirstOrDefault(iter => iter.Type == "user");
-        var userInfo = userClaim != null ? JsonSerializer.Deserialize<TokenUserInfo>(userClaim.Value) : null;
+        var userInfo = userClaim is not null ? JsonSerializer.Deserialize<TokenUserInfo>(userClaim.Value) : null;
 
-        if (userInfo == null)
+        if (userInfo is null)
         {
-            // we have a token but it's invalid, should we report this or assume it's the server's fault?
+            _logger.LogError("Unable to extract user info from token!");
             return null;
         }
 
-        return new UserInfo
+        _cachedUserInfo = new UserInfo
         {
             Name = userInfo.Name,
             IsPremium = userInfo.MembershipRoles.Contains(MembershipRole.Premium),
             IsSupporter = userInfo.MembershipRoles.Contains(MembershipRole.Supporter),
-            Avatar = new Uri($"https://forums.nexusmods.com/uploads/profile/photo-thumb-{userInfo.Id}.png")
+            // TODO: fetch avatar
         };
+
+        return _cachedUserInfo;
     }
 
-    /// <summary>
-    /// will handle "Token has expired" errors by refreshing the JWT token and then triggering a retry of the same
-    /// query
-    /// </summary>
-    public async ValueTask<HttpRequestMessage?> HandleError(HttpRequestMessage original, HttpRequestException ex, CancellationToken cancel)
+    /// <inheritdoc/>
+    public ValueTask<HttpRequestMessage?> HandleError(HttpRequestMessage original, HttpRequestException ex, CancellationToken cancel)
     {
-        if ((ex.StatusCode == System.Net.HttpStatusCode.Unauthorized) && (ex.Message == "Token has expired"))
-        {
-            var tokens = _store.Get<JWTTokenEntity>(JWTTokenEntity.StoreId);
-            if (tokens == null)
-            {
-                // this shouldn't be possible, why would we get "Token has expired" if we don't _have_ a token?
-                // unless there is a race condition whereby another thread has deleted the token after the request was made
-                return null;
-            }
-            var newToken = await _auth.RefreshToken(tokens.RefreshToken, cancel);
-
-            _store.Put(JWTTokenEntity.StoreId, new JWTTokenEntity
-            {
-                RefreshToken = newToken.RefreshToken,
-                AccessToken = newToken.AccessToken,
-                ExpiresAt = DateTimeOffset.UtcNow
-            });
-
-            var msg = new HttpRequestMessage(original.Method, original.RequestUri);
-            msg.Headers.Add("Authorization", $"Bearer {newToken.AccessToken}");
-            return msg;
-        }
-
-        return null;
-    }
-
-    private string Token
-    {
-        get
-        {
-            var token = _store.Get<JWTTokenEntity>(JWTTokenEntity.StoreId);
-            var value = token?.AccessToken ?? null;
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                throw new Exception("No OAuth2 token");
-            }
-
-            return value;
-        }
+        return ValueTask.FromResult<HttpRequestMessage?>(null);
     }
 }

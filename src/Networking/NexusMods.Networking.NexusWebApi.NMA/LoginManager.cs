@@ -57,6 +57,10 @@ public class LoginManager
         _protocolRegistration = protocolRegistration;
 
         UserInfo = _dataStore.IdChanges
+            // NOTE(err120): Since id's don't change on startup, we can insert
+            // a fake change at the start of the observable chain. This will only
+            // run once at startup and notify the subscribers.
+            .Merge(Observable.Return(JWTTokenEntity.StoreId))
             .Where(id => id.Equals(JWTTokenEntity.StoreId))
             .SelectMany(async _ => await Verify(CancellationToken.None));
     }

@@ -35,6 +35,14 @@ public record JWTTokenEntity : Entity
     /// Gets the date at which the <see cref="AccessToken"/> expires.
     /// </summary>
     public required DateTimeOffset ExpiresAt { get; init; }
+
+    /// <summary>
+    /// Checks whether the token has expired.
+    /// </summary>
+    public bool HasExpired()
+    {
+        return ExpiresAt - TimeSpan.FromMinutes(5) <= DateTimeOffset.UtcNow;
+    }
 }
 
 
