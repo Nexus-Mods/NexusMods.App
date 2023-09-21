@@ -45,7 +45,8 @@ public class OAuth2MessageFactoryTests
             .Returns(_ => new JWTTokenEntity
             {
                 AccessToken = "access_token",
-                RefreshToken = "refresh_token"
+                RefreshToken = "refresh_token",
+                ExpiresAt = DateTimeOffset.UtcNow
             });
 
         var request = await _factory.Create(HttpMethod.Get, new Uri("test://foobar"));
@@ -79,7 +80,8 @@ public class OAuth2MessageFactoryTests
             .Returns(_ => new JWTTokenEntity
             {
                 AccessToken = "access_token",
-                RefreshToken = "refresh_token"
+                RefreshToken = "refresh_token",
+                ExpiresAt = DateTimeOffset.UtcNow
             });
 
         _handler

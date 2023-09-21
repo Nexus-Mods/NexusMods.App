@@ -26,7 +26,7 @@ public class LoginManager
     /// <summary>
     /// True if the user is logged in
     /// </summary>
-    public IObservable<bool> IsLoggedIn => UserInfo.Select(info => info != null);
+    public IObservable<bool> IsLoggedIn => UserInfo.Select(info => info is not null);
 
     /// <summary>
     /// True if the user is logged in and is a premium member
@@ -46,7 +46,9 @@ public class LoginManager
     /// <param name="protocolRegistration">Used to register NXM protocol.</param>
     public LoginManager(Client client,
         IAuthenticatingMessageFactory msgFactory,
-        OAuth oauth, IDataStore dataStore, IProtocolRegistration protocolRegistration)
+        OAuth oauth,
+        IDataStore dataStore,
+        IProtocolRegistration protocolRegistration)
     {
         _oauth = oauth;
         _msgFactory = msgFactory;
@@ -56,13 +58,13 @@ public class LoginManager
 
         UserInfo = _dataStore.IdChanges
             .Where(id => id.Equals(JWTTokenEntity.StoreId))
-            .SelectMany(async _ => await Verify());
+            .SelectMany(async _ => await Verify(CancellationToken.None));
     }
 
-    private async Task<UserInfo?> Verify()
+    private async Task<UserInfo?> Verify(CancellationToken cancellationToken)
     {
         if (await _msgFactory.IsAuthenticated())
-            return await _msgFactory.Verify(_client, CancellationToken.None);
+            return await _msgFactory.Verify(_client, cancellationToken);
         return null;
     }
 

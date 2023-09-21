@@ -100,7 +100,8 @@ public class OAuth2MessageFactory : IAuthenticatingMessageFactory
             _store.Put(JWTTokenEntity.StoreId, new JWTTokenEntity
             {
                 RefreshToken = newToken.RefreshToken,
-                AccessToken = newToken.AccessToken
+                AccessToken = newToken.AccessToken,
+                ExpiresAt = DateTimeOffset.UtcNow
             });
 
             var msg = new HttpRequestMessage(original.Method, original.RequestUri);
