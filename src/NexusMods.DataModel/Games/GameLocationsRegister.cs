@@ -48,7 +48,7 @@ public class GameLocationsRegister
                     if (!newPath.InFolder(this[existingId])) continue;
 
                     _locations[existingId].AddNestedLocation(newLocation);
-                    newLocation.SetTopLevelParent(ComputeTopLevelParent(newLocation, _locations[existingId]));
+                    newLocation.TopLevelParent = ComputeTopLevelParent(newLocation, _locations[existingId]);
                 }
                 else
                 {
@@ -56,8 +56,7 @@ public class GameLocationsRegister
                     if (!this[existingId].InFolder(newPath)) continue;
 
                     newLocation.AddNestedLocation(_locations[existingId]);
-                    _locations[existingId]
-                        .SetTopLevelParent(ComputeTopLevelParent(_locations[existingId], newLocation));
+                    _locations[existingId].TopLevelParent = ComputeTopLevelParent(_locations[existingId], newLocation);
                 }
             }
         }

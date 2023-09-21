@@ -40,7 +40,7 @@ public class GameLocationDescriptor
     /// <summary>
     /// The top level location that contains this location, if there is any.
     /// </summary>
-    public GameFolderType? TopLevelParent { get; private set; }
+    public GameFolderType? TopLevelParent { get; internal set; }
 
     /// <summary>
     /// A collection of other <see cref="GameFolderType"/>s that are nested directories of this location.
@@ -57,14 +57,5 @@ public class GameLocationDescriptor
         nestedLocation.IsTopLevel = false;
 
         _nestedLocations.Add(nestedLocation.Id);
-    }
-
-    /// <summary>
-    /// Sets the the <see cref="TopLevelParent"/> property of the current location.
-    /// </summary>
-    /// <param name="topLevelParent"></param>
-    internal void SetTopLevelParent(GameFolderType topLevelParent)
-    {
-        TopLevelParent = topLevelParent;
     }
 }
