@@ -79,9 +79,9 @@ public readonly struct GamePath : IPath, IPath<GamePath>, IEquatable<GamePath>
     /// <inheritdoc />
     public IEnumerable<GamePath> GetAllParents()
     {
-        var type = LocationId;
-        var root = new GamePath(type, "");
-        return Path.GetAllParents().Select(parentPath => new GamePath(type, parentPath)).Append(root);
+        var id = LocationId;
+        var root = new GamePath(id, "");
+        return Path.GetAllParents().Select(parentPath => new GamePath(id, parentPath)).Append(root);
     }
 
     /// <inheritdoc />
