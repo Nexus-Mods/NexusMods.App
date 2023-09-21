@@ -97,6 +97,10 @@ public abstract class AGame : IGame
     /// <summary>
     /// Returns the locations of known game elements, such as save folder, etc.
     /// </summary>
+    /// <remarks>
+    /// TODO: (Al12rs) Games can return Locations that point to the same AbsolutePath, a way is needed to decide which to use.
+    /// Current code will use the first declared one but relies on undefined ordering of Dictionary.
+    /// </remarks>
     /// <param name="fileSystem">The file system where the game was found in. This comes from <paramref name="installation"/>.</param>
     /// <param name="locator">The locator used to find this game installation.</param>
     /// <param name="installation">An installation of the game found by the <paramref name="locator"/>.</param>
