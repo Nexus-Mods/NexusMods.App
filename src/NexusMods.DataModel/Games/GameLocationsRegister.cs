@@ -30,30 +30,35 @@ public class GameLocationsRegister
     {
         foreach (var (newId, newPath) in newLocations)
         {
-            var newLocation = new GameLocationDescriptor { Id = newId, ResolvedPath = newPath };
-
-            foreach (var existingLocation in _locations.Values)
-            {
-                if (existingLocation.ResolvedPath.GetFullPathLength() < newPath.GetFullPathLength())
-                {
-                    if (!newPath.InFolder(existingLocation.ResolvedPath)) continue;
-
-                    existingLocation.AddNestedLocation(newLocation);
-                    newLocation.SetTopLevelParent(ComputeTopLevelParent(newLocation, existingLocation));
-                }
-                else
-                {
-                    if (!existingLocation.ResolvedPath.InFolder(newPath)) continue;
-
-                    newLocation.AddNestedLocation(existingLocation);
-                    existingLocation.SetTopLevelParent(ComputeTopLevelParent(existingLocation, newLocation));
-                }
-            }
+            var newLocation = new GameLocationDescriptor(newId, newPath);
 
             var isDuplicate = !_locations.TryAdd(newId, newLocation);
 
             Debug.Assert(isDuplicate == false,
                 $"Duplicate location found for {newId} at {_locations[newId].ResolvedPath}: {newPath}");
+
+            foreach (var existingId in _locations.Keys)
+            {
+                if (existingId == newId) continue;
+
+                if (this[existingId].GetFullPathLength() < newPath.GetFullPathLength())
+                {
+                    if (!newPath.InFolder(this[existingId])) continue;
+
+                    _locations[existingId].AddNestedLocation(newLocation);
+                    newLocation.SetTopLevelParent(ComputeTopLevelParent(newLocation, _locations[existingId]));
+                }
+                else
+                {
+                    if (!this[existingId].InFolder(newPath)) continue;
+
+                    newLocation.AddNestedLocation(_locations[existingId]);
+                    _locations[existingId]
+                        .SetTopLevelParent(ComputeTopLevelParent(_locations[existingId], newLocation));
+                }
+            }
+
+
         }
     }
 
@@ -94,6 +99,7 @@ public class GameLocationsRegister
     /// </summary>
     /// <remarks>
     /// If the <see cref="GameFolderType"/> is a top level location, it will return itself.
+    /// If there are two top level parents with the same path, the first one in the order they were declared will be returned.
     /// </remarks>
     /// <param name="id"></param>
     /// <returns></returns>
@@ -109,7 +115,7 @@ public class GameLocationsRegister
     /// <returns></returns>
     public AbsolutePath GetResolvedPath(GameFolderType id)
     {
-        return _locations[id].ResolvedPath;
+        return this[id];
     }
 
     /// <summary>
@@ -125,11 +131,11 @@ public class GameLocationsRegister
     /// <summary>
     /// Returns a collection of <see cref="GameFolderType"/>s that are nested directories of the passed location.
     /// </summary>
-    /// <param name="Id"></param>
+    /// <param name="id"></param>
     /// <returns></returns>
-    public IReadOnlyCollection<GameFolderType> GetNestedLocations(GameFolderType Id)
+    public IReadOnlyCollection<GameFolderType> GetNestedLocations(GameFolderType id)
     {
-        return _locations[Id].NestedLocations.ToArray();
+        return _locations[id].NestedLocations.ToArray();
     }
 
     /// <summary>
@@ -144,20 +150,25 @@ public class GameLocationsRegister
     /// <returns></returns>
     public GamePath ToGamePath(AbsolutePath absolutePath)
     {
-        return _locations.Values.Where(location => absolutePath.InFolder(location.ResolvedPath))
+        return _locations.Values.Where(location => absolutePath.StartsWith(location.ResolvedPath))
             .Select(desc => new GamePath(desc.Id, absolutePath.RelativeTo(desc.ResolvedPath)))
-            .MinBy(gamePath => gamePath.Path.Depth);
+            .MinBy(gamePath => gamePath.Path.Path.Length);
     }
 
     /// <summary>
     /// Returns the collection of game locations that are not nested to any other,
     /// in the form of a collection of <see cref="KeyValuePair"/> of <see cref="GameFolderType"/>, <see cref="AbsolutePath"/> />
     /// </summary>
+    /// <remarks>
+    /// If there are two top level locations with the same path, the first one in the order they were declared will be returned.
+    /// </remarks>
     /// <returns></returns>
     public IReadOnlyCollection<KeyValuePair<GameFolderType, AbsolutePath>> GetTopLevelLocations()
     {
         return LocationDescriptors
             .Where(x => x.Value.IsTopLevel)
+            .GroupBy(kv => kv.Value.ResolvedPath)
+            .Select(g => g.First())
             .Select(x => new KeyValuePair<GameFolderType, AbsolutePath>(x.Key, x.Value.ResolvedPath))
             .ToArray();
     }

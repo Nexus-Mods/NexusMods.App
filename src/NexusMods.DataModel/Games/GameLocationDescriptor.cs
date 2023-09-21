@@ -6,9 +6,9 @@ namespace NexusMods.DataModel.Games;
 /// Describes details of a game location (<see cref="GameFolderType"/>), e.g. the Data folder for Skyrim.
 /// Contains the resolved path, any nested locations and the top level parent.
 /// </summary>
-public struct GameLocationDescriptor
+public class GameLocationDescriptor
 {
-    private List<GameFolderType> _nestedLocations = new();
+    private readonly List<GameFolderType> _nestedLocations = new();
 
     /// <summary>
     /// Creates a new instance of <see cref="GameLocationDescriptor"/>.
@@ -19,24 +19,25 @@ public struct GameLocationDescriptor
     {
         Id = id;
         ResolvedPath = resolvedPath;
+        IsTopLevel = true;
     }
 
     /// <summary>
     /// Identifier of the location being described.
     /// </summary>
-    public required GameFolderType Id { get; init; }
+    public GameFolderType Id { get; }
 
     /// <summary>
     /// <see cref="AbsolutePath"/> of the current installation for the location being described.
     /// </summary>
-    public required AbsolutePath ResolvedPath { get; init; }
+    public AbsolutePath ResolvedPath { get; }
 
     /// <summary>
     /// If true, no other game location contains this game location.
     /// </summary>
-    public bool IsTopLevel { get; set; } = true;
+    public bool IsTopLevel { get; private set; }
 
-    private GameFolderType? _topLevelParent = null;
+    private GameFolderType? _topLevelParent;
 
     /// <summary>
     /// The top level location that contains this location, if there is any.
