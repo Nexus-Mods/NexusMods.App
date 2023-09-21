@@ -13,7 +13,7 @@ internal static class Telemetry
 {
     private const string AssemblyName = "NexusMods.App";
     // TODO: https://github.com/Nexus-Mods/NexusMods.App/pull/644
-    private static readonly Version AssemblyVersion = Assembly.GetExecutingAssembly().GetName().Version ?? new Version(1, 0);
+    private static readonly Version AssemblyVersion = Assembly.GetExecutingAssembly().GetName().Version ?? new Version(0, 0, 1);
     private static readonly string AssemblyVersionString = AssemblyVersion.ToString(fieldCount: 3);
 
     internal static readonly TelemetryLibraryInfo LibraryInfo = new()
