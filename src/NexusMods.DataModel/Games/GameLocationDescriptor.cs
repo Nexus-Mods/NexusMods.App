@@ -37,12 +37,10 @@ public class GameLocationDescriptor
     /// </summary>
     public bool IsTopLevel { get; private set; }
 
-    private GameFolderType? _topLevelParent;
-
     /// <summary>
     /// The top level location that contains this location, if there is any.
     /// </summary>
-    public GameFolderType? TopLevelParent => _topLevelParent;
+    public GameFolderType? TopLevelParent { get; private set; }
 
     /// <summary>
     /// A collection of other <see cref="GameFolderType"/>s that are nested directories of this location.
@@ -67,6 +65,6 @@ public class GameLocationDescriptor
     /// <param name="topLevelParent"></param>
     internal void SetTopLevelParent(GameFolderType topLevelParent)
     {
-        _topLevelParent = topLevelParent;
+        TopLevelParent = topLevelParent;
     }
 }
