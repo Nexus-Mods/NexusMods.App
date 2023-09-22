@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using NexusMods.Common;
 using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Games.DarkestDungeon.Installers;
@@ -72,6 +73,13 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame, IEpicGame
             result[LocationId.Saves] = savesDirectory;
         }
 
+        return result;
+    }
+
+    public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations)
+    {
+        var result = new List<IModInstallDestination>();
+        ModInstallDestinationHelpers.AddCommonLocations(locations, result);
         return result;
     }
 

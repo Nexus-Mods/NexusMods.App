@@ -1,7 +1,7 @@
 using JetBrains.Annotations;
 using NexusMods.Common;
-using NexusMods.DataModel;
 using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Games.StardewValley.Installers;
@@ -78,4 +78,10 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
         SMAPIModInstaller.Create(_serviceProvider)
     };
 
+    public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations)
+    {
+        var result = new List<IModInstallDestination>();
+        ModInstallDestinationHelpers.AddCommonLocations(locations, result);
+        return result;
+    }
 }

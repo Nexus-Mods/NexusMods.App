@@ -55,9 +55,6 @@ public abstract class AGame : IGame
     /// <inheritdoc />
     public virtual IEnumerable<IModInstaller> Installers { get; } = Array.Empty<IModInstaller>();
 
-    /// <inheritdoc />
-    public virtual List<IModInstallDestination> InstallDestinations { get; } = new List<IModInstallDestination>();
-
     private Version GetVersion(GameLocatorResult installation)
     {
         try
@@ -109,6 +106,12 @@ public abstract class AGame : IGame
     /// <returns></returns>
     protected abstract IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
         GameLocatorResult installation);
+
+    /// <summary>
+    /// Returns the locations of installation destinations used by the Advanced Installer.
+    /// </summary>
+    /// <param name="locations">Result of <see cref="GetLocations"/>.</param>
+    public abstract List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations);
 
     /// <inheritdoc />
     public override string ToString() => Name;

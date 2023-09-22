@@ -61,7 +61,8 @@ public interface IModInstallDestination
 
 ## Acquiring `IModInstallDestination`(s) During Deploy Step (a.k.a. `GetModsAsync`)
 
-Extend the `IGame` interface to expose a property which returns `IModInstallDestination`(s) for the game's most common directories.
+Extend the `GameInstallation` abstract class to expose a property which returns `IModInstallDestination`(s) for the game's most common directories.
+To do this, we will add an abstract method into `AGame`, to accompany the existing `GetLocations()` method.
 
 This property is populated with the following elements:
 - All `GamePath` entries (i.e. Game folder, Save folder, Config folder, etc.)
@@ -74,5 +75,4 @@ This interface can be accessed during the deploy step under `GameInstallation` s
 
 Note: Currently we don't auto fetch, `InstallFolderTarget`(s) [as in, auto add targets with 0 code] for the following reason(s):
 - We might potentially one day have directories that `GenericFolderMatchInstaller` might use, but we don't want to display to user.
-- We can only pull locations from `GenericFolderMatchInstaller` in current code, but that lives in an inaccessible package/project from `IGame`.
-
+- We can only pull locations from `GenericFolderMatchInstaller` in current code, but that lives in an inaccessible package/project from `AGame`.

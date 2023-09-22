@@ -32,14 +32,11 @@ public abstract class ABethesdaGame : AGame
     /// <inheritdoc />
     public override IEnumerable<IModInstaller> Installers => _installers;
 
-    // Note: Not cached because it's not used often
-    public override List<IModInstallDestination> InstallDestinations => GetInstallDestinations();
-
-    private List<IModInstallDestination> GetInstallDestinations()
+    public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations)
     {
         var result = new List<IModInstallDestination>();
         ModInstallDestinationHelpers.AddInstallFolderTargets(BethesdaInstallFolderTargets.InstallFolderTargets(), result);
-        ModInstallDestinationHelpers.AddCommonLocations(GetLocations(), result);
+        ModInstallDestinationHelpers.AddCommonLocations(locations, result);
         return result;
     }
 }

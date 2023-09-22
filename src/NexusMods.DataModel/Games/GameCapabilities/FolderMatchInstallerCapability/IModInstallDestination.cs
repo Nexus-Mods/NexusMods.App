@@ -58,13 +58,14 @@ public static class ModInstallDestinationHelpers
     /// </summary>
     /// <param name="locations">Locations to add to the accumulator.</param>
     /// <param name="accumulator">List to return the results into.</param>
-    public static void AddCommonLocations(IReadOnlyDictionary<GameFolderType, AbsolutePath> locations, List<IModInstallDestination> accumulator)
+    public static void AddCommonLocations(IReadOnlyDictionary<LocationId, AbsolutePath> locations, List<IModInstallDestination> accumulator)
     {
         foreach (var location in locations)
         {
             accumulator.Add(new InstallFolderTarget()
             {
-                DestinationGamePath = new GamePath(location.Key, location.Value),
+                // Locations has 
+                DestinationGamePath = new GamePath(location.Key, ""),
                 KnownSourceFolderNames = Array.Empty<string>(),
                 KnownValidSubfolders = Array.Empty<string>(),
                 KnownValidFileExtensions = Array.Empty<Extension>(),
