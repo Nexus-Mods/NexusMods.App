@@ -80,16 +80,22 @@ public abstract class AGame : IGame
 
     private List<GameInstallation> GetInstallations()
     {
-        return (from locator in _gamelocators
-                from installation in locator.Find(this)
-                select new GameInstallation
+        return (_gamelocators.SelectMany(locator => locator.Find(this),
+                (locator, installation) =>
                 {
-                    Game = this,
-                    LocationsRegister = new GameLocationsRegister(new Dictionary<LocationId, AbsolutePath>(
-                        GetLocations(installation.Path.FileSystem, installation))),
-                    Version = installation.Version ?? GetVersion(installation),
-                    Store = installation.Store
-                })
+                    var locations = GetLocations(installation.Path.FileSystem,
+                        installation);
+                    return new GameInstallation
+                    {
+                        Game = this,
+                        LocationsRegister =
+                            new GameLocationsRegister(
+                                new Dictionary<LocationId, AbsolutePath>(locations)),
+                        InstallDestinations = GetInstallDestinations(locations),
+                        Version = installation.Version ?? GetVersion(installation),
+                        Store = installation.Store
+                    };
+                }))
             .DistinctBy(g => g.LocationsRegister[LocationId.Game])
             .ToList();
     }
