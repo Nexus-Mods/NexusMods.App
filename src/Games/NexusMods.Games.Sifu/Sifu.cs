@@ -15,7 +15,7 @@ public class Sifu : AGame, ISteamGame, IEpicGame
     public override GameDomain Domain => GameDomain.From("sifu");
     public override GamePath GetPrimaryFile(GameStore store)
     {
-        return new(GameFolderType.Game, "Sifu.exe");
+        return new(LocationId.Game, "Sifu.exe");
     }
 
     public Sifu(IEnumerable<IGameLocator> gameLocators, IServiceProvider serviceProvider) : base(gameLocators)
@@ -23,13 +23,12 @@ public class Sifu : AGame, ISteamGame, IEpicGame
         _serviceProvider = serviceProvider;
     }
 
-    protected override IReadOnlyDictionary<GameFolderType, AbsolutePath> GetLocations(IFileSystem fileSystem,
-        IGameLocator locator,
+    protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
         GameLocatorResult installation)
     {
-        return new Dictionary<GameFolderType, AbsolutePath>()
+        return new Dictionary<LocationId, AbsolutePath>()
         {
-            { GameFolderType.Game, installation.Path },
+            { LocationId.Game, installation.Path },
         };
     }
 

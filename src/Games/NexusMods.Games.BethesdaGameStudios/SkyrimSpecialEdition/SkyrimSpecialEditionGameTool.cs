@@ -10,5 +10,5 @@ public class SkyrimSpecialEditionGameTool : RunGameWithScriptExtender<SkyrimSpec
     // ReSharper disable once ContextualLoggerProblem
     public SkyrimSpecialEditionGameTool(ILogger<RunGameTool<SkyrimSpecialEdition>> logger, SkyrimSpecialEdition game, IProcessFactory processFactory) 
         : base(logger, game, processFactory) { }
-    protected override GamePath ScriptLoaderPath => new(GameFolderType.Game, "skse64_loader.exe");
+    protected override GamePath ScriptLoaderPath => new(LocationId.Game, "skse64_loader.exe");
 }

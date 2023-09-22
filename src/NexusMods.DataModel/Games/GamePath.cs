@@ -14,9 +14,9 @@ public readonly struct GamePath : IPath, IPath<GamePath>, IEquatable<GamePath>
     public RelativePath Path { get; } = RelativePath.Empty;
 
     /// <summary>
-    /// Type of folder stored in this instance.
+    /// The id of the game location this path is relative to.
     /// </summary>
-    public GameFolderType Type { get; }
+    public LocationId LocationId { get; }
 
     /// <inheritdoc />
     public Extension Extension => Path.Extension;
@@ -25,36 +25,36 @@ public readonly struct GamePath : IPath, IPath<GamePath>, IEquatable<GamePath>
     public RelativePath FileName => Path.FileName;
 
     /// <summary/>
-    /// <param name="type">Type of folder contained in this path.</param>
-    /// <param name="path">The path to the item.</param>
-    public GamePath(GameFolderType type, RelativePath path)
+    /// <param name="locationId">Id of the game location to be relative to.</param>
+    /// <param name="path">The relative path to the item.</param>
+    public GamePath(LocationId locationId, RelativePath path)
     {
-        Type = type;
+        LocationId = locationId;
         Path = path;
     }
 
     /// <summary/>
-    /// <param name="type">Type of folder contained in this path.</param>
-    /// <param name="path">The path to the item.</param>
-    public GamePath(GameFolderType type, string path) : this(type, path.ToRelativePath()) { }
+    /// <param name="locationId">Id of the game location to be relative to.</param>
+    /// <param name="path">The relative path to the item.</param>
+    public GamePath(LocationId locationId, string path) : this(locationId, path.ToRelativePath()) { }
 
     /// <inheritdoc />
-    public bool Equals(GamePath other) => Type == other.Type && Path == other.Path;
+    public bool Equals(GamePath other) => LocationId == other.LocationId && Path == other.Path;
 
     /// <summary/>
-    public static bool operator ==(GamePath a, GamePath b) => a.Type == b.Type && a.Path == b.Path;
+    public static bool operator ==(GamePath a, GamePath b) => a.LocationId == b.LocationId && a.Path == b.Path;
 
     /// <summary/>
-    public static bool operator !=(GamePath a, GamePath b) => a.Type != b.Type || a.Path != b.Path;
+    public static bool operator !=(GamePath a, GamePath b) => a.LocationId != b.LocationId || a.Path != b.Path;
 
     /// <inheritdoc />
     public override bool Equals(object? obj) => obj is GamePath other && Equals(other);
 
     /// <inheritdoc />
-    public override int GetHashCode() => Path.GetHashCode() ^ Type.GetHashCode();
+    public override int GetHashCode() => Path.GetHashCode() ^ LocationId.GetHashCode();
 
     /// <inheritdoc />
-    public override string ToString() => "{" + Type + "}/" + Path;
+    public override string ToString() => "{" + LocationId + "}/" + Path;
 
     /// <summary>
     /// Joins the current absolute path with a relative path.
@@ -68,10 +68,10 @@ public readonly struct GamePath : IPath, IPath<GamePath>, IEquatable<GamePath>
     public RelativePath Name => Path.Name;
 
     /// <inheritdoc />
-    public GamePath Parent => new GamePath(Type, Path.Parent);
+    public GamePath Parent => new GamePath(LocationId, Path.Parent);
 
     /// <inheritdoc />
-    public GamePath GetRootComponent => new GamePath(Type, "");
+    public GamePath GetRootComponent => new GamePath(LocationId, "");
 
     /// <inheritdoc />
     public IEnumerable<RelativePath> Parts => Path.Parts;
@@ -79,9 +79,9 @@ public readonly struct GamePath : IPath, IPath<GamePath>, IEquatable<GamePath>
     /// <inheritdoc />
     public IEnumerable<GamePath> GetAllParents()
     {
-        var type = Type;
-        var root = new GamePath(type, "");
-        return Path.GetAllParents().Select(parentPath => new GamePath(type, parentPath)).Append(root);
+        var id = LocationId;
+        var root = new GamePath(id, "");
+        return Path.GetAllParents().Select(parentPath => new GamePath(id, parentPath)).Append(root);
     }
 
     /// <inheritdoc />
@@ -96,13 +96,13 @@ public readonly struct GamePath : IPath, IPath<GamePath>, IEquatable<GamePath>
     /// <inheritdoc />
     public bool InFolder(GamePath parent)
     {
-        return Type == parent.Type && Path.InFolder(parent.Path);
+        return LocationId == parent.LocationId && Path.InFolder(parent.Path);
     }
 
     /// <inheritdoc />
     public bool StartsWith(GamePath other)
     {
-        return Type == other.Type && Path.StartsWith(other.Path);
+        return LocationId == other.LocationId && Path.StartsWith(other.Path);
     }
 
     /// <inheritdoc />

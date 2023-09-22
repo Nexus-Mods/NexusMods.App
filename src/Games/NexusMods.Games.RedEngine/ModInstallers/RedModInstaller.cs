@@ -39,7 +39,7 @@ public class RedModInstaller : IModInstaller
             {
                 var path = childNode.Path;
                 var entry = childNode.Value;
-                files.Add(entry!.ToFromArchive(new GamePath(GameFolderType.Game, Mods.Join(parentName).Join(path.RelativeTo(modFolder.Path)))));
+                files.Add(entry!.ToFromArchive(new GamePath(LocationId.Game, Mods.Join(parentName).Join(path.RelativeTo(modFolder.Path)))));
 
             }
 

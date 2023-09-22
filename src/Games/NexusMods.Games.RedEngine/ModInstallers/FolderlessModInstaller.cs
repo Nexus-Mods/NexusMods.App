@@ -21,7 +21,7 @@ public class FolderlessModInstaller : IModInstaller
         var modFiles = archiveFiles.GetAllDescendentFiles()
             .Where(f => !Helpers.IgnoreExtensions.Contains(f.Path.Extension))
             .Select(f => f.Value!.ToFromArchive(
-                new GamePath(GameFolderType.Game, Destination.Join(f.Path.FileName))
+                new GamePath(LocationId.Game, Destination.Join(f.Path.FileName))
             ))
             .ToArray();
 

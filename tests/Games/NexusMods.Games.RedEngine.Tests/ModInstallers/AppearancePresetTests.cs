@@ -22,8 +22,8 @@ public class AppearancePresetTests : AModInstallerTest<Cyberpunk2077, Appearance
         files.Should()
             .BeEquivalentTo(new[]
             {
-                (hash, GameFolderType.Game, "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/female/cool_choom.preset"),
-                (hash, GameFolderType.Game, "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/male/cool_choom.preset")
+                (hash, LocationId.Game, "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/female/cool_choom.preset"),
+                (hash, LocationId.Game, "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/male/cool_choom.preset")
             });
     }
 
@@ -40,8 +40,8 @@ public class AppearancePresetTests : AModInstallerTest<Cyberpunk2077, Appearance
         files.Should()
             .BeEquivalentTo(new[]
             {
-                (hash, GameFolderType.Game, "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/female/cool_choom.preset"),
-                (hash, GameFolderType.Game, "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/male/cool_choom.preset")
+                (hash, LocationId.Game, "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/female/cool_choom.preset"),
+                (hash, LocationId.Game, "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/male/cool_choom.preset")
             });
     }
 

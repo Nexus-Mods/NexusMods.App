@@ -19,7 +19,7 @@ public class ModelTests : ADataModelTest<ModelTests>
         var file = new FromArchive
         {
             Id = ModFileId.New(),
-            To = new GamePath(GameFolderType.Game, "foo/bar.pez"),
+            To = new GamePath(LocationId.Game, "foo/bar.pez"),
             Hash = (Hash)0x42L,
             Size = Size.FromLong(44L)
         };

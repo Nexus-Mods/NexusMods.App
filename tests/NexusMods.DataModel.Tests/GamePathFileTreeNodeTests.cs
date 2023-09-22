@@ -15,15 +15,15 @@ public class GamePathFileTreeNodeTests
     [InlineData("Game","foo/bar/file4.txt", true, 4)]
     [InlineData("Game","baz/bazer/file5.txt", true, 5)]
     [InlineData("Saves","baz/bazer/file5.txt", false, 5)]
-    public void Test_FindNode(GameFolderType folderType, string path, bool found, int value)
+    public void Test_FindNode(string locationId, string path, bool found, int value)
     {
         var tree = MakeTestTree();
 
-        var node = tree.FindNode(new GamePath(folderType, (RelativePath)path));
+        var node = tree.FindNode(new GamePath(LocationId.From(locationId), (RelativePath)path));
         if (found)
         {
             node.Should().NotBeNull();
-            node!.Path.Should().Be(new GamePath(folderType, (RelativePath)path));
+            node!.Path.Should().Be(new GamePath(LocationId.From(locationId), (RelativePath)path));
             node!.Value.Should().Be(value);
         }
         else
@@ -38,11 +38,11 @@ public class GamePathFileTreeNodeTests
 
         fileEntries = new Dictionary<GamePath, int>
         {
-            { new GamePath(GameFolderType.Game,"file1.txt"), 1 },
-            { new GamePath(GameFolderType.Game,"foo/file2.txt"), 2 },
-            { new GamePath(GameFolderType.Game,"foo/file3.txt"), 3 },
-            { new GamePath(GameFolderType.Game,"foo/bar/file4.txt"), 4 },
-            { new GamePath(GameFolderType.Game,"baz/bazer/file5.txt"), 5 },
+            { new GamePath(LocationId.Game,"file1.txt"), 1 },
+            { new GamePath(LocationId.Game,"foo/file2.txt"), 2 },
+            { new GamePath(LocationId.Game,"foo/file3.txt"), 3 },
+            { new GamePath(LocationId.Game,"foo/bar/file4.txt"), 4 },
+            { new GamePath(LocationId.Game,"baz/bazer/file5.txt"), 5 },
         };
 
         return FileTreeNode<GamePath, int>.CreateTree(fileEntries);

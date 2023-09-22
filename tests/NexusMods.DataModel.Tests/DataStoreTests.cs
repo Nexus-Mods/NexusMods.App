@@ -31,7 +31,7 @@ public class DataStoreTests
             Id = ModFileId.New(),
             Hash = Hash.Zero,
             Size = Size.From(42L),
-            To = new GamePath(GameFolderType.Game, "test.foo")
+            To = new GamePath(LocationId.Game, "test.foo")
         }.WithPersist(DataStore);
         foo.DataStoreId.ToString().Should().NotBeEmpty();
         DataStore.Get<FromArchive>(foo.DataStoreId).Should().NotBeNull();
@@ -83,7 +83,7 @@ public class DataStoreTests
             Id = ModFileId.New(),
             Hash = (Hash)(ulong)idx,
             Size = Size.FromLong(idx),
-            To = new GamePath(GameFolderType.Game, $"{idx}.file"),
+            To = new GamePath(LocationId.Game, $"{idx}.file"),
         }).WithPersist(DataStore)
             .ToList();
 

@@ -56,7 +56,7 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
     protected static AbsolutePath GetFirstModFile(Loadout loadout)
     {
         var to = loadout.Mods.Values.First().Files.Values.OfType<IToFile>().First().To;
-        return to.Combine(loadout.Installation.LocationsRegister[GameFolderType.Game]);
+        return to.Combine(loadout.Installation.LocationsRegister[LocationId.Game]);
     }
 
 
@@ -125,7 +125,7 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
             files = files.With(new TestGeneratedFile
             {
                 Id = ModFileId.New(),
-                To = new GamePath(GameFolderType.Game, "0x00001.generated"),
+                To = new GamePath(LocationId.Game, "0x00001.generated"),
             }, m => m.Id);
         }
         else
@@ -135,7 +135,7 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
                 Id = ModFileId.New(),
                 Hash = Hash.From(0x00001),
                 Size = Size.From(0x10001),
-                To = new GamePath(GameFolderType.Game, "0x00001.dat"),
+                To = new GamePath(LocationId.Game, "0x00001.dat"),
             }, m => m.Id);
         }
 
@@ -153,7 +153,7 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
             Id = ModFileId.New(),
             Hash = Hash.From(0x00001),
             Size = Size.From(0x10001),
-            To = new GamePath(GameFolderType.Game, "shouldNotExist/0x00001.dat"),
+            To = new GamePath(LocationId.Game, "shouldNotExist/0x00001.dat"),
         }, m => m.Id);
 
         var disabledMod = new Mod

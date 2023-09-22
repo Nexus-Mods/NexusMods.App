@@ -122,6 +122,6 @@ where T : AGame
     /// <returns></returns>
     protected virtual AbsolutePath GetGamePath(Loadout loadout, ApplyPlan applyPlan)
     {
-        return _game.GetPrimaryFile(loadout.Installation.Store).Combine(loadout.Installation.LocationsRegister[GameFolderType.Game]);
+        return _game.GetPrimaryFile(loadout.Installation.Store).Combine(loadout.Installation.LocationsRegister[LocationId.Game]);
     }
 }

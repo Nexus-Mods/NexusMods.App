@@ -3,19 +3,19 @@
 namespace NexusMods.DataModel.Games;
 
 /// <summary>
-/// Describes details of a game location (<see cref="GameFolderType"/>), e.g. the Data folder for Skyrim.
+/// Describes details of a game location (<see cref="LocationId"/>), e.g. the Data folder for Skyrim.
 /// Contains the resolved path, any nested locations and the top level parent.
 /// </summary>
 public class GameLocationDescriptor
 {
-    private readonly List<GameFolderType> _nestedLocations = new();
+    private readonly List<LocationId> _nestedLocations = new();
 
     /// <summary>
     /// Creates a new instance of <see cref="GameLocationDescriptor"/>.
     /// </summary>
-    /// <param name="id">Id of the <see cref="GameFolderType"/> being described</param>
+    /// <param name="id">Id of the <see cref="LocationId"/> being described</param>
     /// <param name="resolvedPath">The resolved absolute path for the location</param>
-    public GameLocationDescriptor(GameFolderType id, AbsolutePath resolvedPath)
+    public GameLocationDescriptor(LocationId id, AbsolutePath resolvedPath)
     {
         Id = id;
         ResolvedPath = resolvedPath;
@@ -25,7 +25,7 @@ public class GameLocationDescriptor
     /// <summary>
     /// Identifier of the location being described.
     /// </summary>
-    public GameFolderType Id { get; }
+    public LocationId Id { get; }
 
     /// <summary>
     /// <see cref="AbsolutePath"/> of the current installation for the location being described.
@@ -37,17 +37,15 @@ public class GameLocationDescriptor
     /// </summary>
     public bool IsTopLevel { get; private set; }
 
-    private GameFolderType? _topLevelParent;
-
     /// <summary>
     /// The top level location that contains this location, if there is any.
     /// </summary>
-    public GameFolderType? TopLevelParent => _topLevelParent;
+    public LocationId? TopLevelParent { get; internal set; }
 
     /// <summary>
-    /// A collection of other <see cref="GameFolderType"/>s that are nested directories of this location.
+    /// A collection of other <see cref="LocationId"/>s that are nested directories of this location.
     /// </summary>
-    public IReadOnlyCollection<GameFolderType> NestedLocations => _nestedLocations;
+    public IReadOnlyCollection<LocationId> NestedLocations => _nestedLocations;
 
     /// <summary>
     /// Adds the Id of a nested location to the collection of nested locations.
@@ -59,14 +57,5 @@ public class GameLocationDescriptor
         nestedLocation.IsTopLevel = false;
 
         _nestedLocations.Add(nestedLocation.Id);
-    }
-
-    /// <summary>
-    /// Sets the the <see cref="TopLevelParent"/> property of the current location.
-    /// </summary>
-    /// <param name="topLevelParent"></param>
-    internal void SetTopLevelParent(GameFolderType topLevelParent)
-    {
-        _topLevelParent = topLevelParent;
     }
 }

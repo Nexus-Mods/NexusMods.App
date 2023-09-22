@@ -26,8 +26,8 @@ public class FolderlessModInstallerTests : AModInstallerTest<Cyberpunk2077, Fold
         description.Should()
             .BeEquivalentTo(new[]
             {
-                (hash1, GameFolderType.Game, "archive/pc/mod/filea.archive"),
-                (hash2, GameFolderType.Game, "archive/pc/mod/fileb.archive")
+                (hash1, LocationId.Game, "archive/pc/mod/filea.archive"),
+                (hash2, LocationId.Game, "archive/pc/mod/fileb.archive")
             });
     }
 
@@ -47,7 +47,7 @@ public class FolderlessModInstallerTests : AModInstallerTest<Cyberpunk2077, Fold
         description.Should()
             .BeEquivalentTo(new[]
             {
-                (hash1, GameFolderType.Game, "archive/pc/mod/filea.archive")
+                (hash1, LocationId.Game, "archive/pc/mod/filea.archive")
             });
     }
 }

@@ -41,7 +41,7 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
         _fileSystem = fileSystem;
     }
 
-    public override GamePath GetPrimaryFile(GameStore store) => new(GameFolderType.Game, "");
+    public override GamePath GetPrimaryFile(GameStore store) => new(LocationId.Game, "");
 
     public override IEnumerable<GameInstallation> Installations
     {
@@ -52,9 +52,9 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
                 .Select((i, idx) => new GameInstallation()
                 {
                     Game = this,
-                    LocationsRegister = new GameLocationsRegister( new Dictionary<GameFolderType, AbsolutePath>()
+                    LocationsRegister = new GameLocationsRegister( new Dictionary<LocationId, AbsolutePath>()
                     {
-                        { GameFolderType.Game, EnsureFiles(i.Path) }
+                        { LocationId.Game, EnsureFiles(i.Path) }
                     }),
                     Version = Version.Parse($"0.0.{idx}.0"),
                     Store = GameStore.Unknown,
@@ -72,12 +72,12 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
             "NexusMods.StandardGameLocators.TestHelpers.Resources.question_mark_game.png");
 
     public override IStreamFactory GameImage => throw new NotImplementedException("No game image for stubbed game.");
-    protected override IReadOnlyDictionary<GameFolderType, AbsolutePath> GetLocations(IFileSystem fileSystem,
-        IGameLocator locator, GameLocatorResult installation)
+    protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
+        GameLocatorResult installation)
     {
-        return new Dictionary<GameFolderType, AbsolutePath>()
+        return new Dictionary<LocationId, AbsolutePath>()
             {
-                { GameFolderType.Game, Installations.First().LocationsRegister[GameFolderType.Game] }
+                { LocationId.Game, Installations.First().LocationsRegister[LocationId.Game] }
             };
     }
 

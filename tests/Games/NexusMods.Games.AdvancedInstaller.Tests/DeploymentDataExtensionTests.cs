@@ -44,7 +44,7 @@ public partial class DeploymentDataTests
         AssertMapping(data, "folder/subfolder/file3.txt", MakeGamePath("Data/subfolder/file3.txt"));
     }
 
-    private static GamePath MakeGamePath(string path) => new(GameFolderType.Game, path);
+    private static GamePath MakeGamePath(string path) => new(LocationId.Game, path);
 
     private static Dictionary<RelativePath, int> CreateExtensionTestFileTree()
     {

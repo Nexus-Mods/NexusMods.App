@@ -35,37 +35,33 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame, IEpicGame
         return _osInformation.MatchPlatform(
             ref store,
             onWindows: (ref GameStore gameStore) => gameStore == GameStore.Steam
-                ? new GamePath(GameFolderType.Game, "_windows/Darkest.exe")
-                : new GamePath(GameFolderType.Game, "_windowsnosteam/Darkest.exe"),
+                ? new GamePath(LocationId.Game, "_windows/Darkest.exe")
+                : new GamePath(LocationId.Game, "_windowsnosteam/Darkest.exe"),
             onLinux: (ref GameStore gameStore) => gameStore == GameStore.Steam
-                ? new GamePath(GameFolderType.Game, "_linux/darkest.bin.x86_64")
-                : new GamePath(GameFolderType.Game, "linuxnosteam/darkest.bin.x86_64"),
+                ? new GamePath(LocationId.Game, "_linux/darkest.bin.x86_64")
+                : new GamePath(LocationId.Game, "linuxnosteam/darkest.bin.x86_64"),
             onOSX: (ref GameStore gameStore) => gameStore == GameStore.Steam
-                ? new GamePath(GameFolderType.Game, "_osx/Darkest.app/Contents/MacOS/Darkest")
-                : new GamePath(GameFolderType.Game, "_osxnosteam/Darkest.app/Contents/MacOS/Darkest NoSteam")
+                ? new GamePath(LocationId.Game, "_osx/Darkest.app/Contents/MacOS/Darkest")
+                : new GamePath(LocationId.Game, "_osxnosteam/Darkest.app/Contents/MacOS/Darkest NoSteam")
         );
     }
 
-    protected override IReadOnlyDictionary<GameFolderType, AbsolutePath> GetLocations(IFileSystem fileSystem,
-        IGameLocator locator,
+    protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
         GameLocatorResult installation)
     {
         var globalSettingsFile = fileSystem
             .GetKnownPath(KnownPath.LocalApplicationDataDirectory)
             .Combine("Red Hook Studios/Darkest/persist.options.json");
 
-        var result =  new Dictionary<GameFolderType, AbsolutePath>()
+        var result =  new Dictionary<LocationId, AbsolutePath>()
         {
-            { GameFolderType.Game, installation.Path },
-            { GameFolderType.Preferences, globalSettingsFile }
+            { LocationId.Game, installation.Path },
+            { LocationId.Preferences, globalSettingsFile }
         };
 
         if (installation.Metadata is SteamLocatorResultMetadata { CloudSavesDirectory: not null } steamLocatorResultMetadata)
-            result[GameFolderType.Saves] = steamLocatorResultMetadata.CloudSavesDirectory.Value;
-
-        if (installation.Store == GameStore.Steam)
         {
-            // TODO: Steam Cloud Saves
+            result[LocationId.Saves] = steamLocatorResultMetadata.CloudSavesDirectory.Value;
         }
         else
         {
@@ -73,7 +69,7 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame, IEpicGame
                 .GetKnownPath(KnownPath.MyDocumentsDirectory)
                 .Combine("Darkest");
 
-            result[GameFolderType.Saves] = savesDirectory;
+            result[LocationId.Saves] = savesDirectory;
         }
 
         return result;

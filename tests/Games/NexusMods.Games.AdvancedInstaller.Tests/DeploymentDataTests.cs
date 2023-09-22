@@ -13,7 +13,7 @@ public partial class DeploymentDataTests
         // Arrange
         var data = new DeploymentData();
         var archivePath = new RelativePath("archive/file1");
-        var outputPath = new GamePath(GameFolderType.Game, "Data/file1");
+        var outputPath = new GamePath(LocationId.Game, "Data/file1");
 
         // Act
         data.AddMapping(archivePath, outputPath);
@@ -32,7 +32,7 @@ public partial class DeploymentDataTests
         // Arrange
         var data = new DeploymentData();
         var archivePath = new RelativePath("archive/file1");
-        var outputPath = new GamePath(GameFolderType.Game, "Data/file1");
+        var outputPath = new GamePath(LocationId.Game, "Data/file1");
         data.AddMapping(archivePath, outputPath);
 
         // Act
@@ -49,8 +49,8 @@ public partial class DeploymentDataTests
     {
         // Arrange
         var data = new DeploymentData();
-        data.AddMapping(new RelativePath("archive/file1"), new GamePath(GameFolderType.Game, "Data/file1"));
-        data.AddMapping(new RelativePath("archive/file2"), new GamePath(GameFolderType.Game, "Data/file2"));
+        data.AddMapping(new RelativePath("archive/file1"), new GamePath(LocationId.Game, "Data/file1"));
+        data.AddMapping(new RelativePath("archive/file2"), new GamePath(LocationId.Game, "Data/file2"));
 
         // Act
         data.ClearMappings();
@@ -67,7 +67,7 @@ public partial class DeploymentDataTests
         var data = new DeploymentData();
         var archivePath1 = new RelativePath("archive/file1");
         var archivePath2 = new RelativePath("archive/file2");
-        var outputPath = new GamePath(GameFolderType.Game, "Data/file1");
+        var outputPath = new GamePath(LocationId.Game, "Data/file1");
 
         // Act
         data.AddMapping(archivePath1, outputPath);

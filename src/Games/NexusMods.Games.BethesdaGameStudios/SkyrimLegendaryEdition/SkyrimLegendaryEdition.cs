@@ -13,16 +13,15 @@ public class SkyrimLegendaryEdition : ABethesdaGame, ISteamGame
     public static GameDomain StaticDomain => GameDomain.From("skyrim");
 
     public override GameDomain Domain => StaticDomain;
-    public override GamePath GetPrimaryFile(GameStore store) => new(GameFolderType.Game, "TESV.exe");
+    public override GamePath GetPrimaryFile(GameStore store) => new(LocationId.Game, "TESV.exe");
 
-    protected override IReadOnlyDictionary<GameFolderType, AbsolutePath> GetLocations(IFileSystem fileSystem,
-        IGameLocator locator,
+    protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
         GameLocatorResult installation)
     {
-        return new Dictionary<GameFolderType, AbsolutePath>
+        return new Dictionary<LocationId, AbsolutePath>
         {
-            { GameFolderType.Game, installation.Path },
-            { GameFolderType.AppData, fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("Skyrim") }
+            { LocationId.Game, installation.Path },
+            { LocationId.AppData, fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("Skyrim") }
         };
     }
 

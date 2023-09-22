@@ -79,7 +79,7 @@ public class NativeModInstaller : IModInstaller
                     {
                         var (path, file) = kv;
                         return file!.ToFromArchive(
-                            new GamePath(GameFolderType.Game, ModsFolder.Join(path.DropFirst(parent.Depth - 1)))
+                            new GamePath(LocationId.Game, ModsFolder.Join(path.DropFirst(parent.Depth - 1)))
                         );
                     });
 
