@@ -78,10 +78,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
         SMAPIModInstaller.Create(_serviceProvider)
     };
 
-    public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations)
-    {
-        var result = new List<IModInstallDestination>();
-        ModInstallDestinationHelpers.AddCommonLocations(locations, result);
-        return result;
-    }
+    public override List<IModInstallDestination> GetInstallDestinations(
+        IReadOnlyDictionary<LocationId, AbsolutePath> locations)
+        => ModInstallDestinationHelpers.GetCommonLocations(locations);
 }

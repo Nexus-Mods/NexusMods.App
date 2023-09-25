@@ -64,9 +64,5 @@ public class Cyberpunk2077 : AGame, ISteamGame, IGogGame, IEpicGame
     };
 
     public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations)
-    {
-        var result = new List<IModInstallDestination>();
-        ModInstallDestinationHelpers.AddCommonLocations(locations, result);
-        return result;
-    }
+        => ModInstallDestinationHelpers.GetCommonLocations(locations);
 }

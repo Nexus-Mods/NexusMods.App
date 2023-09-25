@@ -76,12 +76,8 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame, IEpicGame
         return result;
     }
 
-    public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations)
-    {
-        var result = new List<IModInstallDestination>();
-        ModInstallDestinationHelpers.AddCommonLocations(locations, result);
-        return result;
-    }
+    public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations) =>
+        ModInstallDestinationHelpers.GetCommonLocations(locations);
 
     public override IStreamFactory Icon =>
         new EmbededResourceStreamFactory<DarkestDungeon>("NexusMods.Games.DarkestDungeon.Resources.DarkestDungeon.icon.png");

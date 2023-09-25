@@ -37,9 +37,5 @@ public class Sifu : AGame, ISteamGame, IEpicGame
     public override IEnumerable<IModInstaller> Installers => new[] { new SifuModInstaller(_serviceProvider) };
 
     public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations)
-    {
-        var result = new List<IModInstallDestination>();
-        ModInstallDestinationHelpers.AddCommonLocations(locations, result);
-        return result;
-    }
+        => ModInstallDestinationHelpers.GetCommonLocations(locations);
 }
