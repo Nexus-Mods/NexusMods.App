@@ -1,8 +1,10 @@
+using System.Net;
 using System.Reactive.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Web;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.Common.OSInterop;
@@ -24,7 +26,7 @@ public class OAuth
     // NOTE(erri120): The backend has a list of valid redirect URLs and client IDs.
     // We can't change these on our own.
     private const string OAuthRedirectUrl = "nxm://oauth/callback";
-    private const string OAuthClientId = "vortex";
+    private const string OAuthClientId = "nma";
 
     private readonly ILogger<OAuth> _logger;
     private readonly HttpClient _http;
@@ -136,7 +138,7 @@ public class OAuth
         var request = new Dictionary<string, string>
         {
             { "response_type", "code" },
-            { "scope", "public" },
+            { "scope", "public openid profile email" },
             { "code_challenge_method", "S256" },
             { "client_id", OAuthClientId },
             { "redirect_uri",  OAuthRedirectUrl },
