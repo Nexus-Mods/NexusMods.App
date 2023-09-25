@@ -1,5 +1,7 @@
+using System.Text.Json;
 using NexusMods.App.UI;
 using NexusMods.DataModel;
+using NexusMods.DataModel.GlobalSettings;
 using NexusMods.FileExtractor;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Paths;
@@ -46,6 +48,7 @@ public class AppConfig
     public HttpDownloaderSettings HttpDownloaderSettings { get; set; } = new();
     public LoggingSettings LoggingSettings { get; set; }
     public LauncherSettings LauncherSettings { get; set; } = new();
+    public bool? EnableTelemetry { get; set; }
 
     /// <summary>
     /// Sanitizes the config; e.g.
@@ -115,4 +118,29 @@ public class LoggingSettings : ILoggingSettings
     {
         MaxArchivedFiles = MaxArchivedFiles < 0 ? 10 : MaxArchivedFiles;
     }
+}
+
+internal class AppConfigManager : IAppConfigManager
+{
+    private readonly AppConfig _config;
+    private readonly AbsolutePath _configPath;
+    private readonly JsonSerializerOptions _jsonSerializerOptions;
+
+    public AppConfigManager(AppConfig config, JsonSerializerOptions jsonSerializerOptions)
+    {
+        _config = config;
+        _configPath = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory).Combine("AppConfig.json");
+        _jsonSerializerOptions = jsonSerializerOptions;
+    }
+
+    public bool GetMetricsOptIn() => _config.EnableTelemetry ?? false;
+
+    public void SetMetricsOptIn(bool value)
+    {
+        _config.EnableTelemetry = value;
+        var res = JsonSerializer.SerializeToUtf8Bytes(_config, _jsonSerializerOptions);
+        _configPath.WriteAllBytesAsync(res);
+    }
+
+    public bool IsMetricsOptInSet() => _config.EnableTelemetry.HasValue;
 }
