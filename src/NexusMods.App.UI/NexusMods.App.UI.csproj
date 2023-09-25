@@ -300,6 +300,9 @@
         <Compile Update="Controls\DevelopmentBuildBanner\DevelopmentBuildBannerView.axaml.cs">
           <DependentUpon>DevelopmentBuildBannerView.axaml</DependentUpon>
         </Compile>
+        <Compile Update="Overlays\Updater\UpdaterDesignViewModel.cs">
+          <DependentUpon>IUpdaterViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

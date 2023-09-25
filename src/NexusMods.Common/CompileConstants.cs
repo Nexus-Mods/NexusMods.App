@@ -23,6 +23,15 @@ public static class CompileConstants
 #else
         InstallationMethod.Manually;
 #endif
+
+    /// <summary>
+    /// True if the app is running with compile settings
+    /// </summary>
+#if DEBUG
+    public static readonly bool IsDebug = true;
+#else
+    public static readonly bool IsDebug = false;
+#endif
 }
 
 /// <summary>

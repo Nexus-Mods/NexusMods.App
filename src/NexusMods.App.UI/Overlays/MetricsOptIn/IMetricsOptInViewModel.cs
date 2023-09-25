@@ -16,7 +16,7 @@ public interface IMetricsOptInViewModel : IOverlayViewModel
     public ICommand Deny { get; }
 
     /// <summary>
-    /// If the metrics opt-in overlay has not been shown before, then show it now
+    /// If the metrics opt-in overlay has not been shown before, then show it now. Returns true if the overlay was shown.
     /// </summary>
-    public void MaybeShow();
+    public bool MaybeShow();
 }

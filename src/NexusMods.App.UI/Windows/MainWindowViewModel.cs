@@ -7,6 +7,7 @@ using NexusMods.App.UI.Controls.TopBar;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.MetricsOptIn;
+using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
@@ -35,6 +36,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
         IDownloadService downloadService,
         IArchiveInstaller archiveInstaller,
         IMetricsOptInViewModel metricsOptInViewModel,
+        IUpdaterViewModel updaterViewModel,
         LoadoutRegistry registry)
     {
         TopBar = topBarViewModel;
@@ -105,7 +107,10 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
                     return right;
                 }).BindTo(this, vm => vm.RightContent);
 
-            metricsOptInViewModel.MaybeShow();
+            // Only show the updater if the metrics opt-in has been shown before, so we don't spam the user.
+            if (!metricsOptInViewModel.MaybeShow())
+                updaterViewModel.MaybeShow();
+
         });
     }
 
