@@ -42,6 +42,24 @@
     <data name="MetricsOptIn_MainMessage" xml:space="preserve">
         <value>Help us provide you with the best modding experience.&#x0a;&#x0a;With your permission, we will collect analytics information and send it to our team to help us improve quality and performance.&#x0a;&#x0a;This information is sent anonymously and will never be shared with a 3rd party.</value>
     </data>
+    <data name="Updater_LATER" xml:space="preserve">
+        <value>LATER</value>
+    </data>
+    <data name="Updater_UPDATE" xml:space="preserve">
+        <value>UPDATE</value>
+    </data>
+    <data name="Updater_UpdateAvailable" xml:space="preserve">
+        <value>Update available</value>
+    </data>
+    <data name="Updater_MainMessage" xml:space="preserve">
+        <value>Keep your app updated to get the latest improvements.</value>
+    </data>
+    <data name="Updater_UseSystemUpdater" xml:space="preserve">
+        <value>It appears that your copy of the app was installed via a system managed package manager, please update via your operating system's update application.</value>
+    </data>
+    <data name="Updater_ViewChangelog" xml:space="preserve">
+        <value>View changelog on GitHub</value>
+    </data>
     <data name="LoadoutGridView_AddMod_FilePicker_Title" xml:space="preserve">
         <value>Please select a mod file to install.</value>
     </data>

@@ -39,11 +39,12 @@ public class MetricsOptInViewModel : AViewModel<IMetricsOptInViewModel>, IMetric
         });
     }
 
-    public void MaybeShow()
+    public bool MaybeShow()
     {
         if (_globalSettingsManager.IsMetricsOptInSet())
-            return;
+            return false;
 
         _overlayController.SetOverlayContent(new SetOverlayItem(this));
+        return true;
     }
 }

@@ -14,6 +14,8 @@ using NexusMods.Common;
 using NexusMods.Paths;
 using NLog.Extensions.Logging;
 using NLog.Targets;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
 using ReactiveUI;
 
 namespace NexusMods.App;
@@ -84,6 +86,12 @@ public class Program
             .ConfigureLogging((_, builder) => AddLogging(builder, config.LoggingSettings))
             .Build();
 
+        // NOTE(erri120): DI is lazy by default and these services
+        // do additional initialization inside their constructors.
+        // We need to make sure their constructors are called to
+        // finalize our OpenTelemetry configuration.
+        host.Services.GetService<TracerProvider>();
+        host.Services.GetService<MeterProvider>();
         return host;
     }
 
