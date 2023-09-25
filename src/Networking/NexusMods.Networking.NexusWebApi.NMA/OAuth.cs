@@ -1,10 +1,8 @@
-using System.Net;
 using System.Reactive.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
-using System.Web;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.Common.OSInterop;
@@ -138,7 +136,7 @@ public class OAuth
         var request = new Dictionary<string, string>
         {
             { "response_type", "code" },
-            { "scope", "public openid profile email" },
+            { "scope", "openid profile email" },
             { "code_challenge_method", "S256" },
             { "client_id", OAuthClientId },
             { "redirect_uri",  OAuthRedirectUrl },
