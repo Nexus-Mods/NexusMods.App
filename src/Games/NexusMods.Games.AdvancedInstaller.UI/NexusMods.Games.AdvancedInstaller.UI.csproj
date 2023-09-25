@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <ItemGroup>
+        <ProjectReference Include="..\..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Update="Resources\Language.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Language.resx</DependentUpon>
+        </Compile>
+
+        <EmbeddedResource Update="Resources\Language.resx">
+            <Generator>PublicResXFileCodeGenerator</Generator>
+            <LastGenOutput>Language.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+    </ItemGroup>
+</Project>

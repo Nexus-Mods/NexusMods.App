@@ -127,6 +127,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.AdvancedIns
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.AdvancedInstaller", "src\Games\NexusMods.Games.AdvancedInstaller\NexusMods.Games.AdvancedInstaller.csproj", "{E7E68E07-6732-4FA4-BC4D-6E4249B592FD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.AdvancedInstaller.UI", "src\Games\NexusMods.Games.AdvancedInstaller.UI\NexusMods.Games.AdvancedInstaller.UI.csproj", "{07B8ACA6-CE4B-496D-B183-63A57C5F08E1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -313,6 +315,10 @@ Global
 		{E7E68E07-6732-4FA4-BC4D-6E4249B592FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7E68E07-6732-4FA4-BC4D-6E4249B592FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7E68E07-6732-4FA4-BC4D-6E4249B592FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07B8ACA6-CE4B-496D-B183-63A57C5F08E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07B8ACA6-CE4B-496D-B183-63A57C5F08E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07B8ACA6-CE4B-496D-B183-63A57C5F08E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07B8ACA6-CE4B-496D-B183-63A57C5F08E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -368,6 +374,7 @@ Global
 		{500CE772-93C3-4DA9-9AB3-E9E9EC0A9429} = {70D38D24-79AE-4600-8E83-17F3C11BA81F}
 		{63BC2EE7-18E5-4887-913A-4843DBBE2C8D} = {05B06AC1-7F2B-492F-983E-5BC63CDBF20D}
 		{E7E68E07-6732-4FA4-BC4D-6E4249B592FD} = {70D38D24-79AE-4600-8E83-17F3C11BA81F}
+		{07B8ACA6-CE4B-496D-B183-63A57C5F08E1} = {70D38D24-79AE-4600-8E83-17F3C11BA81F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F9F8352-34DD-42C0-8564-EE9AF34A3501}
