@@ -76,8 +76,9 @@ public sealed class LoginManager : IDisposable
         var cachedValue = _cachedUserInfo.Get();
         if (cachedValue is not null) return cachedValue;
 
-        using var waiter = _verifySemaphore.CustomWait(timeout: TimeSpan.FromSeconds(30), cancellationToken);
-        if (!waiter.HasEntered) return null;
+        using var waiter = _verifySemaphore.CustomWait(cancellationToken);
+        cachedValue = _cachedUserInfo.Get();
+        if (cachedValue is not null) return cachedValue;
 
         var isAuthenticated = await _msgFactory.IsAuthenticated();
         if (!isAuthenticated) return null;
