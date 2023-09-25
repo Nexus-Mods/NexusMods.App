@@ -2,6 +2,11 @@
     <ItemGroup>
         <ProjectReference Include="..\..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="ReactiveUI.Fody" />
+    </ItemGroup>
+    
     <ItemGroup>
         <Compile Update="Resources\Language.Designer.cs">
             <DesignTime>True</DesignTime>
