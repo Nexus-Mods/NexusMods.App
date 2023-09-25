@@ -55,4 +55,13 @@ public struct CachedObject<T> where T : class
         _object = obj;
         _expiredAt = DateTimeOffset.UtcNow + _lifetime;
     }
+
+    /// <summary>
+    /// Immediately expires the current cache.
+    /// </summary>
+    public void Evict()
+    {
+        _object = null;
+        _expiredAt = DateTimeOffset.UtcNow;
+    }
 }

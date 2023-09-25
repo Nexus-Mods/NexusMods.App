@@ -15,25 +15,25 @@ public record OAuthUserInfo : IJsonSerializable<OAuthUserInfo>
     /// Gets the User ID.
     /// </summary>
     [JsonPropertyName("sub")]
-    public ulong Sub { get; init; }
+    public string Sub { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets the User Name.
     /// </summary>
     [JsonPropertyName("name")]
-    public string Name { get; init; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets the avatar url.
     /// </summary>
     [JsonPropertyName("avatar")]
-    public Uri? Avatar { get; init; }
+    public Uri? Avatar { get; set; }
 
     /// <summary>
     /// Gets an array of membership roles.
     /// </summary>
     [JsonPropertyName("membership_roles")]
-    public MembershipRole[] MembershipRoles { get; init; } = Array.Empty<MembershipRole>();
+    public MembershipRole[] MembershipRoles { get; set; } = Array.Empty<MembershipRole>();
 
     /// <inheritdoc />
     public static JsonTypeInfo<OAuthUserInfo> GetTypeInfo() => OAuthUserInfoContext.Default.OAuthUserInfo;

@@ -1,5 +1,4 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Text.Json;
+using System.Reactive.Linq;
 using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.Networking.NexusWebApi.DTOs.OAuth;
@@ -15,7 +14,6 @@ public class OAuth2MessageFactory : IAuthenticatingMessageFactory
     private readonly ILogger<OAuth2MessageFactory> _logger;
     private readonly IDataStore _store;
     private readonly OAuth _auth;
-    private readonly JwtSecurityTokenHandler _tokenHandler = new();
 
     /// <summary>
     /// Constructor.
@@ -28,11 +26,13 @@ public class OAuth2MessageFactory : IAuthenticatingMessageFactory
         _store = store;
         _auth = auth;
         _logger = logger;
+
+        _store.IdChanges
+            .Where(x => x.Equals(JWTTokenEntity.StoreId))
+            .Subscribe(_ => _cachedTokenEntity = null);
     }
 
-    // TODO: listen to DB changes when the user wants to logout
     private JWTTokenEntity? _cachedTokenEntity;
-    private UserInfo? _cachedUserInfo;
 
     private async ValueTask<string?> GetOrRefreshToken(CancellationToken cancellationToken)
     {
@@ -47,11 +47,12 @@ public class OAuth2MessageFactory : IAuthenticatingMessageFactory
         {
             RefreshToken = newToken.RefreshToken,
             AccessToken = newToken.AccessToken,
-            ExpiresAt = DateTimeOffset.UtcNow
+            ExpiresAt = DateTimeOffset.UtcNow,
         };
 
-        _cachedUserInfo = null;
         _store.Put(JWTTokenEntity.StoreId, _cachedTokenEntity);
+        _cachedTokenEntity.DataStoreId = JWTTokenEntity.StoreId;
+
         return _cachedTokenEntity.AccessToken;
     }
 
@@ -77,30 +78,24 @@ public class OAuth2MessageFactory : IAuthenticatingMessageFactory
     /// <inheritdoc/>
     public async ValueTask<UserInfo?> Verify(Client client, CancellationToken cancel)
     {
-        if (_cachedUserInfo is not null) return _cachedUserInfo;
-        _logger.LogDebug("Renewing cached user info");
-
-        var token = await GetOrRefreshToken(cancellationToken: cancel);
-
-        var tokenInfo = _tokenHandler.ReadJwtToken(token);
-        var userClaim = tokenInfo?.Claims.FirstOrDefault(iter => iter.Type == "user");
-        var userInfo = userClaim is not null ? JsonSerializer.Deserialize<TokenUserInfo>(userClaim.Value) : null;
-
-        if (userInfo is null)
+        OAuthUserInfo oAuthUserInfo;
+        try
         {
-            _logger.LogError("Unable to extract user info from token!");
+            var res = await client.GetOAuthUserInfo(cancellationToken: cancel);
+            oAuthUserInfo = res.Data;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Exception while fetching OAuth user info");
             return null;
         }
 
-        _cachedUserInfo = new UserInfo
+        return new UserInfo
         {
-            Name = userInfo.Name,
-            IsPremium = userInfo.MembershipRoles.Contains(MembershipRole.Premium),
-            IsSupporter = userInfo.MembershipRoles.Contains(MembershipRole.Supporter),
-            // TODO: fetch avatar
+            Name = oAuthUserInfo.Name,
+            IsPremium = oAuthUserInfo.MembershipRoles.Contains(MembershipRole.Premium),
+            AvatarUrl = oAuthUserInfo.Avatar
         };
-
-        return _cachedUserInfo;
     }
 
     /// <inheritdoc/>

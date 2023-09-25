@@ -1,5 +1,7 @@
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using JetBrains.Annotations;
+using NexusMods.Common;
 using NexusMods.Common.ProtocolRegistration;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.Networking.NexusWebApi.Types;
@@ -10,7 +12,7 @@ namespace NexusMods.Networking.NexusWebApi.NMA;
 /// Component for handling login and logout from the Nexus Mods
 /// </summary>
 [PublicAPI]
-public class LoginManager
+public sealed class LoginManager : IDisposable
 {
     private readonly OAuth _oauth;
     private readonly IDataStore _dataStore;
@@ -36,7 +38,7 @@ public class LoginManager
     /// <summary>
     /// The user's avatar
     /// </summary>
-    public IObservable<Uri?> Avatar => UserInfo.Select(info => info?.Avatar);
+    public IObservable<Uri?> Avatar => UserInfo.Select(info => info?.AvatarUrl);
 
     /// <summary/>
     /// <param name="client">Nexus API client.</param>
@@ -57,19 +59,33 @@ public class LoginManager
         _protocolRegistration = protocolRegistration;
 
         UserInfo = _dataStore.IdChanges
-            // NOTE(err120): Since id's don't change on startup, we can insert
+            // NOTE(err120): Since IDs don't change on startup, we can insert
             // a fake change at the start of the observable chain. This will only
             // run once at startup and notify the subscribers.
             .Merge(Observable.Return(JWTTokenEntity.StoreId))
             .Where(id => id.Equals(JWTTokenEntity.StoreId))
+            .ObserveOn(TaskPoolScheduler.Default)
             .SelectMany(async _ => await Verify(CancellationToken.None));
     }
 
+    private CachedObject<UserInfo> _cachedUserInfo = new(TimeSpan.FromHours(1));
+    private readonly SemaphoreSlim _verifySemaphore = new(initialCount: 1, maxCount: 1);
+
     private async Task<UserInfo?> Verify(CancellationToken cancellationToken)
     {
-        if (await _msgFactory.IsAuthenticated())
-            return await _msgFactory.Verify(_client, cancellationToken);
-        return null;
+        var cachedValue = _cachedUserInfo.Get();
+        if (cachedValue is not null) return cachedValue;
+
+        using var waiter = _verifySemaphore.CustomWait(timeout: TimeSpan.FromSeconds(30), cancellationToken);
+        if (!waiter.HasEntered) return null;
+
+        var isAuthenticated = await _msgFactory.IsAuthenticated();
+        if (!isAuthenticated) return null;
+
+        var userInfo = await _msgFactory.Verify(_client, cancellationToken);
+        _cachedUserInfo.Store(userInfo);
+
+        return userInfo;
     }
 
     /// <summary>
@@ -100,6 +116,13 @@ public class LoginManager
     public Task Logout()
     {
         _dataStore.Delete(JWTTokenEntity.StoreId);
+        _cachedUserInfo.Evict();
         return Task.CompletedTask;
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        _verifySemaphore.Dispose();
     }
 }
