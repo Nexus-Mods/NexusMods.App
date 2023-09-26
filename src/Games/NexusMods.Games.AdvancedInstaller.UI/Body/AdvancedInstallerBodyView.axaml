@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI"
+    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
     mc:Ignorable="d" d:DesignWidth="1232" d:DesignHeight="672"
     x:Class="NexusMods.Games.AdvancedInstaller.UI.AdvancedInstallerBodyView">
 
@@ -13,8 +14,77 @@
         <ui:AdvancedInstallerBodyDesignViewModel />
     </Design.DataContext>
 
-    <StackPanel Background="Black">
-        <TextBlock Text="Hello World!" Foreground="White" />
-    </StackPanel>
+    <Grid RowDefinitions="Auto, *">
+        <Grid.Styles>
+
+            <Style Selector="TextBlock#ModNameTextBlock">
+                <Setter Property="Margin" Value="0,0,0,8" />
+            </Style>
+
+            <Style Selector="TextBlock#InstallerNameTextBlock">
+                <Setter Property="Margin" Value="0,0,0,12" />
+            </Style>
+
+            <Style Selector="Border#BodyContainerBorder">
+                <Setter Property="Margin" Value="0,16,0,0" />
+            </Style>
+
+            <Style Selector="Border.ContainerBorder">
+                <Setter Property="CornerRadius" Value="8" />
+                <Setter Property="Background" Value="{DynamicResource BorderContainerColor}" />
+            </Style>
+
+            <Style Selector="icons|Icon.CentralIcon">
+                <Setter Property="Foreground" Value="{DynamicResource BrandTertiaryDarker}" />
+                <Setter Property="Margin" Value="16,0,16,0" />
+                <Setter Property="FontSize" Value="14" />
+            </Style>
+
+        </Grid.Styles>
+
+        <Border Grid.Row="0" x:Name="TitleContainerBorder">
+            <StackPanel x:Name="HeadingAndSubHeadingStackPanel" Orientation="Vertical">
+                <TextBlock Classes="TitleMDSemi" x:Name="ModNameTextBlock"
+                           Text="Temp mod name" />
+                <TextBlock Classes="HeadingMDSemi" x:Name="InstallerNameTextBlock"
+                           Text="Advanced manual mod installer" />
+                <TextBlock Classes="BodyLGNormal" x:Name="SubHeadingTextBlock"
+                           Text="Please select the files to install and where they should be installed to." />
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="1" x:Name="BodyContainerBorder">
+            <Grid ColumnDefinitions="*, Auto, *" x:Name="CentralGrid">
+
+                <Border Classes="ContainerBorder" Grid.Column="0" x:Name="ModContentBorder">
+                    <ScrollViewer x:Name="ModContentScrollViewer">
+                        <ItemsControl x:Name="ModContentScrollItemsControl">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Border>
+
+                <icons:Icon Classes="Play CentralIcon" Grid.Column="1" x:Name="PlayArrowIcon" />
+
+                <Border Classes="ContainerBorder" Grid.Column="2" x:Name="ResultsBorder">
+                    <ScrollViewer x:Name="ResultsScrollViewer">
+                        <ItemsControl x:Name="ResultsScrollItemsControl">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Border>
+
+            </Grid>
+        </Border>
+
+    </Grid>
 
 </reactiveUi:ReactiveUserControl>
