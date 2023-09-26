@@ -180,12 +180,12 @@ public class OAuthTests
         };
 
     // ReSharper disable once InconsistentNaming
-    private readonly Uri ExpectedAuthURL = new("https://users.nexusmods.com/oauth/authorize?response_type=code&scope=public&code_challenge_method=S256&client_id=vortex&redirect_uri=nxm%3A%2F%2Foauth%2Fcallback&code_challenge=-pSOp5xdZffKD0gc1lb5JALgN_ZtE9X573ib3yS8BT4&state=00000000-0000-0000-0000-000000000000");
+    private readonly Uri ExpectedAuthURL = new("https://users.nexusmods.com/oauth/authorize?response_type=code&scope=openid profile email&code_challenge_method=S256&client_id=nma&redirect_uri=nxm%3A%2F%2Foauth%2Fcallback&code_challenge=QMZ4D7BLeehAXINE9NZ8dho2i5AYVTbfqJ8PhQ4eUrE&state=00000000-0000-0000-0000-000000000000");
 
     [Fact]
     public void Test_GenerateAuthorizeUrl()
     {
-        var res = OAuth.GenerateAuthorizeUrl("-pSOp5xdZffKD0gc1lb5JALgN_ZtE9X573ib3yS8BT4", "00000000-0000-0000-0000-000000000000");
+        var res = OAuth.GenerateAuthorizeUrl("QMZ4D7BLeehAXINE9NZ8dho2i5AYVTbfqJ8PhQ4eUrE", "00000000-0000-0000-0000-000000000000");
         res.Should().Be(ExpectedAuthURL);
     }
 }
