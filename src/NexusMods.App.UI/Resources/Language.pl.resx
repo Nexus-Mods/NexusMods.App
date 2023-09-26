@@ -35,6 +35,24 @@
     <data name="MetricsOptIn_MainMessage" xml:space="preserve">
         <value>Pomóż nam zapewnić ci najlepsze wrażenia z modowania.&#x0a;&#x0a;Za twoją zgodą będziemy gromadzić informacje analityczne i wysyłać je do naszego zespołu, by poprawić jakość i wydajność aplikacji.&#x0a;&#x0a;Informacje analityczne są wysyłane anonimowo i nigdy nie będą udostępniane stronom trzecim.</value>
     </data>
+    <data name="Updater_LATER" xml:space="preserve">
+        <value>PÓŹNIEJ</value>
+    </data>
+    <data name="Updater_UPDATE" xml:space="preserve">
+        <value>ZAKTUALIZUJ</value>
+    </data>
+    <data name="Updater_UpdateAvailable" xml:space="preserve">
+        <value>Dostępna aktualizacja</value>
+    </data>
+    <data name="Updater_MainMessage" xml:space="preserve">
+        <value>Aktualizuj swoją aplikację, by otrzymywać najnowsze ulepszenia.</value>
+    </data>
+    <data name="Updater_UseSystemUpdater" xml:space="preserve">
+        <value>Wygląda na to, że twoja aplikacja została zainstalowana za pośrednictwem narzędzia Menedżer pakietów systemu. Proszę zaktualizować aplikację za pośrednictwem systemowej aplikacji do aktualizacji.</value>
+    </data>
+    <data name="Updater_ViewChangelog" xml:space="preserve">
+        <value>Zobacz dziennik zmian na GitHub</value>
+    </data>
     <data name="LoadoutGridView_AddMod_FilePicker_Title" xml:space="preserve">
         <value>Proszę wybrać plik modyfikacji do zainstalowania.</value>
     </data>
