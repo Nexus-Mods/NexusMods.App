@@ -1,6 +1,8 @@
-﻿namespace NexusMods.Games.AdvancedInstaller.UI;
+﻿using NexusMods.App.UI;
 
-public class IAdvancedInstallerBodyViewModel
+namespace NexusMods.Games.AdvancedInstaller.UI;
+
+public interface IAdvancedInstallerBodyViewModel : IViewModel
 {
-    
+
 }
