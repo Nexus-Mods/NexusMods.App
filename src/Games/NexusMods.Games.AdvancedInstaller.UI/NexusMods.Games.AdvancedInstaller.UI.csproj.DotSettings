@@ -5,4 +5,6 @@
 	<s:Boolean
             x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=body/@EntryIndexedValue">True</s:Boolean>
     <s:Boolean
+            x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=footer/@EntryIndexedValue">True</s:Boolean>
+    <s:Boolean
             x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=window/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>

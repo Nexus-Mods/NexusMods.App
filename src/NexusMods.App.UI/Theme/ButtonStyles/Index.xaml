@@ -14,28 +14,31 @@
             </Button>
             <Button Classes="LeftMenuItem">
                 <StackPanel>
-                    <icons:Icon Classes="ProgressDownload"/>
+                    <icons:Icon Classes="ProgressDownload" />
                     <TextBlock Text="Label Goes Here"></TextBlock>
                 </StackPanel>
             </Button>
             <Button Classes="LeftMenuItem Active">
                 <StackPanel>
-                    <icons:Icon Classes="ProgressDownload"/>
+                    <icons:Icon Classes="ProgressDownload" />
                     <TextBlock Text="Label Goes Here"></TextBlock>
                 </StackPanel>
             </Button>
 
             <!-- Use like this -->
             <Button Classes="Primary">
-                <TextBlock Text="YES"/>
+                <TextBlock Text="YES" />
             </Button>
 
             <!-- DO NOT use like this -->
-            <Button Classes="Primary" Content="YES"/>
+            <Button Classes="Primary" Content="YES" />
 
             <!-- Tertiary -->
             <Button Classes="LeftMenuItem" HorizontalAlignment="Center">
                 <TextBlock Text="NO" />
+            </Button>
+            <Button Classes="Tertiary" HorizontalAlignment="Center">
+                <TextBlock Text="TERTIARY" />
             </Button>
         </StackPanel>
     </Design.PreviewWith>
@@ -232,6 +235,18 @@
     </Style>
 
     <!-- Left Menu Item: 'Tertiary' Style -->
+    <Style Selector="Button.Tertiary">
+        <Setter Property="CornerRadius" Value="4"></Setter>
+        <Setter Property="Background" Value="Transparent" />
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource BrandSecondaryLighter}" />
+        </Style>
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Opacity" Value="0.4" />
+            <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryColor}" />
+        </Style>
+    </Style>
+
     <Style Selector="Button.LeftMenuItem">
         <Setter Property="Height" Value="40" />
         <Setter Property="Padding" Value="0" />
@@ -242,16 +257,16 @@
         by making it visually transparent, but not really, so the user can hover
         over the space meant to be taken by the button, and still be able to click it.-->
         <Setter Property="Background" Value="#01FFFFFF" />
-
     </Style>
 
     <Style Selector="Button.LeftMenuItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource BrandSecondaryLighter}"/>
+        <Setter Property="Background" Value="{DynamicResource BrandSecondaryLighter}" />
     </Style>
 
     <Style Selector="Button.LeftMenuItem.Active /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource BackgroundTertiaryColor}"/>
+        <Setter Property="Background" Value="{DynamicResource BackgroundTertiaryColor}" />
     </Style>
+
 
     <!-- TODO: Reach out to design. There's no visual feedback for when a button is held down.
     <Style Selector="Button.LeftMenuItem:pressed /template/ ContentPresenter#PART_ContentPresenter">
