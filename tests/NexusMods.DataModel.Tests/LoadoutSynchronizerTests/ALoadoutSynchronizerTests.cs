@@ -108,7 +108,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
                 "{Preferences}/preferences/prefs.dat",
                 "{Saves}/saves/save.dat"
             },
-                "All the mods are flattened into a single tree, with overlaps removed");
+                "all the mods are flattened into a single tree, with overlaps removed");
 
         var topMod = _modIds[0];
         var topFiles = BaseList.Value.Mods[topMod].Files.Values.OfType<FromArchive>().ToDictionary(d => d.To);
@@ -116,7 +116,15 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
         foreach (var path in _allPaths)
         {
             flattened[path].Value!.File.Should()
-                .BeEquivalentTo(topFiles[path], "The top mod should be the one that contributes the file data");
+                .BeEquivalentTo(topFiles[path], "the top mod should be the one that contributes the file data");
+        }
+
+        for (var i = 0; i < ModCount; i++)
+        {
+            var path = new GamePath(LocationId.Game, $"perMod/{i}.dat");
+            var originalFile = BaseList.Value.Mods[_modIds[i]].Files.Values.OfType<FromArchive>().First(f => f.To == path);
+            flattened[path].Value!.File.Should()
+                .BeEquivalentTo(originalFile, "these files have unique paths, so they should not be overridden");
         }
     }
 }
