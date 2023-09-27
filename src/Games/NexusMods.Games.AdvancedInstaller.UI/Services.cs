@@ -8,6 +8,13 @@ public static class Services
     public static IServiceCollection AddAdvancedInstallerUi(this IServiceCollection serviceCollection)
     {
         return serviceCollection
-            .AddView<AdvancedInstallerBodyView, IAdvancedInstallerBodyViewModel>();
+            .AddViewModel<AdvancedInstallerOverlayViewModel, IAdvancedInstallerOverlayViewModel>()
+
+            .AddView<AdvancedInstallerFooterView, IAdvancedInstallerFooterViewModel>()
+            .AddView<AdvancedInstallerBodyView, IAdvancedInstallerBodyViewModel>()
+            .AddView<AdvancedInstallerModContentView, IAdvancedInstallerModContentViewModel>()
+            .AddView<AdvancedInstallerResultsView, IAdvancedInstallerResultsViewModel>()
+            .AddView<AdvancedInstallerOverlayView, IAdvancedInstallerOverlayViewModel>();
+
     }
 }
