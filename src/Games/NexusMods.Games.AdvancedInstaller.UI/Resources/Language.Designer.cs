@@ -76,5 +76,14 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Resources {
                 return ResourceManager.GetString("Footer_INSTALL", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Advanced installer.
+        /// </summary>
+        public static string OverlayHeaderText_Advanced_Installer {
+            get {
+                return ResourceManager.GetString("OverlayHeaderText_Advanced_Installer", resourceCulture);
+            }
+        }
     }
 }

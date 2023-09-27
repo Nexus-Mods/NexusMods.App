@@ -24,4 +24,7 @@
     <data name="Footer_INSTALL" xml:space="preserve">
         <value>INSTALL</value>
     </data>
+    <data name="OverlayHeaderText_Advanced_Installer" xml:space="preserve">
+        <value>Advanced installer</value>
+    </data>
 </root>
