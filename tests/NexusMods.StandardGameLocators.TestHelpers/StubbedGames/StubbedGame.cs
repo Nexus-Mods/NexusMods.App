@@ -49,12 +49,14 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
         {
             _logger.LogInformation("Looking for {Game} in {Count} locators", ToString(), _locators.Count());
             return _locators.SelectMany(l => l.Find(this))
-                .Select((i, idx) => new GameInstallation()
+                .Select((i, idx) => new GameInstallation
                 {
                     Game = this,
                     LocationsRegister = new GameLocationsRegister( new Dictionary<LocationId, AbsolutePath>()
                     {
-                        { LocationId.Game, EnsureFiles(i.Path) }
+                        { LocationId.Game, EnsureFiles(i.Path, LocationId.Game) },
+                        { LocationId.Preferences, EnsurePath(i.Path, LocationId.Preferences) },
+                        { LocationId.Saves, EnsurePath(i.Path, LocationId.Saves) },
                     }),
                     Version = Version.Parse($"0.0.{idx}.0"),
                     Store = GameStore.Unknown,
@@ -81,14 +83,26 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
             };
     }
 
-    private AbsolutePath EnsureFiles(AbsolutePath path)
+    private AbsolutePath EnsureFiles(AbsolutePath path, LocationId locationId)
     {
         lock (this)
         {
+            path = path.Combine(locationId.ToString());
+            path.CreateDirectory();
             foreach (var file in DATA_NAMES)
             {
                 EnsureFile(path.Combine(file));
             }
+            return path;
+        }
+    }
+
+    private AbsolutePath EnsurePath(AbsolutePath path, LocationId locationId)
+    {
+        lock (this)
+        {
+            path = path.Combine(locationId.ToString());
+            path.CreateDirectory();
             return path;
         }
     }

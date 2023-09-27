@@ -69,7 +69,7 @@ public record PluginOrderFile : AModFile, IGeneratedFile, IToFile, ITriggerFilte
                 {
                     for (var i = 0; i < defaultIdx; i++)
                     {
-                        yield return new After<ModRuleTuple, RelativePath>(_defaultOrdering[i]);
+                        yield return new After<ModRuleTuple, RelativePath> { Other = _defaultOrdering[i]};
                     }
 
                     foreach (var itm in modFiles)
@@ -86,19 +86,19 @@ public record PluginOrderFile : AModFile, IGeneratedFile, IToFile, ITriggerFilte
                     {
                         foreach (var dep in itm.Masters)
                         {
-                            yield return new After<ModRuleTuple, RelativePath>(dep);
+                            yield return new After<ModRuleTuple, RelativePath> {Other = dep};
                         }
                     }
 
                     if (aModFile.To.Extension == SkyrimSpecialEdition.ESL)
                     {
                         foreach (var file in modFiles.Where(m => m.Mod.To.Extension == SkyrimSpecialEdition.ESM))
-                            yield return new After<ModRuleTuple, RelativePath>(file.Mod.To.FileName);
+                            yield return new After<ModRuleTuple, RelativePath> { Other = file.Mod.To.FileName};
                     }
                     else if (aModFile.To.Extension == SkyrimSpecialEdition.ESP)
                     {
                         foreach (var file in modFiles.Where(m => m.Mod.To.Extension != SkyrimSpecialEdition.ESP))
-                            yield return new After<ModRuleTuple, RelativePath>(file.Mod.To.FileName);
+                            yield return new After<ModRuleTuple, RelativePath> { Other = file.Mod.To.FileName};
                     }
 
 
@@ -145,7 +145,7 @@ public record PluginOrderFile : AModFile, IGeneratedFile, IToFile, ITriggerFilte
                 fingerprinter.Add(f.DataStoreId);
             });
 
-        
+
         return fingerprinter.Digest();
     }
 }

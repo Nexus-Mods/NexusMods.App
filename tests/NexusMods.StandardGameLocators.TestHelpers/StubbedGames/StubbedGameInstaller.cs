@@ -6,6 +6,7 @@ using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Paths;
+using NexusMods.Paths.Extensions;
 using NexusMods.Paths.FileTree;
 using Hash = NexusMods.Hashing.xxHash64.Hash;
 
@@ -13,6 +14,9 @@ namespace NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
 public class StubbedGameInstaller : IModInstaller
 {
+    private readonly RelativePath _preferencesPrefix = "preferences".ToRelativePath();
+    private readonly RelativePath _savesPrefix = "saves".ToRelativePath();
+
     public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
         ModId baseModId,
@@ -30,9 +34,24 @@ public class StubbedGameInstaller : IModInstaller
             .Select(kv =>
             {
                 var (path, file) = kv;
+                if (path.Path.StartsWith(_preferencesPrefix))
+                {
+                    return file!.ToFromArchive(
+                        new GamePath(LocationId.Preferences, path)
+                    );
+                }
+
+                if (path.Path.StartsWith(_savesPrefix))
+                {
+                    return file!.ToFromArchive(
+                        new GamePath(LocationId.Saves, path)
+                    );
+
+                }
+
                 return file!.ToFromArchive(
-                    new GamePath(LocationId.Game, path)
-                );
+                    new GamePath(LocationId.Game, path));
+                ;
             });
 
         yield return new ModInstallerResult

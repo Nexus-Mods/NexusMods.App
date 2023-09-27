@@ -11,7 +11,6 @@ namespace NexusMods.DataModel.Loadouts.Markers;
 public readonly struct LoadoutMarker
 {
     private readonly LoadoutRegistry _registry;
-    private readonly LoadoutId _id;
 
     /// <summary/>
     /// <param name="registry"></param>
@@ -19,13 +18,18 @@ public readonly struct LoadoutMarker
     public LoadoutMarker(LoadoutRegistry registry, LoadoutId id)
     {
         _registry = registry;
-        _id = id;
+        Id = id;
     }
 
     /// <summary>
     /// Gets the state of the loadout represented by the current ID.
     /// </summary>
-    public Loadout Value => _registry.Get(_id)!;
+    public Loadout Value => _registry.Get(Id)!;
+
+    /// <summary>
+    /// Returns the ID of the loadout.
+    /// </summary>
+    public LoadoutId Id { get; }
 
     /// <summary>
     /// Returns all of the previous versions of this loadout for.
@@ -51,7 +55,7 @@ public readonly struct LoadoutMarker
     /// <param name="newMod">The mod to add to the loadout.</param>
     public void Add(Mod newMod)
     {
-        _registry.Alter(_id, $"Added mod: {newMod.Name}", l => l.Add(newMod));
+        _registry.Alter(Id, $"Added mod: {newMod.Name}", l => l.Add(newMod));
     }
 
     /// <summary>
@@ -60,7 +64,7 @@ public readonly struct LoadoutMarker
     /// <param name="oldMod">The mod to remove from the loadout.</param>
     public void Remove(Mod oldMod)
     {
-        _registry.Alter(_id, $"Remove mod: {oldMod.Name}", l => l.Remove(oldMod));
+        _registry.Alter(Id, $"Remove mod: {oldMod.Name}", l => l.Remove(oldMod));
     }
 
     /// <summary>
@@ -70,6 +74,6 @@ public readonly struct LoadoutMarker
     /// <param name="func"></param>
     public void Alter(string changeMessage, Func<Loadout, Loadout> func)
     {
-        _registry.Alter(_id, changeMessage, func);
+        _registry.Alter(Id, changeMessage, func);
     }
 }

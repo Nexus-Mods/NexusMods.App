@@ -1,3 +1,4 @@
+using System.IO.Compression;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -40,7 +41,8 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected readonly IArchiveManager ArchiveManager;
     protected readonly IArchiveInstaller ArchiveInstaller;
     protected readonly LoadoutManager LoadoutManager;
-    protected readonly LoadoutSynchronizer LoadoutSynchronizer;
+    protected readonly LoadoutRegistry LoadoutRegistry;
+    protected readonly Loadouts.LoadoutSynchronizer LoadoutSynchronizer;
     protected readonly FileHashCache FileHashCache;
     protected readonly IFileSystem FileSystem;
     protected readonly IDataStore DataStore;
@@ -65,12 +67,13 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         ArchiveManager = provider1.GetRequiredService<IArchiveManager>();
         ArchiveInstaller = provider1.GetRequiredService<IArchiveInstaller>();
         LoadoutManager = provider1.GetRequiredService<LoadoutManager>();
+        LoadoutRegistry = provider1.GetRequiredService<LoadoutRegistry>();
         FileHashCache = provider1.GetRequiredService<FileHashCache>();
         FileSystem = provider1.GetRequiredService<IFileSystem>();
         DataStore = provider1.GetRequiredService<IDataStore>();
         DownloadRegistry = provider1.GetRequiredService<IDownloadRegistry>();
         Logger = provider1.GetRequiredService<ILogger<T>>();
-        LoadoutSynchronizer = provider1.GetRequiredService<LoadoutSynchronizer>();
+        LoadoutSynchronizer = provider1.GetRequiredService<Loadouts.LoadoutSynchronizer>();
         TemporaryFileManager = provider1.GetRequiredService<TemporaryFileManager>();
         ToolManager = provider1.GetRequiredService<IToolManager>();
         ServiceProvider = provider;
@@ -84,7 +87,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         _host.Dispose();
     }
 
-    public async Task InitializeAsync()
+    public virtual async Task InitializeAsync()
     {
         BaseList = await LoadoutManager.ManageGameAsync(Install, "BaseList", CancellationToken.None);
     }
@@ -95,6 +98,42 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         var downloadId = await DownloadRegistry.RegisterDownload(path,
             new FilePathMetadata {OriginalName = path.FileName, Quality = Quality.Low}, CancellationToken.None);
         return await ArchiveInstaller.AddMods(mainList.Value.LoadoutId, downloadId, name, CancellationToken.None);
+    }
+
+    /// <summary>
+    /// Creates a download from the given files, and data (saved as UTF-8 strings), and registers it with the download registry,
+    /// returning the download id.
+    /// </summary>
+    /// <param name="files"></param>
+    /// <returns></returns>
+    protected async Task<DownloadId> RegisterDownload(params (string Name, string Data)[] files)
+    {
+        await using var tmpFile = TemporaryFileManager.CreateFile();
+        using (var zip = new ZipArchive(tmpFile.Path.Create(), ZipArchiveMode.Create, false))
+        {
+            foreach (var (name, data) in files)
+            {
+                var entry = zip.CreateEntry(name);
+                await using var stream = entry.Open();
+                await using var writer = new StreamWriter(stream);
+                await writer.WriteAsync(data);
+            }
+        }
+
+        return await DownloadRegistry.RegisterDownload(tmpFile.Path, new FilePathMetadata {OriginalName = tmpFile.Path.FileName, Quality = Quality.Low}, CancellationToken.None);
+    }
+
+    /// <summary>
+    /// Adds a mod to the given loadout, with the given files (saved as UTF-8 strings), and returns the mod id.
+    /// </summary>
+    /// <param name="modName"></param>
+    /// <param name="files"></param>
+    /// <returns></returns>
+    protected async Task<ModId> AddMod(string modName, params (string Name, string Data)[] files)
+    {
+        var downloadId = await RegisterDownload(files);
+        var modIds = await ArchiveInstaller.AddMods(BaseList.Value.LoadoutId, downloadId, modName, CancellationToken.None);
+        return modIds.First();
     }
 
     public Task DisposeAsync()

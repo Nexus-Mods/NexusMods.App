@@ -10,7 +10,7 @@ namespace NexusMods.DataModel;
 /// </summary>
 public class ToolManager : IToolManager
 {
-    private readonly LoadoutSynchronizer _loadoutSynchronizer;
+    private readonly Loadouts.LoadoutSynchronizer _loadoutSynchronizer;
     private readonly ILookup<GameDomain,ITool> _tools;
     private readonly IDataStore _dataStore;
     private readonly LoadoutRegistry _loadoutRegistry;
@@ -22,7 +22,7 @@ public class ToolManager : IToolManager
     /// <param name="loadoutSynchronizer"></param>
     /// <param name="dataStore"></param>
     /// <param name="loadoutRegistry"></param>
-    public ToolManager(IEnumerable<ITool> tools, LoadoutSynchronizer loadoutSynchronizer, IDataStore dataStore, LoadoutRegistry loadoutRegistry)
+    public ToolManager(IEnumerable<ITool> tools, Loadouts.LoadoutSynchronizer loadoutSynchronizer, IDataStore dataStore, LoadoutRegistry loadoutRegistry)
     {
         _dataStore = dataStore;
         _tools = tools.SelectMany(tool => tool.Domains.Select(domain => (domain, tool)))

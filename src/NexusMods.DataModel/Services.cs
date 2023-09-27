@@ -69,7 +69,7 @@ public static class Services
         coll.AddSingleton<LoadoutRegistry>();
         coll.AddSingleton<IDirectoryIndexer, DirectoryIndexer>();
         coll.AddSingleton<IDownloadRegistry, DownloadRegistry>();
-        coll.AddSingleton<LoadoutSynchronizer>();
+        coll.AddSingleton<Loadouts.LoadoutSynchronizer>();
         coll.AddSingleton<FileHashCache>();
         coll.AddSingleton<GlobalSettingsManager>();
         coll.AddSingleton<IArchiveInstaller, ArchiveInstaller>();
