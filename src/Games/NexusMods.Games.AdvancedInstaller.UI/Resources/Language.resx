@@ -27,4 +27,10 @@
     <data name="OverlayHeaderText_Advanced_Installer" xml:space="preserve">
         <value>Advanced installer</value>
     </data>
+    <data name="InstallerNameText" xml:space="preserve">
+        <value>Advanced manual mod installer</value>
+    </data>
+    <data name="SubHeadingText_Please_select_files" xml:space="preserve">
+        <value>Please select the files to install and where they should be installed to.</value>
+    </data>
 </root>

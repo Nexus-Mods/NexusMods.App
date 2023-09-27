@@ -78,11 +78,29 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Advanced manual mod installer.
+        /// </summary>
+        public static string InstallerNameText {
+            get {
+                return ResourceManager.GetString("InstallerNameText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Advanced installer.
         /// </summary>
         public static string OverlayHeaderText_Advanced_Installer {
             get {
                 return ResourceManager.GetString("OverlayHeaderText_Advanced_Installer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please select the files to install and where they should be installed to..
+        /// </summary>
+        public static string SubHeadingText_Please_select_files {
+            get {
+                return ResourceManager.GetString("SubHeadingText_Please_select_files", resourceCulture);
             }
         }
     }
