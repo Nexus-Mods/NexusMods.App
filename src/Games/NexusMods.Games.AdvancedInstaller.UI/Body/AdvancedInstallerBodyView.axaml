@@ -31,7 +31,7 @@
 
             <Style Selector="Border.ContainerBorder">
                 <Setter Property="CornerRadius" Value="8" />
-                <Setter Property="Background" Value="{DynamicResource BorderContainerColor}" />
+                <Setter Property="Background" Value="{DynamicResource StructuralBorderColor}" />
             </Style>
 
             <Style Selector="icons|Icon.CentralIcon">
