@@ -8,7 +8,7 @@
                                 xmlns:base="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base;assembly=NexusMods.App.UI"
                                 xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
                                 xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
-                                mc:Ignorable="d" d:DesignWidth="1500" d:DesignHeight="818"
+                                mc:Ignorable="d" d:DesignWidth="1232" d:DesignHeight="672"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.AdvancedInstallerOverlayView">
     <Design.DataContext>
         <ui:AdvancedInstallerOverlayDesignViewModel />
@@ -16,23 +16,36 @@
 
     <base:MessageBoxBackground MinHeight="672" MinWidth="1232" MaxHeight="818" MaxWidth="1500">
         <base:MessageBoxBackground.Styles>
+
             <Style Selector="Border.TopPart">
-                <Setter Property="Background" Value="Black" />
+                <Setter Property="Background" Value="{DynamicResource BorderContainerColor}" />
+                <Setter Property="Padding" Value="24,16,24,24" />
+                <Setter Property="CornerRadius" Value="8,8,0,0" />
             </Style>
+
+            <Style Selector="Border.OverlayHeaderSection">
+                <Setter Property="Margin" Value="0,0,0,16" />
+            </Style>
+
+            <Style Selector="icons|Icon#OverlayHeaderMultiOptionIcon">
+                <Setter Property="FontSize" Value="20" />
+                <Setter Property="Margin" Value="0,0,8,8" />
+                <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+            </Style>
+            
         </base:MessageBoxBackground.Styles>
 
         <base:MessageBoxBackground.TopContent>
             <Border Classes="TopPart" x:Name="TopContentBorder">
                 <Grid RowDefinitions="Auto, *">
 
-                    <Border Grid.Row="0" x:Name="OverlayHeaderBorder">
+                    <Border Grid.Row="0" Classes="OverlayHeaderSection" x:Name="OverlayHeaderBorder">
                         <Grid x:Name="OverlayHeaderGrid" ColumnDefinitions="Auto, *, Auto">
 
                             <icons:Icon Grid.Column="0" x:Name="OverlayHeaderMultiOptionIcon" Classes="Tune" />
 
                             <TextBlock Grid.Column="1" x:Name="OverlayHeaderTextBlock" Classes="BodyLGBold"
-                                       HorizontalAlignment="Stretch"
-                                       Text="Advanced Manual Installer" />
+                                       Text="{x:Static resources:Language.OverlayHeaderText_Advanced_Installer}" />
 
                             <Button Grid.Column="2" Classes="BareIcon WindowClose Small"
                                     x:Name="OverlayHeaderCloseButton" />
@@ -40,12 +53,17 @@
                     </Border>
 
                     <reactiveUi:ViewModelViewHost Grid.Row="1" x:Name="TopContentViewHost" />
+
                 </Grid>
             </Border>
         </base:MessageBoxBackground.TopContent>
 
         <base:MessageBoxBackground.BottomContent>
-            <reactiveUi:ViewModelViewHost x:Name="BottomContentViewHost" />
+            <Border Classes="BottomPart" x:Name="BottomContentBorder">
+
+                <reactiveUi:ViewModelViewHost x:Name="BottomContentViewHost" />
+
+            </Border>
         </base:MessageBoxBackground.BottomContent>
 
     </base:MessageBoxBackground>
