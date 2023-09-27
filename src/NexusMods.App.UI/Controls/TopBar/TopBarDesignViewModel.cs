@@ -1,4 +1,5 @@
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
@@ -16,17 +17,13 @@ public class TopBarDesignViewModel : AViewModel<ITopBarViewModel>, ITopBarViewMo
     [Reactive]
     public bool IsLoggedIn { get; set; }
 
-    [Reactive]
-    public bool IsPremium { get; set; }
+    [Reactive] public bool IsPremium { get; set; } = true;
 
-    [Reactive]
-    public IImage Avatar { get; set; }
+    [Reactive] public IImage Avatar { get; set; } = new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")));
 
-    [Reactive]
-    public ReactiveCommand<Unit, Unit> LoginCommand { get; set; }
+    [Reactive] public ReactiveCommand<Unit, Unit> LoginCommand { get; set; } = Initializers.EnabledReactiveCommand;
 
-    [Reactive]
-    public ReactiveCommand<Unit, Unit> LogoutCommand { get; set; }
+    [Reactive] public ReactiveCommand<Unit, Unit> LogoutCommand { get; set; } = Initializers.EnabledReactiveCommand;
 
     [Reactive]
     public ReactiveCommand<Unit, Unit> MinimizeCommand { get; set; } = ReactiveCommand.Create(() => { });
@@ -38,13 +35,11 @@ public class TopBarDesignViewModel : AViewModel<ITopBarViewModel>, ITopBarViewMo
 
     public TopBarDesignViewModel()
     {
-        Avatar = new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")));
-        IsLoggedIn = false;
-        IsPremium = true;
-
-        LogoutCommand = ReactiveCommand.Create(ToggleLogin, this.WhenAnyValue(vm => vm.IsLoggedIn));
-        LoginCommand = ReactiveCommand.Create(ToggleLogin, this.WhenAnyValue(vm => vm.IsLoggedIn)
-            .Select(x => !x));
+        this.WhenActivated(disposables =>
+        {
+            LogoutCommand = ReactiveCommand.Create(ToggleLogin, this.WhenAnyValue(vm => vm.IsLoggedIn)).DisposeWith(disposables);
+            LoginCommand = ReactiveCommand.Create(ToggleLogin, this.WhenAnyValue(vm => vm.IsLoggedIn).Select(x => !x)).DisposeWith(disposables);
+        });
     }
 
     private void ToggleLogin()

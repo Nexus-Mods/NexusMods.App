@@ -1,4 +1,7 @@
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using JetBrains.Annotations;
+using NexusMods.Common;
 using NexusMods.Common.ProtocolRegistration;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.Networking.NexusWebApi.Types;
@@ -8,7 +11,8 @@ namespace NexusMods.Networking.NexusWebApi.NMA;
 /// <summary>
 /// Component for handling login and logout from the Nexus Mods
 /// </summary>
-public class LoginManager
+[PublicAPI]
+public sealed class LoginManager : IDisposable
 {
     private readonly OAuth _oauth;
     private readonly IDataStore _dataStore;
@@ -24,7 +28,7 @@ public class LoginManager
     /// <summary>
     /// True if the user is logged in
     /// </summary>
-    public IObservable<bool> IsLoggedIn => UserInfo.Select(info => info != null);
+    public IObservable<bool> IsLoggedIn => UserInfo.Select(info => info is not null);
 
     /// <summary>
     /// True if the user is logged in and is a premium member
@@ -34,7 +38,7 @@ public class LoginManager
     /// <summary>
     /// The user's avatar
     /// </summary>
-    public IObservable<Uri?> Avatar => UserInfo.Select(info => info?.Avatar);
+    public IObservable<Uri?> Avatar => UserInfo.Select(info => info?.AvatarUrl);
 
     /// <summary/>
     /// <param name="client">Nexus API client.</param>
@@ -44,25 +48,45 @@ public class LoginManager
     /// <param name="protocolRegistration">Used to register NXM protocol.</param>
     public LoginManager(Client client,
         IAuthenticatingMessageFactory msgFactory,
-        OAuth oauth, IDataStore dataStore, IProtocolRegistration protocolRegistration)
+        OAuth oauth,
+        IDataStore dataStore,
+        IProtocolRegistration protocolRegistration)
     {
         _oauth = oauth;
         _msgFactory = msgFactory;
         _client = client;
         _dataStore = dataStore;
         _protocolRegistration = protocolRegistration;
+
         UserInfo = _dataStore.IdChanges
+            // NOTE(err120): Since IDs don't change on startup, we can insert
+            // a fake change at the start of the observable chain. This will only
+            // run once at startup and notify the subscribers.
+            .Merge(Observable.Return(JWTTokenEntity.StoreId))
             .Where(id => id.Equals(JWTTokenEntity.StoreId))
-            .Select(_ => true)
-            .StartWith(true)
-            .SelectMany(async _ => await Verify());
+            .ObserveOn(TaskPoolScheduler.Default)
+            .SelectMany(async _ => await Verify(CancellationToken.None));
     }
 
-    private async Task<UserInfo?> Verify()
+    private CachedObject<UserInfo> _cachedUserInfo = new(TimeSpan.FromHours(1));
+    private readonly SemaphoreSlim _verifySemaphore = new(initialCount: 1, maxCount: 1);
+
+    private async Task<UserInfo?> Verify(CancellationToken cancellationToken)
     {
-        if (await _msgFactory.IsAuthenticated())
-            return await _msgFactory.Verify(_client, CancellationToken.None);
-        return null;
+        var cachedValue = _cachedUserInfo.Get();
+        if (cachedValue is not null) return cachedValue;
+
+        using var waiter = _verifySemaphore.CustomWait(cancellationToken);
+        cachedValue = _cachedUserInfo.Get();
+        if (cachedValue is not null) return cachedValue;
+
+        var isAuthenticated = await _msgFactory.IsAuthenticated();
+        if (!isAuthenticated) return null;
+
+        var userInfo = await _msgFactory.Verify(_client, cancellationToken);
+        _cachedUserInfo.Store(userInfo);
+
+        return userInfo;
     }
 
     /// <summary>
@@ -75,10 +99,15 @@ public class LoginManager
         await _protocolRegistration.RegisterSelf("nxm");
 
         var jwtToken = await _oauth.AuthorizeRequest(token);
+        var createdAt = DateTimeOffset.FromUnixTimeSeconds(jwtToken.CreatedAt);
+        var expiresIn = TimeSpan.FromSeconds(jwtToken.ExpiresIn);
+        var expiresAt = createdAt + expiresIn;
+
         _dataStore.Put(JWTTokenEntity.StoreId, new JWTTokenEntity
         {
             RefreshToken = jwtToken.RefreshToken,
-            AccessToken = jwtToken.AccessToken
+            AccessToken = jwtToken.AccessToken,
+            ExpiresAt = expiresAt
         });
     }
 
@@ -88,6 +117,13 @@ public class LoginManager
     public Task Logout()
     {
         _dataStore.Delete(JWTTokenEntity.StoreId);
+        _cachedUserInfo.Evict();
         return Task.CompletedTask;
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        _verifySemaphore.Dispose();
     }
 }

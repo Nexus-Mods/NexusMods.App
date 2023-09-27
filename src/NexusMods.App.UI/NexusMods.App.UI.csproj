@@ -303,6 +303,12 @@
         <Compile Update="Overlays\Updater\UpdaterDesignViewModel.cs">
           <DependentUpon>IUpdaterViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\TopBar\TopBarDesignViewModel.cs">
+          <DependentUpon>ITopBarViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\TopBar\TopBarViewModel.cs">
+          <DependentUpon>ITopBarViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
