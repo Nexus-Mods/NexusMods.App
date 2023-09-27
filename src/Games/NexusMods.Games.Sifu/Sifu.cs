@@ -1,4 +1,5 @@
 using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Paths;
 
@@ -34,4 +35,7 @@ public class Sifu : AGame, ISteamGame, IEpicGame
 
     /// <inheritdoc />
     public override IEnumerable<IModInstaller> Installers => new[] { new SifuModInstaller(_serviceProvider) };
+
+    public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations)
+        => ModInstallDestinationHelpers.GetCommonLocations(locations);
 }

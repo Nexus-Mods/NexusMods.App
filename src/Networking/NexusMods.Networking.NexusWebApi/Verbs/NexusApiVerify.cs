@@ -26,14 +26,13 @@ public class NexusApiVerify : AVerb, IRenderingVerb
     public async Task<int> Run(CancellationToken token)
     {
         var userInfo = await _messageFactory.Verify(_client, token);
-        await Renderer.Render(new Table(new[] { "Name", "Premium", "Supporter" },
+        await Renderer.Render(new Table(new[] { "Name", "Premium" },
             new[]
             {
                 new object[]
                 {
                     userInfo?.Name ?? "<Not logged in>",
                     userInfo?.IsPremium ?? false,
-                    userInfo?.IsSupporter ?? false,
                 }
             }));
 

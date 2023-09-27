@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using NexusMods.Common;
 using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Games.DarkestDungeon.Installers;
@@ -74,6 +75,9 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame, IEpicGame
 
         return result;
     }
+
+    public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations) =>
+        ModInstallDestinationHelpers.GetCommonLocations(locations);
 
     public override IStreamFactory Icon =>
         new EmbededResourceStreamFactory<DarkestDungeon>("NexusMods.Games.DarkestDungeon.Resources.DarkestDungeon.icon.png");
