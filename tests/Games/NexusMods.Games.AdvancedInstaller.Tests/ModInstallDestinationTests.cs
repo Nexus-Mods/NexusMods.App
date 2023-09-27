@@ -24,7 +24,6 @@ public class ModInstallDestinationTests
         for (var i = 0; i < result.Count; i++)
         {
             result[i].DestinationGamePath.Should().Be(targets[i].DestinationGamePath);
-            result[i].KnownValidFileExtensions.Should().Equal(targets[i].KnownValidFileExtensions);
         }
     }
 
@@ -40,10 +39,6 @@ public class ModInstallDestinationTests
         // Assert
         result.Should().NotBeNull();
         result.Should().HaveCount(2);
-
-        // Verify nested element is present at any index.
-        result.Should().Contain(x =>
-            x.KnownValidFileExtensions.SequenceEqual(DataInstallFolderTarget.KnownValidFileExtensions));
     }
 
     static readonly InstallFolderTarget DataInstallFolderTarget = new()

@@ -12,17 +12,6 @@ public interface IModInstallDestination
     /// GamePath to which the relative mod file paths should appended to.
     /// </summary>
     public GamePath DestinationGamePath { get; }
-
-    /// <summary>
-    /// List of known recognizable file extensions for direct children of the target <see cref="DestinationGamePath"/>.
-    /// NOTE: Only include file extensions that are only likely to appear at this level of the folder hierarchy.
-    /// </summary>
-    public IEnumerable<Extension> KnownValidFileExtensions { get; }
-
-    /// <summary>
-    /// List of file extensions to discard when installing to this target.
-    /// </summary>
-    public IEnumerable<Extension> FileExtensionsToDiscard { get; }
 }
 
 /// <summary>
