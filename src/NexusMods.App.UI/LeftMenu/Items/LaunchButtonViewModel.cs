@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
@@ -52,8 +53,7 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
                 .DisposeWith(d);
 
             var canExecute = _jobs.WhenAnyValue(coll => coll.Count, count => count == 0);
-
-            Command = ReactiveCommand.CreateFromTask(LaunchGame, canExecute.OnUI());
+            Command = ReactiveCommand.CreateFromObservable(() => Observable.StartAsync(LaunchGame, RxApp.TaskpoolScheduler), canExecute.OnUI());
         });
     }
 
