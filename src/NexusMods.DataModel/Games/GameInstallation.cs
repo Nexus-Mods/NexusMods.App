@@ -1,3 +1,4 @@
+using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Games;
@@ -13,6 +14,10 @@ public class GameInstallation
     /// </summary>
     public Version Version { get; init; } = new();
 
+    /// <summary>
+    /// Contains the manual install destinations for AdvancedInstaller and friends.
+    /// </summary>
+    public List<IModInstallDestination> InstallDestinations { get; init; } = new();
 
     /// <summary>
     /// The location on-disk of this game and it's associated paths [e.g. Saves].

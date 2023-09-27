@@ -1,5 +1,6 @@
 using NexusMods.Common;
 using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Games.RedEngine.ModInstallers;
@@ -61,4 +62,7 @@ public class Cyberpunk2077 : AGame, ISteamGame, IGogGame, IEpicGame
         new AppearancePreset(_serviceProvider),
         new FolderlessModInstaller()
     };
+
+    public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations)
+        => ModInstallDestinationHelpers.GetCommonLocations(locations);
 }

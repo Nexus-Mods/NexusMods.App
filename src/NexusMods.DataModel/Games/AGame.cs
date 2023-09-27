@@ -1,5 +1,6 @@
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Paths;
@@ -79,16 +80,22 @@ public abstract class AGame : IGame
 
     private List<GameInstallation> GetInstallations()
     {
-        return (from locator in _gamelocators
-                from installation in locator.Find(this)
-                select new GameInstallation
+        return (_gamelocators.SelectMany(locator => locator.Find(this),
+                (locator, installation) =>
                 {
-                    Game = this,
-                    LocationsRegister = new GameLocationsRegister(new Dictionary<LocationId, AbsolutePath>(
-                        GetLocations(installation.Path.FileSystem, installation))),
-                    Version = installation.Version ?? GetVersion(installation),
-                    Store = installation.Store
-                })
+                    var locations = GetLocations(installation.Path.FileSystem,
+                        installation);
+                    return new GameInstallation
+                    {
+                        Game = this,
+                        LocationsRegister =
+                            new GameLocationsRegister(
+                                new Dictionary<LocationId, AbsolutePath>(locations)),
+                        InstallDestinations = GetInstallDestinations(locations),
+                        Version = installation.Version ?? GetVersion(installation),
+                        Store = installation.Store
+                    };
+                }))
             .DistinctBy(g => g.LocationsRegister[LocationId.Game])
             .ToList();
     }
@@ -105,6 +112,12 @@ public abstract class AGame : IGame
     /// <returns></returns>
     protected abstract IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
         GameLocatorResult installation);
+
+    /// <summary>
+    /// Returns the locations of installation destinations used by the Advanced Installer.
+    /// </summary>
+    /// <param name="locations">Result of <see cref="GetLocations"/>.</param>
+    public abstract List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations);
 
     /// <inheritdoc />
     public override string ToString() => Name;
