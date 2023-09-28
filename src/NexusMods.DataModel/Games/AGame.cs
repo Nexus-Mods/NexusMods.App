@@ -83,17 +83,15 @@ public abstract class AGame : IGame
         return (_gamelocators.SelectMany(locator => locator.Find(this),
                 (locator, installation) =>
                 {
-                    var locations = GetLocations(installation.Path.FileSystem,
-                        installation);
+                    var locations = GetLocations(installation.Path.FileSystem, installation);
                     return new GameInstallation
                     {
                         Game = this,
-                        LocationsRegister =
-                            new GameLocationsRegister(
-                                new Dictionary<LocationId, AbsolutePath>(locations)),
+                        LocationsRegister = new GameLocationsRegister(new Dictionary<LocationId, AbsolutePath>(locations)),
                         InstallDestinations = GetInstallDestinations(locations),
                         Version = installation.Version ?? GetVersion(installation),
-                        Store = installation.Store
+                        Store = installation.Store,
+                        LocatorResultMetadata = installation.Metadata
                     };
                 }))
             .DistinctBy(g => g.LocationsRegister[LocationId.Game])

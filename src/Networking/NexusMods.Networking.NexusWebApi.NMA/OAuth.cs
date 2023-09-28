@@ -56,7 +56,7 @@ public class OAuth
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns>task with the jwt token once we receive one</returns>
-    public async Task<JwtTokenReply> AuthorizeRequest(CancellationToken cancellationToken)
+    public async Task<JwtTokenReply?> AuthorizeRequest(CancellationToken cancellationToken)
     {
         // see https://www.rfc-editor.org/rfc/rfc7636#section-4.1
         var codeVerifier = _idGen.UUIDv4().ToBase64();
@@ -97,7 +97,7 @@ public class OAuth
     /// <param name="refreshToken">the refresh token</param>
     /// <param name="cancel"></param>
     /// <returns>a new token reply</returns>
-    public async Task<JwtTokenReply> RefreshToken(string refreshToken, CancellationToken cancel)
+    public async Task<JwtTokenReply?> RefreshToken(string refreshToken, CancellationToken cancel)
     {
         var request = new Dictionary<string, string>
         {
@@ -113,7 +113,7 @@ public class OAuth
         return JsonSerializer.Deserialize<JwtTokenReply>(responseString);
     }
 
-    private async Task<JwtTokenReply> AuthorizeToken(string verifier, string code, CancellationToken cancel)
+    private async Task<JwtTokenReply?> AuthorizeToken(string verifier, string code, CancellationToken cancel)
     {
         var request = new Dictionary<string, string> {
             { "grant_type", "authorization_code" },

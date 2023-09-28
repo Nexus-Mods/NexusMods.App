@@ -43,13 +43,14 @@ public class OAuth2MessageFactory : IAuthenticatingMessageFactory
         _logger.LogDebug("Refreshing expired OAuth token");
 
         var newToken = await _auth.RefreshToken(_cachedTokenEntity.RefreshToken, cancellationToken);
-        _cachedTokenEntity = new JWTTokenEntity
+        var newTokenEntity = JWTTokenEntity.From(newToken);
+        if (newTokenEntity is null)
         {
-            RefreshToken = newToken.RefreshToken,
-            AccessToken = newToken.AccessToken,
-            ExpiresAt = DateTimeOffset.UtcNow,
-        };
+            _logger.LogError("Invalid new token!");
+            return null;
+        }
 
+        _cachedTokenEntity = newTokenEntity;
         _store.Put(JWTTokenEntity.StoreId, _cachedTokenEntity);
         _cachedTokenEntity.DataStoreId = JWTTokenEntity.StoreId;
 
