@@ -5,3 +5,8 @@
   # prevent codecov from writing a comment before n builds have finished
   # this number should be the number of operating systems tested
   after_n_builds: 2 
+coverage:
+  status:
+    project:
+      default:
+        threshold: 0.05 # 5%
