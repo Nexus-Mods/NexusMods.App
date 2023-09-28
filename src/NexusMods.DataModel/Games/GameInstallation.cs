@@ -1,3 +1,4 @@
+using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Games;
@@ -9,10 +10,19 @@ namespace NexusMods.DataModel.Games;
 public class GameInstallation
 {
     /// <summary>
+    /// Empty game installation, used for testing and some cases where a property must be set.
+    /// </summary>
+    public static GameInstallation Empty => new();
+
+    /// <summary>
     /// The Version installed.
     /// </summary>
     public Version Version { get; init; } = new();
 
+    /// <summary>
+    /// Contains the manual install destinations for AdvancedInstaller and friends.
+    /// </summary>
+    public List<IModInstallDestination> InstallDestinations { get; init; } = new();
 
     /// <summary>
     /// The location on-disk of this game and it's associated paths [e.g. Saves].
@@ -25,14 +35,14 @@ public class GameInstallation
     public IGame Game { get; init; } = null!;
 
     /// <summary>
-    /// Empty game installation, used for testing and some cases where a property must be set.
-    /// </summary>
-    public static GameInstallation Empty => new();
-
-    /// <summary>
     /// The <see cref="GameStore"/> which was used to install the game.
     /// </summary>
     public GameStore Store { get; init; } = GameStore.Unknown;
+
+    /// <summary>
+    /// Gets the metadata returned by the game locator.
+    /// </summary>
+    public IGameLocatorResultMetadata? LocatorResultMetadata { get; init; }
 
     /// <summary>
     /// Returns the game name and version as

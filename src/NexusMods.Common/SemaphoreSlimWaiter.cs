@@ -47,4 +47,15 @@ public static class SemaphoreExtensions
         var entered = semaphoreSlim.Wait(timeout, cancellationToken);
         return new SemaphoreSlimWaiter(semaphoreSlim, entered);
     }
+
+    /// <summary>
+    /// Custom wait infinitely using <see cref="SemaphoreSlimWaiter"/>.
+    /// </summary>
+    public static SemaphoreSlimWaiter CustomWait(
+        this SemaphoreSlim semaphoreSlim,
+        CancellationToken cancellationToken = default)
+    {
+        semaphoreSlim.Wait(cancellationToken);
+        return new SemaphoreSlimWaiter(semaphoreSlim, entered: true);
+    }
 }

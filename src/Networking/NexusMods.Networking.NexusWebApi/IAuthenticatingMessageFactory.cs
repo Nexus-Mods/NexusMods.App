@@ -10,10 +10,10 @@ namespace NexusMods.Networking.NexusWebApi;
 public interface IAuthenticatingMessageFactory : IHttpMessageFactory
 {
     /// <summary>
-    /// verify that the authentication information we have for a user is valid
+    /// Verify that the authentication information we have for a user is valid
     /// </summary>
     /// <param name="client">api client to use for making api requests</param>
-    /// <param name="token">cancelation token</param>
+    /// <param name="token">cancellation token</param>
     /// <returns>information about the user, null if not valid</returns>
     public ValueTask<UserInfo?> Verify(Client client, CancellationToken token);
 }
