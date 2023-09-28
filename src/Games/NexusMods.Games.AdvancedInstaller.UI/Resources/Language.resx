@@ -33,4 +33,10 @@
     <data name="SubHeadingText_Please_select_files" xml:space="preserve">
         <value>Please select the files to install and where they should be installed to.</value>
     </data>
+    <data name="ModContentTitle_MOD_CONTENT" xml:space="preserve">
+        <value>MOD CONTENT</value>
+    </data>
+    <data name="ModContentSubHeading_Files_with_no" xml:space="preserve">
+        <value>Files with no location selected will not be installed.</value>
+    </data>
 </root>

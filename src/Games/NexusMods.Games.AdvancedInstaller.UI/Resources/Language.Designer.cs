@@ -87,6 +87,24 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Files with no location selected will not be installed..
+        /// </summary>
+        public static string ModContentSubHeading_Files_with_no {
+            get {
+                return ResourceManager.GetString("ModContentSubHeading_Files_with_no", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MOD CONTENT.
+        /// </summary>
+        public static string ModContentTitle_MOD_CONTENT {
+            get {
+                return ResourceManager.GetString("ModContentTitle_MOD_CONTENT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Advanced installer.
         /// </summary>
         public static string OverlayHeaderText_Advanced_Installer {
