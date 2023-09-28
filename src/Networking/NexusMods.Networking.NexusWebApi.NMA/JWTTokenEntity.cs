@@ -1,6 +1,7 @@
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.JsonConverters;
+using NexusMods.Networking.NexusWebApi.DTOs.OAuth;
 
 namespace NexusMods.Networking.NexusWebApi.NMA;
 
@@ -14,6 +15,21 @@ public record JWTTokenEntity : Entity
     /// ID used to refer to JWT tokens in the data store.
     /// </summary>
     public static readonly IId StoreId = new IdVariableLength(EntityCategory.AuthData, "NexusMods.Networking.NexusWebApi.JWTTokens"u8.ToArray());
+
+    /// <summary>
+    /// Creates a new <see cref="JWTTokenEntity"/> from a <see cref="JwtTokenReply"/>.
+    /// </summary>
+    public static JWTTokenEntity? From(JwtTokenReply? tokenReply)
+    {
+        if (tokenReply?.AccessToken is null || tokenReply.RefreshToken is null) return null;
+        return new JWTTokenEntity
+        {
+            AccessToken = tokenReply.AccessToken,
+            RefreshToken = tokenReply.RefreshToken,
+            ExpiresAt = DateTimeOffset.FromUnixTimeSeconds(tokenReply.CreatedAt) + TimeSpan.FromSeconds(tokenReply.ExpiresIn),
+            DataStoreId = StoreId
+        };
+    }
 
     /// <inheritdoc/>
     public override EntityCategory Category => StoreId.Category;
