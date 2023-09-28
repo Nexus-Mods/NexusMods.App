@@ -92,22 +92,22 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
             .Select(f => f.Path.ToString())
             .Should()
             .BeEquivalentTo(new []
-            {
-                "{Game}/meshes/b.nif",
-                "{Game}/perMod/0.dat",
-                "{Game}/perMod/1.dat",
-                "{Game}/perMod/2.dat",
-                "{Game}/perMod/3.dat",
-                "{Game}/perMod/4.dat",
-                "{Game}/perMod/5.dat",
-                "{Game}/perMod/6.dat",
-                "{Game}/perMod/7.dat",
-                "{Game}/perMod/8.dat",
-                "{Game}/perMod/9.dat",
-                "{Game}/textures/a.dds",
-                "{Preferences}/preferences/prefs.dat",
-                "{Saves}/saves/save.dat"
-            },
+                {
+                    "{Game}/meshes/b.nif",
+                    "{Game}/perMod/0.dat",
+                    "{Game}/perMod/1.dat",
+                    "{Game}/perMod/2.dat",
+                    "{Game}/perMod/3.dat",
+                    "{Game}/perMod/4.dat",
+                    "{Game}/perMod/5.dat",
+                    "{Game}/perMod/6.dat",
+                    "{Game}/perMod/7.dat",
+                    "{Game}/perMod/8.dat",
+                    "{Game}/perMod/9.dat",
+                    "{Game}/textures/a.dds",
+                    "{Preferences}/preferences/prefs.dat",
+                    "{Saves}/saves/save.dat"
+                },
                 "all the mods are flattened into a single tree, with overlaps removed");
 
         var topMod = _modIds[0];
@@ -126,5 +126,62 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
             flattened[path].Value!.File.Should()
                 .BeEquivalentTo(originalFile, "these files have unique paths, so they should not be overridden");
         }
+    }
+
+    [Fact]
+    public async Task CanCreateFileTree()
+    {
+        var flattened = await _synchronizer.LoadoutToFlattenedLoadout(BaseList.Value);
+        var fileTree = await _synchronizer.FlattenedLoadoutToFileTree(flattened, BaseList.Value);
+
+        fileTree.GetAllDescendentFiles()
+            .Select(f => f.Path.ToString())
+            .Should()
+            .BeEquivalentTo(new []
+                {
+                    "{Game}/meshes/b.nif",
+                    "{Game}/perMod/0.dat",
+                    "{Game}/perMod/1.dat",
+                    "{Game}/perMod/2.dat",
+                    "{Game}/perMod/3.dat",
+                    "{Game}/perMod/4.dat",
+                    "{Game}/perMod/5.dat",
+                    "{Game}/perMod/6.dat",
+                    "{Game}/perMod/7.dat",
+                    "{Game}/perMod/8.dat",
+                    "{Game}/perMod/9.dat",
+                    "{Game}/textures/a.dds",
+                    "{Preferences}/preferences/prefs.dat",
+                    "{Saves}/saves/save.dat"
+                },
+                "all the mods are flattened into a single tree, with overlaps removed");
+
+        var topMod = _modIds[0];
+        var topFiles = BaseList.Value.Mods[topMod].Files.Values.OfType<FromArchive>().ToDictionary(d => d.To);
+
+        foreach (var path in _allPaths)
+        {
+            fileTree[path].Value!.Should()
+                .BeEquivalentTo(topFiles[path], "the top mod should be the one that contributes the file data");
+        }
+
+        for (var i = 0; i < ModCount; i++)
+        {
+            var path = new GamePath(LocationId.Game, $"perMod/{i}.dat");
+            var originalFile = BaseList.Value.Mods[_modIds[i]].Files.Values.OfType<FromArchive>().First(f => f.To == path);
+            fileTree[path].Value!.Should()
+                .BeEquivalentTo(originalFile, "these files have unique paths, so they should not be overridden");
+        }
+    }
+
+    [Fact]
+    public async Task CanWriteDiskTreeToDisk()
+    {
+        var flattened = await _synchronizer.LoadoutToFlattenedLoadout(BaseList.Value);
+        var fileTree = await _synchronizer.FlattenedLoadoutToFileTree(flattened, BaseList.Value);
+        var diskState = await _synchronizer.FileTreeToDisk(fileTree);
+
+
+
     }
 }

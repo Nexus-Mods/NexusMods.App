@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using NexusMods.Common;
+using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -17,14 +18,18 @@ namespace NexusMods.DataModel.LoadoutSynchronizer;
 public class ALoadoutSynchronizer : ILoadoutSynchronizer
 {
     private readonly ILogger _logger;
+    private readonly FileHashCache _hashCache;
+    private readonly IFileSystem _fileSystem;
 
     /// <summary>
     /// Loadout synchronizer base constructor.
     /// </summary>
     /// <param name="logger"></param>
-    protected ALoadoutSynchronizer(ILogger logger)
+    protected ALoadoutSynchronizer(ILogger logger, FileHashCache hashCache, IFileSystem fileSystem)
     {
         _logger = logger;
+        _hashCache = hashCache;
+        _fileSystem = fileSystem;
     }
 
 
@@ -62,9 +67,59 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public Task<DiskState> FileTreeToDisk(FileTree fileTree)
+    public async Task<DiskState> FileTreeToDisk(FileTree fileTree, DiskState prevState, GameInstallation installation)
     {
-        throw new NotImplementedException();
+        List<HashedEntry> toDelete = new();
+        List<KeyValuePair<HashedEntry, AModFile>> toWrite = new();
+
+        foreach (var (locationId, location) in installation.LocationsRegister.GetTopLevelLocations())
+        {
+            await foreach (var entry in _hashCache.IndexFolderAsync(location))
+            {
+                var gamePath = installation.LocationsRegister.ToGamePath(entry.Path);
+                if (prevState.TryGetValue(gamePath, out var prevEntry))
+                {
+                    if (prevEntry.Value!.Hash != entry.Hash)
+                    {
+                        HandleNeedIngest(entry);
+                        continue;
+                    }
+
+                    if (!fileTree.TryGetValue(gamePath, out var newEntry))
+                    {
+                        toDelete.Add(entry);
+                        continue;
+                    }
+                    else
+                    {
+                        toWrite.Add(KeyValuePair.Create(entry, newEntry.Value!));
+                    }
+                }
+                else
+                {
+                    HandleNeedIngest(entry);
+                }
+            }
+        }
+
+        foreach (var entry in toDelete)
+        {
+            entry.Path.Delete();
+        }
+
+        foreach (var (entry, file) in toWrite)
+        {
+            await file.WriteToDiskAsync(entry.Path);
+        }
+    }
+
+    /// <summary>
+    /// Called when a file has changed during an apply operation, and a ingest is required.
+    /// </summary>
+    /// <param name="entry"></param>
+    public virtual void HandleNeedIngest(HashedEntry entry)
+    {
+        throw new Exception("File changed during apply, need to ingest");
     }
 
     /// <inheritdoc />
