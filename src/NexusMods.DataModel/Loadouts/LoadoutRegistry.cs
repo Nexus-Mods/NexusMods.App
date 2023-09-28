@@ -97,7 +97,7 @@ public class LoadoutRegistry : IDisposable
             loadout = _store.Get<Loadout>(IId.FromTaggedSpan(loadoutRoot), true);
         }
 
-        var newLoadout = alterFn(loadout ?? Loadout.Empty(_store));
+        var newLoadout = alterFn(loadout ?? Loadout.Empty(_store) with {LoadoutId = id});
 
         newLoadout = newLoadout with
         {
@@ -116,6 +116,7 @@ public class LoadoutRegistry : IDisposable
             goto TryAgain;
 
         _logger.LogInformation("Loadout {LoadoutId} altered: {CommitMessage}", id, commitMessage);
+
 
         return newLoadout;
     }

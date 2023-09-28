@@ -59,11 +59,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
     protected ADataModelTest(IServiceProvider provider)
     {
-        var startup = new Startup();
-        _host = new HostBuilder()
-            .ConfigureServices((_, service) => startup.ConfigureServices(service))
-            .Build();
-        var provider1 = _host.Services;
+        var provider1 = provider;
         ArchiveManager = provider1.GetRequiredService<IArchiveManager>();
         ArchiveInstaller = provider1.GetRequiredService<IArchiveInstaller>();
         LoadoutManager = provider1.GetRequiredService<LoadoutManager>();
@@ -84,14 +80,13 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
     public void Dispose()
     {
-        _host.Dispose();
+        //_host.Dispose();
     }
 
     public virtual async Task InitializeAsync()
     {
-        BaseList = await LoadoutManager.ManageGameAsync(Install, "BaseList", CancellationToken.None);
+        BaseList = LoadoutRegistry.GetMarker((await Install.Game.Synchronizer.Manage(Install)).LoadoutId);
     }
-
 
     protected async Task<ModId[]> AddMods(LoadoutMarker mainList, AbsolutePath path, string? name = null)
     {

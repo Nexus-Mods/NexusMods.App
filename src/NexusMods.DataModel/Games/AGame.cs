@@ -2,6 +2,7 @@ using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.LoadoutSynchronizer;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Paths;
 
@@ -54,6 +55,15 @@ public abstract class AGame : IGame
 
     /// <inheritdoc />
     public virtual IEnumerable<IModInstaller> Installers { get; } = Array.Empty<IModInstaller>();
+
+    /// <inheritdoc />
+    public virtual ValueTask<DiskState> GetInitialDiskState(GameInstallation installation)
+    {
+        throw new NotImplementedException("TODO: implement this");
+    }
+
+    /// <inheritdoc />
+    public virtual ILoadoutSynchronizer Synchronizer => throw new NotImplementedException();
 
     private Version GetVersion(GameLocatorResult installation)
     {

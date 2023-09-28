@@ -9,10 +9,10 @@ namespace NexusMods.DataModel.Tests.LoadoutSynchronizerTests;
 
 public class LoadoutSynchronizerStub : ALoadoutSynchronizer
 {
-    protected LoadoutSynchronizerStub(ILogger logger) : base(logger) { }
+    protected LoadoutSynchronizerStub(IServiceProvider logger) : base(logger) { }
 
-    public static LoadoutSynchronizerStub Create(ILogger logger)
+    public static LoadoutSynchronizerStub Create(IServiceProvider provider)
     {
-        return new LoadoutSynchronizerStub(logger);
+        return new LoadoutSynchronizerStub(provider);
     }
 }

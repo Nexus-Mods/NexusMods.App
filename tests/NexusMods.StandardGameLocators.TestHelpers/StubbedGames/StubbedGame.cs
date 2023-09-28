@@ -4,6 +4,7 @@ using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.LoadoutSynchronizer;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Hashing.xxHash64;
@@ -33,6 +34,8 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
             d => (d.FileName.ToString().XxHash64AsUtf8(), Size.FromLong(d.FileName.ToString().Length)));
 
     private readonly IFileSystem _fileSystem;
+    private Dictionary<AbsolutePath, DateTime> _modifiedTimes = new();
+    private ILoadoutSynchronizer _synchronizer;
 
     public StubbedGame(ILogger<StubbedGame> logger, IEnumerable<IGameLocator> locators,
         IFileSystem fileSystem) : base(locators)
@@ -69,6 +72,25 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
     {
         return Array.Empty<AModFile>();
     }
+
+    public override ValueTask<DiskState> GetInitialDiskState(GameInstallation installation)
+    {
+        var results = DATA_NAMES.Select(name =>
+        {
+            var gamePath = new GamePath(LocationId.Game, name);
+            return KeyValuePair.Create(gamePath,
+                new DiskStateEntry
+                {
+                    Size = Size.From((ulong)name.Path.Length),
+                    Hash = name.Path.XxHash64AsUtf8(),
+                    LastModified = _modifiedTimes[installation.LocationsRegister.GetResolvedPath(gamePath)]
+                });
+        });
+        return ValueTask.FromResult(DiskState.Create(results));
+    }
+
+    public void SetSynchronizer(ILoadoutSynchronizer synchronizer) => _synchronizer = synchronizer;
+    public override ILoadoutSynchronizer Synchronizer => _synchronizer;
 
     public override IStreamFactory Icon =>
         new EmbededResourceStreamFactory<StubbedGame>(
@@ -115,6 +137,7 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
         path.Parent.CreateDirectory();
         if (path.FileExists) return;
         _fileSystem.WriteAllText(path, path.FileName);
+        _modifiedTimes[path] = DateTime.Now;
     }
 
     public IEnumerable<uint> SteamIds => new[] { 42u };

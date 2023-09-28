@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Common;
+using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
@@ -20,16 +22,30 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     private readonly ILogger _logger;
     private readonly FileHashCache _hashCache;
     private readonly IFileSystem _fileSystem;
+    private readonly IDataStore _store;
+    private readonly LoadoutRegistry _loadoutRegistry;
 
     /// <summary>
     /// Loadout synchronizer base constructor.
     /// </summary>
     /// <param name="logger"></param>
-    protected ALoadoutSynchronizer(ILogger logger, FileHashCache hashCache, IFileSystem fileSystem)
+    protected ALoadoutSynchronizer(ILogger logger, FileHashCache hashCache, IFileSystem fileSystem, IDataStore store, LoadoutRegistry loadoutRegistry)
     {
         _logger = logger;
         _hashCache = hashCache;
         _fileSystem = fileSystem;
+        _store = store;
+        _loadoutRegistry = loadoutRegistry;
+    }
+
+    protected ALoadoutSynchronizer(IServiceProvider provider) : this(
+        provider.GetRequiredService<ILogger<ALoadoutSynchronizer>>(),
+        provider.GetRequiredService<FileHashCache>(),
+        provider.GetRequiredService<IFileSystem>(),
+        provider.GetRequiredService<IDataStore>(),
+        provider.GetRequiredService<LoadoutRegistry>())
+    {
+
     }
 
 
@@ -64,6 +80,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         return ValueTask.FromResult(FileTree.Create(flattenedLoadout.GetAllDescendentFiles()
             .Select(f => KeyValuePair.Create(f.Path, f.Value!.File))));
+    }
+
+    public Task<DiskState> FileTreeToDisk(FileTree fileTree)
+    {
+        throw new NotImplementedException();
     }
 
     /// <inheritdoc />
@@ -107,10 +128,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             entry.Path.Delete();
         }
 
-        foreach (var (entry, file) in toWrite)
-        {
-            await file.WriteToDiskAsync(entry.Path);
-        }
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -146,6 +164,22 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         throw new NotImplementedException();
     }
 
+    /// <inheritdoc />
+    public async ValueTask<DiskState> GetInitialGameState(GameInstallation installation)
+    {
+        var paths = installation.LocationsRegister.GetTopLevelLocations();
+        var results = await _hashCache.IndexFoldersAsync(paths.Select(p => p.Value))
+            .Select(p => KeyValuePair.Create(installation.LocationsRegister.ToGamePath(p.Path),
+                new DiskStateEntry()
+                {
+                    Hash = p.Hash,
+                    Size = p.Size,
+                    LastModified = p.LastModified
+                }))
+            .ToListAsync();
+        return DiskState.Create(results);
+    }
+
     /// <summary>
     /// Applies a loadout to the game folder.
     /// </summary>
@@ -155,7 +189,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         var flattened = await LoadoutToFlattenedLoadout(loadout);
         var fileTree = await FlattenedLoadoutToFileTree(flattened, loadout);
-        await FileTreeToDisk(fileTree);
+        throw new NotImplementedException();
+        //await FileTreeToDisk(fileTree);
     }
 
     /// <inheritdoc />
@@ -163,6 +198,22 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         throw new NotImplementedException();
     }
+
+    public async Task<Loadout> Manage(GameInstallation installation)
+    {
+        var initialState = await installation.Game.GetInitialDiskState(installation);
+
+        var loadoutId = LoadoutId.Create();
+        var loadout = _loadoutRegistry.Alter(loadoutId, "Initial loadout",  loadout => loadout
+            with
+            {
+                Name = $"Loadout {installation.Game.Name}",
+                Installation = installation,
+            });
+
+        return loadout;
+    }
+
     #endregion
 
     #region FlattenLoadoutToTree Methods

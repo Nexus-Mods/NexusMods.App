@@ -1,4 +1,5 @@
-﻿using NexusMods.DataModel.Loadouts;
+﻿using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Loadouts;
 
 namespace NexusMods.DataModel.LoadoutSynchronizer;
 
@@ -88,6 +89,8 @@ public interface ILoadoutSynchronizer
     /// <param name="loadout"></param>
     /// <returns></returns>
     Task Ingest(Loadout loadout);
+
+    Task<Loadout> Manage(GameInstallation installation);
 
     #endregion
 

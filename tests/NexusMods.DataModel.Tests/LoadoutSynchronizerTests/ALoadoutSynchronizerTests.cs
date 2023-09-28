@@ -10,6 +10,7 @@ using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
+using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 using ModId = NexusMods.DataModel.Loadouts.ModId;
 
 namespace NexusMods.DataModel.Tests.LoadoutSynchronizerTests;
@@ -32,9 +33,8 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
 
     public ALoadoutSynchronizerTests(IServiceProvider provider) : base(provider)
     {
-        _synchronizer = LoadoutSynchronizerStub.Create(provider.GetRequiredService<ILogger<LoadoutSynchronizerStub>>());
-
-
+        _synchronizer = LoadoutSynchronizerStub.Create(provider);
+        ((StubbedGame)Game).SetSynchronizer(_synchronizer);
     }
 
     public override async Task InitializeAsync()
