@@ -30,9 +30,10 @@
                 <Setter Property="Margin" Value="0,16,0,0" />
             </Style>
 
-            <Style Selector="Border.ContainerBorder">
+            <Style Selector="Border.CentralSectionBorder">
                 <Setter Property="CornerRadius" Value="8" />
                 <Setter Property="Background" Value="{DynamicResource StructuralBorderColor}" />
+                <Setter Property="Padding" Value="16" />
             </Style>
 
             <Style Selector="icons|Icon.CentralIcon">
@@ -57,21 +58,17 @@
         <Border Grid.Row="1" x:Name="BodyContainerBorder">
             <Grid ColumnDefinitions="*, Auto, *" x:Name="CentralGrid">
 
-                <Border Classes="ContainerBorder" Grid.Column="0" x:Name="ModContentBorder">
+                <Border Classes="CentralSectionBorder" Grid.Column="0" x:Name="ModContentBorder">
                     <ScrollViewer x:Name="ModContentScrollViewer">
-                        <ItemsControl x:Name="ModContentScrollItemsControl">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                        </ItemsControl>
+
+                        <reactiveUi:ViewModelViewHost x:Name="ModContentSectionViewHost"/>
+
                     </ScrollViewer>
                 </Border>
 
                 <icons:Icon Classes="Play CentralIcon" Grid.Column="1" x:Name="PlayArrowIcon" />
 
-                <Border Classes="ContainerBorder" Grid.Column="2" x:Name="ResultsBorder">
+                <Border Classes="CentralSectionBorder" Grid.Column="2" x:Name="ResultsBorder">
                     <ScrollViewer x:Name="ResultsScrollViewer">
                         <ItemsControl x:Name="ResultsScrollItemsControl">
                             <ItemsControl.ItemsPanel>

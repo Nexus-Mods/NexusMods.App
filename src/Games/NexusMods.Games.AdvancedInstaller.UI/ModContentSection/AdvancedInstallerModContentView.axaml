@@ -5,6 +5,36 @@
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI"
+                                xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.AdvancedInstallerModContentView">
+    <Grid RowDefinitions="Auto, *">
+        <Grid.Styles>
+
+            <Style Selector="Border.HeaderAreaBorder">
+                <Setter Property="BorderThickness" Value="0, 0, 0, 1" />
+                <Setter Property="BorderBrush" Value="{DynamicResource BorderContainerBrush}" />
+                <Setter Property="Margin" Value="0, 0, 0, 16" />
+            </Style>
+
+            <Style Selector="TextBlock.ContentSubHeading">
+                <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryColor}" />
+                <Setter Property="Margin" Value="0, 4, 0, 16" />
+            </Style>
+
+        </Grid.Styles>
+
+        <Border Grid.Row="0" Classes="HeaderAreaBorder" x:Name="HeaderAreaBorder">
+            <StackPanel Orientation="Vertical">
+
+                <TextBlock Classes="TitleSMSemi" Text="{x:Static resources:Language.ModContentTitle_MOD_CONTENT}"
+                           x:Name="ModContentTitle" />
+
+                <TextBlock Classes="BodySMNormal ContentSubHeading"
+                           Text="{x:Static resources:Language.ModContentSubHeading_Files_with_no}"
+                           x:Name="ModContentSubHeading" />
+            </StackPanel>
+        </Border>
+
+    </Grid>
 </reactiveUi:ReactiveUserControl>

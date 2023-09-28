@@ -4,5 +4,4 @@ namespace NexusMods.Games.AdvancedInstaller.UI;
 
 public class AdvancedInstallerModContentViewModel : AViewModel<IAdvancedInstallerModContentViewModel>, IAdvancedInstallerModContentViewModel
 {
-
 }
