@@ -134,7 +134,7 @@ public class ApplyLoadoutTests : ALoadoutSynrchonizerTest<ApplyLoadoutTests>
     {
         var loadout = await CreateApplyPlanTestLoadout(true);
 
-        var dest = loadout.Installation.Locations[GameFolderType.Game].Combine("generated.txt");
+        var dest = loadout.Installation.LocationsRegister[LocationId.Game].Combine("generated.txt");
         var gFile = new TestGeneratedFile();
 
 

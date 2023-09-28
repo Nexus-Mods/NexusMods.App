@@ -9,7 +9,7 @@ namespace NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapabil
 /// Each <see cref="InstallFolderTarget"/> represents a single game location and
 /// contains information useful for recognizing and installing mod file paths to that location.
 /// </summary>
-public class InstallFolderTarget
+public class InstallFolderTarget : IModInstallDestination
 {
     /// <summary>
     /// GamePath to which the relative mod file paths should appended to.

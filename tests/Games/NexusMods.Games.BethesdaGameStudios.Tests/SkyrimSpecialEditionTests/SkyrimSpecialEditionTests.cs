@@ -143,7 +143,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
                 {
                     Id = ModFileId.New(),
                     Installation = loadout.Value.Installation,
-                    To = new GamePath(GameFolderType.Game, $"Data/{file.Key}"),
+                    To = new GamePath(LocationId.Game, $"Data/{file.Key}"),
                     Hash = Hash.Zero,
                     Size = Size.Zero,
                     Metadata = ImmutableList<IMetadata>.Empty

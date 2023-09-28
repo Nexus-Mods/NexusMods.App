@@ -9,6 +9,6 @@ public class IDGenerator : IIDGenerator
     /// <inheritdoc/>
     public string UUIDv4()
     {
-        return Guid.NewGuid().ToString();
+        return Guid.NewGuid().ToString("N");
     }
 }

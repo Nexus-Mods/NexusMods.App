@@ -56,7 +56,7 @@ public class DataStoreBenchmark : IBenchmark, IDisposable
             Id = ModFileId.New(),
             Size = Size.FromLong(1024),
             Hash = Hash.From(42),
-            To = new GamePath(GameFolderType.Game, "test.txt")
+            To = new GamePath(LocationId.Game, "test.txt")
         };
         _immutableRecord = _dataStore.Put(_record);
     }
@@ -87,7 +87,7 @@ public class DataStoreBenchmark : IBenchmark, IDisposable
             Id = ModFileId.New(),
             Size = Size.FromLong(1024),
             Hash = Hash.From(42),
-            To = new GamePath(GameFolderType.Game, "test.txt")
+            To = new GamePath(LocationId.Game, "test.txt")
         };
         return _dataStore.Put(record);
     }

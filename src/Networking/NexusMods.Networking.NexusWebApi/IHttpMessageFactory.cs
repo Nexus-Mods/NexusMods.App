@@ -22,7 +22,7 @@ public interface IHttpMessageFactory
     /// </summary>
     /// <param name="original">the original request that led to this error</param>
     /// <param name="ex">the exception to handle (or not)</param>
-    /// <param name="cancel">cancelation token</param>
+    /// <param name="cancel">cancellation token</param>
     /// <returns>a new/updated request to be sent or null if the exception should be thrown</returns>
     public ValueTask<HttpRequestMessage?> HandleError(HttpRequestMessage original, HttpRequestException ex, CancellationToken cancel);
 }

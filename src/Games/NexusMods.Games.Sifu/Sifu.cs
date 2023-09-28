@@ -1,4 +1,5 @@
 using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Paths;
 
@@ -15,7 +16,7 @@ public class Sifu : AGame, ISteamGame, IEpicGame
     public override GameDomain Domain => GameDomain.From("sifu");
     public override GamePath GetPrimaryFile(GameStore store)
     {
-        return new(GameFolderType.Game, "Sifu.exe");
+        return new(LocationId.Game, "Sifu.exe");
     }
 
     public Sifu(IEnumerable<IGameLocator> gameLocators, IServiceProvider serviceProvider) : base(gameLocators)
@@ -23,14 +24,18 @@ public class Sifu : AGame, ISteamGame, IEpicGame
         _serviceProvider = serviceProvider;
     }
 
-    protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(
-        IFileSystem fileSystem,
-        IGameLocator locator,
+    protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
         GameLocatorResult installation)
     {
-        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);
+        return new Dictionary<LocationId, AbsolutePath>()
+        {
+            { LocationId.Game, installation.Path },
+        };
     }
 
     /// <inheritdoc />
     public override IEnumerable<IModInstaller> Installers => new[] { new SifuModInstaller(_serviceProvider) };
+
+    public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations)
+        => ModInstallDestinationHelpers.GetCommonLocations(locations);
 }

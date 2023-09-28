@@ -93,8 +93,7 @@ public class SMAPIInstaller : AModInstaller
         }
 
 
-        var gameFolderPath = gameInstallation.Locations
-            .First(x => x.Key == GameFolderType.Game).Value;
+        var gameFolderPath = gameInstallation.LocationsRegister[LocationId.Game];
 
         var archiveContents = (await _downloadRegistry.Get(downloadId)).GetFileTree();
 
@@ -128,7 +127,7 @@ public class SMAPIInstaller : AModInstaller
             Size = gameDepsFileCache.Size,
             Id = ModFileId.New(),
             Installation = gameInstallation,
-            To = new GamePath(GameFolderType.Game, "StardewModdingAPI.deps.json")
+            To = new GamePath(LocationId.Game, "StardewModdingAPI.deps.json")
         });
 
         // TODO: consider adding Name and Version

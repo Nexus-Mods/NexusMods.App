@@ -674,5 +674,59 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("TopBarActions__LOG_IN", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to LATER.
+        /// </summary>
+        public static string Updater_LATER {
+            get {
+                return ResourceManager.GetString("Updater_LATER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Keep your app updated to get the latest improvements..
+        /// </summary>
+        public static string Updater_MainMessage {
+            get {
+                return ResourceManager.GetString("Updater_MainMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UPDATE.
+        /// </summary>
+        public static string Updater_UPDATE {
+            get {
+                return ResourceManager.GetString("Updater_UPDATE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update available.
+        /// </summary>
+        public static string Updater_UpdateAvailable {
+            get {
+                return ResourceManager.GetString("Updater_UpdateAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to It appears that your copy of the app was installed via a system managed package manager, please update via your operating system&apos;s update application..
+        /// </summary>
+        public static string Updater_UseSystemUpdater {
+            get {
+                return ResourceManager.GetString("Updater_UseSystemUpdater", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View changelog on GitHub.
+        /// </summary>
+        public static string Updater_ViewChangelog {
+            get {
+                return ResourceManager.GetString("Updater_ViewChangelog", resourceCulture);
+            }
+        }
     }
 }

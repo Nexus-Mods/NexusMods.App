@@ -3,6 +3,7 @@ using System.Text.Json.Serialization.Metadata;
 using Microsoft.Extensions.Logging;
 using NexusMods.Networking.NexusWebApi.DTOs;
 using NexusMods.Networking.NexusWebApi.DTOs.Interfaces;
+using NexusMods.Networking.NexusWebApi.DTOs.OAuth;
 using NexusMods.Networking.NexusWebApi.Types;
 
 namespace NexusMods.Networking.NexusWebApi;
@@ -40,6 +41,17 @@ public class Client
     {
         var msg = await _factory.Create(HttpMethod.Get, new Uri("https://api.nexusmods.com/v1/users/validate.json"));
         return await SendAsync<ValidateInfo>(msg, token);
+    }
+
+    private static readonly Uri OAuthUserInfoUri = new("https://users.nexusmods.com/oauth/userinfo");
+
+    /// <summary>
+    /// Retrieves information about the current user when logged in via OAuth.
+    /// </summary>
+    public async Task<Response<OAuthUserInfo>> GetOAuthUserInfo(CancellationToken cancellationToken = default)
+    {
+        var msg = await _factory.Create(HttpMethod.Get, OAuthUserInfoUri);
+        return await SendAsync<OAuthUserInfo>(msg, cancellationToken);
     }
 
     /// <summary>

@@ -6,6 +6,7 @@ using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Games.Generic.Installers;
 using NexusMods.Paths;
+using Vogen;
 
 namespace NexusMods.Games.BethesdaGameStudios;
 
@@ -21,25 +22,22 @@ public class SkyrimSpecialEdition : ABethesdaGame, ISteamGame, IGogGame, IXboxGa
     public static GameDomain StaticDomain => GameDomain.From("skyrimspecialedition");
     public override string Name => "Skyrim Special Edition";
     public override GameDomain Domain => StaticDomain;
-    public override GamePath GetPrimaryFile(GameStore store) => new(GameFolderType.Game, "SkyrimSE.exe");
+    public override GamePath GetPrimaryFile(GameStore store) => new(LocationId.Game, "SkyrimSE.exe");
 
     public SkyrimSpecialEdition(IEnumerable<IGameLocator> gameLocators, IServiceProvider provider) : base(gameLocators, provider) {}
-    protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(
-        IFileSystem fileSystem,
-        IGameLocator locator,
+    protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
         GameLocatorResult installation)
     {
-        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);
-
-        var appData = installation.Store == GameStore.GOG
-            ? fileSystem
-                .GetKnownPath(KnownPath.LocalApplicationDataDirectory)
-                .Combine("Skyrim Special Edition GOG")
-            : fileSystem
-                .GetKnownPath(KnownPath.LocalApplicationDataDirectory)
-                .Combine("Skyrim Special Edition");
-
-        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.AppData, appData);
+        return new Dictionary<LocationId, AbsolutePath>()
+        {
+            { LocationId.Game, installation.Path },
+            {
+                LocationId.AppData, installation.Store == GameStore.GOG
+                    ? fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory)
+                        .Combine("Skyrim Special Edition GOG")
+                    : fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("Skyrim Special Edition")
+            }
+        };
     }
 
     public override IEnumerable<AModFile> GetGameFiles(GameInstallation installation, IDataStore store)
@@ -47,7 +45,7 @@ public class SkyrimSpecialEdition : ABethesdaGame, ISteamGame, IGogGame, IXboxGa
         yield return new PluginOrderFile
         {
             Id = ModFileId.New(),
-            To = new GamePath(GameFolderType.AppData, "plugins.txt")
+            To = new GamePath(LocationId.AppData, "plugins.txt")
         };
     }
 

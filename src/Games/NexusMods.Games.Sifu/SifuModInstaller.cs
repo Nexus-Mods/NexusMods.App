@@ -41,7 +41,7 @@ public class SifuModInstaller : AModInstaller
             {
                 var (path, file) = kv;
                 return file!.ToFromArchive(
-                    new GamePath(GameFolderType.Game, ModsPath.Join(path.RelativeTo(pakPath.Path)))
+                    new GamePath(LocationId.Game, ModsPath.Join(path.RelativeTo(pakPath.Path)))
                 );
             });
 

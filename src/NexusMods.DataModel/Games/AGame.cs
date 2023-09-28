@@ -1,5 +1,6 @@
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Paths;
@@ -79,31 +80,42 @@ public abstract class AGame : IGame
 
     private List<GameInstallation> GetInstallations()
     {
-        return (from locator in _gamelocators
-                from installation in locator.Find(this)
-                select new GameInstallation
+        return (_gamelocators.SelectMany(locator => locator.Find(this),
+                (locator, installation) =>
                 {
-                    Game = this,
-                    Locations = new Dictionary<GameFolderType, AbsolutePath>(GetLocations(installation.Path.FileSystem,
-                        locator, installation)),
-                    Version = installation.Version ?? GetVersion(installation),
-                    Store = installation.Store
-                })
-            .DistinctBy(g => g.Locations[GameFolderType.Game])
+                    var locations = GetLocations(installation.Path.FileSystem, installation);
+                    return new GameInstallation
+                    {
+                        Game = this,
+                        LocationsRegister = new GameLocationsRegister(new Dictionary<LocationId, AbsolutePath>(locations)),
+                        InstallDestinations = GetInstallDestinations(locations),
+                        Version = installation.Version ?? GetVersion(installation),
+                        Store = installation.Store,
+                        LocatorResultMetadata = installation.Metadata
+                    };
+                }))
+            .DistinctBy(g => g.LocationsRegister[LocationId.Game])
             .ToList();
     }
 
     /// <summary>
     /// Returns the locations of known game elements, such as save folder, etc.
     /// </summary>
+    /// <remarks>
+    /// TODO: (Al12rs) Games can return Locations that point to the same AbsolutePath, a way is needed to decide which to use.
+    /// Current code will use the first declared one but relies on undefined ordering of Dictionary.
+    /// </remarks>
     /// <param name="fileSystem">The file system where the game was found in. This comes from <paramref name="installation"/>.</param>
-    /// <param name="locator">The locator used to find this game installation.</param>
     /// <param name="installation">An installation of the game found by the <paramref name="locator"/>.</param>
     /// <returns></returns>
-    protected abstract IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(
-        IFileSystem fileSystem,
-        IGameLocator locator,
+    protected abstract IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
         GameLocatorResult installation);
+
+    /// <summary>
+    /// Returns the locations of installation destinations used by the Advanced Installer.
+    /// </summary>
+    /// <param name="locations">Result of <see cref="GetLocations"/>.</param>
+    public abstract List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations);
 
     /// <inheritdoc />
     public override string ToString() => Name;

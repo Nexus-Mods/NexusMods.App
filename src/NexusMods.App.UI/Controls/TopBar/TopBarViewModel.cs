@@ -19,31 +19,38 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
     {
         _logger = logger;
         _loginManager = loginManager;
-        LoginCommand = ReactiveCommand.CreateFromTask(Login, _loginManager.IsLoggedIn.OnUI().Select(b => !b));
-        LogoutCommand = ReactiveCommand.CreateFromTask(Logout, _loginManager.IsLoggedIn.OnUI().Select(b => b));
 
         this.WhenActivated(d =>
         {
+            var canLogin = this.WhenAnyValue(x => x.IsLoggedIn).Select(isLoggedIn => !isLoggedIn);
+            LoginCommand = ReactiveCommand.CreateFromTask(Login, canLogin).DisposeWith(d);
+
+            var canLogout = this.WhenAnyValue(x => x.IsLoggedIn);
+            LogoutCommand = ReactiveCommand.CreateFromTask(Logout, canLogout).DisposeWith(d);
+
             _loginManager.IsLoggedIn
+                .OnUI()
                 .SubscribeWithErrorLogging(logger, x => IsLoggedIn = x)
                 .DisposeWith(d);
 
             _loginManager.IsPremium
+                .OnUI()
                 .SubscribeWithErrorLogging(logger, x => IsPremium = x)
                 .DisposeWith(d);
 
             _loginManager.Avatar
                 .WhereNotNull()
+                .OffUi()
                 .SelectMany(LoadImage)
                 .WhereNotNull()
+                .OnUI()
                 .SubscribeWithErrorLogging(logger, x => Avatar = x)
                 .DisposeWith(d);
         });
     }
 
-    private async Task<IImage?> LoadImage(Uri? uri)
+    private async Task<IImage?> LoadImage(Uri uri)
     {
-        if (uri == null) return null;
         try
         {
             var client = new HttpClient();
@@ -79,15 +86,14 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 
     [Reactive] public IImage Avatar { get; set; } = Initializers.IImage;
 
-    [Reactive] public ReactiveCommand<Unit, Unit> LoginCommand { get; set; }
+    [Reactive] public ReactiveCommand<Unit, Unit> LoginCommand { get; set; } = Initializers.EnabledReactiveCommand;
 
-    [Reactive] public ReactiveCommand<Unit, Unit> LogoutCommand { get; set; }
+    [Reactive] public ReactiveCommand<Unit, Unit> LogoutCommand { get; set; } = Initializers.DisabledReactiveCommand;
+
+    [Reactive] public ReactiveCommand<Unit, Unit> MinimizeCommand { get; set; } = Initializers.DisabledReactiveCommand;
 
     [Reactive]
-    public ReactiveCommand<Unit, Unit> MinimizeCommand { get; set; } = ReactiveCommand.Create(() => { });
+    public ReactiveCommand<Unit, Unit> ToggleMaximizeCommand { get; set; } = Initializers.DisabledReactiveCommand;
 
-    [Reactive]
-    public ReactiveCommand<Unit, Unit> ToggleMaximizeCommand { get; set; } = ReactiveCommand.Create(() => { });
-
-    [Reactive] public ReactiveCommand<Unit, Unit> CloseCommand { get; set; } = ReactiveCommand.Create(() => { });
+    [Reactive] public ReactiveCommand<Unit, Unit> CloseCommand { get; set; } = Initializers.DisabledReactiveCommand;
 }
