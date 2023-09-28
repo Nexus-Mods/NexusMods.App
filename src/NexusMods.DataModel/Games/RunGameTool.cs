@@ -115,6 +115,7 @@ public class RunGameTool<T> : IRunGameTool
 
     private async Task RunThroughSteam(uint appId, CancellationToken cancellationToken)
     {
+        var existingReaperProcesses = Process.GetProcessesByName("reaper");
         await _osInterop.OpenUrl(new Uri($"steam://rungameid//{appId.ToString(CultureInfo.InvariantCulture)}"), cancellationToken);
 
         if (OSInformation.Shared.IsWindows)
@@ -122,12 +123,12 @@ public class RunGameTool<T> : IRunGameTool
             // TODO:
         } else if (OSInformation.Shared.IsLinux)
         {
-            var steam = await WaitForProcessToStart("steam", TimeSpan.FromMinutes(1), cancellationToken);
+            var steam = await WaitForProcessToStart("steam", Array.Empty<Process>(), TimeSpan.FromMinutes(1), cancellationToken);
             if (steam is null) return;
 
             // NOTE(erri120): Reaper is a custom tool for cleaning up child processes
             // See https://github.com/sonic2kk/steamtinkerlaunch/wiki/Steam-Reaper for details.
-            var reaper = await WaitForProcessToStart("reaper", TimeSpan.FromMinutes(1), cancellationToken);
+            var reaper = await WaitForProcessToStart("reaper", existingReaperProcesses, TimeSpan.FromMinutes(1), cancellationToken);
             if (reaper is null) return;
 
             await reaper.WaitForExitAsync(cancellationToken);
@@ -140,16 +141,17 @@ public class RunGameTool<T> : IRunGameTool
 
     private async ValueTask<Process?> WaitForProcessToStart(
         string processName,
+        Process[] existingProcesses,
         TimeSpan timeout,
         CancellationToken cancellationToken = default)
     {
         try
         {
             var start = DateTime.UtcNow;
-            while (!cancellationToken.IsCancellationRequested && start + timeout < DateTime.UtcNow)
+            while (!cancellationToken.IsCancellationRequested && start + timeout > DateTime.UtcNow)
             {
                 var processes = Process.GetProcessesByName(processName);
-                var target = processes.FirstOrDefault();
+                var target = processes.FirstOrDefault(x => existingProcesses.All(p => p.Id != x.Id));
                 if (target is not null) return target;
 
                 await Task.Delay(TimeSpan.FromMilliseconds(300), cancellationToken);
