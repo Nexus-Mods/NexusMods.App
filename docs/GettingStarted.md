@@ -19,7 +19,7 @@ Visual Studio and JetBrains Rider both have avalonia extensions that allow previ
 Both extensions can be found directly from the IDE plugin/extension managers.
 Using these extension is recommended for easier development.
 
-There are also some project Templates for Avalonia that can be very useful to have, available here:
+There are also some Item Templates for Avalonia that can be very useful to have, available here:
 - https://github.com/AvaloniaUI/avalonia-dotnet-templates
 
 ### Code Overview
