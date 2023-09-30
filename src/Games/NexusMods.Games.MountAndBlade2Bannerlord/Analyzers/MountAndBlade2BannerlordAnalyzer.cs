@@ -1,3 +1,4 @@
+/*
 using System.Runtime.CompilerServices;
 using System.Xml;
 using Bannerlord.LauncherManager;
@@ -60,3 +61,4 @@ public class MountAndBlade2BannerlordAnalyzer : IFileAnalyzer
         };
     }
 }
+*/

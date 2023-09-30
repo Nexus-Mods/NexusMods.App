@@ -1,7 +1,9 @@
-using System.Diagnostics.CodeAnalysis;
 using NexusMods.Common;
 using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.StreamFactories;
+using NexusMods.Games.MountAndBlade2Bannerlord.Installers;
 using NexusMods.Games.MountAndBlade2Bannerlord.Services;
 using NexusMods.Games.MountAndBlade2Bannerlord.Utils;
 using NexusMods.Paths;
@@ -18,21 +20,17 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
     public static readonly GameDomain StaticDomain = GameDomain.From("mountandblade2bannerlord");
     public static string DisplayName => "Mount & Blade II: Bannerlord";
 
-    private readonly IFileSystem _fileSystem;
-    private readonly IEnumerable<IGameLocator> _gameLocators;
+    private readonly IServiceProvider _serviceProvider;
     private readonly LauncherManagerFactory _launcherManagerFactory;
-    private IReadOnlyCollection<GameInstallation>? _installations;
 
     public IEnumerable<uint> SteamIds => new[] { 261550u };
     public IEnumerable<long> GogIds => new long[] { 1802539526, 1564781494 };
     public IEnumerable<string> EpicCatalogItemId => new[] { "Chickadee" };
     public IEnumerable<string> XboxIds => new[] { "TaleWorldsEntertainment.MountBladeIIBannerlord" };
 
-    [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
-    public MountAndBlade2Bannerlord(IFileSystem fileSystem, IEnumerable<IGameLocator> gameLocators, LauncherManagerFactory launcherManagerFactory) : base(gameLocators)
+    public MountAndBlade2Bannerlord(IServiceProvider serviceProvider, IEnumerable<IGameLocator> gameLocators, LauncherManagerFactory launcherManagerFactory) : base(gameLocators)
     {
-        _fileSystem = fileSystem;
-        _gameLocators = gameLocators;
+        _serviceProvider = serviceProvider;
         _launcherManagerFactory = launcherManagerFactory;
     }
 
@@ -47,32 +45,28 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
     public override IStreamFactory GameImage =>
         new EmbededResourceStreamFactory<MountAndBlade2Bannerlord>("NexusMods.Games.MountAndBlade2Bannerlord.Resources.game_image.jpg");
 
-    public override IEnumerable<GameInstallation> Installations
+    public override IEnumerable<IModInstaller> Installers => new IModInstaller[]
     {
-        get
-        {
-            if (_installations != null) return _installations;
-            _installations = _gameLocators.SelectMany(locator => locator.Find(this), (locator, installation) =>
-                {
-                    var launcherManagerHandler = _launcherManagerFactory.Get(installation);
-                    return new GameInstallation
-                    {
-                        Game = this,
-                        Locations = new Dictionary<GameFolderType, AbsolutePath>(GetLocations(_fileSystem, locator, installation)),
-                        Version = Version.TryParse(launcherManagerHandler.GetGameVersion(), out var val) ? val : new Version(),
-                    };
-                })
-                .DistinctBy(g => g.Locations[GameFolderType.Game])
-                .ToList();
-            return _installations;
-        }
+        MountAndBlade2BannerlordModInstaller.Create(_serviceProvider),
+    };
+
+    public override Version GetVersion(GameLocatorResult installation)
+    {
+        var launcherManagerHandler = _launcherManagerFactory.Get(installation);
+        return Version.TryParse(launcherManagerHandler.GetGameVersion(), out var val) ? val : new Version();
     }
 
-    protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(IFileSystem fileSystem, IGameLocator locator, GameLocatorResult installation)
+    protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)
     {
         var documentsFolder = fileSystem.GetKnownPath(KnownPath.MyDocumentsDirectory);
-        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);
-        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Saves, documentsFolder.Combine(@$"{DocumentsFolderName}/Game Saves"));
-        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Preferences, documentsFolder.Combine(@$"{DocumentsFolderName}/Configs"));
+        return new Dictionary<LocationId, AbsolutePath>()
+        {
+            { LocationId.Game, installation.Store == GameStore.XboxGamePass ? installation.Path.Combine("Content") : installation.Path },
+            { LocationId.Saves, documentsFolder.Combine(@$"{DocumentsFolderName}/Game Saves") },
+            { LocationId.Preferences, documentsFolder.Combine(@$"{DocumentsFolderName}/Configs") },
+        };
     }
+
+    public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations)
+        => ModInstallDestinationHelpers.GetCommonLocations(locations);
 }

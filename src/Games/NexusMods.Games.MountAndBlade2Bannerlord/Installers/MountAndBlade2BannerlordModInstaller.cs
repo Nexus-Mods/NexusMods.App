@@ -1,121 +1,75 @@
-using System.Collections.Immutable;
-using System.Diagnostics;
-using Bannerlord.LauncherManager.Models;
+using System.Xml;
+using Bannerlord.ModuleManager;
 using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.ModFiles;
-using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.ModInstallers;
-using NexusMods.DataModel.Sorting.Rules;
-using NexusMods.Games.MountAndBlade2Bannerlord.Models;
-using NexusMods.Games.MountAndBlade2Bannerlord.Services;
-using NexusMods.Games.MountAndBlade2Bannerlord.Sorters;
-using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
+using NexusMods.Paths.FileTree;
 using static NexusMods.Games.MountAndBlade2Bannerlord.MountAndBlade2BannerlordConstants;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Installers;
 
-public sealed class MountAndBlade2BannerlordModInstaller : IModInstaller
+public sealed class MountAndBlade2BannerlordModInstaller : AModInstaller
 {
-    private readonly LauncherManagerFactory _launcherManagerFactory;
+    private MountAndBlade2BannerlordModInstaller(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
-    public MountAndBlade2BannerlordModInstaller(LauncherManagerFactory launcherManagerFactory)
+    public static MountAndBlade2BannerlordModInstaller Create(IServiceProvider serviceProvider) => new(serviceProvider);
+
+    private static IAsyncEnumerable<(FileTreeNode<RelativePath, ModSourceFileEntry> ModuleInfoFile, ModuleInfoExtended ModuleInfo)> GetModuleInfoFiles(
+        FileTreeNode<RelativePath, ModSourceFileEntry> files)
     {
-        _launcherManagerFactory = launcherManagerFactory;
-    }
-
-    // TODO: We had in mind creating optional mod types (Framework, Gameplay, Assets, etc) that we potentially could map to priorities
-    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
-    {
-        if (!installation.Is<MountAndBlade2Bannerlord>()) return Priority.None;
-
-        var launcherManager = _launcherManagerFactory.Get(installation);
-        var result = launcherManager.TestModuleContent(archiveFiles.Select(x => x.Key.ToString()).ToArray());
-
-        return result.Supported ? Priority.Normal : Priority.None;
-    }
-
-    public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(GameInstallation installation, ModId baseModId, Hash srcHash, EntityDictionary<RelativePath, AnalyzedFile> files,
-        CancellationToken ct = default)
-    {
-        static IEnumerable<KeyValuePair<RelativePath, AnalyzedFile>> GetModuleInfoFiles(EntityDictionary<RelativePath, AnalyzedFile> files) => files.Where(kv =>
+        return files.GetAllDescendentFiles().SelectAsync(async kv =>
         {
             var (path, file) = kv;
 
-            if (!path.FileName.Equals(SubModuleFile)) return false;
-            return file.AnalysisData.OfType<MountAndBlade2BannerlordModuleInfo>().FirstOrDefault() is not null;
-        });
+            if (!path.FileName.Equals(SubModuleFile))
+                return default;
 
-        var launcherManager = _launcherManagerFactory.Get(installation);
+            await using var stream = await file!.Open();
 
-        var moduleInfoFiles = GetModuleInfoFiles(files).ToArray();
-        var mods = moduleInfoFiles.Select(moduleInfoFile =>
-        {
-            var parent = moduleInfoFile.Key.Parent;
-            var moduleInfo = moduleInfoFile.Value.AnalysisData.OfType<MountAndBlade2BannerlordModuleInfo>().FirstOrDefault()?.ModuleInfo;
-
-            if (moduleInfo is null) throw new UnreachableException();
-
-            var moduleInfoWithPath = new ModuleInfoExtendedWithPath(moduleInfo, moduleInfoFile.Key.Path);
-            // InstallModuleContent will only install mods if the ModuleInfoExtendedWithPath for a mod was provided
-            var result = launcherManager.InstallModuleContent(files.Where(kv => kv.Key.InFolder(parent)).Select(x => x.Key.ToString()).ToArray(), new[] { moduleInfoWithPath });
-            var modFiles = result.Instructions.OfType<CopyInstallInstruction>().Select(instruction =>
+            try
             {
-                var relativePath = instruction.Source.ToRelativePath();
-                var file = files[relativePath];
-                var hasSubModule = relativePath.Equals(SubModuleFile);
-                IEnumerable<IMetadata> GetMetadata()
-                {
-                    yield return new OriginalPathMetadata { OriginalRelativePath = relativePath.Path };
-                    if (hasSubModule) yield return new ModuleInfoMetadata { ModuleInfo = moduleInfo };
-                }
-                return new FromArchive
-                {
-                    Id = ModFileId.New(),
-                    To = new GamePath(GameFolderType.Game, ModFolder.Join(relativePath)),
-                    Hash = file.Hash,
-                    Size = file.Size,
-                    Metadata = ImmutableList.CreateRange(GetMetadata())
-                };
-            });
-            return new ModInstallerResult
+                var doc = new XmlDocument();
+                doc.Load(stream);
+                var data = ModuleInfoExtended.FromXml(doc);
+                return (ModuleInfoFile: kv, ModuleInfo: data);
+            }
+            catch (Exception e)
             {
-                Id = baseModId,
-                Files = modFiles,
-                Name = moduleInfo.Name,
-                Version = moduleInfo.Version.ToString(),
-                SortRules = ImmutableList<ISortRule<Mod, ModId>>.Empty.Add(new ModuleInfoSort())
-            };
-        });
+                return default;
+                //_logger.LogError("Failed to Parse Bannerlord Module: {EMessage}\\n{EStackTrace}", e.Message, e.StackTrace);
+            }
+        }).Where(kv => kv.ModuleInfo != null);
+    }
 
-        if (moduleInfoFiles.Length == 0) // Not a valid Bannerlord Module - install in root folder the content
+    public override async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(GameInstallation gameInstallation, ModId baseModId,
+        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles, CancellationToken ct = default)
+    {
+        var moduleInfoFiles = await GetModuleInfoFiles(archiveFiles).ToArrayAsync(ct);
+
+        if (!moduleInfoFiles.Any()) return NoResults;
+
+        var mods = moduleInfoFiles.Select(found =>
         {
-            var modFiles = files.Select(kv =>
+            var (moduleInfoFile, moduleInfo) = found;
+            var parent = moduleInfoFile.Parent;
+
+            var modFiles = parent.GetAllDescendentFiles().Select(kv =>
             {
                 var (path, file) = kv;
-                return new FromArchive
-                {
-                    Id = ModFileId.New(),
-                    To = new GamePath(GameFolderType.Game, path),
-                    Hash = file.Hash,
-                    Size = file.Size,
-                };
+                return file!.ToFromArchive(new GamePath(LocationId.Game, ModFolder.Join(path.DropFirst(parent.Depth - 1))));
             });
-            mods = new List<ModInstallerResult>
-            {
-                new ModInstallerResult
-                {
-                    Id = baseModId,
-                    Files = modFiles
-                }
-            };
-        }
 
-        return ValueTask.FromResult(mods);
+            return new ModInstallerResult
+            {
+                Id = ModId.New(),
+                Files = modFiles,
+                Name = moduleInfo.Name,
+                Version = moduleInfo.Version.ToString()
+            };
+        });
+
+        return mods;
     }
 }

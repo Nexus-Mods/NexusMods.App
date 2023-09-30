@@ -9,7 +9,7 @@ internal static class LoadoutExtensions
 {
     public static IEnumerable<LoadoutModuleViewModel> GetViewModels(this Loadout loadout)
     {
-        var gamePath = loadout.Installation.Locations[GameFolderType.Game];
+        var gamePath = loadout.Installation.LocationsRegister[LocationId.Game];
         var i = 0;
         return loadout.Mods.Select(x =>
         {

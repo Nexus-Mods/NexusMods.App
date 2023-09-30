@@ -1,4 +1,5 @@
-﻿using Bannerlord.ModuleManager;
+﻿/*
+using Bannerlord.ModuleManager;
 using JetBrains.Annotations;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.JsonConverters;
@@ -11,3 +12,4 @@ public record MountAndBlade2BannerlordModuleInfo : IFileAnalysisData
 {
     public required ModuleInfoExtended ModuleInfo { get; init; }
 }
+*/

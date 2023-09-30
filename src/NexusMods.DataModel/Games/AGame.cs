@@ -55,7 +55,7 @@ public abstract class AGame : IGame
     /// <inheritdoc />
     public virtual IEnumerable<IModInstaller> Installers { get; } = Array.Empty<IModInstaller>();
 
-    private Version GetVersion(GameLocatorResult installation)
+    public virtual Version GetVersion(GameLocatorResult installation)
     {
         try
         {

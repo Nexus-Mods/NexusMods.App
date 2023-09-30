@@ -19,7 +19,7 @@ public sealed class LauncherManagerFactory
     public LauncherManagerNexusMods Get(GameInstallation installation)
     {
         var store = Converter.ToGameStoreTW(installation.Store);
-        return _instances.GetOrAdd(installation.Locations[GameFolderType.Game].ToString(),
+        return _instances.GetOrAdd(installation.LocationsRegister[LocationId.Game].ToString(),
             static (installationPath, tuple) => ValueFactory(tuple._loggerFactory, installationPath, tuple.store), (_loggerFactory, store));
     }
 

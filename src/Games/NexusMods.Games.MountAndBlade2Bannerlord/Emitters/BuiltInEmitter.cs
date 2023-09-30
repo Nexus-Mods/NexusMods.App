@@ -16,8 +16,10 @@ public class BuiltInEmitter : ILoadoutDiagnosticEmitter
 {
     internal const string Source = "NexusMods.Games.MountAndBlade2Bannerlord";
 
-    public IEnumerable<Diagnostic> Diagnose(Loadout loadout)
+    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout loadout)
     {
+        await Task.Yield();
+
         var lookup = loadout.GetViewModels().ToDictionary(x => x.ModuleInfoExtended.Id, x => x);
         var modules = lookup.Values.Select(x => x.ModuleInfoExtended).Concat(FeatureIds.LauncherFeatures.Select(x => new ModuleInfoExtended { Id = x })).ToList();
         var ctx = new ModuleContext<LoadoutModuleViewModel>(lookup);
