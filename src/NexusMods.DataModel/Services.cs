@@ -3,7 +3,9 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Diagnostics;
+using NexusMods.DataModel.GlobalSettings;
 using NexusMods.DataModel.Interprocess;
 using NexusMods.DataModel.Interprocess.Jobs;
 using NexusMods.DataModel.JsonConverters;
@@ -51,7 +53,7 @@ public static class Services
         coll.AddSingleton(typeof(EntityLinkConverter<>));
 
         coll.AddSingleton<IDataStore, SqliteDataStore>();
-        coll.AddAllSingleton<IArchiveManager, ZipArchiveManager>();
+        coll.AddAllSingleton<IArchiveManager, NxArchiveManager>();
         coll.AddAllSingleton<IResource, IResource<FileHashCache, Size>>(s =>
             new Resource<FileHashCache, Size>("File Hashing",
                 Settings(s).MaxHashingJobs,
@@ -66,9 +68,10 @@ public static class Services
         coll.AddSingleton<LoadoutManager>();
         coll.AddSingleton<LoadoutRegistry>();
         coll.AddSingleton<IDirectoryIndexer, DirectoryIndexer>();
+        coll.AddSingleton<IDownloadRegistry, DownloadRegistry>();
         coll.AddSingleton<LoadoutSynchronizer>();
         coll.AddSingleton<FileHashCache>();
-        coll.AddSingleton<IArchiveAnalyzer, ArchiveAnalyzer>();
+        coll.AddSingleton<GlobalSettingsManager>();
         coll.AddSingleton<IArchiveInstaller, ArchiveInstaller>();
         coll.AddSingleton<IToolManager, ToolManager>();
 
@@ -82,8 +85,8 @@ public static class Services
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<AModMetadata>>();
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<Entity>>();
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<IMetadata>>();
-        coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<IFileAnalysisData>>();
         coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<ISortRule<Mod, ModId>>>();
+        coll.AddSingleton<JsonConverter, AbstractClassConverterFactory<AArchiveMetaData>>();
 
         coll.AddSingleton(s =>
         {

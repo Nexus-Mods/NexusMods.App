@@ -1,16 +1,13 @@
-using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.Paths;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NexusMods.Games.Sifu;
 
 public class Sifu : AGame, ISteamGame, IEpicGame
 {
+    private readonly IServiceProvider _serviceProvider;
     public IEnumerable<uint> SteamIds => new[] { 2138710u };
     public IEnumerable<string> EpicCatalogItemId => new[] { "c80a76de890145edbe0d41679dbccc66" };
 
@@ -19,18 +16,26 @@ public class Sifu : AGame, ISteamGame, IEpicGame
     public override GameDomain Domain => GameDomain.From("sifu");
     public override GamePath GetPrimaryFile(GameStore store)
     {
-        return new(GameFolderType.Game, "Sifu.exe");
-    }
-    
-    public Sifu(IEnumerable<IGameLocator> gameLocators) : base(gameLocators)
-    {
+        return new(LocationId.Game, "Sifu.exe");
     }
 
-    protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(
-        IFileSystem fileSystem,
-        IGameLocator locator,
+    public Sifu(IEnumerable<IGameLocator> gameLocators, IServiceProvider serviceProvider) : base(gameLocators)
+    {
+        _serviceProvider = serviceProvider;
+    }
+
+    protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
         GameLocatorResult installation)
     {
-        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);
+        return new Dictionary<LocationId, AbsolutePath>()
+        {
+            { LocationId.Game, installation.Path },
+        };
     }
+
+    /// <inheritdoc />
+    public override IEnumerable<IModInstaller> Installers => new[] { new SifuModInstaller(_serviceProvider) };
+
+    public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations)
+        => ModInstallDestinationHelpers.GetCommonLocations(locations);
 }

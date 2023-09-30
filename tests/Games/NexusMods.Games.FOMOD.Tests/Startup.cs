@@ -2,14 +2,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
-using NexusMods.DataModel;
-using NexusMods.DataModel.RateLimiting;
-using NexusMods.FileExtractor;
-using NexusMods.FileExtractor.Extractors;
+using NexusMods.Games.BethesdaGameStudios;
+using NexusMods.Games.Generic;
 using NexusMods.Games.TestFramework;
-using NexusMods.Paths;
-using Xunit.DependencyInjection;
-using Xunit.DependencyInjection.Logging;
+using NexusMods.StandardGameLocators.TestHelpers;
 
 namespace NexusMods.Games.FOMOD.Tests;
 
@@ -19,12 +15,12 @@ public class Startup
     {
         container
             .AddDefaultServicesForTesting()
+            .AddBethesdaGameStudios()
+            .AddUniversalGameLocator<SkyrimSpecialEdition>(new Version("1.6.659.0"))
+            .AddGenericGameSupport()
             .AddFomod()
             .AddSingleton<ICoreDelegates, MockDelegates>()
+            .AddLogging(builder => builder.AddXUnit())
             .Validate();
     }
-
-    // ReSharper disable once UnusedMember.Global
-    public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>
-        loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(accessor, delegate { return true;}));
 }

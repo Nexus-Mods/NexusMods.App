@@ -1,13 +1,13 @@
 using System.Reactive.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.Common.OSInterop;
 using NexusMods.DataModel.Interprocess;
 using NexusMods.DataModel.Interprocess.Jobs;
-using NexusMods.DataModel.Interprocess.Messages;
 using NexusMods.Networking.NexusWebApi.DTOs.OAuth;
 using NexusMods.Networking.NexusWebApi.NMA.Messages;
 using NexusMods.Networking.NexusWebApi.NMA.Types;
@@ -21,10 +21,10 @@ namespace NexusMods.Networking.NexusWebApi.NMA;
 public class OAuth
 {
     private const string OAuthUrl = "https://users.nexusmods.com/oauth";
-    // the redirect url has to explicitly be permitted by the server so we can't change
-    // this without consulting the backend team
+    // NOTE(erri120): The backend has a list of valid redirect URLs and client IDs.
+    // We can't change these on our own.
     private const string OAuthRedirectUrl = "nxm://oauth/callback";
-    private const string OAuthClientId = "vortex";
+    private const string OAuthClientId = "nma";
 
     private readonly ILogger<OAuth> _logger;
     private readonly HttpClient _http;
@@ -36,8 +36,11 @@ public class OAuth
     /// <summary>
     /// constructor
     /// </summary>
-    public OAuth(ILogger<OAuth> logger, HttpClient http, IIDGenerator idGen,
-        IOSInterop os, IMessageConsumer<NXMUrlMessage> nxmUrlMessages,
+    public OAuth(ILogger<OAuth> logger,
+        HttpClient http,
+        IIDGenerator idGen,
+        IOSInterop os,
+        IMessageConsumer<NXMUrlMessage> nxmUrlMessages,
         IInterprocessJobManager jobManager)
     {
         _logger = logger;
@@ -49,39 +52,38 @@ public class OAuth
     }
 
     /// <summary>
-    /// make an authorization request
+    /// Make an authorization request
     /// </summary>
-    /// <param name="cancel"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns>task with the jwt token once we receive one</returns>
-    public async Task<JwtTokenReply> AuthorizeRequest(CancellationToken cancel)
+    public async Task<JwtTokenReply?> AuthorizeRequest(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Starting NexusMods OAuth2 authorization request");
-        var state = _idGen.UUIDv4();
-
         // see https://www.rfc-editor.org/rfc/rfc7636#section-4.1
-        var verifier = _idGen.UUIDv4().Replace("-", "").ToBase64();
+        var codeVerifier = _idGen.UUIDv4().ToBase64();
+
         // see https://www.rfc-editor.org/rfc/rfc7636#section-4.2
-        using var sha256 = SHA256.Create();
-        var challenge = sha256.ComputeHash(Encoding.UTF8.GetBytes(verifier)).ToBase64();
+        var codeChallengeBytes = SHA256.HashData(Encoding.UTF8.GetBytes(codeVerifier));
+        var codeChallenge = StringEncodingExtension.Base64UrlEncode(codeChallengeBytes);
+
+        var state = _idGen.UUIDv4();
 
         // Start listening first, otherwise we might miss the message
         var codeTask = _nxmUrlMessages.Messages
-            .Where(url => url.Value.UrlType == NXMUrlType.OAuth)
-            .Where(url => url.Value.OAuth.State == state)
-            .Select(url => url.Value.OAuth.Code!)
+            .Where(url => url.Value.UrlType == NXMUrlType.OAuth && url.Value.OAuth.State == state)
+            .Select(url => url.Value.OAuth.Code)
+            .Where(code => code is not null)
+            .Select(code => code!)
             .ToAsyncEnumerable()
-            .FirstAsync(cancel);
+            .FirstAsync(cancellationToken);
 
-        _logger.LogInformation("Opening browser for NexusMods OAuth2 authorization request");
-        var url = GenerateAuthorizeUrl(challenge, state);
+        var url = GenerateAuthorizeUrl(codeChallenge, state);
         using var job = CreateJob(url);
+
         // see https://www.rfc-editor.org/rfc/rfc7636#section-4.3
-        await _os.OpenUrl(url, cancel);
+        await _os.OpenUrl(url, cancellationToken);
         var code = await codeTask;
 
-        _logger.LogInformation("Received OAuth2 authorization code, requesting token");
-        return await AuthorizeToken(verifier, code, cancel);
-
+        return await AuthorizeToken(codeVerifier, code, cancellationToken);
     }
 
     private IInterprocessJob CreateJob(Uri url)
@@ -95,7 +97,7 @@ public class OAuth
     /// <param name="refreshToken">the refresh token</param>
     /// <param name="cancel"></param>
     /// <returns>a new token reply</returns>
-    public async Task<JwtTokenReply> RefreshToken(string refreshToken, CancellationToken cancel)
+    public async Task<JwtTokenReply?> RefreshToken(string refreshToken, CancellationToken cancel)
     {
         var request = new Dictionary<string, string>
         {
@@ -111,7 +113,7 @@ public class OAuth
         return JsonSerializer.Deserialize<JwtTokenReply>(responseString);
     }
 
-    private async Task<JwtTokenReply> AuthorizeToken(string verifier, string code, CancellationToken cancel)
+    private async Task<JwtTokenReply?> AuthorizeToken(string verifier, string code, CancellationToken cancel)
     {
         var request = new Dictionary<string, string> {
             { "grant_type", "authorization_code" },
@@ -128,37 +130,42 @@ public class OAuth
         return JsonSerializer.Deserialize<JwtTokenReply>(responseString);
     }
 
-    private string SanitizeBase64(string input)
+    internal static Uri GenerateAuthorizeUrl(string challenge, string state)
     {
-        return input
-            .Replace("+", "-")
-            .Replace("/", "_")
-            .TrimEnd('=');
-    }
-
-    private Uri GenerateAuthorizeUrl(string challenge, string state)
-    {
+        // TODO: switch to Microsoft.AspNetCore.WebUtilities when .NET 8 is available
         var request = new Dictionary<string, string>
         {
             { "response_type", "code" },
-            { "scope", "public" },
+            { "scope", "openid profile email" },
             { "code_challenge_method", "S256" },
             { "client_id", OAuthClientId },
             { "redirect_uri",  OAuthRedirectUrl },
-            { "code_challenge", SanitizeBase64(challenge) },
+            { "code_challenge", challenge },
             { "state", state },
         };
-        return new Uri($"{OAuthUrl}/authorize?{StringifyRequest(request)}");
+
+        return new Uri($"{OAuthUrl}/authorize{CreateQueryString(request)}");
     }
 
-    private string StringifyRequest(IDictionary<string, string> input)
+    private static string CreateQueryString(Dictionary<string, string> parameters)
     {
-        IList<string> properties = new List<string>();
-        foreach (var kv in input)
+        var builder = new StringBuilder();
+        var first = true;
+        foreach (var pair in parameters)
         {
-            properties.Add($"{kv.Key}={Uri.EscapeDataString(kv.Value)}");
+            var (key, value) = pair;
+
+            builder.Append(first ? '?' : '&');
+            builder.Append(UrlEncoder.Default.Encode(key));
+            builder.Append('=');
+            if (!string.IsNullOrEmpty(value))
+            {
+                builder.Append(UrlEncoder.Default.Encode(value));
+            }
+
+            first = false;
         }
 
-        return string.Join("&", properties);
+        return builder.ToString();
     }
 }

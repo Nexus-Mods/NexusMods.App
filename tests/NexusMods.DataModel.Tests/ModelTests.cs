@@ -1,17 +1,9 @@
-using System.Collections.Immutable;
-using System.IO.Compression;
 using FluentAssertions;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
-using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
-using NexusMods.Paths.Utilities;
-using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
 namespace NexusMods.DataModel.Tests;
 
@@ -27,7 +19,7 @@ public class ModelTests : ADataModelTest<ModelTests>
         var file = new FromArchive
         {
             Id = ModFileId.New(),
-            To = new GamePath(GameFolderType.Game, "foo/bar.pez"),
+            To = new GamePath(LocationId.Game, "foo/bar.pez"),
             Hash = (Hash)0x42L,
             Size = Size.FromLong(44L)
         };

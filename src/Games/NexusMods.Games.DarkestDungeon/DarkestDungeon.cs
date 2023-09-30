@@ -1,8 +1,12 @@
 using System.Diagnostics.CodeAnalysis;
 using NexusMods.Common;
 using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.StreamFactories;
+using NexusMods.Games.DarkestDungeon.Installers;
 using NexusMods.Paths;
+using OneOf.Types;
 
 namespace NexusMods.Games.DarkestDungeon;
 
@@ -32,37 +36,33 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame, IEpicGame
         return _osInformation.MatchPlatform(
             ref store,
             onWindows: (ref GameStore gameStore) => gameStore == GameStore.Steam
-                ? new GamePath(GameFolderType.Game, "_windows/Darkest.exe")
-                : new GamePath(GameFolderType.Game, "_windowsnosteam/Darkest.exe"),
+                ? new GamePath(LocationId.Game, "_windows/Darkest.exe")
+                : new GamePath(LocationId.Game, "_windowsnosteam/Darkest.exe"),
             onLinux: (ref GameStore gameStore) => gameStore == GameStore.Steam
-                ? new GamePath(GameFolderType.Game, "_linux/darkest.bin.x86_64")
-                : new GamePath(GameFolderType.Game, "linuxnosteam/darkest.bin.x86_64"),
+                ? new GamePath(LocationId.Game, "_linux/darkest.bin.x86_64")
+                : new GamePath(LocationId.Game, "linuxnosteam/darkest.bin.x86_64"),
             onOSX: (ref GameStore gameStore) => gameStore == GameStore.Steam
-                ? new GamePath(GameFolderType.Game, "_osx/Darkest.app/Contents/MacOS/Darkest")
-                : new GamePath(GameFolderType.Game, "_osxnosteam/Darkest.app/Contents/MacOS/Darkest NoSteam")
+                ? new GamePath(LocationId.Game, "_osx/Darkest.app/Contents/MacOS/Darkest")
+                : new GamePath(LocationId.Game, "_osxnosteam/Darkest.app/Contents/MacOS/Darkest NoSteam")
         );
     }
 
-    protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(
-        IFileSystem fileSystem,
-        IGameLocator locator,
+    protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
         GameLocatorResult installation)
     {
-        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);
-
-
-        if (installation.Metadata is SteamLocatorResultMetadata { CloudSavesDirectory: not null } steamLocatorResultMetadata)
-            yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Saves, steamLocatorResultMetadata.CloudSavesDirectory.Value);
-
         var globalSettingsFile = fileSystem
             .GetKnownPath(KnownPath.LocalApplicationDataDirectory)
             .Combine("Red Hook Studios/Darkest/persist.options.json");
 
-        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Preferences, globalSettingsFile);
-
-        if (installation.Store == GameStore.Steam)
+        var result =  new Dictionary<LocationId, AbsolutePath>()
         {
-            // TODO: Steam Cloud Saves
+            { LocationId.Game, installation.Path },
+            { LocationId.Preferences, globalSettingsFile }
+        };
+
+        if (installation.Metadata is SteamLocatorResultMetadata { CloudSavesDirectory: not null } steamLocatorResultMetadata)
+        {
+            result[LocationId.Saves] = steamLocatorResultMetadata.CloudSavesDirectory.Value;
         }
         else
         {
@@ -70,9 +70,14 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame, IEpicGame
                 .GetKnownPath(KnownPath.MyDocumentsDirectory)
                 .Combine("Darkest");
 
-            yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Saves, savesDirectory);
+            result[LocationId.Saves] = savesDirectory;
         }
+
+        return result;
     }
+
+    public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations) =>
+        ModInstallDestinationHelpers.GetCommonLocations(locations);
 
     public override IStreamFactory Icon =>
         new EmbededResourceStreamFactory<DarkestDungeon>("NexusMods.Games.DarkestDungeon.Resources.DarkestDungeon.icon.png");
@@ -81,5 +86,10 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame, IEpicGame
         new EmbededResourceStreamFactory<DarkestDungeon>("NexusMods.Games.DarkestDungeon.Resources.DarkestDungeon.game_image.jpg");
 
 
-
+    /// <inheritdoc />
+    public override IEnumerable<IModInstaller> Installers => new IModInstaller[]
+    {
+        new NativeModInstaller(),
+        new LooseFilesModInstaller(),
+    };
 }

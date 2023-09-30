@@ -1,12 +1,8 @@
-﻿using System.Collections.ObjectModel;
-using System.Reactive.Disposables;
-using Avalonia;
+﻿using System.Reactive.Disposables;
 using Avalonia.Controls;
-using Avalonia.Data;
-using Avalonia.Markup.Xaml;
-using Avalonia.Markup.Xaml.Templates;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
+using NexusMods.App.UI.Resources;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
 using ReactiveUI;
@@ -21,7 +17,7 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
         InitializeComponent();
         this.WhenActivated(d =>
         {
-            
+
             this.WhenAnyValue(view => view.ViewModel!.Mods)
                 .BindToUi(this, view => view.ModsDataGrid.ItemsSource)
                 .DisposeWith(d);
@@ -32,7 +28,7 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
 
             AddModButton.Command =
                 ReactiveCommand.CreateFromTask(AddMod);
-            
+
             DeleteModsButton.Command =
                 ReactiveCommand.CreateFromTask(DeleteSelectedMods);
 
@@ -42,7 +38,7 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
         });
     }
 
-    
+
 
     private async Task AddMod()
     {
@@ -50,13 +46,11 @@ public partial class LoadoutGridView : ReactiveUserControl<ILoadoutGridViewModel
         var options =
             new FilePickerOpenOptions
             {
-                Title = "Please select a mod file to install.",
+                Title = Language.LoadoutGridView_AddMod_FilePicker_Title,
                 AllowMultiple = true,
                 FileTypeFilter = new[]
                 {
-                    new FilePickerFileType("ZIP") {Patterns = new [] {"*.zip"}},
-                    new FilePickerFileType("RAR") {Patterns = new [] {"*.rar"}},
-                    new FilePickerFileType("7-Zip") {Patterns = new [] {"*.7z"}},
+                    new FilePickerFileType(Language.LoadoutGridView_AddMod_FileType_Archive) {Patterns = new [] {"*.zip", "*.7z", "*.rar"}},
                 }
             };
 

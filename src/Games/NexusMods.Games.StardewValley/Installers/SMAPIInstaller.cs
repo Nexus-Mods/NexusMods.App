@@ -1,10 +1,10 @@
 using System.Diagnostics;
-using System.Runtime.InteropServices;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveContents;
-using NexusMods.DataModel.Extensions;
+using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -13,6 +13,7 @@ using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
+using NexusMods.Paths.FileTree;
 
 // ReSharper disable IdentifierTypo
 // ReSharper disable InconsistentNaming
@@ -23,7 +24,7 @@ namespace NexusMods.Games.StardewValley.Installers;
 /// <see cref="IModInstaller"/> for SMAPI itself. This is different from <see cref="SMAPIModInstaller"/>,
 /// which is an implementation of <see cref="IModInstaller"/> for mods that use SMAPI.
 /// </summary>
-public class SMAPIInstaller : IModInstaller
+public class SMAPIInstaller : AModInstaller
 {
     private static readonly RelativePath InstallDatFile = "install.dat".ToRelativePath();
     private static readonly RelativePath LinuxFolder = "linux".ToRelativePath();
@@ -32,90 +33,82 @@ public class SMAPIInstaller : IModInstaller
 
     private readonly IOSInformation _osInformation;
     private readonly FileHashCache _fileHashCache;
+    private readonly IDownloadRegistry _downloadRegistry;
 
-    public SMAPIInstaller(IOSInformation osInformation, FileHashCache fileHashCache)
+    private SMAPIInstaller(IOSInformation osInformation, FileHashCache fileHashCache, IDownloadRegistry downloadRegistry, IServiceProvider serviceProvider)
+        : base(serviceProvider)
     {
         _osInformation = osInformation;
         _fileHashCache = fileHashCache;
+        _downloadRegistry = downloadRegistry;
     }
 
-    private static KeyValuePair<RelativePath, AnalyzedFile>[] GetInstallDataFiles(EntityDictionary<RelativePath, AnalyzedFile> files)
+    private static FileTreeNode<RelativePath, ModSourceFileEntry>[] GetInstallDataFiles(FileTreeNode<RelativePath, ModSourceFileEntry> files)
     {
-        var installDataFiles = files.Where(kv =>
+        var installDataFiles = files.GetAllDescendentFiles()
+            .Where(kv =>
         {
             var (path, file) = kv;
             var fileName = path.FileName;
             var parent = path.Parent.FileName;
 
-            return file.FileTypes.Contains(FileType.ZIP) &&
-                   fileName.Equals(InstallDatFile) &&
+            return fileName.Equals(InstallDatFile) &&
                    (parent.Equals(LinuxFolder) ||
                     parent.Equals(MacOSFolder) ||
                     parent.Equals(WindowsFolder));
-        }).ToArray();
+        })
+            .ToArray();
 
         return installDataFiles;
     }
 
-    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
-    {
-        if (!installation.Is<StardewValley>()) return Priority.None;
-
-        var installDataFiles = GetInstallDataFiles(archiveFiles);
-        return installDataFiles.Length == 3
-            ? Priority.Highest
-            : Priority.None;
-    }
-
-    public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
+    public override async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
         ModId baseModId,
-        Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
+        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         CancellationToken cancellationToken = default)
-    {
-        return ValueTask.FromResult(GetMods(gameInstallation, baseModId, srcArchiveHash, archiveFiles));
-    }
-
-    private IEnumerable<ModInstallerResult> GetMods(
-        GameInstallation gameInstallation,
-        ModId baseModId,
-        Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
     {
         var modFiles = new List<AModFile>();
 
         var installDataFiles = GetInstallDataFiles(archiveFiles);
-        if (installDataFiles.Length != 3) throw new UnreachableException($"{nameof(SMAPIInstaller)} should guarantee with {nameof(GetPriority)} that {nameof(GetInstallDataFiles)} returns 3 files when called from {nameof(GetModsAsync)} but it has {installDataFiles.Length} files instead!");
+        if (installDataFiles.Length != 3)
+            return NoResults;
 
         var installDataFile = _osInformation.MatchPlatform(
             state: ref installDataFiles,
-            onWindows: (ref KeyValuePair<RelativePath, AnalyzedFile>[] dataFiles) => dataFiles.First(kv => kv.Key.Parent.FileName.Equals("windows")),
-            onLinux: (ref KeyValuePair<RelativePath, AnalyzedFile>[] dataFiles) => dataFiles.First(kv => kv.Key.Parent.FileName.Equals("linux")),
-            onOSX: (ref KeyValuePair<RelativePath, AnalyzedFile>[] dataFiles) => dataFiles.First(kv => kv.Key.Parent.FileName.Equals("macOS"))
+            onWindows: (ref FileTreeNode<RelativePath, ModSourceFileEntry>[] dataFiles) => dataFiles.First(kv => kv.Path.Parent.FileName.Equals("windows")),
+            onLinux: (ref FileTreeNode<RelativePath, ModSourceFileEntry>[] dataFiles) => dataFiles.First(kv => kv.Path.Parent.FileName.Equals("linux")),
+            onOSX: (ref FileTreeNode<RelativePath, ModSourceFileEntry>[] dataFiles) => dataFiles.First(kv => kv.Path.Parent.FileName.Equals("macOS"))
         );
 
         var (path, file) = installDataFile;
-        if (file is not AnalyzedArchive archive)
-            throw new UnreachableException($"{nameof(AnalyzedFile)} that has the file type {nameof(FileType.ZIP)} is not a {nameof(AnalyzedArchive)}");
 
-        var gameFolderPath = gameInstallation.Locations
-            .First(x => x.Key == GameFolderType.Game).Value;
+        var found = _downloadRegistry.GetByHash(file!.Hash).ToArray();
+        DownloadId downloadId;
+        if (!found.Any())
+            downloadId = await RegisterDataFile(path, file, cancellationToken);
+        else
+        {
+            downloadId = found.First();
+        }
 
-        var archiveContents = archive.Contents;
+
+        var gameFolderPath = gameInstallation.LocationsRegister[LocationId.Game];
+
+        var archiveContents = (await _downloadRegistry.Get(downloadId)).GetFileTree();
 
         // TODO: install.dat is an archive inside an archive see https://github.com/Nexus-Mods/NexusMods.App/issues/244
         // the basicFiles have to be extracted from the nested archive and put inside the game folder
         // https://github.com/Pathoschild/SMAPI/blob/9763bc7484e29cbc9e7f37c61121d794e6720e75/src/SMAPI.Installer/InteractiveInstaller.cs#L380-L384
-        var basicFiles = archiveContents
-            .Where(kv => !kv.Key.Equals("unix-launcher.sh")).ToArray();
+        var basicFiles = archiveContents.GetAllDescendentFiles()
+            .Where(kv => !kv.Path.Equals("unix-launcher.sh")).ToArray();
 
         if (_osInformation.IsLinux || _osInformation.IsOSX)
         {
             // TODO: Replace game launcher (StardewValley) with unix-launcher.sh by overwriting the game file
             // https://github.com/Pathoschild/SMAPI/blob/9763bc7484e29cbc9e7f37c61121d794e6720e75/src/SMAPI.Installer/InteractiveInstaller.cs#L386-L417
-            var modLauncherScriptFile = archiveContents
-                .First(kv => kv.Key.FileName.Equals("unix-launcher.sh"));
+            var modLauncherScriptFile = archiveContents.GetAllDescendentFiles()
+                .First(kv => kv.Path.FileName.Equals("unix-launcher.sh"));
 
             var gameLauncherScriptFilePath = gameFolderPath.Combine("StardewValley");
         }
@@ -134,14 +127,29 @@ public class SMAPIInstaller : IModInstaller
             Size = gameDepsFileCache.Size,
             Id = ModFileId.New(),
             Installation = gameInstallation,
-            To = new GamePath(GameFolderType.Game, "StardewModdingAPI.deps.json")
+            To = new GamePath(LocationId.Game, "StardewModdingAPI.deps.json")
         });
 
         // TODO: consider adding Name and Version
-        yield return new ModInstallerResult
+        return new [] { new ModInstallerResult
         {
             Id = baseModId,
             Files = modFiles
-        };
+        }};
+    }
+
+    private async ValueTask<DownloadId> RegisterDataFile(RelativePath filename, ModSourceFileEntry file, CancellationToken token)
+    {
+        return await _downloadRegistry.RegisterDownload(file.StreamFactory, new FilePathMetadata { OriginalName = filename.FileName, Quality = Quality.Low}, token);
+    }
+
+    public static SMAPIInstaller Create(IServiceProvider serviceProvider)
+    {
+        return new SMAPIInstaller(
+            serviceProvider.GetRequiredService<IOSInformation>(),
+            serviceProvider.GetRequiredService<FileHashCache>(),
+            serviceProvider.GetRequiredService<IDownloadRegistry>(),
+            serviceProvider
+        );
     }
 }

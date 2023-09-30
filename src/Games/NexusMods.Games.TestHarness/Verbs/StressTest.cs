@@ -2,8 +2,10 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.CLI;
 using NexusMods.Abstractions.CLI.DataOutputs;
 using NexusMods.CLI;
-using NexusMods.Common.UserInput;
+using NexusMods.Common;
+using NexusMods.Common.GuidedInstaller;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Hashing.xxHash64;
@@ -36,14 +38,14 @@ public class StressTest : AVerb<IGame, AbsolutePath>, IRenderingVerb
         LoadoutManager loadoutManager, Client client,
         TemporaryFileManager temporaryFileManager,
         IHttpDownloader downloader,
-        IArchiveAnalyzer archiveAnalyzer,
         IArchiveInstaller archiveInstaller,
+        IDownloadRegistry downloadRegistry,
         IEnumerable<IGameLocator> gameLocators,
-        IOptionSelector optionSelector)
+        IGuidedInstaller optionSelector)
     {
-        ((CliOptionSelector)optionSelector).AutoFail = true;
-        _archiveAnalyzer = archiveAnalyzer;
+        ((CliGuidedInstaller)optionSelector).SkipAll = true;
         _archiveInstaller = archiveInstaller;
+        _downloadRegistry = downloadRegistry;
         _downloader = downloader;
         _loadoutManager = loadoutManager;
         _logger = logger;
@@ -63,9 +65,9 @@ public class StressTest : AVerb<IGame, AbsolutePath>, IRenderingVerb
 
     private readonly LoadoutManager _loadoutManager;
     private readonly ILogger<StressTest> _logger;
-    private readonly IArchiveAnalyzer _archiveAnalyzer;
     private readonly IArchiveInstaller _archiveInstaller;
     private readonly ManuallyAddedLocator _manualLocator;
+    private readonly IDownloadRegistry _downloadRegistry;
 
     public async Task<int> Run(IGame game, AbsolutePath output, CancellationToken token)
     {
@@ -118,8 +120,9 @@ public class StressTest : AVerb<IGame, AbsolutePath>, IRenderingVerb
 
                         var list = await _loadoutManager.ManageGameAsync(install,
                             indexGameFiles: false, token: cts.Token);
-                        var analysisData = await _archiveAnalyzer.AnalyzeFileAsync(tmpPath, token);
-                        await _archiveInstaller.AddMods(list.Value.LoadoutId, analysisData.Hash, token: token);
+                        var downloadId = await _downloadRegistry.RegisterDownload(tmpPath, new FilePathMetadata
+                            { OriginalName = tmpPath.Path.Name, Quality = Quality.Low }, token);
+                        await _archiveInstaller.AddMods(list.Value.LoadoutId, downloadId, token: token);
 
                         results.Add((file.FileName, mod.ModId, file.FileId, hash, true, null));
                         _logger.LogInformation("Installed {ModId} {FileId} {FileName} - {Size}", mod.ModId, file.FileId,

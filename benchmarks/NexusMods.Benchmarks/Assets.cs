@@ -1,5 +1,4 @@
 using NexusMods.Paths;
-using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Benchmarks;
 

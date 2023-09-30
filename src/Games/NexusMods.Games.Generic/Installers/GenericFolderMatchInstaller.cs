@@ -1,16 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
-using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveContents;
-using NexusMods.DataModel.Extensions;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Games.GameCapabilities;
-using NexusMods.DataModel.Games.GameCapabilities.AFolderMatchInstallerCapability;
+using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.ModInstallers;
-using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.Generic.Installers;
 
@@ -19,64 +15,49 @@ namespace NexusMods.Games.Generic.Installers;
 /// (<see cref="InstallFolderTarget"/>).
 /// Requires the game to support <see cref="AFolderMatchInstallerCapability"/>.
 /// Tries to match the mod archive folder structure to <see cref="InstallFolderTarget"/> offered by the capability.
-/// 
+///
 /// Example: myMod/Textures/myTexture.dds -> Skyrim/Data/Textures/myTexture.dds
 /// </summary>
-public class GenericFolderMatchInstaller : IModInstaller
+public class GenericFolderMatchInstaller : AModInstaller
 {
     private readonly ILogger<GenericFolderMatchInstaller> _logger;
+    private readonly IEnumerable<InstallFolderTarget> _installFolderTargets;
 
+    /// <summary>
+    /// Creates a new instance of <see cref="GenericFolderMatchInstaller"/> with the provided <paramref name="installFolderTargets"/>.
+    /// </summary>
+    /// <param name="provider"></param>
+    /// <param name="installFolderTargets"></param>
+    /// <returns></returns>
+    public static GenericFolderMatchInstaller Create(IServiceProvider provider, IEnumerable<InstallFolderTarget> installFolderTargets)
+    {
+        return new GenericFolderMatchInstaller(provider.GetRequiredService<ILogger<GenericFolderMatchInstaller>>(), installFolderTargets, provider);
+    }
 
-    public GameCapabilityId RequiredGameCapability => AFolderMatchInstallerCapability.CapabilityId;
-
-    public GenericFolderMatchInstaller(ILogger<GenericFolderMatchInstaller> logger)
+    private GenericFolderMatchInstaller(ILogger<GenericFolderMatchInstaller> logger, IEnumerable<InstallFolderTarget> installFolderTargets, IServiceProvider serviceProvider)
+        : base(serviceProvider)
     {
         _logger = logger;
+        _installFolderTargets = installFolderTargets;
     }
 
     #region IModInstaller
 
-    public Priority GetPriority(GameInstallation installation,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
+    public override ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(GameInstallation gameInstallation,
+        ModId baseModId, FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+        CancellationToken cancellationToken = default)
     {
-        if (!installation.Game.SupportedCapabilities.TryGetValue(RequiredGameCapability, out var capability))
-            return Priority.None;
-        var folderMatchInstallerCapability = (AFolderMatchInstallerCapability)capability;
-        var installFolderTargets = folderMatchInstallerCapability.GetInstallFolderTargets();
-
-        var filePaths = archiveFiles.Keys;
-        
-        if (filePaths.Any(filePath => PathMatchesAnyTarget(filePath, installFolderTargets)))
-        {
-            return Priority.Normal;
-        }
-
-        return Priority.None;
-    }
-
-    public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(GameInstallation gameInstallation, ModId baseModId,
-        Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles, CancellationToken cancellationToken = default)
-    {
-        if (!gameInstallation.Game.SupportedCapabilities.TryGetValue(RequiredGameCapability, out var capability))
-        {
-            throw new NotSupportedException(
-                $"Game {gameInstallation.Game.Name} does not support GenericFolderMatchInstaller capability.");
-        }
-
-        var folderMatchInstallerCapability = (AFolderMatchInstallerCapability)capability;
-        var installFolderTargets = folderMatchInstallerCapability.GetInstallFolderTargets();
 
         List<RelativePath> missedFiles = new();
 
         List<FromArchive> modFiles = new();
 
-        foreach (var target in installFolderTargets)
+        foreach (var target in _installFolderTargets)
         {
             modFiles.AddRange(GetModFilesForTarget(archiveFiles, target, missedFiles));
             if (modFiles.Any())
             {
-                // If any file matched target, ignore other targets. 
+                // If any file matched target, ignore other targets.
                 // no support for multiple targets from the same archive.
                 break;
             }
@@ -110,7 +91,7 @@ public class GenericFolderMatchInstaller : IModInstaller
     /// <param name="target"></param>
     /// <param name="missedFiles"></param>
     /// <returns></returns>
-    private IEnumerable<FromArchive> GetModFilesForTarget(EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
+    private IEnumerable<FromArchive> GetModFilesForTarget(FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         InstallFolderTarget target, List<RelativePath> missedFiles)
     {
         List<FromArchive> modFiles = new();
@@ -118,9 +99,10 @@ public class GenericFolderMatchInstaller : IModInstaller
         // TODO: Currently just assumes that the prefix of the first file that matches the target structure is the correct one.
         // Consider checking that each file matches the target at the found location before adding it.
 
-        if (TryFindPrefixToDrop(target, archiveFiles.Keys, out var prefixToDrop))
+        if (TryFindPrefixToDrop(target, archiveFiles.GetAllDescendentFiles().Select(f => f.Path),
+                out var prefixToDrop))
         {
-            foreach (var (filePath, fileData) in archiveFiles)
+            foreach (var (filePath, fileData) in archiveFiles.GetAllDescendentFiles())
             {
                 var trimmedPath = filePath;
 
@@ -141,10 +123,10 @@ public class GenericFolderMatchInstaller : IModInstaller
                 if (PathIsExcluded(trimmedPath, target))
                     continue;
 
-                var modPath = new GamePath(target.DestinationGamePath.Type,
+                var modPath = new GamePath(target.DestinationGamePath.LocationId,
                     target.DestinationGamePath.Path.Join(trimmedPath));
 
-                modFiles.Add(fileData.ToFromArchive(modPath));
+                modFiles.Add(fileData!.ToFromArchive(modPath));
             }
 
             return modFiles;
@@ -205,27 +187,6 @@ public class GenericFolderMatchInstaller : IModInstaller
         }
 
         return prefix;
-    }
-
-    /// <summary>
-    /// Returns true if any file matches any target or sub-target.
-    /// </summary>
-    /// <param name="filePath"></param>
-    /// <param name="installFolderTargets"></param>
-    /// <returns></returns>
-    private bool PathMatchesAnyTarget(RelativePath filePath,
-        IEnumerable<InstallFolderTarget> installFolderTargets)
-    {
-        foreach (var target in installFolderTargets)
-        {
-            if (PathMatchesTarget(filePath, target))
-                return true;
-
-            if (PathMatchesAnyTarget(filePath, target.SubTargets))
-                return true;
-        }
-
-        return false;
     }
 
     /// <summary>
@@ -319,7 +280,7 @@ public class GenericFolderMatchInstaller : IModInstaller
 
     /// <summary>
     /// Returns whether the path contains the subPath.
-    /// 
+    ///
     /// Example: path: "skse_1_07_03/src/skse/skse.sln" subPath: "src/skse"
     /// </summary>
     /// <param name="path"></param>

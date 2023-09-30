@@ -1,5 +1,4 @@
-﻿using DynamicData;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NexusMods.App.UI.RightContent.LoadoutGrid;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;

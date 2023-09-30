@@ -13,9 +13,9 @@ public interface IArchiveInstaller
     /// standard way to "install" a mod.
     /// </summary>
     /// <param name="loadoutId"></param>
-    /// <param name="archiveHash"></param>
+    /// <param name="downloadId"></param>
     /// <param name="defaultModName"></param>
     /// <param name="token"></param>
     /// <returns></returns>
-    public Task<ModId[]> AddMods(LoadoutId loadoutId, Hash archiveHash, string? defaultModName = null, CancellationToken token = default);
+    public Task<ModId[]> AddMods(LoadoutId loadoutId, DownloadId downloadId, string? defaultModName = null, CancellationToken token = default);
 }

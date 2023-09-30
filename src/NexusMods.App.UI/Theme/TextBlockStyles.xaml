@@ -1,4 +1,40 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <StackPanel>
+            <TextBlock Classes="Small" Text="Sample Text Small" />
+            <TextBlock Classes="H1" Text="Sample Text H1" />
+            <TextBlock Classes="TopTitle" Text="Sample Text Top Title" />
+            <TextBlock Classes="Body2RobotoRegular" Text="Sample Text Body2RobotoRegular" />
+            <TextBlock Classes="Subheading" Text="Sample Text Subheading" />
+            <TextBlock Classes="H5MontserratSemi" Text="Sample Text H5MontserratSemi" />
+            <TextBlock Classes="H6MontserratSemi" Text="Sample Text H6MontserratSemi" />
+            <TextBlock Classes="Body_MD_Normal" Text="Sample Text Body_MD_Normal" />
+            <TextBlock Classes="CaptionMontserratSemi" Text="Sample Text CaptionMontserratSemi" />
+            <TextBlock Classes="ButtonMontserratSemi" Text="Sample Text ButtonMontserratSemi" />
+            <TextBlock Classes="Body2RobotoRegularBold" Text="Sample Text Body2RobotoRegularBold" />
+            <TextBlock Classes="UsesAccentLighterColor" Text="Sample Text UsesAccentLighterColor" />
+            <TextBlock Classes="Heading2XLSemi" Text="Sample Text Heading2XLSemi" />
+            <TextBlock Classes="HeadingXLSemi" Text="Sample Text HeadingXLSemi" />
+            <TextBlock Classes="HeadingLGSemi" Text="Sample Text HeadingLGSemi" />
+            <TextBlock Classes="HeadingMDSemi" Text="Sample Text HeadingMDSemi" />
+            <TextBlock Classes="HeadingSMSemi" Text="Sample Text HeadingSMSemi" />
+            <TextBlock Classes="HeadingXSSemi" Text="Sample Text HeadingXSSemi" />
+            <TextBlock Classes="TitleMDSemi" Text="Sample Text TitleMDSemi" />
+            <TextBlock Classes="TitleSMSemi" Text="Sample Text TitleSMSemi" />
+            <TextBlock Classes="TitleXSSemi" Text="Sample Text TitleXSSemi" />
+            <TextBlock Classes="BodyXLBold" Text="Sample Text BodyXLBold" />
+            <TextBlock Classes="BodyXLNormal" Text="Sample Text BodyXLNormal" />
+            <TextBlock Classes="BodyLGBold" Text="Sample Text BodyLGBold" />
+            <TextBlock Classes="BodyLGNormal" Text="Sample Text BodyLGNormal" />
+            <TextBlock Classes="BodyMDBold" Text="Sample Text BodyMDBold" />
+            <TextBlock Classes="BodyMDNormal" Text="Sample Text BodyMDNormal" />
+            <TextBlock Classes="BodySMBold" Text="Sample Text BodySMBold" />
+            <TextBlock Classes="BodySMNormal" Text="Sample Text BodySMNormal" />
+            <TextBlock Classes="UsesBrandWhiteColor" Text="Sample Text UsesBrandWhiteColor" />
+
+
+        </StackPanel>
+    </Design.PreviewWith>
 
     <Style Selector="TextBlock.Small">
         <Setter Property="FontSize" Value="10" />
@@ -11,7 +47,6 @@
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
-
 
 
     <Style Selector="TextBlock.H1">
@@ -54,7 +89,7 @@
         <Setter Property="LineHeight" Value="16.41" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
     </Style>
-    
+
     <Style Selector="TextBlock.H5MontserratSemi">
         <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
         <Setter Property="FontWeight" Value="600" />
@@ -62,13 +97,21 @@
         <Setter Property="LineHeight" Value="33" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
     </Style>
-    
+
     <Style Selector="TextBlock.H6MontserratSemi">
         <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
         <Setter Property="FontWeight" Value="600" />
         <Setter Property="FontSize" Value="18" />
         <Setter Property="LineHeight" Value="25" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+
+    <Style Selector="TextBlock.Body_MD_Normal">
+        <Setter Property="FontFamily" Value="{DynamicResource FontSecondaryRegular}" />
+        <Setter Property="FontWeight" Value="400" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="LineHeight" Value="12" />
     </Style>
 
     <Style Selector="TextBlock.CaptionMontserratSemi">
@@ -79,7 +122,7 @@
         <Setter Property="LetterSpacing" Value="0.6" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
     </Style>
-    
+
     <Style Selector="TextBlock.ButtonMontserratSemi">
         <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
         <Setter Property="FontWeight" Value="600" />
@@ -88,15 +131,7 @@
         <Setter Property="LetterSpacing" Value="0.7" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
     </Style>
-    
-    <Style Selector="TextBlock.Body2RobotoRegular">
-        <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
-        <Setter Property="FontWeight" Value="400" />
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="LineHeight" Value="21" />
-        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
-    </Style>
-    
+
     <Style Selector="TextBlock.Body2RobotoRegularBold">
         <Setter Property="FontFamily" Value="{DynamicResource FontSecondaryBold}" />
         <Setter Property="FontWeight" Value="700" />
@@ -104,8 +139,148 @@
         <Setter Property="LineHeight" Value="21" />
         <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryColor}" />
     </Style>
-    
+
     <Style Selector="TextBlock.UsesAccentLighterColor">
         <Setter Property="Foreground" Value="{DynamicResource BrandAccentLighter}" />
+    </Style>
+
+    <Style Selector="TextBlock.Heading2XLSemi">
+        <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
+        <Setter Property="FontWeight" Value="600" />
+        <Setter Property="FontSize" Value="60" />
+        <Setter Property="LineHeight" Value="72" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="TextBlock.HeadingXLSemi">
+        <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
+        <Setter Property="FontWeight" Value="600" />
+        <Setter Property="FontSize" Value="48" />
+        <Setter Property="LineHeight" Value="57.6" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="TextBlock.HeadingLGSemi">
+        <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
+        <Setter Property="FontWeight" Value="600" />
+        <Setter Property="FontSize" Value="36" />
+        <Setter Property="LineHeight" Value="43.2" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="TextBlock.HeadingMDSemi">
+        <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
+        <Setter Property="FontWeight" Value="600" />
+        <Setter Property="FontSize" Value="30" />
+        <Setter Property="LineHeight" Value="37.2" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="TextBlock.HeadingSMSemi">
+        <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
+        <Setter Property="FontWeight" Value="600" />
+        <Setter Property="FontSize" Value="24" />
+        <Setter Property="LineHeight" Value="30" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="TextBlock.HeadingXSSemi">
+        <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
+        <Setter Property="FontWeight" Value="600" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="LineHeight" Value="24.75" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="TextBlock.TitleMDSemi">
+        <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
+        <Setter Property="FontWeight" Value="600" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="LineHeight" Value="14" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="TextBlock.TitleSMSemi">
+        <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
+        <Setter Property="FontWeight" Value="600" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="LineHeight" Value="16.5" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="TextBlock.TitleXSSemi">
+        <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
+        <Setter Property="FontWeight" Value="600" />
+        <Setter Property="FontSize" Value="10" />
+        <Setter Property="LineHeight" Value="15" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="TextBlock.BodyXLBold">
+        <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
+        <Setter Property="FontWeight" Value="700" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="LineHeight" Value="27" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="TextBlock.BodyXLNormal">
+        <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
+        <Setter Property="FontWeight" Value="400" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="LineHeight" Value="27" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="TextBlock.BodyLGBold">
+        <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
+        <Setter Property="FontWeight" Value="700" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="LineHeight" Value="24" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="TextBlock.BodyLGNormal">
+        <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
+        <Setter Property="FontWeight" Value="400" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="LineHeight" Value="24" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="TextBlock.BodyMDBold">
+        <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
+        <Setter Property="FontWeight" Value="700" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="LineHeight" Value="21" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="TextBlock.BodyMDNormal">
+        <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
+        <Setter Property="FontWeight" Value="400" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="LineHeight" Value="21" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="TextBlock.BodySMBold">
+        <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
+        <Setter Property="FontWeight" Value="700" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="LineHeight" Value="18" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="TextBlock.BodySMNormal">
+        <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
+        <Setter Property="FontWeight" Value="400" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="LineHeight" Value="18" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+    </Style>
+
+    <Style Selector="TextBlock.UsesBrandWhiteColor">
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
     </Style>
 </Styles>

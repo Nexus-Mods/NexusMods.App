@@ -2,7 +2,9 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -32,14 +34,15 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
 
     private readonly IFileSystem _fileSystem;
 
-    public StubbedGame(ILogger<StubbedGame> logger, IEnumerable<IGameLocator> locators, IFileSystem fileSystem) : base(locators)
+    public StubbedGame(ILogger<StubbedGame> logger, IEnumerable<IGameLocator> locators,
+        IFileSystem fileSystem) : base(locators)
     {
         _logger = logger;
         _locators = locators;
         _fileSystem = fileSystem;
     }
 
-    public override GamePath GetPrimaryFile(GameStore store) => new(GameFolderType.Game, "");
+    public override GamePath GetPrimaryFile(GameStore store) => new(LocationId.Game, "");
 
     public override IEnumerable<GameInstallation> Installations
     {
@@ -50,10 +53,10 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
                 .Select((i, idx) => new GameInstallation()
                 {
                     Game = this,
-                    Locations = new Dictionary<GameFolderType, AbsolutePath>()
+                    LocationsRegister = new GameLocationsRegister( new Dictionary<LocationId, AbsolutePath>()
                     {
-                        { GameFolderType.Game, EnsureFiles(i.Path) }
-                    },
+                        { LocationId.Game, EnsureFiles(i.Path) }
+                    }),
                     Version = Version.Parse($"0.0.{idx}.0"),
                     Store = GameStore.Unknown,
                 });
@@ -70,13 +73,16 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
             "NexusMods.StandardGameLocators.TestHelpers.Resources.question_mark_game.png");
 
     public override IStreamFactory GameImage => throw new NotImplementedException("No game image for stubbed game.");
-    protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(IFileSystem fileSystem, IGameLocator locator, GameLocatorResult installation)
+    protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
+        GameLocatorResult installation)
     {
-        return new[]
-        {
-            new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, Installations.First().Locations[GameFolderType.Game])
-        };
+        return new Dictionary<LocationId, AbsolutePath>()
+            {
+                { LocationId.Game, Installations.First().LocationsRegister[LocationId.Game] }
+            };
     }
+
+    public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations) => new();
 
     private AbsolutePath EnsureFiles(AbsolutePath path)
     {
@@ -103,4 +109,9 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
     public IEnumerable<string> EpicCatalogItemId => new[] { "epic-game-id" };
     public IEnumerable<string> OriginGameIds => new[] { "origin-game-id" };
     public IEnumerable<string> XboxIds => new[] { "xbox-game-id" };
+
+    public override IEnumerable<IModInstaller> Installers => new IModInstaller[]
+    {
+        new StubbedGameInstaller()
+    };
 }

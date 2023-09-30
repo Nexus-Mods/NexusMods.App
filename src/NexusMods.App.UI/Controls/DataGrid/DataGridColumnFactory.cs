@@ -1,6 +1,5 @@
 ﻿using Avalonia.Controls;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.App.UI.RightContent.LoadoutGrid;
 
 namespace NexusMods.App.UI.Controls.DataGrid;
 

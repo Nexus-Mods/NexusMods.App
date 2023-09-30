@@ -1,5 +1,5 @@
 using Humanizer.Bytes;
-using NexusMods.Paths;
+using NexusMods.App.UI.Resources;
 
 namespace NexusMods.App.UI.Helpers;
 
@@ -30,9 +30,9 @@ public static class StringFormatters
     {
         return secondsRemaining switch
         {
-            < 60 => $"{secondsRemaining} secs",
-            >= 60 and < 3600 => $"{secondsRemaining / 60} mins",
-            >= 3600 => $"{secondsRemaining / 3600} hours"
+            < 60 => string.Format(Language.StringFormatters__SecondsRemaining_secs, secondsRemaining),
+            >= 60 and < 3600 => string.Format(Language.StringFormatters__MinutesRemaining_mins, secondsRemaining / 60),
+            >= 3600 => string.Format(Language.StringFormatters__HoursRemaining__hours, secondsRemaining / 3600)
         };
     }
 
@@ -40,5 +40,6 @@ public static class StringFormatters
     /// Formats the 'In Progress' title in Downloads Menu.
     /// </summary>
     /// <param name="itemCount">Number of items in the menu.</param>
-    public static string ToDownloadsInProgressTitle(int itemCount) => $"In progress ({itemCount})";
+    public static string ToDownloadsInProgressTitle(int itemCount) =>
+        string.Format(Language.StringFormatters__In_progress__numDownloads, itemCount);
 }

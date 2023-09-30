@@ -6,13 +6,14 @@ using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.Controls.DataGrid;
-using NexusMods.App.UI.RightContent.LoadoutGrid.Columns;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModCategory;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModEnabled;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModInstalled;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModName;
 using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModVersion;
+using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Cursors;
@@ -36,8 +37,8 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
     private readonly IFileSystem _fileSystem;
     private readonly ILogger<LoadoutGridViewModel> _logger;
     private readonly LoadoutRegistry _loadoutRegistry;
-    private readonly IArchiveAnalyzer _archiveAnalyzer;
     private readonly IArchiveInstaller _archiveInstaller;
+    private readonly IDownloadRegistry _downloadRegistry;
 
     [Reactive]
     public string LoadoutName { get; set; } = "";
@@ -49,14 +50,14 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
         IServiceProvider provider,
         LoadoutRegistry loadoutRegistry,
         IFileSystem fileSystem,
-        IArchiveAnalyzer archiveAnalyzer,
-        IArchiveInstaller archiveInstaller)
+        IArchiveInstaller archiveInstaller,
+        IDownloadRegistry downloadRegistry)
     {
         _logger = logger;
         _fileSystem = fileSystem;
         _loadoutRegistry = loadoutRegistry;
-        _archiveAnalyzer = archiveAnalyzer;
         _archiveInstaller = archiveInstaller;
+        _downloadRegistry = downloadRegistry;
 
         _columns =
             new SourceCache<IDataGridColumnFactory<LoadoutColumn>, LoadoutColumn>(
@@ -125,8 +126,14 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
 
         var _ = Task.Run(async () =>
         {
-            var analyzedFile = await _archiveAnalyzer.AnalyzeFileAsync(file, CancellationToken.None);
-            await _archiveInstaller.AddMods(LoadoutId, analyzedFile.Hash, token: CancellationToken.None);
+            var downloadId = await _downloadRegistry.RegisterDownload(file,
+                new FilePathMetadata
+                {
+                    OriginalName = file.FileName,
+                    Quality = Quality.Low,
+                    Name = file.FileName
+                });
+            await _archiveInstaller.AddMods(LoadoutId, downloadId, token: CancellationToken.None);
         });
 
         return Task.CompletedTask;

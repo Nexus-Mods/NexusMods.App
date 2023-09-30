@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.CLI;
 using NexusMods.App.CLI.Renderers;
@@ -6,10 +7,12 @@ using NexusMods.App.UI;
 using NexusMods.CLI;
 using NexusMods.Common;
 using NexusMods.DataModel;
+using NexusMods.DataModel.GlobalSettings;
 using NexusMods.FileExtractor;
 using NexusMods.Games.BethesdaGameStudios;
 using NexusMods.Games.DarkestDungeon;
 using NexusMods.Games.FOMOD;
+using NexusMods.Games.FOMOD.UI;
 using NexusMods.Games.Generic;
 using NexusMods.Games.MountAndBlade2Bannerlord;
 using NexusMods.Games.RedEngine;
@@ -23,6 +26,9 @@ using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.NMA;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators;
+using NexusMods.Telemetry;
+using NexusMods.Telemetry.OpenTelemetry;
+using OpenTelemetry.Exporter;
 
 namespace NexusMods.App;
 
@@ -34,7 +40,7 @@ public static class Services
         services.AddScoped<IRenderer, Json>();
         return services;
     }
-    
+
     public static IServiceCollection AddListeners(this IServiceCollection services)
     {
         services.AddSingleton<NxmRpcListener>();
@@ -46,9 +52,12 @@ public static class Services
     {
         config ??= new AppConfig();
 
-        services.AddCLI()
+        services
+            .AddSingleton<IAppConfigManager, AppConfigManager>(provider => new AppConfigManager(config, provider.GetRequiredService<JsonSerializerOptions>()))
+            .AddCLI()
             .AddFileSystem()
-            .AddUI()
+            .AddUI(config.LauncherSettings)
+            .AddGuidedInstallerUi()
             .AddFileExtractors(config.FileExtractorSettings)
             .AddDataModel(config.DataModelSettings)
             .AddBethesdaGameStudios()
@@ -73,6 +82,19 @@ public static class Services
         if (addStandardGameLocators)
             services.AddStandardGameLocators();
 
-        return services;
+        return OpenTelemetryRegistration.AddTelemetry(services, new OpenTelemetrySettings
+        {
+            IsEnabled = config.EnableTelemetry ?? false,
+
+            EnableMetrics = true,
+            EnableTracing = true,
+
+            ApplicationName = Telemetry.LibraryInfo.AssemblyName,
+            ApplicationVersion = Telemetry.LibraryInfo.AssemblyVersion,
+
+            ExporterProtocol = OtlpExportProtocol.HttpProtobuf,
+            ExporterMetricsEndpoint = new Uri("https://collector.nexusmods.com/v1/metrics"),
+            ExporterTracesEndpoint = new Uri("https://collector.nexusmods.com/v1/traces")
+        }).ConfigureTelemetry(Telemetry.LibraryInfo, configureMetrics: Telemetry.SetupTelemetry);
     }
 }

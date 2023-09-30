@@ -1,7 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using NexusMods.App.UI.RightContent;
-using NexusMods.App.UI.RightContent.Downloads;
 using NexusMods.App.UI.ViewModels.Helpers.ViewModelSelector;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

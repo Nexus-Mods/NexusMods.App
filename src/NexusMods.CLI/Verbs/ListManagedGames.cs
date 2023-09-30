@@ -19,7 +19,6 @@ public class ListManagedGames : AVerb, IRenderingVerb
     /// DI constructor
     /// </summary>
     /// <param name="manager"></param>
-    /// <param name="configurator"></param>
     public ListManagedGames(LoadoutManager manager)
     {
         _manager = manager;

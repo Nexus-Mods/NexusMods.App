@@ -1,16 +1,17 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using NexusMods.Paths.Utilities;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
-using Xunit.DependencyInjection;
+
 // ReSharper disable StaticMemberInGenericType
 
 namespace NexusMods.DataModel.Tests.Harness;
@@ -36,7 +37,6 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
     protected readonly TemporaryFileManager TemporaryFileManager;
     protected readonly IServiceProvider ServiceProvider;
-    protected readonly IArchiveAnalyzer ArchiveAnalyzer;
     protected readonly IArchiveManager ArchiveManager;
     protected readonly IArchiveInstaller ArchiveInstaller;
     protected readonly LoadoutManager LoadoutManager;
@@ -44,6 +44,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected readonly FileHashCache FileHashCache;
     protected readonly IFileSystem FileSystem;
     protected readonly IDataStore DataStore;
+    protected readonly IDownloadRegistry DownloadRegistry;
     protected readonly IToolManager ToolManager;
 
     protected readonly IGame Game;
@@ -57,17 +58,17 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected ADataModelTest(IServiceProvider provider)
     {
         var startup = new Startup();
-        _host = Host.CreateDefaultBuilder(Environment.GetCommandLineArgs())
+        _host = new HostBuilder()
             .ConfigureServices((_, service) => startup.ConfigureServices(service))
             .Build();
         var provider1 = _host.Services;
-        ArchiveAnalyzer = provider1.GetRequiredService<IArchiveAnalyzer>();
         ArchiveManager = provider1.GetRequiredService<IArchiveManager>();
         ArchiveInstaller = provider1.GetRequiredService<IArchiveInstaller>();
         LoadoutManager = provider1.GetRequiredService<LoadoutManager>();
         FileHashCache = provider1.GetRequiredService<FileHashCache>();
         FileSystem = provider1.GetRequiredService<IFileSystem>();
         DataStore = provider1.GetRequiredService<IDataStore>();
+        DownloadRegistry = provider1.GetRequiredService<IDownloadRegistry>();
         Logger = provider1.GetRequiredService<ILogger<T>>();
         LoadoutSynchronizer = provider1.GetRequiredService<LoadoutSynchronizer>();
         TemporaryFileManager = provider1.GetRequiredService<TemporaryFileManager>();
@@ -76,9 +77,6 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
         Game = provider1.GetRequiredService<StubbedGame>();
         Install = Game.Installations.First();
-
-        startup.Configure(provider1.GetRequiredService<ILoggerFactory>(), provider.GetRequiredService<ITestOutputHelperAccessor>());
-
     }
 
     public void Dispose()
@@ -94,8 +92,9 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
     protected async Task<ModId[]> AddMods(LoadoutMarker mainList, AbsolutePath path, string? name = null)
     {
-        var hash1 = await ArchiveAnalyzer.AnalyzeFileAsync(path, CancellationToken.None);
-        return await ArchiveInstaller.AddMods(mainList.Value.LoadoutId, hash1.Hash, name, CancellationToken.None);
+        var downloadId = await DownloadRegistry.RegisterDownload(path,
+            new FilePathMetadata {OriginalName = path.FileName, Quality = Quality.Low}, CancellationToken.None);
+        return await ArchiveInstaller.AddMods(mainList.Value.LoadoutId, downloadId, name, CancellationToken.None);
     }
 
     public Task DisposeAsync()

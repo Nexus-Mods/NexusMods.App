@@ -1,8 +1,10 @@
-using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 using NexusMods.Common;
 using NexusMods.DataModel.Games;
+using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.StreamFactories;
+using NexusMods.Games.StardewValley.Installers;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.StardewValley;
@@ -11,8 +13,7 @@ namespace NexusMods.Games.StardewValley;
 public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
 {
     private readonly IOSInformation _osInformation;
-    private readonly IFileSystem _fileSystem;
-
+    private readonly IServiceProvider _serviceProvider;
     public IEnumerable<uint> SteamIds => new[] { 413150u };
     public IEnumerable<long> GogIds => new long[] { 1453375253 };
     public IEnumerable<string> XboxIds => new[] { "ConcernedApe.StardewValleyPC" };
@@ -24,11 +25,11 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
 
     public StardewValley(
         IOSInformation osInformation,
-        IFileSystem fileSystem,
-        IEnumerable<IGameLocator> gameLocators) : base(gameLocators)
+        IEnumerable<IGameLocator> gameLocators,
+        IServiceProvider provider) : base(gameLocators)
     {
         _osInformation = osInformation;
-        _fileSystem = fileSystem;
+        _serviceProvider = provider;
     }
 
     public override GamePath GetPrimaryFile(GameStore store)
@@ -40,45 +41,44 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
             state: ref store,
             onWindows: (ref GameStore gameStore) =>
                 gameStore == GameStore.XboxGamePass
-                    ? new GamePath(GameFolderType.Game, "Stardew Valley.exe")
-                    : new GamePath(GameFolderType.Game, "StardewModdingAPI.exe"),
-            onLinux: (ref GameStore _) => new GamePath(GameFolderType.Game, "StardewValley"),
-            onOSX: (ref GameStore _) => new GamePath(GameFolderType.Game, "Contents/MacOS/StardewValley")
+                    ? new GamePath(LocationId.Game, "Stardew Valley.exe")
+                    : new GamePath(LocationId.Game, "StardewModdingAPI.exe"),
+            onLinux: (ref GameStore _) => new GamePath(LocationId.Game, "StardewValley"),
+            onOSX: (ref GameStore _) => new GamePath(LocationId.Game, "Contents/MacOS/StardewValley")
         );
     }
 
-    protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(
-        IFileSystem fileSystem,
-        IGameLocator locator,
+    protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
         GameLocatorResult installation)
     {
-        if (installation.Store == GameStore.XboxGamePass)
-        {
-            yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path.Combine("Content"));
-        }
-        else
-        {
-            yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);
-        }
-
+        // global data files (https://github.com/Pathoschild/SMAPI/blob/8d600e226960a81636137d9bf286c69ab39066ed/src/SMAPI/Framework/ModHelpers/DataHelper.cs#L163-L169)
         var stardewValleyAppDataPath = fileSystem
             .GetKnownPath(KnownPath.ApplicationDataDirectory)
             .Combine("StardewValley");
 
-        // base game saves
-        yield return new KeyValuePair<GameFolderType, AbsolutePath>(
-            GameFolderType.Saves,
-            stardewValleyAppDataPath.Combine("Saves")
-        );
-
-        // global data files (https://github.com/Pathoschild/SMAPI/blob/8d600e226960a81636137d9bf286c69ab39066ed/src/SMAPI/Framework/ModHelpers/DataHelper.cs#L163-L169)
-        yield return new KeyValuePair<GameFolderType, AbsolutePath>(
-            GameFolderType.AppData,
-            stardewValleyAppDataPath.Combine(".smapi")
-        );
+        var result = new Dictionary<LocationId, AbsolutePath>()
+        {
+            {
+                LocationId.Game,
+                installation.Store == GameStore.XboxGamePass ? installation.Path.Combine("Content") : installation.Path
+            },
+            { LocationId.AppData, stardewValleyAppDataPath.Combine(".smapi") },
+            { LocationId.Saves, stardewValleyAppDataPath.Combine("Saves") },
+        };
+        return result;
     }
 
     public override IStreamFactory Icon => new EmbededResourceStreamFactory<StardewValley>("NexusMods.Games.StardewValley.Resources.icon.png");
 
     public override IStreamFactory GameImage => new EmbededResourceStreamFactory<StardewValley>("NexusMods.Games.StardewValley.Resources.game_image.jpg");
+
+    public override IEnumerable<IModInstaller> Installers => new IModInstaller[]
+    {
+        SMAPIInstaller.Create(_serviceProvider),
+        SMAPIModInstaller.Create(_serviceProvider)
+    };
+
+    public override List<IModInstallDestination> GetInstallDestinations(
+        IReadOnlyDictionary<LocationId, AbsolutePath> locations)
+        => ModInstallDestinationHelpers.GetCommonLocations(locations);
 }

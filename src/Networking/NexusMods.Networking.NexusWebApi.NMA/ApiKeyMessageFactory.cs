@@ -14,7 +14,7 @@ public class ApiKeyMessageFactory : IAuthenticatingMessageFactory
     /// The name of the environment variable that contains the API key.
     /// </summary>
     public const string NexusApiKeyEnvironmentVariable = "NEXUS_API_KEY";
-    
+
     private static readonly IId ApiKeyId = new IdVariableLength(EntityCategory.AuthData, "NexusMods.Networking.NexusWebApi.ApiKey"u8.ToArray());
 
     private readonly IDataStore _store;
@@ -75,7 +75,7 @@ public class ApiKeyMessageFactory : IAuthenticatingMessageFactory
         {
             Name = result.Data.Name,
             IsPremium = result.Data.IsPremium,
-            IsSupporter = result.Data.IsSupporter,
+            AvatarUrl = result.Data.ProfileUrl
         };
     }
 

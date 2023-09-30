@@ -19,7 +19,6 @@ public class RunTool : AVerb<ITool, LoadoutMarker>, IRenderingVerb
     /// <summary>
     /// DI constructor
     /// </summary>
-    /// <param name="configurator"></param>
     /// <param name="toolManager"></param>
     public RunTool(IToolManager toolManager)
     {

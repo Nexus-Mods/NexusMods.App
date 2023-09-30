@@ -1,6 +1,4 @@
 ﻿using Avalonia;
-using Avalonia.Controls;
-using DynamicData;
 
 namespace NexusMods.App.UI.Extensions;
 

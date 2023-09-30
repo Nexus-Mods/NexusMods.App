@@ -1,8 +1,10 @@
-﻿using NexusMods.DataModel;
+using System.Text.Json;
+using NexusMods.App.UI;
+using NexusMods.DataModel;
+using NexusMods.DataModel.GlobalSettings;
 using NexusMods.FileExtractor;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Paths;
-using NexusMods.Paths.Utilities;
 
 namespace NexusMods.App;
 
@@ -11,14 +13,12 @@ namespace NexusMods.App;
 /// </summary>
 public class AppConfig
 {
-    private readonly IFileSystem _fileSystem;
-
     public AppConfig()
     {
-        _fileSystem = FileSystem.Shared;
-        DataModelSettings = new DataModelSettings(_fileSystem);
-        FileExtractorSettings = new FileExtractorSettings(_fileSystem);
-        LoggingSettings = new LoggingSettings(_fileSystem);
+        var fileSystem = FileSystem.Shared;
+        DataModelSettings = new DataModelSettings(fileSystem);
+        FileExtractorSettings = new FileExtractorSettings(fileSystem);
+        LoggingSettings = new LoggingSettings(fileSystem);
     }
     /*
         Default Value Rules:
@@ -47,6 +47,8 @@ public class AppConfig
     public FileExtractorSettings FileExtractorSettings { get; set; }
     public HttpDownloaderSettings HttpDownloaderSettings { get; set; } = new();
     public LoggingSettings LoggingSettings { get; set; }
+    public LauncherSettings LauncherSettings { get; set; } = new();
+    public bool? EnableTelemetry { get; set; }
 
     /// <summary>
     /// Sanitizes the config; e.g.
@@ -81,7 +83,7 @@ public class LoggingSettings : ILoggingSettings
 {
     private const string LogFileName = "nexusmods.app.current.log";
     private const string LogFileNameTemplate = "nexusmods.app.{##}.log";
-    
+
     /// <inheritdoc/>
     public ConfigurationPath FilePath { get; set; }
 
@@ -90,7 +92,7 @@ public class LoggingSettings : ILoggingSettings
 
     /// <inheritdoc/>
     public int MaxArchivedFiles { get; set; }
-    
+
     /// <summary>
     /// Default constructor for serialization.
     /// </summary>
@@ -99,7 +101,7 @@ public class LoggingSettings : ILoggingSettings
     /// <summary>
     /// Creates the default logger with logs stored in the entry directory.
     /// </summary>
-    /// <param name="baseDirectory">The base directory to use.</param>
+    /// <param name="fileSystem">The FileSystem implementation to use.</param>
     public LoggingSettings(IFileSystem fileSystem)
     {
         var baseFolder = fileSystem.GetKnownPath(KnownPath.EntryDirectory);
@@ -116,4 +118,29 @@ public class LoggingSettings : ILoggingSettings
     {
         MaxArchivedFiles = MaxArchivedFiles < 0 ? 10 : MaxArchivedFiles;
     }
+}
+
+internal class AppConfigManager : IAppConfigManager
+{
+    private readonly AppConfig _config;
+    private readonly AbsolutePath _configPath;
+    private readonly JsonSerializerOptions _jsonSerializerOptions;
+
+    public AppConfigManager(AppConfig config, JsonSerializerOptions jsonSerializerOptions)
+    {
+        _config = config;
+        _configPath = FileSystem.Shared.GetKnownPath(KnownPath.EntryDirectory).Combine("AppConfig.json");
+        _jsonSerializerOptions = jsonSerializerOptions;
+    }
+
+    public bool GetMetricsOptIn() => _config.EnableTelemetry ?? false;
+
+    public void SetMetricsOptIn(bool value)
+    {
+        _config.EnableTelemetry = value;
+        var res = JsonSerializer.SerializeToUtf8Bytes(_config, _jsonSerializerOptions);
+        _configPath.WriteAllBytesAsync(res);
+    }
+
+    public bool IsMetricsOptInSet() => _config.EnableTelemetry.HasValue;
 }

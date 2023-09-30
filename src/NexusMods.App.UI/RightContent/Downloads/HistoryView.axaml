@@ -6,12 +6,13 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:downloads="clr-namespace:NexusMods.App.UI.RightContent.Downloads"
                                 xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+                                xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.RightContent.Downloads.HistoryView">
     <StackPanel>
         <Border Classes="Toolbar">
             <Grid ColumnDefinitions="*, Auto">
-                <TextBlock Grid.Column="0" Text="HISTORY"></TextBlock>
+                <TextBlock Grid.Column="0" Text="{x:Static resources:Language.DownloadHistoryView__HISTORY}"></TextBlock>
                 <StackPanel Grid.Column="1">
                     <Button x:Name="PauseAllButton">
                         <StackPanel>

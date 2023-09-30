@@ -7,34 +7,36 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:downloads="clr-namespace:NexusMods.App.UI.RightContent.Downloads"
     xmlns:avalonia="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     mc:Ignorable="d" d:DesignWidth="920" d:DesignHeight="664"
     x:Class="NexusMods.App.UI.RightContent.Downloads.InProgressView">
     <Design.DataContext>
-        <downloads:InProgressDesignViewModel/>
+        <downloads:InProgressDesignViewModel />
     </Design.DataContext>
     <Grid RowDefinitions="Auto, *">
         <!-- ToolBar -->
         <Border Classes="Toolbar" Grid.Row="0">
             <Grid ColumnDefinitions="*, Auto">
-                <TextBlock Grid.Column="0" Text="IN PROGRESS"></TextBlock>
+                <TextBlock Grid.Column="0" Text="{x:Static resources:Language.DownloadInProgressView__IN_PROGRESS}">
+                </TextBlock>
                 <StackPanel Grid.Column="1">
                     <Button x:Name="CancelButton">
                         <StackPanel>
                             <avalonia:Icon Classes="RemoveCircleOutline" />
-                            <TextBlock Text="Cancel"></TextBlock>
+                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Cancel}"></TextBlock>
                         </StackPanel>
                     </Button>
                     <Button x:Name="PauseButton">
                         <StackPanel>
                             <avalonia:Icon Classes="PauseCircleOutline" />
-                            <TextBlock Text="Pause"></TextBlock>
+                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Pause}"></TextBlock>
                         </StackPanel>
                     </Button>
                     <Line />
                     <Button x:Name="PauseAllButton">
                         <StackPanel>
                             <avalonia:Icon Classes="PauseCircleFilled" />
-                            <TextBlock Text="Pause all"></TextBlock>
+                            <TextBlock Text="{x:Static resources:Language.DownloadInProgressView__Pause_All}"></TextBlock>
                         </StackPanel>
                     </Button>
                     <Line />
@@ -46,49 +48,51 @@
                 </StackPanel>
             </Grid>
         </Border>
-        
+
         <!-- Page Content -->
         <Grid RowDefinitions="Auto, Auto, *" Margin="24, 16" Grid.Row="1">
-        
+
             <!-- Title & Status -->
             <DockPanel LastChildFill="True" HorizontalAlignment="Stretch" Grid.Row="0">
                 <TextBlock DockPanel.Dock="Left"
-                           Classes="H5MontserratSemi" 
-                           Text="In progress (0)" 
+                           Classes="H5MontserratSemi"
+                           Text="{x:Static resources:Language.InProgressTitleTextBlock}"
                            x:Name="InProgressTitleTextBlock"
                            Margin="0,0,0,16" />
-            
+
                 <!-- Right Side -->
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <TextBlock VerticalAlignment="Center"
-                               Classes="Body2RobotoRegular" 
-                               Text="0GB / 0GB" Margin="0,0,16,0" 
+                               Classes="Body2RobotoRegular"
+                               Text="0GB / 0GB" Margin="0,0,16,0"
                                x:Name="SizeCompletionTextBlock" />
-                
+
                     <!-- Note: Can use 'run' here, but don't want to make separate styles for 'run' -->
                     <TextBlock VerticalAlignment="Center"
-                               Classes="Body2RobotoRegularBold" 
-                               Text="0 mins" Margin="0,0,4,0"
+                               Classes="Body2RobotoRegularBold"
+                               Text="{x:Static resources:Language.BoldMinutesRemainingTextBlock}" Margin="0,0,4,0"
                                x:Name="BoldMinutesRemainingTextBlock" />
-                
+
                     <TextBlock VerticalAlignment="Center"
-                               Classes="Body2RobotoRegular" 
-                               Text="remaining"
+                               Classes="Body2RobotoRegular"
+                               Text="{x:Static resources:Language.MinutesRemainingTextBlock}"
                                x:Name="MinutesRemainingTextBlock" />
-                
+
                 </StackPanel>
-            
+
             </DockPanel>
-        
+
             <!-- Progress -->
-            <ProgressBar Classes="DownloadBar" x:Name="DownloadProgressBar" Minimum="0" Maximum="1" Grid.Row="1"/>
-        
+            <ProgressBar Classes="DownloadBar"
+                         ProgressTextFormat="{x:Static resources:Language.ProgressBar_ProgressTextFormat__Total_1_0}"
+                         x:Name="DownloadProgressBar" Minimum="0" Maximum="1" Grid.Row="1" />
+
             <!-- Currently Downloaded Mods -->
-            <DataGrid Grid.Row="2" 
-                HorizontalAlignment="Stretch"
-                CanUserSortColumns="True"
-                Margin="-16,16"
-                x:Name="ModsDataGrid" />
+            <DataGrid Grid.Row="2"
+                      HorizontalAlignment="Stretch"
+                      CanUserSortColumns="True"
+                      Margin="-16,16"
+                      x:Name="ModsDataGrid" />
         </Grid>
     </Grid>
 </reactiveUi:ReactiveUserControl>

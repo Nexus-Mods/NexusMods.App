@@ -25,7 +25,6 @@ public class ListGames : AVerb, IRenderingVerb
     /// DI constructor
     /// </summary>
     /// <param name="games"></param>
-    /// <param name="configurator"></param>
     public ListGames(IEnumerable<IGame> games)
     {
         _games = games;
@@ -44,7 +43,7 @@ public class ListGames : AVerb, IRenderingVerb
 
         await Renderer.Render(
             new Table(new[] { "Game", "Version", "Path", "Store" },
-                installs.Select(i => new object[] { i.Game, i.Version, i.Locations[GameFolderType.Game], i.Store })));
+                installs.Select(i => new object[] { i.Game, i.Version, i.LocationsRegister[LocationId.Game], i.Store })));
 
         return 0;
     }

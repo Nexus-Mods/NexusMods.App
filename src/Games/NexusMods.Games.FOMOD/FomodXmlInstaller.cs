@@ -1,43 +1,58 @@
-﻿using System.Diagnostics;
 using FomodInstaller.Interface;
 using FomodInstaller.Scripting.XmlScript;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.ModInstallers;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Games.FOMOD.CoreDelegates;
 using NexusMods.Paths;
+using NexusMods.Paths.FileTree;
+using NexusMods.Paths.Utilities;
 using Mod = FomodInstaller.Interface.Mod;
 
 namespace NexusMods.Games.FOMOD;
 
-public class FomodXmlInstaller : IModInstaller
+public class FomodXmlInstaller : AModInstaller
 {
     private readonly ICoreDelegates _delegates;
     private readonly XmlScriptType _scriptType = new();
     private readonly ILogger<FomodXmlInstaller> _logger;
+    private readonly GamePath _fomodInstallationPath;
+    private readonly IFileSystem _fileSystem;
+    private readonly TemporaryFileManager _temporaryFileManager;
 
-    public FomodXmlInstaller(ILogger<FomodXmlInstaller> logger, ICoreDelegates coreDelegates)
+    /// <summary>
+    /// Creates a new instance of <see cref="FomodXmlInstaller"/> given the provided <paramref name="provider"/> and <paramref name="fomodInstallationPath"/>.
+    /// </summary>
+    /// <param name="provider"></param>
+    /// <param name="fomodInstallationPath"></param>
+    /// <returns></returns>
+    public static FomodXmlInstaller Create(IServiceProvider provider, GamePath fomodInstallationPath)
+    {
+        return new FomodXmlInstaller(provider.GetRequiredService<ILogger<FomodXmlInstaller>>(),
+            provider.GetRequiredService<ICoreDelegates>(), provider.GetRequiredService<IFileSystem>(),
+            provider.GetRequiredService<TemporaryFileManager>(),
+
+            fomodInstallationPath, provider);
+    }
+
+    public FomodXmlInstaller(ILogger<FomodXmlInstaller> logger, ICoreDelegates coreDelegates,
+        IFileSystem fileSystem, TemporaryFileManager temporaryFileManager, GamePath fomodInstallationPath,
+        IServiceProvider serviceProvider) : base(serviceProvider)
     {
         _delegates = coreDelegates;
+        _fomodInstallationPath = fomodInstallationPath;
         _logger = logger;
+        _temporaryFileManager = temporaryFileManager;
+        _fileSystem = fileSystem;
     }
 
-    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
-    {
-        var hasScript = archiveFiles.Keys.Any(x => x.EndsWith(FomodConstants.XmlConfigRelativePath));
-        return hasScript ? Priority.High : Priority.None;
-    }
-
-    public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
+    public override async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
         ModId baseModId,
-        Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
+        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         CancellationToken cancellationToken = default)
     {
         // the component dealing with FOMODs is built to support all kinds of mods, including those without a script.
@@ -45,23 +60,36 @@ public class FomodXmlInstaller : IModInstaller
         // we only intend to support xml scripted FOMODs, this should be good enough
         var stopPattern = new List<string> { "fomod" };
 
-        if (!archiveFiles.Keys.TryGetFirst(x => x.EndsWith(FomodConstants.XmlConfigRelativePath), out var xmlFile))
-            throw new UnreachableException($"$[{nameof(FomodXmlInstaller)}] XML file not found. This should never be true and is indicative of a bug.");
+        var analyzerInfo = await FomodAnalyzer.AnalyzeAsync(archiveFiles, _fileSystem, cancellationToken);
+        if (analyzerInfo == default)
+            return Array.Empty<ModInstallerResult>();
 
-        if (!archiveFiles.TryGetValue(xmlFile, out var analyzedFile))
-            throw new UnreachableException($"$[{nameof(FomodXmlInstaller)}] XML data not found. This should never be true and is indicative of a bug.");
+        await using var tmpFolder = _temporaryFileManager.CreateFolder();
+        await analyzerInfo.DumpToFileSystemAsync(tmpFolder.Path.Combine(analyzerInfo.PathPrefix));
 
-        var analyzerInfo = analyzedFile.AnalysisData.OfType<FomodAnalyzerInfo>().FirstOrDefault();
-        if (analyzerInfo == default) return Array.Empty<ModInstallerResult>();
+        var xmlPath = analyzerInfo.PathPrefix.Join(FomodConstants.XmlConfigRelativePath);
 
         // Setup mod, exclude script path so it doesn't get picked up and thus double read from disk
-        var modFiles = archiveFiles.Keys.Select(x => x.ToString()).ToList();
-        var mod = new Mod(modFiles, stopPattern, xmlFile, string.Empty, _scriptType);
+        var modFiles = archiveFiles.GetAllDescendentFiles().Select(x => x.Path.ToNativeSeparators(OSInformation.Shared)).ToList();
+        var mod = new Mod(modFiles, stopPattern, xmlPath.ToString(), string.Empty, _scriptType);
         await mod.InitializeWithoutLoadingScript();
 
+        // NOTE(erri120): The FOMOD library calls us, so this is the only way we can pass data along.
+        var installerDelegates = _delegates as InstallerDelegates;
+        if (installerDelegates is not null)
+        {
+            installerDelegates.UiDelegates.CurrentArchiveFiles = archiveFiles;
+        }
+
         var executor = _scriptType.CreateExecutor(mod, _delegates);
-        var installScript = _scriptType.LoadScript(analyzerInfo.XmlScript, true);
+        var installScript = _scriptType.LoadScript(FixXmlScript(analyzerInfo.XmlScript), true);
         var instructions = await executor.Execute(installScript, "", null);
+
+        // NOTE(err120): Reset the previously provided data
+        if (installerDelegates is not null)
+        {
+            installerDelegates.UiDelegates.CurrentArchiveFiles = archiveFiles;
+        }
 
         var errors = instructions.Where(instruction => instruction.type == "error").ToArray();
         if (errors.Any()) throw new Exception(string.Join("; ", errors.Select(err => err.source)));
@@ -76,74 +104,76 @@ public class FomodXmlInstaller : IModInstaller
             new ModInstallerResult
             {
                 Id = baseModId,
-                Files = InstructionsToModFiles(instructions, srcArchiveHash, archiveFiles)
+                Files = InstructionsToModFiles(instructions, archiveFiles, _fomodInstallationPath)
             }
         };
     }
 
-    private IEnumerable<AModFile> InstructionsToModFiles(IEnumerable<Instruction> instructions, Hash srcArchive, EntityDictionary<RelativePath, AnalyzedFile> files)
+    private static string FixXmlScript(string input)
     {
-        var groupedInstructions = instructions.Aggregate(new Dictionary<string, List<Instruction>>(), (prev, instruction) => {
-            if (prev.TryGetValue(instruction.type, out var existing))
-            {
-                existing.Add(instruction);
-            }
-            else
-            {
-                prev[instruction.type] = new List<Instruction>
-                {
-                    instruction
-                };
-            }
-
-            return prev;
-        });
-
-        var result = new List<AModFile>();
-        foreach (var type in groupedInstructions)
-            result.AddRange(ConvertInstructions(type.Value, files));
-
-        return result;
+        // NOTE(erri120): The FOMOD library we're using does some really funky path normalization.
+        // These don't really work well with our internal path representation and on systems
+        // where the main directory separator character is the forward slash.
+        // See https://github.com/Nexus-Mods/NexusMods.App/issues/625 for details.
+        return Path.DirectorySeparatorChar == PathHelpers.DirectorySeparatorChar ? input.Replace('\\', PathHelpers.DirectorySeparatorChar) : input;
     }
 
-    private static IEnumerable<AModFile> ConvertInstructions(IList<Instruction> instructions, EntityDictionary<RelativePath, AnalyzedFile> files)
+    private IEnumerable<AModFile> InstructionsToModFiles(
+        IList<Instruction> instructions,
+        FileTreeNode<RelativePath, ModSourceFileEntry> files,
+        GamePath gameTargetPath)
     {
-        if (!instructions.Any()) return new List<AModFile>();
-
-        return instructions.First().type switch
+        var res = instructions.Select(instruction =>
         {
-            "copy" => ConvertInstructionCopy(instructions, files),
-            "mkdir" => ConvertInstructionMkdir(instructions),
-            // TODO: "enableallplugins",
-            // "iniedit" - only supported by c# script and modscript installers atm
-            // "generatefile" - only supported by c# script installers
-            // "enableplugin" - supported in the fomod-installer module but doesn't seem to be emitted anywhere
-            _ => new List<AModFile>()
-        };
-    }
-
-    private static IEnumerable<AModFile> ConvertInstructionCopy(IEnumerable<Instruction> instructions, EntityDictionary<RelativePath, AnalyzedFile> files)
-    {
-        return instructions.Select(instruction =>
-        {
-            var file = files.First(file => file.Key.Equals(RelativePath.FromUnsanitizedInput(instruction.source)));
-
-            return new FromArchive
+            return instruction.type switch
             {
-                Id = ModFileId.New(),
-                To = new GamePath(GameFolderType.Game, instruction.destination),
-                Hash = file.Value.Hash,
-                Size = file.Value.Size
+                "copy" => ConvertInstructionCopy(instruction, files, gameTargetPath),
+                "mkdir" => ConvertInstructionMkdir(instruction, gameTargetPath),
+                // TODO: "enableallplugins",
+                // "iniedit" - only supported by c# script and modscript installers atm
+                // "generatefile" - only supported by c# script installers
+                // "enableplugin" - supported in the fomod-installer module but doesn't seem to be emitted anywhere
+                _ => ReportUnknownType(instruction.type),
             };
-        });
+        }).Where(x => x is not null).Select(x => x!).ToArray();
+
+        return res;
     }
 
-    private static IEnumerable<AModFile> ConvertInstructionMkdir(IEnumerable<Instruction> instructions)
+    private AModFile? ReportUnknownType(string instructionType)
     {
-        return instructions.Select(instruction => new EmptyDirectory
+        _logger.LogWarning("Unknown FOMOD instruction type: {Type}", instructionType);
+        return null;
+    }
+
+    private static AModFile ConvertInstructionCopy(
+        Instruction instruction,
+        FileTreeNode<RelativePath, ModSourceFileEntry>  files,
+        GamePath gameTargetPath)
+    {
+        var src = RelativePath.FromUnsanitizedInput(instruction.source);
+        var dest = RelativePath.FromUnsanitizedInput(instruction.destination);
+
+        var file = files.FindNode(src)!.Value;
+        return new FromArchive
         {
             Id = ModFileId.New(),
-            Directory = new GamePath(GameFolderType.Game, instruction.destination)
-        });
+            To = new GamePath(gameTargetPath.LocationId, gameTargetPath.Path.Join(dest)),
+            Hash = file!.Hash,
+            Size = file.Size
+        };
+    }
+
+
+    private static AModFile ConvertInstructionMkdir(
+        Instruction instruction,
+        GamePath gameTargetPath)
+    {
+        var dest = RelativePath.FromUnsanitizedInput(instruction.destination);
+        return new EmptyDirectory
+        {
+            Id = ModFileId.New(),
+            Directory = new GamePath(gameTargetPath.LocationId, gameTargetPath.Path.Join(dest))
+        };
     }
 }

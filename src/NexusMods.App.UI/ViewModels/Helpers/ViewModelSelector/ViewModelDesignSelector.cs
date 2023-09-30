@@ -1,9 +1,4 @@
-﻿using System.Reactive.Linq;
-using System.Windows.Input;
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
-namespace NexusMods.App.UI.ViewModels.Helpers.ViewModelSelector;
+﻿namespace NexusMods.App.UI.ViewModels.Helpers.ViewModelSelector;
 
 /// <summary>
 /// ViewModelSelector for design time, this switches between hardcoded view models.

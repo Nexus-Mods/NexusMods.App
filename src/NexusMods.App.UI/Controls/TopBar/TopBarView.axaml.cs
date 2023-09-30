@@ -1,10 +1,9 @@
 using System.Reactive.Disposables;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using Avalonia.Controls;
 using Avalonia.ReactiveUI;
-using Avalonia.VisualTree;
+using NexusMods.App.UI;
 using ReactiveUI;
-using Image = Avalonia.Controls.Image;
 
 namespace NexusMods.App.UI.Controls.TopBar;
 
@@ -16,33 +15,28 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
 
         this.WhenActivated(d =>
         {
-            this.BindCommand(ViewModel, vm => vm.LoginCommand, v => v.LoginButton)
+            this.BindCommand(ViewModel, vm => vm.LoginCommand, view => view.LoginButton)
                 .DisposeWith(d);
 
             this.BindCommand(ViewModel, vm => vm.LogoutCommand, view => view.UserButton)
                 .DisposeWith(d);
 
-            this.WhenAnyValue(v => v.ViewModel!.IsLoggedIn)
-                .Select(v => !v)
-                .BindToUi(this, v => v.LoginButton.IsVisible)
+            this.OneWayBind(ViewModel, vm => vm.IsLoggedIn, view => view.LoginButton.IsVisible,isLoggedIn => !isLoggedIn)
                 .DisposeWith(d);
 
-            this.WhenAnyValue(v => v.ViewModel!.IsLoggedIn)
-                .Select(v => v)
-                .BindToUi(this, v => v.UserPanel.IsVisible)
+            this.OneWayBind(ViewModel, vm => vm.IsLoggedIn, view => view.UserPanel.IsVisible)
                 .DisposeWith(d);
 
-            this.WhenAnyValue(view => view.ViewModel!.IsLoggedIn)
-                .CombineLatest(this.WhenAnyValue(view => view.ViewModel!.IsPremium))
-                .Select(t => t.First && t.Second)
-                .BindToUi(this, view => view.Premium.IsVisible)
+            this.WhenAnyValue(
+                    x => x.ViewModel!.IsLoggedIn,
+                    x => x.ViewModel!.IsPremium,
+                    (isLoggedIn, isPremium) => isLoggedIn && isPremium
+                )
+                .BindTo(this, view => view.Premium.IsVisible)
                 .DisposeWith(d);
 
-            ViewModel.WhenAnyValue(vm => vm.Avatar)
-                .WhereNotNull()
-                .BindToUi(AvatarImage, v => v.Source)
+            this.OneWayBind(ViewModel, vm => vm.Avatar, view => view.AvatarImage.Source)
                 .DisposeWith(d);
-            
         });
     }
 

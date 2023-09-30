@@ -10,21 +10,13 @@ namespace NexusMods.App.UI.LeftMenu.Game;
 
 public class GameLeftMenuDesignViewModel : AViewModel<IGameLeftMenuViewModel>, IGameLeftMenuViewModel
 {
-    [Reactive]
-    public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items
-    {
-        get;
-        set;
-    }
+    [Reactive] public ReadOnlyObservableCollection<ILeftMenuItemViewModel> Items { get; set; }
 
-    [Reactive]
-    public ILaunchButtonViewModel LaunchButton { get; set; }
+    [Reactive] public ILaunchButtonViewModel LaunchButton { get; set; }
 
-    [Reactive]
-    public IGame Game { get; set; } = GameInstallation.Empty.Game;
+    [Reactive] public IGame Game { get; set; } = GameInstallation.Empty.Game;
 
-    [Reactive]
-    public IRightContentViewModel RightContent { get; set; } = Initializers.IRightContent;
+    [Reactive] public IRightContentViewModel RightContent { get; set; } = Initializers.IRightContent;
 
     public GameLeftMenuDesignViewModel()
     {
@@ -32,7 +24,7 @@ public class GameLeftMenuDesignViewModel : AViewModel<IGameLeftMenuViewModel>, I
 
         var items = new ILeftMenuItemViewModel[]
         {
-            new IconViewModel { Name = "Newsfeed", Icon = IconType.News},
+            new IconViewModel { Name = "Newsfeed", Icon = IconType.News },
             new IconViewModel { Name = "My loadout 1", Icon = IconType.ChevronRight },
             new IconViewModel { Name = "My other loadout", Icon = IconType.ChevronRight },
         };

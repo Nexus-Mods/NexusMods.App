@@ -34,7 +34,7 @@ public class DiagnosticManagerTests : ADataModelTest<DiagnosticManagerTests>
             changeSet.Adds.Should().Be(1);
         });
 
-        _diagnosticManager.RefreshLoadoutDiagnostics(loadout.Value);
+        await _diagnosticManager.RefreshLoadoutDiagnostics(loadout.Value);
 
         var diagnostic = _diagnosticManager.ActiveDiagnostics.Should().ContainSingle().Which;
         diagnostic.Id.Number.Should().Be(1);

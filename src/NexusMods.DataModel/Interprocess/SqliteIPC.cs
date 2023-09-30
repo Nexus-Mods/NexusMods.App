@@ -4,6 +4,7 @@ using System.Text.Json;
 using DynamicData;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
+using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Interprocess.Jobs;

@@ -1,10 +1,7 @@
-using System.Globalization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.Paths;
-using Xunit.DependencyInjection;
-using Xunit.DependencyInjection.Logging;
 
 namespace NexusMods.Networking.HttpDownloader.Tests;
 
@@ -23,10 +20,8 @@ public class Startup
                  .AddSingleton(new TemporaryFileManager(FileSystem.Shared, prefix))
                  .AddSingleton<HttpClient>()
                  .AddSingleton<LocalHttpServer>()
+                 .AddLogging(builder => builder.AddXUnit())
                  .Validate();
     }
-
-    public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>
-        loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(accessor, delegate { return true; }));
 }
 

@@ -1,27 +1,25 @@
+using JetBrains.Annotations;
+
 namespace NexusMods.Networking.NexusWebApi.Types;
 
 /// <summary>
 /// Information about a logged in user
 /// </summary>
+[PublicAPI]
 public record UserInfo
 {
     /// <summary>
-    /// user name
+    /// Gets the name of the user.
     /// </summary>
-    public string Name = "";
+    public required string Name { get; init; }
 
     /// <summary>
-    /// is the user premium?
+    /// Gets the premium status of the user.
     /// </summary>
-    public bool IsPremium;
+    public required bool IsPremium { get; init; }
 
     /// <summary>
-    /// is the user a supporter (e.g. formerly premium)?
+    /// Gets the avatar url of the user.
     /// </summary>
-    public bool IsSupporter;
-
-    /// <summary>
-    /// Uri of the user's avatar
-    /// </summary>
-    public Uri? Avatar { get; set; }
+    public required Uri? AvatarUrl { get; init; }
 }

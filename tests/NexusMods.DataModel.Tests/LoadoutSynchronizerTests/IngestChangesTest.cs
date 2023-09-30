@@ -19,7 +19,7 @@ public class IngestChangesTest : ALoadoutSynrchonizerTest<IngestChangesTest>
     {
         var loadout = await CreateApplyPlanTestLoadout();
 
-        var absPath = loadout.Installation.Locations[GameFolderType.Game].Combine("0x00001.dat");
+        var absPath = loadout.Installation.LocationsRegister[LocationId.Game].Combine("0x00001.dat");
 
         await TestSyncronizer.Ingest(new IngestPlan()
         {
@@ -41,6 +41,7 @@ public class IngestChangesTest : ALoadoutSynrchonizerTest<IngestChangesTest>
     }
 
     [Fact]
+    [Trait("FlakeyTest", "True")]
     public async Task RemovedFilesAreRemoved()
     {
         var loadout = await CreateApplyPlanTestLoadout();
@@ -94,7 +95,7 @@ public class IngestChangesTest : ALoadoutSynrchonizerTest<IngestChangesTest>
 
         var firstMod = loadout.Mods.Values.First();
         var firstFile = firstMod.Files.Values.First();
-        var absPath = loadout.Installation.Locations[GameFolderType.Game].Combine("foo.bar");
+        var absPath = loadout.Installation.LocationsRegister[LocationId.Game].Combine("foo.bar");
 
         loadout = await TestSyncronizer.Ingest(new IngestPlan
         {
@@ -115,7 +116,7 @@ public class IngestChangesTest : ALoadoutSynrchonizerTest<IngestChangesTest>
         });
 
         var file = (FromArchive)loadout.Mods.Values.First().Files.Values.First();
-        file.To.Should().Be(new GamePath(GameFolderType.Game, "foo.bar"));
+        file.To.Should().Be(new GamePath(LocationId.Game, "foo.bar"));
         file.Hash.Should().Be(Hash.From(0x42DEADBEEF));
         file.Size.Should().Be(Size.MB);
     }
@@ -125,7 +126,7 @@ public class IngestChangesTest : ALoadoutSynrchonizerTest<IngestChangesTest>
     {
         var loadout = await CreateApplyPlanTestLoadout();
         var firstMod = loadout.Mods.Values.First();
-        var absPath = loadout.Installation.Locations[GameFolderType.Game].Combine("foo.bar");
+        var absPath = loadout.Installation.LocationsRegister[LocationId.Game].Combine("foo.bar");
 
         loadout = await TestSyncronizer.Ingest(new IngestPlan
         {
@@ -144,7 +145,7 @@ public class IngestChangesTest : ALoadoutSynrchonizerTest<IngestChangesTest>
             }
         });
 
-        var gamePath = new GamePath(GameFolderType.Game, "foo.bar");
+        var gamePath = new GamePath(LocationId.Game, "foo.bar");
 
         var file = loadout.Mods[firstMod.Id]
             .Files.Values

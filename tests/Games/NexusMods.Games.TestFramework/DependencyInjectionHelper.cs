@@ -1,4 +1,3 @@
-using System.Globalization;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -59,7 +58,6 @@ public static class DependencyInjectionHelper
             {
                 UseInMemoryDataModel = true
             })
-            .AddAllSingleton<IResource, IResource<ArchiveAnalyzer, Size>>(_ => new Resource<ArchiveAnalyzer, Size>("File Analysis for tests"))
             .AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ => new Resource<IExtractor, Size>("File Extraction for tests"))
             .AddAllSingleton<IResource, IResource<FileHashCache, Size>>(_ => new Resource<FileHashCache, Size>("Hash Cache for tests"))
             .AddFileExtractors();

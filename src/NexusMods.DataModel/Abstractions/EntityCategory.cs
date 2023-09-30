@@ -1,5 +1,4 @@
 using NetEscapades.EnumGenerators;
-using NexusMods.DataModel.Attributes;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.FileExtractor.FileSignatures;
@@ -108,9 +107,19 @@ public enum EntityCategory : byte
     /// See <see cref="Diagnostics"/>.
     /// </summary>
     Diagnostics = 14,
-    
+
     /// <summary>
     /// Downloader resume/suspend state.
     /// </summary>
     DownloadStates = 15,
+
+    /// <summary>
+    /// Global settings for things like metrics opt-in and the like.
+    /// </summary>
+    GlobalSettings = 16,
+
+    /// <summary>
+    /// Information about registered downloads
+    /// </summary>
+    DownloadMetadata = 17,
 }

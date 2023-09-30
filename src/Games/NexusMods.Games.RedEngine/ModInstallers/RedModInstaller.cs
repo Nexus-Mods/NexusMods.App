@@ -1,15 +1,13 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.ModInstallers;
-using NexusMods.Games.RedEngine.FileAnalyzers;
-using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
+using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.RedEngine.ModInstallers;
 
@@ -18,55 +16,55 @@ public class RedModInstaller : IModInstaller
     private static readonly RelativePath InfoJson = "info.json".ToRelativePath();
     private static readonly RelativePath Mods = "mods".ToRelativePath();
 
-    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
+    public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(GameInstallation gameInstallation, ModId baseModId,
+        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles, CancellationToken cancellationToken = default)
     {
-        if (!installation.Is<Cyberpunk2077>()) return Priority.None;
+        var infos = (await archiveFiles.GetAllDescendentFiles()
+                .Where(f => f.Path.FileName == InfoJson)
+                .SelectAsync(async f => (File: f, InfoJson: await ReadInfoJson(f.Value!)))
+                .ToArrayAsync())
+            .Where(node => node.InfoJson != null)
+            .ToArray();
 
-        return archiveFiles.Any(IsInfoJson) ? Priority.High : Priority.None;
-    }
 
-    private static bool IsInfoJson(KeyValuePair<RelativePath, AnalyzedFile> file)
-    {
-        return file.Key.FileName == InfoJson && file.Value.AnalysisData.OfType<RedModInfo>().Any();
-    }
+        List<ModInstallerResult> results = new();
 
-    public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
-        GameInstallation gameInstallation,
-        ModId baseModId,
-        Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
-        CancellationToken cancellationToken = default)
-    {
-        return ValueTask.FromResult(GetMods(baseModId, srcArchiveHash, archiveFiles));
-    }
-
-    private IEnumerable<ModInstallerResult> GetMods(
-        ModId baseModId,
-        Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
-    {
-        var modFiles = archiveFiles
-            .Where(IsInfoJson)
-            .SelectMany(infoJson =>
-            {
-                var parent = infoJson.Key.Parent;
-                var parentName = parent.FileName;
-
-                return archiveFiles
-                    .Where(kv => kv.Key.InFolder(parent))
-                    .Select(kv =>
-                    {
-                        var (path, file) = kv;
-                        return file.ToFromArchive(
-                            new GamePath(GameFolderType.Game, Mods.Join(parentName).Join(path.RelativeTo(parent)))
-                        );
-                    });
-            });
-
-        yield return new ModInstallerResult
+        var baseIdUsed = false;
+        foreach (var node in infos)
         {
-            Id = baseModId,
-            Files = modFiles
-        };
+            var modFolder = node.File.Parent;
+            var parentName = modFolder.Name;
+            var files = new List<AModFile>();
+            foreach (var childNode in modFolder.GetAllDescendentFiles())
+            {
+                var path = childNode.Path;
+                var entry = childNode.Value;
+                files.Add(entry!.ToFromArchive(new GamePath(LocationId.Game, Mods.Join(parentName).Join(path.RelativeTo(modFolder.Path)))));
+
+            }
+
+            results.Add(new ModInstallerResult
+            {
+                Id = baseIdUsed ? ModId.New() : baseModId,
+                Files = files,
+                Name = node.InfoJson?.Name ?? "<unknown>"
+            });
+            baseIdUsed = true;
+        }
+
+        return results;
     }
+
+    private static async Task<RedModInfo?> ReadInfoJson(ModSourceFileEntry entry)
+    {
+        await using var stream = await entry.Open();
+        return await JsonSerializer.DeserializeAsync<RedModInfo>(stream);
+    }
+
+}
+
+internal class RedModInfo
+{
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = string.Empty;
 }

@@ -12,8 +12,6 @@ namespace NexusMods.DataModel.Abstractions;
 /// Example entities include: <br/>
 /// - <see cref="Mod"/><br/>
 /// - <see cref="Loadout"/><br/>
-/// - <see cref="AnalyzedFile"/><br/>
-/// - <see cref="AnalyzedArchive"/>
 /// </summary>
 public abstract record Entity : IWalkable<Entity>
 {

@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.CLI;
 using NexusMods.CLI.Types;

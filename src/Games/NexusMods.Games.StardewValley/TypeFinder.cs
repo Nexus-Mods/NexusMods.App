@@ -1,5 +1,4 @@
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
-using NexusMods.Games.StardewValley.Analyzers;
 using NexusMods.Games.StardewValley.Models;
 
 namespace NexusMods.Games.StardewValley;

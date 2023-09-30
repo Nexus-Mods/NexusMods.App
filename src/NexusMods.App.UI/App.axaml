@@ -2,7 +2,8 @@
     x:Class="NexusMods.App.UI.App"
     xmlns="https://github.com/avaloniaui"
     xmlns:local="using:NexusMods.App.UI"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:system="clr-namespace:System;assembly=System.Runtime">
     <Application.DataTemplates>
         <local:ViewLocator />
     </Application.DataTemplates>

@@ -1,6 +1,6 @@
-using Moq;
 using CliWrap;
 using NexusMods.Common.OSInterop;
+using NSubstitute;
 
 namespace NexusMods.Common.Tests;
 
@@ -11,50 +11,56 @@ public class OSInteropTests
     public async Task UsesExplorerOnWindows()
     {
         var url = new Uri("foobar://test");
-        var mockFactory = new Mock<IProcessFactory>();
 
-        var os = new OSInteropWindows(mockFactory.Object);
-        await os.OpenUrl(url);
+        const string targetFilePath = "cmd.exe";
+        var arguments = $@"/c start """" ""{url}""";
 
-        mockFactory.Verify(f => f.ExecuteAsync(
-            It.Is<Command>(command =>
-                command.TargetFilePath == "cmd.exe" &&
-                command.Arguments == $@"/c start """" ""{url}"""),
-            It.IsAny<CancellationToken>()
-        ), Times.Once);
+        await TestWithCommand(factory => new OSInteropWindows(factory), url, targetFilePath, arguments);
     }
 
     [Fact]
     public async Task UsesXDGOpenOnLinux()
     {
         var url = new Uri("foobar://test");
-        var mockFactory = new Mock<IProcessFactory>();
 
-        var os = new OSInteropLinux(mockFactory.Object);
-        await os.OpenUrl(url);
+        const string targetFilePath = "xdg-open";
+        var arguments = url.ToString();
 
-        mockFactory.Verify(f => f.ExecuteAsync(
-            It.Is<Command>(command =>
-                command.TargetFilePath == "xdg-open" &&
-                command.Arguments == url.ToString()),
-            It.IsAny<CancellationToken>()
-        ), Times.Once);
+        await TestWithCommand(factory => new OSInteropLinux(factory), url, targetFilePath, arguments);
     }
 
     [Fact]
     public async Task UsesOpenOnOSX()
     {
         var url = new Uri("foobar://test");
-        var mockFactory = new Mock<IProcessFactory>();
 
-        var os = new OSInteropOSX(mockFactory.Object);
+        const string targetFilePath = "open";
+        var arguments = url.ToString();
+
+        await TestWithCommand(factory => new OSInteropOSX(factory), url, targetFilePath, arguments);
+    }
+
+    private static async Task TestWithCommand(Func<IProcessFactory, IOSInterop> osFactory, Uri url, string targetFilePath, string arguments)
+    {
+        var factory = Substitute.For<IProcessFactory>();
+        factory
+            .ExecuteAsync(Arg.Is<Command>(command =>
+                    command.TargetFilePath == targetFilePath &&
+                    command.Arguments == arguments),
+                Arg.Any<CancellationToken>()
+            )
+            .Returns(Task.FromResult(new CommandResult(0, DateTimeOffset.Now, DateTimeOffset.Now)));
+
+        var os = osFactory(factory);
         await os.OpenUrl(url);
 
-        mockFactory.Verify(f => f.ExecuteAsync(
-            It.Is<Command>(command =>
-                command.TargetFilePath == "open" &&
-                command.Arguments == url.ToString()),
-            It.IsAny<CancellationToken>()
-        ), Times.Once);
+        await factory
+            .Received(1)
+            .ExecuteAsync(
+                Arg.Is<Command>(command =>
+                    command.TargetFilePath == targetFilePath &&
+                    command.Arguments == arguments),
+                Arg.Any<CancellationToken>()
+            );
     }
 }

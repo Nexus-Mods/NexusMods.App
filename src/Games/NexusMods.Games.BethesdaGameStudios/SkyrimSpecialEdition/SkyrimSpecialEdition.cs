@@ -1,16 +1,16 @@
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
-using NexusMods.DataModel.Games.GameCapabilities;
-using NexusMods.DataModel.Games.GameCapabilities.AFolderMatchInstallerCapability;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.StreamFactories;
-using NexusMods.Games.BethesdaGameStudios.Capabilities;
+using NexusMods.Games.Generic.Installers;
 using NexusMods.Paths;
+using Vogen;
 
 namespace NexusMods.Games.BethesdaGameStudios;
 
-public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame, IXboxGame
+public class SkyrimSpecialEdition : ABethesdaGame, ISteamGame, IGogGame, IXboxGame
 {
     // ReSharper disable InconsistentNaming
     public static Extension ESL = new(".esl");
@@ -22,26 +22,22 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame, IXboxGame
     public static GameDomain StaticDomain => GameDomain.From("skyrimspecialedition");
     public override string Name => "Skyrim Special Edition";
     public override GameDomain Domain => StaticDomain;
-    public override GamePath GetPrimaryFile(GameStore store) => new(GameFolderType.Game, "SkyrimSE.exe");
+    public override GamePath GetPrimaryFile(GameStore store) => new(LocationId.Game, "SkyrimSE.exe");
 
-    public SkyrimSpecialEdition(IEnumerable<IGameLocator> gameLocators) : base(gameLocators) { }
-
-    protected override IEnumerable<KeyValuePair<GameFolderType, AbsolutePath>> GetLocations(
-        IFileSystem fileSystem,
-        IGameLocator locator,
+    public SkyrimSpecialEdition(IEnumerable<IGameLocator> gameLocators, IServiceProvider provider) : base(gameLocators, provider) {}
+    protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
         GameLocatorResult installation)
     {
-        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.Game, installation.Path);
-
-        var appData = installation.Store == GameStore.GOG
-            ? fileSystem
-                .GetKnownPath(KnownPath.LocalApplicationDataDirectory)
-                .Combine("Skyrim Special Edition GOG")
-            : fileSystem
-                .GetKnownPath(KnownPath.LocalApplicationDataDirectory)
-                .Combine("Skyrim Special Edition");
-
-        yield return new KeyValuePair<GameFolderType, AbsolutePath>(GameFolderType.AppData, appData);
+        return new Dictionary<LocationId, AbsolutePath>()
+        {
+            { LocationId.Game, installation.Path },
+            {
+                LocationId.AppData, installation.Store == GameStore.GOG
+                    ? fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory)
+                        .Combine("Skyrim Special Edition GOG")
+                    : fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("Skyrim Special Edition")
+            }
+        };
     }
 
     public override IEnumerable<AModFile> GetGameFiles(GameInstallation installation, IDataStore store)
@@ -49,18 +45,9 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame, IXboxGame
         yield return new PluginOrderFile
         {
             Id = ModFileId.New(),
-            To = new GamePath(GameFolderType.AppData, "plugins.txt")
+            To = new GamePath(LocationId.AppData, "plugins.txt")
         };
     }
-
-    public override Dictionary<GameCapabilityId, IGameCapability> SupportedCapabilities => new()
-    {
-        {
-            // Support for installing simple Data and GameRoot level mods. 
-            AFolderMatchInstallerCapability.CapabilityId, new BethesdaFolderMatchInstallerCapability()
-        }
-    };
-
 
     public IEnumerable<uint> SteamIds => new[] { 489830u };
 
@@ -80,4 +67,5 @@ public class SkyrimSpecialEdition : AGame, ISteamGame, IGogGame, IXboxGame
     public override IStreamFactory GameImage =>
         new EmbededResourceStreamFactory<SkyrimSpecialEdition>(
             "NexusMods.Games.BethesdaGameStudios.Resources.SkyrimSpecialEdition.game_image.png");
+
 }

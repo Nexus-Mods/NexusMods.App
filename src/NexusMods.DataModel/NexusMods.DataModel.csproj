@@ -4,7 +4,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\ArchiveManagement\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj" />
-        <ProjectReference Include="..\NexusMods.Hashing.xxHash64\NexusMods.Hashing.xxHash64.csproj" />
+        <ProjectReference Include="..\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -16,6 +16,7 @@
         <PackageReference Include="Microsoft.Extensions.ObjectPool" />
         <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" />
         <PackageReference Include="NexusMods.Archives.Nx" />
+        <PackageReference Include="NexusMods.Hashing.xxHash64" />
         <PackageReference Include="Sewer56.BitStream" />
         <PackageReference Include="System.Reactive" />
     </ItemGroup>

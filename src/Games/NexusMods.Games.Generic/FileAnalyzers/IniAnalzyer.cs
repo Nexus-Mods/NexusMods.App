@@ -2,16 +2,14 @@ using System.Runtime.CompilerServices;
 using IniParser;
 using IniParser.Model.Configuration;
 using IniParser.Parser;
-using NexusMods.DataModel.Abstractions;
+using NexusMods.Common;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.FileExtractor.FileSignatures;
-using NexusMods.Games.Generic.Entities;
-using NexusMods.Paths;
 
 namespace NexusMods.Games.Generic.FileAnalyzers;
 
 
-public class IniAnalzyer : IFileAnalyzer
+public class IniAnalzyer
 {
     public FileAnalyzerId Id { get; } = FileAnalyzerId.New("904bca7b-fbd6-4350-b4e2-6fdbd034ec76", 1);
     public IEnumerable<FileType> FileTypes => new[] { FileType.INI };
@@ -26,16 +24,15 @@ public class IniAnalzyer : IFileAnalyzer
         SkipInvalidLines = true,
     };
 
-#pragma warning disable CS1998
-    public async IAsyncEnumerable<IFileAnalysisData> AnalyzeAsync(FileAnalyzerInfo info, [EnumeratorCancellation] CancellationToken token = default)
-#pragma warning restore CS1998
+    public static async Task<IniAnalysisData> AnalyzeAsync(IStreamFactory info)
     {
-        var data = new StreamIniDataParser(new IniDataParser(Config)).ReadData(new StreamReader(info.Stream));
+        await using var os = await info.GetStreamAsync();
+        var data = new StreamIniDataParser(new IniDataParser(Config)).ReadData(new StreamReader(os));
         var sections = data.Sections.Select(s => s.SectionName).ToHashSet();
         var keys = data.Global.Select(k => k.KeyName)
             .Concat(data.Sections.SelectMany(d => d.Keys).Select(kv => kv.KeyName))
             .ToHashSet();
-        yield return new IniAnalysisData
+        return new IniAnalysisData
         {
             Sections = sections,
             Keys = keys

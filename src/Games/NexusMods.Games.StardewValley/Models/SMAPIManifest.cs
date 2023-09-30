@@ -11,7 +11,7 @@ namespace NexusMods.Games.StardewValley.Models;
 /// </summary>
 [PublicAPI]
 [JsonName("NexusMods.Games.StardewValley.SMAPIManifest")]
-public record SMAPIManifest : IFileAnalysisData
+public record SMAPIManifest
 {
     /// <summary>
     /// The mod name.

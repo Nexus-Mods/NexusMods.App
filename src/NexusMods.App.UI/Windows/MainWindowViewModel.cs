@@ -1,10 +1,14 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Microsoft.Extensions.Logging;
+using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.TopBar;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.Overlays;
+using NexusMods.App.UI.Overlays.MetricsOptIn;
+using NexusMods.App.UI.Overlays.Updater;
+using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.Hashing.xxHash64;
@@ -27,13 +31,17 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
         IOSInformation osInformation,
         ISpineViewModel spineViewModel,
         ITopBarViewModel topBarViewModel,
+        IDevelopmentBuildBannerViewModel developmentBuildBannerViewModel,
         IOverlayController controller,
         IDownloadService downloadService,
         IArchiveInstaller archiveInstaller,
+        IMetricsOptInViewModel metricsOptInViewModel,
+        IUpdaterViewModel updaterViewModel,
         LoadoutRegistry registry)
     {
         TopBar = topBarViewModel;
         Spine = spineViewModel;
+        DevelopmentBuildBanner = developmentBuildBannerViewModel;
         _overlayController = controller;
         _archiveInstaller = archiveInstaller;
         _registry = registry;
@@ -55,7 +63,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
             downloadService.AnalyzedArchives.Subscribe(tuple =>
             {
                 // Because HandleDownloadedAnalyzedArchive is an async task, it begins automatically.
-                HandleDownloadedAnalyzedArchive(tuple.task, tuple.analyzedHash, tuple.modName).ContinueWith(t =>
+                HandleDownloadedAnalyzedArchive(tuple.task, tuple.downloadId, tuple.modName).ContinueWith(t =>
                 {
                     if (t.Exception != null)
                         logger.LogError(t.Exception, "Error while installing downloaded analyzed archive");
@@ -98,10 +106,16 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
                         right);
                     return right;
                 }).BindTo(this, vm => vm.RightContent);
+
+            // Only show the updater if the metrics opt-in has been shown before, so we don't spam the user.
+            if (!metricsOptInViewModel.MaybeShow())
+                updaterViewModel.MaybeShow();
+
         });
     }
 
-    private async Task HandleDownloadedAnalyzedArchive(IDownloadTask task, Hash analyzedHash, string modName)
+
+    private async Task HandleDownloadedAnalyzedArchive(IDownloadTask task, DownloadId downloadId, string modName)
     {
         var loadouts = Array.Empty<LoadoutId>();
         if (task is IHaveGameDomain gameDomain)
@@ -115,9 +129,9 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
         await Task.Run(async () =>
         {
             if (loadouts.Length > 0)
-                await _archiveInstaller.AddMods(loadouts[0], analyzedHash, modName);
+                await _archiveInstaller.AddMods(loadouts[0], downloadId, modName);
             else
-                await _archiveInstaller.AddMods(_registry.AllLoadouts().First().LoadoutId, analyzedHash, modName);
+                await _archiveInstaller.AddMods(_registry.AllLoadouts().First().LoadoutId, downloadId, modName);
         });
     }
 
@@ -139,6 +153,9 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>
 
     [Reactive]
     public ITopBarViewModel TopBar { get; set; }
+
+    [Reactive]
+    public IDevelopmentBuildBannerViewModel DevelopmentBuildBanner { get; set; }
 
     [Reactive]
     public IOverlayViewModel? OverlayContent { get; set; }

@@ -17,30 +17,6 @@ public class NativeModInstallerTests : AModInstallerTest<DarkestDungeon, NativeM
 {
     public NativeModInstallerTests(IServiceProvider serviceProvider) : base(serviceProvider) { }
 
-    [Fact]
-    public async Task Test_Priority_WithoutProjectFile()
-    {
-        var testFiles = new Dictionary<RelativePath, byte[]>();
-        await using var path = await CreateTestArchive(testFiles);
-
-        var priority = await GetPriorityFromInstaller(path);
-        priority.Should().Be(Priority.None);
-    }
-
-    [Fact]
-    public async Task Test_Priority_WithProjectFile()
-    {
-        var testFiles = new Dictionary<RelativePath, byte[]>
-        {
-            { "project.xml", CreateModProject(out _) }
-        };
-
-        await using var path = await CreateTestArchive(testFiles);
-
-        var priority = await GetPriorityFromInstaller(path);
-        priority.Should().Be(Priority.Highest);
-    }
-
     [Theory]
     [InlineData("")]
     [InlineData("foo/bar/baz/")]
@@ -69,15 +45,11 @@ public class NativeModInstallerTests : AModInstallerTest<DarkestDungeon, NativeM
         var loadout = await CreateLoadout();
 
         // Marvin Seo's Lamia Class Mod 1.03 (https://www.nexusmods.com/darkestdungeon/mods/501)
-        var (path, hash) = await DownloadMod(GameInstallation.Game.Domain, ModId.From(501), FileId.From(2705));
-        await using (path)
-        {
-            hash.Should().Be(Hash.From(0x34C32E580205FC36));
+        var downloadId = await DownloadMod(GameInstallation.Game.Domain, ModId.From(501), FileId.From(2705));
+        var mod = await InstallModFromArchiveIntoLoadout(loadout, downloadId);
+        mod.Files.Should().NotBeEmpty();
+        mod.Files.Values.Cast<IToFile>().Should().AllSatisfy(kv => kv.To.Path.StartsWith("mods/Lamia Mod Base"));
 
-            var mod = await InstallModFromArchiveIntoLoadout(loadout, path);
-            mod.Files.Should().NotBeEmpty();
-            mod.Files.Values.Cast<IToFile>().Should().AllSatisfy(kv => kv.To.Path.StartsWith("mods/Lamia Mod Base"));
-        }
     }
 
     internal static byte[] CreateModProject(out ModProject project)

@@ -2,7 +2,8 @@ using FomodInstaller.Interface;
 using FomodInstaller.Interface.ui;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
-using NexusMods.Common.UserInput;
+using NexusMods.Common.GuidedInstaller;
+using NexusMods.DataModel.Abstractions;
 
 namespace NexusMods.Games.FOMOD.CoreDelegates;
 
@@ -12,12 +13,19 @@ public sealed class InstallerDelegates : ICoreDelegates
     public IContextDelegates context { get; }
     public IIniDelegates ini => throw new NotImplementedException();
     public IPluginDelegates plugin { get; }
-    public IUIDelegates ui { get; }
 
-    public InstallerDelegates(ILoggerFactory loggerFactory, IOptionSelector optionSelector)
+    public IUIDelegates ui => UiDelegates;
+    public readonly UiDelegates UiDelegates;
+
+    public InstallerDelegates(
+        ILoggerFactory loggerFactory,
+        IGuidedInstaller guidedInstaller)
     {
         context = new ContextDelegates(loggerFactory.CreateLogger<ContextDelegates>());
         plugin = new PluginDelegates(loggerFactory.CreateLogger<PluginDelegates>());
-        ui = new UiDelegates(loggerFactory.CreateLogger<UiDelegates>(), optionSelector);
+        UiDelegates = new UiDelegates(
+            loggerFactory.CreateLogger<UiDelegates>(),
+            guidedInstaller
+        );
     }
 }

@@ -1,21 +1,19 @@
 using NexusMods.Common;
-using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveContents;
-using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.ModInstallers;
-using NexusMods.FileExtractor.FileSignatures;
-using NexusMods.Games.Generic.Entities;
-using NexusMods.Hashing.xxHash64;
+using NexusMods.Games.Generic.FileAnalyzers;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
+using NexusMods.Paths.FileTree;
+using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Games.Reshade;
 
-public class ReshadePresetInstaller : IModInstaller
+public class ReshadePresetInstaller : AModInstaller
 {
+
+
     private static readonly HashSet<RelativePath> IgnoreFiles = new[]
         {
             "readme.txt",
@@ -25,69 +23,57 @@ public class ReshadePresetInstaller : IModInstaller
         .Select(t => t.ToRelativePath())
         .ToHashSet();
 
-    public Priority GetPriority(GameInstallation installation, EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
-    {
-        var filtered = archiveFiles
-            .Where(f => !IgnoreFiles.Contains(f.Key.FileName))
-            .ToList();
+    private static Extension Ini = new(".ini");
 
-        // We have to be able to find the game's executable
-        if (installation.Game is not AGame)
-            return Priority.None;
+    public ReshadePresetInstaller(IServiceProvider serviceProvider) : base(serviceProvider) {}
+
+    public override async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
+        GameInstallation gameInstallation,
+        ModId baseModId,
+        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+        CancellationToken cancellationToken = default)
+    {
+
+        var filtered = archiveFiles.GetAllDescendentFiles()
+            .Where(f => !IgnoreFiles.Contains(f.Path.FileName))
+            .ToList();
 
         // We only support ini files for now
-        if (!filtered.All(f => f.Value.FileTypes.Contains(FileType.INI)))
-            return Priority.None;
+        if (filtered.Any(f => f.Path.Extension != Ini))
+            return NoResults;
 
         // Get all the ini data
-        var iniData = filtered
-            .Select(f => f.Value.AnalysisData
-                .OfType<IniAnalysisData>()
-                .FirstOrDefault())
-            .Where(d => d is not null)
-            .Select(d => d!)
-            .ToList();
+        var iniData = await filtered
+            .SelectAsync(async f => await IniAnalzyer.AnalyzeAsync(f.Value!.StreamFactory))
+            .ToListAsync(cancellationToken: cancellationToken);
 
         // All the files must have ini data
         if (iniData.Count != filtered.Count)
-            return Priority.None;
+            return NoResults;
 
         // All the files must have a section that ends with .fx marking them as likely a reshade preset
         if (!iniData.All(f => f.Sections.All(x => x.EndsWith(".fx", StringComparison.CurrentCultureIgnoreCase))))
-            return Priority.None;
+            return NoResults;
 
-        return Priority.Low;
-    }
-
-    public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
-        GameInstallation gameInstallation,
-        ModId baseModId,
-        Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles,
-        CancellationToken cancellationToken = default)
-    {
-        return ValueTask.FromResult(GetMods(baseModId, srcArchiveHash, archiveFiles));
-    }
-
-    private IEnumerable<ModInstallerResult> GetMods(
-        ModId baseModId,
-        Hash srcArchiveHash,
-        EntityDictionary<RelativePath, AnalyzedFile> archiveFiles)
-    {
-        var modFiles = archiveFiles
-            .Where(kv => !IgnoreFiles.Contains(kv.Key.FileName))
+        var modFiles = archiveFiles.GetAllDescendentFiles()
+            .Where(kv => !IgnoreFiles.Contains(kv.Name.FileName))
             .Select(kv =>
             {
                 var (path, file) = kv;
-                return file.ToFromArchive(
-                    new GamePath(GameFolderType.Game, path.FileName)
+                return file!.ToFromArchive(
+                    new GamePath(LocationId.Game, path.FileName)
                 );
-            });
+            }).ToArray();
 
-        yield return new ModInstallerResult
+        if (!modFiles.Any())
+            return NoResults;
+
+        return new [] { new ModInstallerResult
         {
             Id = baseModId,
             Files = modFiles
-        };
+        }};
     }
+
+
 }

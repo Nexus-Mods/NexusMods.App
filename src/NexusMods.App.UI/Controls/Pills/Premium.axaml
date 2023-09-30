@@ -8,7 +8,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:drawing="clr-namespace:System.Drawing;assembly=System.Drawing.Common"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
     <UserControl.Styles>
         <Style Selector="Border">
             <Setter Property="Background" Value="{DynamicResource BrandWhite}" />
@@ -35,7 +36,7 @@
             <TextBlock
                 HorizontalAlignment="Left"
                 Margin="4,0,0,0"
-                Text="PREMIUM"
+                Text="{x:Static resources:Language.Nexus_Premium_Status__Premium}"
                 VerticalAlignment="Center" />
         </StackPanel>
 

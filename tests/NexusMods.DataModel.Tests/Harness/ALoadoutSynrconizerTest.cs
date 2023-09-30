@@ -38,10 +38,10 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
         TestFingerprintCacheInstance = new TestFingerprintCache<Mod, CachedModSortRules>();
         TestGeneratedFileFingerprintCache = new TestFingerprintCache<IGeneratedFile, CachedGeneratedFileData>();
         TestSyncronizer = new LoadoutSynchronizer(
-            provider.GetRequiredService<ILogger<LoadoutSynchronizer>>(), 
-            TestFingerprintCacheInstance, 
-            TestIndexer, 
-            TestArchiveManagerInstance, 
+            provider.GetRequiredService<ILogger<LoadoutSynchronizer>>(),
+            TestFingerprintCacheInstance,
+            TestIndexer,
+            TestArchiveManagerInstance,
             TestGeneratedFileFingerprintCache,
             LoadoutManager.Registry);
     }
@@ -56,7 +56,7 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
     protected static AbsolutePath GetFirstModFile(Loadout loadout)
     {
         var to = loadout.Mods.Values.First().Files.Values.OfType<IToFile>().First().To;
-        return to.Combine(loadout.Installation.Locations[GameFolderType.Game]);
+        return to.Combine(loadout.Installation.LocationsRegister[LocationId.Game]);
     }
 
 
@@ -68,10 +68,9 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
         {
             return Archives.Contains(hash);
         }
-
-        public async Task BackupFiles(IEnumerable<(IStreamFactory, Hash, Size)> backups, CancellationToken token = default)
+        public async Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, CancellationToken token = default)
         {
-            Archives.AddRange(backups.Select(b => b.Item2));
+            Archives.AddRange(backups.Select(b => b.Hash));
         }
 
         public async Task ExtractFiles(IEnumerable<(Hash Src, AbsolutePath Dest)> files, CancellationToken token = default)
@@ -81,6 +80,11 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
         }
 
         public Task<IDictionary<Hash, byte[]>> ExtractFiles(IEnumerable<Hash> files, CancellationToken token = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Stream> GetFileStream(Hash hash, CancellationToken token = default)
         {
             throw new NotImplementedException();
         }
@@ -121,7 +125,7 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
             files = files.With(new TestGeneratedFile
             {
                 Id = ModFileId.New(),
-                To = new GamePath(GameFolderType.Game, "0x00001.generated"),
+                To = new GamePath(LocationId.Game, "0x00001.generated"),
             }, m => m.Id);
         }
         else
@@ -131,7 +135,7 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
                 Id = ModFileId.New(),
                 Hash = Hash.From(0x00001),
                 Size = Size.From(0x10001),
-                To = new GamePath(GameFolderType.Game, "0x00001.dat"),
+                To = new GamePath(LocationId.Game, "0x00001.dat"),
             }, m => m.Id);
         }
 
@@ -143,15 +147,15 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
             SortRules = ImmutableList<ISortRule<Mod, ModId>>.Empty,
             Enabled = true
         };
-        
+
         disabledFiles = files.With(new FromArchive
         {
             Id = ModFileId.New(),
             Hash = Hash.From(0x00001),
             Size = Size.From(0x10001),
-            To = new GamePath(GameFolderType.Game, "shouldNotExist/0x00001.dat"),
+            To = new GamePath(LocationId.Game, "shouldNotExist/0x00001.dat"),
         }, m => m.Id);
-        
+
         var disabledMod = new Mod
         {
             Id = ModId.New(),
@@ -160,8 +164,8 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
             SortRules = ImmutableList<ISortRule<Mod, ModId>>.Empty,
             Enabled = false,
         };
-        
-        
+
+
         loadout.Add(mod);
         loadout.Add(disabledMod);
         loadout.Remove(mainMod);
@@ -236,9 +240,9 @@ public record TestGeneratedFile : AModFile, IGeneratedFile, IToFile, ITriggerFil
         using var printer = Fingerprinter.Create();
         foreach (var mod in plan.Loadout.Mods)
         {
-            if (mod.Value.Enabled == false) 
+            if (mod.Value.Enabled == false)
                 continue;
-            
+
             foreach (var file in mod.Value.Files)
                 if (!file.Value.Id.Equals(self.File.Id))
                     printer.Add(file.Value.DataStoreId);
@@ -257,7 +261,9 @@ public class AlphabeticalSort : IGeneratedSortRule, ISortRule<Mod, ModId>, ITrig
 {
     public ITriggerFilter<ModId, Loadout> TriggerFilter => this;
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
     public async IAsyncEnumerable<ISortRule<Mod, ModId>> GenerateSortRules(ModId selfId, Loadout loadout)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
     {
         var thisMod = loadout.Mods[selfId];
         foreach (var (modId, other) in loadout.Mods)

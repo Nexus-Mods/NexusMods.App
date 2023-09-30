@@ -9,7 +9,7 @@ namespace NexusMods.Games.DarkestDungeon.Models;
 /// </summary>
 [JsonName("NexusMods.Games.DarkestDungeon.ModProject")]
 [XmlRoot(ElementName = "project")]
-public record ModProject : IFileAnalysisData
+public record ModProject
 {
     [XmlElement(ElementName = "Title")]
     public string Title { get; set; } = string.Empty;

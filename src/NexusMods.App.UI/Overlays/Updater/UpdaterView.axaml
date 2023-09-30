@@ -1,0 +1,63 @@
+﻿<reactiveUi:ReactiveUserControl
+    x:TypeArguments="updater:IUpdaterViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:updater="clr-namespace:NexusMods.App.UI.Overlays.Updater"
+    xmlns:base="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="NexusMods.App.UI.Overlays.Updater.UpdaterView">
+    <Design.DataContext>
+        <updater:UpdaterDesignViewModel/>
+    </Design.DataContext>
+    <base:MessageBoxBackground MinWidth="576" MaxWidth="576">
+        <base:MessageBoxBackground.TopContent>
+            <StackPanel Orientation="Vertical" Margin="16, 24, 24, 24" Spacing="16">
+
+                <TextBlock Classes="H6MontserratSemi"
+                           Text="{x:Static resources:Language.Updater_UpdateAvailable}"/>
+
+                <!-- Message -->
+                <StackPanel Spacing="8">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Classes="Body_MD_Normal UsesBrandWhiteColor"
+                                   x:Name="FromVersionTextBlock"/>
+                        <TextBlock Text=" -> "
+                                   Classes="Body_MD_Normal UsesBrandWhiteColor"/>
+                        <TextBlock Classes="Body_MD_Normal UsesBrandWhiteColor"
+                                   x:Name="ToVersionTextBlock"/>
+                    </StackPanel>
+                    <TextBlock TextWrapping="WrapWithOverflow"
+                               Text="{x:Static resources:Language.Updater_MainMessage}"
+                               Classes="Body_MD_Normal UsesBrandWhiteColor" />
+
+                    <TextBlock x:Name="UseSystemUpdater"
+                               TextWrapping="WrapWithOverflow"
+                               Text="{x:Static resources:Language.Updater_UseSystemUpdater}"
+                               Classes="Body_MD_Normal UsesBrandWhiteColor" />
+
+                    <Button Classes="Hyperlink" x:Name="ChangelogButton"><TextBlock Classes="Body_MD_Normal" Text="{x:Static resources:Language.Updater_ViewChangelog}"></TextBlock></Button>
+                </StackPanel>
+            </StackPanel>
+
+        </base:MessageBoxBackground.TopContent>
+
+        <base:MessageBoxBackground.BottomContent>
+
+            <!-- Buttons -->
+            <StackPanel Orientation="Horizontal" Margin="24" HorizontalAlignment="Right" Spacing="8">
+                <Button x:Name="LaterButton" Classes="Button Secondary" HorizontalAlignment="Stretch">
+                    <TextBlock Text="{x:Static resources:Language.Updater_LATER}" />
+                </Button>
+                <Button x:Name="UpdateButton" Classes="Button Primary" HorizontalAlignment="Stretch">
+                    <TextBlock Text="{x:Static resources:Language.Updater_UPDATE}"/>
+                </Button>
+            </StackPanel>
+
+        </base:MessageBoxBackground.BottomContent>
+    </base:MessageBoxBackground>
+</reactiveUi:ReactiveUserControl>
+

@@ -1,0 +1,47 @@
+﻿<reactiveUi:ReactiveUserControl
+    x:TypeArguments="metricsOptIn:IMetricsOptInViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:base="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:metricsOptIn="clr-namespace:NexusMods.App.UI.Overlays.MetricsOptIn"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="NexusMods.App.UI.Overlays.MetricsOptIn.MetricsOptInView">
+   <base:MessageBoxBackground MinWidth="576" MaxWidth="576">
+          <base:MessageBoxBackground.TopContent>
+              <StackPanel Orientation="Vertical" Margin="16, 24, 24, 24" Spacing="16">
+
+                  <TextBlock Classes="H6MontserratSemi"
+                             Text="{x:Static resources:Language.MetricsOptIn_OverlayTitle}"/>
+
+                  <!-- Message -->
+                  <StackPanel Spacing="8">
+                      <TextBlock TextWrapping="WrapWithOverflow"
+                                 Text="{x:Static resources:Language.MetricsOptIn_MainMessage}"
+                                 Classes="Body_MD_Normal UsesBrandWhiteColor" />
+
+                      <Button Classes="Hyperlink"><TextBlock Classes="Body_MD_Normal" Text="{x:Static resources:Language.MetricsOptIn_MoreInfoAboutTheDataWeTrack}"></TextBlock></Button>
+                  </StackPanel>
+              </StackPanel>
+
+          </base:MessageBoxBackground.TopContent>
+
+          <base:MessageBoxBackground.BottomContent>
+
+              <!-- Buttons -->
+              <StackPanel Orientation="Horizontal" Margin="24" HorizontalAlignment="Right" Spacing="8">
+                  <Button x:Name="DenyButton" Classes="Button Secondary" HorizontalAlignment="Stretch">
+                      <TextBlock Text="{x:Static resources:Language.MetricsOptIn_DENY}" />
+                  </Button>
+                  <Button x:Name="AllowButton" Classes="Button Primary" HorizontalAlignment="Stretch">
+                      <TextBlock Text="{x:Static resources:Language.MetricsOptIn_ALLOW}"/>
+                  </Button>
+              </StackPanel>
+
+          </base:MessageBoxBackground.BottomContent>
+      </base:MessageBoxBackground>
+</reactiveUi:ReactiveUserControl>
+

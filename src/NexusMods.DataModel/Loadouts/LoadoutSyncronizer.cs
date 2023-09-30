@@ -9,6 +9,7 @@ using NexusMods.DataModel.Loadouts.IngestSteps;
 using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.DataModel.TriggerFilter;
@@ -23,10 +24,10 @@ namespace NexusMods.DataModel.Loadouts;
 /// </summary>
 public class LoadoutSynchronizer
 {
-    private readonly IFingerprintCache<Mod,CachedModSortRules> _modSortRulesFingerprintCache;
+    private readonly IFingerprintCache<Mod, CachedModSortRules> _modSortRulesFingerprintCache;
     private readonly IDirectoryIndexer _directoryIndexer;
     private readonly IArchiveManager _archiveManager;
-    private readonly IFingerprintCache<IGeneratedFile,CachedGeneratedFileData> _generatedFileFingerprintCache;
+    private readonly IFingerprintCache<IGeneratedFile, CachedGeneratedFileData> _generatedFileFingerprintCache;
     private readonly LoadoutRegistry _loadoutRegistry;
     private readonly ILogger<LoadoutSynchronizer> _logger;
 
@@ -39,7 +40,7 @@ public class LoadoutSynchronizer
     /// <param name="archiveManager"></param>
     /// <param name="generatedFileFingerprintCache"></param>
     /// <param name="loadoutRegistry"></param>
-    public LoadoutSynchronizer(ILogger<LoadoutSynchronizer> logger, 
+    public LoadoutSynchronizer(ILogger<LoadoutSynchronizer> logger,
         IFingerprintCache<Mod, CachedModSortRules> modSortRulesFingerprintCache,
         IDirectoryIndexer directoryIndexer,
         IArchiveManager archiveManager,
@@ -61,7 +62,8 @@ public class LoadoutSynchronizer
     /// </summary>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    public async ValueTask<(IReadOnlyDictionary<GamePath, ModFilePair> Files, IEnumerable<Mod> Mods)> FlattenLoadout(Loadout loadout)
+    public async ValueTask<(IReadOnlyDictionary<GamePath, ModFilePair> Files, IEnumerable<Mod> Mods)> FlattenLoadout(
+        Loadout loadout)
     {
         var dict = new Dictionary<GamePath, ModFilePair>();
 
@@ -71,15 +73,16 @@ public class LoadoutSynchronizer
         {
             if (!mod.Enabled)
                 continue;
-            
+
             foreach (var (_, file) in mod.Files)
             {
                 if (file is not IToFile toFile)
                     continue;
 
-                dict[toFile.To] = new ModFilePair {Mod = mod, File = file};
+                dict[toFile.To] = new ModFilePair { Mod = mod, File = file };
             }
         }
+
         return (dict, sorted);
     }
 
@@ -98,7 +101,7 @@ public class LoadoutSynchronizer
             .ToDictionaryAsync(r => r.Id, r => r.Item2);
         if (modRules.Count == 0)
             return Array.Empty<Mod>();
-        
+
         var sorted = Sorter.Sort<Mod, ModId>(mods, m => m.Id, m => modRules[m.Id]);
         return sorted;
     }
@@ -150,10 +153,11 @@ public class LoadoutSynchronizer
     /// <returns></returns>
     public async ValueTask<ApplyPlan> MakeApplySteps(Loadout loadout, CancellationToken token = default)
     {
-
         var install = loadout.Installation;
 
-        var existingFiles = _directoryIndexer.IndexFolders(install.Locations.Values, token);
+        var existingFiles =
+            _directoryIndexer.IndexFolders(install.LocationsRegister.GetTopLevelLocations().Select(kv => kv.Value),
+                token);
 
         var (flattenedLoadout, sortedMods) = await FlattenLoadout(loadout);
 
@@ -182,7 +186,8 @@ public class LoadoutSynchronizer
                     case IGeneratedFile generatedFile:
                     {
                         var fingerprint = generatedFile.TriggerFilter.GetFingerprint(planned, tmpPlan);
-                        if (_generatedFileFingerprintCache.TryGet(fingerprint, out var cached) && cached.Hash == existing.Hash && cached.Size == existing.Size)
+                        if (_generatedFileFingerprintCache.TryGet(fingerprint, out var cached) &&
+                            cached.Hash == existing.Hash && cached.Size == existing.Size)
                         {
                             continue;
                         }
@@ -231,7 +236,7 @@ public class LoadoutSynchronizer
             });
             return;
         }
-        
+
         // If the file is generated
         if (pair.File is IGeneratedFile generatedFile)
         {
@@ -300,11 +305,14 @@ public class LoadoutSynchronizer
     /// <param name="modSelector"></param>
     /// <param name="token"></param>
     /// <returns></returns>
-    public async ValueTask<IngestPlan> MakeIngestPlan(Loadout loadout, Func<AbsolutePath, ModId> modSelector, CancellationToken token = default)
+    public async ValueTask<IngestPlan> MakeIngestPlan(Loadout loadout, Func<AbsolutePath, ModId> modSelector,
+        CancellationToken token = default)
     {
         var install = loadout.Installation;
 
-        var existingFiles = _directoryIndexer.IndexFolders(install.Locations.Values, token);
+        var existingFiles =
+            _directoryIndexer.IndexFolders(install.LocationsRegister.GetTopLevelLocations().Select(kv => kv.Value),
+                token);
 
         var (flattenedLoadout, sortedMods) = await FlattenLoadout(loadout);
 
@@ -322,7 +330,8 @@ public class LoadoutSynchronizer
                 {
                     await EmitIngestReplacePlan(plan, planFile, existing);
                 }
-                // TODO: Fix this, it doesn't contain support for IGeneratedFile, 
+
+                // TODO: Fix this, it doesn't contain support for IGeneratedFile,
                 // once we re-design apply/ingest this should be implemented
                 continue;
             }
@@ -358,7 +367,8 @@ public class LoadoutSynchronizer
         return ValueTask.CompletedTask;
     }
 
-    private async ValueTask EmitIngestCreatePlan(List<IIngestStep> plan, HashedEntry existing, Func<AbsolutePath, ModId> modSelector)
+    private async ValueTask EmitIngestCreatePlan(List<IIngestStep> plan, HashedEntry existing,
+        Func<AbsolutePath, ModId> modSelector)
     {
         if (!await _archiveManager.HaveFile(existing.Hash))
         {
@@ -413,7 +423,7 @@ public class LoadoutSynchronizer
 
         var backups = byType[typeof(BackupFile)]
             .OfType<BackupFile>()
-            .Select(f => ((IStreamFactory)new NativeFileStreamFactory(f.To), f.Hash, f.Size))
+            .Select(f => new ArchivedFileEntry(new NativeFileStreamFactory(f.To), f.Hash, f.Size))
             .ToList();
 
         if (backups.Any())
@@ -460,7 +470,7 @@ public class LoadoutSynchronizer
         var byType = plan.Steps.ToLookup(t => t.GetType());
         var backupFiles = byType[typeof(IngestSteps.BackupFile)]
             .OfType<IngestSteps.BackupFile>()
-            .Select(f => ((IStreamFactory)new NativeFileStreamFactory(f.Source), f.Hash, f.Size));
+            .Select(f => new ArchivedFileEntry(new NativeFileStreamFactory(f.Source), f.Hash, f.Size));
         await _archiveManager.BackupFiles(backupFiles);
 
         return _loadoutRegistry.Alter(plan.Loadout.LoadoutId, commitMessage, new IngestVisitor(byType, plan));
@@ -470,8 +480,8 @@ public class LoadoutSynchronizer
     {
         private readonly IngestPlan _plan;
         private readonly HashSet<GamePath> _removeFiles;
-        private readonly ILookup<ModId,FromArchive> _replaceFiles;
-        private readonly ILookup<ModId,FromArchive> _createFiles;
+        private readonly ILookup<ModId, FromArchive> _replaceFiles;
+        private readonly ILookup<ModId, FromArchive> _createFiles;
 
         public IngestVisitor(ILookup<Type, IIngestStep> steps, IngestPlan plan)
         {
@@ -502,7 +512,6 @@ public class LoadoutSynchronizer
                         Size = r.Size,
                         Id = ModFileId.New()
                     });
-
         }
 
         public override AModFile? Alter(AModFile file)
@@ -511,6 +520,7 @@ public class LoadoutSynchronizer
             {
                 if (_removeFiles.Contains(to.To)) return null;
             }
+
             return base.Alter(file);
         }
 
@@ -524,10 +534,8 @@ public class LoadoutSynchronizer
                     Files = mod.Files.With(toAdd, f => f.Id)
                 };
             }
+
             return base.Alter(mod);
         }
     }
-
-
 }
-

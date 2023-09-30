@@ -20,7 +20,6 @@ public class DownloadUri : AVerb<Uri, AbsolutePath>, IRenderingVerb
     /// The URI to download files from.
     /// </summary>
     /// <param name="httpDownloader">Allows for downloads of content from given URLs.</param>
-    /// <param name="configurator">Used for late binding of renderers.</param>
     /// <remarks>Usually called from DI container.</remarks>
     public DownloadUri(IHttpDownloader httpDownloader)
     {

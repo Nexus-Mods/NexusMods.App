@@ -1,7 +1,7 @@
-﻿{
+{
   "DataModelSettings": {
-    "DataStoreFilePath": "{EntryFolder}/DataModel.sqlite",
-    "IpcDataStoreFilePath": "{EntryFolder}/DataModel_IPC.sqlite",
+    "DataStoreFilePath": "{EntryFolder}/DataModel/DataModel.sqlite",
+    "IpcDataStoreFilePath": "{EntryFolder}/DataModel/DataModel_IPC.sqlite",
     "ArchiveLocations": [
       "{EntryFolder}/Archives"
     ],
@@ -13,7 +13,6 @@
     "TempFolderLocation": "{EntryFolder}/Temp"
   },
   "HttpDownloaderSettings": {
-    "ChunkCount": 4,
     "WriteQueueLength": 16,
     "MinCancelAge": 500,
     "CancelSpeedFraction": 0.66
@@ -22,5 +21,8 @@
     "FilePath": "{EntryFolder}/Logs/nexusmods.app.current.log",
     "ArchiveFilePath": "{EntryFolder}/Logs/nexusmods.app.{##}.log",
     "MaxArchivedFiles": 10
+  },
+  "LauncherSettings": {
+    "LocaleOverride": ""
   }
 }

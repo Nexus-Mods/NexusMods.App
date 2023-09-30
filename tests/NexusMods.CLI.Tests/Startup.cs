@@ -11,8 +11,6 @@ using NexusMods.Networking.NexusWebApi.NMA;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
-using Xunit.DependencyInjection;
-using Xunit.DependencyInjection.Logging;
 
 namespace NexusMods.CLI.Tests;
 
@@ -36,10 +34,8 @@ public class Startup
                 .AddAllScoped<IRenderer, LoggingRenderer>()
                 .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
                 .AddSingleton<LocalHttpServer>()
+                .AddLogging(builder => builder.AddXUnit())
                 .Validate();
     }
-
-    public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>
-        loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(accessor, delegate { return true; }));
 }
 

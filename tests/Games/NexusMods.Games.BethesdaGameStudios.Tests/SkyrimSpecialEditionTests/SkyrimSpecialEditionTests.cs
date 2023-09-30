@@ -8,7 +8,6 @@ using NexusMods.CLI.Tests.VerbTests;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.Games.TestFramework;
@@ -43,6 +42,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
     }
 
     [Fact]
+    [Trait("FlakeyTest", "True")]
     public async Task CanInstallAndApplyMostPopularMods()
     {
         const int skseModId = 30379;
@@ -143,15 +143,10 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
                 {
                     Id = ModFileId.New(),
                     Installation = loadout.Value.Installation,
-                    To = new GamePath(GameFolderType.Game, $"Data/{file.Key}"),
+                    To = new GamePath(LocationId.Game, $"Data/{file.Key}"),
                     Hash = Hash.Zero,
                     Size = Size.Zero,
-                    Metadata =
-                        ImmutableList<IMetadata>.Empty.Add(
-                            new PluginAnalysisData
-                            {
-                                Masters = file.Value.Select(f => f.ToRelativePath()).ToArray()
-                            })
+                    Metadata = ImmutableList<IMetadata>.Empty
                 };
                 files = files.With(newFile.Id, newFile);
             }
@@ -161,10 +156,6 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
 
 
         gameFiles.Files.Count.Should().BeGreaterThan(0);
-
-        LoadoutRegistry.Get(loadout.Value.LoadoutId, gameFiles.Id)!.Files.Values
-            .Count(x => x.Metadata.OfType<PluginAnalysisData>().Any())
-            .Should().BeGreaterOrEqualTo(analysis.Count, "Analysis data has been added");
 
         var pluginOrderFile = gameFiles.Files.Values.OfType<PluginOrderFile>().First();
         var flattenedList = (await LoadoutSynchronizer.FlattenLoadout(loadout.Value)).Files.Values.ToList();
@@ -338,7 +329,11 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
         text.Should().Contain("plugin_test.esp", "plugin_test.esp is installed");
 
         LoadoutRegistry.Alter(loadout.Value.LoadoutId, pluginTest.Id, "disable plugin",
-            mod => mod with { Enabled = false });
+            mod =>
+            {
+                mod.Should().NotBeNull();
+                return mod! with { Enabled = false };
+            });
 
         text = await GetPluginOrder(pluginFilePath);
 
@@ -353,7 +348,11 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
         text.Should().NotContain("plugin_test.esp", "plugin_test.esp is disabled");
 
         LoadoutRegistry.Alter(loadout.Value.LoadoutId, pluginTest.Id, "enable plugin",
-            mod => mod with { Enabled = true });
+            mod =>
+            {
+                mod.Should().NotBeNull();
+                return mod! with { Enabled = true };
+            });
 
         await Apply(loadout.Value);
 

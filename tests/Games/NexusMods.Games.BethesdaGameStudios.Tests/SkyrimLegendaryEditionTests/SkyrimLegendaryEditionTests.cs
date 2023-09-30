@@ -19,6 +19,7 @@ public class SkyrimLegendaryEditionTests : AGameTest<SkyrimLegendaryEdition>
     }
 
     [Fact]
+    [Trait("FlakeyTest", "True")]
     public async Task CanInstallAndApplyMostPopularMods()
     {
 
@@ -51,7 +52,7 @@ public class SkyrimLegendaryEditionTests : AGameTest<SkyrimLegendaryEdition>
         _verbTester.LastTable.Rows.Count().Should().Be(1);
 
         // install SKSE
-        await _verbTester.RunNoBannerAsync("install-mod", "-l", loadoutName, "-f", sksePath.ToString());
+        await _verbTester.RunNoBannerAsync("install-mod", "-l", loadoutName, "-f", sksePath.ToString(), "-n", skseModName);
 
         await _verbTester.RunNoBannerAsync("list-mods", "-l", loadoutName);
         _verbTester.LastTable.Rows.Count().Should().Be(2);

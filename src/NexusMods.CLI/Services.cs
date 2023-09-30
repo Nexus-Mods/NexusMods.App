@@ -1,4 +1,3 @@
-using System.Globalization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.CLI.OptionParsers;
 using NexusMods.CLI.Verbs;
@@ -10,13 +9,12 @@ using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.FileExtractor.Extractors;
 using NexusMods.Paths;
-using System.Runtime.InteropServices;
 using NexusMods.Abstractions.CLI;
 using NexusMods.CLI.Types;
 using NexusMods.CLI.Types.DownloadHandlers;
 using NexusMods.CLI.Types.IpcHandlers;
+using NexusMods.Common.GuidedInstaller;
 using NexusMods.Common.ProtocolRegistration;
-using NexusMods.Common.UserInput;
 
 namespace NexusMods.CLI;
 
@@ -40,7 +38,7 @@ public static class Services
         services.AddSingleton<IOptionParser<Version>, VersionParser>();
         services.AddSingleton<IOptionParser<Loadout>, LoadoutParser>();
         services.AddSingleton<IOptionParser<ITool>, ToolParser>();
-        services.AddAllSingleton<IOptionSelector, CliOptionSelector>();
+        services.AddAllSingleton<IGuidedInstaller, CliGuidedInstaller>();
 
         OSInformation.Shared.SwitchPlatform(
             ref services,
@@ -84,7 +82,6 @@ public static class Services
             .AddVerb<SetNexusAPIKey>();
 
         services.AddAllSingleton<IResource, IResource<IExtractor, Size>>(_ => new Resource<IExtractor, Size>("File Extraction"));
-        services.AddAllSingleton<IResource, IResource<ArchiveAnalyzer, Size>>(_ => new Resource<ArchiveAnalyzer, Size>("File Analysis"));
         return services;
     }
 

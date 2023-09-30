@@ -10,7 +10,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:roundedButton="clr-namespace:NexusMods.App.UI.Controls.Buttons.RoundedButton"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
     <UserControl.Styles>
         <Style Selector="Button TextBlock.ButtonText">
             <Setter Property="Foreground" Value="{DynamicResource FontDarkPrimary}" />
@@ -42,7 +43,7 @@
                 HorizontalAlignment="Left"
                 IsVisible="True"
                 Margin="6,5,10,0"
-                Text="Manage"
+                Text="{x:Static resources:Language.Button_Manage}"
                 VerticalAlignment="Center" />
         </StackPanel>
     </Button>

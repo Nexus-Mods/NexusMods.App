@@ -13,6 +13,8 @@
         <AvaloniaResource Include="Theme\Index.xaml" />
         <AvaloniaResource Include="Theme\LabelStyles.xaml" />
         <AvaloniaResource Include="Theme\ProgressBar.Download.xaml" />
+        <AvaloniaResource Include="Theme\ProgressBar.LaunchButton.xaml" />
+        <AvaloniaResource Include="Theme\ProgressBar.Stepper.xaml" />
         <AvaloniaResource Include="Theme\TextBlockStyles.xaml" />
         <AvaloniaResource Include="Theme\TextBox.xaml" />
         <AvaloniaResource Include="Theme\ToggleSwitchStyles.xaml" />
@@ -68,10 +70,10 @@
         <AvaloniaResource Include="Theme\MainWindow.xaml" />
         <None Remove="Theme\ButtonStyles\Standard.xaml" />
         <AvaloniaResource Include="Theme\ButtonStyles\Standard.xaml" />
-        <None Remove="Theme\ProgressBar.xaml" />
-        <AvaloniaResource Include="Theme\ProgressBar.xaml" />
         <None Remove="Theme\ButtonStyles\Spine\DownloadButton.xaml" />
         <AvaloniaResource Include="Theme\ButtonStyles\Spine\DownloadButton.xaml" />
+        <None Remove="Theme\ButtonStyles\Hyperlink.xaml" />
+        <AvaloniaResource Include="Theme\ButtonStyles\Hyperlink.xaml" />
     </ItemGroup>
 
     <ItemGroup>
@@ -281,6 +283,32 @@
         <Compile Update="Overlays\Generic\MessageBox\OkCancel\MessageBoxOkCancelViewModel.cs">
           <DependentUpon>IMessageBoxOkCancelViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Overlays\MetricsOptIn\MetricsOptInDesignerViewModel.cs">
+          <DependentUpon>IMetricsOptInViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Overlays\MetricsOptIn\MetricsOptInViewModel.cs">
+          <DependentUpon>IMetricsOptInViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Resources\Language.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>Language.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\DevelopmentBuildBanner\DevelopmentBuildBannerViewModel.cs">
+          <DependentUpon>IDevelopmentBuildBannerViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\DevelopmentBuildBanner\DevelopmentBuildBannerView.axaml.cs">
+          <DependentUpon>DevelopmentBuildBannerView.axaml</DependentUpon>
+        </Compile>
+        <Compile Update="Overlays\Updater\UpdaterDesignViewModel.cs">
+          <DependentUpon>IUpdaterViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\TopBar\TopBarDesignViewModel.cs">
+          <DependentUpon>ITopBarViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\TopBar\TopBarViewModel.cs">
+          <DependentUpon>ITopBarViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
@@ -301,10 +329,18 @@
     </ItemGroup>
 
     <ItemGroup>
+      <AdditionalFiles Include="Controls\DevelopmentBuildBanner\DevelopmentBuildBannerView.axaml" />
       <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadGameName\DownloadGameNameView.axaml" />
       <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadName\DownloadNameView.axaml" />
       <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadSize\DownloadSizeView.axaml" />
       <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadStatus\DownloadStatusView.axaml" />
       <AdditionalFiles Include="RightContent\DownloadGrid\Columns\DownloadVersion\DownloadVersionView.axaml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="Resources\Language.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>Language.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
     </ItemGroup>
 </Project>

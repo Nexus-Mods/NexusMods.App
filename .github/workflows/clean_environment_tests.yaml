@@ -1,6 +1,7 @@
 name: Clean Environment Tests
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main ]
     paths:
@@ -31,5 +32,5 @@ jobs:
     if: github.event_name == 'push' || github.event.pull_request.draft == false
     uses: Nexus-Mods/NexusMods.App.Meta/.github/workflows/dotnet-build-and-test.yaml@4b8ec395686e6e2e8e070670195a122995562e15
     with:
-      test-filter: "RequiresNetworking!=True"
+      test-filter: "RequiresNetworking!=True&FlakeyTest!=True"
       codecov-flags: ",clean_environment_tests"

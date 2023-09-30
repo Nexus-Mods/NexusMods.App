@@ -12,7 +12,7 @@ public class DummyLoadoutDiagnosticEmitter : ILoadoutDiagnosticEmitter
         return DiagnosticMessage.From($"LoadoutId={loadout.LoadoutId}, DataStoreId={loadout.DataStoreId.SpanHex}");
     }
 
-    public IEnumerable<Diagnostic> Diagnose(Loadout loadout)
+    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout loadout)
     {
         yield return new Diagnostic
         {

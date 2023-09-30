@@ -1,5 +1,5 @@
 ﻿using System.Reactive;
-using NexusMods.DataModel.Games;
+using NexusMods.App.UI.Resources;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.RateLimiting;
 using ReactiveUI;

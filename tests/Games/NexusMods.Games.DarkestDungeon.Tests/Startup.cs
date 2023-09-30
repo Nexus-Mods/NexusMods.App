@@ -3,8 +3,6 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.Games.TestFramework;
 using NexusMods.StandardGameLocators.TestHelpers;
-using Xunit.DependencyInjection;
-using Xunit.DependencyInjection.Logging;
 
 namespace NexusMods.Games.DarkestDungeon.Tests;
 
@@ -16,10 +14,7 @@ public class Startup
             .AddDefaultServicesForTesting()
             .AddUniversalGameLocator<DarkestDungeon>(new Version())
             .AddDarkestDungeon()
+            .AddLogging(builder => builder.AddXUnit())
             .Validate();
     }
-
-    // ReSharper disable once UnusedMember.Global
-    public void Configure(ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor) =>
-        loggerFactory.AddProvider(new XunitTestOutputLoggerProvider(accessor, delegate { return true;}));
 }

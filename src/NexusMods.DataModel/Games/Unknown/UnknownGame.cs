@@ -1,7 +1,8 @@
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Games.GameCapabilities;
+using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel.Games;
@@ -36,25 +37,25 @@ public class UnknownGame : IGame
         new GameInstallation
         {
             Game = this,
-            Locations = new Dictionary<GameFolderType, AbsolutePath>(),
+            LocationsRegister = new GameLocationsRegister(new Dictionary<LocationId, AbsolutePath>()),
             Version = _version
         }
     };
 
     /// <inheritdoc />
-    public void ResetInstallations()
-    {
-    }
+    public void ResetInstallations() { }
 
     /// <inheritdoc />
     public IEnumerable<AModFile> GetGameFiles(GameInstallation installation, IDataStore store)
     {
         return Array.Empty<AModFile>();
     }
-    
+
     /// <inheritdoc />
-    public virtual Dictionary<GameCapabilityId, IGameCapability> SupportedCapabilities { get; } = new();
-    
+    public IEnumerable<IModInstaller> Installers => Array.Empty<IModInstaller>();
+
+    /// <inheritdoc />
+    public List<IModInstallDestination> InstallDestinations { get; } = new();
 
     /// <inheritdoc />
     public IStreamFactory Icon => throw new NotImplementedException("No icon provided for this game.");

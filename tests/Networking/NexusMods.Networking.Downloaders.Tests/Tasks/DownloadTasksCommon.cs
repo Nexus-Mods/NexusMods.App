@@ -1,7 +1,7 @@
 using FluentAssertions;
-using Moq;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Paths;
+using NSubstitute;
 
 namespace NexusMods.Networking.Downloaders.Tests.Tasks;
 
@@ -11,15 +11,18 @@ internal static class DownloadTasksCommon
     /// <summary>
     /// Creates a mock that will receive a downloaded file and assert it exists.
     /// </summary>
-    public static Mock<IDownloadService> CreateMockWithConfirmFileReceive()
+    public static IDownloadService CreateMockWithConfirmFileReceive()
     {
-        var mock = new Mock<IDownloadService>(); //replace with the actual interface or class name that has the FinalizeDownloadAsync method
-
-        mock.Setup(x => x.FinalizeDownloadAsync(It.IsAny<IDownloadTask>(), It.IsAny<TemporaryPath>(), It.IsAny<string>()))
-            .Returns(Task.CompletedTask) // Adjust this line as needed, for instance if your method returns a Task<TResult> then you should use Task.FromResult(result)
-            .Callback((IDownloadTask task, TemporaryPath tempPath, string modName) =>
+        var res = Substitute.For<IDownloadService>();
+        res
+            .FinalizeDownloadAsync(Arg.Any<IDownloadTask>(), Arg.Any<TemporaryPath>(), Arg.Any<string>())
+            .Returns(Task.CompletedTask)
+            .AndDoes(callInfo =>
             {
-                // Place your assertions here, for example:
+                var task = callInfo.ArgAt<IDownloadTask>(0);
+                var tempPath = callInfo.ArgAt<TemporaryPath>(1);
+                var modName = callInfo.ArgAt<string>(2);
+
                 try
                 {
                     task.Should().NotBeNull();
@@ -27,7 +30,7 @@ internal static class DownloadTasksCommon
                     modName.Should().NotBeNullOrEmpty();
 
                     using var stream = tempPath.Path.Open(FileMode.Open);
-                    stream.Length.Should().BeGreaterThan(0);
+                    stream.Length.Should().BePositive();
                 }
                 finally
                 {
@@ -36,6 +39,6 @@ internal static class DownloadTasksCommon
                 }
             });
 
-        return mock;
+        return res;
     }
 }

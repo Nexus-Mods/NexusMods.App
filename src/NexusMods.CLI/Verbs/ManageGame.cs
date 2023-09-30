@@ -19,7 +19,6 @@ public class ManageGame : AVerb<IGame, Version, string>, IRenderingVerb
     /// DI constructor
     /// </summary>
     /// <param name="manager"></param>
-    /// <param name="configurator"></param>
     public ManageGame(LoadoutManager manager)
     {
         _manager = manager;
