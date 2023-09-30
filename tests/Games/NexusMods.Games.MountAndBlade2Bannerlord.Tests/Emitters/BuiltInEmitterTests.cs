@@ -31,7 +31,7 @@ public class BuiltInEmitterTests : ALoadoutDiagnosticEmitterTest<MountAndBlade2B
         await using var modAPath = await CreateTestArchive(modAFiles);
         var modA = await InstallModFromArchiveIntoLoadout(loadoutMarker, modAPath);
 
-        var diagnostic = GetSingleDiagnostic(loadoutMarker.Value);
+        var diagnostic = await GetSingleDiagnostic(loadoutMarker.Value);
         diagnostic.Id.Should().Be(new DiagnosticId(BuiltInEmitter.Source, (ushort) ModuleIssueType.MissingDependencies));
         diagnostic.DataReferences.Should().Equal(
             loadoutMarker.Value.ToReference(),
@@ -50,7 +50,7 @@ public class BuiltInEmitterTests : ALoadoutDiagnosticEmitterTest<MountAndBlade2B
 
         await InstallModFromArchiveIntoLoadout(loadoutMarker, modBPath);
 
-        var diagnostics = GetAllDiagnostics(loadoutMarker.Value);
+        var diagnostics = await GetAllDiagnostics(loadoutMarker.Value);
         diagnostics.Should().BeEmpty();
     }
 }
