@@ -62,8 +62,8 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
         return new Dictionary<LocationId, AbsolutePath>()
         {
             { LocationId.Game, installation.Store == GameStore.XboxGamePass ? installation.Path.Combine("Content") : installation.Path },
-            { LocationId.Saves, documentsFolder.Combine(@$"{DocumentsFolderName}/Game Saves") },
-            { LocationId.Preferences, documentsFolder.Combine(@$"{DocumentsFolderName}/Configs") },
+            { LocationId.Saves, documentsFolder.Combine($"{DocumentsFolderName}/Game Saves") },
+            { LocationId.Preferences, documentsFolder.Combine($"{DocumentsFolderName}/Configs") },
         };
     }
 
