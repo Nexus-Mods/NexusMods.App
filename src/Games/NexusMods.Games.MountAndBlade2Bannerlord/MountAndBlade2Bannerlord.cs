@@ -50,7 +50,7 @@ public sealed class MountAndBlade2Bannerlord : AGame, ISteamGame, IGogGame, IEpi
         MountAndBlade2BannerlordModInstaller.Create(_serviceProvider),
     };
 
-    public override Version GetVersion(GameLocatorResult installation)
+    protected override Version GetVersion(GameLocatorResult installation)
     {
         var launcherManagerHandler = _launcherManagerFactory.Get(installation);
         return Version.TryParse(launcherManagerHandler.GetGameVersion(), out var val) ? val : new Version();
