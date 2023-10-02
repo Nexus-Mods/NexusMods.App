@@ -37,6 +37,7 @@
             <icons:Icon Classes="FolderOutline"></icons:Icon>
             <icons:Icon Classes="File"></icons:Icon>
             <icons:Icon Classes="Close"></icons:Icon>
+            <icons:Icon Classes="Check"></icons:Icon>
             <Svg Classes="AddCircle" />
         </WrapPanel>
     </Design.PreviewWith>
@@ -145,6 +146,10 @@
 
     <Style Selector="icons|Icon.Close">
         <Setter Property="Value" Value="mdi-close" />
+    </Style>
+
+    <Style Selector="icons|Icon.Check">
+        <Setter Property="Value" Value="mdi-check" />
     </Style>
 
     <Style Selector="Svg.AddCircle">
