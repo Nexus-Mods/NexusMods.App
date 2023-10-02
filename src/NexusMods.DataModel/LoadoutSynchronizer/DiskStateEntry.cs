@@ -1,4 +1,5 @@
-﻿using NexusMods.Hashing.xxHash64;
+﻿using NexusMods.DataModel.Loadouts.ModFiles;
+using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
 namespace NexusMods.DataModel.LoadoutSynchronizer;
@@ -36,6 +37,21 @@ public readonly struct DiskStateEntry
             Hash = hashedEntry.Hash,
             Size = hashedEntry.Size,
             LastModified = hashedEntry.LastModified
+        };
+    }
+
+    /// <summary>
+    /// Converts a <see cref="FromArchive"/> to a <see cref="DiskStateEntry"/>.
+    /// </summary>
+    /// <param name="hashedEntry"></param>
+    /// <returns></returns>
+    public static DiskStateEntry From(FromArchive hashedEntry)
+    {
+        return new()
+        {
+            Hash = hashedEntry.Hash,
+            Size = hashedEntry.Size,
+            LastModified = DateTime.Now
         };
     }
 

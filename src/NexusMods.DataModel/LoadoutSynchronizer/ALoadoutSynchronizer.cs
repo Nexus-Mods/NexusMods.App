@@ -96,10 +96,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     public async Task<DiskState> FileTreeToDisk(FileTree fileTree, DiskState prevState, GameInstallation installation)
     {
         List<HashedEntry> toDelete = new();
-        List<KeyValuePair<HashedEntry, AModFile>> toWrite = new();
-        List<KeyValuePair<HashedEntry, FromArchive>> toExtract = new();
+        List<KeyValuePair<AbsolutePath, AModFile>> toWrite = new();
+        List<KeyValuePair<AbsolutePath, FromArchive>> toExtract = new();
 
-        List<KeyValuePair<GamePath, DiskStateEntry>> resultingItems = new();
+        Dictionary<GamePath, DiskStateEntry> resultingItems = new();
 
         foreach (var (locationId, location) in installation.LocationsRegister.GetTopLevelLocations())
         {
@@ -125,12 +125,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                         // FromArchive files are special cased so we can batch them up and extract them all at once.
                         if (newEntry.Value! is FromArchive fa)
                         {
-                            resultingItems.Add(KeyValuePair.Create(gamePath, DiskStateEntry.From(entry)));
-                            toExtract.Add(KeyValuePair.Create(entry, fa));
+                            resultingItems.Add(gamePath, DiskStateEntry.From(entry));
+                            toExtract.Add(KeyValuePair.Create(entry.Path, fa));
                             continue;
                         }
                         // Hash for these files is generated on the fly, so we need to update it after we write it.
-                        toWrite.Add(KeyValuePair.Create(entry, newEntry.Value!));
+                        toWrite.Add(KeyValuePair.Create(entry.Path, newEntry.Value!));
                     }
                 }
                 else
@@ -138,7 +138,27 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     HandleNeedIngest(entry);
                     throw new UnreachableException("HandleNeedIngest should have thrown");
                 }
-                resultingItems.Add(KeyValuePair.Create(gamePath, DiskStateEntry.From(entry)));
+                resultingItems.Add(gamePath, DiskStateEntry.From(entry));
+            }
+        }
+
+        // Now we look for completely new files
+        foreach (var (path, entry) in fileTree.GetAllDescendentFiles())
+        {
+            if (resultingItems.ContainsKey(path))
+                continue;
+
+            var absolutePath = installation.LocationsRegister.GetResolvedPath(path);
+
+            if (entry! is FromArchive fa)
+            {
+                resultingItems.Add(path, DiskStateEntry.From(fa));
+                toExtract.Add(KeyValuePair.Create(absolutePath, fa));
+            }
+            else
+            {
+                // Don't add to the results here as we'll write the file in a bit
+                toWrite.Add(KeyValuePair.Create(absolutePath, entry!));
             }
         }
 
@@ -155,7 +175,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         // Extract all the files that need extracting in one batch.
         await _archiveManager.ExtractFiles(toExtract
-            .Select(f => (f.Value.Hash, f.Key.Path)));
+            .Select(f => (f.Value.Hash, f.Key)));
 
         // Return the new tree
         return DiskState.Create(resultingItems);

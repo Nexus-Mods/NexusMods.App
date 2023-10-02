@@ -182,6 +182,29 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
         var prevState = DiskStateRegistry.GetState(BaseList.Id)!;
         var diskState = await _synchronizer.FileTreeToDisk(fileTree, prevState, Install);
 
+        diskState.GetAllDescendentFiles()
+            .Select(f => f.Path.ToString())
+            .Should()
+            .BeEquivalentTo(new []
+                {
+                    "{Game}/meshes/b.nif",
+                    "{Game}/perMod/0.dat",
+                    "{Game}/perMod/1.dat",
+                    "{Game}/perMod/2.dat",
+                    "{Game}/perMod/3.dat",
+                    "{Game}/perMod/4.dat",
+                    "{Game}/perMod/5.dat",
+                    "{Game}/perMod/6.dat",
+                    "{Game}/perMod/7.dat",
+                    "{Game}/perMod/8.dat",
+                    "{Game}/perMod/9.dat",
+                    "{Game}/textures/a.dds",
+                    "{Preferences}/preferences/prefs.dat",
+                    "{Saves}/saves/save.dat"
+                },
+                "files have all been written to disk");
+
+
 
 
     }
