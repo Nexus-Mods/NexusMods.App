@@ -6,58 +6,81 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI"
                                 xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
-                                mc:Ignorable="d" d:DesignWidth="508" d:DesignHeight="44"
+                                mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="44"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.AdvancedInstallerTreeEntryView">
     <Design.DataContext>
         <ui:AdvancedInstallerTreeEntryDesignViewModel />
     </Design.DataContext>
 
-    <StackPanel Orientation="Horizontal" Name="TreeEntryStackPanel">
-        <StackPanel.Styles>
+    <Grid ColumnDefinitions="*, Auto">
+        <Grid.Styles>
             <Style Selector="icons|Icon.FileTypeIcon">
-                <Setter Property="Foreground" Value="{DynamicResource BrandWhite}"/>
-                <Setter Property="FontSize" Value="18"/>
+                <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+                <Setter Property="FontSize" Value="18" />
             </Style>
+        </Grid.Styles>
 
-        </StackPanel.Styles>
+        <StackPanel Grid.Column="0" Orientation="Horizontal" Name="EntryLeftElementsStackPanel">
 
-        <!-- File / Directory Icon -->
-        <icons:Icon Classes="File FileTypeIcon" x:Name="FileEntryIcon"/>
-        <icons:Icon Classes="FolderOutline FileTypeIcon" x:Name="FolderEntryIcon"/>
+            <!-- File / Directory Icon -->
+            <icons:Icon Classes="File FileTypeIcon" x:Name="FileEntryIcon" />
+            <icons:Icon Classes="FolderOutline FileTypeIcon" x:Name="FolderEntryIcon" />
 
-        <!-- File Name -->
-        <TextBlock Classes="BodyMDNormal" Text="Example-file.bsa" x:Name="FileNameTextBlock"/>
+            <!-- File Name -->
+            <TextBlock Classes="BodyMDNormal" VerticalAlignment="Center" Text="Example-file.bsa"
+                       x:Name="FileNameTextBlock" />
 
-        <!-- NEW Pill Label-->
-        <Button Classes="Pill Accent Label" x:Name="NewPill">
-            <StackPanel>
-                <TextBlock Text="NEW"/>
-            </StackPanel>
-        </Button>
+            <!-- NEW Pill Label -->
+            <Button Classes="Pill Accent Label" x:Name="NewPill">
+                <StackPanel>
+                    <TextBlock Text="NEW" />
+                </StackPanel>
+            </Button>
 
-        <!-- Dupe Folder Pill Label-->
-        <Button Classes="Pill Light Label" x:Name="DupeFolderPill">
-            <StackPanel>
-                <icons:Icon Classes="Alert" />
-                <TextBlock Text="DUPE FOLDER"/>
-            </StackPanel>
-        </Button>
+            <!-- Dupe Folder Pill Label -->
+            <Button Classes="Pill Light Label" x:Name="DupeFolderPill">
+                <StackPanel>
+                    <icons:Icon Classes="Alert" />
+                    <TextBlock Text="DUPE FOLDER" />
+                </StackPanel>
+            </Button>
 
-        <!-- X Button-->
-        <Button Classes="Pill Light Label" x:Name="XButton">
-            <StackPanel>
-                <icons:Icon Classes="Alert" />
-                <TextBlock Text="DUPE FOLDER"/>
-            </StackPanel>
-        </Button>
+            <!-- Folder Merged Pill Label -->
+            <Button Classes="Pill Light Label" x:Name="FolderMergedPill">
+                <StackPanel>
+                    <icons:Icon Classes="Check" />
+                    <TextBlock Text="FOLDER MERGED" />
+                </StackPanel>
+            </Button>
+        </StackPanel>
 
-        <!-- Install/Select Button-->
-        <Button Classes="Rounded" x:Name="RoundedButton">
-            <StackPanel Orientation="Horizontal">
-                <icons:Icon Classes="Close" x:Name="StandaloneRemoveIcon"/>
-                <TextBlock Text="Install" x:Name="RoundedButtonTextBlock"/>
-            </StackPanel>
-        </Button>
+        <StackPanel Grid.Column="1" Orientation="Horizontal">
 
-    </StackPanel>
+            <!-- Install Button -->
+            <Button Classes="Rounded" HorizontalAlignment="Right" x:Name="InstallRoundedButton">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Temp Install text" x:Name="InstallRoundedButtonTextBlock" />
+                </StackPanel>
+            </Button>
+
+            <!-- X Select location -->
+            <Button Classes="Rounded" HorizontalAlignment="Right" x:Name="SelectLocationRoundedButton">
+                <StackPanel Orientation="Horizontal">
+                    <icons:Icon Classes="Close" x:Name="SelectLocationCloseIcon" />
+                    <TextBlock Text="Select location" x:Name="SelectLocationRoundedButtonTextBlock" />
+                </StackPanel>
+            </Button>
+
+            <!-- X Button -->
+            <Button Classes="Rounded" HorizontalAlignment="Right" x:Name="XRoundedButton">
+                <StackPanel Orientation="Horizontal">
+                    <icons:Icon Classes="Close" x:Name="StandaloneCloseIcon" />
+                </StackPanel>
+            </Button>
+
+
+
+        </StackPanel>
+    </Grid>
+
 </reactiveUi:ReactiveUserControl>
