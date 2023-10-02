@@ -12,7 +12,7 @@
         <ui:AdvancedInstallerTreeEntryDesignViewModel />
     </Design.DataContext>
 
-    <StackPanel Orientation="Horizontal">
+    <StackPanel Orientation="Horizontal" Name="TreeEntryStackPanel">
         <StackPanel.Styles>
             <Style Selector="icons|Icon.FileTypeIcon">
                 <Setter Property="Foreground" Value="{DynamicResource BrandWhite}"/>
@@ -22,18 +22,34 @@
         </StackPanel.Styles>
 
         <!-- File / Directory Icon -->
-        <icons:Icon Classes="File FileTypeIcon"/>
-        <icons:Icon Classes="FolderOutline FileTypeIcon"/>
+        <icons:Icon Classes="File FileTypeIcon" x:Name="FileEntryIcon"/>
+        <icons:Icon Classes="FolderOutline FileTypeIcon" x:Name="FolderEntryIcon"/>
 
         <!-- File Name -->
-        <TextBlock Classes="BodyMDNormal" Text="Example-file.bsa" x:Name="FileNameTextBlock" VerticalAlignment="Center"/>
+        <TextBlock Classes="BodyMDNormal" Text="Example-file.bsa" x:Name="FileNameTextBlock"/>
 
-        <!-- NEW Pill -->
-        <Button Classes="Pill Accent" x:Name="NewButtonPill">
-            <TextBlock Text="NEW"/>
+        <!-- NEW Pill Label-->
+        <Button Classes="Pill Accent Label" x:Name="NewPill">
+            <StackPanel>
+                <TextBlock Text="NEW"/>
+            </StackPanel>
         </Button>
 
-        <!-- Dupe Folder Pill -->
+        <!-- Dupe Folder Pill Label-->
+        <Button Classes="Pill Light Label" x:Name="DupeFolderPill">
+            <StackPanel>
+                <icons:Icon Classes="Alert" />
+                <TextBlock Text="DUPE FOLDER"/>
+            </StackPanel>
+        </Button>
+
+        <!-- X Button-->
+        <Button Classes="Pill Light Label" x:Name="XButton">
+            <StackPanel>
+                <icons:Icon Classes="Alert" />
+                <TextBlock Text="DUPE FOLDER"/>
+            </StackPanel>
+        </Button>
 
     </StackPanel>
 </reactiveUi:ReactiveUserControl>
