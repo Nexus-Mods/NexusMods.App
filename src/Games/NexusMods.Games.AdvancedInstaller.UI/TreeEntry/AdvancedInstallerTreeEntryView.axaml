@@ -1,10 +1,39 @@
-﻿<reactiveUi:ReactiveUserControl x:TypeArguments="ui:IAdvancedInstallerTreeEntryViewModel" xmlns="https://github.com/avaloniaui"
+﻿<reactiveUi:ReactiveUserControl x:TypeArguments="ui:IAdvancedInstallerTreeEntryViewModel"
+                                xmlns="https://github.com/avaloniaui"
                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI"
+                                xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
                                 mc:Ignorable="d" d:DesignWidth="508" d:DesignHeight="44"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.AdvancedInstallerTreeEntryView">
-</reactiveUi:ReactiveUserControl>
+    <Design.DataContext>
+        <ui:AdvancedInstallerTreeEntryDesignViewModel />
+    </Design.DataContext>
 
+    <StackPanel Orientation="Horizontal">
+        <StackPanel.Styles>
+            <Style Selector="icons|Icon.FileTypeIcon">
+                <Setter Property="Foreground" Value="{DynamicResource BrandWhite}"/>
+                <Setter Property="FontSize" Value="18"/>
+            </Style>
+
+        </StackPanel.Styles>
+
+        <!-- File / Directory Icon -->
+        <icons:Icon Classes="File FileTypeIcon"/>
+        <icons:Icon Classes="FolderOutline FileTypeIcon"/>
+
+        <!-- File Name -->
+        <TextBlock Classes="BodyMDNormal" Text="Example-file.bsa" x:Name="FileNameTextBlock" VerticalAlignment="Center"/>
+
+        <!-- NEW Pill -->
+        <Button Classes="Pill Accent" x:Name="NewButtonPill">
+            <TextBlock Text="NEW"/>
+        </Button>
+
+        <!-- Dupe Folder Pill -->
+
+    </StackPanel>
+</reactiveUi:ReactiveUserControl>
