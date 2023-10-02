@@ -8,6 +8,10 @@
                                 xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.AdvancedInstallerModContentView">
+    <Design.DataContext>
+        <ui:AdvancedInstallerModContentViewModel />
+    </Design.DataContext>
+
     <Grid RowDefinitions="Auto, *">
         <Grid.Styles>
 
@@ -35,6 +39,10 @@
                            x:Name="ModContentSubHeading" />
             </StackPanel>
         </Border>
+
+        <TreeDataGrid Grid.Row="1" x:Name="ModContentTreeDataGrid" >
+
+        </TreeDataGrid>
 
     </Grid>
 </reactiveUi:ReactiveUserControl>
