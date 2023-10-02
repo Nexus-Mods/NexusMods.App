@@ -4,6 +4,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Avalonia.Controls.TreeDataGrid" />
         <PackageReference Include="ReactiveUI.Fody" />
     </ItemGroup>
     
