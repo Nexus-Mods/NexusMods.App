@@ -86,6 +86,7 @@
 
     <ItemGroup>
         <PackageReference Include="Avalonia" />
+        <PackageReference Include="Avalonia.Controls.TreeDataGrid" />
         <PackageReference Include="Avalonia.Desktop" />
         <PackageReference Include="Avalonia.Controls.DataGrid" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
