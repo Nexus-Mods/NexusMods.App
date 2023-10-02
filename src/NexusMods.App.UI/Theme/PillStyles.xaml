@@ -5,33 +5,44 @@
 
     <Design.PreviewWith>
         <StackPanel Orientation="Vertical" Spacing="4">
+            <Button Classes="Pill Standard Label">
+                <StackPanel>
+                    <icons:Icon Value="mdi-star" />
+                    <TextBlock Text="LABEL STANDARD"></TextBlock>
+                </StackPanel>
+            </Button>
+            <Button Classes="Pill Standard">
+                <StackPanel>
+                    <TextBlock Text="BUTTON STANDARD"></TextBlock>
+                </StackPanel>
+            </Button>
             <Button Classes="Pill Light">
                 <StackPanel>
-                    <TextBlock Text="BUTTON"></TextBlock>
+                    <TextBlock Text="BUTTON LIGHT"></TextBlock>
                 </StackPanel>
             </Button>
             <Button Classes="Pill Light">
                 <StackPanel>
                     <icons:Icon Value="mdi-star" />
-                    <TextBlock Text="BUTTON"></TextBlock>
+                    <TextBlock Text="BUTTON LIGHT"></TextBlock>
                 </StackPanel>
             </Button>
             <Button Classes="Pill Light Label">
                 <StackPanel>
                     <icons:Icon Value="mdi-star" />
-                    <TextBlock Text="LABEL"></TextBlock>
+                    <TextBlock Text="LABEL LIGHT"></TextBlock>
                 </StackPanel>
             </Button>
             <Button Classes="Pill Accent">
                 <StackPanel>
                     <icons:Icon Value="mdi-star" />
-                    <TextBlock Text="BUTTON"></TextBlock>
+                    <TextBlock Text="BUTTON ACCENT"></TextBlock>
                 </StackPanel>
             </Button>
             <Button Classes="Pill Accent Label">
                 <StackPanel>
                     <icons:Icon Value="mdi-star" />
-                    <TextBlock Text="LABEL"></TextBlock>
+                    <TextBlock Text="LABEL ACCENT"></TextBlock>
                 </StackPanel>
             </Button>
         </StackPanel>
@@ -63,6 +74,28 @@
             <Setter Property="FontSize" Value="10"></Setter>
             <Setter Property="Width" Value="10"></Setter>
             <Setter Property="Height" Value="10"></Setter>
+        </Style>
+    </Style>
+
+    <!-- Pill Button Standard -->
+    <Style Selector="Button.Pill.Standard">
+        <Setter Property="Background" Value="{DynamicResource FontDarkSecondaryColor}"></Setter>
+
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource BrandWhite}"></Setter>
+        </Style>
+
+        <Style Selector="^ TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource BackgroundPrimary}"></Setter>
+        </Style>
+
+        <Style Selector="^ icons|Icon">
+            <Setter Property="Foreground" Value="{DynamicResource BackgroundPrimary}"></Setter>
+        </Style>
+
+        <!-- Disable pointerOver for Label version-->
+        <Style Selector="^.Label:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource FontDarkSecondaryColor}"></Setter>
         </Style>
     </Style>
 
