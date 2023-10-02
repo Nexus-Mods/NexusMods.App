@@ -1,6 +1,7 @@
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.Common.ProtocolRegistration;
 using NexusMods.DataModel.Abstractions;
@@ -14,6 +15,7 @@ namespace NexusMods.Networking.NexusWebApi.NMA;
 [PublicAPI]
 public sealed class LoginManager : IDisposable
 {
+    private readonly ILogger<LoginManager> _logger;
     private readonly OAuth _oauth;
     private readonly IDataStore _dataStore;
     private readonly IProtocolRegistration _protocolRegistration;
@@ -40,23 +42,23 @@ public sealed class LoginManager : IDisposable
     /// </summary>
     public IObservable<Uri?> Avatar => UserInfo.Select(info => info?.AvatarUrl);
 
-    /// <summary/>
-    /// <param name="client">Nexus API client.</param>
-    /// <param name="msgFactory">Used to check authentication status and ensure verified.</param>
-    /// <param name="oauth">Helper class to deal with authentication messages.</param>
-    /// <param name="dataStore">Used for storing information about the current login session.</param>
-    /// <param name="protocolRegistration">Used to register NXM protocol.</param>
-    public LoginManager(Client client,
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    public LoginManager(
+        Client client,
         IAuthenticatingMessageFactory msgFactory,
         OAuth oauth,
         IDataStore dataStore,
-        IProtocolRegistration protocolRegistration)
+        IProtocolRegistration protocolRegistration,
+        ILogger<LoginManager> logger)
     {
         _oauth = oauth;
         _msgFactory = msgFactory;
         _client = client;
         _dataStore = dataStore;
         _protocolRegistration = protocolRegistration;
+        _logger = logger;
 
         UserInfo = _dataStore.IdChanges
             // NOTE(err120): Since IDs don't change on startup, we can insert
@@ -99,16 +101,14 @@ public sealed class LoginManager : IDisposable
         await _protocolRegistration.RegisterSelf("nxm");
 
         var jwtToken = await _oauth.AuthorizeRequest(token);
-        var createdAt = DateTimeOffset.FromUnixTimeSeconds(jwtToken.CreatedAt);
-        var expiresIn = TimeSpan.FromSeconds(jwtToken.ExpiresIn);
-        var expiresAt = createdAt + expiresIn;
-
-        _dataStore.Put(JWTTokenEntity.StoreId, new JWTTokenEntity
+        var newTokenEntity = JWTTokenEntity.From(jwtToken);
+        if (newTokenEntity is null)
         {
-            RefreshToken = jwtToken.RefreshToken,
-            AccessToken = jwtToken.AccessToken,
-            ExpiresAt = expiresAt
-        });
+            _logger.LogError("Invalid new token!");
+            return;
+        }
+
+        _dataStore.Put(JWTTokenEntity.StoreId, newTokenEntity);
     }
 
     /// <summary>
