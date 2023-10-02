@@ -1,0 +1,37 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <Button Classes="WidgetRounded">
+                <StackPanel Orientation="Horizontal">
+                    <icons:Icon Classes="Play" />
+                    <TextBlock Text="Button" />
+                    <Button Classes="Pill Standard Label">
+                        <StackPanel>
+                            <TextBlock Text="LABEL" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Button>
+        </Border>
+    </Design.PreviewWith>
+
+
+    <Style Selector="Button.WidgetRounded">
+        <Setter Property="CornerRadius" Value="48" />
+        <Setter Property="Background" Value="{DynamicResource BrandWhiteBrush10Percent}" />
+        <Style Selector="^ > StackPanel > TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource FontDarkPrimary}" />
+            <!-- BodyMDNormal -->
+            <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
+            <Setter Property="FontWeight" Value="400" />
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource BrandWhiteBrush20Percent}" />
+        </Style>
+
+
+    </Style>
+</Styles>

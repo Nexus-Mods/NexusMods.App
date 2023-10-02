@@ -52,6 +52,8 @@
 
         <Color x:Key="BrandWhite">#FFFFFF</Color>
         <SolidColorBrush Color="{DynamicResource BrandWhite}" x:Key="BrandWhiteBrush" />
+        <SolidColorBrush Color="{DynamicResource BrandWhite}" Opacity="0.1" x:Key="BrandWhiteBrush10Percent" />
+        <SolidColorBrush Color="{DynamicResource BrandWhite}" Opacity="0.2" x:Key="BrandWhiteBrush20Percent" />
 
         <Color x:Key="BrandWhite30Percent">#4CFFFFFF</Color>
 

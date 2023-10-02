@@ -306,5 +306,6 @@
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/ButtonStyles/Hyperlink.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/ButtonStyles/Standard.xaml" />
     <StyleInclude Source="avares://NexusMods.App.UI/Theme/ButtonStyles/Spine/DownloadButton.xaml" />
+    <StyleInclude Source="avares://NexusMods.App.UI/Theme/ButtonStyles/WidgetRounded.axaml" />
 
 </Styles>
