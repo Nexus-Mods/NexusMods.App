@@ -23,4 +23,20 @@ public readonly struct DiskStateEntry
     /// </summary>
     public required DateTime LastModified { get; init; }
 
+
+    /// <summary>
+    /// Converts a <see cref="HashedEntry"/> to a <see cref="DiskStateEntry"/>.
+    /// </summary>
+    /// <param name="hashedEntry"></param>
+    /// <returns></returns>
+    public static DiskStateEntry From(HashedEntry hashedEntry)
+    {
+        return new()
+        {
+            Hash = hashedEntry.Hash,
+            Size = hashedEntry.Size,
+            LastModified = hashedEntry.LastModified
+        };
+    }
+
 }

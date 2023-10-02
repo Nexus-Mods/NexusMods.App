@@ -47,6 +47,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected readonly IFileSystem FileSystem;
     protected readonly IDataStore DataStore;
     protected readonly IDownloadRegistry DownloadRegistry;
+    protected readonly DiskStateRegistry DiskStateRegistry;
     protected readonly IToolManager ToolManager;
 
     protected readonly IGame Game;
@@ -68,6 +69,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         FileSystem = provider1.GetRequiredService<IFileSystem>();
         DataStore = provider1.GetRequiredService<IDataStore>();
         DownloadRegistry = provider1.GetRequiredService<IDownloadRegistry>();
+        DiskStateRegistry = provider1.GetRequiredService<DiskStateRegistry>();
         Logger = provider1.GetRequiredService<ILogger<T>>();
         LoadoutSynchronizer = provider1.GetRequiredService<Loadouts.LoadoutSynchronizer>();
         TemporaryFileManager = provider1.GetRequiredService<TemporaryFileManager>();

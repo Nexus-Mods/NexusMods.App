@@ -179,7 +179,8 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
     {
         var flattened = await _synchronizer.LoadoutToFlattenedLoadout(BaseList.Value);
         var fileTree = await _synchronizer.FlattenedLoadoutToFileTree(flattened, BaseList.Value);
-        var diskState = await _synchronizer.FileTreeToDisk(fileTree);
+        var prevState = DiskStateRegistry.GetState(BaseList.Id)!;
+        var diskState = await _synchronizer.FileTreeToDisk(fileTree, prevState, Install);
 
 
 

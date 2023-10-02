@@ -29,7 +29,7 @@ public interface ILoadoutSynchronizer
     /// Writes a file tree to disk (updating the game files)
     /// </summary>
     /// <param name="fileTree"></param>
-    Task<DiskState> FileTreeToDisk(FileTree fileTree);
+    Task<DiskState> FileTreeToDisk(FileTree fileTree, DiskState prevState, GameInstallation installation);
 
     #endregion
 

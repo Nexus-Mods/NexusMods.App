@@ -81,8 +81,9 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
             return KeyValuePair.Create(gamePath,
                 new DiskStateEntry
                 {
-                    Size = Size.From((ulong)name.Path.Length),
-                    Hash = name.Path.XxHash64AsUtf8(),
+                    // This is coded to match what we write in `EnsureFile`
+                    Size = Size.From((ulong)name.FileName.Path.Length),
+                    Hash = name.FileName.Path.XxHash64AsUtf8(),
                     LastModified = _modifiedTimes[installation.LocationsRegister.GetResolvedPath(gamePath)]
                 });
         });

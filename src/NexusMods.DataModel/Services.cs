@@ -74,6 +74,7 @@ public static class Services
         coll.AddSingleton<GlobalSettingsManager>();
         coll.AddSingleton<IArchiveInstaller, ArchiveInstaller>();
         coll.AddSingleton<IToolManager, ToolManager>();
+        coll.AddSingleton<DiskStateRegistry>();
 
         coll.AddAllSingleton<IInterprocessJobManager, SqliteIPC>();
         coll.AddSingleton(typeof(IMessageConsumer<>),

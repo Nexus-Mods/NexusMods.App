@@ -16,6 +16,11 @@ public class DiskState : AGamePathTree<DiskStateEntry>
 {
     private DiskState(IEnumerable<KeyValuePair<GamePath, DiskStateEntry>> tree) : base(tree) { }
 
+    /// <summary>
+    /// Creates a disk state from a list of files.
+    /// </summary>
+    /// <param name="tree"></param>
+    /// <returns></returns>
     public static DiskState Create(IEnumerable<KeyValuePair<GamePath, DiskStateEntry>> tree)
     {
         return new DiskState(tree);
@@ -27,7 +32,7 @@ class DiskStateConverter : JsonConverter<DiskState>
 {
     public override DiskState? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        if (!reader.Read() || reader.TokenType != JsonTokenType.StartArray)
+        if (reader.TokenType != JsonTokenType.StartArray)
             throw new JsonException();
 
         var itms = new List<KeyValuePair<GamePath, DiskStateEntry>>();
@@ -36,13 +41,29 @@ class DiskStateConverter : JsonConverter<DiskState>
             if (reader.TokenType == JsonTokenType.EndArray)
                 return DiskState.Create(itms);
 
-            var (locationId, path, hash, size, lastModified) = JsonSerializer.Deserialize<(LocationId, string, Hash, Size, long)>(ref reader, options)!;
+            if (reader.TokenType != JsonTokenType.StartArray)
+                throw new JsonException();
+
+            reader.Read();
+            var locationId = LocationId.From(reader.GetString()!);
+            reader.Read();
+            var path = reader.GetString()!;
+            reader.Read();
+            var hash = Hash.From(reader.GetUInt64());
+            reader.Read();
+            var size = Size.From(reader.GetUInt64());
+            reader.Read();
+            var lastModified = DateTime.FromFileTimeUtc(reader.GetInt64());
+            reader.Read();
+            if (reader.TokenType != JsonTokenType.EndArray)
+                throw new JsonException();
+
             itms.Add(new KeyValuePair<GamePath, DiskStateEntry>(new GamePath(locationId, path),
                 new DiskStateEntry
             {
                 Hash = hash,
                 Size = size,
-                LastModified = DateTime.FromFileTimeUtc(lastModified)
+                LastModified = lastModified
             }));
         }
 
@@ -54,8 +75,15 @@ class DiskStateConverter : JsonConverter<DiskState>
         writer.WriteStartArray();
         foreach (var (path, entry) in value.GetAllDescendentFiles())
         {
-            JsonSerializer.Serialize(writer,
-                (path.LocationId, path.Path, entry!.Hash, entry.Size, entry.LastModified.ToFileTimeUtc()));
+            writer.WriteStartArray();
+
+            writer.WriteStringValue(path.LocationId.Value);
+            writer.WriteStringValue(path.Path);
+            writer.WriteNumberValue(entry!.Hash.Value);
+            writer.WriteNumberValue(entry.Size.Value);
+            writer.WriteNumberValue(entry.LastModified.ToFileTimeUtc());
+
+            writer.WriteEndArray();
         }
         writer.WriteEndArray();
     }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
@@ -24,18 +25,24 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     private readonly IFileSystem _fileSystem;
     private readonly IDataStore _store;
     private readonly LoadoutRegistry _loadoutRegistry;
+    private readonly DiskStateRegistry _diskStateRegistry;
+    private readonly IArchiveManager _archiveManager;
 
     /// <summary>
     /// Loadout synchronizer base constructor.
     /// </summary>
     /// <param name="logger"></param>
-    protected ALoadoutSynchronizer(ILogger logger, FileHashCache hashCache, IFileSystem fileSystem, IDataStore store, LoadoutRegistry loadoutRegistry)
+    protected ALoadoutSynchronizer(ILogger logger, FileHashCache hashCache, IFileSystem fileSystem, IDataStore store, LoadoutRegistry loadoutRegistry,
+        DiskStateRegistry diskStateRegistry,
+        IArchiveManager archiveManager)
     {
         _logger = logger;
         _hashCache = hashCache;
         _fileSystem = fileSystem;
         _store = store;
         _loadoutRegistry = loadoutRegistry;
+        _diskStateRegistry = diskStateRegistry;
+        _archiveManager = archiveManager;
     }
 
     protected ALoadoutSynchronizer(IServiceProvider provider) : this(
@@ -43,7 +50,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         provider.GetRequiredService<FileHashCache>(),
         provider.GetRequiredService<IFileSystem>(),
         provider.GetRequiredService<IDataStore>(),
-        provider.GetRequiredService<LoadoutRegistry>())
+        provider.GetRequiredService<LoadoutRegistry>(),
+        provider.GetRequiredService<DiskStateRegistry>(),
+        provider.GetRequiredService<IArchiveManager>())
+
     {
 
     }
@@ -82,16 +92,14 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             .Select(f => KeyValuePair.Create(f.Path, f.Value!.File))));
     }
 
-    public Task<DiskState> FileTreeToDisk(FileTree fileTree)
-    {
-        throw new NotImplementedException();
-    }
-
     /// <inheritdoc />
     public async Task<DiskState> FileTreeToDisk(FileTree fileTree, DiskState prevState, GameInstallation installation)
     {
         List<HashedEntry> toDelete = new();
         List<KeyValuePair<HashedEntry, AModFile>> toWrite = new();
+        List<KeyValuePair<HashedEntry, FromArchive>> toExtract = new();
+
+        List<KeyValuePair<GamePath, DiskStateEntry>> resultingItems = new();
 
         foreach (var (locationId, location) in installation.LocationsRegister.GetTopLevelLocations())
         {
@@ -103,23 +111,34 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     if (prevEntry.Value!.Hash != entry.Hash)
                     {
                         HandleNeedIngest(entry);
-                        continue;
+                        throw new UnreachableException("HandleNeedIngest should have thrown");
                     }
 
                     if (!fileTree.TryGetValue(gamePath, out var newEntry))
                     {
+                        // Don't update the results here as we'll delete the file in a bit
                         toDelete.Add(entry);
                         continue;
                     }
                     else
                     {
+                        // FromArchive files are special cased so we can batch them up and extract them all at once.
+                        if (newEntry.Value! is FromArchive fa)
+                        {
+                            resultingItems.Add(KeyValuePair.Create(gamePath, DiskStateEntry.From(entry)));
+                            toExtract.Add(KeyValuePair.Create(entry, fa));
+                            continue;
+                        }
+                        // Hash for these files is generated on the fly, so we need to update it after we write it.
                         toWrite.Add(KeyValuePair.Create(entry, newEntry.Value!));
                     }
                 }
                 else
                 {
                     HandleNeedIngest(entry);
+                    throw new UnreachableException("HandleNeedIngest should have thrown");
                 }
+                resultingItems.Add(KeyValuePair.Create(gamePath, DiskStateEntry.From(entry)));
             }
         }
 
@@ -128,7 +147,18 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             entry.Path.Delete();
         }
 
-        throw new NotImplementedException();
+        foreach (var entry in toWrite)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        // Extract all the files that need extracting in one batch.
+        await _archiveManager.ExtractFiles(toExtract
+            .Select(f => (f.Value.Hash, f.Key.Path)));
+
+        // Return the new tree
+        return DiskState.Create(resultingItems);
     }
 
     /// <summary>
@@ -204,12 +234,16 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var initialState = await installation.Game.GetInitialDiskState(installation);
 
         var loadoutId = LoadoutId.Create();
+
+        // Save the state first incase someone is watching and needs the state immediately after creation.
+        _diskStateRegistry.SaveState(loadoutId, initialState);
         var loadout = _loadoutRegistry.Alter(loadoutId, "Initial loadout",  loadout => loadout
             with
             {
                 Name = $"Loadout {installation.Game.Name}",
                 Installation = installation,
             });
+
 
         return loadout;
     }
