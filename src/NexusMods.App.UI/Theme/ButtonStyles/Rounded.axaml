@@ -3,7 +3,7 @@
         xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia">
     <Design.PreviewWith>
         <Border Padding="20">
-            <Button Classes="WidgetRounded">
+            <Button Classes="Rounded">
                 <StackPanel Orientation="Horizontal">
                     <icons:Icon Classes="Play" />
                     <TextBlock Text="Button" />
@@ -18,7 +18,7 @@
     </Design.PreviewWith>
 
 
-    <Style Selector="Button.WidgetRounded">
+    <Style Selector="Button.Rounded">
         <Setter Property="CornerRadius" Value="48" />
         <Setter Property="Background" Value="{DynamicResource BrandWhiteBrush10Percent}" />
         <Style Selector="^ > StackPanel > TextBlock">
