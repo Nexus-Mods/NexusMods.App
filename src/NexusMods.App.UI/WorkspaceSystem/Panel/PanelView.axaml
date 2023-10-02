@@ -11,7 +11,7 @@
     <!-- <reactive:ViewModelViewHost x:Name="ViewModelViewHost"/> -->
 
     <Design.DataContext>
-        <workspace:PanelDesignViewModel/>
+        <workspace:PanelViewModel/>
     </Design.DataContext>
 
     <TextBlock Classes="Body2RobotoRegularBold">Hello World!</TextBlock>

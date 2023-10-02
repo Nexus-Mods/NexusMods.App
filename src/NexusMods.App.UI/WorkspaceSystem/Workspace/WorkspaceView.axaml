@@ -24,5 +24,4 @@
         <Canvas x:Name="WorkspaceCanvas"></Canvas>
     </StackPanel>
 
-
 </reactive:ReactiveUserControl>

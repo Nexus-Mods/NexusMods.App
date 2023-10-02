@@ -1,12 +1,15 @@
+using System.Diagnostics;
 using System.Reactive.Disposables;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using DynamicData;
 using DynamicData.Binding;
+using JetBrains.Annotations;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
+[UsedImplicitly]
 public partial class WorkspaceView : ReactiveUserControl<IWorkspaceViewModel>
 {
     public WorkspaceView()
@@ -15,6 +18,8 @@ public partial class WorkspaceView : ReactiveUserControl<IWorkspaceViewModel>
 
         this.WhenActivated(disposables =>
         {
+            Debug.Assert(WorkspaceCanvas.Children.Count == 0);
+
             this.BindCommand(ViewModel, vm => vm.AddPanelCommand, view => view.AddPanelButton)
                 .DisposeWith(disposables);
 
@@ -31,26 +36,34 @@ public partial class WorkspaceView : ReactiveUserControl<IWorkspaceViewModel>
                     {
                         Console.WriteLine(change.Reason);
 
-                        if (change.Reason == ListChangeReason.Add)
+                        switch (change.Reason)
                         {
-                            var item = change.Item.Current;
-                            WorkspaceCanvas.Children.Add(CreateViewModelHost(item));
-                        } else if (change.Reason == ListChangeReason.Remove)
-                        {
-                            var item = change.Item.Current;
-                            var existingControl = WorkspaceCanvas.Children.FirstOrDefault(x =>
+                            case ListChangeReason.Add:
                             {
-                                if (x is not ViewModelViewHost viewModelViewHost) return false;
-                                if (viewModelViewHost.ViewModel is not IPanelViewModel panelViewModel) return false;
-                                return panelViewModel.Id == item.Id;
-                            });
+                                var item = change.Item.Current;
+                                WorkspaceCanvas.Children.Add(CreateView(item));
+                                break;
+                            }
+                            case ListChangeReason.AddRange:
+                            {
+                                var items = change.Range;
+                                WorkspaceCanvas.Children.AddRange(items.Select(CreateView));
+                                break;
+                            }
+                            case ListChangeReason.Remove:
+                            {
+                                var item = change.Item.Current;
+                                var existingControl = WorkspaceCanvas.Children.FirstOrDefault(x =>
+                                {
+                                    if (x is not PanelView panelView) return false;
+                                    return panelView.ViewModel?.Id == item.Id;
+                                });
 
-                            if (existingControl is null) return;
-                            WorkspaceCanvas.Children.Remove(existingControl);
-                        } else if (change.Reason == ListChangeReason.AddRange)
-                        {
-                            var items = change.Range;
-                            WorkspaceCanvas.Children.AddRange(items.Select(CreateViewModelHost));
+                                if (existingControl is null) return;
+                                WorkspaceCanvas.Children.Remove(existingControl);
+                                break;
+                            }
+                            default: throw new NotSupportedException();
                         }
                     }
                 })
@@ -58,13 +71,11 @@ public partial class WorkspaceView : ReactiveUserControl<IWorkspaceViewModel>
         });
     }
 
-    private static Control CreateViewModelHost(IPanelViewModel panelViewModel)
+    private static Control CreateView(IPanelViewModel panelViewModel)
     {
-        var host = new ViewModelViewHost
+        return new PanelView
         {
             ViewModel = panelViewModel
         };
-
-        return host;
     }
 }

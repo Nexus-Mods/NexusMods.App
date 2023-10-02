@@ -1,6 +1,4 @@
-using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
-using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 

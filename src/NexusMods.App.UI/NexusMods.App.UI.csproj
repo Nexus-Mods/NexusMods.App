@@ -319,9 +319,6 @@
         <Compile Update="WorkspaceSystem\Workspace\WorkspaceViewModel.cs">
           <DependentUpon>IWorkspaceViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="WorkspaceSystem\Panel\PanelDesignViewModel.cs">
-          <DependentUpon>IPanelViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="WorkspaceSystem\Panel\PanelViewModel.cs">
           <DependentUpon>IPanelViewModel.cs</DependentUpon>
         </Compile>
