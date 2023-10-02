@@ -125,7 +125,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                         // FromArchive files are special cased so we can batch them up and extract them all at once.
                         if (newEntry.Value! is FromArchive fa)
                         {
-                            resultingItems.Add(gamePath, DiskStateEntry.From(entry));
+                            // Don't add toExtract to the results yet as we'll need to get the modified file times
+                            // after we extract them
                             toExtract.Add(KeyValuePair.Create(entry.Path, fa));
                             continue;
                         }
@@ -152,7 +153,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
             if (entry! is FromArchive fa)
             {
-                resultingItems.Add(path, DiskStateEntry.From(fa));
+                // Don't add toExtract to the results yet as we'll need to get the modified file times
+                // after we extract them
                 toExtract.Add(KeyValuePair.Create(absolutePath, fa));
             }
             else
@@ -176,6 +178,16 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // Extract all the files that need extracting in one batch.
         await _archiveManager.ExtractFiles(toExtract
             .Select(f => (f.Value.Hash, f.Key)));
+
+        foreach (var (path, entry) in toExtract)
+        {
+            resultingItems.Add(entry.To, new DiskStateEntry
+            {
+                Hash = entry.Hash,
+                Size = entry.Size,
+                LastModified = path.FileInfo.LastWriteTimeUtc
+            });
+        }
 
         // Return the new tree
         return DiskState.Create(resultingItems);

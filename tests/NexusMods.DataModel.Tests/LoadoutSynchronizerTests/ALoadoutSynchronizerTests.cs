@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Common;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.Loadouts.ModFiles;
@@ -204,6 +205,14 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
                 },
                 "files have all been written to disk");
 
+        foreach (var file in diskState.GetAllDescendentFiles())
+        {
+            var path = Install.LocationsRegister.GetResolvedPath(file.Path);
+            path.FileExists.Should().BeTrue("the file should exist on disk");
+            path.FileInfo.Size.Should().Be(file.Value!.Size, "the file size should match");
+            path.FileInfo.LastWriteTimeUtc.Should().Be(file.Value.LastModified, "the file last modified time should match");
+            (await path.XxHash64Async()).Should().Be(file.Value.Hash, "the file hash should match");
+        }
 
 
 
