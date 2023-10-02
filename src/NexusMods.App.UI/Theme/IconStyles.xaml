@@ -36,7 +36,8 @@
             <icons:Icon Classes="ArrowRight"></icons:Icon>
             <icons:Icon Classes="FolderOutline"></icons:Icon>
             <icons:Icon Classes="File"></icons:Icon>
-            <Svg Classes="AddCircle"/>
+            <icons:Icon Classes="Close"></icons:Icon>
+            <Svg Classes="AddCircle" />
         </WrapPanel>
     </Design.PreviewWith>
 
@@ -111,40 +112,44 @@
     </Style>
 
     <Style Selector="icons|Icon.PlayCircleOutline">
-        <Setter Property="Value" Value="mdi-play-circle-outline"/>
+        <Setter Property="Value" Value="mdi-play-circle-outline" />
     </Style>
 
     <Style Selector="icons|Icon.Image">
-        <Setter Property="Value" Value="mdi-image"/>
+        <Setter Property="Value" Value="mdi-image" />
     </Style>
 
     <Style Selector="icons|Icon.Description">
-        <Setter Property="Value" Value="mdi-text-box"/>
+        <Setter Property="Value" Value="mdi-text-box" />
     </Style>
 
     <Style Selector="icons|Icon.Tune">
-        <Setter Property="Value" Value="mdi-tune"/>
+        <Setter Property="Value" Value="mdi-tune" />
     </Style>
 
     <Style Selector="icons|Icon.ArrowLeft">
-        <Setter Property="Value" Value="mdi-arrow-left"/>
+        <Setter Property="Value" Value="mdi-arrow-left" />
     </Style>
 
     <Style Selector="icons|Icon.ArrowRight">
-        <Setter Property="Value" Value="mdi-arrow-right"/>
+        <Setter Property="Value" Value="mdi-arrow-right" />
     </Style>
 
     <Style Selector="icons|Icon.File">
-        <Setter Property="Value" Value="mdi-file"/>
+        <Setter Property="Value" Value="mdi-file" />
     </Style>
 
     <Style Selector="icons|Icon.FolderOutline">
-        <Setter Property="Value" Value="mdi-folder-outline"/>
+        <Setter Property="Value" Value="mdi-folder-outline" />
+    </Style>
+
+    <Style Selector="icons|Icon.Close">
+        <Setter Property="Value" Value="mdi-close" />
     </Style>
 
     <Style Selector="Svg.AddCircle">
-        <Setter Property="Path" Value="avares://NexusMods.App.UI/Assets/Icons/add_circle_24px.svg"/>
-        <Setter Property="Width" Value="24"/>
-        <Setter Property="Height" Value="24"/>
+        <Setter Property="Path" Value="avares://NexusMods.App.UI/Assets/Icons/add_circle_24px.svg" />
+        <Setter Property="Width" Value="24" />
+        <Setter Property="Height" Value="24" />
     </Style>
 </Styles>
