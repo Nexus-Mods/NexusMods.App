@@ -82,12 +82,10 @@
                             Margin="0,16,0,0"
                             Orientation="Horizontal"
                             VerticalAlignment="Center">
-                            <Button Classes="TransparentRounded" x:Name="PrimaryButton">
+                            <Button Classes="WidgetRounded" x:Name="PrimaryButton">
                                 <StackPanel Orientation="Horizontal">
-                                    <avalonia:Icon Foreground="#FFFFFF" Value="mdi-plus-circle" />
+                                    <Svg Classes="AddCircle"/>
                                     <TextBlock
-                                        Classes="Body2RobotoRegular"
-                                        Margin="6,9.5,12,9.5"
                                         Text="{x:Static resources:Language.GameWidget__Add_game}">
                                     </TextBlock>
                                 </StackPanel>
