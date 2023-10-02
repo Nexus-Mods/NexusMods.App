@@ -64,7 +64,7 @@
             </Button>
 
             <!-- X Select location -->
-            <Button Classes="Rounded" HorizontalAlignment="Right" x:Name="SelectLocationRoundedButton">
+            <Button Classes="Rounded Secondary" HorizontalAlignment="Right" x:Name="SelectLocationRoundedButton">
                 <StackPanel Orientation="Horizontal">
                     <icons:Icon Classes="Close" x:Name="SelectLocationCloseIcon" />
                     <TextBlock Text="Select location" x:Name="SelectLocationRoundedButtonTextBlock" />
