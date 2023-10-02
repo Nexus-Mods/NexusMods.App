@@ -82,7 +82,7 @@
                             Margin="0,16,0,0"
                             Orientation="Horizontal"
                             VerticalAlignment="Center">
-                            <Button Classes="Rounded" x:Name="PrimaryButton">
+                            <Button Classes="TransparentRounded" x:Name="PrimaryButton">
                                 <StackPanel Orientation="Horizontal">
                                     <avalonia:Icon Foreground="#FFFFFF" Value="mdi-plus-circle" />
                                     <TextBlock

@@ -40,6 +40,11 @@
             <Button Classes="Tertiary" HorizontalAlignment="Center">
                 <TextBlock Text="TERTIARY" />
             </Button>
+
+            <!-- Rounded Transparent -->
+            <Button Classes="Rounded" HorizontalAlignment="Center">
+                <TextBlock Text="ROUNDED" />
+            </Button>
         </StackPanel>
     </Design.PreviewWith>
 
@@ -58,8 +63,8 @@
 
     <!--  End invisible button  -->
 
-    <!--  Rounded Button  -->
-    <Style Selector="Button.Rounded">
+    <!--  TransparentRounded Button  -->
+    <Style Selector="Button.TransparentRounded">
         <Setter Property="CornerRadius" Value="45" />
         <Setter Property="Height" Value="40" />
         <Setter Property="BorderThickness" Value="1" />
@@ -67,7 +72,7 @@
         <Setter Property="Padding" Value="0" />
     </Style>
 
-    <Style Selector="Button.Rounded icons|Icon">
+    <Style Selector="Button.TransparentRounded icons|Icon">
         <Setter Property="FontSize" Value="20" />
         <Setter Property="Width" Value="22" />
         <Setter Property="Height" Value="22" />
@@ -76,16 +81,16 @@
         <Setter Property="HorizontalAlignment" Value="Left" />
     </Style>
 
-    <Style Selector="Button.Rounded TextBlock">
+    <Style Selector="Button.TransparentRounded TextBlock">
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="HorizontalAlignment" Value="Left" />
     </Style>
 
-    <Style Selector="Button.Rounded:pressed">
+    <Style Selector="Button.TransparentRounded:pressed">
         <Setter Property="RenderTransform" Value="scale(0.9)" />
     </Style>
 
-    <!--  End Rounded Button  -->
+    <!--  End TransparentRounded Button  -->
 
 
     <Style Selector="Button">
