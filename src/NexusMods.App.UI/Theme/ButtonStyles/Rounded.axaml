@@ -4,7 +4,7 @@
     <Design.PreviewWith>
         <Border Padding="20">
             <StackPanel Orientation="Vertical" Spacing="6">
-                <Button Classes="Rounded" IsEnabled="False">
+                <Button Classes="Rounded" IsEnabled="True">
                     <StackPanel Orientation="Horizontal">
                         <icons:Icon Classes="Play" />
                         <TextBlock Text="Rounded" />
@@ -15,7 +15,7 @@
                         </Button>
                     </StackPanel>
                 </Button>
-                <Button Classes="Rounded Active" IsEnabled="False">
+                <Button Classes="Rounded Active" IsEnabled="True">
                     <StackPanel Orientation="Horizontal">
                         <icons:Icon Classes="Play" />
                         <TextBlock Text="Rounded Active" />
@@ -26,7 +26,7 @@
                         </Button>
                     </StackPanel>
                 </Button>
-                <Button Classes="Rounded SemiActive" IsEnabled="False">
+                <Button Classes="Rounded SemiActive" IsEnabled="True">
                     <StackPanel Orientation="Horizontal">
                         <icons:Icon Classes="Play" />
                         <TextBlock Text="Rounded SemiActive" />
@@ -37,7 +37,7 @@
                         </Button>
                     </StackPanel>
                 </Button>
-                <Button Classes="Rounded SemiActiveAccent" IsEnabled="False">
+                <Button Classes="Rounded SemiActiveAccent" IsEnabled="True">
                     <StackPanel Orientation="Horizontal">
                         <icons:Icon Classes="Play" />
                         <TextBlock Text="Rounded SemiActiveAccent" />
@@ -48,7 +48,7 @@
                         </Button>
                     </StackPanel>
                 </Button>
-                <Button Classes="Rounded Accent" IsEnabled="False">
+                <Button Classes="Rounded Accent" IsEnabled="True">
                     <StackPanel Orientation="Horizontal">
                         <icons:Icon Classes="Play" />
                         <TextBlock Text="Rounded Accent" />
