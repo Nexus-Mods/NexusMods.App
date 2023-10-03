@@ -76,7 +76,7 @@
                     <ScrollViewer x:Name="ResultsScrollViewer">
 
                         <reactiveUi:ViewModelViewHost x:Name="PreviewSectionViewHost"/>
-                        
+
                     </ScrollViewer>
                 </Border>
 

@@ -5,6 +5,7 @@
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI"
+                                xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.AdvancedInstallerEmptyPreviewView">
     <Design.DataContext>
@@ -25,7 +26,7 @@
             </Style>
         </Border.Styles>
 
-        <TextBlock Text="Select which files to install from the mod archive on the left."
+        <TextBlock Text="{x:Static resources:Language.EmptyPreviewText_Select_files_to_install}"
                    x:Name="EmptyPreviewTextBlock" />
     </Border>
 </reactiveUi:ReactiveUserControl>

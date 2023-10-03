@@ -87,6 +87,15 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Select which files to install from the mod archive on the left..
+        /// </summary>
+        public static string EmptyPreviewText_Select_files_to_install {
+            get {
+                return ResourceManager.GetString("EmptyPreviewText_Select_files_to_install", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CANCEL.
         /// </summary>
         public static string Footer_CANCEL {

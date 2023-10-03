@@ -66,4 +66,7 @@
     <data name="SaveCreatedFolderButton_Save" xml:space="preserve">
         <value>Save</value>
     </data>
+    <data name="EmptyPreviewText_Select_files_to_install" xml:space="preserve">
+        <value>Select which files to install from the mod archive on the left.</value>
+    </data>
 </root>
