@@ -6,7 +6,7 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI"
                                 xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
-                                mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="44"
+                                mc:Ignorable="d" d:DesignWidth="1500" d:DesignHeight="44"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.AdvancedInstallerTreeEntryView">
     <Design.DataContext>
         <ui:AdvancedInstallerTreeEntryDesignViewModel />
@@ -21,6 +21,14 @@
         </Grid.Styles>
 
         <StackPanel Grid.Column="0" Orientation="Horizontal" Name="EntryLeftElementsStackPanel">
+
+            <!-- Create Folder Button -->
+            <Button Classes="Rounded" HorizontalAlignment="Right" x:Name="CreateFolderButton">
+                <StackPanel Orientation="Horizontal">
+                    <icons:Icon Classes="Plus" x:Name="CreateFolderPlusIcon" />
+                    <TextBlock Text="Create new folder" x:Name="CreateFolderButtonTextBlock" />
+                </StackPanel>
+            </Button>
 
             <!-- File / Directory Icon -->
             <icons:Icon Classes="File FileTypeIcon" x:Name="FileEntryIcon" />
