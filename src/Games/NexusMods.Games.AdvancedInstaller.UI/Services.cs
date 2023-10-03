@@ -14,7 +14,8 @@ public static class Services
             .AddView<AdvancedInstallerBodyView, IAdvancedInstallerBodyViewModel>()
             .AddView<AdvancedInstallerModContentView, IAdvancedInstallerModContentViewModel>()
             .AddView<AdvancedInstallerResultsView, IAdvancedInstallerResultsViewModel>()
-            .AddView<AdvancedInstallerOverlayView, IAdvancedInstallerOverlayViewModel>();
+            .AddView<AdvancedInstallerOverlayView, IAdvancedInstallerOverlayViewModel>()
+            .AddView<AdvancedInstallerTreeEntryView, IAdvancedInstallerTreeEntryViewModel>();
 
     }
 }
