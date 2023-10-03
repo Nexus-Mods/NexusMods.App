@@ -52,7 +52,7 @@
         <Border Grid.Row="1" x:Name="BodyContainerBorder">
             <Grid ColumnDefinitions="*, Auto, *" x:Name="CentralGrid">
 
-                <Border Classes="Rounded Padding16 ContainerBorderColor" Grid.Column="0" x:Name="ModContentBorder">
+                <Border Classes="Rounded Padding16 StructuralBorderColor" Grid.Column="0" x:Name="ModContentBorder">
                     <ScrollViewer x:Name="ModContentScrollViewer">
 
                         <reactiveUi:ViewModelViewHost x:Name="ModContentSectionViewHost"/>
