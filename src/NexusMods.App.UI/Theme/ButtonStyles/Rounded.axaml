@@ -7,7 +7,7 @@
                 <Button Classes="Rounded">
                     <StackPanel Orientation="Horizontal">
                         <icons:Icon Classes="Play" />
-                        <TextBlock Text="Button" />
+                        <TextBlock Text="Rounded" />
                         <Button Classes="Pill Standard Label">
                             <StackPanel>
                                 <TextBlock Text="LABEL" />
@@ -15,10 +15,43 @@
                         </Button>
                     </StackPanel>
                 </Button>
-                <Button Classes="Rounded Secondary">
+                <Button Classes="Rounded Active">
                     <StackPanel Orientation="Horizontal">
                         <icons:Icon Classes="Play" />
-                        <TextBlock Text="Button" />
+                        <TextBlock Text="Rounded Active" />
+                        <Button Classes="Pill Standard Label">
+                            <StackPanel>
+                                <TextBlock Text="LABEL" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Button>
+                <Button Classes="Rounded SemiActive">
+                    <StackPanel Orientation="Horizontal">
+                        <icons:Icon Classes="Play" />
+                        <TextBlock Text="Rounded SemiActive" />
+                        <Button Classes="Pill Standard Label">
+                            <StackPanel>
+                                <TextBlock Text="LABEL" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Button>
+                <Button Classes="Rounded SemiActiveAccent">
+                    <StackPanel Orientation="Horizontal">
+                        <icons:Icon Classes="Play" />
+                        <TextBlock Text="Rounded SemiActiveAccent" />
+                        <Button Classes="Pill Standard Label">
+                            <StackPanel>
+                                <TextBlock Text="LABEL" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Button>
+                <Button Classes="Rounded Accent">
+                    <StackPanel Orientation="Horizontal">
+                        <icons:Icon Classes="Play" />
+                        <TextBlock Text="Rounded Accent" />
                         <Button Classes="Pill Standard Label">
                             <StackPanel>
                                 <TextBlock Text="LABEL" />
@@ -49,8 +82,8 @@
             <Setter Property="Background" Value="{DynamicResource BrandWhiteBrush20Percent}" />
         </Style>
 
-        <!-- Rounded Button Secondary -->
-        <Style Selector="^.Secondary">
+        <!-- Rounded Button Active -->
+        <Style Selector="^.Active">
             <Setter Property="Background" Value="{DynamicResource BrandWhite}" />
 
             <Style Selector="^ > StackPanel > TextBlock">
@@ -64,7 +97,65 @@
             <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="Background" Value="{DynamicResource BrandTertiaryLighter}" />
             </Style>
+        </Style>
 
+        <!-- Rounded Button SemiActive -->
+        <Style Selector="^.SemiActive">
+            <Setter Property="BorderBrush" Value="{DynamicResource BrandWhite}" />
+            <Setter Property="BorderThickness" Value="1" />
+
+            <Style Selector="^ > StackPanel > TextBlock">
+                <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
             </Style>
+
+            <Style Selector="^ > StackPanel > icons|Icon">
+                <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+            </Style>
+
+            <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="BorderBrush" Value="{DynamicResource BrandWhite}" />
+                <Setter Property="BorderThickness" Value="1" />
+            </Style>
+        </Style>
+
+        <!-- Rounded Button SemiActiveAccent -->
+        <Style Selector="^.SemiActiveAccent">
+            <Setter Property="BorderBrush" Value="{DynamicResource BrandAccentLighter}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Background" Value="{DynamicResource BrandAccentLighterBrush20Percent}" />
+
+            <Style Selector="^ > StackPanel > TextBlock">
+                <Setter Property="Foreground" Value="{DynamicResource FontDarkPrimary}" />
+            </Style>
+
+            <Style Selector="^ > StackPanel > icons|Icon">
+                <Setter Property="Foreground" Value="{DynamicResource FontDarkPrimary}" />
+            </Style>
+
+            <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="BorderBrush" Value="{DynamicResource BrandAccentLighter}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Background" Value="{DynamicResource BrandAccentLighterBrush30Percent}" />
+            </Style>
+        </Style>
+
+        <!-- Rounded Button Accent -->
+        <Style Selector="^.Accent">
+            <Setter Property="Background" Value="{DynamicResource BrandAccentLighter}" />
+
+            <Style Selector="^ > StackPanel > TextBlock">
+                <Setter Property="Foreground" Value="{DynamicResource BackgroundPrimary}" />
+            </Style>
+
+            <Style Selector="^ > StackPanel > icons|Icon">
+                <Setter Property="Foreground" Value="{DynamicResource BackgroundPrimary}" />
+            </Style>
+
+            <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{DynamicResource BrandAccent}" />
+            </Style>
+        </Style>
+
+
     </Style>
 </Styles>

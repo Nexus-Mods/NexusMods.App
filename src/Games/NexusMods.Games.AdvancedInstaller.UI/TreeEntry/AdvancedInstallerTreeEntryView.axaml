@@ -6,7 +6,7 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI"
                                 xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
-                                mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="44"
+                                mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="44"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.AdvancedInstallerTreeEntryView">
     <Design.DataContext>
         <ui:AdvancedInstallerTreeEntryDesignViewModel />
@@ -64,7 +64,7 @@
             </Button>
 
             <!-- X Select location -->
-            <Button Classes="Rounded Secondary" HorizontalAlignment="Right" x:Name="SelectLocationRoundedButton">
+            <Button Classes="Rounded Active" HorizontalAlignment="Right" x:Name="SelectLocationRoundedButton">
                 <StackPanel Orientation="Horizontal">
                     <icons:Icon Classes="Close" x:Name="SelectLocationCloseIcon" />
                     <TextBlock Text="Select location" x:Name="SelectLocationRoundedButtonTextBlock" />
@@ -75,6 +75,30 @@
             <Button Classes="Rounded" HorizontalAlignment="Right" x:Name="XRoundedButton">
                 <StackPanel Orientation="Horizontal">
                     <icons:Icon Classes="Close" x:Name="StandaloneCloseIcon" />
+                </StackPanel>
+            </Button>
+
+            <!-- Remove from Location Button -->
+            <Button Classes="Rounded Accent" HorizontalAlignment="Right" x:Name="RemoveFromLocationButton">
+                <StackPanel Orientation="Horizontal">
+                    <icons:Icon Classes="Close" x:Name="RemoveFromLocationCloseIcon" />
+                    <TextBlock Text="temp Loc" x:Name="RemoveFromLocationButtonTextBlock" />
+                </StackPanel>
+            </Button>
+
+            <!-- Include with Folder transition Button -->
+            <Button Classes="Rounded SemiActive" HorizontalAlignment="Right" x:Name="IncludeWithFolderTransitionButton">
+                <StackPanel Orientation="Horizontal">
+                    <icons:Icon Classes="Close" x:Name="IncludeWithFolderTransitionCloseIcon" />
+                    <TextBlock Text="Include with folder" x:Name="IncludeWithFolderTransitionButtonTextBlock" />
+                </StackPanel>
+            </Button>
+
+            <!-- Included with Folder Button -->
+            <Button Classes="Rounded SemiActiveAccent" HorizontalAlignment="Right" x:Name="IncludedWithFolderButton">
+                <StackPanel Orientation="Horizontal">
+                    <icons:Icon Classes="Close" x:Name="IncludedWithFolderCloseIcon" />
+                    <TextBlock Text="Included with folder" x:Name="IncludedWithFolderButtonTextBlock" />
                 </StackPanel>
             </Button>
 

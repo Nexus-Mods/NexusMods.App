@@ -8,6 +8,10 @@
         <Color x:Key="BrandAccentLighter">#60A5FB</Color>
         <Color x:Key="BrandAccentDarker">#0555B8</Color>
 
+        <SolidColorBrush Color="{DynamicResource BrandAccentLighter}" Opacity="0.1" x:Key="BrandAccentLighterBrush10Percent" />
+        <SolidColorBrush Color="{DynamicResource BrandAccentLighter}" Opacity="0.2" x:Key="BrandAccentLighterBrush20Percent" />
+        <SolidColorBrush Color="{DynamicResource BrandAccentLighter}" Opacity="0.3" x:Key="BrandAccentLighterBrush30Percent" />
+
         <SolidColorBrush Color="{DynamicResource BrandPrimary}" x:Key="BrandPrimaryBrush" />
         <SolidColorBrush Color="{DynamicResource BrandPrimaryLighter}" x:Key="BrandPrimaryLighterBrush" />
         <SolidColorBrush Color="{DynamicResource BrandPrimaryDarker}" x:Key="BrandPrimaryDarkerBrush" />
