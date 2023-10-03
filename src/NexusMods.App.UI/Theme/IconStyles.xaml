@@ -39,6 +39,7 @@
             <icons:Icon Classes="Close"></icons:Icon>
             <icons:Icon Classes="Check"></icons:Icon>
             <icons:Icon Classes="Plus"></icons:Icon>
+            <icons:Icon Classes="DeleteOutline"></icons:Icon>
             <Svg Classes="AddCircle" />
         </WrapPanel>
     </Design.PreviewWith>
@@ -155,6 +156,10 @@
 
     <Style Selector="icons|Icon.Plus">
         <Setter Property="Value" Value="mdi-plus" />
+    </Style>
+
+    <Style Selector="icons|Icon.DeleteOutline">
+        <Setter Property="Value" Value="mdi-delete-outline" />
     </Style>
 
     <Style Selector="Svg.AddCircle">
