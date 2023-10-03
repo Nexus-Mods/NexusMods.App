@@ -38,6 +38,7 @@
             <icons:Icon Classes="File"></icons:Icon>
             <icons:Icon Classes="Close"></icons:Icon>
             <icons:Icon Classes="Check"></icons:Icon>
+            <icons:Icon Classes="Plus"></icons:Icon>
             <Svg Classes="AddCircle" />
         </WrapPanel>
     </Design.PreviewWith>
@@ -150,6 +151,10 @@
 
     <Style Selector="icons|Icon.Check">
         <Setter Property="Value" Value="mdi-check" />
+    </Style>
+
+    <Style Selector="icons|Icon.Plus">
+        <Setter Property="Value" Value="mdi-plus" />
     </Style>
 
     <Style Selector="Svg.AddCircle">
