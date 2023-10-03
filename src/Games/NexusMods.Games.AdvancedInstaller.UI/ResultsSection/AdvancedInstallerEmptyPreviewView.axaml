@@ -12,12 +12,12 @@
         <ui:AdvancedInstallerEmptyPreviewDesignViewModel />
     </Design.DataContext>
 
-    <Border BorderThickness="1" CornerRadius="8" BorderBrush="{DynamicResource BrandTertiaryDarker}">
+    <Border Classes="Rounded ContainerBorderColor OutlineTertiaryDarker">
         <Border.Styles>
             <Style Selector="TextBlock#EmptyPreviewTextBlock">
-                <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryColor}"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryColor}" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="HorizontalAlignment" Value="Center" />
                 <!-- BodyMDNormal - Can't set the class or it would override the foreground color -->
                 <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
                 <Setter Property="FontWeight" Value="400" />
