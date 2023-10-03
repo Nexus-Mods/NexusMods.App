@@ -25,6 +25,21 @@ public record Mod : Entity, IHasEntityId<ModId>
     public const string GameFilesCategory = "Game Files";
 
     /// <summary>
+    /// Category used for 'Preferences'.
+    /// </summary>
+    public const string PreferencesCategory = "Preferences";
+
+    /// <summary>
+    /// Category used for 'Save Games'.
+    /// </summary>
+    public const string SavesCategory = "Saved Games";
+
+    /// <summary>
+    /// Category used for 'Save Games'.
+    /// </summary>
+    public const string OverridesCategory = "Overrides";
+
+    /// <summary>
     /// A unique identifier for this mod within the loadout.
     /// </summary>
     public required ModId Id { get; init; }

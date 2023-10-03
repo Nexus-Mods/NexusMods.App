@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Reflection.Metadata;
+using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
@@ -260,13 +261,15 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <exception cref="NotImplementedException"></exception>
     protected virtual ValueTask<AModFile> HandleNewFile(DiskStateEntry newEntry, GamePath gamePath, AbsolutePath absolutePath)
     {
-        return ValueTask.FromResult<AModFile>(new FromArchive
+        var newFile = new FromArchive
         {
             Id = ModFileId.New(),
             Hash = newEntry.Hash,
             Size = newEntry.Size,
             To = gamePath
-        });
+        };
+        newFile.EnsurePersisted(_store);
+        return ValueTask.FromResult<AModFile>(newFile);
     }
 
 
@@ -282,19 +285,102 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <returns></returns>
     protected virtual ValueTask<AModFile> HandleChangedFile(AModFile prevFile, DiskStateEntry prevEntry, DiskStateEntry newEntry, GamePath gamePath, AbsolutePath absolutePath)
     {
-        return ValueTask.FromResult<AModFile>(new FromArchive
+        var newFile = new FromArchive
         {
             Id = ModFileId.New(),
             Hash = newEntry.Hash,
             Size = newEntry.Size,
             To = gamePath
-        });
+        };
+        newFile.EnsurePersisted(_store);
+        return ValueTask.FromResult<AModFile>(newFile);
     }
 
     /// <inheritdoc />
-    public FlattenedLoadout FileTreeToFlattenedLoadout(FileTree fileTree, FlattenedLoadout prevFlattenedLoadout)
+    public ValueTask<FlattenedLoadout> FileTreeToFlattenedLoadout(Loadout prevLoadout, FileTree fileTree, FlattenedLoadout prevFlattenedLoadout)
     {
-        throw new NotImplementedException();
+        var results = new List<KeyValuePair<GamePath, ModFilePair>>();
+        var mods = prevLoadout.Mods.Values
+            .Where(m => !string.IsNullOrWhiteSpace(m.ModCategory))
+            .GroupBy(m => m.ModCategory)
+            .ToDictionary(g => g.Key, g => g.First());
+
+        // Helper function to get a mod for a given category, or create a new one if it doesn't exist.
+        Mod ModForCategory(string name)
+        {
+            if (mods.TryGetValue(name, out var mod))
+                return mod;
+            var newMod = new Mod
+            {
+                ModCategory = name,
+                Name = name,
+                Id = ModId.New(),
+                Enabled = true,
+                Files = new EntityDictionary<ModFileId, AModFile>()
+            };
+            mods.Add(name, newMod);
+            return newMod;
+        }
+
+
+        // Find all the files, and try to find a match in the previous state
+        foreach (var (path, file) in fileTree.GetAllDescendentFiles())
+        {
+            if (prevFlattenedLoadout.TryGetValue(path, out var prevPair))
+            {
+                if (prevPair.Value!.File.DataStoreId.Equals(file!.DataStoreId))
+                {
+                    // File hasn't changed, so we can use the previous entry
+                    results.Add(KeyValuePair.Create(path, prevPair.Value!));
+                    continue;
+                }
+                else
+                {
+                    // Use the previous mod, but the new file
+                    results.Add(KeyValuePair.Create(path, new ModFilePair
+                    {
+                        Mod = prevPair.Value!.Mod,
+                        File = file!
+                    }));
+                    continue;
+                }
+            }
+
+            // Assign the new files to a mod
+            var mod = GetModForNewFile(prevLoadout, path, file!, ModForCategory);
+            results.Add(KeyValuePair.Create(path, new ModFilePair
+            {
+                Mod = mod,
+                File = file!
+            }));
+        }
+
+        return ValueTask.FromResult(FlattenedLoadout.Create(results));
+    }
+
+    /// <summary>
+    /// If a file is new, this method will be called to get the mod for the new file. The modForCategory function
+    /// can be called to get a mod for a given category, or create a new one if it doesn't exist.
+    /// </summary>
+    /// <param name="prevLoadout"></param>
+    /// <param name="path"></param>
+    /// <param name="file"></param>
+    /// <param name="modsByCategory"></param>
+    /// <returns></returns>
+    protected virtual Mod GetModForNewFile(Loadout prevLoadout, GamePath path, AModFile file, Func<string, Mod> modForCategory)
+    {
+        if (path.LocationId == LocationId.Preferences)
+        {
+            return modForCategory(Mod.PreferencesCategory);
+        }
+        else if (path.LocationId == LocationId.Saves)
+        {
+            return modForCategory(Mod.SavesCategory);
+        }
+        else
+        {
+            return modForCategory(Mod.OverridesCategory);
+        }
     }
 
     /// <inheritdoc />
