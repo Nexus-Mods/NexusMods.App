@@ -61,7 +61,7 @@
         </Compile>
 
         <Compile Update="ResultsSection\AdvancedInstallerEmptyPreviewViewModel.cs">
-          <DependentUpon>IAdvancedInstallerPreviewViewModel.cs</DependentUpon>
+          <DependentUpon>IAdvancedInstallerEmptyPreviewViewModel.cs</DependentUpon>
         </Compile>
 
         <Compile Update="TreeEntry\AdvancedInstallerTreeEntryViewModel.cs">

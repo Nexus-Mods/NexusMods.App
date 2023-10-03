@@ -2,7 +2,5 @@
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
 
-public class AdvancedInstallerEmptyPreviewViewModel : AViewModel<IAdvancedInstallerPreviewViewModel>, IAdvancedInstallerPreviewViewModel
-{
-
-}
+public class AdvancedInstallerEmptyPreviewViewModel : AViewModel<IAdvancedInstallerEmptyPreviewViewModel>,
+    IAdvancedInstallerEmptyPreviewViewModel { }

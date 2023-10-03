@@ -6,5 +6,7 @@
                                 xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.AdvancedInstallerPreviewView">
+    
+
 </reactiveUi:ReactiveUserControl>
 
