@@ -87,6 +87,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
     public virtual async Task InitializeAsync()
     {
+        ((StubbedGame)Game).ResetGameFolders();
         BaseList = LoadoutRegistry.GetMarker((await Install.Game.Synchronizer.Manage(Install)).LoadoutId);
     }
 

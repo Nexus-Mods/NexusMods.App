@@ -217,7 +217,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
     }
 
     [Fact]
-    public async Task CanIngestFileTree()
+    public async Task CanIngestDiskState()
     {
         // Apply the old state
         await _synchronizer.Apply(BaseList.Value);
@@ -263,4 +263,58 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
         diskState[newFile].Value!.Hash.Should().Be(new byte[] { 0x04, 0x05, 0x06 }.XxHash64(), "the file should have been created");
 
     }
+
+    [Fact]
+    public async Task CanIngestFileTree()
+    {
+                // Apply the old state
+        await _synchronizer.Apply(BaseList.Value);
+
+        // Setup some paths
+        var modifiedFile = new GamePath(LocationId.Game, "meshes/b.nif");
+        var newFile = new GamePath(LocationId.Saves, "saves/newSave.dat");
+        var deletedFile = new GamePath(LocationId.Game, "/perMod/9.dat");
+
+        // Modify the files on disk
+        Install.LocationsRegister.GetResolvedPath(deletedFile).Delete();
+        await Install.LocationsRegister.GetResolvedPath(modifiedFile).WriteAllBytesAsync(new byte[] { 0x01, 0x02, 0x03 });
+        await Install.LocationsRegister.GetResolvedPath(newFile).WriteAllBytesAsync(new byte[] { 0x04, 0x05, 0x06 });
+
+        var diskState = await _synchronizer.GetDiskState(Install);
+
+        // Reconstruct the previous file tree
+        var prevFlattenedLoadout = await _synchronizer.LoadoutToFlattenedLoadout(BaseList.Value);
+        var prevFileTree = await _synchronizer.FlattenedLoadoutToFileTree(prevFlattenedLoadout, BaseList.Value);
+
+        var fileTree = _synchronizer.DiskToFileTree(diskState, prevFileTree);
+
+        fileTree.GetAllDescendentFiles()
+            .Select(f => f.Path.ToString())
+            .Should()
+            .BeEquivalentTo(new[]
+                {
+                    // modifiedFile: b.nif is modified, so it should be included
+                    "{Game}/meshes/b.nif",
+                    "{Game}/perMod/0.dat",
+                    "{Game}/perMod/1.dat",
+                    "{Game}/perMod/2.dat",
+                    "{Game}/perMod/3.dat",
+                    "{Game}/perMod/4.dat",
+                    "{Game}/perMod/5.dat",
+                    "{Game}/perMod/6.dat",
+                    "{Game}/perMod/7.dat",
+                    "{Game}/perMod/8.dat",
+                    // deletedFile: 9.dat is deleted
+                    "{Game}/textures/a.dds",
+                    "{Preferences}/preferences/prefs.dat",
+                    // newFile: newSave.dat is created
+                    "{Saves}/saves/newSave.dat",
+                    "{Saves}/saves/save.dat"
+                },
+                "files have all been written to disk");
+
+        diskState[modifiedFile].Value!.Hash.Should().Be(new byte[] { 0x01, 0x02, 0x03 }.XxHash64(), "the file should have been modified");
+        diskState[newFile].Value!.Hash.Should().Be(new byte[] { 0x04, 0x05, 0x06 }.XxHash64(), "the file should have been created");
+    }
+
 }

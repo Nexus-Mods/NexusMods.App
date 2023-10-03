@@ -47,6 +47,29 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
 
     public override GamePath GetPrimaryFile(GameStore store) => new(LocationId.Game, "");
 
+    public void ResetGameFolders()
+    {
+        // Delete all the folders
+        foreach (var installation in Installations)
+        {
+            foreach (var (_, path) in installation.LocationsRegister.GetTopLevelLocations())
+            {
+                path.DeleteDirectory(true);
+            }
+        }
+
+        // Re-create the folders/files
+        foreach (var locator in _locators)
+        {
+            foreach (var result in locator.Find(this))
+            {
+                EnsureFiles(result.Path, LocationId.Game);
+                EnsurePath(result.Path, LocationId.Preferences);
+                EnsurePath(result.Path, LocationId.Saves);
+            }
+        }
+    }
+
     public override IEnumerable<GameInstallation> Installations
     {
         get
