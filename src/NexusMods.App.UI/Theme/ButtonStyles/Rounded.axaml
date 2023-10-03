@@ -4,7 +4,7 @@
     <Design.PreviewWith>
         <Border Padding="20">
             <StackPanel Orientation="Vertical" Spacing="6">
-                <Button Classes="Rounded">
+                <Button Classes="Rounded" IsEnabled="False">
                     <StackPanel Orientation="Horizontal">
                         <icons:Icon Classes="Play" />
                         <TextBlock Text="Rounded" />
@@ -15,7 +15,7 @@
                         </Button>
                     </StackPanel>
                 </Button>
-                <Button Classes="Rounded Active">
+                <Button Classes="Rounded Active" IsEnabled="False">
                     <StackPanel Orientation="Horizontal">
                         <icons:Icon Classes="Play" />
                         <TextBlock Text="Rounded Active" />
@@ -26,7 +26,7 @@
                         </Button>
                     </StackPanel>
                 </Button>
-                <Button Classes="Rounded SemiActive">
+                <Button Classes="Rounded SemiActive" IsEnabled="False">
                     <StackPanel Orientation="Horizontal">
                         <icons:Icon Classes="Play" />
                         <TextBlock Text="Rounded SemiActive" />
@@ -37,7 +37,7 @@
                         </Button>
                     </StackPanel>
                 </Button>
-                <Button Classes="Rounded SemiActiveAccent">
+                <Button Classes="Rounded SemiActiveAccent" IsEnabled="False">
                     <StackPanel Orientation="Horizontal">
                         <icons:Icon Classes="Play" />
                         <TextBlock Text="Rounded SemiActiveAccent" />
@@ -48,7 +48,7 @@
                         </Button>
                     </StackPanel>
                 </Button>
-                <Button Classes="Rounded Accent">
+                <Button Classes="Rounded Accent" IsEnabled="False">
                     <StackPanel Orientation="Horizontal">
                         <icons:Icon Classes="Play" />
                         <TextBlock Text="Rounded Accent" />
@@ -81,6 +81,10 @@
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{DynamicResource BrandWhiteBrush20Percent}" />
         </Style>
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource BrandWhiteBrush10Percent}" />
+            <Setter Property="Opacity" Value="0.4" />
+        </Style>
 
         <!-- Rounded Button Active -->
         <Style Selector="^.Active">
@@ -96,6 +100,10 @@
 
             <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="Background" Value="{DynamicResource BrandTertiaryLighter}" />
+            </Style>
+
+            <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{DynamicResource BrandWhite}" />
             </Style>
         </Style>
 
@@ -113,6 +121,11 @@
             </Style>
 
             <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="BorderBrush" Value="{DynamicResource BrandWhite}" />
+                <Setter Property="BorderThickness" Value="1" />
+            </Style>
+
+            <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="BorderBrush" Value="{DynamicResource BrandWhite}" />
                 <Setter Property="BorderThickness" Value="1" />
             </Style>
@@ -137,6 +150,12 @@
                 <Setter Property="BorderThickness" Value="1" />
                 <Setter Property="Background" Value="{DynamicResource BrandAccentLighterBrush30Percent}" />
             </Style>
+
+            <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="BorderBrush" Value="{DynamicResource BrandAccentLighter}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Background" Value="{DynamicResource BrandAccentLighterBrush20Percent}" />
+            </Style>
         </Style>
 
         <!-- Rounded Button Accent -->
@@ -153,6 +172,10 @@
 
             <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="Background" Value="{DynamicResource BrandAccent}" />
+            </Style>
+
+            <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{DynamicResource BrandAccentLighter}" />
             </Style>
         </Style>
 
