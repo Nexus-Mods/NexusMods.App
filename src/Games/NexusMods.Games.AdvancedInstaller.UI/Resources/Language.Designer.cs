@@ -60,6 +60,33 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string CancelCreateFolderButton_Cancel {
+            get {
+                return ResourceManager.GetString("CancelCreateFolderButton_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create new folder.
+        /// </summary>
+        public static string CreateFolderButton_Create_new_folder {
+            get {
+                return ResourceManager.GetString("CreateFolderButton_Create_new_folder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        public static string DeleteCreatedFolderButton_Delete {
+            get {
+                return ResourceManager.GetString("DeleteCreatedFolderButton_Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CANCEL.
         /// </summary>
         public static string Footer_CANCEL {
@@ -105,11 +132,65 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to NEW.
+        /// </summary>
+        public static string NewFilePill_NEW {
+            get {
+                return ResourceManager.GetString("NewFilePill_NEW", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Advanced installer.
         /// </summary>
         public static string OverlayHeaderText_Advanced_Installer {
             get {
                 return ResourceManager.GetString("OverlayHeaderText_Advanced_Installer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DUPE FOLDER.
+        /// </summary>
+        public static string Pill_DUPE_FOLDER {
+            get {
+                return ResourceManager.GetString("Pill_DUPE_FOLDER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to FOLDER MERGED.
+        /// </summary>
+        public static string Pill_FOLDER_MERGED {
+            get {
+                return ResourceManager.GetString("Pill_FOLDER_MERGED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save.
+        /// </summary>
+        public static string SaveCreatedFolderButton_Save {
+            get {
+                return ResourceManager.GetString("SaveCreatedFolderButton_Save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select.
+        /// </summary>
+        public static string SelectButton_Select {
+            get {
+                return ResourceManager.GetString("SelectButton_Select", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select location.
+        /// </summary>
+        public static string SelectLocationButton_Select_location {
+            get {
+                return ResourceManager.GetString("SelectLocationButton_Select_location", resourceCulture);
             }
         }
         

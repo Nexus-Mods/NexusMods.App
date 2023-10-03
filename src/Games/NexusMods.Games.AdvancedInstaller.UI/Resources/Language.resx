@@ -39,4 +39,31 @@
     <data name="ModContentSubHeading_Files_with_no" xml:space="preserve">
         <value>Files with no location selected will not be installed.</value>
     </data>
+    <data name="CreateFolderButton_Create_new_folder" xml:space="preserve">
+        <value>Create new folder</value>
+    </data>
+    <data name="NewFilePill_NEW" xml:space="preserve">
+        <value>NEW</value>
+    </data>
+    <data name="Pill_DUPE_FOLDER" xml:space="preserve">
+        <value>DUPE FOLDER</value>
+    </data>
+    <data name="Pill_FOLDER_MERGED" xml:space="preserve">
+        <value>FOLDER MERGED</value>
+    </data>
+    <data name="SelectLocationButton_Select_location" xml:space="preserve">
+        <value>Select location</value>
+    </data>
+    <data name="SelectButton_Select" xml:space="preserve">
+        <value>Select</value>
+    </data>
+    <data name="DeleteCreatedFolderButton_Delete" xml:space="preserve">
+        <value>Delete</value>
+    </data>
+    <data name="CancelCreateFolderButton_Cancel" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="SaveCreatedFolderButton_Save" xml:space="preserve">
+        <value>Save</value>
+    </data>
 </root>

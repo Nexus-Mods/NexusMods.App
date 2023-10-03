@@ -6,6 +6,7 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI"
                                 xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+                                xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
                                 mc:Ignorable="d" d:DesignWidth="492" d:DesignHeight="44"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.AdvancedInstallerTreeEntryView">
     <Design.DataContext>
@@ -21,21 +22,23 @@
             </Style>
 
             <Style Selector="Button.RightElements">
-                <Setter Property="Margin" Value="0,0,8,0"/>
+                <Setter Property="Margin" Value="0,0,8,0" />
             </Style>
 
             <Style Selector="TextBlock#FileNameTextBlock">
-                <Setter Property="Margin" Value="0,4,8,0"/>
+                <Setter Property="Margin" Value="0,4,8,0" />
             </Style>
         </Grid.Styles>
 
-        <StackPanel Grid.Column="0" Classes="ElementsStackPanel" Orientation="Horizontal" Name="EntryLeftElementsStackPanel">
+        <StackPanel Grid.Column="0" Classes="ElementsStackPanel" Orientation="Horizontal"
+                    Name="EntryLeftElementsStackPanel">
 
             <!-- Create Folder Button -->
             <Button Classes="Rounded" HorizontalAlignment="Right" IsVisible="False" x:Name="CreateFolderButton">
                 <StackPanel Orientation="Horizontal">
                     <icons:Icon Classes="Plus" x:Name="CreateFolderPlusIcon" />
-                    <TextBlock Text="Create new folder" x:Name="CreateFolderButtonTextBlock" />
+                    <TextBlock Text="{x:Static resources:Language.CreateFolderButton_Create_new_folder}"
+                               x:Name="CreateFolderButtonTextBlock" />
                 </StackPanel>
             </Button>
 
@@ -50,7 +53,7 @@
             <!-- NEW Pill Label -->
             <Button Classes="Pill Accent Label" IsVisible="True" x:Name="NewPill">
                 <StackPanel>
-                    <TextBlock Text="NEW" />
+                    <TextBlock Text="{x:Static resources:Language.NewFilePill_NEW}" />
                 </StackPanel>
             </Button>
 
@@ -58,7 +61,7 @@
             <Button Classes="Pill Light Label" IsVisible="False" x:Name="DupeFolderPill">
                 <StackPanel>
                     <icons:Icon Classes="Alert" />
-                    <TextBlock Text="DUPE FOLDER" />
+                    <TextBlock Text="{x:Static resources:Language.Pill_DUPE_FOLDER}" />
                 </StackPanel>
             </Button>
 
@@ -66,7 +69,7 @@
             <Button Classes="Pill Light Label" IsVisible="False" x:Name="FolderMergedPill">
                 <StackPanel>
                     <icons:Icon Classes="Check" />
-                    <TextBlock Text="FOLDER MERGED" />
+                    <TextBlock Text="{x:Static resources:Language.Pill_FOLDER_MERGED}" />
                 </StackPanel>
             </Button>
         </StackPanel>
@@ -74,29 +77,34 @@
         <StackPanel Grid.Column="1" Orientation="Horizontal" x:Name="EntryRightElementsStackPanel">
 
             <!-- Install Button (Install / Install all / Install folder) -->
-            <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="True" x:Name="InstallRoundedButton">
+            <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="True"
+                    x:Name="InstallRoundedButton">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Install temp text" x:Name="InstallRoundedButtonTextBlock" />
                 </StackPanel>
             </Button>
 
             <!-- X Select location -->
-            <Button Classes="Rounded Active RightElements" HorizontalAlignment="Right" IsVisible="False" x:Name="SelectLocationRoundedButton">
+            <Button Classes="Rounded Active RightElements" HorizontalAlignment="Right" IsVisible="False"
+                    x:Name="SelectLocationRoundedButton">
                 <StackPanel Orientation="Horizontal">
                     <icons:Icon Classes="Close" x:Name="SelectLocationCloseIcon" />
-                    <TextBlock Text="Select location" x:Name="SelectLocationRoundedButtonTextBlock" />
+                    <TextBlock Text="{x:Static resources:Language.SelectLocationButton_Select_location}"
+                               x:Name="SelectLocationRoundedButtonTextBlock" />
                 </StackPanel>
             </Button>
 
             <!-- X Button -->
-            <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False" x:Name="XRoundedButton">
+            <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False"
+                    x:Name="XRoundedButton">
                 <StackPanel Orientation="Horizontal">
                     <icons:Icon Classes="Close" x:Name="StandaloneCloseIcon" />
                 </StackPanel>
             </Button>
 
             <!-- Remove from Location Button -->
-            <Button Classes="Rounded Accent RightElements" HorizontalAlignment="Right" IsVisible="False" x:Name="RemoveFromLocationButton">
+            <Button Classes="Rounded Accent RightElements" HorizontalAlignment="Right" IsVisible="False"
+                    x:Name="RemoveFromLocationButton">
                 <StackPanel Orientation="Horizontal">
                     <icons:Icon Classes="Close" x:Name="RemoveFromLocationCloseIcon" />
                     <TextBlock Text="temp Loc" x:Name="RemoveFromLocationButtonTextBlock" />
@@ -104,7 +112,8 @@
             </Button>
 
             <!-- Include Transition Button (Include / Include folder / Include with folder) -->
-            <Button Classes="Rounded SemiActive RightElements" HorizontalAlignment="Right" IsVisible="False" x:Name="IncludeTransitionButton">
+            <Button Classes="Rounded SemiActive RightElements" HorizontalAlignment="Right" IsVisible="False"
+                    x:Name="IncludeTransitionButton">
                 <StackPanel Orientation="Horizontal">
                     <icons:Icon Classes="Close" x:Name="IncludeTransitionCloseIcon" />
                     <TextBlock Text="Include temp text" x:Name="IncludeTransitionButtonTextBlock" />
@@ -112,7 +121,8 @@
             </Button>
 
             <!-- Included Remove Button (Included / Included folder / Included with folder) -->
-            <Button Classes="Rounded SemiActiveAccent RightElements" HorizontalAlignment="Right" IsVisible="False" x:Name="IncludedRemoveButton">
+            <Button Classes="Rounded SemiActiveAccent RightElements" HorizontalAlignment="Right" IsVisible="False"
+                    x:Name="IncludedRemoveButton">
                 <StackPanel Orientation="Horizontal">
                     <icons:Icon Classes="Close" x:Name="IncludedRemoveButtonCloseIcon" />
                     <TextBlock Text="Included temp text" x:Name="IncludedRemoveButtonTextBlock" />
@@ -120,31 +130,39 @@
             </Button>
 
             <!-- Select Button -->
-            <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False" x:Name="SelectRoundedButton">
+            <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False"
+                    x:Name="SelectRoundedButton">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Select" x:Name="SelectButtonTextBlock" />
+                    <TextBlock Text="{x:Static resources:Language.SelectButton_Select}"
+                               x:Name="SelectButtonTextBlock" />
                 </StackPanel>
             </Button>
 
             <!-- Delete Created Folder Button -->
-            <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False" x:Name="DeleteCreatedFolderButton">
+            <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False"
+                    x:Name="DeleteCreatedFolderButton">
                 <StackPanel Orientation="Horizontal">
                     <icons:Icon Classes="DeleteOutline" x:Name="DeleteCreatedFolderDeleteIcon" />
-                    <TextBlock Text="Delete" x:Name="DeleteCreatedFolderButtonTextBlock" />
+                    <TextBlock Text="{x:Static resources:Language.DeleteCreatedFolderButton_Delete}"
+                               x:Name="DeleteCreatedFolderButtonTextBlock" />
                 </StackPanel>
             </Button>
 
             <!-- Cancel Create Folder Button -->
-            <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False" x:Name="CancelCreateFolderButton">
+            <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False"
+                    x:Name="CancelCreateFolderButton">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Cancel" x:Name="CancelCreateFolderButtonTextBlock" />
+                    <TextBlock Text="{x:Static resources:Language.CancelCreateFolderButton_Cancel}"
+                               x:Name="CancelCreateFolderButtonTextBlock" />
                 </StackPanel>
             </Button>
 
             <!-- Save Created Folder Button -->
-            <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False" x:Name="SaveCreatedFolderButton">
+            <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False"
+                    x:Name="SaveCreatedFolderButton">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Save" x:Name="SaveCreatedFolderButtonTextBlock" />
+                    <TextBlock Text="{x:Static resources:Language.SaveCreatedFolderButton_Save}"
+                               x:Name="SaveCreatedFolderButtonTextBlock" />
                 </StackPanel>
             </Button>
 
