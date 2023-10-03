@@ -19,5 +19,57 @@
             <Generator>PublicResXFileCodeGenerator</Generator>
             <LastGenOutput>Language.Designer.cs</LastGenOutput>
         </EmbeddedResource>
+
+        <Compile Update="Body\AdvancedInstallerBodyViewModel.cs">
+          <DependentUpon>IAdvancedInstallerBodyViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Body\AdvancedInstallerBodyDesignViewModel.cs">
+          <DependentUpon>IAdvancedInstallerBodyViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Footer\AdvancedInstallerFooterViewModel.cs">
+          <DependentUpon>IAdvancedInstallerFooterViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Footer\AdvancedInstallerFooterDesignViewModel.cs">
+          <DependentUpon>IAdvancedInstallerFooterViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="ModContentSection\AdvancedInstallerModContentViewModel.cs">
+          <DependentUpon>IAdvancedInstallerModContentViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="ModContentSection\AdvancedInstallerModContentDesignViewModel.cs">
+          <DependentUpon>IAdvancedInstallerModContentViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Overlay\AdvancedInstallerOverlayViewModel.cs">
+          <DependentUpon>IAdvancedInstallerOverlayViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Overlay\AdvancedInstallerOverlayDesignViewModel.cs">
+          <DependentUpon>IAdvancedInstallerOverlayViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="ResultsSection\AdvancedInstallerPreviewViewModel.cs">
+          <DependentUpon>IAdvancedInstallerPreviewViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="ResultsSection\AdvancedInstallerPreviewDesignViewModel.cs">
+          <DependentUpon>IAdvancedInstallerPreviewViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="ResultsSection\AdvancedInstallerEmptyPreviewViewModel.cs">
+          <DependentUpon>IAdvancedInstallerEmptyPreviewViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="TreeEntry\AdvancedInstallerTreeEntryViewModel.cs">
+          <DependentUpon>IAdvancedInstallerTreeEntryViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="TreeEntry\AdvancedInstallerTreeEntryDesignViewModel.cs">
+          <DependentUpon>IAdvancedInstallerTreeEntryViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 </Project>

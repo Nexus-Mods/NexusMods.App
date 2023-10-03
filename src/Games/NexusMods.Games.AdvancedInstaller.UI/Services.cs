@@ -13,7 +13,7 @@ public static class Services
             .AddView<AdvancedInstallerFooterView, IAdvancedInstallerFooterViewModel>()
             .AddView<AdvancedInstallerBodyView, IAdvancedInstallerBodyViewModel>()
             .AddView<AdvancedInstallerModContentView, IAdvancedInstallerModContentViewModel>()
-            .AddView<AdvancedInstallerResultsView, IAdvancedInstallerResultsViewModel>()
+            .AddView<AdvancedInstallerPreviewView, IAdvancedInstallerPreviewViewModel>()
             .AddView<AdvancedInstallerOverlayView, IAdvancedInstallerOverlayViewModel>()
             .AddView<AdvancedInstallerTreeEntryView, IAdvancedInstallerTreeEntryViewModel>();
 

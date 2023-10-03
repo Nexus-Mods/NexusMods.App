@@ -5,9 +5,9 @@ using Avalonia.ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
 
-public partial class AdvancedInstallerResultsView : ReactiveUserControl<IAdvancedInstallerResultsViewModel>
+public partial class AdvancedInstallerPreviewView : ReactiveUserControl<IAdvancedInstallerPreviewViewModel>
 {
-    public AdvancedInstallerResultsView()
+    public AdvancedInstallerPreviewView()
     {
         InitializeComponent();
     }
