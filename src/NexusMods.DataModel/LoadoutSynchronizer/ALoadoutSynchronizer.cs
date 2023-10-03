@@ -384,9 +384,61 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public Loadout FlattenedLoadoutToLoadout(FlattenedLoadout flattenedLoadout, Loadout prevLoadout)
+    public ValueTask<Loadout> FlattenedLoadoutToLoadout(FlattenedLoadout flattenedLoadout, Loadout prevLoadout, FlattenedLoadout prevFlattenedLoadout)
     {
-        throw new NotImplementedException();
+        return ValueTask.FromResult(prevLoadout.Transform(new FlattenedToLoadoutTransformer(flattenedLoadout, prevLoadout, prevFlattenedLoadout)));
+    }
+
+    private class FlattenedToLoadoutTransformer : ALoadoutVisitor
+    {
+        private readonly Dictionary<(ModId, ModFileId),AModFile> _toReplace;
+        private readonly Dictionary<ModId, AModFile> _toAdd;
+        private readonly HashSet<GamePath> _toDelete;
+        private readonly Dictionary<ModId, ModFileId> _toRemove;
+        private readonly HashSet<ModId> _allNewMods;
+
+
+        public FlattenedToLoadoutTransformer(FlattenedLoadout flattenedLoadout, Loadout prevLoadout, FlattenedLoadout prevFlattenedLoadout)
+        {
+            // We're about to iterate over the entire loadout, so pre-calculate some data to make this proces faster
+            _toReplace = new Dictionary<(ModId, ModFileId), AModFile>();
+            _toAdd = new Dictionary<ModId, AModFile>();
+            _toDelete = new HashSet<GamePath>();
+            _toRemove = new Dictionary<ModId, ModFileId>();
+
+            _allNewMods = new HashSet<ModId>();
+
+            foreach (var (path, newPair) in flattenedLoadout.GetAllDescendentFiles())
+            {
+                _allNewMods.Add(newPair!.Mod.Id);
+
+                if (prevFlattenedLoadout.TryGetValue(path, out var prevFile))
+                {
+                    if (prevFile.Value!.File.Id == newPair!.File.Id)
+                    {
+                        // No change, so do nothing
+                        continue;
+                    }
+
+                    // Are we replacing or moving the file?
+                    if (prevFile.Value!.Mod.Id.Equals(newPair.Mod.Id))
+                    {
+                        // Replacing the file
+                        _toReplace.Add((prevFile.Value!.Mod.Id, prevFile.Value.File.Id), newPair.File);
+                        continue;
+                    }
+
+                    // Moving the file to a new mod
+                    _toRemove.Add(prevFile.Value!.Mod.Id, prevFile.Value.File.Id);
+                    _toAdd.Add(newPair.Mod.Id, newPair.File);
+                }
+                else
+                {
+                    // New file
+                    _toAdd.Add(newPair.Mod.Id, newPair.File);
+                }
+            }
+        }
     }
 
     /// <inheritdoc />

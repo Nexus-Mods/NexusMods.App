@@ -122,4 +122,21 @@ public record Loadout : Entity, IEmptyWithDataStore<Loadout>
             })
         };
     }
+
+    /// <summary>
+    /// Transforms this loadout using the given visitor.
+    /// </summary>
+    /// <param name="visitor"></param>
+    /// <returns></returns>
+    public Loadout Transform(ALoadoutVisitor visitor)
+    {
+        // Callback hell? Never heard of it!
+        return visitor.Alter(this with
+        {
+            Mods = Mods.Keep(mod =>
+            {
+                return visitor.Alter(mod with { Files = mod.Files.Keep(modFile => visitor.Alter(mod, modFile)) });
+            })
+        });
+    }
 }

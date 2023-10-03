@@ -514,14 +514,14 @@ public class LoadoutSynchronizer
                     });
         }
 
-        public override AModFile? Alter(AModFile file)
+        public override AModFile? Alter(Mod mod, AModFile file)
         {
             if (file is IToFile to)
             {
                 if (_removeFiles.Contains(to.To)) return null;
             }
 
-            return base.Alter(file);
+            return base.Alter(mod, file);
         }
 
         public override Mod? Alter(Mod mod)

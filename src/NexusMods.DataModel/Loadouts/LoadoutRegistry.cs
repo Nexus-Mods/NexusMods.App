@@ -178,18 +178,7 @@ public class LoadoutRegistry : IDisposable
     /// <param name="visitor"></param>
     public Loadout Alter(LoadoutId id, string commitMessage, ALoadoutVisitor visitor)
     {
-        // Callback hell? Never heard of it!
-        return Alter(id, commitMessage, loadout =>
-        {
-            return visitor.Alter(loadout with
-            {
-                Mods = loadout.Mods.Keep(mod =>
-                {
-                    return visitor.Alter(mod with { Files = mod.Files.Keep(visitor.Alter) });
-                })
-            });
-        });
-
+        return Alter(id, commitMessage, loadout => loadout.Transform(visitor));
     }
 
     /// <summary>

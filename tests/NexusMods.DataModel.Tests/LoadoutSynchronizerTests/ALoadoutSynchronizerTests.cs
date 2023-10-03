@@ -386,7 +386,76 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
         newMod.Name.Should().Be("Saved Games", "the mod should be named after the file");
 
         flattenedLoadout[deletedFile].Should().BeNull("the file should have been deleted");
+    }
 
+
+    [Fact]
+    public async Task CanIngestLoadout()
+    {
+        // Apply the old state
+        await _synchronizer.Apply(BaseList.Value);
+
+        // Setup some paths
+        var modifiedFile = new GamePath(LocationId.Game, "meshes/b.nif");
+        var newFile = new GamePath(LocationId.Saves, "saves/newSave.dat");
+        var deletedFile = new GamePath(LocationId.Game, "/perMod/9.dat");
+
+        // Modify the files on disk
+        Install.LocationsRegister.GetResolvedPath(deletedFile).Delete();
+        await Install.LocationsRegister.GetResolvedPath(modifiedFile).WriteAllBytesAsync(new byte[] { 0x01, 0x02, 0x03 });
+        await Install.LocationsRegister.GetResolvedPath(newFile).WriteAllBytesAsync(new byte[] { 0x04, 0x05, 0x06 });
+
+        var diskState = await _synchronizer.GetDiskState(Install);
+
+        // Reconstruct the previous file tree
+        var prevFlattenedLoadout = await _synchronizer.LoadoutToFlattenedLoadout(BaseList.Value);
+        var prevFileTree = await _synchronizer.FlattenedLoadoutToFileTree(prevFlattenedLoadout, BaseList.Value);
+        var prevDiskState = DiskStateRegistry.GetState(BaseList.Id)!;
+
+        var fileTree = await _synchronizer.DiskToFileTree(diskState, BaseList.Value, prevFileTree, prevDiskState);
+        var flattenedLoadout = await _synchronizer.FileTreeToFlattenedLoadout(BaseList.Value, fileTree, prevFlattenedLoadout);
+        var loadout = await _synchronizer.FlattenedLoadoutToLoadout(flattenedLoadout, BaseList.Value, prevFlattenedLoadout);
+
+        var flattenedAgain = await _synchronizer.LoadoutToFlattenedLoadout(loadout);
+
+        flattenedAgain.GetAllDescendentFiles()
+            .Select(f => f.Path.ToString())
+            .Should()
+            .BeEquivalentTo(new[]
+                {
+                    // modifiedFile: b.nif is modified, so it should be included
+                    "{Game}/meshes/b.nif",
+                    "{Game}/perMod/0.dat",
+                    "{Game}/perMod/1.dat",
+                    "{Game}/perMod/2.dat",
+                    "{Game}/perMod/3.dat",
+                    "{Game}/perMod/4.dat",
+                    "{Game}/perMod/5.dat",
+                    "{Game}/perMod/6.dat",
+                    "{Game}/perMod/7.dat",
+                    "{Game}/perMod/8.dat",
+                    // deletedFile: 9.dat is deleted
+                    "{Game}/textures/a.dds",
+                    "{Preferences}/preferences/prefs.dat",
+                    // newFile: newSave.dat is created
+                    "{Saves}/saves/newSave.dat",
+                    "{Saves}/saves/save.dat"
+                },
+                "files have all been written to disk");
+
+        var flattenedModifiedPair = flattenedAgain[modifiedFile].Value!;
+        var flattenedModifiedFile = (FromArchive)flattenedModifiedPair.File;
+        flattenedModifiedFile.Hash.Should().Be(new byte[] { 0x01, 0x02, 0x03 }.XxHash64(), "the file should have been modified");
+        flattenedModifiedPair.Mod.Should().Be(prevFlattenedLoadout[modifiedFile].Value!.Mod, "the mod should be the same");
+
+        var flattenedNewPair = flattenedAgain[newFile].Value!;
+        var flattenedNewFile = (FromArchive) flattenedNewPair.File;
+        flattenedNewFile.Hash.Should().Be(new byte[] { 0x04, 0x05, 0x06 }.XxHash64(), "the file should have been created");
+        var newMod = flattenedNewPair.Mod;
+        newMod.ModCategory.Should().Be(Mod.SavesCategory, "the mod should be in the overrides category");
+        newMod.Name.Should().Be("Saved Games", "the mod should be named after the file");
+
+        flattenedAgain[deletedFile].Should().BeNull("the file should have been deleted");
     }
 
 }

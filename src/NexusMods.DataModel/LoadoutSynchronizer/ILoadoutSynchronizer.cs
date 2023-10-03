@@ -66,8 +66,9 @@ public interface ILoadoutSynchronizer
     /// </summary>
     /// <param name="flattenedLoadout"></param>
     /// <param name="prevLoadout"></param>
+    /// <param name="prevFlattenedLoadout"></param>
     /// <returns></returns>
-    Loadout FlattenedLoadoutToLoadout(FlattenedLoadout flattenedLoadout, Loadout prevLoadout);
+    ValueTask<Loadout> FlattenedLoadoutToLoadout(FlattenedLoadout flattenedLoadout, Loadout prevLoadout, FlattenedLoadout prevFlattenedLoadout);
 
     #endregion
 
