@@ -36,6 +36,13 @@ public interface ILoadoutSynchronizer
     #region Ingest Methods
 
     /// <summary>
+    /// Indexes the game folders and creates a disk state.
+    /// </summary>
+    /// <param name="installation"></param>
+    /// <returns></returns>
+    Task<DiskState> GetDiskState(GameInstallation installation);
+
+    /// <summary>
     /// Creates a new file tree from the current disk state and the previous file tree.
     /// </summary>
     /// <param name="diskState"></param>
@@ -79,8 +86,8 @@ public interface ILoadoutSynchronizer
     /// Applies a loadout to the game folder.
     /// </summary>
     /// <param name="loadout"></param>
-    /// <returns></returns>
-    Task Apply(Loadout loadout);
+    /// <returns>The new DiskState after the files were applied</returns>
+    Task<DiskState> Apply(Loadout loadout);
 
 
     /// <summary>

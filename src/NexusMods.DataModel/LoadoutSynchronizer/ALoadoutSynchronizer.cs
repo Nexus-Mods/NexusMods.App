@@ -92,6 +92,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             .Select(f => KeyValuePair.Create(f.Path, f.Value!.File))));
     }
 
+
     /// <inheritdoc />
     public async Task<DiskState> FileTreeToDisk(FileTree fileTree, DiskState prevState, GameInstallation installation)
     {
@@ -193,6 +194,16 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return DiskState.Create(resultingItems);
     }
 
+    /// <inheritdoc />
+    public async Task<DiskState> GetDiskState(GameInstallation installation)
+    {
+        var hashed =
+            await _hashCache.IndexFoldersAsync(installation.LocationsRegister.GetTopLevelLocations().Select(f => f.Value))
+                .ToListAsync();
+        return DiskState.Create(hashed.Select(h => KeyValuePair.Create(installation.LocationsRegister.ToGamePath(h.Path),
+            DiskStateEntry.From(h))));
+    }
+
     /// <summary>
     /// Called when a file has changed during an apply operation, and a ingest is required.
     /// </summary>
@@ -247,12 +258,13 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// </summary>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    public async Task Apply(Loadout loadout)
+    public async Task<DiskState> Apply(Loadout loadout)
     {
         var flattened = await LoadoutToFlattenedLoadout(loadout);
         var fileTree = await FlattenedLoadoutToFileTree(flattened, loadout);
-        throw new NotImplementedException();
-        //await FileTreeToDisk(fileTree);
+        var prevState = _diskStateRegistry.GetState(loadout.LoadoutId)!;
+        var diskState = await FileTreeToDisk(fileTree, prevState, loadout.Installation);
+        return diskState;
     }
 
     /// <inheritdoc />
