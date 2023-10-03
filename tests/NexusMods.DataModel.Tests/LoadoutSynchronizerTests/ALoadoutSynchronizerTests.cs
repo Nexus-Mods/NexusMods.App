@@ -267,7 +267,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
     [Fact]
     public async Task CanIngestFileTree()
     {
-                // Apply the old state
+        // Apply the old state
         await _synchronizer.Apply(BaseList.Value);
 
         // Setup some paths
@@ -285,8 +285,9 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
         // Reconstruct the previous file tree
         var prevFlattenedLoadout = await _synchronizer.LoadoutToFlattenedLoadout(BaseList.Value);
         var prevFileTree = await _synchronizer.FlattenedLoadoutToFileTree(prevFlattenedLoadout, BaseList.Value);
+        var prevDiskState = DiskStateRegistry.GetState(BaseList.Id);
 
-        var fileTree = _synchronizer.DiskToFileTree(diskState, prevFileTree);
+        var fileTree = await _synchronizer.DiskToFileTree(diskState, BaseList.Value, prevFileTree, prevDiskState);
 
         fileTree.GetAllDescendentFiles()
             .Select(f => f.Path.ToString())
@@ -313,8 +314,11 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
                 },
                 "files have all been written to disk");
 
-        diskState[modifiedFile].Value!.Hash.Should().Be(new byte[] { 0x01, 0x02, 0x03 }.XxHash64(), "the file should have been modified");
-        diskState[newFile].Value!.Hash.Should().Be(new byte[] { 0x04, 0x05, 0x06 }.XxHash64(), "the file should have been created");
+        ((FromArchive) fileTree[modifiedFile].Value!).Hash.Should().Be(new byte[] { 0x01, 0x02, 0x03 }.XxHash64(), "the file should have been modified");
+        ((FromArchive) fileTree[newFile].Value!).Hash.Should().Be(new byte[] { 0x04, 0x05, 0x06 }.XxHash64(), "the file should have been created");
+
+        fileTree[deletedFile].Should().BeNull("the file should have been deleted");
+
     }
 
 }

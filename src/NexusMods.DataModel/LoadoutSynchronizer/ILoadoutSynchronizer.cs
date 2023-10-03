@@ -46,9 +46,11 @@ public interface ILoadoutSynchronizer
     /// Creates a new file tree from the current disk state and the previous file tree.
     /// </summary>
     /// <param name="diskState"></param>
+    /// <param name="prevLoadout"></param>
     /// <param name="prevFileTree"></param>
+    /// <param name="prevDiskState"></param>
     /// <returns></returns>
-    FileTree DiskToFileTree(DiskState diskState, FileTree prevFileTree);
+    ValueTask<FileTree> DiskToFileTree(DiskState diskState, Loadout prevLoadout, FileTree prevFileTree, DiskState prevDiskState);
 
     /// <summary>
     /// Creates a new flattened loadout from the current file tree and the previous flattened loadout.

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Reflection.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
@@ -11,6 +12,7 @@ using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.Paths;
+using NexusMods.Paths.FileTree;
 
 namespace NexusMods.DataModel.LoadoutSynchronizer;
 
@@ -214,9 +216,79 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public FileTree DiskToFileTree(DiskState diskState, FileTree prevFileTree)
+    public async ValueTask<FileTree> DiskToFileTree(DiskState diskState, Loadout prevLoadout, FileTree prevFileTree, DiskState prevDiskState)
     {
-        throw new NotImplementedException();
+        List<KeyValuePair<GamePath, AModFile>> results = new();
+        foreach (var (path, newEntry) in diskState.GetAllDescendentFiles())
+        {
+            var absPath = prevLoadout.Installation.LocationsRegister.GetResolvedPath(path);
+            if (prevDiskState.TryGetValue(path, out var prevEntry))
+            {
+                var prevFile = prevFileTree[path].Value!;
+                if (prevEntry.Value.Hash == newEntry.Hash)
+                {
+                    // If the file hasn't changed, use it as-is
+                    results.Add(KeyValuePair.Create(path, prevFile));
+                    continue;
+                }
+
+
+                // Else, the file has changed, so we need to update it.
+                var newFile = await HandleChangedFile(prevFile, prevEntry.Value!, newEntry, path, absPath);
+                results.Add(KeyValuePair.Create(path, newFile));
+            }
+            else
+            {
+                // Else, the file is new, so we need to add it.
+                var newFile = await HandleNewFile(newEntry, path, absPath);
+                results.Add(KeyValuePair.Create(path, newFile));
+            }
+        }
+
+        // Deletes are handled implicitly as we only return files that exist in the new state.
+        return FileTree.Create(results);
+    }
+
+    /// <summary>
+    /// When a file is new, this method will be called to convert the new data into a AModFile. The file contents
+    /// are still accessible via <paramref name="absolutePath"/>
+    /// </summary>
+    /// <param name="newEntry"></param>
+    /// <param name="gamePath"></param>
+    /// <param name="absolutePath"></param>
+    /// <returns></returns>
+    /// <exception cref="NotImplementedException"></exception>
+    protected virtual ValueTask<AModFile> HandleNewFile(DiskStateEntry newEntry, GamePath gamePath, AbsolutePath absolutePath)
+    {
+        return ValueTask.FromResult<AModFile>(new FromArchive
+        {
+            Id = ModFileId.New(),
+            Hash = newEntry.Hash,
+            Size = newEntry.Size,
+            To = gamePath
+        });
+    }
+
+
+    /// <summary>
+    /// When a file is changed, this method will be called to convert the new data into a AModFile. The
+    /// file on disk is still accessible via <paramref name="absolutePath"/>
+    /// </summary>
+    /// <param name="prevFile"></param>
+    /// <param name="prevEntry"></param>
+    /// <param name="newEntry"></param>
+    /// <param name="gamePath"></param>
+    /// <param name="absolutePath"></param>
+    /// <returns></returns>
+    protected virtual ValueTask<AModFile> HandleChangedFile(AModFile prevFile, DiskStateEntry prevEntry, DiskStateEntry newEntry, GamePath gamePath, AbsolutePath absolutePath)
+    {
+        return ValueTask.FromResult<AModFile>(new FromArchive
+        {
+            Id = ModFileId.New(),
+            Hash = newEntry.Hash,
+            Size = newEntry.Size,
+            To = gamePath
+        });
     }
 
     /// <inheritdoc />
