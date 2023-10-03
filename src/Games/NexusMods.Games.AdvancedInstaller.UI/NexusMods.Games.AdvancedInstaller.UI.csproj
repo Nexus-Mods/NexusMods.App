@@ -75,5 +75,13 @@
         <Compile Update="ResultsSection\AdvancedInstallerEmptyPreviewDesignViewModel.cs">
           <DependentUpon>AdvancedInstallerEmptyPreviewViewModel.cs</DependentUpon>
         </Compile>
+
+        <Compile Update="ResultsSection\AdvancedInstallerSelectLocationViewModel.cs">
+          <DependentUpon>IAdvancedInstallerSelectLocationViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="ResultsSection\AdvancedInstallerSelectLocationDesignViewModel.cs">
+          <DependentUpon>AdvancedInstallerSelectLocationViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 </Project>

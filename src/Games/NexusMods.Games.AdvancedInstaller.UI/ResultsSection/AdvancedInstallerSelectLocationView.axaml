@@ -1,0 +1,35 @@
+﻿<reactiveUi:ReactiveUserControl x:TypeArguments="ui:IAdvancedInstallerSelectLocationViewModel"
+                                xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI"
+                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                                x:Class="NexusMods.Games.AdvancedInstaller.UI.AdvancedInstallerSelectLocationView">
+    <Design.DataContext>
+        <ui:AdvancedInstallerSelectLocationDesignViewModel />
+    </Design.DataContext>
+
+
+    <Border Classes="Rounded StructuralBorderColor OutlineWhite Padding16">
+        <Border.Styles>
+
+        </Border.Styles>
+
+        <Grid RowDefinitions="Auto, *">
+            <Border Grid.Row="0" Classes="HeaderAreaBorder" x:Name="HeaderAreaBorder">
+                <StackPanel Orientation="Vertical">
+
+                    <TextBlock Classes="TitleSMSemi" Text="SELECT INSTALL LOCATION"
+                               x:Name="SelectLocationHeader" />
+
+                    <TextBlock Classes="BodySMNormal ContentSubHeading"
+                               Text="Select where to install the mod file/folder."
+                               x:Name="SelectLocationSubHeading" />
+                </StackPanel>
+            </Border>
+        </Grid>
+
+    </Border>
+</reactiveUi:ReactiveUserControl>
