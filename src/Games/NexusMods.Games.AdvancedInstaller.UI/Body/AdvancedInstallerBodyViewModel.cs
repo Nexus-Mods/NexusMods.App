@@ -7,6 +7,7 @@ public class AdvancedInstallerBodyViewModel : AViewModel<IAdvancedInstallerBodyV
     public IAdvancedInstallerModContentViewModel ModContentViewModel { get; } = new AdvancedInstallerModContentViewModel();
     public IAdvancedInstallerPreviewViewModel PreviewViewModel { get; } = new AdvancedInstallerPreviewViewModel();
     public IAdvancedInstallerEmptyPreviewViewModel EmptyPreviewViewModel { get; } = new AdvancedInstallerEmptyPreviewViewModel();
+    public IAdvancedInstallerSelectLocationViewModel SelectLocationViewModel { get; } = new AdvancedInstallerSelectLocationViewModel();
 
-    public IViewModel CurrentPreviewViewModel => PreviewViewModel;
+    public IViewModel CurrentPreviewViewModel => SelectLocationViewModel;
 }

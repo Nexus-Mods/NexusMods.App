@@ -11,6 +11,9 @@
             <Border Classes="Rounded Padding16 StructuralBorderColor OutlineTertiaryDarker">
                 <TextBlock Text="CONTENT" Foreground="White"></TextBlock>
             </Border>
+            <Border Classes="Rounded Padding16 ContainerBorderColor OutlineWhite">
+                <TextBlock Text="CONTENT" Foreground="White"></TextBlock>
+            </Border>
         </StackPanel>
     </Design.PreviewWith>
 
@@ -55,6 +58,11 @@
 
     <Style Selector="Border.OutlineTertiaryDarker">
         <Setter Property="BorderBrush" Value="{DynamicResource BrandTertiaryDarker}" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <Style Selector="Border.OutlineContainer">
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderContainerColor}" />
         <Setter Property="BorderThickness" Value="1" />
     </Style>
 
