@@ -17,10 +17,15 @@
             <Style Selector="icons|Icon.FileTypeIcon">
                 <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
                 <Setter Property="FontSize" Value="18" />
+                <Setter Property="Margin" Value="8, 0, 8, 0" />
+            </Style>
+
+            <Style Selector="StackPanel.ElementsStackPanel">
+                <Setter Property="Margin" Value="0,0,8,0"/>
             </Style>
         </Grid.Styles>
 
-        <StackPanel Grid.Column="0" Orientation="Horizontal" Name="EntryLeftElementsStackPanel">
+        <StackPanel Grid.Column="0" Classes="ElementsStackPanel" Orientation="Horizontal" Name="EntryLeftElementsStackPanel">
 
             <!-- Create Folder Button -->
             <Button Classes="Rounded" HorizontalAlignment="Right" x:Name="CreateFolderButton">
@@ -62,7 +67,7 @@
             </Button>
         </StackPanel>
 
-        <StackPanel Grid.Column="1" Orientation="Horizontal">
+        <StackPanel Grid.Column="1" Orientation="Horizontal" x:Name="EntryRightElementsStackPanel">
 
             <!-- Install Button -->
             <Button Classes="Rounded" HorizontalAlignment="Right" x:Name="InstallRoundedButton">
@@ -110,7 +115,34 @@
                 </StackPanel>
             </Button>
 
+            <!-- Select Button -->
+            <Button Classes="Rounded" HorizontalAlignment="Right" x:Name="SelectRoundedButton">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Select" x:Name="SelectButtonTextBlock" />
+                </StackPanel>
+            </Button>
 
+            <!-- Delete Created Folder Button -->
+            <Button Classes="Rounded" HorizontalAlignment="Right" x:Name="DeleteCreatedFolderButton">
+                <StackPanel Orientation="Horizontal">
+                    <icons:Icon Classes="DeleteOutline" x:Name="DeleteCreatedFolderDeleteIcon" />
+                    <TextBlock Text="Delete" x:Name="DeleteCreatedFolderButtonTextBlock" />
+                </StackPanel>
+            </Button>
+
+            <!-- Cancel Create Folder Button -->
+            <Button Classes="Rounded" HorizontalAlignment="Right" x:Name="CancelCreateFolderButton">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Cancel" x:Name="CancelCreateFolderButtonTextBlock" />
+                </StackPanel>
+            </Button>
+
+            <!-- Save Created Folder Button -->
+            <Button Classes="Rounded" HorizontalAlignment="Right" x:Name="SaveCreatedFolderButton">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Save" x:Name="SaveCreatedFolderButtonTextBlock" />
+                </StackPanel>
+            </Button>
 
         </StackPanel>
     </Grid>
