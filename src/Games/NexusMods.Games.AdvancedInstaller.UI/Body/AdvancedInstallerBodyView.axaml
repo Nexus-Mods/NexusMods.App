@@ -32,11 +32,10 @@
 
             <Style Selector="Border.CentralSectionBorder">
                 <Setter Property="CornerRadius" Value="8" />
-                <Setter Property="Background" Value="{DynamicResource StructuralBorderColor}" />
-
             </Style>
 
             <Style Selector="Border#ModContentBorder">
+                <Setter Property="Background" Value="{DynamicResource StructuralBorderColor}" />
                 <Setter Property="Padding" Value="16" />
             </Style>
 
