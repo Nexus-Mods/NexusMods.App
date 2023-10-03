@@ -33,6 +33,10 @@
             <Style Selector="Border.CentralSectionBorder">
                 <Setter Property="CornerRadius" Value="8" />
                 <Setter Property="Background" Value="{DynamicResource StructuralBorderColor}" />
+
+            </Style>
+
+            <Style Selector="Border#ModContentBorder">
                 <Setter Property="Padding" Value="16" />
             </Style>
 
@@ -70,13 +74,9 @@
 
                 <Border Classes="CentralSectionBorder" Grid.Column="2" x:Name="ResultsBorder">
                     <ScrollViewer x:Name="ResultsScrollViewer">
-                        <ItemsControl x:Name="ResultsScrollItemsControl">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                        </ItemsControl>
+
+                        <reactiveUi:ViewModelViewHost x:Name="PreviewSectionViewHost"/>
+                        
                     </ScrollViewer>
                 </Border>
 

@@ -14,6 +14,9 @@ public partial class AdvancedInstallerBodyView : ReactiveUserControl<IAdvancedIn
         {
             this.OneWayBind(ViewModel, vm => vm.ModContentViewModel, view => view.ModContentSectionViewHost.ViewModel)
                 .DisposeWith(disposables);
+
+            this.OneWayBind(ViewModel, vm => vm.PreviewSectionViewModel, view => view.PreviewSectionViewHost.ViewModel)
+                .DisposeWith(disposables);
         });
     }
 }
