@@ -7,7 +7,7 @@
                                 xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI"
                                 xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
                                 xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
-                                mc:Ignorable="d" d:DesignWidth="492" d:DesignHeight="44"
+                                mc:Ignorable="d" d:DesignWidth="410" d:DesignHeight="44"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.AdvancedInstallerTreeEntryView">
     <Design.DataContext>
         <ui:AdvancedInstallerTreeEntryDesignViewModel />
@@ -25,16 +25,21 @@
                 <Setter Property="Margin" Value="0,0,8,0" />
             </Style>
 
+            <Style Selector="Button.PillElement">
+                <Setter Property="HorizontalAlignment" Value="Left" />
+            </Style>
+
             <Style Selector="TextBlock#FileNameTextBlock">
                 <Setter Property="Margin" Value="0,4,8,0" />
             </Style>
         </Grid.Styles>
 
-        <StackPanel Grid.Column="0" Classes="ElementsStackPanel" Orientation="Horizontal"
-                    Name="EntryLeftElementsStackPanel">
+        <!-- Left Elements -->
+        <Grid Grid.Column="0" ColumnDefinitions="*"
+              Name="EntryLeftElementsGrid">
 
             <!-- Create Folder Button -->
-            <Button Classes="Rounded" HorizontalAlignment="Right" IsVisible="False" x:Name="CreateFolderButton">
+            <Button Classes="Rounded" HorizontalAlignment="Left" IsVisible="False" x:Name="CreateFolderButton">
                 <StackPanel Orientation="Horizontal">
                     <icons:Icon Classes="Plus" x:Name="CreateFolderPlusIcon" />
                     <TextBlock Text="{x:Static resources:Language.CreateFolderButton_Create_new_folder}"
@@ -42,39 +47,52 @@
                 </StackPanel>
             </Button>
 
-            <!-- File / Directory Icon -->
-            <icons:Icon Classes="File FileTypeIcon" IsVisible="True" x:Name="FileEntryIcon" />
-            <icons:Icon Classes="FolderOutline FileTypeIcon" IsVisible="False" x:Name="FolderEntryIcon" />
+            <!-- File Element -->
+            <Grid ClipToBounds="True" ColumnDefinitions="Auto,Auto,Auto,*" IsVisible="True" x:Name="FileElementGrid">
 
-            <!-- File Name -->
-            <TextBlock Classes="BodyMDNormal" VerticalAlignment="Center" Text="Example-file.bsa" IsVisible="True"
-                       x:Name="FileNameTextBlock" />
+                <!-- File / Directory Icon -->
+                <icons:Icon Grid.Column="0" Classes="File FileTypeIcon" IsVisible="True" x:Name="FileEntryIcon" />
+                <icons:Icon Grid.Column="0" Classes="FolderOutline FileTypeIcon" IsVisible="False"
+                            x:Name="FolderEntryIcon" />
 
-            <!-- NEW Pill Label -->
-            <Button Classes="Pill Accent Label" IsVisible="True" x:Name="NewPill">
-                <StackPanel>
-                    <TextBlock Text="{x:Static resources:Language.NewFilePill_NEW}" />
-                </StackPanel>
-            </Button>
+                <!-- File Name -->
+                <TextBlock Grid.Column="1" Classes="BodyMDNormal" VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis"
+                           Text="Example-file.bsa" IsVisible="True"
+                           x:Name="FileNameTextBlock" />
 
-            <!-- Dupe Folder Pill Label -->
-            <Button Classes="Pill Light Label" IsVisible="False" x:Name="DupeFolderPill">
-                <StackPanel>
-                    <icons:Icon Classes="Alert" />
-                    <TextBlock Text="{x:Static resources:Language.Pill_DUPE_FOLDER}" />
-                </StackPanel>
-            </Button>
+                <!-- Pills -->
 
-            <!-- Folder Merged Pill Label -->
-            <Button Classes="Pill Light Label" IsVisible="False" x:Name="FolderMergedPill">
-                <StackPanel>
-                    <icons:Icon Classes="Check" />
-                    <TextBlock Text="{x:Static resources:Language.Pill_FOLDER_MERGED}" />
-                </StackPanel>
-            </Button>
-        </StackPanel>
+                <!-- NEW Pill Label -->
+                <Button Grid.Column="2" Classes="Pill Accent Label PillElement" IsVisible="True" x:Name="NewPill">
+                    <StackPanel>
+                        <TextBlock Text="{x:Static resources:Language.NewFilePill_NEW}" />
+                    </StackPanel>
+                </Button>
 
-        <StackPanel Grid.Column="1" Orientation="Horizontal" x:Name="EntryRightElementsStackPanel">
+                <!-- Dupe Folder Pill Label -->
+                <Button Grid.Column="2" Classes="Pill Light Label PillElement" IsVisible="False"
+                        x:Name="DupeFolderPill">
+                    <StackPanel>
+                        <icons:Icon Classes="Alert" />
+                        <TextBlock Text="{x:Static resources:Language.Pill_DUPE_FOLDER}" />
+                    </StackPanel>
+                </Button>
+
+                <!-- Folder Merged Pill Label -->
+                <Button Grid.Column="2" Classes="Pill Light Label PillElement" IsVisible="False"
+                        x:Name="FolderMergedPill">
+                    <StackPanel>
+                        <icons:Icon Classes="Check" />
+                        <TextBlock Text="{x:Static resources:Language.Pill_FOLDER_MERGED}" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Grid>
+
+        <!-- Right Elements -->
+        <StackPanel Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal"
+                    x:Name="EntryRightElementsStackPanel">
 
             <!-- Install Button (Install / Install all / Install folder) -->
             <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="True"

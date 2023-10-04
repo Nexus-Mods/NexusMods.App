@@ -83,5 +83,13 @@
         <Compile Update="ResultsSection\AdvancedInstallerSelectLocationDesignViewModel.cs">
           <DependentUpon>AdvancedInstallerSelectLocationViewModel.cs</DependentUpon>
         </Compile>
+
+        <Compile Update="SuggestedEntry\AdvancedInstallerSuggestedEntryViewModel.cs">
+          <DependentUpon>IAdvancedInstallerSuggestedEntryViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="SuggestedEntry\AdvancedInstallerSuggestedEntryDesignViewModel.cs">
+          <DependentUpon>IAdvancedInstallerSuggestedEntryViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 </Project>

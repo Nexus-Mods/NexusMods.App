@@ -69,4 +69,19 @@
     <data name="EmptyPreviewText_Select_files_to_install" xml:space="preserve">
         <value>Select which files to install from the mod archive on the left.</value>
     </data>
+    <data name="SelectLocationHeaderText_SELECT_INSTALL_LOCATION" xml:space="preserve">
+        <value>SELECT INSTALL LOCATION</value>
+    </data>
+    <data name="SelectLocationSubHeadingText_Select_where_to" xml:space="preserve">
+        <value>Select where to install the mod file/folder.</value>
+    </data>
+    <data name="SuggestedHeaderText_SUGGESTED" xml:space="preserve">
+        <value>SUGGESTED</value>
+    </data>
+    <data name="AllFoldersAreaHeaderText_ALL_FOLDERS" xml:space="preserve">
+        <value>ALL FOLDERS</value>
+    </data>
+    <data name="AllFoldersAreaSubHeaderText_Select_from_full" xml:space="preserve">
+        <value>Select from the full folder structure</value>
+    </data>
 </root>

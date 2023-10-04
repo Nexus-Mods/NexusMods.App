@@ -16,6 +16,7 @@ public static class Services
             .AddView<AdvancedInstallerPreviewView, IAdvancedInstallerPreviewViewModel>()
             .AddView<AdvancedInstallerEmptyPreviewView, IAdvancedInstallerEmptyPreviewViewModel>()
             .AddView<AdvancedInstallerSelectLocationView, IAdvancedInstallerSelectLocationViewModel>()
+            .AddView<AdvancedInstallerSuggestedEntryView, IAdvancedInstallerSuggestedEntryViewModel>()
             .AddView<AdvancedInstallerOverlayView, IAdvancedInstallerOverlayViewModel>()
             .AddView<AdvancedInstallerTreeEntryView, IAdvancedInstallerTreeEntryViewModel>();
 

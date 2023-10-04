@@ -5,6 +5,7 @@
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI"
+                                xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.AdvancedInstallerSelectLocationView">
     <Design.DataContext>
@@ -49,11 +50,12 @@
             <Border Grid.Row="0" x:Name="HeaderAreaBorder">
                 <StackPanel Orientation="Vertical">
 
-                    <TextBlock Classes="TitleSMSemi" Text="SELECT INSTALL LOCATION"
+                    <TextBlock Classes="TitleSMSemi"
+                               Text="{x:Static resources:Language.SelectLocationHeaderText_SELECT_INSTALL_LOCATION}"
                                x:Name="SelectLocationHeader" />
 
                     <TextBlock Classes="BodySMNormal SelectSubHeading"
-                               Text="Select where to install the mod file/folder."
+                               Text="{x:Static resources:Language.SelectLocationSubHeadingText_Select_where_to}"
                                x:Name="SelectLocationSubHeading" />
                 </StackPanel>
             </Border>
@@ -64,7 +66,9 @@
 
                     <StackPanel Grid.Row="0" Classes="SuggestedHeaderStackPanel" Orientation="Vertical">
 
-                        <TextBlock Classes="TitleXSSemi" Text="SUGGESTED" x:Name="SuggestedHeaderText" />
+                        <TextBlock Classes="TitleXSSemi"
+                                   Text="{x:Static resources:Language.SuggestedHeaderText_SUGGESTED}"
+                                   x:Name="SuggestedHeaderText" />
 
                         <TextBlock Classes="BodySMNormal SelectSubHeading"
                                    Text="Temp Skyrim Special Edition Mods are usually installed in the following game folders."
@@ -75,7 +79,7 @@
                     <ItemsControl Grid.Row="1" x:Name="SuggestedLocationItemsControl">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <StackPanel />
+                                <StackPanel Orientation="Vertical" />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                     </ItemsControl>
@@ -88,15 +92,17 @@
 
                     <StackPanel Grid.Row="0" Classes="SuggestedHeaderStackPanel" Orientation="Vertical">
 
-                        <TextBlock Classes="TitleXSSemi" Text="ALL FOLDERS" x:Name="AllFoldersAreaHeaderText" />
+                        <TextBlock Classes="TitleXSSemi"
+                                   Text="{x:Static resources:Language.AllFoldersAreaHeaderText_ALL_FOLDERS}"
+                                   x:Name="AllFoldersAreaHeaderText" />
 
                         <TextBlock Classes="BodySMNormal SelectSubHeading"
-                                   Text="Select from the full folder structure"
+                                   Text="{x:Static resources:Language.AllFoldersAreaSubHeaderText_Select_from_full}"
                                    x:Name="AllFoldersAreaSubHeaderText" />
 
                     </StackPanel>
 
-                    <TreeDataGrid Grid.Row="1" ShowColumnHeaders="False"/>
+                    <TreeDataGrid Grid.Row="1" ShowColumnHeaders="False" />
 
                 </Grid>
             </Border>
