@@ -30,5 +30,8 @@ internal static class MathUtils
         return logicalBounds * workspaceSize.AsVector();
     }
 
-    private static Vector AsVector(this Size size) => new(x: size.Width, y: size.Height);
+    /// <summary>
+    /// Converts a <see cref="Size"/> into a <see cref="Vector"/>.
+    /// </summary>
+    internal static Vector AsVector(this Size size) => new(x: size.Width, y: size.Height);
 }
