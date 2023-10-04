@@ -12,7 +12,7 @@
         <ui:AdvancedInstallerModContentDesignViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="Auto, *" >
+    <Grid RowDefinitions="Auto, *">
         <Grid.Styles>
 
             <Style Selector="Border.HeaderAreaBorder">
@@ -24,6 +24,16 @@
             <Style Selector="TextBlock.ContentSubHeading">
                 <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryColor}" />
                 <Setter Property="Margin" Value="0, 4, 0, 16" />
+            </Style>
+
+            <Style
+                Selector="TreeDataGrid.TreeNoSelection TreeDataGridExpanderCell:pointerover /template/ Border#CellBorder:pointerover">
+                <Setter Property="Background" Value="{StaticResource BorderContainerColor}" />
+            </Style>
+
+            <Style
+                Selector="TreeDataGrid.TreeNoSelection TreeDataGridRow:selected /template/ TreeDataGridCellsPresenter#PART_CellsPresenter">
+                <Setter Property="Background" Value="Transparent" />
             </Style>
 
         </Grid.Styles>
@@ -40,7 +50,7 @@
             </StackPanel>
         </Border>
 
-        <TreeDataGrid Grid.Row="1" x:Name="ModContentTreeDataGrid" ShowColumnHeaders="True"
+        <TreeDataGrid Grid.Row="1" Classes="TreeNoSelection" x:Name="ModContentTreeDataGrid" ShowColumnHeaders="True"
                       Foreground="{DynamicResource FontDarkSecondaryColor}">
 
         </TreeDataGrid>
