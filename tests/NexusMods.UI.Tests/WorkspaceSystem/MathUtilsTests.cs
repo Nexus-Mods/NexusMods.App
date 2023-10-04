@@ -34,4 +34,19 @@ public class MathUtilsTests
 
         new object[]{ new Size(100, 100), new Rect(0.5, 0.5, 0.5, 0.5), new Rect(50, 50, 50, 50) },
     };
+
+    [Theory]
+    [MemberData(nameof(TestData_Split))]
+    public void Test_Split(Rect currentLogicalBounds, bool vertical, Rect updatedLogicalBounds, Rect newPanelLogicalBounds)
+    {
+        var tuple = MathUtils.Split(currentLogicalBounds, vertical);
+        tuple.UpdatedLogicalBounds.Should().Be(updatedLogicalBounds);
+        tuple.NewPanelLogicalBounds.Should().Be(newPanelLogicalBounds);
+    }
+
+    public static IEnumerable<object[]> TestData_Split() => new[]
+    {
+        new object[] { new Rect(0.0, 0.0, 100, 100), true, new Rect(0.0, 0.0, 50, 100), new Rect(50, 0.0, 50, 100) },
+        new object[] { new Rect(0.0, 0.0, 100, 100), false, new Rect(0.0, 0.0, 100, 50), new Rect(0.0, 50, 100, 50) },
+    };
 }

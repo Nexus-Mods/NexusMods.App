@@ -30,6 +30,10 @@ internal static class MathUtils
         return logicalBounds * workspaceSize.AsVector();
     }
 
+    /// <summary>
+    /// Calculates the logical bounds for the existing panel and the new panel that is going
+    /// to take up half of the existing panels' space.
+    /// </summary>
     internal static (Rect UpdatedLogicalBounds, Rect NewPanelLogicalBounds) Split(Rect currentLogicalBounds, bool vertical)
     {
         Rect newPanelLogicalBounds;
