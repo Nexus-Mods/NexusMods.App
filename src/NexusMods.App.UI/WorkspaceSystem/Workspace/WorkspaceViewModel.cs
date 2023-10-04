@@ -3,7 +3,6 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia;
-using Avalonia.Controls;
 using DynamicData;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -25,6 +24,9 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
     public WorkspaceViewModel()
     {
+        // TODO: setting?
+        const int maxPanelCount = 4;
+
         this.WhenActivated(disposables =>
         {
             _panelSource
@@ -34,7 +36,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 .SubscribeWithErrorLogging()
                 .DisposeWith(disposables);
 
-            var canAddPanel = _panelSource.CountChanged.Select(count => count < 4);
+            var canAddPanel = _panelSource.CountChanged.Select(count => count < maxPanelCount);
             AddPanelCommand = ReactiveCommand.Create(() =>
             {
                 var newPanelLogicalBounds = MathUtils.One;
@@ -59,7 +61,20 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
             var canRemovePanel = _panelSource.CountChanged.Select(count => count > 0);
             RemovePanelCommand = ReactiveCommand.Create(() =>
             {
-                _panelSource.RemoveKey(_panelSource.Keys.Last());
+                if (Panels.Count >= 2)
+                {
+                    var last = Panels.TakeLast(count: 2).ToArray();
+                    var toConsume = last.Last();
+                    var toExpand = last.First();
+
+                    _panelSource.RemoveKey(toConsume.Id);
+                    toExpand.LogicalBounds = MathUtils.Join(toExpand.LogicalBounds, toConsume.LogicalBounds);
+                }
+                else
+                {
+                    _panelSource.RemoveKey(_panelSource.Keys.Last());
+                }
+
             }, canRemovePanel);
         });
     }

@@ -49,4 +49,18 @@ public class MathUtilsTests
         new object[] { new Rect(0.0, 0.0, 100, 100), true, new Rect(0.0, 0.0, 50, 100), new Rect(50, 0.0, 50, 100) },
         new object[] { new Rect(0.0, 0.0, 100, 100), false, new Rect(0.0, 0.0, 100, 50), new Rect(0.0, 50, 100, 50) },
     };
+
+    [Theory]
+    [MemberData(nameof(TestData_Join))]
+    public void Test_Join(Rect logicalBoundsToExpand, Rect logicalBoundsToConsume, Rect expected)
+    {
+        var actual = MathUtils.Join(logicalBoundsToExpand, logicalBoundsToConsume);
+        actual.Should().Be(expected);
+    }
+
+    public static IEnumerable<object[]> TestData_Join() => new[]
+    {
+        new object[]{ new Rect(0.0, 0.0, 50, 100), new Rect(50, 0.0, 50, 100), new Rect(0.0, 0.0, 100, 100) },
+        new object[]{ new Rect(0.0, 0.0, 100, 50), new Rect(0.0, 50, 100, 50), new Rect(0.0, 0.0, 100, 100) },
+    };
 }

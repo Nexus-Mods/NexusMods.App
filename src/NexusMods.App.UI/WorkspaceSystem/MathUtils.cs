@@ -57,9 +57,12 @@ internal static class MathUtils
         return (updatedLogicalBounds, newPanelLogicalBounds);
     }
 
-    internal static Rect Join(Rect a, Rect b)
+    /// <summary>
+    /// Calculates the new combined logical bounds of two panels.
+    /// </summary>
+    internal static Rect Join(Rect logicalBoundsToExpand, Rect logicalBoundsToConsume)
     {
-        throw new NotImplementedException();
+        return logicalBoundsToExpand.Union(logicalBoundsToConsume);
     }
 
     /// <summary>
