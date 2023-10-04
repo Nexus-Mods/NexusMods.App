@@ -17,9 +17,14 @@
             <Button x:Name="AddPanelButton" Classes="Standard PrimaryOutlined">
                 <TextBlock>Add Panel</TextBlock>
             </Button>
+
             <Button x:Name="RemovePanelButton" Classes="Standard PrimaryOutlined">
                 <TextBlock>Remove Panel</TextBlock>
             </Button>
+
+            <CheckBox x:Name="VerticalSplitCheckbox">
+                <TextBlock Classes="ButtonMontserratSemi">Split Vertically</TextBlock>
+            </CheckBox>
         </StackPanel>
 
         <reactive:ViewModelViewHost Grid.Row="1" x:Name="ViewModelViewHost" />

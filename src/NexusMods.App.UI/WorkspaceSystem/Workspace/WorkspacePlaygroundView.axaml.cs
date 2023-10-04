@@ -19,6 +19,9 @@ public partial class WorkspacePlaygroundView : ReactiveUserControl<WorkspacePlay
 
             this.BindCommand(ViewModel, vm => vm.WorkspaceViewModel.RemovePanelCommand, view => view.RemovePanelButton)
                 .DisposeWith(disposables);
+
+            this.Bind(ViewModel, vm => vm.SplitVertically, view => view.VerticalSplitCheckbox.IsChecked)
+                .DisposeWith(disposables);
         });
     }
 }

@@ -22,6 +22,8 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     [Reactive]
     public ReactiveCommand<Unit, Unit> RemovePanelCommand { get; private set; } = Initializers.DisabledReactiveCommand;
 
+    internal bool SplitVertically = true;
+
     public WorkspaceViewModel()
     {
         // TODO: setting?
@@ -44,7 +46,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 var lastPanel = Panels.LastOrDefault();
                 if (lastPanel is not null)
                 {
-                    var tuple = MathUtils.Split(lastPanel.LogicalBounds, vertical: false);
+                    var tuple = MathUtils.Split(lastPanel.LogicalBounds, vertical: SplitVertically);
                     lastPanel.LogicalBounds = tuple.UpdatedLogicalBounds;
                     newPanelLogicalBounds = tuple.NewPanelLogicalBounds;
                 }
