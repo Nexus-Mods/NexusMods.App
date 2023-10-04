@@ -60,6 +60,24 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ALL FOLDERS.
+        /// </summary>
+        public static string AllFoldersAreaHeaderText_ALL_FOLDERS {
+            get {
+                return ResourceManager.GetString("AllFoldersAreaHeaderText_ALL_FOLDERS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select from the full folder structure.
+        /// </summary>
+        public static string AllFoldersAreaSubHeaderText_Select_from_full {
+            get {
+                return ResourceManager.GetString("AllFoldersAreaSubHeaderText_Select_from_full", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string CancelCreateFolderButton_Cancel {
@@ -204,11 +222,38 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to SELECT INSTALL LOCATION.
+        /// </summary>
+        public static string SelectLocationHeaderText_SELECT_INSTALL_LOCATION {
+            get {
+                return ResourceManager.GetString("SelectLocationHeaderText_SELECT_INSTALL_LOCATION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select where to install the mod file/folder..
+        /// </summary>
+        public static string SelectLocationSubHeadingText_Select_where_to {
+            get {
+                return ResourceManager.GetString("SelectLocationSubHeadingText_Select_where_to", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please select the files to install and where they should be installed to..
         /// </summary>
         public static string SubHeadingText_Please_select_files {
             get {
                 return ResourceManager.GetString("SubHeadingText_Please_select_files", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SUGGESTED.
+        /// </summary>
+        public static string SuggestedHeaderText_SUGGESTED {
+            get {
+                return ResourceManager.GetString("SuggestedHeaderText_SUGGESTED", resourceCulture);
             }
         }
     }
