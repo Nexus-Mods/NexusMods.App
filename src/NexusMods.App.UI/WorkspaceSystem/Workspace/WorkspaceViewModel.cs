@@ -3,8 +3,10 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia;
+using Avalonia.Controls;
 using DynamicData;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
@@ -15,7 +17,10 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     private ReadOnlyObservableCollection<IPanelViewModel> _panels = Initializers.ReadOnlyObservableCollection<IPanelViewModel>();
     public ReadOnlyObservableCollection<IPanelViewModel> Panels => _panels;
 
+    [Reactive]
     public ReactiveCommand<Unit, Unit> AddPanelCommand { get; private set; } = Initializers.DisabledReactiveCommand;
+
+    [Reactive]
     public ReactiveCommand<Unit, Unit> RemovePanelCommand { get; private set; } = Initializers.DisabledReactiveCommand;
 
     public WorkspaceViewModel()
@@ -37,11 +42,9 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 var lastPanel = Panels.LastOrDefault();
                 if (lastPanel is not null)
                 {
-                    var lastLogicalBounds = lastPanel.LogicalBounds;
-                    var newWidth = lastLogicalBounds.Width / 2;
-
-                    newPanelLogicalBounds = lastLogicalBounds.WithWidth(newWidth).WithX(lastLogicalBounds.Left + newWidth);
-                    lastPanel.LogicalBounds = lastLogicalBounds.WithWidth(newWidth);
+                    var tuple = MathUtils.Split(lastPanel.LogicalBounds, vertical: false);
+                    lastPanel.LogicalBounds = tuple.UpdatedLogicalBounds;
+                    newPanelLogicalBounds = tuple.NewPanelLogicalBounds;
                 }
 
                 Console.WriteLine(newPanelLogicalBounds.ToString());

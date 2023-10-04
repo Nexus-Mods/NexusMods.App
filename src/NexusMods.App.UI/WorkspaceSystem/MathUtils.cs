@@ -30,6 +30,34 @@ internal static class MathUtils
         return logicalBounds * workspaceSize.AsVector();
     }
 
+    internal static (Rect UpdatedLogicalBounds, Rect NewPanelLogicalBounds) Split(Rect currentLogicalBounds, bool vertical)
+    {
+        Rect newPanelLogicalBounds;
+        Rect updatedLogicalBounds;
+
+        if (vertical)
+        {
+            var newWidth = currentLogicalBounds.Width / 2;
+
+            updatedLogicalBounds = currentLogicalBounds.WithWidth(newWidth);
+            newPanelLogicalBounds = updatedLogicalBounds.WithX(currentLogicalBounds.X + newWidth);
+        }
+        else
+        {
+            var newHeight = currentLogicalBounds.Height / 2;
+
+            updatedLogicalBounds = currentLogicalBounds.WithHeight(newHeight);
+            newPanelLogicalBounds = updatedLogicalBounds.WithY(currentLogicalBounds.Y + newHeight);
+        }
+
+        return (updatedLogicalBounds, newPanelLogicalBounds);
+    }
+
+    internal static Rect Join(Rect a, Rect b)
+    {
+        throw new NotImplementedException();
+    }
+
     /// <summary>
     /// Converts a <see cref="Size"/> into a <see cref="Vector"/>.
     /// </summary>
