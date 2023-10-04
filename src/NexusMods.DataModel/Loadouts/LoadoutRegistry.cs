@@ -178,7 +178,7 @@ public class LoadoutRegistry : IDisposable
     /// <param name="visitor"></param>
     public Loadout Alter(LoadoutId id, string commitMessage, ALoadoutVisitor visitor)
     {
-        return Alter(id, commitMessage, loadout => loadout.Transform(visitor));
+        return Alter(id, commitMessage, visitor.Transform);
     }
 
     /// <summary>

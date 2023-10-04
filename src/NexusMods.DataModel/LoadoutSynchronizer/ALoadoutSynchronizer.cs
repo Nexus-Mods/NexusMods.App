@@ -316,7 +316,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 Name = name,
                 Id = ModId.New(),
                 Enabled = true,
-                Files = new EntityDictionary<ModFileId, AModFile>()
+                Files = EntityDictionary<ModFileId, AModFile>.Empty(_store)
             };
             mods.Add(name, newMod);
             return newMod;
@@ -386,58 +386,92 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <inheritdoc />
     public ValueTask<Loadout> FlattenedLoadoutToLoadout(FlattenedLoadout flattenedLoadout, Loadout prevLoadout, FlattenedLoadout prevFlattenedLoadout)
     {
-        return ValueTask.FromResult(prevLoadout.Transform(new FlattenedToLoadoutTransformer(flattenedLoadout, prevLoadout, prevFlattenedLoadout)));
+        return ValueTask.FromResult(new FlattenedToLoadoutTransformer(flattenedLoadout, prevLoadout, prevFlattenedLoadout)
+            .Transform(prevLoadout));
     }
 
     private class FlattenedToLoadoutTransformer : ALoadoutVisitor
     {
-        private readonly Dictionary<(ModId, ModFileId),AModFile> _toReplace;
-        private readonly Dictionary<ModId, AModFile> _toAdd;
+        private readonly Dictionary<ModId,Mod> _modReplacements;
         private readonly HashSet<GamePath> _toDelete;
-        private readonly Dictionary<ModId, ModFileId> _toRemove;
-        private readonly HashSet<ModId> _allNewMods;
-
 
         public FlattenedToLoadoutTransformer(FlattenedLoadout flattenedLoadout, Loadout prevLoadout, FlattenedLoadout prevFlattenedLoadout)
         {
-            // We're about to iterate over the entire loadout, so pre-calculate some data to make this proces faster
-            _toReplace = new Dictionary<(ModId, ModFileId), AModFile>();
-            _toAdd = new Dictionary<ModId, AModFile>();
-            _toDelete = new HashSet<GamePath>();
-            _toRemove = new Dictionary<ModId, ModFileId>();
 
-            _allNewMods = new HashSet<ModId>();
+            // The pattern is pretty simple here, we'll preprocess as much information as we can, and construct
+            // helper collections to allow us to efficiently transform the loadout. The overall goal is to reduce
+            // all operations to O(n) time complexity, where n is the number of files in the loadout.
 
+            _modReplacements = new Dictionary<ModId, Mod>();
+
+            // These are files that no longer exist in the loadout, so we need to delete them
+            _toDelete = prevFlattenedLoadout.GetAllDescendentFiles()
+                .Where(f => !flattenedLoadout.TryGetValue(f.Path, out _))
+                .Select(f => f.Path)
+                .ToHashSet();
+
+
+            // These are files that have changed or are new, so we need to add/update them
             foreach (var (path, newPair) in flattenedLoadout.GetAllDescendentFiles())
             {
-                _allNewMods.Add(newPair!.Mod.Id);
-
                 if (prevFlattenedLoadout.TryGetValue(path, out var prevFile))
                 {
-                    if (prevFile.Value!.File.Id == newPair!.File.Id)
-                    {
-                        // No change, so do nothing
-                        continue;
-                    }
-
-                    // Are we replacing or moving the file?
-                    if (prevFile.Value!.Mod.Id.Equals(newPair.Mod.Id))
-                    {
-                        // Replacing the file
-                        _toReplace.Add((prevFile.Value!.Mod.Id, prevFile.Value.File.Id), newPair.File);
-                        continue;
-                    }
-
-                    // Moving the file to a new mod
-                    _toRemove.Add(prevFile.Value!.Mod.Id, prevFile.Value.File.Id);
-                    _toAdd.Add(newPair.Mod.Id, newPair.File);
+                    // TODO
+                    continue;
                 }
                 else
                 {
                     // New file
-                    _toAdd.Add(newPair.Mod.Id, newPair.File);
+                    if (_modReplacements.TryGetValue(newPair!.Mod.Id, out var mod1))
+                    {
+                        // We've already processed this mod
+                        mod1 = mod1 with
+                        {
+                            Files = mod1.Files.With(newPair.File.Id, newPair.File)
+                        };
+                        _modReplacements[mod1.Id] = mod1;
+                    }
+                    else if (prevLoadout.Mods.TryGetValue(newPair!.Mod.Id, out var mod2))
+                    {
+                        // Mod already exists in the loadout, so we can just add the file
+                        mod2 = mod2 with
+                        {
+                            Files = mod2.Files.With(newPair.File.Id, newPair.File)
+                        };
+                        _modReplacements[mod2.Id] = mod2;
+                    }
+                    else
+                    {
+                        // We need to use the mod attached to the pair
+                        var mod = newPair.Mod with
+                        {
+                            Files = newPair.Mod.Files.With(newPair.File.Id, newPair.File)
+                        };
+                        _modReplacements[mod.Id] = mod;
+                    }
                 }
             }
+        }
+
+        protected override Loadout AlterBefore(Loadout loadout)
+        {
+            // Add in all the new and updated mods
+            loadout = loadout with
+            {
+                Mods = loadout.Mods.With(_modReplacements)
+            };
+            return base.AlterBefore(loadout);
+        }
+
+        protected override AModFile? AlterBefore(Loadout loadout, Mod mod, AModFile modFile)
+        {
+            // Delete any files that no longer exist
+            if (modFile is IToFile tf && _toDelete.Contains(tf.To))
+            {
+                return null;
+            }
+
+            return modFile;
         }
     }
 
