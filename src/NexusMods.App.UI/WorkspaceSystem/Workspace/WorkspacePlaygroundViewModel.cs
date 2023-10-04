@@ -22,19 +22,35 @@ public class WorkspacePlaygroundViewModel : AViewModel<IWorkspacePlaygroundViewM
     [Reactive] public bool HasBottomLeftPanel { get; set; }
     [Reactive] public bool HasBottomRightPanel { get; set; }
 
-    private IPanelViewModel? _topLeftPanel;
-    private IPanelViewModel? _topRightPanel;
-    private IPanelViewModel? _bottomLeftPanel;
-    private IPanelViewModel? _bottomRightPanel;
+    [Reactive] private IPanelViewModel? TopLeftPanel { get; set; }
+    [Reactive] private IPanelViewModel? TopRightPanel { get; set; }
+    [Reactive] private IPanelViewModel? BottomLeftPanel { get; set; }
+    [Reactive] private IPanelViewModel? BottomRightPanel { get; set; }
 
     public WorkspacePlaygroundViewModel()
     {
         this.WhenActivated(disposables =>
         {
+            this.WhenAnyValue(vm => vm.TopLeftPanel)
+                .SubscribeWithErrorLogging(value => HasTopLeftPanel = value is not null)
+                .DisposeWith(disposables);
+
+            this.WhenAnyValue(vm => vm.TopRightPanel)
+                .SubscribeWithErrorLogging(value => HasTopRightPanel = value is not null)
+                .DisposeWith(disposables);
+
+            this.WhenAnyValue(vm => vm.BottomLeftPanel)
+                .SubscribeWithErrorLogging(value => HasBottomLeftPanel = value is not null)
+                .DisposeWith(disposables);
+
+            this.WhenAnyValue(vm => vm.BottomRightPanel)
+                .SubscribeWithErrorLogging(value => HasBottomRightPanel = value is not null)
+                .DisposeWith(disposables);
+
             this.WhenAnyValue(vm => vm.WorkspaceViewModel.AddPanelCommand)
                 .SubscribeWithErrorLogging(cmd =>
                 {
-                    _topLeftPanel = cmd.Execute(new AddPanelInput
+                    TopLeftPanel = cmd.Execute(new AddPanelInput
                     {
                         PanelToSplit = null,
                         SplitVertically = true
@@ -48,15 +64,19 @@ public class WorkspacePlaygroundViewModel : AViewModel<IWorkspacePlaygroundViewM
             {
                 if (!HasTopRightPanel)
                 {
-                    _topRightPanel = WorkspaceViewModel.AddPanelCommand.Execute(new AddPanelInput
+                    TopRightPanel = WorkspaceViewModel.AddPanelCommand.Execute(new AddPanelInput
                     {
-                        PanelToSplit = _topLeftPanel,
-                        SplitVertically = true
+                        PanelToSplit = HasBottomRightPanel ? BottomRightPanel : TopLeftPanel,
+                        SplitVertically = !HasBottomRightPanel
                     }).Wait();
                 }
                 else
                 {
-                    throw new NotImplementedException();
+                    WorkspaceViewModel.RemovePanelCommand.Execute(new RemovePanelInput
+                    {
+                        PanelToConsume = TopRightPanel!,
+                        PanelToExpand = HasBottomRightPanel ? BottomRightPanel! : TopLeftPanel!
+                    }).Wait();
                 }
 
                 HasTopRightPanel = !HasTopRightPanel;
@@ -67,15 +87,19 @@ public class WorkspacePlaygroundViewModel : AViewModel<IWorkspacePlaygroundViewM
             {
                 if (!HasBottomLeftPanel)
                 {
-                    _bottomLeftPanel = WorkspaceViewModel.AddPanelCommand.Execute(new AddPanelInput
+                    BottomLeftPanel = WorkspaceViewModel.AddPanelCommand.Execute(new AddPanelInput
                     {
-                        PanelToSplit = _topLeftPanel,
+                        PanelToSplit = TopLeftPanel,
                         SplitVertically = false
                     }).Wait();
                 }
                 else
                 {
-                    throw new NotImplementedException();
+                    WorkspaceViewModel.RemovePanelCommand.Execute(new RemovePanelInput
+                    {
+                        PanelToConsume = BottomLeftPanel!,
+                        PanelToExpand = TopLeftPanel!
+                    }).Wait();
                 }
 
                 HasBottomLeftPanel = !HasBottomLeftPanel;
@@ -86,15 +110,19 @@ public class WorkspacePlaygroundViewModel : AViewModel<IWorkspacePlaygroundViewM
             {
                 if (!HasBottomRightPanel)
                 {
-                    _bottomRightPanel = WorkspaceViewModel.AddPanelCommand.Execute(new AddPanelInput
+                    BottomRightPanel = WorkspaceViewModel.AddPanelCommand.Execute(new AddPanelInput
                     {
-                        PanelToSplit = HasBottomLeftPanel ? _bottomLeftPanel : _topRightPanel,
+                        PanelToSplit = HasBottomLeftPanel ? BottomLeftPanel : TopRightPanel,
                         SplitVertically = HasBottomLeftPanel
                     }).Wait();
                 }
                 else
                 {
-                    throw new NotImplementedException();
+                    WorkspaceViewModel.RemovePanelCommand.Execute(new RemovePanelInput
+                    {
+                        PanelToConsume = BottomRightPanel!,
+                        PanelToExpand = HasBottomLeftPanel ? BottomLeftPanel! : TopRightPanel!
+                    }).Wait();
                 }
 
                 HasBottomRightPanel = !HasBottomRightPanel;

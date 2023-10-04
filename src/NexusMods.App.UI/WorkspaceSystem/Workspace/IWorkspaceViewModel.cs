@@ -11,7 +11,7 @@ public interface IWorkspaceViewModel : IViewModelInterface
 
     public ReactiveCommand<AddPanelInput, IPanelViewModel> AddPanelCommand { get; }
 
-    public ReactiveCommand<Unit, Unit> RemovePanelCommand { get; }
+    public ReactiveCommand<RemovePanelInput, Unit> RemovePanelCommand { get; }
 
     public void ArrangePanels(Size workspaceControlSize);
 }

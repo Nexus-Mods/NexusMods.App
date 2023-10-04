@@ -20,7 +20,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     public ReactiveCommand<AddPanelInput, IPanelViewModel> AddPanelCommand { get; private set; } = Initializers.CreateReactiveCommand<AddPanelInput, IPanelViewModel>();
 
     [Reactive]
-    public ReactiveCommand<Unit, Unit> RemovePanelCommand { get; private set; } = Initializers.DisabledReactiveCommand;
+    public ReactiveCommand<RemovePanelInput, Unit> RemovePanelCommand { get; private set; } = Initializers.CreateReactiveCommand<RemovePanelInput>();
 
     public WorkspaceViewModel()
     {
@@ -60,23 +60,15 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 return panelViewModel;
             }, canAddPanel).DisposeWith(disposables);
 
-            var canRemovePanel = _panelSource.CountChanged.Select(count => count > 0);
-            RemovePanelCommand = ReactiveCommand.Create(() =>
+            var canRemovePanel = _panelSource.CountChanged.Select(count => count > 1);
+            RemovePanelCommand = ReactiveCommand.Create<RemovePanelInput, Unit>(removePanelInput =>
             {
-                if (Panels.Count >= 2)
-                {
-                    var last = Panels.TakeLast(count: 2).ToArray();
-                    var toConsume = last.Last();
-                    var toExpand = last.First();
+                var (toConsume, toExpand) = removePanelInput;
 
-                    _panelSource.RemoveKey(toConsume.Id);
-                    toExpand.LogicalBounds = MathUtils.Join(toExpand.LogicalBounds, toConsume.LogicalBounds);
-                }
-                else
-                {
-                    _panelSource.RemoveKey(_panelSource.Keys.Last());
-                }
+                _panelSource.RemoveKey(toConsume.Id);
+                toExpand.LogicalBounds = MathUtils.Join(toExpand.LogicalBounds, toConsume.LogicalBounds);
 
+                return Unit.Default;
             }, canRemovePanel);
         });
     }
