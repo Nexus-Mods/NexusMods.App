@@ -16,9 +16,11 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     private ReadOnlyObservableCollection<IPanelViewModel> _panels = Initializers.ReadOnlyObservableCollection<IPanelViewModel>();
     public ReadOnlyObservableCollection<IPanelViewModel> Panels => _panels;
 
+    /// <inheritdoc/>
     [Reactive]
     public ReactiveCommand<AddPanelInput, IPanelViewModel> AddPanelCommand { get; private set; } = Initializers.CreateReactiveCommand<AddPanelInput, IPanelViewModel>();
 
+    /// <inheritdoc/>
     [Reactive]
     public ReactiveCommand<RemovePanelInput, Unit> RemovePanelCommand { get; private set; } = Initializers.CreateReactiveCommand<RemovePanelInput>();
 
