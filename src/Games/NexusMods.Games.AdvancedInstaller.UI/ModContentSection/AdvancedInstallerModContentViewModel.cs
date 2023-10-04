@@ -9,17 +9,21 @@ public class AdvancedInstallerModContentViewModel : AViewModel<IAdvancedInstalle
     IAdvancedInstallerModContentViewModel
 {
     public virtual HierarchicalTreeDataGridSource<TreeDataGridFileNode> Tree =>
-        new(new TreeDataGridFileNode())
+        new(AdvancedInstallerModContentDesignViewModel.TestTree)
         {
             Columns =
             {
                 new HierarchicalExpanderColumn<TreeDataGridFileNode>(
-                    new TemplateColumn<TreeDataGridFileNode>("File",
+                    new TemplateColumn<TreeDataGridFileNode>(
+                        null,
                         new FuncDataTemplate<TreeDataGridFileNode>((node, scope) => new AdvancedInstallerTreeEntryView()
                         {
                             DataContext = node,
-                        })),
-                    x => x.Children)
+                        }),
+                        width: new GridLength(1, GridUnitType.Star)
+                    ),
+                    x => x.Children
+                )
             }
         };
 }

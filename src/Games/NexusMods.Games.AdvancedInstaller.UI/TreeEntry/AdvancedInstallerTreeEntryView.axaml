@@ -7,13 +7,13 @@
                                 xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI"
                                 xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
                                 xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
-                                mc:Ignorable="d" d:DesignWidth="410" d:DesignHeight="44"
+                                mc:Ignorable="d" d:DesignWidth="710" d:DesignHeight="44"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.AdvancedInstallerTreeEntryView">
     <Design.DataContext>
         <ui:AdvancedInstallerTreeEntryDesignViewModel />
     </Design.DataContext>
 
-    <Grid ColumnDefinitions="*, Auto">
+    <Grid ColumnDefinitions="*, Auto" Margin="0,5,0,5">
         <Grid.Styles>
             <Style Selector="icons|Icon.FileTypeIcon">
                 <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />

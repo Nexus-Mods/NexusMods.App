@@ -10,7 +10,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI;
 
 public class AdvancedInstallerModContentDesignViewModel : AdvancedInstallerModContentViewModel
 {
-    private readonly TreeDataGridFileNode _testTree = new()
+    public static readonly TreeDataGridFileNode TestTree = new()
     {
         FileName = "All mod files", IsDirectory = true, IsRoot = true,
         Children = new ObservableCollection<TreeDataGridFileNode>()
@@ -49,16 +49,18 @@ public class AdvancedInstallerModContentDesignViewModel : AdvancedInstallerModCo
         }
     };
 
-    public override HierarchicalTreeDataGridSource<TreeDataGridFileNode> Tree => new(_testTree)
+    public override HierarchicalTreeDataGridSource<TreeDataGridFileNode> Tree => new(TestTree)
     {
         Columns =
         {
             new HierarchicalExpanderColumn<TreeDataGridFileNode>(
-                new TemplateColumn<TreeDataGridFileNode>("File",
+                new TemplateColumn<TreeDataGridFileNode>(null,
                     new FuncDataTemplate<TreeDataGridFileNode>((node, scope) => new AdvancedInstallerTreeEntryView()
                     {
                         DataContext = node,
-                    })),
+                    }),
+                    width: new GridLength(1, GridUnitType.Star)
+                    ),
                 x => x.Children)
         }
     };
