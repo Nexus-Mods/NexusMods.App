@@ -1,10 +1,67 @@
-﻿<reactiveUi:ReactiveUserControl x:TypeArguments="ui:IAdvancedInstallerSuggestedEntryViewModel" xmlns="https://github.com/avaloniaui"
+﻿<reactiveUi:ReactiveUserControl x:TypeArguments="ui:IAdvancedInstallerSuggestedEntryViewModel"
+                                xmlns="https://github.com/avaloniaui"
                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI"
-                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                                xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
+                                xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+                                mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="60"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.AdvancedInstallerSuggestedEntryView">
-</reactiveUi:ReactiveUserControl>
+    <Design.DataContext>
+        <ui:AdvancedInstallerSuggestedEntryDesignViewModel />
+    </Design.DataContext>
 
+    <Grid ColumnDefinitions="Auto, *, Auto">
+        <Grid.Styles>
+            <Style Selector="icons|Icon.FileTypeIcon">
+                <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+                <Setter Property="FontSize" Value="18" />
+                <Setter Property="Margin" Value="8, 0, 8, 0" />
+            </Style>
+
+            <Style Selector="Button.RightElements">
+                <Setter Property="Margin" Value="8,0,8,0" />
+            </Style>
+
+            <Style Selector="TextBlock.SubHeading">
+                <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryColor}" />
+            </Style>
+
+            <Style Selector="TextBlock#LocationName">
+                <Setter Property="Margin" Value="0,4,0,0" />
+            </Style>
+        </Grid.Styles>
+
+        <!-- Directory Icon -->
+        <icons:Icon Grid.Column="0" Classes="FolderOutline FileTypeIcon"
+                    x:Name="FolderEntryIcon" />
+
+        <Grid Grid.Column="1" VerticalAlignment="Center" RowDefinitions="Auto,Auto">
+            <!-- Location Title -->
+            <TextBlock Grid.Row="0" Classes="BodyMDBold" VerticalAlignment="Center"
+                       TextTrimming="CharacterEllipsis"
+                       Text="Temp Skyrim Special Edition"
+                       x:Name="LocationName" />
+
+            <!-- Location SubHeading -->
+            <TextBlock Grid.Row="1" Classes="BodySMNormal SubHeading" VerticalAlignment="Center"
+                       TextTrimming="CharacterEllipsis"
+                       Text="Temp Game root folder"
+                       x:Name="LocationSubHeading" />
+        </Grid>
+
+
+
+        <!-- Select Button -->
+        <Button Grid.Column="2" Classes="Rounded RightElements" HorizontalAlignment="Right"
+                x:Name="SelectRoundedButton">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{x:Static resources:Language.SelectButton_Select}"
+                           x:Name="SelectButtonTextBlock" />
+            </StackPanel>
+        </Button>
+
+    </Grid>
+</reactiveUi:ReactiveUserControl>
