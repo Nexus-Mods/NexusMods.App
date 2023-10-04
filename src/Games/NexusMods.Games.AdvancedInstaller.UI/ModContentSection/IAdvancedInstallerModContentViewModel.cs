@@ -19,5 +19,12 @@ public class TreeDataGridFileNode : ReactiveObject
 
     [Reactive] public bool IsDirectory { get; set; } = false;
 
+    /// <summary>
+    ///     Contains the children nodes of this node.
+    /// </summary>
+    /// <remarks>
+    ///     Do not rename!! This is used by Avalonia TreeDataGrid control
+    ///     in bindings.
+    /// </remarks>
     [Reactive] public ObservableCollection<TreeDataGridFileNode> Children { get; set; } = new();
 }
