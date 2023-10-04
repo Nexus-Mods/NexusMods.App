@@ -446,7 +446,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
         var flattenedModifiedPair = flattenedAgain[modifiedFile].Value!;
         var flattenedModifiedFile = (FromArchive)flattenedModifiedPair.File;
         flattenedModifiedFile.Hash.Should().Be(new byte[] { 0x01, 0x02, 0x03 }.XxHash64(), "the file should have been modified");
-        flattenedModifiedPair.Mod.Should().Be(prevFlattenedLoadout[modifiedFile].Value!.Mod, "the mod should be the same");
+        flattenedModifiedPair.Mod.Id.Should().Be(prevFlattenedLoadout[modifiedFile].Value!.Mod.Id, "the mod should be the same");
 
         var flattenedNewPair = flattenedAgain[newFile].Value!;
         var flattenedNewFile = (FromArchive) flattenedNewPair.File;

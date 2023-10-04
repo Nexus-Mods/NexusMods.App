@@ -394,6 +394,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         private readonly Dictionary<ModId,Mod> _modReplacements;
         private readonly HashSet<GamePath> _toDelete;
+        private readonly Dictionary<ModId, List<AModFile>> _moveFrom;
+        private readonly Dictionary<ModId, List<AModFile>> _moveTo;
+        private readonly Dictionary<(ModId, ModFileId),AModFile> _fileReplacements;
 
         public FlattenedToLoadoutTransformer(FlattenedLoadout flattenedLoadout, Loadout prevLoadout, FlattenedLoadout prevFlattenedLoadout)
         {
@@ -410,13 +413,51 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 .Select(f => f.Path)
                 .ToHashSet();
 
+            _moveFrom = new Dictionary<ModId, List<AModFile>>();
+            _moveTo = new Dictionary<ModId, List<AModFile>>();
+
+            void AddToValues(Dictionary<ModId, List<AModFile>> dict, ModId key, AModFile file)
+            {
+                if (dict.TryGetValue(key, out var list))
+                {
+                    list.Add(file);
+                }
+                else
+                {
+                    dict.Add(key, new List<AModFile> { file });
+                }
+            }
+
+            _fileReplacements = new Dictionary<(ModId, ModFileId), AModFile>();
 
             // These are files that have changed or are new, so we need to add/update them
             foreach (var (path, newPair) in flattenedLoadout.GetAllDescendentFiles())
             {
-                if (prevFlattenedLoadout.TryGetValue(path, out var prevFile))
+                if (prevFlattenedLoadout.TryGetValue(path, out var prevPair))
                 {
-                    // TODO
+                    if (prevPair.Value!.Mod.Id.Equals(newPair!.Mod.Id))
+                    {
+                        if (prevPair.Value!.File.Id.Equals(newPair!.File.Id))
+                        {
+                            if (prevPair.Value!.File.DataStoreId.Equals(newPair.File.DataStoreId))
+                            {
+                                // Nothing to change
+                                continue;
+                            }
+                            _fileReplacements[(newPair.Mod.Id, newPair.File.Id)] = newPair.File;
+                            continue;
+                        }
+                        else
+                        {
+                            AddToValues(_moveFrom, prevPair.Value.Mod.Id, prevPair.Value.File);
+                            AddToValues(_moveTo, newPair.Mod.Id, newPair.File);
+                            continue;
+                        }
+
+                        continue;
+                    }
+
+
                     continue;
                 }
                 else
@@ -461,6 +502,26 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 Mods = loadout.Mods.With(_modReplacements)
             };
             return base.AlterBefore(loadout);
+        }
+
+        protected override Mod? AlterBefore(Loadout loadout, Mod mod)
+        {
+            if (_moveFrom.TryGetValue(mod.Id, out var replacements))
+            {
+                mod = mod with
+                {
+                    Files = replacements.Aggregate(mod.Files, (files, toRemove) => files.Without(toRemove.Id))
+                };
+            }
+            if (_moveTo.TryGetValue(mod.Id, out replacements))
+            {
+                mod = mod with
+                {
+                    Files = mod.Files.With(replacements.Select(m => KeyValuePair.Create(m.Id, m)))
+                };
+            }
+
+            return mod;
         }
 
         protected override AModFile? AlterBefore(Loadout loadout, Mod mod, AModFile modFile)
