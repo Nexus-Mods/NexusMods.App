@@ -9,7 +9,7 @@ public interface IWorkspaceViewModel : IViewModelInterface
 {
     public ReadOnlyObservableCollection<IPanelViewModel> Panels { get; }
 
-    public ReactiveCommand<Unit, Unit> AddPanelCommand { get; }
+    public ReactiveCommand<AddPanelInput, IPanelViewModel> AddPanelCommand { get; }
 
     public ReactiveCommand<Unit, Unit> RemovePanelCommand { get; }
 

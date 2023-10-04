@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Windows.Input;
@@ -25,6 +26,16 @@ public static class Initializers
 
     public static readonly ReactiveCommand<Unit, Unit> EnabledReactiveCommand = ReactiveCommand.Create(() => { }, Observable.Return(true));
     public static readonly ReactiveCommand<Unit, Unit> DisabledReactiveCommand = ReactiveCommand.Create(() => { }, Observable.Return(false));
+
+    public static ReactiveCommand<TInput, Unit> CreateReactiveCommand<TInput>(bool disabled = true)
+    {
+        return ReactiveCommand.Create<TInput, Unit>(_ => Unit.Default, Observable.Return(disabled));
+    }
+
+    public static ReactiveCommand<TInput, TOutput> CreateReactiveCommand<TInput, TOutput>()
+    {
+        return ReactiveCommand.Create<TInput, TOutput>(_ => throw new UnreachableException(), Observable.Return(false));
+    }
 
     public static readonly ModCursor ModCursor = new(LoadoutId,
         ModId.From(new Guid("00000000-0000-0000-0000-000000000002")));

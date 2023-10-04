@@ -13,19 +13,23 @@
     </Design.DataContext>
 
     <Grid RowDefinitions="Auto, *">
-        <StackPanel Orientation="Horizontal" Grid.Row="0">
-            <Button x:Name="AddPanelButton" Classes="Standard PrimaryOutlined">
-                <TextBlock>Add Panel</TextBlock>
+        <Grid Grid.Row="0" ColumnDefinitions="Auto, Auto" RowDefinitions="Auto, Auto">
+            <Button Grid.Row="0" Grid.Column="0" Classes="Standard PrimaryOutlined" x:Name="TopLeftButton">
+                <TextBlock x:Name="TopLeftTextBlock"/>
             </Button>
 
-            <Button x:Name="RemovePanelButton" Classes="Standard PrimaryOutlined">
-                <TextBlock>Remove Panel</TextBlock>
+            <Button Grid.Row="0" Grid.Column="1" Classes="Standard PrimaryOutlined" x:Name="TopRightButton">
+                <TextBlock x:Name="TopRightTextBlock"/>
             </Button>
 
-            <CheckBox x:Name="VerticalSplitCheckbox">
-                <TextBlock Classes="ButtonMontserratSemi">Split Vertically</TextBlock>
-            </CheckBox>
-        </StackPanel>
+            <Button Grid.Row="1" Grid.Column="0" Classes="Standard PrimaryOutlined" x:Name="BottomLeftButton">
+                <TextBlock x:Name="BottomLeftTextBlock"/>
+            </Button>
+
+            <Button Grid.Row="1" Grid.Column="1" Classes="Standard PrimaryOutlined" x:Name="BottomRightButton">
+                <TextBlock x:Name="BottomRightTextBlock"/>
+            </Button>
+        </Grid>
 
         <reactive:ViewModelViewHost Grid.Row="1" x:Name="ViewModelViewHost" />
     </Grid>

@@ -17,12 +17,10 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     public ReadOnlyObservableCollection<IPanelViewModel> Panels => _panels;
 
     [Reactive]
-    public ReactiveCommand<Unit, Unit> AddPanelCommand { get; private set; } = Initializers.DisabledReactiveCommand;
+    public ReactiveCommand<AddPanelInput, IPanelViewModel> AddPanelCommand { get; private set; } = Initializers.CreateReactiveCommand<AddPanelInput, IPanelViewModel>();
 
     [Reactive]
     public ReactiveCommand<Unit, Unit> RemovePanelCommand { get; private set; } = Initializers.DisabledReactiveCommand;
-
-    internal bool SplitVertically = true;
 
     public WorkspaceViewModel()
     {
@@ -39,25 +37,27 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 .DisposeWith(disposables);
 
             var canAddPanel = _panelSource.CountChanged.Select(count => count < maxPanelCount);
-            AddPanelCommand = ReactiveCommand.Create(() =>
+            AddPanelCommand = ReactiveCommand.Create<AddPanelInput, IPanelViewModel>(addPanelInput =>
             {
                 var newPanelLogicalBounds = MathUtils.One;
 
-                var lastPanel = Panels.LastOrDefault();
-                if (lastPanel is not null)
+                var (panelToSplit, splitVertically) = addPanelInput;
+                if (panelToSplit is not null)
                 {
-                    var tuple = MathUtils.Split(lastPanel.LogicalBounds, vertical: SplitVertically);
-                    lastPanel.LogicalBounds = tuple.UpdatedLogicalBounds;
+                    var tuple = MathUtils.Split(panelToSplit.LogicalBounds, vertical: splitVertically);
+                    panelToSplit.LogicalBounds = tuple.UpdatedLogicalBounds;
                     newPanelLogicalBounds = tuple.NewPanelLogicalBounds;
                 }
 
-                Console.WriteLine(newPanelLogicalBounds.ToString());
-                _panelSource.AddOrUpdate(new PanelViewModel
+                var panelViewModel = new PanelViewModel
                 {
                     LogicalBounds = newPanelLogicalBounds
-                });
+                };
 
+                _panelSource.AddOrUpdate(panelViewModel);
                 ArrangePanels(_lastWorkspaceControlSize);
+
+                return panelViewModel;
             }, canAddPanel).DisposeWith(disposables);
 
             var canRemovePanel = _panelSource.CountChanged.Select(count => count > 0);
