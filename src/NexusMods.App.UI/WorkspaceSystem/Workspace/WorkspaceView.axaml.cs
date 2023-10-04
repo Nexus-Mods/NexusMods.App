@@ -21,12 +21,6 @@ public partial class WorkspaceView : ReactiveUserControl<IWorkspaceViewModel>
         {
             Debug.Assert(WorkspaceCanvas.Children.Count == 0);
 
-            this.BindCommand(ViewModel, vm => vm.AddPanelCommand, view => view.AddPanelButton)
-                .DisposeWith(disposables);
-
-            this.BindCommand(ViewModel, vm => vm.RemovePanelCommand, view => view.RemovePanelButton)
-                .DisposeWith(disposables);
-
             ViewModel!.Panels
                 .ToObservableChangeSet()
                 .SubscribeWithErrorLogging(changeSet =>

@@ -8,20 +8,6 @@
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.WorkspaceSystem.WorkspaceView">
 
-    <Design.DataContext>
-        <workspace:WorkspaceViewModel/>
-    </Design.DataContext>
-
-    <StackPanel>
-        <Button x:Name="AddPanelButton" Classes="Standard PrimaryOutlined">
-            <TextBlock>Add Panel</TextBlock>
-        </Button>
-
-        <Button x:Name="RemovePanelButton" Classes="Standard PrimaryOutlined">
-            <TextBlock>Remove Panel</TextBlock>
-        </Button>
-
-        <Canvas x:Name="WorkspaceCanvas"></Canvas>
-    </StackPanel>
+    <Canvas x:Name="WorkspaceCanvas"></Canvas>
 
 </reactive:ReactiveUserControl>
