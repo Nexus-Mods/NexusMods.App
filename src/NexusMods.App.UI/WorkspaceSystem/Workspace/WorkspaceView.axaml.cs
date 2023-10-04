@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Reactive.Disposables;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using DynamicData;
@@ -77,5 +78,12 @@ public partial class WorkspaceView : ReactiveUserControl<IWorkspaceViewModel>
         {
             ViewModel = panelViewModel
         };
+    }
+
+    protected override Size ArrangeOverride(Size finalSize)
+    {
+        Console.WriteLine(nameof(ArrangeOverride));
+        ViewModel?.ArrangePanels(finalSize);
+        return base.ArrangeOverride(finalSize);
     }
 }

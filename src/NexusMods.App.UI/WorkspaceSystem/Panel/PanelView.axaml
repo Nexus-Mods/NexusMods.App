@@ -6,7 +6,8 @@
     xmlns:reactive="http://reactiveui.net"
     xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-    x:Class="NexusMods.App.UI.WorkspaceSystem.PanelView">
+    x:Class="NexusMods.App.UI.WorkspaceSystem.PanelView"
+    Width="0" Height="0">
 
     <!-- <reactive:ViewModelViewHost x:Name="ViewModelViewHost"/> -->
 
@@ -14,6 +15,6 @@
         <workspace:PanelViewModel/>
     </Design.DataContext>
 
-    <TextBlock Classes="Body2RobotoRegularBold">Hello World!</TextBlock>
+    <TextBlock>Hello World!</TextBlock>
 
 </reactive:ReactiveUserControl>

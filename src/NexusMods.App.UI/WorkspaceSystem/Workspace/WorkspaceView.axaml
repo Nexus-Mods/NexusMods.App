@@ -9,7 +9,7 @@
     x:Class="NexusMods.App.UI.WorkspaceSystem.WorkspaceView">
 
     <Design.DataContext>
-        <workspace:WorkspaceDesignViewModel/>
+        <workspace:WorkspaceViewModel/>
     </Design.DataContext>
 
     <StackPanel>

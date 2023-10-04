@@ -313,9 +313,6 @@
           <DependentUpon>WorkspaceView.axaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
-        <Compile Update="WorkspaceSystem\Workspace\WorkspaceDesignViewModel.cs">
-          <DependentUpon>IWorkspaceViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="WorkspaceSystem\Workspace\WorkspaceViewModel.cs">
           <DependentUpon>IWorkspaceViewModel.cs</DependentUpon>
         </Compile>
