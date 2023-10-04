@@ -32,7 +32,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
             var canAddPanel = _panelSource.CountChanged.Select(count => count < 4);
             AddPanelCommand = ReactiveCommand.Create(() =>
             {
-                var newPanelLogicalBounds = new Rect(0.0, 0.0, 1.0, 1.0);
+                var newPanelLogicalBounds = MathUtils.One;
 
                 var lastPanel = Panels.LastOrDefault();
                 if (lastPanel is not null)
