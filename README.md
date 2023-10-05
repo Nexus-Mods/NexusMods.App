@@ -52,7 +52,7 @@ Further Reading: [Comparison of File Management Systems](/docs/ComparisonOfFileM
 
 **Q:** Why is this being done, why a new platform, design, etc.?
 
-**A:** Vortex was designed primarily for develoment by a team of one person (Tannin), as at the time Nexus wasn't ready to take on the financial and leadership burden of a larger development team. However, times change and we're now in the position of being able to have a more well structured team and development schedule. As such we are increasing the size of our mod management team. On the technical side of things we're taking time to lay a solid CI foundation, setup a well rounded datamodel (using lessons we've learned over the years of developing Vortex), and build this project to be more of a company product and less of a community project. 
+**A:** Vortex was designed primarily for development by a team of one person (Tannin), as at the time Nexus wasn't ready to take on the financial and leadership burden of a larger development team. However, times change and we're now in the position of being able to have a more well structured team and development schedule. As such we are increasing the size of our mod management team. On the technical side of things we're taking time to lay a solid CI foundation, setup a well rounded datamodel (using lessons we've learned over the years of developing Vortex), and build this project to be more of a company product and less of a community project. 
 
 
 **Q:** Company product? Is this going closed source?
