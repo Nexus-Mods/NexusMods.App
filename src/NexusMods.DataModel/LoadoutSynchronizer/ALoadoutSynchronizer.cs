@@ -404,173 +404,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             .Transform(prevLoadout));
     }
 
-    private class FlattenedToLoadoutTransformer : ALoadoutVisitor
-    {
-        private readonly Dictionary<ModId,Mod> _modReplacements;
-        private readonly HashSet<GamePath> _toDelete;
-        private readonly Dictionary<ModId, List<AModFile>> _moveFrom;
-        private readonly Dictionary<ModId, List<AModFile>> _moveTo;
-        private readonly Dictionary<(ModId, ModFileId),AModFile> _fileReplacements;
-
-        public FlattenedToLoadoutTransformer(FlattenedLoadout flattenedLoadout, Loadout prevLoadout, FlattenedLoadout prevFlattenedLoadout)
-        {
-
-            // The pattern is pretty simple here, we'll preprocess as much information as we can, and construct
-            // helper collections to allow us to efficiently transform the loadout. The overall goal is to reduce
-            // all operations to O(n) time complexity, where n is the number of files in the loadout.
-
-            _modReplacements = new Dictionary<ModId, Mod>();
-
-            // These are files that no longer exist in the loadout, so we need to delete them
-            _toDelete = prevFlattenedLoadout.GetAllDescendentFiles()
-                .Where(f => !flattenedLoadout.TryGetValue(f.Path, out _))
-                .Select(f => f.Path)
-                .ToHashSet();
-
-            _moveFrom = new Dictionary<ModId, List<AModFile>>();
-            _moveTo = new Dictionary<ModId, List<AModFile>>();
-
-            void AddToValues(Dictionary<ModId, List<AModFile>> dict, ModId key, AModFile file)
-            {
-                if (dict.TryGetValue(key, out var list))
-                {
-                    list.Add(file);
-                }
-                else
-                {
-                    dict.Add(key, new List<AModFile> { file });
-                }
-            }
-
-            _fileReplacements = new Dictionary<(ModId, ModFileId), AModFile>();
-
-            // These are files that have changed or are new, so we need to add/update them
-            foreach (var (path, newPair) in flattenedLoadout.GetAllDescendentFiles())
-            {
-                if (prevFlattenedLoadout.TryGetValue(path, out var prevPair))
-                {
-                    if (prevPair.Value!.Mod.Id.Equals(newPair!.Mod.Id))
-                    {
-                        if (prevPair.Value!.File.Id.Equals(newPair!.File.Id))
-                        {
-                            if (prevPair.Value!.File.DataStoreId.Equals(newPair.File.DataStoreId))
-                            {
-                                // Nothing to change
-                                continue;
-                            }
-                            _fileReplacements[(newPair.Mod.Id, newPair.File.Id)] = newPair.File;
-                            continue;
-                        }
-                        else
-                        {
-                            AddToValues(_moveFrom, prevPair.Value.Mod.Id, prevPair.Value.File);
-                            AddToValues(_moveTo, newPair.Mod.Id, newPair.File);
-                            continue;
-                        }
-
-                        continue;
-                    }
-
-
-                    continue;
-                }
-                else
-                {
-                    // New file
-                    if (_modReplacements.TryGetValue(newPair!.Mod.Id, out var mod1))
-                    {
-                        // We've already processed this mod
-                        mod1 = mod1 with
-                        {
-                            Files = mod1.Files.With(newPair.File.Id, newPair.File)
-                        };
-                        _modReplacements[mod1.Id] = mod1;
-                    }
-                    else if (prevLoadout.Mods.TryGetValue(newPair!.Mod.Id, out var mod2))
-                    {
-                        // Mod already exists in the loadout, so we can just add the file
-                        mod2 = mod2 with
-                        {
-                            Files = mod2.Files.With(newPair.File.Id, newPair.File)
-                        };
-                        _modReplacements[mod2.Id] = mod2;
-                    }
-                    else
-                    {
-                        // We need to use the mod attached to the pair
-                        var mod = newPair.Mod with
-                        {
-                            Files = newPair.Mod.Files.With(newPair.File.Id, newPair.File)
-                        };
-                        _modReplacements[mod.Id] = mod;
-                    }
-                }
-            }
-        }
-
-        protected override Loadout AlterBefore(Loadout loadout)
-        {
-            // Add in all the new and updated mods
-            loadout = loadout with
-            {
-                Mods = loadout.Mods.With(_modReplacements)
-            };
-            return base.AlterBefore(loadout);
-        }
-
-        protected override Mod? AlterBefore(Loadout loadout, Mod mod)
-        {
-            if (_moveFrom.TryGetValue(mod.Id, out var replacements))
-            {
-                mod = mod with
-                {
-                    Files = replacements.Aggregate(mod.Files, (files, toRemove) => files.Without(toRemove.Id))
-                };
-            }
-            if (_moveTo.TryGetValue(mod.Id, out replacements))
-            {
-                mod = mod with
-                {
-                    Files = mod.Files.With(replacements.Select(m => KeyValuePair.Create(m.Id, m)))
-                };
-            }
-
-            return mod;
-        }
-
-        protected override AModFile? AlterBefore(Loadout loadout, Mod mod, AModFile modFile)
-        {
-            // Delete any files that no longer exist
-            if (modFile is IToFile tf && _toDelete.Contains(tf.To))
-            {
-                return null;
-            }
-
-            return modFile;
-        }
-    }
-
     /// <inheritdoc />
-    public Loadout MergeLoadouts(Loadout loadoutA, Loadout loadoutB)
+    public virtual Loadout MergeLoadouts(Loadout loadoutA, Loadout loadoutB)
     {
         var visitor = new MergingVisitor();
         return visitor.Transform(loadoutA, loadoutB);
-    }
-
-    /// <inheritdoc />
-    public async ValueTask<DiskState> GetInitialGameState(GameInstallation installation)
-    {
-        var paths = installation.LocationsRegister.GetTopLevelLocations();
-        var results = await _hashCache.IndexFoldersAsync(paths.Select(p => p.Value))
-            .Select(p => KeyValuePair.Create(installation.LocationsRegister.ToGamePath(p.Path),
-                new DiskStateEntry()
-                {
-                    Hash = p.Hash,
-                    Size = p.Size,
-                    LastModified = p.LastModified
-                }))
-            .ToListAsync();
-        return DiskState.Create(results);
     }
 
     /// <summary>
@@ -578,7 +416,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// </summary>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    public async Task<DiskState> Apply(Loadout loadout)
+    public virtual async Task<DiskState> Apply(Loadout loadout)
     {
         var flattened = await LoadoutToFlattenedLoadout(loadout);
         var fileTree = await FlattenedLoadoutToFileTree(flattened, loadout);
@@ -588,7 +426,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public async Task<Loadout> Ingest(Loadout loadout)
+    public virtual async Task<Loadout> Ingest(Loadout loadout)
     {
         // Reconstruct the previous file tree
         var prevFlattenedLoadout = await LoadoutToFlattenedLoadout(loadout);
@@ -604,7 +442,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return newLoadout;
     }
 
-    public async Task<Loadout> Manage(GameInstallation installation)
+    /// <inheritdoc />
+    public virtual async Task<Loadout> Manage(GameInstallation installation)
     {
         var initialState = await installation.Game.GetInitialDiskState(installation);
 

@@ -101,10 +101,13 @@ public interface ILoadoutSynchronizer
     /// <returns></returns>
     Task<Loadout> Ingest(Loadout loadout);
 
+
+    /// <summary>
+    /// Manage a game, creating the initial loadout
+    /// </summary>
+    /// <param name="installation"></param>
+    /// <returns></returns>
     Task<Loadout> Manage(GameInstallation installation);
 
     #endregion
-
-
-
 }
