@@ -84,4 +84,7 @@
     <data name="AllFoldersAreaSubHeaderText_Select_from_full" xml:space="preserve">
         <value>Select from the full folder structure</value>
     </data>
+    <data name="FileTree_ALL_MOD_FILES" xml:space="preserve">
+        <value>All mod files</value>
+    </data>
 </root>

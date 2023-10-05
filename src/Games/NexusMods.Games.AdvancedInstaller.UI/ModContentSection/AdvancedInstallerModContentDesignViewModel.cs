@@ -1,61 +1,25 @@
-﻿using System.Collections.ObjectModel;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Templates;
-using Avalonia.Markup.Xaml.Templates;
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
+using NexusMods.App.UI;
+using NexusMods.Paths;
+using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
 
-public class AdvancedInstallerModContentDesignViewModel : AdvancedInstallerModContentViewModel
+public class AdvancedInstallerModContentDesignViewModel : AViewModel<IAdvancedInstallerModContentViewModel>,
+    IAdvancedInstallerModContentViewModel
 {
-    public static readonly TreeDataGridFileNode TestTree = new()
-    {
-        FileName = "All mod files", IsDirectory = true, IsRoot = true,
-        Children = new ObservableCollection<TreeDataGridFileNode>()
-        {
-            new() { FileName = "BWS.bsa" },
-            new() { FileName = "BWS - Textures.bsa" },
-            new() { FileName = "Readme-BWS.txt" },
-            new()
-            {
-                FileName = "Textures", IsDirectory = true,
-                Children = new ObservableCollection<TreeDataGridFileNode>()
-                {
-                    new() { FileName = "greenBlade.dds" },
-                    new() { FileName = "greenBlade_n.dds" },
-                    new() { FileName = "greenHilt.dds" },
-                    new()
-                    {
-                        FileName = "Armors", IsDirectory = true,
-                        Children = new ObservableCollection<TreeDataGridFileNode>()
-                        {
-                            new() { FileName = "greenArmor.dds" },
-                            new() { FileName = "greenBlade.dds" },
-                            new() { FileName = "greenHilt.dds" },
-                        },
-                    },
-                },
-            },
-            new()
-            {
-                FileName = "Meshes", IsDirectory = true,
-                Children = new ObservableCollection<TreeDataGridFileNode>()
-                {
-                    new() { FileName = "greenBlade.nif" },
-                }
-            }
-        }
-    };
-
-    public override HierarchicalTreeDataGridSource<TreeDataGridFileNode> Tree => new(TestTree)
+    /// <summary>
+    /// The visual representation of the tree.
+    /// </summary>
+    public HierarchicalTreeDataGridSource<ITreeDataGridSourceFileNode> Tree => new(GetTreeData())
     {
         Columns =
         {
-            new HierarchicalExpanderColumn<TreeDataGridFileNode>(
-                new TemplateColumn<TreeDataGridFileNode>(null,
-                    new FuncDataTemplate<TreeDataGridFileNode>((node, scope) => new AdvancedInstallerTreeEntryView()
+            new HierarchicalExpanderColumn<ITreeDataGridSourceFileNode>(
+                new TemplateColumn<ITreeDataGridSourceFileNode>(null,
+                    new FuncDataTemplate<ITreeDataGridSourceFileNode>((node, scope) => new AdvancedInstallerTreeEntryView()
                     {
                         DataContext = node,
                     }),
@@ -64,6 +28,28 @@ public class AdvancedInstallerModContentDesignViewModel : AdvancedInstallerModCo
                 x => x.Children)
         }
     };
+
+    protected virtual ITreeDataGridSourceFileNode GetTreeData() => CreateTestTree();
+
+    private static ITreeDataGridSourceFileNode CreateTestTree()
+    {
+        var fileEntries = new Dictionary<RelativePath, int>
+        {
+            { new RelativePath("BWS.bsa"), 1 },
+            { new RelativePath("BWS - Textures.bsa"), 2 },
+            { new RelativePath("Readme-BWS.txt"), 3 },
+            { new RelativePath("Textures/greenBlade.dds"), 4 },
+            { new RelativePath("Textures/greenBlade_n.dds"), 5 },
+            { new RelativePath("Textures/greenHilt.dds"), 6 },
+            { new RelativePath("Textures/Armors/greenArmor.dds"), 7 },
+            { new RelativePath("Textures/Armors/greenBlade.dds"), 8 },
+            { new RelativePath("Textures/Armors/greenHilt.dds"), 9 },
+            { new RelativePath("Meshes/greenBlade.nif"), 10 }
+        };
+
+        var tree = FileTreeNode<RelativePath, int>.CreateTree(fileEntries);
+        return TreeDataGridSourceFileNode<RelativePath, int>.FromFileTree(tree);
+    }
 }
 
 
