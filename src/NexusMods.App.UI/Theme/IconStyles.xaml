@@ -13,6 +13,7 @@
                 </Style>
             </WrapPanel.Styles>
             <icons:Icon Classes="Alert"></icons:Icon>
+            <icons:Icon Classes="AlertOutline"></icons:Icon>
             <icons:Icon Classes="Bell"></icons:Icon>
             <icons:Icon Classes="CheckUnderline"></icons:Icon>
             <icons:Icon Classes="ClearAll"></icons:Icon>
@@ -52,6 +53,10 @@
 
     <Style Selector="icons|Icon.Alert">
         <Setter Property="Value" Value="mdi-alert"></Setter>
+    </Style>
+
+    <Style Selector="icons|Icon.AlertOutline">
+        <Setter Property="Value" Value="mdi-alert-outline"></Setter>
     </Style>
 
     <Style Selector="icons|Icon.Bell">
