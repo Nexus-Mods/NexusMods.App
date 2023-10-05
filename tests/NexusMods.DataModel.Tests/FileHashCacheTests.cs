@@ -11,6 +11,7 @@ public class FileHashCacheTests : ADataModelTest<FileHashCacheTests>
 {
     public FileHashCacheTests(IServiceProvider provider) : base(provider)
     {
+
     }
 
     [Fact]

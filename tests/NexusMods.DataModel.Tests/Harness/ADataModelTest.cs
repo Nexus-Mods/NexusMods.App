@@ -82,7 +82,6 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
     public void Dispose()
     {
-        //_host.Dispose();
     }
 
     public virtual async Task InitializeAsync()
