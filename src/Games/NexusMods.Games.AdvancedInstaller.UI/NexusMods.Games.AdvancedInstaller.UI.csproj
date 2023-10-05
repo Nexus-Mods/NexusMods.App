@@ -91,5 +91,13 @@
         <Compile Update="SuggestedEntry\AdvancedInstallerSuggestedEntryDesignViewModel.cs">
           <DependentUpon>IAdvancedInstallerSuggestedEntryViewModel.cs</DependentUpon>
         </Compile>
+
+        <Compile Update="Overlay\UnsupportedModOverlayViewModel.cs">
+          <DependentUpon>IUnsupportedModOverlayViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Overlay\UnsupportedModOverlayDesignViewModel.cs">
+          <DependentUpon>IUnsupportedModOverlayViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 </Project>
