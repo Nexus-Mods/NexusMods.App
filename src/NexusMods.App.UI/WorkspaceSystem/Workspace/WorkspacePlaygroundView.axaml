@@ -13,23 +13,15 @@
     </Design.DataContext>
 
     <Grid RowDefinitions="Auto, *">
-        <Grid Grid.Row="0" ColumnDefinitions="Auto, Auto" RowDefinitions="Auto, Auto">
-            <Button Grid.Row="0" Grid.Column="0" Classes="Standard PrimaryOutlined" x:Name="TopLeftButton">
-                <TextBlock x:Name="TopLeftTextBlock"/>
+        <StackPanel Grid.Row="0" Spacing="8">
+            <Button x:Name="AddPanelButton" Classes="Standard PrimaryOutlined">
+                <TextBlock>Add Panel</TextBlock>
             </Button>
 
-            <Button Grid.Row="0" Grid.Column="1" Classes="Standard PrimaryOutlined" x:Name="TopRightButton">
-                <TextBlock x:Name="TopRightTextBlock"/>
+            <Button x:Name="RemovePanelButton" Classes="Standard PrimaryOutlined">
+                <TextBlock>Remove Panel</TextBlock>
             </Button>
-
-            <Button Grid.Row="1" Grid.Column="0" Classes="Standard PrimaryOutlined" x:Name="BottomLeftButton">
-                <TextBlock x:Name="BottomLeftTextBlock"/>
-            </Button>
-
-            <Button Grid.Row="1" Grid.Column="1" Classes="Standard PrimaryOutlined" x:Name="BottomRightButton">
-                <TextBlock x:Name="BottomRightTextBlock"/>
-            </Button>
-        </Grid>
+        </StackPanel>
 
         <reactive:ViewModelViewHost Grid.Row="1" x:Name="ViewModelViewHost" />
     </Grid>

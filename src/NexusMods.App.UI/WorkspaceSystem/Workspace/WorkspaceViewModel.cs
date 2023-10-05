@@ -1,9 +1,11 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia;
 using DynamicData;
+using DynamicData.Binding;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -11,14 +13,21 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 
 public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceViewModel
 {
+    private const int Columns = 2;
+    private const int Rows = 2;
+    private const int MaxPanelCount = Columns * Rows;
+
     private readonly SourceCache<IPanelViewModel, PanelId> _panelSource = new(x => x.Id);
 
     private ReadOnlyObservableCollection<IPanelViewModel> _panels = Initializers.ReadOnlyObservableCollection<IPanelViewModel>();
     public ReadOnlyObservableCollection<IPanelViewModel> Panels => _panels;
 
+    [Reactive]
+    public IReadOnlyList<IReadOnlyDictionary<PanelId, Rect>> PossibleStates { get; private set; } = Array.Empty<IReadOnlyDictionary<PanelId, Rect>>();
+
     /// <inheritdoc/>
     [Reactive]
-    public ReactiveCommand<AddPanelInput, IPanelViewModel> AddPanelCommand { get; private set; } = Initializers.CreateReactiveCommand<AddPanelInput, IPanelViewModel>();
+    public ReactiveCommand<IReadOnlyDictionary<PanelId, Rect>, IPanelViewModel> AddPanelCommand { get; private set; } = Initializers.CreateReactiveCommand<IReadOnlyDictionary<PanelId, Rect>, IPanelViewModel>();
 
     /// <inheritdoc/>
     [Reactive]
@@ -26,9 +35,6 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
     public WorkspaceViewModel()
     {
-        // TODO: setting?
-        const int maxPanelCount = 4;
-
         this.WhenActivated(disposables =>
         {
             _panelSource
@@ -38,27 +44,46 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 .SubscribeWithErrorLogging()
                 .DisposeWith(disposables);
 
-            var canAddPanel = _panelSource.CountChanged.Select(count => count < maxPanelCount);
-            AddPanelCommand = ReactiveCommand.Create<AddPanelInput, IPanelViewModel>(addPanelInput =>
-            {
-                var newPanelLogicalBounds = MathUtils.One;
-
-                var (panelToSplit, splitVertically) = addPanelInput;
-                if (panelToSplit is not null)
+            _panels
+                .ObserveCollectionChanges()
+                .SubscribeWithErrorLogging(_ =>
                 {
-                    var tuple = MathUtils.Split(panelToSplit.LogicalBounds, vertical: splitVertically);
-                    panelToSplit.LogicalBounds = tuple.UpdatedLogicalBounds;
-                    newPanelLogicalBounds = tuple.NewPanelLogicalBounds;
+                    PossibleStates = GridUtils.GetPossibleStates(_panels, Columns, Rows).ToArray();
+                })
+                .DisposeWith(disposables);
+
+            var canAddPanel = _panelSource.CountChanged.Select(count => count < MaxPanelCount);
+            AddPanelCommand = ReactiveCommand.Create<IReadOnlyDictionary<PanelId, Rect>, IPanelViewModel>(state =>
+            {
+                IPanelViewModel panelViewModel = null!;
+                foreach (var kv in state)
+                {
+                    var (panelId, logicalBounds) = kv;
+                    _panelSource.Edit(update =>
+                    {
+                        if (panelId == PanelId.Empty)
+                        {
+                            panelViewModel = new PanelViewModel
+                            {
+                                LogicalBounds = logicalBounds
+                            };
+
+                            update.AddOrUpdate(panelViewModel);
+                        }
+                        else
+                        {
+                            var existingPanel = update.Lookup(panelId);
+                            Debug.Assert(existingPanel.HasValue);
+
+                            var value = existingPanel.Value;
+                            value.LogicalBounds = logicalBounds;
+                        }
+                    });
                 }
 
-                var panelViewModel = new PanelViewModel
-                {
-                    LogicalBounds = newPanelLogicalBounds
-                };
+                ArrangePanels(_lastWorkspaceSize);
 
-                _panelSource.AddOrUpdate(panelViewModel);
-                ArrangePanels(_lastWorkspaceControlSize);
-
+                Debug.Assert(panelViewModel is not null);
                 return panelViewModel;
             }, canAddPanel).DisposeWith(disposables);
 
@@ -75,13 +100,13 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         });
     }
 
-    private Size _lastWorkspaceControlSize;
-    public void ArrangePanels(Size workspaceControlSize)
+    private Size _lastWorkspaceSize;
+    public void ArrangePanels(Size workspaceSize)
     {
-        _lastWorkspaceControlSize = workspaceControlSize;
+        _lastWorkspaceSize = workspaceSize;
         foreach (var panelViewModel in _panelSource.Items)
         {
-            panelViewModel.Arrange(workspaceControlSize);
+            panelViewModel.Arrange(workspaceSize);
         }
     }
 }

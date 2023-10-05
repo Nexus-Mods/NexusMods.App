@@ -31,7 +31,6 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
     private void UpdateActualBounds()
     {
         ActualBounds = MathUtils.CalculateActualBounds(_workspaceSize, LogicalBounds);
-        Console.WriteLine(ActualBounds.ToString());
     }
 
     /// <inheritdoc/>

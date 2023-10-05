@@ -29,8 +29,6 @@ public partial class WorkspaceView : ReactiveUserControl<IWorkspaceViewModel>
 
                     foreach (var change in changeSet)
                     {
-                        Console.WriteLine(change.Reason);
-
                         switch (change.Reason)
                         {
                             case ListChangeReason.Add:
@@ -76,7 +74,6 @@ public partial class WorkspaceView : ReactiveUserControl<IWorkspaceViewModel>
 
     protected override Size ArrangeOverride(Size finalSize)
     {
-        Console.WriteLine(nameof(ArrangeOverride));
         ViewModel?.ArrangePanels(finalSize);
         return base.ArrangeOverride(finalSize);
     }
