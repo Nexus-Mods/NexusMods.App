@@ -322,9 +322,6 @@
         <Compile Update="WorkspaceSystem\Workspace\WorkspacePlaygroundViewModel.cs">
           <DependentUpon>WorkspacePlaygroundView.axaml</DependentUpon>
         </Compile>
-        <Compile Update="WorkspaceSystem\Workspace\AddPanelInput.cs">
-          <DependentUpon>IWorkspaceViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="WorkspaceSystem\Workspace\RemovePanelInput.cs">
           <DependentUpon>IWorkspaceViewModel.cs</DependentUpon>
         </Compile>

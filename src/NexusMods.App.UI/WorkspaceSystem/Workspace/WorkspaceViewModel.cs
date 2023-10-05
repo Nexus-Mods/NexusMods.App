@@ -48,7 +48,16 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 .ObserveCollectionChanges()
                 .SubscribeWithErrorLogging(_ =>
                 {
+                    // Console.WriteLine("Panels Changed");
                     PossibleStates = GridUtils.GetPossibleStates(_panels, Columns, Rows).ToArray();
+                    // foreach (var possibleState in PossibleStates)
+                    // {
+                    //     foreach (var kv in possibleState)
+                    //     {
+                    //         Console.WriteLine($"[{kv.Key}]: {kv.Value}");
+                    //     }
+                    //     Console.WriteLine();
+                    // }
                 })
                 .DisposeWith(disposables);
 
@@ -56,11 +65,11 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
             AddPanelCommand = ReactiveCommand.Create<IReadOnlyDictionary<PanelId, Rect>, IPanelViewModel>(state =>
             {
                 IPanelViewModel panelViewModel = null!;
-                foreach (var kv in state)
+                _panelSource.Edit(updater =>
                 {
-                    var (panelId, logicalBounds) = kv;
-                    _panelSource.Edit(update =>
+                    foreach (var kv in state)
                     {
+                        var (panelId, logicalBounds) = kv;
                         if (panelId == PanelId.Empty)
                         {
                             panelViewModel = new PanelViewModel
@@ -68,20 +77,20 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                                 LogicalBounds = logicalBounds
                             };
 
-                            update.AddOrUpdate(panelViewModel);
+                            panelViewModel.Arrange(_lastWorkspaceSize);
+                            updater.AddOrUpdate(panelViewModel);
                         }
                         else
                         {
-                            var existingPanel = update.Lookup(panelId);
+                            var existingPanel = updater.Lookup(panelId);
                             Debug.Assert(existingPanel.HasValue);
 
                             var value = existingPanel.Value;
                             value.LogicalBounds = logicalBounds;
+                            updater.AddOrUpdate(value);
                         }
-                    });
-                }
-
-                ArrangePanels(_lastWorkspaceSize);
+                    }
+                });
 
                 Debug.Assert(panelViewModel is not null);
                 return panelViewModel;
@@ -91,10 +100,14 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
             RemovePanelCommand = ReactiveCommand.Create<RemovePanelInput, Unit>(removePanelInput =>
             {
                 var (toConsume, toExpand) = removePanelInput;
+                // Console.WriteLine($"removing: {toConsume.Id} | expanding: {toExpand.Id}");
 
-                _panelSource.RemoveKey(toConsume.Id);
+                // NOTE(erri120): The instruction ordering is important, as the state calculation
+                // requires the latest LogicalBounds value.
                 toExpand.LogicalBounds = MathUtils.Join(toExpand.LogicalBounds, toConsume.LogicalBounds);
+                _panelSource.RemoveKey(toConsume.Id);
 
+                ArrangePanels(_lastWorkspaceSize);
                 return Unit.Default;
             }, canRemovePanel);
         });

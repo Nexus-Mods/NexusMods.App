@@ -56,7 +56,6 @@ public partial class WorkspaceView : ReactiveUserControl<IWorkspaceViewModel>
                                 WorkspaceCanvas.Children.Remove(existingControl);
                                 break;
                             }
-                            default: throw new NotSupportedException();
                         }
                     }
                 })
