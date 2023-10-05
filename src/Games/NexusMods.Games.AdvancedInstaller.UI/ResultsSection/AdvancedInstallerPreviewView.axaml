@@ -49,7 +49,7 @@
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Vertical" >
                             <!-- This might need to go into a separate View -->
-                            <TreeDataGrid Classes="TreeNoSelection" x:Name="LocationPreviewTree" ShowColumnHeaders="True"
+                            <TreeDataGrid Classes="TreeNoSelection TreeNoHeader" x:Name="LocationPreviewTreeDataGrid" ShowColumnHeaders="True"
                                           Foreground="{DynamicResource FontDarkSecondaryColor}"/>
                         </StackPanel>
                     </ItemsPanelTemplate>

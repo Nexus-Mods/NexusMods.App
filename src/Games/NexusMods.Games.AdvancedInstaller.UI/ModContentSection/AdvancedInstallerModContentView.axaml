@@ -50,7 +50,7 @@
             </StackPanel>
         </Border>
 
-        <TreeDataGrid Grid.Row="1" Classes="TreeNoSelection" x:Name="ModContentTreeDataGrid" ShowColumnHeaders="True"
+        <TreeDataGrid Grid.Row="1" Classes="TreeNoSelection TreeNoHeader" x:Name="ModContentTreeDataGrid" ShowColumnHeaders="True"
                       Foreground="{DynamicResource FontDarkSecondaryColor}">
 
         </TreeDataGrid>
