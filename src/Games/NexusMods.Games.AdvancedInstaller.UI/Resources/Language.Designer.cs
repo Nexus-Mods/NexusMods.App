@@ -114,6 +114,15 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to If you are confident this mod is safe, and you know where the files need to be installed, you can attempt an advanced manual install..
+        /// </summary>
+        public static string ExtraDescriptionTextBlock_If_you_are_confident {
+            get {
+                return ResourceManager.GetString("ExtraDescriptionTextBlock_If_you_are_confident", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to All mod files.
         /// </summary>
         public static string FileTree_ALL_MOD_FILES {
@@ -281,6 +290,51 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Resources {
         public static string SuggestedHeaderText_SUGGESTED {
             get {
                 return ResourceManager.GetString("SuggestedHeaderText_SUGGESTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This mod is structured in an unrecognised way, or contains unrecognised file types, so it cannot be installed automatically..
+        /// </summary>
+        public static string UnsupportedDescriptionTextBlock_This_mod_is_structured {
+            get {
+                return ResourceManager.GetString("UnsupportedDescriptionTextBlock_This_mod_is_structured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unsupported mod.
+        /// </summary>
+        public static string UnsupportedModHeader_Unsupported_mod {
+            get {
+                return ResourceManager.GetString("UnsupportedModHeader_Unsupported_mod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ADVANCED INSTALL.
+        /// </summary>
+        public static string UnsupportedOverlayFooter_ADVANCED_INSTALL {
+            get {
+                return ResourceManager.GetString("UnsupportedOverlayFooter_ADVANCED_INSTALL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CLOSE.
+        /// </summary>
+        public static string UnsupportedOverlayFooter_CLOSE {
+            get {
+                return ResourceManager.GetString("UnsupportedOverlayFooter_CLOSE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This mod is not supported.
+        /// </summary>
+        public static string UnsupportedTitleTextBlock_This_mod_is_not_supported {
+            get {
+                return ResourceManager.GetString("UnsupportedTitleTextBlock_This_mod_is_not_supported", resourceCulture);
             }
         }
     }

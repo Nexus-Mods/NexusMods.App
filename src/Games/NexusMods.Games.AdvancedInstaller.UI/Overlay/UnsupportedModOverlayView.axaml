@@ -34,15 +34,15 @@
             </Style>
 
             <Style Selector="TextBlock.ModNameTitle">
-                <Setter Property="Margin" Value="0,0,0,8"/>
+                <Setter Property="Margin" Value="0,0,0,8" />
             </Style>
 
             <Style Selector="TextBlock.MessageTitle">
-                <Setter Property="Margin" Value="0,0,0,12"/>
+                <Setter Property="Margin" Value="0,0,0,12" />
             </Style>
 
             <Style Selector="TextBlock.DescriptionText">
-                <Setter Property="Margin" Value="0,0,0,4"/>
+                <Setter Property="Margin" Value="0,0,0,4" />
             </Style>
 
         </base:MessageBoxBackground.Styles>
@@ -57,7 +57,8 @@
                             <icons:Icon Grid.Column="0" Classes="AlertOutline" x:Name="WarningIcon" />
 
                             <TextBlock Grid.Column="1" Classes="BodyLGBold"
-                                       Text="Unsupported mod" x:Name="OverlayHeaderTextBlock" Margin="0,1,0,0" />
+                                       Text="{x:Static resources:Language.UnsupportedModHeader_Unsupported_mod}"
+                                       x:Name="OverlayHeaderTextBlock" Margin="0,1,0,0" />
 
                             <Button Grid.Column="2" Classes="BareIcon WindowClose Small"
                                     x:Name="OverlayHeaderCloseButton" />
@@ -65,14 +66,20 @@
                     </Border>
                     <Border Grid.Row="1">
                         <StackPanel Orientation="Vertical">
-                            <TextBlock Classes="TitleMDSemi ModNameTitle" Text="TEMP MOD NAME" x:Name="ModNameTextBlock" />
-                            <TextBlock Classes="HeadingMDSemi MessageTitle" Text="This mod is not supported"
+
+                            <TextBlock Classes="TitleMDSemi ModNameTitle" Text="TEMP MOD NAME"
+                                       x:Name="ModNameTextBlock" />
+
+                            <TextBlock Classes="HeadingMDSemi MessageTitle"
+                                       Text="{x:Static resources:Language.UnsupportedTitleTextBlock_This_mod_is_not_supported}"
                                        x:Name="UnsupportedTitleTextBlock" />
+
                             <TextBlock Classes="BodyLGNormal DescriptionText" TextWrapping="Wrap"
-                                       Text="This mod is structured in an unrecognised way, or contains unrecognised file types, so it cannot be installed automatically."
+                                       Text="{x:Static resources:Language.UnsupportedDescriptionTextBlock_This_mod_is_structured}"
                                        x:Name="UnsupportedDescriptionTextBlock" />
+
                             <TextBlock Classes="BodyLGNormal DescriptionText" TextWrapping="Wrap"
-                                       Text="If you are confident this mod is safe, and you know where the files need to be installed, you can attempt an advanced manual install."
+                                       Text="{x:Static resources:Language.ExtraDescriptionTextBlock_If_you_are_confident}"
                                        x:Name="ExtraDescriptionTextBlock" />
                         </StackPanel>
                     </Border>
@@ -102,14 +109,15 @@
 
                     <Grid Classes="FooterGrid" ColumnDefinitions="*, Auto, Auto">
 
-                        <Button Classes="Standard SecondaryOutlined FooterButton" HorizontalAlignment="Left" Grid.Column="1"
+                        <Button Classes="Standard SecondaryOutlined FooterButton" HorizontalAlignment="Left"
+                                Grid.Column="1"
                                 x:Name="InstallButton">
-                            <TextBlock Text="ADVANCED INSTALL" />
+                            <TextBlock Text="{x:Static resources:Language.UnsupportedOverlayFooter_ADVANCED_INSTALL}" />
                         </Button>
 
                         <Button Classes="Primary FooterButton" HorizontalAlignment="Right" Grid.Column="2"
                                 x:Name="CancelButton">
-                            <TextBlock Text="CLOSE" />
+                            <TextBlock Text="{x:Static resources:Language.UnsupportedOverlayFooter_CLOSE}" />
                         </Button>
 
                     </Grid>

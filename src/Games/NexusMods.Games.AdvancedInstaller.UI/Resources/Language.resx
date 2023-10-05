@@ -93,4 +93,22 @@
     <data name="PreviewSubHeading_Files_labelled_as_new" xml:space="preserve">
         <value>Files/folders labelled as “New” will be installed/added.</value>
     </data>
+    <data name="UnsupportedModHeader_Unsupported_mod" xml:space="preserve">
+        <value>Unsupported mod</value>
+    </data>
+    <data name="UnsupportedTitleTextBlock_This_mod_is_not_supported" xml:space="preserve">
+        <value>This mod is not supported</value>
+    </data>
+    <data name="UnsupportedDescriptionTextBlock_This_mod_is_structured" xml:space="preserve">
+        <value>This mod is structured in an unrecognised way, or contains unrecognised file types, so it cannot be installed automatically.</value>
+    </data>
+    <data name="ExtraDescriptionTextBlock_If_you_are_confident" xml:space="preserve">
+        <value>If you are confident this mod is safe, and you know where the files need to be installed, you can attempt an advanced manual install.</value>
+    </data>
+    <data name="UnsupportedOverlayFooter_ADVANCED_INSTALL" xml:space="preserve">
+        <value>ADVANCED INSTALL</value>
+    </data>
+    <data name="UnsupportedOverlayFooter_CLOSE" xml:space="preserve">
+        <value>CLOSE</value>
+    </data>
 </root>
