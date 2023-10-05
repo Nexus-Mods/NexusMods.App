@@ -65,7 +65,10 @@ public abstract class AGame : IGame
     /// <inheritdoc />
     public virtual ILoadoutSynchronizer Synchronizer => throw new NotImplementedException();
 
-    private Version GetVersion(GameLocatorResult installation)
+    /// <summary>
+    /// Returns the game version if GameLocatorResult failed to get the game version.
+    /// </summary>
+    protected virtual Version GetVersion(GameLocatorResult installation)
     {
         try
         {
