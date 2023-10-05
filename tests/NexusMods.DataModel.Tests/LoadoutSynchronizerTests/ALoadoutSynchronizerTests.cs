@@ -31,6 +31,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
     private static GamePath _savePath = new(LocationId.Saves, "saves/save.dat");
 
     private static GamePath[] _allPaths = new [] {_texturePath , _meshPath, _prefsPath, _savePath};
+    private Loadout _originalLoadout;
 
     public ALoadoutSynchronizerTests(IServiceProvider provider) : base(provider)
     {
@@ -41,6 +42,8 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();
+
+        _originalLoadout = BaseList.Value;
 
         BaseList.Alter("Remove Base Mods",
             l => l with { Mods = l.Mods.Keep(m => m with { Enabled = false }) });
@@ -456,6 +459,61 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
         newMod.Name.Should().Be("Saved Games", "the mod should be named after the file");
 
         flattenedAgain[deletedFile].Should().BeNull("the file should have been deleted");
+    }
+
+    [Fact]
+    public async Task CanMergeLoadouts()
+    {
+        // Setup some paths
+        var modifiedFile = new GamePath(LocationId.Game, "meshes/b.nif");
+        var newFile = new GamePath(LocationId.Saves, "saves/newSave.dat");
+
+        // Modify the files on disk
+        Install.LocationsRegister.GetResolvedPath(modifiedFile).Parent.CreateDirectory();
+        Install.LocationsRegister.GetResolvedPath(newFile).Parent.CreateDirectory();
+
+        await Install.LocationsRegister.GetResolvedPath(modifiedFile).WriteAllBytesAsync(new byte[] { 0x01, 0x02, 0x03 });
+        await Install.LocationsRegister.GetResolvedPath(newFile).WriteAllBytesAsync(new byte[] { 0x04, 0x05, 0x06 });
+
+        // Represents the loadout the user has changed but not applied
+        var userModified = BaseList.Value;
+
+        // Represents the loadout from the ingest process
+        var ingested = await _synchronizer.Ingest(_originalLoadout);
+
+        var result = _synchronizer.MergeLoadouts(userModified, ingested);
+
+        // Re-enable the game files as they are disabled by the merged loadout
+        var gameFilesId = result.Mods.First(m => m.Value.ModCategory == Mod.GameFilesCategory).Key;
+        result = result.Alter(gameFilesId, m => m with { Enabled = true });
+
+
+        // The merged loadout should contain all the mods from both loadouts
+        userModified.Mods
+            .Select(m => (m.Key, m.Value.Name))
+            .Concat(ingested.Mods.Select(m => (m.Key, m.Value.Name)))
+            .Distinct()
+            .Should()
+            .BeEquivalentTo(result.Mods.Select(m => (m.Key, m.Value.Name)),
+                "the merged loadout should contain all the mods from both loadouts");
+
+        // The game files should be enabled
+        result.Mods
+            .First(m => m.Value.ModCategory == Mod.GameFilesCategory)
+            .Value.Enabled.Should().BeTrue("the game files should be enabled");
+
+        // The merged loadout should contain all the files from both loadouts
+        var flattenedUserModified = await _synchronizer.LoadoutToFlattenedLoadout(userModified);
+        var flattenedIngested = await _synchronizer.LoadoutToFlattenedLoadout(ingested);
+        var flattenedResult = await _synchronizer.LoadoutToFlattenedLoadout(result);
+
+        flattenedUserModified.GetAllDescendentFiles()
+            .Concat(flattenedIngested.GetAllDescendentFiles())
+            .Select(f => f.Path.ToString())
+            .Distinct()
+            .Should()
+            .BeEquivalentTo(flattenedResult.GetAllDescendentFiles().Select(f => f.Path.ToString()),
+                "the merged loadout should contain all the files from both loadouts");
     }
 
 }

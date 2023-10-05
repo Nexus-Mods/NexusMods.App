@@ -539,7 +539,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <inheritdoc />
     public Loadout MergeLoadouts(Loadout loadoutA, Loadout loadoutB)
     {
-        throw new NotImplementedException();
+        var visitor = new MergingVisitor();
+        return visitor.Transform(loadoutA, loadoutB);
     }
 
     /// <inheritdoc />
@@ -573,9 +574,20 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public Task Ingest(Loadout loadout)
+    public async Task<Loadout> Ingest(Loadout loadout)
     {
-        throw new NotImplementedException();
+        // Reconstruct the previous file tree
+        var prevFlattenedLoadout = await LoadoutToFlattenedLoadout(loadout);
+        var prevFileTree = await FlattenedLoadoutToFileTree(prevFlattenedLoadout, loadout);
+        var prevDiskState = _diskStateRegistry.GetState(loadout.LoadoutId)!;
+
+        // Get the new disk state
+        var diskState = await GetDiskState(loadout.Installation);
+        var fileTree = await DiskToFileTree(diskState, loadout, prevFileTree, prevDiskState);
+        var flattenedLoadout = await FileTreeToFlattenedLoadout(loadout, fileTree, prevFlattenedLoadout);
+        var newLoadout = await FlattenedLoadoutToLoadout(flattenedLoadout, loadout, prevFlattenedLoadout);
+
+        return newLoadout;
     }
 
     public async Task<Loadout> Manage(GameInstallation installation)
@@ -586,13 +598,34 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         // Save the state first incase someone is watching and needs the state immediately after creation.
         _diskStateRegistry.SaveState(loadoutId, initialState);
+
+        var gameFiles = new Mod()
+        {
+            Name = "Game Files",
+            ModCategory = Mod.GameFilesCategory,
+            Id = ModId.New(),
+            Enabled = true,
+            Files = EntityDictionary<ModFileId, AModFile>.Empty(_store).With(initialState.GetAllDescendentFiles()
+                .Select(f =>
+                {
+                    var id = ModFileId.New();
+                    return KeyValuePair.Create(id, (AModFile)new FromArchive
+                    {
+                        Id = id,
+                        Hash = f.Value.Hash,
+                        Size = f.Value.Size,
+                        To = f.Path
+                    });
+                }))
+        };
+
         var loadout = _loadoutRegistry.Alter(loadoutId, "Initial loadout",  loadout => loadout
             with
             {
                 Name = $"Loadout {installation.Game.Name}",
                 Installation = installation,
+                Mods = loadout.Mods.With(gameFiles.Id, gameFiles)
             });
-
 
         return loadout;
     }

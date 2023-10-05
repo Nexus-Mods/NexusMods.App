@@ -238,6 +238,35 @@ public struct EntityDictionary<TK, TV> :
         });
     }
 
+    /// <summary>
+    /// Merges two dictionaries together, returning a new dictionary, using mergeFn to combine results, return
+    /// null to exclude the item from the resulting dictionary.
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    public EntityDictionary<TK, TV> Merge(EntityDictionary<TK, TV> other, Func<TV?, TV?, TV?> mergeFn)
+    {
+        var result = Empty(_store);
+        foreach (var (key, value) in _coll)
+        {
+            var otherValue = other._coll.TryGetValue(key, out var found) ? _store.Get<TV>(found) : null;
+            var newValue = mergeFn(_store.Get<TV>(value), otherValue);
+            if (newValue is not null)
+                result = result.With(key, newValue);
+        }
+
+        foreach (var (key, value) in other._coll)
+        {
+            // We've already processed colliding keys, so skip them.
+            if (_coll.ContainsKey(key)) continue;
+            var newValue = mergeFn(null, _store.Get<TV>(value));
+            if (newValue is not null)
+                result = result.With(key, newValue);
+        }
+
+        return result;
+    }
+
     private IEnumerable<TV> GetValues()
     {
         foreach (var id in _coll.Values)

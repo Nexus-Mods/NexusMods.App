@@ -99,7 +99,7 @@ public interface ILoadoutSynchronizer
     /// </summary>
     /// <param name="loadout"></param>
     /// <returns></returns>
-    Task Ingest(Loadout loadout);
+    Task<Loadout> Ingest(Loadout loadout);
 
     Task<Loadout> Manage(GameInstallation installation);
 
