@@ -1,15 +1,13 @@
 ﻿using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
+using NexusMods.DataModel.LoadoutSynchronizer;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 using ModId = NexusMods.DataModel.Loadouts.ModId;
@@ -18,7 +16,7 @@ namespace NexusMods.DataModel.Tests.LoadoutSynchronizerTests;
 
 public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
 {
-    private readonly LoadoutSynchronizerStub _synchronizer;
+    private readonly ILoadoutSynchronizer _synchronizer;
     private readonly Dictionary<ModId, string> _modNames = new();
     private readonly Dictionary<string, ModId> _modIdForName = new();
     private readonly Dictionary<ModFileId, ModFilePair> _pairs = new();
@@ -30,13 +28,12 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
     private static GamePath _prefsPath = new(LocationId.Preferences, "preferences/prefs.dat");
     private static GamePath _savePath = new(LocationId.Saves, "saves/save.dat");
 
-    private static GamePath[] _allPaths = new [] {_texturePath , _meshPath, _prefsPath, _savePath};
+    private static GamePath[] _allPaths = {_texturePath , _meshPath, _prefsPath, _savePath};
     private Loadout _originalLoadout;
 
     public ALoadoutSynchronizerTests(IServiceProvider provider) : base(provider)
     {
-        _synchronizer = LoadoutSynchronizerStub.Create(provider);
-        ((StubbedGame)Game).SetSynchronizer(_synchronizer);
+        _synchronizer = Game.Synchronizer;
     }
 
     public override async Task InitializeAsync()

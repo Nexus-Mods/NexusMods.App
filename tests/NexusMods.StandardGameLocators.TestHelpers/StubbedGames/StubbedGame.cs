@@ -35,11 +35,12 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
 
     private readonly IFileSystem _fileSystem;
     private Dictionary<AbsolutePath, DateTime> _modifiedTimes = new();
-    private ILoadoutSynchronizer _synchronizer;
+    private readonly IServiceProvider _serviceProvider;
 
     public StubbedGame(ILogger<StubbedGame> logger, IEnumerable<IGameLocator> locators,
-        IFileSystem fileSystem) : base(locators)
+        IFileSystem fileSystem, IServiceProvider provider) : base(locators)
     {
+        _serviceProvider = provider;
         _logger = logger;
         _locators = locators;
         _fileSystem = fileSystem;
@@ -113,8 +114,12 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
         return ValueTask.FromResult(DiskState.Create(results));
     }
 
-    public void SetSynchronizer(ILoadoutSynchronizer synchronizer) => _synchronizer = synchronizer;
-    public override ILoadoutSynchronizer Synchronizer => _synchronizer;
+
+    public override ILoadoutSynchronizer Synchronizer
+    {
+        // Lazy initialization to avoid circular dependencies
+        get { return new DefaultSynchronizer(_serviceProvider); }
+    }
 
     public override IStreamFactory Icon =>
         new EmbededResourceStreamFactory<StubbedGame>(

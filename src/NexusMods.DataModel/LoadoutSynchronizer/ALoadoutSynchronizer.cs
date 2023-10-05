@@ -35,7 +35,17 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// Loadout synchronizer base constructor.
     /// </summary>
     /// <param name="logger"></param>
-    protected ALoadoutSynchronizer(ILogger logger, FileHashCache hashCache, IFileSystem fileSystem, IDataStore store, LoadoutRegistry loadoutRegistry,
+    /// <param name="hashCache"></param>
+    /// <param name="fileSystem"></param>
+    /// <param name="store"></param>
+    /// <param name="loadoutRegistry"></param>
+    /// <param name="diskStateRegistry"></param>
+    /// <param name="archiveManager"></param>
+    protected ALoadoutSynchronizer(ILogger logger,
+        FileHashCache hashCache,
+        IFileSystem fileSystem,
+        IDataStore store,
+        LoadoutRegistry loadoutRegistry,
         DiskStateRegistry diskStateRegistry,
         IArchiveManager archiveManager)
     {
@@ -48,6 +58,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         _archiveManager = archiveManager;
     }
 
+    /// <summary>
+    /// Helper constructor that takes only a service provider, and resolves the dependencies from it.
+    /// </summary>
+    /// <param name="provider"></param>
     protected ALoadoutSynchronizer(IServiceProvider provider) : this(
         provider.GetRequiredService<ILogger<ALoadoutSynchronizer>>(),
         provider.GetRequiredService<FileHashCache>(),
