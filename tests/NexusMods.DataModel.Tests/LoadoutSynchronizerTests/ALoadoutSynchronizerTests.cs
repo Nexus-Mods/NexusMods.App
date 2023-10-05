@@ -225,7 +225,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
         // Setup some paths
         var modifiedFile = new GamePath(LocationId.Game, "meshes/b.nif");
         var newFile = new GamePath(LocationId.Saves, "saves/newSave.dat");
-        var deletedFile = new GamePath(LocationId.Game, "/perMod/9.dat");
+        var deletedFile = new GamePath(LocationId.Game, "perMod/9.dat");
 
         // Modify the files on disk
         Install.LocationsRegister.GetResolvedPath(deletedFile).Delete();
