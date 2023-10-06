@@ -6,7 +6,7 @@ using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content;
 
-public class BodyViewModel : AViewModel<IBodyViewModel>,
+internal class BodyViewModel : AViewModel<IBodyViewModel>,
     IBodyViewModel
 {
     public IModContentViewModel ModContentViewModel { get; } = new ModContentViewModel();

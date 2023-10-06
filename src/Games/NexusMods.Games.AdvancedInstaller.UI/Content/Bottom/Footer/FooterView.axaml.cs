@@ -2,7 +2,7 @@
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Bottom;
 
-public partial class FooterView : ReactiveUserControl<IFooterViewModel>
+internal partial class FooterView : ReactiveUserControl<IFooterViewModel>
 {
     public FooterView()
     {

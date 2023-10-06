@@ -2,4 +2,4 @@
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Bottom;
 
-public class FooterViewModel : AViewModel<IFooterViewModel>, IFooterViewModel { }
+internal class FooterViewModel : AViewModel<IFooterViewModel>, IFooterViewModel { }

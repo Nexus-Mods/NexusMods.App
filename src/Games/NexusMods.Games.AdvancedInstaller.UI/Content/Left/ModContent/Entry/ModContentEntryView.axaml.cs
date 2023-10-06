@@ -2,7 +2,7 @@
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 
-public partial class
+internal partial class
     ModContentEntryView : ReactiveUserControl<IModContentEntryViewModel>
 {
     public ModContentEntryView()

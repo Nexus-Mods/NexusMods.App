@@ -6,7 +6,7 @@ using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 
-public partial class
+internal partial class
     SelectLocationView : ReactiveUserControl<ISelectLocationViewModel>
 {
     public SelectLocationView()
@@ -15,7 +15,7 @@ public partial class
         this.WhenActivated(disposables =>
         {
             this.WhenAnyValue(view => view.ViewModel!.SuggestedEntries)
-                .BindTo<ReadOnlyObservableCollection<IAdvancedInstallerSuggestedEntryViewModel>,
+                .BindTo<ReadOnlyObservableCollection<ISuggestedEntryViewModel>,
                     SelectLocationView, IEnumerable>(this,
                     view => view.SuggestedLocationItemsControl.ItemsSource)
                 .DisposeWith(disposables);

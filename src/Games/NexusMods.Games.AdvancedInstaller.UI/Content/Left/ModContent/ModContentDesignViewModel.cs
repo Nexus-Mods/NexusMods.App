@@ -7,7 +7,7 @@ using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 
-public class ModContentDesignViewModel : AViewModel<IModContentViewModel>,
+internal class ModContentDesignViewModel : AViewModel<IModContentViewModel>,
     IModContentViewModel
 {
     /// <summary>

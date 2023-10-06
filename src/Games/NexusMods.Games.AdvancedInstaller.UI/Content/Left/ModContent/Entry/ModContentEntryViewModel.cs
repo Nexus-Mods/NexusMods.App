@@ -2,5 +2,5 @@
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 
-public class ModContentEntryViewModel : AViewModel<IModContentEntryViewModel>,
+internal class ModContentEntryViewModel : AViewModel<IModContentEntryViewModel>,
     IModContentEntryViewModel { }

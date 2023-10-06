@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
         <ProjectReference Include="..\..\NexusMods.App.UI\NexusMods.App.UI.csproj"/>
+        <InternalsVisibleTo Include="NexusMods.Games.AdvancedInstaller.UI.Tests"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -143,6 +144,14 @@
 
         <Compile Update="Content\BodyDesignViewModel.cs">
             <DependentUpon>IBodyViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\Results\SelectLocation\SuggestedEntry\SuggestedEntryDesignViewModel.cs">
+            <DependentUpon>ISuggestedEntryViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\Results\SelectLocation\SuggestedEntry\SuggestedEntryViewModel.cs">
+            <DependentUpon>ISuggestedEntryViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

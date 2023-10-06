@@ -67,7 +67,7 @@ public interface IModContentFileNode
 /// <typeparam name="TRelPath">Type of relative path used in <see cref="FileTreeNode{TPath,TValue}" />.</typeparam>
 /// <typeparam name="TNodeValue">Type of file entry used in <see cref="FileTreeNode{TPath,TValue}" />.</typeparam>
 [DebuggerDisplay("FileName = {FileName}, IsRoot = {IsRoot}, Children = {Children.Length}, Status = {Status}")]
-public class ModContentNode<TRelPath, TNodeValue> : ReactiveObject, IModContentFileNode
+internal class ModContentNode<TRelPath, TNodeValue> : ReactiveObject, IModContentFileNode
     where TRelPath : struct, IPath<TRelPath>, IEquatable<TRelPath>
 {
     /// <summary>

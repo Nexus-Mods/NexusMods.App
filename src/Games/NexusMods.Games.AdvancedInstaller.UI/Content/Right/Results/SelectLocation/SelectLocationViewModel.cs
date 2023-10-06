@@ -4,13 +4,13 @@ using NexusMods.App.UI.Extensions;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 
-public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
+internal class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
     ISelectLocationViewModel
 {
     public SelectLocationViewModel() : base()
     {
-        SuggestedEntries = Array.Empty<IAdvancedInstallerSuggestedEntryViewModel>().ToReadOnlyObservableCollection();
+        SuggestedEntries = Array.Empty<ISuggestedEntryViewModel>().ToReadOnlyObservableCollection();
     }
 
-    public ReadOnlyObservableCollection<IAdvancedInstallerSuggestedEntryViewModel> SuggestedEntries { get; set; }
+    public ReadOnlyObservableCollection<ISuggestedEntryViewModel> SuggestedEntries { get; set; }
 }

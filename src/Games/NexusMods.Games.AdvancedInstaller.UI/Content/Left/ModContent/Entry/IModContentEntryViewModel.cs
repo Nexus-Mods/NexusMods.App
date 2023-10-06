@@ -2,4 +2,4 @@
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 
-public interface IModContentEntryViewModel : IViewModel { }
+internal interface IModContentEntryViewModel : IViewModel { }

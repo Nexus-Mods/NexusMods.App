@@ -7,7 +7,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers;
 
 public abstract class ATreeDataGridSourceFileNodeTest
 {
-    protected ModContentNode<RelativePath, int>? GetChildNode(IModContentFileNode root,
+    internal ModContentNode<RelativePath, int>? GetChildNode(IModContentFileNode root,
         string fileName)
     {
         return root.Children.FirstOrDefault(x => x.FileName == fileName) as
@@ -30,7 +30,7 @@ public abstract class ATreeDataGridSourceFileNodeTest
         node.Children.Length.Should().Be(expectedChildrenCount);
     }
 
-    protected ModContentNode<RelativePath, int> CreateTestTreeNode()
+    internal ModContentNode<RelativePath, int> CreateTestTreeNode()
     {
         return ModContentNode<RelativePath, int>.FromFileTree(CreateTestTree());
     }

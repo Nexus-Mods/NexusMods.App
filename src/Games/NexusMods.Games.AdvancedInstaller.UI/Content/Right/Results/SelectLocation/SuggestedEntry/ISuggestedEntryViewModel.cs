@@ -2,4 +2,4 @@
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 
-public interface IAdvancedInstallerSuggestedEntryViewModel : IViewModel { }
+internal interface ISuggestedEntryViewModel : IViewModel { }

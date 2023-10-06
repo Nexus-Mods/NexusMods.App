@@ -1,4 +1,4 @@
-﻿<reactiveUi:ReactiveUserControl x:TypeArguments="selectLocation1:IAdvancedInstallerSuggestedEntryViewModel"
+﻿<reactiveUi:ReactiveUserControl x:TypeArguments="selectLocation1:ISuggestedEntryViewModel"
                                 xmlns="https://github.com/avaloniaui"
                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -8,9 +8,9 @@
                                 xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
                                 xmlns:selectLocation1="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation"
                                 mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="60"
-                                x:Class="NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.AdvancedInstallerSuggestedEntryView">
+                                x:Class="NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SuggestedEntryView">
     <Design.DataContext>
-        <selectLocation1:AdvancedInstallerSuggestedEntryDesignViewModel />
+        <selectLocation1:SuggestedEntryDesignViewModel />
     </Design.DataContext>
 
     <Grid ColumnDefinitions="Auto, *, Auto">

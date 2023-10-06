@@ -21,7 +21,7 @@ public static class Services
             .AddView<PreviewView, IPreviewViewModel>()
             .AddView<EmptyPreviewView, IEmptyPreviewViewModel>()
             .AddView<SelectLocationView, ISelectLocationViewModel>()
-            .AddView<AdvancedInstallerSuggestedEntryView, IAdvancedInstallerSuggestedEntryViewModel>()
+            .AddView<SuggestedEntryView, ISuggestedEntryViewModel>()
             .AddView<AdvancedInstallerOverlayView, IAdvancedInstallerOverlayViewModel>()
             .AddView<ModContentEntryView, IModContentEntryViewModel>();
     }

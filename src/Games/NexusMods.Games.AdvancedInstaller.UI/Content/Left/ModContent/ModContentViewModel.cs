@@ -1,6 +1,6 @@
 ﻿namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 
-public class ModContentViewModel : ModContentDesignViewModel
+internal class ModContentViewModel : ModContentDesignViewModel
 {
     // TODO: Implement the actual tree data.
     // ReSharper disable once RedundantOverriddenMember
