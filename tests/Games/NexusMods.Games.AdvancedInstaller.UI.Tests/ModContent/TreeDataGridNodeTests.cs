@@ -1,7 +1,7 @@
 using FluentAssertions;
 using NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers;
 
-namespace NexusMods.Games.AdvancedInstaller.UI.Tests;
+namespace NexusMods.Games.AdvancedInstaller.UI.Tests.ModContent;
 
 public class TreeDataGridNodeTests : ATreeDataGridSourceFileNodeTest
 {

@@ -2,7 +2,7 @@ using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers;
 using NexusMods.Paths.FileTree;
 
-namespace NexusMods.Games.AdvancedInstaller.UI.Tests;
+namespace NexusMods.Games.AdvancedInstaller.UI.Tests.ModContent;
 
 /// <summary>
 /// Tests converting <see cref="FileTreeNode{TPath,TValue}"/> into ViewModel specific nodes.

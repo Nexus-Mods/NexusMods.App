@@ -12,16 +12,14 @@ public static class Services
     {
         return serviceCollection
             .AddViewModel<AdvancedInstallerOverlayViewModel, IAdvancedInstallerOverlayViewModel>()
-
             .AddView<AdvancedInstallerFooterView, IAdvancedInstallerFooterViewModel>()
             .AddView<AdvancedInstallerBodyView, IAdvancedInstallerBodyViewModel>()
             .AddView<AdvancedInstallerModContentView, IAdvancedInstallerModContentViewModel>()
-            .AddView<PreviewView.AdvancedInstallerPreviewView, IAdvancedInstallerPreviewViewModel>()
-            .AddView<EmptyPreview.AdvancedInstallerEmptyPreviewView, IAdvancedInstallerEmptyPreviewViewModel>()
-            .AddView<SelectLocation.AdvancedInstallerSelectLocationView, IAdvancedInstallerSelectLocationViewModel>()
+            .AddView<AdvancedInstallerPreviewView, IAdvancedInstallerPreviewViewModel>()
+            .AddView<AdvancedInstallerEmptyPreviewView, IAdvancedInstallerEmptyPreviewViewModel>()
+            .AddView<AdvancedInstallerSelectLocationView, IAdvancedInstallerSelectLocationViewModel>()
             .AddView<AdvancedInstallerSuggestedEntryView, IAdvancedInstallerSuggestedEntryViewModel>()
             .AddView<AdvancedInstallerOverlayView, IAdvancedInstallerOverlayViewModel>()
-            .AddView<AdvancedInstallerTreeEntryView, IAdvancedInstallerTreeEntryViewModel>();
-
+            .AddView<AdvancedInstallerModContentEntryView, IAdvancedInstallerModContentEntryViewModel>();
     }
 }

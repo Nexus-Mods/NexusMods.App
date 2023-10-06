@@ -19,12 +19,13 @@ public class AdvancedInstallerModContentDesignViewModel : AViewModel<IAdvancedIn
         {
             new HierarchicalExpanderColumn<IModContentFileNode>(
                 new TemplateColumn<IModContentFileNode>(null,
-                    new FuncDataTemplate<IModContentFileNode>((node, scope) => new AdvancedInstallerTreeEntryView()
-                    {
-                        DataContext = node,
-                    }),
+                    new FuncDataTemplate<IModContentFileNode>((node, scope) =>
+                        new AdvancedInstallerModContentEntryView()
+                        {
+                            DataContext = node,
+                        }),
                     width: new GridLength(1, GridUnitType.Star)
-                    ),
+                ),
                 x => x.Children)
         }
     };
@@ -51,5 +52,3 @@ public class AdvancedInstallerModContentDesignViewModel : AViewModel<IAdvancedIn
         return ModContentFileNode<RelativePath, int>.FromFileTree(tree);
     }
 }
-
-
