@@ -1,0 +1,78 @@
+﻿<reactiveUi:ReactiveUserControl
+    x:TypeArguments="content:IBodyViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
+    xmlns:content="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Content"
+    mc:Ignorable="d" d:DesignWidth="1184" d:DesignHeight="492"
+    x:Class="NexusMods.Games.AdvancedInstaller.UI.Content.BodyView">
+
+    <Design.DataContext>
+        <content:BodyDesignViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto, *">
+        <Grid.Styles>
+
+            <Style Selector="TextBlock#ModNameTextBlock">
+                <Setter Property="Margin" Value="0,0,0,8" />
+            </Style>
+
+            <Style Selector="TextBlock#InstallerNameTextBlock">
+                <Setter Property="Margin" Value="0,0,0,12" />
+            </Style>
+
+            <Style Selector="Border#BodyContainerBorder">
+                <Setter Property="Margin" Value="0,16,0,0" />
+            </Style>
+
+            <Style Selector="icons|Icon.CentralIcon">
+                <Setter Property="Foreground" Value="{DynamicResource BrandTertiaryDarker}" />
+                <Setter Property="Margin" Value="16,0,16,0" />
+                <Setter Property="FontSize" Value="14" />
+            </Style>
+
+        </Grid.Styles>
+
+        <Border Grid.Row="0" x:Name="TitleContainerBorder">
+            <StackPanel x:Name="HeadingAndSubHeadingStackPanel" Orientation="Vertical">
+                <TextBlock Classes="TitleMDSemi" x:Name="ModNameTextBlock"
+                           Text="TEMP MOD NAME" />
+                <TextBlock Classes="HeadingMDSemi" x:Name="InstallerNameTextBlock"
+                           Text="{x:Static resources:Language.InstallerNameText}" />
+                <TextBlock Classes="BodyLGNormal" x:Name="SubHeadingTextBlock"
+                           Text="{x:Static resources:Language.SubHeadingText_Please_select_files}" />
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="1" x:Name="BodyContainerBorder">
+            <Grid ColumnDefinitions="*, Auto, *" x:Name="CentralGrid">
+
+                <Border Classes="Rounded Padding16 StructuralBorderColor" Grid.Column="0" x:Name="ModContentBorder">
+                    <ScrollViewer x:Name="ModContentScrollViewer">
+
+                        <reactiveUi:ViewModelViewHost x:Name="ModContentSectionViewHost" />
+
+                    </ScrollViewer>
+                </Border>
+
+                <icons:Icon Classes="Play CentralIcon" Grid.Column="1" x:Name="PlayArrowIcon" />
+
+                <Border Classes="Rounded" Grid.Column="2" x:Name="ResultsBorder">
+                    <ScrollViewer x:Name="ResultsScrollViewer">
+
+                        <reactiveUi:ViewModelViewHost x:Name="PreviewSectionViewHost" />
+
+                    </ScrollViewer>
+                </Border>
+
+            </Grid>
+        </Border>
+
+    </Grid>
+
+</reactiveUi:ReactiveUserControl>

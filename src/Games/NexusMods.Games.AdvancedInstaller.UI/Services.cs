@@ -1,8 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI;
-using NexusMods.Games.AdvancedInstaller.UI.EmptyPreview;
-using NexusMods.Games.AdvancedInstaller.UI.PreviewView;
-using NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
+using NexusMods.Games.AdvancedInstaller.UI.Content;
+using NexusMods.Games.AdvancedInstaller.UI.Content.Bottom;
+using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
+using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.EmptyPreview;
+using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView;
+using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
 
@@ -12,14 +15,14 @@ public static class Services
     {
         return serviceCollection
             .AddViewModel<AdvancedInstallerOverlayViewModel, IAdvancedInstallerOverlayViewModel>()
-            .AddView<AdvancedInstallerFooterView, IAdvancedInstallerFooterViewModel>()
-            .AddView<AdvancedInstallerBodyView, IAdvancedInstallerBodyViewModel>()
-            .AddView<AdvancedInstallerModContentView, IAdvancedInstallerModContentViewModel>()
-            .AddView<AdvancedInstallerPreviewView, IAdvancedInstallerPreviewViewModel>()
-            .AddView<AdvancedInstallerEmptyPreviewView, IAdvancedInstallerEmptyPreviewViewModel>()
-            .AddView<AdvancedInstallerSelectLocationView, IAdvancedInstallerSelectLocationViewModel>()
+            .AddView<FooterView, IFooterViewModel>()
+            .AddView<BodyView, IBodyViewModel>()
+            .AddView<ModContentView, IModContentViewModel>()
+            .AddView<PreviewView, IPreviewViewModel>()
+            .AddView<EmptyPreviewView, IEmptyPreviewViewModel>()
+            .AddView<SelectLocationView, ISelectLocationViewModel>()
             .AddView<AdvancedInstallerSuggestedEntryView, IAdvancedInstallerSuggestedEntryViewModel>()
             .AddView<AdvancedInstallerOverlayView, IAdvancedInstallerOverlayViewModel>()
-            .AddView<AdvancedInstallerModContentEntryView, IAdvancedInstallerModContentEntryViewModel>();
+            .AddView<ModContentEntryView, IModContentEntryViewModel>();
     }
 }

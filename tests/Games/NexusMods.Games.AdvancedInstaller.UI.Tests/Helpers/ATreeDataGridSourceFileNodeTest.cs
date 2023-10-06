@@ -1,4 +1,5 @@
 using FluentAssertions;
+using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 
@@ -6,11 +7,11 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers;
 
 public abstract class ATreeDataGridSourceFileNodeTest
 {
-    protected ModContentFileNode<RelativePath, int>? GetChildNode(IModContentFileNode root,
+    protected ModContentNode<RelativePath, int>? GetChildNode(IModContentFileNode root,
         string fileName)
     {
         return root.Children.FirstOrDefault(x => x.FileName == fileName) as
-            ModContentFileNode<RelativePath, int>;
+            ModContentNode<RelativePath, int>;
     }
 
     protected void AssertFileInTree(IModContentFileNode root, string expectedName, bool isRoot,
@@ -29,9 +30,9 @@ public abstract class ATreeDataGridSourceFileNodeTest
         node.Children.Length.Should().Be(expectedChildrenCount);
     }
 
-    protected ModContentFileNode<RelativePath, int> CreateTestTreeNode()
+    protected ModContentNode<RelativePath, int> CreateTestTreeNode()
     {
-        return ModContentFileNode<RelativePath, int>.FromFileTree(CreateTestTree());
+        return ModContentNode<RelativePath, int>.FromFileTree(CreateTestTree());
     }
 
     protected FileTreeNode<RelativePath, int> CreateTestTree()

@@ -20,13 +20,6 @@
             <LastGenOutput>Language.Designer.cs</LastGenOutput>
         </EmbeddedResource>
 
-        <Compile Update="Body\AdvancedInstallerBodyViewModel.cs">
-            <DependentUpon>IAdvancedInstallerBodyViewModel.cs</DependentUpon>
-        </Compile>
-
-        <Compile Update="Body\AdvancedInstallerBodyDesignViewModel.cs">
-            <DependentUpon>IAdvancedInstallerBodyViewModel.cs</DependentUpon>
-        </Compile>
 
         <Compile Update="Footer\AdvancedInstallerFooterViewModel.cs">
             <DependentUpon>IAdvancedInstallerFooterViewModel.cs</DependentUpon>
@@ -82,39 +75,6 @@
             <DependentUpon>IAdvancedInstallerEmptyPreviewViewModel.cs</DependentUpon>
         </Compile>
 
-        <Compile Update="ResultsSection\PreviewView\AdvancedInstallerPreviewView.axaml.cs">
-            <DependentUpon>AdvancedInstallerPreviewView.axaml</DependentUpon>
-            <SubType>Code</SubType>
-        </Compile>
-
-        <Compile Update="ResultsSection\SelectLocation\AdvancedInstallerSelectLocationView.axaml.cs">
-            <DependentUpon>AdvancedInstallerSelectLocationView.axaml</DependentUpon>
-            <SubType>Code</SubType>
-        </Compile>
-
-        <Compile Update="ResultsSection\SelectLocation\AdvancedInstallerSelectLocationViewModel.cs">
-            <DependentUpon>IAdvancedInstallerSelectLocationViewModel.cs</DependentUpon>
-        </Compile>
-
-        <Compile Update="ResultsSection\SelectLocation\AdvancedInstallerSelectLocationDesignViewModel.cs">
-            <DependentUpon>IAdvancedInstallerSelectLocationViewModel.cs</DependentUpon>
-        </Compile>
-
-        <Compile Update="ResultsSection\PreviewView\AdvancedInstallerPreviewDesignViewModel.cs">
-            <DependentUpon>IAdvancedInstallerPreviewViewModel.cs</DependentUpon>
-        </Compile>
-
-        <Compile Update="ResultsSection\PreviewView\AdvancedInstallerPreviewViewModel.cs">
-            <DependentUpon>IAdvancedInstallerPreviewViewModel.cs</DependentUpon>
-        </Compile>
-
-        <Compile Update="ResultsSection\SelectLocation\SuggestedEntry\AdvancedInstallerSuggestedEntryViewModel.cs">
-            <DependentUpon>IAdvancedInstallerSuggestedEntryViewModel.cs</DependentUpon>
-        </Compile>
-
-        <Compile Update="ResultsSection\SelectLocation\SuggestedEntry\AdvancedInstallerSuggestedEntryDesignViewModel.cs">
-            <DependentUpon>IAdvancedInstallerSuggestedEntryViewModel.cs</DependentUpon>
-        </Compile>
 
         <Compile Update="ModContentSection\ModContentEntry\AdvancedInstallerModContentEntryDesignViewModel.cs">
             <DependentUpon>IAdvancedInstallerModContentEntryViewModel.cs</DependentUpon>
@@ -123,10 +83,73 @@
         <Compile Update="ModContentSection\ModContentEntry\AdvancedInstallerModContentEntryViewModel.cs">
             <DependentUpon>IAdvancedInstallerModContentEntryViewModel.cs</DependentUpon>
         </Compile>
+
+        <Compile Update="Content\Left\ModContent\Entry\ModContentEntryDesignViewModel.cs">
+            <DependentUpon>IModContentEntryViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Left\ModContent\Entry\ModContentEntryViewModel.cs">
+            <DependentUpon>IModContentEntryViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Left\ModContent\ModContentDesignViewModel.cs">
+            <DependentUpon>IModContentViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Left\ModContent\ModContentViewModel.cs">
+            <DependentUpon>IModContentViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Bottom\Footer\FooterDesignViewModel.cs">
+            <DependentUpon>IFooterViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Bottom\Footer\FooterViewModel.cs">
+            <DependentUpon>IFooterViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\Results\PreviewView\PreviewDesignViewModel.cs">
+            <DependentUpon>IPreviewViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\Results\PreviewView\PreviewViewModel.cs">
+            <DependentUpon>IPreviewViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\Results\EmptyPreview\EmptyPreviewViewModel.cs">
+            <DependentUpon>IEmptyPreviewViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\Results\EmptyPreview\EmptyPreviewDesignViewModel.cs">
+            <DependentUpon>IEmptyPreviewViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\Results\SelectLocation\SelectLocationViewModel.cs">
+            <DependentUpon>ISelectLocationViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\Results\SelectLocation\SelectLocationDesignViewModel.cs">
+            <DependentUpon>ISelectLocationViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\BodyView.axaml.cs">
+            <DependentUpon>AdvancedInstallerBodyView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+
+        <Compile Update="Content\BodyViewModel.cs">
+            <DependentUpon>IBodyViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\BodyDesignViewModel.cs">
+            <DependentUpon>IBodyViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
-        <AdditionalFiles Include="ModContentSection\ModContentEntry\AdvancedInstallerModContentEntryView.axaml"/>
-        <AdditionalFiles Include="ResultsSection\SelectLocation\SuggestedEntry\AdvancedInstallerSuggestedEntryView.axaml"/>
+        <Folder Include="Content\Bottom\"/>
+        <Folder Include="Content\Left\"/>
+        <Folder Include="Content\Right\Results\"/>
+        <Folder Include="Content\Top\"/>
     </ItemGroup>
 </Project>
