@@ -27,4 +27,5 @@
       <ProjectReference Include="..\..\..\src\Games\NexusMods.Games.Generic\NexusMods.Games.Generic.csproj" />
     </ItemGroup>
 
+
 </Project>
