@@ -6,7 +6,7 @@ using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content;
 
-internal partial class BodyView : ReactiveUserControl<IBodyViewModel>
+public partial class BodyView : ReactiveUserControl<IBodyViewModel>
 {
     public BodyView()
     {

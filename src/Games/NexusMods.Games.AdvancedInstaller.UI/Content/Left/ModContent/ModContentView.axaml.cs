@@ -5,7 +5,7 @@ using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 
-internal partial class ModContentView : ReactiveUserControl<IModContentViewModel>
+public partial class ModContentView : ReactiveUserControl<IModContentViewModel>
 {
     public ModContentView()
     {

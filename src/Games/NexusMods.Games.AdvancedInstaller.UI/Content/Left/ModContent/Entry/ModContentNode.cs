@@ -10,7 +10,9 @@ using ReactiveUI.Fody.Helpers;
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 
 /// <summary>
-///     Represents an individual node in a tree data grid for the Advanced Installer.
+///     Represents an individual node in the 'Mod Content' section.
+///
+///     A node can represent any file or directory within the mod being unpacked during advanced install.
 /// </summary>
 /// <remarks>
 ///     Using this at runtime isn't exactly ideal given how many items there may be, but given everything is virtualized,

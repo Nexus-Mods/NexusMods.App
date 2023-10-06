@@ -6,7 +6,7 @@ using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 
-internal partial class
+public partial class
     SelectLocationView : ReactiveUserControl<ISelectLocationViewModel>
 {
     public SelectLocationView()
