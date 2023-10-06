@@ -6,21 +6,21 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers;
 
 public abstract class ATreeDataGridSourceFileNodeTest
 {
-    protected TreeDataGridSourceFileNode<RelativePath, int>? GetChildNode(ITreeDataGridSourceFileNode root,
+    protected ModContentFileNode<RelativePath, int>? GetChildNode(IModContentFileNode root,
         string fileName)
     {
         return root.Children.FirstOrDefault(x => x.FileName == fileName) as
-            TreeDataGridSourceFileNode<RelativePath, int>;
+            ModContentFileNode<RelativePath, int>;
     }
 
-    protected void AssertFileInTree(ITreeDataGridSourceFileNode root, string expectedName, bool isRoot,
+    protected void AssertFileInTree(IModContentFileNode root, string expectedName, bool isRoot,
         bool isDirectory, int expectedChildrenCount)
     {
         AssertNode(root.Children.FirstOrDefault(x => x.FileName == expectedName)!, expectedName, isRoot, isDirectory,
             expectedChildrenCount);
     }
 
-    protected void AssertNode(ITreeDataGridSourceFileNode node, string expectedName, bool isRoot, bool isDirectory,
+    protected void AssertNode(IModContentFileNode node, string expectedName, bool isRoot, bool isDirectory,
         int expectedChildrenCount)
     {
         node.FileName.Should().Be(expectedName);
@@ -29,9 +29,9 @@ public abstract class ATreeDataGridSourceFileNodeTest
         node.Children.Length.Should().Be(expectedChildrenCount);
     }
 
-    protected TreeDataGridSourceFileNode<RelativePath, int> CreateTestTreeNode()
+    protected ModContentFileNode<RelativePath, int> CreateTestTreeNode()
     {
-        return TreeDataGridSourceFileNode<RelativePath, int>.FromFileTree(CreateTestTree());
+        return ModContentFileNode<RelativePath, int>.FromFileTree(CreateTestTree());
     }
 
     protected FileTreeNode<RelativePath, int> CreateTestTree()

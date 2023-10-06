@@ -4,5 +4,5 @@ public class AdvancedInstallerModContentViewModel : AdvancedInstallerModContentD
 {
     // TODO: Implement the actual tree data.
     // ReSharper disable once RedundantOverriddenMember
-    protected override ITreeDataGridSourceFileNode GetTreeData() => base.GetTreeData();
+    protected override IModContentFileNode GetTreeData() => base.GetTreeData();
 }

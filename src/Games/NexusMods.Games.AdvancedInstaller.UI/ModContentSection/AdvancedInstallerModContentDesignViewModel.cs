@@ -13,13 +13,13 @@ public class AdvancedInstallerModContentDesignViewModel : AViewModel<IAdvancedIn
     /// <summary>
     /// The visual representation of the tree.
     /// </summary>
-    public HierarchicalTreeDataGridSource<ITreeDataGridSourceFileNode> Tree => new(GetTreeData())
+    public HierarchicalTreeDataGridSource<IModContentFileNode> Tree => new(GetTreeData())
     {
         Columns =
         {
-            new HierarchicalExpanderColumn<ITreeDataGridSourceFileNode>(
-                new TemplateColumn<ITreeDataGridSourceFileNode>(null,
-                    new FuncDataTemplate<ITreeDataGridSourceFileNode>((node, scope) => new AdvancedInstallerTreeEntryView()
+            new HierarchicalExpanderColumn<IModContentFileNode>(
+                new TemplateColumn<IModContentFileNode>(null,
+                    new FuncDataTemplate<IModContentFileNode>((node, scope) => new AdvancedInstallerTreeEntryView()
                     {
                         DataContext = node,
                     }),
@@ -29,9 +29,9 @@ public class AdvancedInstallerModContentDesignViewModel : AViewModel<IAdvancedIn
         }
     };
 
-    protected virtual ITreeDataGridSourceFileNode GetTreeData() => CreateTestTree();
+    protected virtual IModContentFileNode GetTreeData() => CreateTestTree();
 
-    private static ITreeDataGridSourceFileNode CreateTestTree()
+    private static IModContentFileNode CreateTestTree()
     {
         var fileEntries = new Dictionary<RelativePath, int>
         {
@@ -48,7 +48,7 @@ public class AdvancedInstallerModContentDesignViewModel : AViewModel<IAdvancedIn
         };
 
         var tree = FileTreeNode<RelativePath, int>.CreateTree(fileEntries);
-        return TreeDataGridSourceFileNode<RelativePath, int>.FromFileTree(tree);
+        return ModContentFileNode<RelativePath, int>.FromFileTree(tree);
     }
 }
 

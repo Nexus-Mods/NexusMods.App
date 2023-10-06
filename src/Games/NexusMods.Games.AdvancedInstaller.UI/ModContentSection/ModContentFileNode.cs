@@ -16,7 +16,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI;
 ///     Using this at runtime isn't exactly ideal given how many items there may be, but given everything is virtualized,
 ///     things should hopefully be a-ok!
 /// </remarks>
-public interface ITreeDataGridSourceFileNode
+public interface IModContentFileNode
 {
     /// <summary>
     ///     Status of the node in question.
@@ -46,7 +46,7 @@ public interface ITreeDataGridSourceFileNode
     ///     <see cref="FileTreeNode{TPath,TValue}" />;
     ///     array is used, as it's the lowest overhead collection available for the job.
     /// </remarks>
-    ITreeDataGridSourceFileNode[] Children { get; }
+    IModContentFileNode[] Children { get; }
 
     /// <summary>
     ///     True if this is the root node.
@@ -61,13 +61,13 @@ public interface ITreeDataGridSourceFileNode
 }
 
 /// <summary>
-///     Represents a <see cref="ITreeDataGridSourceFileNode" /> that is backed by a
+///     Represents a <see cref="IModContentFileNode" /> that is backed by a
 ///     <see cref="FileTreeNode{TPath,TValue}" />.
 /// </summary>
 /// <typeparam name="TRelPath">Type of relative path used in <see cref="FileTreeNode{TPath,TValue}" />.</typeparam>
 /// <typeparam name="TNodeValue">Type of file entry used in <see cref="FileTreeNode{TPath,TValue}" />.</typeparam>
 [DebuggerDisplay("FileName = {FileName}, IsRoot = {IsRoot}, Children = {Children.Length}, Status = {Status}")]
-public class TreeDataGridSourceFileNode<TRelPath, TNodeValue> : ReactiveObject, ITreeDataGridSourceFileNode
+public class ModContentFileNode<TRelPath, TNodeValue> : ReactiveObject, IModContentFileNode
     where TRelPath : struct, IPath<TRelPath>, IEquatable<TRelPath>
 {
     /// <summary>
@@ -81,9 +81,9 @@ public class TreeDataGridSourceFileNode<TRelPath, TNodeValue> : ReactiveObject, 
     /// <remarks>
     ///     This is null if the node is a root.
     /// </remarks>
-    public required TreeDataGridSourceFileNode<TRelPath, TNodeValue>? Parent { get; init; }
+    public required ModContentFileNode<TRelPath, TNodeValue>? Parent { get; init; }
 
-    public required ITreeDataGridSourceFileNode[] Children { get; init; }
+    public required IModContentFileNode[] Children { get; init; }
 
     // Note: _lastStatus has no size impact on the object, because it fits in what otherwise would be padding.
     //       hence it was placed at the end of the object.
@@ -154,32 +154,32 @@ public class TreeDataGridSourceFileNode<TRelPath, TNodeValue> : ReactiveObject, 
     /// <remarks>
     ///     Uses stack to avoid recursive IEnumerable, which would be a performance disaster.
     /// </remarks>
-    public IEnumerable<TreeDataGridSourceFileNode<TRelPath, TNodeValue>> ChildrenFlattened()
+    public IEnumerable<ModContentFileNode<TRelPath, TNodeValue>> ChildrenFlattened()
     {
-        var stack = new Stack<TreeDataGridSourceFileNode<TRelPath, TNodeValue>>();
+        var stack = new Stack<ModContentFileNode<TRelPath, TNodeValue>>();
 
         // Push initial children onto the stack.
         foreach (var child in Children)
-            stack.Push((child as TreeDataGridSourceFileNode<TRelPath, TNodeValue>)!);
+            stack.Push((child as ModContentFileNode<TRelPath, TNodeValue>)!);
 
         while (stack.Count > 0)
         {
             var current = stack.Pop();
             yield return current;
             foreach (var child in current.Children!)
-                stack.Push((child as TreeDataGridSourceFileNode<TRelPath, TNodeValue>)!);
+                stack.Push((child as ModContentFileNode<TRelPath, TNodeValue>)!);
         }
     }
 
     /// <summary>
     ///     Recursively marks all of the children of this node for selection.
     /// </summary>
-    public static void BeginSelectChildrenRecursive(TreeDataGridSourceFileNode<TRelPath, TNodeValue> item)
+    public static void BeginSelectChildrenRecursive(ModContentFileNode<TRelPath, TNodeValue> item)
     {
         foreach (var childInterface in item.Children)
         {
             // Covariant cast to remove virtualization and make Status writeable.
-            var child = childInterface as TreeDataGridSourceFileNode<TRelPath, TNodeValue>;
+            var child = childInterface as ModContentFileNode<TRelPath, TNodeValue>;
             child!.SetStatus(TreeDataGridSourceFileNodeStatus.SelectingViaParent);
             BeginSelectChildrenRecursive(child);
         }
@@ -188,30 +188,30 @@ public class TreeDataGridSourceFileNode<TRelPath, TNodeValue> : ReactiveObject, 
     /// <summary>
     ///     Recursively restores last status of all child nodes.
     /// </summary>
-    public static void RestoreLastStatusRecursive(TreeDataGridSourceFileNode<TRelPath, TNodeValue> item)
+    public static void RestoreLastStatusRecursive(ModContentFileNode<TRelPath, TNodeValue> item)
     {
         foreach (var childInterface in item.Children)
         {
             // Covariant cast to remove virtualization and make Status writeable.
-            var child = childInterface as TreeDataGridSourceFileNode<TRelPath, TNodeValue>;
+            var child = childInterface as ModContentFileNode<TRelPath, TNodeValue>;
             child!.RestoreLastStatus();
             RestoreLastStatusRecursive(child);
         }
     }
 
     /// <summary>
-    ///     Creates a new <see cref="TreeDataGridSourceFileNode{TRelPath,TFileEntry}" /> from a given
+    ///     Creates a new <see cref="ModContentFileNode{TRelPath,TNodeValue}" /> from a given
     ///     <see cref="FileTreeNode{TRelPath,TFileEntry}" />.
     /// </summary>
     /// <typeparam name="TRelPath">Type of relative path used for the node.</typeparam>
     /// <typeparam name="TNodeValue">Type of value associated with this node.</typeparam>
-    public static TreeDataGridSourceFileNode<TRelPath, TNodeValue> FromFileTree(FileTreeNode<TRelPath, TNodeValue> node)
+    public static ModContentFileNode<TRelPath, TNodeValue> FromFileTree(FileTreeNode<TRelPath, TNodeValue> node)
     {
-        var root = new TreeDataGridSourceFileNode<TRelPath, TNodeValue>
+        var root = new ModContentFileNode<TRelPath, TNodeValue>
         {
             Node = node,
             Parent = null!,
-            Children = GC.AllocateUninitializedArray<ITreeDataGridSourceFileNode>(node.Children.Count),
+            Children = GC.AllocateUninitializedArray<IModContentFileNode>(node.Children.Count),
             Status = TreeDataGridSourceFileNodeStatus.Default
         };
 
@@ -223,7 +223,7 @@ public class TreeDataGridSourceFileNode<TRelPath, TNodeValue> : ReactiveObject, 
     }
 
     /// <summary>
-    ///     Recursively createsnew <see cref="TreeDataGridSourceFileNode{TRelPath,TFileEntry}" /> entries from a given matching
+    ///     Recursively createsnew <see cref="ModContentFileNode{TRelPath,TNodeValue}" /> entries from a given matching
     ///     <see cref="FileTreeNode{TRelPath,TFileEntry}" /> node.
     /// </summary>
     /// <param name="node">The node of the file tree.</param>
@@ -231,14 +231,14 @@ public class TreeDataGridSourceFileNode<TRelPath, TNodeValue> : ReactiveObject, 
     /// <typeparam name="TRelPath">Type of relative path used for the node.</typeparam>
     /// <typeparam name="TNodeValue">Type of file entry stored in this tree.</typeparam>
     /// <returns>The node.</returns>
-    public static ITreeDataGridSourceFileNode FromFileTreeRecursive(FileTreeNode<TRelPath, TNodeValue> node,
-        TreeDataGridSourceFileNode<TRelPath, TNodeValue> parent)
+    public static IModContentFileNode FromFileTreeRecursive(FileTreeNode<TRelPath, TNodeValue> node,
+        ModContentFileNode<TRelPath, TNodeValue> parent)
     {
-        var item = new TreeDataGridSourceFileNode<TRelPath, TNodeValue>
+        var item = new ModContentFileNode<TRelPath, TNodeValue>
         {
             Node = node,
             Parent = parent,
-            Children = GC.AllocateUninitializedArray<ITreeDataGridSourceFileNode>(node.Children.Count),
+            Children = GC.AllocateUninitializedArray<IModContentFileNode>(node.Children.Count),
             Status = TreeDataGridSourceFileNodeStatus.Default
         };
 
@@ -251,7 +251,7 @@ public class TreeDataGridSourceFileNode<TRelPath, TNodeValue> : ReactiveObject, 
 }
 
 /// <summary>
-///     Represents the current status of the <see cref="TreeDataGridSourceFileNode{TRelPath,TFileEntry}" />.
+///     Represents the current status of the <see cref="ModContentFileNode{TRelPath,TNodeValue}" />.
 /// </summary>
 public enum TreeDataGridSourceFileNodeStatus
 {
