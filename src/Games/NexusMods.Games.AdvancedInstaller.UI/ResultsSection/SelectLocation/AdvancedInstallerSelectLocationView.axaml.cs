@@ -1,8 +1,10 @@
-﻿using System.Reactive.Disposables;
+﻿using System.Collections;
+using System.Collections.ObjectModel;
+using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
-namespace NexusMods.Games.AdvancedInstaller.UI;
+namespace NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
 
 public partial class AdvancedInstallerSelectLocationView : ReactiveUserControl<IAdvancedInstallerSelectLocationViewModel>
 {
@@ -12,7 +14,7 @@ public partial class AdvancedInstallerSelectLocationView : ReactiveUserControl<I
         this.WhenActivated(disposables =>
         {
             this.WhenAnyValue(view => view.ViewModel!.SuggestedEntries)
-                .BindTo(this, view => view.SuggestedLocationItemsControl.ItemsSource)
+                .BindTo<ReadOnlyObservableCollection<IAdvancedInstallerSuggestedEntryViewModel>, AdvancedInstallerSelectLocationView, IEnumerable>(this, view => view.SuggestedLocationItemsControl.ItemsSource)
                 .DisposeWith(disposables);
         });
     }

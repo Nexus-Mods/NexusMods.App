@@ -2,7 +2,7 @@
 using NexusMods.App.UI;
 using NexusMods.App.UI.Extensions;
 
-namespace NexusMods.Games.AdvancedInstaller.UI;
+namespace NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
 
 public class AdvancedInstallerSelectLocationViewModel : AViewModel<IAdvancedInstallerSelectLocationViewModel>,
     IAdvancedInstallerSelectLocationViewModel

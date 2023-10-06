@@ -1,4 +1,7 @@
 ﻿using NexusMods.App.UI;
+using NexusMods.Games.AdvancedInstaller.UI.EmptyPreview;
+using NexusMods.Games.AdvancedInstaller.UI.PreviewView;
+using NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
 

@@ -52,17 +52,8 @@
           <DependentUpon>IAdvancedInstallerOverlayViewModel.cs</DependentUpon>
         </Compile>
 
-        <Compile Update="ResultsSection\AdvancedInstallerPreviewViewModel.cs">
-          <DependentUpon>IAdvancedInstallerPreviewViewModel.cs</DependentUpon>
-        </Compile>
 
-        <Compile Update="ResultsSection\AdvancedInstallerPreviewDesignViewModel.cs">
-          <DependentUpon>AdvancedInstallerPreviewViewModel.cs</DependentUpon>
-        </Compile>
 
-        <Compile Update="ResultsSection\AdvancedInstallerEmptyPreviewViewModel.cs">
-          <DependentUpon>IAdvancedInstallerEmptyPreviewViewModel.cs</DependentUpon>
-        </Compile>
 
         <Compile Update="TreeEntry\AdvancedInstallerTreeEntryViewModel.cs">
           <DependentUpon>IAdvancedInstallerTreeEntryViewModel.cs</DependentUpon>
@@ -72,17 +63,8 @@
           <DependentUpon>IAdvancedInstallerTreeEntryViewModel.cs</DependentUpon>
         </Compile>
 
-        <Compile Update="ResultsSection\AdvancedInstallerEmptyPreviewDesignViewModel.cs">
-          <DependentUpon>AdvancedInstallerEmptyPreviewViewModel.cs</DependentUpon>
-        </Compile>
 
-        <Compile Update="ResultsSection\AdvancedInstallerSelectLocationViewModel.cs">
-          <DependentUpon>IAdvancedInstallerSelectLocationViewModel.cs</DependentUpon>
-        </Compile>
 
-        <Compile Update="ResultsSection\AdvancedInstallerSelectLocationDesignViewModel.cs">
-          <DependentUpon>AdvancedInstallerSelectLocationViewModel.cs</DependentUpon>
-        </Compile>
 
         <Compile Update="SuggestedEntry\AdvancedInstallerSuggestedEntryViewModel.cs">
           <DependentUpon>IAdvancedInstallerSuggestedEntryViewModel.cs</DependentUpon>
@@ -98,6 +80,45 @@
 
         <Compile Update="Overlay\UnsupportedModOverlayDesignViewModel.cs">
           <DependentUpon>IUnsupportedModOverlayViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="ResultsSection\EmptyPreview\AdvancedInstallerEmptyPreviewView.axaml.cs">
+          <DependentUpon>AdvancedInstallerEmptyPreviewView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+
+        <Compile Update="ResultsSection\EmptyPreview\AdvancedInstallerEmptyPreviewDesignViewModel.cs">
+          <DependentUpon>IAdvancedInstallerEmptyPreviewViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="ResultsSection\EmptyPreview\AdvancedInstallerEmptyPreviewViewModel.cs">
+          <DependentUpon>IAdvancedInstallerEmptyPreviewViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="ResultsSection\PreviewView\AdvancedInstallerPreviewView.axaml.cs">
+          <DependentUpon>AdvancedInstallerPreviewView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+
+        <Compile Update="ResultsSection\SelectLocation\AdvancedInstallerSelectLocationView.axaml.cs">
+          <DependentUpon>AdvancedInstallerSelectLocationView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+
+        <Compile Update="ResultsSection\SelectLocation\AdvancedInstallerSelectLocationViewModel.cs">
+          <DependentUpon>IAdvancedInstallerSelectLocationViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="ResultsSection\SelectLocation\AdvancedInstallerSelectLocationDesignViewModel.cs">
+          <DependentUpon>IAdvancedInstallerSelectLocationViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="ResultsSection\PreviewView\AdvancedInstallerPreviewDesignViewModel.cs">
+          <DependentUpon>IAdvancedInstallerPreviewViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="ResultsSection\PreviewView\AdvancedInstallerPreviewViewModel.cs">
+          <DependentUpon>IAdvancedInstallerPreviewViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 </Project>

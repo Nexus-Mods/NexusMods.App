@@ -1,9 +1,6 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
-using Avalonia.ReactiveUI;
+﻿using Avalonia.ReactiveUI;
 
-namespace NexusMods.Games.AdvancedInstaller.UI;
+namespace NexusMods.Games.AdvancedInstaller.UI.PreviewView;
 
 public partial class AdvancedInstallerPreviewView : ReactiveUserControl<IAdvancedInstallerPreviewViewModel>
 {

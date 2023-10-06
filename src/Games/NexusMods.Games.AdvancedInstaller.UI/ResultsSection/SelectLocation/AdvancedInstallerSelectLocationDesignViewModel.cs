@@ -1,7 +1,6 @@
 ﻿using System.Collections.ObjectModel;
-using NexusMods.App.UI.Controls.GameWidget;
 
-namespace NexusMods.Games.AdvancedInstaller.UI;
+namespace NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
 
 public class AdvancedInstallerSelectLocationDesignViewModel : AdvancedInstallerSelectLocationViewModel
 {

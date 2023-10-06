@@ -1,4 +1,4 @@
-﻿<reactiveUi:ReactiveUserControl x:TypeArguments="ui:IAdvancedInstallerEmptyPreviewViewModel"
+﻿<reactiveUi:ReactiveUserControl x:TypeArguments="emptyPreview:IAdvancedInstallerEmptyPreviewViewModel"
                                 xmlns="https://github.com/avaloniaui"
                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,10 +6,11 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI"
                                 xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
+                                xmlns:emptyPreview="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.EmptyPreview"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-                                x:Class="NexusMods.Games.AdvancedInstaller.UI.AdvancedInstallerEmptyPreviewView">
+                                x:Class="NexusMods.Games.AdvancedInstaller.UI.EmptyPreview.AdvancedInstallerEmptyPreviewView">
     <Design.DataContext>
-        <ui:AdvancedInstallerEmptyPreviewDesignViewModel />
+        <emptyPreview:AdvancedInstallerEmptyPreviewDesignViewModel />
     </Design.DataContext>
 
     <Border Classes="Rounded ContainerBorderColor OutlineTertiaryDarker">
