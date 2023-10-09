@@ -4,6 +4,7 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia;
+using Avalonia.Media.Imaging;
 using DynamicData;
 using DynamicData.Binding;
 using ReactiveUI;
@@ -24,6 +25,9 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
     [Reactive]
     public IReadOnlyList<IReadOnlyDictionary<PanelId, Rect>> PossibleStates { get; private set; } = Array.Empty<IReadOnlyDictionary<PanelId, Rect>>();
+
+    [Reactive]
+    public IReadOnlyList<Bitmap> StateImages { get; private set; } = Array.Empty<Bitmap>();
 
     /// <inheritdoc/>
     [Reactive]
@@ -48,16 +52,8 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 .ObserveCollectionChanges()
                 .SubscribeWithErrorLogging(_ =>
                 {
-                    // Console.WriteLine("Panels Changed");
                     PossibleStates = GridUtils.GetPossibleStates(_panels, Columns, Rows).ToArray();
-                    // foreach (var possibleState in PossibleStates)
-                    // {
-                    //     foreach (var kv in possibleState)
-                    //     {
-                    //         Console.WriteLine($"[{kv.Key}]: {kv.Value}");
-                    //     }
-                    //     Console.WriteLine();
-                    // }
+                    StateImages = PossibleStates.Select(IconUtils.StateToBitmap).ToArray();
                 })
                 .DisposeWith(disposables);
 

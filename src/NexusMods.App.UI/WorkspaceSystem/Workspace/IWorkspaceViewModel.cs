@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
 using Avalonia;
+using Avalonia.Media.Imaging;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
@@ -9,6 +10,7 @@ public interface IWorkspaceViewModel : IViewModelInterface
 {
     public ReadOnlyObservableCollection<IPanelViewModel> Panels { get; }
     public IReadOnlyList<IReadOnlyDictionary<PanelId, Rect>> PossibleStates { get; }
+    public IReadOnlyList<Bitmap> StateImages { get; }
 
     /// <summary>
     /// Command for adding a new panel to the workspace.
