@@ -10,6 +10,7 @@ using NexusMods.DataModel;
 using NexusMods.DataModel.GlobalSettings;
 using NexusMods.FileExtractor;
 using NexusMods.Games.BethesdaGameStudios;
+using NexusMods.Games.BladeAndSorcery;
 using NexusMods.Games.DarkestDungeon;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.FOMOD.UI;
@@ -67,6 +68,7 @@ public static class Services
             .AddDarkestDungeon()
             .AddSifu()
             .AddStardewValley()
+            .AddBladeAndSorcery()
             .AddRenderers()
             .AddNexusWebApi()
             .AddNexusWebApiNmaIntegration()

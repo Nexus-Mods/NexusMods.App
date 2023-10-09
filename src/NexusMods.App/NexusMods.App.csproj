@@ -15,6 +15,7 @@
         <ProjectReference Include="..\Games\NexusMods.Games.RedEngine\NexusMods.Games.RedEngine.csproj" />
         <ProjectReference Include="..\Games\NexusMods.Games.Reshade\NexusMods.Games.Reshade.csproj" />
         <ProjectReference Include="..\Games\NexusMods.Games.Sifu\NexusMods.Games.Sifu.csproj" />
+        <ProjectReference Include="..\Games\NexusMods.Games.BladeAndSorcery\NexusMods.Games.BladeAndSorcery.csproj" />
         <ProjectReference Include="..\Games\NexusMods.Games.TestHarness\NexusMods.Games.TestHarness.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.Downloaders\NexusMods.Networking.Downloaders.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />
