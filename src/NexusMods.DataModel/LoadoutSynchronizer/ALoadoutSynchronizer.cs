@@ -115,6 +115,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer, IStandardizedLoadoutSy
 
         Dictionary<GamePath, DiskStateEntry> resultingItems = new();
 
+        // We'll start by scanning the game folders and comparing it to the previous state. Technically this is a
+        // three way compare between the disk state, the previous state, and the new state. However if the disk state
+        // diverges from the previous state, we'll abort, this effectively reduces the process to a two way compare.
         foreach (var (_, location) in installation.LocationsRegister.GetTopLevelLocations())
         {
             await foreach (var entry in _hashCache.IndexFolderAsync(location))
@@ -139,8 +142,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer, IStandardizedLoadoutSy
 
                     switch (newEntry.Value!)
                     {
-                        // FromArchive files are special cased so we can batch them up and extract them all at once.
+
                         case FromArchive fa:
+                            // FromArchive files are special cased so we can batch them up and extract them all at once.
                             // Don't add toExtract to the results yet as we'll need to get the modified file times
                             // after we extract them
                             toExtract.Add(KeyValuePair.Create(entry.Path, fa));
@@ -153,46 +157,47 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer, IStandardizedLoadoutSy
                             throw new UnreachableException("No way to handle this file");
                     }
                 }
-                else
-                {
-                    HandleNeedIngest(entry);
-                    throw new UnreachableException("HandleNeedIngest should have thrown");
-                }
-                resultingItems.Add(gamePath, DiskStateEntry.From(entry));
+
+                // If we get here, the file is new, and not in the previous state, so we need to abort and do an ingest
+                HandleNeedIngest(entry);
+                throw new UnreachableException("HandleNeedIngest should have thrown");
             }
         }
 
         // Now we look for completely new files
         foreach (var (path, entry) in fileTree.GetAllDescendentFiles())
         {
+            // If the file has already been handled above, skip it
             if (resultingItems.ContainsKey(path))
                 continue;
 
             var absolutePath = installation.LocationsRegister.GetResolvedPath(path);
 
-            if (entry! is FromArchive fa)
+            switch (entry!)
             {
-                // Don't add toExtract to the results yet as we'll need to get the modified file times
-                // after we extract them
-                toExtract.Add(KeyValuePair.Create(absolutePath, fa));
-            }
-            else if (entry! is IGeneratedFile gf and IToFile)
-            {
-                // Don't add to the results here as we'll write the file in a bit
-                toWrite.Add(KeyValuePair.Create(absolutePath, gf));
-            }
-            else
-            {
-                throw new UnreachableException("No way to handle this file");
+                case FromArchive fa:
+                    // Don't add toExtract to the results yet as we'll need to get the modified file times
+                    // after we extract them
+                    toExtract.Add(KeyValuePair.Create(absolutePath, fa));
+                    break;
+                case IGeneratedFile gf and IToFile:
+                    // Don't add to the results here as we'll write the file in a bit, and need the metadata
+                    // after we write it.
+                    toWrite.Add(KeyValuePair.Create(absolutePath, gf));
+                    break;
+                default:
+                    throw new UnreachableException("No way to handle this file");
             }
         }
 
+        // Now delete all the files that need deleting in one batch.
         foreach (var entry in toDelete)
         {
             entry.Value.Path.Delete();
             resultingItems.Remove(entry.Key);
         }
 
+        // Write the generated files (could be done in parallel)
         foreach (var entry in toWrite)
         {
             await using var outputStream = entry.Key.Create();
@@ -216,6 +221,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer, IStandardizedLoadoutSy
         await _archiveManager.ExtractFiles(toExtract
             .Select(f => (f.Value.Hash, f.Key)));
 
+        // Update the resulting items with the new file times
         foreach (var (path, entry) in toExtract)
         {
             resultingItems[entry.To] = new DiskStateEntry
