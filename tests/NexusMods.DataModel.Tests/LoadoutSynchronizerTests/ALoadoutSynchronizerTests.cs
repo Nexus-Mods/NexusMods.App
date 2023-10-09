@@ -100,6 +100,10 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
         // will have not properly updated the disk state, and it will error because the disk state is not in sync
         await _synchronizer.Apply(BaseList.Value);
         await _synchronizer.Apply(BaseList.Value);
+
+        // This should not throw as the disk state should be in sync
+        BaseList.Alter("Changing the name", l => l with { Name = "Changed Name"});
+        await _synchronizer.Apply(BaseList.Value);
     }
 
     [Fact]
@@ -539,6 +543,12 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
         public GamePath To => new(LocationId.Game, "generated.txt");
 
         public required Char[] Data { get; init; }
+        public async ValueTask<Hash?> Write(Stream stream)
+        {
+            var bytes = Data.Select(c => (byte)c).ToArray();
+            await stream.WriteAsync(bytes, 0, bytes.Length);
+            return bytes.XxHash64();
+        }
     }
 
     [Fact]
@@ -556,6 +566,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
             Data = new[] { 'A', 'B', 'C' }
         };
 
+
         BaseList.Alter("Add generated file", l => l with
         {
             Mods = l.Mods.With(modId, new Mod
@@ -563,15 +574,32 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
                 Id = modId,
                 Name = "Generated Files",
                 Files = EntityDictionary<ModFileId, AModFile>.Empty(DataStore)
-                    .With(fileId, generatedFile)
+                    .With(fileId, generatedFile),
+                Enabled = true
             })
         });
 
         var outputPath = Install.LocationsRegister.GetResolvedPath(generatedFile.To);
-        await _synchronizer.Apply(BaseList.Value);
+        var state = await _synchronizer.Apply(BaseList.Value);
+
+        state[generatedFile.To].Value!.Hash.Should().Be("ABC".XxHash64AsUtf8(), "the file should have been generated");
 
         outputPath.FileExists.Should().BeTrue("the file should have been written to disk");
         (await outputPath.ReadAllTextAsync()).Should().Be("ABC", "the file should contain the generated data");
+
+        // So the file is generated now, but what if we change the data?
+
+        LoadoutRegistry.Alter<GeneratedTestFile>(BaseList.Value.LoadoutId, modId, fileId, "Change the data", f => f with
+        {
+            Data = new[] { 'D', 'E', 'F' }
+        });
+
+        var newState = await _synchronizer.Apply(BaseList.Value);
+
+        newState[generatedFile.To].Value!.Hash.Should().Be("DEF".XxHash64AsUtf8(), "the file should have been generated");
+        outputPath.FileExists.Should().BeTrue("the file should still exist");
+        (await outputPath.ReadAllTextAsync()).Should().Be("DEF", "the file should contain the new generated data");
+
     }
 
 }

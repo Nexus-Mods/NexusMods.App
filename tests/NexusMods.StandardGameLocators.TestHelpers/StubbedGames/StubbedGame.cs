@@ -36,6 +36,8 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
     private readonly IFileSystem _fileSystem;
     private Dictionary<AbsolutePath, DateTime> _modifiedTimes = new();
     private readonly IServiceProvider _serviceProvider;
+    private readonly Dictionary<GameStore, Dictionary<LocationId, AbsolutePath>> _locations = new();
+    private bool _initalized;
 
     public StubbedGame(ILogger<StubbedGame> logger, IEnumerable<IGameLocator> locators,
         IFileSystem fileSystem, IServiceProvider provider) : base(locators)
@@ -44,29 +46,26 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
         _logger = logger;
         _locators = locators;
         _fileSystem = fileSystem;
+        _initalized = false;
     }
 
     public override GamePath GetPrimaryFile(GameStore store) => new(LocationId.Game, "");
 
     public void ResetGameFolders()
     {
-        // Delete all the folders
-        foreach (var installation in Installations)
-        {
-            foreach (var (_, path) in installation.LocationsRegister.GetTopLevelLocations())
-            {
-                path.DeleteDirectory(true);
-            }
-        }
-
         // Re-create the folders/files
         foreach (var locator in _locators)
         {
             foreach (var result in locator.Find(this))
             {
-                EnsureFiles(result.Path, LocationId.Game);
-                EnsurePath(result.Path, LocationId.Preferences);
-                EnsurePath(result.Path, LocationId.Saves);
+                result.Path.DeleteDirectory(true);
+                var locations = new Dictionary<LocationId, AbsolutePath>
+                {
+                    [LocationId.Game] = EnsureFiles(result.Path, LocationId.Game),
+                    [LocationId.Preferences] = EnsurePath(result.Path, LocationId.Preferences),
+                    [LocationId.Saves] = EnsurePath(result.Path, LocationId.Saves)
+                };
+                _locations[result.Store] = locations;
             }
         }
     }
@@ -75,17 +74,18 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
     {
         get
         {
+            if (!_initalized)
+            {
+                ResetGameFolders();
+                _initalized = true;
+            }
+
             _logger.LogInformation("Looking for {Game} in {Count} locators", ToString(), _locators.Count());
             return _locators.SelectMany(l => l.Find(this))
                 .Select((i, idx) => new GameInstallation
                 {
                     Game = this,
-                    LocationsRegister = new GameLocationsRegister( new Dictionary<LocationId, AbsolutePath>()
-                    {
-                        { LocationId.Game, EnsureFiles(i.Path, LocationId.Game) },
-                        { LocationId.Preferences, EnsurePath(i.Path, LocationId.Preferences) },
-                        { LocationId.Saves, EnsurePath(i.Path, LocationId.Saves) },
-                    }),
+                    LocationsRegister = new GameLocationsRegister(_locations[i.Store]),
                     Version = Version.Parse($"0.0.{idx}.0"),
                     Store = GameStore.Unknown,
                 });

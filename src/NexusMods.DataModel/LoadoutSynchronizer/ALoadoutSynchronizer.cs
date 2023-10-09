@@ -12,6 +12,7 @@ using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Sorting.Rules;
+using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 
@@ -108,8 +109,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer, IStandardizedLoadoutSy
     /// <inheritdoc />
     public async Task<DiskState> FileTreeToDisk(FileTree fileTree, DiskState prevState, GameInstallation installation)
     {
-        List<HashedEntry> toDelete = new();
-        List<KeyValuePair<AbsolutePath, AModFile>> toWrite = new();
+        List<KeyValuePair<GamePath, HashedEntry>> toDelete = new();
+        List<KeyValuePair<AbsolutePath, IGeneratedFile>> toWrite = new();
         List<KeyValuePair<AbsolutePath, FromArchive>> toExtract = new();
 
         Dictionary<GamePath, DiskStateEntry> resultingItems = new();
@@ -121,30 +122,35 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer, IStandardizedLoadoutSy
                 var gamePath = installation.LocationsRegister.ToGamePath(entry.Path);
                 if (prevState.TryGetValue(gamePath, out var prevEntry))
                 {
+                    // If the file has been modified outside of the app since the last apply, we need to ingest it.
                     if (prevEntry.Value!.Hash != entry.Hash)
                     {
                         HandleNeedIngest(entry);
                         throw new UnreachableException("HandleNeedIngest should have thrown");
                     }
 
+                    // Does the file exist in the new tree?
                     if (!fileTree.TryGetValue(gamePath, out var newEntry))
                     {
                         // Don't update the results here as we'll delete the file in a bit
-                        toDelete.Add(entry);
+                        toDelete.Add(KeyValuePair.Create(gamePath, entry));
                         continue;
                     }
-                    else
+
+                    switch (newEntry.Value!)
                     {
                         // FromArchive files are special cased so we can batch them up and extract them all at once.
-                        if (newEntry.Value! is FromArchive fa)
-                        {
+                        case FromArchive fa:
                             // Don't add toExtract to the results yet as we'll need to get the modified file times
                             // after we extract them
                             toExtract.Add(KeyValuePair.Create(entry.Path, fa));
                             continue;
-                        }
-                        // Hash for these files is generated on the fly, so we need to update it after we write it.
-                        toWrite.Add(KeyValuePair.Create(entry.Path, newEntry.Value!));
+                        case IGeneratedFile gf and IToFile:
+                            // Hash for these files is generated on the fly, so we need to update it after we write it.
+                            toWrite.Add(KeyValuePair.Create(entry.Path, gf));
+                            continue;
+                        default:
+                            throw new UnreachableException("No way to handle this file");
                     }
                 }
                 else
@@ -170,21 +176,39 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer, IStandardizedLoadoutSy
                 // after we extract them
                 toExtract.Add(KeyValuePair.Create(absolutePath, fa));
             }
-            else
+            else if (entry! is IGeneratedFile gf and IToFile)
             {
                 // Don't add to the results here as we'll write the file in a bit
-                toWrite.Add(KeyValuePair.Create(absolutePath, entry!));
+                toWrite.Add(KeyValuePair.Create(absolutePath, gf));
+            }
+            else
+            {
+                throw new UnreachableException("No way to handle this file");
             }
         }
 
         foreach (var entry in toDelete)
         {
-            entry.Path.Delete();
+            entry.Value.Path.Delete();
+            resultingItems.Remove(entry.Key);
         }
 
         foreach (var entry in toWrite)
         {
-            throw new NotImplementedException();
+            await using var outputStream = entry.Key.Create();
+            var hash = await entry.Value.Write(outputStream);
+            if (hash == null)
+            {
+                outputStream.Position = 0;
+                hash = await outputStream.HashingCopyAsync(Stream.Null, CancellationToken.None, async x => {});
+            }
+
+            resultingItems[((IToFile)entry.Value).To] = new DiskStateEntry
+            {
+                Hash = hash!.Value,
+                Size = Size.From((ulong)outputStream.Length),
+                LastModified = entry.Key.FileInfo.LastWriteTimeUtc
+            };
         }
 
 

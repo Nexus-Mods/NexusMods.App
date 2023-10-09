@@ -9,6 +9,7 @@ using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts.Cursors;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.Mods;
+using NexusMods.Networking.NexusWebApi.Types;
 
 namespace NexusMods.DataModel.Loadouts;
 
@@ -154,6 +155,27 @@ public class LoadoutRegistry : IDisposable
             return loadout with { Mods = loadout.Mods.With(modId, newMod) };
         });
 
+    }
+
+    /// <summary>
+    /// Alters the file with the given id in the mod with the given id in the loadout with the given id. If the file
+    /// does not exist, an error is thrown.
+    /// </summary>
+    /// <param name="loadoutId"></param>
+    /// <param name="modId"></param>
+    /// <param name="fileId"></param>
+    /// <param name="commitMessage"></param>
+    /// <param name="alterFn"></param>
+    /// <typeparam name="T"></typeparam>
+    public void Alter<T>(LoadoutId loadoutId, ModId modId, ModFileId fileId, string commitMessage, Func<T, T> alterFn)
+    where T : AModFile
+    {
+        Alter(loadoutId, modId, commitMessage, mod =>
+        {
+            var existingFile = mod!.Files[fileId];
+            var newFile = alterFn((T)existingFile);
+            return mod with { Files = mod.Files.With(fileId, newFile) };
+        });
     }
 
     /// <summary>
