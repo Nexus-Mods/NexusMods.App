@@ -1,4 +1,6 @@
 using System.Collections.Immutable;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Avalonia;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
@@ -138,9 +140,99 @@ internal static class GridUtils
     }
 
     internal static IReadOnlyDictionary<PanelId, Rect> GetStateWithoutPanel(
-        IImmutableDictionary<PanelId, Rect> currentState,
+        ImmutableDictionary<PanelId, Rect> currentState,
         PanelId panelToRemove)
     {
-        return currentState;
+        if (currentState.Count == 1) return ImmutableDictionary<PanelId, Rect>.Empty;
+
+        var res = currentState.Remove(panelToRemove);
+        if (res.Count == 1)
+        {
+            return new Dictionary<PanelId, Rect>
+            {
+                { res.First().Key, MathUtils.One }
+            };
+        }
+
+        var currentRect = currentState[panelToRemove];
+
+        // TODO: https://github.com/SteveDunn/Vogen/issues/497
+        Span<PanelId> sameColumn = GC.AllocateUninitializedArray<PanelId>(currentState.Count);
+        var sameColumnCount = 0;
+
+        Span<PanelId> sameRow = GC.AllocateUninitializedArray<PanelId>(currentState.Count);
+        var sameRowCount = 0;
+
+        foreach (var kv in res)
+        {
+            var (id, rect) = kv;
+
+            // same column
+            // | a | x |  | b | x |
+            // | b | x |  | a | x |
+            if (rect.Left >= currentRect.Left && rect.Right <= currentRect.Right)
+            {
+                if (rect.Top.TolerantEquals(currentRect.Bottom) || rect.Bottom.TolerantEquals(currentRect.Top))
+                {
+                    sameColumn[sameColumnCount++] = id;
+                }
+            }
+
+            // same row
+            // | a | b |  | b | a |  | a | b |
+            // | x | x |  | x | x |  | a | c |
+            if (rect.Top >= currentRect.Top && rect.Bottom <= currentRect.Bottom)
+            {
+                if (rect.Left.TolerantEquals(currentRect.Right) || rect.Right.TolerantEquals(currentRect.Left))
+                {
+                    sameRow[sameRowCount++] = id;
+                }
+            }
+        }
+
+        Debug.Assert(sameColumnCount > 0 || sameRowCount > 0);
+
+        // TODO: prefer columns over rows when horizontal and rows over columns when vertical
+        if (sameColumnCount > 0)
+        {
+            var updates = GC.AllocateUninitializedArray<KeyValuePair<PanelId, Rect>>(sameColumnCount);
+
+            for (var i = 0; i < sameColumnCount; i++)
+            {
+                var id = sameColumn[i];
+                var rect = res[id];
+
+                var x = rect.X;
+                var width = rect.Width;
+
+                var y = Math.Min(rect.Y, currentRect.Y);
+                var height = rect.Height + currentRect.Height;
+
+                updates[i] = new KeyValuePair<PanelId, Rect>(id, new Rect(x, y, width, height));
+            }
+
+            res = res.SetItems(updates);
+        } else if (sameRowCount > 0)
+        {
+            var updates = GC.AllocateUninitializedArray<KeyValuePair<PanelId, Rect>>(sameRowCount);
+
+            for (var i = 0; i < sameRowCount; i++)
+            {
+                var id = sameRow[i];
+                var rect = res[id];
+
+                var y = rect.Y;
+                var height = rect.Height;
+
+                var x = Math.Min(rect.X, currentRect.X);
+                var width = rect.Width + currentRect.Width;
+
+                updates[i] = new KeyValuePair<PanelId, Rect>(id, new Rect(x, y, width, height));
+            }
+
+            res = res.SetItems(updates);
+        }
+
+        return res;
     }
 }
