@@ -13,13 +13,13 @@ internal class ModContentDesignViewModel : AViewModel<IModContentViewModel>,
     /// <summary>
     /// The visual representation of the tree.
     /// </summary>
-    public HierarchicalTreeDataGridSource<IModContentFileNode> Tree => new(GetTreeData())
+    public HierarchicalTreeDataGridSource<IModContentNode> Tree => new(GetTreeData())
     {
         Columns =
         {
-            new HierarchicalExpanderColumn<IModContentFileNode>(
-                new TemplateColumn<IModContentFileNode>(null,
-                    new FuncDataTemplate<IModContentFileNode>((node, scope) =>
+            new HierarchicalExpanderColumn<IModContentNode>(
+                new TemplateColumn<IModContentNode>(null,
+                    new FuncDataTemplate<IModContentNode>((node, scope) =>
                         new ModContentEntryView()
                         {
                             DataContext = node,
@@ -30,9 +30,9 @@ internal class ModContentDesignViewModel : AViewModel<IModContentViewModel>,
         }
     };
 
-    protected virtual IModContentFileNode GetTreeData() => CreateTestTree();
+    protected virtual IModContentNode GetTreeData() => CreateTestTree();
 
-    private static IModContentFileNode CreateTestTree()
+    private static IModContentNode CreateTestTree()
     {
         var fileEntries = new Dictionary<RelativePath, int>
         {

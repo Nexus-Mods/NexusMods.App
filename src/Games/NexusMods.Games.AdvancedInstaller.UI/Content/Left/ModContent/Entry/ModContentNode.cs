@@ -18,7 +18,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 ///     Using this at runtime isn't exactly ideal given how many items there may be, but given everything is virtualized,
 ///     things should hopefully be a-ok!
 /// </remarks>
-public interface IModContentFileNode
+public interface IModContentNode
 {
     /// <summary>
     ///     Status of the node in question.
@@ -48,7 +48,7 @@ public interface IModContentFileNode
     ///     <see cref="FileTreeNode{TPath,TValue}" />;
     ///     array is used, as it's the lowest overhead collection available for the job.
     /// </remarks>
-    IModContentFileNode[] Children { get; }
+    IModContentNode[] Children { get; }
 
     /// <summary>
     ///     True if this is the root node.
@@ -63,13 +63,13 @@ public interface IModContentFileNode
 }
 
 /// <summary>
-///     Represents a <see cref="IModContentFileNode" /> that is backed by a
+///     Represents a <see cref="IModContentNode" /> that is backed by a
 ///     <see cref="FileTreeNode{TPath,TValue}" />.
 /// </summary>
 /// <typeparam name="TRelPath">Type of relative path used in <see cref="FileTreeNode{TPath,TValue}" />.</typeparam>
 /// <typeparam name="TNodeValue">Type of file entry used in <see cref="FileTreeNode{TPath,TValue}" />.</typeparam>
 [DebuggerDisplay("FileName = {FileName}, IsRoot = {IsRoot}, Children = {Children.Length}, Status = {Status}")]
-internal class ModContentNode<TRelPath, TNodeValue> : ReactiveObject, IModContentFileNode
+internal class ModContentNode<TRelPath, TNodeValue> : ReactiveObject, IModContentNode
     where TRelPath : struct, IPath<TRelPath>, IEquatable<TRelPath>
 {
     /// <summary>
@@ -85,7 +85,7 @@ internal class ModContentNode<TRelPath, TNodeValue> : ReactiveObject, IModConten
     /// </remarks>
     public required ModContentNode<TRelPath, TNodeValue>? Parent { get; init; }
 
-    public required IModContentFileNode[] Children { get; init; }
+    public required IModContentNode[] Children { get; init; }
 
     // Note: _lastStatus has no size impact on the object, because it fits in what otherwise would be padding.
     //       hence it was placed at the end of the object.
@@ -213,7 +213,7 @@ internal class ModContentNode<TRelPath, TNodeValue> : ReactiveObject, IModConten
         {
             Node = node,
             Parent = null!,
-            Children = GC.AllocateUninitializedArray<IModContentFileNode>(node.Children.Count),
+            Children = GC.AllocateUninitializedArray<IModContentNode>(node.Children.Count),
             Status = TreeDataGridSourceFileNodeStatus.Default
         };
 
@@ -233,14 +233,14 @@ internal class ModContentNode<TRelPath, TNodeValue> : ReactiveObject, IModConten
     /// <typeparam name="TRelPath">Type of relative path used for the node.</typeparam>
     /// <typeparam name="TNodeValue">Type of file entry stored in this tree.</typeparam>
     /// <returns>The node.</returns>
-    public static IModContentFileNode FromFileTreeRecursive(FileTreeNode<TRelPath, TNodeValue> node,
+    public static IModContentNode FromFileTreeRecursive(FileTreeNode<TRelPath, TNodeValue> node,
         ModContentNode<TRelPath, TNodeValue> parent)
     {
         var item = new ModContentNode<TRelPath, TNodeValue>
         {
             Node = node,
             Parent = parent,
-            Children = GC.AllocateUninitializedArray<IModContentFileNode>(node.Children.Count),
+            Children = GC.AllocateUninitializedArray<IModContentNode>(node.Children.Count),
             Status = TreeDataGridSourceFileNodeStatus.Default
         };
 
