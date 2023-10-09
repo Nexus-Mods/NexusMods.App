@@ -4,6 +4,7 @@ using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using IGeneratedFile = NexusMods.DataModel.LoadoutSynchronizer.IGeneratedFile;
 
 namespace NexusMods.DataModel.Tests.LoadoutSynchronizerTests;
 

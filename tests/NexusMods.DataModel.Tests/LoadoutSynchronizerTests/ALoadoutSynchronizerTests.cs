@@ -1,22 +1,28 @@
 ﻿using FluentAssertions;
 using NexusMods.Common;
+using NexusMods.DataModel.Abstractions;
+using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.ApplySteps;
 using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.LoadoutSynchronizer;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.DataModel.Tests.Harness;
+using NexusMods.DataModel.TriggerFilter;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
+using IGeneratedFile = NexusMods.DataModel.LoadoutSynchronizer.IGeneratedFile;
 using ModId = NexusMods.DataModel.Loadouts.ModId;
 
 namespace NexusMods.DataModel.Tests.LoadoutSynchronizerTests;
 
 public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
 {
-    private readonly ILoadoutSynchronizer _synchronizer;
+    private readonly IStandardizedLoadoutSynchronizer _synchronizer;
     private readonly Dictionary<ModId, string> _modNames = new();
     private readonly Dictionary<string, ModId> _modIdForName = new();
     private readonly Dictionary<ModFileId, ModFilePair> _pairs = new();
@@ -31,9 +37,13 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
     private static GamePath[] _allPaths = {_texturePath , _meshPath, _prefsPath, _savePath};
     private Loadout _originalLoadout;
 
+    /// <summary>
+    /// DI constructor
+    /// </summary>
+    /// <param name="provider"></param>
     public ALoadoutSynchronizerTests(IServiceProvider provider) : base(provider)
     {
-        _synchronizer = Game.Synchronizer;
+        _synchronizer = (IStandardizedLoadoutSynchronizer)Game.Synchronizer;
     }
 
     public override async Task InitializeAsync()
@@ -81,6 +91,15 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
                 _pairs[fileId] = new ModFilePair { Mod = mod, File = file };
             }
         }
+    }
+
+    [Fact]
+    public async Task ApplyingTwiceDoesNothing()
+    {
+        // If apply is buggy, it will result in a "needs ingest" error when we try to re-apply. Because Apply
+        // will have not properly updated the disk state, and it will error because the disk state is not in sync
+        await _synchronizer.Apply(BaseList.Value);
+        await _synchronizer.Apply(BaseList.Value);
     }
 
     [Fact]
@@ -511,6 +530,48 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
             .Should()
             .BeEquivalentTo(flattenedResult.GetAllDescendentFiles().Select(f => f.Path.ToString()),
                 "the merged loadout should contain all the files from both loadouts");
+    }
+
+
+    [JsonName("GeneratedTestFile")]
+    record GeneratedTestFile : AModFile, IGeneratedFile, IToFile
+    {
+        public GamePath To => new(LocationId.Game, "generated.txt");
+
+        public required Char[] Data { get; init; }
+    }
+
+    [Fact]
+    public async Task CanWriteGeneratedFiles()
+    {
+        // Apply the old state
+        await _synchronizer.Apply(BaseList.Value);
+
+        var modId = ModId.New();
+        var fileId = ModFileId.New();
+
+        var generatedFile = new GeneratedTestFile()
+        {
+            Id = fileId,
+            Data = new[] { 'A', 'B', 'C' }
+        };
+
+        BaseList.Alter("Add generated file", l => l with
+        {
+            Mods = l.Mods.With(modId, new Mod
+            {
+                Id = modId,
+                Name = "Generated Files",
+                Files = EntityDictionary<ModFileId, AModFile>.Empty(DataStore)
+                    .With(fileId, generatedFile)
+            })
+        });
+
+        var outputPath = Install.LocationsRegister.GetResolvedPath(generatedFile.To);
+        await _synchronizer.Apply(BaseList.Value);
+
+        outputPath.FileExists.Should().BeTrue("the file should have been written to disk");
+        (await outputPath.ReadAllTextAsync()).Should().Be("ABC", "the file should contain the generated data");
     }
 
 }

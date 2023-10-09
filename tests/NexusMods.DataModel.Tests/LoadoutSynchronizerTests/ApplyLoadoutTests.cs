@@ -8,8 +8,10 @@ using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.DataModel.TriggerFilter;
 using NexusMods.Hashing.xxHash64;
+using NexusMods.Networking.NexusWebApi.DTOs;
 using NexusMods.Paths;
 using NSubstitute;
+using IGeneratedFile = NexusMods.DataModel.LoadoutSynchronizer.IGeneratedFile;
 
 namespace NexusMods.DataModel.Tests.LoadoutSynchronizerTests;
 
@@ -114,7 +116,7 @@ public class ApplyLoadoutTests : ALoadoutSynrchonizerTest<ApplyLoadoutTests>
     }
 
 
-    class TestGeneratedFile : IGeneratedFile, ITriggerFilter<ModFilePair, Plan>
+    class TestGeneratedFile : ITriggerFilter<ModFilePair, Plan>, Loadouts.ModFiles.IGeneratedFile
     {
         public ITriggerFilter<ModFilePair, Plan> TriggerFilter => this;
         public async Task<Hash> GenerateAsync(Stream stream, ApplyPlan plan, CancellationToken cancellationToken = default)

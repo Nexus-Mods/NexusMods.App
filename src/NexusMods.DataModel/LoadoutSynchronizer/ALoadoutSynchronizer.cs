@@ -21,11 +21,10 @@ namespace NexusMods.DataModel.LoadoutSynchronizer;
 /// Base class for loadout synchronizers, provides some common functionality. Does not have to be user,
 /// but reduces a lot of boilerplate, and is highly recommended.
 /// </summary>
-public class ALoadoutSynchronizer : ILoadoutSynchronizer
+public class ALoadoutSynchronizer : ILoadoutSynchronizer, IStandardizedLoadoutSynchronizer
 {
     private readonly ILogger _logger;
     private readonly FileHashCache _hashCache;
-    private readonly IFileSystem _fileSystem;
     private readonly IDataStore _store;
     private readonly LoadoutRegistry _loadoutRegistry;
     private readonly DiskStateRegistry _diskStateRegistry;
@@ -43,7 +42,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <param name="archiveManager"></param>
     protected ALoadoutSynchronizer(ILogger logger,
         FileHashCache hashCache,
-        IFileSystem fileSystem,
         IDataStore store,
         LoadoutRegistry loadoutRegistry,
         DiskStateRegistry diskStateRegistry,
@@ -51,7 +49,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         _logger = logger;
         _hashCache = hashCache;
-        _fileSystem = fileSystem;
         _store = store;
         _loadoutRegistry = loadoutRegistry;
         _diskStateRegistry = diskStateRegistry;
@@ -65,7 +62,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     protected ALoadoutSynchronizer(IServiceProvider provider) : this(
         provider.GetRequiredService<ILogger<ALoadoutSynchronizer>>(),
         provider.GetRequiredService<FileHashCache>(),
-        provider.GetRequiredService<IFileSystem>(),
         provider.GetRequiredService<IDataStore>(),
         provider.GetRequiredService<LoadoutRegistry>(),
         provider.GetRequiredService<DiskStateRegistry>(),
@@ -75,8 +71,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
     }
 
-
-    #region ILoadoutSynchronizer Implementation
+    #region IStandardizedLoadoutSynchronizer Implementation
 
     /// <inheritdoc />
     public async ValueTask<FlattenedLoadout> LoadoutToFlattenedLoadout(Loadout loadout)
@@ -119,7 +114,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         Dictionary<GamePath, DiskStateEntry> resultingItems = new();
 
-        foreach (var (locationId, location) in installation.LocationsRegister.GetTopLevelLocations())
+        foreach (var (_, location) in installation.LocationsRegister.GetTopLevelLocations())
         {
             await foreach (var entry in _hashCache.IndexFolderAsync(location))
             {
@@ -199,12 +194,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         foreach (var (path, entry) in toExtract)
         {
-            resultingItems.Add(entry.To, new DiskStateEntry
+            resultingItems[entry.To] = new DiskStateEntry
             {
                 Hash = entry.Hash,
                 Size = entry.Size,
                 LastModified = path.FileInfo.LastWriteTimeUtc
-            });
+            };
         }
 
         // Return the new tree
@@ -411,6 +406,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return visitor.Transform(loadoutA, loadoutB);
     }
 
+    #endregion
+
+    #region ILoadoutSynchronizer Implementation
+
     /// <summary>
     /// Applies a loadout to the game folder.
     /// </summary>
@@ -422,6 +421,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var fileTree = await FlattenedLoadoutToFileTree(flattened, loadout);
         var prevState = _diskStateRegistry.GetState(loadout.LoadoutId)!;
         var diskState = await FileTreeToDisk(fileTree, prevState, loadout.Installation);
+        _diskStateRegistry.SaveState(loadout.LoadoutId, diskState);
         return diskState;
     }
 
@@ -449,8 +449,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         var loadoutId = LoadoutId.Create();
 
-        // Save the state first incase someone is watching and needs the state immediately after creation.
-        _diskStateRegistry.SaveState(loadoutId, initialState);
 
         var gameFiles = new Mod()
         {
@@ -479,6 +477,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 Installation = installation,
                 Mods = loadout.Mods.With(gameFiles.Id, gameFiles)
             });
+
+        _diskStateRegistry.SaveState(loadout.LoadoutId, initialState);
 
         return loadout;
     }
