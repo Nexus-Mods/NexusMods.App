@@ -344,7 +344,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer, IStandardizedLoadoutSy
     }
 
     /// <inheritdoc />
-    public ValueTask<FlattenedLoadout> FileTreeToFlattenedLoadout(Loadout prevLoadout, FileTree fileTree, FlattenedLoadout prevFlattenedLoadout)
+    public ValueTask<FlattenedLoadout> FileTreeToFlattenedLoadout(FileTree fileTree, Loadout prevLoadout,
+        FlattenedLoadout prevFlattenedLoadout)
     {
         var results = new List<KeyValuePair<GamePath, ModFilePair>>();
         var mods = prevLoadout.Mods.Values
@@ -474,7 +475,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer, IStandardizedLoadoutSy
         // Get the new disk state
         var diskState = await GetDiskState(loadout.Installation);
         var fileTree = await DiskToFileTree(diskState, loadout, prevFileTree, prevDiskState);
-        var flattenedLoadout = await FileTreeToFlattenedLoadout(loadout, fileTree, prevFlattenedLoadout);
+        var flattenedLoadout = await FileTreeToFlattenedLoadout(fileTree, loadout, prevFlattenedLoadout);
         var newLoadout = await FlattenedLoadoutToLoadout(flattenedLoadout, loadout, prevFlattenedLoadout);
 
         return newLoadout;

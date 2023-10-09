@@ -58,11 +58,11 @@ public interface IStandardizedLoadoutSynchronizer : ILoadoutSynchronizer
     /// <summary>
     /// Creates a new flattened loadout from the current file tree and the previous flattened loadout.
     /// </summary>
-    /// <param name="prevLoadout"></param>
     /// <param name="fileTree"></param>
+    /// <param name="prevLoadout"></param>
     /// <param name="prevFlattenedLoadout"></param>
     /// <returns></returns>
-    ValueTask<FlattenedLoadout> FileTreeToFlattenedLoadout(Loadout prevLoadout, FileTree fileTree, FlattenedLoadout prevFlattenedLoadout);
+    ValueTask<FlattenedLoadout> FileTreeToFlattenedLoadout(FileTree fileTree, Loadout prevLoadout, FlattenedLoadout prevFlattenedLoadout);
 
     /// <summary>
     /// Creates a new loadout from the current flattened loadout and the previous loadout.

@@ -370,7 +370,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
         var prevDiskState = DiskStateRegistry.GetState(BaseList.Id)!;
 
         var fileTree = await _synchronizer.DiskToFileTree(diskState, BaseList.Value, prevFileTree, prevDiskState);
-        var flattenedLoadout = await _synchronizer.FileTreeToFlattenedLoadout(BaseList.Value, fileTree, prevFlattenedLoadout);
+        var flattenedLoadout = await _synchronizer.FileTreeToFlattenedLoadout(fileTree, BaseList.Value, prevFlattenedLoadout);
 
         flattenedLoadout.GetAllDescendentFiles()
             .Select(f => f.Path.ToString())
@@ -437,7 +437,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
         var prevDiskState = DiskStateRegistry.GetState(BaseList.Id)!;
 
         var fileTree = await _synchronizer.DiskToFileTree(diskState, BaseList.Value, prevFileTree, prevDiskState);
-        var flattenedLoadout = await _synchronizer.FileTreeToFlattenedLoadout(BaseList.Value, fileTree, prevFlattenedLoadout);
+        var flattenedLoadout = await _synchronizer.FileTreeToFlattenedLoadout(fileTree, BaseList.Value, prevFlattenedLoadout);
         var loadout = await _synchronizer.FlattenedLoadoutToLoadout(flattenedLoadout, BaseList.Value, prevFlattenedLoadout);
 
         var flattenedAgain = await _synchronizer.LoadoutToFlattenedLoadout(loadout);
