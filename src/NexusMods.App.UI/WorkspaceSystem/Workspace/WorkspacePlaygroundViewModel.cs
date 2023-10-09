@@ -12,8 +12,6 @@ public class WorkspacePlaygroundViewModel : AViewModel<IWorkspacePlaygroundViewM
 {
     public readonly IWorkspaceViewModel WorkspaceViewModel = new WorkspaceViewModel();
 
-    [Reactive] public ReactiveCommand<Unit, Unit> AddPanelCommand { get; private set; } = Initializers.DisabledReactiveCommand;
-    [Reactive] public ReactiveCommand<Unit, Unit> RemovePanelCommand { get; private set; }= Initializers.DisabledReactiveCommand;
     [Reactive] public ReactiveCommand<Unit, Unit> SwapPanelsCommand { get; private set; } = Initializers.DisabledReactiveCommand;
 
     public WorkspacePlaygroundViewModel()
@@ -24,15 +22,6 @@ public class WorkspacePlaygroundViewModel : AViewModel<IWorkspacePlaygroundViewM
             {
                 { PanelId.Empty, MathUtils.One }
             });
-
-            var canRemovePanel = this.WhenAnyValue(vm => vm.WorkspaceViewModel.CanRemovePanel);
-            RemovePanelCommand = ReactiveCommand.Create(() =>
-            {
-                var last = WorkspaceViewModel.Panels.TakeLast(2).ToArray();
-                var toConsume = last[1];
-                var toExpand = last[0];
-                WorkspaceViewModel.RemovePanel(new RemovePanelInput(toConsume, toExpand));
-            }, canRemovePanel).DisposeWith(disposables);
 
             SwapPanelsCommand = ReactiveCommand.Create(() =>
             {

@@ -16,9 +16,6 @@ public partial class WorkspacePlaygroundView : ReactiveUserControl<WorkspacePlay
         {
             ViewModelViewHost.ViewModel = ViewModel?.WorkspaceViewModel;
 
-            this.BindCommand(ViewModel, vm => vm.RemovePanelCommand, view => view.RemovePanelButton)
-                .DisposeWith(disposables);
-
             this.BindCommand(ViewModel, vm => vm.SwapPanelsCommand, view => view.SwapPanelsButton)
                 .DisposeWith(disposables);
 

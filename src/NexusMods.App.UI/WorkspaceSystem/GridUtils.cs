@@ -136,4 +136,11 @@ internal static class GridUtils
 
         return currentRows < maxRows;
     }
+
+    internal static IReadOnlyDictionary<PanelId, Rect> GetStateWithoutPanel(
+        IImmutableDictionary<PanelId, Rect> currentState,
+        PanelId panelToRemove)
+    {
+        return currentState;
+    }
 }

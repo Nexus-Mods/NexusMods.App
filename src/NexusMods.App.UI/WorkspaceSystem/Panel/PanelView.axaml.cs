@@ -33,6 +33,7 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
                     Canvas.SetTop(this, bounds.Y);
                 })
                 .DisposeWith(disposables);
+
         });
     }
 }

@@ -1,7 +1,7 @@
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using Avalonia;
 using DynamicData;
 using ReactiveUI;
@@ -23,10 +23,6 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     [Reactive]
     public IReadOnlyList<IAddPanelButtonViewModel> AddPanelButtonViewModels { get; private set; } = Array.Empty<IAddPanelButtonViewModel>();
 
-    [Reactive] public bool CanAddPanel { get; private set; }
-
-    [Reactive] public bool CanRemovePanel { get; private set; }
-
     public WorkspaceViewModel()
     {
         this.WhenActivated(disposables =>
@@ -36,26 +32,6 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 .Sort(PanelComparer.Instance)
                 .Bind(out _panels)
                 .SubscribeWithErrorLogging(_ => UpdateStates())
-                .DisposeWith(disposables);
-
-            var panelCountObservable = _panelSource.CountChanged;
-            var stateCountObservable = this
-                .WhenAnyValue(vm => vm.AddPanelButtonViewModels)
-                .Select(states => states.Count);
-
-            panelCountObservable
-                .CombineLatest(stateCountObservable)
-                .Select(tuple =>
-                {
-                    var (panelCount, stateCount) = tuple;
-                    return panelCount < MaxPanelCount && stateCount > 0;
-                })
-                .SubscribeWithErrorLogging(canAddPanel => CanAddPanel = canAddPanel)
-                .DisposeWith(disposables);
-
-            panelCountObservable
-                .Select(panelCount => panelCount > 1)
-                .SubscribeWithErrorLogging(canRemovePanel => CanRemovePanel = canRemovePanel)
                 .DisposeWith(disposables);
         });
     }
@@ -82,6 +58,12 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
     private void UpdateStates()
     {
+        if (_panels.Count == MaxPanelCount)
+        {
+            AddPanelButtonViewModels = Array.Empty<IAddPanelButtonViewModel>();
+            return;
+        }
+
         var states = GridUtils.GetPossibleStates(_panels, Columns, Rows);
         AddPanelButtonViewModels = states.Select(state =>
         {
@@ -101,9 +83,9 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 var (panelId, logicalBounds) = kv;
                 if (panelId == PanelId.Empty)
                 {
-                    panelViewModel = new PanelViewModel
+                    panelViewModel = new PanelViewModel(this)
                     {
-                        LogicalBounds = logicalBounds
+                        LogicalBounds = logicalBounds,
                     };
 
                     panelViewModel.Arrange(_lastWorkspaceSize);
@@ -122,19 +104,32 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         });
 
         Debug.Assert(panelViewModel is not null);
+
         return panelViewModel;
     }
 
     /// <inheritdoc/>
-    public void RemovePanel(RemovePanelInput removePanelInput)
+    public void ClosePanel(IPanelViewModel currentPanel)
     {
-        var (toConsume, toExpand) = removePanelInput;
+        var currentState = _panels.ToImmutableDictionary(panel => panel.Id, panel => panel.LogicalBounds);
+        var newState = GridUtils.GetStateWithoutPanel(currentState, currentPanel.Id);
 
-        // NOTE(erri120): The instruction ordering is important, as the state calculation
-        // requires the latest LogicalBounds value.
-        toExpand.LogicalBounds = MathUtils.Join(toExpand.LogicalBounds, toConsume.LogicalBounds);
-        _panelSource.RemoveKey(toConsume.Id);
+        _panelSource.Edit(updater =>
+        {
+            updater.Remove(currentPanel.Id);
 
-        ArrangePanels(_lastWorkspaceSize);
+            foreach (var kv in newState)
+            {
+                var (panelId, logicalBounds) = kv;
+                {
+                    var existingPanel = updater.Lookup(panelId);
+                    Debug.Assert(existingPanel.HasValue);
+
+                    var value = existingPanel.Value;
+                    value.LogicalBounds = logicalBounds;
+                    updater.AddOrUpdate(value);
+                }
+            }
+        });
     }
 }

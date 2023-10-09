@@ -22,22 +22,11 @@ public interface IWorkspaceViewModel : IViewModelInterface
     /// <summary>
     /// Add a new panel to the workspace.
     /// </summary>
-    /// <param name="state"></param>
     /// <returns>The newly created <see cref="IPanelViewModel"/>.</returns>
     public IPanelViewModel AddPanel(IReadOnlyDictionary<PanelId, Rect> state);
 
     /// <summary>
-    /// Gets whether <see cref="AddPanel"/> can be called.
+    /// Closes a panel from the workspace.
     /// </summary>
-    public bool CanAddPanel { get; }
-
-    /// <summary>
-    /// Remove an existing panel from the workspace.
-    /// </summary>
-    public void RemovePanel(RemovePanelInput removePanelInput);
-
-    /// <summary>
-    /// Gets whether <see cref="RemovePanel"/> can be called.
-    /// </summary>
-    public bool CanRemovePanel { get; }
+    public void ClosePanel(IPanelViewModel currentPanel);
 }
