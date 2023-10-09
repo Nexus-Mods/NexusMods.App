@@ -1,15 +1,9 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Reactive;
-using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Runtime.CompilerServices;
 using Avalonia;
-using Avalonia.Media.Imaging;
-using Avalonia.ReactiveUI;
 using DynamicData;
-using DynamicData.Binding;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -27,10 +21,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     public ReadOnlyObservableCollection<IPanelViewModel> Panels => _panels;
 
     [Reactive]
-    public IReadOnlyList<IReadOnlyDictionary<PanelId, Rect>> PossibleStates { get; private set; } = Array.Empty<IReadOnlyDictionary<PanelId, Rect>>();
-
-    [Reactive]
-    public IReadOnlyList<Bitmap> StateImages { get; private set; } = Array.Empty<Bitmap>();
+    public IReadOnlyList<IAddPanelButtonViewModel> AddPanelButtonViewModels { get; private set; } = Array.Empty<IAddPanelButtonViewModel>();
 
     [Reactive] public bool CanAddPanel { get; private set; }
 
@@ -49,7 +40,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
             var panelCountObservable = _panelSource.CountChanged;
             var stateCountObservable = this
-                .WhenAnyValue(vm => vm.PossibleStates)
+                .WhenAnyValue(vm => vm.AddPanelButtonViewModels)
                 .Select(states => states.Count);
 
             panelCountObservable
@@ -91,8 +82,12 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
     private void UpdateStates()
     {
-        PossibleStates = GridUtils.GetPossibleStates(_panels, Columns, Rows).ToArray();
-        StateImages = PossibleStates.Select(IconUtils.StateToBitmap).ToArray();
+        var states = GridUtils.GetPossibleStates(_panels, Columns, Rows);
+        AddPanelButtonViewModels = states.Select(state =>
+        {
+            var image = IconUtils.StateToBitmap(state);
+            return new AddPanelButtonViewModel(this, state, image);
+        }).ToArray();
     }
 
     /// <inheritdoc/>

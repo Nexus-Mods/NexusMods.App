@@ -1,6 +1,5 @@
 using System.Reactive;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using Avalonia;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -25,13 +24,6 @@ public class WorkspacePlaygroundViewModel : AViewModel<IWorkspacePlaygroundViewM
             {
                 { PanelId.Empty, MathUtils.One }
             });
-
-            var canAddPanel = this.WhenAnyValue(vm => vm.WorkspaceViewModel.CanAddPanel);
-            AddPanelCommand = ReactiveCommand.Create(() =>
-            {
-                var state = WorkspaceViewModel.PossibleStates[0];
-                WorkspaceViewModel.AddPanel(state);
-            }, canAddPanel).DisposeWith(disposables);
 
             var canRemovePanel = this.WhenAnyValue(vm => vm.WorkspaceViewModel.CanRemovePanel);
             RemovePanelCommand = ReactiveCommand.Create(() =>

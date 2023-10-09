@@ -149,10 +149,13 @@ public static class Services
             .AddView<MessageBoxOkCancelView, IMessageBoxOkCancelViewModel>()
             .AddView<UpdaterView, IUpdaterViewModel>()
 
+            // workspace system
             .AddViewModel<WorkspaceViewModel, IWorkspaceViewModel>()
-            .AddView<WorkspaceView, IWorkspaceViewModel>()
             .AddViewModel<PanelViewModel, IPanelViewModel>()
+            .AddViewModel<AddPanelButtonViewModel, IAddPanelButtonViewModel>()
+            .AddView<WorkspaceView, IWorkspaceViewModel>()
             .AddView<PanelView, IPanelViewModel>()
+            .AddView<AddPanelButtonView, IAddPanelButtonViewModel>()
 
             // Other
             .AddSingleton<InjectedViewLocator>()

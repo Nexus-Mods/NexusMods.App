@@ -9,7 +9,7 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 
 internal static class IconUtils
 {
-    private const float IconSize = 18f;
+    internal const float IconSize = 18f;
     private const float CornerRadius = 1f;
 
     private const float OuterPaddingRatio = 0.08333333333333f;

@@ -16,16 +16,13 @@ public partial class WorkspacePlaygroundView : ReactiveUserControl<WorkspacePlay
         {
             ViewModelViewHost.ViewModel = ViewModel?.WorkspaceViewModel;
 
-            this.BindCommand(ViewModel, vm => vm.AddPanelCommand, view => view.AddPanelButton)
-                .DisposeWith(disposables);
-
             this.BindCommand(ViewModel, vm => vm.RemovePanelCommand, view => view.RemovePanelButton)
                 .DisposeWith(disposables);
 
             this.BindCommand(ViewModel, vm => vm.SwapPanelsCommand, view => view.SwapPanelsButton)
                 .DisposeWith(disposables);
 
-            this.OneWayBind(ViewModel, vm => vm.WorkspaceViewModel.StateImages, view => view.StateImages.ItemsSource)
+            this.OneWayBind(ViewModel, vm => vm.WorkspaceViewModel.AddPanelButtonViewModels, view => view.AddPanelButtonItemsControl.ItemsSource)
                 .DisposeWith(disposables);
         });
     }
