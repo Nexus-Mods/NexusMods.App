@@ -1,10 +1,13 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Runtime.CompilerServices;
 using Avalonia;
 using Avalonia.Media.Imaging;
+using Avalonia.ReactiveUI;
 using DynamicData;
 using DynamicData.Binding;
 using ReactiveUI;
@@ -29,13 +32,9 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     [Reactive]
     public IReadOnlyList<Bitmap> StateImages { get; private set; } = Array.Empty<Bitmap>();
 
-    /// <inheritdoc/>
-    [Reactive]
-    public ReactiveCommand<IReadOnlyDictionary<PanelId, Rect>, IPanelViewModel> AddPanelCommand { get; private set; } = Initializers.CreateReactiveCommand<IReadOnlyDictionary<PanelId, Rect>, IPanelViewModel>();
+    [Reactive] public bool CanAddPanel { get; private set; }
 
-    /// <inheritdoc/>
-    [Reactive]
-    public ReactiveCommand<RemovePanelInput, Unit> RemovePanelCommand { get; private set; } = Initializers.CreateReactiveCommand<RemovePanelInput>();
+    [Reactive] public bool CanRemovePanel { get; private set; }
 
     public WorkspaceViewModel()
     {
@@ -45,11 +44,6 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 .Connect()
                 .Sort(PanelComparer.Instance)
                 .Bind(out _panels)
-                .SubscribeWithErrorLogging()
-                .DisposeWith(disposables);
-
-            _panels
-                .ObserveCollectionChanges()
                 .SubscribeWithErrorLogging(_ =>
                 {
                     PossibleStates = GridUtils.GetPossibleStates(_panels, Columns, Rows).ToArray();
@@ -57,55 +51,25 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 })
                 .DisposeWith(disposables);
 
-            var canAddPanel = _panelSource.CountChanged.Select(count => count < MaxPanelCount);
-            AddPanelCommand = ReactiveCommand.Create<IReadOnlyDictionary<PanelId, Rect>, IPanelViewModel>(state =>
-            {
-                IPanelViewModel panelViewModel = null!;
-                _panelSource.Edit(updater =>
+            var panelCountObservable = _panelSource.CountChanged;
+            var stateCountObservable = this
+                .WhenAnyValue(vm => vm.PossibleStates)
+                .Select(states => states.Count);
+
+            panelCountObservable
+                .CombineLatest(stateCountObservable)
+                .Select(tuple =>
                 {
-                    foreach (var kv in state)
-                    {
-                        var (panelId, logicalBounds) = kv;
-                        if (panelId == PanelId.Empty)
-                        {
-                            panelViewModel = new PanelViewModel
-                            {
-                                LogicalBounds = logicalBounds
-                            };
+                    var (panelCount, stateCount) = tuple;
+                    return panelCount < MaxPanelCount && stateCount > 0;
+                })
+                .SubscribeWithErrorLogging(canAddPanel => CanAddPanel = canAddPanel)
+                .DisposeWith(disposables);
 
-                            panelViewModel.Arrange(_lastWorkspaceSize);
-                            updater.AddOrUpdate(panelViewModel);
-                        }
-                        else
-                        {
-                            var existingPanel = updater.Lookup(panelId);
-                            Debug.Assert(existingPanel.HasValue);
-
-                            var value = existingPanel.Value;
-                            value.LogicalBounds = logicalBounds;
-                            updater.AddOrUpdate(value);
-                        }
-                    }
-                });
-
-                Debug.Assert(panelViewModel is not null);
-                return panelViewModel;
-            }, canAddPanel).DisposeWith(disposables);
-
-            var canRemovePanel = _panelSource.CountChanged.Select(count => count > 1);
-            RemovePanelCommand = ReactiveCommand.Create<RemovePanelInput, Unit>(removePanelInput =>
-            {
-                var (toConsume, toExpand) = removePanelInput;
-                // Console.WriteLine($"removing: {toConsume.Id} | expanding: {toExpand.Id}");
-
-                // NOTE(erri120): The instruction ordering is important, as the state calculation
-                // requires the latest LogicalBounds value.
-                toExpand.LogicalBounds = MathUtils.Join(toExpand.LogicalBounds, toConsume.LogicalBounds);
-                _panelSource.RemoveKey(toConsume.Id);
-
-                ArrangePanels(_lastWorkspaceSize);
-                return Unit.Default;
-            }, canRemovePanel);
+            panelCountObservable
+                .Select(panelCount => panelCount > 1)
+                .SubscribeWithErrorLogging(canRemovePanel => CanRemovePanel = canRemovePanel)
+                .DisposeWith(disposables);
         });
     }
 
@@ -117,5 +81,51 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         {
             panelViewModel.Arrange(workspaceSize);
         }
+    }
+
+    public IPanelViewModel AddPanel(IReadOnlyDictionary<PanelId, Rect> state)
+    {
+        IPanelViewModel panelViewModel = null!;
+        _panelSource.Edit(updater =>
+        {
+            foreach (var kv in state)
+            {
+                var (panelId, logicalBounds) = kv;
+                if (panelId == PanelId.Empty)
+                {
+                    panelViewModel = new PanelViewModel
+                    {
+                        LogicalBounds = logicalBounds
+                    };
+
+                    panelViewModel.Arrange(_lastWorkspaceSize);
+                    updater.AddOrUpdate(panelViewModel);
+                }
+                else
+                {
+                    var existingPanel = updater.Lookup(panelId);
+                    Debug.Assert(existingPanel.HasValue);
+
+                    var value = existingPanel.Value;
+                    value.LogicalBounds = logicalBounds;
+                    updater.AddOrUpdate(value);
+                }
+            }
+        });
+
+        Debug.Assert(panelViewModel is not null);
+        return panelViewModel;
+    }
+
+    public void RemovePanel(RemovePanelInput removePanelInput)
+    {
+        var (toConsume, toExpand) = removePanelInput;
+
+        // NOTE(erri120): The instruction ordering is important, as the state calculation
+        // requires the latest LogicalBounds value.
+        toExpand.LogicalBounds = MathUtils.Join(toExpand.LogicalBounds, toConsume.LogicalBounds);
+        _panelSource.RemoveKey(toConsume.Id);
+
+        ArrangePanels(_lastWorkspaceSize);
     }
 }

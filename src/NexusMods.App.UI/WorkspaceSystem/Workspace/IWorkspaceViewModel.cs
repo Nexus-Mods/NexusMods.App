@@ -1,8 +1,6 @@
 using System.Collections.ObjectModel;
-using System.Reactive;
 using Avalonia;
 using Avalonia.Media.Imaging;
-using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
@@ -13,17 +11,29 @@ public interface IWorkspaceViewModel : IViewModelInterface
     public IReadOnlyList<Bitmap> StateImages { get; }
 
     /// <summary>
-    /// Command for adding a new panel to the workspace.
+    /// Add a new panel to the workspace.
     /// </summary>
-    /// <remarks>
-    /// This command returns the new panel.
-    /// </remarks>
-    public ReactiveCommand<IReadOnlyDictionary<PanelId, Rect>, IPanelViewModel> AddPanelCommand { get; }
+    /// <param name="state"></param>
+    /// <returns>The newly created <see cref="IPanelViewModel"/>.</returns>
+    public IPanelViewModel AddPanel(IReadOnlyDictionary<PanelId, Rect> state);
 
     /// <summary>
-    /// Command for remove an existing panel from the workspace.
+    /// Gets whether <see cref="AddPanel"/> can be called.
     /// </summary>
-    public ReactiveCommand<RemovePanelInput, Unit> RemovePanelCommand { get; }
+    public bool CanAddPanel { get; }
 
+    /// <summary>
+    /// Remove an existing panel from the workspace.
+    /// </summary>
+    public void RemovePanel(RemovePanelInput removePanelInput);
+
+    /// <summary>
+    /// Gets whether <see cref="RemovePanel"/> can be called.
+    /// </summary>
+    public bool CanRemovePanel { get; }
+
+    /// <summary>
+    /// Called by the View to notify the VM about the new size of the control.
+    /// </summary>
     public void ArrangePanels(Size workspaceSize);
 }
