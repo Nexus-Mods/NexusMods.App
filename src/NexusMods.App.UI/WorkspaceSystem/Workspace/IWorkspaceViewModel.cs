@@ -11,6 +11,16 @@ public interface IWorkspaceViewModel : IViewModelInterface
     public IReadOnlyList<Bitmap> StateImages { get; }
 
     /// <summary>
+    /// Called by the View to notify the VM about the new size of the control.
+    /// </summary>
+    public void ArrangePanels(Size workspaceSize);
+
+    /// <summary>
+    /// Swaps the position of two panels.
+    /// </summary>
+    public void SwapPanels(IPanelViewModel first, IPanelViewModel second);
+
+    /// <summary>
     /// Add a new panel to the workspace.
     /// </summary>
     /// <param name="state"></param>
@@ -31,9 +41,4 @@ public interface IWorkspaceViewModel : IViewModelInterface
     /// Gets whether <see cref="RemovePanel"/> can be called.
     /// </summary>
     public bool CanRemovePanel { get; }
-
-    /// <summary>
-    /// Called by the View to notify the VM about the new size of the control.
-    /// </summary>
-    public void ArrangePanels(Size workspaceSize);
 }

@@ -44,11 +44,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 .Connect()
                 .Sort(PanelComparer.Instance)
                 .Bind(out _panels)
-                .SubscribeWithErrorLogging(_ =>
-                {
-                    PossibleStates = GridUtils.GetPossibleStates(_panels, Columns, Rows).ToArray();
-                    StateImages = PossibleStates.Select(IconUtils.StateToBitmap).ToArray();
-                })
+                .SubscribeWithErrorLogging(_ => UpdateStates())
                 .DisposeWith(disposables);
 
             var panelCountObservable = _panelSource.CountChanged;
@@ -74,6 +70,8 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     }
 
     private Size _lastWorkspaceSize;
+
+    /// <inheritdoc/>
     public void ArrangePanels(Size workspaceSize)
     {
         _lastWorkspaceSize = workspaceSize;
@@ -83,6 +81,21 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         }
     }
 
+    /// <inheritdoc/>
+    public void SwapPanels(IPanelViewModel first, IPanelViewModel second)
+    {
+        (second.LogicalBounds, first.LogicalBounds) = (first.LogicalBounds, second.LogicalBounds);
+        ArrangePanels(_lastWorkspaceSize);
+        UpdateStates();
+    }
+
+    private void UpdateStates()
+    {
+        PossibleStates = GridUtils.GetPossibleStates(_panels, Columns, Rows).ToArray();
+        StateImages = PossibleStates.Select(IconUtils.StateToBitmap).ToArray();
+    }
+
+    /// <inheritdoc/>
     public IPanelViewModel AddPanel(IReadOnlyDictionary<PanelId, Rect> state)
     {
         IPanelViewModel panelViewModel = null!;
@@ -117,6 +130,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         return panelViewModel;
     }
 
+    /// <inheritdoc/>
     public void RemovePanel(RemovePanelInput removePanelInput)
     {
         var (toConsume, toExpand) = removePanelInput;
