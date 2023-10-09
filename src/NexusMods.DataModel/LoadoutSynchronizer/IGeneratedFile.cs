@@ -1,4 +1,6 @@
-﻿using NexusMods.Hashing.xxHash64;
+﻿using NexusMods.DataModel.Loadouts;
+using NexusMods.Hashing.xxHash64;
+using NexusMods.Paths;
 
 namespace NexusMods.DataModel.LoadoutSynchronizer;
 
@@ -13,5 +15,14 @@ public interface IGeneratedFile
     /// </summary>
     /// <param name="stream"></param>
     /// <returns></returns>
-    public ValueTask<Hash?> Write(Stream stream);
+    ValueTask<Hash?> Write(Stream stream);
+
+    /// <summary>
+    /// Called when the file is updated on disk, outside of the application, this method should read the file,
+    /// and update the IGeneratedFile accordingly.
+    /// </summary>
+    /// <param name="newEntry"></param>
+    /// <param name="stream"></param>
+    /// <returns></returns>
+    ValueTask<AModFile> Update(DiskStateEntry newEntry, Stream stream);
 }

@@ -322,8 +322,16 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer, IStandardizedLoadoutSy
     /// <param name="gamePath"></param>
     /// <param name="absolutePath"></param>
     /// <returns></returns>
-    protected virtual ValueTask<AModFile> HandleChangedFile(AModFile prevFile, DiskStateEntry prevEntry, DiskStateEntry newEntry, GamePath gamePath, AbsolutePath absolutePath)
+    protected virtual async ValueTask<AModFile> HandleChangedFile(AModFile prevFile, DiskStateEntry prevEntry, DiskStateEntry newEntry, GamePath gamePath, AbsolutePath absolutePath)
     {
+        if (prevFile is IGeneratedFile gf)
+        {
+            await using var stream = absolutePath.Read();
+            var entity = await gf.Update(newEntry, stream);
+            entity.EnsurePersisted(_store);
+            return entity;
+        }
+
         var newFile = new FromArchive
         {
             Id = ModFileId.New(),
@@ -332,7 +340,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer, IStandardizedLoadoutSy
             To = gamePath
         };
         newFile.EnsurePersisted(_store);
-        return ValueTask.FromResult<AModFile>(newFile);
+        return newFile;
     }
 
     /// <inheritdoc />

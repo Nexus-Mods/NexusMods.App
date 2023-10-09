@@ -156,6 +156,13 @@ public class FlattenedToLoadoutTransformer : ALoadoutVisitor
             return null;
         }
 
+        // Perform any file replacements
+        if (_fileReplacements.TryGetValue((mod.Id, modFile.Id), out var replacement))
+        {
+            return replacement;
+        }
+
         return modFile;
     }
+
 }

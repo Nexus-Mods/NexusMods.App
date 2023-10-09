@@ -13,6 +13,7 @@ using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.DataModel.TriggerFilter;
 using NexusMods.Hashing.xxHash64;
+using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 using IGeneratedFile = NexusMods.DataModel.LoadoutSynchronizer.IGeneratedFile;
@@ -549,6 +550,11 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
             await stream.WriteAsync(bytes, 0, bytes.Length);
             return bytes.XxHash64();
         }
+
+        public async ValueTask<AModFile> Update(DiskStateEntry newEntry, Stream stream)
+        {
+            return this with { Data = (await stream.ReadAllTextAsync()).ToArray() };
+        }
     }
 
     [Fact]
@@ -599,6 +605,23 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
         newState[generatedFile.To].Value!.Hash.Should().Be("DEF".XxHash64AsUtf8(), "the file should have been generated");
         outputPath.FileExists.Should().BeTrue("the file should still exist");
         (await outputPath.ReadAllTextAsync()).Should().Be("DEF", "the file should contain the new generated data");
+
+        // Now that we've changed the data, what if we change the disk state?
+
+        await outputPath.WriteAllTextAsync("DEADBEEF");
+
+        var newLoadout = await _synchronizer.Ingest(BaseList.Value);
+
+        newLoadout.Mods[modId].Files.ContainsKey(fileId).Should().BeTrue("The file should still exist");
+
+        var generatedFileUpdated = (GeneratedTestFile)newLoadout.Mods[modId].Files[fileId];
+        generatedFileUpdated.Data.Should().BeEquivalentTo(new[] { 'D', 'E', 'A', 'D', 'B', 'E', 'E', 'F' }, "the data should be updated");
+
+        // Delete the file
+        outputPath.Delete();
+
+        newLoadout = await _synchronizer.Ingest(newLoadout);
+        newLoadout.Mods[modId].Files.ContainsKey(fileId).Should().BeFalse("The file should no longer exist");
 
     }
 
