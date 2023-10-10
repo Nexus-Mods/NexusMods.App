@@ -26,7 +26,7 @@ internal static class GridUtils
                     yield return CreateResult(currentPanels, panel, vertical: true, inverse: true);
             }
 
-            if (CanSplitHorizontally(panel, panels, columns))
+            if (CanSplitHorizontally(panel, panels, rows))
             {
                 var res = CreateResult(currentPanels, panel, vertical: false, inverse: false);
                 yield return res;
