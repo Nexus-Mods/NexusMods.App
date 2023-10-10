@@ -328,6 +328,12 @@
         <Compile Update="WorkspaceSystem\AddPanelButton\AddPanelButtonDesignViewModel.cs">
           <DependentUpon>IAddPanelButtonViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="WorkspaceSystem\PanelTab\PanelTabViewModel.cs">
+          <DependentUpon>IPanelTabViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Dummy\DummyViewModel.cs">
+          <DependentUpon>IDummyViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

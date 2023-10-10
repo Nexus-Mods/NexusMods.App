@@ -1,4 +1,5 @@
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Immutable;
@@ -9,23 +10,14 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 
 public partial class PanelView : ReactiveUserControl<IPanelViewModel>
 {
-    private static byte GetRandomByte()
-    {
-        var i = Random.Shared.Next(byte.MinValue, byte.MaxValue);
-        return (byte)i;
-    }
-
     public PanelView()
     {
         InitializeComponent();
 
-        var color = Color.FromRgb(GetRandomByte(), GetRandomByte(), GetRandomByte());
-        Background = new ImmutableSolidColorBrush(color);
-
         this.WhenActivated(disposables =>
         {
             this.WhenAnyValue(view => view.ViewModel!.ActualBounds)
-                .Subscribe(bounds =>
+                .SubscribeWithErrorLogging(bounds =>
                 {
                     Width = bounds.Width;
                     Height = bounds.Height;
@@ -34,7 +26,10 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
                 })
                 .DisposeWith(disposables);
 
-            this.BindCommand(ViewModel, vm => vm.ClosePanelCommand, view => view.ClosePanelButton)
+            this.BindCommand(ViewModel, vm => vm.CloseCommand, view => view.ClosePanelButton)
+                .DisposeWith(disposables);
+
+            this.OneWayBind(ViewModel, vm => vm.SelectedTabContents, view => view.ViewModelViewHost.ViewModel)
                 .DisposeWith(disposables);
         });
     }

@@ -1,6 +1,7 @@
 using Avalonia;
 using FluentAssertions;
 using NexusMods.App.UI.WorkspaceSystem;
+using Xunit.Sdk;
 
 namespace NexusMods.UI.Tests.WorkspaceSystem;
 

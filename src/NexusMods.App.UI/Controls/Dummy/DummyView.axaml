@@ -13,4 +13,6 @@
         <controls:DummyViewModel/>
     </Design.DataContext>
 
+    <TextBlock FontSize="30">Hello World!</TextBlock>
+
 </reactive:ReactiveUserControl>

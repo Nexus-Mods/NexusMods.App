@@ -1,6 +1,7 @@
 using System.Reactive;
 using System.Reactive.Disposables;
 using Avalonia;
+using NexusMods.App.UI.Controls;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -18,10 +19,13 @@ public class WorkspacePlaygroundViewModel : AViewModel<IWorkspacePlaygroundViewM
     {
         this.WhenActivated(disposables =>
         {
-            WorkspaceViewModel.AddPanel(new Dictionary<PanelId, Rect>
+            var panel = WorkspaceViewModel.AddPanel(new Dictionary<PanelId, Rect>
             {
                 { PanelId.Empty, MathUtils.One }
             });
+
+            var tab = panel.AddTab();
+            tab.Contents = new DummyViewModel();
 
             SwapPanelsCommand = ReactiveCommand.Create(() =>
             {

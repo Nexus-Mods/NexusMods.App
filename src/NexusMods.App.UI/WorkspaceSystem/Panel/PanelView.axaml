@@ -9,19 +9,12 @@
     x:Class="NexusMods.App.UI.WorkspaceSystem.PanelView"
     Width="0" Height="0">
 
-    <!-- <reactive:ViewModelViewHost x:Name="ViewModelViewHost"/> -->
-
-    <Design.DataContext>
-        <workspace:PanelViewModel/>
-    </Design.DataContext>
-
-    <StackPanel Spacing="8">
-        <Button x:Name="ClosePanelButton" Classes="Standard PrimaryOutlined">
+    <Grid RowDefinitions="Auto, *">
+        <Button Grid.Row="0" x:Name="ClosePanelButton" Classes="Standard PrimaryOutlined">
             <TextBlock>Close Panel</TextBlock>
         </Button>
 
-        <TextBlock>Hello World!</TextBlock>
-    </StackPanel>
-
+        <reactive:ViewModelViewHost Grid.Row="1" x:Name="ViewModelViewHost"/>
+    </Grid>
 
 </reactive:ReactiveUserControl>
