@@ -35,7 +35,7 @@ public record Mod : Entity, IHasEntityId<ModId>
     public const string SavesCategory = "Saved Games";
 
     /// <summary>
-    /// Category used for 'Save Games'.
+    /// Category used for 'Overrides'.
     /// </summary>
     public const string OverridesCategory = "Overrides";
 
