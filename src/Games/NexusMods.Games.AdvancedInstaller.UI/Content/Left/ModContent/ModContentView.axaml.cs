@@ -13,7 +13,7 @@ public partial class ModContentView : ReactiveUserControl<IModContentViewModel>
 
         this.WhenActivated(disposables =>
         {
-            this.OneWayBind<IModContentViewModel, ModContentView, HierarchicalTreeDataGridSource<IModContentFileNode>,
+            this.OneWayBind<IModContentViewModel, ModContentView, HierarchicalTreeDataGridSource<IModContentNode>,
                     ITreeDataGridSource>(ViewModel, vm => vm.Tree, view => view.ModContentTreeDataGrid.Source!)
                 .DisposeWith(disposables);
         });

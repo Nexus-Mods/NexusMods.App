@@ -7,21 +7,21 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers;
 
 public abstract class ATreeDataGridSourceFileNodeTest
 {
-    internal ModContentNode<RelativePath, int>? GetChildNode(IModContentFileNode root,
+    internal ModContentNode<RelativePath, int>? GetChildNode(IModContentNode root,
         string fileName)
     {
         return root.Children.FirstOrDefault(x => x.FileName == fileName) as
             ModContentNode<RelativePath, int>;
     }
 
-    protected void AssertFileInTree(IModContentFileNode root, string expectedName, bool isRoot,
+    protected void AssertFileInTree(IModContentNode root, string expectedName, bool isRoot,
         bool isDirectory, int expectedChildrenCount)
     {
         AssertNode(root.Children.FirstOrDefault(x => x.FileName == expectedName)!, expectedName, isRoot, isDirectory,
             expectedChildrenCount);
     }
 
-    protected void AssertNode(IModContentFileNode node, string expectedName, bool isRoot, bool isDirectory,
+    protected void AssertNode(IModContentNode node, string expectedName, bool isRoot, bool isDirectory,
         int expectedChildrenCount)
     {
         node.FileName.Should().Be(expectedName);

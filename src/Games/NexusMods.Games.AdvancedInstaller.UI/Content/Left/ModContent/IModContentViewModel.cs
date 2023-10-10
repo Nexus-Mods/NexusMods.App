@@ -5,5 +5,5 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 
 public interface IModContentViewModel : IViewModel
 {
-    public HierarchicalTreeDataGridSource<IModContentFileNode> Tree { get; }
+    public HierarchicalTreeDataGridSource<IModContentNode> Tree { get; }
 }
