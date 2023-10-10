@@ -205,7 +205,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer, IStandardizedLoadoutSy
             if (hash == null)
             {
                 outputStream.Position = 0;
-                hash = await outputStream.HashingCopyAsync(Stream.Null, CancellationToken.None, async x => {});
+                hash = await outputStream.HashingCopyAsync(Stream.Null, CancellationToken.None);
             }
 
             resultingItems[((IToFile)entry.Value).To] = new DiskStateEntry
