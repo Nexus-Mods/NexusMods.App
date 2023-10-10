@@ -85,14 +85,6 @@
             <DependentUpon>IAdvancedInstallerModContentEntryViewModel.cs</DependentUpon>
         </Compile>
 
-        <Compile Update="Content\Left\ModContent\Entry\ModContentEntryDesignViewModel.cs">
-            <DependentUpon>IModContentEntryViewModel.cs</DependentUpon>
-        </Compile>
-
-        <Compile Update="Content\Left\ModContent\Entry\ModContentEntryViewModel.cs">
-            <DependentUpon>IModContentEntryViewModel.cs</DependentUpon>
-        </Compile>
-
         <Compile Update="Content\Left\ModContent\ModContentDesignViewModel.cs">
             <DependentUpon>IModContentViewModel.cs</DependentUpon>
         </Compile>
@@ -152,6 +144,11 @@
 
         <Compile Update="Content\Right\Results\SelectLocation\SuggestedEntry\SuggestedEntryViewModel.cs">
             <DependentUpon>ISuggestedEntryViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="TreeEntry\TreeEntryView.axaml.cs">
+          <DependentUpon>ModContentEntryView.axaml</DependentUpon>
+          <SubType>Code</SubType>
         </Compile>
     </ItemGroup>
 

@@ -1,4 +1,4 @@
-﻿<reactiveUi:ReactiveUserControl x:TypeArguments="left:IModContentEntryViewModel"
+﻿<reactiveUi:ReactiveUserControl x:TypeArguments="ui:ITreeEntryViewModel"
                                 xmlns="https://github.com/avaloniaui"
                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,11 +6,11 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
                                 xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
-                                xmlns:left="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Content.Left"
+                                xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI"
                                 mc:Ignorable="d" d:DesignWidth="710" d:DesignHeight="44"
-                                x:Class="NexusMods.Games.AdvancedInstaller.UI.Content.Left.ModContentEntryView">
+                                x:Class="NexusMods.Games.AdvancedInstaller.UI.TreeEntryView">
     <Design.DataContext>
-        <left:ModContentEntryDesignViewModel />
+        <ui:TreeEntryDesignViewModel />
     </Design.DataContext>
 
     <Grid ColumnDefinitions="*, Auto" Margin="0,5,0,5">
@@ -60,6 +60,11 @@
                            TextTrimming="CharacterEllipsis"
                            Text="Example-file.bsa" IsVisible="True"
                            x:Name="FileNameTextBlock" />
+
+                <!-- Create Folder Name input field -->
+                <TextBox Grid.Column="1" Classes="BodyMDNormal" VerticalAlignment="Center"
+                         Text="" IsVisible="False"
+                         x:Name="CreateFolderNameTextBox" />
 
                 <!-- Pills -->
 
