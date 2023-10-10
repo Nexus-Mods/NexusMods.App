@@ -26,7 +26,6 @@ where TVm : IViewModelInterface
     protected StubbedGame Game { get; }
     protected IFileSystem FileSystem { get; }
     protected GameInstallation Install { get; }
-    protected LoadoutManager LoadoutManager { get; }
     protected LoadoutRegistry LoadoutRegistry { get; }
 
     protected IDataStore DataStore { get; }
@@ -45,7 +44,6 @@ where TVm : IViewModelInterface
     {
         _vmWrapper = GetActivatedViewModel<TVm>();
         DataStore = provider.GetRequiredService<IDataStore>();
-        LoadoutManager = provider.GetRequiredService<LoadoutManager>();
         LoadoutRegistry = provider.GetRequiredService<LoadoutRegistry>();
         Game = provider.GetRequiredService<StubbedGame>();
         Install = Game.Installations.First();
@@ -60,7 +58,7 @@ where TVm : IViewModelInterface
 
     public async Task InitializeAsync()
     {
-        _loadoutId = (await LoadoutManager.ManageGameAsync(Install, "Test")).Value.LoadoutId;
+        _loadoutId = (await LoadoutRegistry.Manage(Install, "Test")).Value.LoadoutId;
     }
 
     protected async Task<ModId[]> InstallMod(AbsolutePath path)

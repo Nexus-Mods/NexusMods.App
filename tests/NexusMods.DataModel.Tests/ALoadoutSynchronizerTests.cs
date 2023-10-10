@@ -3,25 +3,20 @@ using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.ApplySteps;
 using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.LoadoutSynchronizer;
-using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.DataModel.Tests.Harness;
-using NexusMods.DataModel.TriggerFilter;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
-using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 using IGeneratedFile = NexusMods.DataModel.LoadoutSynchronizer.IGeneratedFile;
 using ModId = NexusMods.DataModel.Loadouts.ModId;
 
-namespace NexusMods.DataModel.Tests.LoadoutSynchronizerTests;
+namespace NexusMods.DataModel.Tests;
 
-public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
+public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTests>
 {
     private readonly IStandardizedLoadoutSynchronizer _synchronizer;
     private readonly Dictionary<ModId, string> _modNames = new();

@@ -24,7 +24,6 @@ namespace NexusMods.DataModel.Tests.Harness;
 public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
 {
     protected readonly TestDirectoryIndexer TestIndexer;
-    protected readonly Loadouts.LoadoutSynchronizer TestSyncronizer;
     protected readonly TestArchiveManager TestArchiveManagerInstance;
     protected readonly TestFingerprintCache<Mod, CachedModSortRules> TestFingerprintCacheInstance;
     protected readonly TestFingerprintCache<IGeneratedFile, CachedGeneratedFileData> TestGeneratedFileFingerprintCache;
@@ -37,13 +36,6 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
         TestArchiveManagerInstance = new TestArchiveManager();
         TestFingerprintCacheInstance = new TestFingerprintCache<Mod, CachedModSortRules>();
         TestGeneratedFileFingerprintCache = new TestFingerprintCache<IGeneratedFile, CachedGeneratedFileData>();
-        TestSyncronizer = new Loadouts.LoadoutSynchronizer(
-            provider.GetRequiredService<ILogger<Loadouts.LoadoutSynchronizer>>(),
-            TestFingerprintCacheInstance,
-            TestIndexer,
-            TestArchiveManagerInstance,
-            TestGeneratedFileFingerprintCache,
-            LoadoutManager.Registry);
     }
 
 
@@ -111,98 +103,6 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
             }
         }
     }
-
-    protected async Task<Loadout> CreateApplyPlanTestLoadout(bool generatedFile = false)
-    {
-        var loadout = await LoadoutManager.ManageGameAsync(Install, Guid.NewGuid().ToString());
-
-        var mainMod = loadout.Value.Mods.Values.First();
-        var files = EntityDictionary<ModFileId, AModFile>.Empty(DataStore);
-        var disabledFiles = EntityDictionary<ModFileId, AModFile>.Empty(DataStore);
-
-        if (generatedFile)
-        {
-            files = files.With(new TestGeneratedFile
-            {
-                Id = ModFileId.New(),
-                To = new GamePath(LocationId.Game, "0x00001.generated"),
-            }, m => m.Id);
-        }
-        else
-        {
-            files = files.With(new FromArchive
-            {
-                Id = ModFileId.New(),
-                Hash = Hash.From(0x00001),
-                Size = Size.From(0x10001),
-                To = new GamePath(LocationId.Game, "0x00001.dat"),
-            }, m => m.Id);
-        }
-
-        var mod = new Mod
-        {
-            Id = ModId.New(),
-            Name = "Test Mod",
-            Files = files,
-            SortRules = ImmutableList<ISortRule<Mod, ModId>>.Empty,
-            Enabled = true
-        };
-
-        disabledFiles = files.With(new FromArchive
-        {
-            Id = ModFileId.New(),
-            Hash = Hash.From(0x00001),
-            Size = Size.From(0x10001),
-            To = new GamePath(LocationId.Game, "shouldNotExist/0x00001.dat"),
-        }, m => m.Id);
-
-        var disabledMod = new Mod
-        {
-            Id = ModId.New(),
-            Name = "Disabled Test Mod",
-            Files = disabledFiles,
-            SortRules = ImmutableList<ISortRule<Mod, ModId>>.Empty,
-            Enabled = false,
-        };
-
-
-        loadout.Add(mod);
-        loadout.Add(disabledMod);
-        loadout.Remove(mainMod);
-        return loadout.Value;
-    }
-
-    /// <summary>
-    /// Create a test loadout with a number of mods each with a alphabetical sort rule
-    /// </summary>
-    /// <param name="numberMainFiles"></param>
-    /// <returns></returns>
-    protected async Task<LoadoutMarker> CreateTestLoadout(int numberMainFiles = 10)
-    {
-        var loadout = await LoadoutManager.ManageGameAsync(Install, Guid.NewGuid().ToString());
-
-        var mainMod = loadout.Value.Mods.Values.First();
-
-        var mods = Enumerable.Range(0,  numberMainFiles).Select(x => new Mod()
-        {
-            Id = ModId.New(),
-            Name = $"Mod {x}",
-            Files = EntityDictionary<ModFileId, AModFile>.Empty(DataStore),
-            SortRules = new ISortRule<Mod, ModId>[]
-            {
-                new AlphabeticalSort()
-            }.ToImmutableList(),
-            Enabled = true
-        }).ToList();
-
-        foreach (var mod in mods)
-            loadout.Add(mod);
-
-        loadout.Remove(mainMod);
-        return loadout;
-    }
-
-
 
     public class TestFingerprintCache<TSrc, TValue> : IFingerprintCache<TSrc, TValue> where TValue : Entity
     {

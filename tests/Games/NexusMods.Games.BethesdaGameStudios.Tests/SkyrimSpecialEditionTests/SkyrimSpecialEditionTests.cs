@@ -8,8 +8,10 @@ using NexusMods.CLI.Tests.VerbTests;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.Extensions;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
+using NexusMods.DataModel.LoadoutSynchronizer;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -158,12 +160,9 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
         gameFiles.Files.Count.Should().BeGreaterThan(0);
 
         var pluginOrderFile = gameFiles.Files.Values.OfType<PluginOrderFile>().First();
-        var flattenedList = (await LoadoutSynchronizer.FlattenLoadout(loadout.Value)).Files.Values.ToList();
-
-        var plan = await LoadoutSynchronizer.MakeApplySteps(loadout.Value);
 
         using var ms = new MemoryStream();
-        await pluginOrderFile.GenerateAsync(ms, plan);
+        await pluginOrderFile.Write(ms);
 
         ms.Position = 0;
 
@@ -303,7 +302,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
             downloaded.Path,
             downloaded.Manifest.Name);
 
-        await Apply(loadout.Value);
+        await loadout.Value.Apply();
 
         pluginFilePath.FileExists.Should().BeTrue("the loadout is applied");
 
@@ -320,7 +319,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
             downloaded.Path,
             downloaded.Manifest.Name);
 
-        await Apply(loadout.Value);
+        await loadout.Value.Apply();
 
         pluginFilePath.FileExists.Should().BeTrue("the loadout is applied");
         text = await GetPluginOrder(pluginFilePath);
@@ -340,7 +339,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
         text.Should().Contain("Skyrim.esm");
         text.Should().Contain("plugin_test.esp", "new loadout has not been applied yet");
 
-        await Apply(loadout.Value);
+        await loadout.Value.Apply();
 
         text = await GetPluginOrder(pluginFilePath);
 
@@ -354,7 +353,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
                 return mod! with { Enabled = true };
             });
 
-        await Apply(loadout.Value);
+        await loadout.Value.Apply();
 
         text = await GetPluginOrder(pluginFilePath);
 

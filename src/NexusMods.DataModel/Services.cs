@@ -62,14 +62,9 @@ public static class Services
 
         coll.AddSingleton(typeof(IFingerprintCache<,>), typeof(DataStoreFingerprintCache<,>));
 
-        coll.AddAllSingleton<IResource, IResource<LoadoutManager, Size>>(s =>
-            new Resource<LoadoutManager, Size>("Load Order Management",
-                Settings(s).LoadoutDeploymentJobs, Size.Zero));
-        coll.AddSingleton<LoadoutManager>();
         coll.AddSingleton<LoadoutRegistry>();
         coll.AddSingleton<IDirectoryIndexer, DirectoryIndexer>();
         coll.AddSingleton<IDownloadRegistry, DownloadRegistry>();
-        coll.AddSingleton<Loadouts.LoadoutSynchronizer>();
         coll.AddSingleton<FileHashCache>();
         coll.AddSingleton<GlobalSettingsManager>();
         coll.AddSingleton<IArchiveInstaller, ArchiveInstaller>();

@@ -40,9 +40,8 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected readonly IServiceProvider ServiceProvider;
     protected readonly IArchiveManager ArchiveManager;
     protected readonly IArchiveInstaller ArchiveInstaller;
-    protected readonly LoadoutManager LoadoutManager;
+
     protected readonly LoadoutRegistry LoadoutRegistry;
-    protected readonly Loadouts.LoadoutSynchronizer LoadoutSynchronizer;
     protected readonly FileHashCache FileHashCache;
     protected readonly IFileSystem FileSystem;
     protected readonly IDataStore DataStore;
@@ -63,7 +62,6 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         var provider1 = provider;
         ArchiveManager = provider1.GetRequiredService<IArchiveManager>();
         ArchiveInstaller = provider1.GetRequiredService<IArchiveInstaller>();
-        LoadoutManager = provider1.GetRequiredService<LoadoutManager>();
         LoadoutRegistry = provider1.GetRequiredService<LoadoutRegistry>();
         FileHashCache = provider1.GetRequiredService<FileHashCache>();
         FileSystem = provider1.GetRequiredService<IFileSystem>();
@@ -71,7 +69,6 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
         DownloadRegistry = provider1.GetRequiredService<IDownloadRegistry>();
         DiskStateRegistry = provider1.GetRequiredService<DiskStateRegistry>();
         Logger = provider1.GetRequiredService<ILogger<T>>();
-        LoadoutSynchronizer = provider1.GetRequiredService<Loadouts.LoadoutSynchronizer>();
         TemporaryFileManager = provider1.GetRequiredService<TemporaryFileManager>();
         ToolManager = provider1.GetRequiredService<IToolManager>();
         ServiceProvider = provider;

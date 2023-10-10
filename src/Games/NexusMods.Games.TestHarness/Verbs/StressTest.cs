@@ -34,9 +34,9 @@ public class StressTest : AVerb<IGame, AbsolutePath>, IRenderingVerb
     /// <inheritdoc />
     public IRenderer Renderer { get; set; } = null!;
 
-    public StressTest(ILogger<StressTest> logger,
-        LoadoutManager loadoutManager, Client client,
+    public StressTest(ILogger<StressTest> logger, Client client,
         TemporaryFileManager temporaryFileManager,
+        LoadoutRegistry loadoutRegistry,
         IHttpDownloader downloader,
         IArchiveInstaller archiveInstaller,
         IDownloadRegistry downloadRegistry,
@@ -46,8 +46,8 @@ public class StressTest : AVerb<IGame, AbsolutePath>, IRenderingVerb
         ((CliGuidedInstaller)optionSelector).SkipAll = true;
         _archiveInstaller = archiveInstaller;
         _downloadRegistry = downloadRegistry;
+        _loadoutRegistry = loadoutRegistry;
         _downloader = downloader;
-        _loadoutManager = loadoutManager;
         _logger = logger;
         _client = client;
         _temporaryFileManager = temporaryFileManager;
@@ -63,11 +63,11 @@ public class StressTest : AVerb<IGame, AbsolutePath>, IRenderingVerb
                 new OptionDefinition<AbsolutePath>("o", "output", "The output file to write the markdown report to")
             });
 
-    private readonly LoadoutManager _loadoutManager;
     private readonly ILogger<StressTest> _logger;
     private readonly IArchiveInstaller _archiveInstaller;
     private readonly ManuallyAddedLocator _manualLocator;
     private readonly IDownloadRegistry _downloadRegistry;
+    private readonly LoadoutRegistry _loadoutRegistry;
 
     public async Task<int> Run(IGame game, AbsolutePath output, CancellationToken token)
     {
@@ -118,8 +118,7 @@ public class StressTest : AVerb<IGame, AbsolutePath>, IRenderingVerb
                             file.FileId,
                             file.FileName, file.SizeInBytes);
 
-                        var list = await _loadoutManager.ManageGameAsync(install,
-                            indexGameFiles: false, token: cts.Token);
+                        var list = await _loadoutRegistry.Manage(install);
                         var downloadId = await _downloadRegistry.RegisterDownload(tmpPath, new FilePathMetadata
                             { OriginalName = tmpPath.Path.Name, Quality = Quality.Low }, token);
                         await _archiveInstaller.AddMods(list.Value.LoadoutId, downloadId, token: token);

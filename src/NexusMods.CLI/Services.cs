@@ -61,7 +61,6 @@ public static class Services
             .AddVerb<DownloadAndInstallMod>()
             .AddVerb<DownloadLinks>()
             .AddVerb<DownloadUri>()
-            .AddVerb<ExportLoadout>()
             .AddVerb<ExtractArchive>()
             .AddVerb<FlattenList>()
             .AddVerb<HashFolder>()

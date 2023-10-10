@@ -379,4 +379,41 @@ public class LoadoutRegistry : IDisposable
     {
         return new LoadoutMarker(this, loadoutId);
     }
+
+    /// <summary>
+    /// Suggestions a name for a new loadout.
+    /// </summary>
+    /// <param name="installation"></param>
+    /// <returns></returns>
+    public string SuggestName(GameInstallation installation)
+    {
+        var names = AllLoadouts().Select(l => l.Name).ToHashSet();
+        for (var i = 1; i < 1000; i++)
+        {
+            var name = $"My Loadout {i}";
+            if (!names.Contains(name))
+                return name;
+        }
+
+        return $"My Loadout {Guid.NewGuid()}";
+    }
+
+    /// <summary>
+    /// Manages the given installation, returning a marker for the new loadout.
+    /// </summary>
+    /// <param name="installation"></param>
+    /// <returns></returns>
+    public async Task<LoadoutMarker> Manage(GameInstallation installation, string name = "")
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            name = SuggestName(installation);
+
+        var result = await installation.Game.Synchronizer.Manage(installation);
+        Alter(result.LoadoutId, $"Manage new instance of {installation.Game.Name} as {name}",
+            _ => result with
+        {
+            Name = name
+        });
+        return GetMarker(result.LoadoutId);
+    }
 }

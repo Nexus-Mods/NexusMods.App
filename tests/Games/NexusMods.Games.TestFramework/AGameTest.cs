@@ -35,9 +35,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     protected readonly IArchiveManager ArchiveManager;
     protected readonly IArchiveInstaller ArchiveInstaller;
     protected readonly IDownloadRegistry DownloadRegistry;
-    protected readonly LoadoutManager LoadoutManager;
     protected readonly LoadoutRegistry LoadoutRegistry;
-    protected readonly LoadoutSynchronizer LoadoutSynchronizer;
     protected readonly IDataStore DataStore;
 
     protected readonly Client NexusClient;
@@ -64,9 +62,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
         ArchiveInstaller = serviceProvider.GetRequiredService<IArchiveInstaller>();
         DownloadRegistry = serviceProvider.GetRequiredService<IDownloadRegistry>();
         TemporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
-        LoadoutManager = serviceProvider.GetRequiredService<LoadoutManager>();
         LoadoutRegistry = serviceProvider.GetRequiredService<LoadoutRegistry>();
-        LoadoutSynchronizer = serviceProvider.GetRequiredService<LoadoutSynchronizer>();
         DataStore = serviceProvider.GetRequiredService<IDataStore>();
 
         NexusClient = serviceProvider.GetRequiredService<Client>();
@@ -79,8 +75,9 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// <returns></returns>
     protected async Task<LoadoutMarker> CreateLoadout(bool indexGameFiles = true)
     {
-        var loadout = await LoadoutManager.ManageGameAsync(GameInstallation, Guid.NewGuid().ToString("N"), indexGameFiles: indexGameFiles);
-        return loadout;
+        var loadout = await GameInstallation.Game.Synchronizer.Manage(GameInstallation);
+        LoadoutRegistry.Alter(loadout.LoadoutId, "Manage new Game", _ => loadout);
+        return LoadoutRegistry.GetMarker(loadout.LoadoutId);
     }
 
     /// <summary>
@@ -265,14 +262,4 @@ public abstract class AGameTest<TGame> where TGame : AGame
 
     protected Task<TemporaryPath> CreateTestFile(string contents, Extension? extension, Encoding? encoding = null)
         => CreateTestFile((encoding ?? Encoding.UTF8).GetBytes(contents), extension);
-
-    /// <summary>
-    /// Helper method to create create a apply plan and apply it.
-    /// </summary>
-    /// <param name="loadout"></param>
-    protected async Task Apply(Loadout loadout)
-    {
-        var plan = await LoadoutSynchronizer.MakeApplySteps(loadout);
-        await LoadoutSynchronizer.Apply(plan);
-    }
 }

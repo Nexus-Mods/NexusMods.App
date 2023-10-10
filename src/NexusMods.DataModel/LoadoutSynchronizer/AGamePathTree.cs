@@ -79,4 +79,14 @@ public class AGamePathTree<TEntry>
         value = default;
         return false;
     }
+
+    /// <summary>
+    /// Returns true if the tree contains a value for the given location
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public bool ContainsKey(GamePath path)
+    {
+        return TryGetValue(path, out _);
+    }
 }
