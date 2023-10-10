@@ -1,5 +1,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.GameWidget;
@@ -158,6 +159,8 @@ public static class Services
             .AddView<AddPanelButtonView, IAddPanelButtonViewModel>()
 
             // Other
+            .AddViewModel<DummyViewModel, IDummyViewModel>()
+            .AddView<DummyView, IDummyViewModel>()
             .AddSingleton<InjectedViewLocator>()
             .AddSingleton<App>();
     }
