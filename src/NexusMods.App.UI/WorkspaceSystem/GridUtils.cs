@@ -1,6 +1,5 @@
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using Avalonia;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
