@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
@@ -15,12 +16,19 @@ public abstract class AGame : IGame
 {
     private IReadOnlyCollection<GameInstallation>? _installations;
     private readonly IEnumerable<IGameLocator> _gamelocators;
+    private readonly Lazy<IStandardizedLoadoutSynchronizer> _synchronizer;
+    private readonly Lazy<IEnumerable<IModInstaller>> _installers;
+    private readonly IServiceProvider _provider;
 
     /// <summary/>
     /// <param name="gameLocators">Services used for locating games.</param>
-    public AGame(IEnumerable<IGameLocator> gameLocators)
+    protected AGame(IServiceProvider provider)
     {
-        _gamelocators = gameLocators;
+        _provider = provider;
+        _gamelocators = provider.GetServices<IGameLocator>();
+        // In a Lazy so we don't get a circular dependency
+        _synchronizer = new Lazy<IStandardizedLoadoutSynchronizer>(() => new DefaultSynchronizer(provider));
+        _installers = new Lazy<IEnumerable<IModInstaller>>(() => MakeInstallers(provider));
     }
 
     /// <inheritdoc />
@@ -54,16 +62,36 @@ public abstract class AGame : IGame
         throw new NotImplementedException("No game image provided for this game.");
 
     /// <inheritdoc />
-    public virtual IEnumerable<IModInstaller> Installers { get; } = Array.Empty<IModInstaller>();
+    public virtual IEnumerable<IModInstaller> Installers => _installers.Value;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Helper method to create a list of <see cref="IModInstaller"/>s. The result of this method is cached
+    /// behind a lazy.
+    /// </summary>
+    /// <param name="provider"></param>
+    /// <returns></returns>
+    protected virtual IEnumerable<IModInstaller> MakeInstallers(IServiceProvider provider)
+    {
+        return Array.Empty<IModInstaller>();
+    }
+
+
+    /// <summary>
+    /// By default this method just returns the current state of the game folders. Most of the time
+    /// this creates a sub-par user experience as users may have installed mods in the past and then
+    /// these files will be marked as part of the game files when they are not. Properly implemented
+    /// games should override this method and return only the files that are part of the game itself.
+    /// </summary>
+    /// <param name="installation"></param>
+    /// <returns></returns>
     public virtual ValueTask<DiskState> GetInitialDiskState(GameInstallation installation)
     {
-        throw new NotImplementedException("TODO: implement this");
+        var cache = _provider.GetRequiredService<FileHashCache>();
+        return cache.IndexDiskState(installation);
     }
 
     /// <inheritdoc />
-    public virtual ILoadoutSynchronizer Synchronizer => throw new NotImplementedException();
+    public virtual ILoadoutSynchronizer Synchronizer => _synchronizer.Value;
 
     /// <summary>
     /// Returns the game version if GameLocatorResult failed to get the game version.

@@ -22,7 +22,7 @@ public class DarkestDungeon : AGame, ISteamGame, IGogGame, IEpicGame
 
     public DarkestDungeon(
         IOSInformation osInformation,
-        IEnumerable<IGameLocator> gameLocators) : base(gameLocators)
+        IServiceProvider provider) : base(provider)
     {
         _osInformation = osInformation;
     }

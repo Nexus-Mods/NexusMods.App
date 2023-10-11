@@ -40,7 +40,7 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
     private bool _initalized;
 
     public StubbedGame(ILogger<StubbedGame> logger, IEnumerable<IGameLocator> locators,
-        IFileSystem fileSystem, IServiceProvider provider) : base(locators)
+        IFileSystem fileSystem, IServiceProvider provider) : base(provider)
     {
         _serviceProvider = provider;
         _logger = logger;

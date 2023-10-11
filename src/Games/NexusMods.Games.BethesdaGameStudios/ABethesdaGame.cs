@@ -18,7 +18,7 @@ public abstract class ABethesdaGame : AGame
     private readonly IModInstaller[] _installers;
 
     /// <inheritdoc />
-    protected ABethesdaGame(IEnumerable<IGameLocator> gameLocators, IServiceProvider provider) : base(gameLocators)
+    protected ABethesdaGame(IServiceProvider provider) : base(provider)
     {
         _installers = new IModInstaller[]
         {

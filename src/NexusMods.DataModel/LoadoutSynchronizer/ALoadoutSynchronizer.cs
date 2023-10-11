@@ -237,13 +237,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer, IStandardizedLoadoutSy
     }
 
     /// <inheritdoc />
-    public async Task<DiskState> GetDiskState(GameInstallation installation)
+    public virtual async Task<DiskState> GetDiskState(GameInstallation installation)
     {
-        var hashed =
-            await _hashCache.IndexFoldersAsync(installation.LocationsRegister.GetTopLevelLocations().Select(f => f.Value))
-                .ToListAsync();
-        return DiskState.Create(hashed.Select(h => KeyValuePair.Create(installation.LocationsRegister.ToGamePath(h.Path),
-            DiskStateEntry.From(h))));
+        return await _hashCache.IndexDiskState(installation);
     }
 
     /// <summary>
