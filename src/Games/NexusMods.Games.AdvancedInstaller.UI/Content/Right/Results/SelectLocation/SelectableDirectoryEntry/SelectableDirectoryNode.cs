@@ -11,7 +11,7 @@ public interface ISelectableDirectoryNode
     ///     Contains the children nodes of this node.
     /// </summary>
     /// <remarks>
-    ///     See <see cref="ModContentNode{TRelPath,TNodeValue}.Children"/>
+    ///     See <see cref="ModContentNode{TNodeValue}.Children"/>
     /// </remarks>
     ISelectableDirectoryNode[] Children { get; }
 
