@@ -42,19 +42,25 @@ public interface IModContentNode : IUnlinkableItem
     ///     Contains the children nodes of this node.
     /// </summary>
     /// <remarks>
-    ///     (Sewer) I got some notes to make here. Because someone will comment during review.
-    ///     1.  The TreeDataGrid control does not dynamically update its children nodes (i.e. this list);
-    ///     but instead consumes an IEnumerable. Therefore <see cref="ObservableCollection{T}" /> is not needed
-    ///     (it would be unnecessary overhead).
-    ///     2a. Although I wish it was possible, lazy loading this item is not really feasible.
-    ///     When you map a folder, the state of all the children (recursively) must be updated;
-    ///     meaning that the items (recursively) need to be loaded. Therefore, opportunities for lazy loading
-    ///     are minimal.
-    ///     2b. The input collection from which the tree is constructed is immutable. Mods cannot dynamically add
-    ///     files in the middle of the Advanced Installer installation process.
+    ///     (Sewer) I got some notes to make here.
+    ///
+    ///     1. Lazy loading of this item should be investigated, in the case that the user has not yet expanded all
+    ///        items yet.
+    ///
+    ///
+    ///        When you map a folder, the state of all the children (recursively) must be updated;
+    ///        meaning that the items (recursively) need to be loaded. Therefore, opportunities for lazy loading
+    ///        are minimal.
+    ///
+    ///     2. The input collection from which the tree is constructed is immutable.
+    ///
+    ///        Mods cannot dynamically add files in the middle of the Advanced Installer
+    ///        installation process. There is no need to use an observable collection here,
+    ///        as that would just be unnecessary memory overhead.
+    ///
     ///     Based on the above points, and given that the children count is already known in
-    ///     <see cref="FileTreeNode{TPath,TValue}" />;
-    ///     array is used, as it's the lowest overhead collection available for the job.
+    ///     <see cref="FileTreeNode{TPath,TValue}" />; an array is used, as it's the lowest
+    ///     overhead collection available for the job.
     /// </remarks>
     IModContentNode[] Children { get; }
 
