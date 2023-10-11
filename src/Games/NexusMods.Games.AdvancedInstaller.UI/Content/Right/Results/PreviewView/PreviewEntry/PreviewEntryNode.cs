@@ -1,4 +1,5 @@
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
+using static NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry.PreviewEntryNodeFlags;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
 
@@ -8,9 +9,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView
 /// <remarks>
 ///     We consider all entries delete-able, even those not added by the user in the results screen (such as
 ///     existing game folders that parents the selected mods).
-///
 ///     This is such that the user can in one go delete all items as needed.
-///
 ///     If it happens that after deletion, no files are deployed, the entire tree should be cleared.
 /// </remarks>
 public interface IPreviewEntryNode
@@ -19,17 +18,17 @@ public interface IPreviewEntryNode
     ///     Contains the children nodes of this node.
     /// </summary>
     /// <remarks>
-    ///     See <see cref="ModContentNode{TRelPath,TNodeValue}.Children"/>
+    ///     See <see cref="ModContentNode{TNodeValue}.Children" />
     /// </remarks>
     IPreviewEntryNode[] Children { get; }
 
     /// <summary>
-    /// The file name displayed for this node.
+    ///     The file name displayed for this node.
     /// </summary>
     string FileName { get; }
 
     /// <summary>
-    ///     True if this is the root node.
+    ///     True if this is the root node. (Cannot be deleted)
     /// </summary>
     bool IsRoot { get; }
 
@@ -38,24 +37,94 @@ public interface IPreviewEntryNode
     ///     target folder.
     /// </summary>
     bool IsDirectory { get; }
+
+    /// <summary>
+    ///     If this is true, the 'new' pill should be displayed in the UI.
+    /// </summary>
+    bool IsNew { get; }
+
+    /// <summary>
+    ///     If this is true the 'folder merged' pill should be displayed in the UI.
+    /// </summary>
+    bool IsFolderMerged { get; }
+
+    /*
+       Note:
+       In the case of folder, the item can be merged or created from multiple sources, e.g. Multiple folders.
+       when we unlink the folder/node, the user expects that all of the items under this node are unlinked.
+
+       Therefore, we need to maintain a list of all items we can run an 'unlink' operation on, which can be either
+       a file or a directory.
+    */
+
+    /// <summary>
+    ///     Collection of unlinkable items under this node.
+    ///     This collection is null, unless an element exists.
+    /// </summary>
+    List<IUnlinkableItem>? UnlinkableItems { get; }
+
+    /// <summary>
+    ///     Applies a link from source to the given node.
+    /// </summary>
+    /// <param name="source">The source item that was linked to this node.</param>
+    /// <param name="previouslyExisted">True if this item has previously existed in the game directory.</param>
+    void ApplyLink(IUnlinkableItem source, bool previouslyExisted);
 }
 
+/// <summary>
+///     Represents an individual node in the 'Preview' section when selecting a location.
+/// </summary>
 public class PreviewEntryNode : IPreviewEntryNode
 {
-    // TODO: Add this once we have concrete type.
-    /// <summary>
-    ///     The parent of this node.
-    /// </summary>
-    /// <remarks>
-    ///     This is null if the node is a root.
-    /// </remarks>
-    // public required PreviewEntryNode<TRelPath, TNodeValue>? Parent { get; init; }
-
     public IPreviewEntryNode[] Children { get; init; } = null!;
-
     public string FileName { get; init; } = null!;
-    public bool IsRoot { get; init; }
-    public bool IsDirectory { get; init; }
+    public List<IUnlinkableItem>? UnlinkableItems { get; } = new();
+
+    // Do not rearrange items here, flags are deliberately last to optimize for struct layout.
+    public PreviewEntryNodeFlags Flags { get; init; }
+
+
+    // Derived Getters: For convenience.
+    public bool IsRoot => (Flags & PreviewEntryNodeFlags.IsRoot) == PreviewEntryNodeFlags.IsRoot;
+    public bool IsDirectory => (Flags & PreviewEntryNodeFlags.IsDirectory) == PreviewEntryNodeFlags.IsDirectory;
+    public bool IsNew => (Flags & PreviewEntryNodeFlags.IsNew) == PreviewEntryNodeFlags.IsNew;
+
+    public bool IsFolderMerged =>
+        (Flags & PreviewEntryNodeFlags.IsFolderMerged) == PreviewEntryNodeFlags.IsFolderMerged;
+
+    public void ApplyLink(IUnlinkableItem source, bool previouslyExisted)
+    {
+        // We apply 'folder merged' flag under either of the circumstances.
+        // 1. Files from two different subfolders are mapped to the same folder.
+        // 2. Folder already existed in game directory (non-empty), and we are mapping it.
+        throw new NotImplementedException();
+    }
 }
 
-public enum PreviewEntryNodeType { }
+/// <summary>
+///     Bitpacked flags describing the current state of the node.
+/// </summary>
+[Flags]
+public enum PreviewEntryNodeFlags
+{
+    /// <summary>
+    ///     If this is true, the 'new' pill should be displayed in the UI.
+    /// </summary>
+    IsNew = 0b0000_0001,
+
+    /// <summary>
+    ///     If this is true the 'folder merged' pill should be displayed in the UI.
+    /// </summary>
+    IsFolderMerged = 0b0000_0010,
+
+    /// <summary>
+    ///     If this is true, this item is a directory.
+    /// </summary>
+    IsDirectory = 0b0000_0100,
+
+    /// <summary>
+    ///     If this is true, this node is the root, and cannot be deleted.
+    ///     (All items can however be unlinked)
+    /// </summary>
+    IsRoot = 0b0000_1000
+}

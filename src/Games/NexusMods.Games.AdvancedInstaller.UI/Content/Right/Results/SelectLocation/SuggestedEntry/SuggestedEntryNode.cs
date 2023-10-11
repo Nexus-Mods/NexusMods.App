@@ -1,5 +1,3 @@
-using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
-
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 
 /// <summary>
@@ -9,12 +7,12 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocat
 public interface ISuggestedEntryNode
 {
     /// <summary>
-    /// The Directory name displayed for this node.
+    ///     The Directory name displayed for this node.
     /// </summary>
     string DirectoryName { get; }
 
     /// <summary>
-    /// Short description for this item.
+    ///     Short description for this item.
     /// </summary>
     string Description { get; }
 }

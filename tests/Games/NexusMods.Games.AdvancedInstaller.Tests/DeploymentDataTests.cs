@@ -76,4 +76,27 @@ public partial class DeploymentDataTests
         var act = () => data.AddMapping(archivePath2, outputPath);
         act.Should().Throw<MappingAlreadyExistsException>();
     }
+
+    [Fact]
+    public void AddMapping_WithDuplicateOutputPath_AndForced_ShouldRemap()
+    {
+        // Arrange
+        var data = new DeploymentData();
+        var archivePath1 = new RelativePath("archive/file1");
+        var archivePath2 = new RelativePath("archive/file2");
+        var outputPath = new GamePath(LocationId.Game, "Data/file1");
+
+        // Act
+        data.AddMapping(archivePath1, outputPath);
+
+        // Assert
+        data.AddMapping(archivePath2, outputPath, true);
+
+        data.ArchiveToOutputMap.Should().ContainKey(archivePath2);
+        data.ArchiveToOutputMap.Should().NotContainKey(archivePath1);
+        data.ArchiveToOutputMap[archivePath2].Should().Be(outputPath);
+
+        data.OutputToArchiveMap.Should().ContainKey(outputPath);
+        data.OutputToArchiveMap[outputPath].Should().Be(archivePath2);
+    }
 }
