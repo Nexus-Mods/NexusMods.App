@@ -24,7 +24,7 @@ namespace NexusMods.DataModel.Tests.Harness;
 public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
 {
     protected readonly TestDirectoryIndexer TestIndexer;
-    protected readonly LoadoutSynchronizer TestSyncronizer;
+    protected readonly Loadouts.LoadoutSynchronizer TestSyncronizer;
     protected readonly TestArchiveManager TestArchiveManagerInstance;
     protected readonly TestFingerprintCache<Mod, CachedModSortRules> TestFingerprintCacheInstance;
     protected readonly TestFingerprintCache<IGeneratedFile, CachedGeneratedFileData> TestGeneratedFileFingerprintCache;
@@ -37,8 +37,8 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
         TestArchiveManagerInstance = new TestArchiveManager();
         TestFingerprintCacheInstance = new TestFingerprintCache<Mod, CachedModSortRules>();
         TestGeneratedFileFingerprintCache = new TestFingerprintCache<IGeneratedFile, CachedGeneratedFileData>();
-        TestSyncronizer = new LoadoutSynchronizer(
-            provider.GetRequiredService<ILogger<LoadoutSynchronizer>>(),
+        TestSyncronizer = new Loadouts.LoadoutSynchronizer(
+            provider.GetRequiredService<ILogger<Loadouts.LoadoutSynchronizer>>(),
             TestFingerprintCacheInstance,
             TestIndexer,
             TestArchiveManagerInstance,
@@ -275,7 +275,7 @@ public class AlphabeticalSort : IGeneratedSortRule, ISortRule<Mod, ModId>, ITrig
             }
             else
             {
-                yield return new After<Mod, ModId>(modId);
+                yield return new After<Mod, ModId> { Other = modId };
             }
         }
     }

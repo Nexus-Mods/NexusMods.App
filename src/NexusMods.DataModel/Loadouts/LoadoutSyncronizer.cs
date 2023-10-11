@@ -514,17 +514,17 @@ public class LoadoutSynchronizer
                     });
         }
 
-        public override AModFile? Alter(AModFile file)
+        protected override AModFile? AlterAfter(Loadout loadout, Mod mod, AModFile file)
         {
             if (file is IToFile to)
             {
                 if (_removeFiles.Contains(to.To)) return null;
             }
 
-            return base.Alter(file);
+            return base.AlterAfter(loadout, mod, file);
         }
 
-        public override Mod? Alter(Mod mod)
+        protected override Mod? AlterAfter(Loadout loadout, Mod mod)
         {
             var toAdd = _replaceFiles[mod.Id].Concat(_createFiles[mod.Id]);
             if (toAdd.Any())
@@ -535,7 +535,7 @@ public class LoadoutSynchronizer
                 };
             }
 
-            return base.Alter(mod);
+            return base.AlterAfter(loadout, mod);
         }
     }
 }

@@ -43,6 +43,7 @@ public class SqliteDataStore : IDataStore, IDisposable
     private readonly ObjectPool<SqliteConnection> _pool;
     private readonly ConnectionPoolPolicy _poolPolicy;
     private readonly ObjectPoolDisposable<SqliteConnection> _globalHandle;
+    private readonly IDataModelSettings _settings;
 
     /// <summary/>
     /// <param name="logger">Logs events.</param>
@@ -56,6 +57,7 @@ public class SqliteDataStore : IDataStore, IDisposable
     {
         _logger = logger;
 
+        _settings = settings;
         string connectionString;
         if (settings.UseInMemoryDataModel)
         {

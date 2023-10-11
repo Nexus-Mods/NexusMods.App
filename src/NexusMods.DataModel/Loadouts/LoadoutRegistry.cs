@@ -9,6 +9,7 @@ using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts.Cursors;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.Mods;
+using NexusMods.Networking.NexusWebApi.Types;
 
 namespace NexusMods.DataModel.Loadouts;
 
@@ -97,7 +98,7 @@ public class LoadoutRegistry : IDisposable
             loadout = _store.Get<Loadout>(IId.FromTaggedSpan(loadoutRoot), true);
         }
 
-        var newLoadout = alterFn(loadout ?? Loadout.Empty(_store));
+        var newLoadout = alterFn(loadout ?? Loadout.Empty(_store) with {LoadoutId = id});
 
         newLoadout = newLoadout with
         {
@@ -116,6 +117,7 @@ public class LoadoutRegistry : IDisposable
             goto TryAgain;
 
         _logger.LogInformation("Loadout {LoadoutId} altered: {CommitMessage}", id, commitMessage);
+
 
         return newLoadout;
     }
@@ -156,6 +158,27 @@ public class LoadoutRegistry : IDisposable
     }
 
     /// <summary>
+    /// Alters the file with the given id in the mod with the given id in the loadout with the given id. If the file
+    /// does not exist, an error is thrown.
+    /// </summary>
+    /// <param name="loadoutId"></param>
+    /// <param name="modId"></param>
+    /// <param name="fileId"></param>
+    /// <param name="commitMessage"></param>
+    /// <param name="alterFn"></param>
+    /// <typeparam name="T"></typeparam>
+    public void Alter<T>(LoadoutId loadoutId, ModId modId, ModFileId fileId, string commitMessage, Func<T, T> alterFn)
+    where T : AModFile
+    {
+        Alter(loadoutId, modId, commitMessage, mod =>
+        {
+            var existingFile = mod!.Files[fileId];
+            var newFile = alterFn((T)existingFile);
+            return mod with { Files = mod.Files.With(fileId, newFile) };
+        });
+    }
+
+    /// <summary>
     /// Alters the mod pointed to by the cursor. If the alter function returns null, the mod is removed from the loadout.
     /// </summary>
     /// <param name="cursor"></param>
@@ -177,18 +200,7 @@ public class LoadoutRegistry : IDisposable
     /// <param name="visitor"></param>
     public Loadout Alter(LoadoutId id, string commitMessage, ALoadoutVisitor visitor)
     {
-        // Callback hell? Never heard of it!
-        return Alter(id, commitMessage, loadout =>
-        {
-            return visitor.Alter(loadout with
-            {
-                Mods = loadout.Mods.Keep(mod =>
-                {
-                    return visitor.Alter(mod with { Files = mod.Files.Keep(visitor.Alter) });
-                })
-            });
-        });
-
+        return Alter(id, commitMessage, visitor.Transform);
     }
 
     /// <summary>

@@ -4,6 +4,7 @@ using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Tests.Harness;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
+using IGeneratedFile = NexusMods.DataModel.LoadoutSynchronizer.IGeneratedFile;
 
 namespace NexusMods.DataModel.Tests.LoadoutSynchronizerTests;
 
@@ -157,7 +158,7 @@ public class MakeApplyPlanTests : ALoadoutSynrchonizerTest<MakeApplyPlanTests>
     {
         var loadout = await CreateApplyPlanTestLoadout(generatedFile: true);
 
-        var fileOne = loadout.Mods.Values.First().Files.Values.OfType<IGeneratedFile>()
+        var fileOne = loadout.Mods.Values.First().Files.Values.OfType<Loadouts.ModFiles.IGeneratedFile>()
             .First();
 
         var absPath = loadout.Installation.LocationsRegister[LocationId.Game].Combine("0x00001.generated");

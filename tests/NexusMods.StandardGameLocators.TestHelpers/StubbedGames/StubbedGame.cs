@@ -4,6 +4,7 @@ using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.LoadoutSynchronizer;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Hashing.xxHash64;
@@ -33,30 +34,58 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
             d => (d.FileName.ToString().XxHash64AsUtf8(), Size.FromLong(d.FileName.ToString().Length)));
 
     private readonly IFileSystem _fileSystem;
+    private Dictionary<AbsolutePath, DateTime> _modifiedTimes = new();
+    private readonly IServiceProvider _serviceProvider;
+    private readonly Dictionary<GameStore, Dictionary<LocationId, AbsolutePath>> _locations = new();
+    private bool _initalized;
 
     public StubbedGame(ILogger<StubbedGame> logger, IEnumerable<IGameLocator> locators,
-        IFileSystem fileSystem) : base(locators)
+        IFileSystem fileSystem, IServiceProvider provider) : base(locators)
     {
+        _serviceProvider = provider;
         _logger = logger;
         _locators = locators;
         _fileSystem = fileSystem;
+        _initalized = false;
     }
 
     public override GamePath GetPrimaryFile(GameStore store) => new(LocationId.Game, "");
+
+    public void ResetGameFolders()
+    {
+        // Re-create the folders/files
+        foreach (var locator in _locators)
+        {
+            foreach (var result in locator.Find(this))
+            {
+                result.Path.DeleteDirectory(true);
+                var locations = new Dictionary<LocationId, AbsolutePath>
+                {
+                    [LocationId.Game] = EnsureFiles(result.Path, LocationId.Game),
+                    [LocationId.Preferences] = EnsurePath(result.Path, LocationId.Preferences),
+                    [LocationId.Saves] = EnsurePath(result.Path, LocationId.Saves)
+                };
+                _locations[result.Store] = locations;
+            }
+        }
+    }
 
     public override IEnumerable<GameInstallation> Installations
     {
         get
         {
+            if (!_initalized)
+            {
+                ResetGameFolders();
+                _initalized = true;
+            }
+
             _logger.LogInformation("Looking for {Game} in {Count} locators", ToString(), _locators.Count());
             return _locators.SelectMany(l => l.Find(this))
-                .Select((i, idx) => new GameInstallation()
+                .Select((i, idx) => new GameInstallation
                 {
                     Game = this,
-                    LocationsRegister = new GameLocationsRegister( new Dictionary<LocationId, AbsolutePath>()
-                    {
-                        { LocationId.Game, EnsureFiles(i.Path) }
-                    }),
+                    LocationsRegister = new GameLocationsRegister(_locations[i.Store]),
                     Version = Version.Parse($"0.0.{idx}.0"),
                     Store = GameStore.Unknown,
                 });
@@ -66,6 +95,30 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
     public override IEnumerable<AModFile> GetGameFiles(GameInstallation installation, IDataStore store)
     {
         return Array.Empty<AModFile>();
+    }
+
+    public override ValueTask<DiskState> GetInitialDiskState(GameInstallation installation)
+    {
+        var results = DATA_NAMES.Select(name =>
+        {
+            var gamePath = new GamePath(LocationId.Game, name);
+            return KeyValuePair.Create(gamePath,
+                new DiskStateEntry
+                {
+                    // This is coded to match what we write in `EnsureFile`
+                    Size = Size.From((ulong)name.FileName.Path.Length),
+                    Hash = name.FileName.Path.XxHash64AsUtf8(),
+                    LastModified = _modifiedTimes[installation.LocationsRegister.GetResolvedPath(gamePath)]
+                });
+        });
+        return ValueTask.FromResult(DiskState.Create(results));
+    }
+
+
+    public override ILoadoutSynchronizer Synchronizer
+    {
+        // Lazy initialization to avoid circular dependencies
+        get { return new DefaultSynchronizer(_serviceProvider); }
     }
 
     public override IStreamFactory Icon =>
@@ -84,14 +137,26 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
 
     public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations) => new();
 
-    private AbsolutePath EnsureFiles(AbsolutePath path)
+    private AbsolutePath EnsureFiles(AbsolutePath path, LocationId locationId)
     {
         lock (this)
         {
+            path = path.Combine(locationId.ToString());
+            path.CreateDirectory();
             foreach (var file in DATA_NAMES)
             {
                 EnsureFile(path.Combine(file));
             }
+            return path;
+        }
+    }
+
+    private AbsolutePath EnsurePath(AbsolutePath path, LocationId locationId)
+    {
+        lock (this)
+        {
+            path = path.Combine(locationId.ToString());
+            path.CreateDirectory();
             return path;
         }
     }
@@ -101,6 +166,7 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
         path.Parent.CreateDirectory();
         if (path.FileExists) return;
         _fileSystem.WriteAllText(path, path.FileName);
+        _modifiedTimes[path] = DateTime.Now;
     }
 
     public IEnumerable<uint> SteamIds => new[] { 42u };
