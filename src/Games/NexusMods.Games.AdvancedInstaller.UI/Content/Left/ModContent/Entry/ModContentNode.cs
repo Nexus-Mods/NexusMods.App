@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
@@ -31,12 +30,12 @@ public interface IModContentNode : IUnlinkableItem
     string FileName { get; }
 
     /// <summary>
-    ///     Name of the linked entry in the 'Results' section.
+    ///     Name of the linked target which was created with <see cref="Link"/>.
     /// </summary>
     /// <remarks>
     ///     This is used such that we can unlink the entry on the left hand side.
     /// </remarks>
-    ISuggestedEntryNode? LinkedNode { get; }
+    IModContentBindingTarget? LinkedTarget { get; }
 
     /// <summary>
     ///     Contains the children nodes of this node.
@@ -73,7 +72,14 @@ public interface IModContentNode : IUnlinkableItem
     ///     True if this is a directory, in which case all files from child of this will be mapped to given
     ///     target folder.
     /// </summary>
-    bool IsDirectory { get; }
+    new bool IsDirectory { get; }
+
+    /// <summary>
+    ///     Binds the current node/source to the given target.
+    /// </summary>
+    /// <param name="data">The structure keeping track of deployment data.</param>
+    /// <param name="target">The target to receive the binding.</param>
+    void Link(DeploymentData data, IModContentBindingTarget target);
 }
 
 /// <summary>
@@ -87,7 +93,7 @@ public interface IUnlinkableItem
     public bool IsDirectory { get; }
 
     /// <summary>
-    ///     Unlink the given node from the deployment data.
+    ///     Unlink the current node from the deployment data.
     /// </summary>
     public void Unlink(DeploymentData data);
 }
@@ -116,7 +122,7 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
     public required ModContentNode<TNodeValue>? Parent { get; init; }
 
     /// <inheritdoc />
-    public ISuggestedEntryNode? LinkedNode { get; }
+    public IModContentBindingTarget? LinkedTarget { get; private set; }
 
     /// <inheritdoc />
     public required IModContentNode[] Children { get; init; }
@@ -128,6 +134,14 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
     public string FileName => Node.IsTreeRoot ? Language.FileTree_ALL_MOD_FILES : Node.Name;
     public bool IsDirectory => Node.IsDirectory;
     public bool IsRoot => Node.IsTreeRoot;
+
+    public void Link(DeploymentData data, IModContentBindingTarget target)
+    {
+        // TODO: Handle individual file nodes.
+        LinkedTarget = target;
+        data.AddFolderMapping(Node, target.Bind(this));
+        SetStatusRecursive(this, TreeDataGridSourceFileNodeStatus.IncludedViaParent);
+    }
 
     public void Unlink(DeploymentData data)
     {
@@ -165,7 +179,7 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
             return;
 
         // Update all of children
-        BeginSelectChildrenRecursive(this);
+        SetStatusRecursive(this, TreeDataGridSourceFileNodeStatus.Selecting);
     }
 
     /// <summary>
@@ -215,23 +229,23 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
     }
 
     /// <summary>
-    ///     Recursively marks all of the children of this node for selection.
+    ///     Recursively sets a new status for every single node under this node.
     /// </summary>
-    public static void BeginSelectChildrenRecursive(ModContentNode<TNodeValue> item)
+    private static void SetStatusRecursive(ModContentNode<TNodeValue> item, TreeDataGridSourceFileNodeStatus status)
     {
         foreach (var childInterface in item.Children)
         {
             // Covariant cast to remove virtualization and make Status writeable.
             var child = childInterface as ModContentNode<TNodeValue>;
-            child!.SetStatus(TreeDataGridSourceFileNodeStatus.SelectingViaParent);
-            BeginSelectChildrenRecursive(child);
+            child!.SetStatus(status);
+            SetStatusRecursive(child, status);
         }
     }
 
     /// <summary>
     ///     Recursively restores last status of all child nodes.
     /// </summary>
-    public static void RestoreLastStatusRecursive(ModContentNode<TNodeValue> item)
+    private static void RestoreLastStatusRecursive(ModContentNode<TNodeValue> item)
     {
         foreach (var childInterface in item.Children)
         {
@@ -244,8 +258,10 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
 
     /// <summary>
     ///     Creates a new <see cref="ModContentNode{TNodeValue}" /> from a given
-    ///     <see cref="FileTreeNode{RelativePath,TFileEntry}" />.
+    ///     <see cref="FileTreeNode{RelativePath,TFileEntry}" />. The entry is assumed to be
+    ///     the root.
     /// </summary>
+    /// <param name="node">The root node.</param>
     /// <typeparam name="TNodeValue">Type of value associated with this node.</typeparam>
     public static ModContentNode<TNodeValue> FromFileTree(FileTreeNode<RelativePath, TNodeValue> node)
     {

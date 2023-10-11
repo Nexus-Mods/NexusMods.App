@@ -4,7 +4,7 @@ using NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Tests.ModContent;
 
-public class TreeDataGridNodeTests : ATreeDataGridSourceFileNodeTest
+public class NodeSelectionTests : AModContentNodeTest
 {
     [Fact]
     public void SelectingRootNode_AllChildrenAreSelected()

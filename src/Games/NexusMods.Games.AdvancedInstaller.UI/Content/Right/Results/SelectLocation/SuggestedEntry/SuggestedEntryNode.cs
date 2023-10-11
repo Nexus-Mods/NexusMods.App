@@ -1,3 +1,6 @@
+using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
+using NexusMods.Paths;
+
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 
 /// <summary>
@@ -15,4 +18,18 @@ public interface ISuggestedEntryNode
     ///     Short description for this item.
     /// </summary>
     string Description { get; }
+}
+
+/// <summary>
+///     Marks an interface for an item which can be bound to a source file/folder within a game mod archive.
+/// </summary>
+/// <remarks>
+///     This is part of <see cref="ISuggestedEntryNode" /> but separated for easier testing.
+/// </remarks>
+public interface IModContentBindingTarget
+{
+    /// <summary>
+    ///     Binds to the path represented by this target.
+    /// </summary>
+    GamePath Bind(IUnlinkableItem unlinkable);
 }

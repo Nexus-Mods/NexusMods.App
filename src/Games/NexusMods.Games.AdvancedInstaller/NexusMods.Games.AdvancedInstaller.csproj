@@ -12,6 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <InternalsVisibleTo Include="NexusMods.Games.AdvancedInstaller.Tests" />
+        <InternalsVisibleTo Include="NexusMods.Games.AdvancedInstaller.Tests"/>
+        <InternalsVisibleTo Include="NexusMods.Games.AdvancedInstaller.UI.Tests"/>
     </ItemGroup>
 </Project>
