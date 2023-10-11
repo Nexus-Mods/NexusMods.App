@@ -13,7 +13,7 @@ public class NodeSelectionTests : AModContentNodeTest
         node.BeginSelect();
 
         foreach (var child in node.ChildrenFlattened())
-            child.Status.Should().Be(TreeDataGridSourceFileNodeStatus.SelectingViaParent);
+            child.Status.Should().Be(ModContentNodeStatus.SelectingViaParent);
     }
 
     [Fact]
@@ -24,7 +24,7 @@ public class NodeSelectionTests : AModContentNodeTest
         node.CancelSelect();
 
         foreach (var child in node.ChildrenFlattened())
-            child.Status.Should().Be(TreeDataGridSourceFileNodeStatus.Default);
+            child.Status.Should().Be(ModContentNodeStatus.Default);
     }
 
     [Fact]
@@ -34,13 +34,13 @@ public class NodeSelectionTests : AModContentNodeTest
 
         // Change the status of a child node.
         var child = GetChildNode(node, "Readme-BWS.txt")!;
-        child.SetStatus(TreeDataGridSourceFileNodeStatus.IncludedExplicit);
+        child.SetStatus(ModContentNodeStatus.IncludedExplicit);
 
         // Select and unselect
         node.BeginSelect();
         node.CancelSelect();
 
         // Unchanged after selection was cancelled
-        child.Status.Should().Be(TreeDataGridSourceFileNodeStatus.IncludedExplicit);
+        child.Status.Should().Be(ModContentNodeStatus.IncludedExplicit);
     }
 }

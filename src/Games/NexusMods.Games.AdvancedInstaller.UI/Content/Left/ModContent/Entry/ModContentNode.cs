@@ -22,7 +22,7 @@ public interface IModContentNode : IUnlinkableItem
     /// <summary>
     ///     Status of the node in question.
     /// </summary>
-    public TreeDataGridSourceFileNodeStatus Status { get; }
+    public ModContentNodeStatus Status { get; }
 
     /// <summary>
     ///     The name of this specific file in the tree.
@@ -106,8 +106,6 @@ public interface IUnlinkableItem
 [DebuggerDisplay("FileName = {FileName}, IsRoot = {IsRoot}, Children = {Children.Length}, Status = {Status}")]
 internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
 {
-    private TreeDataGridSourceFileNodeStatus _lastStatus;
-
     /// <summary>
     ///     The underlying node providing the data for this tree.
     /// </summary>
@@ -127,9 +125,9 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
     /// <inheritdoc />
     public required IModContentNode[] Children { get; init; }
 
-    // Note: _lastStatus has no size impact on the object, because it fits in what otherwise would be padding.
-    //       hence it was placed at the end of the object.
-    [Reactive] public TreeDataGridSourceFileNodeStatus Status { get; private set; }
+    // Note: Items here are reduced to 1 byte, to avoid eating memory. With 3 items we have 5 bytes of padding left.
+    [Reactive] public ModContentNodeStatus Status { get; private set; }
+    private ModContentNodeStatus _lastStatus;
 
     public string FileName => Node.IsTreeRoot ? Language.FileTree_ALL_MOD_FILES : Node.Name;
     public bool IsDirectory => Node.IsDirectory;
@@ -139,20 +137,31 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
     {
         // TODO: Handle individual file nodes.
         LinkedTarget = target;
-        data.AddFolderMapping(Node, target.Bind(this));
-        SetStatusRecursive(this, TreeDataGridSourceFileNodeStatus.IncludedViaParent);
+        if (IsDirectory)
+        {
+            data.AddFolderMapping(Node, target.Bind(this), true);
+            SetStatusRecursive(this, ModContentNodeStatus.IncludedViaParent);
+        }
+        else
+        {
+            SetStatus(ModContentNodeStatus.IncludedExplicit);
+            data.AddMapping(Node.Path, target.Bind(this), true);
+        }
     }
 
     public void Unlink(DeploymentData data)
     {
+        SetStatus(ModContentNodeStatus.Default);
         data.RemoveFolderMapping(Node);
+        if (IsDirectory)
+            SetStatusRecursive(this, ModContentNodeStatus.Default);
     }
 
     /// <summary>
     ///     Sets a new status, and stores the previous status in <see cref="_lastStatus" />.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void SetStatus(TreeDataGridSourceFileNodeStatus status)
+    public void SetStatus(ModContentNodeStatus status)
     {
         var last = Status;
         Status = status;
@@ -169,17 +178,17 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
     }
 
     /// <summary>
-    ///     Marks the node for selection, changing its state to <see cref="TreeDataGridSourceFileNodeStatus.Selecting" />,
+    ///     Marks the node for selection, changing its state to <see cref="ModContentNodeStatus.Selecting" />,
     ///     and updating the state of the child nodes accordingly.
     /// </summary>
     public void BeginSelect()
     {
-        SetStatus(TreeDataGridSourceFileNodeStatus.Selecting);
+        SetStatus(ModContentNodeStatus.Selecting);
         if (!IsDirectory)
             return;
 
         // Update all of children
-        SetStatusRecursive(this, TreeDataGridSourceFileNodeStatus.Selecting);
+        SetStatusRecursive(this, ModContentNodeStatus.Selecting);
     }
 
     /// <summary>
@@ -187,7 +196,7 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
     /// </summary>
     public void CancelSelect()
     {
-        if (Status != TreeDataGridSourceFileNodeStatus.Selecting)
+        if (Status != ModContentNodeStatus.Selecting)
             return;
 
         RestoreLastStatusRecursive();
@@ -231,7 +240,7 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
     /// <summary>
     ///     Recursively sets a new status for every single node under this node.
     /// </summary>
-    private static void SetStatusRecursive(ModContentNode<TNodeValue> item, TreeDataGridSourceFileNodeStatus status)
+    private static void SetStatusRecursive(ModContentNode<TNodeValue> item, ModContentNodeStatus status)
     {
         foreach (var childInterface in item.Children)
         {
@@ -270,7 +279,7 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
             Node = node,
             Parent = null!,
             Children = GC.AllocateUninitializedArray<IModContentNode>(node.Children.Count),
-            Status = TreeDataGridSourceFileNodeStatus.Default
+            Status = ModContentNodeStatus.Default
         };
 
         var childIndex = 0;
@@ -296,7 +305,7 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
             Node = node,
             Parent = parent,
             Children = GC.AllocateUninitializedArray<IModContentNode>(node.Children.Count),
-            Status = TreeDataGridSourceFileNodeStatus.Default
+            Status = ModContentNodeStatus.Default
         };
 
         var childIndex = 0;
@@ -310,7 +319,7 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
 /// <summary>
 ///     Represents the current status of the <see cref="ModContentNode{TNodeValue}" />.
 /// </summary>
-public enum TreeDataGridSourceFileNodeStatus
+public enum ModContentNodeStatus : byte
 {
     /// <summary>
     ///     Item is not selected, and available for selection.
