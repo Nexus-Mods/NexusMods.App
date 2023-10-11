@@ -22,7 +22,16 @@ public interface IModContentNode : IUnlinkableItem
     /// <summary>
     ///     Status of the node in question.
     /// </summary>
+    [Reactive]
     public ModContentNodeStatus Status { get; }
+
+    /// <summary>
+    ///     True if this is an element child of the root node.
+    /// </summary>
+    /// <remarks>
+    ///     This is useful for the UI, e.g. to determine "Included" vs "Included with folder" text.
+    /// </remarks>
+    bool IsTopLevel { get; }
 
     /// <summary>
     ///     The name of this specific file in the tree.
@@ -61,7 +70,7 @@ public interface IModContentNode : IUnlinkableItem
     ///     <see cref="FileTreeNode{TPath,TValue}" />; an array is used, as it's the lowest
     ///     overhead collection available for the job.
     /// </remarks>
-    IModContentNode[] Children { get; }
+    ITreeEntryViewModel[] Children { get; }
 
     /// <summary>
     ///     True if this is the root node.
@@ -123,11 +132,16 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
     public IModContentBindingTarget? LinkedTarget { get; private set; }
 
     /// <inheritdoc />
-    public required IModContentNode[] Children { get; init; }
+    public required ITreeEntryViewModel[] Children { get; init; }
 
     // Note: Items here are reduced to 1 byte, to avoid eating memory. With 3 items we have 5 bytes of padding left.
     [Reactive] public ModContentNodeStatus Status { get; private set; }
     private ModContentNodeStatus _lastStatus;
+
+    /// <summary>
+    ///     Whether the node is a child of the root.
+    /// </summary>
+    public required bool IsTopLevel { get; init; }
 
     public string FileName => Node.IsTreeRoot ? Language.FileTree_ALL_MOD_FILES : Node.Name;
     public bool IsDirectory => Node.IsDirectory;
@@ -195,7 +209,7 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
             return;
 
         // Update all of children
-        SetStatusRecursive(this, ModContentNodeStatus.Selecting);
+        SetStatusRecursive(this, ModContentNodeStatus.SelectingViaParent);
     }
 
     /// <summary>
@@ -233,14 +247,14 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
 
         // Push initial children onto the stack.
         foreach (var child in Children)
-            stack.Push((child as ModContentNode<TNodeValue>)!);
+            stack.Push((child.Node.AsT0 as ModContentNode<TNodeValue>)!);
 
         while (stack.Count > 0)
         {
             var current = stack.Pop();
             yield return current;
             foreach (var child in current.Children)
-                stack.Push((child as ModContentNode<TNodeValue>)!);
+                stack.Push((child.Node.AsT0 as ModContentNode<TNodeValue>)!);
         }
     }
 
@@ -252,7 +266,7 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
         foreach (var childInterface in item.Children)
         {
             // Covariant cast to remove virtualization and make Status writeable.
-            var child = childInterface as ModContentNode<TNodeValue>;
+            var child = childInterface.Node.AsT0 as ModContentNode<TNodeValue>;
             child!.SetStatus(status);
             SetStatusRecursive(child, status);
         }
@@ -266,7 +280,7 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
         foreach (var childInterface in item.Children)
         {
             // Covariant cast to remove virtualization and make Status writeable.
-            var child = childInterface as ModContentNode<TNodeValue>;
+            var child = childInterface.Node.AsT0 as ModContentNode<TNodeValue>;
             child!.RestoreLastStatus();
             RestoreLastStatusRecursive(child);
         }
@@ -285,13 +299,14 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
         {
             Node = node,
             Parent = null!,
-            Children = GC.AllocateUninitializedArray<IModContentNode>(node.Children.Count),
+            Children = GC.AllocateUninitializedArray<ITreeEntryViewModel>(node.Children.Count),
+            IsTopLevel = false,
             Status = ModContentNodeStatus.Default
         };
 
         var childIndex = 0;
         foreach (var child in node.Children)
-            root.Children[childIndex++] = FromFileTreeRecursive(child.Value, root);
+            root.Children[childIndex++] = new TreeEntryViewModel(FromFileTreeRecursive(child.Value, root));
 
         return root;
     }
@@ -311,13 +326,14 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
         {
             Node = node,
             Parent = parent,
-            Children = GC.AllocateUninitializedArray<IModContentNode>(node.Children.Count),
+            Children = GC.AllocateUninitializedArray<ITreeEntryViewModel>(node.Children.Count),
+            IsTopLevel = parent.IsRoot,
             Status = ModContentNodeStatus.Default
         };
 
         var childIndex = 0;
         foreach (var child in node.Children)
-            item.Children[childIndex++] = FromFileTreeRecursive(child.Value, item);
+            item.Children[childIndex++] = new TreeEntryViewModel(FromFileTreeRecursive(child.Value, item));
 
         return item;
     }

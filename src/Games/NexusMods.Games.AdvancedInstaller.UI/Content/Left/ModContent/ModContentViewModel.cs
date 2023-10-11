@@ -4,5 +4,5 @@ internal class ModContentViewModel : ModContentDesignViewModel
 {
     // TODO: Implement the actual tree data.
     // ReSharper disable once RedundantOverriddenMember
-    protected override IModContentNode GetTreeData() => base.GetTreeData();
+    protected override ITreeEntryViewModel GetTreeData() => base.GetTreeData();
 }

@@ -33,4 +33,9 @@ public interface IModContentBindingTarget
     /// </summary>
     /// <param name="unlinkable">You can use this item for unlinking.</param>
     GamePath Bind(IUnlinkableItem unlinkable);
+
+    /// <summary>
+    ///     The Directory name target of the link.
+    /// </summary>
+    string DirectoryName { get; }
 }

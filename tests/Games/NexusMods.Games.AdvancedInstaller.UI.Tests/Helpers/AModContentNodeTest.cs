@@ -10,7 +10,7 @@ public abstract class AModContentNodeTest
     internal ModContentNode<int>? GetChildNode(IModContentNode root,
         string fileName)
     {
-        return root.Children.FirstOrDefault(x => x.FileName == fileName) as
+        return root.Children.FirstOrDefault(x => x.Node.AsT0.FileName == fileName)!.Node.AsT0 as
             ModContentNode<int>;
     }
 
@@ -22,7 +22,7 @@ public abstract class AModContentNodeTest
     }
 
     protected IModContentNode GetNode(IModContentNode root, string expectedName) =>
-        root.Children.FirstOrDefault(x => x.FileName == expectedName)!;
+        root.Children.FirstOrDefault(x => x.Node.AsT0.FileName == expectedName)!.Node.AsT0;
 
     protected void AssertNode(IModContentNode node, string expectedName, bool isRoot, bool isDirectory,
         int expectedChildrenCount)
@@ -61,5 +61,5 @@ public abstract class AModContentNodeTest
 internal static class ModContentNodeExtensions
 {
     public static IModContentNode GetNode(this IModContentNode root, string expectedName) =>
-        root.Children.FirstOrDefault(x => x.FileName == expectedName)!;
+        root.Children.FirstOrDefault(x => x.Node.AsT0.FileName == expectedName)!.Node.AsT0;
 }

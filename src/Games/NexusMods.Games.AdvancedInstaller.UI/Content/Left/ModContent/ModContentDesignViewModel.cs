@@ -13,26 +13,26 @@ internal class ModContentDesignViewModel : AViewModel<IModContentViewModel>,
     /// <summary>
     /// The visual representation of the tree.
     /// </summary>
-    public HierarchicalTreeDataGridSource<IModContentNode> Tree => new(GetTreeData())
+    public HierarchicalTreeDataGridSource<ITreeEntryViewModel> Tree => new(GetTreeData())
     {
         Columns =
         {
-            new HierarchicalExpanderColumn<IModContentNode>(
-                new TemplateColumn<IModContentNode>(null,
-                    new FuncDataTemplate<IModContentNode>((node, scope) =>
+            new HierarchicalExpanderColumn<ITreeEntryViewModel>(
+                new TemplateColumn<ITreeEntryViewModel>(null,
+                    new FuncDataTemplate<ITreeEntryViewModel>((node, scope) =>
                         new UI.TreeEntryView()
                         {
                             DataContext = node,
                         }),
                     width: new GridLength(1, GridUnitType.Star)
                 ),
-                x => x.Children)
+                x => x.Node.AsT0.Children)
         }
     };
 
-    protected virtual IModContentNode GetTreeData() => CreateTestTree();
+    protected virtual ITreeEntryViewModel GetTreeData() => CreateTestTree();
 
-    private static IModContentNode CreateTestTree()
+    private static ITreeEntryViewModel CreateTestTree()
     {
         var fileEntries = new Dictionary<RelativePath, int>
         {
@@ -49,6 +49,6 @@ internal class ModContentDesignViewModel : AViewModel<IModContentViewModel>,
         };
 
         var tree = FileTreeNode<RelativePath, int>.CreateTree(fileEntries);
-        return ModContentNode<int>.FromFileTree(tree);
+        return new TreeEntryViewModel( ModContentNode<int>.FromFileTree(tree));
     }
 }
