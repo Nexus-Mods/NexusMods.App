@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 using NexusMods.Paths;
@@ -26,7 +27,7 @@ public interface IPreviewEntryNode
     /// <remarks>
     ///     See <see cref="ModContentNode{TNodeValue}.Children" />
     /// </remarks>
-    IPreviewEntryNode[] Children { get; }
+    ObservableCollection<IPreviewEntryNode> Children { get; }
 
     /// <summary>
     ///     The file name displayed for this node.
@@ -75,8 +76,9 @@ public interface IPreviewEntryNode
 /// </summary>
 public class PreviewEntryNode : IPreviewEntryNode, IModContentBindingTarget
 {
+    // TODO: This should be optimized because we are creating a new string for every item.
     public GamePath FullPath { get; init; }
-    public IPreviewEntryNode[] Children { get; init; } = null!;
+    public ObservableCollection<IPreviewEntryNode> Children { get; init; } = new();
     public List<IUnlinkableItem>? UnlinkableItems { get; private set; } = new();
 
     // Do not rearrange order here, flags are deliberately last to optimize for struct layout.
@@ -91,6 +93,13 @@ public class PreviewEntryNode : IPreviewEntryNode, IModContentBindingTarget
 
     public bool IsFolderMerged =>
         (Flags & PreviewEntryNodeFlags.IsFolderMerged) == PreviewEntryNodeFlags.IsFolderMerged;
+
+
+    public PreviewEntryNode(GamePath fullPath, PreviewEntryNodeFlags flags)
+    {
+        FullPath = fullPath;
+        Flags = flags;
+    }
 
     public GamePath Bind(IUnlinkableItem unlinkable, bool previouslyExisted)
     {
@@ -126,6 +135,79 @@ public class PreviewEntryNode : IPreviewEntryNode, IModContentBindingTarget
 
         UnlinkableItems.Clear();
     }
+
+    /// <summary>
+    ///     Creates the root node for the preview tree from an existing path.
+    /// </summary>
+    /// <param name="fullPath">The path to create the node from.</param>
+    /// <param name="isDirectory">True if the final part of the directory is a path.</param>
+    /// <param name="checker">Checks if the item has already has existed prior.</param>
+    /// <returns>The root node.</returns>
+    public static PreviewEntryNode Create<TChecker>(GamePath fullPath, bool isDirectory, TChecker checker)
+        where TChecker : struct, ICheckIfItemAlreadyExists // for devirtualization, do not de-struct.
+    {
+        var root = new PreviewEntryNode(fullPath, PreviewEntryNodeFlags.IsRoot | PreviewEntryNodeFlags.IsDirectory);
+        root.AddChild(fullPath.Path, isDirectory, checker);
+        return root;
+    }
+
+    /// <summary>
+    ///     Adds a child node to the current node.
+    /// </summary>
+    /// <param name="path">The path relative to root <see cref="GamePath"/>.</param>
+    /// <param name="isDirectory">True if the final part of the directory is a path.</param>
+    /// <param name="checker">Checks if the item has already has existed prior.</param>
+    /// <remarks>Adds a child to any non-root node.</remarks>
+    public void AddChild<TChecker>(string path, bool isDirectory, TChecker checker)
+        where TChecker : struct, ICheckIfItemAlreadyExists // for devirtualization, do not de-struct.
+    {
+        var pathComponents = path.Split('/');
+        var currentNode = this;
+
+        for (var x = 0; x < pathComponents.Length; x++)
+        {
+            var component = pathComponents[x];
+            var isLastComponent = x == pathComponents.Length - 1;
+
+            // Check if the current node already has a child with the name of the current path component.
+            var childNode = currentNode.Children.FirstOrDefault(child => child.FileName == component);
+
+            // If the child node doesn't exist, create it.
+            if (childNode == null)
+            {
+                var childFullPath = currentNode.FullPath.Path.Join(component);
+                var newGamePath = new GamePath(FullPath.LocationId, childFullPath);
+                PreviewEntryNodeFlags childFlags;
+
+                var isNewFlag = checker.AlreadyExists(newGamePath)
+                    ? PreviewEntryNodeFlags.IsNew
+                    : PreviewEntryNodeFlags.Default;
+
+                var isDirectoryFlag = isLastComponent && !isDirectory
+                    ? PreviewEntryNodeFlags.Default
+                    : PreviewEntryNodeFlags.IsDirectory;
+
+                childNode = new PreviewEntryNode(newGamePath, isNewFlag | isDirectoryFlag);
+                currentNode.Children.Add(childNode);
+            }
+
+            // Set the current node to the child node and continue.
+            currentNode = (PreviewEntryNode)childNode;
+        }
+    }
+}
+
+/// <summary>
+///     An interface that informs the node adding process whether an item has previously existed.
+/// </summary>
+public interface ICheckIfItemAlreadyExists
+{
+    /// <summary>
+    ///     Returns true if the given path already exist
+    /// </summary>
+    /// <param name="path">The path to validate if it already exists in the game folder.</param>
+    /// <returns>True if this path already exists, else false.</returns>
+    bool AlreadyExists(GamePath path);
 }
 
 /// <summary>
@@ -134,6 +216,11 @@ public class PreviewEntryNode : IPreviewEntryNode, IModContentBindingTarget
 [Flags]
 public enum PreviewEntryNodeFlags
 {
+    /// <summary>
+    ///     None
+    /// </summary>
+    Default,
+
     /// <summary>
     ///     If this is true, the 'new' pill should be displayed in the UI.
     /// </summary>
