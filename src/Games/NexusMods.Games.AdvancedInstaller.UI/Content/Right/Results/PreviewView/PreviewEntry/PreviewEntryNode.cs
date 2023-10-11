@@ -28,7 +28,7 @@ public interface IPreviewEntryNode
     string FileName { get; }
 
     /// <summary>
-    ///     True if this is the root node.
+    ///     True if this is the root node. (Cannot be deleted)
     /// </summary>
     bool IsRoot { get; }
 
@@ -37,6 +37,16 @@ public interface IPreviewEntryNode
     ///     target folder.
     /// </summary>
     bool IsDirectory { get; }
+
+    /// <summary>
+    ///     If this is true, the 'new' pill should be displayed in the UI.
+    /// </summary>
+    bool IsNew { get; }
+
+    /// <summary>
+    ///     If this is true the 'folder merged' pill should be displayed in the UI.
+    /// </summary>
+    bool IsFolderMerged { get; }
 
     /*
        Note:
@@ -66,13 +76,21 @@ public interface IPreviewEntryNode
 /// </summary>
 public class PreviewEntryNode : IPreviewEntryNode
 {
-    public PreviewEntryNodeFlags Flags { get; init; }
-
-    public PreviewEntryNodeFlags DerivedFlags { get; init; }
-
     public IPreviewEntryNode[] Children { get; init; } = null!;
     public string FileName { get; init; } = null!;
     public List<IUnlinkableItem>? UnlinkableItems { get; } = new();
+
+    // Do not rearrange items here, flags are deliberately last to optimize for struct layout.
+    public PreviewEntryNodeFlags Flags { get; init; }
+
+
+    // Derived Getters: For convenience.
+    public bool IsRoot => (Flags & PreviewEntryNodeFlags.IsRoot) == PreviewEntryNodeFlags.IsRoot;
+    public bool IsDirectory => (Flags & PreviewEntryNodeFlags.IsDirectory) == PreviewEntryNodeFlags.IsDirectory;
+    public bool IsNew => (Flags & PreviewEntryNodeFlags.IsNew) == PreviewEntryNodeFlags.IsNew;
+
+    public bool IsFolderMerged =>
+        (Flags & PreviewEntryNodeFlags.IsFolderMerged) == PreviewEntryNodeFlags.IsFolderMerged;
 
     public void ApplyLink(IUnlinkableItem source, bool previouslyExisted)
     {
@@ -81,16 +99,6 @@ public class PreviewEntryNode : IPreviewEntryNode
         // 2. Folder already existed in game directory (non-empty), and we are mapping it.
         throw new NotImplementedException();
     }
-
-    // Note: Do not rearrange these fields (for packing/perf reasons).
-    public bool IsRoot { get; init; }
-    public bool IsDirectory { get; init; }
-
-    // Derived Getters (for convenience in ViewModel)
-    public bool IsNew => (Flags & PreviewEntryNodeFlags.IsNew) == PreviewEntryNodeFlags.IsNew;
-
-    public bool IsFolderMerged =>
-        (Flags & PreviewEntryNodeFlags.IsFolderMerged) == PreviewEntryNodeFlags.IsFolderMerged;
 }
 
 /// <summary>
@@ -107,5 +115,16 @@ public enum PreviewEntryNodeFlags
     /// <summary>
     ///     If this is true the 'folder merged' pill should be displayed in the UI.
     /// </summary>
-    IsFolderMerged = 0b0000_0010
+    IsFolderMerged = 0b0000_0010,
+
+    /// <summary>
+    ///     If this is true, this item is a directory.
+    /// </summary>
+    IsDirectory = 0b0000_0100,
+
+    /// <summary>
+    ///     If this is true, this node is the root, and cannot be deleted.
+    ///     (All items can however be unlinked)
+    /// </summary>
+    IsRoot = 0b0000_1000
 }
