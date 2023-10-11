@@ -25,7 +25,7 @@ public interface IPanelViewModel : IViewModelInterface
     /// <summary>
     /// Gets or sets the current selected tab.
     /// </summary>
-    public IPanelTabViewModel? SelectedTab { get; set; }
+    public PanelTabId SelectedTabId { get; set; }
 
     /// <summary>
     /// Gets the contents of the selected tab.

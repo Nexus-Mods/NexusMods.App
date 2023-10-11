@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia;
 using DynamicData;
 using NexusMods.App.UI.Controls;
@@ -23,7 +24,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
     public ReadOnlyObservableCollection<IPanelTabHeaderViewModel> TabHeaders => _tabHeaders;
 
     [Reactive]
-    public IPanelTabViewModel? SelectedTab { get; set; }
+    public PanelTabId SelectedTabId { get; set; }
 
     [Reactive]
     public IViewModel? SelectedTabContents { get; private set; }
@@ -42,8 +43,6 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
         CloseCommand = ReactiveCommand.Create(() =>
         {
             workspaceViewModel.ClosePanel(this);
-
-            SelectedTab = null;
             _tabsSource.Clear();
             _tabsSource.Dispose();
         });
@@ -73,7 +72,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                     // TODO: handle removals and update indices
                     if (changeSet.TryGetFirst(change => change.Reason == ChangeReason.Add, out var added))
                     {
-                        SelectedTab = added.Current;
+                        SelectedTabId = added.Key;
                     }
                 })
                 .DisposeWith(disposables);
@@ -87,9 +86,11 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                 .SubscribeWithErrorLogging()
                 .DisposeWith(disposables);
 
-            this.WhenAnyValue(vm => vm.SelectedTab)
-                .SubscribeWithErrorLogging(tab =>
+            this.WhenAnyValue(vm => vm.SelectedTabId)
+                .Select(tabId => _tabsSource.Lookup(tabId))
+                .SubscribeWithErrorLogging(optional =>
                 {
+                    var tab = optional.HasValue ? optional.Value : null;
                     SelectedTabContents = tab?.Contents;
 
                     if (tab is not null)

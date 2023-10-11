@@ -1,5 +1,6 @@
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.Media;
 using NexusMods.App.UI.Resources;
 using ReactiveUI;
@@ -33,6 +34,11 @@ public class PanelTabHeaderViewModel : AViewModel<IPanelTabHeaderViewModel>, IPa
 
         this.WhenActivated(disposables =>
         {
+            this.WhenAnyValue(vm => vm.IsSelected)
+                .Where(isSelected => isSelected)
+                .SubscribeWithErrorLogging(_ => panelViewModel.SelectedTabId = Id)
+                .DisposeWith(disposables);
+
             Disposable.Create(this, state =>
             {
                 if (state.Icon is IDisposable disposable) disposable.Dispose();

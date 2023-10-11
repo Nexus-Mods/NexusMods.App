@@ -6,20 +6,19 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactive="http://reactiveui.net"
     xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
-    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
-    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="100"
+    mc:Ignorable="d" d:DesignWidth="232" d:DesignHeight="60"
     x:Class="NexusMods.App.UI.WorkspaceSystem.PanelTabHeaderView">
 
     <Design.DataContext>
         <workspace:PanelTabHeaderDesignViewModel/>
     </Design.DataContext>
 
-    <StackPanel Orientation="Horizontal" Spacing="4">
-        <Image x:Name="IconImage"/>
+    <Grid ColumnDefinitions="Auto, *, Auto" PointerPressed="InputElement_OnPointerPressed">
+        <Image Grid.Column="0" x:Name="IconImage"/>
 
-        <TextBlock Classes="BodyMDBold" FontSize="14" LineHeight="21" x:Name="TitleTextBlock"/>
+        <TextBlock Grid.Column="1" Classes="BodyMDBold" FontSize="14" LineHeight="21" x:Name="TitleTextBlock"/>
 
-        <Button Width="28" Height="28" x:Name="CloseTabButton" Classes="BareIcon WindowClose"/>
-    </StackPanel>
+        <Button Grid.Column="2" Width="28" Height="28" x:Name="CloseTabButton" Classes="BareIcon WindowClose"/>
+    </Grid>
 
 </reactive:ReactiveUserControl>

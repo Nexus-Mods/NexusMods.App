@@ -1,6 +1,7 @@
 using System.Reactive;
 using Avalonia.Media;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
@@ -12,6 +13,7 @@ public class PanelTabHeaderDesignViewModel : AViewModel<IPanelTabHeaderViewModel
 
     public IImage? Icon { get; set; } = Initializers.IImage;
 
+    [Reactive]
     public bool IsSelected { get; set; }
 
     public ReactiveCommand<Unit, Unit> CloseTabCommand => Initializers.EnabledReactiveCommand;

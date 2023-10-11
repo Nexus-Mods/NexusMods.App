@@ -337,6 +337,9 @@
         <Compile Update="WorkspaceSystem\PanelTabHeader\PanelTabHeaderViewModel.cs">
           <DependentUpon>IPanelTabHeaderViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="WorkspaceSystem\PanelTabHeader\PanelTabHeaderDesignViewModel.cs">
+          <DependentUpon>IPanelTabHeaderViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

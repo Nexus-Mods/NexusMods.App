@@ -1,4 +1,6 @@
 using System.Reactive.Disposables;
+using Avalonia.Input;
+using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using ReactiveUI;
@@ -11,6 +13,7 @@ public partial class PanelTabHeaderView : ReactiveUserControl<IPanelTabHeaderVie
     public PanelTabHeaderView()
     {
         InitializeComponent();
+        Background = Brushes.Transparent;
 
         this.WhenActivated(disposables =>
         {
@@ -22,7 +25,20 @@ public partial class PanelTabHeaderView : ReactiveUserControl<IPanelTabHeaderVie
 
             this.BindCommand(ViewModel, vm => vm.CloseTabCommand, view => view.CloseTabButton)
                 .DisposeWith(disposables);
+
+            this.WhenAnyValue(vm => vm.ViewModel!.IsSelected)
+                .SubscribeWithErrorLogging(isSelected =>
+                {
+                    Background = isSelected ? Brushes.Aqua : Brushes.Transparent;
+                })
+                .DisposeWith(disposables);
         });
+    }
+
+    private void InputElement_OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (ViewModel is null) return;
+        ViewModel.IsSelected = true;
     }
 }
 
