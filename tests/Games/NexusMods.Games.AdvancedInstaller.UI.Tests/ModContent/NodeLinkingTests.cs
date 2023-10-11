@@ -18,10 +18,10 @@ public class NodeLinkingTests : AModContentNodeTest
         // Arrange & Act
         var (node, data, target) = CommonSetup();
         var armorsDir = node.GetNode("Textures").GetNode("Armors");
-        armorsDir.Link(data, target);
+        armorsDir.Link(data, target, false);
 
         // Assert
-        target.Received().Bind(Arg.Any<IUnlinkableItem>());
+        target.Received().Bind(Arg.Any<IUnlinkableItem>(), Arg.Any<bool>());
         AssertArmorsLinked(data);
         armorsDir.GetNode("greenArmor.dds").Status.Should().Be(ModContentNodeStatus.IncludedViaParent);
         armorsDir.GetNode("greenBlade.dds").Status.Should().Be(ModContentNodeStatus.IncludedViaParent);
@@ -34,10 +34,10 @@ public class NodeLinkingTests : AModContentNodeTest
         // Arrange & Act
         var (node, data, target) = CommonSetup();
         var greenArmor = node.GetNode("Textures").GetNode("Armors").GetNode("greenArmor.dds");
-        greenArmor.Link(data, target);
+        greenArmor.Link(data, target, false);
 
         // Assert
-        target.Received().Bind(Arg.Any<IUnlinkableItem>());
+        target.Received().Bind(Arg.Any<IUnlinkableItem>(), Arg.Any<bool>());
         greenArmor.Status.Should().Be(ModContentNodeStatus.IncludedExplicit);
         data.ArchiveToOutputMap.Count.Should().Be(1);
         data.ArchiveToOutputMap["Textures/Armors/greenArmor.dds"].Should()
@@ -50,7 +50,7 @@ public class NodeLinkingTests : AModContentNodeTest
         // Arrange & Act
         var (node, data, target) = CommonSetup();
         var armorsDir = node.GetNode("Textures").GetNode("Armors");
-        armorsDir.Link(data, target);
+        armorsDir.Link(data, target, false);
 
         // Unlink assert that everything is empty.
         armorsDir.Unlink(data);
@@ -64,7 +64,7 @@ public class NodeLinkingTests : AModContentNodeTest
         IUnlinkableItem? unlinkable = null!;
         var (node, data, target) = CommonSetup(item => unlinkable = item);
         var armorsDir = node.GetNode("Textures").GetNode("Armors");
-        armorsDir.Link(data, target);
+        armorsDir.Link(data, target, false);
 
         // Unlink assert that everything is empty.
         unlinkable.Unlink(data);
@@ -77,7 +77,7 @@ public class NodeLinkingTests : AModContentNodeTest
         // Arrange & Act
         var (node, data, target) = CommonSetup();
         var greenArmor = node.GetNode("Textures").GetNode("Armors").GetNode("greenArmor.dds");
-        greenArmor.Link(data, target);
+        greenArmor.Link(data, target, false);
 
         // Assert
         greenArmor.Unlink(data);
@@ -93,7 +93,7 @@ public class NodeLinkingTests : AModContentNodeTest
         var target = Substitute.For<IModContentBindingTarget>();
 
         var path = new GamePath(LocationId.Game, "");
-        target.Bind(Arg.Any<IUnlinkableItem>()).Returns(path)
+        target.Bind(Arg.Any<IUnlinkableItem>(), Arg.Any<bool>()).Returns(path)
             .AndDoes(info => getUnlinkableCallback?.Invoke(info.ArgAt<IUnlinkableItem>(0)));
 
         return (node, data, target);

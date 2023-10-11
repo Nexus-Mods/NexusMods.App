@@ -88,7 +88,11 @@ public interface IModContentNode : IUnlinkableItem
     /// </summary>
     /// <param name="data">The structure keeping track of deployment data.</param>
     /// <param name="target">The target to receive the binding.</param>
-    void Link(DeploymentData data, IModContentBindingTarget target);
+    /// <param name="targetAlreadyExisted">
+    ///     Set this to true to indicate that this target has already existed.
+    ///     i.e. The target is a non-user created folder.
+    /// </param>
+    void Link(DeploymentData data, IModContentBindingTarget target, bool targetAlreadyExisted);
 }
 
 /// <summary>
@@ -147,18 +151,18 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
     public bool IsDirectory => Node.IsDirectory;
     public bool IsRoot => Node.IsTreeRoot;
 
-    public void Link(DeploymentData data, IModContentBindingTarget target)
+    public void Link(DeploymentData data, IModContentBindingTarget target, bool targetAlreadyExisted)
     {
         LinkedTarget = target;
         if (IsDirectory)
         {
-            data.AddFolderMapping(Node, target.Bind(this), true);
+            data.AddFolderMapping(Node, target.Bind(this, targetAlreadyExisted), true);
             SetStatusRecursive(this, ModContentNodeStatus.IncludedViaParent);
         }
         else
         {
             SetStatus(ModContentNodeStatus.IncludedExplicit);
-            var folder = target.Bind(this);
+            var folder = target.Bind(this, targetAlreadyExisted);
             data.AddMapping(Node.Path, new GamePath(folder.LocationId, folder.Path.Join(FileName)), true);
         }
     }

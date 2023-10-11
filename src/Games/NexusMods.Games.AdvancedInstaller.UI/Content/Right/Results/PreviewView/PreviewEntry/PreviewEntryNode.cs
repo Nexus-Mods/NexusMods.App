@@ -1,5 +1,6 @@
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
-using static NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry.PreviewEntryNodeFlags;
+using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
+using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
 
@@ -14,6 +15,11 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView
 /// </remarks>
 public interface IPreviewEntryNode
 {
+    /// <summary>
+    ///     The full path of this node.
+    /// </summary>
+    public GamePath FullPath { get; init; }
+
     /// <summary>
     ///     Contains the children nodes of this node.
     /// </summary>
@@ -62,29 +68,23 @@ public interface IPreviewEntryNode
     ///     This collection is null, unless an element exists.
     /// </summary>
     List<IUnlinkableItem>? UnlinkableItems { get; }
-
-    /// <summary>
-    ///     Applies a link from source to the given node.
-    /// </summary>
-    /// <param name="source">The source item that was linked to this node.</param>
-    /// <param name="previouslyExisted">True if this item has previously existed in the game directory.</param>
-    void ApplyLink(IUnlinkableItem source, bool previouslyExisted);
 }
 
 /// <summary>
 ///     Represents an individual node in the 'Preview' section when selecting a location.
 /// </summary>
-public class PreviewEntryNode : IPreviewEntryNode
+public class PreviewEntryNode : IPreviewEntryNode, IModContentBindingTarget
 {
+    public GamePath FullPath { get; init; }
     public IPreviewEntryNode[] Children { get; init; } = null!;
-    public string FileName { get; init; } = null!;
-    public List<IUnlinkableItem>? UnlinkableItems { get; } = new();
+    public List<IUnlinkableItem>? UnlinkableItems { get; private set; } = new();
 
-    // Do not rearrange items here, flags are deliberately last to optimize for struct layout.
-    public PreviewEntryNodeFlags Flags { get; init; }
-
+    // Do not rearrange order here, flags are deliberately last to optimize for struct layout.
+    public PreviewEntryNodeFlags Flags { get; private set; }
 
     // Derived Getters: For convenience.
+    public string FileName => FullPath.FileName;
+    public string DirectoryName => FileName;
     public bool IsRoot => (Flags & PreviewEntryNodeFlags.IsRoot) == PreviewEntryNodeFlags.IsRoot;
     public bool IsDirectory => (Flags & PreviewEntryNodeFlags.IsDirectory) == PreviewEntryNodeFlags.IsDirectory;
     public bool IsNew => (Flags & PreviewEntryNodeFlags.IsNew) == PreviewEntryNodeFlags.IsNew;
@@ -92,12 +92,39 @@ public class PreviewEntryNode : IPreviewEntryNode
     public bool IsFolderMerged =>
         (Flags & PreviewEntryNodeFlags.IsFolderMerged) == PreviewEntryNodeFlags.IsFolderMerged;
 
-    public void ApplyLink(IUnlinkableItem source, bool previouslyExisted)
+    public GamePath Bind(IUnlinkableItem unlinkable, bool previouslyExisted)
     {
         // We apply 'folder merged' flag under either of the circumstances.
-        // 1. Files from two different subfolders are mapped to the same folder.
+        // 1. TODO: Files from two different subfolders are mapped to the same folder.
+        //    - It's also unclear if 'folder merged' should be displayed when there are files
+        //      from a subfolder where another bound file exists.
+        //      i.e.
+        //          - file
+        //          - subfolder/file
+        //      Should this display 'folder merged'?
         // 2. Folder already existed in game directory (non-empty), and we are mapping it.
-        throw new NotImplementedException();
+        UnlinkableItems ??= new List<IUnlinkableItem>();
+        UnlinkableItems.Add(unlinkable);
+
+        // Note: If two items merged into this item, then folders are considered 'merged'.
+        if (previouslyExisted)
+            Flags |= PreviewEntryNodeFlags.IsFolderMerged;
+
+        return FullPath;
+    }
+
+    /// <summary>
+    ///     Unlinks this node, and all children (in the case this node is a telegram).
+    /// </summary>
+    public void Unlink(DeploymentData data)
+    {
+        if (UnlinkableItems == null)
+            return;
+
+        foreach (var unlinkable in UnlinkableItems)
+            unlinkable.Unlink(data);
+
+        UnlinkableItems.Clear();
     }
 }
 

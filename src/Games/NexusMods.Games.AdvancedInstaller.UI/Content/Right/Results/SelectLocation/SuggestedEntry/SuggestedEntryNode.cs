@@ -32,7 +32,8 @@ public interface IModContentBindingTarget
     ///     Binds to the path represented by this target.
     /// </summary>
     /// <param name="unlinkable">You can use this item for unlinking.</param>
-    GamePath Bind(IUnlinkableItem unlinkable);
+    /// <param name="previouslyExisted">This location previously existed (as result of ).</param>
+    GamePath Bind(IUnlinkableItem unlinkable, bool previouslyExisted);
 
     /// <summary>
     ///     The Directory name target of the link.
