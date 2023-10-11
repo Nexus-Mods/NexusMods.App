@@ -19,6 +19,10 @@ public partial class
 
         this.WhenActivated(disposable =>
         {
+            if (ViewModel == null)
+            {
+                return;
+            }
             switch (ViewModel!.Node.Value)
             {
                 case IModContentNode contentNode:
