@@ -3,6 +3,7 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using Avalonia;
 using DynamicData;
+using NexusMods.App.UI.Controls;
 using NexusMods.Common;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -18,6 +19,9 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
     private ReadOnlyObservableCollection<IPanelTabViewModel> _tabs = Initializers.ReadOnlyObservableCollection<IPanelTabViewModel>();
     public ReadOnlyObservableCollection<IPanelTabViewModel> Tabs => _tabs;
 
+    private ReadOnlyObservableCollection<IPanelTabHeaderViewModel> _tabHeaders = Initializers.ReadOnlyObservableCollection<IPanelTabHeaderViewModel>();
+    public ReadOnlyObservableCollection<IPanelTabHeaderViewModel> TabHeaders => _tabHeaders;
+
     [Reactive]
     public IPanelTabViewModel? SelectedTab { get; set; }
 
@@ -31,6 +35,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
     [Reactive] public Rect ActualBounds { get; private set; }
 
     public ReactiveCommand<Unit, Unit> CloseCommand { get; }
+    public ReactiveCommand<Unit, Unit> AddTabCommand { get; }
 
     public PanelViewModel(IWorkspaceViewModel workspaceViewModel)
     {
@@ -41,6 +46,11 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
             SelectedTab = null;
             _tabsSource.Clear();
             _tabsSource.Dispose();
+        });
+
+        AddTabCommand = ReactiveCommand.Create(() =>
+        {
+            AddTab();
         });
 
         this.WhenActivated(disposables =>
@@ -68,8 +78,30 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                 })
                 .DisposeWith(disposables);
 
+            _tabsSource
+                .Connect()
+                .DisposeMany()
+                .Sort(PanelTabComparer.Instance)
+                .Transform(tab => tab.Header)
+                .Bind(out _tabHeaders)
+                .SubscribeWithErrorLogging()
+                .DisposeWith(disposables);
+
             this.WhenAnyValue(vm => vm.SelectedTab)
-                .SubscribeWithErrorLogging(tab => SelectedTabContents = tab?.Contents)
+                .SubscribeWithErrorLogging(tab =>
+                {
+                    SelectedTabContents = tab?.Contents;
+
+                    if (tab is not null)
+                    {
+                        tab.Header.IsSelected = true;
+                    }
+
+                    foreach (var tabViewModel in _tabs)
+                    {
+                        tabViewModel.Header.IsSelected = ReferenceEquals(tabViewModel, tab);
+                    }
+                })
                 .DisposeWith(disposables);
         });
     }
@@ -93,8 +125,17 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
             ? PanelTabIndex.From(0)
             : PanelTabIndex.From(_tabs.Last().Index.Value + 1);
 
-        var tab = new PanelTabViewModel(nextIndex);
+        var tab = new PanelTabViewModel(this, nextIndex)
+        {
+            Contents = new DummyViewModel()
+        };
+
         _tabsSource.AddOrUpdate(tab);
         return tab;
+    }
+
+    public void CloseTab(PanelTabId id)
+    {
+        _tabsSource.Remove(id);
     }
 }

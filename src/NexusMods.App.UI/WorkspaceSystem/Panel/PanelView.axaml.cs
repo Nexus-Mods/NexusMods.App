@@ -1,8 +1,5 @@
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using Avalonia.Controls;
-using Avalonia.Media;
-using Avalonia.Media.Immutable;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
@@ -29,7 +26,13 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
             this.BindCommand(ViewModel, vm => vm.CloseCommand, view => view.ClosePanelButton)
                 .DisposeWith(disposables);
 
+            this.BindCommand(ViewModel, vm => vm.AddTabCommand, view => view.AddTabButton)
+                .DisposeWith(disposables);
+
             this.OneWayBind(ViewModel, vm => vm.SelectedTabContents, view => view.ViewModelViewHost.ViewModel)
+                .DisposeWith(disposables);
+
+            this.OneWayBind(ViewModel, vm => vm.TabHeaders, view => view.TabHeaders.ItemsSource)
                 .DisposeWith(disposables);
         });
     }

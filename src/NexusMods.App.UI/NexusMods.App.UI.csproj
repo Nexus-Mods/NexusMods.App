@@ -334,6 +334,9 @@
         <Compile Update="Controls\Dummy\DummyViewModel.cs">
           <DependentUpon>IDummyViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="WorkspaceSystem\PanelTabHeader\PanelTabHeaderViewModel.cs">
+          <DependentUpon>IPanelTabHeaderViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

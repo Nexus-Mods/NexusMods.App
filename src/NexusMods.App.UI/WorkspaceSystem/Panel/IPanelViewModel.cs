@@ -18,6 +18,11 @@ public interface IPanelViewModel : IViewModelInterface
     public ReadOnlyObservableCollection<IPanelTabViewModel> Tabs { get; }
 
     /// <summary>
+    /// Gets the read-only observable collection of all tab headers of the panel.
+    /// </summary>
+    public ReadOnlyObservableCollection<IPanelTabHeaderViewModel> TabHeaders { get; }
+
+    /// <summary>
     /// Gets or sets the current selected tab.
     /// </summary>
     public IPanelTabViewModel? SelectedTab { get; set; }
@@ -61,4 +66,14 @@ public interface IPanelViewModel : IViewModelInterface
     /// Adds a new tab to the panel.
     /// </summary>
     public IPanelTabViewModel AddTab();
+
+    /// <summary>
+    /// Gets the command version of <see cref="AddTab"/>.
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> AddTabCommand { get; }
+
+    /// <summary>
+    /// Closes a tab.
+    /// </summary>
+    public void CloseTab(PanelTabId id);
 }

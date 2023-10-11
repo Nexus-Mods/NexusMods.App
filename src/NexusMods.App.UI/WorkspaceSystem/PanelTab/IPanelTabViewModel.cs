@@ -1,7 +1,3 @@
-using System.Reactive;
-using Avalonia.Media;
-using ReactiveUI;
-
 namespace NexusMods.App.UI.WorkspaceSystem;
 
 public interface IPanelTabViewModel : IViewModelInterface
@@ -10,11 +6,7 @@ public interface IPanelTabViewModel : IViewModelInterface
 
     public PanelTabIndex Index { get; }
 
-    public string Title { get; set; }
-
-    public IImage? Icon { get; set; }
+    public IPanelTabHeaderViewModel Header { get; }
 
     public IViewModel? Contents { get; set; }
-
-    public ReactiveCommand<Unit, Unit> CloseCommand { get; }
 }

@@ -154,9 +154,11 @@ public static class Services
             .AddViewModel<WorkspaceViewModel, IWorkspaceViewModel>()
             .AddViewModel<PanelViewModel, IPanelViewModel>()
             .AddViewModel<AddPanelButtonViewModel, IAddPanelButtonViewModel>()
+            .AddViewModel<PanelTabHeaderViewModel, IPanelTabHeaderViewModel>()
             .AddView<WorkspaceView, IWorkspaceViewModel>()
             .AddView<PanelView, IPanelViewModel>()
             .AddView<AddPanelButtonView, IAddPanelButtonViewModel>()
+            .AddView<PanelTabHeaderView, IPanelTabHeaderViewModel>()
 
             // Other
             .AddViewModel<DummyViewModel, IDummyViewModel>()

@@ -9,12 +9,30 @@
     x:Class="NexusMods.App.UI.WorkspaceSystem.PanelView"
     Width="0" Height="0">
 
-    <Grid RowDefinitions="Auto, *">
-        <Button Grid.Row="0" x:Name="ClosePanelButton" Classes="Standard PrimaryOutlined">
+    <Grid RowDefinitions="Auto, Auto, *" ColumnDefinitions="*, Auto">
+        <ItemsControl Grid.Row="0" Grid.Column="0" x:Name="TabHeaders">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" Spacing="8"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type workspace:IPanelTabHeaderViewModel}">
+                    <reactive:ViewModelViewHost ViewModel="{Binding}"/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <Button Grid.Row="0" Grid.Column="1" x:Name="AddTabButton" Classes="Standard PrimaryOutlined">
+            <TextBlock>Add Tab</TextBlock>
+        </Button>
+
+        <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ClosePanelButton" Classes="Standard PrimaryOutlined">
             <TextBlock>Close Panel</TextBlock>
         </Button>
 
-        <reactive:ViewModelViewHost Grid.Row="1" x:Name="ViewModelViewHost"/>
+        <reactive:ViewModelViewHost Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ViewModelViewHost"/>
     </Grid>
 
 </reactive:ReactiveUserControl>

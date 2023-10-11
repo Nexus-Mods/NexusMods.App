@@ -1,5 +1,4 @@
-using System.Reactive;
-using Avalonia.Media;
+using System.Reactive.Disposables;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
@@ -10,16 +9,23 @@ public class PanelTabViewModel : AViewModel<IPanelTabViewModel>, IPanelTabViewMo
 
     public PanelTabIndex Index { get; }
 
-    public string Title { get; set; } = "New Tab";
-
-    public IImage? Icon { get; set; }
+    public IPanelTabHeaderViewModel Header { get; private set; }
 
     public IViewModel? Contents { get; set; }
 
-    public ReactiveCommand<Unit, Unit> CloseCommand { get; } = Initializers.DisabledReactiveCommand;
-
-    public PanelTabViewModel(PanelTabIndex index)
+    public PanelTabViewModel(IPanelViewModel panelViewModel, PanelTabIndex index)
     {
         Index = index;
+        Header = new PanelTabHeaderViewModel(panelViewModel, Id);
+
+        this.WhenActivated(disposables =>
+        {
+            Disposable.Create(this, state =>
+            {
+                if (state.Contents is IDisposable disposable) disposable.Dispose();
+                state.Contents = null;
+                state.Header = null!;
+            }).DisposeWith(disposables);
+        });
     }
 }
