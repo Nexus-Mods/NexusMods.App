@@ -140,7 +140,8 @@ internal static class GridUtils
 
     internal static IReadOnlyDictionary<PanelId, Rect> GetStateWithoutPanel(
         ImmutableDictionary<PanelId, Rect> currentState,
-        PanelId panelToRemove)
+        PanelId panelToRemove,
+        bool isHorizontal = true)
     {
         if (currentState.Count == 1) return ImmutableDictionary<PanelId, Rect>.Empty;
 
@@ -191,47 +192,79 @@ internal static class GridUtils
 
         Debug.Assert(sameColumnCount > 0 || sameRowCount > 0);
 
-        // TODO: prefer columns over rows when horizontal and rows over columns when vertical
-        if (sameColumnCount > 0)
+        if (isHorizontal)
         {
-            var updates = GC.AllocateUninitializedArray<KeyValuePair<PanelId, Rect>>(sameColumnCount);
-
-            for (var i = 0; i < sameColumnCount; i++)
+            // prefer columns over rows when horizontal
+            if (sameColumnCount > 0)
             {
-                var id = sameColumn[i];
-                var rect = res[id];
-
-                var x = rect.X;
-                var width = rect.Width;
-
-                var y = Math.Min(rect.Y, currentRect.Y);
-                var height = rect.Height + currentRect.Height;
-
-                updates[i] = new KeyValuePair<PanelId, Rect>(id, new Rect(x, y, width, height));
+                res = JoinSameColumn(res, currentRect, sameColumn, sameColumnCount);
+            } else if (sameRowCount > 0)
+            {
+                res = JoinSameRow(res, currentRect, sameRow, sameRowCount);
             }
-
-            res = res.SetItems(updates);
-        } else if (sameRowCount > 0)
+        }
+        else
         {
-            var updates = GC.AllocateUninitializedArray<KeyValuePair<PanelId, Rect>>(sameRowCount);
-
-            for (var i = 0; i < sameRowCount; i++)
+            // prefer rows over columns when vertical
+            if (sameRowCount > 0)
             {
-                var id = sameRow[i];
-                var rect = res[id];
-
-                var y = rect.Y;
-                var height = rect.Height;
-
-                var x = Math.Min(rect.X, currentRect.X);
-                var width = rect.Width + currentRect.Width;
-
-                updates[i] = new KeyValuePair<PanelId, Rect>(id, new Rect(x, y, width, height));
+                res = JoinSameRow(res, currentRect, sameRow, sameRowCount);
+            } else if (sameColumnCount > 0)
+            {
+                res = JoinSameColumn(res, currentRect, sameColumn, sameColumnCount);
             }
-
-            res = res.SetItems(updates);
         }
 
         return res;
+    }
+
+    private static ImmutableDictionary<PanelId, Rect> JoinSameColumn(
+        ImmutableDictionary<PanelId, Rect> res,
+        Rect currentRect,
+        Span<PanelId> sameColumn,
+        int sameColumnCount)
+    {
+        var updates = GC.AllocateUninitializedArray<KeyValuePair<PanelId, Rect>>(sameColumnCount);
+
+        for (var i = 0; i < sameColumnCount; i++)
+        {
+            var id = sameColumn[i];
+            var rect = res[id];
+
+            var x = rect.X;
+            var width = rect.Width;
+
+            var y = Math.Min(rect.Y, currentRect.Y);
+            var height = rect.Height + currentRect.Height;
+
+            updates[i] = new KeyValuePair<PanelId, Rect>(id, new Rect(x, y, width, height));
+        }
+
+        return res.SetItems(updates);
+    }
+
+    private static ImmutableDictionary<PanelId, Rect> JoinSameRow(
+        ImmutableDictionary<PanelId, Rect> res,
+        Rect currentRect,
+        Span<PanelId> sameRow,
+        int sameRowCount)
+    {
+        var updates = GC.AllocateUninitializedArray<KeyValuePair<PanelId, Rect>>(sameRowCount);
+
+        for (var i = 0; i < sameRowCount; i++)
+        {
+            var id = sameRow[i];
+            var rect = res[id];
+
+            var y = rect.Y;
+            var height = rect.Height;
+
+            var x = Math.Min(rect.X, currentRect.X);
+            var width = rect.Width + currentRect.Width;
+
+            updates[i] = new KeyValuePair<PanelId, Rect>(id, new Rect(x, y, width, height));
+        }
+
+        return res.SetItems(updates);
     }
 }
