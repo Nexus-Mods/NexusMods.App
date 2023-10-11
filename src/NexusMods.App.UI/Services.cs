@@ -36,6 +36,7 @@ using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModVersion;
 using NexusMods.App.UI.RightContent.MyGames;
 using NexusMods.App.UI.Routing;
 using NexusMods.App.UI.Windows;
+using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Common;
 using ReactiveUI;
 using DownloadGameNameView = NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadGameName.DownloadGameNameView;
@@ -147,6 +148,14 @@ public static class Services
             .AddView<CancelDownloadOverlayView, ICancelDownloadOverlayViewModel>()
             .AddView<MessageBoxOkCancelView, IMessageBoxOkCancelViewModel>()
             .AddView<UpdaterView, IUpdaterViewModel>()
+
+            // workspace system
+            .AddViewModel<WorkspaceViewModel, IWorkspaceViewModel>()
+            .AddViewModel<PanelViewModel, IPanelViewModel>()
+            .AddViewModel<AddPanelButtonViewModel, IAddPanelButtonViewModel>()
+            .AddView<WorkspaceView, IWorkspaceViewModel>()
+            .AddView<PanelView, IPanelViewModel>()
+            .AddView<AddPanelButtonView, IAddPanelButtonViewModel>()
 
             // Other
             .AddSingleton<InjectedViewLocator>()

@@ -26,7 +26,6 @@ public class GenerateGameFileHashes : AVerb<AbsolutePath>, IRenderingVerb
         foreach (var g in _games)
         {
             Renderer.Render($"Generating hashes for {g.Name}");
-            foreach (var result in _cache.
         }
     }
 

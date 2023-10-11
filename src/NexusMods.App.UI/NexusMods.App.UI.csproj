@@ -309,6 +309,25 @@
         <Compile Update="Controls\TopBar\TopBarViewModel.cs">
           <DependentUpon>ITopBarViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="WorkspaceSystem\Workspace\WorkspaceView.axaml.cs">
+          <DependentUpon>WorkspaceView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="WorkspaceSystem\Workspace\WorkspaceViewModel.cs">
+          <DependentUpon>IWorkspaceViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="WorkspaceSystem\Panel\PanelViewModel.cs">
+          <DependentUpon>IPanelViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="WorkspaceSystem\Workspace\WorkspacePlaygroundViewModel.cs">
+          <DependentUpon>WorkspacePlaygroundView.axaml</DependentUpon>
+        </Compile>
+        <Compile Update="WorkspaceSystem\AddPanelButton\AddPanelButtonViewModel.cs">
+          <DependentUpon>IAddPanelButtonViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="WorkspaceSystem\AddPanelButton\AddPanelButtonDesignViewModel.cs">
+          <DependentUpon>IAddPanelButtonViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
