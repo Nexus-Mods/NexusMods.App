@@ -1,4 +1,5 @@
-﻿using Avalonia.ReactiveUI;
+﻿using System.Reactive.Disposables;
+using Avalonia.ReactiveUI;
 using NexusMods.App.UI;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
@@ -24,7 +25,8 @@ public partial class
                     PupulateFromModContentNode(contentNode);
 
                     this.WhenAnyValue(x => x.ViewModel!.Node.AsT0.Status)
-                        .SubscribeWithErrorLogging(status => { UpdateFromStatus(ViewModel!.Node.AsT0); });
+                        .SubscribeWithErrorLogging(status => { UpdateFromStatus(ViewModel!.Node.AsT0); })
+                        .DisposeWith(disposable);
                     break;
 
                 case ISelectableDirectoryNode selectableDirectoryNode:
