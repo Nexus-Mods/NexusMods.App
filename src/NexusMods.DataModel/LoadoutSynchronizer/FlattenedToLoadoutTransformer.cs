@@ -69,20 +69,13 @@ public class FlattenedToLoadoutTransformer : ALoadoutVisitor
                             continue;
                         }
                         _fileReplacements[(newPair.Mod.Id, newPair.File.Id)] = newPair.File;
-                        continue;
                     }
                     else
                     {
                         AddToValues(_moveFrom, prevPair.Value.Mod.Id, prevPair.Value.File);
                         AddToValues(_moveTo, newPair.Mod.Id, newPair.File);
-                        continue;
                     }
-
-                    continue;
                 }
-
-
-                continue;
             }
             else
             {
