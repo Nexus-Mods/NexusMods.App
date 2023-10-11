@@ -87,7 +87,7 @@ public class PreviewEntryNode : IPreviewEntryNode
     {
         // We apply 'folder merged' flag under either of the circumstances.
         // 1. Files from two different subfolders are mapped to the same folder.
-        // 2. Folder already existed in game directory, and we are mapping it.
+        // 2. Folder already existed in game directory (non-empty), and we are mapping it.
         throw new NotImplementedException();
     }
 
