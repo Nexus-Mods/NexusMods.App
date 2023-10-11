@@ -294,6 +294,78 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to All mod files.
+        /// </summary>
+        public static string TreeEntryView_FileNameTextBlock_All_mod_files {
+            get {
+                return ResourceManager.GetString("TreeEntryView_FileNameTextBlock_All_mod_files", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Included folder.
+        /// </summary>
+        public static string TreeEntryView_IncludedRemoveButtonTextBlock_Included_folder {
+            get {
+                return ResourceManager.GetString("TreeEntryView_IncludedRemoveButtonTextBlock_Included_folder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Included with folder.
+        /// </summary>
+        public static string TreeEntryView_IncludedRemoveButtonTextBlock_Included_with_folder {
+            get {
+                return ResourceManager.GetString("TreeEntryView_IncludedRemoveButtonTextBlock_Included_with_folder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Include folder.
+        /// </summary>
+        public static string TreeEntryView_IncludeTransitionButtonTextBlock_Include_folder {
+            get {
+                return ResourceManager.GetString("TreeEntryView_IncludeTransitionButtonTextBlock_Include_folder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Include with folder.
+        /// </summary>
+        public static string TreeEntryView_IncludeTransitionButtonTextBlock_Include_with_folder {
+            get {
+                return ResourceManager.GetString("TreeEntryView_IncludeTransitionButtonTextBlock_Include_with_folder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Install.
+        /// </summary>
+        public static string TreeEntryView_InstallRoundedButtonTextBlock_Install {
+            get {
+                return ResourceManager.GetString("TreeEntryView_InstallRoundedButtonTextBlock_Install", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Install all.
+        /// </summary>
+        public static string TreeEntryView_InstallRoundedButtonTextBlock_Install_all {
+            get {
+                return ResourceManager.GetString("TreeEntryView_InstallRoundedButtonTextBlock_Install_all", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Install folder.
+        /// </summary>
+        public static string TreeEntryView_InstallRoundedButtonTextBlock_Install_folder {
+            get {
+                return ResourceManager.GetString("TreeEntryView_InstallRoundedButtonTextBlock_Install_folder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This mod is structured in an unrecognised way, or contains unrecognised file types, so it cannot be installed automatically..
         /// </summary>
         public static string UnsupportedDescriptionTextBlock_This_mod_is_structured {

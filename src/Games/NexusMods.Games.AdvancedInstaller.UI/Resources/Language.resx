@@ -111,4 +111,28 @@
     <data name="UnsupportedOverlayFooter_CLOSE" xml:space="preserve">
         <value>CLOSE</value>
     </data>
+    <data name="TreeEntryView_FileNameTextBlock_All_mod_files" xml:space="preserve">
+        <value>All mod files</value>
+    </data>
+    <data name="TreeEntryView_InstallRoundedButtonTextBlock_Install_all" xml:space="preserve">
+        <value>Install all</value>
+    </data>
+    <data name="TreeEntryView_InstallRoundedButtonTextBlock_Install_folder" xml:space="preserve">
+        <value>Install folder</value>
+    </data>
+    <data name="TreeEntryView_InstallRoundedButtonTextBlock_Install" xml:space="preserve">
+        <value>Install</value>
+    </data>
+    <data name="TreeEntryView_IncludeTransitionButtonTextBlock_Include_folder" xml:space="preserve">
+        <value>Include folder</value>
+    </data>
+    <data name="TreeEntryView_IncludeTransitionButtonTextBlock_Include_with_folder" xml:space="preserve">
+        <value>Include with folder</value>
+    </data>
+    <data name="TreeEntryView_IncludedRemoveButtonTextBlock_Included_folder" xml:space="preserve">
+        <value>Included folder</value>
+    </data>
+    <data name="TreeEntryView_IncludedRemoveButtonTextBlock_Included_with_folder" xml:space="preserve">
+        <value>Included with folder</value>
+    </data>
 </root>

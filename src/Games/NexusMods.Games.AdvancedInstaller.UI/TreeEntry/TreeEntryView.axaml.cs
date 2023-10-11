@@ -3,6 +3,9 @@ using NexusMods.App.UI;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry;
+using NexusMods.Games.AdvancedInstaller.UI.Resources;
+using NexusMods.Games.AdvancedInstaller.UI.Resources;
+using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
@@ -47,9 +50,9 @@ public partial class
 
         if (node.IsRoot)
         {
-            FileNameTextBlock.Text = "All mod files";
+            FileNameTextBlock.Text = Language.TreeEntryView_FileNameTextBlock_All_mod_files;
 
-            InstallRoundedButtonTextBlock.Text = "Install all";
+            InstallRoundedButtonTextBlock.Text = Language.TreeEntryView_InstallRoundedButtonTextBlock_Install_all;
         }
         else
         {
@@ -58,12 +61,12 @@ public partial class
             if (node.IsDirectory)
             {
                 FolderEntryIcon.IsVisible = true;
-                InstallRoundedButtonTextBlock.Text = "Install folder";
+                InstallRoundedButtonTextBlock.Text = Language.TreeEntryView_InstallRoundedButtonTextBlock_Install_folder;
             }
             else
             {
                 FileEntryIcon.IsVisible = true;
-                InstallRoundedButtonTextBlock.Text = "Install";
+                InstallRoundedButtonTextBlock.Text = Language.TreeEntryView_InstallRoundedButtonTextBlock_Install;
             }
         }
     }
@@ -77,33 +80,39 @@ public partial class
             case TreeDataGridSourceFileNodeStatus.Default:
                 InstallRoundedButton.IsVisible = true;
                 break;
+
             case TreeDataGridSourceFileNodeStatus.Selecting:
                 SelectLocationRoundedButton.IsVisible = true;
                 break;
+
             case TreeDataGridSourceFileNodeStatus.SelectingViaParent:
                 if (node.IsDirectory)
                 {
-                    IncludeTransitionButtonTextBlock.Text = "Include folder";
+                    IncludeTransitionButtonTextBlock.Text = Language.TreeEntryView_IncludeTransitionButtonTextBlock_Include_folder;
                 } else
                 {
                     // TODO: This should be "Include" if the parent is the root node, otherwise "Include with folder"
-                    IncludeTransitionButtonTextBlock.Text = "Include with folder";
+                    IncludeTransitionButtonTextBlock.Text = Language.TreeEntryView_IncludeTransitionButtonTextBlock_Include_with_folder;
                 }
+
                 IncludeTransitionButton.IsVisible = true;
                 break;
+
             case TreeDataGridSourceFileNodeStatus.IncludedExplicit:
                 RemoveFromLocationButtonTextBlock.Text = node.LinkedNode?.DirectoryName;
                 RemoveFromLocationButton.IsVisible = true;
                 break;
+
             case TreeDataGridSourceFileNodeStatus.IncludedViaParent:
                 if (node.IsDirectory)
                 {
-                    IncludedRemoveButtonTextBlock.Text = "Included folder";
+                    IncludedRemoveButtonTextBlock.Text = Language.TreeEntryView_IncludedRemoveButtonTextBlock_Included_folder;
                 } else
                 {
                     // TODO: This should be "Included" if the parent is the root node, otherwise "Included with folder"
-                    IncludedRemoveButtonTextBlock.Text = "Included with folder";
+                    IncludedRemoveButtonTextBlock.Text = Language.TreeEntryView_IncludedRemoveButtonTextBlock_Included_with_folder;
                 }
+
                 IncludedRemoveButton.IsVisible = true;
                 break;
 
