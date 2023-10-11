@@ -1,4 +1,5 @@
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
+using static NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry.PreviewEntryNodeFlags;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
 
@@ -95,6 +96,10 @@ public class PreviewEntryNode : IPreviewEntryNode
     public bool IsDirectory { get; init; }
 
     // Derived Getters (for convenience in ViewModel)
+    public bool IsNew => (Flags & PreviewEntryNodeFlags.IsNew) == PreviewEntryNodeFlags.IsNew;
+
+    public bool IsFolderMerged =>
+        (Flags & PreviewEntryNodeFlags.IsFolderMerged) == PreviewEntryNodeFlags.IsFolderMerged;
 }
 
 /// <summary>
