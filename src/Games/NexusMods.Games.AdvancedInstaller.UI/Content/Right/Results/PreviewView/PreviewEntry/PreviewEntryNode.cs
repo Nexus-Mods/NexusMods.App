@@ -66,15 +66,6 @@ public interface IPreviewEntryNode
 /// </summary>
 public class PreviewEntryNode : IPreviewEntryNode
 {
-    // TODO: Add this once we have concrete type for this.
-    /// <summary>
-    ///     The parent of this node.
-    /// </summary>
-    /// <remarks>
-    ///     This is null if the node is a root.
-    /// </remarks>
-    // public required PreviewEntryNode<TRelPath, TNodeValue>? Parent { get; init; }
-
     public PreviewEntryNodeFlags Flags { get; init; }
 
     public PreviewEntryNodeFlags DerivedFlags { get; init; }
