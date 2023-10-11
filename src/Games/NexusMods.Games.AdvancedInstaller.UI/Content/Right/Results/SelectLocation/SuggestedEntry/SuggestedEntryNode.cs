@@ -21,7 +21,7 @@ public interface ISuggestedEntryNode
 }
 
 /// <summary>
-///     Marks an interface for an item which can be bound to a source file/folder within a game mod archive.
+///     An interface for an item which can be bound to a source file/folder within a game mod archive.
 /// </summary>
 /// <remarks>
 ///     This is part of <see cref="ISuggestedEntryNode" /> but separated for easier testing.
@@ -31,5 +31,6 @@ public interface IModContentBindingTarget
     /// <summary>
     ///     Binds to the path represented by this target.
     /// </summary>
+    /// <param name="unlinkable">You can use this item for unlinking.</param>
     GamePath Bind(IUnlinkableItem unlinkable);
 }

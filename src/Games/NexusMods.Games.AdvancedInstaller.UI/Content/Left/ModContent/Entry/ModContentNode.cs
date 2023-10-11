@@ -145,16 +145,23 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
         else
         {
             SetStatus(ModContentNodeStatus.IncludedExplicit);
-            data.AddMapping(Node.Path, target.Bind(this), true);
+            var folder = target.Bind(this);
+            data.AddMapping(Node.Path, new GamePath(folder.LocationId, folder.Path.Join(FileName)), true);
         }
     }
 
     public void Unlink(DeploymentData data)
     {
         SetStatus(ModContentNodeStatus.Default);
-        data.RemoveFolderMapping(Node);
         if (IsDirectory)
+        {
+            data.RemoveFolderMapping(Node);
             SetStatusRecursive(this, ModContentNodeStatus.Default);
+        }
+        else
+        {
+            data.RemoveMapping(Node.Path);
+        }
     }
 
     /// <summary>

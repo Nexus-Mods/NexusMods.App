@@ -38,7 +38,8 @@ public class NodeLinkingTests : AModContentNodeTest
 
         // Assert
         target.Received().Bind(Arg.Any<IUnlinkableItem>());
-        data.ArchiveToOutputMap.Count.Should().Be(3);
+        greenArmor.Status.Should().Be(ModContentNodeStatus.IncludedExplicit);
+        data.ArchiveToOutputMap.Count.Should().Be(1);
         data.ArchiveToOutputMap["Textures/Armors/greenArmor.dds"].Should()
             .Be(new GamePath(LocationId.Game, "greenArmor.dds"));
     }
@@ -59,6 +60,20 @@ public class NodeLinkingTests : AModContentNodeTest
         armorsDir.GetNode("greenArmor.dds").Status.Should().Be(ModContentNodeStatus.Default);
         armorsDir.GetNode("greenBlade.dds").Status.Should().Be(ModContentNodeStatus.Default);
         armorsDir.GetNode("greenHilt.dds").Status.Should().Be(ModContentNodeStatus.Default);
+    }
+
+    [Fact]
+    public void CanUnlinkFiles()
+    {
+        // Arrange & Act
+        var (node, data, target) = CommonSetup();
+        var greenArmor = node.GetNode("Textures").GetNode("Armors").GetNode("greenArmor.dds");
+        greenArmor.Link(data, target);
+
+        // Assert
+        greenArmor.Unlink(data);
+        data.ArchiveToOutputMap.Count.Should().Be(0);
+        greenArmor.Status.Should().Be(ModContentNodeStatus.Default);
     }
 
     private (ModContentNode<int> node, DeploymentData data, IModContentBindingTarget target) CommonSetup()
