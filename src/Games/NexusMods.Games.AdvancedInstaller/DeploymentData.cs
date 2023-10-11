@@ -70,7 +70,9 @@ public struct DeploymentData
     public bool RemoveMapping(RelativePath archivePath)
     {
         var result = ArchiveToOutputMap.Remove(archivePath, out var existing);
-        OutputToArchiveMap.Remove(existing);
+        if (result)
+            OutputToArchiveMap.Remove(existing);
+
         return result;
     }
 
