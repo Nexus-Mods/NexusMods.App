@@ -303,6 +303,15 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Included.
+        /// </summary>
+        public static string TreeEntryView_IncludedRemoveButtonTextBlock_Included {
+            get {
+                return ResourceManager.GetString("TreeEntryView_IncludedRemoveButtonTextBlock_Included", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Included folder.
         /// </summary>
         public static string TreeEntryView_IncludedRemoveButtonTextBlock_Included_folder {
@@ -317,6 +326,15 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Resources {
         public static string TreeEntryView_IncludedRemoveButtonTextBlock_Included_with_folder {
             get {
                 return ResourceManager.GetString("TreeEntryView_IncludedRemoveButtonTextBlock_Included_with_folder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Include.
+        /// </summary>
+        public static string TreeEntryView_IncludeTransitionButtonTextBlock_Include {
+            get {
+                return ResourceManager.GetString("TreeEntryView_IncludeTransitionButtonTextBlock_Include", resourceCulture);
             }
         }
         

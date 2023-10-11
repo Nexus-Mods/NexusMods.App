@@ -135,4 +135,10 @@
     <data name="TreeEntryView_IncludedRemoveButtonTextBlock_Included_with_folder" xml:space="preserve">
         <value>Included with folder</value>
     </data>
+    <data name="TreeEntryView_IncludeTransitionButtonTextBlock_Include" xml:space="preserve">
+        <value>Include</value>
+    </data>
+    <data name="TreeEntryView_IncludedRemoveButtonTextBlock_Included" xml:space="preserve">
+        <value>Included</value>
+    </data>
 </root>

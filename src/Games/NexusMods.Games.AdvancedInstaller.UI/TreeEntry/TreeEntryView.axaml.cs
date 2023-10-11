@@ -4,6 +4,7 @@ using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
+using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
@@ -23,10 +24,7 @@ public partial class
                     PupulateFromModContentNode(contentNode);
 
                     this.WhenAnyValue(x => x.ViewModel!.Node.AsT0.Status)
-                        .SubscribeWithErrorLogging(status =>
-                        {
-                            UpdateFromStatus(ViewModel!.Node.AsT0);
-                        });
+                        .SubscribeWithErrorLogging(status => { UpdateFromStatus(ViewModel!.Node.AsT0); });
                     break;
 
                 case ISelectableDirectoryNode selectableDirectoryNode:
@@ -37,7 +35,6 @@ public partial class
                     PopulateFromPreviewNode(previewNode);
                     break;
             }
-
         });
     }
 
@@ -59,7 +56,8 @@ public partial class
             if (node.IsDirectory)
             {
                 FolderEntryIcon.IsVisible = true;
-                InstallRoundedButtonTextBlock.Text = Language.TreeEntryView_InstallRoundedButtonTextBlock_Install_folder;
+                InstallRoundedButtonTextBlock.Text =
+                    Language.TreeEntryView_InstallRoundedButtonTextBlock_Install_folder;
             }
             else
             {
@@ -86,11 +84,14 @@ public partial class
             case TreeDataGridSourceFileNodeStatus.SelectingViaParent:
                 if (node.IsDirectory)
                 {
-                    IncludeTransitionButtonTextBlock.Text = Language.TreeEntryView_IncludeTransitionButtonTextBlock_Include_folder;
-                } else
+                    IncludeTransitionButtonTextBlock.Text =
+                        Language.TreeEntryView_IncludeTransitionButtonTextBlock_Include_folder;
+                }
+                else
                 {
-                    // TODO: This should be "Include" if the parent is the root node, otherwise "Include with folder"
-                    IncludeTransitionButtonTextBlock.Text = Language.TreeEntryView_IncludeTransitionButtonTextBlock_Include_with_folder;
+                    IncludeTransitionButtonTextBlock.Text = node.IsTopLevel
+                        ? Language.TreeEntryView_IncludeTransitionButtonTextBlock_Include
+                        : Language.TreeEntryView_IncludeTransitionButtonTextBlock_Include_with_folder;
                 }
 
                 IncludeTransitionButton.IsVisible = true;
@@ -104,28 +105,24 @@ public partial class
             case TreeDataGridSourceFileNodeStatus.IncludedViaParent:
                 if (node.IsDirectory)
                 {
-                    IncludedRemoveButtonTextBlock.Text = Language.TreeEntryView_IncludedRemoveButtonTextBlock_Included_folder;
-                } else
+                    IncludedRemoveButtonTextBlock.Text =
+                        Language.TreeEntryView_IncludedRemoveButtonTextBlock_Included_folder;
+                }
+                else
                 {
-                    // TODO: This should be "Included" if the parent is the root node, otherwise "Included with folder"
-                    IncludedRemoveButtonTextBlock.Text = Language.TreeEntryView_IncludedRemoveButtonTextBlock_Included_with_folder;
+                    IncludedRemoveButtonTextBlock.Text = node.IsTopLevel
+                        ? Language.TreeEntryView_IncludedRemoveButtonTextBlock_Included
+                        : Language.TreeEntryView_IncludedRemoveButtonTextBlock_Included_with_folder;
                 }
 
                 IncludedRemoveButton.IsVisible = true;
                 break;
-
         }
     }
 
-    private void PopulateFromPreviewNode(IPreviewEntryNode node)
-    {
+    private void PopulateFromPreviewNode(IPreviewEntryNode node) { }
 
-    }
-
-    private void PopulateFromSelectableDirectoryNode(ISelectableDirectoryNode node)
-    {
-
-    }
+    private void PopulateFromSelectableDirectoryNode(ISelectableDirectoryNode node) { }
 
     private void ClearAllButtons()
     {

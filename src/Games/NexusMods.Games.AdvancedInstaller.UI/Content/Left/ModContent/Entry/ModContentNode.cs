@@ -25,6 +25,14 @@ public interface IModContentNode : IUnlinkableItem
     [Reactive] public TreeDataGridSourceFileNodeStatus Status { get; }
 
     /// <summary>
+    ///     True if this is an element child of the root node.
+    /// </summary>
+    /// <remarks>
+    ///     This is useful for the UI, e.g. to determine "Included" vs "Included with folder" text.
+    /// </remarks>
+    bool IsTopLevel { get; }
+
+    /// <summary>
     ///     The name of this specific file in the tree.
     /// </summary>
     string FileName { get; }
@@ -130,6 +138,11 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
     // Note: _lastStatus has no size impact on the object, because it fits in what otherwise would be padding.
     //       hence it was placed at the end of the object.
     [Reactive] public TreeDataGridSourceFileNodeStatus Status { get; private set; }
+
+    /// <summary>
+    ///     Whether the node is a child of the root.
+    /// </summary>
+    public required bool IsTopLevel { get; init; }
 
     public string FileName => Node.IsTreeRoot ? Language.FileTree_ALL_MOD_FILES : Node.Name;
     public bool IsDirectory => Node.IsDirectory;
@@ -270,6 +283,7 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
             Node = node,
             Parent = null!,
             Children = GC.AllocateUninitializedArray<IModContentNode>(node.Children.Count),
+            IsTopLevel = false,
             Status = TreeDataGridSourceFileNodeStatus.Default
         };
 
@@ -296,6 +310,7 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
             Node = node,
             Parent = parent,
             Children = GC.AllocateUninitializedArray<IModContentNode>(node.Children.Count),
+            IsTopLevel = parent.IsRoot,
             Status = TreeDataGridSourceFileNodeStatus.Default
         };
 
