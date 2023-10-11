@@ -23,7 +23,7 @@ public interface IModContentNode : IUnlinkableItem
     /// <summary>
     ///     Status of the node in question.
     /// </summary>
-    public TreeDataGridSourceFileNodeStatus Status { get; }
+    [Reactive] public TreeDataGridSourceFileNodeStatus Status { get; }
 
     /// <summary>
     ///     The name of this specific file in the tree.
