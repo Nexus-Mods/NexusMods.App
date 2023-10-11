@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
@@ -11,7 +12,6 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 
 /// <summary>
 ///     Represents an individual node in the 'Mod Content' section.
-///
 ///     A node can represent any file or directory within the mod being unpacked during advanced install.
 /// </summary>
 /// <remarks>
@@ -29,6 +29,14 @@ public interface IModContentNode
     ///     The name of this specific file in the tree.
     /// </summary>
     string FileName { get; }
+
+    /// <summary>
+    ///     Name of the linked entry in the 'Results' section.
+    /// </summary>
+    /// <remarks>
+    ///     This is used such that we can unlink the entry on the left hand side.
+    /// </remarks>
+    ISuggestedEntryNode? LinkedNode { get; }
 
     /// <summary>
     ///     Contains the children nodes of this node.
@@ -63,6 +71,17 @@ public interface IModContentNode
 }
 
 /// <summary>
+///     Represents an item that can be unlinked from the 'Results' section of the 'Select Location' view.
+/// </summary>
+public interface IUnlinkableItem
+{
+    /// <summary>
+    ///     Unlink the given node from the original source section.
+    /// </summary>
+    public void Unlink();
+}
+
+/// <summary>
 ///     Represents a <see cref="IModContentNode" /> that is backed by a
 ///     <see cref="FileTreeNode{TPath,TValue}" />.
 /// </summary>
@@ -72,6 +91,8 @@ public interface IModContentNode
 internal class ModContentNode<TRelPath, TNodeValue> : ReactiveObject, IModContentNode
     where TRelPath : struct, IPath<TRelPath>, IEquatable<TRelPath>
 {
+    private TreeDataGridSourceFileNodeStatus _lastStatus;
+
     /// <summary>
     ///     The underlying node providing the data for this tree.
     /// </summary>
@@ -85,19 +106,19 @@ internal class ModContentNode<TRelPath, TNodeValue> : ReactiveObject, IModConten
     /// </remarks>
     public required ModContentNode<TRelPath, TNodeValue>? Parent { get; init; }
 
+    public ISuggestedEntryNode? LinkedNode { get; }
     public required IModContentNode[] Children { get; init; }
 
     // Note: _lastStatus has no size impact on the object, because it fits in what otherwise would be padding.
     //       hence it was placed at the end of the object.
     [Reactive] public TreeDataGridSourceFileNodeStatus Status { get; private set; }
-    private TreeDataGridSourceFileNodeStatus _lastStatus;
 
     public string FileName => Node.IsTreeRoot ? Language.FileTree_ALL_MOD_FILES : Node.Name;
     public bool IsDirectory => Node.IsDirectory;
     public bool IsRoot => Node.IsTreeRoot;
 
     /// <summary>
-    /// Sets a new status, and stores the previous status in <see cref="_lastStatus" />.
+    ///     Sets a new status, and stores the previous status in <see cref="_lastStatus" />.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SetStatus(TreeDataGridSourceFileNodeStatus status)
@@ -108,10 +129,13 @@ internal class ModContentNode<TRelPath, TNodeValue> : ReactiveObject, IModConten
     }
 
     /// <summary>
-    /// Restores the last status backed up in <see cref="_lastStatus"/>
+    ///     Restores the last status backed up in <see cref="_lastStatus" />
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void RestoreLastStatus() => (Status, _lastStatus) = (_lastStatus, Status);
+    public void RestoreLastStatus()
+    {
+        (Status, _lastStatus) = (_lastStatus, Status);
+    }
 
     /// <summary>
     ///     Marks the node for selection, changing its state to <see cref="TreeDataGridSourceFileNodeStatus.Selecting" />,
@@ -225,7 +249,7 @@ internal class ModContentNode<TRelPath, TNodeValue> : ReactiveObject, IModConten
     }
 
     /// <summary>
-    ///     Recursively createsnew <see cref="ModContentNode{TRelPath,TNodeValue}" /> entries from a given matching
+    ///     Recursively creates new <see cref="ModContentNode{TRelPath,TNodeValue}" /> entries from a given matching
     ///     <see cref="FileTreeNode{TRelPath,TFileEntry}" /> node.
     /// </summary>
     /// <param name="node">The node of the file tree.</param>
