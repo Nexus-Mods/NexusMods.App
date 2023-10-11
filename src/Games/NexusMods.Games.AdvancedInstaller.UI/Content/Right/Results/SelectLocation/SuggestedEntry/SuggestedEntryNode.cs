@@ -32,4 +32,9 @@ public interface IModContentBindingTarget
     ///     Binds to the path represented by this target.
     /// </summary>
     GamePath Bind(IUnlinkableItem unlinkable);
+
+    /// <summary>
+    ///     The Directory name target of the link.
+    /// </summary>
+    string DirectoryName { get; }
 }

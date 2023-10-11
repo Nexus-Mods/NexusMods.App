@@ -4,8 +4,6 @@ using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
-using NexusMods.Games.AdvancedInstaller.UI.Resources;
-using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
@@ -99,7 +97,7 @@ public partial class
                 break;
 
             case TreeDataGridSourceFileNodeStatus.IncludedExplicit:
-                RemoveFromLocationButtonTextBlock.Text = node.LinkedNode?.DirectoryName;
+                RemoveFromLocationButtonTextBlock.Text = node.LinkedTarget?.DirectoryName;
                 RemoveFromLocationButton.IsVisible = true;
                 break;
 
