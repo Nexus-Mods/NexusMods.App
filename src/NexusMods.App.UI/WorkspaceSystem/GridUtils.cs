@@ -74,7 +74,7 @@ internal static class GridUtils
 
             // NOTE(erri120): +1 column if another panel (self included) has the same Y position.
             // Since self is included, the number of columns is guaranteed to be at least 1.
-            if (other.LogicalBounds.Y.TolerantEquals(panel.LogicalBounds.Y))
+            if (other.LogicalBounds.Y.IsCloseTo(panel.LogicalBounds.Y))
             {
                 currentColumns++;
                 continue;
@@ -88,8 +88,8 @@ internal static class GridUtils
             // | 3 | 2 |  | 1 | 3 |
 
             // 1) check if the panel is next to us
-            if (!other.LogicalBounds.Left.TolerantEquals(panel.LogicalBounds.Right) &&
-                !other.LogicalBounds.Right.TolerantEquals(panel.LogicalBounds.Left)) continue;
+            if (!other.LogicalBounds.Left.IsCloseTo(panel.LogicalBounds.Right) &&
+                !other.LogicalBounds.Right.IsCloseTo(panel.LogicalBounds.Left)) continue;
 
             // 2) check if the panel is in the current row
             if (other.LogicalBounds.Bottom >= panel.LogicalBounds.Y ||
@@ -112,7 +112,7 @@ internal static class GridUtils
 
             // NOTE(erri120): +1 column if another panel (self included) has the same X position.
             // Since self is included, the number of columns is guaranteed to be at least 1.
-            if (other.LogicalBounds.X.TolerantEquals(panel.LogicalBounds.X))
+            if (other.LogicalBounds.X.IsCloseTo(panel.LogicalBounds.X))
             {
                 currentRows++;
                 continue;
@@ -126,8 +126,8 @@ internal static class GridUtils
             // | 2 | 2 |  | 2 | 3 |
 
             // 1) check if the panel is above or below us
-            if (!other.LogicalBounds.Top.TolerantEquals(panel.LogicalBounds.Bottom) &&
-                !other.LogicalBounds.Bottom.TolerantEquals(panel.LogicalBounds.Top)) continue;
+            if (!other.LogicalBounds.Top.IsCloseTo(panel.LogicalBounds.Bottom) &&
+                !other.LogicalBounds.Bottom.IsCloseTo(panel.LogicalBounds.Top)) continue;
 
             // 2) check if the panel is in the current column
             if (other.LogicalBounds.Right >= panel.LogicalBounds.X ||
@@ -171,7 +171,7 @@ internal static class GridUtils
             // | b | x |  | a | x |
             if (rect.Left >= currentRect.Left && rect.Right <= currentRect.Right)
             {
-                if (rect.Top.TolerantEquals(currentRect.Bottom) || rect.Bottom.TolerantEquals(currentRect.Top))
+                if (rect.Top.IsCloseTo(currentRect.Bottom) || rect.Bottom.IsCloseTo(currentRect.Top))
                 {
                     sameColumn[sameColumnCount++] = id;
                 }
@@ -182,7 +182,7 @@ internal static class GridUtils
             // | x | x |  | x | x |  | a | c |
             if (rect.Top >= currentRect.Top && rect.Bottom <= currentRect.Bottom)
             {
-                if (rect.Left.TolerantEquals(currentRect.Right) || rect.Right.TolerantEquals(currentRect.Left))
+                if (rect.Left.IsCloseTo(currentRect.Right) || rect.Right.IsCloseTo(currentRect.Left))
                 {
                     sameRow[sameRowCount++] = id;
                 }

@@ -19,6 +19,21 @@ public class MathUtilsTests
     }
 
     [Theory]
+    [InlineData(0.0, 0.0, true)]
+    [InlineData(0.25, 0.25, true)]
+    [InlineData(0.5, 0.5, true)]
+    [InlineData(1.0, 1.0, true)]
+    [InlineData(0.0, 0.1, false)]
+    [InlineData(0.25, 0.3, false)]
+    [InlineData(0.5, 0.6, false)]
+    [InlineData(0.9, 1.0, false)]
+    public void Test_IsCloseTo(double left, double right, bool expected)
+    {
+        var res = left.IsCloseTo(right);
+        res.Should().Be(expected);
+    }
+
+    [Theory]
     [MemberData(nameof(TestData_CalculateActualBounds))]
     public void Test_CalculateActualBounds(Size workspaceSize, Rect logicalBounds, Rect expected)
     {
