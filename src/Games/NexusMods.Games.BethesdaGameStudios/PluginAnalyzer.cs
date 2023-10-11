@@ -90,7 +90,8 @@ public class PluginAnalyzer
             return new PluginAnalysisData
             {
                 IsLightMaster = isLightMaster,
-                Masters = masters
+                Masters = masters,
+                FileName = path
             };
         }
         catch (Exception e)

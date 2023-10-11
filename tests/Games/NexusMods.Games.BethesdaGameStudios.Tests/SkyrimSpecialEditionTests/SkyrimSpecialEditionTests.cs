@@ -12,6 +12,7 @@ using NexusMods.DataModel.Loadouts.Extensions;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.LoadoutSynchronizer;
+using NexusMods.DataModel.LoadoutSynchronizer.Extensions;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
@@ -133,6 +134,9 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
         var analysis = JsonSerializer.Deserialize<Dictionary<string, string[]>>(analysisStr)!;
 
 
+        var metadataFiles =
+            loadout.Value.Mods.Values.First(m => m.ModCategory == Mod.ModdingMetaData); // <= throws on failure
+
         var gameFiles =
             loadout.Value.Mods.Values.First(m => m.ModCategory == Mod.GameFilesCategory); // <= throws on failure
 
@@ -141,7 +145,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
             var files = mod!.Files;
             foreach (var file in analysis)
             {
-                var newFile = new GameFile()
+                var newFile = new GameFile
                 {
                     Id = ModFileId.New(),
                     Installation = loadout.Value.Installation,
@@ -159,10 +163,13 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
 
         gameFiles.Files.Count.Should().BeGreaterThan(0);
 
-        var pluginOrderFile = gameFiles.Files.Values.OfType<PluginOrderFile>().First();
+
+        var pluginOrderFile = metadataFiles.Files.Values.OfType<PluginOrderFile>().First();
+
+        var flattened = await loadout.Value.ToFlattenedLoadout();
 
         using var ms = new MemoryStream();
-        await pluginOrderFile.Write(ms);
+        await pluginOrderFile.Write(ms, loadout.Value, flattened, await loadout.Value.ToFileTree());
 
         ms.Position = 0;
 

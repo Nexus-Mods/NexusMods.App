@@ -107,7 +107,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer, IStandardizedLoadoutSy
 
 
     /// <inheritdoc />
-    public async Task<DiskState> FileTreeToDisk(FileTree fileTree, DiskState prevState, GameInstallation installation)
+    public async Task<DiskState> FileTreeToDisk(FileTree fileTree, Loadout loadout, FlattenedLoadout flattenedLoadout, DiskState prevState, GameInstallation installation)
     {
         List<KeyValuePair<GamePath, HashedEntry>> toDelete = new();
         List<KeyValuePair<AbsolutePath, IGeneratedFile>> toWrite = new();
@@ -201,7 +201,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer, IStandardizedLoadoutSy
         foreach (var entry in toWrite)
         {
             await using var outputStream = entry.Key.Create();
-            var hash = await entry.Value.Write(outputStream);
+            var hash = await entry.Value.Write(outputStream, loadout, flattenedLoadout, fileTree);
             if (hash == null)
             {
                 outputStream.Position = 0;
@@ -455,7 +455,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer, IStandardizedLoadoutSy
         var flattened = await LoadoutToFlattenedLoadout(loadout);
         var fileTree = await FlattenedLoadoutToFileTree(flattened, loadout);
         var prevState = _diskStateRegistry.GetState(loadout.LoadoutId)!;
-        var diskState = await FileTreeToDisk(fileTree, prevState, loadout.Installation);
+        var diskState = await FileTreeToDisk(fileTree, loadout, flattened, prevState, loadout.Installation);
         _diskStateRegistry.SaveState(loadout.LoadoutId, diskState);
         return diskState;
     }

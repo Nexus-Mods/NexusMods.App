@@ -1,6 +1,8 @@
-﻿using NexusMods.DataModel.Extensions;
+﻿using Microsoft.Extensions.DependencyInjection;
+using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
+using NexusMods.DataModel.LoadoutSynchronizer;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.Generic.Installers;
@@ -16,6 +18,9 @@ namespace NexusMods.Games.BethesdaGameStudios;
 public abstract class ABethesdaGame : AGame
 {
     private readonly IModInstaller[] _installers;
+    private readonly Lazy<PluginSorter> _pluginSorter;
+
+    public PluginSorter PluginSorter => _pluginSorter.Value;
 
     /// <inheritdoc />
     protected ABethesdaGame(IServiceProvider provider) : base(provider)
@@ -27,10 +32,17 @@ public abstract class ABethesdaGame : AGame
             // Handles common installs to the game folder and other common directories like `Data`
             GenericFolderMatchInstaller.Create(provider, BethesdaInstallFolderTargets.InstallFolderTargets()),
         };
+
+        _pluginSorter = new Lazy<PluginSorter>(provider.GetRequiredService<PluginSorter>);
     }
 
     /// <inheritdoc />
     public override IEnumerable<IModInstaller> Installers => _installers;
+
+    protected override IStandardizedLoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
+    {
+        return new BethesdaLoadoutSynchronizer(provider);
+    }
 
     public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations)
     {

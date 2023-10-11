@@ -200,7 +200,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         var flattened = await _synchronizer.LoadoutToFlattenedLoadout(BaseList.Value);
         var fileTree = await _synchronizer.FlattenedLoadoutToFileTree(flattened, BaseList.Value);
         var prevState = DiskStateRegistry.GetState(BaseList.Id)!;
-        var diskState = await _synchronizer.FileTreeToDisk(fileTree, prevState, Install);
+        var diskState = await _synchronizer.FileTreeToDisk(fileTree, BaseList.Value, flattened, prevState, Install);
 
         diskState.GetAllDescendentFiles()
             .Select(f => f.Path.ToString())
@@ -539,7 +539,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         public GamePath To => new(LocationId.Game, "generated.txt");
 
         public required Char[] Data { get; init; }
-        public async ValueTask<Hash?> Write(Stream stream)
+        public async ValueTask<Hash?> Write(Stream stream, Loadout loadout, FlattenedLoadout flattenedLoadout, FileTree fileTree)
         {
             var bytes = Data.Select(c => (byte)c).ToArray();
             await stream.WriteAsync(bytes, 0, bytes.Length);

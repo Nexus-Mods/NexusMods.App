@@ -44,8 +44,7 @@ public class SkyrimSpecialEdition : ABethesdaGame, ISteamGame, IGogGame, IXboxGa
     {
         yield return new PluginOrderFile
         {
-            Id = ModFileId.New(),
-            To = new GamePath(LocationId.AppData, "plugins.txt")
+            Id = ModFileId.New()
         };
     }
 

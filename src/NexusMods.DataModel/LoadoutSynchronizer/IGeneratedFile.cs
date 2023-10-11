@@ -13,9 +13,12 @@ public interface IGeneratedFile
     /// Writes the file to the given stream, returning the hash of the file. If hashing the file
     /// would require a full reading of the stream, return null, and the callee will hash the file.
     /// </summary>
+    /// <param name="flattenedLoadout"></param>
+    /// <param name="fileTree"></param>
     /// <param name="stream"></param>
+    /// <param name="loadout"></param>
     /// <returns></returns>
-    ValueTask<Hash?> Write(Stream stream);
+    ValueTask<Hash?> Write(Stream stream, Loadout loadout, FlattenedLoadout flattenedLoadout, FileTree fileTree);
 
     /// <summary>
     /// Called when the file is updated on disk, outside of the application, this method should read the file,

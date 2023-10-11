@@ -9,4 +9,6 @@ public class PluginAnalysisData
 {
     public required RelativePath[] Masters { get; init; }
     public bool IsLightMaster { get; init; }
+
+    public required RelativePath FileName { get; init; }
 }

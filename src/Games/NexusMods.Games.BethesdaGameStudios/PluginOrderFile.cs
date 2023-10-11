@@ -18,18 +18,11 @@ using IGeneratedFile = NexusMods.DataModel.LoadoutSynchronizer.IGeneratedFile;
 namespace NexusMods.Games.BethesdaGameStudios;
 
 [JsonName("BethesdaGameStudios.PluginOrderFile")]
-public record PluginOrderFile : AModFile, IGeneratedFile, IToFile, ITriggerFilter<ModFilePair, Plan>
+public record PluginOrderFile : AModFile, IGeneratedFile, IToFile
 {
-    private static RelativePath[] _defaultOrdering = new[]
-    {
-        "Skyrim.esm",
-        "Update.esm",
-        "Dawnguard.esm",
-        "HearthFires.esm",
-        "Dragonborn.esm",
-    }.Select(e => e.ToRelativePath()).ToArray();
+    public static GamePath Path = new(LocationId.AppData, "plugins.txt");
 
-    public required GamePath To { get; init; }
+    public GamePath To => Path;
 
     private static IEnumerable<IToFile> PluginFiles(IEnumerable<ModFilePair> flattenedList)
     {
@@ -40,125 +33,22 @@ public record PluginOrderFile : AModFile, IGeneratedFile, IToFile, ITriggerFilte
         return pluginFiles;
     }
 
-    private ModRuleTuple[] InitialiseFileRuleTuples(IToFile[] pluginFiles)
+    public async ValueTask<Hash?> Write(Stream stream, Loadout loadout, FlattenedLoadout flattenedLoadout, FileTree fileTree)
     {
-        // Init Mods
-        var pluginFileRuleTuples = GC.AllocateUninitializedArray<ModRuleTuple>(pluginFiles.Length);
-        for (var x = 0; x < pluginFileRuleTuples.Length; x++)
+        var sorted = await ((ABethesdaGame)loadout.Installation.Game)
+            .PluginSorter.Sort(fileTree, CancellationToken.None);
+
+        var writer = new StreamWriter(stream);
+        foreach (var entry in sorted)
         {
-            ref var entry = ref pluginFileRuleTuples[x];
-            entry.Mod = pluginFiles[x];
+            await writer.WriteLineAsync("*" + entry.FileName);
         }
 
-        // Generate & Cache Rules
-        for (var x = 0; x < pluginFileRuleTuples.Length; x++)
-        {
-            ref var entry = ref pluginFileRuleTuples[x];
-            entry.Rules = GenerateRules(pluginFileRuleTuples, entry.Mod).ToArray();
-        }
-
-        return pluginFileRuleTuples;
-    }
-
-    private IEnumerable<ISortRule<ModRuleTuple, RelativePath>> GenerateRules(ModRuleTuple[] modFiles, IToFile aModFile)
-    {
-        var defaultIdx = _defaultOrdering.IndexOf(aModFile.To.FileName);
-        switch (defaultIdx)
-        {
-            case 0:
-                yield return new First<ModRuleTuple, RelativePath>();
-                break;
-            case > 1:
-                {
-                    for (var i = 0; i < defaultIdx; i++)
-                    {
-                        yield return new After<ModRuleTuple, RelativePath> { Other = _defaultOrdering[i]};
-                    }
-
-                    foreach (var itm in modFiles)
-                    {
-                        if (_defaultOrdering.Contains(itm.Mod.To.FileName)) continue;
-                        yield return new Before<ModRuleTuple, RelativePath>(itm.Mod.To.FileName);
-                    }
-
-                    break;
-                }
-            default:
-                {
-                    foreach (var itm in ((AModFile)aModFile).Metadata.OfType<PluginAnalysisData>())
-                    {
-                        foreach (var dep in itm.Masters)
-                        {
-                            yield return new After<ModRuleTuple, RelativePath> {Other = dep};
-                        }
-                    }
-
-                    if (aModFile.To.Extension == SkyrimSpecialEdition.ESL)
-                    {
-                        foreach (var file in modFiles.Where(m => m.Mod.To.Extension == SkyrimSpecialEdition.ESM))
-                            yield return new After<ModRuleTuple, RelativePath> { Other = file.Mod.To.FileName};
-                    }
-                    else if (aModFile.To.Extension == SkyrimSpecialEdition.ESP)
-                    {
-                        foreach (var file in modFiles.Where(m => m.Mod.To.Extension != SkyrimSpecialEdition.ESP))
-                            yield return new After<ModRuleTuple, RelativePath> { Other = file.Mod.To.FileName};
-                    }
-
-
-                    break;
-                }
-        }
-    }
-
-    private struct ModRuleTuple
-    {
-        public IToFile Mod;
-        public IReadOnlyList<ISortRule<ModRuleTuple, RelativePath>> Rules;
-    }
-
-    public ITriggerFilter<ModFilePair, Plan> TriggerFilter => this;
-
-    public async Task<Hash> GenerateAsync(Stream stream, ApplyPlan plan, CancellationToken token = default)
-    {
-        var pluginFiles = PluginFiles(plan.Flattened.Values).ToArray();
-
-        var pluginFileRuleTuples = InitialiseFileRuleTuples(pluginFiles);
-
-        var results = Sorter.Sort<ModRuleTuple, RelativePath, ModRuleTuple[]>(pluginFileRuleTuples,
-            i => ((IToFile)i.Mod).To.FileName,
-            i => i.Rules, //GenerateRules(pluginFiles, i),
-            RelativePath.Comparer);
-
-        await stream.WriteAllLinesAsync(results.Select(i => '*' + i.Mod.To.FileName.ToString()), token: token);
-        stream.Position = 0;
-        return await stream.XxHash64Async(token);
-    }
-
-    public Hash GetFingerprint(ModFilePair self, Plan plan)
-    {
-        using var fingerprinter = Fingerprinter.Create();
-
-        plan.Flattened
-            .Where(f => SkyrimSpecialEdition.PluginExtensions.Contains(f.Key.Extension))
-            .Select(f => (f.Key.FileName, f.Value.File.DataStoreId))
-            .OrderBy(f => f)
-            .ForEach(f =>
-            {
-                fingerprinter.Add(f.FileName);
-                fingerprinter.Add(f.DataStoreId);
-            });
-
-
-        return fingerprinter.Digest();
-    }
-
-    public ValueTask<Hash?> Write(Stream stream)
-    {
-        throw new NotImplementedException();
+        return null;
     }
 
     public ValueTask<AModFile> Update(DiskStateEntry newEntry, Stream stream)
     {
-        throw new NotImplementedException();
+        return ValueTask.FromResult<AModFile>(new PluginOrderFile {Id = ModFileId.New()});
     }
 }

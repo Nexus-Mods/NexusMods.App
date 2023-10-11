@@ -27,8 +27,19 @@ public abstract class AGame : IGame
         _provider = provider;
         _gamelocators = provider.GetServices<IGameLocator>();
         // In a Lazy so we don't get a circular dependency
-        _synchronizer = new Lazy<IStandardizedLoadoutSynchronizer>(() => new DefaultSynchronizer(provider));
+        _synchronizer = new Lazy<IStandardizedLoadoutSynchronizer>(() => MakeSynchronizer(provider));
         _installers = new Lazy<IEnumerable<IModInstaller>>(() => MakeInstallers(provider));
+    }
+
+    /// <summary>
+    /// Helper method to create a <see cref="IStandardizedLoadoutSynchronizer"/>. The result of this method is cached
+    /// so that the same instance is returned every time.
+    /// </summary>
+    /// <param name="provider"></param>
+    /// <returns></returns>
+    protected virtual IStandardizedLoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
+    {
+        return new DefaultSynchronizer(provider);
     }
 
     /// <inheritdoc />

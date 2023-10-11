@@ -34,6 +34,7 @@ public class PluginAnalysisTests : AGameTest<SkyrimSpecialEdition>
         {
             IsLightMaster = true,
             Masters = new[] { "Skyrim.esm".ToRelativePath() },
+            FileName = path.FileName
         });
     }
 }

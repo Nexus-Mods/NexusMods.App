@@ -64,8 +64,7 @@ public class SkyrimLegendaryEditionTests : AGameTest<SkyrimLegendaryEdition>
         await _verbTester.RunNoBannerAsync("flatten-list", "-l", loadoutName);
         _verbTester.LastTable.Rows.Count().Should().Be(127);
 
-        await _verbTester.RunNoBannerAsync("apply", "-l", loadoutName, "-r", "false");
-        _verbTester.LastTable.Rows.Count().Should().Be(127);
+        await _verbTester.RunNoBannerAsync("apply", "-l", loadoutName);
 
         // install skyui
         var uri = $"nxm://{Game.Domain}/mods/{skyuiModId}/files/{skyuiFileId}";
