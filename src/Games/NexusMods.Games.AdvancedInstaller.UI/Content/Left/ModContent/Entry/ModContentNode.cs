@@ -230,14 +230,14 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
 
         // Push initial children onto the stack.
         foreach (var child in Children)
-            stack.Push((child as ModContentNode<TNodeValue>)!);
+            stack.Push((child.Node.AsT0 as ModContentNode<TNodeValue>)!);
 
         while (stack.Count > 0)
         {
             var current = stack.Pop();
             yield return current;
             foreach (var child in current.Children)
-                stack.Push((child as ModContentNode<TNodeValue>)!);
+                stack.Push((child.Node.AsT0 as ModContentNode<TNodeValue>)!);
         }
     }
 
@@ -249,7 +249,7 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
         foreach (var childInterface in item.Children)
         {
             // Covariant cast to remove virtualization and make Status writeable.
-            var child = childInterface as ModContentNode<TNodeValue>;
+            var child = childInterface.Node.AsT0 as ModContentNode<TNodeValue>;
             child!.SetStatus(status);
             SetStatusRecursive(child, status);
         }
@@ -263,7 +263,7 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
         foreach (var childInterface in item.Children)
         {
             // Covariant cast to remove virtualization and make Status writeable.
-            var child = childInterface as ModContentNode<TNodeValue>;
+            var child = childInterface.Node.AsT0 as ModContentNode<TNodeValue>;
             child!.RestoreLastStatus();
             RestoreLastStatusRecursive(child);
         }
