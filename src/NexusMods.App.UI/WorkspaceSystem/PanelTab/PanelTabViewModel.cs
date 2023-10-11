@@ -7,7 +7,7 @@ public class PanelTabViewModel : AViewModel<IPanelTabViewModel>, IPanelTabViewMo
 {
     public PanelTabId Id { get; } = PanelTabId.From(Guid.NewGuid());
 
-    public PanelTabIndex Index { get; }
+    public PanelTabIndex Index { get; set; }
 
     public IPanelTabHeaderViewModel Header { get; private set; }
 

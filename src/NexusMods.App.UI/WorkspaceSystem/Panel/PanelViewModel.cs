@@ -65,14 +65,35 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                 .Bind(out _tabs)
                 .Do(changeSet =>
                 {
-                    Console.WriteLine($"adds: {changeSet.Adds}");
-                    Console.WriteLine($"removes: {changeSet.Removes}");
-                    Console.WriteLine($"updates: {changeSet.Updates}");
-
-                    // TODO: handle removals and update indices
                     if (changeSet.TryGetFirst(change => change.Reason == ChangeReason.Add, out var added))
                     {
                         SelectedTabId = added.Key;
+                    }
+
+                    if (changeSet.TryGetFirst(change => change.Reason == ChangeReason.Remove, out var removed))
+                    {
+                        var removedIndex = removed.Current.Index.Value;
+
+                        // set new selected tab
+                        if (SelectedTabId == removed.Key)
+                        {
+                            if (_tabs.Count != 0)
+                            {
+                                if (removedIndex >= _tabs.Count - 1)
+                                    SelectedTabId = _tabs[^1].Id;
+                                else if (removedIndex == 0)
+                                    SelectedTabId = _tabs[0].Id;
+                                else
+                                    SelectedTabId = _tabs[(int)removedIndex].Id;
+                            }
+                        }
+
+                        // update indices
+                        for (var i = removedIndex; i < _tabs.Count; i++)
+                        {
+                            var next = _tabs[(int)i];
+                            next.Index = PanelTabIndex.From(i);
+                        }
                     }
                 })
                 .Transform(tab => tab.Header)

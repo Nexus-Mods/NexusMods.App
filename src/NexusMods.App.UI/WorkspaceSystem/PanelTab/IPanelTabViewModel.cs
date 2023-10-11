@@ -4,7 +4,7 @@ public interface IPanelTabViewModel : IViewModelInterface
 {
     public PanelTabId Id { get; }
 
-    public PanelTabIndex Index { get; }
+    public PanelTabIndex Index { get; set; }
 
     public IPanelTabHeaderViewModel Header { get; }
 
