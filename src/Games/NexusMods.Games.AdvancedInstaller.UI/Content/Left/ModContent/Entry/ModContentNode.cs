@@ -149,7 +149,6 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
 
     public void Link(DeploymentData data, IModContentBindingTarget target)
     {
-        // TODO: Handle individual file nodes.
         LinkedTarget = target;
         if (IsDirectory)
         {
