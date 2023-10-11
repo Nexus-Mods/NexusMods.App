@@ -151,12 +151,19 @@
             <DependentUpon>ModContentEntryView.axaml</DependentUpon>
             <SubType>Code</SubType>
         </Compile>
+
+        <Compile Update="TreeEntry\TreeEntryDesignViewModel.cs">
+          <DependentUpon>ITreeEntryViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="TreeEntry\TreeEntryViewModel.cs">
+          <DependentUpon>ITreeEntryViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
         <Folder Include="Content\Bottom\"/>
         <Folder Include="Content\Left\"/>
         <Folder Include="Content\Right\Results\"/>
-        <Folder Include="Content\Top\"/>
     </ItemGroup>
 </Project>
