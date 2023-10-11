@@ -63,7 +63,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                 .DisposeMany()
                 .Sort(PanelTabComparer.Instance)
                 .Bind(out _tabs)
-                .SubscribeWithErrorLogging(changeSet =>
+                .Do(changeSet =>
                 {
                     Console.WriteLine($"adds: {changeSet.Adds}");
                     Console.WriteLine($"removes: {changeSet.Removes}");
@@ -75,12 +75,6 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                         SelectedTabId = added.Key;
                     }
                 })
-                .DisposeWith(disposables);
-
-            _tabsSource
-                .Connect()
-                .DisposeMany()
-                .Sort(PanelTabComparer.Instance)
                 .Transform(tab => tab.Header)
                 .Bind(out _tabHeaders)
                 .SubscribeWithErrorLogging()
