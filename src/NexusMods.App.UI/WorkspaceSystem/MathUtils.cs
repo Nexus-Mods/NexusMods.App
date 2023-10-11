@@ -58,15 +58,15 @@ internal static class MathUtils
     }
 
     /// <summary>
-    /// Calculates the new combined logical bounds of two panels.
-    /// </summary>
-    internal static Rect Join(Rect logicalBoundsToExpand, Rect logicalBoundsToConsume)
-    {
-        return logicalBoundsToExpand.Union(logicalBoundsToConsume);
-    }
-
-    /// <summary>
     /// Converts a <see cref="Size"/> into a <see cref="Vector"/>.
     /// </summary>
     internal static Vector AsVector(this Size size) => new(x: size.Width, y: size.Height);
+
+    /// <summary>
+    /// Tolerant equality check.
+    /// </summary>
+    internal static bool TolerantEquals(this double left, double right, double tolerance = 0.001)
+    {
+        return Math.Abs(left - right) < tolerance;
+    }
 }

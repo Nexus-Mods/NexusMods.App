@@ -1,3 +1,4 @@
+using System.Reactive;
 using System.Reactive.Disposables;
 using Avalonia;
 using ReactiveUI;
@@ -7,7 +8,7 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 
 public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 {
-    public PanelId Id { get; } = PanelId.From(Guid.NewGuid());
+    public PanelId Id { get; } = PanelId.New();
 
     [Reactive] public IViewModel? Content { get; set; }
 
@@ -15,10 +16,17 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
     [Reactive] public Rect LogicalBounds { get; set; }
 
     /// <inheritdoc/>
-    [Reactive] public Rect ActualBounds { get; set; }
+    [Reactive] public Rect ActualBounds { get; private set; }
 
-    public PanelViewModel()
+    public ReactiveCommand<Unit, Unit> ClosePanelCommand { get; }
+
+    public PanelViewModel(IWorkspaceViewModel workspaceViewModel)
     {
+        ClosePanelCommand = ReactiveCommand.Create(() =>
+        {
+            workspaceViewModel.ClosePanel(this);
+        });
+
         this.WhenActivated(disposables =>
         {
             this.WhenAnyValue(vm => vm.LogicalBounds)
@@ -31,7 +39,6 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
     private void UpdateActualBounds()
     {
         ActualBounds = MathUtils.CalculateActualBounds(_workspaceSize, LogicalBounds);
-        Console.WriteLine(ActualBounds.ToString());
     }
 
     /// <inheritdoc/>

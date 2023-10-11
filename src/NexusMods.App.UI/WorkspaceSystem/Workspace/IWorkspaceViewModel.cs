@@ -1,7 +1,5 @@
 using System.Collections.ObjectModel;
-using System.Reactive;
 using Avalonia;
-using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
@@ -9,18 +7,26 @@ public interface IWorkspaceViewModel : IViewModelInterface
 {
     public ReadOnlyObservableCollection<IPanelViewModel> Panels { get; }
 
-    /// <summary>
-    /// Command for adding a new panel to the workspace.
-    /// </summary>
-    /// <remarks>
-    /// This command returns the new panel.
-    /// </remarks>
-    public ReactiveCommand<AddPanelInput, IPanelViewModel> AddPanelCommand { get; }
+    public IReadOnlyList<IAddPanelButtonViewModel> AddPanelButtonViewModels { get; }
 
     /// <summary>
-    /// Command for remove an existing panel from the workspace.
+    /// Called by the View to notify the VM about the new size of the control.
     /// </summary>
-    public ReactiveCommand<RemovePanelInput, Unit> RemovePanelCommand { get; }
+    public void ArrangePanels(Size workspaceSize);
 
-    public void ArrangePanels(Size workspaceControlSize);
+    /// <summary>
+    /// Swaps the position of two panels.
+    /// </summary>
+    public void SwapPanels(IPanelViewModel first, IPanelViewModel second);
+
+    /// <summary>
+    /// Add a new panel to the workspace.
+    /// </summary>
+    /// <returns>The newly created <see cref="IPanelViewModel"/>.</returns>
+    public IPanelViewModel AddPanel(IReadOnlyDictionary<PanelId, Rect> state);
+
+    /// <summary>
+    /// Closes a panel from the workspace.
+    /// </summary>
+    public void ClosePanel(IPanelViewModel currentPanel);
 }

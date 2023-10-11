@@ -15,6 +15,13 @@
         <workspace:PanelViewModel/>
     </Design.DataContext>
 
-    <TextBlock>Hello World!</TextBlock>
+    <StackPanel Spacing="8">
+        <Button x:Name="ClosePanelButton" Classes="Standard PrimaryOutlined">
+            <TextBlock>Close Panel</TextBlock>
+        </Button>
+
+        <TextBlock>Hello World!</TextBlock>
+    </StackPanel>
+
 
 </reactive:ReactiveUserControl>

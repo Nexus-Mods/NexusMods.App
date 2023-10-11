@@ -1,12 +1,22 @@
+using System.Reactive;
 using Avalonia;
+using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
 public interface IPanelViewModel : IViewModelInterface
 {
+    /// <summary>
+    /// Gets the unique panel identifier.
+    /// </summary>
     public PanelId Id { get; }
 
     public IViewModel? Content { get; set; }
+
+    /// <summary>
+    /// Gets the command for closing this panel.
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> ClosePanelCommand { get; }
 
     /// <summary>
     /// Gets or sets the logical bounds the panel.
