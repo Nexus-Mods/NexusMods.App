@@ -23,6 +23,6 @@ public static class Services
             .AddView<SelectLocationView, ISelectLocationViewModel>()
             .AddView<SuggestedEntryView, ISuggestedEntryViewModel>()
             .AddView<AdvancedInstallerOverlayView, IAdvancedInstallerOverlayViewModel>()
-            .AddView<ModContentEntryView, IModContentEntryViewModel>();
+            .AddView<TreeEntryView, ITreeEntryViewModel>();
     }
 }
