@@ -69,7 +69,7 @@ public interface IModContentNode : IUnlinkableItem
     ///     <see cref="FileTreeNode{TPath,TValue}" />; an array is used, as it's the lowest
     ///     overhead collection available for the job.
     /// </remarks>
-    IModContentNode[] Children { get; }
+    ITreeEntryViewModel[] Children { get; }
 
     /// <summary>
     ///     True if this is the root node.
@@ -133,7 +133,7 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
     public IModContentBindingTarget? LinkedTarget { get; private set; }
 
     /// <inheritdoc />
-    public required IModContentNode[] Children { get; init; }
+    public required ITreeEntryViewModel[] Children { get; init; }
 
     // Note: _lastStatus has no size impact on the object, because it fits in what otherwise would be padding.
     //       hence it was placed at the end of the object.
@@ -282,14 +282,14 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
         {
             Node = node,
             Parent = null!,
-            Children = GC.AllocateUninitializedArray<IModContentNode>(node.Children.Count),
+            Children = GC.AllocateUninitializedArray<ITreeEntryViewModel>(node.Children.Count),
             IsTopLevel = false,
             Status = TreeDataGridSourceFileNodeStatus.Default
         };
 
         var childIndex = 0;
         foreach (var child in node.Children)
-            root.Children[childIndex++] = FromFileTreeRecursive(child.Value, root);
+            root.Children[childIndex++] = new TreeEntryViewModel(FromFileTreeRecursive(child.Value, root));
 
         return root;
     }
@@ -309,14 +309,14 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
         {
             Node = node,
             Parent = parent,
-            Children = GC.AllocateUninitializedArray<IModContentNode>(node.Children.Count),
+            Children = GC.AllocateUninitializedArray<ITreeEntryViewModel>(node.Children.Count),
             IsTopLevel = parent.IsRoot,
             Status = TreeDataGridSourceFileNodeStatus.Default
         };
 
         var childIndex = 0;
         foreach (var child in node.Children)
-            item.Children[childIndex++] = FromFileTreeRecursive(child.Value, item);
+            item.Children[childIndex++] = new TreeEntryViewModel(FromFileTreeRecursive(child.Value, item));
 
         return item;
     }

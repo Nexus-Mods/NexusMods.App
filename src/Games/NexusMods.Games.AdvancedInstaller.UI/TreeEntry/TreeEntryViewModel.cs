@@ -10,12 +10,10 @@ namespace NexusMods.Games.AdvancedInstaller.UI;
 internal class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>,
     ITreeEntryViewModel
 {
-
     public OneOf<IModContentNode, ISelectableDirectoryNode, IPreviewEntryNode> Node { get; }
-    public TreeEntryViewModel(OneOf<IModContentNode, ISelectableDirectoryNode, IPreviewEntryNode> node)
+
+    public TreeEntryViewModel(IModContentNode node)
     {
-        Node = node;
+        Node = OneOf<IModContentNode, ISelectableDirectoryNode, IPreviewEntryNode>.FromT0(node);
     }
-
 }
-

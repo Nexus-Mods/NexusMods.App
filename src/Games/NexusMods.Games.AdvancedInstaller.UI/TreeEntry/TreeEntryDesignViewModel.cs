@@ -10,8 +10,6 @@ namespace NexusMods.Games.AdvancedInstaller.UI;
 
 internal class TreeEntryDesignViewModel : TreeEntryViewModel
 {
-    public TreeEntryDesignViewModel(OneOf<IModContentNode, ISelectableDirectoryNode, IPreviewEntryNode> node) :
-        base(node) { }
 
     public TreeEntryDesignViewModel() : base(ModContentNode<int>.FromFileTree(
         new FileTreeNode<RelativePath, int>(new RelativePath("BWS.bsa").GetRootComponent, new RelativePath("Textures"),
