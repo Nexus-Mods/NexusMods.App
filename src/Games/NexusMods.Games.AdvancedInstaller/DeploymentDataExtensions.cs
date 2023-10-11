@@ -42,4 +42,17 @@ public static class DeploymentDataExtensions
             data.AddMapping(child.Path, newPath, force);
         }
     }
+
+    /// <summary>
+    ///     Removes the mappings of all of the children of the given node.
+    /// </summary>
+    /// <param name="data">The instance of <see cref="DeploymentData" />.</param>
+    /// <param name="folderNode">The relative path of the source file within the mod archive.</param>
+    /// <returns>True if the mapping was removed successfully, false if the key doesn't exist.</returns>
+    public static void RemoveFolderMapping<TValue>(this DeploymentData data,
+        FileTreeNode<RelativePath, TValue> folderNode)
+    {
+        foreach (var child in folderNode.GetAllDescendentFiles())
+            data.RemoveMapping(child.Path);
+    }
 }

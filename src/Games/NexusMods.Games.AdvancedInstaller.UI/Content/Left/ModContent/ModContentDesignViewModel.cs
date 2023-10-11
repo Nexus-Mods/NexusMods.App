@@ -49,6 +49,6 @@ internal class ModContentDesignViewModel : AViewModel<IModContentViewModel>,
         };
 
         var tree = FileTreeNode<RelativePath, int>.CreateTree(fileEntries);
-        return ModContentNode<RelativePath, int>.FromFileTree(tree);
+        return ModContentNode<int>.FromFileTree(tree);
     }
 }

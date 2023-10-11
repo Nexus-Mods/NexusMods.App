@@ -17,7 +17,7 @@ public interface IPreviewEntryNode
     ///     Contains the children nodes of this node.
     /// </summary>
     /// <remarks>
-    ///     See <see cref="ModContentNode{TRelPath,TNodeValue}.Children" />
+    ///     See <see cref="ModContentNode{TNodeValue}.Children" />
     /// </remarks>
     IPreviewEntryNode[] Children { get; }
 
@@ -51,6 +51,13 @@ public interface IPreviewEntryNode
     ///     This collection is null, unless an element exists.
     /// </summary>
     List<IUnlinkableItem>? UnlinkableItems { get; }
+
+    /// <summary>
+    ///     Applies a link from source to the given node.
+    /// </summary>
+    /// <param name="source">The source item that was linked to this node.</param>
+    /// <param name="previouslyExisted">True if this item has previously existed in the game directory.</param>
+    void ApplyLink(IUnlinkableItem source, bool previouslyExisted);
 }
 
 /// <summary>
@@ -68,17 +75,26 @@ public class PreviewEntryNode : IPreviewEntryNode
     // public required PreviewEntryNode<TRelPath, TNodeValue>? Parent { get; init; }
 
     public PreviewEntryNodeFlags Flags { get; init; }
+
+    public PreviewEntryNodeFlags DerivedFlags { get; init; }
+
     public IPreviewEntryNode[] Children { get; init; } = null!;
     public string FileName { get; init; } = null!;
     public List<IUnlinkableItem>? UnlinkableItems { get; } = new();
 
+    public void ApplyLink(IUnlinkableItem source, bool previouslyExisted)
+    {
+        // We apply 'folder merged' flag under either of the circumstances.
+        // 1. Files from two different subfolders are mapped to the same folder.
+        // 2. Folder already existed in game directory, and we are mapping it.
+        throw new NotImplementedException();
+    }
+
     // Note: Do not rearrange these fields (for packing/perf reasons).
     public bool IsRoot { get; init; }
     public bool IsDirectory { get; init; }
-    public PreviewEntryNodeFlags DerivedFlags { get; init; }
 
     // Derived Getters (for convenience in ViewModel)
-
 }
 
 /// <summary>

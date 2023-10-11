@@ -12,7 +12,11 @@ namespace NexusMods.Games.AdvancedInstaller;
 /// DeploymentData encapsulates all the data needed for a manual or advanced mod installation.
 /// It contains a mapping between the source files in the archive to the target paths in the game directory.
 /// </summary>
-public struct DeploymentData
+/// <remarks>
+///     Note that this class only contains reference types, so it is safe to pass around by value.
+///     If you are adding any value types here, you might want to re-evaluate how this struct is used in the codebase.
+/// </remarks>
+public readonly struct DeploymentData
 {
     /// <summary>
     /// This Dictionary maps relative paths of files in the mod archive to relative paths in the game directories.<br/>

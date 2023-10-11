@@ -18,7 +18,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 ///     Using this at runtime isn't exactly ideal given how many items there may be, but given everything is virtualized,
 ///     things should hopefully be a-ok!
 /// </remarks>
-public interface IModContentNode
+public interface IModContentNode : IUnlinkableItem
 {
     /// <summary>
     ///     Status of the node in question.
@@ -71,32 +71,35 @@ public interface IModContentNode
 }
 
 /// <summary>
-///     Represents an item that can be unlinked from the 'Results' section of the 'Select Location' view.
+///     Represents an item that can be unlinked from the deployment data.
 /// </summary>
 public interface IUnlinkableItem
 {
     /// <summary>
-    ///     Unlink the given node from the original source section.
+    ///     Returns true if this unlinkable item represents a folder, else false.
     /// </summary>
-    public void Unlink();
+    public bool IsDirectory { get; }
+
+    /// <summary>
+    ///     Unlink the given node from the deployment data.
+    /// </summary>
+    public void Unlink(DeploymentData data);
 }
 
 /// <summary>
 ///     Represents a <see cref="IModContentNode" /> that is backed by a
 ///     <see cref="FileTreeNode{TPath,TValue}" />.
 /// </summary>
-/// <typeparam name="TRelPath">Type of relative path used in <see cref="FileTreeNode{TPath,TValue}" />.</typeparam>
 /// <typeparam name="TNodeValue">Type of file entry used in <see cref="FileTreeNode{TPath,TValue}" />.</typeparam>
 [DebuggerDisplay("FileName = {FileName}, IsRoot = {IsRoot}, Children = {Children.Length}, Status = {Status}")]
-internal class ModContentNode<TRelPath, TNodeValue> : ReactiveObject, IModContentNode
-    where TRelPath : struct, IPath<TRelPath>, IEquatable<TRelPath>
+internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
 {
     private TreeDataGridSourceFileNodeStatus _lastStatus;
 
     /// <summary>
     ///     The underlying node providing the data for this tree.
     /// </summary>
-    public required FileTreeNode<TRelPath, TNodeValue> Node { get; init; }
+    public required FileTreeNode<RelativePath, TNodeValue> Node { get; init; }
 
     /// <summary>
     ///     The parent of this node.
@@ -104,9 +107,12 @@ internal class ModContentNode<TRelPath, TNodeValue> : ReactiveObject, IModConten
     /// <remarks>
     ///     This is null if the node is a root.
     /// </remarks>
-    public required ModContentNode<TRelPath, TNodeValue>? Parent { get; init; }
+    public required ModContentNode<TNodeValue>? Parent { get; init; }
 
+    /// <inheritdoc />
     public ISuggestedEntryNode? LinkedNode { get; }
+
+    /// <inheritdoc />
     public required IModContentNode[] Children { get; init; }
 
     // Note: _lastStatus has no size impact on the object, because it fits in what otherwise would be padding.
@@ -116,6 +122,11 @@ internal class ModContentNode<TRelPath, TNodeValue> : ReactiveObject, IModConten
     public string FileName => Node.IsTreeRoot ? Language.FileTree_ALL_MOD_FILES : Node.Name;
     public bool IsDirectory => Node.IsDirectory;
     public bool IsRoot => Node.IsTreeRoot;
+
+    public void Unlink(DeploymentData data)
+    {
+        data.RemoveFolderMapping(Node);
+    }
 
     /// <summary>
     ///     Sets a new status, and stores the previous status in <see cref="_lastStatus" />.
@@ -180,32 +191,32 @@ internal class ModContentNode<TRelPath, TNodeValue> : ReactiveObject, IModConten
     /// <remarks>
     ///     Uses stack to avoid recursive IEnumerable, which would be a performance disaster.
     /// </remarks>
-    public IEnumerable<ModContentNode<TRelPath, TNodeValue>> ChildrenFlattened()
+    public IEnumerable<ModContentNode<TNodeValue>> ChildrenFlattened()
     {
-        var stack = new Stack<ModContentNode<TRelPath, TNodeValue>>();
+        var stack = new Stack<ModContentNode<TNodeValue>>();
 
         // Push initial children onto the stack.
         foreach (var child in Children)
-            stack.Push((child as ModContentNode<TRelPath, TNodeValue>)!);
+            stack.Push((child as ModContentNode<TNodeValue>)!);
 
         while (stack.Count > 0)
         {
             var current = stack.Pop();
             yield return current;
-            foreach (var child in current.Children!)
-                stack.Push((child as ModContentNode<TRelPath, TNodeValue>)!);
+            foreach (var child in current.Children)
+                stack.Push((child as ModContentNode<TNodeValue>)!);
         }
     }
 
     /// <summary>
     ///     Recursively marks all of the children of this node for selection.
     /// </summary>
-    public static void BeginSelectChildrenRecursive(ModContentNode<TRelPath, TNodeValue> item)
+    public static void BeginSelectChildrenRecursive(ModContentNode<TNodeValue> item)
     {
         foreach (var childInterface in item.Children)
         {
             // Covariant cast to remove virtualization and make Status writeable.
-            var child = childInterface as ModContentNode<TRelPath, TNodeValue>;
+            var child = childInterface as ModContentNode<TNodeValue>;
             child!.SetStatus(TreeDataGridSourceFileNodeStatus.SelectingViaParent);
             BeginSelectChildrenRecursive(child);
         }
@@ -214,26 +225,25 @@ internal class ModContentNode<TRelPath, TNodeValue> : ReactiveObject, IModConten
     /// <summary>
     ///     Recursively restores last status of all child nodes.
     /// </summary>
-    public static void RestoreLastStatusRecursive(ModContentNode<TRelPath, TNodeValue> item)
+    public static void RestoreLastStatusRecursive(ModContentNode<TNodeValue> item)
     {
         foreach (var childInterface in item.Children)
         {
             // Covariant cast to remove virtualization and make Status writeable.
-            var child = childInterface as ModContentNode<TRelPath, TNodeValue>;
+            var child = childInterface as ModContentNode<TNodeValue>;
             child!.RestoreLastStatus();
             RestoreLastStatusRecursive(child);
         }
     }
 
     /// <summary>
-    ///     Creates a new <see cref="ModContentNode{TRelPath,TNodeValue}" /> from a given
-    ///     <see cref="FileTreeNode{TRelPath,TFileEntry}" />.
+    ///     Creates a new <see cref="ModContentNode{TNodeValue}" /> from a given
+    ///     <see cref="FileTreeNode{RelativePath,TFileEntry}" />.
     /// </summary>
-    /// <typeparam name="TRelPath">Type of relative path used for the node.</typeparam>
     /// <typeparam name="TNodeValue">Type of value associated with this node.</typeparam>
-    public static ModContentNode<TRelPath, TNodeValue> FromFileTree(FileTreeNode<TRelPath, TNodeValue> node)
+    public static ModContentNode<TNodeValue> FromFileTree(FileTreeNode<RelativePath, TNodeValue> node)
     {
-        var root = new ModContentNode<TRelPath, TNodeValue>
+        var root = new ModContentNode<TNodeValue>
         {
             Node = node,
             Parent = null!,
@@ -249,18 +259,17 @@ internal class ModContentNode<TRelPath, TNodeValue> : ReactiveObject, IModConten
     }
 
     /// <summary>
-    ///     Recursively creates new <see cref="ModContentNode{TRelPath,TNodeValue}" /> entries from a given matching
-    ///     <see cref="FileTreeNode{TRelPath,TFileEntry}" /> node.
+    ///     Recursively creates new <see cref="ModContentNode{TNodeValue}" /> entries from a given matching
+    ///     <see cref="FileTreeNode{RelativePath,TFileEntry}" /> node.
     /// </summary>
     /// <param name="node">The node of the file tree.</param>
     /// <param name="parent">The parent to the current entry.</param>
-    /// <typeparam name="TRelPath">Type of relative path used for the node.</typeparam>
     /// <typeparam name="TNodeValue">Type of file entry stored in this tree.</typeparam>
     /// <returns>The node.</returns>
-    public static IModContentNode FromFileTreeRecursive(FileTreeNode<TRelPath, TNodeValue> node,
-        ModContentNode<TRelPath, TNodeValue> parent)
+    public static IModContentNode FromFileTreeRecursive(FileTreeNode<RelativePath, TNodeValue> node,
+        ModContentNode<TNodeValue> parent)
     {
-        var item = new ModContentNode<TRelPath, TNodeValue>
+        var item = new ModContentNode<TNodeValue>
         {
             Node = node,
             Parent = parent,
@@ -277,7 +286,7 @@ internal class ModContentNode<TRelPath, TNodeValue> : ReactiveObject, IModConten
 }
 
 /// <summary>
-///     Represents the current status of the <see cref="ModContentNode{TRelPath,TNodeValue}" />.
+///     Represents the current status of the <see cref="ModContentNode{TNodeValue}" />.
 /// </summary>
 public enum TreeDataGridSourceFileNodeStatus
 {

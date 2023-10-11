@@ -2,6 +2,7 @@
     <ItemGroup>
         <ProjectReference Include="..\..\NexusMods.App.UI\NexusMods.App.UI.csproj"/>
         <InternalsVisibleTo Include="NexusMods.Games.AdvancedInstaller.UI.Tests"/>
+        <ProjectReference Include="..\NexusMods.Games.AdvancedInstaller\NexusMods.Games.AdvancedInstaller.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -147,8 +148,8 @@
         </Compile>
 
         <Compile Update="TreeEntry\TreeEntryView.axaml.cs">
-          <DependentUpon>ModContentEntryView.axaml</DependentUpon>
-          <SubType>Code</SubType>
+            <DependentUpon>ModContentEntryView.axaml</DependentUpon>
+            <SubType>Code</SubType>
         </Compile>
     </ItemGroup>
 
