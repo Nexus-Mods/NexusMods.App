@@ -16,4 +16,9 @@ internal class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>,
     {
         Node = OneOf<IModContentNode, ISelectableDirectoryNode, IPreviewEntryNode>.FromT0(node);
     }
+
+    public TreeEntryViewModel(IPreviewEntryNode node)
+    {
+        Node = OneOf<IModContentNode, ISelectableDirectoryNode, IPreviewEntryNode>.FromT2(node);
+    }
 }

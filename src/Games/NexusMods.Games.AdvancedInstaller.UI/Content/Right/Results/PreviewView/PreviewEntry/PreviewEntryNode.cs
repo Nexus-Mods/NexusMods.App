@@ -27,7 +27,7 @@ public interface IPreviewEntryNode : IModContentBindingTarget
     /// <remarks>
     ///     See <see cref="ModContentNode{TNodeValue}.Children" />
     /// </remarks>
-    ObservableCollection<IPreviewEntryNode> Children { get; }
+    ObservableCollection<ITreeEntryViewModel> Children { get; }
 
     /// <summary>
     ///     The file name displayed for this node.
@@ -55,6 +55,11 @@ public interface IPreviewEntryNode : IModContentBindingTarget
     /// </summary>
     bool IsFolderMerged { get; }
 
+    /// <summary>
+    ///     If this is true the 'dupe folder' pill should be displayed in the UI.
+    /// </summary>
+    bool IsFolderDuplicated { get; }
+
     /*
        Note:
        In the case of folder, the item can be merged or created from multiple sources, e.g. Multiple folders.
@@ -78,7 +83,7 @@ public class PreviewEntryNode : IPreviewEntryNode
 {
     // TODO: This (FullPath) should be optimized because we are creating a new string for every item.
     public GamePath FullPath { get; init; }
-    public ObservableCollection<IPreviewEntryNode> Children { get; init; } = new();
+    public ObservableCollection<ITreeEntryViewModel> Children { get; init; } = new();
     public List<IUnlinkableItem>? UnlinkableItems { get; private set; } = new();
 
     // Do not rearrange order here, flags are deliberately last to optimize for struct layout.
@@ -93,6 +98,9 @@ public class PreviewEntryNode : IPreviewEntryNode
 
     public bool IsFolderMerged =>
         (Flags & PreviewEntryNodeFlags.IsFolderMerged) == PreviewEntryNodeFlags.IsFolderMerged;
+
+    public bool IsFolderDuplicated =>
+        (Flags & PreviewEntryNodeFlags.IsFolderDuplicated) == PreviewEntryNodeFlags.IsFolderDuplicated;
 
 
     public PreviewEntryNode(GamePath fullPath, PreviewEntryNodeFlags flags)
@@ -172,7 +180,7 @@ public class PreviewEntryNode : IPreviewEntryNode
             var isLastComponent = x == pathComponents.Length - 1;
 
             // Check if the current node already has a child with the name of the current path component.
-            var childNode = currentNode.Children.FirstOrDefault(child => child.FileName == component);
+            var childNode = currentNode.Children.FirstOrDefault(child => child.Node.AsT2.FileName == component);
 
             // If the child node doesn't exist, create it.
             if (childNode == null)
@@ -188,12 +196,12 @@ public class PreviewEntryNode : IPreviewEntryNode
                     ? PreviewEntryNodeFlags.Default
                     : PreviewEntryNodeFlags.IsDirectory;
 
-                childNode = new PreviewEntryNode(newGamePath, isNewFlag | isDirectoryFlag);
+                childNode = new TreeEntryViewModel(new PreviewEntryNode(newGamePath, isNewFlag | isDirectoryFlag));
                 currentNode.Children.Add(childNode);
             }
 
             // Set the current node to the child node and continue.
-            currentNode = (PreviewEntryNode)childNode;
+            currentNode = (PreviewEntryNode)childNode.Node.AsT2;
         }
     }
 
@@ -209,7 +217,7 @@ public class PreviewEntryNode : IPreviewEntryNode
 
         foreach (var component in pathComponents)
         {
-            var childNode = currentNode.Children.FirstOrDefault(child => child.FileName == component);
+            var childNode = currentNode.Children.FirstOrDefault(child => child.Node.AsT2.FileName == component);
 
             // If a child node with the given name is not found at any level, return null.
             if (childNode == null)
