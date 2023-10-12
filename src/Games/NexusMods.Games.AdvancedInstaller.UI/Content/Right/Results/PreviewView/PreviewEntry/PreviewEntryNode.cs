@@ -2,7 +2,6 @@ using System.Collections.ObjectModel;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 using NexusMods.Paths;
-using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
 
@@ -218,7 +217,7 @@ public class PreviewEntryNode : IPreviewEntryNode
 
         foreach (var component in pathComponents)
         {
-            var childNode = currentNode.Children.FirstOrDefault(child => child.FileName == component);
+            var childNode = currentNode.Children.FirstOrDefault(child => child.Node.AsT2.FileName == component);
 
             // If a child node with the given name is not found at any level, return null.
             if (childNode == null)
