@@ -1,14 +1,13 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Templates;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
+using NexusMods.App.UI;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
 using NexusMods.Paths;
-using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView;
 
-internal class PreviewDesignViewModel : PreviewViewModel
+internal class PreviewDesignViewModel : AViewModel<IPreviewViewModel>, IPreviewViewModel
 {
     /// <summary>
     /// The visual representation of the tree.
