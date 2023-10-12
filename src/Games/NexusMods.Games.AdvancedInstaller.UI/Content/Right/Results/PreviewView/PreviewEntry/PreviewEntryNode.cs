@@ -14,7 +14,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView
 ///     This is such that the user can in one go delete all items as needed.
 ///     If it happens that after deletion, no files are deployed, the entire tree should be cleared.
 /// </remarks>
-public interface IPreviewEntryNode
+public interface IPreviewEntryNode : IModContentBindingTarget
 {
     /// <summary>
     ///     The full path of this node.
@@ -74,7 +74,7 @@ public interface IPreviewEntryNode
 /// <summary>
 ///     Represents an individual node in the 'Preview' section when selecting a location.
 /// </summary>
-public class PreviewEntryNode : IPreviewEntryNode, IModContentBindingTarget
+public class PreviewEntryNode : IPreviewEntryNode
 {
     // TODO: This (FullPath) should be optimized because we are creating a new string for every item.
     public GamePath FullPath { get; init; }
@@ -195,6 +195,31 @@ public class PreviewEntryNode : IPreviewEntryNode, IModContentBindingTarget
             // Set the current node to the child node and continue.
             currentNode = (PreviewEntryNode)childNode;
         }
+    }
+
+    /// <summary>
+    ///     Retrieves a child node from the current node using the relative path.
+    /// </summary>
+    /// <param name="relativePath">The path relative to current node.</param>
+    /// <returns>The found node or null if not found.</returns>
+    public IPreviewEntryNode? GetChild(string relativePath)
+    {
+        var pathComponents = relativePath.Split('/');
+        var currentNode = this;
+
+        foreach (var component in pathComponents)
+        {
+            var childNode = currentNode.Children.FirstOrDefault(child => child.FileName == component);
+
+            // If a child node with the given name is not found at any level, return null.
+            if (childNode == null)
+                return null;
+
+            // Move to the next child node.
+            currentNode = (PreviewEntryNode)childNode;
+        }
+
+        return currentNode;
     }
 }
 
