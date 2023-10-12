@@ -13,8 +13,18 @@
         <workspace:AddPanelButtonDesignViewModel/>
     </Design.DataContext>
 
-    <Button x:Name="AddPanelButton">
-        <Image x:Name="ButtonImage"/>
-    </Button>
+    <Border>
+        <Border.Styles>
+            <Style Selector="Button">
+                <Setter Property="Background" Value="{DynamicResource Transparent}"></Setter>
+                <Setter Property="BorderBrush" Value="{DynamicResource BrandPrimary}"></Setter>
+                <Setter Property="Padding" Value="0" />
+            </Style>
+        </Border.Styles>
+
+        <Button x:Name="AddPanelButton">
+            <Image x:Name="ButtonImage"/>
+        </Button>
+    </Border>
 
 </reactive:ReactiveUserControl>
