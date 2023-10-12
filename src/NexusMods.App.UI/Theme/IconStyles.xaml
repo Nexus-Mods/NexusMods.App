@@ -39,6 +39,7 @@
             <icons:Icon Classes="MenuUp"></icons:Icon>
             <icons:Icon Classes="Close"></icons:Icon>
             <icons:Icon Classes="OpenInNew"></icons:Icon>
+            <icons:Icon Classes="Tab"></icons:Icon>
         </WrapPanel>
     </Design.PreviewWith>
 
@@ -154,5 +155,9 @@
 
     <Style Selector="icons|Icon.OpenInNew">
         <Setter Property="Value" Value="mdi-open-in-new"/>
+    </Style>
+
+    <Style Selector="icons|Icon.Tab">
+        <Setter Property="Value" Value="mdi-tab"/>
     </Style>
 </Styles>
