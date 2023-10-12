@@ -224,7 +224,7 @@ public class PreviewEntryNode : IPreviewEntryNode
                 return null;
 
             // Move to the next child node.
-            currentNode = (PreviewEntryNode)childNode;
+            currentNode = (PreviewEntryNode)childNode.Node.AsT2;
         }
 
         return currentNode;
