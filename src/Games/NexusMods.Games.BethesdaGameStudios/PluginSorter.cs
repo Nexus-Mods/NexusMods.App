@@ -57,7 +57,7 @@ public class PluginSorter
             .Select(r => new RuleTuple
             {
                 Plugin = r!.FileName,
-                Rules = GenerateRules(allPlugins, r).ToArray()
+                Rules = GenerateRules(allPlugins, r).Distinct().ToArray()
             })
             .ToArray();
 
@@ -82,7 +82,7 @@ public class PluginSorter
                 yield return new First<RuleTuple, RelativePath>();
                 break;
             // It's not the first plugin, so we generate a rule for each plugin that comes before it
-            case > 1:
+            case >= 1:
                 {
                     for (var i = 0; i < defaultIdx; i++)
                     {

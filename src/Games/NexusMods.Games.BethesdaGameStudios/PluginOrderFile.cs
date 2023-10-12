@@ -38,13 +38,9 @@ public record PluginOrderFile : AModFile, IGeneratedFile, IToFile
         var sorted = await ((ABethesdaGame)loadout.Installation.Game)
             .PluginSorter.Sort(fileTree, CancellationToken.None);
 
-        var writer = new StreamWriter(stream);
-        foreach (var entry in sorted)
-        {
-            await writer.WriteLineAsync("*" + entry.FileName);
-        }
+        await stream.WriteAllLinesAsync(sorted.Select(e => "*" + e.FileName));
 
-        return null;
+        return Hash.FromLong(sorted.Length);
     }
 
     public ValueTask<AModFile> Update(DiskStateEntry newEntry, Stream stream)
