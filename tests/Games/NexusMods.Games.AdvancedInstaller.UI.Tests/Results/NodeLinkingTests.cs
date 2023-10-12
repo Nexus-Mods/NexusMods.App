@@ -43,6 +43,30 @@ public class NodeLinkingTests
         // Assert everything got deleted
         data.OutputToArchiveMap.Should().BeEmpty();
         data.ArchiveToOutputMap.Should().BeEmpty();
+
+        // Root node children should be deleted.
+        target.Children.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void CanUnlinkFolders_WithNonRootNode()
+    {
+        // Arrange & Act
+        var (node, data, target) = CommonSetup();
+        var armorsDir = node.GetNode("Textures").GetNode("Armors");
+
+        // Link Armors Directory, then unlink root.
+        var texturesTarget = target.GetChild("Textures")!;
+        armorsDir.Link(data, texturesTarget, false);
+        (texturesTarget as PreviewEntryNode)!.Unlink(data);
+
+        // Note: There is no direct link in 'target', the children are linked.
+        // Assert everything got deleted
+        data.OutputToArchiveMap.Should().BeEmpty();
+        data.ArchiveToOutputMap.Should().BeEmpty();
+
+        // Armors children should be deleted.
+        target.Children.Should().NotContain(x => x.Node.AsT2.FileName == "Textures");
     }
 
     private (ModContentNode<int> node, DeploymentData data, PreviewEntryNode target)

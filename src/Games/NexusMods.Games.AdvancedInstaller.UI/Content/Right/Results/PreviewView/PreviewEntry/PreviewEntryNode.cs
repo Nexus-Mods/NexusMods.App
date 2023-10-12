@@ -82,6 +82,7 @@ public interface IPreviewEntryNode : IModContentBindingTarget
 public class PreviewEntryNode : IPreviewEntryNode
 {
     // TODO: This (FullPath) should be optimized because we are creating a new string for every item.
+    public PreviewEntryNode? Parent { get; init; } = null!;
     public GamePath FullPath { get; init; }
     public ObservableCollection<ITreeEntryViewModel> Children { get; init; } = new();
     public List<IUnlinkableItem>? UnlinkableItems { get; private set; } = new();
@@ -103,8 +104,9 @@ public class PreviewEntryNode : IPreviewEntryNode
         (Flags & PreviewEntryNodeFlags.IsFolderDuplicated) == PreviewEntryNodeFlags.IsFolderDuplicated;
 
 
-    public PreviewEntryNode(GamePath fullPath, PreviewEntryNodeFlags flags)
+    public PreviewEntryNode(GamePath fullPath, PreviewEntryNodeFlags flags, PreviewEntryNode? parent = null)
     {
+        Parent = parent;
         FullPath = fullPath;
         Flags = flags;
     }
@@ -136,11 +138,26 @@ public class PreviewEntryNode : IPreviewEntryNode
     /// </summary>
     public void Unlink(DeploymentData data)
     {
+        // Do the unlink.
+        UnlinkRecursive(data);
+
+        // Delete self (if possible).
+        if (!IsRoot)
+        {
+            var thisVm = Parent!.Children.FirstOrDefault(x => x.Node.AsT2 == this)!;
+            Parent?.Children.Remove(thisVm);
+        }
+        else
+            Children.Clear();
+    }
+
+    private void UnlinkRecursive(DeploymentData data)
+    {
         // Recursively unlink first.
         foreach (var child in Children)
         {
             var node = child.Node.AsT2 as PreviewEntryNode;
-            node!.Unlink(data);
+            node!.UnlinkRecursive(data);
         }
 
         // And now unlink self.
@@ -204,7 +221,8 @@ public class PreviewEntryNode : IPreviewEntryNode
                     ? PreviewEntryNodeFlags.Default
                     : PreviewEntryNodeFlags.IsDirectory;
 
-                childNode = new TreeEntryViewModel(new PreviewEntryNode(newGamePath, isNewFlag | isDirectoryFlag));
+                childNode = new TreeEntryViewModel(new PreviewEntryNode(newGamePath, isNewFlag | isDirectoryFlag,
+                    currentNode));
                 currentNode.Children.Add(childNode);
             }
 
