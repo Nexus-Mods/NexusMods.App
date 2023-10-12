@@ -28,6 +28,23 @@ public class NodeLinkingTests
             .Be("Textures/Armors/greenHilt.dds");
     }
 
+    [Fact]
+    public void CanUnlinkFoldersRecursively()
+    {
+        // Arrange & Act
+        var (node, data, target) = CommonSetup();
+        var armorsDir = node.GetNode("Textures").GetNode("Armors");
+
+        // Link Armors Directory, then unlink root.
+        armorsDir.Link(data, target.GetChild("Textures/Armors")!, false);
+        target.Unlink(data);
+
+        // Note: There is no direct link in 'target', the children are linked.
+        // Assert everything got deleted
+        data.OutputToArchiveMap.Should().BeEmpty();
+        data.ArchiveToOutputMap.Should().BeEmpty();
+    }
+
     private (ModContentNode<int> node, DeploymentData data, PreviewEntryNode target)
         CommonSetup()
     {

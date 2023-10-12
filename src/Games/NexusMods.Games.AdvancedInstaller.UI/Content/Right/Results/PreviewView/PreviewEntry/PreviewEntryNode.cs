@@ -136,6 +136,14 @@ public class PreviewEntryNode : IPreviewEntryNode
     /// </summary>
     public void Unlink(DeploymentData data)
     {
+        // Recursively unlink first.
+        foreach (var child in Children)
+        {
+            var node = child.Node.AsT2 as PreviewEntryNode;
+            node!.Unlink(data);
+        }
+
+        // And now unlink self.
         if (UnlinkableItems == null)
             return;
 
