@@ -28,14 +28,6 @@ public interface ISelectableDirectoryNode
     /// The Directory name displayed for this node.
     /// </summary>
     string DirectoryName { get; }
-
-    /// <summary>
-    /// Returns true if the node is delete-able.
-    /// When a node is user created, either by linking a file, or creating a folder, it is considered 'delete-able'.
-    /// </summary>
-    bool IsDeletable { get; }
-
-
 }
 
 
@@ -44,7 +36,6 @@ public class SelectableDirectoryNode : ReactiveObject, ISelectableDirectoryNode
     [Reactive] public SelectableDirectoryNodeStatus Status { get; private set;}
     public ObservableCollection<ITreeEntryViewModel> Children { get; init; } = new();
     public string DirectoryName { get; } = string.Empty;
-    public bool IsDeletable { get; } = false;
 }
 
 

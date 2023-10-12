@@ -26,7 +26,7 @@ public partial class
             switch (ViewModel!.Node.Value)
             {
                 case IModContentNode contentNode:
-                    PupulateFromModContentNode(contentNode);
+                    PopulateFromModContentNode(contentNode);
 
                     this.WhenAnyValue(x => x.ViewModel!.Node.AsT0.Status)
                         .SubscribeWithErrorLogging(status => { UpdateFromModContentNode(ViewModel!.Node.AsT0); })
@@ -44,7 +44,7 @@ public partial class
         });
     }
 
-    private void PupulateFromModContentNode(IModContentNode node)
+    private void PopulateFromModContentNode(IModContentNode node)
     {
         FileElementGrid.IsVisible = true;
         FileNameTextBlock.IsVisible = true;
@@ -108,7 +108,49 @@ public partial class
         }
     }
 
-    private void PopulateFromSelectableDirectoryNode(ISelectableDirectoryNode node) { }
+    private void PopulateFromSelectableDirectoryNode(ISelectableDirectoryNode node)
+    {
+        switch (node.Status)
+        {
+            case SelectableDirectoryNodeStatus.Regular:
+                FileElementGrid.IsVisible = true;
+                FolderEntryIcon.IsVisible = true;
+                FileNameTextBlock.IsVisible = true;
+
+                FileNameTextBlock.Text = node.DirectoryName;
+
+                SelectRoundedButton.IsVisible = true;
+                break;
+
+            case SelectableDirectoryNodeStatus.Create:
+                FileElementGrid.IsVisible = false;
+                CreateFolderButton.IsVisible = true;
+                break;
+
+            case SelectableDirectoryNodeStatus.Editing:
+                FileElementGrid.IsVisible = true;
+                FolderEntryIcon.IsVisible = true;
+
+                // input field
+                CreateFolderNameTextBox.IsVisible = true;
+
+                //buttons
+                CancelCreateFolderButton.IsVisible = true;
+                SaveCreatedFolderButton.IsVisible = true;
+                break;
+
+            case SelectableDirectoryNodeStatus.Created:
+                FileElementGrid.IsVisible = true;
+                FolderEntryIcon.IsVisible = true;
+                FileNameTextBlock.IsVisible = true;
+
+                FileNameTextBlock.Text = node.DirectoryName;
+
+                SelectRoundedButton.IsVisible = true;
+                DeleteCreatedFolderButton.IsVisible = true;
+                break;
+        }
+    }
 
     private void UpdateFromModContentNode(IModContentNode node)
     {
