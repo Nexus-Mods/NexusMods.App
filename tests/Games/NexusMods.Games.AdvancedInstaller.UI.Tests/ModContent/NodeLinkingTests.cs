@@ -21,7 +21,6 @@ public class NodeLinkingTests
         armorsDir.Link(data, target, false);
 
         // Assert
-        target.Received().Bind(Arg.Any<IUnlinkableItem>(), Arg.Any<bool>());
         data.ArchiveToOutputMap.Count.Should().Be(3);
         data.OutputToArchiveMap.Count.Should().Be(3);
         armorsDir.GetNode("greenArmor.dds").Status.Should().Be(ModContentNodeStatus.IncludedViaParent);
@@ -38,7 +37,6 @@ public class NodeLinkingTests
         texturesDir.Link(data, target, false);
 
         // Assert
-        target.Received().Bind(Arg.Any<IUnlinkableItem>(), Arg.Any<bool>());
         data.ArchiveToOutputMap.Count.Should().Be(6);
         data.OutputToArchiveMap.Count.Should().Be(6);
         AssertArmorsLinked(data, "Armors");
@@ -58,7 +56,6 @@ public class NodeLinkingTests
         greenArmor.Link(data, target, false);
 
         // Assert
-        target.Received().Bind(Arg.Any<IUnlinkableItem>(), Arg.Any<bool>());
         greenArmor.Status.Should().Be(ModContentNodeStatus.IncludedExplicit);
         data.ArchiveToOutputMap.Count.Should().Be(1);
         data.ArchiveToOutputMap["Textures/Armors/greenArmor.dds"].Should()
@@ -82,13 +79,12 @@ public class NodeLinkingTests
     public void CanUnlinkFolders_ViaUnlinkableItem()
     {
         // Arrange & Act
-        IUnlinkableItem? unlinkable = null!;
-        var (node, data, target) = CommonSetup(item => unlinkable = item);
+        var (node, data, target) = CommonSetup();
         var armorsDir = node.GetNode("Textures").GetNode("Armors");
         armorsDir.Link(data, target, false);
 
         // Unlink assert that everything is empty.
-        unlinkable.Unlink(data);
+        node.Unlink(data); // unlinkable
         AssertUnlinkedArmorsFolder(armorsDir, data);
     }
 
@@ -107,16 +103,11 @@ public class NodeLinkingTests
     }
 
     private (ModContentNode<int> node, DeploymentData data, IModContentBindingTarget target)
-        CommonSetup(Action<IUnlinkableItem>? getUnlinkableCallback = null)
+        CommonSetup()
     {
         var node = ModContentNodeTestHelpers.CreateTestTreeNode();
         var data = new DeploymentData();
-        var target = Substitute.For<IModContentBindingTarget>();
-
-        var path = new GamePath(LocationId.Game, "");
-        target.Bind(Arg.Any<IUnlinkableItem>(), Arg.Any<bool>()).Returns(path)
-            .AndDoes(info => getUnlinkableCallback?.Invoke(info.ArgAt<IUnlinkableItem>(0)));
-
+        var target = new TestBindingTarget();
         return (node, data, target);
     }
 
@@ -138,5 +129,22 @@ public class NodeLinkingTests
         armorsDir.GetNode("greenArmor.dds").Status.Should().Be(ModContentNodeStatus.Default);
         armorsDir.GetNode("greenBlade.dds").Status.Should().Be(ModContentNodeStatus.Default);
         armorsDir.GetNode("greenHilt.dds").Status.Should().Be(ModContentNodeStatus.Default);
+    }
+
+    // Stub providing minimum functionality for the tests.
+    public class TestBindingTarget : IModContentBindingTarget
+    {
+        public GamePath Current = new(LocationId.Game, "");
+
+        public IModContentBindingTarget GetOrCreateChild(string name, bool isDirectory)
+        {
+            return new TestBindingTarget()
+            {
+                Current = new GamePath(LocationId.Game, Current.Path.Join(name))
+            };
+        }
+
+        public GamePath Bind(IUnlinkableItem unlinkable, bool previouslyExisted) => Current;
+        public string DirectoryName => Current.FileName;
     }
 }

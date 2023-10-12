@@ -165,26 +165,56 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
     public void Link(DeploymentData data, IModContentBindingTarget target, bool targetAlreadyExisted)
     {
         LinkedTarget = target;
-        if (IsDirectory)
+        SetStatus(ModContentNodeStatus.IncludedExplicit);
+
+        if (!IsDirectory)
         {
-            data.AddFolderMapping(Node, target.Bind(this, targetAlreadyExisted), true);
-            SetStatusRecursive(this, ModContentNodeStatus.IncludedViaParent);
+            var folder = target.Bind(this, targetAlreadyExisted);
+            data.AddMapping(Node.Path, new GamePath(folder.LocationId, folder.Path.Join(FileName)), true);
+            return;
+        }
+
+        foreach (var child in Children)
+        {
+            var node = child.Node.AsT0 as ModContentNode<TNodeValue>;
+            LinkRecursive(node!, data, target.GetOrCreateChild(node!.FileName, node.IsDirectory), targetAlreadyExisted);
+        }
+    }
+
+    private static void LinkRecursive(ModContentNode<TNodeValue> thisNode, DeploymentData data,
+        IModContentBindingTarget target,
+        bool targetAlreadyExisted)
+    {
+        thisNode.SetStatus(ModContentNodeStatus.IncludedViaParent);
+        if (thisNode.IsDirectory)
+        {
+            foreach (var child in thisNode.Children)
+            {
+                var node = child.Node.AsT0 as ModContentNode<TNodeValue>;
+                LinkRecursive(node!, data, target.GetOrCreateChild(node!.FileName, node.IsDirectory),
+                    targetAlreadyExisted);
+            }
         }
         else
         {
-            SetStatus(ModContentNodeStatus.IncludedExplicit);
-            var folder = target.Bind(this, targetAlreadyExisted);
-            data.AddMapping(Node.Path, new GamePath(folder.LocationId, folder.Path.Join(FileName)), true);
+            var filePath = target.Bind(thisNode, targetAlreadyExisted);
+            data.AddMapping(thisNode.Node.Path, new GamePath(filePath.LocationId, filePath.Path),
+                true);
         }
     }
 
     public void Unlink(DeploymentData data)
     {
         SetStatus(ModContentNodeStatus.Default);
+
         if (IsDirectory)
         {
-            data.RemoveFolderMapping(Node);
-            SetStatusRecursive(this, ModContentNodeStatus.Default);
+            SetStatus(ModContentNodeStatus.Default);
+            foreach (var child in Children)
+            {
+                var node = child.Node.AsT0 as ModContentNode<TNodeValue>;
+                node!.Unlink(data);
+            }
         }
         else
         {

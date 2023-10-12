@@ -82,6 +82,7 @@ public interface IPreviewEntryNode : IModContentBindingTarget
 public class PreviewEntryNode : IPreviewEntryNode
 {
     // TODO: This (FullPath) should be optimized because we are creating a new string for every item.
+    public PreviewEntryNode? Parent { get; init; } = null!;
     public GamePath FullPath { get; init; }
     public ObservableCollection<ITreeEntryViewModel> Children { get; init; } = new();
     public List<IUnlinkableItem>? UnlinkableItems { get; private set; } = new();
@@ -103,13 +104,14 @@ public class PreviewEntryNode : IPreviewEntryNode
         (Flags & PreviewEntryNodeFlags.IsFolderDuplicated) == PreviewEntryNodeFlags.IsFolderDuplicated;
 
 
-    public PreviewEntryNode(GamePath fullPath, PreviewEntryNodeFlags flags)
+    public PreviewEntryNode(GamePath fullPath, PreviewEntryNodeFlags flags, PreviewEntryNode? parent = null)
     {
+        Parent = parent;
         FullPath = fullPath;
         Flags = flags;
     }
 
-    // Note: This is normally called
+    // Note: This is normally called from an 'unlinkable' item, i.e. ModContentNode
     public GamePath Bind(IUnlinkableItem unlinkable, bool previouslyExisted)
     {
         // We apply 'folder merged' flag under either of the circumstances.
@@ -136,6 +138,29 @@ public class PreviewEntryNode : IPreviewEntryNode
     /// </summary>
     public void Unlink(DeploymentData data)
     {
+        // Do the unlink.
+        UnlinkRecursive(data);
+
+        // Delete self (if possible).
+        if (!IsRoot)
+        {
+            var thisVm = Parent!.Children.FirstOrDefault(x => x.Node.AsT2 == this)!;
+            Parent?.Children.Remove(thisVm);
+        }
+        else
+            Children.Clear();
+    }
+
+    private void UnlinkRecursive(DeploymentData data)
+    {
+        // Recursively unlink first.
+        foreach (var child in Children)
+        {
+            var node = child.Node.AsT2 as PreviewEntryNode;
+            node!.UnlinkRecursive(data);
+        }
+
+        // And now unlink self.
         if (UnlinkableItems == null)
             return;
 
@@ -155,7 +180,7 @@ public class PreviewEntryNode : IPreviewEntryNode
     {
         var root = new PreviewEntryNode(new GamePath(fullPath.LocationId, ""),
             PreviewEntryNodeFlags.IsRoot | PreviewEntryNodeFlags.IsDirectory);
-        root.AddChild(fullPath.Path, isDirectory, new AlwaysFalseChecker());
+        root.AddChildren(fullPath.Path, isDirectory, new AlwaysFalseChecker());
         return root;
     }
 
@@ -165,10 +190,10 @@ public class PreviewEntryNode : IPreviewEntryNode
     /// <param name="relativePath">The path relative to current node.</param>
     /// <param name="isDirectory">True if the final part of the path is a directory.</param>
     /// <remarks>Adds a child to any non-root node.</remarks>
-    public void AddChild(string relativePath, bool isDirectory) =>
-        AddChild(relativePath, isDirectory, new AlwaysFalseChecker());
+    public void AddChildren(string relativePath, bool isDirectory) =>
+        AddChildren(relativePath, isDirectory, new AlwaysFalseChecker());
 
-    private void AddChild<TChecker>(string relativePath, bool isDirectory, TChecker checker)
+    private void AddChildren<TChecker>(string relativePath, bool isDirectory, TChecker checker)
         where TChecker : struct, ICheckIfItemAlreadyExists // for devirtualization, do not de-struct.
     {
         var pathComponents = relativePath.Split('/');
@@ -196,7 +221,8 @@ public class PreviewEntryNode : IPreviewEntryNode
                     ? PreviewEntryNodeFlags.Default
                     : PreviewEntryNodeFlags.IsDirectory;
 
-                childNode = new TreeEntryViewModel(new PreviewEntryNode(newGamePath, isNewFlag | isDirectoryFlag));
+                childNode = new TreeEntryViewModel(new PreviewEntryNode(newGamePath, isNewFlag | isDirectoryFlag,
+                    currentNode));
                 currentNode.Children.Add(childNode);
             }
 
@@ -228,6 +254,16 @@ public class PreviewEntryNode : IPreviewEntryNode
         }
 
         return currentNode;
+    }
+
+    IModContentBindingTarget IModContentBindingTarget.GetOrCreateChild(string name, bool isDirectory)
+    {
+        var existing = GetChild(name);
+        if (existing != null)
+            return existing;
+
+        AddChildren(name, isDirectory);
+        return GetChild(name)!;
     }
 }
 

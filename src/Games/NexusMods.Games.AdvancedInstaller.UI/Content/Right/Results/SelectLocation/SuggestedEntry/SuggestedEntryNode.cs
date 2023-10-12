@@ -29,10 +29,20 @@ public interface ISuggestedEntryNode
 public interface IModContentBindingTarget
 {
     /// <summary>
+    ///     Returns the child of this target, i.e. child node in target's tree.
+    /// </summary>
+    /// <param name="name">The name of the child.</param>
+    /// <param name="isDirectory">If this child does not exist, it will be created as directory if this is true.</param>
+    /// <remarks>
+    ///     If the child does not exist, it may be created.
+    /// </remarks>
+    IModContentBindingTarget GetOrCreateChild(string name, bool isDirectory);
+
+    /// <summary>
     ///     Binds to the path represented by this target.
     /// </summary>
     /// <param name="unlinkable">You can use this item for unlinking.</param>
-    /// <param name="previouslyExisted">This location previously existed (as result of ).</param>
+    /// <param name="previouslyExisted">This location previously existed (on FileSystem, or as result of another mod binding into that folder).</param>
     GamePath Bind(IUnlinkableItem unlinkable, bool previouslyExisted);
 
     /// <summary>
