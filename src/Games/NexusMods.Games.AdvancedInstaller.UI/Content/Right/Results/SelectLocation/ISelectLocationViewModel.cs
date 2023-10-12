@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using Avalonia.Controls;
 using NexusMods.App.UI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
@@ -6,4 +7,6 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocat
 public interface ISelectLocationViewModel : IViewModel
 {
     public ReadOnlyObservableCollection<ISuggestedEntryViewModel> SuggestedEntries { get; }
+
+    public HierarchicalTreeDataGridSource<ITreeEntryViewModel> Tree { get; }
 }
