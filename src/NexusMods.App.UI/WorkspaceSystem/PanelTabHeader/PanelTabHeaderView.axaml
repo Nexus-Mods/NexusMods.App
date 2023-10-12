@@ -20,8 +20,28 @@
             <StyleInclude Source="avares://NexusMods.App.UI/Theme/TextBlockStyles.xaml"/>
             <StyleInclude Source="avares://NexusMods.App.UI/Theme/IconStyles.xaml"/>
 
+            <Style Selector="Border:not(.Selected)">
+                <Setter Property="Background" Value="Transparent"></Setter>
+            </Style>
+
+            <Style Selector="Border:not(.Selected) icons|Icon">
+                <Setter Property="Foreground" Value="{StaticResource FontDarkSecondaryColor}"/>
+            </Style>
+
+            <Style Selector="Border:not(.Selected) TextBlock">
+                <Setter Property="Foreground" Value="{StaticResource FontDarkSecondaryColor}"/>
+            </Style>
+
             <Style Selector="Border.Selected">
                 <Setter Property="Background" Value="{StaticResource BrandSecondaryDarker}"></Setter>
+            </Style>
+
+            <Style Selector="Border.Selected icons|Icon">
+                <Setter Property="Foreground" Value="{StaticResource BrandWhite}"/>
+            </Style>
+
+            <Style Selector="Border.Selected TextBlock">
+                <Setter Property="Foreground" Value="{StaticResource BrandWhite}"/>
             </Style>
         </Border.Styles>
 
