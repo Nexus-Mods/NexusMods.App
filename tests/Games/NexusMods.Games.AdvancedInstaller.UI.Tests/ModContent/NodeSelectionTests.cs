@@ -4,7 +4,7 @@ using static NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers.ModContentNodeTe
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Tests.ModContent;
 
-public class NodeSelectionTestsHelpers
+public class NodeSelectionTests
 {
     [Fact]
     public void SelectingRootNode_AllChildrenAreSelected()

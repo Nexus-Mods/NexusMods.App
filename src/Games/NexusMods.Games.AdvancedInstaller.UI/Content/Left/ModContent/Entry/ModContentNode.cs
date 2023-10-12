@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using NexusMods.Paths;
@@ -37,6 +38,11 @@ public interface IModContentNode : IUnlinkableItem
     ///     The name of this specific file in the tree.
     /// </summary>
     string FileName { get; }
+
+    /// <summary>
+    ///     The full relative path of this file in the tree.
+    /// </summary>
+    RelativePath FullPath { get; }
 
     /// <summary>
     ///     Name of the linked target which was created with <see cref="Link"/>.
@@ -87,7 +93,11 @@ public interface IModContentNode : IUnlinkableItem
     ///     Binds the current node/source to the given target.
     /// </summary>
     /// <param name="data">The structure keeping track of deployment data.</param>
-    /// <param name="target">The target to receive the binding.</param>
+    /// <param name="target">
+    ///     The target to receive the binding.
+    ///     This is usually <see cref="PreviewEntryNode"/>, care must be taken to ensure the target path matches the
+    ///     correct path. To do this, search for the <see cref="FullPath"/> in root node/directory of <see cref="IModContentBindingTarget"/>.
+    /// </param>
     /// <param name="targetAlreadyExisted">
     ///     Set this to true to indicate that this target has already existed.
     ///     i.e. The target is a non-user created folder.
@@ -148,6 +158,7 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
     public required bool IsTopLevel { get; init; }
 
     public string FileName => Node.IsTreeRoot ? Language.FileTree_ALL_MOD_FILES : Node.Name;
+    public RelativePath FullPath => Node.Path;
     public bool IsDirectory => Node.IsDirectory;
     public bool IsRoot => Node.IsTreeRoot;
 

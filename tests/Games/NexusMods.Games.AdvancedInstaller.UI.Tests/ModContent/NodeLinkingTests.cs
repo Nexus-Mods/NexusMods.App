@@ -10,7 +10,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Tests.ModContent;
 /// <summary>
 ///     Tests related to the linking of mod content nodes to output directories.
 /// </summary>
-public class NodeLinkingTestsHelpers
+public class NodeLinkingTests
 {
     [Fact]
     public void CanLinkFolders()

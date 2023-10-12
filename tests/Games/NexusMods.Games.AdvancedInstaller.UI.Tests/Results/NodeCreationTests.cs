@@ -15,6 +15,9 @@ public class NodeCreationTests
     {
         // Create the tree from single entry.
         var root = PreviewEntryNode.Create(new GamePath(LocationId.Game, "Textures/Armors/greenHilt.dds"), false);
+        root.FileName.Should().BeEmpty();
+        root.IsRoot.Should().BeTrue();
+        root.IsDirectory.Should().BeTrue();
 
         var textures = root.GetNode("Textures");
         textures.Should().NotBeNull();
