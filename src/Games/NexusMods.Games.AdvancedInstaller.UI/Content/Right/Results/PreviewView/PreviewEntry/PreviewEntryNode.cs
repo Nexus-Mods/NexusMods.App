@@ -101,6 +101,7 @@ public class PreviewEntryNode : IPreviewEntryNode, IModContentBindingTarget
         Flags = flags;
     }
 
+    // Note: This is normally called
     public GamePath Bind(IUnlinkableItem unlinkable, bool previouslyExisted)
     {
         // We apply 'folder merged' flag under either of the circumstances.
@@ -140,11 +141,12 @@ public class PreviewEntryNode : IPreviewEntryNode, IModContentBindingTarget
     ///     Creates the root node for the preview tree from an existing path.
     /// </summary>
     /// <param name="fullPath">The path to create the node from.</param>
-    /// <param name="isDirectory">True if the final part of the directory is a path.</param>
+    /// <param name="isDirectory">True if the final part of the path is a directory.</param>
     /// <returns>The root node.</returns>
     public static PreviewEntryNode Create(GamePath fullPath, bool isDirectory)
     {
-        var root = new PreviewEntryNode(fullPath, PreviewEntryNodeFlags.IsRoot | PreviewEntryNodeFlags.IsDirectory);
+        var root = new PreviewEntryNode(new GamePath(fullPath.LocationId, ""),
+            PreviewEntryNodeFlags.IsRoot | PreviewEntryNodeFlags.IsDirectory);
         root.AddChild(fullPath.Path, isDirectory, new AlwaysFalseChecker());
         return root;
     }
@@ -153,7 +155,7 @@ public class PreviewEntryNode : IPreviewEntryNode, IModContentBindingTarget
     ///     Adds a child node to the current node.
     /// </summary>
     /// <param name="relativePath">The path relative to current node.</param>
-    /// <param name="isDirectory">True if the final part of the directory is a path.</param>
+    /// <param name="isDirectory">True if the final part of the path is a directory.</param>
     /// <remarks>Adds a child to any non-root node.</remarks>
     public void AddChild(string relativePath, bool isDirectory) =>
         AddChild(relativePath, isDirectory, new AlwaysFalseChecker());
