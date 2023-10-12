@@ -20,9 +20,12 @@ public class NodeLinkingTests
         armorsDir.Link(data, target.GetChild("Textures/Armors")!, false);
 
         // Assert the correct folder as added in output end
-        data.OutputToArchiveMap[new GamePath(LocationId.Game, "Textures/Armors/greenArmor.dds")].Should().Be("Textures/Armors/greenArmor.dds");
-        data.OutputToArchiveMap[new GamePath(LocationId.Game, "Textures/Armors/greenBlade.dds")].Should().Be("Textures/Armors/greenBlade.dds");
-        data.OutputToArchiveMap[new GamePath(LocationId.Game, "Textures/Armors/greenHilt.dds")].Should().Be("Textures/Armors/greenHilt.dds");
+        data.OutputToArchiveMap[new GamePath(LocationId.Game, "Textures/Armors/greenArmor.dds")].Should()
+            .Be("Textures/Armors/greenArmor.dds");
+        data.OutputToArchiveMap[new GamePath(LocationId.Game, "Textures/Armors/greenBlade.dds")].Should()
+            .Be("Textures/Armors/greenBlade.dds");
+        data.OutputToArchiveMap[new GamePath(LocationId.Game, "Textures/Armors/greenHilt.dds")].Should()
+            .Be("Textures/Armors/greenHilt.dds");
     }
 
     private (ModContentNode<int> node, DeploymentData data, PreviewEntryNode target)
@@ -33,7 +36,7 @@ public class NodeLinkingTests
 
         var target = PreviewEntryNode.Create(new GamePath(LocationId.Game, ""), true);
         foreach (var file in GetPaths())
-            target.AddChild(file, false);
+            target.AddChildren(file, false);
 
         return (node, data, target);
     }

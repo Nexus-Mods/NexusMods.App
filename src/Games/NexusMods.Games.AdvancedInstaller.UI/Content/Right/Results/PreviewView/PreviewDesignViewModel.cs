@@ -49,7 +49,7 @@ internal class PreviewDesignViewModel : AViewModel<IPreviewViewModel>, IPreviewV
 
         var target = PreviewEntryNode.Create(new GamePath(LocationId.Game, ""), true);
         foreach (var file in fileEntries)
-            target.AddChild(file, false);
+            target.AddChildren(file, false);
 
         return new TreeEntryViewModel(target);
     }

@@ -38,7 +38,7 @@ public class NodeCreationTests
         // Create empty tree, then add all paths separately.
         var root = PreviewEntryNode.Create(new GamePath(LocationId.Game, ""), true);
         foreach (var file in GetPaths())
-            root.AddChild(file, false);
+            root.AddChildren(file, false);
 
         // Now verify the structure.
         AssertChildNode(root, "BWS.bsa");
