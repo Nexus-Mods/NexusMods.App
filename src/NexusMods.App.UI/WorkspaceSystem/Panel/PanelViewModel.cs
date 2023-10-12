@@ -86,6 +86,10 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                                 else
                                     SelectedTabId = _tabs[(int)removedIndex].Id;
                             }
+                            else
+                            {
+                                SelectedTabId = PanelTabId.Empty;
+                            }
                         }
 
                         // update indices
