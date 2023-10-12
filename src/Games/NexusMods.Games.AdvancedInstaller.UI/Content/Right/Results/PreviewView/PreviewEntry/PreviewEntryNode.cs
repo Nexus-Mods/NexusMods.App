@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 using NexusMods.Paths;
+using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
 
@@ -27,7 +28,7 @@ public interface IPreviewEntryNode
     /// <remarks>
     ///     See <see cref="ModContentNode{TNodeValue}.Children" />
     /// </remarks>
-    ObservableCollection<IPreviewEntryNode> Children { get; }
+    ObservableCollection<ITreeEntryViewModel> Children { get; }
 
     /// <summary>
     ///     The file name displayed for this node.
@@ -83,7 +84,7 @@ public class PreviewEntryNode : IPreviewEntryNode, IModContentBindingTarget
 {
     // TODO: This (FullPath) should be optimized because we are creating a new string for every item.
     public GamePath FullPath { get; init; }
-    public ObservableCollection<IPreviewEntryNode> Children { get; init; } = new();
+    public ObservableCollection<ITreeEntryViewModel> Children { get; init; } = new();
     public List<IUnlinkableItem>? UnlinkableItems { get; private set; } = new();
 
     // Do not rearrange order here, flags are deliberately last to optimize for struct layout.
@@ -178,7 +179,7 @@ public class PreviewEntryNode : IPreviewEntryNode, IModContentBindingTarget
             var isLastComponent = x == pathComponents.Length - 1;
 
             // Check if the current node already has a child with the name of the current path component.
-            var childNode = currentNode.Children.FirstOrDefault(child => child.FileName == component);
+            var childNode = currentNode.Children.FirstOrDefault(child => child.Node.AsT2.FileName == component);
 
             // If the child node doesn't exist, create it.
             if (childNode == null)
@@ -194,14 +195,15 @@ public class PreviewEntryNode : IPreviewEntryNode, IModContentBindingTarget
                     ? PreviewEntryNodeFlags.Default
                     : PreviewEntryNodeFlags.IsDirectory;
 
-                childNode = new PreviewEntryNode(newGamePath, isNewFlag | isDirectoryFlag);
+                childNode = new TreeEntryViewModel(new PreviewEntryNode(newGamePath, isNewFlag | isDirectoryFlag));
                 currentNode.Children.Add(childNode);
             }
 
             // Set the current node to the child node and continue.
-            currentNode = (PreviewEntryNode)childNode;
+            currentNode = (PreviewEntryNode)childNode.Node.AsT2;
         }
     }
+
 }
 
 /// <summary>

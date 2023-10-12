@@ -5,7 +5,6 @@ using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
-using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;

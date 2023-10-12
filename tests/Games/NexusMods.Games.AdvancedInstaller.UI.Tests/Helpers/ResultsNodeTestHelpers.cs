@@ -36,5 +36,5 @@ internal static class ResultsNodeTestHelpers
 internal static class ResultsNodeExtensions
 {
     public static IPreviewEntryNode? GetNode(this IPreviewEntryNode root, string expectedName) =>
-        root.Children.FirstOrDefault(x => x.FileName == expectedName);
+        root.Children.FirstOrDefault(x => x.Node.AsT2.FileName == expectedName)?.Node.AsT2;
 }
