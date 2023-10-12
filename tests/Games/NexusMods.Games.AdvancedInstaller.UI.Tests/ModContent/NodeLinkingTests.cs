@@ -22,7 +22,28 @@ public class NodeLinkingTests
 
         // Assert
         target.Received().Bind(Arg.Any<IUnlinkableItem>(), Arg.Any<bool>());
+        data.ArchiveToOutputMap.Count.Should().Be(3);
+        data.OutputToArchiveMap.Count.Should().Be(3);
+        armorsDir.GetNode("greenArmor.dds").Status.Should().Be(ModContentNodeStatus.IncludedViaParent);
+        armorsDir.GetNode("greenBlade.dds").Status.Should().Be(ModContentNodeStatus.IncludedViaParent);
+        armorsDir.GetNode("greenHilt.dds").Status.Should().Be(ModContentNodeStatus.IncludedViaParent);
+    }
+
+    [Fact]
+    public void CanLinkFoldersRecursively()
+    {
+        // Arrange & Act
+        var (node, data, target) = CommonSetup();
+        var texturesDir = node.GetNode("Textures");
+        texturesDir.Link(data, target, false);
+
+        // Assert
+        target.Received().Bind(Arg.Any<IUnlinkableItem>(), Arg.Any<bool>());
+        data.ArchiveToOutputMap.Count.Should().Be(6);
+        data.OutputToArchiveMap.Count.Should().Be(6);
         AssertArmorsLinked(data);
+
+        var armorsDir = texturesDir.GetNode("Armors");
         armorsDir.GetNode("greenArmor.dds").Status.Should().Be(ModContentNodeStatus.IncludedViaParent);
         armorsDir.GetNode("greenBlade.dds").Status.Should().Be(ModContentNodeStatus.IncludedViaParent);
         armorsDir.GetNode("greenHilt.dds").Status.Should().Be(ModContentNodeStatus.IncludedViaParent);
@@ -101,8 +122,6 @@ public class NodeLinkingTests
 
     private void AssertArmorsLinked(DeploymentData data)
     {
-        data.ArchiveToOutputMap.Count.Should().Be(3);
-        data.OutputToArchiveMap.Count.Should().Be(3);
         data.ArchiveToOutputMap["Textures/Armors/greenArmor.dds"].Should()
             .Be(new GamePath(LocationId.Game, "greenArmor.dds"));
         data.ArchiveToOutputMap["Textures/Armors/greenBlade.dds"].Should()
