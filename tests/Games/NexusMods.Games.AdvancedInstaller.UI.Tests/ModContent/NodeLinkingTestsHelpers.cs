@@ -10,7 +10,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Tests.ModContent;
 /// <summary>
 ///     Tests related to the linking of mod content nodes to output directories.
 /// </summary>
-public class NodeLinkingTests : AModContentNodeTest
+public class NodeLinkingTestsHelpers
 {
     [Fact]
     public void CanLinkFolders()
@@ -88,7 +88,7 @@ public class NodeLinkingTests : AModContentNodeTest
     private (ModContentNode<int> node, DeploymentData data, IModContentBindingTarget target)
         CommonSetup(Action<IUnlinkableItem>? getUnlinkableCallback = null)
     {
-        var node = CreateTestTreeNode();
+        var node = ModContentNodeTestHelpers.CreateTestTreeNode();
         var data = new DeploymentData();
         var target = Substitute.For<IModContentBindingTarget>();
 

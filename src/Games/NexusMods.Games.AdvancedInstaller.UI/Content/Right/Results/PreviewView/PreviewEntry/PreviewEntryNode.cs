@@ -81,7 +81,7 @@ public interface IPreviewEntryNode
 /// </summary>
 public class PreviewEntryNode : IPreviewEntryNode, IModContentBindingTarget
 {
-    // TODO: This should be optimized because we are creating a new string for every item.
+    // TODO: This (FullPath) should be optimized because we are creating a new string for every item.
     public GamePath FullPath { get; init; }
     public ObservableCollection<IPreviewEntryNode> Children { get; init; } = new();
     public List<IUnlinkableItem>? UnlinkableItems { get; private set; } = new();
@@ -149,27 +149,27 @@ public class PreviewEntryNode : IPreviewEntryNode, IModContentBindingTarget
     /// </summary>
     /// <param name="fullPath">The path to create the node from.</param>
     /// <param name="isDirectory">True if the final part of the directory is a path.</param>
-    /// <param name="checker">Checks if the item has already has existed prior.</param>
     /// <returns>The root node.</returns>
-    public static PreviewEntryNode Create<TChecker>(GamePath fullPath, bool isDirectory, TChecker checker)
-        where TChecker : struct, ICheckIfItemAlreadyExists // for devirtualization, do not de-struct.
+    public static PreviewEntryNode Create(GamePath fullPath, bool isDirectory)
     {
         var root = new PreviewEntryNode(fullPath, PreviewEntryNodeFlags.IsRoot | PreviewEntryNodeFlags.IsDirectory);
-        root.AddChild(fullPath.Path, isDirectory, checker);
+        root.AddChild(fullPath.Path, isDirectory, new AlwaysFalseChecker());
         return root;
     }
 
     /// <summary>
     ///     Adds a child node to the current node.
     /// </summary>
-    /// <param name="path">The path relative to root <see cref="GamePath"/>.</param>
+    /// <param name="relativePath">The path relative to current node.</param>
     /// <param name="isDirectory">True if the final part of the directory is a path.</param>
-    /// <param name="checker">Checks if the item has already has existed prior.</param>
     /// <remarks>Adds a child to any non-root node.</remarks>
-    public void AddChild<TChecker>(string path, bool isDirectory, TChecker checker)
+    public void AddChild(string relativePath, bool isDirectory) =>
+        AddChild(relativePath, isDirectory, new AlwaysFalseChecker());
+
+    private void AddChild<TChecker>(string relativePath, bool isDirectory, TChecker checker)
         where TChecker : struct, ICheckIfItemAlreadyExists // for devirtualization, do not de-struct.
     {
-        var pathComponents = path.Split('/');
+        var pathComponents = relativePath.Split('/');
         var currentNode = this;
 
         for (var x = 0; x < pathComponents.Length; x++)
@@ -185,7 +185,6 @@ public class PreviewEntryNode : IPreviewEntryNode, IModContentBindingTarget
             {
                 var childFullPath = currentNode.FullPath.Path.Join(component);
                 var newGamePath = new GamePath(FullPath.LocationId, childFullPath);
-                PreviewEntryNodeFlags childFlags;
 
                 var isNewFlag = checker.AlreadyExists(newGamePath)
                     ? PreviewEntryNodeFlags.IsNew
@@ -203,19 +202,6 @@ public class PreviewEntryNode : IPreviewEntryNode, IModContentBindingTarget
             currentNode = (PreviewEntryNode)childNode;
         }
     }
-}
-
-/// <summary>
-///     An interface that informs the node adding process whether an item has previously existed.
-/// </summary>
-public interface ICheckIfItemAlreadyExists
-{
-    /// <summary>
-    ///     Returns true if the given path already exist
-    /// </summary>
-    /// <param name="path">The path to validate if it already exists in the game folder.</param>
-    /// <returns>True if this path already exists, else false.</returns>
-    bool AlreadyExists(GamePath path);
 }
 
 /// <summary>
@@ -251,7 +237,28 @@ public enum PreviewEntryNodeFlags
     IsRoot = 0b0000_1000,
 
     /// <summary>
-    ///     If this is true the 'dupe folder' pill should be displayed in the UI.
+    ///     If this is true, this folder has the same name as its parent.
     /// </summary>
     IsFolderDuplicated = 0b0001_0000,
+}
+
+/// <summary>
+///     An interface that informs the node adding process whether an item has previously existed.
+/// </summary>
+public interface ICheckIfItemAlreadyExists
+{
+    /// <summary>
+    ///     Returns true if the given path already exist
+    /// </summary>
+    /// <param name="path">The path to validate if it already exists in the game folder.</param>
+    /// <returns>True if this path already exists, else false.</returns>
+    bool AlreadyExists(GamePath path);
+}
+
+/// <summary>
+///     A checker that always returns false.
+/// </summary>
+internal struct AlwaysFalseChecker : ICheckIfItemAlreadyExists
+{
+    public bool AlreadyExists(GamePath path) => true;
 }

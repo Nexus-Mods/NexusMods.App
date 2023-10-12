@@ -5,26 +5,26 @@ using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers;
 
-public abstract class AModContentNodeTest
+internal static class ModContentNodeTestHelpers
 {
-    internal ModContentNode<int>? GetChildNode(IModContentNode root,
+    internal static ModContentNode<int>? GetChildNode(IModContentNode root,
         string fileName)
     {
         return root.Children.FirstOrDefault(x => x.Node.AsT0.FileName == fileName)!.Node.AsT0 as
             ModContentNode<int>;
     }
 
-    protected void AssertFileInTree(IModContentNode root, string expectedName, bool isRoot,
+    internal static void AssertChildNode(IModContentNode root, string expectedName, bool isRoot,
         bool isDirectory, int expectedChildrenCount)
     {
         AssertNode(root.GetNode(expectedName), expectedName, isRoot, isDirectory,
             expectedChildrenCount);
     }
 
-    protected IModContentNode GetNode(IModContentNode root, string expectedName) =>
+    internal static IModContentNode GetNode(IModContentNode root, string expectedName) =>
         root.Children.FirstOrDefault(x => x.Node.AsT0.FileName == expectedName)!.Node.AsT0;
 
-    protected void AssertNode(IModContentNode node, string expectedName, bool isRoot, bool isDirectory,
+    internal static void AssertNode(IModContentNode node, string expectedName, bool isRoot, bool isDirectory,
         int expectedChildrenCount)
     {
         node.FileName.Should().Be(expectedName);
@@ -33,12 +33,12 @@ public abstract class AModContentNodeTest
         node.Children.Length.Should().Be(expectedChildrenCount);
     }
 
-    internal ModContentNode<int> CreateTestTreeNode()
+    internal static ModContentNode<int> CreateTestTreeNode()
     {
         return ModContentNode<int>.FromFileTree(CreateTestTree());
     }
 
-    protected FileTreeNode<RelativePath, int> CreateTestTree()
+    internal static FileTreeNode<RelativePath, int> CreateTestTree()
     {
         var fileEntries = new Dictionary<RelativePath, int>
         {

@@ -1,10 +1,10 @@
 using FluentAssertions;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
-using NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers;
+using static NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers.ModContentNodeTestHelpers;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Tests.ModContent;
 
-public class NodeSelectionTests : AModContentNodeTest
+public class NodeSelectionTestsHelpers
 {
     [Fact]
     public void SelectingRootNode_AllChildrenAreSelected()
