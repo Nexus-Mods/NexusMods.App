@@ -249,7 +249,7 @@
     </Style>
 
     <Style Selector="TextBlock.BodyMDBold">
-        <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
+        <Setter Property="FontFamily" Value="{DynamicResource FontSecondaryBold}" />
         <Setter Property="FontWeight" Value="700" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="LineHeight" Value="21" />
