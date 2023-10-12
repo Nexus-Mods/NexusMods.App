@@ -10,7 +10,7 @@
     Width="0" Height="0">
 
     <Grid RowDefinitions="Auto, Auto, *" ColumnDefinitions="*, Auto">
-        <ItemsControl Grid.Row="0" Grid.Column="0" x:Name="TabHeaders">
+        <ItemsControl Grid.Row="0" Grid.Column="0" Height="52" x:Name="TabHeaders">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Horizontal" Spacing="8"/>

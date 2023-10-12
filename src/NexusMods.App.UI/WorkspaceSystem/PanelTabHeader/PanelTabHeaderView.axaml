@@ -7,33 +7,42 @@
     xmlns:reactive="http://reactiveui.net"
     xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
     xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
-    mc:Ignorable="d" d:DesignWidth="232" d:DesignHeight="60"
+    mc:Ignorable="d" d:DesignWidth="232" d:DesignHeight="52"
     x:Class="NexusMods.App.UI.WorkspaceSystem.PanelTabHeaderView">
 
     <Design.DataContext>
-        <workspace:PanelTabHeaderDesignViewModel/>
+        <workspace:PanelTabHeaderDesignViewModel />
     </Design.DataContext>
 
-    <StackPanel Orientation="Horizontal" Spacing="12" Height="52" Margin="24, 24, 24, 24" PointerPressed="InputElement_OnPointerPressed">
-        <StackPanel.Styles>
-            <StyleInclude Source="avares://NexusMods.App.UI/Theme/TextBlockStyles.xaml"></StyleInclude>
-            <StyleInclude Source="avares://NexusMods.App.UI/Theme/IconStyles.xaml"></StyleInclude>
-        </StackPanel.Styles>
+    <Border x:Name="Container" PointerPressed="InputElement_OnPointerPressed">
+        <Border.Styles>
+            <StyleInclude Source="avares://NexusMods.App.UI/Palatte/Nexus.xaml"/>
+            <StyleInclude Source="avares://NexusMods.App.UI/Theme/TextBlockStyles.xaml"/>
+            <StyleInclude Source="avares://NexusMods.App.UI/Theme/IconStyles.xaml"/>
 
-        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-            <Image x:Name="IconImage" MaxHeight="24" MaxWidth="24" Height="100" Width="100"/>
-            <TextBlock x:Name="TitleTextBlock" Classes="BodyMDBold" Width="114" TextWrapping="NoWrap" FontSize="14" LineHeight="21" VerticalAlignment="Bottom" />
+            <Style Selector="Border.Selected">
+                <Setter Property="Background" Value="{StaticResource BrandSecondaryDarker}"></Setter>
+            </Style>
+        </Border.Styles>
+
+        <StackPanel Orientation="Horizontal" Spacing="12" Height="52" Margin="24, 14, 24, 14">
+            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                <Image x:Name="IconImage" MaxHeight="24" MaxWidth="24" Height="100" Width="100" />
+                <TextBlock x:Name="TitleTextBlock" Classes="BodyMDBold" Width="114" TextWrapping="NoWrap" FontSize="14"
+                           LineHeight="21" VerticalAlignment="Bottom" />
+            </StackPanel>
+
+            <Button x:Name="CloseTabButton" Width="28" Height="28">
+                <Button.Template>
+                    <ControlTemplate>
+                        <Border Background="Transparent">
+                            <icons:Icon Classes="Close" Width="22" Height="22" />
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+
         </StackPanel>
-
-        <Button x:Name="CloseTabButton" Width="28" Height="28">
-            <Button.Template>
-                <ControlTemplate>
-                    <Border Background="Transparent">
-                        <icons:Icon Classes="Close" Width="22" Height="22"/>
-                    </Border>
-                </ControlTemplate>
-            </Button.Template>
-        </Button>
-    </StackPanel>
+    </Border>
 
 </reactive:ReactiveUserControl>

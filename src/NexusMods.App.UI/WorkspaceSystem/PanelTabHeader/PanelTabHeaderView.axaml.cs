@@ -1,4 +1,6 @@
 using System.Reactive.Disposables;
+using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
@@ -13,11 +15,18 @@ public partial class PanelTabHeaderView : ReactiveUserControl<IPanelTabHeaderVie
     public PanelTabHeaderView()
     {
         InitializeComponent();
-        Background = Brushes.Transparent;
 
         this.WhenActivated(disposables =>
         {
-            this.OneWayBind(ViewModel, vm => vm.Icon, view => view.IconImage.Source)
+            this.WhenAnyValue(view => view.ViewModel!.Icon)
+                .SubscribeWithErrorLogging(icon =>
+                {
+                    IconImage.Source = icon;
+
+                    var size = icon?.Size ?? new Size(0, 0);
+                    IconImage.Width = size.Width;
+                    IconImage.Height = size.Height;
+                })
                 .DisposeWith(disposables);
 
             this.OneWayBind(ViewModel, vm => vm.Title, view => view.TitleTextBlock.Text)
@@ -29,7 +38,8 @@ public partial class PanelTabHeaderView : ReactiveUserControl<IPanelTabHeaderVie
             this.WhenAnyValue(vm => vm.ViewModel!.IsSelected)
                 .SubscribeWithErrorLogging(isSelected =>
                 {
-                    Background = isSelected ? Brushes.Aqua : Brushes.Transparent;
+                    if (isSelected) Container.Classes.Add("Selected");
+                    else Container.Classes.Remove("Selected");
                 })
                 .DisposeWith(disposables);
         });
