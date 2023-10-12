@@ -1,15 +1,15 @@
-﻿<reactiveUi:ReactiveUserControl x:TypeArguments="previewView1:IPreviewViewModel"
+﻿<reactiveUi:ReactiveUserControl x:TypeArguments="ui:IPreviewViewModel"
                                 xmlns="https://github.com/avaloniaui"
                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
-                                xmlns:previewView1="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView"
+                                xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewView">
     <Design.DataContext>
-        <previewView1:PreviewViewModel />
+        <ui:PreviewDesignViewModel />
     </Design.DataContext>
 
     <Border Classes="Rounded StructuralBorderColor Padding16" x:Name="TopLevelBorder">
@@ -47,12 +47,7 @@
             <ItemsControl Grid.Row="1" x:Name="LocationsPreviewsItemsControl">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel Orientation="Vertical">
-                            <!-- This might need to go into a separate View -->
-                            <TreeDataGrid Classes="TreeNoSelection TreeNoHeader" x:Name="LocationPreviewTreeDataGrid"
-                                          ShowColumnHeaders="True"
-                                          Foreground="{DynamicResource FontDarkSecondaryColor}" />
-                        </StackPanel>
+                        <StackPanel Orientation="Vertical"/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
