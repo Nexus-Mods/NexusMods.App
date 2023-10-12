@@ -7,7 +7,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Tests.ModContent;
 /// <summary>
 /// Tests converting <see cref="FileTreeNode{TPath,TValue}"/> into ViewModel specific nodes.
 /// </summary>
-public class FileTreeConversionTestsHelpers
+public class FileTreeConversionTests
 {
     [Fact]
     public void CanCreateNodes_Basic()
