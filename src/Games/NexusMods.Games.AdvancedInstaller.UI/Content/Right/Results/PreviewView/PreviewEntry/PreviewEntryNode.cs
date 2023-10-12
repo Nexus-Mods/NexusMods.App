@@ -55,6 +55,11 @@ public interface IPreviewEntryNode
     /// </summary>
     bool IsFolderMerged { get; }
 
+    /// <summary>
+    ///     If this is true the 'dupe folder' pill should be displayed in the UI.
+    /// </summary>
+    bool IsFolderDuplicated { get; }
+
     /*
        Note:
        In the case of folder, the item can be merged or created from multiple sources, e.g. Multiple folders.
@@ -93,6 +98,9 @@ public class PreviewEntryNode : IPreviewEntryNode, IModContentBindingTarget
 
     public bool IsFolderMerged =>
         (Flags & PreviewEntryNodeFlags.IsFolderMerged) == PreviewEntryNodeFlags.IsFolderMerged;
+
+    public bool IsFolderDuplicated =>
+        (Flags & PreviewEntryNodeFlags.IsFolderDuplicated) == PreviewEntryNodeFlags.IsFolderDuplicated;
 
 
     public PreviewEntryNode(GamePath fullPath, PreviewEntryNodeFlags flags)
@@ -240,5 +248,10 @@ public enum PreviewEntryNodeFlags
     ///     If this is true, this node is the root, and cannot be deleted.
     ///     (All items can however be unlinked)
     /// </summary>
-    IsRoot = 0b0000_1000
+    IsRoot = 0b0000_1000,
+
+    /// <summary>
+    ///     If this is true the 'dupe folder' pill should be displayed in the UI.
+    /// </summary>
+    IsFolderDuplicated = 0b0001_0000,
 }
