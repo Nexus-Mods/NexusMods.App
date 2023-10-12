@@ -5,34 +5,77 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactive="http://reactiveui.net"
     xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
-    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="400"
     x:Class="NexusMods.App.UI.WorkspaceSystem.PanelView"
     Width="0" Height="0">
 
-    <Grid RowDefinitions="Auto, Auto, *" ColumnDefinitions="*, Auto">
-        <ItemsControl Grid.Row="0" Grid.Column="0" Height="52" x:Name="TabHeaders">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel Orientation="Horizontal" Spacing="8"/>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
+    <Design.DataContext>
+        <workspace:PanelDesignViewModel/>
+    </Design.DataContext>
 
-            <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="{x:Type workspace:IPanelTabHeaderViewModel}">
-                    <reactive:ViewModelViewHost ViewModel="{Binding}"/>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+    <Grid RowDefinitions="Auto, *" Background="{StaticResource BrandSecondaryDarker}">
+        <Grid.Styles>
+            <StyleInclude Source="avares://NexusMods.App.UI/Palatte/Nexus.xaml"/>
+            <StyleInclude Source="avares://NexusMods.App.UI/Theme/TextBlockStyles.xaml"/>
+            <StyleInclude Source="avares://NexusMods.App.UI/Theme/IconStyles.xaml"/>
+        </Grid.Styles>
 
-        <Button Grid.Row="0" Grid.Column="1" x:Name="AddTabButton" Classes="Standard PrimaryOutlined">
-            <TextBlock>Add Tab</TextBlock>
-        </Button>
+        <Grid Grid.Row="0" ColumnDefinitions="Auto, *" Background="{StaticResource BackgroundPrimaryColor}">
+            <ItemsControl Grid.Column="0" x:Name="TabHeaders" Height="52">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" Spacing="0"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
 
-        <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ClosePanelButton" Classes="Standard PrimaryOutlined">
-            <TextBlock>Close Panel</TextBlock>
-        </Button>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type workspace:IPanelTabHeaderViewModel}">
+                        <reactive:ViewModelViewHost ViewModel="{Binding}"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
 
-        <reactive:ViewModelViewHost Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" x:Name="ViewModelViewHost"/>
+            <Grid Grid.Column="1" ColumnDefinitions="*, Auto, Auto" Margin="12, 12, 12, 12">
+                <Grid.Styles>
+                    <Style Selector="icons|Icon">
+                        <Setter Property="Foreground" Value="{StaticResource FontDarkSecondaryColor}"/>
+                    </Style>
+                </Grid.Styles>
+
+                <Button Grid.Column="0" x:Name="AddTabButton">
+                    <Button.Template>
+                        <ControlTemplate>
+                            <Border Background="Transparent">
+                                <icons:Icon Classes="Plus" Width="24" Height="24" />
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+
+                <Button Grid.Column="1" x:Name="PopOutPanelButton">
+                    <Button.Template>
+                        <ControlTemplate>
+                            <Border Background="Transparent">
+                                <icons:Icon Classes="OpenInNew" Width="24" Height="24" />
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+
+                <Button Grid.Column="2" x:Name="ClosePanelButton" Margin="4, 0, 0, 0">
+                    <Button.Template>
+                        <ControlTemplate>
+                            <Border Background="Transparent">
+                                <icons:Icon Classes="Close" Width="24" Height="24" />
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
+        </Grid>
+
+        <reactive:ViewModelViewHost Grid.Row="1" x:Name="ViewModelViewHost"/>
     </Grid>
 
 </reactive:ReactiveUserControl>
