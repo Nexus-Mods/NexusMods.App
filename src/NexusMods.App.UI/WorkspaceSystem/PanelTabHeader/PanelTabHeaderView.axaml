@@ -49,7 +49,7 @@
             <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                 <Image x:Name="IconImage" MaxHeight="24" MaxWidth="24" Height="100" Width="100" />
                 <TextBlock x:Name="TitleTextBlock" Classes="BodyMDBold" Width="114" TextWrapping="NoWrap" FontSize="14"
-                           LineHeight="21" VerticalAlignment="Bottom" />
+                           LineHeight="21" VerticalAlignment="Bottom" TextTrimming="CharacterEllipsis" />
             </StackPanel>
 
             <Button x:Name="CloseTabButton" Width="28" Height="28">

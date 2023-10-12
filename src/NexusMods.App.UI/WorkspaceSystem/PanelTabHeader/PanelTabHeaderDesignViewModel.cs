@@ -15,7 +15,7 @@ public class PanelTabHeaderDesignViewModel : AViewModel<IPanelTabHeaderViewModel
 {
     public PanelTabId Id { get; } = PanelTabId.From(Guid.Empty);
 
-    public string Title { get; set; } = "My Mods";
+    public string Title { get; set; } = "Very long name for tab headers";
 
     public IImage? Icon { get; set; }
 
