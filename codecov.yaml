@@ -11,6 +11,6 @@ coverage:
       default:
         threshold: 0.05 # 5%
 ignore:
- - "*.axaml.cs"
- - "*.axaml"
- - "*.g.cs:
+ - "**/*.axaml.cs"
+ - "**/*.axaml"
+ - "**/*.g.cs:
