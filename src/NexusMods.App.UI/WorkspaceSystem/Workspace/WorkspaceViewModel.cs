@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Reactive.Disposables;
 using Avalonia;
 using DynamicData;
+using NexusMods.App.UI.Controls;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -89,6 +90,9 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                         LogicalBounds = logicalBounds,
                     };
 
+                    var tab = panelViewModel.AddTab();
+                    tab.Contents = new DummyViewModel();
+
                     panelViewModel.Arrange(_lastWorkspaceSize);
                     updater.AddOrUpdate(panelViewModel);
                 }
@@ -105,7 +109,6 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         });
 
         Debug.Assert(panelViewModel is not null);
-
         return panelViewModel;
     }
 

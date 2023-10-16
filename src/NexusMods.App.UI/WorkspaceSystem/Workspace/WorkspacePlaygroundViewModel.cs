@@ -15,13 +15,10 @@ public class WorkspacePlaygroundViewModel : AViewModel<IWorkspacePlaygroundViewM
     {
         this.WhenActivated(disposables =>
         {
-            var panel = WorkspaceViewModel.AddPanel(new Dictionary<PanelId, Rect>
+            WorkspaceViewModel.AddPanel(new Dictionary<PanelId, Rect>
             {
                 { PanelId.Empty, MathUtils.One }
             });
-
-            var tab = panel.AddTab();
-            tab.Contents = new DummyViewModel();
 
             Disposable.Create(() => { }).DisposeWith(disposables);
         });
