@@ -50,7 +50,7 @@ public class LocationPreviewTreeDesignViewModel : AViewModel<ILocationPreviewTre
 
         var target = PreviewEntryNode.Create(new GamePath(LocationId.Game, ""), true);
         foreach (var file in fileEntries)
-            target.AddChild(file, false);
+            target.AddChildren(file, false);
 
         return new TreeEntryViewModel(target);
     }
