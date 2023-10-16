@@ -33,6 +33,11 @@ public interface IPanelViewModel : IViewModelInterface
     public ReactiveCommand<Unit, Unit> CloseCommand { get; }
 
     /// <summary>
+    /// Gets the command for opening the panel in a new window.
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> PopoutCommand { get; }
+
+    /// <summary>
     /// Gets or sets the logical bounds the panel.
     /// </summary>
     /// <remarks>

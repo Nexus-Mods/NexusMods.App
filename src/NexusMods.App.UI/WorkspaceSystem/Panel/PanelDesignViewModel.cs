@@ -11,6 +11,7 @@ public class PanelDesignViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 
     public ReactiveCommand<Unit, Unit> AddTabCommand => Initializers.DisabledReactiveCommand;
     public ReactiveCommand<Unit, Unit> CloseCommand => Initializers.DisabledReactiveCommand;
+    public ReactiveCommand<Unit, Unit> PopoutCommand => Initializers.DisabledReactiveCommand;
 
     public ReadOnlyObservableCollection<IPanelTabViewModel> Tabs => Initializers.ReadOnlyObservableCollection<IPanelTabViewModel>();
     public ReadOnlyObservableCollection<IPanelTabHeaderViewModel> TabHeaders => Initializers.ReadOnlyObservableCollection<IPanelTabHeaderViewModel>();

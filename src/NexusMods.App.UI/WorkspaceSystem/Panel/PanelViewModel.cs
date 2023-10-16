@@ -32,15 +32,20 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
     /// <inheritdoc/>
     [Reactive] public Rect ActualBounds { get; private set; }
 
-    public ReactiveCommand<Unit, Unit> CloseCommand { get; }
     public ReactiveCommand<Unit, Unit> AddTabCommand { get; }
+    public ReactiveCommand<Unit, Unit> CloseCommand { get; }
+    public ReactiveCommand<Unit, Unit> PopoutCommand { get; }
 
     private readonly IWorkspaceViewModel _workspaceViewModel;
     public PanelViewModel(IWorkspaceViewModel workspaceViewModel)
     {
         _workspaceViewModel = workspaceViewModel;
 
+        // TODO: open in new window
+        PopoutCommand = Initializers.DisabledReactiveCommand;
+
         CloseCommand = ReactiveCommand.Create(ClosePanel);
+
         AddTabCommand = ReactiveCommand.Create(() =>
         {
             AddTab();

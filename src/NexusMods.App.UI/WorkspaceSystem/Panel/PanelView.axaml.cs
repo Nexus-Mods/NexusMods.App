@@ -26,6 +26,9 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
             this.BindCommand(ViewModel, vm => vm.CloseCommand, view => view.ClosePanelButton)
                 .DisposeWith(disposables);
 
+            this.BindCommand(ViewModel, vm => vm.PopoutCommand, view => view.PopOutPanelButton)
+                .DisposeWith(disposables);
+
             this.BindCommand(ViewModel, vm => vm.AddTabCommand, view => view.AddTabButton)
                 .DisposeWith(disposables);
 
