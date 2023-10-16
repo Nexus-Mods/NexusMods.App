@@ -1,17 +1,25 @@
 using System.Reactive.Disposables;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
 public class PanelTabViewModel : AViewModel<IPanelTabViewModel>, IPanelTabViewModel
 {
+    /// <inheritdoc/>
     public PanelTabId Id { get; } = PanelTabId.From(Guid.NewGuid());
 
+    /// <inheritdoc/>
     public PanelTabIndex Index { get; set; }
 
+    /// <inheritdoc/>
     public IPanelTabHeaderViewModel Header { get; private set; }
 
-    public IViewModel? Contents { get; set; }
+    /// <inheritdoc/>
+    [Reactive] public IViewModel? Contents { get; set; }
+
+    /// <inheritdoc/>
+    [Reactive] public bool IsVisible { get; set; } = true;
 
     public PanelTabViewModel(IPanelViewModel panelViewModel, PanelTabIndex index)
     {

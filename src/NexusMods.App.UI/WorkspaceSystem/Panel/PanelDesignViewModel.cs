@@ -16,7 +16,6 @@ public class PanelDesignViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
     public ReadOnlyObservableCollection<IPanelTabHeaderViewModel> TabHeaders => Initializers.ReadOnlyObservableCollection<IPanelTabHeaderViewModel>();
 
     public PanelTabId SelectedTabId { get; set; }
-    public IViewModel? SelectedTabContents => null;
 
     public Rect LogicalBounds { get; set; } = new(0, 0, 1, 1);
     public Rect ActualBounds { get; } = new(0, 0, 1000, 400);

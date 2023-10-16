@@ -26,9 +26,6 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
     [Reactive]
     public PanelTabId SelectedTabId { get; set; }
 
-    [Reactive]
-    public IViewModel? SelectedTabContents { get; private set; }
-
     /// <inheritdoc/>
     [Reactive] public Rect LogicalBounds { get; set; }
 
@@ -113,16 +110,17 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                 .SubscribeWithErrorLogging(optional =>
                 {
                     var tab = optional.HasValue ? optional.Value : null;
-                    SelectedTabContents = tab?.Contents;
 
                     if (tab is not null)
                     {
                         tab.Header.IsSelected = true;
+                        tab.IsVisible = true;
                     }
 
                     foreach (var tabViewModel in _tabs)
                     {
                         tabViewModel.Header.IsSelected = ReferenceEquals(tabViewModel, tab);
+                        tabViewModel.IsVisible = ReferenceEquals(tabViewModel, tab);
                     }
                 })
                 .DisposeWith(disposables);

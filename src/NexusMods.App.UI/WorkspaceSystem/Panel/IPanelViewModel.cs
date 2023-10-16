@@ -28,11 +28,6 @@ public interface IPanelViewModel : IViewModelInterface
     public PanelTabId SelectedTabId { get; set; }
 
     /// <summary>
-    /// Gets the contents of the selected tab.
-    /// </summary>
-    public IViewModel? SelectedTabContents { get; }
-
-    /// <summary>
     /// Gets the command for closing this panel.
     /// </summary>
     public ReactiveCommand<Unit, Unit> CloseCommand { get; }

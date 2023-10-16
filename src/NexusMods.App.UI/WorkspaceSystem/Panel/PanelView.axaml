@@ -31,7 +31,7 @@
 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type workspace:IPanelTabHeaderViewModel}">
-                        <reactive:ViewModelViewHost ViewModel="{Binding}"/>
+                        <reactive:ViewModelViewHost ViewModel="{Binding Mode=OneWay}"/>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
@@ -75,7 +75,19 @@
             </Grid>
         </Grid>
 
-        <reactive:ViewModelViewHost Grid.Row="1" x:Name="ViewModelViewHost"/>
+        <ItemsControl Grid.Row="1" x:Name="TabContents">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid RowDefinitions="*" ColumnDefinitions="*"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type workspace:IPanelTabViewModel}">
+                    <reactive:ViewModelViewHost x:Name="ViewModelViewHost" IsVisible="{Binding IsVisible, Mode=OneWay}" ViewModel="{Binding Contents, Mode=OneWay}" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </Grid>
 
 </reactive:ReactiveUserControl>
