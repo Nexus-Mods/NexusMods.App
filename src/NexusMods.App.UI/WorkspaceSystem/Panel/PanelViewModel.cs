@@ -38,15 +38,12 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
     public ReactiveCommand<Unit, Unit> CloseCommand { get; }
     public ReactiveCommand<Unit, Unit> AddTabCommand { get; }
 
+    private readonly IWorkspaceViewModel _workspaceViewModel;
     public PanelViewModel(IWorkspaceViewModel workspaceViewModel)
     {
-        CloseCommand = ReactiveCommand.Create(() =>
-        {
-            workspaceViewModel.ClosePanel(this);
-            _tabsSource.Clear();
-            _tabsSource.Dispose();
-        });
+        _workspaceViewModel = workspaceViewModel;
 
+        CloseCommand = ReactiveCommand.Create(ClosePanel);
         AddTabCommand = ReactiveCommand.Create(() =>
         {
             AddTab();
@@ -72,6 +69,12 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 
                     if (changeSet.TryGetFirst(change => change.Reason == ChangeReason.Remove, out var removed))
                     {
+                        if (_tabs.Count == 0)
+                        {
+                            ClosePanel();
+                            return;
+                        }
+
                         var removedIndex = removed.Current.Index.Value;
 
                         // set new selected tab
@@ -157,5 +160,12 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
     public void CloseTab(PanelTabId id)
     {
         _tabsSource.Remove(id);
+    }
+
+    private void ClosePanel()
+    {
+        _workspaceViewModel.ClosePanel(this);
+        _tabsSource.Clear();
+        _tabsSource.Dispose();
     }
 }
