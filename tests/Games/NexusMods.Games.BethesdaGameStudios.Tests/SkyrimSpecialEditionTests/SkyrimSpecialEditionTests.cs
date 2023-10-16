@@ -147,10 +147,9 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
             var files = mod!.Files;
             foreach (var file in analysis)
             {
-                var newFile = new GameFile
+                var newFile = new FromArchive
                 {
                     Id = ModFileId.New(),
-                    Installation = loadout.Value.Installation,
                     To = new GamePath(LocationId.Game, $"Data/{file.Key}"),
                     Hash = Hash.Zero,
                     Size = Size.Zero,
