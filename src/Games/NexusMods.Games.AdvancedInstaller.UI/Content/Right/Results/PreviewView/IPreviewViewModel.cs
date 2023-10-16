@@ -1,9 +1,9 @@
-﻿using Avalonia.Controls;
+﻿using System.Collections.ObjectModel;
 using NexusMods.App.UI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView;
 
 public interface IPreviewViewModel : IViewModel
 {
-    public HierarchicalTreeDataGridSource<ITreeEntryViewModel> Tree { get; }
+    public ReadOnlyObservableCollection<ILocationPreviewTreeViewModel> Locations { get; }
 }

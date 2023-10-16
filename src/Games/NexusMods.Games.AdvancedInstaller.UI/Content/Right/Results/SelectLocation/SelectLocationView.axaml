@@ -1,15 +1,15 @@
-﻿<reactiveUi:ReactiveUserControl x:TypeArguments="selectLocation1:ISelectLocationViewModel"
+﻿<reactiveUi:ReactiveUserControl x:TypeArguments="ui:ISelectLocationViewModel"
                                 xmlns="https://github.com/avaloniaui"
                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
-                                xmlns:selectLocation1="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation"
+                                xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectLocationView">
     <Design.DataContext>
-        <selectLocation1:SelectLocationDesignViewModel />
+        <ui:SelectLocationDesignViewModel />
     </Design.DataContext>
 
 

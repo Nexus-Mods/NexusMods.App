@@ -19,10 +19,12 @@ public static class Services
             .AddView<BodyView, IBodyViewModel>()
             .AddView<ModContentView, IModContentViewModel>()
             .AddView<PreviewView, IPreviewViewModel>()
+            .AddView<LocationPreviewTreeView, ILocationPreviewTreeViewModel>()
             .AddView<EmptyPreviewView, IEmptyPreviewViewModel>()
             .AddView<SelectLocationView, ISelectLocationViewModel>()
             .AddView<SuggestedEntryView, ISuggestedEntryViewModel>()
             .AddView<AdvancedInstallerOverlayView, IAdvancedInstallerOverlayViewModel>()
-            .AddView<TreeEntryView, ITreeEntryViewModel>();
+            .AddView<TreeEntryView, ITreeEntryViewModel>()
+            .AddView<UnsupportedModOverlayView, IUnsupportedModOverlayViewModel>();
     }
 }

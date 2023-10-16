@@ -13,10 +13,8 @@ public partial class PreviewView : ReactiveUserControl<IPreviewViewModel>
 
         this.WhenActivated(disposables =>
         {
-            this.OneWayBind<
-                        IPreviewViewModel, PreviewView, HierarchicalTreeDataGridSource<ITreeEntryViewModel>,
-                        ITreeDataGridSource>
-                    (ViewModel, vm => vm.Tree, view => view.LocationPreviewTreeDataGrid.Source!)
+            this.WhenAnyValue(x => x.ViewModel!.Locations)
+                .BindTo(this, x => x.LocationsPreviewsItemsControl.ItemsSource)
                 .DisposeWith(disposables);
         });
     }
