@@ -13,4 +13,4 @@ coverage:
 ignore:
   - "**/*.axaml.cs"
   - "**/*.axaml"
-  - "**/*.g.cs:
+  - "**/*.g.cs"
