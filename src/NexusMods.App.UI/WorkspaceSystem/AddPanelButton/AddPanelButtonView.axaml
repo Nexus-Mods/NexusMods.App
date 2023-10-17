@@ -6,7 +6,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactive="http://reactiveui.net"
     xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
-    mc:Ignorable="d" d:DesignWidth="40" d:DesignHeight="40"
+    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    mc:Ignorable="d" d:DesignWidth="60" d:DesignHeight="40"
     x:Class="NexusMods.App.UI.WorkspaceSystem.AddPanelButtonView">
 
     <Design.DataContext>
@@ -15,15 +16,25 @@
 
     <Border>
         <Border.Styles>
+            <StyleInclude Source="avares://NexusMods.App.UI/Palatte/Nexus.xaml"/>
+            <StyleInclude Source="avares://NexusMods.App.UI/Theme/IconStyles.xaml"/>
+
             <Style Selector="Button">
-                <Setter Property="Background" Value="{DynamicResource Transparent}"></Setter>
-                <Setter Property="BorderBrush" Value="{DynamicResource BrandPrimary}"></Setter>
+                <Setter Property="Background" Value="{DynamicResource Transparent}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource BrandPrimary}"/>
                 <Setter Property="Padding" Value="0" />
+            </Style>
+
+            <Style Selector="icons|Icon">
+                <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryColor}"/>
             </Style>
         </Border.Styles>
 
         <Button x:Name="AddPanelButton">
-            <Image x:Name="ButtonImage"/>
+            <StackPanel Orientation="Horizontal" Spacing="4">
+                <Image x:Name="ButtonImage"/>
+                <icons:Icon Classes="Plus"/>
+            </StackPanel>
         </Button>
     </Border>
 
