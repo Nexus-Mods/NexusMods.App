@@ -48,7 +48,7 @@
         <StackPanel Orientation="Horizontal" Spacing="12" Height="52" Margin="24, 14, 24, 14">
             <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                 <Image x:Name="IconImage" MaxHeight="24" MaxWidth="24" Height="100" Width="100" />
-                <TextBlock x:Name="TitleTextBlock" Classes="BodyMDBold" Width="114" TextWrapping="NoWrap" FontSize="14"
+                <TextBlock x:Name="TitleTextBlock" Classes="BodyLGBold" Width="114" TextWrapping="NoWrap" FontSize="14"
                            LineHeight="21" VerticalAlignment="Bottom" TextTrimming="CharacterEllipsis" />
             </StackPanel>
 

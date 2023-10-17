@@ -31,10 +31,13 @@
             <TextBlock Classes="BodySMBold" Text="Sample Text BodySMBold" />
             <TextBlock Classes="BodySMNormal" Text="Sample Text BodySMNormal" />
             <TextBlock Classes="UsesBrandWhiteColor" Text="Sample Text UsesBrandWhiteColor" />
-
-
         </StackPanel>
     </Design.PreviewWith>
+
+    <!--
+    NOTE(erri120): dynamic font loading via weights isn't really supported in Avalonia.
+    You need to explicitly use the BOLD font AND change the weight.
+     -->
 
     <Style Selector="TextBlock.Small">
         <Setter Property="FontSize" Value="10" />
@@ -217,7 +220,7 @@
     </Style>
 
     <Style Selector="TextBlock.BodyXLBold">
-        <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
+        <Setter Property="FontFamily" Value="{DynamicResource FontSecondaryBold}" />
         <Setter Property="FontWeight" Value="700" />
         <Setter Property="FontSize" Value="18" />
         <Setter Property="LineHeight" Value="27" />
@@ -233,7 +236,7 @@
     </Style>
 
     <Style Selector="TextBlock.BodyLGBold">
-        <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
+        <Setter Property="FontFamily" Value="{DynamicResource FontSecondaryBold}" />
         <Setter Property="FontWeight" Value="700" />
         <Setter Property="FontSize" Value="16" />
         <Setter Property="LineHeight" Value="24" />
@@ -265,7 +268,7 @@
     </Style>
 
     <Style Selector="TextBlock.BodySMBold">
-        <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
+        <Setter Property="FontFamily" Value="{DynamicResource FontSecondaryBold}" />
         <Setter Property="FontWeight" Value="700" />
         <Setter Property="FontSize" Value="12" />
         <Setter Property="LineHeight" Value="18" />
