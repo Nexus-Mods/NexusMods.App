@@ -16,7 +16,7 @@ internal static class GridUtils
 
         foreach (var panel in panels)
         {
-            if (CanSplitVertically(panel, panels, columns))
+            if (CanAddColumn(panel, panels, columns))
             {
                 var res = CreateResult(currentPanels, panel, vertical: true, inverse: false);
                 yield return res;
@@ -25,7 +25,7 @@ internal static class GridUtils
                     yield return CreateResult(currentPanels, panel, vertical: true, inverse: true);
             }
 
-            if (CanSplitHorizontally(panel, panels, rows))
+            if (CanAddRow(panel, panels, rows))
             {
                 var res = CreateResult(currentPanels, panel, vertical: false, inverse: false);
                 yield return res;
@@ -62,7 +62,7 @@ internal static class GridUtils
         }
     }
 
-    private static bool CanSplitVertically(IPanelViewModel panel, IReadOnlyList<IPanelViewModel> panels, int maxColumns)
+    private static bool CanAddColumn(IPanelViewModel panel, IReadOnlyList<IPanelViewModel> panels, int maxColumns)
     {
         var currentColumns = 0;
 
@@ -100,7 +100,7 @@ internal static class GridUtils
         return currentColumns < maxColumns;
     }
 
-    private static bool CanSplitHorizontally(IPanelViewModel panel, IReadOnlyList<IPanelViewModel> panels, int maxRows)
+    private static bool CanAddRow(IPanelViewModel panel, IReadOnlyList<IPanelViewModel> panels, int maxRows)
     {
         var currentRows = 0;
 

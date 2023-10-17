@@ -4,6 +4,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia;
 using DynamicData;
+using DynamicData.Binding;
 using NexusMods.App.UI.Controls;
 using NexusMods.Common;
 using ReactiveUI;
@@ -43,7 +44,6 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 
         // TODO: open in new window
         PopoutCommand = Initializers.DisabledReactiveCommand;
-
         CloseCommand = ReactiveCommand.Create(ClosePanel);
 
         AddTabCommand = ReactiveCommand.Create(() =>

@@ -49,14 +49,14 @@ The workspace primarily deals with the panel layout, sizes and position of panel
 
 - Additional panels can only be added to the workspace if the maximum number of columns and rows aren't reached yet.
 - An existing panel must be split in half to create space for a new panel.
-- An existing panel can only be split vertically if the number of columns in the current row isn't greater than the maximum amount of allowed columns.
-- An existing panel can only be split horizontally if the number of rows in the current column isn't greater than the maximum amount of allowed rows.
+- An existing panel can be split into two columns if the number of columns in the current row isn't greater than the maximum amount of allowed columns.
+- An existing panel can be split into two rows if the number of rows in the current column isn't greater than the maximum amount of allowed rows.
 
 ### Closing a Panel
 
-- Closing a panel is done by joining the current panel with **one or more** adjacent panel.
+- Closing a panel is done by joining the current panel with **one or more** adjacent panels.
+    - An adjacent panel is a panel that is in the same row or column as the current panel and share a border.
 - Columns are preferred to rows when the workspace is horizontal (width > height).
 - Rows are preferred to columns when the workspace is vertical (height > width).
-- An adjacent panel is a panel that is in the same row or column as the current panel.
 - The height of the current panel will be added to the panels in the same column.
 - The width of the current panel will be added to the panels in the same row.
