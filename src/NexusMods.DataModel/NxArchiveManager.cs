@@ -209,6 +209,8 @@ public class NxArchiveManager : IArchiveManager
     /// <inheritdoc />
     public async Task<Stream> GetFileStream(Hash hash, CancellationToken token = default)
     {
+        if (hash == Hash.Zero)
+            throw new ArgumentNullException(nameof(hash));
         if (!TryGetLocation(hash, out var archivePath, out var entry))
             throw new Exception($"Missing archive for {hash.ToHex()}");
 

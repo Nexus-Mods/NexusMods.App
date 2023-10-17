@@ -73,14 +73,14 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
         _verbTester.LastTable.Rows.FirstOrDefault(r => r.First().Equals(loadoutName)).Should().NotBeNull();
 
         await _verbTester.RunNoBannerAsync("list-mods", "-l", loadoutName);
-        _verbTester.LastTable.Rows.Count().Should().Be(1);
+        _verbTester.LastTable.Rows.Count().Should().Be(2);
 
         // install skse
         var uri = $"nxm://{Game.Domain}/mods/{skseModId}/files/{skseFileId}";
         await _verbTester.RunNoBannerAsync("download-and-install-mod", "-u", uri, "-l", loadoutName, "-n", skseModName);
 
         await _verbTester.RunNoBannerAsync("list-mods", "-l", loadoutName);
-        _verbTester.LastTable.Rows.Count().Should().Be(2);
+        _verbTester.LastTable.Rows.Count().Should().Be(3);
 
         await _verbTester.RunNoBannerAsync("list-mod-contents", "-l", loadoutName, "-n", skseModName);
         _verbTester.LastTable.Rows.Count().Should().Be(128);
@@ -91,7 +91,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
             skyuiModName);
 
         await _verbTester.RunNoBannerAsync("list-mods", "-l", loadoutName);
-        _verbTester.LastTable.Rows.Count().Should().Be(3);
+        _verbTester.LastTable.Rows.Count().Should().Be(4);
 
         await _verbTester.RunNoBannerAsync("list-mod-contents", "-l", loadoutName, "-n", skyuiModName);
         _verbTester.LastTable.Rows.Count().Should().Be(6);
@@ -102,7 +102,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
             ussepModName);
 
         await _verbTester.RunNoBannerAsync("list-mods", "-l", loadoutName);
-        _verbTester.LastTable.Rows.Count().Should().Be(4);
+        _verbTester.LastTable.Rows.Count().Should().Be(5);
 
         await _verbTester.RunNoBannerAsync("list-mod-contents", "-l", loadoutName, "-n", ussepModName);
         _verbTester.LastTable.Rows.Count().Should().Be(8);

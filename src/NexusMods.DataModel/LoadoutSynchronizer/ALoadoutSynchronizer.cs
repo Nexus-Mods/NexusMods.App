@@ -200,6 +200,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer, IStandardizedLoadoutSy
         // Write the generated files (could be done in parallel)
         foreach (var entry in toWrite)
         {
+            entry.Key.Parent.CreateDirectory();
             await using var outputStream = entry.Key.Create();
             var hash = await entry.Value.Write(outputStream, loadout, flattenedLoadout, fileTree);
             if (hash == null)

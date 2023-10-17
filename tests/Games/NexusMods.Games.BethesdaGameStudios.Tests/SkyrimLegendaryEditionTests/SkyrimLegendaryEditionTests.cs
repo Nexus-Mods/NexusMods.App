@@ -49,20 +49,20 @@ public class SkyrimLegendaryEditionTests : AGameTest<SkyrimLegendaryEdition>
         _verbTester.LastTable.Rows.FirstOrDefault(r => r.First().Equals(loadoutName)).Should().NotBeNull();
 
         await _verbTester.RunNoBannerAsync("list-mods", "-l", loadoutName);
-        _verbTester.LastTable.Rows.Count().Should().Be(1);
+        _verbTester.LastTable.Rows.Count().Should().Be(2);
 
         // install SKSE
         await _verbTester.RunNoBannerAsync("install-mod", "-l", loadoutName, "-f", sksePath.ToString(), "-n", skseModName);
 
         await _verbTester.RunNoBannerAsync("list-mods", "-l", loadoutName);
-        _verbTester.LastTable.Rows.Count().Should().Be(2);
+        _verbTester.LastTable.Rows.Count().Should().Be(3);
 
         await _verbTester.RunNoBannerAsync("list-mod-contents", "-l", loadoutName, "-n", skseModName);
         _verbTester.LastTable.Rows.Count().Should().Be(127);
 
         // Test Apply
         await _verbTester.RunNoBannerAsync("flatten-list", "-l", loadoutName);
-        _verbTester.LastTable.Rows.Count().Should().Be(127);
+        _verbTester.LastTable.Rows.Count().Should().Be(128);
 
         await _verbTester.RunNoBannerAsync("apply", "-l", loadoutName);
 
