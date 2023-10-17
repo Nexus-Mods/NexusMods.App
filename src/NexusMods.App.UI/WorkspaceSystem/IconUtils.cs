@@ -9,14 +9,13 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 
 internal static class IconUtils
 {
-    internal const float IconSize = 18f;
-    private const float CornerRadius = 1f;
+    private const float IconSize = 30f;
+    private const float CornerRadius = 2f;
 
-    private const float OuterPaddingRatio = 0.08333333333333f;
-    private const float OuterPadding = IconSize * OuterPaddingRatio;
+    private const float OuterPadding = 1.25f;
+    private const float InnerPadding = OuterPadding + 2.5f;
 
-    private const float InnerPaddingRatio = 0.14f;
-    private const float InnerPadding = IconSize * InnerPaddingRatio;
+    private const float Scale = 5f;
 
     private static readonly SKColor BackgroundColor = SKColor.Parse("#101010");
     private static readonly SKColor FillColor = SKColor.Parse("#AAA");
@@ -29,8 +28,8 @@ internal static class IconUtils
         using var skPicture = GeneratePicture(state);
         using var skBitmap = skPicture.ToBitmap(
             background: BackgroundColor,
-            scaleX: 10f,
-            scaleY: 10f,
+            scaleX: Scale,
+            scaleY: Scale,
             skColorType: SKColorType.Bgra8888,
             skAlphaType: SKAlphaType.Premul,
             skColorSpace: SKColorSpace.CreateSrgb()
