@@ -39,8 +39,7 @@ public record PluginOrderFile : AModFile, IGeneratedFile, IToFile
             .PluginSorter.Sort(fileTree, CancellationToken.None);
 
         await stream.WriteAllLinesAsync(sorted.Select(e => "*" + e.FileName));
-
-        return Hash.FromLong(sorted.Length);
+        return null;
     }
 
     public ValueTask<AModFile> Update(DiskStateEntry newEntry, Stream stream)

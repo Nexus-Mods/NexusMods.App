@@ -171,10 +171,9 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
 
         await Task.Delay(100);
         using var ms = new MemoryStream();
-        var files = await pluginOrderFile.Write(ms, loadout.Value, flattened, await loadout.Value.ToFileTree());
+        await pluginOrderFile.Write(ms, loadout.Value, flattened, await loadout.Value.ToFileTree());
         await ms.FlushAsync();
 
-        files.Should().Be(Hash.FromLong(81));
 
         flattened.GetAllDescendentFiles()
             .ToArray()
