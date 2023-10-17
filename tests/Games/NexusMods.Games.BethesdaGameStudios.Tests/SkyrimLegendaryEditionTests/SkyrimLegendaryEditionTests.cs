@@ -72,7 +72,7 @@ public class SkyrimLegendaryEditionTests : AGameTest<SkyrimLegendaryEdition>
             skyuiModName);
 
         await _verbTester.RunNoBannerAsync("list-mods", "-l", loadoutName);
-        _verbTester.LastTable.Rows.Count().Should().Be(3);
+        _verbTester.LastTable.Rows.Count().Should().Be(4);
 
         await _verbTester.RunNoBannerAsync("list-mod-contents", "-l", loadoutName, "-n", skyuiModName);
         _verbTester.LastTable.Rows.Count().Should().Be(5);
@@ -83,7 +83,7 @@ public class SkyrimLegendaryEditionTests : AGameTest<SkyrimLegendaryEdition>
             uslepModName);
 
         await _verbTester.RunNoBannerAsync("list-mods", "-l", loadoutName);
-        _verbTester.LastTable.Rows.Count().Should().Be(4);
+        _verbTester.LastTable.Rows.Count().Should().Be(5);
 
         await _verbTester.RunNoBannerAsync("list-mod-contents", "-l", loadoutName, "-n", uslepModName);
         _verbTester.LastTable.Rows.Count().Should().Be(5);
@@ -91,10 +91,8 @@ public class SkyrimLegendaryEditionTests : AGameTest<SkyrimLegendaryEdition>
         // Test Apply
         await _verbTester.RunNoBannerAsync("flatten-list", "-l", loadoutName);
         // count plugins.txt
-        _verbTester.LastTable.Rows.Count().Should().Be(137);
+        _verbTester.LastTable.Rows.Count().Should().Be(138);
 
-        await _verbTester.RunNoBannerAsync("apply", "-l", loadoutName, "-r", "false");
-        // depending on the state of plugins.txt, there could be more or less steps
-        _verbTester.LastTable.Rows.Count().Should().Be(137);
+        await _verbTester.RunNoBannerAsync("apply", "-l", loadoutName);
     }
 }

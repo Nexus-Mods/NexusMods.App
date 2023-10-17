@@ -58,7 +58,8 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
         {
             foreach (var result in locator.Find(this))
             {
-                result.Path.DeleteDirectory(true);
+                if (result.Path.DirectoryExists())
+                    result.Path.DeleteDirectory(true);
                 var locations = new Dictionary<LocationId, AbsolutePath>
                 {
                     [LocationId.Game] = EnsureFiles(result.Path, LocationId.Game),
