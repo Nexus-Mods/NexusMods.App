@@ -18,5 +18,5 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
     public ISelectLocationViewModel SelectLocationViewModel { get; } =
         new SelectLocationViewModel();
 
-    public IViewModel CurrentPreviewViewModel => EmptyPreviewViewModel;
+    public IViewModel CurrentPreviewViewModel => PreviewViewModel;
 }

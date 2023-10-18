@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Templates;
@@ -12,7 +12,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView
 internal class PreviewDesignViewModel : AViewModel<IPreviewViewModel>, IPreviewViewModel
 {
     // Design filler data
-    public virtual ReadOnlyObservableCollection<ILocationPreviewTreeViewModel> Locations { get; } = GetTestData().ToReadOnlyObservableCollection();
+    public virtual ILocationPreviewTreeViewModel[] Locations { get; } = GetTestData();
 
     private static ILocationPreviewTreeViewModel[] GetTestData()
     {

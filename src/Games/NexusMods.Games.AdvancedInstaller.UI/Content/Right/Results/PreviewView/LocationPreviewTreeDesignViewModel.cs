@@ -1,4 +1,4 @@
-﻿using Avalonia.Controls;
+using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Templates;
 using NexusMods.App.UI;
@@ -26,7 +26,7 @@ public class LocationPreviewTreeDesignViewModel : AViewModel<ILocationPreviewTre
                         }),
                     width: new GridLength(1, GridUnitType.Star)
                 ),
-                x => x.Node.AsT0.Children)
+                x => x.Node.AsT2.Children)
         }
     };
 
