@@ -1,5 +1,4 @@
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
@@ -21,10 +20,13 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
                     view => view.TabHeaderScrollViewer.Extent,
                     view => view.TabHeaderScrollViewer.Viewport,
                     (extent, viewport) => extent.Width > viewport.Width)
-                .SubscribeWithErrorLogging(isVisible =>
+                .SubscribeWithErrorLogging(isScrollbarVisible =>
                 {
-                    ScrollLeftButton.IsVisible = isVisible;
-                    ScrollRightButton.IsVisible = isVisible;
+                    ScrollLeftButton.IsVisible = isScrollbarVisible;
+                    ScrollRightButton.IsVisible = isScrollbarVisible;
+
+                    AddTabButton1.IsVisible = !isScrollbarVisible;
+                    AddTabButton2.IsVisible = isScrollbarVisible;
                 })
                 .DisposeWith(disposables);
 
@@ -55,7 +57,10 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
             this.BindCommand(ViewModel, vm => vm.PopoutCommand, view => view.PopOutPanelButton)
                 .DisposeWith(disposables);
 
-            this.BindCommand(ViewModel, vm => vm.AddTabCommand, view => view.AddTabButton)
+            this.BindCommand(ViewModel, vm => vm.AddTabCommand, view => view.AddTabButton1)
+                .DisposeWith(disposables);
+
+            this.BindCommand(ViewModel, vm => vm.AddTabCommand, view => view.AddTabButton2)
                 .DisposeWith(disposables);
 
             this.OneWayBind(ViewModel, vm => vm.Tabs, view => view.TabContents.ItemsSource)

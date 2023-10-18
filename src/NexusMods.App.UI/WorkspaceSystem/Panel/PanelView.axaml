@@ -25,7 +25,7 @@
             </Style>
 
             <Style Selector="Button:pointerover icons|Icon">
-                <Setter Property="Foreground" Value="{StaticResource FontDarkPrimary}"/>
+                <Setter Property="Foreground" Value="{StaticResource FontDarkPrimary}" />
             </Style>
 
             <Style Selector="Button:disabled icons|Icon">
@@ -45,23 +45,36 @@
                     </Button.Template>
                 </Button>
 
-                <ScrollViewer Grid.Column="1" x:Name="TabHeaderScrollViewer" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
-                    <ItemsControl x:Name="TabHeaders" Height="52">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal" Spacing="0" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
+                <ScrollViewer Grid.Column="1" x:Name="TabHeaderScrollViewer" VerticalScrollBarVisibility="Disabled"
+                              HorizontalScrollBarVisibility="Auto">
+                    <StackPanel Orientation="Horizontal">
+                        <ItemsControl x:Name="TabHeaders" Height="52">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" Spacing="0" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
 
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="{x:Type workspace:IPanelTabHeaderViewModel}">
-                                <reactive:ViewModelViewHost ViewModel="{Binding Mode=OneWay}" />
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type workspace:IPanelTabHeaderViewModel}">
+                                    <reactive:ViewModelViewHost ViewModel="{Binding Mode=OneWay}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <Button x:Name="AddTabButton1" Margin="12 12 10 12">
+                            <Button.Template>
+                                <ControlTemplate>
+                                    <Border Background="Transparent">
+                                        <icons:Icon Classes="Plus" Width="24" Height="24" />
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </StackPanel>
                 </ScrollViewer>
 
-                <Button Grid.Column="2" x:Name="AddTabButton" Margin="12 12 10 12">
+                <Button Grid.Column="2" x:Name="AddTabButton2" Margin="12 12 10 12">
                     <Button.Template>
                         <ControlTemplate>
                             <Border Background="Transparent">
@@ -71,7 +84,8 @@
                     </Button.Template>
                 </Button>
 
-                <Button Grid.Column="3" x:Name="ScrollRightButton" Click="ScrollRightButton_OnClick" Margin="10 12 12 12">
+                <Button Grid.Column="3" x:Name="ScrollRightButton" Click="ScrollRightButton_OnClick"
+                        Margin="10 12 12 12">
                     <Button.Template>
                         <ControlTemplate>
                             <Border Background="Transparent">
