@@ -40,6 +40,8 @@
             <icons:Icon Classes="Close"></icons:Icon>
             <icons:Icon Classes="OpenInNew"></icons:Icon>
             <icons:Icon Classes="Tab"></icons:Icon>
+            <icons:Icon Classes="ChevronLeft"></icons:Icon>
+            <icons:Icon Classes="ChevronRight"></icons:Icon>
         </WrapPanel>
     </Design.PreviewWith>
 
@@ -159,5 +161,13 @@
 
     <Style Selector="icons|Icon.Tab">
         <Setter Property="Value" Value="mdi-tab"/>
+    </Style>
+
+    <Style Selector="icons|Icon.ChevronLeft">
+        <Setter Property="Value" Value="mdi-chevron-left"/>
+    </Style>
+
+    <Style Selector="icons|Icon.ChevronRight">
+        <Setter Property="Value" Value="mdi-chevron-right"/>
     </Style>
 </Styles>
