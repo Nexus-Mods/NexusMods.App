@@ -28,16 +28,6 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
                 })
                 .DisposeWith(disposables);
 
-            this.WhenAnyValue(view => view.TabHeaderScrollViewer.Offset)
-                .SubscribeWithErrorLogging(_ =>
-                {
-                    Console.WriteLine("Offset={0}", TabHeaderScrollViewer.Offset);
-                    Console.WriteLine("ScrollbarMaximum={0}", TabHeaderScrollViewer.ScrollBarMaximum);
-                    Console.WriteLine("Viewport={0}", TabHeaderScrollViewer.Viewport);
-                    Console.WriteLine("Extent={0}", TabHeaderScrollViewer.Extent);
-                })
-                .DisposeWith(disposables);
-
             this.WhenAnyValue(
                     view => view.TabHeaderScrollViewer.ScrollBarMaximum,
                     view => view.TabHeaderScrollViewer.Offset)
