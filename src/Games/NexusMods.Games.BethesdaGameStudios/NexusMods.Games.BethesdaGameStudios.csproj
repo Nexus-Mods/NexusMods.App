@@ -19,8 +19,5 @@
         <EmbeddedResource Include="Resources\SkyrimLegendaryEdition\icon.png" />
         <None Remove="Resources\SkyrimLegendaryEdition\game_image.jpg" />
         <EmbeddedResource Include="Resources\SkyrimLegendaryEdition\game_image.jpg" />
-        <None Update="Resources\SkyrimSpecialEdition\hashed_files.json.brotili">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
     </ItemGroup>
 </Project>
