@@ -32,6 +32,10 @@ public partial class PanelTabHeaderView : ReactiveUserControl<IPanelTabHeaderVie
             this.OneWayBind(ViewModel, vm => vm.Title, view => view.TitleTextBlock.Text)
                 .DisposeWith(disposables);
 
+            this.WhenAnyValue(view => view.ViewModel!.Title)
+                .SubscribeWithErrorLogging(title => ToolTip.SetTip(this, title))
+                .DisposeWith(disposables);
+
             this.BindCommand(ViewModel, vm => vm.CloseTabCommand, view => view.CloseTabButton)
                 .DisposeWith(disposables);
 
