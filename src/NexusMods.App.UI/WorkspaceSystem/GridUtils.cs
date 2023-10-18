@@ -16,7 +16,7 @@ internal static class GridUtils
 
         foreach (var panel in panels)
         {
-            if (CanSplitVertically(panel, panels, columns))
+            if (CanAddColumn(panel, panels, columns))
             {
                 var res = CreateResult(currentPanels, panel, vertical: true, inverse: false);
                 yield return res;
@@ -25,7 +25,7 @@ internal static class GridUtils
                     yield return CreateResult(currentPanels, panel, vertical: true, inverse: true);
             }
 
-            if (CanSplitHorizontally(panel, panels, rows))
+            if (CanAddRow(panel, panels, rows))
             {
                 var res = CreateResult(currentPanels, panel, vertical: false, inverse: false);
                 yield return res;
@@ -62,7 +62,7 @@ internal static class GridUtils
         }
     }
 
-    private static bool CanSplitVertically(IPanelViewModel panel, IReadOnlyList<IPanelViewModel> panels, int maxColumns)
+    private static bool CanAddColumn(IPanelViewModel panel, IReadOnlyList<IPanelViewModel> panels, int maxColumns)
     {
         var currentColumns = 0;
 
@@ -74,7 +74,7 @@ internal static class GridUtils
 
             // NOTE(erri120): +1 column if another panel (self included) has the same Y position.
             // Since self is included, the number of columns is guaranteed to be at least 1.
-            if (other.LogicalBounds.Y.TolerantEquals(panel.LogicalBounds.Y))
+            if (other.LogicalBounds.Y.IsCloseTo(panel.LogicalBounds.Y))
             {
                 currentColumns++;
                 continue;
@@ -88,8 +88,8 @@ internal static class GridUtils
             // | 3 | 2 |  | 1 | 3 |
 
             // 1) check if the panel is next to us
-            if (!other.LogicalBounds.Left.TolerantEquals(panel.LogicalBounds.Right) &&
-                !other.LogicalBounds.Right.TolerantEquals(panel.LogicalBounds.Left)) continue;
+            if (!other.LogicalBounds.Left.IsCloseTo(panel.LogicalBounds.Right) &&
+                !other.LogicalBounds.Right.IsCloseTo(panel.LogicalBounds.Left)) continue;
 
             // 2) check if the panel is in the current row
             if (other.LogicalBounds.Bottom >= panel.LogicalBounds.Y ||
@@ -100,7 +100,7 @@ internal static class GridUtils
         return currentColumns < maxColumns;
     }
 
-    private static bool CanSplitHorizontally(IPanelViewModel panel, IReadOnlyList<IPanelViewModel> panels, int maxRows)
+    private static bool CanAddRow(IPanelViewModel panel, IReadOnlyList<IPanelViewModel> panels, int maxRows)
     {
         var currentRows = 0;
 
@@ -112,7 +112,7 @@ internal static class GridUtils
 
             // NOTE(erri120): +1 column if another panel (self included) has the same X position.
             // Since self is included, the number of columns is guaranteed to be at least 1.
-            if (other.LogicalBounds.X.TolerantEquals(panel.LogicalBounds.X))
+            if (other.LogicalBounds.X.IsCloseTo(panel.LogicalBounds.X))
             {
                 currentRows++;
                 continue;
@@ -126,8 +126,8 @@ internal static class GridUtils
             // | 2 | 2 |  | 2 | 3 |
 
             // 1) check if the panel is above or below us
-            if (!other.LogicalBounds.Top.TolerantEquals(panel.LogicalBounds.Bottom) &&
-                !other.LogicalBounds.Bottom.TolerantEquals(panel.LogicalBounds.Top)) continue;
+            if (!other.LogicalBounds.Top.IsCloseTo(panel.LogicalBounds.Bottom) &&
+                !other.LogicalBounds.Bottom.IsCloseTo(panel.LogicalBounds.Top)) continue;
 
             // 2) check if the panel is in the current column
             if (other.LogicalBounds.Right >= panel.LogicalBounds.X ||
@@ -140,7 +140,8 @@ internal static class GridUtils
 
     internal static IReadOnlyDictionary<PanelId, Rect> GetStateWithoutPanel(
         ImmutableDictionary<PanelId, Rect> currentState,
-        PanelId panelToRemove)
+        PanelId panelToRemove,
+        bool isHorizontal = true)
     {
         if (currentState.Count == 1) return ImmutableDictionary<PanelId, Rect>.Empty;
 
@@ -171,7 +172,7 @@ internal static class GridUtils
             // | b | x |  | a | x |
             if (rect.Left >= currentRect.Left && rect.Right <= currentRect.Right)
             {
-                if (rect.Top.TolerantEquals(currentRect.Bottom) || rect.Bottom.TolerantEquals(currentRect.Top))
+                if (rect.Top.IsCloseTo(currentRect.Bottom) || rect.Bottom.IsCloseTo(currentRect.Top))
                 {
                     sameColumn[sameColumnCount++] = id;
                 }
@@ -182,7 +183,7 @@ internal static class GridUtils
             // | x | x |  | x | x |  | a | c |
             if (rect.Top >= currentRect.Top && rect.Bottom <= currentRect.Bottom)
             {
-                if (rect.Left.TolerantEquals(currentRect.Right) || rect.Right.TolerantEquals(currentRect.Left))
+                if (rect.Left.IsCloseTo(currentRect.Right) || rect.Right.IsCloseTo(currentRect.Left))
                 {
                     sameRow[sameRowCount++] = id;
                 }
@@ -191,47 +192,79 @@ internal static class GridUtils
 
         Debug.Assert(sameColumnCount > 0 || sameRowCount > 0);
 
-        // TODO: prefer columns over rows when horizontal and rows over columns when vertical
-        if (sameColumnCount > 0)
+        if (isHorizontal)
         {
-            var updates = GC.AllocateUninitializedArray<KeyValuePair<PanelId, Rect>>(sameColumnCount);
-
-            for (var i = 0; i < sameColumnCount; i++)
+            // prefer columns over rows when horizontal
+            if (sameColumnCount > 0)
             {
-                var id = sameColumn[i];
-                var rect = res[id];
-
-                var x = rect.X;
-                var width = rect.Width;
-
-                var y = Math.Min(rect.Y, currentRect.Y);
-                var height = rect.Height + currentRect.Height;
-
-                updates[i] = new KeyValuePair<PanelId, Rect>(id, new Rect(x, y, width, height));
+                res = JoinSameColumn(res, currentRect, sameColumn, sameColumnCount);
+            } else if (sameRowCount > 0)
+            {
+                res = JoinSameRow(res, currentRect, sameRow, sameRowCount);
             }
-
-            res = res.SetItems(updates);
-        } else if (sameRowCount > 0)
+        }
+        else
         {
-            var updates = GC.AllocateUninitializedArray<KeyValuePair<PanelId, Rect>>(sameRowCount);
-
-            for (var i = 0; i < sameRowCount; i++)
+            // prefer rows over columns when vertical
+            if (sameRowCount > 0)
             {
-                var id = sameRow[i];
-                var rect = res[id];
-
-                var y = rect.Y;
-                var height = rect.Height;
-
-                var x = Math.Min(rect.X, currentRect.X);
-                var width = rect.Width + currentRect.Width;
-
-                updates[i] = new KeyValuePair<PanelId, Rect>(id, new Rect(x, y, width, height));
+                res = JoinSameRow(res, currentRect, sameRow, sameRowCount);
+            } else if (sameColumnCount > 0)
+            {
+                res = JoinSameColumn(res, currentRect, sameColumn, sameColumnCount);
             }
-
-            res = res.SetItems(updates);
         }
 
         return res;
+    }
+
+    private static ImmutableDictionary<PanelId, Rect> JoinSameColumn(
+        ImmutableDictionary<PanelId, Rect> res,
+        Rect currentRect,
+        Span<PanelId> sameColumn,
+        int sameColumnCount)
+    {
+        var updates = GC.AllocateUninitializedArray<KeyValuePair<PanelId, Rect>>(sameColumnCount);
+
+        for (var i = 0; i < sameColumnCount; i++)
+        {
+            var id = sameColumn[i];
+            var rect = res[id];
+
+            var x = rect.X;
+            var width = rect.Width;
+
+            var y = Math.Min(rect.Y, currentRect.Y);
+            var height = rect.Height + currentRect.Height;
+
+            updates[i] = new KeyValuePair<PanelId, Rect>(id, new Rect(x, y, width, height));
+        }
+
+        return res.SetItems(updates);
+    }
+
+    private static ImmutableDictionary<PanelId, Rect> JoinSameRow(
+        ImmutableDictionary<PanelId, Rect> res,
+        Rect currentRect,
+        Span<PanelId> sameRow,
+        int sameRowCount)
+    {
+        var updates = GC.AllocateUninitializedArray<KeyValuePair<PanelId, Rect>>(sameRowCount);
+
+        for (var i = 0; i < sameRowCount; i++)
+        {
+            var id = sameRow[i];
+            var rect = res[id];
+
+            var y = rect.Y;
+            var height = rect.Height;
+
+            var x = Math.Min(rect.X, currentRect.X);
+            var width = rect.Width + currentRect.Width;
+
+            updates[i] = new KeyValuePair<PanelId, Rect>(id, new Rect(x, y, width, height));
+        }
+
+        return res.SetItems(updates);
     }
 }

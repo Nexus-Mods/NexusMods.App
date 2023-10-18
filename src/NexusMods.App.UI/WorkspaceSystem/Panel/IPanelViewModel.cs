@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Reactive;
 using Avalonia;
 using ReactiveUI;
@@ -11,12 +12,30 @@ public interface IPanelViewModel : IViewModelInterface
     /// </summary>
     public PanelId Id { get; }
 
-    public IViewModel? Content { get; set; }
+    /// <summary>
+    /// Gets the read-only observable collection of all tabs of the panel.
+    /// </summary>
+    public ReadOnlyObservableCollection<IPanelTabViewModel> Tabs { get; }
+
+    /// <summary>
+    /// Gets the read-only observable collection of all tab headers of the panel.
+    /// </summary>
+    public ReadOnlyObservableCollection<IPanelTabHeaderViewModel> TabHeaders { get; }
+
+    /// <summary>
+    /// Gets or sets the current selected tab.
+    /// </summary>
+    public PanelTabId SelectedTabId { get; set; }
 
     /// <summary>
     /// Gets the command for closing this panel.
     /// </summary>
-    public ReactiveCommand<Unit, Unit> ClosePanelCommand { get; }
+    public ReactiveCommand<Unit, Unit> CloseCommand { get; }
+
+    /// <summary>
+    /// Gets the command for opening the panel in a new window.
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> PopoutCommand { get; }
 
     /// <summary>
     /// Gets or sets the logical bounds the panel.
@@ -42,4 +61,19 @@ public interface IPanelViewModel : IViewModelInterface
     /// Updates the <see cref="ActualBounds"/> using the new workspace size.
     /// </summary>
     public void Arrange(Size workspaceSize);
+
+    /// <summary>
+    /// Adds a new tab to the panel.
+    /// </summary>
+    public IPanelTabViewModel AddTab();
+
+    /// <summary>
+    /// Gets the command version of <see cref="AddTab"/>.
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> AddTabCommand { get; }
+
+    /// <summary>
+    /// Closes a tab.
+    /// </summary>
+    public void CloseTab(PanelTabId id);
 }

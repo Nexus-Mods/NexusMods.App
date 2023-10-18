@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Reactive.Disposables;
 using Avalonia;
 using DynamicData;
+using NexusMods.App.UI.Controls;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -37,6 +38,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     }
 
     private Size _lastWorkspaceSize;
+    private bool IsHorizontal => _lastWorkspaceSize.Width > _lastWorkspaceSize.Height;
 
     /// <inheritdoc/>
     public void ArrangePanels(Size workspaceSize)
@@ -88,6 +90,9 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                         LogicalBounds = logicalBounds,
                     };
 
+                    var tab = panelViewModel.AddTab();
+                    tab.Contents = new DummyViewModel();
+
                     panelViewModel.Arrange(_lastWorkspaceSize);
                     updater.AddOrUpdate(panelViewModel);
                 }
@@ -104,7 +109,6 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         });
 
         Debug.Assert(panelViewModel is not null);
-
         return panelViewModel;
     }
 
@@ -112,7 +116,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     public void ClosePanel(IPanelViewModel currentPanel)
     {
         var currentState = _panels.ToImmutableDictionary(panel => panel.Id, panel => panel.LogicalBounds);
-        var newState = GridUtils.GetStateWithoutPanel(currentState, currentPanel.Id);
+        var newState = GridUtils.GetStateWithoutPanel(currentState, currentPanel.Id, isHorizontal: IsHorizontal);
 
         _panelSource.Edit(updater =>
         {

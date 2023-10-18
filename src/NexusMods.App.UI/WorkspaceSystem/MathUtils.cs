@@ -1,4 +1,5 @@
 using Avalonia;
+using Avalonia.Utilities;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
@@ -65,8 +66,8 @@ internal static class MathUtils
     /// <summary>
     /// Tolerant equality check.
     /// </summary>
-    internal static bool TolerantEquals(this double left, double right, double tolerance = 0.001)
+    internal static bool IsCloseTo(this double left, double right, double tolerance = 0.001)
     {
-        return Math.Abs(left - right) < tolerance;
+        return MathUtilities.AreClose(left, right, eps: tolerance);
     }
 }

@@ -1,5 +1,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.GameWidget;
@@ -153,11 +154,15 @@ public static class Services
             .AddViewModel<WorkspaceViewModel, IWorkspaceViewModel>()
             .AddViewModel<PanelViewModel, IPanelViewModel>()
             .AddViewModel<AddPanelButtonViewModel, IAddPanelButtonViewModel>()
+            .AddViewModel<PanelTabHeaderViewModel, IPanelTabHeaderViewModel>()
             .AddView<WorkspaceView, IWorkspaceViewModel>()
             .AddView<PanelView, IPanelViewModel>()
             .AddView<AddPanelButtonView, IAddPanelButtonViewModel>()
+            .AddView<PanelTabHeaderView, IPanelTabHeaderViewModel>()
 
             // Other
+            .AddViewModel<DummyViewModel, IDummyViewModel>()
+            .AddView<DummyView, IDummyViewModel>()
             .AddSingleton<InjectedViewLocator>()
             .AddSingleton<App>();
     }

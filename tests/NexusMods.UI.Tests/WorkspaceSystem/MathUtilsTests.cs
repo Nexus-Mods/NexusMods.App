@@ -1,6 +1,7 @@
 using Avalonia;
 using FluentAssertions;
 using NexusMods.App.UI.WorkspaceSystem;
+using Xunit.Sdk;
 
 namespace NexusMods.UI.Tests.WorkspaceSystem;
 
@@ -15,6 +16,21 @@ public class MathUtilsTests
         var vec = size.AsVector();
         vec.X.Should().Be(width);
         vec.Y.Should().Be(height);
+    }
+
+    [Theory]
+    [InlineData(0.0, 0.0, true)]
+    [InlineData(0.25, 0.25, true)]
+    [InlineData(0.5, 0.5, true)]
+    [InlineData(1.0, 1.0, true)]
+    [InlineData(0.0, 0.1, false)]
+    [InlineData(0.25, 0.3, false)]
+    [InlineData(0.5, 0.6, false)]
+    [InlineData(0.9, 1.0, false)]
+    public void Test_IsCloseTo(double left, double right, bool expected)
+    {
+        var res = left.IsCloseTo(right);
+        res.Should().Be(expected);
     }
 
     [Theory]

@@ -328,6 +328,21 @@
         <Compile Update="WorkspaceSystem\AddPanelButton\AddPanelButtonDesignViewModel.cs">
           <DependentUpon>IAddPanelButtonViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="WorkspaceSystem\PanelTab\PanelTabViewModel.cs">
+          <DependentUpon>IPanelTabViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Dummy\DummyViewModel.cs">
+          <DependentUpon>IDummyViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="WorkspaceSystem\PanelTabHeader\PanelTabHeaderViewModel.cs">
+          <DependentUpon>IPanelTabHeaderViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="WorkspaceSystem\PanelTabHeader\PanelTabHeaderDesignViewModel.cs">
+          <DependentUpon>IPanelTabHeaderViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="WorkspaceSystem\Panel\PanelDesignViewModel.cs">
+          <DependentUpon>IPanelViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
