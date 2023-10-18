@@ -18,6 +18,9 @@ public partial class SelectLocationView : ReactiveUserControl<ISelectLocationVie
                     SelectLocationView, IEnumerable>(this,
                     view => view.SuggestedLocationItemsControl.ItemsSource)
                 .DisposeWith(disposables);
+
+            this.OneWayBind(ViewModel, vm => vm.AllFoldersTrees,
+                view => view.AllFoldersItemsControl.ItemsSource).DisposeWith(disposables);
         });
     }
 }

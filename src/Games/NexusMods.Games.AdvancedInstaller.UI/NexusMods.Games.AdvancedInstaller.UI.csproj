@@ -168,6 +168,14 @@
         <Compile Update="Content\Right\Results\PreviewView\LocationPreviewTreeViewModel.cs">
           <DependentUpon>ILocationPreviewTreeViewModel.cs</DependentUpon>
         </Compile>
+
+        <Compile Update="Content\Right\Results\SelectLocation\SelectLocationTreeViewModel.cs">
+          <DependentUpon>ISelectLocationTreeViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\Results\SelectLocation\SelectLocationTreeDesignViewModel.cs">
+          <DependentUpon>ISelectLocationTreeViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

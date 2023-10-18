@@ -14,11 +14,13 @@ internal class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
     {
         SuggestedEntries = Array.Empty<ISuggestedEntryViewModel>().ToReadOnlyObservableCollection();
 
-        // TODO: Pass the ISelectableDirectoryNode tree instead
-        Tree = new HierarchicalTreeDataGridSource<ITreeEntryViewModel>(
-            new TreeEntryViewModel(PreviewEntryNode.Create(new GamePath(LocationId.Game, ""), true)));
+        AllFoldersTrees = new ISelectLocationTreeViewModel[]
+        {
+            new SelectLocationTreeViewModel(),
+            new SelectLocationTreeViewModel(),
+        }.ToReadOnlyObservableCollection();
     }
 
     public ReadOnlyObservableCollection<ISuggestedEntryViewModel> SuggestedEntries { get; set; }
-    public HierarchicalTreeDataGridSource<ITreeEntryViewModel> Tree { get; }
+    public ReadOnlyObservableCollection<ISelectLocationTreeViewModel> AllFoldersTrees { get; set; }
 }
