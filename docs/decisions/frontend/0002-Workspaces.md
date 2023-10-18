@@ -7,30 +7,32 @@ The workspace system is made up of the following components:
 - Workspaces
 - Panels
 - Tabs
+- Pages
 
 ```mermaid
 flowchart TD
     subgraph Window 2
         Workspace2[Workspace 2]
         Workspace2 --> Panel3[Panel 3]
-        Panel3 --> Tab4[Tab 4]
+        Panel3 --> Tab4[Tab 4] --> Page
     end
 
     subgraph Window 1
         Workspace1[Workspace 1]
         Workspace1 --> Panel1[Panel 1]
         Workspace1 --> Panel2[Panel 2]
-        Panel1 --> Tab1[Tab 1]
-        Panel1 --> Tab2[Tab 2]
-        Panel2 --> Tab3[Tab 3]
+        Panel1 --> Tab1[Tab 1] --> Page
+        Panel1 --> Tab2[Tab 2] --> Page
+        Panel2 --> Tab3[Tab 3] --> Page
     end
 ```
 
 - Each window can only contain **a single** workspace.
 - Each workspace can contain **one or more** panels.
 - Each panel can contain **one or more** tabs.
+- Each tab contains **a single** page, which are the contents to be displayed.
 
-Starting with the smallest component, a tab is comparable to a browser tab. Tabs own the content to display and clicking on another tab will change the displayed content of the current panel.
+Starting with the smallest component, a tab is comparable to a browser tab. Tabs own the content to display and clicking on another tab will change the displayed content of the current panel. The contents of a tab can only be a page, which is a generalized concept to hold any view.
 
 Panels contains the tabs and are responsible for displaying the currently selected tab, and a "tab strip" for selecting other tabs. Closing a panel will automatically close all of its tabs.
 
