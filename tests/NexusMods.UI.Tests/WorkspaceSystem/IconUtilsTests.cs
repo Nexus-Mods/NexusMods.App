@@ -18,6 +18,6 @@ public class IconUtilsTests : AUiTest
         };
 
         var bitmap = IconUtils.StateToBitmap(state);
-        bitmap.Size.Should().Be(new Size(180, 180));
+        bitmap.Size.Should().Be(new Size(150, 150));
     }
 }
