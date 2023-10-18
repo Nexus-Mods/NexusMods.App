@@ -10,6 +10,7 @@ using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Sorting.Rules;
+using NexusMods.FileExtractor.StreamFactories;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 
@@ -472,7 +473,37 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer, IStandardizedLoadoutSy
         var flattenedLoadout = await FileTreeToFlattenedLoadout(fileTree, loadout, prevFlattenedLoadout);
         var newLoadout = await FlattenedLoadoutToLoadout(flattenedLoadout, loadout, prevFlattenedLoadout);
 
+        await BackupNewFiles(loadout, fileTree);
+
         return newLoadout;
+    }
+
+    /// <summary>
+    /// Backs up any new files in the loadout.
+    /// </summary>
+    /// <param name="loadout"></param>
+    /// <param name="fileTree"></param>
+    public virtual async Task BackupNewFiles(Loadout loadout, FileTree fileTree)
+    {
+        // Backup the files that are new or changed
+        await _archiveManager.BackupFiles(await fileTree.GetAllDescendentFiles()
+            .Select(n => n.Value)
+            .OfType<FromArchive>()
+            .SelectAsync(async f =>
+            {
+                var path = loadout.Installation.LocationsRegister.GetResolvedPath(f.To);
+                if (await _archiveManager.HaveFile(f.Hash))
+                    return null;
+                return new ArchivedFileEntry
+                {
+                    Size = f.Size,
+                    Hash = f.Hash,
+                    StreamFactory = new NativeFileStreamFactory(path),
+                } as ArchivedFileEntry?;
+            })
+            .Where(f => f != null)
+            .Select(f => f!.Value)
+            .ToListAsync());
     }
 
     /// <inheritdoc />

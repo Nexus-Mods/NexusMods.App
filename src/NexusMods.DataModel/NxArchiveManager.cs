@@ -1,9 +1,7 @@
 ﻿using System.Buffers;
 using System.Buffers.Binary;
-using System.IO.Compression;
-using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
-using System.Text;
+using Microsoft.Extensions.Logging;
 using NexusMods.Archives.Nx.FileProviders;
 using NexusMods.Archives.Nx.Headers;
 using NexusMods.Archives.Nx.Headers.Managed;
@@ -12,7 +10,6 @@ using NexusMods.Archives.Nx.Interfaces;
 using NexusMods.Archives.Nx.Packing;
 using NexusMods.Archives.Nx.Structs;
 using NexusMods.Archives.Nx.Utilities;
-using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.ArchiveContents;
@@ -31,13 +28,14 @@ public class NxArchiveManager : IArchiveManager
 {
     private readonly AbsolutePath[] _archiveLocations;
     private readonly IDataStore _store;
+    private readonly ILogger<NxArchiveManager> _logger;
 
     /// <summary>
     /// DI Constructor
     /// </summary>
     /// <param name="store"></param>
     /// <param name="settings"></param>
-    public NxArchiveManager(IDataStore store, IDataModelSettings settings)
+    public NxArchiveManager(ILogger<NxArchiveManager> logger, IDataStore store, IDataModelSettings settings)
     {
         _archiveLocations = settings.ArchiveLocations.Select(f => f.ToAbsolutePath()).ToArray();
         foreach (var location in _archiveLocations)
@@ -45,6 +43,8 @@ public class NxArchiveManager : IArchiveManager
             if (!location.DirectoryExists())
                 location.CreateDirectory();
         }
+
+        _logger = logger;
         _store = store;
 
     }
@@ -58,10 +58,10 @@ public class NxArchiveManager : IArchiveManager
     /// <inheritdoc />
     public async Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, CancellationToken token = default)
     {
-        // TODO: port this to the new format
         var builder = new NxPackerBuilder();
         var distinct = backups.DistinctBy(d => d.Hash).ToArray();
         var streams = new List<Stream>();
+        _logger.LogDebug("Backing up {Count} files of {Size} in size", distinct.Length, distinct.Sum(s => s.Size));
         foreach (var backup in distinct)
         {
             var stream = await backup.StreamFactory.GetStreamAsync();

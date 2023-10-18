@@ -475,6 +475,13 @@ public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTest
         newMod.Name.Should().Be("Saved Games", "the mod should be named after the file");
 
         flattenedAgain[deletedFile].Should().BeNull("the file should have been deleted");
+
+        await _synchronizer.BackupNewFiles(loadout, fileTree);
+
+        (await ArchiveManager.HaveFile(new byte[] { 0x04, 0x05, 0x06 }.XxHash64()))
+            .Should().BeTrue("the file should have been backed up");
+        (await ArchiveManager.HaveFile(new byte[] { 0x01, 0x02, 0x03 }.XxHash64()))
+            .Should().BeTrue("the file should have been backed up");
     }
 
     [Fact]

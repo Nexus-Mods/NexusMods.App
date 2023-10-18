@@ -78,5 +78,12 @@ public interface IStandardizedLoadoutSynchronizer : ILoadoutSynchronizer
     /// <returns></returns>
     ValueTask<Loadout> FlattenedLoadoutToLoadout(FlattenedLoadout flattenedLoadout, Loadout prevLoadout, FlattenedLoadout prevFlattenedLoadout);
 
+    /// <summary>
+    /// Backs up any new files in the file tree.
+    /// </summary>
+    /// <param name="loadout"></param>
+    /// <param name="fileTree"></param>
+    /// <returns></returns>
+    Task BackupNewFiles(Loadout loadout, FileTree fileTree);
     #endregion
 }
