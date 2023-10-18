@@ -67,4 +67,9 @@ public class GameInstallation
     /// <typeparam name="T">The type to cast the game to.</typeparam>
     /// <returns>True if the cast is possible, else false.</returns>
     public bool Is<T>() where T : IGame => Game is T;
+
+    /// <summary>
+    /// The <see cref="IGameLocator"/> that found this installation.
+    /// </summary>
+    public IGameLocator Locator { get; init; } = null!;
 }

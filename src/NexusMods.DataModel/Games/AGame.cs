@@ -143,7 +143,8 @@ public abstract class AGame : IGame
                         InstallDestinations = GetInstallDestinations(locations),
                         Version = installation.Version ?? GetVersion(installation),
                         Store = installation.Store,
-                        LocatorResultMetadata = installation.Metadata
+                        LocatorResultMetadata = installation.Metadata,
+                        Locator = locator
                     };
                 }))
             .DistinctBy(g => g.LocationsRegister[LocationId.Game])

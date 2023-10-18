@@ -3,6 +3,7 @@ using System.Text;
 using FluentAssertions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Common;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
@@ -19,6 +20,7 @@ using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.NMA.Extensions;
 using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
+using NexusMods.StandardGameLocators.TestHelpers;
 using ModId = NexusMods.Networking.NexusWebApi.Types.ModId;
 
 namespace NexusMods.Games.TestFramework;
@@ -40,6 +42,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
 
     protected readonly Client NexusClient;
     protected readonly IHttpDownloader HttpDownloader;
+    private readonly ILogger<AGameTest<TGame>> _logger;
 
     /// <summary>
     /// Constructor.
@@ -67,6 +70,29 @@ public abstract class AGameTest<TGame> where TGame : AGame
 
         NexusClient = serviceProvider.GetRequiredService<Client>();
         HttpDownloader = serviceProvider.GetRequiredService<IHttpDownloader>();
+
+        _logger = serviceProvider.GetRequiredService<ILogger<AGameTest<TGame>>>();
+        if (GameInstallation.Locator is UniversalStubbedGameLocator<TGame> universal)
+        {
+            _logger.LogInformation("Resetting game files for {Game}", Game.Name);
+            ResetGameFolders();
+        }
+
+    }
+
+    /// <summary>
+    /// Resets the game folders to a clean state.
+    /// </summary>
+    private void ResetGameFolders()
+    {
+        var register = GameInstallation.LocationsRegister;
+        var oldLocations = register.GetTopLevelLocations().ToArray();
+        var newLocations = new Dictionary<LocationId, AbsolutePath>();
+        foreach (var (k, _) in oldLocations)
+        {
+            newLocations[k] = TemporaryFileManager.CreateFolder().Path;
+        }
+        register.Reset(newLocations);
     }
 
     /// <summary>

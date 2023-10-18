@@ -62,6 +62,19 @@ public class GameLocationsRegister
         }
     }
 
+    /// <summary>
+    /// Resets the <see cref="GameLocationsRegister"/> to the passed locations, used for testing.
+    /// </summary>
+    /// <param name="locations"></param>
+    public void Reset(IDictionary<LocationId, AbsolutePath> locations)
+    {
+        _locations.Clear();
+        foreach (var (k, v) in locations)
+        {
+            _locations.Add(k, new GameLocationDescriptor(k, v));
+        }
+    }
+
     private LocationId ComputeTopLevelParent(GameLocationDescriptor child, GameLocationDescriptor newParent)
     {
         if (child.TopLevelParent == null)
