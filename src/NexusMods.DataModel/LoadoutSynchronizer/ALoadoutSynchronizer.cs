@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Reflection.Metadata;
-using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Common;
@@ -14,7 +12,6 @@ using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using NexusMods.Paths.FileTree;
 
 namespace NexusMods.DataModel.LoadoutSynchronizer;
 

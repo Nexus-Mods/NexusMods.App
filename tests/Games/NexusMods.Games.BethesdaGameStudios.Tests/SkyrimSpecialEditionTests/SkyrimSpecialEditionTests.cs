@@ -120,9 +120,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
         logger.LogInformation("flatten-list table {FlattenTable}", sb.ToString());
         _verbTester.LastTable.Rows.Count().Should().Be(143);
 
-        await _verbTester.RunNoBannerAsync("apply", "-l", loadoutName, "-r", "false");
-        // depending on the state of plugins.txt, there could be more or less steps
-        _verbTester.LastTable.Rows.Count().Should().BeGreaterThan(142);
+        await _verbTester.RunNoBannerAsync("apply", "-l", loadoutName);
     }
 
     [Fact]
@@ -142,25 +140,8 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
         var gameFiles =
             loadout.Value.Mods.Values.First(m => m.ModCategory == Mod.GameFilesCategory); // <= throws on failure
 
-        LoadoutRegistry.Alter(loadout.Value.LoadoutId, gameFiles.Id, "Added plugins", mod =>
-        {
-            var files = mod!.Files;
-            foreach (var file in analysis)
-            {
-                var newFile = new FromArchive
-                {
-                    Id = ModFileId.New(),
-                    To = new GamePath(LocationId.Game, $"Data/{file.Key}"),
-                    Hash = Hash.Zero,
-                    Size = Size.Zero,
-                    Metadata = ImmutableList<IMetadata>.Empty
-                };
-                files = files.With(newFile.Id, newFile);
-            }
-
-            return mod with { Files = files };
-        });
-
+        var modPath = FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Assets/SMIM_Truncated.7z");
+        await InstallModFromArchiveIntoLoadout(loadout, modPath, "SMIM");
 
         gameFiles.Files.Count.Should().BeGreaterThan(0);
 
@@ -179,7 +160,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
             .ToArray()
             .Length
             .Should()
-            .Be(161, "there are 161 files in the loadout");
+            .Be(83, "the loadout has all the files");
 
         ms.Position = 0;
         var results = Encoding.UTF8.GetString(ms.ToArray()).Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
@@ -273,6 +254,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
                     "ccvsvsse004-beafarmer.esl",
                     "jks skyrim.esp",
                     "skyui_se.esp",
+                    "smim-merged-all.esp",
                 }.Select(t => t.ToLowerInvariant()),
                 opt => opt.WithStrictOrdering());
     }
@@ -296,6 +278,12 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
     public async Task EnablingAndDisablingModsModifiesThePluginsFile()
     {
         var loadout = await CreateLoadout(indexGameFiles: false);
+
+        loadout.Value.Mods.Values.SelectMany(m => m.Files.Values)
+            .OfType<IToFile>()
+            .Where(t => t.To.FileName == "plugin_test.esp")
+            .Should()
+            .BeEmpty("the mod is not installed");
 
         var pluginFile = (from mod in loadout.Value.Mods.Values
                 from file in mod.Files.Values

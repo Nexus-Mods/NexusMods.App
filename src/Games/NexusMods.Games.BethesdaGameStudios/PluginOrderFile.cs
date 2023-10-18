@@ -24,15 +24,6 @@ public record PluginOrderFile : AModFile, IGeneratedFile, IToFile
 
     public GamePath To => Path;
 
-    private static IEnumerable<IToFile> PluginFiles(IEnumerable<ModFilePair> flattenedList)
-    {
-        var pluginFiles = flattenedList
-            .Select(f => f.File)
-            .OfType<IToFile>()
-            .Where(f => SkyrimSpecialEdition.PluginExtensions.Contains(f.To.Extension));
-        return pluginFiles;
-    }
-
     public async ValueTask<Hash?> Write(Stream stream, Loadout loadout, FlattenedLoadout flattenedLoadout, FileTree fileTree)
     {
         var sorted = await ((ABethesdaGame)loadout.Installation.Game)

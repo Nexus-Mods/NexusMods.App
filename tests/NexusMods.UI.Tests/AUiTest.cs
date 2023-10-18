@@ -80,7 +80,7 @@ public class AUiTest
             {
                 if (sw.Elapsed >= maxTimeout)
                     throw;
-                await Task.Delay(delay.Value);
+                await Task.Delay(delay.Value).ConfigureAwait(false);
             }
         }
     }
@@ -109,7 +109,7 @@ public class AUiTest
             {
                 if (sw.Elapsed >= maxTimeout)
                     throw;
-                await Task.Delay(delay.Value);
+                await Task.Delay(delay.Value).ConfigureAwait(false);
             }
         }
     }

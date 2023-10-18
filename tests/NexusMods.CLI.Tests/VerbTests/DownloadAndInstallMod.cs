@@ -60,12 +60,11 @@ public class DownloadAndInstallMod : AGameTest<StubbedGame>
     {
         // This test requires Premium. If it fails w/o Premium, ignore that.
         var loadout = await CreateLoadout();
-        var loadoutName = loadout.Value.Name;
         var origNumMods = loadout.Value.Mods.Count;
         origNumMods.Should().Be(1); // game files
 
         var uri = $"nxm://{gameDomain}/mods/{modId}/files/{fileId}";
-        await Test.RunNoBannerAsync("download-and-install-mod", "-u", uri, "-l", loadoutName, "-n", "TestMod");
+        await Test.RunNoBannerAsync("download-and-install-mod", "-u", uri, "-l", loadout.Id.ToString(), "-n", "TestMod");
         loadout.Value.Mods.Count.Should().BeGreaterThan(origNumMods);
     }
 }

@@ -15,7 +15,7 @@ public class LoadoutGridViewModelTests : AVmTest<ILoadoutGridViewModel>
     public async Task CanDeleteMods()
     {
         Vm.LoadoutId = Loadout.Value.LoadoutId;
-        
+
         var ids = new List<ModId>();
         for (int x = 0; x < 10; x++)
         {
@@ -35,7 +35,7 @@ public class LoadoutGridViewModelTests : AVmTest<ILoadoutGridViewModel>
         {
             Vm.Mods.Count.Should().Be(11, "because 10 mods were added, and we started with one");
         });
-        
+
         var toDelete = Random.Shared.Next(1, 8);
         var toDeleteIds = ids.Take(toDelete).ToList();
 
@@ -48,7 +48,7 @@ public class LoadoutGridViewModelTests : AVmTest<ILoadoutGridViewModel>
             Vm.Mods.Count.Should().Be(11 - toDelete, $"because {toDelete} mods were deleted of {10}");
             foreach (var id in toDeleteIds)
             {
-                Vm.Mods.Any(m => m.ModId == id).Should().BeFalse();
+                Vm.Mods.Any(m => m.ModId.Equals(id)).Should().BeFalse();
             }
         });
     }

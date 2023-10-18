@@ -75,7 +75,9 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// <returns></returns>
     protected async Task<LoadoutMarker> CreateLoadout(bool indexGameFiles = true)
     {
+        var name = Guid.NewGuid().ToString();
         var loadout = await GameInstallation.Game.Synchronizer.Manage(GameInstallation);
+        loadout = loadout with { Name = name };
         LoadoutRegistry.Alter(loadout.LoadoutId, "Manage new Game", _ => loadout);
         return LoadoutRegistry.GetMarker(loadout.LoadoutId);
     }
