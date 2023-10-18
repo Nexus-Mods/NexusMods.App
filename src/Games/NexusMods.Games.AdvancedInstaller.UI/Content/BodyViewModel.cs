@@ -1,4 +1,4 @@
-﻿using NexusMods.App.UI;
+using NexusMods.App.UI;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.EmptyPreview;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView;
@@ -18,5 +18,5 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
     public ISelectLocationViewModel SelectLocationViewModel { get; } =
         new SelectLocationViewModel();
 
-    public IViewModel CurrentPreviewViewModel => PreviewViewModel;
+    public IViewModel CurrentPreviewViewModel => EmptyPreviewViewModel;
 }
