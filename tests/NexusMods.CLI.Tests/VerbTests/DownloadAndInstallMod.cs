@@ -40,9 +40,18 @@ public class DownloadAndInstallMod : AGameTest<StubbedGame>
         var origNumMods = loadout.Value.Mods.Count;
         origNumMods.Should().Be(1); // game files
 
+        var oldId = loadout.Value.DataStoreId;
+        var oldLoadoutId = loadout.Value.LoadoutId;
         var makeUrl = $"{_server.Uri}{url}";
-        await Test.RunNoBannerAsync("download-and-install-mod", "-u", makeUrl, "-l", loadoutName, "-n", "TestMod");
+        LoadoutRegistry.AllLoadouts().Should().ContainSingle(l => l.LoadoutId.Equals(oldLoadoutId));
+
+        await Test.RunNoBannerAsync("download-and-install-mod", "-u", makeUrl, "-l", oldLoadoutId.ToString(), "-n", "TestMod");
+        loadout.DataStoreId.Should().NotBe(oldId, "the loadout has been updated");
+        loadout.Id.Should().Be(oldLoadoutId, "the loadout ID should not change");
+
         loadout.Value.Mods.Count.Should().BeGreaterThan(origNumMods);
+
+
     }
 
     [Theory]

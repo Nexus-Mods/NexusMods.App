@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using NexusMods.DataModel.Abstractions.Ids;
 using NexusMods.DataModel.Loadouts.Mods;
 
@@ -8,28 +9,41 @@ namespace NexusMods.DataModel.Loadouts.Markers;
 /// may mutate a loadout, which will then cause a "rebase" of this marker
 /// on the new loadoutID.
 /// </summary>
-public readonly struct LoadoutMarker
+public class LoadoutMarker
 {
     private readonly LoadoutRegistry _registry;
+    private IId _dataStoreId = IdEmpty.Empty;
+    private Guid _uniqueId = Guid.NewGuid();
 
     /// <summary/>
     /// <param name="registry"></param>
     /// <param name="id"></param>
-    public LoadoutMarker(LoadoutRegistry registry, LoadoutId id)
+    internal LoadoutMarker(LoadoutRegistry registry, LoadoutId id)
     {
         _registry = registry;
-        Id = id;
+        _dataStoreId = _registry.Get(id)!.DataStoreId;
     }
+
+    /// <summary>
+    /// Sets the current data store ID of the loadout.
+    /// </summary>
+    /// <param name="id"></param>
+    internal void SetDataStoreId(IId id) => _dataStoreId = id;
+
+    /// <summary>
+    /// Gets the current data store ID of the loadout.
+    /// </summary>
+    public IId DataStoreId => _dataStoreId;
 
     /// <summary>
     /// Gets the state of the loadout represented by the current ID.
     /// </summary>
-    public Loadout Value => _registry.Get(Id)!;
+    public Loadout Value => _registry.GetLoadout(_dataStoreId)!;
 
     /// <summary>
     /// Returns the ID of the loadout.
     /// </summary>
-    public LoadoutId Id { get; }
+    public LoadoutId Id => Value.LoadoutId;
 
     /// <summary>
     /// Returns all of the previous versions of this loadout for.
@@ -86,4 +100,5 @@ public readonly struct LoadoutMarker
         _registry.Alter(Id, $"Merge loadout: {newLoadout.Name}",
             l => l.Installation.Game.Synchronizer.MergeLoadouts(l, newLoadout));
     }
+
 }

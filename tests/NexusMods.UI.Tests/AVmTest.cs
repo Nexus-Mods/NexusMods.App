@@ -37,7 +37,7 @@ where TVm : IViewModelInterface
 
     private LoadoutId? _loadoutId;
     protected LoadoutMarker Loadout => _loadoutId != null ?
-        new LoadoutMarker(LoadoutRegistry, _loadoutId.Value) :
+        LoadoutRegistry.GetMarker(Loadout.Value.LoadoutId) :
         throw new InvalidOperationException("LoadoutId is null");
 
     public AVmTest(IServiceProvider provider) : base(provider)

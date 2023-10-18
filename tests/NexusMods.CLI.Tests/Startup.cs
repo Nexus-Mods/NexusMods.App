@@ -23,7 +23,7 @@ public class Startup
                 .AddFileSystem()
                 .AddDataModel(new DataModelSettings
                 {
-                    UseInMemoryDataModel = true
+                    UseInMemoryDataModel = false
                 })
                 .AddFileExtractors()
                 .AddCLI()
@@ -32,7 +32,7 @@ public class Startup
                 .AddNexusWebApi()
                 .AddNexusWebApiNmaIntegration(true)
                 .AddAllScoped<IRenderer, LoggingRenderer>()
-                .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Debug))
+                .AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace))
                 .AddSingleton<LocalHttpServer>()
                 .AddLogging(builder => builder.AddXUnit())
                 .Validate();

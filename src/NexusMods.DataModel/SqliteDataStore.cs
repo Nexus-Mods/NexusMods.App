@@ -172,6 +172,9 @@ public class SqliteDataStore : IDataStore, IDisposable
     /// <inheritdoc />
     public T? Get<T>(IId id, bool canCache) where T : Entity
     {
+        if (id is null)
+            throw new ArgumentNullException(nameof(id));
+
         if (_isDisposed)
             throw new ObjectDisposedException(nameof(SqliteDataStore));
 
