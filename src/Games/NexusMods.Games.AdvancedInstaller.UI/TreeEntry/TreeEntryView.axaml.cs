@@ -93,7 +93,7 @@ public partial class
         FolderMergedPill.IsVisible = node.IsFolderMerged;
 
         // Always show unlink button, it means unlink child nodes if it is a folder.
-        XRoundedButton.IsVisible = false;
+        XRoundedButton.IsVisible = true;
 
         if (node.IsDirectory)
         {

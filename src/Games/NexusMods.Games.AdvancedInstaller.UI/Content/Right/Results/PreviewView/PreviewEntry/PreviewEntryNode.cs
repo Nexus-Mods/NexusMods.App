@@ -91,7 +91,7 @@ public class PreviewEntryNode : IPreviewEntryNode
     public PreviewEntryNodeFlags Flags { get; private set; }
 
     // Derived Getters: For convenience.
-    public string FileName => FullPath.FileName;
+    public string FileName { get; init; }
     public string DirectoryName => FileName;
     public bool IsRoot => (Flags & PreviewEntryNodeFlags.IsRoot) == PreviewEntryNodeFlags.IsRoot;
     public bool IsDirectory => (Flags & PreviewEntryNodeFlags.IsDirectory) == PreviewEntryNodeFlags.IsDirectory;
@@ -109,6 +109,14 @@ public class PreviewEntryNode : IPreviewEntryNode
         Parent = parent;
         FullPath = fullPath;
         Flags = flags;
+        if (IsRoot)
+        {
+            FileName = FullPath.LocationId.Value;
+        }
+        else
+        {
+            FileName = FullPath.FileName;
+        }
     }
 
     // Note: This is normally called from an 'unlinkable' item, i.e. ModContentNode
@@ -180,7 +188,6 @@ public class PreviewEntryNode : IPreviewEntryNode
     {
         var root = new PreviewEntryNode(new GamePath(fullPath.LocationId, ""),
             PreviewEntryNodeFlags.IsRoot | PreviewEntryNodeFlags.IsDirectory);
-        root.AddChildren(fullPath.Path, isDirectory, new AlwaysFalseChecker());
         return root;
     }
 
