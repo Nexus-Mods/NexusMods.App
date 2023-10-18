@@ -1,7 +1,6 @@
 using DynamicData;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.LoadoutSynchronizer;
 using NexusMods.DataModel.Sorting;
@@ -56,7 +55,7 @@ public class PluginSorter
         var tuples = allPlugins
             .Select(r => new RuleTuple
             {
-                Plugin = r!.FileName,
+                Plugin = r.FileName,
                 Rules = GenerateRules(allPlugins, r).Distinct().ToArray()
             })
             .ToArray();
