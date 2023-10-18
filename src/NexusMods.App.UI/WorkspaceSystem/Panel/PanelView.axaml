@@ -20,12 +20,16 @@
             <StyleInclude Source="avares://NexusMods.App.UI/Theme/TextBlockStyles.xaml" />
             <StyleInclude Source="avares://NexusMods.App.UI/Theme/IconStyles.xaml" />
 
-            <Style Selector="icons|Icon">
+            <Style Selector="Button icons|Icon">
                 <Setter Property="Foreground" Value="{StaticResource FontDarkSecondaryColor}" />
             </Style>
 
+            <Style Selector="Button:pointerover icons|Icon">
+                <Setter Property="Foreground" Value="{StaticResource FontDarkPrimary}"/>
+            </Style>
+
             <Style Selector="Button:disabled icons|Icon">
-                <Setter Property="Foreground" Value="{StaticResource FontDarkSecondaryColor}" />
+                <Setter Property="Opacity" Value="0.2" />
             </Style>
         </Grid.Styles>
 

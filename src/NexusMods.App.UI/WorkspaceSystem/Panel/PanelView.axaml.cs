@@ -28,13 +28,23 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
                 })
                 .DisposeWith(disposables);
 
+            this.WhenAnyValue(view => view.TabHeaderScrollViewer.Offset)
+                .SubscribeWithErrorLogging(_ =>
+                {
+                    Console.WriteLine("Offset={0}", TabHeaderScrollViewer.Offset);
+                    Console.WriteLine("ScrollbarMaximum={0}", TabHeaderScrollViewer.ScrollBarMaximum);
+                    Console.WriteLine("Viewport={0}", TabHeaderScrollViewer.Viewport);
+                    Console.WriteLine("Extent={0}", TabHeaderScrollViewer.Extent);
+                })
+                .DisposeWith(disposables);
+
             this.WhenAnyValue(
                     view => view.TabHeaderScrollViewer.ScrollBarMaximum,
                     view => view.TabHeaderScrollViewer.Offset)
                 .SubscribeWithErrorLogging(tuple =>
                 {
-                    var (offset, scrollBarMaximum) = tuple;
-                    ScrollLeftButton.IsEnabled = offset.X < ScrollOffset;
+                    var (scrollBarMaximum, offset) = tuple;
+                    ScrollLeftButton.IsEnabled = offset.X > 0;
                     ScrollRightButton.IsEnabled = !offset.X.IsCloseTo(scrollBarMaximum.X);
                 })
                 .DisposeWith(disposables);
@@ -68,14 +78,12 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
 
     private void ScrollLeftButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        Console.WriteLine(nameof(ScrollLeftButton_OnClick));
         var currentOffset = TabHeaderScrollViewer.Offset;
         TabHeaderScrollViewer.Offset = currentOffset.WithX(currentOffset.X - ScrollOffset);
     }
 
     private void ScrollRightButton_OnClick(object? sender, RoutedEventArgs e)
     {
-        Console.WriteLine(nameof(ScrollRightButton_OnClick));
         var currentOffset = TabHeaderScrollViewer.Offset;
         TabHeaderScrollViewer.Offset = currentOffset.WithX(currentOffset.X + ScrollOffset);
     }
