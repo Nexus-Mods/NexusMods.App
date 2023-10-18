@@ -117,7 +117,7 @@ public partial class
                 FolderEntryIcon.IsVisible = true;
                 FileNameTextBlock.IsVisible = true;
 
-                FileNameTextBlock.Text = node.DirectoryName;
+                FileNameTextBlock.Text = node.DisplayName;
 
                 SelectRoundedButton.IsVisible = true;
                 break;
@@ -144,7 +144,7 @@ public partial class
                 FolderEntryIcon.IsVisible = true;
                 FileNameTextBlock.IsVisible = true;
 
-                FileNameTextBlock.Text = node.DirectoryName;
+                FileNameTextBlock.Text = node.DisplayName;
 
                 SelectRoundedButton.IsVisible = true;
                 DeleteCreatedFolderButton.IsVisible = true;

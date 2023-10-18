@@ -30,7 +30,7 @@ public interface ISelectableDirectoryNode
     /// <summary>
     /// The Directory name displayed for this node.
     /// </summary>
-    string DirectoryName { get; }
+    string DisplayName { get; }
 }
 
 
@@ -40,16 +40,18 @@ public class SelectableDirectoryNode : ReactiveObject, ISelectableDirectoryNode
     public SelectableDirectoryNodeStatus Status { get; private set; } = SelectableDirectoryNodeStatus.Regular;
     public ObservableCollection<ITreeEntryViewModel> Children { get; init; } = new();
     public GamePath Path { get; init; }
-    public string DirectoryName => string.Empty;
+    private string _displayName = string.Empty;
+    public string DisplayName => _displayName != string.Empty ? _displayName : Path.FileName;
 
     /// <summary>
     ///     Creates nodes from a given path that is tied to a FileSystem.
     /// </summary>
     /// <param name="register">The game location register obtained from <see cref="GameInstallation"/>. Helps resolving <see cref="GamePath"/>.</param>
     /// <param name="gamePath">The path of the root node.</param>
-    public static SelectableDirectoryNode Create(GameLocationsRegister register, GamePath gamePath)
+    /// <param name="rootName">Name of the root item.</param>
+    public static SelectableDirectoryNode Create(GameLocationsRegister register, GamePath gamePath, string rootName = "")
     {
-        return Create(register[gamePath.LocationId], gamePath);
+        return Create(register[gamePath.LocationId], gamePath, rootName);
     }
 
     /// <summary>
@@ -57,14 +59,16 @@ public class SelectableDirectoryNode : ReactiveObject, ISelectableDirectoryNode
     /// </summary>
     /// <param name="absPath">Path of where <see cref="GamePath"/> points to on FileSystem.</param>
     /// <param name="gamePath">The path of the root node.</param>
-    public static SelectableDirectoryNode Create(AbsolutePath absPath, GamePath gamePath)
+    /// <param name="rootName">Name of the root item.</param>
+    public static SelectableDirectoryNode Create(AbsolutePath absPath, GamePath gamePath, string rootName = "")
     {
         var finalLocation = absPath.Combine(gamePath.Path);
-        var finalLocationLength = finalLocation.GetFullPathLength();
+        var finalLocationLength = finalLocation.GetFullPathLength() + 1;
         var root = new SelectableDirectoryNode
         {
             Status = SelectableDirectoryNodeStatus.Regular,
-            Path = gamePath
+            Path = gamePath,
+            _displayName = rootName
         };
         root.CreateChildrenRecursive(finalLocation, gamePath.LocationId, finalLocationLength);
         return root;
@@ -75,15 +79,15 @@ public class SelectableDirectoryNode : ReactiveObject, ISelectableDirectoryNode
     /// </summary>
     /// <param name="currentDirectory">The path to the current directory.</param>
     /// <param name="locationId">The named location for the <see cref="GamePath"/>(s) to create.</param>
-    /// <param name="baseLocationLength">Precalculated length of the base location from root <see cref="AbsolutePath"/>.</param>
-    internal void CreateChildrenRecursive(AbsolutePath currentDirectory, LocationId locationId, int baseLocationLength)
+    /// <param name="dirSubstringLength">Precalculated length of <see cref="currentDirectory"/>.</param>
+    internal void CreateChildrenRecursive(AbsolutePath currentDirectory, LocationId locationId, int dirSubstringLength)
     {
         // Get files at this level.
         foreach (var directory in currentDirectory.EnumerateDirectories("*", false))
         {
-            var name = directory.GetFullPath().Substring(baseLocationLength);
+            var name = directory.GetFullPath().Substring(dirSubstringLength);
             var node = new SelectableDirectoryNode { Path = new GamePath(locationId, name) };
-            node.CreateChildrenRecursive(directory, locationId, baseLocationLength);
+            node.CreateChildrenRecursive(directory, locationId, dirSubstringLength + name.Length + 1);
             Children.Add(new TreeEntryViewModel(node));
         }
     }
