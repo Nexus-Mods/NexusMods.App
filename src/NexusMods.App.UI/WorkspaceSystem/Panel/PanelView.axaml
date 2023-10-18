@@ -26,8 +26,18 @@
         </Grid.Styles>
 
         <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Background="{StaticResource BackgroundPrimaryColor}">
-            <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
-                <StackPanel Orientation="Horizontal" Spacing="0">
+            <Grid Grid.Column="0" ColumnDefinitions="Auto, *, Auto, Auto">
+                <Button Grid.Column="0" x:Name="ScrollLeftButton" Click="ScrollLeftButton_OnClick" Margin="24 12 12 12">
+                    <Button.Template>
+                        <ControlTemplate>
+                            <Border Background="Transparent">
+                                <icons:Icon Classes="ChevronLeft" Width="24" Height="24" />
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+
+                <ScrollViewer Grid.Column="1" x:Name="TabHeaderScrollViewer" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
                     <ItemsControl x:Name="TabHeaders" Height="52">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -41,18 +51,29 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
+                </ScrollViewer>
 
-                    <Button x:Name="AddTabButton" Margin="12 12 12 12">
-                        <Button.Template>
-                            <ControlTemplate>
-                                <Border Background="Transparent">
-                                    <icons:Icon Classes="Plus" Width="24" Height="24" />
-                                </Border>
-                            </ControlTemplate>
-                        </Button.Template>
-                    </Button>
-                </StackPanel>
-            </ScrollViewer>
+                <Button Grid.Column="2" x:Name="AddTabButton" Margin="12 12 10 12">
+                    <Button.Template>
+                        <ControlTemplate>
+                            <Border Background="Transparent">
+                                <icons:Icon Classes="Plus" Width="24" Height="24" />
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+
+                <Button Grid.Column="3" x:Name="ScrollRightButton" Click="ScrollRightButton_OnClick" Margin="10 12 12 12">
+                    <Button.Template>
+                        <ControlTemplate>
+                            <Border Background="Transparent">
+                                <icons:Icon Classes="ChevronRight" Width="24" Height="24" />
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
+
 
             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" Margin="12, 12, 12, 12">
                 <Button x:Name="PopOutPanelButton">

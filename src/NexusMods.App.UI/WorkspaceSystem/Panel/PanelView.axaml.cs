@@ -1,5 +1,6 @@
 using System.Reactive.Disposables;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
@@ -38,6 +39,18 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
             this.OneWayBind(ViewModel, vm => vm.TabHeaders, view => view.TabHeaders.ItemsSource)
                 .DisposeWith(disposables);
         });
+    }
+
+    private void ScrollLeftButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var currentOffset = TabHeaderScrollViewer.Offset;
+        TabHeaderScrollViewer.Offset = currentOffset.WithX(currentOffset.X - 234);
+    }
+
+    private void ScrollRightButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var currentOffset = TabHeaderScrollViewer.Offset;
+        TabHeaderScrollViewer.Offset = currentOffset.WithX(currentOffset.X + 234);
     }
 }
 
