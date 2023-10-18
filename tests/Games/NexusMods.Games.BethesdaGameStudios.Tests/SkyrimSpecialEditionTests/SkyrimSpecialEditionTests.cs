@@ -140,7 +140,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
         var gameFiles =
             loadout.Value.Mods.Values.First(m => m.ModCategory == Mod.GameFilesCategory); // <= throws on failure
 
-        var modPath = FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Assets/SMIM_Truncated.7z");
+        var modPath = FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Assets/SMIM_Truncated_Plugins.7z");
         await InstallModFromArchiveIntoLoadout(loadout, modPath, "SMIM");
 
         var pluginOrderFile = metadataFiles.Files.Values.OfType<PluginOrderFile>().First();
