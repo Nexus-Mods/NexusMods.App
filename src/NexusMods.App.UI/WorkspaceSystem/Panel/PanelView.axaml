@@ -23,6 +23,10 @@
             <Style Selector="icons|Icon">
                 <Setter Property="Foreground" Value="{StaticResource FontDarkSecondaryColor}" />
             </Style>
+
+            <Style Selector="Button:disabled icons|Icon">
+                <Setter Property="Foreground" Value="{StaticResource FontDarkSecondaryColor}" />
+            </Style>
         </Grid.Styles>
 
         <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Background="{StaticResource BackgroundPrimaryColor}">
