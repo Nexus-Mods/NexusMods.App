@@ -61,9 +61,21 @@ public class SelectLocationTreeDesignViewModel : AViewModel<ISelectLocationTreeV
             Path = new GamePath(LocationId.Game, "Data/Textures"),
         };
 
+        var createdElement = new SelectableDirectoryNode()
+        {
+            Status = SelectableDirectoryNodeStatus.Created,
+            Path = new GamePath(LocationId.Game, "Data/Textures/This is a created folder"),
+        };
+
+        var editingElement = new SelectableDirectoryNode()
+        {
+            Status = SelectableDirectoryNodeStatus.Editing,
+        };
+
+
         RootElement.AddChildren(new []{createFolderElement, dataElement});
         dataElement.AddChildren(new[]{createFolderElement, texturesElement});
-        texturesElement.AddChildren(new[]{createFolderElement});
+        texturesElement.AddChildren(new[]{createFolderElement, createdElement, editingElement});
 
         return new TreeEntryViewModel(RootElement);
     }
