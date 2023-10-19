@@ -152,15 +152,6 @@
                 </StackPanel>
             </Button>
 
-            <!-- Select Button -->
-            <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False"
-                    x:Name="SelectRoundedButton">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{x:Static resources:Language.SelectButton_Select}"
-                               x:Name="SelectButtonTextBlock" />
-                </StackPanel>
-            </Button>
-
             <!-- Delete Created Folder Button -->
             <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False"
                     x:Name="DeleteCreatedFolderButton">
@@ -168,6 +159,15 @@
                     <icons:Icon Classes="DeleteOutline" x:Name="DeleteCreatedFolderDeleteIcon" />
                     <TextBlock Text="{x:Static resources:Language.DeleteCreatedFolderButton_Delete}"
                                x:Name="DeleteCreatedFolderButtonTextBlock" />
+                </StackPanel>
+            </Button>
+
+            <!-- Select Button -->
+            <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False"
+                    x:Name="SelectRoundedButton">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{x:Static resources:Language.SelectButton_Select}"
+                               x:Name="SelectButtonTextBlock" />
                 </StackPanel>
             </Button>
 
