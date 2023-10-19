@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
@@ -11,7 +10,6 @@ using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts.Cursors;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.Mods;
-using NexusMods.Networking.NexusWebApi.Types;
 
 namespace NexusMods.DataModel.Loadouts;
 

@@ -1,7 +1,4 @@
 using NexusMods.Abstractions.CLI;
-using NexusMods.Abstractions.CLI.DataOutputs;
-using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.ApplySteps;
 using NexusMods.DataModel.Loadouts.Extensions;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.Paths;

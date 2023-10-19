@@ -1,9 +1,8 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Games.TestFramework;
 using NexusMods.CLI.Tests.VerbTests;
+using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
-
 
 namespace NexusMods.Games.BethesdaGameStudios.Tests.SkyrimLegendaryEditionTests;
 

@@ -1,16 +1,10 @@
 using NexusMods.DataModel;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.LoadoutSynchronizer;
-using NexusMods.DataModel.Sorting;
-using NexusMods.DataModel.Sorting.Rules;
-using NexusMods.DataModel.TriggerFilter;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
-using Noggog;
 using IGeneratedFile = NexusMods.DataModel.LoadoutSynchronizer.IGeneratedFile;
 
 // ReSharper disable AccessToDisposedClosure

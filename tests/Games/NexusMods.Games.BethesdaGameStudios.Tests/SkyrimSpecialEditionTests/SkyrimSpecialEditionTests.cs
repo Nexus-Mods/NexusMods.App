@@ -1,23 +1,17 @@
-using System.Collections.Immutable;
 using System.Text;
 using System.Text.Json;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.CLI.Tests.VerbTests;
-using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Extensions;
-using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Extensions;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
-using NexusMods.DataModel.LoadoutSynchronizer;
 using NexusMods.DataModel.LoadoutSynchronizer.Extensions;
 using NexusMods.Games.TestFramework;
-using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
 using Noggog;
 
 namespace NexusMods.Games.BethesdaGameStudios.Tests.SkyrimSpecialEditionTests;

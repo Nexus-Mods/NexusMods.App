@@ -3,7 +3,6 @@ using NexusMods.Abstractions.CLI;
 using NexusMods.Abstractions.CLI.DataOutputs;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
-using NexusMods.DataModel.ArchiveContents;
 using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.Paths;
 

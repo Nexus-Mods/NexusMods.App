@@ -33,6 +33,7 @@ public class NxArchiveManager : IArchiveManager
     /// <summary>
     /// DI Constructor
     /// </summary>
+    /// <param name="logger"></param>
     /// <param name="store"></param>
     /// <param name="settings"></param>
     public NxArchiveManager(ILogger<NxArchiveManager> logger, IDataStore store, IDataModelSettings settings)
@@ -89,10 +90,10 @@ public class NxArchiveManager : IArchiveManager
         await outputPath.MoveToAsync(finalPath, token: token);
         await using var os = finalPath.Read();
         var unpacker = new NxUnpacker(new FromStreamProvider(os));
-        UpdateIndexes(unpacker, distinct, guid, finalPath);
+        UpdateIndexes(unpacker, guid, finalPath);
     }
 
-    private unsafe void UpdateIndexes(NxUnpacker unpacker, ArchivedFileEntry[] distinct, Guid guid,
+    private unsafe void UpdateIndexes(NxUnpacker unpacker, Guid guid,
         AbsolutePath finalPath)
     {
         Span<byte> buffer = stackalloc byte[sizeof(NativeFileEntryV1)];
@@ -207,7 +208,7 @@ public class NxArchiveManager : IArchiveManager
     }
 
     /// <inheritdoc />
-    public async Task<Stream> GetFileStream(Hash hash, CancellationToken token = default)
+    public Task<Stream> GetFileStream(Hash hash, CancellationToken token = default)
     {
         if (hash == Hash.Zero)
             throw new ArgumentNullException(nameof(hash));
@@ -219,7 +220,7 @@ public class NxArchiveManager : IArchiveManager
         var provider = new FromStreamProvider(file);
         var header = HeaderParser.ParseHeader(provider);
 
-        return new ChunkedStream<ChunkedArchiveStream>(new ChunkedArchiveStream(entry, header, file));
+        return Task.FromResult<Stream>(new ChunkedStream<ChunkedArchiveStream>(new ChunkedArchiveStream(entry, header, file)));
     }
 
     private class ChunkedArchiveStream : IChunkedStreamSource

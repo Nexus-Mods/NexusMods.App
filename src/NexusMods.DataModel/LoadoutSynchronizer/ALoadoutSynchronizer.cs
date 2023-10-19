@@ -20,7 +20,7 @@ namespace NexusMods.DataModel.LoadoutSynchronizer;
 /// Base class for loadout synchronizers, provides some common functionality. Does not have to be user,
 /// but reduces a lot of boilerplate, and is highly recommended.
 /// </summary>
-public class ALoadoutSynchronizer : ILoadoutSynchronizer, IStandardizedLoadoutSynchronizer
+public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 {
     private readonly ILogger _logger;
     private readonly FileHashCache _hashCache;
@@ -34,7 +34,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer, IStandardizedLoadoutSy
     /// </summary>
     /// <param name="logger"></param>
     /// <param name="hashCache"></param>
-    /// <param name="fileSystem"></param>
     /// <param name="store"></param>
     /// <param name="loadoutRegistry"></param>
     /// <param name="diskStateRegistry"></param>
@@ -124,7 +123,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer, IStandardizedLoadoutSy
                 if (prevState.TryGetValue(gamePath, out var prevEntry))
                 {
                     // If the file has been modified outside of the app since the last apply, we need to ingest it.
-                    if (prevEntry.Value!.Hash != entry.Hash)
+                    if (prevEntry.Value.Hash != entry.Hash)
                     {
                         HandleNeedIngest(entry);
                         throw new UnreachableException("HandleNeedIngest should have thrown");
@@ -269,7 +268,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer, IStandardizedLoadoutSy
 
 
                 // Else, the file has changed, so we need to update it.
-                var newFile = await HandleChangedFile(prevFile, prevEntry.Value!, newEntry, path, absPath);
+                var newFile = await HandleChangedFile(prevFile, prevEntry.Value, newEntry, path, absPath);
                 results.Add(KeyValuePair.Create(path, newFile));
             }
             else
@@ -383,7 +382,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer, IStandardizedLoadoutSy
                     results.Add(KeyValuePair.Create(path, new ModFilePair
                     {
                         Mod = prevPair.Value!.Mod,
-                        File = file!
+                        File = file
                     }));
                     continue;
                 }
@@ -408,7 +407,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer, IStandardizedLoadoutSy
     /// <param name="prevLoadout"></param>
     /// <param name="path"></param>
     /// <param name="file"></param>
-    /// <param name="modsByCategory"></param>
+    /// <param name="modForCategory"></param>
     /// <returns></returns>
     protected virtual Mod GetModForNewFile(Loadout prevLoadout, GamePath path, AModFile file, Func<string, Mod> modForCategory)
     {
