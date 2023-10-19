@@ -14,7 +14,7 @@ existing install? Will copying some files into their game folder require them to
 game updated, and the user updated their mods, now nothing works! Every step of the modding process is fraught with pitfalls and destructive changes.
 
 The Nexus Mods App intends to solve these problems. In addition to being a great mod installer, manager and builder, this project aims to always
-provide a "undo" feature for users. Not just on a metadata level (like most mod managers offer today) but on a per-file basis as well. So go ahead,
+provide an "undo" feature for users. Not just on a metadata level (like most mod managers offer today) but on a per-file basis as well. So go ahead,
 update that mod, if you don't like it, you can always go back to the game as it was before you made the update.
 
 Further Reading : [Immutable Mod Lists](/docs/ImmutableModlists.md)
