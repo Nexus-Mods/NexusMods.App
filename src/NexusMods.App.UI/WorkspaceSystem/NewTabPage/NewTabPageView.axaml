@@ -5,44 +5,25 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactive="http://reactiveui.net"
     xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
-    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.WorkspaceSystem.NewTabPageView">
 
     <Design.DataContext>
-        <workspace:NewTabPageViewModel />
+        <workspace:NewTabPageDesignViewModel />
     </Design.DataContext>
 
-    <WrapPanel Orientation="Horizontal">
-        <WrapPanel.Styles>
-            <StyleInclude Source="avares://NexusMods.App.UI/Theme/TextBlockStyles.xaml"/>
-            <StyleInclude Source="avares://NexusMods.App.UI/Theme/IconStyles.xaml"/>
-            <StyleInclude Source="avares://NexusMods.App.UI/Palatte/Nexus.xaml"/>
-        </WrapPanel.Styles>
+    <ItemsControl x:Name="Sections">
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <WrapPanel/>
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
 
-        <StackPanel Spacing="12" Width="375" Margin="12 0">
-            <TextBlock Classes="HeadingSMSemi">Category Name</TextBlock>
-
-            <StackPanel Spacing="8">
-
-                <Border CornerRadius="4" Background="{StaticResource BackgroundTertiaryColor}">
-                    <StackPanel Margin="16" Orientation="Horizontal">
-                        <icons:Icon Classes="ProgressDownload" Width="24" Height="24" Foreground="{StaticResource BrandWhite}"/>
-
-                        <TextBlock Classes="BodyLGBold">In Progress</TextBlock>
-                    </StackPanel>
-                </Border>
-
-                <Border CornerRadius="4" Background="{StaticResource BackgroundTertiaryColor}">
-                    <StackPanel Margin="16" Orientation="Horizontal">
-                        <icons:Icon Classes="Image" Width="24" Height="24" Foreground="{StaticResource BrandWhite}"/>
-
-                        <TextBlock Classes="BodyLGBold">Texture Viewer</TextBlock>
-                    </StackPanel>
-                </Border>
-            </StackPanel>
-        </StackPanel>
-
-    </WrapPanel>
+        <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="{x:Type workspace:INewTabPageSectionViewModel}">
+                <reactive:ViewModelViewHost ViewModel="{Binding Mode=OneTime}"/>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>
 
 </reactive:ReactiveUserControl>

@@ -5,15 +5,16 @@ using ReactiveUI;
 namespace NexusMods.App.UI.WorkspaceSystem;
 
 [UsedImplicitly]
-public partial class NewTabPageView : ReactiveUserControl<INewTabPageViewModel>
+public partial class NewTabPageSectionView : ReactiveUserControl<INewTabPageSectionViewModel>
 {
-    public NewTabPageView()
+    public NewTabPageSectionView()
     {
         InitializeComponent();
 
         this.WhenActivated(_ =>
         {
-            Sections.ItemsSource = ViewModel?.SectionViewModels;
+            SectionNameTextBlock.Text = ViewModel?.SectionName;
         });
     }
 }
+

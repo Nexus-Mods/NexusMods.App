@@ -38,7 +38,6 @@ using NexusMods.App.UI.RightContent.MyGames;
 using NexusMods.App.UI.Routing;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.Common;
 using ReactiveUI;
 using DownloadGameNameView = NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadGameName.DownloadGameNameView;
 using DownloadNameView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadName.DownloadNameView;
@@ -155,10 +154,14 @@ public static class Services
             .AddViewModel<PanelViewModel, IPanelViewModel>()
             .AddViewModel<AddPanelButtonViewModel, IAddPanelButtonViewModel>()
             .AddViewModel<PanelTabHeaderViewModel, IPanelTabHeaderViewModel>()
+            .AddViewModel<NewTabPageViewModel, INewTabPageViewModel>()
+            .AddViewModel<NewTabPageSectionViewModel, INewTabPageSectionViewModel>()
             .AddView<WorkspaceView, IWorkspaceViewModel>()
             .AddView<PanelView, IPanelViewModel>()
             .AddView<AddPanelButtonView, IAddPanelButtonViewModel>()
             .AddView<PanelTabHeaderView, IPanelTabHeaderViewModel>()
+            .AddView<NewTabPageView, INewTabPageViewModel>()
+            .AddView<NewTabPageSectionView, INewTabPageSectionViewModel>()
 
             // Other
             .AddViewModel<DummyViewModel, IDummyViewModel>()
