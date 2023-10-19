@@ -201,7 +201,7 @@
         <value>PRZEGLĄDAJ WSZYSTKIE GRY</value>
     </data>
     <data name="LoadoutGridView__Add_Mod" xml:space="preserve">
-        <value>Dodaj mod</value>
+        <value>Dodaj Mod</value>
     </data>
     <data name="MyGamesView__Ready_to_mod" xml:space="preserve">
         <value>Gotowe do modowania</value>
