@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI;
 using NexusMods.Common;
-using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Games;
@@ -35,10 +34,8 @@ where TVm : IViewModelInterface
     protected GlobalSettingsManager GlobalSettingsManager { get; }
 
 
-    private LoadoutId? _loadoutId;
-    protected LoadoutMarker Loadout => _loadoutId != null ?
-        LoadoutRegistry.GetMarker(Loadout.Value.LoadoutId) :
-        throw new InvalidOperationException("LoadoutId is null");
+    private LoadoutMarker? _loadout;
+    protected LoadoutMarker Loadout => _loadout!;
 
     public AVmTest(IServiceProvider provider) : base(provider)
     {
@@ -58,7 +55,7 @@ where TVm : IViewModelInterface
 
     public async Task InitializeAsync()
     {
-        _loadoutId = (await LoadoutRegistry.Manage(Install, "Test")).Value.LoadoutId;
+        _loadout = await LoadoutRegistry.Manage(Install, "Test");
     }
 
     protected async Task<ModId[]> InstallMod(AbsolutePath path)
