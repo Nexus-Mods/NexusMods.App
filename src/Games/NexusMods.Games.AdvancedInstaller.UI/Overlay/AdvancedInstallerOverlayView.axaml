@@ -33,6 +33,10 @@
                 <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
             </Style>
 
+            <Style Selector="TreeDataGrid.TreeWhiteCaret">
+                <Setter Property="Foreground" Value="{StaticResource FontDarkSecondaryBrush}"></Setter>
+            </Style>
+
             <Style
                 Selector="TreeDataGrid.TreeNoSelection TreeDataGridExpanderCell:pointerover /template/ Border#CellBorder:pointerover">
                 <Setter Property="Background" Value="{StaticResource BorderContainerBrush}" />

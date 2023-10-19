@@ -10,7 +10,7 @@
         <ui:SelectLocationTreeDesignViewModel />
     </Design.DataContext>
 
-    <TreeDataGrid Classes="TreeNoSelection TreeNoHeader" ShowColumnHeaders="True"
+    <TreeDataGrid Classes="TreeNoSelection TreeNoHeader TreeWhiteCaret" ShowColumnHeaders="True"
                   x:Name="SelectTreeDataGrid" />
 </reactiveUi:ReactiveUserControl>
 
