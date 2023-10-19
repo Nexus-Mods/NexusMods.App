@@ -14,4 +14,9 @@ public interface IBodyViewModel : IViewModel
     public IEmptyPreviewViewModel EmptyPreviewViewModel { get; }
 
     public IViewModel CurrentPreviewViewModel { get; }
+
+    /// <summary>
+    ///     Stores the data used for deployment.
+    /// </summary>
+    public DeploymentData Data { get; }
 }

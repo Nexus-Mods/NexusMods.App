@@ -19,4 +19,5 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
         new SelectLocationViewModel();
 
     public IViewModel CurrentPreviewViewModel => PreviewViewModel;
+    public DeploymentData Data { get; set; }
 }
