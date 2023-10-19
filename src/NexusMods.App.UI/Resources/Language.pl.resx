@@ -201,7 +201,7 @@
         <value>PRZEGLĄDAJ WSZYSTKIE GRY</value>
     </data>
     <data name="LoadoutGridView__Add_Mod" xml:space="preserve">
-        <value>Dodaj Mod</value>
+        <value>Dodaj mod</value>
     </data>
     <data name="MyGamesView__Ready_to_mod" xml:space="preserve">
         <value>Gotowe do modowania</value>
@@ -232,5 +232,8 @@
     </data>
     <data name="DownloadStatusDesignViewModel_Text_Queued_0_" xml:space="preserve">
         <value>W kolejce 0%</value>
+    </data>
+    <data name="PanelTabHeaderViewModel_Title_New_Tab" xml:space="preserve">
+        <value>Nowa karta</value>						  
     </data>
 </root>
