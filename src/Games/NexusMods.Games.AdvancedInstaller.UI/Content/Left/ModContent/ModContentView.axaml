@@ -26,15 +26,7 @@
                 <Setter Property="Margin" Value="0, 4, 0, 16" />
             </Style>
 
-            <Style
-                Selector="TreeDataGrid.TreeNoSelection TreeDataGridExpanderCell:pointerover /template/ Border#CellBorder:pointerover">
-                <Setter Property="Background" Value="{StaticResource BorderContainerColor}" />
-            </Style>
 
-            <Style
-                Selector="TreeDataGrid.TreeNoSelection TreeDataGridRow:selected /template/ TreeDataGridCellsPresenter#PART_CellsPresenter">
-                <Setter Property="Background" Value="Transparent" />
-            </Style>
 
         </Grid.Styles>
 

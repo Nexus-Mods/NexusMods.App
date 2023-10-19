@@ -28,7 +28,7 @@ public class SelectLocationTreeDesignViewModel : AViewModel<ISelectLocationTreeV
                     width: new GridLength(1, GridUnitType.Star)
                 ),
                 // TODO: Switch to AsT1
-                x => x.Node.AsT2.Children)
+                x => x.Node.AsT1.Children)
         }
     };
 
@@ -38,9 +38,33 @@ public class SelectLocationTreeDesignViewModel : AViewModel<ISelectLocationTreeV
     private static ITreeEntryViewModel CreateTestTree()
     {
 
-        //var target = SelectableDirectoryNode.Create(new GamePath(LocationId.Game, ""), true);
-        // TODO: Switch to using SelectableDirectoryNode
-        var fakeTarget = PreviewEntryNode.Create(new GamePath(LocationId.Game, ""), true);
-        return new TreeEntryViewModel(fakeTarget);
+        var RootElement = new SelectableDirectoryNode
+        {
+            Status = SelectableDirectoryNodeStatus.Regular,
+            Path = new GamePath(LocationId.Game, ""),
+        };
+
+        var createFolderElement = new SelectableDirectoryNode()
+        {
+            Status = SelectableDirectoryNodeStatus.Create,
+        };
+
+        var dataElement = new SelectableDirectoryNode
+        {
+            Status = SelectableDirectoryNodeStatus.Regular,
+            Path = new GamePath(LocationId.Game, "Data"),
+        };
+
+        var texturesElement = new SelectableDirectoryNode
+        {
+            Status = SelectableDirectoryNodeStatus.Regular,
+            Path = new GamePath(LocationId.Game, "Data/Textures"),
+        };
+
+        RootElement.AddChildren(new []{createFolderElement, dataElement});
+        dataElement.AddChildren(new[]{createFolderElement, texturesElement});
+        texturesElement.AddChildren(new[]{createFolderElement});
+
+        return new TreeEntryViewModel(RootElement);
     }
 }

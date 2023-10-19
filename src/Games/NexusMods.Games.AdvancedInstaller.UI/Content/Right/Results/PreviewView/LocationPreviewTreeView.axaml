@@ -9,6 +9,7 @@
     <Design.DataContext>
         <ui:LocationPreviewTreeDesignViewModel />
     </Design.DataContext>
+
     <TreeDataGrid Classes="TreeNoSelection TreeNoHeader" x:Name="LocationPreviewTreeDataGrid"
                   ShowColumnHeaders="True"
                   Foreground="{DynamicResource FontDarkSecondaryColor}" />

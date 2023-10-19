@@ -7,20 +7,7 @@ using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 
-internal class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
-    ISelectLocationViewModel
+internal class SelectLocationViewModel : SelectLocationDesignViewModel
 {
-    public SelectLocationViewModel() : base()
-    {
-        SuggestedEntries = Array.Empty<ISuggestedEntryViewModel>().ToReadOnlyObservableCollection();
-
-        AllFoldersTrees = new ISelectLocationTreeViewModel[]
-        {
-            new SelectLocationTreeViewModel(),
-            new SelectLocationTreeViewModel(),
-        }.ToReadOnlyObservableCollection();
-    }
-
-    public ReadOnlyObservableCollection<ISuggestedEntryViewModel> SuggestedEntries { get; set; }
-    public ReadOnlyObservableCollection<ISelectLocationTreeViewModel> AllFoldersTrees { get; set; }
+    public SelectLocationViewModel() : base() { }
 }

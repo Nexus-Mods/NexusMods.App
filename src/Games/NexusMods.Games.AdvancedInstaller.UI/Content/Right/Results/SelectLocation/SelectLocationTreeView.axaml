@@ -6,6 +6,9 @@
                                 xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectLocationTreeView">
+    <Design.DataContext>
+        <ui:SelectLocationTreeDesignViewModel />
+    </Design.DataContext>
 
     <TreeDataGrid Classes="TreeNoSelection TreeNoHeader" ShowColumnHeaders="True"
                   x:Name="SelectTreeDataGrid" />
