@@ -10,17 +10,20 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 internal class ModContentDesignViewModel : AViewModel<IModContentViewModel>,
     IModContentViewModel
 {
+    public ITreeEntryViewModel TreeVm => _treeData ??= InitTreeData();
+    private ITreeEntryViewModel? _treeData;
+
     /// <summary>
     /// The visual representation of the tree.
     /// </summary>
-    public HierarchicalTreeDataGridSource<ITreeEntryViewModel> Tree => new(GetTreeData())
+    public HierarchicalTreeDataGridSource<ITreeEntryViewModel> Tree => new(TreeVm)
     {
         Columns =
         {
             new HierarchicalExpanderColumn<ITreeEntryViewModel>(
                 new TemplateColumn<ITreeEntryViewModel>(null,
-                    new FuncDataTemplate<ITreeEntryViewModel>((node, scope) =>
-                        new UI.TreeEntryView()
+                    new FuncDataTemplate<ITreeEntryViewModel>((node, _) =>
+                        new TreeEntryView()
                         {
                             DataContext = node,
                         }),
@@ -30,7 +33,7 @@ internal class ModContentDesignViewModel : AViewModel<IModContentViewModel>,
         }
     };
 
-    protected virtual ITreeEntryViewModel GetTreeData() => CreateTestTree();
+    protected virtual ITreeEntryViewModel InitTreeData() => CreateTestTree();
 
     private static ITreeEntryViewModel CreateTestTree()
     {
