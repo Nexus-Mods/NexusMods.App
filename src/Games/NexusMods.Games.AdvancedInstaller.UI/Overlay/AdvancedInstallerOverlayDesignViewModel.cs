@@ -1,5 +1,13 @@
-﻿namespace NexusMods.Games.AdvancedInstaller.UI;
+﻿using NexusMods.App.UI;
+using NexusMods.Games.AdvancedInstaller.UI.Content;
+using NexusMods.Games.AdvancedInstaller.UI.Content.Bottom;
 
-public class AdvancedInstallerOverlayDesignViewModel : AdvancedInstallerOverlayViewModel
+namespace NexusMods.Games.AdvancedInstaller.UI;
+
+public class AdvancedInstallerOverlayDesignViewModel : AViewModel<IAdvancedInstallerOverlayViewModel>,
+    IAdvancedInstallerOverlayViewModel
 {
+    public bool IsActive { get; set; }
+    public IFooterViewModel FooterViewModel { get; } = new FooterDesignViewModel();
+    public IBodyViewModel BodyViewModel { get; } = new BodyDesignViewModel();
 }

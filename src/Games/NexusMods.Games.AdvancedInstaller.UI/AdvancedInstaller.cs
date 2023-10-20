@@ -46,7 +46,7 @@ public class AdvancedInstaller : IModInstaller
             return new DeploymentData();
 
         // This is a stub, until we implement some UI logic to pull this data
-        return await ShowAdvancedInstallerOverlay();
+        return await ShowAdvancedInstallerOverlay(archiveFiles, gameInstallation.LocationsRegister, gameInstallation.Game.Name);
     }
 
     private async Task<bool> ShowUnsupportedModOverlay(object? referenceItem = null)
@@ -58,10 +58,10 @@ public class AdvancedInstaller : IModInstaller
         return vm.ShouldAdvancedInstall;
     }
 
-    private async Task<DeploymentData> ShowAdvancedInstallerOverlay(object? referenceItem = null)
+    private async Task<DeploymentData> ShowAdvancedInstallerOverlay(FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles, GameLocationsRegister register, string gameName = "", object? referenceItem = null)
     {
         var tcs = new TaskCompletionSource<bool>();
-        var vm = new AdvancedInstallerOverlayViewModel();
+        var vm = new AdvancedInstallerOverlayViewModel(archiveFiles, register, gameName);
         _overlayController.SetOverlayContent(new SetOverlayItem(vm, referenceItem), tcs);
         await tcs.Task;
         return vm.BodyViewModel.Data;
