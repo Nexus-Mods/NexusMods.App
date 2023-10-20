@@ -17,8 +17,8 @@ internal class SelectLocationDesignViewModel : AViewModel<ISelectLocationViewMod
 
         AllFoldersTrees = new ISelectLocationTreeViewModel[]
         {
-            new SelectLocationTreeViewModel(),
-            new SelectLocationTreeViewModel(),
+            new SelectLocationTreeDesignViewModel(),
+            new SelectLocationTreeDesignViewModel(),
         }.ToReadOnlyObservableCollection();
 
         SuggestedEntries =
