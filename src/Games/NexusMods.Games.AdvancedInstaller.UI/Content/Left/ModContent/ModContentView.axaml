@@ -14,7 +14,6 @@
 
     <Grid RowDefinitions="Auto, *">
         <Grid.Styles>
-
             <Style Selector="Border.HeaderAreaBorder">
                 <Setter Property="BorderThickness" Value="0, 0, 0, 1" />
                 <Setter Property="BorderBrush" Value="{DynamicResource BorderContainerBrush}" />
@@ -25,11 +24,9 @@
                 <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryColor}" />
                 <Setter Property="Margin" Value="0, 4, 0, 16" />
             </Style>
-
-
-
         </Grid.Styles>
 
+        <!-- "Mod Content" Header and "Description" -->
         <Border Grid.Row="0" Classes="HeaderAreaBorder" x:Name="HeaderAreaBorder">
             <StackPanel Orientation="Vertical">
 
@@ -42,6 +39,7 @@
             </StackPanel>
         </Border>
 
+        <!-- "Mod Content" Tree -->
         <TreeDataGrid Grid.Row="1" Classes="TreeNoSelection TreeNoHeader" x:Name="ModContentTreeDataGrid"
                       ShowColumnHeaders="True"
                       Foreground="{DynamicResource FontDarkSecondaryColor}" />
