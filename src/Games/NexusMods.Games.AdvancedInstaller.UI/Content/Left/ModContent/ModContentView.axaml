@@ -6,10 +6,11 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
                                 xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI"
+                                xmlns:left="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Content.Left"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.Content.Left.ModContentView">
     <Design.DataContext>
-        <ui:TreeEntryDesignViewModel />
+        <left:ModContentDesignViewModel />
     </Design.DataContext>
 
     <Grid RowDefinitions="Auto, *">
