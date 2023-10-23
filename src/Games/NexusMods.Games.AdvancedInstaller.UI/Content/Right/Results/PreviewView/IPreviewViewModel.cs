@@ -1,5 +1,4 @@
-using System.Collections.ObjectModel;
-using NexusMods.App.UI;
+﻿using NexusMods.App.UI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView;
 

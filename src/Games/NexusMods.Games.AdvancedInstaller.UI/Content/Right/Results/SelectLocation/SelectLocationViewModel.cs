@@ -1,11 +1,7 @@
 ﻿using System.Collections.ObjectModel;
-using Avalonia.Controls;
 using NexusMods.App.UI;
 using NexusMods.App.UI.Extensions;
 using NexusMods.DataModel.Games;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
-using NexusMods.Paths;
-using OneOf.Types;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 

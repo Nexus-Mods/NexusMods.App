@@ -1,7 +1,4 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
-using Avalonia.ReactiveUI;
+﻿using Avalonia.ReactiveUI;
 using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
