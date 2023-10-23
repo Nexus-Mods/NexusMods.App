@@ -28,7 +28,7 @@ public static class Services
             .AddView<AdvancedInstallerOverlayView, IAdvancedInstallerOverlayViewModel>()
             .AddView<Content.Left.TreeEntryView, Content.Left.ITreeEntryViewModel>()
             .AddView<TreeEntryView, Content.Right.Results.PreviewView.PreviewEntry.ITreeEntryViewModel>()
-            .AddView<SelectableDirectoryEntryView,
+            .AddView<Content.Right.Results.SelectLocation.SelectableDirectoryEntry.TreeEntryView,
                 Content.Right.Results.SelectLocation.SelectableDirectoryEntry.ITreeEntryViewModel>()
             .AddView<UnsupportedModOverlayView, IUnsupportedModOverlayViewModel>();
     }

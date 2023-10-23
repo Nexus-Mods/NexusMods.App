@@ -3,9 +3,9 @@ using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry;
 
-public partial class SelectableDirectoryEntryView : ReactiveUserControl<ITreeEntryViewModel>
+public partial class TreeEntryView : ReactiveUserControl<ITreeEntryViewModel>
 {
-    public SelectableDirectoryEntryView()
+    public TreeEntryView()
     {
         InitializeComponent();
 

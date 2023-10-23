@@ -8,7 +8,7 @@
                                 xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
                                 xmlns:selectableDirectoryEntry="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry"
                                 mc:Ignorable="d" d:DesignWidth="710" d:DesignHeight="44"
-                                x:Class="NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry.SelectableDirectoryEntryView">
+                                x:Class="NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry.TreeEntryView">
 
     <Design.DataContext>
         <selectableDirectoryEntry:TreeEntryCreatingDirectoryDesignViewModel />

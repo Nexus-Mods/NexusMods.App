@@ -17,7 +17,7 @@ public class SelectLocationTreeDesignViewModel : AViewModel<ISelectLocationTreeV
             new HierarchicalExpanderColumn<ITreeEntryViewModel>(
                 new TemplateColumn<ITreeEntryViewModel>(null,
                     new FuncDataTemplate<ITreeEntryViewModel>((node, scope) =>
-                        new SelectableDirectoryEntryView()
+                        new TreeEntryView()
                         {
                             DataContext = node,
                         }),

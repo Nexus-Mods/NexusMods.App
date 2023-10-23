@@ -174,7 +174,7 @@
             <SubType>Code</SubType>
         </Compile>
 
-        <Compile Update="Content\Right\Results\SelectLocation\SelectableDirectoryEntry\SelectableDirectoryEntryView.axaml.cs">
+        <Compile Update="Content\Right\Results\SelectLocation\SelectableDirectoryEntry\TreeEntryView.axaml.cs">
             <DependentUpon>PreviewTreeEntryView.axaml</DependentUpon>
             <SubType>Code</SubType>
         </Compile>
