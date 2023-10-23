@@ -31,23 +31,18 @@
         </Grid.Styles>
 
         <!-- Left Elements -->
-        <Grid Grid.Column="0" ColumnDefinitions="*"
-              Name="EntryLeftElementsGrid">
+        <Grid Grid.Column="0" ClipToBounds="True" ColumnDefinitions="Auto,Auto" Name="FileElementGrid">
 
-            <!-- File Element -->
-            <Grid ClipToBounds="True" ColumnDefinitions="Auto,Auto,Auto,*" x:Name="FileElementGrid">
+            <!-- File / Directory Icon -->
+            <icons:Icon Grid.Column="0" Classes="File FileTypeIcon" IsVisible="False" x:Name="FileEntryIcon" />
+            <icons:Icon Grid.Column="0" Classes="FolderOutline FileTypeIcon" IsVisible="False"
+                        x:Name="FolderEntryIcon" />
 
-                <!-- File / Directory Icon -->
-                <icons:Icon Grid.Column="0" Classes="File FileTypeIcon" IsVisible="False" x:Name="FileEntryIcon" />
-                <icons:Icon Grid.Column="0" Classes="FolderOutline FileTypeIcon" IsVisible="False"
-                            x:Name="FolderEntryIcon" />
-
-                <!-- File Name -->
-                <TextBlock Grid.Column="1" Classes="BodyMDNormal" VerticalAlignment="Center"
-                           TextTrimming="CharacterEllipsis"
-                           Text="Example-file.bsa"
-                           x:Name="FileNameTextBlock" />
-            </Grid>
+            <!-- File Name -->
+            <TextBlock Grid.Column="1" Classes="BodyMDNormal" VerticalAlignment="Center"
+                       TextTrimming="CharacterEllipsis"
+                       Text="Example-file.bsa"
+                       x:Name="FileNameTextBlock" />
         </Grid>
 
         <!-- Right Elements -->
@@ -57,9 +52,7 @@
             <!-- Install Button (Install / Install all / Install folder) -->
             <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False"
                     x:Name="InstallRoundedButton">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Install temp text" x:Name="InstallRoundedButtonTextBlock" />
-                </StackPanel>
+                <TextBlock Text="Install temp text" x:Name="InstallRoundedButtonTextBlock" />
             </Button>
 
             <!-- X Select location ['Selecting' State] -->
@@ -98,7 +91,6 @@
                     <TextBlock Text="Included temp text" x:Name="IncludedRemoveButtonTextBlock" />
                 </StackPanel>
             </Button>
-
         </StackPanel>
     </Grid>
 
