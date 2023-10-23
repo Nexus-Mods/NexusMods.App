@@ -7,13 +7,14 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocat
 internal class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
     ISelectLocationViewModel
 {
+    public ReadOnlyObservableCollection<ISuggestedEntryViewModel> SuggestedEntries { get; set; }
+    public ReadOnlyObservableCollection<ISelectLocationTreeViewModel> AllFoldersTrees { get; }
+
     public SelectLocationViewModel(GameLocationsRegister register, string gameName = "") : this() // <= remove this
     {
         List<ISelectLocationTreeViewModel> treeList = new();
         foreach (var location in register.GetTopLevelLocations())
-        {
             treeList.Add(new SelectLocationTreeViewModel(register, location.Key));
-        }
 
         AllFoldersTrees = treeList.ToReadOnlyObservableCollection();
     }
@@ -27,7 +28,4 @@ internal class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
             new SelectLocationTreeDesignViewModel()
         }.ToReadOnlyObservableCollection();
     }
-
-    public ReadOnlyObservableCollection<ISuggestedEntryViewModel> SuggestedEntries { get; set; }
-    public ReadOnlyObservableCollection<ISelectLocationTreeViewModel> AllFoldersTrees { get; }
 }

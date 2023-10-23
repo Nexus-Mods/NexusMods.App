@@ -14,9 +14,7 @@ public partial class SelectLocationView : ReactiveUserControl<ISelectLocationVie
         this.WhenActivated(disposables =>
         {
             this.WhenAnyValue(view => view.ViewModel!.SuggestedEntries)
-                .BindTo<ReadOnlyObservableCollection<ISuggestedEntryViewModel>,
-                    SelectLocationView, IEnumerable>(this,
-                    view => view.SuggestedLocationItemsControl.ItemsSource)
+                .BindTo(this, view => view.SuggestedLocationItemsControl.ItemsSource)
                 .DisposeWith(disposables);
 
             this.OneWayBind(ViewModel, vm => vm.AllFoldersTrees,

@@ -179,14 +179,6 @@
             <SubType>Code</SubType>
         </Compile>
 
-        <Compile Update="Content\Right\Results\SelectLocation\SelectableDirectoryEntry\SelectableDirectoryEntryDesignViewModel.cs">
-            <DependentUpon>ISelectableDirectoryEntryViewModel.cs</DependentUpon>
-        </Compile>
-
-        <Compile Update="Content\Right\Results\SelectLocation\SelectableDirectoryEntry\SelectableDirectoryEntryViewModel.cs">
-            <DependentUpon>ISelectableDirectoryEntryViewModel.cs</DependentUpon>
-        </Compile>
-
         <Compile Update="Content\Left\ModContent\Entry\TreeEntryViewModel.cs">
             <DependentUpon>ITreeEntryViewModel.cs</DependentUpon>
         </Compile>
@@ -196,6 +188,14 @@
         </Compile>
 
         <Compile Update="Content\Right\Results\PreviewView\PreviewEntry\TreeEntryViewModel.cs">
+            <DependentUpon>ITreeEntryViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\Results\SelectLocation\SelectableDirectoryEntry\TreeEntryViewModel.cs">
+            <DependentUpon>ITreeEntryViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\Results\SelectLocation\SelectableDirectoryEntry\TreeEntryCreatingDirectoryDesignViewModel.cs">
             <DependentUpon>ITreeEntryViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>

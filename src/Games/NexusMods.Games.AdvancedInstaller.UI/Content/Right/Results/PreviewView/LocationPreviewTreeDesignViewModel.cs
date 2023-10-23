@@ -5,6 +5,8 @@ using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.
 using NexusMods.Paths;
 using ITreeEntryViewModel =
     NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry.ITreeEntryViewModel;
+using TreeEntryViewModel =
+    NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry.TreeEntryViewModel;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView;
 

@@ -10,67 +10,65 @@ public class SelectLocationTreeDesignViewModel : AViewModel<ISelectLocationTreeV
     /// <summary>
     /// The visual representation of the tree.
     /// </summary>
-    public HierarchicalTreeDataGridSource<ISelectableDirectoryEntryViewModel> Tree => new(GetTreeData())
+    public HierarchicalTreeDataGridSource<ITreeEntryViewModel> Tree => new(GetTreeData())
     {
         Columns =
         {
-            new HierarchicalExpanderColumn<ISelectableDirectoryEntryViewModel>(
-                new TemplateColumn<ISelectableDirectoryEntryViewModel>(null,
-                    new FuncDataTemplate<ISelectableDirectoryEntryViewModel>((node, scope) =>
+            new HierarchicalExpanderColumn<ITreeEntryViewModel>(
+                new TemplateColumn<ITreeEntryViewModel>(null,
+                    new FuncDataTemplate<ITreeEntryViewModel>((node, scope) =>
                         new SelectableDirectoryEntryView()
                         {
                             DataContext = node,
                         }),
                     width: new GridLength(1, GridUnitType.Star)
                 ),
-                // TODO: Switch to AsT1
-                x => x.Node.AsT1.Children)
+                x => x.Children)
         }
     };
 
 
-    protected virtual ISelectableDirectoryEntryViewModel GetTreeData() => CreateTestTree();
+    protected virtual ITreeEntryViewModel GetTreeData() => CreateTestTree();
 
-    private static ISelectableDirectoryEntryViewModel CreateTestTree()
+    private static ITreeEntryViewModel CreateTestTree()
     {
-        var RootElement = new SelectableDirectoryNode
+        var rootElement = new TreeEntryViewModel
         {
             Status = SelectableDirectoryNodeStatus.Regular,
             Path = new GamePath(LocationId.Game, ""),
         };
 
-        var createFolderElement = new SelectableDirectoryNode()
+        var createFolderElement = new TreeEntryViewModel()
         {
             Status = SelectableDirectoryNodeStatus.Create,
         };
 
-        var dataElement = new SelectableDirectoryNode
+        var dataElement = new TreeEntryViewModel
         {
             Status = SelectableDirectoryNodeStatus.Regular,
             Path = new GamePath(LocationId.Game, "Data"),
         };
 
-        var texturesElement = new SelectableDirectoryNode
+        var texturesElement = new TreeEntryViewModel
         {
             Status = SelectableDirectoryNodeStatus.Regular,
             Path = new GamePath(LocationId.Game, "Data/Textures"),
         };
 
-        var createdElement = new SelectableDirectoryNode()
+        var createdElement = new TreeEntryViewModel()
         {
             Status = SelectableDirectoryNodeStatus.Created,
             Path = new GamePath(LocationId.Game, "Data/Textures/This is a created folder"),
         };
 
-        var editingElement = new SelectableDirectoryNode()
+        var editingElement = new TreeEntryViewModel()
         {
             Status = SelectableDirectoryNodeStatus.Editing,
         };
 
-        RootElement.AddChildren(new[] { createFolderElement, dataElement });
+        rootElement.AddChildren(new[] { createFolderElement, dataElement });
         dataElement.AddChildren(new[] { createFolderElement, texturesElement });
         texturesElement.AddChildren(new[] { createFolderElement, createdElement, editingElement });
-
-        return new SelectableDirectoryEntryViewModel(RootElement);
+        return rootElement;
     }
 }
