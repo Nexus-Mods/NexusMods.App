@@ -62,7 +62,7 @@
                 </StackPanel>
             </Button>
 
-            <!-- X Select location -->
+            <!-- X Select location ['Selecting' State] -->
             <Button Classes="Rounded Active RightElements" HorizontalAlignment="Right" IsVisible="False"
                     x:Name="SelectLocationRoundedButton">
                 <StackPanel Orientation="Horizontal">
