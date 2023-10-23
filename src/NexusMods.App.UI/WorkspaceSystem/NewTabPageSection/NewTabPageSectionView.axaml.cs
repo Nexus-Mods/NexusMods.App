@@ -14,6 +14,7 @@ public partial class NewTabPageSectionView : ReactiveUserControl<INewTabPageSect
         this.WhenActivated(_ =>
         {
             SectionNameTextBlock.Text = ViewModel?.SectionName;
+            Items.ItemsSource = ViewModel?.Items;
         });
     }
 }

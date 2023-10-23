@@ -21,7 +21,7 @@
 
         <ItemsControl.ItemTemplate>
             <DataTemplate DataType="{x:Type workspace:INewTabPageSectionViewModel}">
-                <reactive:ViewModelViewHost ViewModel="{Binding Mode=OneTime}"/>
+                <workspace:NewTabPageSectionView/>
             </DataTemplate>
         </ItemsControl.ItemTemplate>
     </ItemsControl>

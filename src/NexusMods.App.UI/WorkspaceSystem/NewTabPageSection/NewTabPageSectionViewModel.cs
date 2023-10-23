@@ -4,8 +4,11 @@ public class NewTabPageSectionViewModel : AViewModel<INewTabPageSectionViewModel
 {
     public string SectionName { get; }
 
-    public NewTabPageSectionViewModel(string sectionName)
+    public INewTabPageSectionItemViewModel[] Items { get; }
+
+    public NewTabPageSectionViewModel(string sectionName, INewTabPageSectionItemViewModel[] items)
     {
         SectionName = sectionName;
+        Items = items;
     }
 }
