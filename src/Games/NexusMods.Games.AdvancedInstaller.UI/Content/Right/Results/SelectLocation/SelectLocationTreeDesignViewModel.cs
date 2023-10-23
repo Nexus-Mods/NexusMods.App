@@ -1,26 +1,25 @@
-﻿using Avalonia.Controls;
-using Avalonia.Controls.Models.TreeDataGrid;
+﻿using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Templates;
-using NexusMods.App.UI;
+using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
+using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 
-public class SelectLocationTreeDesignViewModel : AViewModel<ISelectLocationTreeViewModel> , ISelectLocationTreeViewModel
+public class SelectLocationTreeDesignViewModel : AViewModel<ISelectLocationTreeViewModel>, ISelectLocationTreeViewModel
 {
-
     /// <summary>
     /// The visual representation of the tree.
     /// </summary>
-    public HierarchicalTreeDataGridSource<ITreeEntryViewModel> Tree => new(GetTreeData())
+    public HierarchicalTreeDataGridSource<ISelectableDirectoryEntryViewModel> Tree => new(GetTreeData())
     {
         Columns =
         {
-            new HierarchicalExpanderColumn<ITreeEntryViewModel>(
-                new TemplateColumn<ITreeEntryViewModel>(null,
-                    new FuncDataTemplate<ITreeEntryViewModel>((node, scope) =>
-                        new UI.TreeEntryView()
+            new HierarchicalExpanderColumn<ISelectableDirectoryEntryViewModel>(
+                new TemplateColumn<ISelectableDirectoryEntryViewModel>(null,
+                    new FuncDataTemplate<ISelectableDirectoryEntryViewModel>((node, scope) =>
+                        new SelectableDirectoryEntryView()
                         {
                             DataContext = node,
                         }),
@@ -32,11 +31,10 @@ public class SelectLocationTreeDesignViewModel : AViewModel<ISelectLocationTreeV
     };
 
 
-    protected virtual ITreeEntryViewModel GetTreeData() => CreateTestTree();
+    protected virtual ISelectableDirectoryEntryViewModel GetTreeData() => CreateTestTree();
 
-    private static ITreeEntryViewModel CreateTestTree()
+    private static ISelectableDirectoryEntryViewModel CreateTestTree()
     {
-
         var RootElement = new SelectableDirectoryNode
         {
             Status = SelectableDirectoryNodeStatus.Regular,
@@ -71,11 +69,10 @@ public class SelectLocationTreeDesignViewModel : AViewModel<ISelectLocationTreeV
             Status = SelectableDirectoryNodeStatus.Editing,
         };
 
+        RootElement.AddChildren(new[] { createFolderElement, dataElement });
+        dataElement.AddChildren(new[] { createFolderElement, texturesElement });
+        texturesElement.AddChildren(new[] { createFolderElement, createdElement, editingElement });
 
-        RootElement.AddChildren(new []{createFolderElement, dataElement});
-        dataElement.AddChildren(new[]{createFolderElement, texturesElement});
-        texturesElement.AddChildren(new[]{createFolderElement, createdElement, editingElement});
-
-        return new TreeEntryViewModel(RootElement);
+        return new SelectableDirectoryEntryViewModel(RootElement);
     }
 }

@@ -25,9 +25,9 @@ public interface IPreviewEntryNode : IModContentBindingTarget
     ///     Contains the children nodes of this node.
     /// </summary>
     /// <remarks>
-    ///     See <see cref="ModContentNode{TNodeValue}.Children" />
+    ///     See <see crTreeEntryNode{TNodeValue}lue}.Children" />
     /// </remarks>
-    ObservableCollection<ITreeEntryViewModel> Children { get; }
+    ObservableCollection<IPreviewTreeEntryViewModel> Children { get; }
 
     /// <summary>
     ///     The file name displayed for this node.
@@ -84,7 +84,7 @@ public class PreviewEntryNode : IPreviewEntryNode
     // TODO: This (FullPath) should be optimized because we are creating a new string for every item.
     public PreviewEntryNode? Parent { get; init; } = null!;
     public GamePath FullPath { get; init; }
-    public ObservableCollection<ITreeEntryViewModel> Children { get; init; } = new();
+    public ObservableCollection<IPreviewTreeEntryViewModel> Children { get; init; } = new();
     public List<IUnlinkableItem>? UnlinkableItems { get; private set; } = new();
 
     // Do not rearrange order here, flags are deliberately last to optimize for struct layout.
@@ -228,7 +228,8 @@ public class PreviewEntryNode : IPreviewEntryNode
                     ? PreviewEntryNodeFlags.Default
                     : PreviewEntryNodeFlags.IsDirectory;
 
-                childNode = new TreeEntryViewModel(new PreviewEntryNode(newGamePath, isNewFlag | isDirectoryFlag,
+                childNode = new PreviewTreeEntryViewModel(new PreviewEntryNode(newGamePath,
+                    isNewFlag | isDirectoryFlag,
                     currentNode));
                 currentNode.Children.Add(childNode);
             }

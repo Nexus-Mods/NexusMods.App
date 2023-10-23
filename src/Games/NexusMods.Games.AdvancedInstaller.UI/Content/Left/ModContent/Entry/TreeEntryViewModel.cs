@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using NexusMods.Paths;
@@ -11,123 +10,12 @@ using ReactiveUI.Fody.Helpers;
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 
 /// <summary>
-///     Represents an individual node in the 'Mod Content' section.
-///     A node can represent any file or directory within the mod being unpacked during advanced install.
-/// </summary>
-/// <remarks>
-///     Using this at runtime isn't exactly ideal given how many items there may be, but given everything is virtualized,
-///     things should hopefully be a-ok!
-/// </remarks>
-public interface IModContentNode : IUnlinkableItem
-{
-    /// <summary>
-    ///     Status of the node in question.
-    /// </summary>
-    [Reactive]
-    public ModContentNodeStatus Status { get; }
-
-    /// <summary>
-    ///     True if this is an element child of the root node.
-    /// </summary>
-    /// <remarks>
-    ///     This is useful for the UI, e.g. to determine "Included" vs "Included with folder" text.
-    /// </remarks>
-    bool IsTopLevel { get; }
-
-    /// <summary>
-    ///     The name of this specific file in the tree.
-    /// </summary>
-    string FileName { get; }
-
-    /// <summary>
-    ///     The full relative path of this file in the tree.
-    /// </summary>
-    RelativePath FullPath { get; }
-
-    /// <summary>
-    ///     Name of the linked target which was created with <see cref="Link"/>.
-    /// </summary>
-    /// <remarks>
-    ///     This is used such that we can unlink the entry on the left hand side.
-    /// </remarks>
-    IModContentBindingTarget? LinkedTarget { get; }
-
-    /// <summary>
-    ///     Contains the children nodes of this node.
-    /// </summary>
-    /// <remarks>
-    ///     (Sewer) I got some notes to make here.
-    ///
-    ///     1. Lazy loading of this item should be investigated, in the case that the user has not yet expanded all
-    ///        items yet.
-    ///
-    ///
-    ///        When you map a folder, the state of all the children (recursively) must be updated;
-    ///        meaning that the items (recursively) need to be loaded. Therefore, opportunities for lazy loading
-    ///        are minimal.
-    ///
-    ///     2. The input collection from which the tree is constructed is immutable.
-    ///
-    ///        Mods cannot dynamically add files in the middle of the Advanced Installer
-    ///        installation process. There is no need to use an observable collection here,
-    ///        as that would just be unnecessary memory overhead.
-    ///
-    ///     Based on the above points, and given that the children count is already known in
-    ///     <see cref="FileTreeNode{TPath,TValue}" />; an array is used, as it's the lowest
-    ///     overhead collection available for the job.
-    /// </remarks>
-    ITreeEntryViewModel[] Children { get; }
-
-    /// <summary>
-    ///     True if this is the root node.
-    /// </summary>
-    bool IsRoot { get; }
-
-    /// <summary>
-    ///     True if this is a directory, in which case all files from child of this will be mapped to given
-    ///     target folder.
-    /// </summary>
-    new bool IsDirectory { get; }
-
-    /// <summary>
-    ///     Binds the current node/source to the given target.
-    /// </summary>
-    /// <param name="data">The structure keeping track of deployment data.</param>
-    /// <param name="target">
-    ///     The target to receive the binding.
-    ///     This is usually <see cref="PreviewEntryNode"/>, care must be taken to ensure the target path matches the
-    ///     correct path. To do this, search for the <see cref="FullPath"/> in root node/directory of <see cref="IModContentBindingTarget"/>.
-    /// </param>
-    /// <param name="targetAlreadyExisted">
-    ///     Set this to true to indicate that this target has already existed.
-    ///     i.e. The target is a non-user created folder.
-    /// </param>
-    void Link(DeploymentData data, IModContentBindingTarget target, bool targetAlreadyExisted);
-}
-
-/// <summary>
-///     Represents an item that can be unlinked from the deployment data.
-/// </summary>
-public interface IUnlinkableItem
-{
-    /// <summary>
-    ///     Returns true if this unlinkable item represents a folder, else false.
-    /// </summary>
-    public bool IsDirectory { get; }
-
-    /// <summary>
-    ///     Unlink the current node from the deployment data.
-    /// </summary>
-    public void Unlink(DeploymentData data);
-}
-
-/// <summary>
-///     Represents a <see cref="IModContentNode" /> that is backed by a
+///     Represents a <see cref="ITreeEntryViewModel" /> that is backed by a
 ///     <see cref="FileTreeNode{TPath,TValue}" />.
 /// </summary>
 /// <typeparam name="TNodeValue">Type of file entry used in <see cref="FileTreeNode{TPath,TValue}" />.</typeparam>
 [DebuggerDisplay("FileName = {FileName}, IsRoot = {IsRoot}, Children = {Children.Length}, Status = {Status}")]
-internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
+internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewModel
 {
     /// <summary>
     ///     The underlying node providing the data for this tree.
@@ -140,7 +28,7 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
     /// <remarks>
     ///     This is null if the node is a root.
     /// </remarks>
-    public required ModContentNode<TNodeValue>? Parent { get; init; }
+    public required TreeEntryViewModel<TNodeValue>? Parent { get; init; }
 
     /// <inheritdoc />
     public IModContentBindingTarget? LinkedTarget { get; private set; }
@@ -176,29 +64,29 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
 
         foreach (var child in Children)
         {
-            var node = child.Node.AsT0 as ModContentNode<TNodeValue>;
+            var node = child as TreeEntryViewModel<TNodeValue>;
             LinkRecursive(node!, data, target.GetOrCreateChild(node!.FileName, node.IsDirectory), targetAlreadyExisted);
         }
     }
 
-    private static void LinkRecursive(ModContentNode<TNodeValue> thisNode, DeploymentData data,
+    private static void LinkRecursive(TreeEntryViewModel<TNodeValue> @this, DeploymentData data,
         IModContentBindingTarget target,
         bool targetAlreadyExisted)
     {
-        thisNode.SetStatus(ModContentNodeStatus.IncludedViaParent);
-        if (thisNode.IsDirectory)
+        @this.SetStatus(ModContentNodeStatus.IncludedViaParent);
+        if (@this.IsDirectory)
         {
-            foreach (var child in thisNode.Children)
+            foreach (var child in @this.Children)
             {
-                var node = child.Node.AsT0 as ModContentNode<TNodeValue>;
+                var node = child as TreeEntryViewModel<TNodeValue>;
                 LinkRecursive(node!, data, target.GetOrCreateChild(node!.FileName, node.IsDirectory),
                     targetAlreadyExisted);
             }
         }
         else
         {
-            var filePath = target.Bind(thisNode, targetAlreadyExisted);
-            data.AddMapping(thisNode.Node.Path, new GamePath(filePath.LocationId, filePath.Path),
+            var filePath = target.Bind(@this, targetAlreadyExisted);
+            data.AddMapping(@this.Node.Path, new GamePath(filePath.LocationId, filePath.Path),
                 true);
         }
     }
@@ -212,7 +100,7 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
             SetStatus(ModContentNodeStatus.Default);
             foreach (var child in Children)
             {
-                var node = child.Node.AsT0 as ModContentNode<TNodeValue>;
+                var node = child as TreeEntryViewModel<TNodeValue>;
                 node!.Unlink(data);
             }
         }
@@ -285,32 +173,32 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
     /// <remarks>
     ///     Uses stack to avoid recursive IEnumerable, which would be a performance disaster.
     /// </remarks>
-    public IEnumerable<ModContentNode<TNodeValue>> ChildrenFlattened()
+    public IEnumerable<TreeEntryViewModel<TNodeValue>> ChildrenFlattened()
     {
-        var stack = new Stack<ModContentNode<TNodeValue>>();
+        var stack = new Stack<TreeEntryViewModel<TNodeValue>>();
 
         // Push initial children onto the stack.
         foreach (var child in Children)
-            stack.Push((child.Node.AsT0 as ModContentNode<TNodeValue>)!);
+            stack.Push((child as TreeEntryViewModel<TNodeValue>)!);
 
         while (stack.Count > 0)
         {
             var current = stack.Pop();
             yield return current;
             foreach (var child in current.Children)
-                stack.Push((child.Node.AsT0 as ModContentNode<TNodeValue>)!);
+                stack.Push((child as TreeEntryViewModel<TNodeValue>)!);
         }
     }
 
     /// <summary>
     ///     Recursively sets a new status for every single node under this node.
     /// </summary>
-    private static void SetStatusRecursive(ModContentNode<TNodeValue> item, ModContentNodeStatus status)
+    private static void SetStatusRecursive(TreeEntryViewModel<TNodeValue> item, ModContentNodeStatus status)
     {
         foreach (var childInterface in item.Children)
         {
             // Covariant cast to remove virtualization and make Status writeable.
-            var child = childInterface.Node.AsT0 as ModContentNode<TNodeValue>;
+            var child = childInterface as TreeEntryViewModel<TNodeValue>;
             child!.SetStatus(status);
             SetStatusRecursive(child, status);
         }
@@ -319,27 +207,27 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
     /// <summary>
     ///     Recursively restores last status of all child nodes.
     /// </summary>
-    private static void RestoreLastStatusRecursive(ModContentNode<TNodeValue> item)
+    private static void RestoreLastStatusRecursive(TreeEntryViewModel<TNodeValue> item)
     {
         foreach (var childInterface in item.Children)
         {
             // Covariant cast to remove virtualization and make Status writeable.
-            var child = childInterface.Node.AsT0 as ModContentNode<TNodeValue>;
+            var child = childInterface as TreeEntryViewModel<TNodeValue>;
             child!.RestoreLastStatus();
             RestoreLastStatusRecursive(child);
         }
     }
 
     /// <summary>
-    ///     Creates a new <see cref="ModContentNode{TNodeValue}" /> from a given
+    ///     Creates a new <see cref="TreeEntryViewModel{TNodeValue}" /> from a given
     ///     <see cref="FileTreeNode{RelativePath,TFileEntry}" />. The entry is assumed to be
     ///     the root.
     /// </summary>
     /// <param name="node">The root node.</param>
     /// <typeparam name="TNodeValue">Type of value associated with this node.</typeparam>
-    public static ModContentNode<TNodeValue> FromFileTree(FileTreeNode<RelativePath, TNodeValue> node)
+    public static TreeEntryViewModel<TNodeValue> FromFileTree(FileTreeNode<RelativePath, TNodeValue> node)
     {
-        var root = new ModContentNode<TNodeValue>
+        var root = new TreeEntryViewModel<TNodeValue>
         {
             Node = node,
             Parent = null!,
@@ -350,23 +238,23 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
 
         var childIndex = 0;
         foreach (var child in node.Children)
-            root.Children[childIndex++] = new TreeEntryViewModel(FromFileTreeRecursive(child.Value, root));
+            root.Children[childIndex++] = FromFileTreeRecursive(child.Value, root);
 
         return root;
     }
 
     /// <summary>
-    ///     Recursively creates new <see cref="ModContentNode{TNodeValue}" /> entries from a given matching
+    ///     Recursively creates new <see cref="TreeEntryViewModel{TNodeValue}" /> entries from a given matching
     ///     <see cref="FileTreeNode{RelativePath,TFileEntry}" /> node.
     /// </summary>
     /// <param name="node">The node of the file tree.</param>
     /// <param name="parent">The parent to the current entry.</param>
     /// <typeparam name="TNodeValue">Type of file entry stored in this tree.</typeparam>
     /// <returns>The node.</returns>
-    public static IModContentNode FromFileTreeRecursive(FileTreeNode<RelativePath, TNodeValue> node,
-        ModContentNode<TNodeValue> parent)
+    public static ITreeEntryViewModel FromFileTreeRecursive(FileTreeNode<RelativePath, TNodeValue> node,
+        TreeEntryViewModel<TNodeValue> parent)
     {
-        var item = new ModContentNode<TNodeValue>
+        var item = new TreeEntryViewModel<TNodeValue>
         {
             Node = node,
             Parent = parent,
@@ -377,14 +265,14 @@ internal class ModContentNode<TNodeValue> : ReactiveObject, IModContentNode
 
         var childIndex = 0;
         foreach (var child in node.Children)
-            item.Children[childIndex++] = new TreeEntryViewModel(FromFileTreeRecursive(child.Value, item));
+            item.Children[childIndex++] = FromFileTreeRecursive(child.Value, item);
 
         return item;
     }
 }
 
 /// <summary>
-///     Represents the current status of the <see cref="ModContentNode{TNodeValue}" />.
+///     Represents the current status of the <see cref="TreeEntryViewModel{TNodeValue}" />.
 /// </summary>
 public enum ModContentNodeStatus : byte
 {

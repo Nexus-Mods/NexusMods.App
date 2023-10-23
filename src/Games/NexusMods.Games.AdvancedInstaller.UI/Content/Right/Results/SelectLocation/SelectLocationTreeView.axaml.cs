@@ -1,4 +1,5 @@
-﻿using Avalonia.ReactiveUI;
+﻿using System.Reactive.Disposables;
+using Avalonia.ReactiveUI;
 using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
@@ -9,9 +10,8 @@ public partial class SelectLocationTreeView : ReactiveUserControl<ISelectLocatio
     {
         InitializeComponent();
 
-        this.WhenActivated(disposable =>
-            this.OneWayBind(ViewModel, vm => vm.Tree, view => view.SelectTreeDataGrid.Source )
+        this.WhenActivated(d =>
+            this.OneWayBind(ViewModel, vm => vm.Tree, view => view.SelectTreeDataGrid.Source).DisposeWith(d)
         );
     }
 }
-

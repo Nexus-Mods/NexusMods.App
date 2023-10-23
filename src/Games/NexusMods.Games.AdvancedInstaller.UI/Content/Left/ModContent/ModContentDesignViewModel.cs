@@ -1,7 +1,5 @@
-﻿using Avalonia.Controls;
-using Avalonia.Controls.Models.TreeDataGrid;
+﻿using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Templates;
-using NexusMods.App.UI;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 
@@ -10,13 +8,13 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 internal class ModContentDesignViewModel : AViewModel<IModContentViewModel>,
     IModContentViewModel
 {
-    public ITreeEntryViewModel TreeVm => _treeData ??= InitTreeData();
+    public ITreeEntryViewModel Root => _treeData ??= InitTreeData();
     private ITreeEntryViewModel? _treeData;
 
     /// <summary>
     /// The visual representation of the tree.
     /// </summary>
-    public HierarchicalTreeDataGridSource<ITreeEntryViewModel> Tree => new(TreeVm)
+    public HierarchicalTreeDataGridSource<ITreeEntryViewModel> Tree => new(Root)
     {
         Columns =
         {
@@ -29,7 +27,7 @@ internal class ModContentDesignViewModel : AViewModel<IModContentViewModel>,
                         }),
                     width: new GridLength(1, GridUnitType.Star)
                 ),
-                x => x.Node.AsT0.Children)
+                x => x.Children)
         }
     };
 
@@ -52,6 +50,6 @@ internal class ModContentDesignViewModel : AViewModel<IModContentViewModel>,
         };
 
         var tree = FileTreeNode<RelativePath, int>.CreateTree(fileEntries);
-        return new TreeEntryViewModel( ModContentNode<int>.FromFileTree(tree));
+        return TreeEntryViewModel<int>.FromFileTree(tree);
     }
 }

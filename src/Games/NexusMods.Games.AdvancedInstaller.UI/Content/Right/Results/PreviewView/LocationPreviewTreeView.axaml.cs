@@ -1,6 +1,7 @@
 ﻿using System.Reactive.Disposables;
-using Avalonia.Controls;
 using Avalonia.ReactiveUI;
+using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
+using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
 using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView;
@@ -13,13 +14,8 @@ public partial class LocationPreviewTreeView : ReactiveUserControl<ILocationPrev
 
         this.WhenActivated(disposables =>
         {
-            this.OneWayBind<
-                        ILocationPreviewTreeViewModel, LocationPreviewTreeView, HierarchicalTreeDataGridSource<ITreeEntryViewModel>,
-                        ITreeDataGridSource>
-                    (ViewModel, vm => vm.Tree, view => view.LocationPreviewTreeDataGrid.Source!)
+            this.OneWayBind(ViewModel, vm => vm.Tree, view => view.LocationPreviewTreeDataGrid.Source!)
                 .DisposeWith(disposables);
         });
     }
-
 }
-

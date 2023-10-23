@@ -1,5 +1,4 @@
-using NexusMods.App.UI;
-using NexusMods.DataModel.Games;
+﻿using NexusMods.DataModel.Games;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.EmptyPreview;

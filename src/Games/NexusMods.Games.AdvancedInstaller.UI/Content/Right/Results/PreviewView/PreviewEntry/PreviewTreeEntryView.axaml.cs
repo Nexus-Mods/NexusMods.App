@@ -1,18 +1,16 @@
 ﻿using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
-using NexusMods.App.UI;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using ReactiveUI;
 
-namespace NexusMods.Games.AdvancedInstaller.UI;
+namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
 
 public partial class
-    TreeEntryView : ReactiveUserControl<ITreeEntryViewModel>
+    PreviewTreeEntryView : ReactiveUserControl<IPreviewTreeEntryViewModel>
 {
-    public TreeEntryView()
+    public PreviewTreeEntryView()
     {
         InitializeComponent();
 
@@ -25,7 +23,7 @@ public partial class
 
             switch (ViewModel!.Node.Value)
             {
-                case IModContentNode contentNode:
+                case ITreeEntryViewModel contentNode:
                     PopulateFromModContentNode(contentNode);
 
                     this.WhenAnyValue(x => x.ViewModel!.Node.AsT0.Status)
@@ -44,7 +42,7 @@ public partial class
         });
     }
 
-    private void PopulateFromModContentNode(IModContentNode node)
+    private void PopulateFromModContentNode(ITreeEntryViewModel node)
     {
         FileElementGrid.IsVisible = true;
         FileNameTextBlock.IsVisible = true;
@@ -152,7 +150,7 @@ public partial class
         }
     }
 
-    private void UpdateFromModContentNode(IModContentNode node)
+    private void UpdateFromModContentNode(ITreeEntryViewModel node)
     {
         var status = node.Status;
         ClearAllButtons();

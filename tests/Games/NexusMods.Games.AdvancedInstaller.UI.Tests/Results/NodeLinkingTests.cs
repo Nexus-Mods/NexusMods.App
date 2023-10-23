@@ -69,10 +69,10 @@ public class NodeLinkingTests
         target.Children.Should().NotContain(x => x.Node.AsT2.FileName == "Textures");
     }
 
-    private (ModContentNode<int> node, DeploymentData data, PreviewEntryNode target)
+    private (TreeEntryViewModel<int> node, DeploymentData data, PreviewEntryNode target)
         CommonSetup()
     {
-        var node = ModContentNodeTestHelpers.CreateTestTreeNode();
+        var node = ModContentVMTestHelpers.CreateTestTreeNode();
         var data = new DeploymentData();
 
         var target = PreviewEntryNode.Create(new GamePath(LocationId.Game, ""), true);
