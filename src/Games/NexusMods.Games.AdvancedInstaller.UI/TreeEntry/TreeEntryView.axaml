@@ -29,6 +29,13 @@
                 <Setter Property="HorizontalAlignment" Value="Left" />
             </Style>
 
+            <Style Selector="TextBox.CreateFolderEditBox">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="CornerRadius" Value="4"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource BrandWhite}"/>
+            </Style>
+
             <Style Selector="TextBlock#FileNameTextBlock">
                 <Setter Property="Margin" Value="0,4,8,0" />
             </Style>
@@ -62,8 +69,9 @@
                            x:Name="FileNameTextBlock" />
 
                 <!-- Create Folder Name input field -->
-                <TextBox Grid.Column="1" Classes="BodyMDNormal" VerticalAlignment="Center"
-                         Text="" IsVisible="False"
+                <TextBox Grid.Column="1" Classes="BodyMDNormal CreateFolderEditBox" VerticalAlignment="Center"
+                         Text="" IsVisible="False" BorderBrush="White" BorderThickness="1" CornerRadius="4"
+                         Background="Transparent"
                          x:Name="CreateFolderNameTextBox" />
 
                 <!-- Pills -->
@@ -152,15 +160,6 @@
                 </StackPanel>
             </Button>
 
-            <!-- Select Button -->
-            <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False"
-                    x:Name="SelectRoundedButton">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{x:Static resources:Language.SelectButton_Select}"
-                               x:Name="SelectButtonTextBlock" />
-                </StackPanel>
-            </Button>
-
             <!-- Delete Created Folder Button -->
             <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False"
                     x:Name="DeleteCreatedFolderButton">
@@ -168,6 +167,15 @@
                     <icons:Icon Classes="DeleteOutline" x:Name="DeleteCreatedFolderDeleteIcon" />
                     <TextBlock Text="{x:Static resources:Language.DeleteCreatedFolderButton_Delete}"
                                x:Name="DeleteCreatedFolderButtonTextBlock" />
+                </StackPanel>
+            </Button>
+
+            <!-- Select Button -->
+            <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False"
+                    x:Name="SelectRoundedButton">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{x:Static resources:Language.SelectButton_Select}"
+                               x:Name="SelectButtonTextBlock" />
                 </StackPanel>
             </Button>
 

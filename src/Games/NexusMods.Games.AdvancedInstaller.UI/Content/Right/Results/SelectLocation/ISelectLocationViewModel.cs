@@ -8,5 +8,7 @@ public interface ISelectLocationViewModel : IViewModel
 {
     public ReadOnlyObservableCollection<ISuggestedEntryViewModel> SuggestedEntries { get; }
 
-    public HierarchicalTreeDataGridSource<ITreeEntryViewModel> Tree { get; }
+
+    public ReadOnlyObservableCollection<ISelectLocationTreeViewModel> AllFoldersTrees { get; }
+
 }

@@ -30,17 +30,31 @@ public interface ISelectableDirectoryNode
     /// The Directory name displayed for this node.
     /// </summary>
     string DisplayName { get; }
+
+        /// <summary>
+    /// The Directory name displayed for this node.
+    /// </summary>
+    string DirectoryName { get; }
 }
 
 
 public class SelectableDirectoryNode : ReactiveObject, ISelectableDirectoryNode
 {
     [Reactive]
-    public SelectableDirectoryNodeStatus Status { get; private set; } = SelectableDirectoryNodeStatus.Regular;
+    public SelectableDirectoryNodeStatus Status { get; internal set; } = SelectableDirectoryNodeStatus.Regular;
     public ObservableCollection<ITreeEntryViewModel> Children { get; init; } = new();
     public GamePath Path { get; init; }
+
+    public string DirectoryName
+    {
+        get
+        {
+            return String.IsNullOrEmpty(Path.FileName) ? Path.LocationId.Value : Path.FileName;
+        }
+    }
+    
     private string _displayName = string.Empty;
-    public string DisplayName => _displayName != string.Empty ? _displayName : Path.FileName;
+    public string DisplayName => _displayName != string.Empty ? _displayName : DirectoryName;
 
     /// <summary>
     ///     Creates nodes from a given path that is tied to a FileSystem.
@@ -87,6 +101,17 @@ public class SelectableDirectoryNode : ReactiveObject, ISelectableDirectoryNode
             var name = directory.GetFullPath().Substring(dirSubstringLength);
             var node = new SelectableDirectoryNode { Path = new GamePath(locationId, name) };
             node.CreateChildrenRecursive(directory, locationId, dirSubstringLength + name.Length + 1);
+            Children.Add(new TreeEntryViewModel(node));
+        }
+    }
+
+    /// <summary>
+    /// For testing and preview purposes, don't use for production.
+    /// </summary>
+    internal void AddChildren(SelectableDirectoryNode[] children)
+    {
+        foreach (var node in children)
+        {
             Children.Add(new TreeEntryViewModel(node));
         }
     }

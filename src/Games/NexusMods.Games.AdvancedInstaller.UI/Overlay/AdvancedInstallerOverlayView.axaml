@@ -33,6 +33,20 @@
                 <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
             </Style>
 
+            <Style Selector="TreeDataGrid.TreeWhiteCaret">
+                <Setter Property="Foreground" Value="{StaticResource FontDarkSecondaryBrush}"></Setter>
+            </Style>
+
+            <Style
+                Selector="TreeDataGrid.TreeNoSelection TreeDataGridExpanderCell:pointerover /template/ Border#CellBorder:pointerover">
+                <Setter Property="Background" Value="{StaticResource BorderContainerBrush}" />
+            </Style>
+
+            <Style
+                Selector="TreeDataGrid.TreeNoSelection TreeDataGridRow:selected /template/ TreeDataGridCellsPresenter#PART_CellsPresenter">
+                <Setter Property="Background" Value="Transparent" />
+            </Style>
+
             <!-- NOTE(Al12rs) This is to hide the TreeDataGrid Headers, without actually removing them.
                             Hiding the headers completely breaks the Star columns, collapsing them to minimum space-->
             <Style Selector="TreeDataGrid.TreeNoHeader /template/ Border#ColumnHeadersPresenterBorder">

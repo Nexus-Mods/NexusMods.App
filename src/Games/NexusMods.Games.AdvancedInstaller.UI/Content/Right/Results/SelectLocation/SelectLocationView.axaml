@@ -102,8 +102,14 @@
 
                     </StackPanel>
 
-                    <TreeDataGrid Classes="TreeNoSelection TreeNoHeader" Grid.Row="1" ShowColumnHeaders="True"
-                                  x:Name="SelectTreeDataGrid" />
+                    <ItemsControl Grid.Row="1" x:Name="AllFoldersItemsControl">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Vertical"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+
 
                 </Grid>
             </Border>

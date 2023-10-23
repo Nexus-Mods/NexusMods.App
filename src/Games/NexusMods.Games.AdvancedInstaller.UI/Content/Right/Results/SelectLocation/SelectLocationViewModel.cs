@@ -5,6 +5,7 @@ using NexusMods.App.UI.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
 using NexusMods.Paths;
+using OneOf.Types;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 
@@ -13,21 +14,25 @@ internal class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
 {
     public SelectLocationViewModel(GameLocationsRegister register, string gameName = "") : this() // <= remove this
     {
-        // TODO: Implement this when the UI side (AL) is done adjusting this.
+        List<ISelectLocationTreeViewModel> treeList = new();
         foreach (var location in register.GetTopLevelLocations())
         {
-
+            treeList.Add(new SelectLocationTreeViewModel(register, location.Key));
         }
+
+        AllFoldersTrees = treeList.ToReadOnlyObservableCollection();
     }
 
     public SelectLocationViewModel()
     {
         SuggestedEntries = Array.Empty<ISuggestedEntryViewModel>().ToReadOnlyObservableCollection();
-        TreeRoot = new TreeEntryViewModel(PreviewEntryNode.Create(new GamePath(LocationId.Game, ""), true));
-        Tree = new HierarchicalTreeDataGridSource<ITreeEntryViewModel>(TreeRoot);
+        AllFoldersTrees = new ISelectLocationTreeViewModel[]
+        {
+            new SelectLocationTreeDesignViewModel(),
+            new SelectLocationTreeDesignViewModel()
+        }.ToReadOnlyObservableCollection();
     }
 
     public ReadOnlyObservableCollection<ISuggestedEntryViewModel> SuggestedEntries { get; set; }
-    public HierarchicalTreeDataGridSource<ITreeEntryViewModel> Tree { get; }
-    public ITreeEntryViewModel TreeRoot { get; }
+    public ReadOnlyObservableCollection<ISelectLocationTreeViewModel> AllFoldersTrees { get; }
 }
