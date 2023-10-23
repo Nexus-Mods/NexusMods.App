@@ -2,7 +2,7 @@ using FluentAssertions;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
 using NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers;
 using NexusMods.Paths;
-using static NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers.ResultsNodeTestHelpers;
+using static NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers.ResultsVMTestHelpers;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Tests.Results;
 
@@ -14,8 +14,8 @@ public class NodeCreationTests
     public void AddSingleNode_CreatesChildren()
     {
         // Create the tree from single entry.
-        var root = PreviewEntryNode.Create(new GamePath(LocationId.Game, "Textures/Armors/greenHilt.dds"), false);
-        root.FileName.Should().BeEmpty();
+        var root = TreeEntryViewModel.Create(new GamePath(LocationId.Game, "Textures/Armors/greenHilt.dds"), false);
+        root.FileName.Should().Be("Game");
         root.IsRoot.Should().BeTrue();
         root.IsDirectory.Should().BeTrue();
 
@@ -36,7 +36,7 @@ public class NodeCreationTests
     public void AddChild_AddsAllChildren()
     {
         // Create empty tree, then add all paths separately.
-        var root = PreviewEntryNode.Create(new GamePath(LocationId.Game, ""), true);
+        var root = TreeEntryViewModel.Create(new GamePath(LocationId.Game, ""), true);
         foreach (var file in GetPaths())
             root.AddChildren(file, false);
 

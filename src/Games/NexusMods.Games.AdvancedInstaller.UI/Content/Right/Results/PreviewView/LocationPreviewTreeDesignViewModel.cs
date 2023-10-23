@@ -1,9 +1,10 @@
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Templates;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry;
 using NexusMods.Paths;
+using ITreeEntryViewModel =
+    NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry.ITreeEntryViewModel;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView;
 
@@ -13,26 +14,27 @@ public class LocationPreviewTreeDesignViewModel : AViewModel<ILocationPreviewTre
     /// <summary>
     /// The visual representation of the tree.
     /// </summary>
-    public HierarchicalTreeDataGridSource<IPreviewTreeEntryViewModel> Tree => new(GetTreeData())
+    public HierarchicalTreeDataGridSource<ITreeEntryViewModel> Tree => new(GetTreeData())
     {
         Columns =
         {
-            new HierarchicalExpanderColumn<IPreviewTreeEntryViewModel>(
-                new TemplateColumn<IPreviewTreeEntryViewModel>(null,
-                    new FuncDataTemplate<IPreviewTreeEntryViewModel>((node, scope) =>
-                        new SelectableDirectoryEntryView()
+            new HierarchicalExpanderColumn<ITreeEntryViewModel>(
+                new TemplateColumn<ITreeEntryViewModel>(null,
+                    new FuncDataTemplate<ITreeEntryViewModel>((node, scope) =>
+                        new TreeEntryView()
                         {
                             DataContext = node,
                         }),
                     width: new GridLength(1, GridUnitType.Star)
                 ),
-                x => x.Node.AsT2.Children)
+                x => x.Children)
         }
     };
 
-    protected virtual IPreviewTreeEntryViewModel GetTreeData() => CreateTestTree();
+    // ReSharper disable once VirtualMemberNeverOverridden.Global
+    protected virtual ITreeEntryViewModel GetTreeData() => CreateTestTree();
 
-    private static IPreviewTreeEntryViewModel CreateTestTree()
+    private static ITreeEntryViewModel CreateTestTree()
     {
         var fileEntries = new RelativePath[]
         {
@@ -48,10 +50,10 @@ public class LocationPreviewTreeDesignViewModel : AViewModel<ILocationPreviewTre
             new("Meshes/greenBlade.nif")
         };
 
-        var target = PreviewEntryNode.Create(new GamePath(LocationId.Game, ""), true);
+        var target = TreeEntryViewModel.Create(new GamePath(LocationId.Game, ""), true);
         foreach (var file in fileEntries)
             target.AddChildren(file, false);
 
-        return new PreviewTreeEntryViewModel(target);
+        return target;
     }
 }

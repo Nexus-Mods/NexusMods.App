@@ -17,14 +17,14 @@ public partial class
             if (ViewModel == null)
                 return;
 
-            InitFromModContentNode();
+            InitView();
             this.WhenAnyValue(x => x.ViewModel!.Status)
-                .SubscribeWithErrorLogging(_ => { UpdateFromModContentNode(); })
+                .SubscribeWithErrorLogging(_ => { UpdateView(); })
                 .DisposeWith(disposable);
         });
     }
 
-    private void InitFromModContentNode()
+    private void InitView()
     {
         if (ViewModel!.IsRoot)
         {
@@ -50,17 +50,10 @@ public partial class
             }
         }
 
-        UpdateFromModContentNode();
+        UpdateView();
     }
 
-    private void MakeTextblockBold()
-    {
-        FileNameTextBlock.Classes.Remove("BodyMDNormal");
-        FileNameTextBlock.Classes.Add("BodyMDBold");
-    }
-
-
-    private void UpdateFromModContentNode()
+    private void UpdateView()
     {
         var status = ViewModel!.Status;
         ClearAllButtons();
@@ -120,5 +113,11 @@ public partial class
         RemoveFromLocationButton.IsVisible = false;
         IncludeTransitionButton.IsVisible = false;
         IncludedRemoveButton.IsVisible = false;
+    }
+
+    private void MakeTextblockBold()
+    {
+        FileNameTextBlock.Classes.Remove("BodyMDNormal");
+        FileNameTextBlock.Classes.Add("BodyMDBold");
     }
 }

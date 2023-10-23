@@ -15,7 +15,7 @@ internal static class SelectableDirectoryNodeTestHelpers
         return fs;
     }
 
-    private static RelativePath[] GetPaths() => ResultsNodeTestHelpers.GetPaths();
+    private static RelativePath[] GetPaths() => ResultsVMTestHelpers.GetPaths();
 
     /// <summary>
     /// Asserts that a child node exists with the given name, and returns said node.

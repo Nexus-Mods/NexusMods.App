@@ -1,5 +1,4 @@
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 using ReactiveUI.Fody.Helpers;
@@ -91,7 +90,7 @@ public interface ITreeEntryViewModel : IUnlinkableItem
     /// <param name="data">The structure keeping track of deployment data.</param>
     /// <param name="target">
     ///     The target to receive the binding.
-    ///     This is usually <see cref="PreviewEntryNode"/>, care must be taken to ensure the target path matches the
+    ///     This is usually <see cref="TreeEntryViewModel"/>, care must be taken to ensure the target path matches the
     ///     correct path. To do this, search for the <see cref="FullPath"/> in root node/directory of <see cref="IModContentBindingTarget"/>.
     /// </param>
     /// <param name="targetAlreadyExisted">

@@ -3,7 +3,7 @@ using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
 using NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers;
 using NexusMods.Paths;
-using static NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers.ResultsNodeTestHelpers;
+using static NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers.ResultsVMTestHelpers;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Tests.Results;
 
@@ -58,7 +58,7 @@ public class NodeLinkingTests
         // Link Armors Directory, then unlink root.
         var texturesTarget = target.GetChild("Textures")!;
         armorsDir.Link(data, texturesTarget, false);
-        (texturesTarget as PreviewEntryNode)!.Unlink(data);
+        (texturesTarget as TreeEntryViewModel)!.Unlink(data);
 
         // Note: There is no direct link in 'target', the children are linked.
         // Assert everything got deleted
@@ -66,16 +66,16 @@ public class NodeLinkingTests
         data.ArchiveToOutputMap.Should().BeEmpty();
 
         // Armors children should be deleted.
-        target.Children.Should().NotContain(x => x.Node.AsT2.FileName == "Textures");
+        target.Children.Should().NotContain(x => x.FileName == "Textures");
     }
 
-    private (TreeEntryViewModel<int> node, DeploymentData data, PreviewEntryNode target)
+    private (TreeEntryViewModel<int> node, DeploymentData data, TreeEntryViewModel target)
         CommonSetup()
     {
         var node = ModContentVMTestHelpers.CreateTestTreeNode();
         var data = new DeploymentData();
 
-        var target = PreviewEntryNode.Create(new GamePath(LocationId.Game, ""), true);
+        var target = TreeEntryViewModel.Create(new GamePath(LocationId.Game, ""), true);
         foreach (var file in GetPaths())
             target.AddChildren(file, false);
 

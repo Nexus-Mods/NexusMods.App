@@ -4,7 +4,7 @@ using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers;
 
-internal static class ResultsNodeTestHelpers
+internal static class ResultsVMTestHelpers
 {
     internal static RelativePath[] GetPaths()
     {
@@ -23,9 +23,9 @@ internal static class ResultsNodeTestHelpers
         };
     }
 
-    internal static IPreviewEntryNode AssertChildNode(IPreviewEntryNode parentNode, string nodeName)
+    internal static ITreeEntryViewModel AssertChildNode(ITreeEntryViewModel parentViewModel, string nodeName)
     {
-        var node = parentNode.GetNode(nodeName);
+        var node = parentViewModel.GetNode(nodeName);
         node.Should().NotBeNull($"because {nodeName} should exist");
         node!.IsNew.Should().BeTrue($"because {nodeName} should be marked as new");
         // right now we show 'new' on all elements.
@@ -35,6 +35,6 @@ internal static class ResultsNodeTestHelpers
 
 internal static class ResultsNodeExtensions
 {
-    public static IPreviewEntryNode? GetNode(this IPreviewEntryNode root, string expectedName) =>
-        root.Children.FirstOrDefault(x => x.Node.AsT2.FileName == expectedName)?.Node.AsT2;
+    public static ITreeEntryViewModel? GetNode(this ITreeEntryViewModel root, string expectedName) =>
+        root.Children.FirstOrDefault(x => x.FileName == expectedName);
 }

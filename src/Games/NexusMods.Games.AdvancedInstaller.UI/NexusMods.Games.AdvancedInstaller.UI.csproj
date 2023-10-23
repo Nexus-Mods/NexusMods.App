@@ -169,17 +169,9 @@
             <SubType>Code</SubType>
         </Compile>
 
-        <Compile Update="Content\Right\Results\PreviewView\PreviewEntry\PreviewTreeEntryView.axaml.cs">
+        <Compile Update="Content\Right\Results\PreviewView\PreviewEntry\TreeEntryView.axaml.cs">
             <DependentUpon>ModContentTreeEntryView.axaml</DependentUpon>
             <SubType>Code</SubType>
-        </Compile>
-
-        <Compile Update="Content\Right\Results\PreviewView\PreviewEntry\PreviewTreeEntryDesignViewModel.cs">
-            <DependentUpon>IPreviewTreeEntryViewModel.cs</DependentUpon>
-        </Compile>
-
-        <Compile Update="Content\Right\Results\PreviewView\PreviewEntry\PreviewTreeEntryViewModel.cs">
-            <DependentUpon>IPreviewTreeEntryViewModel.cs</DependentUpon>
         </Compile>
 
         <Compile Update="Content\Right\Results\SelectLocation\SelectableDirectoryEntry\SelectableDirectoryEntryView.axaml.cs">
@@ -202,12 +194,15 @@
         <Compile Update="Content\Left\ModContent\Entry\TreeEntryDesignViewModelRoot.cs">
             <DependentUpon>ITreeEntryViewModel.cs</DependentUpon>
         </Compile>
+
+        <Compile Update="Content\Right\Results\PreviewView\PreviewEntry\TreeEntryViewModel.cs">
+            <DependentUpon>ITreeEntryViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
         <Folder Include="Content\Bottom\"/>
         <Folder Include="Content\Left\"/>
         <Folder Include="Content\Right\Results\"/>
-        <Folder Include="TreeEntry\"/>
     </ItemGroup>
 </Project>

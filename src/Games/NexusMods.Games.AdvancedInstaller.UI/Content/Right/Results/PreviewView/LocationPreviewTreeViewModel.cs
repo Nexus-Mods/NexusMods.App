@@ -1,6 +1,3 @@
 ﻿namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView;
 
-public class LocationPreviewTreeViewModel : LocationPreviewTreeDesignViewModel
-{
-
-}
+public sealed class LocationPreviewTreeViewModel : LocationPreviewTreeDesignViewModel { }

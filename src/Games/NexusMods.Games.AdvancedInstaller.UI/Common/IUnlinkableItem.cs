@@ -1,11 +1,8 @@
-namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
+namespace NexusMods.Games.AdvancedInstaller.UI;
 
 /// <summary>
 ///     Represents an item that can be unlinked from the deployment data.
 /// </summary>
-/// <remarks>
-///     Currently alongside <see cref="ITreeEntryViewModel"/> as it is the only implementation of this interface.
-/// </remarks>
 public interface IUnlinkableItem
 {
     /// <summary>

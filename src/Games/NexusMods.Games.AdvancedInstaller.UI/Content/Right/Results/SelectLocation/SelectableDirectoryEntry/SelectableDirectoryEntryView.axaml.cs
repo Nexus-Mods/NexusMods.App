@@ -1,9 +1,9 @@
 ﻿using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using ReactiveUI;
+using ITreeEntryViewModel = NexusMods.Games.AdvancedInstaller.UI.Content.Left.ITreeEntryViewModel;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry;
 
@@ -35,7 +35,7 @@ public partial class
                     PopulateFromSelectableDirectoryNode(selectableDirectoryNode);
                     break;
 
-                case IPreviewEntryNode previewNode:
+                case PreviewView.PreviewEntry.ITreeEntryViewModel previewNode:
                     PopulateFromPreviewNode(previewNode);
                     break;
             }
@@ -79,21 +79,21 @@ public partial class
     }
 
 
-    private void PopulateFromPreviewNode(IPreviewEntryNode node)
+    private void PopulateFromPreviewNode(PreviewView.PreviewEntry.ITreeEntryViewModel viewModel)
     {
         FileElementGrid.IsVisible = true;
         FileNameTextBlock.IsVisible = true;
 
-        FileNameTextBlock.Text = node.FileName;
+        FileNameTextBlock.Text = viewModel.FileName;
 
-        NewPill.IsVisible = node.IsNew;
-        DupeFolderPill.IsVisible = node.IsFolderDuplicated;
-        FolderMergedPill.IsVisible = node.IsFolderMerged;
+        NewPill.IsVisible = viewModel.IsNew;
+        DupeFolderPill.IsVisible = viewModel.IsFolderDuplicated;
+        FolderMergedPill.IsVisible = viewModel.IsFolderMerged;
 
         // Always show unlink button, it means unlink child nodes if it is a folder.
         XRoundedButton.IsVisible = true;
 
-        if (node.IsDirectory)
+        if (viewModel.IsDirectory)
         {
             FolderEntryIcon.IsVisible = true;
 
