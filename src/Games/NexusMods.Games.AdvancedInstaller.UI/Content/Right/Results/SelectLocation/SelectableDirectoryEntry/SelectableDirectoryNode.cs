@@ -2,7 +2,6 @@ using System.Collections.ObjectModel;
 using NexusMods.DataModel.Games;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 using NexusMods.Paths;
-using NexusMods.Paths.FileTree;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

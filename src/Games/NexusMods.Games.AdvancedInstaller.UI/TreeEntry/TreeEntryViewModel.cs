@@ -3,7 +3,6 @@ using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry;
 using OneOf;
-using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
 

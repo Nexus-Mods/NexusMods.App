@@ -110,8 +110,7 @@
                     <Grid Classes="FooterGrid" ColumnDefinitions="*, Auto, Auto">
 
                         <Button Classes="Standard SecondaryOutlined FooterButton" HorizontalAlignment="Left"
-                                Grid.Column="1"
-                                x:Name="InstallButton">
+                                Grid.Column="1" x:Name="InstallButton">
                             <TextBlock Text="{x:Static resources:Language.UnsupportedOverlayFooter_ADVANCED_INSTALL}" />
                         </Button>
 
