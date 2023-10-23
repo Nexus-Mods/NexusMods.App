@@ -24,4 +24,6 @@ public class PanelDesignViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
     public void Arrange(Size workspaceSize) => throw new NotSupportedException();
     public void CloseTab(PanelTabId id) => throw new NotSupportedException();
     public IPanelTabViewModel AddTab() => throw new NotSupportedException();
+    public PanelData ToData() => throw new NotSupportedException();
+    public void FromData(PanelData data) => throw new NotSupportedException();
 }

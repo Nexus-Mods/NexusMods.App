@@ -4,7 +4,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia;
 using DynamicData;
-using DynamicData.Binding;
 using NexusMods.App.UI.Controls;
 using NexusMods.Common;
 using ReactiveUI;
@@ -14,7 +13,7 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 
 public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 {
-    public PanelId Id { get; } = PanelId.New();
+    public PanelId Id { get; private set; } = PanelId.New();
 
     private readonly SourceCache<IPanelTabViewModel, PanelTabId> _tabsSource = new(x => x.Id);
 
@@ -153,6 +152,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 
         var tab = new PanelTabViewModel(this, nextIndex)
         {
+            // TODO:
             Contents = new DummyViewModel()
         };
 
@@ -170,5 +170,37 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
         _workspaceViewModel.ClosePanel(this);
         _tabsSource.Clear();
         _tabsSource.Dispose();
+    }
+
+    public PanelData ToData()
+    {
+        return new PanelData
+        {
+            Id = Id,
+            LogicalBounds = LogicalBounds,
+            Tabs = _tabs.Select(tab => tab.ToData()).ToArray()
+        };
+    }
+
+    public void FromData(PanelData data)
+    {
+        Id = data.Id;
+        LogicalBounds = data.LogicalBounds;
+
+        _tabsSource.Clear();
+
+        _tabsSource.Edit(updater =>
+        {
+            for (uint i = 0; i < data.Tabs.Length; i++)
+            {
+                var index = PanelTabIndex.From(i);
+                var vm = new PanelTabViewModel(this, index);
+
+                // TODO:
+                vm.Contents = new DummyViewModel();
+
+                updater.AddOrUpdate(vm);
+            }
+        });
     }
 }

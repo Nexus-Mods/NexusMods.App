@@ -30,6 +30,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         {
             _panelSource
                 .Connect()
+                .DisposeMany()
                 .Sort(PanelComparer.Instance)
                 .Bind(out _panels)
                 .SubscribeWithErrorLogging(_ => UpdateStates())
@@ -90,9 +91,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                         LogicalBounds = logicalBounds,
                     };
 
-                    var tab = panelViewModel.AddTab();
-                    tab.Contents = new DummyViewModel();
-
+                    panelViewModel.AddTab();
                     panelViewModel.Arrange(_lastWorkspaceSize);
                     updater.AddOrUpdate(panelViewModel);
                 }
@@ -133,6 +132,32 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                     value.LogicalBounds = logicalBounds;
                     updater.AddOrUpdate(value);
                 }
+            }
+        });
+    }
+
+    public WorkspaceData ToData()
+    {
+        var workspaceData = new WorkspaceData
+        {
+            Panels = _panels.Select(panel => panel.ToData()).ToArray()
+        };
+
+        return workspaceData;
+    }
+
+    public void FromData(WorkspaceData data)
+    {
+        _panelSource.Clear();
+
+        _panelSource.Edit(updater =>
+        {
+            foreach (var panel in data.Panels)
+            {
+                var vm = new PanelViewModel(this);
+                vm.FromData(panel);
+
+                updater.AddOrUpdate(vm);
             }
         });
     }

@@ -36,4 +36,12 @@ public class PanelTabViewModel : AViewModel<IPanelTabViewModel>, IPanelTabViewMo
             }).DisposeWith(disposables);
         });
     }
+
+    public TabData ToData()
+    {
+        return new TabData
+        {
+            Id = Id
+        };
+    }
 }

@@ -1,4 +1,5 @@
 
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.DataGrid;
@@ -62,7 +63,9 @@ public static class Services
         else
             c.AddSingleton(settings);
 
-        return c.AddTransient<MainWindow>()
+        return c
+            .AddSingleton<JsonConverter, RectJsonConverter>()
+            .AddTransient<MainWindow>()
 
             // Services
             .AddSingleton<IRouter, ReactiveMessageRouter>()
