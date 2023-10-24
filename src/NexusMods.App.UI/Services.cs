@@ -39,6 +39,8 @@ using NexusMods.App.UI.RightContent.MyGames;
 using NexusMods.App.UI.Routing;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.DataModel.JsonConverters;
+using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using ReactiveUI;
 using DownloadGameNameView = NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadGameName.DownloadGameNameView;
 using DownloadNameView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadName.DownloadNameView;
@@ -64,7 +66,14 @@ public static class Services
             c.AddSingleton(settings);
 
         return c
+            // JSON converters
             .AddSingleton<JsonConverter, RectJsonConverter>()
+            .AddSingleton<JsonConverter, ColorJsonConverter>()
+            .AddSingleton<JsonConverter, AbstractClassConverterFactory<APageData>>()
+
+            // Type Finder
+            .AddSingleton<ITypeFinder, TypeFinder>()
+
             .AddTransient<MainWindow>()
 
             // Services

@@ -2,7 +2,6 @@ using System.Reactive.Disposables;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using ReactiveUI;

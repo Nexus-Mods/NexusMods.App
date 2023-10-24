@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 namespace NexusMods.App.UI.WorkspaceSystem;
 
 [PublicAPI]
-public record PanelData
+public sealed record PanelData
 {
     public required PanelId Id { get; init; }
 

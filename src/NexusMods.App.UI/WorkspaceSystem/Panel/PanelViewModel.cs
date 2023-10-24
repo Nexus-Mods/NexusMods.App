@@ -3,6 +3,7 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia;
+using Avalonia.Media;
 using DynamicData;
 using NexusMods.App.UI.Controls;
 using NexusMods.Common;
@@ -153,7 +154,15 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
         var tab = new PanelTabViewModel(this, nextIndex)
         {
             // TODO:
-            Contents = new DummyViewModel()
+            Contents = new DummyPage
+            {
+                ViewModel = new DummyViewModel(),
+                PageData = new DummyPageData
+                {
+                    FactoryId = PageFactoryId.From(Guid.Empty),
+                    Parameter = new DummyPageParameter(Colors.Black)
+                }
+            }
         };
 
         _tabsSource.AddOrUpdate(tab);
@@ -197,7 +206,15 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                 var vm = new PanelTabViewModel(this, index);
 
                 // TODO:
-                vm.Contents = new DummyViewModel();
+                vm.Contents = new DummyPage
+                {
+                    ViewModel = new DummyViewModel(),
+                    PageData = new DummyPageData
+                    {
+                        FactoryId = PageFactoryId.From(Guid.Empty),
+                        Parameter = new DummyPageParameter(Colors.Black)
+                    }
+                };
 
                 updater.AddOrUpdate(vm);
             }

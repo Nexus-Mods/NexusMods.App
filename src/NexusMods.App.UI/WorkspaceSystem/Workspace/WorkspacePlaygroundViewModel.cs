@@ -1,7 +1,9 @@
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Text.Json;
 using Avalonia;
+using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -16,18 +18,41 @@ public class WorkspacePlaygroundViewModel : AViewModel<IWorkspacePlaygroundViewM
     public readonly ReactiveCommand<Unit, Unit> SaveWorkspaceCommand;
     public readonly ReactiveCommand<Unit, Unit> LoadWorkspaceCommand;
 
-    [Reactive] private WorkspaceData? SavedWorkspaceData { get; set; }
+    [Reactive] private string? SavedWorkspaceData { get; set; }
 
     public WorkspacePlaygroundViewModel()
     {
+        var jsonSerializerOptions = StaticServiceProvider.Get().GetRequiredService<JsonSerializerOptions>();
+
         SaveWorkspaceCommand = ReactiveCommand.Create(() =>
         {
-            SavedWorkspaceData = WorkspaceViewModel.ToData();
+            var workspaceData = WorkspaceViewModel.ToData();
+
+            try
+            {
+                var res = JsonSerializer.Serialize(workspaceData, jsonSerializerOptions);
+                SavedWorkspaceData = res;
+                Console.WriteLine(SavedWorkspaceData);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         });
 
         LoadWorkspaceCommand = ReactiveCommand.Create(() =>
         {
-            WorkspaceViewModel.FromData(SavedWorkspaceData!);
+            try
+            {
+                var workspaceData = JsonSerializer.Deserialize<WorkspaceData>(SavedWorkspaceData!, jsonSerializerOptions);
+                WorkspaceViewModel.FromData(workspaceData!);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                ;
+            }
+
         }, this.WhenAnyValue(vm => vm.SavedWorkspaceData).Select(data => data is not null));
 
         this.WhenActivated(disposables =>

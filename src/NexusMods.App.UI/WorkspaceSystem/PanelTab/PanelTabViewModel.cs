@@ -16,7 +16,7 @@ public class PanelTabViewModel : AViewModel<IPanelTabViewModel>, IPanelTabViewMo
     public IPanelTabHeaderViewModel Header { get; private set; }
 
     /// <inheritdoc/>
-    [Reactive] public IViewModel? Contents { get; set; }
+    [Reactive] public IPage Contents { get; set; } = new EmptyPage();
 
     /// <inheritdoc/>
     [Reactive] public bool IsVisible { get; set; } = true;
@@ -30,8 +30,7 @@ public class PanelTabViewModel : AViewModel<IPanelTabViewModel>, IPanelTabViewMo
         {
             Disposable.Create(this, state =>
             {
-                if (state.Contents is IDisposable disposable) disposable.Dispose();
-                state.Contents = null;
+                state.Contents = null!;
                 state.Header = null!;
             }).DisposeWith(disposables);
         });
@@ -41,7 +40,8 @@ public class PanelTabViewModel : AViewModel<IPanelTabViewModel>, IPanelTabViewMo
     {
         return new TabData
         {
-            Id = Id
+            Id = Id,
+            PageData = Contents.PageData
         };
     }
 }
