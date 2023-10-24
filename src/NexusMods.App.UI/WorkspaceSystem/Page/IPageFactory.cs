@@ -1,3 +1,5 @@
+using JetBrains.Annotations;
+
 namespace NexusMods.App.UI.WorkspaceSystem;
 
 /// <summary>
@@ -22,7 +24,7 @@ public interface IPageFactory
 /// <typeparam name="TViewModel"></typeparam>
 /// <typeparam name="TParameter"></typeparam>
 public interface IPageFactory<out TViewModel, in TParameter> : IPageFactory
-    where TViewModel : class, IViewModel
+    where TViewModel : class, IViewModelInterface
     where TParameter : class, IPageFactoryParameter
 {
     Page IPageFactory.Create(IPageFactoryParameter parameter)
@@ -48,3 +50,21 @@ public interface IPageFactory<out TViewModel, in TParameter> : IPageFactory
     public TViewModel CreateViewModel(TParameter parameter);
 }
 
+/// <summary>
+/// Abstract class to easily implement <see cref="IPageFactory"/>.
+/// </summary>
+[PublicAPI]
+public abstract class APageFactory<TViewModel, TParameter> : IPageFactory<TViewModel, TParameter>
+    where TViewModel : class, IViewModelInterface
+    where TParameter : class, IPageFactoryParameter
+{
+    public abstract PageFactoryId Id { get; }
+
+    protected readonly IServiceProvider ServiceProvider;
+    protected APageFactory(IServiceProvider serviceProvider)
+    {
+        ServiceProvider = serviceProvider;
+    }
+
+    public abstract TViewModel CreateViewModel(TParameter parameter);
+}

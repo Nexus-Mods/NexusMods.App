@@ -1,4 +1,5 @@
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.RightContent.LoadoutGrid;
 using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 
 namespace NexusMods.App.UI;
@@ -12,6 +13,7 @@ internal class TypeFinder : ITypeFinder
 
     private static IEnumerable<Type> AllTypes => new[]
     {
-        typeof(DummyPageParameter)
+        typeof(DummyPageParameter),
+        typeof(LoadoutGridParameter)
     };
 }

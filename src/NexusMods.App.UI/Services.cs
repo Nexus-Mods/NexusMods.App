@@ -177,6 +177,7 @@ public static class Services
 
             .AddSingleton<PageFactoryController>()
             .AddSingleton<IPageFactory, DummyPageFactory>()
+            .AddSingleton<IPageFactory, LoadoutGridPageFactory>()
 
             // Other
             .AddViewModel<DummyViewModel, IDummyViewModel>()

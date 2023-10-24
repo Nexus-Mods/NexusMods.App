@@ -4,6 +4,9 @@ using System.Reactive.Linq;
 using System.Text.Json;
 using Avalonia;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.App.UI.RightContent.LoadoutGrid;
+using NexusMods.Common;
+using NexusMods.DataModel.Loadouts;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -24,9 +27,10 @@ public class WorkspacePlaygroundViewModel : AViewModel<IWorkspacePlaygroundViewM
     {
         var serviceProvider = DesignerUtils.GetServiceProvider();
 
-        WorkspaceViewModel = new WorkspaceViewModel(serviceProvider.GetRequiredService<PageFactoryController>());
+        var factoryController = serviceProvider.GetRequiredService<PageFactoryController>();
         var jsonSerializerOptions = serviceProvider.GetRequiredService<JsonSerializerOptions>();
 
+        WorkspaceViewModel = new WorkspaceViewModel(factoryController);
         SaveWorkspaceCommand = ReactiveCommand.Create(() =>
         {
             var workspaceData = WorkspaceViewModel.ToData();
