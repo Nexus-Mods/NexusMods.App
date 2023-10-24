@@ -1,8 +1,10 @@
 ﻿using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using NexusMods.App.UI.Extensions;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 
+[ExcludeFromCodeCoverage]
 internal class SelectLocationDesignViewModel : AViewModel<ISelectLocationViewModel>,
     ISelectLocationViewModel
 {

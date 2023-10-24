@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView;
 
+[ExcludeFromCodeCoverage]
 internal class PreviewDesignViewModel : AViewModel<IPreviewViewModel>, IPreviewViewModel
 {
     // Design filler data

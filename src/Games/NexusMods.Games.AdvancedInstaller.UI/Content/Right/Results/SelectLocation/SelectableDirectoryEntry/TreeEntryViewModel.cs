@@ -54,15 +54,6 @@ public class TreeEntryViewModel : ReactiveObject, ITreeEntryViewModel
             Children.Add(node);
         }
     }
-
-    /// <summary>
-    /// For testing and preview purposes, don't use for production.
-    /// </summary>
-    internal void AddChildren(TreeEntryViewModel[] children)
-    {
-        foreach (var node in children)
-            Children.Add(node);
-    }
 }
 
 /// <summary>

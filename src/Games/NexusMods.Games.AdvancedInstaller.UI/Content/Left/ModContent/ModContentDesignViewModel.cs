@@ -1,10 +1,13 @@
-﻿using Avalonia.Controls.Models.TreeDataGrid;
+﻿using System.Diagnostics.CodeAnalysis;
+using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Templates;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 
+[ExcludeFromCodeCoverage]
+// ReSharper disable once UnusedType.Global
 internal class ModContentDesignViewModel : AViewModel<IModContentViewModel>,
     IModContentViewModel
 {
