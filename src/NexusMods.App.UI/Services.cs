@@ -69,7 +69,7 @@ public static class Services
             // JSON converters
             .AddSingleton<JsonConverter, RectJsonConverter>()
             .AddSingleton<JsonConverter, ColorJsonConverter>()
-            .AddSingleton<JsonConverter, AbstractClassConverterFactory<APageData>>()
+            .AddSingleton<JsonConverter, AbstractClassConverterFactory<IPageFactoryParameter>>()
 
             // Type Finder
             .AddSingleton<ITypeFinder, TypeFinder>()
@@ -174,6 +174,10 @@ public static class Services
             .AddView<PanelTabHeaderView, IPanelTabHeaderViewModel>()
             .AddView<NewTabPageView, INewTabPageViewModel>()
             .AddView<NewTabPageSectionView, INewTabPageSectionViewModel>()
+
+            .AddSingleton<PageFactoryController>()
+            .AddSingleton<IPageFactory, DummyPageFactory>()
+            .AddSingleton<IPageFactory, EmptyPageFactory>()
 
             // Other
             .AddViewModel<DummyViewModel, IDummyViewModel>()

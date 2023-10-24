@@ -157,10 +157,10 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
             Contents = new DummyPage
             {
                 ViewModel = new DummyViewModel(),
-                PageData = new DummyPageData
+                PageData = new PageData
                 {
                     FactoryId = PageFactoryId.From(Guid.Empty),
-                    Parameter = new DummyPageParameter(Colors.Black)
+                    Parameter = new DummyPageParameter { Color = Colors.Black }
                 }
             }
         };
@@ -209,10 +209,10 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                 vm.Contents = new DummyPage
                 {
                     ViewModel = new DummyViewModel(),
-                    PageData = new DummyPageData
+                    PageData = new PageData
                     {
                         FactoryId = PageFactoryId.From(Guid.Empty),
-                        Parameter = new DummyPageParameter(Colors.Black)
+                        Parameter = new DummyPageParameter { Color = Colors.Black }
                     }
                 };
 

@@ -4,12 +4,10 @@ using NexusMods.DataModel.JsonConverters;
 
 namespace NexusMods.App.UI.Controls;
 
-public record DummyPageParameter(Color Color) : IPageFactoryParameter;
-
-[JsonName("NexusMods.App.UI.Controls.DummyPageData")]
-public record DummyPageData : APageData
+[JsonName("NexusMods.App.UI.Controls.DummyPageParameter")]
+public record DummyPageParameter : IPageFactoryParameter
 {
-    public required DummyPageParameter Parameter { get; init; }
+    public required Color Color { get; init; }
 }
 
 public class DummyPageFactory : IPageFactory<DummyPage, DummyPageParameter>
@@ -24,7 +22,7 @@ public class DummyPageFactory : IPageFactory<DummyPage, DummyPageParameter>
             {
                 Color = parameter.Color
             },
-            PageData = new DummyPageData
+            PageData = new PageData
             {
                 FactoryId = Id,
                 Parameter = parameter

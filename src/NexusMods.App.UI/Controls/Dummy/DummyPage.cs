@@ -6,5 +6,5 @@ public class DummyPage : IPage
 {
     public IViewModel? ViewModel { get; set; } = new DummyViewModel();
 
-    public required APageData PageData { get; set; }
+    public required PageData PageData { get; set; }
 }

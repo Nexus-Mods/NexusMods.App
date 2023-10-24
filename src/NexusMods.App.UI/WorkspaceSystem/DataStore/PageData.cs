@@ -1,6 +1,8 @@
 namespace NexusMods.App.UI.WorkspaceSystem;
 
-public abstract record APageData
+public record PageData
 {
     public required PageFactoryId FactoryId { get; init; }
+
+    public required IPageFactoryParameter Parameter { get; init; }
 }

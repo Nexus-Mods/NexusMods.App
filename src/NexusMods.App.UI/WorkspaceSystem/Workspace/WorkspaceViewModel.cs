@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Reactive.Disposables;
 using Avalonia;
 using DynamicData;
-using NexusMods.App.UI.Controls;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
