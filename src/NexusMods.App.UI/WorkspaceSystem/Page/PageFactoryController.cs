@@ -1,4 +1,6 @@
 using System.Collections.Immutable;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
@@ -6,9 +8,21 @@ public class PageFactoryController
 {
     private readonly ImmutableDictionary<PageFactoryId, IPageFactory> _factories;
 
+    [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
     public PageFactoryController(IEnumerable<IPageFactory> factories)
     {
+        AssertUniqueness(factories);
         _factories = factories.ToImmutableDictionary(f => f.Id, f => f);
+    }
+
+    [Conditional("DEBUG")]
+    private static void AssertUniqueness(IEnumerable<IPageFactory> factories)
+    {
+        var groups = factories.GroupBy(f => f.Id);
+        foreach (var group in groups)
+        {
+            Debug.Assert(group.Count() == 1, $"{group.Key} shared by multiple factories: {group.Select(f => f.GetType().ToString()).Aggregate((a,b) => $"{a}\n{b}")}");
+        }
     }
 
     public Page Create(PageData pageData)
