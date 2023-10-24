@@ -61,20 +61,23 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
         var loadout = await CreateLoadout(indexGameFiles: false);
         var loadoutName = loadout.Value.Name;
 
+        var modPath = FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Assets/TruncatedPlugins.7z");
+        await InstallModFromArchiveIntoLoadout(loadout, modPath, "Skyrim Truncated Plugins");
+
         await _verbTester.RunNoBannerAsync("list-managed-games");
 
         _verbTester.LastTable.Columns.Should().BeEquivalentTo("Name", "Game", "Id", "Mod Count");
         _verbTester.LastTable.Rows.FirstOrDefault(r => r.First().Equals(loadoutName)).Should().NotBeNull();
 
         await _verbTester.RunNoBannerAsync("list-mods", "-l", loadoutName);
-        _verbTester.LastTable.Rows.Count().Should().Be(2);
+        _verbTester.LastTable.Rows.Count().Should().Be(3);
 
         // install skse
         var uri = $"nxm://{Game.Domain}/mods/{skseModId}/files/{skseFileId}";
         await _verbTester.RunNoBannerAsync("download-and-install-mod", "-u", uri, "-l", loadoutName, "-n", skseModName);
 
         await _verbTester.RunNoBannerAsync("list-mods", "-l", loadoutName);
-        _verbTester.LastTable.Rows.Count().Should().Be(3);
+        _verbTester.LastTable.Rows.Count().Should().Be(4);
 
         await _verbTester.RunNoBannerAsync("list-mod-contents", "-l", loadoutName, "-n", skseModName);
         _verbTester.LastTable.Rows.Count().Should().Be(128);
@@ -85,7 +88,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
             skyuiModName);
 
         await _verbTester.RunNoBannerAsync("list-mods", "-l", loadoutName);
-        _verbTester.LastTable.Rows.Count().Should().Be(4);
+        _verbTester.LastTable.Rows.Count().Should().Be(5);
 
         await _verbTester.RunNoBannerAsync("list-mod-contents", "-l", loadoutName, "-n", skyuiModName);
         _verbTester.LastTable.Rows.Count().Should().Be(6);
@@ -96,7 +99,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
             ussepModName);
 
         await _verbTester.RunNoBannerAsync("list-mods", "-l", loadoutName);
-        _verbTester.LastTable.Rows.Count().Should().Be(5);
+        _verbTester.LastTable.Rows.Count().Should().Be(6);
 
         await _verbTester.RunNoBannerAsync("list-mod-contents", "-l", loadoutName, "-n", ussepModName);
         _verbTester.LastTable.Rows.Count().Should().Be(8);
@@ -112,7 +115,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
             sb.AppendLine();
         });
         logger.LogInformation("flatten-list table {FlattenTable}", sb.ToString());
-        _verbTester.LastTable.Rows.Count().Should().Be(143);
+        _verbTester.LastTable.Rows.Count().Should().Be(223);
 
         await _verbTester.RunNoBannerAsync("apply", "-l", loadoutName);
     }

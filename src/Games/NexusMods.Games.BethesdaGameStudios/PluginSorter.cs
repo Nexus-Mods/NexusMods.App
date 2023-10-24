@@ -101,12 +101,9 @@ public class PluginSorter
             default:
                 {
                     // Rules for all the masters
-                    foreach (var itm in allPlugins)
+                    foreach (var dep in plugin.Masters)
                     {
-                        foreach (var dep in itm.Masters)
-                        {
-                            yield return new After<RuleTuple, RelativePath> {Other = dep};
-                        }
+                        yield return new After<RuleTuple, RelativePath> {Other = dep};
                     }
 
                     // ESLs come right after the last ESM
