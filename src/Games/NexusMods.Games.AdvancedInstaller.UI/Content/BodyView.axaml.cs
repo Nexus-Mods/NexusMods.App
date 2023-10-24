@@ -1,10 +1,12 @@
-﻿using System.Reactive.Disposables;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content;
 
+[ExcludeFromCodeCoverage]
 public partial class BodyView : ReactiveUserControl<IBodyViewModel>
 {
     public BodyView()

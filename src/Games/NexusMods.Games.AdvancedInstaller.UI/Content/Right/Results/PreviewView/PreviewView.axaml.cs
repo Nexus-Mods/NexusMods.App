@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView;
 
+[ExcludeFromCodeCoverage]
 public partial class PreviewView : ReactiveUserControl<IPreviewViewModel>
 {
     public PreviewView()
@@ -12,7 +14,8 @@ public partial class PreviewView : ReactiveUserControl<IPreviewViewModel>
 
         this.WhenActivated(disposables =>
         {
-            this.OneWayBind(ViewModel, vm => vm.Locations, view => view.LocationsPreviewsItemsControl.ItemsSource).DisposeWith(disposables);
+            this.OneWayBind(ViewModel, vm => vm.Locations, view => view.LocationsPreviewsItemsControl.ItemsSource)
+                .DisposeWith(disposables);
         });
     }
 }

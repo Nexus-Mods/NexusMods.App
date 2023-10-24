@@ -1,9 +1,11 @@
-﻿using System.Reactive.Disposables;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
 
+[ExcludeFromCodeCoverage]
 public partial class AdvancedInstallerOverlayView : ReactiveUserControl<IAdvancedInstallerOverlayViewModel>
 {
     public AdvancedInstallerOverlayView()
@@ -12,7 +14,6 @@ public partial class AdvancedInstallerOverlayView : ReactiveUserControl<IAdvance
 
         this.WhenActivated(disposables =>
         {
-
             this.OneWayBind(ViewModel, vm => vm.BodyViewModel, v => v.TopContentViewHost.ViewModel)
                 .DisposeWith(disposables);
             this.OneWayBind(ViewModel, vm => vm.FooterViewModel, v => v.BottomContentViewHost.ViewModel)
@@ -20,4 +21,3 @@ public partial class AdvancedInstallerOverlayView : ReactiveUserControl<IAdvance
         });
     }
 }
-

@@ -1,8 +1,10 @@
-﻿using Avalonia.ReactiveUI;
+﻿using System.Diagnostics.CodeAnalysis;
+using Avalonia.ReactiveUI;
 using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry;
 
+[ExcludeFromCodeCoverage]
 public partial class TreeEntryView : ReactiveUserControl<ITreeEntryViewModel>
 {
     public TreeEntryView()

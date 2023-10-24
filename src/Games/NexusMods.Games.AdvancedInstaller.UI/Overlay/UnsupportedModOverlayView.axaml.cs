@@ -1,9 +1,11 @@
-﻿using System.Reactive.Disposables;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
 
+[ExcludeFromCodeCoverage]
 public partial class UnsupportedModOverlayView : ReactiveUserControl<IUnsupportedModOverlayViewModel>
 {
     public UnsupportedModOverlayView()
