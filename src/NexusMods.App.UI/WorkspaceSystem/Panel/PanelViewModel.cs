@@ -13,7 +13,7 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 
 public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 {
-    public PanelId Id { get; private set; } = PanelId.New();
+    public PanelId Id { get; } = PanelId.New();
 
     private readonly SourceCache<IPanelTabViewModel, PanelTabId> _tabsSource = new(x => x.Id);
 
@@ -180,21 +180,22 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 
     public PanelData ToData()
     {
+        var selectedTab = _tabsSource.Lookup(SelectedTabId);
+        var selectedTabIndex = selectedTab.HasValue ? selectedTab.Value.Index : PanelTabIndex.Max;
+
         return new PanelData
         {
-            Id = Id,
             LogicalBounds = LogicalBounds,
-            Tabs = _tabs.Select(tab => tab.ToData()).ToArray()
+            Tabs = _tabs.Select(tab => tab.ToData()).ToArray(),
+            SelectedTabIndex = selectedTabIndex
         };
     }
 
     public void FromData(PanelData data)
     {
-        Id = data.Id;
         LogicalBounds = data.LogicalBounds;
 
         _tabsSource.Clear();
-
         _tabsSource.Edit(updater =>
         {
             for (uint i = 0; i < data.Tabs.Length; i++)
