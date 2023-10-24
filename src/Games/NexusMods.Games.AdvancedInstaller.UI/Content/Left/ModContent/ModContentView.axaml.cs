@@ -1,5 +1,4 @@
 ﻿using System.Reactive.Disposables;
-using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
@@ -13,8 +12,7 @@ public partial class ModContentView : ReactiveUserControl<IModContentViewModel>
 
         this.WhenActivated(disposables =>
         {
-            this.OneWayBind<IModContentViewModel, ModContentView, HierarchicalTreeDataGridSource<ITreeEntryViewModel>,
-                    ITreeDataGridSource>(ViewModel, vm => vm.Tree, view => view.ModContentTreeDataGrid.Source!)
+            this.OneWayBind(ViewModel, vm => vm.Tree, view => view.ModContentTreeDataGrid.Source!)
                 .DisposeWith(disposables);
         });
     }

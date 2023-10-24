@@ -1,5 +1,4 @@
 ﻿using System.Reactive.Disposables;
-using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
@@ -13,13 +12,8 @@ public partial class LocationPreviewTreeView : ReactiveUserControl<ILocationPrev
 
         this.WhenActivated(disposables =>
         {
-            this.OneWayBind<
-                        ILocationPreviewTreeViewModel, LocationPreviewTreeView, HierarchicalTreeDataGridSource<ITreeEntryViewModel>,
-                        ITreeDataGridSource>
-                    (ViewModel, vm => vm.Tree, view => view.LocationPreviewTreeDataGrid.Source!)
+            this.OneWayBind(ViewModel, vm => vm.Tree, view => view.LocationPreviewTreeDataGrid.Source!)
                 .DisposeWith(disposables);
         });
     }
-
 }
-

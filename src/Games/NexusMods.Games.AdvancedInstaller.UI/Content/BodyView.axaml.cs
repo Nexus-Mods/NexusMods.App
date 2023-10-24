@@ -1,6 +1,5 @@
 ﻿using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
-using NexusMods.App.UI;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 using ReactiveUI;
 

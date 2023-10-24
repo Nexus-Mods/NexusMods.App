@@ -102,10 +102,10 @@ public class NodeLinkingTests
         greenArmor.Status.Should().Be(ModContentNodeStatus.Default);
     }
 
-    private (ModContentNode<int> node, DeploymentData data, IModContentBindingTarget target)
+    private (TreeEntryViewModel<int> node, DeploymentData data, IModContentBindingTarget target)
         CommonSetup()
     {
-        var node = ModContentNodeTestHelpers.CreateTestTreeNode();
+        var node = ModContentVMTestHelpers.CreateTestTreeNode();
         var data = new DeploymentData();
         var target = new TestBindingTarget();
         return (node, data, target);
@@ -121,7 +121,7 @@ public class NodeLinkingTests
             .Be(new GamePath(LocationId.Game, $"{baseDir}/greenHilt.dds"));
     }
 
-    private static void AssertUnlinkedArmorsFolder(IModContentNode armorsDir, DeploymentData data)
+    private static void AssertUnlinkedArmorsFolder(ITreeEntryViewModel armorsDir, DeploymentData data)
     {
         data.ArchiveToOutputMap.Should().BeEmpty();
         data.OutputToArchiveMap.Should().BeEmpty();

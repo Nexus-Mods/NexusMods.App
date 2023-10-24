@@ -3,7 +3,7 @@
         <ProjectReference Include="..\..\NexusMods.App.UI\NexusMods.App.UI.csproj"/>
         <InternalsVisibleTo Include="NexusMods.Games.AdvancedInstaller.UI.Tests"/>
         <ProjectReference Include="..\NexusMods.Games.AdvancedInstaller\NexusMods.Games.AdvancedInstaller.csproj"/>
-        <ProjectReference Include="..\NexusMods.Games.FOMOD.UI\NexusMods.Games.FOMOD.UI.csproj" />
+        <ProjectReference Include="..\NexusMods.Games.FOMOD.UI\NexusMods.Games.FOMOD.UI.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -148,33 +148,55 @@
             <DependentUpon>ISuggestedEntryViewModel.cs</DependentUpon>
         </Compile>
 
-        <Compile Update="TreeEntry\TreeEntryView.axaml.cs">
-            <DependentUpon>ModContentEntryView.axaml</DependentUpon>
-            <SubType>Code</SubType>
-        </Compile>
-
-        <Compile Update="TreeEntry\TreeEntryDesignViewModel.cs">
-          <DependentUpon>ITreeEntryViewModel.cs</DependentUpon>
-        </Compile>
-
-        <Compile Update="TreeEntry\TreeEntryViewModel.cs">
-          <DependentUpon>ITreeEntryViewModel.cs</DependentUpon>
-        </Compile>
-
         <Compile Update="Content\Right\Results\PreviewView\LocationPreviewTreeDesignViewModel.cs">
-          <DependentUpon>ILocationPreviewTreeViewModel.cs</DependentUpon>
+            <DependentUpon>ILocationPreviewTreeViewModel.cs</DependentUpon>
         </Compile>
 
         <Compile Update="Content\Right\Results\PreviewView\LocationPreviewTreeViewModel.cs">
-          <DependentUpon>ILocationPreviewTreeViewModel.cs</DependentUpon>
+            <DependentUpon>ILocationPreviewTreeViewModel.cs</DependentUpon>
         </Compile>
 
         <Compile Update="Content\Right\Results\SelectLocation\SelectLocationTreeViewModel.cs">
-          <DependentUpon>ISelectLocationTreeViewModel.cs</DependentUpon>
+            <DependentUpon>ISelectLocationTreeViewModel.cs</DependentUpon>
         </Compile>
 
         <Compile Update="Content\Right\Results\SelectLocation\SelectLocationTreeDesignViewModel.cs">
-          <DependentUpon>ISelectLocationTreeViewModel.cs</DependentUpon>
+            <DependentUpon>ISelectLocationTreeViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Left\ModContent\Entry\TreeEntryView.axaml.cs">
+            <DependentUpon>ModContentTreeEntryView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+
+        <Compile Update="Content\Right\Results\PreviewView\PreviewEntry\TreeEntryView.axaml.cs">
+            <DependentUpon>ModContentTreeEntryView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+
+        <Compile Update="Content\Right\Results\SelectLocation\SelectableDirectoryEntry\TreeEntryView.axaml.cs">
+            <DependentUpon>PreviewTreeEntryView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+
+        <Compile Update="Content\Left\ModContent\Entry\TreeEntryViewModel.cs">
+            <DependentUpon>ITreeEntryViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Left\ModContent\Entry\TreeEntryDesignViewModelRoot.cs">
+            <DependentUpon>ITreeEntryViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\Results\PreviewView\PreviewEntry\TreeEntryViewModel.cs">
+            <DependentUpon>ITreeEntryViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\Results\SelectLocation\SelectableDirectoryEntry\TreeEntryViewModel.cs">
+            <DependentUpon>ITreeEntryViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\Results\SelectLocation\SelectableDirectoryEntry\TreeEntryCreatingDirectoryDesignViewModel.cs">
+            <DependentUpon>ITreeEntryViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

@@ -78,6 +78,15 @@
             <Setter Property="FontWeight" Value="400" />
             <Setter Property="FontSize" Value="14" />
         </Style>
+
+        <!-- When TextBlock isn't wrapped in Stackpanel, i.e. text only -->
+        <Style Selector="^ > TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource FontDarkPrimary}" />
+            <!-- BodyMDNormal -->
+            <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
+            <Setter Property="FontWeight" Value="400" />
+            <Setter Property="FontSize" Value="14" />
+        </Style>
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{DynamicResource BrandWhiteBrush20Percent}" />
         </Style>

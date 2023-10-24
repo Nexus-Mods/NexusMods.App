@@ -4,7 +4,7 @@ using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers;
 
-internal static class SelectableDirectoryNodeTestHelpers
+internal static class SelectableDirectoryVMTestHelpers
 {
     internal static InMemoryFileSystem CreateInMemoryFs(AbsolutePath basePath)
     {
@@ -15,15 +15,15 @@ internal static class SelectableDirectoryNodeTestHelpers
         return fs;
     }
 
-    private static RelativePath[] GetPaths() => ResultsNodeTestHelpers.GetPaths();
+    private static RelativePath[] GetPaths() => ResultsVMTestHelpers.GetPaths();
 
     /// <summary>
     /// Asserts that a child node exists with the given name, and returns said node.
     /// </summary>
-    internal static SelectableDirectoryNode AssertChildNode(SelectableDirectoryNode parentNode, string nodeName)
+    internal static TreeEntryViewModel AssertChildNode(TreeEntryViewModel parentNode, string nodeName)
     {
-        var node = parentNode.Children.First(x => x.Node.AsT1.DisplayName == nodeName);
+        var node = parentNode.Children.First(x => x.DisplayName == nodeName);
         node.Should().NotBeNull($"because {nodeName} should exist");
-        return (node.Node.AsT1 as SelectableDirectoryNode)!;
+        return (node as TreeEntryViewModel)!;
     }
 }

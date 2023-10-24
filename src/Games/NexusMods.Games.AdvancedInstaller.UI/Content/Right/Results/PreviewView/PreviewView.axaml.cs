@@ -1,5 +1,4 @@
 using System.Reactive.Disposables;
-using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
@@ -14,7 +13,6 @@ public partial class PreviewView : ReactiveUserControl<IPreviewViewModel>
         this.WhenActivated(disposables =>
         {
             this.OneWayBind(ViewModel, vm => vm.Locations, view => view.LocationsPreviewsItemsControl.ItemsSource).DisposeWith(disposables);
-
         });
     }
 }

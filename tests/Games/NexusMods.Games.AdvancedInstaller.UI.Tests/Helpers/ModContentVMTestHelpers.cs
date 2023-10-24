@@ -5,26 +5,26 @@ using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers;
 
-internal static class ModContentNodeTestHelpers
+internal static class ModContentVMTestHelpers
 {
-    internal static ModContentNode<int>? GetChildNode(IModContentNode root,
+    internal static TreeEntryViewModel<int>? GetChildNode(ITreeEntryViewModel root,
         string fileName)
     {
-        return root.Children.FirstOrDefault(x => x.Node.AsT0.FileName == fileName)!.Node.AsT0 as
-            ModContentNode<int>;
+        return root.Children.FirstOrDefault(x => x.FileName == fileName)! as
+            TreeEntryViewModel<int>;
     }
 
-    internal static void AssertChildNode(IModContentNode root, string expectedName, bool isRoot,
+    internal static void AssertChildNode(ITreeEntryViewModel root, string expectedName, bool isRoot,
         bool isDirectory, int expectedChildrenCount)
     {
         AssertNode(root.GetNode(expectedName), expectedName, isRoot, isDirectory,
             expectedChildrenCount);
     }
 
-    internal static IModContentNode GetNode(IModContentNode root, string expectedName) =>
-        root.Children.FirstOrDefault(x => x.Node.AsT0.FileName == expectedName)!.Node.AsT0;
+    internal static ITreeEntryViewModel GetNode(ITreeEntryViewModel root, string expectedName) =>
+        root.Children.FirstOrDefault(x => x.FileName == expectedName)!;
 
-    internal static void AssertNode(IModContentNode node, string expectedName, bool isRoot, bool isDirectory,
+    internal static void AssertNode(ITreeEntryViewModel node, string expectedName, bool isRoot, bool isDirectory,
         int expectedChildrenCount)
     {
         node.FileName.Should().Be(expectedName);
@@ -33,9 +33,9 @@ internal static class ModContentNodeTestHelpers
         node.Children.Length.Should().Be(expectedChildrenCount);
     }
 
-    internal static ModContentNode<int> CreateTestTreeNode()
+    internal static TreeEntryViewModel<int> CreateTestTreeNode()
     {
-        return ModContentNode<int>.FromFileTree(CreateTestTree());
+        return TreeEntryViewModel<int>.FromFileTree(CreateTestTree());
     }
 
     internal static FileTreeNode<RelativePath, int> CreateTestTree()
@@ -60,6 +60,6 @@ internal static class ModContentNodeTestHelpers
 
 internal static class ModContentNodeExtensions
 {
-    public static IModContentNode GetNode(this IModContentNode root, string expectedName) =>
-        root.Children.FirstOrDefault(x => x.Node.AsT0.FileName == expectedName)!.Node.AsT0;
+    public static ITreeEntryViewModel GetNode(this ITreeEntryViewModel root, string expectedName) =>
+        root.Children.FirstOrDefault(x => x.FileName == expectedName)!;
 }

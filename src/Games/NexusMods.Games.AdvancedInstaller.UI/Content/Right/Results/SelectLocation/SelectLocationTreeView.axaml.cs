@@ -1,6 +1,4 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
+﻿using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
@@ -12,9 +10,8 @@ public partial class SelectLocationTreeView : ReactiveUserControl<ISelectLocatio
     {
         InitializeComponent();
 
-        this.WhenActivated(disposable =>
-            this.OneWayBind(ViewModel, vm => vm.Tree, view => view.SelectTreeDataGrid.Source )
+        this.WhenActivated(d =>
+            this.OneWayBind(ViewModel, vm => vm.Tree, view => view.SelectTreeDataGrid.Source).DisposeWith(d)
         );
     }
 }
-

@@ -1,24 +1,20 @@
 ﻿using System.Collections.ObjectModel;
-using Avalonia.Controls;
-using NexusMods.App.UI;
 using NexusMods.App.UI.Extensions;
 using NexusMods.DataModel.Games;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
-using NexusMods.Paths;
-using OneOf.Types;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 
 internal class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
     ISelectLocationViewModel
 {
+    public ReadOnlyObservableCollection<ISuggestedEntryViewModel> SuggestedEntries { get; set; }
+    public ReadOnlyObservableCollection<ISelectLocationTreeViewModel> AllFoldersTrees { get; }
+
     public SelectLocationViewModel(GameLocationsRegister register, string gameName = "") : this() // <= remove this
     {
         List<ISelectLocationTreeViewModel> treeList = new();
         foreach (var location in register.GetTopLevelLocations())
-        {
             treeList.Add(new SelectLocationTreeViewModel(register, location.Key));
-        }
 
         AllFoldersTrees = treeList.ToReadOnlyObservableCollection();
     }
@@ -32,7 +28,4 @@ internal class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
             new SelectLocationTreeDesignViewModel()
         }.ToReadOnlyObservableCollection();
     }
-
-    public ReadOnlyObservableCollection<ISuggestedEntryViewModel> SuggestedEntries { get; set; }
-    public ReadOnlyObservableCollection<ISelectLocationTreeViewModel> AllFoldersTrees { get; }
 }

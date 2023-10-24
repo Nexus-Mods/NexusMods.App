@@ -1,5 +1,4 @@
-﻿using NexusMods.App.UI;
-using NexusMods.Games.AdvancedInstaller.UI.Content;
+﻿using NexusMods.Games.AdvancedInstaller.UI.Content;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Bottom;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
