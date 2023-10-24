@@ -62,3 +62,9 @@ The workspace primarily deals with the panel layout, sizes and position of panel
 - Rows are preferred to columns when the workspace is vertical (height > width).
 - The height of the current panel will be added to the panels in the same column.
 - The width of the current panel will be added to the panels in the same row.
+
+## Persistence and Factories
+
+Workspaces will be saved to our existing data store by transforming the data into a JSON serializable data structure. This can be found at [`WorkspaceData.cs`](../../../src/NexusMods.App.UI/WorkspaceSystem/DataStore/WorkspaceData.cs). Besides properties like the logical bounds of a panel, the contents of the tabs have to be serialized as well. This is done using a factory approach:
+
+A page can be constructed using an implementation of [`IPageFactory`](../../../src/NexusMods.App.UI/WorkspaceSystem/Page/IPageFactory.cs). Each factory has an identifier that must be globally unique, and a method that takes in a "parameter" to produce a page. The provided generic abstract class should be used instead of the non-generic interface, if you want to implement this interface. The parameter contains the data required to construct the page, which will be an ID in most cases.
