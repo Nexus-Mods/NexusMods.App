@@ -479,11 +479,25 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
     /// <summary>
     /// Backs up any new files in the loadout.
+    ///
     /// </summary>
     /// <param name="loadout"></param>
     /// <param name="fileTree"></param>
     public virtual async Task BackupNewFiles(Loadout loadout, FileTree fileTree)
     {
+        // During ingest, new files that haven't been seen before are fed into the game's syncronizer to convert a
+        // DiskStateEntry (hash, size, path) into some sort of AModFile. By default these are converted into a "FromArchive".
+        // All FromArchive does, is say that this file is copied from the downloaded archives, that is, it's not generated
+        // by any extension system.
+        //
+        // So the problem is, the ingest process has tagged all these new files as coming from the downloads, but likely
+        // they've never actually been copied/compressed into the download folders. So if we need to restore them they won't exist.
+        //
+        // If a game wants other types of files to be backed up, they could do so with their own logic. But backing up a
+        // IGeneratedFile is pointless, since when it comes time to restore that file we'll call file.Generate on it since
+        // it's a generated file.
+
+
         // Backup the files that are new or changed
         await _archiveManager.BackupFiles(await fileTree.GetAllDescendentFiles()
             .Select(n => n.Value)

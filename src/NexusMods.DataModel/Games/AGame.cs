@@ -92,6 +92,9 @@ public abstract class AGame : IGame
     /// this creates a sub-par user experience as users may have installed mods in the past and then
     /// these files will be marked as part of the game files when they are not. Properly implemented
     /// games should override this method and return only the files that are part of the game itself.
+    ///
+    /// Doing so, will cause the next "Ingest" to pull in the remaining files in a way consistent with
+    /// the ingestion process of the game. Likely this will involve adding the files to a "Override" mod.
     /// </summary>
     /// <param name="installation"></param>
     /// <returns></returns>
