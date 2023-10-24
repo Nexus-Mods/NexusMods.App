@@ -6,7 +6,7 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
                                 xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation"
-                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="650"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectLocationView">
     <Design.DataContext>
         <ui:SelectLocationDesignViewModel />
@@ -105,7 +105,7 @@
                     <ItemsControl Grid.Row="1" x:Name="AllFoldersItemsControl">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <StackPanel Orientation="Vertical"/>
+                                <StackPanel Orientation="Vertical" />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                     </ItemsControl>
