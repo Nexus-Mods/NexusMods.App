@@ -1,11 +1,11 @@
-﻿using System.Collections;
-using System.Collections.ObjectModel;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 
+[ExcludeFromCodeCoverage]
 public partial class SelectLocationView : ReactiveUserControl<ISelectLocationViewModel>
 {
     public SelectLocationView()

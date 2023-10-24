@@ -1,10 +1,12 @@
-﻿using System.Reactive.Disposables;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 
+[ExcludeFromCodeCoverage]
 public partial class
     TreeEntryView : ReactiveUserControl<ITreeEntryViewModel>
 {

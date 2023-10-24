@@ -9,7 +9,8 @@ internal class SelectLocationDesignViewModel : AViewModel<ISelectLocationViewMod
     public ReadOnlyObservableCollection<ISuggestedEntryViewModel> SuggestedEntries { get; }
 
     public ReadOnlyObservableCollection<ISelectLocationTreeViewModel> AllFoldersTrees { get; }
-    public SelectLocationDesignViewModel() : base()
+
+    public SelectLocationDesignViewModel()
     {
         var entries = Enumerable.Range(0, 2)
             .Select(_ => new SuggestedEntryDesignViewModel());
@@ -20,8 +21,6 @@ internal class SelectLocationDesignViewModel : AViewModel<ISelectLocationViewMod
             new SelectLocationTreeDesignViewModel(),
         }.ToReadOnlyObservableCollection();
 
-        SuggestedEntries =
-            new ReadOnlyObservableCollection<ISuggestedEntryViewModel>(
-                new ObservableCollection<ISuggestedEntryViewModel>(entries));
+        SuggestedEntries = new(new(entries));
     }
 }

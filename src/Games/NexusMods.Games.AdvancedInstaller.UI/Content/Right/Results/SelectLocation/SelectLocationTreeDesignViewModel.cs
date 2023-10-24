@@ -17,7 +17,7 @@ public class SelectLocationTreeDesignViewModel : AViewModel<ISelectLocationTreeV
             new HierarchicalExpanderColumn<ITreeEntryViewModel>(
                 new TemplateColumn<ITreeEntryViewModel>(null,
                     new FuncDataTemplate<ITreeEntryViewModel>((node, scope) =>
-                        new TreeEntryView()
+                        new TreeEntryView
                         {
                             DataContext = node,
                         }),
@@ -38,7 +38,7 @@ public class SelectLocationTreeDesignViewModel : AViewModel<ISelectLocationTreeV
             Path = new GamePath(LocationId.Game, ""),
         };
 
-        var createFolderElement = new TreeEntryViewModel()
+        var createFolderElement = new TreeEntryViewModel
         {
             Status = SelectableDirectoryNodeStatus.Create,
         };
@@ -55,13 +55,13 @@ public class SelectLocationTreeDesignViewModel : AViewModel<ISelectLocationTreeV
             Path = new GamePath(LocationId.Game, "Data/Textures"),
         };
 
-        var createdElement = new TreeEntryViewModel()
+        var createdElement = new TreeEntryViewModel
         {
             Status = SelectableDirectoryNodeStatus.Created,
             Path = new GamePath(LocationId.Game, "Data/Textures/This is a created folder"),
         };
 
-        var editingElement = new TreeEntryViewModel()
+        var editingElement = new TreeEntryViewModel
         {
             Status = SelectableDirectoryNodeStatus.Editing,
         };

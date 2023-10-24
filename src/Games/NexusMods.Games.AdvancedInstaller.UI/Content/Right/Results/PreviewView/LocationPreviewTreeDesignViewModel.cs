@@ -24,7 +24,7 @@ public class LocationPreviewTreeDesignViewModel : AViewModel<ILocationPreviewTre
             new HierarchicalExpanderColumn<ITreeEntryViewModel>(
                 new TemplateColumn<ITreeEntryViewModel>(null,
                     new FuncDataTemplate<ITreeEntryViewModel>((node, scope) =>
-                        new TreeEntryView()
+                        new TreeEntryView
                         {
                             DataContext = node,
                         }),

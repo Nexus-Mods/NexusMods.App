@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using NexusMods.DataModel.Games;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -17,18 +16,6 @@ public class TreeEntryViewModel : ReactiveObject, ITreeEntryViewModel
 
     private string _displayName = string.Empty;
     public string DisplayName => _displayName != string.Empty ? _displayName : DirectoryName;
-
-    /// <summary>
-    ///     Creates nodes from a given path that is tied to a FileSystem.
-    /// </summary>
-    /// <param name="register">The game location register obtained from <see cref="GameInstallation"/>. Helps resolving <see cref="GamePath"/>.</param>
-    /// <param name="gamePath">The path of the root node.</param>
-    /// <param name="rootName">Name of the root item.</param>
-    public static TreeEntryViewModel Create(GameLocationsRegister register, GamePath gamePath,
-        string rootName = "")
-    {
-        return Create(register[gamePath.LocationId], gamePath, rootName);
-    }
 
     /// <summary>
     ///     Creates nodes from a given path that is tied to a FileSystem.

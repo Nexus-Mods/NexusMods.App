@@ -1,5 +1,5 @@
 using System.Collections.ObjectModel;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Diagnostics;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
@@ -7,6 +7,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView
 /// <summary>
 ///     Represents an individual node in the 'Preview' section when selecting a location.
 /// </summary>
+[DebuggerDisplay("FileName = {FileName}, IsRoot = {IsRoot}, Children = {Children.Count}, Flags = {Flags}")]
 public class TreeEntryViewModel : ITreeEntryViewModel
 {
     public TreeEntryViewModel? Parent { get; init; } = null!;
@@ -15,12 +16,12 @@ public class TreeEntryViewModel : ITreeEntryViewModel
     public GamePath FullPath { get; init; }
     public ObservableCollection<ITreeEntryViewModel> Children { get; init; } = new();
     public List<IUnlinkableItem>? UnlinkableItems { get; private set; } = new();
+    public string FileName { get; init; }
 
     // Do not rearrange order here, flags are deliberately last to optimize for struct layout.
     public PreviewEntryNodeFlags Flags { get; private set; }
 
     // Derived Getters: For convenience.
-    public string FileName { get; init; }
     public string DirectoryName => FileName;
     public bool IsRoot => (Flags & PreviewEntryNodeFlags.IsRoot) == PreviewEntryNodeFlags.IsRoot;
     public bool IsDirectory => (Flags & PreviewEntryNodeFlags.IsDirectory) == PreviewEntryNodeFlags.IsDirectory;
@@ -112,6 +113,11 @@ public class TreeEntryViewModel : ITreeEntryViewModel
     {
         var root = new TreeEntryViewModel(new GamePath(fullPath.LocationId, ""),
             PreviewEntryNodeFlags.IsRoot | PreviewEntryNodeFlags.IsDirectory);
+
+        // If there is no subpath, don't add any children.
+        if (fullPath.Path.Path.Length <= 1)
+            return root;
+
         root.AddChildren(fullPath.Path, isDirectory, new AlwaysFalseChecker());
         return root;
     }
