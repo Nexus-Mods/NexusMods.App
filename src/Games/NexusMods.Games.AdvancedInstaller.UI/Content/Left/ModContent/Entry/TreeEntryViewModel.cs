@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
