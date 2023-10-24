@@ -16,7 +16,7 @@ public class PanelTabViewModel : AViewModel<IPanelTabViewModel>, IPanelTabViewMo
     public IPanelTabHeaderViewModel Header { get; private set; }
 
     /// <inheritdoc/>
-    [Reactive] public IPage Contents { get; set; } = new EmptyPage();
+    [Reactive] public required Page Contents { get; set; }
 
     /// <inheritdoc/>
     [Reactive] public bool IsVisible { get; set; } = true;

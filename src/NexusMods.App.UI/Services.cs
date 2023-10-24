@@ -177,7 +177,6 @@ public static class Services
 
             .AddSingleton<PageFactoryController>()
             .AddSingleton<IPageFactory, DummyPageFactory>()
-            .AddSingleton<IPageFactory, EmptyPageFactory>()
 
             // Other
             .AddViewModel<DummyViewModel, IDummyViewModel>()

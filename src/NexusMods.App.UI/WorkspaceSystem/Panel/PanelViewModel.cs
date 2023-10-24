@@ -3,9 +3,7 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia;
-using Avalonia.Media;
 using DynamicData;
-using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.Controls;
 using NexusMods.Common;
 using ReactiveUI;
@@ -203,9 +201,10 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
             {
                 var tab = data.Tabs[i];
                 var index = PanelTabIndex.From(i);
-                var vm = new PanelTabViewModel(this, index);
-
-                vm.Contents = _factoryController.Create(tab.PageData);
+                var vm = new PanelTabViewModel(this, index)
+                {
+                    Contents = _factoryController.Create(tab.PageData)
+                };
 
                 updater.AddOrUpdate(vm);
             }

@@ -1,8 +1,8 @@
 namespace NexusMods.App.UI.WorkspaceSystem;
 
-public interface IPage
+public record Page
 {
     public IViewModel? ViewModel { get; set; }
 
-    public PageData PageData { get; set; }
+    public required PageData PageData { get; set; }
 }

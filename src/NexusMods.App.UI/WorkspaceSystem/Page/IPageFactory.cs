@@ -1,7 +1,8 @@
 namespace NexusMods.App.UI.WorkspaceSystem;
 
-public interface IPageFactoryParameter { }
-
+/// <summary>
+/// Represents a factory for creating pages.
+/// </summary>
 public interface IPageFactory
 {
     /// <summary>
@@ -12,27 +13,38 @@ public interface IPageFactory
     /// <summary>
     /// Creates a new page using the provided parameter
     /// </summary>
-    public IPage Create(IPageFactoryParameter parameter);
+    public Page Create(IPageFactoryParameter parameter);
 }
 
-public interface IPageFactory<out TPage, in TParameter> : IPageFactory
-    where TPage : class, IPage
+/// <summary>
+/// Generic implementation of <see cref="IPageFactory"/>
+/// </summary>
+/// <typeparam name="TViewModel"></typeparam>
+/// <typeparam name="TParameter"></typeparam>
+public interface IPageFactory<out TViewModel, in TParameter> : IPageFactory
+    where TViewModel : class, IViewModel
     where TParameter : class, IPageFactoryParameter
 {
-    IPage IPageFactory.Create(IPageFactoryParameter parameter)
+    Page IPageFactory.Create(IPageFactoryParameter parameter)
     {
         if (parameter is not TParameter actualParameter)
             throw new ArgumentException($"Unsupported type: {parameter.GetType()}");
-        return Create(actualParameter, new PageData
+
+        var vm = CreateViewModel(actualParameter);
+        return new Page
         {
-            FactoryId = Id,
-            Parameter = actualParameter
-        });
+            ViewModel = vm,
+            PageData = new PageData
+            {
+                FactoryId = Id,
+                Parameter = actualParameter
+            }
+        };
     }
 
     /// <summary>
     /// Creates a new view model using the provided parameter.
     /// </summary>
-    public TPage Create(TParameter parameter, PageData pageData);
+    public TViewModel CreateViewModel(TParameter parameter);
 }
 
