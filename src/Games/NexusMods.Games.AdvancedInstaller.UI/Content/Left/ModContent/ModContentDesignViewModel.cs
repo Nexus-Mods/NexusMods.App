@@ -21,7 +21,7 @@ internal class ModContentDesignViewModel : AViewModel<IModContentViewModel>,
             new HierarchicalExpanderColumn<ITreeEntryViewModel>(
                 new TemplateColumn<ITreeEntryViewModel>(null,
                     new FuncDataTemplate<ITreeEntryViewModel>((node, _) =>
-                        new TreeEntryView()
+                        new TreeEntryView
                         {
                             DataContext = node,
                         }),
