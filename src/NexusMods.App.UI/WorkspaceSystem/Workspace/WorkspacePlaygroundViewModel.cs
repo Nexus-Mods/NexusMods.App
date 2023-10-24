@@ -13,7 +13,7 @@ public interface IWorkspacePlaygroundViewModel{}
 
 public class WorkspacePlaygroundViewModel : AViewModel<IWorkspacePlaygroundViewModel>, IWorkspacePlaygroundViewModel
 {
-    public readonly IWorkspaceViewModel WorkspaceViewModel = new WorkspaceViewModel(StaticServiceProvider.Get().GetRequiredService<PageFactoryController>());
+    public readonly IWorkspaceViewModel WorkspaceViewModel;
 
     public readonly ReactiveCommand<Unit, Unit> SaveWorkspaceCommand;
     public readonly ReactiveCommand<Unit, Unit> LoadWorkspaceCommand;
@@ -22,7 +22,10 @@ public class WorkspacePlaygroundViewModel : AViewModel<IWorkspacePlaygroundViewM
 
     public WorkspacePlaygroundViewModel()
     {
-        var jsonSerializerOptions = StaticServiceProvider.Get().GetRequiredService<JsonSerializerOptions>();
+        var serviceProvider = DesignerUtils.GetServiceProvider();
+
+        WorkspaceViewModel = new WorkspaceViewModel(serviceProvider.GetRequiredService<PageFactoryController>());
+        var jsonSerializerOptions = serviceProvider.GetRequiredService<JsonSerializerOptions>();
 
         SaveWorkspaceCommand = ReactiveCommand.Create(() =>
         {

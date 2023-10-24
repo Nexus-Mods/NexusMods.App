@@ -17,7 +17,6 @@ public class Startup
 
     public static AppBuilder BuildAvaloniaApp(IServiceProvider serviceProvider)
     {
-        StaticServiceProvider.Set(serviceProvider);
         ReactiveUiExtensions.DefaultLogger = serviceProvider.GetRequiredService<ILogger<Startup>>();
 
         IconProvider.Current

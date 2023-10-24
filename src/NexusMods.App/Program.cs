@@ -145,6 +145,7 @@ public class Program
     public static AppBuilder BuildAvaloniaApp()
     {
         var host = BuildHost();
+        DesignerUtils.Activate(host.Services);
         return Startup.BuildAvaloniaApp(host.Services);
     }
 }
