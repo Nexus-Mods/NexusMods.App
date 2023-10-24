@@ -11,7 +11,7 @@ public class PageFactoryController
         _factories = factories.ToImmutableDictionary(f => f.Id, f => f);
     }
 
-    public IPage? Create(PageData pageData)
+    public IPage Create(PageData pageData)
     {
         if (!_factories.TryGetValue(pageData.FactoryId, out var factory))
             throw new KeyNotFoundException($"Unable to find registered factory with ID {pageData.FactoryId}");

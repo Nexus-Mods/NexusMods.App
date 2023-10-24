@@ -23,8 +23,10 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     [Reactive]
     public IReadOnlyList<IAddPanelButtonViewModel> AddPanelButtonViewModels { get; private set; } = Array.Empty<IAddPanelButtonViewModel>();
 
-    public WorkspaceViewModel()
+    private readonly PageFactoryController _factoryController;
+    public WorkspaceViewModel(PageFactoryController factoryController)
     {
+        _factoryController = factoryController;
         this.WhenActivated(disposables =>
         {
             _panelSource
@@ -85,7 +87,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 var (panelId, logicalBounds) = kv;
                 if (panelId == PanelId.Empty)
                 {
-                    panelViewModel = new PanelViewModel(this)
+                    panelViewModel = new PanelViewModel(this, _factoryController)
                     {
                         LogicalBounds = logicalBounds,
                     };
@@ -153,7 +155,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         {
             foreach (var panel in data.Panels)
             {
-                var vm = new PanelViewModel(this);
+                var vm = new PanelViewModel(this, _factoryController);
                 vm.FromData(panel);
 
                 updater.AddOrUpdate(vm);

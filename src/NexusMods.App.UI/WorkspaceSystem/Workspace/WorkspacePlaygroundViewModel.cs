@@ -13,7 +13,7 @@ public interface IWorkspacePlaygroundViewModel{}
 
 public class WorkspacePlaygroundViewModel : AViewModel<IWorkspacePlaygroundViewModel>, IWorkspacePlaygroundViewModel
 {
-    public readonly IWorkspaceViewModel WorkspaceViewModel = new WorkspaceViewModel();
+    public readonly IWorkspaceViewModel WorkspaceViewModel = new WorkspaceViewModel(StaticServiceProvider.Get().GetRequiredService<PageFactoryController>());
 
     public readonly ReactiveCommand<Unit, Unit> SaveWorkspaceCommand;
     public readonly ReactiveCommand<Unit, Unit> LoadWorkspaceCommand;
@@ -50,7 +50,6 @@ public class WorkspacePlaygroundViewModel : AViewModel<IWorkspacePlaygroundViewM
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                ;
             }
 
         }, this.WhenAnyValue(vm => vm.SavedWorkspaceData).Select(data => data is not null));

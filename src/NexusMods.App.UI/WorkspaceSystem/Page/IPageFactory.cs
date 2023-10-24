@@ -12,22 +12,27 @@ public interface IPageFactory
     /// <summary>
     /// Creates a new page using the provided parameter
     /// </summary>
-    public IPage? Create(IPageFactoryParameter parameter);
+    public IPage Create(IPageFactoryParameter parameter);
 }
 
 public interface IPageFactory<out TPage, in TParameter> : IPageFactory
     where TPage : class, IPage
     where TParameter : class, IPageFactoryParameter
 {
-    IPage? IPageFactory.Create(IPageFactoryParameter parameter)
+    IPage IPageFactory.Create(IPageFactoryParameter parameter)
     {
         if (parameter is not TParameter actualParameter)
             throw new ArgumentException($"Unsupported type: {parameter.GetType()}");
-        return Create(actualParameter);
+        return Create(actualParameter, new PageData
+        {
+            FactoryId = Id,
+            Parameter = actualParameter
+        });
     }
 
     /// <summary>
     /// Creates a new view model using the provided parameter.
     /// </summary>
-    public TPage? Create(TParameter parameter);
+    public TPage Create(TParameter parameter, PageData pageData);
 }
+

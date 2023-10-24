@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Media;
 using DynamicData;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.Controls;
 using NexusMods.Common;
 using ReactiveUI;
@@ -37,9 +38,11 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
     public ReactiveCommand<Unit, Unit> CloseCommand { get; }
     public ReactiveCommand<Unit, Unit> PopoutCommand { get; }
 
+    private readonly PageFactoryController _factoryController;
     private readonly IWorkspaceViewModel _workspaceViewModel;
-    public PanelViewModel(IWorkspaceViewModel workspaceViewModel)
+    public PanelViewModel(IWorkspaceViewModel workspaceViewModel, PageFactoryController factoryController)
     {
+        _factoryController = factoryController;
         _workspaceViewModel = workspaceViewModel;
 
         // TODO: open in new window
@@ -153,16 +156,12 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 
         var tab = new PanelTabViewModel(this, nextIndex)
         {
-            // TODO:
-            Contents = new DummyPage
+            // TODO: show "new page tab"
+            Contents = _factoryController.Create(new PageData
             {
-                ViewModel = new DummyViewModel(),
-                PageData = new PageData
-                {
-                    FactoryId = PageFactoryId.From(Guid.Empty),
-                    Parameter = new DummyPageParameter { Color = Colors.Black }
-                }
-            }
+                FactoryId = DummyPageFactory.Id,
+                Parameter = new DummyPageParameter(),
+            })
         };
 
         _tabsSource.AddOrUpdate(tab);
@@ -202,19 +201,11 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
         {
             for (uint i = 0; i < data.Tabs.Length; i++)
             {
+                var tab = data.Tabs[i];
                 var index = PanelTabIndex.From(i);
                 var vm = new PanelTabViewModel(this, index);
 
-                // TODO:
-                vm.Contents = new DummyPage
-                {
-                    ViewModel = new DummyViewModel(),
-                    PageData = new PageData
-                    {
-                        FactoryId = PageFactoryId.From(Guid.Empty),
-                        Parameter = new DummyPageParameter { Color = Colors.Black }
-                    }
-                };
+                vm.Contents = _factoryController.Create(tab.PageData);
 
                 updater.AddOrUpdate(vm);
             }

@@ -20,16 +20,12 @@ public class EmptyPageFactory : IPageFactory<EmptyPage, EmptyPageParameter>
 {
     public PageFactoryId Id => PageFactoryId.From(Guid.Parse("38d7c953-c237-49bb-8da4-319fa4989564"));
 
-    public EmptyPage Create(EmptyPageParameter parameter)
+    public EmptyPage Create(EmptyPageParameter parameter, PageData pageData)
     {
         return new EmptyPage
         {
             ViewModel = null,
-            PageData = new PageData
-            {
-                FactoryId = Id,
-                Parameter = new EmptyPageParameter()
-            }
+            PageData = pageData
         };
     }
 }
