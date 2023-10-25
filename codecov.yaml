@@ -1,4 +1,5 @@
-﻿comment:                  # this is a top-level key
+github_checks: false
+comment:                  # this is a top-level key
   layout: "reach, diff, flags, files"
   behavior: default
   require_changes: false  # if true: only post the comment if coverage changes
@@ -7,6 +8,7 @@
   after_n_builds: 2 
 coverage:
   status:
+    patch: false
     project:
       default:
         threshold: 0.05 # 5%
