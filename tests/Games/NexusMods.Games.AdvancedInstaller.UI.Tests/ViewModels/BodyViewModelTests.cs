@@ -75,6 +75,45 @@ public class BodyViewModelTests
         bodyVm.CurrentPreviewViewModel.Should().Be(bodyVm.PreviewViewModel);
     }
 
+    [Theory, AutoFileSystem]
+    public void When_SelectingMultipleTargets_PerformsLinking(AbsolutePath gameDir, AbsolutePath savesDir)
+    {
+        // Arrange, Act & Assert
+        var bodyVm = CommonSetup(gameDir, savesDir);
+        var gameRoot = GetTreeForLocationId(bodyVm.SelectLocationViewModel, LocationId.Game).Root;
+
+        // Add one folder
+        var meshes = bodyVm.ModContentViewModel.Root.Children.First(x => x.FileName == "Meshes");
+        bodyVm.OnSelect(meshes);
+        var textures = bodyVm.ModContentViewModel.Root.Children.First(x => x.FileName == "Textures");
+        bodyVm.OnSelect(textures);
+
+        // Bind inside of Meshes and Textures to data (this is invalid for Skyrim, but for test is okay)
+        var gameMeshes = gameRoot.GetChild("Data");
+        bodyVm.OnDirectorySelected(gameMeshes);
+
+        // Assert everything went smooth
+        var data = bodyVm.Data;
+
+        // Link Data
+        data.ArchiveToOutputMap["Meshes/greenBlade.nif"].Should()
+            .Be(new GamePath(LocationId.Game, "Data/greenBlade.nif"));
+        data.ArchiveToOutputMap["Textures/greenBlade.dds"].Should()
+            .Be(new GamePath(LocationId.Game, "Data/greenBlade.dds"));
+
+        // Source Directory Data
+        meshes.Status.Should().Be(ModContentNodeStatus.IncludedExplicit);
+        textures.Status.Should().Be(ModContentNodeStatus.IncludedExplicit);
+
+        // Preview Data
+        var previewData = GetTreeForLocationId(bodyVm.PreviewViewModel, LocationId.Game).Root;
+        previewData.GetNode("Data")!.GetNode("greenBlade.nif").Should().NotBeNull();
+        previewData.GetNode("Data")!.GetNode("greenBlade.dds").Should().NotBeNull();
+
+        // Shown in preview
+        bodyVm.CurrentPreviewViewModel.Should().Be(bodyVm.PreviewViewModel);
+    }
+
     private BodyViewModel CommonSetup(AbsolutePath gameDir, AbsolutePath savesDir)
     {
         var fs = CreateInMemoryFs(gameDir);
