@@ -167,11 +167,6 @@
     </Design.PreviewWith>
 
     <ControlTheme x:Key="Standard" TargetType="buttons:StandardButton">
-        <ControlTheme.Resources>
-            <icons1:IconTypeConverter x:Key="IconTypeConverter" />
-            <converters:TextCaseConverter x:Key="TextCaseConverter" />
-        </ControlTheme.Resources>
-
         <Setter Property="Height" Value="34" />
         <Setter Property="CornerRadius" Value="4" />
 
@@ -184,12 +179,12 @@
                     <StackPanel x:Name="PART_Panel">
                         <icons:Icon x:Name="PART_Icon"
                                     Foreground="{TemplateBinding Foreground}"
-                                    Value="{TemplateBinding IconType, Converter={StaticResource IconTypeConverter}}" />
+                                    Value="{TemplateBinding IconType, Converter={x:Static icons1:IconTypeConverter.Instance}}" />
                         <Image x:Name="PART_Image"
                                Source="{TemplateBinding Property=Image}" />
                         <TextBlock x:Name="PART_TextBlock"
                                    Foreground="{TemplateBinding Foreground}"
-                                   Text="{TemplateBinding Text, Converter={StaticResource TextCaseConverter}, ConverterParameter=upper}" />
+                                   Text="{TemplateBinding Text, Converter={x:Static converters:UpperCaseTextConverter.Instance}}" />
                     </StackPanel>
                 </Border>
             </ControlTemplate>

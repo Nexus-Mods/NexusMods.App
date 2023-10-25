@@ -4,8 +4,10 @@ using Avalonia.Data.Converters;
 
 namespace NexusMods.App.UI.Icons;
 
-public class IconTypeConverter : IValueConverter
+public sealed class IconTypeConverter : IValueConverter
 {
+    public static readonly IconTypeConverter Instance = new();
+
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is not IconType iconType)
