@@ -25,8 +25,9 @@ public interface IModContentBindingTarget
     ///     Binds to the path represented by this target.
     /// </summary>
     /// <param name="unlinkable">You can use this item for unlinking.</param>
+    /// <param name="data">The deployment data to update, in case an existing target requires to be unbound.</param>
     /// <param name="previouslyExisted">This location previously existed (on FileSystem, or as result of another mod binding into that folder).</param>
-    GamePath Bind(IUnlinkableItem unlinkable, bool previouslyExisted);
+    GamePath Bind(IUnlinkableItem unlinkable, DeploymentData data, bool previouslyExisted);
 
     /// <summary>
     ///     The Directory name target of the link.

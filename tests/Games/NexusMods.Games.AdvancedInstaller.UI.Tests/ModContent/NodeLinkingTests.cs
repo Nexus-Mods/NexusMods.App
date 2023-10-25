@@ -35,8 +35,8 @@ public class NodeLinkingTests
         texturesDir.Link(data, target, false);
 
         // Assert
-        data.ArchiveToOutputMap.Count.Should().Be(6);
-        data.OutputToArchiveMap.Count.Should().Be(6);
+        data.ArchiveToOutputMap.Count.Should().Be(9);
+        data.OutputToArchiveMap.Count.Should().Be(9);
         AssertArmorsLinked(data, "Armors");
 
         var armorsDir = texturesDir.GetNode("Armors");
@@ -57,6 +57,25 @@ public class NodeLinkingTests
         greenArmor.Status.Should().Be(ModContentNodeStatus.IncludedExplicit);
         data.ArchiveToOutputMap.Count.Should().Be(1);
         data.ArchiveToOutputMap["Textures/Armors/greenArmor.dds"].Should()
+            .Be(new GamePath(LocationId.Game, "greenArmor.dds"));
+    }
+
+    // Verifies files can be re-linked.
+    [Fact]
+    public void CanReLinkFiles()
+    {
+        // Arrange & Act
+        var (node, data, target) = CommonSetup();
+        var greenArmor = node.GetNode("Textures").GetNode("Armors").GetNode("greenArmor.dds");
+        greenArmor.Link(data, target, false);
+
+        var greenBlade = node.GetNode("Textures").GetNode("Armors2").GetNode("greenArmor.dds");
+        greenBlade.Link(data, target, false);
+
+        // Assert
+        greenArmor.Status.Should().Be(ModContentNodeStatus.IncludedExplicit);
+        data.ArchiveToOutputMap.Count.Should().Be(1);
+        data.ArchiveToOutputMap["Textures/Armors2/greenArmor.dds"].Should()
             .Be(new GamePath(LocationId.Game, "greenArmor.dds"));
     }
 
@@ -142,7 +161,7 @@ public class NodeLinkingTests
             };
         }
 
-        public GamePath Bind(IUnlinkableItem unlinkable, bool previouslyExisted) => Current;
+        public GamePath Bind(IUnlinkableItem unlinkable, DeploymentData data, bool previouslyExisted) => Current;
         public string DirectoryName => Current.FileName;
     }
 }

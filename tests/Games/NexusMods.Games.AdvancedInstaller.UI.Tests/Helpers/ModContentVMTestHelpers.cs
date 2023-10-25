@@ -52,7 +52,10 @@ internal static class ModContentVMTestHelpers
             { new RelativePath("Textures/Armors/greenArmor.dds"), 7 },
             { new RelativePath("Textures/Armors/greenBlade.dds"), 8 },
             { new RelativePath("Textures/Armors/greenHilt.dds"), 9 },
-            { new RelativePath("Meshes/greenBlade.nif"), 10 }
+            { new RelativePath("Meshes/greenBlade.nif"), 10 },
+            { new RelativePath("Textures/Armors2/greenArmor.dds"), 11 },
+            { new RelativePath("Textures/Armors2/greenBlade.dds"), 12 },
+            { new RelativePath("Textures/Armors2/greenHilt.dds"), 13 },
         };
 
         return FileTreeNode<RelativePath, int>.CreateTree(fileEntries);

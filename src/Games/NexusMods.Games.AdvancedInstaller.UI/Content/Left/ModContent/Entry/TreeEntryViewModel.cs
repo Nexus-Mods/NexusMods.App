@@ -75,7 +75,7 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
 
         if (!IsDirectory)
         {
-            var folder = target.Bind(this, targetAlreadyExisted);
+            var folder = target.Bind(this, data, targetAlreadyExisted);
             data.AddMapping(Node.Path, new GamePath(folder.LocationId, folder.Path.Join(FileName)), true);
             return;
         }
@@ -103,7 +103,7 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
         }
         else
         {
-            var filePath = target.Bind(@this, targetAlreadyExisted);
+            var filePath = target.Bind(@this, data, targetAlreadyExisted);
             data.AddMapping(@this.Node.Path, new GamePath(filePath.LocationId, filePath.Path),
                 true);
         }

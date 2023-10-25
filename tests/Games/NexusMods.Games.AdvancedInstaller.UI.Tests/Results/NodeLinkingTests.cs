@@ -28,6 +28,37 @@ public class NodeLinkingTests
             .Be("Textures/Armors/greenHilt.dds");
     }
 
+    // Confirms files can be re-linked from another folder, while state is kept consistent.
+    [Fact]
+    public void CanReLinkFolders()
+    {
+        // Arrange & Act
+        var (node, data, target) = CommonSetup();
+        var armorsDir = node.GetNode("Textures").GetNode("Armors");
+        var linkTarget = target.GetChild("Textures/Armors")!;
+
+        // Link Armors Directory
+        armorsDir.Link(data, linkTarget, false);
+
+        // Assert the correct folder as added in output end
+        data.OutputToArchiveMap[new GamePath(LocationId.Game, "Textures/Armors/greenArmor.dds")].Should()
+            .Be("Textures/Armors/greenArmor.dds");
+        data.OutputToArchiveMap[new GamePath(LocationId.Game, "Textures/Armors/greenBlade.dds")].Should()
+            .Be("Textures/Armors/greenBlade.dds");
+        data.OutputToArchiveMap[new GamePath(LocationId.Game, "Textures/Armors/greenHilt.dds")].Should()
+            .Be("Textures/Armors/greenHilt.dds");
+
+        // Re-link now
+        var armorsDir2 = node.GetNode("Textures").GetNode("Armors2");
+        armorsDir2.Link(data, linkTarget, false);
+        data.OutputToArchiveMap[new GamePath(LocationId.Game, "Textures/Armors/greenArmor.dds")].Should()
+            .Be("Textures/Armors2/greenArmor.dds");
+        data.OutputToArchiveMap[new GamePath(LocationId.Game, "Textures/Armors/greenBlade.dds")].Should()
+            .Be("Textures/Armors2/greenBlade.dds");
+        data.OutputToArchiveMap[new GamePath(LocationId.Game, "Textures/Armors/greenHilt.dds")].Should()
+            .Be("Textures/Armors2/greenHilt.dds");
+    }
+
     [Fact]
     public void CanUnlinkFoldersRecursively()
     {

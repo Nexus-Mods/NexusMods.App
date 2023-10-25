@@ -15,7 +15,7 @@ public class TreeEntryViewModel : ITreeEntryViewModel
     // TODO: This (FullPath) should be optimized because we are creating a new string for every item.
     public GamePath FullPath { get; init; }
     public ObservableCollection<ITreeEntryViewModel> Children { get; init; } = new();
-    public List<IUnlinkableItem>? UnlinkableItems { get; private set; } = null;
+    public IUnlinkableItem? UnlinkableItem { get; private set; }
     public string FileName { get; init; }
 
     // Do not rearrange order here, flags are deliberately last to optimize for struct layout.
@@ -45,8 +45,11 @@ public class TreeEntryViewModel : ITreeEntryViewModel
     }
 
     // Note: This is normally called from an 'unlinkable' item, i.e. ModContentNode
-    public GamePath Bind(IUnlinkableItem unlinkable, bool previouslyExisted)
+    public GamePath Bind(IUnlinkableItem unlinkable, DeploymentData data, bool previouslyExisted)
     {
+        // Unlink previously bound item (if any).
+        UnlinkableItem?.Unlink(data);
+
         // We apply 'folder merged' flag under either of the circumstances.
         // 1. TODO: Files from two different subfolders are mapped to the same folder.
         //    - It's also unclear if 'folder merged' should be displayed when there are files
@@ -56,8 +59,7 @@ public class TreeEntryViewModel : ITreeEntryViewModel
         //          - subfolder/file
         //      Should this display 'folder merged'?
         // 2. Folder already existed in game directory (non-empty), and we are mapping it.
-        UnlinkableItems ??= new List<IUnlinkableItem>();
-        UnlinkableItems.Add(unlinkable);
+        UnlinkableItem = unlinkable;
 
         // Note: If two items merged into this item, then folders are considered 'merged'.
         if (previouslyExisted)
@@ -94,13 +96,8 @@ public class TreeEntryViewModel : ITreeEntryViewModel
         }
 
         // And now unlink self.
-        if (UnlinkableItems == null)
-            return;
-
-        foreach (var unlinkable in UnlinkableItems)
-            unlinkable.Unlink(data);
-
-        UnlinkableItems.Clear();
+        UnlinkableItem?.Unlink(data);
+        UnlinkableItem = null;
     }
 
     /// <summary>
