@@ -15,7 +15,7 @@ public class TreeEntryViewModel : ITreeEntryViewModel
     // TODO: This (FullPath) should be optimized because we are creating a new string for every item.
     public GamePath FullPath { get; init; }
     public ObservableCollection<ITreeEntryViewModel> Children { get; init; } = new();
-    public List<IUnlinkableItem>? UnlinkableItems { get; private set; } = new();
+    public List<IUnlinkableItem>? UnlinkableItems { get; private set; } = null;
     public string FileName { get; init; }
 
     // Do not rearrange order here, flags are deliberately last to optimize for struct layout.
