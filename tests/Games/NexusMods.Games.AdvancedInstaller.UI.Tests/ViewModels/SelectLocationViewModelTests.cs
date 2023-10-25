@@ -24,7 +24,7 @@ public class SelectLocationViewModelTests
         });
 
         // Act
-        var vm = new SelectLocationViewModel(register, rootName);
+        var vm = new SelectLocationViewModel(register, default!, rootName);
         vm.AllFoldersTrees.Should().HaveCount(2);
 
         // Assert Regular Tree
