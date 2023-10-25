@@ -126,5 +126,10 @@ public enum EntityCategory : byte
     /// <summary>
     /// Disk state for loadouts
     /// </summary>
-    DiskState = 18
+    DiskState = 18,
+
+    /// <summary>
+    /// Persisted workspaces.
+    /// </summary>
+    Workspaces = 19
 }

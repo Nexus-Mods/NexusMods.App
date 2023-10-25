@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Reactive.Disposables;
 using Avalonia;
 using DynamicData;
-using NexusMods.App.UI.Controls;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -24,12 +23,15 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     [Reactive]
     public IReadOnlyList<IAddPanelButtonViewModel> AddPanelButtonViewModels { get; private set; } = Array.Empty<IAddPanelButtonViewModel>();
 
-    public WorkspaceViewModel()
+    private readonly PageFactoryController _factoryController;
+    public WorkspaceViewModel(PageFactoryController factoryController)
     {
+        _factoryController = factoryController;
         this.WhenActivated(disposables =>
         {
             _panelSource
                 .Connect()
+                .DisposeMany()
                 .Sort(PanelComparer.Instance)
                 .Bind(out _panels)
                 .SubscribeWithErrorLogging(_ => UpdateStates())
@@ -85,14 +87,12 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 var (panelId, logicalBounds) = kv;
                 if (panelId == PanelId.Empty)
                 {
-                    panelViewModel = new PanelViewModel(this)
+                    panelViewModel = new PanelViewModel(this, _factoryController)
                     {
                         LogicalBounds = logicalBounds,
                     };
 
-                    var tab = panelViewModel.AddTab();
-                    tab.Contents = new DummyViewModel();
-
+                    panelViewModel.AddTab();
                     panelViewModel.Arrange(_lastWorkspaceSize);
                     updater.AddOrUpdate(panelViewModel);
                 }
@@ -133,6 +133,32 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                     value.LogicalBounds = logicalBounds;
                     updater.AddOrUpdate(value);
                 }
+            }
+        });
+    }
+
+    public WorkspaceData ToData()
+    {
+        var workspaceData = new WorkspaceData
+        {
+            Panels = _panels.Select(panel => panel.ToData()).ToArray()
+        };
+
+        return workspaceData;
+    }
+
+    public void FromData(WorkspaceData data)
+    {
+        _panelSource.Clear();
+
+        _panelSource.Edit(updater =>
+        {
+            foreach (var panel in data.Panels)
+            {
+                var vm = new PanelViewModel(this, _factoryController);
+                vm.FromData(panel);
+
+                updater.AddOrUpdate(vm);
             }
         });
     }

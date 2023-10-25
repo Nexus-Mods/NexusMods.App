@@ -11,7 +11,6 @@ using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.Hashing.xxHash64;
 using NexusMods.Networking.Downloaders.Interfaces;
 using NexusMods.Networking.Downloaders.Interfaces.Traits;
 using NexusMods.Paths;

@@ -1,13 +1,9 @@
-using System.Diagnostics;
 using System.Reactive;
-using Avalonia;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using SkiaSharp;
-using Svg.Skia;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 

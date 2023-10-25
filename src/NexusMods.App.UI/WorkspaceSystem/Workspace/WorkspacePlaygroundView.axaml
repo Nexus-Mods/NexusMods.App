@@ -12,8 +12,18 @@
         <workspace:WorkspacePlaygroundViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="Auto, *">
-        <ItemsControl x:Name="AddPanelButtonItemsControl" Grid.Row="0">
+    <Grid RowDefinitions="Auto, Auto, *">
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Button x:Name="SaveWorkspaceButton" Classes="Standard PrimaryOutlined">
+                <TextBlock>Save Workspace</TextBlock>
+            </Button>
+
+            <Button x:Name="LoadWorkspaceButton" Classes="Standard PrimaryOutlined">
+                <TextBlock>Load Workspace</TextBlock>
+            </Button>
+        </StackPanel>
+
+        <ItemsControl x:Name="AddPanelButtonItemsControl" Grid.Row="1">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Horizontal" Spacing="8"/>
@@ -26,7 +36,7 @@
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <reactive:ViewModelViewHost Grid.Row="1" x:Name="ViewModelViewHost" />
+        <reactive:ViewModelViewHost Grid.Row="2" x:Name="ViewModelViewHost" />
     </Grid>
 
 </reactive:ReactiveUserControl>

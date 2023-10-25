@@ -20,10 +20,15 @@ public interface IPanelTabViewModel : IViewModelInterface
     /// <summary>
     /// Gets or sets the contents of tab.
     /// </summary>
-    public IViewModel? Contents { get; set; }
+    public Page Contents { get; set; }
 
     /// <summary>
     /// Gets or sets whether the tab contents is visible.
     /// </summary>
     public bool IsVisible { get; set; }
+
+    /// <summary>
+    /// Transforms the current state of the tab into a serializable data format.
+    /// </summary>
+    public TabData ToData();
 }

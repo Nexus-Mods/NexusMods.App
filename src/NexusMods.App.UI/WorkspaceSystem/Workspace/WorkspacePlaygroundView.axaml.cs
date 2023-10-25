@@ -18,6 +18,12 @@ public partial class WorkspacePlaygroundView : ReactiveUserControl<WorkspacePlay
 
             this.OneWayBind(ViewModel, vm => vm.WorkspaceViewModel.AddPanelButtonViewModels, view => view.AddPanelButtonItemsControl.ItemsSource)
                 .DisposeWith(disposables);
+
+            this.BindCommand(ViewModel, vm => vm.SaveWorkspaceCommand, view => view.SaveWorkspaceButton)
+                .DisposeWith(disposables);
+
+            this.BindCommand(ViewModel, vm => vm.LoadWorkspaceCommand, view => view.LoadWorkspaceButton)
+                .DisposeWith(disposables);
         });
     }
 }

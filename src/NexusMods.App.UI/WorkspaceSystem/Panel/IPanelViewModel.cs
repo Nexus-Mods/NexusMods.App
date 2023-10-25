@@ -76,4 +76,14 @@ public interface IPanelViewModel : IViewModelInterface
     /// Closes a tab.
     /// </summary>
     public void CloseTab(PanelTabId id);
+
+    /// <summary>
+    /// Transforms the current state of the panel into a serializable data format.
+    /// </summary>
+    public PanelData ToData();
+
+    /// <summary>
+    /// Applies <paramref name="data"/> to the panel.
+    /// </summary>
+    public void FromData(PanelData data);
 }
