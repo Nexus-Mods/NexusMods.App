@@ -1,6 +1,8 @@
+using System.Reactive;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
@@ -98,4 +100,10 @@ public interface ITreeEntryViewModel : IUnlinkableItem
     ///     i.e. The target is a non-user created folder.
     /// </param>
     void Link(DeploymentData data, IModContentBindingTarget target, bool targetAlreadyExisted);
+
+    public ReactiveCommand<Unit, Unit> BeginSelectCommand { get; }
+
+    public ReactiveCommand<Unit, Unit> CancelSelectCommand { get; }
+
+    public ReactiveCommand<Unit, Unit> UnlinkCommand { get; }
 }

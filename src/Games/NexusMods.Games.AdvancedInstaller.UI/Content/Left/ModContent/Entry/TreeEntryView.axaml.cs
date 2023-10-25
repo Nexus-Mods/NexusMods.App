@@ -19,6 +19,22 @@ public partial class
             if (ViewModel == null)
                 return;
 
+            // Command bindings:
+            this.BindCommand(ViewModel, vm => vm.BeginSelectCommand, view => view.InstallRoundedButton)
+                .DisposeWith(disposable);
+
+            this.BindCommand(ViewModel, vm => vm.CancelSelectCommand, view => view.SelectLocationRoundedButton)
+                .DisposeWith(disposable);
+
+            this.BindCommand(ViewModel, vm => vm.CancelSelectCommand, view => view.IncludeTransitionButton)
+                .DisposeWith(disposable);
+
+            this.BindCommand(ViewModel, vm => vm.UnlinkCommand, view => view.RemoveFromLocationButton)
+                .DisposeWith(disposable);
+
+            this.BindCommand(ViewModel, vm => vm.UnlinkCommand, view => view.IncludedRemoveButton)
+                .DisposeWith(disposable);
+
             InitView();
             this.WhenAnyValue(x => x.ViewModel!.Status)
                 .SubscribeWithErrorLogging(_ => { UpdateView(); })
