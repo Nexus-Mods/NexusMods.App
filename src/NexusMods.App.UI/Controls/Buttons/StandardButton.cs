@@ -11,6 +11,6 @@ public class StandardButton : Button
     public string? Text
     {
         get => GetValue(TextProperty);
-        set => SetValue(TextProperty, value);
+        set => SetValue(TextProperty, value?.ToUpperInvariant());
     }
 }

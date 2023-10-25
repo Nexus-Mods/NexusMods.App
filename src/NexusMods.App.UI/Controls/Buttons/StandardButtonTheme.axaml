@@ -7,38 +7,38 @@
         <StackPanel Orientation="Horizontal">
             <StackPanel Orientation="Vertical" Margin="24" Spacing="10">
                 <TextBlock Foreground="White">Primary</TextBlock>
-                <buttons:StandardButton Theme="{DynamicResource Primary}" Text="BUTTON" />
-                <buttons:StandardButton Theme="{DynamicResource Primary}" Text="BUTTON" IsEnabled="False" />
+                <buttons:StandardButton Theme="{DynamicResource Primary}" Text="Button" />
+                <buttons:StandardButton Theme="{DynamicResource Primary}" Text="Button" IsEnabled="False" />
             </StackPanel>
 
             <StackPanel Orientation="Vertical" Margin="24" Spacing="10">
                 <TextBlock Foreground="White">Primary Outlined</TextBlock>
-                <buttons:StandardButton Theme="{DynamicResource PrimaryOutlined}" Text="BUTTON" />
-                <buttons:StandardButton Theme="{DynamicResource PrimaryOutlined}" Text="BUTTON" IsEnabled="False" />
+                <buttons:StandardButton Theme="{DynamicResource PrimaryOutlined}" Text="Button" />
+                <buttons:StandardButton Theme="{DynamicResource PrimaryOutlined}" Text="Button" IsEnabled="False" />
             </StackPanel>
 
             <StackPanel Orientation="Vertical" Margin="24" Spacing="10">
                 <TextBlock Foreground="White">Secondary</TextBlock>
-                <buttons:StandardButton Theme="{DynamicResource Secondary}" Text="BUTTON" />
-                <buttons:StandardButton Theme="{DynamicResource Secondary}" Text="BUTTON" IsEnabled="False" />
+                <buttons:StandardButton Theme="{DynamicResource Secondary}" Text="Button" />
+                <buttons:StandardButton Theme="{DynamicResource Secondary}" Text="Button" IsEnabled="False" />
             </StackPanel>
 
             <StackPanel Orientation="Vertical" Margin="24" Spacing="10">
                 <TextBlock Foreground="White">Secondary Outlined</TextBlock>
-                <buttons:StandardButton Theme="{DynamicResource SecondaryOutlined}" Text="BUTTON" />
-                <buttons:StandardButton Theme="{DynamicResource SecondaryOutlined}" Text="BUTTON" IsEnabled="False" />
+                <buttons:StandardButton Theme="{DynamicResource SecondaryOutlined}" Text="Button" />
+                <buttons:StandardButton Theme="{DynamicResource SecondaryOutlined}" Text="Button" IsEnabled="False" />
             </StackPanel>
 
             <StackPanel Orientation="Vertical" Margin="24" Spacing="10">
                 <TextBlock Foreground="White">Tertiary</TextBlock>
-                <buttons:StandardButton Theme="{DynamicResource Tertiary}" Text="BUTTON" />
-                <buttons:StandardButton Theme="{DynamicResource Tertiary}" Text="BUTTON" IsEnabled="False" />
+                <buttons:StandardButton Theme="{DynamicResource Tertiary}" Text="Button" />
+                <buttons:StandardButton Theme="{DynamicResource Tertiary}" Text="Button" IsEnabled="False" />
             </StackPanel>
 
             <StackPanel Orientation="Vertical" Margin="24" Spacing="10">
                 <TextBlock Foreground="White">Success</TextBlock>
-                <buttons:StandardButton Theme="{DynamicResource Success}" Text="BUTTON" />
-                <buttons:StandardButton Theme="{DynamicResource Success}" Text="BUTTON" IsEnabled="False" />
+                <buttons:StandardButton Theme="{DynamicResource Success}" Text="Button" />
+                <buttons:StandardButton Theme="{DynamicResource Success}" Text="Button" IsEnabled="False" />
             </StackPanel>
         </StackPanel>
     </Design.PreviewWith>
@@ -61,7 +61,6 @@
             </ControlTemplate>
         </Setter>
 
-        <!-- TODO: transform text into uppercase -->
         <Style Selector="^ /template/ TextBlock#PART_TextBlock">
             <Setter Property="Margin" Value="16 10" />
             <Setter Property="TextAlignment" Value="Center" />
