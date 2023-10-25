@@ -1,7 +1,10 @@
-﻿namespace NexusMods.Games.AdvancedInstaller.UI;
+﻿using ReactiveUI.Fody.Helpers;
 
-public class UnsupportedModOverlayViewModel : AViewModel<IUnsupportedModOverlayViewModel>, IUnsupportedModOverlayViewModel
+namespace NexusMods.Games.AdvancedInstaller.UI;
+
+public class UnsupportedModOverlayViewModel : AViewModel<IUnsupportedModOverlayViewModel>,
+    IUnsupportedModOverlayViewModel
 {
-    public bool IsActive { get; set; }
-    public bool ShouldAdvancedInstall { get; set; } = false;
+    [Reactive] public bool IsActive { get; set; }
+    [Reactive] public bool ShouldAdvancedInstall { get; set; } = false;
 }
