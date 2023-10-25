@@ -11,4 +11,8 @@
     <Application.Styles>
         <StyleInclude Source="avares://NexusMods.App.UI/Nexus.xaml" />
     </Application.Styles>
+
+    <Application.Resources>
+        <ResourceInclude x:Key="StandardButtonTheme" Source="avares://NexusMods.App.UI/Controls/Buttons/StandardButtonTheme.axaml"/>
+    </Application.Resources>
 </Application>
