@@ -65,7 +65,7 @@
                 </StackPanel>
             </Button>
 
-            <!-- Remove from Location Button -->
+            <!-- Remove from Location Button ['IncludedExplicit' State] -->
             <Button Classes="Rounded Accent RightElements" HorizontalAlignment="Right" IsVisible="False"
                     x:Name="RemoveFromLocationButton">
                 <StackPanel Orientation="Horizontal">
@@ -74,7 +74,7 @@
                 </StackPanel>
             </Button>
 
-            <!-- Include Transition Button (Include / Include folder / Include with folder) -->
+            <!-- Include Transition Button (Include / Include folder / Include with folder) [`Selecting`,`SelectingViaParent`]-->
             <Button Classes="Rounded SemiActive RightElements" HorizontalAlignment="Right" IsVisible="False"
                     x:Name="IncludeTransitionButton">
                 <StackPanel Orientation="Horizontal">

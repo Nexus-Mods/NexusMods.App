@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Reactive;
 using System.Runtime.CompilerServices;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using NexusMods.Paths;
@@ -48,6 +49,15 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
     public RelativePath FullPath => Node.Path;
     public bool IsDirectory => Node.IsDirectory;
     public bool IsRoot => Node.IsTreeRoot;
+
+    [Reactive]
+    public ReactiveCommand<Unit, Unit> BeginSelectCommand { get; set; } = Initializers.EnabledReactiveCommand;
+
+    [Reactive]
+    public ReactiveCommand<Unit, Unit> CancelSelectCommand { get; set; } = Initializers.EnabledReactiveCommand;
+
+    [Reactive]
+    public ReactiveCommand<Unit, Unit> UnlinkCommand { get; set; } = Initializers.EnabledReactiveCommand;
 
     public void Link(DeploymentData data, IModContentBindingTarget target, bool targetAlreadyExisted)
     {
