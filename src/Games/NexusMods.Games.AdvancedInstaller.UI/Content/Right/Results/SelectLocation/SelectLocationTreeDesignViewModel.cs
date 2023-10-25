@@ -1,10 +1,12 @@
-﻿using Avalonia.Controls.Models.TreeDataGrid;
+﻿using System.Diagnostics.CodeAnalysis;
+using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Templates;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 
+[ExcludeFromCodeCoverage]
 public class SelectLocationTreeDesignViewModel : AViewModel<ISelectLocationTreeViewModel>, ISelectLocationTreeViewModel
 {
     /// <summary>
@@ -66,9 +68,18 @@ public class SelectLocationTreeDesignViewModel : AViewModel<ISelectLocationTreeV
             Status = SelectableDirectoryNodeStatus.Editing,
         };
 
-        rootElement.AddChildren(new[] { createFolderElement, dataElement });
-        dataElement.AddChildren(new[] { createFolderElement, texturesElement });
-        texturesElement.AddChildren(new[] { createFolderElement, createdElement, editingElement });
+        AddChildren(rootElement, new[] { createFolderElement, dataElement });
+        AddChildren(dataElement, new[] { createFolderElement, texturesElement });
+        AddChildren(texturesElement, new[] { createFolderElement, createdElement, editingElement });
         return rootElement;
+    }
+
+    /// <summary>
+    /// For testing and preview purposes, don't use for production.
+    /// </summary>
+    private static void AddChildren(TreeEntryViewModel vm, TreeEntryViewModel[] children)
+    {
+        foreach (var node in children)
+            vm.Children.Add(node);
     }
 }

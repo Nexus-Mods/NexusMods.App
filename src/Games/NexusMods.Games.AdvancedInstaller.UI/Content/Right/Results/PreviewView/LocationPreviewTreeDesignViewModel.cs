@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Templates;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
@@ -11,6 +12,8 @@ using TreeEntryViewModel =
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView;
 
+[ExcludeFromCodeCoverage]
+// ReSharper disable once UnusedType.Global
 public class LocationPreviewTreeDesignViewModel : AViewModel<ILocationPreviewTreeViewModel>,
     ILocationPreviewTreeViewModel
 {

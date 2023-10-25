@@ -1,8 +1,11 @@
-﻿using NexusMods.Games.AdvancedInstaller.UI.Content;
+﻿using System.Diagnostics.CodeAnalysis;
+using NexusMods.Games.AdvancedInstaller.UI.Content;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Bottom;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
 
+[ExcludeFromCodeCoverage]
+// ReSharper disable once UnusedType.Global
 public class AdvancedInstallerOverlayDesignViewModel : AViewModel<IAdvancedInstallerOverlayViewModel>,
     IAdvancedInstallerOverlayViewModel
 {

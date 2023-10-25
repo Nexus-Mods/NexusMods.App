@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using NexusMods.Paths;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry;
@@ -13,6 +14,11 @@ public interface ITreeEntryViewModel
     /// </summary>
     [Reactive]
     public SelectableDirectoryNodeStatus Status { get; }
+
+    /// <summary>
+    ///     The full path associated with this node.
+    /// </summary>
+    public GamePath Path { get; }
 
     /// <summary>
     ///     Contains the children nodes of this node.
