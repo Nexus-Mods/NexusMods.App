@@ -9,7 +9,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI;
 /// <remarks>
 ///     This is part of <see cref="ISuggestedEntryNode" /> but separated for easier testing.
 /// </remarks>
-public interface IModContentBindingTarget
+public interface IModContentBindingTarget : IUnlinkableItem
 {
     /// <summary>
     ///     Returns the child of this target, i.e. child node in target's tree.

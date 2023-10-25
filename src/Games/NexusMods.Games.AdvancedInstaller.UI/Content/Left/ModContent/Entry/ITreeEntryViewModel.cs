@@ -116,4 +116,10 @@ public interface ITreeEntryViewModel : IUnlinkableItem
     ///     This is executed when the user hits 'Remove' button from the left hand side.
     /// </summary>
     ReactiveCommand<DeploymentData, Unit> UnlinkCommand { get; }
+
+    /// <summary>
+    ///     The item with which this item is linked to.
+    ///     If null, it's not been explicitly linked.
+    /// </summary>
+    IUnlinkableItem? UnlinkableItem { get; }
 }

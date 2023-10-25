@@ -37,6 +37,9 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
     public required ITreeEntryViewModel[] Children { get; init; }
 
     /// <inheritdoc />
+    public IUnlinkableItem? UnlinkableItem { get; private set; }
+
+    /// <inheritdoc />
     public ReactiveCommand<Unit, Unit> BeginSelectCommand { get; }
 
     /// <inheritdoc />
@@ -61,7 +64,8 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
 
     public TreeEntryViewModel()
     {
-        void Execute(DeploymentData obj) => Unlink(obj);
+        // false because this is done from UI.
+        void Execute(DeploymentData obj) => Unlink(obj, false);
 
         BeginSelectCommand = ReactiveCommand.Create(BeginSelect);
         CancelSelectCommand = ReactiveCommand.Create(CancelSelect);
@@ -76,6 +80,7 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
         if (!IsDirectory)
         {
             var folder = target.Bind(this, data, targetAlreadyExisted);
+            UnlinkableItem = target;
             data.AddMapping(Node.Path, new GamePath(folder.LocationId, folder.Path.Join(FileName)), true);
             return;
         }
@@ -104,16 +109,13 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
         else
         {
             var filePath = target.Bind(@this, data, targetAlreadyExisted);
+            @this.UnlinkableItem = target;
             data.AddMapping(@this.Node.Path, new GamePath(filePath.LocationId, filePath.Path),
                 true);
         }
     }
 
-    /// <summary>
-    ///     Removes itself and all of its children recursively from the deployment data.
-    /// </summary>
-    /// <param name="data">The deployment data.</param>
-    public void Unlink(DeploymentData data)
+    public void Unlink(DeploymentData data, bool isCalledFromDoubleLinkedItem)
     {
         SetStatus(ModContentNodeStatus.Default);
 
@@ -123,12 +125,16 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
             foreach (var child in Children)
             {
                 var node = child as TreeEntryViewModel<TNodeValue>;
-                node!.Unlink(data);
+                node!.Unlink(data, isCalledFromDoubleLinkedItem);
             }
         }
         else
         {
             data.RemoveMapping(Node.Path);
+            if (!isCalledFromDoubleLinkedItem)
+                UnlinkableItem?.Unlink(data, true);
+
+            UnlinkableItem = null;
         }
     }
 

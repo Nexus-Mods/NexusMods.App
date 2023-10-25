@@ -8,7 +8,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView
 ///     Represents an individual node in the 'Preview' section when selecting a location.
 /// </summary>
 [DebuggerDisplay("FileName = {FileName}, IsRoot = {IsRoot}, Children = {Children.Count}, Flags = {Flags}")]
-public class TreeEntryViewModel : ITreeEntryViewModel
+public class TreeEntryViewModel : ITreeEntryViewModel, IUnlinkableItem
 {
     public TreeEntryViewModel? Parent { get; init; } = null!;
 
@@ -48,7 +48,8 @@ public class TreeEntryViewModel : ITreeEntryViewModel
     public GamePath Bind(IUnlinkableItem unlinkable, DeploymentData data, bool previouslyExisted)
     {
         // Unlink previously bound item (if any).
-        UnlinkableItem?.Unlink(data);
+        // set to true so it doesn't unlink itself
+        UnlinkableItem?.Unlink(data, true);
 
         // We apply 'folder merged' flag under either of the circumstances.
         // 1. TODO: Files from two different subfolders are mapped to the same folder.
@@ -68,13 +69,10 @@ public class TreeEntryViewModel : ITreeEntryViewModel
         return FullPath;
     }
 
-    /// <summary>
-    ///     Unlinks this node, and all children (in the case this node is a telegram).
-    /// </summary>
-    public void Unlink(DeploymentData data)
+    public void Unlink(DeploymentData data, bool isCalledFromDoubleLinkedItem)
     {
         // Do the unlink.
-        UnlinkRecursive(data);
+        UnlinkRecursive(data, isCalledFromDoubleLinkedItem);
 
         // Delete self (if possible).
         if (!IsRoot)
@@ -86,17 +84,19 @@ public class TreeEntryViewModel : ITreeEntryViewModel
             Children.Clear();
     }
 
-    private void UnlinkRecursive(DeploymentData data)
+    private void UnlinkRecursive(DeploymentData data, bool isCalledFromDoubleLinkedItem)
     {
         // Recursively unlink first.
         foreach (var child in Children)
         {
             var node = child as TreeEntryViewModel;
-            node!.UnlinkRecursive(data);
+            node!.UnlinkRecursive(data, isCalledFromDoubleLinkedItem);
         }
 
         // And now unlink self.
-        UnlinkableItem?.Unlink(data);
+        if (!isCalledFromDoubleLinkedItem)
+            UnlinkableItem?.Unlink(data, true);
+
         UnlinkableItem = null;
     }
 

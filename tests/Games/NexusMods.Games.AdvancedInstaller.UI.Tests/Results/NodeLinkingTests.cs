@@ -68,7 +68,7 @@ public class NodeLinkingTests
 
         // Link Armors Directory, then unlink root.
         armorsDir.Link(data, target.GetChild("Textures/Armors")!, false);
-        target.Unlink(data);
+        target.Unlink(data, false);
 
         // Note: There is no direct link in 'target', the children are linked.
         // Assert everything got deleted
@@ -77,6 +77,29 @@ public class NodeLinkingTests
 
         // Root node children should be deleted.
         target.Children.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void CanUnlinkFolders_FromModContent()
+    {
+        // Arrange & Act
+        var (node, data, target) = CommonSetup();
+        var armorsDir = node.GetNode("Textures").GetNode("Armors");
+        var targetDir = target.GetChild("Textures/Armors")!;
+
+        // Link Armors Directory, then unlink root.
+        armorsDir.Link(data, targetDir, false);
+        armorsDir.Unlink(data, false);
+
+        // Note: There is no direct link in 'target', the children are linked.
+        // Assert everything got deleted
+        data.OutputToArchiveMap.Should().BeEmpty();
+        data.ArchiveToOutputMap.Should().BeEmpty();
+
+        // Root node children should be deleted.
+        targetDir.Children.Should().BeEmpty();
+        armorsDir.UnlinkableItem.Should().BeNull();
+        targetDir.UnlinkableItem.Should().BeNull();
     }
 
     [Fact]
@@ -89,7 +112,7 @@ public class NodeLinkingTests
         // Link Armors Directory, then unlink root.
         var texturesTarget = target.GetChild("Textures")!;
         armorsDir.Link(data, texturesTarget, false);
-        (texturesTarget as TreeEntryViewModel)!.Unlink(data);
+        (texturesTarget as TreeEntryViewModel)!.Unlink(data, false);
 
         // Note: There is no direct link in 'target', the children are linked.
         // Assert everything got deleted

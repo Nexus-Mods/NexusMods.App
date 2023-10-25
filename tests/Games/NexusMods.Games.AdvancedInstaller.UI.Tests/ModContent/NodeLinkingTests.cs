@@ -88,7 +88,7 @@ public class NodeLinkingTests
         armorsDir.Link(data, target, false);
 
         // Unlink assert that everything is empty.
-        armorsDir.Unlink(data);
+        armorsDir.Unlink(data, false);
         AssertUnlinkedArmorsFolder(armorsDir, data);
     }
 
@@ -101,7 +101,7 @@ public class NodeLinkingTests
         armorsDir.Link(data, target, false);
 
         // Unlink assert that everything is empty.
-        node.Unlink(data); // unlinkable
+        node.Unlink(data, false); // unlinkable
         AssertUnlinkedArmorsFolder(armorsDir, data);
     }
 
@@ -114,7 +114,7 @@ public class NodeLinkingTests
         greenArmor.Link(data, target, false);
 
         // Assert
-        greenArmor.Unlink(data);
+        greenArmor.Unlink(data, false);
         data.ArchiveToOutputMap.Count.Should().Be(0);
         greenArmor.Status.Should().Be(ModContentNodeStatus.Default);
     }
@@ -163,5 +163,7 @@ public class NodeLinkingTests
 
         public GamePath Bind(IUnlinkableItem unlinkable, DeploymentData data, bool previouslyExisted) => Current;
         public string DirectoryName => Current.FileName;
+
+        public void Unlink(DeploymentData data, bool isCalledFromDoubleLinkedItem) { }
     }
 }
