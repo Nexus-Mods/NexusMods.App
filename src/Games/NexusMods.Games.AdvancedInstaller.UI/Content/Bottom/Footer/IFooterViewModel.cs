@@ -1,3 +1,12 @@
-﻿namespace NexusMods.Games.AdvancedInstaller.UI.Content.Bottom;
+﻿using System.Reactive;
+using System.Windows.Input;
+using ReactiveUI;
 
-public interface IFooterViewModel : IViewModel { }
+namespace NexusMods.Games.AdvancedInstaller.UI.Content.Bottom;
+
+public interface IFooterViewModel : IViewModel
+{
+    ReactiveCommand<Unit, Unit> CancelCommand { get; set; }
+
+    ReactiveCommand<Unit, Unit> InstallCommand { get; set; }
+}
