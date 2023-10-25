@@ -15,6 +15,10 @@
     <Color x:Key="BrandTertiaryDarker">#C9C9C9</Color>
     <Color x:Key="BrandTertiaryLighter">#F1F1F1</Color>
 
+    <Color x:Key="BrandAccent">#38BFFA</Color>
+    <Color x:Key="BrandAccentDarker">#0555B8</Color>
+    <Color x:Key="BrandAccentLighter">#60A5FB</Color>
+
     <!-- Background -->
     <Color x:Key="BackgroundPrimary">#101010</Color>
     <Color x:Key="BackgroundSecondary">#181818</Color>
@@ -36,10 +40,6 @@
     <Color x:Key="StatusSuccess">#1C8930</Color>
     <Color x:Key="StatusSuccessDarker">#156724</Color>
     <Color x:Key="StatusSuccessLighter">#23AB3C</Color>
-
-    <Color x:Key="StatusAccent">#38BFFA</Color>
-    <Color x:Key="StatusAccentDarker">#0555B8</Color>
-    <Color x:Key="StatusAccentLighter">#60A5FB</Color>
 
     <!-- Border -->
     <Color x:Key="BordersStructural">#303236</Color>
