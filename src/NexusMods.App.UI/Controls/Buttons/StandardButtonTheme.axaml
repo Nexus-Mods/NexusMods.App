@@ -1,49 +1,103 @@
 <ResourceDictionary
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:buttons="clr-namespace:NexusMods.App.UI.Controls.Buttons">
+    xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+    xmlns:buttons="clr-namespace:NexusMods.App.UI.Controls.Buttons"
+    xmlns:icons1="clr-namespace:NexusMods.App.UI.Icons">
 
     <Design.PreviewWith>
-        <StackPanel Orientation="Horizontal">
-            <StackPanel Orientation="Vertical" Margin="24" Spacing="10">
-                <TextBlock Foreground="White">Primary</TextBlock>
-                <buttons:StandardButton Theme="{DynamicResource Primary}" Text="Button" />
-                <buttons:StandardButton Theme="{DynamicResource Primary}" Text="Button" IsEnabled="False" />
+        <StackPanel Orientation="Vertical">
+            <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Vertical" Margin="24" Spacing="10">
+                    <TextBlock Foreground="White">Primary + Icon</TextBlock>
+                    <buttons:StandardButton Theme="{DynamicResource Primary}" Text="Button" IconType="Play" />
+                    <buttons:StandardButton Theme="{DynamicResource Primary}" Text="Button" IconType="Play" IsEnabled="False" />
+                </StackPanel>
+
+                <StackPanel Orientation="Vertical" Margin="24" Spacing="10">
+                    <TextBlock Foreground="White">Primary</TextBlock>
+                    <buttons:StandardButton Theme="{DynamicResource Primary}" Text="Button" />
+                    <buttons:StandardButton Theme="{DynamicResource Primary}" Text="Button" IsEnabled="False" />
+                </StackPanel>
             </StackPanel>
 
-            <StackPanel Orientation="Vertical" Margin="24" Spacing="10">
-                <TextBlock Foreground="White">Primary Outlined</TextBlock>
-                <buttons:StandardButton Theme="{DynamicResource PrimaryOutlined}" Text="Button" />
-                <buttons:StandardButton Theme="{DynamicResource PrimaryOutlined}" Text="Button" IsEnabled="False" />
+            <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Vertical" Margin="24" Spacing="10">
+                    <TextBlock Foreground="White">Primary Outlined + Icon</TextBlock>
+                    <buttons:StandardButton Theme="{DynamicResource PrimaryOutlined}" Text="Button" IconType="Play" />
+                    <buttons:StandardButton Theme="{DynamicResource PrimaryOutlined}" Text="Button" IconType="Play" IsEnabled="False" />
+                </StackPanel>
+
+                <StackPanel Orientation="Vertical" Margin="24" Spacing="10">
+                    <TextBlock Foreground="White">Primary Outlined</TextBlock>
+                    <buttons:StandardButton Theme="{DynamicResource PrimaryOutlined}" Text="Button" />
+                    <buttons:StandardButton Theme="{DynamicResource PrimaryOutlined}" Text="Button" IsEnabled="False" />
+                </StackPanel>
             </StackPanel>
 
-            <StackPanel Orientation="Vertical" Margin="24" Spacing="10">
-                <TextBlock Foreground="White">Secondary</TextBlock>
-                <buttons:StandardButton Theme="{DynamicResource Secondary}" Text="Button" />
-                <buttons:StandardButton Theme="{DynamicResource Secondary}" Text="Button" IsEnabled="False" />
+            <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Vertical" Margin="24" Spacing="10">
+                    <TextBlock Foreground="White">Secondary + Icon</TextBlock>
+                    <buttons:StandardButton Theme="{DynamicResource Secondary}" Text="Button" IconType="Play" />
+                    <buttons:StandardButton Theme="{DynamicResource Secondary}" Text="Button" IconType="Play" IsEnabled="False" />
+                </StackPanel>
+
+                <StackPanel Orientation="Vertical" Margin="24" Spacing="10">
+                    <TextBlock Foreground="White">Secondary</TextBlock>
+                    <buttons:StandardButton Theme="{DynamicResource Secondary}" Text="Button" />
+                    <buttons:StandardButton Theme="{DynamicResource Secondary}" Text="Button" IsEnabled="False" />
+                </StackPanel>
             </StackPanel>
 
-            <StackPanel Orientation="Vertical" Margin="24" Spacing="10">
-                <TextBlock Foreground="White">Secondary Outlined</TextBlock>
-                <buttons:StandardButton Theme="{DynamicResource SecondaryOutlined}" Text="Button" />
-                <buttons:StandardButton Theme="{DynamicResource SecondaryOutlined}" Text="Button" IsEnabled="False" />
+            <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Vertical" Margin="24" Spacing="10">
+                    <TextBlock Foreground="White">Secondary Outlined + Icon</TextBlock>
+                    <buttons:StandardButton Theme="{DynamicResource SecondaryOutlined}" Text="Button" IconType="Play" />
+                    <buttons:StandardButton Theme="{DynamicResource SecondaryOutlined}" Text="Button" IconType="Play" IsEnabled="False" />
+                </StackPanel>
+
+                <StackPanel Orientation="Vertical" Margin="24" Spacing="10">
+                    <TextBlock Foreground="White">Secondary Outlined</TextBlock>
+                    <buttons:StandardButton Theme="{DynamicResource SecondaryOutlined}" Text="Button" />
+                    <buttons:StandardButton Theme="{DynamicResource SecondaryOutlined}" Text="Button" IsEnabled="False" />
+                </StackPanel>
             </StackPanel>
 
-            <StackPanel Orientation="Vertical" Margin="24" Spacing="10">
-                <TextBlock Foreground="White">Tertiary</TextBlock>
-                <buttons:StandardButton Theme="{DynamicResource Tertiary}" Text="Button" />
-                <buttons:StandardButton Theme="{DynamicResource Tertiary}" Text="Button" IsEnabled="False" />
+            <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Vertical" Margin="24" Spacing="10">
+                    <TextBlock Foreground="White">Tertiary + Icon</TextBlock>
+                    <buttons:StandardButton Theme="{DynamicResource Tertiary}" Text="Button" IconType="Play" />
+                    <buttons:StandardButton Theme="{DynamicResource Tertiary}" Text="Button" IconType="Play" IsEnabled="False" />
+                </StackPanel>
+
+                <StackPanel Orientation="Vertical" Margin="24" Spacing="10">
+                    <TextBlock Foreground="White">Tertiary</TextBlock>
+                    <buttons:StandardButton Theme="{DynamicResource Tertiary}" Text="Button" />
+                    <buttons:StandardButton Theme="{DynamicResource Tertiary}" Text="Button" IsEnabled="False" />
+                </StackPanel>
             </StackPanel>
 
-            <StackPanel Orientation="Vertical" Margin="24" Spacing="10">
-                <TextBlock Foreground="White">Success</TextBlock>
-                <buttons:StandardButton Theme="{DynamicResource Success}" Text="Button" />
-                <buttons:StandardButton Theme="{DynamicResource Success}" Text="Button" IsEnabled="False" />
+            <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Vertical" Margin="24" Spacing="10">
+                    <TextBlock Foreground="White">Success + Icon</TextBlock>
+                    <buttons:StandardButton Theme="{DynamicResource Success}" Text="Button" IconType="Play" />
+                    <buttons:StandardButton Theme="{DynamicResource Success}" Text="Button" IconType="Play" IsEnabled="False" />
+                </StackPanel>
+
+                <StackPanel Orientation="Vertical" Margin="24" Spacing="10">
+                    <TextBlock Foreground="White">Success</TextBlock>
+                    <buttons:StandardButton Theme="{DynamicResource Success}" Text="Button" />
+                    <buttons:StandardButton Theme="{DynamicResource Success}" Text="Button" IsEnabled="False" />
+                </StackPanel>
             </StackPanel>
         </StackPanel>
     </Design.PreviewWith>
 
     <ControlTheme x:Key="Standard" TargetType="buttons:StandardButton">
+        <ControlTheme.Resources>
+            <icons1:IconTypeConverter x:Key="IconTypeConverter" />
+        </ControlTheme.Resources>
+
         <Setter Property="Height" Value="34" />
         <Setter Property="CornerRadius" Value="4" />
 
@@ -53,16 +107,30 @@
                         Height="{TemplateBinding Height}"
                         Background="{TemplateBinding Background}"
                         CornerRadius="{TemplateBinding CornerRadius}">
-                    <Panel x:Name="PART_Panel">
+                    <StackPanel x:Name="PART_Panel">
+                        <icons:Icon x:Name="PART_Icon"
+                                    Value="{TemplateBinding IconType, Converter={StaticResource IconTypeConverter}}" />
                         <TextBlock x:Name="PART_TextBlock"
                                    Text="{TemplateBinding Text}" />
-                    </Panel>
+                    </StackPanel>
                 </Border>
             </ControlTemplate>
         </Setter>
 
-        <Style Selector="^ /template/ TextBlock#PART_TextBlock">
+        <Style Selector="^ /template/ StackPanel#PART_Panel">
+            <Setter Property="Orientation" Value="Horizontal" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+
             <Setter Property="Margin" Value="16 10" />
+            <Setter Property="Spacing" Value="8" />
+        </Style>
+
+        <Style Selector="^ /template/ icons|Icon#PART_Icon">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+
+        <Style Selector="^ /template/ TextBlock#PART_TextBlock">
             <Setter Property="TextAlignment" Value="Center" />
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
@@ -72,6 +140,16 @@
             <Setter Property="FontSize" Value="14" />
             <Setter Property="LineHeight" Value="14" />
             <Setter Property="LetterSpacing" Value="0.7" />
+        </Style>
+
+        <Style Selector="^:icon /template/ StackPanel#PART_Panel">
+            <Setter Property="Margin" Value="16 6" />
+        </Style>
+
+        <Style Selector="^:icon /template/ icons|Icon#PART_Icon">
+            <Setter Property="IsVisible" Value="True" />
+            <Setter Property="Height" Value="24" />
+            <Setter Property="Width" Value="24" />
         </Style>
     </ControlTheme>
 
