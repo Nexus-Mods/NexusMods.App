@@ -13,7 +13,7 @@ using ITreeEntryViewModel = NexusMods.Games.AdvancedInstaller.UI.Content.Left.IT
 namespace NexusMods.Games.AdvancedInstaller.UI.Content;
 
 internal class BodyViewModel : AViewModel<IBodyViewModel>,
-    IBodyViewModel, IModContentUpdateReceiver, ISelectableDirectoryUpdateReceiver
+    IBodyViewModel, IAdvancedInstallerCoordinator
 {
     public BodyViewModel(FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles, GameLocationsRegister register,
         string gameName = "")
