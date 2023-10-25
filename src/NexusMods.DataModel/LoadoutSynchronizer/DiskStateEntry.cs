@@ -41,11 +41,11 @@ public readonly struct DiskStateEntry
     }
 
     /// <summary>
-    /// Converts a <see cref="FromArchive"/> to a <see cref="DiskStateEntry"/>.
+    /// Converts a <see cref="StoredFile"/> to a <see cref="DiskStateEntry"/>.
     /// </summary>
     /// <param name="hashedEntry"></param>
     /// <returns></returns>
-    public static DiskStateEntry From(FromArchive hashedEntry)
+    public static DiskStateEntry From(StoredFile hashedEntry)
     {
         return new()
         {

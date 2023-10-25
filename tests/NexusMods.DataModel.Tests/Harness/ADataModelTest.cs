@@ -38,14 +38,14 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
     protected readonly TemporaryFileManager TemporaryFileManager;
     protected readonly IServiceProvider ServiceProvider;
-    protected readonly IArchiveManager ArchiveManager;
+    protected readonly IFileStore FileStore;
     protected readonly IArchiveInstaller ArchiveInstaller;
 
     protected readonly LoadoutRegistry LoadoutRegistry;
     protected readonly FileHashCache FileHashCache;
     protected readonly IFileSystem FileSystem;
     protected readonly IDataStore DataStore;
-    protected readonly IDownloadRegistry DownloadRegistry;
+    protected readonly IFileOriginRegistry FileOriginRegistry;
     protected readonly DiskStateRegistry DiskStateRegistry;
     protected readonly IToolManager ToolManager;
 
@@ -60,13 +60,13 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
     protected ADataModelTest(IServiceProvider provider)
     {
         var provider1 = provider;
-        ArchiveManager = provider1.GetRequiredService<IArchiveManager>();
+        FileStore = provider1.GetRequiredService<IFileStore>();
         ArchiveInstaller = provider1.GetRequiredService<IArchiveInstaller>();
         LoadoutRegistry = provider1.GetRequiredService<LoadoutRegistry>();
         FileHashCache = provider1.GetRequiredService<FileHashCache>();
         FileSystem = provider1.GetRequiredService<IFileSystem>();
         DataStore = provider1.GetRequiredService<IDataStore>();
-        DownloadRegistry = provider1.GetRequiredService<IDownloadRegistry>();
+        FileOriginRegistry = provider1.GetRequiredService<IFileOriginRegistry>();
         DiskStateRegistry = provider1.GetRequiredService<DiskStateRegistry>();
         Logger = provider1.GetRequiredService<ILogger<T>>();
         TemporaryFileManager = provider1.GetRequiredService<TemporaryFileManager>();
@@ -89,13 +89,13 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
 
     protected async Task<ModId[]> AddMods(LoadoutMarker mainList, AbsolutePath path, string? name = null)
     {
-        var downloadId = await DownloadRegistry.RegisterDownload(path,
+        var downloadId = await FileOriginRegistry.RegisterDownload(path,
             new FilePathMetadata {OriginalName = path.FileName, Quality = Quality.Low}, CancellationToken.None);
         return await ArchiveInstaller.AddMods(mainList.Value.LoadoutId, downloadId, name, CancellationToken.None);
     }
 
     /// <summary>
-    /// Creates a download from the given files, and data (saved as UTF-8 strings), and registers it with the download registry,
+    /// Creates a download from the given files, and data (saved as UTF-8 strings), and registers it with the FileOriginRegistry,
     /// returning the download id.
     /// </summary>
     /// <param name="files"></param>
@@ -114,7 +114,7 @@ public abstract class ADataModelTest<T> : IDisposable, IAsyncLifetime
             }
         }
 
-        return await DownloadRegistry.RegisterDownload(tmpFile.Path, new FilePathMetadata {OriginalName = tmpFile.Path.FileName, Quality = Quality.Low}, CancellationToken.None);
+        return await FileOriginRegistry.RegisterDownload(tmpFile.Path, new FilePathMetadata {OriginalName = tmpFile.Path.FileName, Quality = Quality.Low}, CancellationToken.None);
     }
 
     /// <summary>

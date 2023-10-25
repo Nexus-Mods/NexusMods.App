@@ -30,7 +30,7 @@ where TVm : IViewModelInterface
     protected IDataStore DataStore { get; }
     protected IArchiveInstaller ArchiveInstaller { get; }
 
-    protected IDownloadRegistry DownloadRegistry { get; }
+    protected IFileOriginRegistry FileOriginRegistry { get; }
     protected GlobalSettingsManager GlobalSettingsManager { get; }
 
 
@@ -46,7 +46,7 @@ where TVm : IViewModelInterface
         Install = Game.Installations.First();
         FileSystem = provider.GetRequiredService<IFileSystem>();
         ArchiveInstaller = provider.GetRequiredService<IArchiveInstaller>();
-        DownloadRegistry = provider.GetRequiredService<IDownloadRegistry>();
+        FileOriginRegistry = provider.GetRequiredService<IFileOriginRegistry>();
         GlobalSettingsManager = provider.GetRequiredService<GlobalSettingsManager>();
     }
 
@@ -60,7 +60,7 @@ where TVm : IViewModelInterface
 
     protected async Task<ModId[]> InstallMod(AbsolutePath path)
     {
-        var downloadId = await DownloadRegistry.RegisterDownload(path,
+        var downloadId = await FileOriginRegistry.RegisterDownload(path,
             new FilePathMetadata() { OriginalName = path.FileName, Quality = Quality.Normal });
         return await ArchiveInstaller.AddMods(Loadout.Value.LoadoutId, downloadId);
     }

@@ -37,7 +37,7 @@ public class MissingDependenciesEmitterTests : ALoadoutDiagnosticEmitterTest<Sta
         var modAFiles = TestHelper.CreateTestFiles(modAManifest);
         await using var modAPath = await CreateTestArchive(modAFiles);
 
-        var modA = await InstallModFromArchiveIntoLoadout(loadoutMarker, modAPath);
+        var modA = await InstallModStoredFileIntoLoadout(loadoutMarker, modAPath);
 
         var diagnostic = await GetSingleDiagnostic(loadoutMarker.Value);
         diagnostic.Id.Should().Be(new DiagnosticId(Diagnostics.Source, 1));
@@ -62,7 +62,7 @@ public class MissingDependenciesEmitterTests : ALoadoutDiagnosticEmitterTest<Sta
         var modBFiles = TestHelper.CreateTestFiles(modBManifest);
         await using var modBPath = await CreateTestArchive(modBFiles);
 
-        await InstallModFromArchiveIntoLoadout(loadoutMarker, modBPath);
+        await InstallModStoredFileIntoLoadout(loadoutMarker, modBPath);
 
         var diagnostics = await GetAllDiagnostics(loadoutMarker.Value);
         diagnostics.Should().BeEmpty();

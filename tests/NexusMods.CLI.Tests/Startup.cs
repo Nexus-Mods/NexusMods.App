@@ -23,7 +23,7 @@ public class Startup
                 .AddFileSystem()
                 .AddDataModel(new DataModelSettings
                 {
-                    UseInMemoryDataModel = false
+                    UseInMemoryDataModel = true
                 })
                 .AddFileExtractors()
                 .AddCLI()

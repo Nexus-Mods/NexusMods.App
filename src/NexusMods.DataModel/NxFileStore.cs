@@ -22,13 +22,13 @@ using NexusMods.Paths.Utilities;
 namespace NexusMods.DataModel;
 
 /// <summary>
-/// Manages the archive locations and allows for the backup of files to internal data folders.
+/// A IFileStore implementation that uses the Nx format for storage.
 /// </summary>
-public class NxArchiveManager : IArchiveManager
+public class NxFileStore : IFileStore
 {
     private readonly AbsolutePath[] _archiveLocations;
     private readonly IDataStore _store;
-    private readonly ILogger<NxArchiveManager> _logger;
+    private readonly ILogger<NxFileStore> _logger;
 
     /// <summary>
     /// DI Constructor
@@ -36,7 +36,7 @@ public class NxArchiveManager : IArchiveManager
     /// <param name="logger"></param>
     /// <param name="store"></param>
     /// <param name="settings"></param>
-    public NxArchiveManager(ILogger<NxArchiveManager> logger, IDataStore store, IDataModelSettings settings)
+    public NxFileStore(ILogger<NxFileStore> logger, IDataStore store, IDataModelSettings settings)
     {
         _archiveLocations = settings.ArchiveLocations.Select(f => f.ToAbsolutePath()).ToArray();
         foreach (var location in _archiveLocations)

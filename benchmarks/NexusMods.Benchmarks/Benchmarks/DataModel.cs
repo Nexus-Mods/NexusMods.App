@@ -27,7 +27,7 @@ public class DataStoreBenchmark : IBenchmark, IDisposable
     private readonly byte[] _rawData;
     private readonly Id64 _rawId;
     private readonly IId _immutableRecord;
-    private readonly FromArchive _record;
+    private readonly StoredFile _record;
 
     public DataStoreBenchmark()
     {
@@ -51,7 +51,7 @@ public class DataStoreBenchmark : IBenchmark, IDisposable
         Random.Shared.NextBytes(_rawData);
         _rawId = new Id64(EntityCategory.TestData, (ulong)Random.Shared.NextInt64());
         _dataStore.PutRaw(_rawId, _rawData);
-        _record = new FromArchive
+        _record = new StoredFile
         {
             Id = ModFileId.New(),
             Size = Size.FromLong(1024),
@@ -82,7 +82,7 @@ public class DataStoreBenchmark : IBenchmark, IDisposable
     [Benchmark]
     public IId PutImmutable()
     {
-        var record = new FromArchive
+        var record = new StoredFile
         {
             Id = ModFileId.New(),
             Size = Size.FromLong(1024),
@@ -99,14 +99,14 @@ public class DataStoreBenchmark : IBenchmark, IDisposable
     }
 
     [Benchmark]
-    public FromArchive? GetImmutable()
+    public StoredFile? GetImmutable()
     {
-        return _dataStore.Get<FromArchive>(_immutableRecord);
+        return _dataStore.Get<StoredFile>(_immutableRecord);
     }
 
     [Benchmark]
-    public FromArchive? GetImmutableCached()
+    public StoredFile? GetImmutableCached()
     {
-        return _dataStore.Get<FromArchive>(_immutableRecord, true);
+        return _dataStore.Get<StoredFile>(_immutableRecord, true);
     }
 }

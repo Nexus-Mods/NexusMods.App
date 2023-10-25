@@ -18,7 +18,7 @@ public class DownloadAndInstallMod : AVerb<string, LoadoutMarker, string>, IRend
     private readonly TemporaryFileManager _temp;
     private readonly IEnumerable<IDownloadProtocolHandler> _handlers;
     private readonly IArchiveInstaller _archiveInstaller;
-    private readonly IDownloadRegistry _downloadRegistry;
+    private readonly IFileOriginRegistry _fileOriginRegistry;
 
     /// <inheritdoc />
     public IRenderer Renderer { get; set; } = null!;
@@ -26,10 +26,10 @@ public class DownloadAndInstallMod : AVerb<string, LoadoutMarker, string>, IRend
     /// <summary/>
     public DownloadAndInstallMod(IHttpDownloader httpDownloader, TemporaryFileManager temp,
         IEnumerable<IDownloadProtocolHandler> handlers, IArchiveInstaller archiveInstaller,
-        IDownloadRegistry downloadRegistry)
+        IFileOriginRegistry fileOriginRegistry)
     {
         _archiveInstaller = archiveInstaller;
-        _downloadRegistry = downloadRegistry;
+        _fileOriginRegistry = fileOriginRegistry;
         _httpDownloader = httpDownloader;
         _temp = temp;
         _handlers = handlers;
@@ -62,7 +62,7 @@ public class DownloadAndInstallMod : AVerb<string, LoadoutMarker, string>, IRend
             await _httpDownloader.DownloadAsync(new[] { new HttpRequestMessage(HttpMethod.Get, uri) },
                 temporaryPath, null, null, token);
 
-            var downloadId = await _downloadRegistry.RegisterDownload(temporaryPath,
+            var downloadId = await _fileOriginRegistry.RegisterDownload(temporaryPath,
                 new FilePathMetadata
                 {
                     OriginalName = temporaryPath.Path.Name,

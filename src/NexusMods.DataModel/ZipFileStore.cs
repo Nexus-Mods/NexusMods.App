@@ -8,16 +8,15 @@ using NexusMods.DataModel.ChunkedStreams;
 using NexusMods.Hashing.xxHash64;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using NexusMods.Paths.FileTree;
 using NexusMods.Paths.Utilities;
 
 namespace NexusMods.DataModel;
 
 /// <summary>
-/// Archive manager that uses zip files instead of the Nexus Mods archive format. This is used for testing and
-/// to verify possible stability and memory issues with the Nexus Mods archive format implementation.
+/// File Store that uses zip files instead of the Nexus Mods archive format. This is used for testing and
+/// to remove any dependency on the Nexus Mods archive format.
 /// </summary>
-public class ZipArchiveManager : IArchiveManager
+public class ZipFileStore : IFileStore
 {
     private readonly AbsolutePath[] _archiveLocations;
     private readonly IDataStore _store;
@@ -29,7 +28,7 @@ public class ZipArchiveManager : IArchiveManager
     /// </summary>
     /// <param name="store"></param>
     /// <param name="settings"></param>
-    public ZipArchiveManager(IDataStore store, IDataModelSettings settings)
+    public ZipFileStore(IDataStore store, IDataModelSettings settings)
     {
         _archiveLocations = settings.ArchiveLocations.Select(f => f.ToAbsolutePath()).ToArray();
         foreach (var location in _archiveLocations)

@@ -25,7 +25,7 @@ public class SMAPIInstallerTests : AModInstallerTest<StardewValley, SMAPIInstall
 
         // SMAPI 3.18.2 (https://www.nexusmods.com/stardewvalley/mods/2400?tab=files)
         var downloadId = await DownloadMod(StardewValley.GameDomain, ModId.From(2400), FileId.From(64874));
-        var mod = await InstallModFromArchiveIntoLoadout(loadout, downloadId);
+        var mod = await InstallModStoredFileIntoLoadout(loadout, downloadId);
 
         var files = mod.Files;
         files.Should().NotBeEmpty();

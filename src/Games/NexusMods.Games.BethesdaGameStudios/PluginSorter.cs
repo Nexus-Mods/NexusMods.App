@@ -25,12 +25,12 @@ public class PluginSorter
     }.Select(e => e.ToRelativePath()).ToArray();
 
     private readonly PluginAnalyzer _pluginAnalyzer;
-    private readonly IArchiveManager _archiveManager;
+    private readonly IFileStore _fileStore;
 
-    public PluginSorter(PluginAnalyzer pluginAnalyzer, IArchiveManager archiveManager)
+    public PluginSorter(PluginAnalyzer pluginAnalyzer, IFileStore fileStore)
     {
         _pluginAnalyzer = pluginAnalyzer;
-        _archiveManager = archiveManager;
+        _fileStore = fileStore;
     }
 
     public async Task<RelativePath[]> Sort(FileTree tree, CancellationToken token)
@@ -42,7 +42,7 @@ public class PluginSorter
             .Where(c => c.IsFile)
             .Select(c => c.Value)
             // For now we only support plugins that are not generated on-the-fly
-            .OfType<FromArchive>()
+            .OfType<StoredFile>()
             .Where(f => SkyrimSpecialEdition.PluginExtensions.Contains(f.To.Extension))
             .SelectAsync(async f => await GetAnalysis(f, token))
             .Where(result => result is not null)
@@ -138,9 +138,9 @@ public class PluginSorter
     /// <param name="archive"></param>
     /// <param name="token"></param>
     /// <returns></returns>
-    private async Task<PluginAnalysisData?> GetAnalysis(FromArchive archive, CancellationToken token)
+    private async Task<PluginAnalysisData?> GetAnalysis(StoredFile archive, CancellationToken token)
     {
-        await using var stream = await _archiveManager.GetFileStream(archive.Hash, token);
+        await using var stream = await _fileStore.GetFileStream(archive.Hash, token);
         return await _pluginAnalyzer.AnalyzeAsync(archive.To.FileName, stream, token);
     }
 }

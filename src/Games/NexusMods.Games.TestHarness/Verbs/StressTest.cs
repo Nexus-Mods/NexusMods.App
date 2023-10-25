@@ -39,13 +39,13 @@ public class StressTest : AVerb<IGame, AbsolutePath>, IRenderingVerb
         LoadoutRegistry loadoutRegistry,
         IHttpDownloader downloader,
         IArchiveInstaller archiveInstaller,
-        IDownloadRegistry downloadRegistry,
+        IFileOriginRegistry fileOriginRegistry,
         IEnumerable<IGameLocator> gameLocators,
         IGuidedInstaller optionSelector)
     {
         ((CliGuidedInstaller)optionSelector).SkipAll = true;
         _archiveInstaller = archiveInstaller;
-        _downloadRegistry = downloadRegistry;
+        _fileOriginRegistry = fileOriginRegistry;
         _loadoutRegistry = loadoutRegistry;
         _downloader = downloader;
         _logger = logger;
@@ -66,7 +66,7 @@ public class StressTest : AVerb<IGame, AbsolutePath>, IRenderingVerb
     private readonly ILogger<StressTest> _logger;
     private readonly IArchiveInstaller _archiveInstaller;
     private readonly ManuallyAddedLocator _manualLocator;
-    private readonly IDownloadRegistry _downloadRegistry;
+    private readonly IFileOriginRegistry _fileOriginRegistry;
     private readonly LoadoutRegistry _loadoutRegistry;
 
     public async Task<int> Run(IGame game, AbsolutePath output, CancellationToken token)
@@ -119,7 +119,7 @@ public class StressTest : AVerb<IGame, AbsolutePath>, IRenderingVerb
                             file.FileName, file.SizeInBytes);
 
                         var list = await _loadoutRegistry.Manage(install);
-                        var downloadId = await _downloadRegistry.RegisterDownload(tmpPath, new FilePathMetadata
+                        var downloadId = await _fileOriginRegistry.RegisterDownload(tmpPath, new FilePathMetadata
                             { OriginalName = tmpPath.Path.Name, Quality = Quality.Low }, token);
                         await _archiveInstaller.AddMods(list.Value.LoadoutId, downloadId, token: token);
 

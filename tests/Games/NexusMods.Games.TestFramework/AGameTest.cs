@@ -32,9 +32,9 @@ public abstract class AGameTest<TGame> where TGame : AGame
 
     protected readonly IFileSystem FileSystem;
     protected readonly TemporaryFileManager TemporaryFileManager;
-    protected readonly IArchiveManager ArchiveManager;
+    protected readonly IFileStore FileStore;
     protected readonly IArchiveInstaller ArchiveInstaller;
-    protected readonly IDownloadRegistry DownloadRegistry;
+    protected readonly IFileOriginRegistry FileOriginRegistry;
     protected readonly LoadoutRegistry LoadoutRegistry;
     protected readonly IDataStore DataStore;
 
@@ -59,9 +59,9 @@ public abstract class AGameTest<TGame> where TGame : AGame
         GameInstallation.Game.Should().BeOfType<TGame>("because the game installation should be for the game we're testing");
 
         FileSystem = serviceProvider.GetRequiredService<IFileSystem>();
-        ArchiveManager = serviceProvider.GetRequiredService<IArchiveManager>();
+        FileStore = serviceProvider.GetRequiredService<IFileStore>();
         ArchiveInstaller = serviceProvider.GetRequiredService<IArchiveInstaller>();
-        DownloadRegistry = serviceProvider.GetRequiredService<IDownloadRegistry>();
+        FileOriginRegistry = serviceProvider.GetRequiredService<IFileOriginRegistry>();
         TemporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
         LoadoutRegistry = serviceProvider.GetRequiredService<LoadoutRegistry>();
         DataStore = serviceProvider.GetRequiredService<IDataStore>();
@@ -123,7 +123,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
             file
         );
 
-        var id = await DownloadRegistry.RegisterDownload(file.Path, new NexusModsArchiveMetadata
+        var id = await FileOriginRegistry.RegisterDownload(file.Path, new NexusModsArchiveMetadata
         {
             GameDomain = gameDomain,
             ModId = modId,
@@ -135,7 +135,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     }
 
     /// <summary>
-    /// Downloads a mod and caches it in the <see cref="ArchiveManager"/> so future
+    /// Downloads a mod and caches it in the <see cref="FileStore"/> so future
     /// requests for the same file will be served from the cache. Compares the
     /// hash of the downloaded file with the expected hash and throws an exception
     /// if they don't match.
@@ -147,7 +147,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// <returns></returns>
     public async Task<DownloadId> DownloadAndCacheMod(GameDomain gameDomain, ModId modId, FileId fileId, Hash hash)
     {
-        var metaDatas = DownloadRegistry.GetAll()
+        var metaDatas = FileOriginRegistry.GetAll()
             .FirstOrDefault(g => g.MetaData is NexusModsArchiveMetadata na
                         && na.GameDomain == gameDomain && na.ModId == modId && na.FileId == fileId);
 
@@ -167,7 +167,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// <param name="defaultModName"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    protected async Task<Mod[]> InstallModsFromArchiveIntoLoadout(
+    protected async Task<Mod[]> InstallModsStoredFileIntoLoadout(
         LoadoutMarker loadout,
         DownloadId downloadId,
         string? defaultModName = null,
@@ -180,7 +180,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
 
     /// <summary>
     /// Installs a single mod from the archive into the loadout. This calls
-    /// <see cref="InstallModsFromArchiveIntoLoadout(NexusMods.DataModel.Loadouts.Markers.LoadoutMarker,NexusMods.Hashing.xxHash64.Hash,string?,System.Threading.CancellationToken)"/> and asserts only one mod
+    /// <see cref="InstallModsStoredFileIntoLoadout(NexusMods.DataModel.Loadouts.Markers.LoadoutMarker,NexusMods.Hashing.xxHash64.Hash,string?,System.Threading.CancellationToken)"/> and asserts only one mod
     /// exists in the archive.
     /// </summary>
     /// <param name="loadout"></param>
@@ -188,13 +188,13 @@ public abstract class AGameTest<TGame> where TGame : AGame
     /// <param name="defaultModName"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    protected async Task<Mod> InstallModFromArchiveIntoLoadout(
+    protected async Task<Mod> InstallModStoredFileIntoLoadout(
         LoadoutMarker loadout,
         DownloadId downloadId,
         string? defaultModName = null,
         CancellationToken cancellationToken = default)
     {
-        var mods = await InstallModsFromArchiveIntoLoadout(
+        var mods = await InstallModsStoredFileIntoLoadout(
             loadout, downloadId,
             defaultModName,
             cancellationToken);
@@ -205,23 +205,23 @@ public abstract class AGameTest<TGame> where TGame : AGame
     }
 
     /// <summary>
-    /// Variant of <see cref="InstallModFromArchiveIntoLoadout(NexusMods.DataModel.Loadouts.Markers.LoadoutMarker,NexusMods.Hashing.xxHash64.Hash,string?,System.Threading.CancellationToken)"/> that takes a file path instead of a hash.
+    /// Variant of <see cref="InstallModStoredFileIntoLoadout(NexusMods.DataModel.Loadouts.Markers.LoadoutMarker,NexusMods.Hashing.xxHash64.Hash,string?,System.Threading.CancellationToken)"/> that takes a file path instead of a hash.
     /// </summary>
     /// <param name="loadout"></param>
     /// <param name="path"></param>
     /// <param name="defaultModName"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    protected async Task<Mod> InstallModFromArchiveIntoLoadout(
+    protected async Task<Mod> InstallModStoredFileIntoLoadout(
         LoadoutMarker loadout,
         AbsolutePath path,
         string? defaultModName = null,
         CancellationToken cancellationToken = default)
     {
-        var downloadId = await DownloadRegistry.RegisterDownload(path, new FilePathMetadata
+        var downloadId = await FileOriginRegistry.RegisterDownload(path, new FilePathMetadata
             { OriginalName = path.FileName, Quality = Quality.Low }, cancellationToken);
 
-        var mods = await InstallModsFromArchiveIntoLoadout(
+        var mods = await InstallModsStoredFileIntoLoadout(
             loadout,
             downloadId,
             defaultModName,

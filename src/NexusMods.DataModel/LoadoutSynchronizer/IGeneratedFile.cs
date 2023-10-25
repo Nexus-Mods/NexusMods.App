@@ -5,7 +5,7 @@ using NexusMods.Paths;
 namespace NexusMods.DataModel.LoadoutSynchronizer;
 
 /// <summary>
-/// Interface for a file that is generated at apply time, not stored in the archive manager
+/// Interface for a file that is generated at apply time, not stored in the file store
 /// </summary>
 public interface IGeneratedFile
 {

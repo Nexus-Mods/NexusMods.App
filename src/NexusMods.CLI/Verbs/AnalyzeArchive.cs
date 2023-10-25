@@ -15,7 +15,7 @@ namespace NexusMods.CLI.Verbs;
 public class AnalyzeArchive : AVerb<AbsolutePath>, IRenderingVerb
 {
     private readonly ILogger<AnalyzeArchive> _logger;
-    private readonly IDownloadRegistry _downloadRegistry;
+    private readonly IFileOriginRegistry _fileOriginRegistry;
 
     /// <inheritdoc />
     public IRenderer Renderer { get; set; } = null!;
@@ -24,10 +24,10 @@ public class AnalyzeArchive : AVerb<AbsolutePath>, IRenderingVerb
     /// DI constructor
     /// </summary>
     /// <param name="logger"></param>
-    public AnalyzeArchive(ILogger<AnalyzeArchive> logger, IDownloadRegistry downloadRegistry)
+    public AnalyzeArchive(ILogger<AnalyzeArchive> logger, IFileOriginRegistry fileOriginRegistry)
     {
         _logger = logger;
-        _downloadRegistry = downloadRegistry;
+        _fileOriginRegistry = fileOriginRegistry;
     }
 
     /// <inheritdoc />
@@ -46,13 +46,13 @@ public class AnalyzeArchive : AVerb<AbsolutePath>, IRenderingVerb
         {
             var results = await Renderer.WithProgress(token, async () =>
             {
-                var downloadId = await _downloadRegistry.RegisterDownload(inputFile, new FilePathMetadata
+                var downloadId = await _fileOriginRegistry.RegisterDownload(inputFile, new FilePathMetadata
                 {
                     OriginalName = inputFile.Name,
                     Quality = Quality.Low,
                     Name = inputFile.Name
                 }, token);
-                var metadata = await _downloadRegistry.Get(downloadId);
+                var metadata = await _fileOriginRegistry.Get(downloadId);
                 return metadata.Contents.Select(kv =>
                 {
                     return new object[]

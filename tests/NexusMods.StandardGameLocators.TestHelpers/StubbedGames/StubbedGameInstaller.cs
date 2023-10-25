@@ -36,20 +36,20 @@ public class StubbedGameInstaller : IModInstaller
                 var (path, file) = kv;
                 if (path.Path.StartsWith(_preferencesPrefix))
                 {
-                    return file!.ToFromArchive(
+                    return file!.ToStoredFile(
                         new GamePath(LocationId.Preferences, path)
                     );
                 }
 
                 if (path.Path.StartsWith(_savesPrefix))
                 {
-                    return file!.ToFromArchive(
+                    return file!.ToStoredFile(
                         new GamePath(LocationId.Saves, path)
                     );
 
                 }
 
-                return file!.ToFromArchive(
+                return file!.ToStoredFile(
                     new GamePath(LocationId.Game, path));
                 ;
             });

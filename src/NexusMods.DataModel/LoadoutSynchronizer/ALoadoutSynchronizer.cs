@@ -27,7 +27,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     private readonly IDataStore _store;
     private readonly LoadoutRegistry _loadoutRegistry;
     private readonly DiskStateRegistry _diskStateRegistry;
-    private readonly IArchiveManager _archiveManager;
+    private readonly IFileStore _fileStore;
 
     /// <summary>
     /// Loadout synchronizer base constructor.
@@ -37,20 +37,20 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <param name="store"></param>
     /// <param name="loadoutRegistry"></param>
     /// <param name="diskStateRegistry"></param>
-    /// <param name="archiveManager"></param>
+    /// <param name="fileStore"></param>
     protected ALoadoutSynchronizer(ILogger logger,
         FileHashCache hashCache,
         IDataStore store,
         LoadoutRegistry loadoutRegistry,
         DiskStateRegistry diskStateRegistry,
-        IArchiveManager archiveManager)
+        IFileStore fileStore)
     {
         _logger = logger;
         _hashCache = hashCache;
         _store = store;
         _loadoutRegistry = loadoutRegistry;
         _diskStateRegistry = diskStateRegistry;
-        _archiveManager = archiveManager;
+        _fileStore = fileStore;
     }
 
     /// <summary>
@@ -63,7 +63,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
         provider.GetRequiredService<IDataStore>(),
         provider.GetRequiredService<LoadoutRegistry>(),
         provider.GetRequiredService<DiskStateRegistry>(),
-        provider.GetRequiredService<IArchiveManager>())
+        provider.GetRequiredService<IFileStore>())
 
     {
 
@@ -108,7 +108,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     {
         List<KeyValuePair<GamePath, HashedEntry>> toDelete = new();
         List<KeyValuePair<AbsolutePath, IGeneratedFile>> toWrite = new();
-        List<KeyValuePair<AbsolutePath, FromArchive>> toExtract = new();
+        List<KeyValuePair<AbsolutePath, StoredFile>> toExtract = new();
 
         Dictionary<GamePath, DiskStateEntry> resultingItems = new();
 
@@ -140,8 +140,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                     switch (newEntry.Value!)
                     {
 
-                        case FromArchive fa:
-                            // FromArchive files are special cased so we can batch them up and extract them all at once.
+                        case StoredFile fa:
+                            // StoredFile files are special cased so we can batch them up and extract them all at once.
                             // Don't add toExtract to the results yet as we'll need to get the modified file times
                             // after we extract them
                             toExtract.Add(KeyValuePair.Create(entry.Path, fa));
@@ -172,7 +172,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
             switch (entry!)
             {
-                case FromArchive fa:
+                case StoredFile fa:
                     // Don't add toExtract to the results yet as we'll need to get the modified file times
                     // after we extract them
                     toExtract.Add(KeyValuePair.Create(absolutePath, fa));
@@ -216,7 +216,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
 
         // Extract all the files that need extracting in one batch.
-        await _archiveManager.ExtractFiles(toExtract
+        await _fileStore.ExtractFiles(toExtract
             .Select(f => (f.Value.Hash, f.Key)));
 
         // Update the resulting items with the new file times
@@ -294,7 +294,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     /// <exception cref="NotImplementedException"></exception>
     protected virtual ValueTask<AModFile> HandleNewFile(DiskStateEntry newEntry, GamePath gamePath, AbsolutePath absolutePath)
     {
-        var newFile = new FromArchive
+        var newFile = new StoredFile
         {
             Id = ModFileId.New(),
             Hash = newEntry.Hash,
@@ -326,7 +326,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
             return entity;
         }
 
-        var newFile = new FromArchive
+        var newFile = new StoredFile
         {
             Id = ModFileId.New(),
             Hash = newEntry.Hash,
@@ -486,8 +486,8 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
     public virtual async Task BackupNewFiles(Loadout loadout, FileTree fileTree)
     {
         // During ingest, new files that haven't been seen before are fed into the game's syncronizer to convert a
-        // DiskStateEntry (hash, size, path) into some sort of AModFile. By default these are converted into a "FromArchive".
-        // All FromArchive does, is say that this file is copied from the downloaded archives, that is, it's not generated
+        // DiskStateEntry (hash, size, path) into some sort of AModFile. By default these are converted into a "StoredFile".
+        // All StoredFile does, is say that this file is copied from the downloaded archives, that is, it's not generated
         // by any extension system.
         //
         // So the problem is, the ingest process has tagged all these new files as coming from the downloads, but likely
@@ -499,13 +499,13 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
 
 
         // Backup the files that are new or changed
-        await _archiveManager.BackupFiles(await fileTree.GetAllDescendentFiles()
+        await _fileStore.BackupFiles(await fileTree.GetAllDescendentFiles()
             .Select(n => n.Value)
-            .OfType<FromArchive>()
+            .OfType<StoredFile>()
             .SelectAsync(async f =>
             {
                 var path = loadout.Installation.LocationsRegister.GetResolvedPath(f.To);
-                if (await _archiveManager.HaveFile(f.Hash))
+                if (await _fileStore.HaveFile(f.Hash))
                     return null;
                 return new ArchivedFileEntry
                 {
@@ -537,7 +537,7 @@ public class ALoadoutSynchronizer : IStandardizedLoadoutSynchronizer
                 .Select(f =>
                 {
                     var id = ModFileId.New();
-                    return KeyValuePair.Create(id, (AModFile)new FromArchive
+                    return KeyValuePair.Create(id, (AModFile)new StoredFile
                     {
                         Id = id,
                         Hash = f.Value.Hash,

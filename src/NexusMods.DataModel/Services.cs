@@ -55,7 +55,7 @@ public static class Services
         coll.AddSingleton(typeof(EntityLinkConverter<>));
 
         coll.AddSingleton<IDataStore, SqliteDataStore>();
-        coll.AddAllSingleton<IArchiveManager, NxArchiveManager>();
+        coll.AddAllSingleton<IFileStore, NxFileStore>();
         coll.AddAllSingleton<IResource, IResource<FileHashCache, Size>>(s =>
             new Resource<FileHashCache, Size>("File Hashing",
                 Settings(s).MaxHashingJobs,
@@ -66,7 +66,7 @@ public static class Services
 
         coll.AddSingleton<LoadoutRegistry>();
         coll.AddSingleton<IDirectoryIndexer, DirectoryIndexer>();
-        coll.AddSingleton<IDownloadRegistry, DownloadRegistry>();
+        coll.AddSingleton<IFileOriginRegistry, FileOriginRegistry>();
         coll.AddSingleton<FileHashCache>();
         coll.AddSingleton<GlobalSettingsManager>();
         coll.AddSingleton<IArchiveInstaller, ArchiveInstaller>();

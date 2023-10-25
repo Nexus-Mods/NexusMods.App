@@ -31,7 +31,7 @@ public class LooseFilesModInstaller : IModInstaller
             .Select(kv =>
             {
                 var (path, file) = kv;
-                return file!.ToFromArchive(
+                return file!.ToStoredFile(
                     new GamePath(LocationId.Game, ModsFolder.Join(path))
                 );
             });

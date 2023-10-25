@@ -40,7 +40,7 @@ public class SifuModInstaller : AModInstaller
             .Select(kv =>
             {
                 var (path, file) = kv;
-                return file!.ToFromArchive(
+                return file!.ToStoredFile(
                     new GamePath(LocationId.Game, ModsPath.Join(path.RelativeTo(pakPath.Path)))
                 );
             });

@@ -26,7 +26,7 @@ public class DataStoreTests
     [Fact]
     public void CanGetAndSetHashedValues()
     {
-        var foo = new FromArchive
+        var foo = new StoredFile
         {
             Id = ModFileId.New(),
             Hash = Hash.Zero,
@@ -34,7 +34,7 @@ public class DataStoreTests
             To = new GamePath(LocationId.Game, "test.foo")
         }.WithPersist(DataStore);
         foo.DataStoreId.ToString().Should().NotBeEmpty();
-        DataStore.Get<FromArchive>(foo.DataStoreId).Should().NotBeNull();
+        DataStore.Get<StoredFile>(foo.DataStoreId).Should().NotBeNull();
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public class DataStoreTests
     // ReSharper disable once InconsistentNaming
     public void CanStoreLargeEntitiesInDB()
     {
-        var files = Enumerable.Range(0, 1024).Select(idx => new FromArchive
+        var files = Enumerable.Range(0, 1024).Select(idx => new StoredFile
         {
             Id = ModFileId.New(),
             Hash = (Hash)(ulong)idx,

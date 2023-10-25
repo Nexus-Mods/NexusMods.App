@@ -62,7 +62,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
         var loadoutName = loadout.Value.Name;
 
         var modPath = FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Assets/TruncatedPlugins.7z");
-        await InstallModFromArchiveIntoLoadout(loadout, modPath, "Skyrim Truncated Plugins");
+        await InstallModStoredFileIntoLoadout(loadout, modPath, "Skyrim Truncated Plugins");
 
         await _verbTester.RunNoBannerAsync("list-managed-games");
 
@@ -138,7 +138,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
             loadout.Value.Mods.Values.First(m => m.ModCategory == Mod.GameFilesCategory); // <= throws on failure
 
         var modPath = FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Assets/SMIM_Truncated_Plugins.7z");
-        await InstallModFromArchiveIntoLoadout(loadout, modPath, "SMIM");
+        await InstallModStoredFileIntoLoadout(loadout, modPath, "SMIM");
 
         var pluginOrderFile = metadataFiles.Files.Values.OfType<PluginOrderFile>().First();
 
@@ -264,7 +264,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
     {
         var path = FileSystem.GetKnownPath(KnownPath.EntryDirectory)
             .Combine("Assets/TruncatedPlugins.7z");
-        var mod = await InstallModFromArchiveIntoLoadout(loadout, path, "TruncatedPlugins");
+        var mod = await InstallModStoredFileIntoLoadout(loadout, path, "TruncatedPlugins");
         return mod;
     }
 
@@ -292,7 +292,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
         var path = BethesdaTestHelpers.GetDownloadableModFolder(FileSystem, "SkyrimBase");
         var downloaded = await _downloader.DownloadFromManifestAsync(path, FileSystem);
 
-        var skyrimBase = await InstallModFromArchiveIntoLoadout(
+        var skyrimBase = await InstallModStoredFileIntoLoadout(
             loadout,
             downloaded.Path,
             downloaded.Manifest.Name);
@@ -309,7 +309,7 @@ public class SkyrimSpecialEditionTests : AGameTest<SkyrimSpecialEdition>
 
         path = BethesdaTestHelpers.GetDownloadableModFolder(FileSystem, "PluginTest");
         downloaded = await _downloader.DownloadFromManifestAsync(path, FileSystem);
-        var pluginTest = await InstallModFromArchiveIntoLoadout(
+        var pluginTest = await InstallModStoredFileIntoLoadout(
             loadout,
             downloaded.Path,
             downloaded.Manifest.Name);

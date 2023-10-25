@@ -10,7 +10,7 @@ namespace NexusMods.DataModel.Loadouts.ModFiles;
 /// as opposed to one sourced from a game mod.
 /// </summary>
 [JsonName("NexusMods.DataModel.ModFiles.GameFile")]
-public record GameFile : AModFile, IToFile, IFromArchive
+public record GameFile : AModFile, IToFile, IStoredFile
 {
     /// <summary>
     /// Unique installation of a game this file is tied to.

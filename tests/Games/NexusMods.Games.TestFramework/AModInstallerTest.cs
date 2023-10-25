@@ -76,13 +76,13 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
         AbsolutePath archivePath,
         CancellationToken cancellationToken = default)
     {
-        var downloadId = await DownloadRegistry.RegisterDownload(archivePath, new FilePathMetadata
+        var downloadId = await FileOriginRegistry.RegisterDownload(archivePath, new FilePathMetadata
         {
             OriginalName = archivePath.FileName,
             Quality = Quality.Low
         }, cancellationToken);
 
-        var contents = await DownloadRegistry.Get(downloadId);
+        var contents = await FileOriginRegistry.Get(downloadId);
 
         var tree = FileTreeNode<RelativePath, ModSourceFileEntry>.CreateTree(contents.Contents
             .Select(f =>
@@ -91,7 +91,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
                     {
                         Hash = f.Hash,
                         Size = f.Size,
-                        StreamFactory = new ArchiveManagerStreamFactory(ArchiveManager, f.Hash)
+                        StreamFactory = new ArchiveManagerStreamFactory(FileStore, f.Hash)
                         {
                             Name = f.Path,
                             Size = f.Size
@@ -278,6 +278,6 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
 
         mods.Length.Should().BeGreaterOrEqualTo(1);
         var contents = mods.First().Files;
-        return contents.OfType<FromArchive>().Select(m => (m.Hash.Value, m.To.LocationId, m.To.Path.ToString()));
+        return contents.OfType<StoredFile>().Select(m => (m.Hash.Value, m.To.LocationId, m.To.Path.ToString()));
     }
 }

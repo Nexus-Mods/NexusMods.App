@@ -24,7 +24,7 @@ namespace NexusMods.DataModel.Tests.Harness;
 public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
 {
     protected readonly TestDirectoryIndexer TestIndexer;
-    protected readonly TestArchiveManager TestArchiveManagerInstance;
+    protected readonly TestFileStore TestFileStoreInstance;
     protected readonly TestFingerprintCache<Mod, CachedModSortRules> TestFingerprintCacheInstance;
     protected readonly TestFingerprintCache<IGeneratedFile, CachedGeneratedFileData> TestGeneratedFileFingerprintCache;
 
@@ -33,7 +33,7 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
         AssertionOptions.AssertEquivalencyUsing(opt => opt.ComparingRecordsByValue());
 
         TestIndexer = new TestDirectoryIndexer();
-        TestArchiveManagerInstance = new TestArchiveManager();
+        TestFileStoreInstance = new TestFileStore();
         TestFingerprintCacheInstance = new TestFingerprintCache<Mod, CachedModSortRules>();
         TestGeneratedFileFingerprintCache = new TestFingerprintCache<IGeneratedFile, CachedGeneratedFileData>();
     }
@@ -52,7 +52,7 @@ public class ALoadoutSynrchonizerTest<T> : ADataModelTest<T>
     }
 
 
-    protected class TestArchiveManager : IArchiveManager
+    protected class TestFileStore : IFileStore
     {
         public readonly HashSet<Hash> Archives = new();
         public readonly Dictionary<Hash, IStreamFactory> Extracted = new();

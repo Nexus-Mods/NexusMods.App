@@ -10,10 +10,10 @@ namespace NexusMods.DataModel.Tests;
 
 public class ArchiveManagerTests
 {
-    private readonly IArchiveManager _manager;
+    private readonly IFileStore _manager;
     private readonly TemporaryFileManager _temporaryFileManager;
 
-    public ArchiveManagerTests(IArchiveManager manager, TemporaryFileManager temporaryFileManager)
+    public ArchiveManagerTests(IFileStore manager, TemporaryFileManager temporaryFileManager)
     {
         _manager = manager;
         _temporaryFileManager = temporaryFileManager;
@@ -50,7 +50,7 @@ public class ArchiveManagerTests
         // Backup the files
         await _manager.BackupFiles(records);
 
-        // Verify the files exist in the archive manager
+        // Verify the files exist in the file store
         foreach (var hash in hashes)
             (await _manager.HaveFile(hash)).Should().BeTrue();
 

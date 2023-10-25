@@ -24,17 +24,17 @@ public partial class DeploymentDataTests
 
         // Assert
         emittedOperations.Should().NotBeEmpty();
-        var first = emittedOperations[0] as FromArchive;
+        var first = emittedOperations[0] as StoredFile;
         first!.To.Should().Be(MakeGamePath("folder/file1.txt"));
         first.Hash.Should().Be(Hash.From(1));
         first.Size.Should().Be(Size.From(1));
 
-        var second = emittedOperations[1] as FromArchive;
+        var second = emittedOperations[1] as StoredFile;
         second!.To.Should().Be(MakeGamePath("folder/file2.txt"));
         second.Hash.Should().Be(Hash.From(2));
         second.Size.Should().Be(Size.From(2));
 
-        var third = emittedOperations[2] as FromArchive;
+        var third = emittedOperations[2] as StoredFile;
         third!.To.Should().Be(MakeGamePath("folder/subfolder/file3.txt"));
         third.Hash.Should().Be(Hash.From(3));
         third.Size.Should().Be(Size.From(3));
