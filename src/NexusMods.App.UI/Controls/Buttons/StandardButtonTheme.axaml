@@ -1,0 +1,207 @@
+<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:buttons="clr-namespace:NexusMods.App.UI.Controls.Buttons">
+
+    <Design.PreviewWith>
+        <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Vertical" Margin="24" Spacing="10">
+                <TextBlock Foreground="White">Primary</TextBlock>
+                <buttons:StandardButton Theme="{DynamicResource Primary}" Text="BUTTON" />
+                <buttons:StandardButton Theme="{DynamicResource Primary}" Text="BUTTON" IsEnabled="False" />
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical" Margin="24" Spacing="10">
+                <TextBlock Foreground="White">Primary Outlined</TextBlock>
+                <buttons:StandardButton Theme="{DynamicResource PrimaryOutlined}" Text="BUTTON" />
+                <buttons:StandardButton Theme="{DynamicResource PrimaryOutlined}" Text="BUTTON" IsEnabled="False" />
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical" Margin="24" Spacing="10">
+                <TextBlock Foreground="White">Secondary</TextBlock>
+                <buttons:StandardButton Theme="{DynamicResource Secondary}" Text="BUTTON" />
+                <buttons:StandardButton Theme="{DynamicResource Secondary}" Text="BUTTON" IsEnabled="False" />
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical" Margin="24" Spacing="10">
+                <TextBlock Foreground="White">Secondary Outlined</TextBlock>
+                <buttons:StandardButton Theme="{DynamicResource SecondaryOutlined}" Text="BUTTON" />
+                <buttons:StandardButton Theme="{DynamicResource SecondaryOutlined}" Text="BUTTON" IsEnabled="False" />
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical" Margin="24" Spacing="10">
+                <TextBlock Foreground="White">Tertiary</TextBlock>
+                <buttons:StandardButton Theme="{DynamicResource Tertiary}" Text="BUTTON" />
+                <buttons:StandardButton Theme="{DynamicResource Tertiary}" Text="BUTTON" IsEnabled="False" />
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical" Margin="24" Spacing="10">
+                <TextBlock Foreground="White">Success</TextBlock>
+                <buttons:StandardButton Theme="{DynamicResource Success}" Text="BUTTON" />
+                <buttons:StandardButton Theme="{DynamicResource Success}" Text="BUTTON" IsEnabled="False" />
+            </StackPanel>
+        </StackPanel>
+    </Design.PreviewWith>
+
+    <ControlTheme x:Key="Standard" TargetType="buttons:StandardButton">
+        <Setter Property="Height" Value="34" />
+        <Setter Property="CornerRadius" Value="4" />
+
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border x:Name="PART_Border"
+                        Height="{TemplateBinding Height}"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="{TemplateBinding CornerRadius}">
+                    <Panel x:Name="PART_Panel">
+                        <TextBlock x:Name="PART_TextBlock"
+                                   Text="{TemplateBinding Text}" />
+                    </Panel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+
+        <!-- TODO: transform text into uppercase -->
+        <Style Selector="^ /template/ TextBlock#PART_TextBlock">
+            <Setter Property="Margin" Value="16 10" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+
+            <Setter Property="FontFamily" Value="{DynamicResource FontPrimarySemiBold}" />
+            <Setter Property="FontWeight" Value="600" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="LineHeight" Value="14" />
+            <Setter Property="LetterSpacing" Value="0.7" />
+        </Style>
+    </ControlTheme>
+
+    <ControlTheme x:Key="Primary" TargetType="buttons:StandardButton" BasedOn="{StaticResource Standard}">
+        <Setter Property="Background" Value="{DynamicResource BrandPrimary}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+
+        <Style Selector="^:focus">
+            <Setter Property="Background" Value="{DynamicResource BrandPrimaryLighter}" />
+        </Style>
+
+        <Style Selector="^:pointerover">
+            <Setter Property="Background" Value="{DynamicResource BrandPrimaryDarker}" />
+        </Style>
+
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.4" />
+            <Setter Property="Background" Value="{DynamicResource BrandPrimaryDarker}" />
+        </Style>
+    </ControlTheme>
+
+    <ControlTheme x:Key="PrimaryOutlined" TargetType="buttons:StandardButton" BasedOn="{StaticResource Standard}">
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+
+        <Style Selector="^ /template/ Border#PART_Border">
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BrandPrimaryBrush}" />
+        </Style>
+
+        <Style Selector="^:focus">
+            <Style Selector="^ /template/ Border#PART_Border">
+                <Setter Property="BorderBrush" Value="{DynamicResource BrandPrimaryLighterBrush}" />
+            </Style>
+
+            <Setter Property="Background" Value="{DynamicResource BrandSecondaryLighter}" />
+        </Style>
+
+        <Style Selector="^:pointerover">
+            <Setter Property="Background" Value="{DynamicResource BrandSecondaryLighter}" />
+            <Setter Property="Foreground" Value="{DynamicResource FontDarkPrimary}" />
+        </Style>
+
+        <Style Selector="^:disabled">
+            <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondary}" />
+            <Setter Property="Opacity" Value="0.4" />
+        </Style>
+    </ControlTheme>
+
+    <ControlTheme x:Key="Secondary" TargetType="buttons:StandardButton" BasedOn="{StaticResource Standard}">
+        <Setter Property="Background" Value="{DynamicResource BrandTertiary}" />
+        <Setter Property="Foreground" Value="{DynamicResource FontLightPrimary}" />
+
+        <Style Selector="^:focus">
+            <Setter Property="Background" Value="{DynamicResource BrandTertiaryLighter}" />
+        </Style>
+
+        <Style Selector="^:pointerover">
+            <Setter Property="Background" Value="{DynamicResource BrandTertiaryDarker}" />
+        </Style>
+
+        <Style Selector="^:disabled">
+            <!-- TODO: the text color differs from FIGMA due to opacity -->
+            <Setter Property="Background" Value="{DynamicResource BrandTertiary}" />
+            <Setter Property="Foreground" Value="{DynamicResource FontDarkTertiary}" />
+            <Setter Property="Opacity" Value="0.4"></Setter>
+        </Style>
+    </ControlTheme>
+
+    <ControlTheme x:Key="SecondaryOutlined" TargetType="buttons:StandardButton" BasedOn="{StaticResource Standard}">
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+
+        <Style Selector="^ /template/ Border#PART_Border">
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BrandTertiary}" />
+        </Style>
+
+        <Style Selector="^:focus">
+            <Setter Property="Background" Value="{DynamicResource BrandSecondaryLighter}" />
+        </Style>
+
+        <Style Selector="^:pointerover">
+            <Setter Property="Background" Value="{DynamicResource BrandSecondaryLighter}" />
+
+            <Style Selector="^ /template/ Border#PART_Border">
+                <Setter Property="BorderBrush" Value="{DynamicResource BrandTertiaryLighter}" />
+            </Style>
+        </Style>
+
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.4" />
+            <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondary}" />
+
+            <Style Selector="^ /template/ Border#PART_Border">
+                <Setter Property="BorderBrush" Value="{DynamicResource BrandSecondaryLighter}" />
+            </Style>
+        </Style>
+    </ControlTheme>
+
+    <ControlTheme x:Key="Tertiary" TargetType="buttons:StandardButton" BasedOn="{StaticResource Standard}">
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+
+        <Style Selector="^:focus">
+            <Setter Property="Background" Value="{DynamicResource BrandSecondaryLighter}" />
+        </Style>
+
+        <Style Selector="^:pointerover">
+            <Setter Property="Background" Value="{DynamicResource BrandSecondaryLighter}" />
+        </Style>
+
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.4" />
+            <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondary}" />
+        </Style>
+    </ControlTheme>
+
+    <ControlTheme x:Key="Success" TargetType="buttons:StandardButton" BasedOn="{StaticResource Standard}">
+        <Setter Property="Background" Value="{DynamicResource StatusSuccess}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+
+        <Style Selector="^:focus">
+            <Setter Property="Background" Value="{DynamicResource StatusSuccessLighter}" />
+        </Style>
+
+        <Style Selector="^:pointerover">
+            <Setter Property="Background" Value="{DynamicResource StatusSuccessDarker}" />
+        </Style>
+
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.4" />
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>

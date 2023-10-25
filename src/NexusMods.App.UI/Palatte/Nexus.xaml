@@ -58,6 +58,8 @@
         <Color x:Key="FontLightPrimary">#303030</Color>
         <Color x:Key="FontLightSecondary">#666666</Color>
         <Color x:Key="FontDarkPrimary">#FFFFFF</Color>
+        <Color x:Key="FontDarkSecondary">#AAAAAA</Color>
+        <Color x:Key="FontDarkTertiary">#5A5A5A</Color>
 
         <Color x:Key="BrandGray">#DADADA</Color>
 
