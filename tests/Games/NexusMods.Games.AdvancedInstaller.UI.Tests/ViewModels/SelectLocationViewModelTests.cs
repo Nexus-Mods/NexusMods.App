@@ -43,7 +43,7 @@ public class SelectLocationViewModelTests
         {
             var success = x.Tree.TryGetModelAt(0, out tevm);
             if (success)
-                return tevm!.Path.LocationId == id;
+                return tevm!.Path?.LocationId == id;
 
             return false;
         });

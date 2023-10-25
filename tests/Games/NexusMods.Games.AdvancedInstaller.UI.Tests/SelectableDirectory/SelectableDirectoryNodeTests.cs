@@ -21,8 +21,12 @@ public class SelectableDirectoryNodeTests
 
         // Assert
         node.DisplayName.Should().Be(rootName);
+        node.Children.Where(x => x.Status == SelectableDirectoryNodeStatus.Create).Should().HaveCount(1);
+
         AssertChildNode(node, "Meshes");
+
         var textures = AssertChildNode(node, "Textures");
+        textures.Children.Where(x => x.Status == SelectableDirectoryNodeStatus.Create).Should().HaveCount(1);
         AssertChildNode(textures, "Armors");
     }
 }

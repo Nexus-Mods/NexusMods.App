@@ -18,7 +18,7 @@ public interface ITreeEntryViewModel
     /// <summary>
     ///     The full path associated with this node.
     /// </summary>
-    public GamePath Path { get; }
+    public GamePath? Path { get; }
 
     /// <summary>
     ///     Contains the children nodes of this node.

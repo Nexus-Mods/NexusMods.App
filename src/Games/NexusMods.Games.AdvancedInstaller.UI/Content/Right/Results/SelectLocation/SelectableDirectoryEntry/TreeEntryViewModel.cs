@@ -11,11 +11,25 @@ public class TreeEntryViewModel : ReactiveObject, ITreeEntryViewModel
     public SelectableDirectoryNodeStatus Status { get; internal set; } = SelectableDirectoryNodeStatus.Regular;
 
     public ObservableCollection<ITreeEntryViewModel> Children { get; init; } = new();
-    public GamePath Path { get; init; }
-    public string DirectoryName => String.IsNullOrEmpty(Path.FileName) ? Path.LocationId.Value : Path.FileName;
+    public GamePath? Path { get; init; }
+
+    public TreeEntryViewModel? Parent {get; init;}
+    public string DirectoryName
+    {
+        get
+        {
+            if (Path == null)
+                return string.Empty;
+            if (Path?.FileName == string.Empty)
+                return Path?.LocationId.Value!;
+            return Path?.FileName!;
+        }
+    }
 
     private string _displayName = string.Empty;
     public string DisplayName => _displayName != string.Empty ? _displayName : DirectoryName;
+
+
 
     /// <summary>
     ///     Creates nodes from a given path that is tied to a FileSystem.
@@ -45,11 +59,23 @@ public class TreeEntryViewModel : ReactiveObject, ITreeEntryViewModel
     /// <param name="dirSubstringLength">Precalculated length of <see cref="currentDirectory"/>.</param>
     internal void CreateChildrenRecursive(AbsolutePath currentDirectory, LocationId locationId, int dirSubstringLength)
     {
+        // Add the Create New Folder node.
+        var createFolderNode = new TreeEntryViewModel
+        {
+            Status = SelectableDirectoryNodeStatus.Create,
+            Parent = this,
+        };
+        Children.Add(createFolderNode);
+
         // Get files at this level.
         foreach (var directory in currentDirectory.EnumerateDirectories("*", false))
         {
             var name = directory.GetFullPath().Substring(dirSubstringLength);
-            var node = new TreeEntryViewModel { Path = new GamePath(locationId, name) };
+            var node = new TreeEntryViewModel
+            {
+                Path = new GamePath(locationId, name),
+                Parent = this,
+            };
             node.CreateChildrenRecursive(directory, locationId, dirSubstringLength + name.Length + 1);
             Children.Add(node);
         }
