@@ -19,8 +19,8 @@ public class SelectLocationViewModelTests
         fs.AddSavePaths(savesDir);
         var register = new GameLocationsRegister(new Dictionary<LocationId, AbsolutePath>()
         {
-            { LocationId.Game, gameDir },
-            { LocationId.Saves, savesDir }
+            { LocationId.Game, fs.FromUnsanitizedFullPath(gameDir.GetFullPath()) },
+            { LocationId.Saves, fs.FromUnsanitizedFullPath(savesDir.GetFullPath()) }
         });
 
         // Act

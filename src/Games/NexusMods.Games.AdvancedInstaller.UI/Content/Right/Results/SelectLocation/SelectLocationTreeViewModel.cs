@@ -3,7 +3,7 @@ using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 
-public sealed class SelectLocationTreeViewModel : SelectLocationTreeDesignViewModel
+public sealed class SelectLocationTreeViewModel : SelectLocationTreeBaseViewModel
 {
     private readonly TreeEntryViewModel _tree;
 

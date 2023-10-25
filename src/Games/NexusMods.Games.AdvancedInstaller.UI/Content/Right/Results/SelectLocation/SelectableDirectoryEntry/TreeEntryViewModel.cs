@@ -50,7 +50,7 @@ public class TreeEntryViewModel : ReactiveObject, ITreeEntryViewModel
         {
             var name = directory.GetFullPath().Substring(dirSubstringLength);
             var node = new TreeEntryViewModel { Path = new GamePath(locationId, name) };
-            node.CreateChildrenRecursive(directory, locationId, dirSubstringLength + name.Length + 1);
+            node.CreateChildrenRecursive(directory, locationId, dirSubstringLength);
             Children.Add(node);
         }
     }

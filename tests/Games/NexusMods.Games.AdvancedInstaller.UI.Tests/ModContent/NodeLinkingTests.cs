@@ -1,9 +1,7 @@
 using FluentAssertions;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 using NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers;
 using NexusMods.Paths;
-using NSubstitute;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Tests.ModContent;
 

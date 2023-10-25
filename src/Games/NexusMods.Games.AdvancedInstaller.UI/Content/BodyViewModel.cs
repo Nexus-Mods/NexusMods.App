@@ -23,7 +23,7 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
         CurrentPreviewViewModel = EmptyPreviewViewModel;
     }
 
-    public DeploymentData Data { get; set; }
+    public DeploymentData Data { get; set; } = new();
 
     public IModContentViewModel ModContentViewModel { get; }
     public IPreviewViewModel PreviewViewModel { get; } = new PreviewViewModel();
@@ -31,20 +31,20 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
     public ISelectLocationViewModel SelectLocationViewModel { get; }
     [Reactive] public IViewModel CurrentPreviewViewModel { get; set; }
 
-    private List<ITreeEntryViewModel> _selectedItems = new();
+    internal readonly List<ITreeEntryViewModel> SelectedItems = new();
 
     #region IModContentUpdateReceiver
 
     public void OnSelect(ITreeEntryViewModel treeEntryViewModel)
     {
-        _selectedItems.Add(treeEntryViewModel);
+        SelectedItems.Add(treeEntryViewModel);
         CurrentPreviewViewModel = SelectLocationViewModel;
     }
 
     public void OnCancelSelect(ITreeEntryViewModel treeEntryViewModel)
     {
-        _selectedItems.Remove(treeEntryViewModel);
-        if (_selectedItems.Count == 0)
+        SelectedItems.Remove(treeEntryViewModel);
+        if (SelectedItems.Count == 0)
             CurrentPreviewViewModel = HasAnyItemsToPreview() ? PreviewViewModel : EmptyPreviewViewModel;
     }
 
@@ -65,13 +65,13 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
 
     public void OnDirectorySelected(Right.Results.SelectLocation.SelectableDirectoryEntry.ITreeEntryViewModel directory)
     {
-        foreach (var item in _selectedItems)
+        foreach (var item in SelectedItems)
         {
             var node = PreviewViewModel.GetOrCreateBindingTarget(directory.Path);
             item.Link(Data, node, directory.Status == SelectableDirectoryNodeStatus.Created);
         }
 
-        _selectedItems.Clear();
+        SelectedItems.Clear();
         CurrentPreviewViewModel = PreviewViewModel;
     }
 

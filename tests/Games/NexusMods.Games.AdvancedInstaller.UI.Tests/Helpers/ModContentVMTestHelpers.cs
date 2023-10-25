@@ -1,4 +1,5 @@
 using FluentAssertions;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
@@ -55,6 +56,25 @@ internal static class ModContentVMTestHelpers
         };
 
         return FileTreeNode<RelativePath, int>.CreateTree(fileEntries);
+    }
+
+    internal static FileTreeNode<RelativePath, ModSourceFileEntry> CreateTestTreeMSFE()
+    {
+        var fileEntries = new Dictionary<RelativePath, ModSourceFileEntry>
+        {
+            { new RelativePath("BWS.bsa"), null! },
+            { new RelativePath("BWS - Textures.bsa"), null! },
+            { new RelativePath("Readme-BWS.txt"), null! },
+            { new RelativePath("Textures/greenBlade.dds"), null! },
+            { new RelativePath("Textures/greenBlade_n.dds"), null! },
+            { new RelativePath("Textures/greenHilt.dds"), null! },
+            { new RelativePath("Textures/Armors/greenArmor.dds"), null! },
+            { new RelativePath("Textures/Armors/greenBlade.dds"), null! },
+            { new RelativePath("Textures/Armors/greenHilt.dds"), null! },
+            { new RelativePath("Meshes/greenBlade.nif"), null! }
+        };
+
+        return FileTreeNode<RelativePath, ModSourceFileEntry>.CreateTree(fileEntries);
     }
 }
 

@@ -6,14 +6,32 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers;
 
 internal static class SelectableDirectoryVMTestHelpers
 {
-    internal static InMemoryFileSystem CreateInMemoryFs(AbsolutePath basePath)
+    internal static ITreeEntryViewModel GetChild(this ITreeEntryViewModel vm, string childName)
     {
-        var fs = new InMemoryFileSystem();
-        fs.AddPaths(basePath, GetPaths());
-        return fs;
+        return vm.Children.First(x => x.DisplayName == childName);
     }
 
-    private static RelativePath[] GetPaths() => ResultsVMTestHelpers.GetPaths();
+    internal static InMemoryFileSystem CreateInMemoryFs(AbsolutePath basePath) => new();
+
+    internal static RelativePath[] GetGameFolderPaths()
+    {
+        return new[]
+        {
+            new RelativePath("SkyrimSE.exe"),
+            new RelativePath("SkyrimSELauncher.exe"),
+            new RelativePath("steam_api64.dll"),
+            new RelativePath("Data/Skyrim.esm"),
+            new RelativePath("Data/Skyrim - Textures0.bsa"),
+            new RelativePath("Data/Skyrim - Textures1.bsa"),
+            new RelativePath("Data/Textures/redBlade.dds"),
+            new RelativePath("Data/Textures/redBlade_n.dds"),
+            new RelativePath("Data/Textures/redHilt.dds"),
+            new RelativePath("Data/Textures/Armors/redArmor.dds"),
+            new RelativePath("Data/Textures/Armors/redBlade.dds"),
+            new RelativePath("Data/Textures/Armors/redHilt.dds"),
+            new RelativePath("Data/Meshes/redBlade.nif")
+        };
+    }
 
     private static RelativePath[] GetSavePaths()
     {
@@ -40,7 +58,7 @@ internal static class SelectableDirectoryVMTestHelpers
     internal static void AddSavePaths(this InMemoryFileSystem fs, AbsolutePath basePath) =>
         fs.AddPaths(basePath, GetSavePaths());
 
-    private static void AddPaths(this InMemoryFileSystem fs, AbsolutePath basePath, RelativePath[] paths)
+    internal static void AddPaths(this InMemoryFileSystem fs, AbsolutePath basePath, RelativePath[] paths)
     {
         foreach (var path in paths)
             fs.AddEmptyFile(fs.FromUnsanitizedFullPath(basePath + "/" + path));

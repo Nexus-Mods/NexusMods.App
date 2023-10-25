@@ -4,6 +4,8 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocat
 
 public interface ISelectLocationTreeViewModel : IViewModel
 {
+    public ITreeEntryViewModel Root { get; }
+
     public HierarchicalTreeDataGridSource<ITreeEntryViewModel> Tree { get; }
 
     /// <summary>

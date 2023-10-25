@@ -4,18 +4,17 @@ using NexusMods.Paths.FileTree;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 
-internal sealed class ModContentViewModel : ModContentDesignViewModel
+internal sealed class ModContentViewModel : ModContentBaseViewModel
 {
-    private readonly FileTreeNode<RelativePath, ModSourceFileEntry> _files;
+    private readonly ITreeEntryViewModel _vm;
 
     public ModContentViewModel(FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         IModContentUpdateReceiver receiver)
     {
-        _files = archiveFiles;
+        _vm = TreeEntryViewModel<ModSourceFileEntry>.FromFileTree(archiveFiles);
         Receiver = receiver;
     }
 
     // ReSharper disable once RedundantOverriddenMember
-    protected override ITreeEntryViewModel InitTreeData() =>
-        TreeEntryViewModel<ModSourceFileEntry>.FromFileTree(_files);
+    protected override ITreeEntryViewModel InitTreeData() => _vm;
 }

@@ -14,6 +14,7 @@ public class SelectableDirectoryNodeTests
         // Arrange
         const string rootName = "Skyrim Special Edition";
         var fs = CreateInMemoryFs(entryDir);
+        fs.AddPaths(entryDir, GetGameFolderPaths());
 
         // Act
         var node = TreeEntryViewModel.Create(fs.FromUnsanitizedFullPath(entryDir.GetFullPath()),
@@ -21,8 +22,8 @@ public class SelectableDirectoryNodeTests
 
         // Assert
         node.DisplayName.Should().Be(rootName);
-        AssertChildNode(node, "Meshes");
-        var textures = AssertChildNode(node, "Textures");
-        AssertChildNode(textures, "Armors");
+        var data = AssertChildNode(node, "Data");
+        var textures = AssertChildNode(data, "Textures");
+        textures.Path.Should().Be(new GamePath(LocationId.Game, "Data/Textures"));
     }
 }

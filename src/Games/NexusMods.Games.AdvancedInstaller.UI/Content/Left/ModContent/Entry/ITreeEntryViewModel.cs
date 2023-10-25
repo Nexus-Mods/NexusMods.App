@@ -1,6 +1,5 @@
 using System.Reactive;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 using ReactiveUI;
