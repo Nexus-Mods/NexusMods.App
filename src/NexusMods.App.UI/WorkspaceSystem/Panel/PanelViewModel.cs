@@ -158,7 +158,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
             Contents = _factoryController.Create(new PageData
             {
                 FactoryId = DummyPageFactory.Id,
-                Parameter = new DummyPageParameter(),
+                Context = new DummyPageContext(),
             })
         };
 

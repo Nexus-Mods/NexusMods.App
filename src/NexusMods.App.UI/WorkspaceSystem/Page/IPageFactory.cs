@@ -13,51 +13,52 @@ public interface IPageFactory
     public PageFactoryId Id { get; }
 
     /// <summary>
-    /// Creates a new page using the provided parameter
+    /// Creates a new page using the provided context.
     /// </summary>
-    public Page Create(IPageFactoryParameter parameter);
+    public Page Create(IPageFactoryContext context);
 }
 
 /// <summary>
 /// Generic implementation of <see cref="IPageFactory"/>
 /// </summary>
 /// <typeparam name="TViewModel"></typeparam>
-/// <typeparam name="TParameter"></typeparam>
-public interface IPageFactory<out TViewModel, in TParameter> : IPageFactory
+/// <typeparam name="TContext"></typeparam>
+public interface IPageFactory<out TViewModel, in TContext> : IPageFactory
     where TViewModel : class, IViewModelInterface
-    where TParameter : class, IPageFactoryParameter
+    where TContext : class, IPageFactoryContext
 {
-    Page IPageFactory.Create(IPageFactoryParameter parameter)
+    Page IPageFactory.Create(IPageFactoryContext context)
     {
-        if (parameter is not TParameter actualParameter)
-            throw new ArgumentException($"Unsupported type: {parameter.GetType()}");
+        if (context is not TContext actualContext)
+            throw new ArgumentException($"Unsupported type: {context.GetType()}");
 
-        var vm = CreateViewModel(actualParameter);
+        var vm = CreateViewModel(actualContext);
         return new Page
         {
             ViewModel = vm,
             PageData = new PageData
             {
                 FactoryId = Id,
-                Parameter = actualParameter
+                Context = actualContext
             }
         };
     }
 
     /// <summary>
-    /// Creates a new view model using the provided parameter.
+    /// Creates a new view model using the provided context.
     /// </summary>
-    public TViewModel CreateViewModel(TParameter parameter);
+    public TViewModel CreateViewModel(TContext parameter);
 }
 
 /// <summary>
 /// Abstract class to easily implement <see cref="IPageFactory"/>.
 /// </summary>
 [PublicAPI]
-public abstract class APageFactory<TViewModel, TParameter> : IPageFactory<TViewModel, TParameter>
+public abstract class APageFactory<TViewModel, TContext> : IPageFactory<TViewModel, TContext>
     where TViewModel : class, IViewModelInterface
-    where TParameter : class, IPageFactoryParameter
+    where TContext : class, IPageFactoryContext
 {
+    /// <inheritdoc/>
     public abstract PageFactoryId Id { get; }
 
     protected readonly IServiceProvider ServiceProvider;
@@ -66,5 +67,6 @@ public abstract class APageFactory<TViewModel, TParameter> : IPageFactory<TViewM
         ServiceProvider = serviceProvider;
     }
 
-    public abstract TViewModel CreateViewModel(TParameter parameter);
+    /// <inheritdoc/>
+    public abstract TViewModel CreateViewModel(TContext parameter);
 }

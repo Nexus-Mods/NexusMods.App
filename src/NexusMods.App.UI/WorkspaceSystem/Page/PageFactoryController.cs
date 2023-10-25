@@ -30,6 +30,6 @@ public class PageFactoryController
         if (!_factories.TryGetValue(pageData.FactoryId, out var factory))
             throw new KeyNotFoundException($"Unable to find registered factory with ID {pageData.FactoryId}");
 
-        return factory.Create(pageData.Parameter);
+        return factory.Create(pageData.Context);
     }
 }

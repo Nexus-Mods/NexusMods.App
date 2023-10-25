@@ -13,7 +13,7 @@ internal class TypeFinder : ITypeFinder
 
     private static IEnumerable<Type> AllTypes => new[]
     {
-        typeof(DummyPageParameter),
-        typeof(LoadoutGridParameter)
+        typeof(DummyPageContext),
+        typeof(LoadoutGridContext)
     };
 }
