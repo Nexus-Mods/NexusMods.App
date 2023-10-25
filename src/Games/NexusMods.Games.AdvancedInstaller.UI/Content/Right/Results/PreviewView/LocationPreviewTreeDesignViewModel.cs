@@ -1,12 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
-using Avalonia.Controls.Models.TreeDataGrid;
-using Avalonia.Controls.Templates;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry;
 using NexusMods.Paths;
 using ITreeEntryViewModel =
     NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry.ITreeEntryViewModel;
-using TreeEntryView = NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry.TreeEntryView;
 using TreeEntryViewModel =
     NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry.TreeEntryViewModel;
 
@@ -14,31 +9,10 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView
 
 [ExcludeFromCodeCoverage]
 // ReSharper disable once UnusedType.Global
-public class LocationPreviewTreeDesignViewModel : AViewModel<ILocationPreviewTreeViewModel>,
-    ILocationPreviewTreeViewModel
+public class LocationPreviewTreeDesignViewModel : LocationPreviewTreeBaseViewModel
 {
-    /// <summary>
-    /// The visual representation of the tree.
-    /// </summary>
-    public HierarchicalTreeDataGridSource<ITreeEntryViewModel> Tree => new(GetTreeData())
-    {
-        Columns =
-        {
-            new HierarchicalExpanderColumn<ITreeEntryViewModel>(
-                new TemplateColumn<ITreeEntryViewModel>(null,
-                    new FuncDataTemplate<ITreeEntryViewModel>((node, scope) =>
-                        new TreeEntryView
-                        {
-                            DataContext = node,
-                        }),
-                    width: new GridLength(1, GridUnitType.Star)
-                ),
-                x => x.Children)
-        }
-    };
-
     // ReSharper disable once VirtualMemberNeverOverridden.Global
-    protected virtual ITreeEntryViewModel GetTreeData() => CreateTestTree();
+    protected override ITreeEntryViewModel GetTreeData() => CreateTestTree();
 
     private static ITreeEntryViewModel CreateTestTree()
     {

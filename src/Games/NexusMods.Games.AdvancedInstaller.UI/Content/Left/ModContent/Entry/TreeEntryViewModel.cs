@@ -36,6 +36,15 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
     /// <inheritdoc />
     public required ITreeEntryViewModel[] Children { get; init; }
 
+    /// <inheritdoc />
+    public ReactiveCommand<Unit, Unit> BeginSelectCommand { get; }
+
+    /// <inheritdoc />
+    public ReactiveCommand<Unit, Unit> CancelSelectCommand { get; }
+
+    /// <inheritdoc />
+    public ReactiveCommand<DeploymentData, Unit> UnlinkCommand { get; }
+
     // Note: Items here are reduced to 1 byte, to avoid eating memory. With 3 items we have 5 bytes of padding left.
     [Reactive] public ModContentNodeStatus Status { get; private set; }
     private ModContentNodeStatus _lastStatus;
@@ -50,14 +59,14 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
     public bool IsDirectory => Node.IsDirectory;
     public bool IsRoot => Node.IsTreeRoot;
 
-    [Reactive]
-    public ReactiveCommand<Unit, Unit> BeginSelectCommand { get; set; } = Initializers.EnabledReactiveCommand;
+    public TreeEntryViewModel()
+    {
+        void Execute(DeploymentData obj) => Unlink(obj);
 
-    [Reactive]
-    public ReactiveCommand<Unit, Unit> CancelSelectCommand { get; set; } = Initializers.EnabledReactiveCommand;
-
-    [Reactive]
-    public ReactiveCommand<Unit, Unit> UnlinkCommand { get; set; } = Initializers.EnabledReactiveCommand;
+        BeginSelectCommand = ReactiveCommand.Create(BeginSelect);
+        CancelSelectCommand = ReactiveCommand.Create(CancelSelect);
+        UnlinkCommand = ReactiveCommand.Create((Action<DeploymentData>)Execute);
+    }
 
     public void Link(DeploymentData data, IModContentBindingTarget target, bool targetAlreadyExisted)
     {
@@ -100,6 +109,10 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
         }
     }
 
+    /// <summary>
+    ///     Removes itself and all of its children recursively from the deployment data.
+    /// </summary>
+    /// <param name="data">The deployment data.</param>
     public void Unlink(DeploymentData data)
     {
         SetStatus(ModContentNodeStatus.Default);

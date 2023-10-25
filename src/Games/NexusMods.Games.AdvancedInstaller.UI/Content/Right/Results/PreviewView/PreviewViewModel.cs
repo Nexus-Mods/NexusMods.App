@@ -1,6 +1,11 @@
-﻿namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView;
+﻿using System.Collections.ObjectModel;
+using NexusMods.App.UI.Extensions;
 
-internal class PreviewViewModel : PreviewDesignViewModel
+namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView;
+
+internal class PreviewViewModel : AViewModel<IPreviewViewModel>, IPreviewViewModel
 {
-
+    // TODO: Update PreviewViewModel at runtime.
+    public ObservableCollection<ILocationPreviewTreeViewModel> Locations { get; set; } =
+        Array.Empty<ILocationPreviewTreeViewModel>().ToObservableCollection();
 }

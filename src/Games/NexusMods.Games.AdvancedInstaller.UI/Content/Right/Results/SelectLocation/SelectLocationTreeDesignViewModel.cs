@@ -9,6 +9,8 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocat
 [ExcludeFromCodeCoverage]
 public class SelectLocationTreeDesignViewModel : AViewModel<ISelectLocationTreeViewModel>, ISelectLocationTreeViewModel
 {
+    public ISelectableDirectoryUpdateReceiver Receiver { get; protected set; } = null!;
+
     /// <summary>
     /// The visual representation of the tree.
     /// </summary>
@@ -22,6 +24,7 @@ public class SelectLocationTreeDesignViewModel : AViewModel<ISelectLocationTreeV
                         new TreeEntryView
                         {
                             DataContext = node,
+                            Receiver = Receiver
                         }),
                     width: new GridLength(1, GridUnitType.Star)
                 ),

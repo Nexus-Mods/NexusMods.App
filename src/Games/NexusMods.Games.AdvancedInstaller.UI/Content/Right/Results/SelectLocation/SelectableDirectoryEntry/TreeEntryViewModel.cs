@@ -77,7 +77,7 @@ public enum SelectableDirectoryNodeStatus
     Editing,
 
     /// <summary>
-    /// A new node created with "Create new folder button
+    /// A new node created with "Create new folder" button
     /// </summary>
     Created,
 }

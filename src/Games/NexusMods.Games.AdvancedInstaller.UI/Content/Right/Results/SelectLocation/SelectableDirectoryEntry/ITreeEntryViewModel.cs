@@ -33,5 +33,5 @@ public interface ITreeEntryViewModel
     /// <summary>
     /// The Directory name displayed for this node.
     /// </summary>
-    string DirectoryName { get; }
+    new string DirectoryName { get; }
 }

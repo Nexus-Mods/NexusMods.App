@@ -5,5 +5,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView
 
 public interface ILocationPreviewTreeViewModel : IViewModel
 {
+    public ITreeEntryViewModel Root { get; }
+
     public HierarchicalTreeDataGridSource<ITreeEntryViewModel> Tree { get; }
 }
