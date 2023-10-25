@@ -1,0 +1,56 @@
+<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Brand -->
+    <Color x:Key="BrandPrimary">#D98F40</Color>
+    <Color x:Key="BrandPrimaryDarker">#C87B28</Color>
+    <Color x:Key="BrandPrimaryLighter">#E0A362</Color>
+
+    <Color x:Key="BrandSecondary">#2A2C2B</Color>
+    <Color x:Key="BrandSecondaryDarker">#161717</Color>
+    <Color x:Key="BrandSecondaryLighter">#3E413F</Color>
+
+    <Color x:Key="BrandTertiary">#DDDDDD</Color>
+    <Color x:Key="BrandTertiaryDarker">#C9C9C9</Color>
+    <Color x:Key="BrandTertiaryLighter">#F1F1F1</Color>
+
+    <!-- Background -->
+    <Color x:Key="BackgroundPrimary">#101010</Color>
+    <Color x:Key="BackgroundSecondary">#181818</Color>
+    <Color x:Key="BackgroundTertiary">#222222</Color>
+
+    <!-- Content -->
+    <Color x:Key="ContentPrimary">#1C1C1C</Color>
+    <Color x:Key="ContentSecondary">#2B2D2F</Color>
+
+    <!-- Status -->
+    <Color x:Key="StatusDanger">#CC0000</Color>
+    <Color x:Key="StatusDangerDarker">#A30000</Color>
+    <Color x:Key="StatusDangerLighter">#FF585B</Color>
+
+    <Color x:Key="StatusWarning">#F4B740</Color>
+    <Color x:Key="StatusWarningDarker">#F2A819</Color>
+    <Color x:Key="StatusWarningLighter">#F6C667</Color>
+
+    <Color x:Key="StatusSuccess">#1C8930</Color>
+    <Color x:Key="StatusSuccessDarker">#156724</Color>
+    <Color x:Key="StatusSuccessLighter">#23AB3C</Color>
+
+    <Color x:Key="StatusAccent">#38BFFA</Color>
+    <Color x:Key="StatusAccentDarker">#0555B8</Color>
+    <Color x:Key="StatusAccentLighter">#60A5FB</Color>
+
+    <!-- Border -->
+    <Color x:Key="BordersStructural">#303236</Color>
+    <Color x:Key="BordersContainer">#3C3F44</Color>
+
+    <!-- Fonts -->
+    <Color x:Key="FontDarkPrimary">#FFFFFF</Color>
+    <Color x:Key="FontDarkSecondary">#AAAAAA</Color>
+    <Color x:Key="FontDarkTertiary">#5A5A5A</Color>
+
+    <Color x:Key="FontLightPrimary">#303030</Color>
+    <Color x:Key="FontLightSecondary">#666666</Color>
+    <Color x:Key="FontLightTertiary">#B3B3B3</Color>
+</ResourceDictionary>
