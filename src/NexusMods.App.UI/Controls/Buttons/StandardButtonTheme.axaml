@@ -299,9 +299,7 @@
         </Style>
 
         <Style Selector="^:disabled">
-            <!-- TODO: the text color differs from FIGMA due to opacity -->
             <Setter Property="Background" Value="{DynamicResource BrandTertiary}" />
-            <Setter Property="Foreground" Value="{DynamicResource FontDarkTertiary}" />
             <Setter Property="Opacity" Value="0.4"></Setter>
         </Style>
     </ControlTheme>
