@@ -1,4 +1,3 @@
-
 using FluentAssertions;
 using NexusMods.App.UI.Overlays;
 using NexusMods.DataModel.Games;
@@ -16,9 +15,9 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Tests;
 public class AdvancedInstallerTests
 {
     private readonly AdvancedInstaller<MockOverlayVMFactory, MockInstallerVMFactory> _installer;
-    private GameInstallation _gameInstallation;
-    private ModId _baseModId;
-    private FileTreeNode<RelativePath, ModSourceFileEntry> _archiveFiles;
+    private readonly GameInstallation _gameInstallation;
+    private readonly ModId _baseModId;
+    private readonly FileTreeNode<RelativePath, ModSourceFileEntry> _archiveFiles;
 
     public AdvancedInstallerTests()
     {
@@ -47,9 +46,11 @@ public class AdvancedInstallerTests
         // Act
         var awaitable = ExecuteInstaller();
         while (!MockOverlayVMFactory.VM.IsActive) { } // Wait until new dialog is set.
+
         MockOverlayVMFactory.VM.Accept(); // Accept running advanced installer.
 
         while (MockInstallerVMFactory.VM == null) { } // Wait until VM created.
+
         while (!MockInstallerVMFactory.VM.IsActive) { } // Wait until new dialog is created.
 
         MockInstallerVMFactory.VM.IsActive = false; // Signal advanced installer is complete.
@@ -67,6 +68,7 @@ public class AdvancedInstallerTests
         // Act
         var awaitable = ExecuteInstaller();
         while (!MockOverlayVMFactory.VM.IsActive) { } // Wait until new dialog is set.
+
         MockOverlayVMFactory.VM.Decline(); // Decline running advanced installer.
         var result = await awaitable;
 
@@ -82,7 +84,7 @@ public class AdvancedInstallerTests
 public class MockOverlayVMFactory : IUnsupportedModOverlayViewModelFactory
 {
     public static IUnsupportedModOverlayViewModel VM = null!;
-    public static bool CreateWasCalled = false;
+    public static bool CreateWasCalled;
 
     public static IUnsupportedModOverlayViewModel Create()
     {
@@ -100,7 +102,7 @@ public class MockOverlayVMFactory : IUnsupportedModOverlayViewModelFactory
 public class MockInstallerVMFactory : IAdvancedInstallerOverlayViewModelFactory
 {
     public static IAdvancedInstallerOverlayViewModel? VM;
-    public static bool CreateWasCalled = false;
+    public static bool CreateWasCalled;
 
     public static IAdvancedInstallerOverlayViewModel Create(FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         GameLocationsRegister register, string gameName = "")
