@@ -68,7 +68,7 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
         foreach (var item in SelectedItems)
         {
             var node = PreviewViewModel.GetOrCreateBindingTarget(directory.Path);
-            item.Link(Data, node, directory.Status == SelectableDirectoryNodeStatus.Created);
+            item.Link(Data, node, directory.Status == SelectableDirectoryNodeStatus.Regular);
         }
 
         SelectedItems.Clear();
