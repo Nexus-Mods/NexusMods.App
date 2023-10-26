@@ -10,8 +10,6 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 public partial class
     TreeEntryView : ReactiveUserControl<ITreeEntryViewModel>
 {
-    public required IModContentUpdateReceiver Receiver { get; init; }
-
     public TreeEntryView()
     {
         InitializeComponent();
@@ -28,19 +26,10 @@ public partial class
             this.BindCommand(ViewModel, vm => vm.CancelSelectCommand, view => view.SelectLocationRoundedButton)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.UnlinkCommand, view => view.RemoveFromLocationButton,
-                    _ => Receiver!.Data)
+            this.BindCommand(ViewModel, vm => vm.UnlinkCommand, view => view.RemoveFromLocationButton)
                 .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.UnlinkCommand, view => view.IncludedRemoveButton,
-                    _ => Receiver!.Data)
-                .DisposeWith(d);
-
-            // Register callbacks
-            ViewModel.BeginSelectCommand.SubscribeWithErrorLogging(_ => { Receiver!.OnSelect(ViewModel); })
-                .DisposeWith(d);
-
-            ViewModel.CancelSelectCommand.SubscribeWithErrorLogging(_ => { Receiver!.OnCancelSelect(ViewModel); })
+            this.BindCommand(ViewModel, vm => vm.UnlinkCommand, view => view.IncludedRemoveButton)
                 .DisposeWith(d);
 
             InitView();

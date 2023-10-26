@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Subjects;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 
@@ -27,6 +28,6 @@ internal class ModContentDesignViewModel : ModContentBaseViewModel
         };
 
         var tree = FileTreeNode<RelativePath, int>.CreateTree(fileEntries);
-        return TreeEntryViewModel<int>.FromFileTree(tree);
+        return TreeEntryViewModel<int>.FromFileTree(tree, new DummyCoordinator());
     }
 }

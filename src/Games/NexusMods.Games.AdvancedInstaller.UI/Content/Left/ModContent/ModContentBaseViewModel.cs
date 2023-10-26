@@ -9,7 +9,9 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 internal abstract class ModContentBaseViewModel : AViewModel<IModContentViewModel>,
     IModContentViewModel
 {
-    public IModContentUpdateReceiver Receiver { get; protected set; } = null!;
+    public IObserver<ITreeEntryViewModel> StartSelectObserver { get; protected set; } = null!;
+    public IObserver<ITreeEntryViewModel> CancelSelectObserver { get; protected set; } = null!;
+
     public ITreeEntryViewModel Root => _treeData ??= InitTreeData();
     private ITreeEntryViewModel? _treeData;
 
@@ -26,7 +28,6 @@ internal abstract class ModContentBaseViewModel : AViewModel<IModContentViewMode
                         new TreeEntryView
                         {
                             DataContext = node,
-                            Receiver = Receiver
                         }),
                     width: new GridLength(1, GridUnitType.Star)
                 ),

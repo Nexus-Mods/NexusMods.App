@@ -1,4 +1,6 @@
-﻿using NexusMods.DataModel.Games;
+﻿using System.Reactive.Disposables;
+using System.Reactive.Subjects;
+using NexusMods.DataModel.Games;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.EmptyPreview;
@@ -7,8 +9,12 @@ using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using ITreeEntryViewModel = NexusMods.Games.AdvancedInstaller.UI.Content.Left.ITreeEntryViewModel;
+using IModContentTreeEntryVM = NexusMods.Games.AdvancedInstaller.UI.Content.Left.ITreeEntryViewModel;
+using ISelectableTreeEntryVM =
+    NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry.
+    ITreeEntryViewModel;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content;
 
@@ -18,11 +24,25 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
     public BodyViewModel(FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles, GameLocationsRegister register,
         string gameName = "")
     {
+        StartSelectObserver = new Subject<IModContentTreeEntryVM>();
+        CancelSelectObserver = new Subject<IModContentTreeEntryVM>();
+        DirectorySelectedObserver = new Subject<ISelectableTreeEntryVM>();
+
         ModContentViewModel = new ModContentViewModel(archiveFiles, this);
         SelectLocationViewModel = new SelectLocationViewModel(register, this, gameName);
         CurrentPreviewViewModel = EmptyPreviewViewModel;
+
+        this.WhenActivated(disposables =>
+        {
+            StartSelectObserver.SubscribeWithErrorLogging(OnSelect).DisposeWith(disposables);
+            CancelSelectObserver.SubscribeWithErrorLogging(OnCancelSelect).DisposeWith(disposables);
+            DirectorySelectedObserver.SubscribeWithErrorLogging(OnDirectorySelected).DisposeWith(disposables);
+        });
     }
 
+    public ISubject<IModContentTreeEntryVM> StartSelectObserver { get; }
+    public ISubject<IModContentTreeEntryVM> CancelSelectObserver { get; }
+    public ISubject<ISelectableTreeEntryVM> DirectorySelectedObserver { get; }
     public DeploymentData Data { get; set; } = new();
 
     public IModContentViewModel ModContentViewModel { get; }
@@ -31,17 +51,16 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
     public ISelectLocationViewModel SelectLocationViewModel { get; }
     [Reactive] public IViewModel CurrentPreviewViewModel { get; set; }
 
-    internal readonly List<ITreeEntryViewModel> SelectedItems = new();
+    internal readonly List<IModContentTreeEntryVM> SelectedItems = new();
 
-    #region IModContentUpdateReceiver
 
-    public void OnSelect(ITreeEntryViewModel treeEntryViewModel)
+    public void OnSelect(IModContentTreeEntryVM treeEntryViewModel)
     {
         SelectedItems.Add(treeEntryViewModel);
         CurrentPreviewViewModel = SelectLocationViewModel;
     }
 
-    public void OnCancelSelect(ITreeEntryViewModel treeEntryViewModel)
+    public void OnCancelSelect(IModContentTreeEntryVM treeEntryViewModel)
     {
         SelectedItems.Remove(treeEntryViewModel);
         if (SelectedItems.Count == 0)
@@ -59,11 +78,7 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
         return false;
     }
 
-    #endregion
-
-    #region ISelectableDirectoryUpdateReceiver
-
-    public void OnDirectorySelected(Right.Results.SelectLocation.SelectableDirectoryEntry.ITreeEntryViewModel directory)
+    public void OnDirectorySelected(ISelectableTreeEntryVM directory)
     {
         foreach (var item in SelectedItems)
         {
@@ -74,6 +89,4 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
         SelectedItems.Clear();
         CurrentPreviewViewModel = PreviewViewModel;
     }
-
-    #endregion
 }

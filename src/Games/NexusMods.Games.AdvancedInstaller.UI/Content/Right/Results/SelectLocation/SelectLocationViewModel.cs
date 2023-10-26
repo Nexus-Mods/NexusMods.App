@@ -11,7 +11,8 @@ internal class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
     public ReadOnlyObservableCollection<ISuggestedEntryViewModel> SuggestedEntries { get; }
     public ReadOnlyObservableCollection<ISelectLocationTreeViewModel> AllFoldersTrees { get; }
 
-    public SelectLocationViewModel(GameLocationsRegister register, ISelectableDirectoryUpdateReceiver updateReceiver,
+    public SelectLocationViewModel(GameLocationsRegister register,
+        IAdvancedInstallerCoordinator directorySelectedObserver,
         string gameName = "")
     {
         List<ISelectLocationTreeViewModel> treeList = new();
@@ -19,7 +20,8 @@ internal class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
         // We add the 'game name' if we show the game folder, otherwise we use name of LocationId.
         foreach (var location in register.GetTopLevelLocations())
             treeList.Add(new SelectLocationTreeViewModel(location.Value, location.Key,
-                location.Key == LocationId.Game ? gameName : null, updateReceiver));
+                location.Key == LocationId.Game ? gameName : null, directorySelectedObserver));
+
 
         SuggestedEntries = new(new());
         AllFoldersTrees = treeList.ToReadOnlyObservableCollection();

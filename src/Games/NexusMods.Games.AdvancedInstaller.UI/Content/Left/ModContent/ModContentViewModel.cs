@@ -1,4 +1,5 @@
-﻿using NexusMods.DataModel.ModInstallers;
+﻿using System.Reactive;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 
@@ -8,11 +9,9 @@ internal sealed class ModContentViewModel : ModContentBaseViewModel
 {
     private readonly ITreeEntryViewModel _vm;
 
-    public ModContentViewModel(FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
-        IModContentUpdateReceiver receiver)
+    public ModContentViewModel(FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles, IAdvancedInstallerCoordinator coordinator)
     {
-        _vm = TreeEntryViewModel<ModSourceFileEntry>.FromFileTree(archiveFiles);
-        Receiver = receiver;
+        _vm = TreeEntryViewModel<ModSourceFileEntry>.FromFileTree(archiveFiles, coordinator);
     }
 
     // ReSharper disable once RedundantOverriddenMember

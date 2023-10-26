@@ -7,12 +7,11 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocat
 /// <summary>
 ///     Represents an individual node in the 'All Folders' section when selecting a location.
 /// </summary>
-public interface ITreeEntryViewModel
+public interface ITreeEntryViewModel : IViewModelInterface
 {
     /// <summary>
     ///     Status of the node in question.
     /// </summary>
-    [Reactive]
     public SelectableDirectoryNodeStatus Status { get; }
 
     /// <summary>

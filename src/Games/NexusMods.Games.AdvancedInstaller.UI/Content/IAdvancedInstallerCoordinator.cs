@@ -1,44 +1,41 @@
+using System.Reactive.Subjects;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 
+using ISelectableDirectoryTreeEntryVM = NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry.ITreeEntryViewModel;
 namespace NexusMods.Games.AdvancedInstaller.UI.Content;
+
 
 /// <summary>
 ///     Interface for a component which facilitates the exchange of information between different AdvancedInstaller components.
 /// </summary>
-public interface IAdvancedInstallerCoordinator : IModContentUpdateReceiver, ISelectableDirectoryUpdateReceiver { }
-
-/// <summary>
-///     An interface for something that receives item selection updates from the <see cref="ModContentView"/>
-/// </summary>
-public interface IModContentUpdateReceiver
+public interface IAdvancedInstallerCoordinator
 {
     /// <summary>
-    ///     This item is called when an item is selected.
+    ///     This observable should be notified when an archive entry is selected from the Mod Content section.
     /// </summary>
-    /// <param name="treeEntryViewModel">The viewmodel of the tree entry being selected.</param>
-    void OnSelect(ITreeEntryViewModel treeEntryViewModel);
+    public ISubject<ITreeEntryViewModel> StartSelectObserver { get; }
 
     /// <summary>
-    ///     This item is called when the last item's selection is cancelled.
+    ///     This observable should be notified when user cancels the selection of an archive entry from the Mod Content section.
     /// </summary>
-    /// <param name="treeEntryViewModel">The viewmodel of the tree entry no longer being selected.</param>
-    void OnCancelSelect(ITreeEntryViewModel treeEntryViewModel);
+    public ISubject<ITreeEntryViewModel> CancelSelectObserver { get; }
+
+    /// <summary>
+    ///     This observable should be notified when user unlinks a file binding, either from the Mod Content section or the Preview section.
+    /// </summary>
+    public ISubject<ISelectableDirectoryTreeEntryVM> DirectorySelectedObserver { get; }
 
     /// <summary>
     ///     Retrieves the deployment data used.
     /// </summary>
-    DeploymentData Data { get; }
+    public DeploymentData Data { get; }
 }
 
-/// <summary>
-///     An interface for something that receives directory selection notifications from <see cref="SelectLocationView"/>
-/// </summary>
-public interface ISelectableDirectoryUpdateReceiver
+public class DummyCoordinator : IAdvancedInstallerCoordinator
 {
-    /// <summary>
-    ///     This function is called when the user selects a directory from the directory selector.
-    /// </summary>
-    /// <param name="directory">The directory that was selected.</param>
-    void OnDirectorySelected(Right.Results.SelectLocation.SelectableDirectoryEntry.ITreeEntryViewModel directory);
+    public ISubject<ITreeEntryViewModel> StartSelectObserver { get; } = new Subject<ITreeEntryViewModel>();
+    public ISubject<ITreeEntryViewModel> CancelSelectObserver { get; } = new Subject<ITreeEntryViewModel>();
+    public ISubject<ISelectableDirectoryTreeEntryVM> DirectorySelectedObserver { get; } = new Subject<ISelectableDirectoryTreeEntryVM>();
+    public DeploymentData Data { get; } = new();
 }
+

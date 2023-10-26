@@ -7,10 +7,5 @@ public interface IModContentViewModel : IViewModel
     /// </summary>
     ITreeEntryViewModel Root { get; }
 
-    /// <summary>
-    ///     An item to receive updates from the <see cref="ModContentView"/>.
-    /// </summary>
-    IModContentUpdateReceiver Receiver { get; }
-
     public HierarchicalTreeDataGridSource<ITreeEntryViewModel> Tree { get; }
 }

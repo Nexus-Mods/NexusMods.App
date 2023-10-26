@@ -8,8 +8,5 @@ public interface ISelectLocationTreeViewModel : IViewModel
 
     public HierarchicalTreeDataGridSource<ITreeEntryViewModel> Tree { get; }
 
-    /// <summary>
-    ///     Coordinator for the AdvancedInstaller components.
-    /// </summary>
-    ISelectableDirectoryUpdateReceiver Receiver { get; }
+    public IAdvancedInstallerCoordinator Coordinator { get; }
 }

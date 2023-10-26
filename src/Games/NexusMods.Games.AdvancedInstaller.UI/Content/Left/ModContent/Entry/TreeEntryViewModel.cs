@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Reactive;
+using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using NexusMods.Paths;
@@ -39,6 +40,8 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
     /// <inheritdoc />
     public IUnlinkableItem? UnlinkableItem { get; private set; }
 
+    public required IAdvancedInstallerCoordinator Coordinator { get; init; }
+
     /// <inheritdoc />
     public ReactiveCommand<Unit, Unit> BeginSelectCommand { get; }
 
@@ -46,7 +49,7 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
     public ReactiveCommand<Unit, Unit> CancelSelectCommand { get; }
 
     /// <inheritdoc />
-    public ReactiveCommand<DeploymentData, Unit> UnlinkCommand { get; }
+    public ReactiveCommand<Unit, Unit> UnlinkCommand { get; }
 
     // Note: Items here are reduced to 1 byte, to avoid eating memory. With 3 items we have 5 bytes of padding left.
     [Reactive] public ModContentNodeStatus Status { get; private set; }
@@ -62,14 +65,13 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
     public bool IsDirectory => Node.IsDirectory;
     public bool IsRoot => Node.IsTreeRoot;
 
+
+
     public TreeEntryViewModel()
     {
-        // false because this is done from UI.
-        void Execute(DeploymentData obj) => Unlink(obj, false);
-
         BeginSelectCommand = ReactiveCommand.Create(BeginSelect);
         CancelSelectCommand = ReactiveCommand.Create(CancelSelect);
-        UnlinkCommand = ReactiveCommand.Create((Action<DeploymentData>)Execute);
+        UnlinkCommand = ReactiveCommand.Create(Unlink);
     }
 
     public void Link(DeploymentData data, IModContentBindingTarget target, bool targetAlreadyExisted)
@@ -115,6 +117,11 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
         }
     }
 
+    private void Unlink()
+    {
+        Unlink(Coordinator.Data, false);
+    }
+
     public void Unlink(DeploymentData data, bool isCalledFromDoubleLinkedItem)
     {
         SetStatus(ModContentNodeStatus.Default);
@@ -136,6 +143,7 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
 
             UnlinkableItem = null;
         }
+
     }
 
     /// <summary>
@@ -170,6 +178,8 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
 
         // Update all of children
         SetStatusRecursive(this, ModContentNodeStatus.SelectingViaParent);
+
+        Coordinator.StartSelectObserver.OnNext(this);
     }
 
     /// <summary>
@@ -181,6 +191,8 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
             return;
 
         RestoreLastStatusRecursive();
+
+        Coordinator.CancelSelectObserver.OnNext(this);
     }
 
     /// <summary>
@@ -253,7 +265,8 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
     /// </summary>
     /// <param name="node">The root node.</param>
     /// <typeparam name="TNodeValue">Type of value associated with this node.</typeparam>
-    public static TreeEntryViewModel<TNodeValue> FromFileTree(FileTreeNode<RelativePath, TNodeValue> node)
+    public static TreeEntryViewModel<TNodeValue> FromFileTree(FileTreeNode<RelativePath, TNodeValue> node,
+        IAdvancedInstallerCoordinator coordinator)
     {
         var root = new TreeEntryViewModel<TNodeValue>
         {
@@ -261,7 +274,8 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
             Parent = null!,
             Children = GC.AllocateUninitializedArray<ITreeEntryViewModel>(node.Children.Count),
             IsTopLevel = false,
-            Status = ModContentNodeStatus.Default
+            Status = ModContentNodeStatus.Default,
+            Coordinator = coordinator,
         };
 
         var childIndex = 0;
@@ -288,7 +302,8 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
             Parent = parent,
             Children = GC.AllocateUninitializedArray<ITreeEntryViewModel>(node.Children.Count),
             IsTopLevel = parent.IsRoot,
-            Status = ModContentNodeStatus.Default
+            Status = ModContentNodeStatus.Default,
+            Coordinator = parent.Coordinator,
         };
 
         var childIndex = 0;

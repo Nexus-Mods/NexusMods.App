@@ -8,10 +8,10 @@ public sealed class SelectLocationTreeViewModel : SelectLocationTreeBaseViewMode
     private readonly TreeEntryViewModel _tree;
 
     public SelectLocationTreeViewModel(AbsolutePath absPath, LocationId treeRoot, string? rootName,
-        ISelectableDirectoryUpdateReceiver receiver)
+        IAdvancedInstallerCoordinator coordinator)
     {
-        _tree = TreeEntryViewModel.Create(absPath, new GamePath(treeRoot, ""), rootName ?? "");
-        Receiver = receiver;
+        _tree = TreeEntryViewModel.Create(absPath, new GamePath(treeRoot, ""), coordinator, rootName ?? "");
+        Coordinator = coordinator;
     }
 
     protected override ITreeEntryViewModel GetTreeData() => _tree;

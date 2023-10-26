@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NexusMods.DataModel.ModInstallers;
+using NexusMods.Games.AdvancedInstaller.UI.Content;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
@@ -36,7 +37,7 @@ internal static class ModContentVMTestHelpers
 
     internal static TreeEntryViewModel<int> CreateTestTreeNode()
     {
-        return TreeEntryViewModel<int>.FromFileTree(CreateTestTree());
+        return TreeEntryViewModel<int>.FromFileTree(CreateTestTree(), new DummyCoordinator());
     }
 
     internal static FileTreeNode<RelativePath, int> CreateTestTree()

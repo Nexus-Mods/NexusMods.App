@@ -1,4 +1,5 @@
 using FluentAssertions;
+using NexusMods.Games.AdvancedInstaller.UI.Content;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry;
 using NexusMods.Paths;
 using NexusMods.Paths.TestingHelpers;
@@ -18,7 +19,7 @@ public class SelectableDirectoryNodeTests
 
         // Act
         var node = TreeEntryViewModel.Create(fs.FromUnsanitizedFullPath(entryDir.GetFullPath()),
-            new GamePath(LocationId.Game, ""), rootName);
+            new GamePath(LocationId.Game, ""), new DummyCoordinator(), rootName);
 
         // Assert
         node.DisplayName.Should().Be(rootName);
