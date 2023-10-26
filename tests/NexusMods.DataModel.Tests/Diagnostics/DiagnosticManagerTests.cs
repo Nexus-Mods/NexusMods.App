@@ -21,8 +21,6 @@ public class DiagnosticManagerTests : ADataModelTest<DiagnosticManagerTests>
     [Fact]
     public async Task Test_RefreshLoadoutDiagnostics()
     {
-        var loadout = await LoadoutManager.ManageGameAsync(Install, Guid.NewGuid().ToString());
-
         _diagnosticManager.ClearDiagnostics();
         _diagnosticManager.ActiveDiagnostics.Should().BeEmpty();
 
@@ -34,33 +32,32 @@ public class DiagnosticManagerTests : ADataModelTest<DiagnosticManagerTests>
             changeSet.Adds.Should().Be(1);
         });
 
-        await _diagnosticManager.RefreshLoadoutDiagnostics(loadout.Value);
+        await _diagnosticManager.RefreshLoadoutDiagnostics(BaseList.Value);
 
         var diagnostic = _diagnosticManager.ActiveDiagnostics.Should().ContainSingle().Which;
         diagnostic.Id.Number.Should().Be(1);
-        diagnostic.Message.Should().Be(DummyLoadoutDiagnosticEmitter.CreateMessage(loadout.Value));
+        diagnostic.Message.Should().Be(DummyLoadoutDiagnosticEmitter.CreateMessage(BaseList.Value));
     }
 
     [Fact]
     public async Task Test_RefreshModDiagnostics()
     {
-        var loadout = await LoadoutManager.ManageGameAsync(Install, Guid.NewGuid().ToString());
-        var mod = await AddDummyMod(loadout);
-        loadout.Value.Mods.Count.Should().Be(2);
+        var mod = await AddDummyMod(BaseList);
+        BaseList.Value.Mods.Count.Should().Be(2);
 
         _diagnosticManager.ClearDiagnostics();
         _diagnosticManager.ActiveDiagnostics.Should().BeEmpty();
 
-        _diagnosticManager.RefreshModDiagnostics(loadout.Value);
+        _diagnosticManager.RefreshModDiagnostics(BaseList.Value);
 
         var diagnostic = _diagnosticManager.ActiveDiagnostics.Should().ContainSingle().Which;
         diagnostic.Id.Number.Should().Be(1);
-        diagnostic.Message.Should().Be(DummyModDiagnosticEmitter.CreateMessage(loadout.Value, mod));
+        diagnostic.Message.Should().Be(DummyModDiagnosticEmitter.CreateMessage(BaseList.Value, mod));
 
-        loadout.Remove(mod);
-        loadout.Value.Mods.Count.Should().Be(1);
+        BaseList.Remove(mod);
+        BaseList.Value.Mods.Count.Should().Be(1);
 
-        _diagnosticManager.RefreshModDiagnostics(loadout.Value);
+        _diagnosticManager.RefreshModDiagnostics(BaseList.Value);
         _diagnosticManager.ActiveDiagnostics.Should().BeEmpty();
     }
 

@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
@@ -9,7 +10,6 @@ using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts.Cursors;
 using NexusMods.DataModel.Loadouts.Markers;
 using NexusMods.DataModel.Loadouts.Mods;
-using NexusMods.Networking.NexusWebApi.Types;
 
 namespace NexusMods.DataModel.Loadouts;
 
@@ -20,6 +20,7 @@ public class LoadoutRegistry : IDisposable
 {
     private bool _isDisposed;
 
+    private ConcurrentDictionary<LoadoutId, LoadoutMarker> _markers;
     private readonly ILogger<LoadoutRegistry> _logger;
     private readonly IDataStore _store;
     private SourceCache<IId, LoadoutId> _cache;
@@ -54,6 +55,7 @@ public class LoadoutRegistry : IDisposable
         _logger = logger;
         _store = store;
         _compositeDisposable = new CompositeDisposable();
+        _markers = new ConcurrentDictionary<LoadoutId, LoadoutMarker>();
 
         _cache = new SourceCache<IId, LoadoutId>(_ => throw new NotImplementedException());
         _cache.Edit(x =>
@@ -118,6 +120,8 @@ public class LoadoutRegistry : IDisposable
 
         _logger.LogInformation("Loadout {LoadoutId} altered: {CommitMessage}", id, commitMessage);
 
+        var marker = _markers.GetOrAdd(id, id => new LoadoutMarker(this, id));
+        marker.SetDataStoreId(newLoadout.DataStoreId);
 
         return newLoadout;
     }
@@ -222,7 +226,20 @@ public class LoadoutRegistry : IDisposable
     /// <exception cref="InvalidOperationException"></exception>
     public Loadout? Get(LoadoutId id)
     {
-        return _store.Get<Loadout>(GetId(id)!, true);
+        var databaseId = GetId(id)!;
+        if (databaseId == null)
+            throw new InvalidOperationException($"Loadout {id} does not exist");
+        return _store.Get<Loadout>(databaseId, true);
+    }
+
+    /// <summary>
+    /// Loads the loadout with the given id, or null if it does not exist.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public Loadout? GetLoadout(IId id)
+    {
+        return _store.Get<Loadout>(id, true);
     }
 
     /// <summary>
@@ -240,9 +257,9 @@ public class LoadoutRegistry : IDisposable
     /// </summary>
     /// <param name="name"></param>
     /// <returns></returns>
-    public Loadout? GetByName(string name)
+    public IEnumerable<Loadout> GetByName(string name)
     {
-        return AllLoadouts().First(l =>
+        return AllLoadouts().Where(l =>
             l.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
     }
 
@@ -377,6 +394,53 @@ public class LoadoutRegistry : IDisposable
     /// <returns></returns>
     public LoadoutMarker GetMarker(LoadoutId loadoutId)
     {
-        return new LoadoutMarker(this, loadoutId);
+        return _markers.GetOrAdd(loadoutId, id => new LoadoutMarker(this, id));
+    }
+
+    /// <summary>
+    /// Suggestions a name for a new loadout.
+    /// </summary>
+    /// <param name="installation"></param>
+    /// <returns></returns>
+    public string SuggestName(GameInstallation installation)
+    {
+        var names = AllLoadouts().Select(l => l.Name).ToHashSet();
+        for (var i = 1; i < 1000; i++)
+        {
+            var name = $"My Loadout {i}";
+            if (!names.Contains(name))
+                return name;
+        }
+
+        return $"My Loadout {Guid.NewGuid()}";
+    }
+
+    /// <summary>
+    /// Manages the given installation, returning a marker for the new loadout.
+    /// </summary>
+    /// <param name="installation"></param>
+    /// <returns></returns>
+    public async Task<LoadoutMarker> Manage(GameInstallation installation, string name = "")
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            name = SuggestName(installation);
+
+        var result = await installation.Game.Synchronizer.Manage(installation);
+        Alter(result.LoadoutId, $"Manage new instance of {installation.Game.Name} as {name}",
+            _ => result with
+        {
+            Name = name
+        });
+        return GetMarker(result.LoadoutId);
+    }
+
+    /// <summary>
+    /// Returns true if the given loadout id exists.
+    /// </summary>
+    /// <param name="loadoutId"></param>
+    /// <returns></returns>
+    public bool Contains(LoadoutId loadoutId)
+    {
+        return GetId(loadoutId) != null;
     }
 }

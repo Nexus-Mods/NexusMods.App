@@ -40,7 +40,7 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
     private bool _initalized;
 
     public StubbedGame(ILogger<StubbedGame> logger, IEnumerable<IGameLocator> locators,
-        IFileSystem fileSystem, IServiceProvider provider) : base(locators)
+        IFileSystem fileSystem, IServiceProvider provider) : base(provider)
     {
         _serviceProvider = provider;
         _logger = logger;
@@ -58,7 +58,8 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
         {
             foreach (var result in locator.Find(this))
             {
-                result.Path.DeleteDirectory(true);
+                if (result.Path.DirectoryExists())
+                    result.Path.DeleteDirectory(true);
                 var locations = new Dictionary<LocationId, AbsolutePath>
                 {
                     [LocationId.Game] = EnsureFiles(result.Path, LocationId.Game),

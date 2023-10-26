@@ -59,22 +59,22 @@ public class FlattenedToLoadoutTransformer : ALoadoutVisitor
         {
             if (prevFlattenedLoadout.TryGetValue(path, out var prevPair))
             {
-                if (prevPair.Value!.Mod.Id.Equals(newPair!.Mod.Id))
+                if (!prevPair.Value!.Mod.Id.Equals(newPair!.Mod.Id))
+                    continue;
+
+                if (prevPair.Value!.File.Id.Equals(newPair!.File.Id))
                 {
-                    if (prevPair.Value!.File.Id.Equals(newPair!.File.Id))
+                    if (prevPair.Value!.File.DataStoreId.Equals(newPair.File.DataStoreId))
                     {
-                        if (prevPair.Value!.File.DataStoreId.Equals(newPair.File.DataStoreId))
-                        {
-                            // Nothing to change
-                            continue;
-                        }
-                        _fileReplacements[(newPair.Mod.Id, newPair.File.Id)] = newPair.File;
+                        // Nothing to change
+                        continue;
                     }
-                    else
-                    {
-                        AddToValues(_moveFrom, prevPair.Value.Mod.Id, prevPair.Value.File);
-                        AddToValues(_moveTo, newPair.Mod.Id, newPair.File);
-                    }
+                    _fileReplacements[(newPair.Mod.Id, newPair.File.Id)] = newPair.File;
+                }
+                else
+                {
+                    AddToValues(_moveFrom, prevPair.Value.Mod.Id, prevPair.Value.File);
+                    AddToValues(_moveTo, newPair.Mod.Id, newPair.File);
                 }
             }
             else

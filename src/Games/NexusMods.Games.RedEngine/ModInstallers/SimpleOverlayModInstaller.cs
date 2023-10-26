@@ -46,14 +46,14 @@ public class SimpleOverlayModInstaller : IModInstaller
         var siblings= roots.Where(root => root.Depth == highestRoot.Depth)
             .ToArray();
 
-        var newFiles = new List<FromArchive>();
+        var newFiles = new List<StoredFile>();
 
         foreach (var node in siblings)
         {
             foreach (var (filePath, fileInfo) in node.GetAllDescendentFiles())
             {
                 var relativePath = filePath.DropFirst(node.Path.Depth);
-                newFiles.Add(new FromArchive()
+                newFiles.Add(new StoredFile()
                 {
                     Id = ModFileId.New(),
                     Hash = fileInfo!.Hash,

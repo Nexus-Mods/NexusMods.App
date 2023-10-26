@@ -51,11 +51,11 @@ public class RunGameTool<T> : IRunGameTool
     public string Name => $"Run {_game.Name}";
 
     /// <inheritdoc />
-    public async Task Execute(Loadout loadout, ApplyPlan applyPlan, CancellationToken cancellationToken)
+    public async Task Execute(Loadout loadout, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Starting {Name}", Name);
 
-        var program = GetGamePath(loadout, applyPlan);
+        var program = await GetGamePath(loadout);
         var primaryFile = _game.GetPrimaryFile(loadout.Installation.Store).CombineChecked(loadout.Installation);
 
         if (OSInformation.Shared.IsLinux && program.Equals(primaryFile) && loadout.Installation.LocatorResultMetadata is SteamLocatorResultMetadata steamLocatorResultMetadata)
@@ -183,8 +183,9 @@ public class RunGameTool<T> : IRunGameTool
     /// <param name="loadout"></param>
     /// <param name="applyPlan"></param>
     /// <returns></returns>
-    protected virtual AbsolutePath GetGamePath(Loadout loadout, ApplyPlan applyPlan)
+    protected virtual ValueTask<AbsolutePath> GetGamePath(Loadout loadout)
     {
-        return _game.GetPrimaryFile(loadout.Installation.Store).Combine(loadout.Installation.LocationsRegister[LocationId.Game]);
+        return ValueTask.FromResult(_game.GetPrimaryFile(loadout.Installation.Store)
+            .Combine(loadout.Installation.LocationsRegister[LocationId.Game]));
     }
 }

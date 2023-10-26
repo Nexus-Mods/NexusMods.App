@@ -9,13 +9,13 @@ namespace NexusMods.CLI.Verbs;
 /// </summary>
 public class Rename : AVerb<Loadout, string>
 {
-    private readonly LoadoutManager _manager;
+    private readonly LoadoutRegistry _registry;
 
     /// <summary>
     /// DI constructor
     /// </summary>
     /// <param name="manager"></param>
-    public Rename(LoadoutManager manager) => _manager = manager;
+    public Rename(LoadoutRegistry registry) => _registry = registry;
 
     /// <inheritdoc />
     public static VerbDefinition Definition => new("rename",
@@ -28,7 +28,7 @@ public class Rename : AVerb<Loadout, string>
     /// <inheritdoc />
     public Task<int> Run(Loadout loadout, string name, CancellationToken token)
     {
-        _manager.Registry.Alter(loadout.LoadoutId, $"Renamed {loadout.DataStoreId} to {name}", _ => loadout);
+        _registry.Alter(loadout.LoadoutId, $"Renamed {loadout.DataStoreId} to {name}", _ => loadout);
         return Task.FromResult(0);
     }
 }

@@ -40,6 +40,12 @@ public record Mod : Entity, IHasEntityId<ModId>
     public const string OverridesCategory = "Overrides";
 
     /// <summary>
+    /// A category used for 'Modding Metadata', that is files that contain metadata about mods, like plugins.txt files
+    /// for Bethesda games, or redmod generated files for Cyberpunk 2077.
+    /// </summary>
+    public const string ModdingMetaData = "Modding Metadata";
+
+    /// <summary>
     /// A unique identifier for this mod within the loadout.
     /// </summary>
     public required ModId Id { get; init; }

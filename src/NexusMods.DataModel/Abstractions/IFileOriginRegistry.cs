@@ -7,9 +7,9 @@ using NexusMods.Paths;
 namespace NexusMods.DataModel.Abstractions;
 
 /// <summary>
-/// A service for linking downloads with files in the archive manager
+/// A service for linking downloads with files in the file store
 /// </summary>
-public interface IDownloadRegistry
+public interface IFileOriginRegistry
 {
     /// <summary>
     /// Register a download with the registry, sourced from a stream, returns a download id that can be used to retrieve the download later.

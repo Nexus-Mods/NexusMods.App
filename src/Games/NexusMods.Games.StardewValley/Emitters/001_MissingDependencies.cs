@@ -13,11 +13,11 @@ namespace NexusMods.Games.StardewValley.Emitters;
 
 public class MissingDependenciesEmitter : ILoadoutDiagnosticEmitter
 {
-    private readonly IArchiveManager _archiveManager;
+    private readonly IFileStore _fileStore;
 
-    public MissingDependenciesEmitter(IArchiveManager archiveManager)
+    public MissingDependenciesEmitter(IFileStore fileStore)
     {
-        _archiveManager = archiveManager;
+        _fileStore = fileStore;
     }
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout loadout)
@@ -73,12 +73,12 @@ public class MissingDependenciesEmitter : ILoadoutDiagnosticEmitter
             .Values
             .OfType<IToFile>()
             .Where(f => f.To.FileName == Constants.ManifestFile)
-            .OfType<FromArchive>()
-            .SelectAsync<FromArchive, SMAPIManifest?>(async fa =>
+            .OfType<StoredFile>()
+            .SelectAsync<StoredFile, SMAPIManifest?>(async fa =>
             {
                 try
                 {
-                    await using var stream = await _archiveManager.GetFileStream(fa.Hash);
+                    await using var stream = await _fileStore.GetFileStream(fa.Hash);
                     return await JsonSerializer.DeserializeAsync<SMAPIManifest>(stream);
                 }
                 catch (Exception)

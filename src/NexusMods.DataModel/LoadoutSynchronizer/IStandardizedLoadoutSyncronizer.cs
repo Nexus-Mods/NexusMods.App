@@ -32,7 +32,12 @@ public interface IStandardizedLoadoutSynchronizer : ILoadoutSynchronizer
     /// Writes a file tree to disk (updating the game files)
     /// </summary>
     /// <param name="fileTree"></param>
-    Task<DiskState> FileTreeToDisk(FileTree fileTree, DiskState prevState, GameInstallation installation);
+    /// <param name="loadout"></param>
+    /// <param name="flattenedLoadout"></param>
+    /// <param name="prevState"></param>
+    /// <param name="installation"></param>
+    Task<DiskState> FileTreeToDisk(FileTree fileTree, Loadout loadout, FlattenedLoadout flattenedLoadout,
+        DiskState prevState, GameInstallation installation);
 
     #endregion
 
@@ -73,5 +78,12 @@ public interface IStandardizedLoadoutSynchronizer : ILoadoutSynchronizer
     /// <returns></returns>
     ValueTask<Loadout> FlattenedLoadoutToLoadout(FlattenedLoadout flattenedLoadout, Loadout prevLoadout, FlattenedLoadout prevFlattenedLoadout);
 
+    /// <summary>
+    /// Backs up any new files in the file tree.
+    /// </summary>
+    /// <param name="loadout"></param>
+    /// <param name="fileTree"></param>
+    /// <returns></returns>
+    Task BackupNewFiles(Loadout loadout, FileTree fileTree);
     #endregion
 }

@@ -13,7 +13,7 @@ public class AVerbTest
         FileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine("Resources/data_7zip_lzma2.7z");
     // ReSharper restore InconsistentNaming
 
-    private List<object> LastLog { get; set; } = new();
+    protected List<object> LastLog { get; set; } = new();
 
     internal readonly TemporaryFileManager TemporaryFileManager;
     private readonly IServiceProvider _provider;

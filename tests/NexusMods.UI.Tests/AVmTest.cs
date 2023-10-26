@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI;
 using NexusMods.Common;
-using NexusMods.DataModel;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.ArchiveMetaData;
 using NexusMods.DataModel.Games;
@@ -26,32 +25,28 @@ where TVm : IViewModelInterface
     protected StubbedGame Game { get; }
     protected IFileSystem FileSystem { get; }
     protected GameInstallation Install { get; }
-    protected LoadoutManager LoadoutManager { get; }
     protected LoadoutRegistry LoadoutRegistry { get; }
 
     protected IDataStore DataStore { get; }
     protected IArchiveInstaller ArchiveInstaller { get; }
 
-    protected IDownloadRegistry DownloadRegistry { get; }
+    protected IFileOriginRegistry FileOriginRegistry { get; }
     protected GlobalSettingsManager GlobalSettingsManager { get; }
 
 
-    private LoadoutId? _loadoutId;
-    protected LoadoutMarker Loadout => _loadoutId != null ?
-        new LoadoutMarker(LoadoutRegistry, _loadoutId.Value) :
-        throw new InvalidOperationException("LoadoutId is null");
+    private LoadoutMarker? _loadout;
+    protected LoadoutMarker Loadout => _loadout!;
 
     public AVmTest(IServiceProvider provider) : base(provider)
     {
         _vmWrapper = GetActivatedViewModel<TVm>();
         DataStore = provider.GetRequiredService<IDataStore>();
-        LoadoutManager = provider.GetRequiredService<LoadoutManager>();
         LoadoutRegistry = provider.GetRequiredService<LoadoutRegistry>();
         Game = provider.GetRequiredService<StubbedGame>();
         Install = Game.Installations.First();
         FileSystem = provider.GetRequiredService<IFileSystem>();
         ArchiveInstaller = provider.GetRequiredService<IArchiveInstaller>();
-        DownloadRegistry = provider.GetRequiredService<IDownloadRegistry>();
+        FileOriginRegistry = provider.GetRequiredService<IFileOriginRegistry>();
         GlobalSettingsManager = provider.GetRequiredService<GlobalSettingsManager>();
     }
 
@@ -60,12 +55,12 @@ where TVm : IViewModelInterface
 
     public async Task InitializeAsync()
     {
-        _loadoutId = (await LoadoutManager.ManageGameAsync(Install, "Test")).Value.LoadoutId;
+        _loadout = await LoadoutRegistry.Manage(Install, "Test");
     }
 
     protected async Task<ModId[]> InstallMod(AbsolutePath path)
     {
-        var downloadId = await DownloadRegistry.RegisterDownload(path,
+        var downloadId = await FileOriginRegistry.RegisterDownload(path,
             new FilePathMetadata() { OriginalName = path.FileName, Quality = Quality.Normal });
         return await ArchiveInstaller.AddMods(Loadout.Value.LoadoutId, downloadId);
     }

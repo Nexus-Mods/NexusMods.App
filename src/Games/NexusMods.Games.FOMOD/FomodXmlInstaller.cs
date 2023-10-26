@@ -155,7 +155,7 @@ public class FomodXmlInstaller : AModInstaller
         var dest = RelativePath.FromUnsanitizedInput(instruction.destination);
 
         var file = files.FindNode(src)!.Value;
-        return new FromArchive
+        return new StoredFile
         {
             Id = ModFileId.New(),
             To = new GamePath(gameTargetPath.LocationId, gameTargetPath.Path.Join(dest)),

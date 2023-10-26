@@ -13,14 +13,14 @@ namespace NexusMods.App.UI.RightContent;
 
 public class FoundGamesViewModel : AViewModel<IFoundGamesViewModel>, IFoundGamesViewModel
 {
-    private readonly LoadoutManager _loadoutManager;
+    private readonly LoadoutRegistry _loadoutRegistry;
     private readonly IServiceProvider _provider;
     private readonly IRouter _router;
 
-    public FoundGamesViewModel(IServiceProvider provider, LoadoutManager loadoutManager, IRouter router)
+    public FoundGamesViewModel(IServiceProvider provider, LoadoutRegistry loadoutManager, IRouter router)
     {
         _router = router;
-        _loadoutManager = loadoutManager;
+        _loadoutRegistry = loadoutManager;
         _provider = provider;
 
         Games = Array.Empty<IGameWidgetViewModel>()
@@ -30,8 +30,8 @@ public class FoundGamesViewModel : AViewModel<IFoundGamesViewModel>, IFoundGames
 
     private async Task ManageGame(GameInstallation installation)
     {
-        var name = _loadoutManager.FindName(installation);
-        var marker = await _loadoutManager.ManageGameAsync(installation, name, earlyReturn:true);
+        var name = _loadoutRegistry.SuggestName(installation);
+        var marker = await _loadoutRegistry.Manage(installation, name);
         _router.NavigateTo(new NavigateToLoadout(marker.Value));
     }
 

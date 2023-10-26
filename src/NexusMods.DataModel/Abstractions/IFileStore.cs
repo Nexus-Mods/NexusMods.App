@@ -6,9 +6,10 @@ using NexusMods.Paths.FileTree;
 namespace NexusMods.DataModel.Abstractions;
 
 /// <summary>
-/// Manager for archive files such as downloads and backups.
+/// Takes hashes and files and stores them in a way that can be retrieved later on. Essentially this is a
+/// de-duplicating Key/Value store, where the keys are hashes and the values are the file contents.
 /// </summary>
-public interface IArchiveManager
+public interface IFileStore
 {
 
     /// <summary>
@@ -55,7 +56,7 @@ public interface IArchiveManager
 
 
 /// <summary>
-/// A helper class for <see cref="IArchiveManager"/> that represents a file to be backed up. The Path is optional,
+/// A helper class for <see cref="IFileStore"/> that represents a file to be backed up. The Path is optional,
 /// but should be provided if it is expected that the paths will be used for extraction or mod installation.
 /// </summary>
 /// <param name="StreamFactory"></param>

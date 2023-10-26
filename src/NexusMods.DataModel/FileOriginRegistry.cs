@@ -13,13 +13,13 @@ using NexusMods.Paths;
 namespace NexusMods.DataModel;
 
 /// <summary>
-/// Registry for downloads, stores metadata and links to files in the archive manager
+/// Registry for downloads, stores metadata and links to files in the file store
 /// </summary>
-public class DownloadRegistry : IDownloadRegistry
+public class FileOriginRegistry : IFileOriginRegistry
 {
-    private readonly ILogger<DownloadRegistry> _logger;
+    private readonly ILogger<FileOriginRegistry> _logger;
     private readonly FileExtractor.FileExtractor _extractor;
-    private readonly IArchiveManager _archiveManager;
+    private readonly IFileStore _fileStore;
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly IDataStore _dataStore;
 
@@ -28,13 +28,13 @@ public class DownloadRegistry : IDownloadRegistry
     /// </summary>
     /// <param name="logger"></param>
     /// <param name="extractor"></param>
-    /// <param name="archiveManager"></param>
-    public DownloadRegistry(ILogger<DownloadRegistry> logger, FileExtractor.FileExtractor extractor,
-        IArchiveManager archiveManager, TemporaryFileManager temporaryFileManager, IDataStore store)
+    /// <param name="fileStore"></param>
+    public FileOriginRegistry(ILogger<FileOriginRegistry> logger, FileExtractor.FileExtractor extractor,
+        IFileStore fileStore, TemporaryFileManager temporaryFileManager, IDataStore store)
     {
         _logger = logger;
         _extractor = extractor;
-        _archiveManager = archiveManager;
+        _fileStore = fileStore;
         _temporaryFileManager = temporaryFileManager;
         _dataStore = store;
     }
@@ -77,7 +77,7 @@ public class DownloadRegistry : IDownloadRegistry
         }
 
         _logger.LogInformation("Archiving {Count} files and {Size} of data", files.Count, files.Sum(f => f.Size));
-        await _archiveManager.BackupFiles(files, token);
+        await _fileStore.BackupFiles(files, token);
 
         Hash finalHash;
         Size finalSize;

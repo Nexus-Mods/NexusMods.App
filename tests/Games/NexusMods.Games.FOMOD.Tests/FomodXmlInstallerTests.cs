@@ -33,10 +33,10 @@ public class FomodXmlInstallerTests : AModInstallerTest<SkyrimSpecialEdition, Fo
 
         var fullPath = FileSystem.GetKnownPath(KnownPath.EntryDirectory)
             .Combine(relativePath);
-        var downloadId = await DownloadRegistry.RegisterDownload(fullPath, new FilePathMetadata {
+        var downloadId = await FileOriginRegistry.RegisterDownload(fullPath, new FilePathMetadata {
             OriginalName = fullPath.FileName,
             Quality = Quality.Low});
-        var analysis = await DownloadRegistry.Get(downloadId);
+        var analysis = await FileOriginRegistry.Get(downloadId);
         var installer = FomodXmlInstaller.Create(ServiceProvider, new GamePath(LocationId.Game, ""));
         var tree =
             FileTreeNode<RelativePath, ModSourceFileEntry>.CreateTree(analysis.Contents
@@ -46,7 +46,7 @@ public class FomodXmlInstallerTests : AModInstallerTest<SkyrimSpecialEdition, Fo
             {
                 Size = f.Size,
                 Hash = f.Hash,
-                StreamFactory = new ArchiveManagerStreamFactory(ArchiveManager, f.Hash)
+                StreamFactory = new ArchiveManagerStreamFactory(FileStore, f.Hash)
                 {
                     Name = f.Path,
                     Size = f.Size

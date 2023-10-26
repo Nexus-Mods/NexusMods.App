@@ -3,25 +3,20 @@ using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.JsonConverters;
 using NexusMods.DataModel.Loadouts;
-using NexusMods.DataModel.Loadouts.ApplySteps;
 using NexusMods.DataModel.Loadouts.LoadoutSynchronizerDTOs;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.LoadoutSynchronizer;
-using NexusMods.DataModel.ModInstallers;
 using NexusMods.DataModel.Sorting.Rules;
 using NexusMods.DataModel.Tests.Harness;
-using NexusMods.DataModel.TriggerFilter;
 using NexusMods.Hashing.xxHash64;
-using NexusMods.Networking.NexusWebApi.Types;
 using NexusMods.Paths;
-using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 using IGeneratedFile = NexusMods.DataModel.LoadoutSynchronizer.IGeneratedFile;
 using ModId = NexusMods.DataModel.Loadouts.ModId;
 
-namespace NexusMods.DataModel.Tests.LoadoutSynchronizerTests;
+namespace NexusMods.DataModel.Tests;
 
-public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
+public class ALoadoutSynchronizerTests : ADataModelTest<ALoadoutSynchronizerTests>
 {
     private readonly IStandardizedLoadoutSynchronizer _synchronizer;
     private readonly Dictionary<ModId, string> _modNames = new();
@@ -136,7 +131,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
                 "all the mods are flattened into a single tree, with overlaps removed");
 
         var topMod = _modIds[0];
-        var topFiles = BaseList.Value.Mods[topMod].Files.Values.OfType<FromArchive>().ToDictionary(d => d.To);
+        var topFiles = BaseList.Value.Mods[topMod].Files.Values.OfType<StoredFile>().ToDictionary(d => d.To);
 
         foreach (var path in _allPaths)
         {
@@ -147,7 +142,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
         for (var i = 0; i < ModCount; i++)
         {
             var path = new GamePath(LocationId.Game, $"perMod/{i}.dat");
-            var originalFile = BaseList.Value.Mods[_modIds[i]].Files.Values.OfType<FromArchive>().First(f => f.To == path);
+            var originalFile = BaseList.Value.Mods[_modIds[i]].Files.Values.OfType<StoredFile>().First(f => f.To == path);
             flattened[path].Value!.File.Should()
                 .BeEquivalentTo(originalFile, "these files have unique paths, so they should not be overridden");
         }
@@ -182,7 +177,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
                 "all the mods are flattened into a single tree, with overlaps removed");
 
         var topMod = _modIds[0];
-        var topFiles = BaseList.Value.Mods[topMod].Files.Values.OfType<FromArchive>().ToDictionary(d => d.To);
+        var topFiles = BaseList.Value.Mods[topMod].Files.Values.OfType<StoredFile>().ToDictionary(d => d.To);
 
         foreach (var path in _allPaths)
         {
@@ -193,7 +188,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
         for (var i = 0; i < ModCount; i++)
         {
             var path = new GamePath(LocationId.Game, $"perMod/{i}.dat");
-            var originalFile = BaseList.Value.Mods[_modIds[i]].Files.Values.OfType<FromArchive>().First(f => f.To == path);
+            var originalFile = BaseList.Value.Mods[_modIds[i]].Files.Values.OfType<StoredFile>().First(f => f.To == path);
             fileTree[path].Value!.Should()
                 .BeEquivalentTo(originalFile, "these files have unique paths, so they should not be overridden");
         }
@@ -205,7 +200,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
         var flattened = await _synchronizer.LoadoutToFlattenedLoadout(BaseList.Value);
         var fileTree = await _synchronizer.FlattenedLoadoutToFileTree(flattened, BaseList.Value);
         var prevState = DiskStateRegistry.GetState(BaseList.Id)!;
-        var diskState = await _synchronizer.FileTreeToDisk(fileTree, prevState, Install);
+        var diskState = await _synchronizer.FileTreeToDisk(fileTree, BaseList.Value, flattened, prevState, Install);
 
         diskState.GetAllDescendentFiles()
             .Select(f => f.Path.ToString())
@@ -338,8 +333,8 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
                 },
                 "files have all been written to disk");
 
-        ((FromArchive) fileTree[modifiedFile].Value!).Hash.Should().Be(new byte[] { 0x01, 0x02, 0x03 }.XxHash64(), "the file should have been modified");
-        ((FromArchive) fileTree[newFile].Value!).Hash.Should().Be(new byte[] { 0x04, 0x05, 0x06 }.XxHash64(), "the file should have been created");
+        ((StoredFile) fileTree[modifiedFile].Value!).Hash.Should().Be(new byte[] { 0x01, 0x02, 0x03 }.XxHash64(), "the file should have been modified");
+        ((StoredFile) fileTree[newFile].Value!).Hash.Should().Be(new byte[] { 0x04, 0x05, 0x06 }.XxHash64(), "the file should have been created");
 
         fileTree[deletedFile].Should().BeNull("the file should have been deleted");
 
@@ -398,12 +393,12 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
                 "files have all been written to disk");
 
         var flattenedModifiedPair = flattenedLoadout[modifiedFile].Value!;
-        var flattenedModifiedFile = (FromArchive)flattenedModifiedPair.File;
+        var flattenedModifiedFile = (StoredFile)flattenedModifiedPair.File;
         flattenedModifiedFile.Hash.Should().Be(new byte[] { 0x01, 0x02, 0x03 }.XxHash64(), "the file should have been modified");
         flattenedModifiedPair.Mod.Should().Be(prevFlattenedLoadout[modifiedFile].Value!.Mod, "the mod should be the same");
 
         var flattenedNewPair = flattenedLoadout[newFile].Value!;
-        var flattenedNewFile = (FromArchive) flattenedNewPair.File;
+        var flattenedNewFile = (StoredFile) flattenedNewPair.File;
         flattenedNewFile.Hash.Should().Be(new byte[] { 0x04, 0x05, 0x06 }.XxHash64(), "the file should have been created");
         var newMod = flattenedNewPair.Mod;
         newMod.ModCategory.Should().Be(Mod.SavesCategory, "the mod should be in the overrides category");
@@ -468,18 +463,25 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
                 "files have all been written to disk");
 
         var flattenedModifiedPair = flattenedAgain[modifiedFile].Value!;
-        var flattenedModifiedFile = (FromArchive)flattenedModifiedPair.File;
+        var flattenedModifiedFile = (StoredFile)flattenedModifiedPair.File;
         flattenedModifiedFile.Hash.Should().Be(new byte[] { 0x01, 0x02, 0x03 }.XxHash64(), "the file should have been modified");
         flattenedModifiedPair.Mod.Id.Should().Be(prevFlattenedLoadout[modifiedFile].Value!.Mod.Id, "the mod should be the same");
 
         var flattenedNewPair = flattenedAgain[newFile].Value!;
-        var flattenedNewFile = (FromArchive) flattenedNewPair.File;
+        var flattenedNewFile = (StoredFile) flattenedNewPair.File;
         flattenedNewFile.Hash.Should().Be(new byte[] { 0x04, 0x05, 0x06 }.XxHash64(), "the file should have been created");
         var newMod = flattenedNewPair.Mod;
         newMod.ModCategory.Should().Be(Mod.SavesCategory, "the mod should be in the overrides category");
         newMod.Name.Should().Be("Saved Games", "the mod should be named after the file");
 
         flattenedAgain[deletedFile].Should().BeNull("the file should have been deleted");
+
+        await _synchronizer.BackupNewFiles(loadout, fileTree);
+
+        (await FileStore.HaveFile(new byte[] { 0x04, 0x05, 0x06 }.XxHash64()))
+            .Should().BeTrue("the file should have been backed up");
+        (await FileStore.HaveFile(new byte[] { 0x01, 0x02, 0x03 }.XxHash64()))
+            .Should().BeTrue("the file should have been backed up");
     }
 
     [Fact]
@@ -544,7 +546,7 @@ public class ALoadoutSynchronizerTests : ADataModelTest<LoadoutSynchronizerStub>
         public GamePath To => new(LocationId.Game, "generated.txt");
 
         public required Char[] Data { get; init; }
-        public async ValueTask<Hash?> Write(Stream stream)
+        public async ValueTask<Hash?> Write(Stream stream, Loadout loadout, FlattenedLoadout flattenedLoadout, FileTree fileTree)
         {
             var bytes = Data.Select(c => (byte)c).ToArray();
             await stream.WriteAsync(bytes, 0, bytes.Length);
