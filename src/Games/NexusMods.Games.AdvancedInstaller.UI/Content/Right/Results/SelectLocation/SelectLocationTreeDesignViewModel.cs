@@ -7,30 +7,9 @@ using NexusMods.Paths;
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 
 [ExcludeFromCodeCoverage]
-public class SelectLocationTreeDesignViewModel : AViewModel<ISelectLocationTreeViewModel>, ISelectLocationTreeViewModel
+public class SelectLocationTreeDesignViewModel : SelectLocationTreeBaseViewModel
 {
-    /// <summary>
-    /// The visual representation of the tree.
-    /// </summary>
-    public HierarchicalTreeDataGridSource<ITreeEntryViewModel> Tree => new(GetTreeData())
-    {
-        Columns =
-        {
-            new HierarchicalExpanderColumn<ITreeEntryViewModel>(
-                new TemplateColumn<ITreeEntryViewModel>(null,
-                    new FuncDataTemplate<ITreeEntryViewModel>((node, scope) =>
-                        new TreeEntryView
-                        {
-                            DataContext = node,
-                        }),
-                    width: new GridLength(1, GridUnitType.Star)
-                ),
-                x => x.Children)
-        }
-    };
-
-
-    protected virtual ITreeEntryViewModel GetTreeData() => CreateTestTree();
+    protected override ITreeEntryViewModel GetTreeData() => CreateTestTree();
 
     private static ITreeEntryViewModel CreateTestTree()
     {

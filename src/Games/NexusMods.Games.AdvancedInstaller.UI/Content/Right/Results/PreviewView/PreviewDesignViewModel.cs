@@ -1,4 +1,6 @@
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using NexusMods.App.UI.Extensions;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView;
 
@@ -6,7 +8,8 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView
 internal class PreviewDesignViewModel : AViewModel<IPreviewViewModel>, IPreviewViewModel
 {
     // Design filler data
-    public virtual ILocationPreviewTreeViewModel[] Locations { get; } = GetTestData();
+    public ObservableCollection<ILocationPreviewTreeViewModel> Locations { get; } =
+        GetTestData().ToObservableCollection();
 
     private static ILocationPreviewTreeViewModel[] GetTestData()
     {

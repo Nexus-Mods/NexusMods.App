@@ -1,3 +1,11 @@
-﻿namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView;
+﻿using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
+using NexusMods.Paths;
 
-public sealed class LocationPreviewTreeViewModel : LocationPreviewTreeDesignViewModel { }
+namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView;
+
+public sealed class LocationPreviewTreeViewModel : LocationPreviewTreeBaseViewModel
+{
+    private readonly GamePath _gamePath;
+    public LocationPreviewTreeViewModel(GamePath originPath) => _gamePath = originPath;
+    protected override ITreeEntryViewModel GetTreeData() => TreeEntryViewModel.Create(_gamePath, true);
+}

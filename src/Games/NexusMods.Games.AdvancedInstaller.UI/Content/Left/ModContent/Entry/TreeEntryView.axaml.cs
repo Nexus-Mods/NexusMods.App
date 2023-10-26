@@ -10,35 +10,43 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 public partial class
     TreeEntryView : ReactiveUserControl<ITreeEntryViewModel>
 {
+    public required IModContentUpdateReceiver Receiver { get; init; }
+
     public TreeEntryView()
     {
         InitializeComponent();
 
-        this.WhenActivated(disposable =>
+        this.WhenActivated(d =>
         {
             if (ViewModel == null)
                 return;
 
             // Command bindings:
             this.BindCommand(ViewModel, vm => vm.BeginSelectCommand, view => view.InstallRoundedButton)
-                .DisposeWith(disposable);
+                .DisposeWith(d);
 
             this.BindCommand(ViewModel, vm => vm.CancelSelectCommand, view => view.SelectLocationRoundedButton)
-                .DisposeWith(disposable);
+                .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.CancelSelectCommand, view => view.IncludeTransitionButton)
-                .DisposeWith(disposable);
+            this.BindCommand(ViewModel, vm => vm.UnlinkCommand, view => view.RemoveFromLocationButton,
+                    _ => Receiver!.Data)
+                .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.UnlinkCommand, view => view.RemoveFromLocationButton)
-                .DisposeWith(disposable);
+            this.BindCommand(ViewModel, vm => vm.UnlinkCommand, view => view.IncludedRemoveButton,
+                    _ => Receiver!.Data)
+                .DisposeWith(d);
 
-            this.BindCommand(ViewModel, vm => vm.UnlinkCommand, view => view.IncludedRemoveButton)
-                .DisposeWith(disposable);
+            // Register callbacks
+            ViewModel.BeginSelectCommand.SubscribeWithErrorLogging(_ => { Receiver!.OnSelect(ViewModel); })
+                .DisposeWith(d);
+
+            ViewModel.CancelSelectCommand.SubscribeWithErrorLogging(_ => { Receiver!.OnCancelSelect(ViewModel); })
+                .DisposeWith(d);
 
             InitView();
             this.WhenAnyValue(x => x.ViewModel!.Status)
                 .SubscribeWithErrorLogging(_ => { UpdateView(); })
-                .DisposeWith(disposable);
+                .DisposeWith(d);
         });
     }
 

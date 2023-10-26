@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Avalonia.Controls.Models.TreeDataGrid;
-using Avalonia.Controls.Templates;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 
@@ -8,33 +6,9 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 
 [ExcludeFromCodeCoverage]
 // ReSharper disable once UnusedType.Global
-internal class ModContentDesignViewModel : AViewModel<IModContentViewModel>,
-    IModContentViewModel
+internal class ModContentDesignViewModel : ModContentBaseViewModel
 {
-    public ITreeEntryViewModel Root => _treeData ??= InitTreeData();
-    private ITreeEntryViewModel? _treeData;
-
-    /// <summary>
-    /// The visual representation of the tree.
-    /// </summary>
-    public HierarchicalTreeDataGridSource<ITreeEntryViewModel> Tree => new(Root)
-    {
-        Columns =
-        {
-            new HierarchicalExpanderColumn<ITreeEntryViewModel>(
-                new TemplateColumn<ITreeEntryViewModel>(null,
-                    new FuncDataTemplate<ITreeEntryViewModel>((node, _) =>
-                        new TreeEntryView
-                        {
-                            DataContext = node,
-                        }),
-                    width: new GridLength(1, GridUnitType.Star)
-                ),
-                x => x.Children)
-        }
-    };
-
-    protected virtual ITreeEntryViewModel InitTreeData() => CreateTestTree();
+    protected override ITreeEntryViewModel InitTreeData() => CreateTestTree();
 
     private static ITreeEntryViewModel CreateTestTree()
     {

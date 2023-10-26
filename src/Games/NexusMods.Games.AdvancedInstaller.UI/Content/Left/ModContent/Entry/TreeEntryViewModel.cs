@@ -36,6 +36,18 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
     /// <inheritdoc />
     public required ITreeEntryViewModel[] Children { get; init; }
 
+    /// <inheritdoc />
+    public IUnlinkableItem? UnlinkableItem { get; private set; }
+
+    /// <inheritdoc />
+    public ReactiveCommand<Unit, Unit> BeginSelectCommand { get; }
+
+    /// <inheritdoc />
+    public ReactiveCommand<Unit, Unit> CancelSelectCommand { get; }
+
+    /// <inheritdoc />
+    public ReactiveCommand<DeploymentData, Unit> UnlinkCommand { get; }
+
     // Note: Items here are reduced to 1 byte, to avoid eating memory. With 3 items we have 5 bytes of padding left.
     [Reactive] public ModContentNodeStatus Status { get; private set; }
     private ModContentNodeStatus _lastStatus;
@@ -50,14 +62,15 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
     public bool IsDirectory => Node.IsDirectory;
     public bool IsRoot => Node.IsTreeRoot;
 
-    [Reactive]
-    public ReactiveCommand<Unit, Unit> BeginSelectCommand { get; set; } = Initializers.EnabledReactiveCommand;
+    public TreeEntryViewModel()
+    {
+        // false because this is done from UI.
+        void Execute(DeploymentData obj) => Unlink(obj, false);
 
-    [Reactive]
-    public ReactiveCommand<Unit, Unit> CancelSelectCommand { get; set; } = Initializers.EnabledReactiveCommand;
-
-    [Reactive]
-    public ReactiveCommand<Unit, Unit> UnlinkCommand { get; set; } = Initializers.EnabledReactiveCommand;
+        BeginSelectCommand = ReactiveCommand.Create(BeginSelect);
+        CancelSelectCommand = ReactiveCommand.Create(CancelSelect);
+        UnlinkCommand = ReactiveCommand.Create((Action<DeploymentData>)Execute);
+    }
 
     public void Link(DeploymentData data, IModContentBindingTarget target, bool targetAlreadyExisted)
     {
@@ -66,7 +79,8 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
 
         if (!IsDirectory)
         {
-            var folder = target.Bind(this, targetAlreadyExisted);
+            var folder = target.Bind(this, data, targetAlreadyExisted);
+            UnlinkableItem = target;
             data.AddMapping(Node.Path, new GamePath(folder.LocationId, folder.Path.Join(FileName)), true);
             return;
         }
@@ -94,13 +108,14 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
         }
         else
         {
-            var filePath = target.Bind(@this, targetAlreadyExisted);
+            var filePath = target.Bind(@this, data, targetAlreadyExisted);
+            @this.UnlinkableItem = target;
             data.AddMapping(@this.Node.Path, new GamePath(filePath.LocationId, filePath.Path),
                 true);
         }
     }
 
-    public void Unlink(DeploymentData data)
+    public void Unlink(DeploymentData data, bool isCalledFromDoubleLinkedItem)
     {
         SetStatus(ModContentNodeStatus.Default);
 
@@ -110,12 +125,16 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
             foreach (var child in Children)
             {
                 var node = child as TreeEntryViewModel<TNodeValue>;
-                node!.Unlink(data);
+                node!.Unlink(data, isCalledFromDoubleLinkedItem);
             }
         }
         else
         {
             data.RemoveMapping(Node.Path);
+            if (!isCalledFromDoubleLinkedItem)
+                UnlinkableItem?.Unlink(data, true);
+
+            UnlinkableItem = null;
         }
     }
 

@@ -5,8 +5,5 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocat
 public interface ISelectLocationViewModel : IViewModel
 {
     public ReadOnlyObservableCollection<ISuggestedEntryViewModel> SuggestedEntries { get; }
-
-
     public ReadOnlyObservableCollection<ISelectLocationTreeViewModel> AllFoldersTrees { get; }
-
 }

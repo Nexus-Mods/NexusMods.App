@@ -8,14 +8,14 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView
 ///     Represents an individual node in the 'Preview' section when selecting a location.
 /// </summary>
 [DebuggerDisplay("FileName = {FileName}, IsRoot = {IsRoot}, Children = {Children.Count}, Flags = {Flags}")]
-public class TreeEntryViewModel : ITreeEntryViewModel
+public class TreeEntryViewModel : ITreeEntryViewModel, IUnlinkableItem
 {
     public TreeEntryViewModel? Parent { get; init; } = null!;
 
     // TODO: This (FullPath) should be optimized because we are creating a new string for every item.
     public GamePath FullPath { get; init; }
     public ObservableCollection<ITreeEntryViewModel> Children { get; init; } = new();
-    public List<IUnlinkableItem>? UnlinkableItems { get; private set; } = new();
+    public IUnlinkableItem? UnlinkableItem { get; private set; }
     public string FileName { get; init; }
 
     // Do not rearrange order here, flags are deliberately last to optimize for struct layout.
@@ -45,8 +45,12 @@ public class TreeEntryViewModel : ITreeEntryViewModel
     }
 
     // Note: This is normally called from an 'unlinkable' item, i.e. ModContentNode
-    public GamePath Bind(IUnlinkableItem unlinkable, bool previouslyExisted)
+    public GamePath Bind(IUnlinkableItem unlinkable, DeploymentData data, bool previouslyExisted)
     {
+        // Unlink previously bound item (if any).
+        // set to true so it doesn't unlink itself
+        UnlinkableItem?.Unlink(data, true);
+
         // We apply 'folder merged' flag under either of the circumstances.
         // 1. TODO: Files from two different subfolders are mapped to the same folder.
         //    - It's also unclear if 'folder merged' should be displayed when there are files
@@ -56,8 +60,7 @@ public class TreeEntryViewModel : ITreeEntryViewModel
         //          - subfolder/file
         //      Should this display 'folder merged'?
         // 2. Folder already existed in game directory (non-empty), and we are mapping it.
-        UnlinkableItems ??= new List<IUnlinkableItem>();
-        UnlinkableItems.Add(unlinkable);
+        UnlinkableItem = unlinkable;
 
         // Note: If two items merged into this item, then folders are considered 'merged'.
         if (previouslyExisted)
@@ -66,41 +69,40 @@ public class TreeEntryViewModel : ITreeEntryViewModel
         return FullPath;
     }
 
-    /// <summary>
-    ///     Unlinks this node, and all children (in the case this node is a telegram).
-    /// </summary>
-    public void Unlink(DeploymentData data)
+    public void Unlink(DeploymentData data, bool isCalledFromDoubleLinkedItem)
     {
         // Do the unlink.
-        UnlinkRecursive(data);
+        UnlinkRecursive(data, isCalledFromDoubleLinkedItem);
 
         // Delete self (if possible).
         if (!IsRoot)
         {
             var thisVm = Parent!.Children.FirstOrDefault(x => x == this)!;
-            Parent?.Children.Remove(thisVm);
+            Parent.Children.Remove(thisVm);
+
+            // If the parent is a directory, and it has no children, remove it from the grandparent.
+            // Note: `Parent.Parent` may be null if we are a child file of the root directory node.
+            if (Parent.Children.Count == 0 && Parent.IsDirectory)
+                Parent.Parent?.Children.Remove(Parent);
         }
         else
             Children.Clear();
     }
 
-    private void UnlinkRecursive(DeploymentData data)
+    private void UnlinkRecursive(DeploymentData data, bool isCalledFromDoubleLinkedItem)
     {
         // Recursively unlink first.
         foreach (var child in Children)
         {
             var node = child as TreeEntryViewModel;
-            node!.UnlinkRecursive(data);
+            node!.UnlinkRecursive(data, isCalledFromDoubleLinkedItem);
         }
 
         // And now unlink self.
-        if (UnlinkableItems == null)
-            return;
+        if (!isCalledFromDoubleLinkedItem)
+            UnlinkableItem?.Unlink(data, true);
 
-        foreach (var unlinkable in UnlinkableItems)
-            unlinkable.Unlink(data);
-
-        UnlinkableItems.Clear();
+        UnlinkableItem = null;
     }
 
     /// <summary>

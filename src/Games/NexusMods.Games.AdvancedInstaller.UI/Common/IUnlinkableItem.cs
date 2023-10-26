@@ -6,12 +6,14 @@ namespace NexusMods.Games.AdvancedInstaller.UI;
 public interface IUnlinkableItem
 {
     /// <summary>
-    ///     Returns true if this unlinkable item represents a folder, else false.
+    ///     Removes itself and all of its children recursively from the deployment data.
     /// </summary>
-    public bool IsDirectory { get; }
-
-    /// <summary>
-    ///     Unlink the current node from the deployment data.
-    /// </summary>
-    public void Unlink(DeploymentData data);
+    /// <param name="data">The deployment data.</param>
+    /// <param name="isCalledFromDoubleLinkedItem">
+    ///     If this is true, the <see cref="Unlink"/> method was called from another <see cref="IUnlinkableItem"/> which
+    ///     is being unlinked (it's doubly linked to this item).
+    ///
+    ///     If this is true, do not call `unlink` on the other item.
+    /// </param>
+    public void Unlink(DeploymentData data, bool isCalledFromDoubleLinkedItem);
 }

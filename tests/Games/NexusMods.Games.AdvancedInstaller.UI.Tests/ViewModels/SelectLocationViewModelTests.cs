@@ -19,12 +19,12 @@ public class SelectLocationViewModelTests
         fs.AddSavePaths(savesDir);
         var register = new GameLocationsRegister(new Dictionary<LocationId, AbsolutePath>()
         {
-            { LocationId.Game, gameDir },
-            { LocationId.Saves, savesDir }
+            { LocationId.Game, fs.FromUnsanitizedFullPath(gameDir.GetFullPath()) },
+            { LocationId.Saves, fs.FromUnsanitizedFullPath(savesDir.GetFullPath()) }
         });
 
         // Act
-        var vm = new SelectLocationViewModel(register, rootName);
+        var vm = new SelectLocationViewModel(register, default!, rootName);
         vm.AllFoldersTrees.Should().HaveCount(2);
 
         // Assert Regular Tree
@@ -43,7 +43,7 @@ public class SelectLocationViewModelTests
         {
             var success = x.Tree.TryGetModelAt(0, out tevm);
             if (success)
-                return tevm!.Path?.LocationId == id;
+                return tevm!.Path.LocationId == id;
 
             return false;
         });

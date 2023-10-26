@@ -15,12 +15,10 @@ public partial class BodyView : ReactiveUserControl<IBodyViewModel>
 
         this.WhenActivated(disposables =>
         {
-            this.OneWayBind<IBodyViewModel, BodyView, IModContentViewModel, object>(ViewModel,
-                    vm => vm.ModContentViewModel, view => view.ModContentSectionViewHost.ViewModel!)
+            this.OneWayBind(ViewModel, vm => vm.ModContentViewModel, view => view.ModContentSectionViewHost.ViewModel!)
                 .DisposeWith(disposables);
 
-            this.OneWayBind<IBodyViewModel, BodyView, IViewModel, object>(ViewModel, vm => vm.CurrentPreviewViewModel,
-                    view => view.PreviewSectionViewHost.ViewModel!)
+            this.OneWayBind(ViewModel, vm => vm.CurrentPreviewViewModel, view => view.PreviewSectionViewHost.ViewModel!)
                 .DisposeWith(disposables);
         });
     }

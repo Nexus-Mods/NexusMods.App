@@ -91,7 +91,7 @@ public interface ITreeEntryViewModel : IUnlinkableItem
     /// </summary>
     /// <param name="data">The structure keeping track of deployment data.</param>
     /// <param name="target">
-    ///     The target to receive the binding.
+    ///     The target (directory) to receive the binding.
     ///     This is usually <see cref="TreeEntryViewModel"/>, care must be taken to ensure the target path matches the
     ///     correct path. To do this, search for the <see cref="FullPath"/> in root node/directory of <see cref="IModContentBindingTarget"/>.
     /// </param>
@@ -101,9 +101,25 @@ public interface ITreeEntryViewModel : IUnlinkableItem
     /// </param>
     void Link(DeploymentData data, IModContentBindingTarget target, bool targetAlreadyExisted);
 
-    public ReactiveCommand<Unit, Unit> BeginSelectCommand { get; }
+    /// <summary>
+    ///     The action executed when the user clicks 'Install' button.
+    /// </summary>
+    ReactiveCommand<Unit, Unit> BeginSelectCommand { get; }
 
-    public ReactiveCommand<Unit, Unit> CancelSelectCommand { get; }
+    /// <summary>
+    ///     The action executed when the user clicks the `Cancel` button after clicking the 'Install' button.
+    /// </summary>
+    ReactiveCommand<Unit, Unit> CancelSelectCommand { get; }
 
-    public ReactiveCommand<Unit, Unit> UnlinkCommand { get; }
+    /// <summary>
+    ///     Removes itself and all of its children recursively from the deployment data.
+    ///     This is executed when the user hits 'Remove' button from the left hand side.
+    /// </summary>
+    ReactiveCommand<DeploymentData, Unit> UnlinkCommand { get; }
+
+    /// <summary>
+    ///     The item with which this item is linked to.
+    ///     If null, it's not been explicitly linked.
+    /// </summary>
+    IUnlinkableItem? UnlinkableItem { get; }
 }

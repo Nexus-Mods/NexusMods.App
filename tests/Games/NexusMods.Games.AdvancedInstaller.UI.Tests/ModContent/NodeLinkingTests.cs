@@ -1,9 +1,7 @@
 using FluentAssertions;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 using NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers;
 using NexusMods.Paths;
-using NSubstitute;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Tests.ModContent;
 
@@ -37,8 +35,8 @@ public class NodeLinkingTests
         texturesDir.Link(data, target, false);
 
         // Assert
-        data.ArchiveToOutputMap.Count.Should().Be(6);
-        data.OutputToArchiveMap.Count.Should().Be(6);
+        data.ArchiveToOutputMap.Count.Should().Be(9);
+        data.OutputToArchiveMap.Count.Should().Be(9);
         AssertArmorsLinked(data, "Armors");
 
         var armorsDir = texturesDir.GetNode("Armors");
@@ -62,6 +60,25 @@ public class NodeLinkingTests
             .Be(new GamePath(LocationId.Game, "greenArmor.dds"));
     }
 
+    // Verifies files can be re-linked.
+    [Fact]
+    public void CanReLinkFiles()
+    {
+        // Arrange & Act
+        var (node, data, target) = CommonSetup();
+        var greenArmor = node.GetNode("Textures").GetNode("Armors").GetNode("greenArmor.dds");
+        greenArmor.Link(data, target, false);
+
+        var greenBlade = node.GetNode("Textures").GetNode("Armors2").GetNode("greenArmor.dds");
+        greenBlade.Link(data, target, false);
+
+        // Assert
+        greenArmor.Status.Should().Be(ModContentNodeStatus.IncludedExplicit);
+        data.ArchiveToOutputMap.Count.Should().Be(1);
+        data.ArchiveToOutputMap["Textures/Armors2/greenArmor.dds"].Should()
+            .Be(new GamePath(LocationId.Game, "greenArmor.dds"));
+    }
+
     [Fact]
     public void CanUnlinkFolders()
     {
@@ -71,7 +88,7 @@ public class NodeLinkingTests
         armorsDir.Link(data, target, false);
 
         // Unlink assert that everything is empty.
-        armorsDir.Unlink(data);
+        armorsDir.Unlink(data, false);
         AssertUnlinkedArmorsFolder(armorsDir, data);
     }
 
@@ -84,7 +101,7 @@ public class NodeLinkingTests
         armorsDir.Link(data, target, false);
 
         // Unlink assert that everything is empty.
-        node.Unlink(data); // unlinkable
+        node.Unlink(data, false); // unlinkable
         AssertUnlinkedArmorsFolder(armorsDir, data);
     }
 
@@ -97,7 +114,7 @@ public class NodeLinkingTests
         greenArmor.Link(data, target, false);
 
         // Assert
-        greenArmor.Unlink(data);
+        greenArmor.Unlink(data, false);
         data.ArchiveToOutputMap.Count.Should().Be(0);
         greenArmor.Status.Should().Be(ModContentNodeStatus.Default);
     }
@@ -144,7 +161,9 @@ public class NodeLinkingTests
             };
         }
 
-        public GamePath Bind(IUnlinkableItem unlinkable, bool previouslyExisted) => Current;
+        public GamePath Bind(IUnlinkableItem unlinkable, DeploymentData data, bool previouslyExisted) => Current;
         public string DirectoryName => Current.FileName;
+
+        public void Unlink(DeploymentData data, bool isCalledFromDoubleLinkedItem) { }
     }
 }

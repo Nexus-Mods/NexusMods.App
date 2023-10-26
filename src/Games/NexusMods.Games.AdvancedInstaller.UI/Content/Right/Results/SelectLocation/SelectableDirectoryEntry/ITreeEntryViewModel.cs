@@ -18,7 +18,7 @@ public interface ITreeEntryViewModel
     /// <summary>
     ///     The full path associated with this node.
     /// </summary>
-    public GamePath? Path { get; }
+    public GamePath Path { get; }
 
     /// <summary>
     ///     Contains the children nodes of this node.
@@ -33,5 +33,5 @@ public interface ITreeEntryViewModel
     /// <summary>
     /// The Directory name displayed for this node.
     /// </summary>
-    string DirectoryName { get; }
+    new string DirectoryName { get; }
 }

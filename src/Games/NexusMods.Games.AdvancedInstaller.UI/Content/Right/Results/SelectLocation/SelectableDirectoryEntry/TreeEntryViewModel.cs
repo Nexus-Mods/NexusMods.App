@@ -11,18 +11,21 @@ public class TreeEntryViewModel : ReactiveObject, ITreeEntryViewModel
     public SelectableDirectoryNodeStatus Status { get; internal set; } = SelectableDirectoryNodeStatus.Regular;
 
     public ObservableCollection<ITreeEntryViewModel> Children { get; init; } = new();
-    public GamePath? Path { get; init; }
+    public GamePath Path { get; init; }
+
+    // Used for the "Create new folder" node.
+    public static GamePath EmptyPath = new GamePath(LocationId.Unknown, string.Empty);
 
     public TreeEntryViewModel? Parent {get; init;}
     public string DirectoryName
     {
         get
         {
-            if (Path == null)
+            if (Path == EmptyPath)
                 return string.Empty;
-            if (Path?.FileName == string.Empty)
-                return Path?.LocationId.Value!;
-            return Path?.FileName!;
+            if (Path.FileName == string.Empty)
+                return Path.LocationId.Value;
+            return Path.FileName;
         }
     }
 
@@ -63,6 +66,7 @@ public class TreeEntryViewModel : ReactiveObject, ITreeEntryViewModel
         var createFolderNode = new TreeEntryViewModel
         {
             Status = SelectableDirectoryNodeStatus.Create,
+            Path = EmptyPath,
             Parent = this,
         };
         Children.Add(createFolderNode);
@@ -76,7 +80,7 @@ public class TreeEntryViewModel : ReactiveObject, ITreeEntryViewModel
                 Path = new GamePath(locationId, name),
                 Parent = this,
             };
-            node.CreateChildrenRecursive(directory, locationId, dirSubstringLength + name.Length + 1);
+            node.CreateChildrenRecursive(directory, locationId, dirSubstringLength);
             Children.Add(node);
         }
     }
@@ -103,7 +107,7 @@ public enum SelectableDirectoryNodeStatus
     Editing,
 
     /// <summary>
-    /// A new node created with "Create new folder button
+    /// A new node created with "Create new folder" button
     /// </summary>
     Created,
 }

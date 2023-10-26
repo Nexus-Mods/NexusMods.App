@@ -7,6 +7,8 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocat
 [ExcludeFromCodeCoverage]
 public partial class TreeEntryView : ReactiveUserControl<ITreeEntryViewModel>
 {
+    public required ISelectableDirectoryUpdateReceiver Receiver { get; init; }
+
     public TreeEntryView()
     {
         InitializeComponent();

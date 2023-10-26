@@ -65,8 +65,8 @@ public interface ITreeEntryViewModel : IModContentBindingTarget
     */
 
     /// <summary>
-    ///     Collection of unlinkable items under this node.
-    ///     This collection is null, unless an element exists.
+    ///     The item with which this item is linked to.
+    ///     If null, it's not been explicitly linked.
     /// </summary>
-    List<IUnlinkableItem>? UnlinkableItems { get; }
+    IUnlinkableItem? UnlinkableItem { get; }
 }
