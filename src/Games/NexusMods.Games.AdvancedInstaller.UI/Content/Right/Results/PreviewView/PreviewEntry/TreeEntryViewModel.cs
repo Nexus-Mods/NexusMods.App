@@ -78,7 +78,12 @@ public class TreeEntryViewModel : ITreeEntryViewModel, IUnlinkableItem
         if (!IsRoot)
         {
             var thisVm = Parent!.Children.FirstOrDefault(x => x == this)!;
-            Parent?.Children.Remove(thisVm);
+            Parent.Children.Remove(thisVm);
+
+            // If the parent is a directory, and it has no children, remove it from the grandparent.
+            // Note: `Parent.Parent` may be null if we are a child file of the root directory node.
+            if (Parent.Children.Count == 0 && Parent.IsDirectory)
+                Parent.Parent?.Children.Remove(Parent);
         }
         else
             Children.Clear();

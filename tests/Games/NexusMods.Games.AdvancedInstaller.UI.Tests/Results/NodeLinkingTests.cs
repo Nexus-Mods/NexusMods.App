@@ -100,6 +100,9 @@ public class NodeLinkingTests
         targetDir.Children.Should().BeEmpty();
         armorsDir.UnlinkableItem.Should().BeNull();
         targetDir.UnlinkableItem.Should().BeNull();
+
+        // Assert empty folder was deleted.
+        target.GetChild("Textures/Armors").Should().BeNull();
     }
 
     [Fact]
