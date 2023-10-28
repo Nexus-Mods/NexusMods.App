@@ -1,4 +1,7 @@
-﻿using NexusMods.App.UI.Overlays;
+﻿using System.Reactive.Disposables;
+using Avalonia.ReactiveUI;
+using Microsoft.Extensions.DependencyInjection;
+using NexusMods.App.UI.Overlays;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.ModInstallers;
@@ -20,6 +23,9 @@ public class AdvancedInstaller<TUnsupportedOverlayFactory, TAdvancedInstallerOve
     where TAdvancedInstallerOverlayViewModelFactory : IAdvancedInstallerOverlayViewModelFactory
 {
     private readonly IOverlayController _overlayController;
+
+    public static AdvancedInstaller<UnsupportedModOverlayViewModelFactory, AdvancedInstallerOverlayViewModelFactory> Create(IServiceProvider provider) =>
+        new(provider.GetRequiredService<IOverlayController>());
 
     public AdvancedInstaller(IOverlayController overlayController)
     {
@@ -60,7 +66,10 @@ public class AdvancedInstaller<TUnsupportedOverlayFactory, TAdvancedInstallerOve
     {
         var tcs = new TaskCompletionSource<bool>();
         var vm = TUnsupportedOverlayFactory.Create();
-        _overlayController.SetOverlayContent(new SetOverlayItem(vm, referenceItem), tcs);
+        OnUi(_overlayController, controller =>
+        {
+            controller.SetOverlayContent(new SetOverlayItem(vm, referenceItem), tcs);
+        });
         await tcs.Task;
         return vm.ShouldAdvancedInstall;
     }
@@ -71,9 +80,26 @@ public class AdvancedInstaller<TUnsupportedOverlayFactory, TAdvancedInstallerOve
     {
         var tcs = new TaskCompletionSource<bool>();
         var vm = TAdvancedInstallerOverlayViewModelFactory.Create(archiveFiles, register, gameName);
-        _overlayController.SetOverlayContent(new SetOverlayItem(vm, referenceItem), tcs);
+        OnUi(_overlayController, controller =>
+        {
+            _overlayController.SetOverlayContent(new SetOverlayItem(vm, referenceItem), tcs);
+        });
         await tcs.Task;
         return vm.BodyViewModel.Data;
+    }
+
+    private static void OnUi<TState>(TState state, Action<TState> action)
+    {
+        // NOTE: AvaloniaScheduler has to be used to do work on the UI thread
+        AvaloniaScheduler.Instance.Schedule(
+            (action, state),
+            AvaloniaScheduler.Instance.Now,
+            (_, tuple) =>
+            {
+                var (innerAction, innerState) = tuple;
+                innerAction(innerState);
+                return Disposable.Empty;
+            });
     }
 }
 
