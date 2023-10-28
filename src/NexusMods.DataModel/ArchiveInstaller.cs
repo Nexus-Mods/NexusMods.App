@@ -28,24 +28,24 @@ public class ArchiveInstaller : IArchiveInstaller
     private readonly IDataStore _dataStore;
     private readonly LoadoutRegistry _registry;
     private readonly IInterprocessJobManager _jobManager;
-    private readonly IArchiveManager _archiveManager;
-    private readonly IDownloadRegistry _downloadRegistry;
+    private readonly IFileStore _fileStore;
+    private readonly IFileOriginRegistry _fileOriginRegistry;
 
     /// <summary>
     /// DI Constructor
     /// </summary>
     public ArchiveInstaller(ILogger<ArchiveInstaller> logger,
-        IDownloadRegistry downloadRegistry,
+        IFileOriginRegistry fileOriginRegistry,
         IDataStore dataStore,
         LoadoutRegistry registry,
-        IArchiveManager archiveManager,
+        IFileStore fileStore,
         IInterprocessJobManager jobManager)
     {
         _logger = logger;
         _dataStore = dataStore;
-        _downloadRegistry = downloadRegistry;
+        _fileOriginRegistry = fileOriginRegistry;
         _registry = registry;
-        _archiveManager = archiveManager;
+        _fileStore = fileStore;
         _jobManager = jobManager;
     }
 
@@ -55,7 +55,7 @@ public class ArchiveInstaller : IArchiveInstaller
         // Get the loadout and create the mod so we can use it in the job.
         var loadout = _registry.GetMarker(loadoutId);
 
-        var download = await _downloadRegistry.Get(downloadId);
+        var download = await _fileOriginRegistry.Get(downloadId);
         var archiveName = "<unknown>";
         if (download.MetaData is not null && defaultModName == null)
         {
@@ -91,7 +91,7 @@ public class ArchiveInstaller : IArchiveInstaller
                     {
                         Hash = entry.Hash,
                         Size = entry.Size,
-                        StreamFactory = new ArchiveManagerStreamFactory(_archiveManager, entry.Hash) {Name = entry.Path, Size = entry.Size}
+                        StreamFactory = new ArchiveManagerStreamFactory(_fileStore, entry.Hash) {Name = entry.Path, Size = entry.Size}
                     })));
 
             // Step 3: Run the archive through the installers.

@@ -113,7 +113,7 @@ public readonly struct DeploymentData
             var src = RelativePath.FromUnsanitizedInput(mapping.Key);
             var file = archiveFiles.FindNode(src)!.Value;
 
-            yield return new FromArchive
+            yield return new StoredFile
             {
                 Id = ModFileId.New(),
                 To = mapping.Value,

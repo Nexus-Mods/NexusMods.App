@@ -8,24 +8,41 @@ namespace NexusMods.DataModel.Loadouts.Markers;
 /// may mutate a loadout, which will then cause a "rebase" of this marker
 /// on the new loadoutID.
 /// </summary>
-public readonly struct LoadoutMarker
+public class LoadoutMarker
 {
     private readonly LoadoutRegistry _registry;
-    private readonly LoadoutId _id;
+    private IId _dataStoreId = IdEmpty.Empty;
+    private Guid _uniqueId = Guid.NewGuid();
 
     /// <summary/>
     /// <param name="registry"></param>
     /// <param name="id"></param>
-    public LoadoutMarker(LoadoutRegistry registry, LoadoutId id)
+    internal LoadoutMarker(LoadoutRegistry registry, LoadoutId id)
     {
         _registry = registry;
-        _id = id;
+        _dataStoreId = _registry.Get(id)!.DataStoreId;
     }
+
+    /// <summary>
+    /// Sets the current data store ID of the loadout.
+    /// </summary>
+    /// <param name="id"></param>
+    internal void SetDataStoreId(IId id) => _dataStoreId = id;
+
+    /// <summary>
+    /// Gets the current data store ID of the loadout.
+    /// </summary>
+    public IId DataStoreId => _dataStoreId;
 
     /// <summary>
     /// Gets the state of the loadout represented by the current ID.
     /// </summary>
-    public Loadout Value => _registry.Get(_id)!;
+    public Loadout Value => _registry.GetLoadout(_dataStoreId)!;
+
+    /// <summary>
+    /// Returns the ID of the loadout.
+    /// </summary>
+    public LoadoutId Id => Value.LoadoutId;
 
     /// <summary>
     /// Returns all of the previous versions of this loadout for.
@@ -51,7 +68,7 @@ public readonly struct LoadoutMarker
     /// <param name="newMod">The mod to add to the loadout.</param>
     public void Add(Mod newMod)
     {
-        _registry.Alter(_id, $"Added mod: {newMod.Name}", l => l.Add(newMod));
+        _registry.Alter(Id, $"Added mod: {newMod.Name}", l => l.Add(newMod));
     }
 
     /// <summary>
@@ -60,7 +77,7 @@ public readonly struct LoadoutMarker
     /// <param name="oldMod">The mod to remove from the loadout.</param>
     public void Remove(Mod oldMod)
     {
-        _registry.Alter(_id, $"Remove mod: {oldMod.Name}", l => l.Remove(oldMod));
+        _registry.Alter(Id, $"Remove mod: {oldMod.Name}", l => l.Remove(oldMod));
     }
 
     /// <summary>
@@ -70,6 +87,17 @@ public readonly struct LoadoutMarker
     /// <param name="func"></param>
     public void Alter(string changeMessage, Func<Loadout, Loadout> func)
     {
-        _registry.Alter(_id, changeMessage, func);
+        _registry.Alter(Id, changeMessage, func);
     }
+
+    /// <summary>
+    /// Merge the given loadout into the current loadout.
+    /// </summary>
+    /// <param name="newLoadout"></param>
+    public void Merge(Loadout newLoadout)
+    {
+        _registry.Alter(Id, $"Merge loadout: {newLoadout.Name}",
+            l => l.Installation.Game.Synchronizer.MergeLoadouts(l, newLoadout));
+    }
+
 }

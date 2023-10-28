@@ -16,7 +16,7 @@ public class ModelTests : ADataModelTest<ModelTests>
     [Fact]
     public void CanCreateModFile()
     {
-        var file = new FromArchive
+        var file = new StoredFile
         {
             Id = ModFileId.New(),
             To = new GamePath(LocationId.Game, "foo/bar.pez"),
@@ -26,7 +26,7 @@ public class ModelTests : ADataModelTest<ModelTests>
         file.EnsurePersisted(DataStore);
         file.DataStoreId.Should().NotBeNull();
 
-        DataStore.Get<FromArchive>(file.DataStoreId)!.To.Should().BeEquivalentTo(file.To);
+        DataStore.Get<StoredFile>(file.DataStoreId)!.To.Should().BeEquivalentTo(file.To);
     }
 
     /* TODO: Fix this test
@@ -35,8 +35,8 @@ public class ModelTests : ADataModelTest<ModelTests>
     {
         var name = Guid.NewGuid().ToString();
         var loadout = await LoadoutManager.ManageGameAsync(Install, name);
-        await loadout.InstallModsFromArchiveAsync(Data7ZLzma2, "Mod1", CancellationToken.None);
-        await loadout.InstallModsFromArchiveAsync(DataZipLzma, "", CancellationToken.None);
+        await loadout.InstallModsStoredFileAsync(Data7ZLzma2, "Mod1", CancellationToken.None);
+        await loadout.InstallModsStoredFileAsync(DataZipLzma, "", CancellationToken.None);
 
         loadout.Value.Mods.Count.Should().Be(3);
         loadout.Value.Mods.Values.Sum(m => m.Files.Count).Should().Be(DataNames.Length * 2 + StubbedGame.DATA_NAMES.Length);
@@ -47,8 +47,8 @@ public class ModelTests : ADataModelTest<ModelTests>
     public async Task RenamingAListDoesntChangeOldIds()
     {
         var loadout = await LoadoutManager.ManageGameAsync(Install, Guid.NewGuid().ToString());
-        var id1 = (await loadout.InstallModsFromArchiveAsync(Data7ZLzma2, "Mod1", CancellationToken.None)).First();
-        var id2 = (await loadout.InstallModsFromArchiveAsync(DataZipLzma, "Mod2", CancellationToken.None)).First();
+        var id1 = (await loadout.InstallModsStoredFileAsync(Data7ZLzma2, "Mod1", CancellationToken.None)).First();
+        var id2 = (await loadout.InstallModsStoredFileAsync(DataZipLzma, "Mod2", CancellationToken.None)).First();
 
         id1.Should().NotBe(id2);
         id1.Should().BeEquivalentTo(id1);
@@ -72,8 +72,8 @@ public class ModelTests : ADataModelTest<ModelTests>
     public async Task CanExportAndImportLoadouts()
     {
         var loadout = await LoadoutManager.ManageGameAsync(Install, Guid.NewGuid().ToString());
-        await loadout.InstallModsFromArchiveAsync(Data7ZLzma2, "Mod1", CancellationToken.None);
-        await loadout.InstallModsFromArchiveAsync(DataZipLzma, "Mod2", CancellationToken.None);
+        await loadout.InstallModsStoredFileAsync(Data7ZLzma2, "Mod1", CancellationToken.None);
+        await loadout.InstallModsStoredFileAsync(DataZipLzma, "Mod2", CancellationToken.None);
 
         await using var tempFile = TemporaryFileManager.CreateFile(KnownExtensions.Zip);
         await loadout.ExportToAsync(tempFile, CancellationToken.None);
@@ -118,8 +118,8 @@ public class ModelTests : ADataModelTest<ModelTests>
 
         await LoadoutManager.ImportFromAsync(tempFile, CancellationToken.None);
         loadout.Value.Mods.Should().NotBeEmpty("The loadout is restored");
-        
-        
+
+
 
     }
     */

@@ -16,16 +16,16 @@
   </ItemGroup>
   <ItemGroup>
     <!-- Avalonia -->
-    <PackageVersion Include="Avalonia" Version="11.0.4" />
-    <PackageVersion Include="Avalonia.Controls.DataGrid" Version="11.0.4" />
+    <PackageVersion Include="Avalonia" Version="11.0.5" />
+    <PackageVersion Include="Avalonia.Controls.DataGrid" Version="11.0.5" />
     <PackageVersion Include="Avalonia.Controls.TreeDataGrid" Version="11.0.1" />
-    <PackageVersion Include="Avalonia.Desktop" Version="11.0.4" />
-    <PackageVersion Include="Avalonia.Diagnostics" Version="11.0.4" />
-    <PackageVersion Include="Avalonia.Headless" Version="11.0.4" />
-    <PackageVersion Include="Avalonia.ReactiveUI" Version="11.0.4" />
-    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.0.4" />
+    <PackageVersion Include="Avalonia.Desktop" Version="11.0.5" />
+    <PackageVersion Include="Avalonia.Diagnostics" Version="11.0.5" />
+    <PackageVersion Include="Avalonia.Headless" Version="11.0.5" />
+    <PackageVersion Include="Avalonia.ReactiveUI" Version="11.0.5" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.0.5" />
     <PackageVersion Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="6.6.0-rc1.1" />
-    <PackageVersion Include="Avalonia.Svg.Skia" Version="11.0.0.2" />
+    <PackageVersion Include="Avalonia.Svg.Skia" Version="11.0.0.3" />
   </ItemGroup>
   <ItemGroup>
     <!-- System -->
@@ -38,13 +38,13 @@
   </ItemGroup>
   <ItemGroup>
     <!-- Microsoft -->
-    <PackageVersion Include="Microsoft.Data.Sqlite" Version="7.0.11" />
+    <PackageVersion Include="Microsoft.Data.Sqlite" Version="7.0.12" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging" Version="7.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
-    <PackageVersion Include="Microsoft.Extensions.ObjectPool" Version="7.0.11" />
+    <PackageVersion Include="Microsoft.Extensions.ObjectPool" Version="7.0.12" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="2.3.2" />
   </ItemGroup>
   <ItemGroup>

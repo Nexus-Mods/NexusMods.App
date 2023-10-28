@@ -50,7 +50,7 @@ public class GenericFolderMatchInstaller : AModInstaller
 
         List<RelativePath> missedFiles = new();
 
-        List<FromArchive> modFiles = new();
+        List<StoredFile> modFiles = new();
 
         foreach (var target in _installFolderTargets)
         {
@@ -91,10 +91,10 @@ public class GenericFolderMatchInstaller : AModInstaller
     /// <param name="target"></param>
     /// <param name="missedFiles"></param>
     /// <returns></returns>
-    private IEnumerable<FromArchive> GetModFilesForTarget(FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+    private IEnumerable<StoredFile> GetModFilesForTarget(FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         InstallFolderTarget target, List<RelativePath> missedFiles)
     {
-        List<FromArchive> modFiles = new();
+        List<StoredFile> modFiles = new();
 
         // TODO: Currently just assumes that the prefix of the first file that matches the target structure is the correct one.
         // Consider checking that each file matches the target at the found location before adding it.
@@ -126,7 +126,7 @@ public class GenericFolderMatchInstaller : AModInstaller
                 var modPath = new GamePath(target.DestinationGamePath.LocationId,
                     target.DestinationGamePath.Path.Join(trimmedPath));
 
-                modFiles.Add(fileData!.ToFromArchive(modPath));
+                modFiles.Add(fileData!.ToStoredFile(modPath));
             }
 
             return modFiles;

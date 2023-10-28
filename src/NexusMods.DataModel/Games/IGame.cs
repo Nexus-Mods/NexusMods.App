@@ -2,6 +2,7 @@ using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.LoadoutSynchronizer;
 using NexusMods.DataModel.ModInstallers;
 
 namespace NexusMods.DataModel.Games;
@@ -60,4 +61,17 @@ public interface IGame
     /// will be tested against a mod's files in the order they are returned by this property.
     /// </summary>
     public IEnumerable<IModInstaller> Installers { get; }
+
+
+    /// <summary>
+    /// Gets the initial game state for a given installation. This is often a pre-determined list of files, and hashes
+    /// as they exist in a fresh install of the game.
+    /// </summary>
+    /// <returns></returns>
+    public ValueTask<DiskState> GetInitialDiskState(GameInstallation installation);
+
+    /// <summary>
+    /// Returns a <see cref="ILoadoutSynchronizer"/> for this game.
+    /// </summary>
+    public ILoadoutSynchronizer Synchronizer { get; }
 }

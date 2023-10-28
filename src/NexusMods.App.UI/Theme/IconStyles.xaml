@@ -35,11 +35,17 @@
             <icons:Icon Classes="Tune"></icons:Icon>
             <icons:Icon Classes="ArrowLeft"></icons:Icon>
             <icons:Icon Classes="ArrowRight"></icons:Icon>
+            <icons:Icon Classes="Plus"></icons:Icon>
+            <icons:Icon Classes="MenuDown"></icons:Icon>
+            <icons:Icon Classes="MenuUp"></icons:Icon>
+            <icons:Icon Classes="Close"></icons:Icon>
+            <icons:Icon Classes="OpenInNew"></icons:Icon>
+            <icons:Icon Classes="Tab"></icons:Icon>
+            <icons:Icon Classes="ChevronLeft"></icons:Icon>
+            <icons:Icon Classes="ChevronRight"></icons:Icon>
             <icons:Icon Classes="FolderOutline"></icons:Icon>
             <icons:Icon Classes="File"></icons:Icon>
-            <icons:Icon Classes="Close"></icons:Icon>
             <icons:Icon Classes="Check"></icons:Icon>
-            <icons:Icon Classes="Plus"></icons:Icon>
             <icons:Icon Classes="DeleteOutline"></icons:Icon>
             <Svg Classes="AddCircle" />
         </WrapPanel>
@@ -171,5 +177,37 @@
         <Setter Property="Path" Value="avares://NexusMods.App.UI/Assets/Icons/add_circle_24px.svg" />
         <Setter Property="Width" Value="24" />
         <Setter Property="Height" Value="24" />
+    </Style>
+
+    <Style Selector="icons|Icon.Plus">
+        <Setter Property="Value" Value="mdi-plus"/>
+    </Style>
+
+    <Style Selector="icons|Icon.MenuDown">
+        <Setter Property="Value" Value="mdi-menu-down"/>
+    </Style>
+
+    <Style Selector="icons|Icon.MenuUp">
+        <Setter Property="Value" Value="mdi-menu-up"/>
+    </Style>
+
+    <Style Selector="icons|Icon.Close">
+        <Setter Property="Value" Value="mdi-close"/>
+    </Style>
+
+    <Style Selector="icons|Icon.OpenInNew">
+        <Setter Property="Value" Value="mdi-open-in-new"/>
+    </Style>
+
+    <Style Selector="icons|Icon.Tab">
+        <Setter Property="Value" Value="mdi-tab"/>
+    </Style>
+
+    <Style Selector="icons|Icon.ChevronLeft">
+        <Setter Property="Value" Value="mdi-chevron-left"/>
+    </Style>
+
+    <Style Selector="icons|Icon.ChevronRight">
+        <Setter Property="Value" Value="mdi-chevron-right"/>
     </Style>
 </Styles>

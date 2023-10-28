@@ -4,6 +4,8 @@ using System.Text;
 using NexusMods.Common;
 using NexusMods.DataModel.Abstractions;
 using NexusMods.DataModel.Abstractions.Ids;
+using NexusMods.DataModel.Games;
+using NexusMods.DataModel.LoadoutSynchronizer;
 using NexusMods.DataModel.RateLimiting;
 using NexusMods.DataModel.RateLimiting.Extensions;
 using NexusMods.Hashing.xxHash64;
@@ -144,6 +146,20 @@ public class FileHashCache
         var hashed = await file.XxHash64Async(job, token);
         PutCachedAsync(file, new FileHashCacheEntry(info.LastWriteTimeUtc, hashed, size));
         return new HashedEntry(file, hashed, info.LastWriteTimeUtc, size);
+    }
+
+    /// <summary>
+    /// Indexes the folders a game installation and returns the disk state tree.
+    /// </summary>
+    /// <param name="installation"></param>
+    /// <returns></returns>
+    public async ValueTask<DiskState> IndexDiskState(GameInstallation installation)
+    {
+        var hashed =
+            await IndexFoldersAsync(installation.LocationsRegister.GetTopLevelLocations().Select(f => f.Value))
+                .ToListAsync();
+        return DiskState.Create(hashed.Select(h => KeyValuePair.Create(installation.LocationsRegister.ToGamePath(h.Path),
+            DiskStateEntry.From(h))));
     }
 
     private void PutCachedAsync(AbsolutePath path, FileHashCacheEntry entry)

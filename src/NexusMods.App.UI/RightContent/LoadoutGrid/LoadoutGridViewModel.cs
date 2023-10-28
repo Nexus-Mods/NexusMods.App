@@ -38,7 +38,7 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
     private readonly ILogger<LoadoutGridViewModel> _logger;
     private readonly LoadoutRegistry _loadoutRegistry;
     private readonly IArchiveInstaller _archiveInstaller;
-    private readonly IDownloadRegistry _downloadRegistry;
+    private readonly IFileOriginRegistry _fileOriginRegistry;
 
     [Reactive]
     public string LoadoutName { get; set; } = "";
@@ -51,13 +51,13 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
         LoadoutRegistry loadoutRegistry,
         IFileSystem fileSystem,
         IArchiveInstaller archiveInstaller,
-        IDownloadRegistry downloadRegistry)
+        IFileOriginRegistry fileOriginRegistry)
     {
         _logger = logger;
         _fileSystem = fileSystem;
         _loadoutRegistry = loadoutRegistry;
         _archiveInstaller = archiveInstaller;
-        _downloadRegistry = downloadRegistry;
+        _fileOriginRegistry = fileOriginRegistry;
 
         _columns =
             new SourceCache<IDataGridColumnFactory<LoadoutColumn>, LoadoutColumn>(
@@ -126,7 +126,7 @@ public class LoadoutGridViewModel : AViewModel<ILoadoutGridViewModel>, ILoadoutG
 
         var _ = Task.Run(async () =>
         {
-            var downloadId = await _downloadRegistry.RegisterDownload(file,
+            var downloadId = await _fileOriginRegistry.RegisterDownload(file,
                 new FilePathMetadata
                 {
                     OriginalName = file.FileName,

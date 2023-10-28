@@ -1,0 +1,42 @@
+<reactive:ReactiveUserControl
+    x:TypeArguments="workspace:WorkspacePlaygroundViewModel" xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactive="http://reactiveui.net"
+    xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
+    mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="700"
+    x:Class="NexusMods.App.UI.WorkspaceSystem.WorkspacePlaygroundView">
+
+    <Design.DataContext>
+        <workspace:WorkspacePlaygroundViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto, Auto, *">
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Button x:Name="SaveWorkspaceButton" Classes="Standard PrimaryOutlined">
+                <TextBlock>Save Workspace</TextBlock>
+            </Button>
+
+            <Button x:Name="LoadWorkspaceButton" Classes="Standard PrimaryOutlined">
+                <TextBlock>Load Workspace</TextBlock>
+            </Button>
+        </StackPanel>
+
+        <ItemsControl x:Name="AddPanelButtonItemsControl" Grid.Row="1">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" Spacing="8"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type workspace:IAddPanelButtonViewModel}">
+                    <reactive:ViewModelViewHost ViewModel="{Binding}"/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <reactive:ViewModelViewHost Grid.Row="2" x:Name="ViewModelViewHost" />
+    </Grid>
+
+</reactive:ReactiveUserControl>

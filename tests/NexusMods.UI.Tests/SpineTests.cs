@@ -12,12 +12,10 @@ namespace NexusMods.UI.Tests;
 [Trait("RequiresNetworking", "True")]
 public class SpineTests : AUiTest
 {
-    private readonly LoadoutManager _loadoutManager;
     private readonly IGame _game;
 
-    public SpineTests(LoadoutManager loadoutManager, IServiceProvider provider) : base(provider)
+    public SpineTests(IServiceProvider provider) : base(provider)
     {
-        _loadoutManager = loadoutManager;
         _game = provider.GetRequiredService<Cyberpunk2077>();
     }
 
@@ -64,7 +62,7 @@ public class SpineTests : AUiTest
         }
 
         using var vm = GetActivatedViewModel<ISpineViewModel>();
-        var loadout = await _loadoutManager.ManageGameAsync(_game.Installations.First(), "Cyberpunk 2077");
+        var loadout = await LoadoutRegistry.Manage(_game.Installations.First(), "Cyberpunk 2077");
 
         using var _ = vm.VM.Actions.Subscribe(vm.VM.Activations);
 

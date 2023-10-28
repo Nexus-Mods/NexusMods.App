@@ -24,7 +24,7 @@ public class SkyrimSpecialEdition : ABethesdaGame, ISteamGame, IGogGame, IXboxGa
     public override GameDomain Domain => StaticDomain;
     public override GamePath GetPrimaryFile(GameStore store) => new(LocationId.Game, "SkyrimSE.exe");
 
-    public SkyrimSpecialEdition(IEnumerable<IGameLocator> gameLocators, IServiceProvider provider) : base(gameLocators, provider) {}
+    public SkyrimSpecialEdition(IServiceProvider provider) : base(provider) {}
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
         GameLocatorResult installation)
     {
@@ -44,8 +44,7 @@ public class SkyrimSpecialEdition : ABethesdaGame, ISteamGame, IGogGame, IXboxGa
     {
         yield return new PluginOrderFile
         {
-            Id = ModFileId.New(),
-            To = new GamePath(LocationId.AppData, "plugins.txt")
+            Id = ModFileId.New()
         };
     }
 

@@ -122,4 +122,14 @@ public enum EntityCategory : byte
     /// Information about registered downloads
     /// </summary>
     DownloadMetadata = 17,
+
+    /// <summary>
+    /// Disk state for loadouts
+    /// </summary>
+    DiskState = 18,
+
+    /// <summary>
+    /// Persisted workspaces.
+    /// </summary>
+    Workspaces = 19
 }

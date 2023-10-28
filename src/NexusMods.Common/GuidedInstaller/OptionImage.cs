@@ -6,13 +6,13 @@ namespace NexusMods.Common.GuidedInstaller;
 /// <summary>
 /// An image.
 /// </summary>
-public sealed class OptionImage : OneOfBase<Uri, OptionImage.ImageFromArchive>
+public sealed class OptionImage : OneOfBase<Uri, OptionImage.ImageStoredFile>
 {
     /// <summary>
     /// Represents an image from an archive.
     /// </summary>
-    public record struct ImageFromArchive(Hash FileHash);
+    public record struct ImageStoredFile(Hash FileHash);
 
     /// <inheritdoc />
-    public OptionImage(OneOf<Uri, ImageFromArchive> input) : base(input) { }
+    public OptionImage(OneOf<Uri, ImageStoredFile> input) : base(input) { }
 }

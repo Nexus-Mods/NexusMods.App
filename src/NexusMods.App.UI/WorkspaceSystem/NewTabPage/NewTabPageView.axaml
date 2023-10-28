@@ -1,0 +1,29 @@
+<reactive:ReactiveUserControl
+    x:TypeArguments="workspace:INewTabPageViewModel" xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactive="http://reactiveui.net"
+    xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="NexusMods.App.UI.WorkspaceSystem.NewTabPageView">
+
+    <Design.DataContext>
+        <workspace:NewTabPageDesignViewModel />
+    </Design.DataContext>
+
+    <ItemsControl x:Name="Sections">
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <WrapPanel/>
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+
+        <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="{x:Type workspace:INewTabPageSectionViewModel}">
+                <workspace:NewTabPageSectionView/>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>
+
+</reactive:ReactiveUserControl>

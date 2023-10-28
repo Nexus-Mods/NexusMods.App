@@ -160,4 +160,16 @@ public interface IId
         guid.TryWriteBytes(span);
         return new IdVariableLength(category, span.ToArray());
     }
+
+    /// <summary>
+    /// Returns a new ID with the given category but the same id value.
+    /// </summary>
+    /// <param name="category"></param>
+    /// <returns></returns>
+    IId WithCategory(EntityCategory category)
+    {
+        Span<byte> span = stackalloc byte[SpanSize];
+        ToSpan(span);
+        return FromSpan(category, span);
+    }
 }

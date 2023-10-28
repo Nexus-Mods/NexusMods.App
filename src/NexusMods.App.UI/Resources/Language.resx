@@ -240,4 +240,7 @@
     <data name="DownloadStatusDesignViewModel_Text_Queued_0_" xml:space="preserve">
         <value>Queued 0%</value>
     </data>
+    <data name="PanelTabHeaderViewModel_Title_New_Tab" xml:space="preserve">
+        <value>New Tab</value>
+    </data>
 </root>

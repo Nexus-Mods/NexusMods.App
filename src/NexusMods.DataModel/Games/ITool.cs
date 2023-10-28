@@ -23,7 +23,6 @@ public interface ITool
     /// Executes this tool.
     /// </summary>
     /// <param name="loadout">The collection of mods (loadout) to be used with this tool.</param>
-    /// <param name="applyPlan">The plan applied before this tool was executed</param>
     /// <param name="cancellationToken"></param>
-    public Task Execute(Loadout loadout, ApplyPlan applyPlan, CancellationToken cancellationToken);
+    public Task Execute(Loadout loadout, CancellationToken cancellationToken);
 }

@@ -1,5 +1,7 @@
 
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.GameWidget;
@@ -36,7 +38,9 @@ using NexusMods.App.UI.RightContent.LoadoutGrid.Columns.ModVersion;
 using NexusMods.App.UI.RightContent.MyGames;
 using NexusMods.App.UI.Routing;
 using NexusMods.App.UI.Windows;
-using NexusMods.Common;
+using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.DataModel.JsonConverters;
+using NexusMods.DataModel.JsonConverters.ExpressionGenerator;
 using ReactiveUI;
 using DownloadGameNameView = NexusMods.App.UI.RightContent.DownloadGrid.Columns.DownloadGameName.DownloadGameNameView;
 using DownloadNameView = NexusMods.App.UI.RightContent.LoadoutGrid.Columns.DownloadName.DownloadNameView;
@@ -61,7 +65,16 @@ public static class Services
         else
             c.AddSingleton(settings);
 
-        return c.AddTransient<MainWindow>()
+        return c
+            // JSON converters
+            .AddSingleton<JsonConverter, RectJsonConverter>()
+            .AddSingleton<JsonConverter, ColorJsonConverter>()
+            .AddSingleton<JsonConverter, AbstractClassConverterFactory<IPageFactoryContext>>()
+
+            // Type Finder
+            .AddSingleton<ITypeFinder, TypeFinder>()
+
+            .AddTransient<MainWindow>()
 
             // Services
             .AddSingleton<IRouter, ReactiveMessageRouter>()
@@ -148,7 +161,27 @@ public static class Services
             .AddView<MessageBoxOkCancelView, IMessageBoxOkCancelViewModel>()
             .AddView<UpdaterView, IUpdaterViewModel>()
 
+            // workspace system
+            .AddViewModel<WorkspaceViewModel, IWorkspaceViewModel>()
+            .AddViewModel<PanelViewModel, IPanelViewModel>()
+            .AddViewModel<AddPanelButtonViewModel, IAddPanelButtonViewModel>()
+            .AddViewModel<PanelTabHeaderViewModel, IPanelTabHeaderViewModel>()
+            .AddViewModel<NewTabPageViewModel, INewTabPageViewModel>()
+            .AddViewModel<NewTabPageSectionViewModel, INewTabPageSectionViewModel>()
+            .AddView<WorkspaceView, IWorkspaceViewModel>()
+            .AddView<PanelView, IPanelViewModel>()
+            .AddView<AddPanelButtonView, IAddPanelButtonViewModel>()
+            .AddView<PanelTabHeaderView, IPanelTabHeaderViewModel>()
+            .AddView<NewTabPageView, INewTabPageViewModel>()
+            .AddView<NewTabPageSectionView, INewTabPageSectionViewModel>()
+
+            .AddSingleton<PageFactoryController>()
+            .AddSingleton<IPageFactory, DummyPageFactory>()
+            .AddSingleton<IPageFactory, LoadoutGridPageFactory>()
+
             // Other
+            .AddViewModel<DummyViewModel, IDummyViewModel>()
+            .AddView<DummyView, IDummyViewModel>()
             .AddSingleton<InjectedViewLocator>()
             .AddSingleton<App>();
     }
