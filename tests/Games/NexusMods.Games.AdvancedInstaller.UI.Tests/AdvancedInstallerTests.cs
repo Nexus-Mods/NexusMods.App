@@ -19,14 +19,14 @@ public class AdvancedInstallerTests
     private readonly ModId _baseModId;
     private readonly FileTreeNode<RelativePath, ModSourceFileEntry> _archiveFiles;
 
-    public AdvancedInstallerTests()
+    public AdvancedInstallerTests(IServiceProvider provider)
     {
         // Executed once per method
         _installer = new AdvancedInstaller<MockOverlayVMFactory, MockInstallerVMFactory>(new OverlayController());
         _gameInstallation = new GameInstallation()
         {
             LocationsRegister = new GameLocationsRegister(new Dictionary<LocationId, AbsolutePath>()),
-            Game = new StubbedGame(default!, default!, FileSystem.Shared)
+            Game = new StubbedGame(default!, default!, FileSystem.Shared, provider),
         };
         _baseModId = ModId.From(Guid.NewGuid());
         _archiveFiles = new FileTreeNode<RelativePath, ModSourceFileEntry>("", "", true, null);
