@@ -29,9 +29,12 @@
             <Button Classes="Primary">
                 <TextBlock Text="YES" />
             </Button>
+            <Button Classes="Primary" IsEnabled="False">
+                <TextBlock Text="DISABLED" />
+            </Button>
 
             <!-- DO NOT use like this -->
-            <Button Classes="Primary" Content="YES" />
+            <Button Classes="Primary" Content="DON'T USE LIKE THIS" />
 
             <!-- Tertiary -->
             <Button Classes="LeftMenuItem" HorizontalAlignment="Center">
@@ -169,7 +172,7 @@
     <Style Selector="Button.Primary:disabled /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource BrandPrimaryBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
-        <Setter Property="Opacity" Value="40" />
+        <Setter Property="Opacity" Value="0.4" />
     </Style>
 
     <Style Selector="Button.Action">

@@ -18,6 +18,9 @@ public partial class AdvancedInstallerOverlayView : ReactiveUserControl<IAdvance
                 .DisposeWith(disposables);
             this.OneWayBind(ViewModel, vm => vm.FooterViewModel, v => v.BottomContentViewHost.ViewModel)
                 .DisposeWith(disposables);
+
+            this.BindCommand(ViewModel, vm => vm.FooterViewModel.CancelCommand, v => v.OverlayHeaderCloseButton)
+                .DisposeWith(disposables);
         });
     }
 }

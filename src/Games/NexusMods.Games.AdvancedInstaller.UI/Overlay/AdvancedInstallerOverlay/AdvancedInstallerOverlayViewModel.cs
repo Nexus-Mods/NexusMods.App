@@ -1,9 +1,11 @@
-﻿using NexusMods.DataModel.Games;
+﻿using System.Reactive.Disposables;
+using NexusMods.DataModel.Games;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Games.AdvancedInstaller.UI.Content;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Bottom;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
@@ -15,9 +17,29 @@ public class AdvancedInstallerOverlayViewModel : AViewModel<IAdvancedInstallerOv
         GameLocationsRegister register, string gameName = "")
     {
         BodyViewModel = new BodyViewModel(archiveFiles, register, gameName);
+        FooterViewModel = new FooterViewModel();
+        WasCancelled = false;
+
+        this.WhenActivated(disposables =>
+        {
+            FooterViewModel.CancelCommand = ReactiveCommand.Create(() =>
+            {
+                WasCancelled = true;
+                IsActive = false;
+            }).DisposeWith(disposables);
+
+            FooterViewModel.InstallCommand = ReactiveCommand.Create(() =>
+            {
+                WasCancelled = false;
+                IsActive = false;
+            }, this.WhenAnyValue(vm => vm.BodyViewModel.CanInstall))
+                .DisposeWith(disposables);
+        });
     }
 
     [Reactive] public bool IsActive { get; set; }
-    public virtual IFooterViewModel FooterViewModel { get; } = new FooterViewModel();
-    public virtual IBodyViewModel BodyViewModel { get; }
+    public IFooterViewModel FooterViewModel { get; }
+    public IBodyViewModel BodyViewModel { get; }
+
+    public bool WasCancelled { get; private set; }
 }

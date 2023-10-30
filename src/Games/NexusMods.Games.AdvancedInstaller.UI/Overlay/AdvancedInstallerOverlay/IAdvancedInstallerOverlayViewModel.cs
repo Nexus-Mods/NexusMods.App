@@ -9,4 +9,6 @@ public interface IAdvancedInstallerOverlayViewModel : IOverlayViewModel
     public IFooterViewModel FooterViewModel { get; }
 
     public IBodyViewModel BodyViewModel { get; }
+
+    public bool WasCancelled { get; }
 }

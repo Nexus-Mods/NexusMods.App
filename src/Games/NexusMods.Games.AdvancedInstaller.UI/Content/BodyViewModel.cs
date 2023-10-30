@@ -7,6 +7,7 @@ using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.EmptyPreview;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry;
+using NexusMods.Games.FOMOD.UI;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 using ReactiveUI;
@@ -37,6 +38,8 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
             StartSelectObserver.SubscribeWithErrorLogging(OnSelect).DisposeWith(disposables);
             CancelSelectObserver.SubscribeWithErrorLogging(OnCancelSelect).DisposeWith(disposables);
             DirectorySelectedObserver.SubscribeWithErrorLogging(OnDirectorySelected).DisposeWith(disposables);
+
+
         });
     }
 
@@ -49,6 +52,8 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
     public IPreviewViewModel PreviewViewModel { get; } = new PreviewViewModel();
     public IEmptyPreviewViewModel EmptyPreviewViewModel { get; } = new EmptyPreviewViewModel();
     public ISelectLocationViewModel SelectLocationViewModel { get; }
+
+    [Reactive] public bool CanInstall { get; set; } = false;
     [Reactive] public IViewModel CurrentPreviewViewModel { get; set; }
 
     internal readonly List<IModContentTreeEntryVM> SelectedItems = new();

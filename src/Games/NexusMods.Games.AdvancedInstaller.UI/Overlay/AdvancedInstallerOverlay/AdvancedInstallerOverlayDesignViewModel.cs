@@ -12,4 +12,6 @@ public class AdvancedInstallerOverlayDesignViewModel : AViewModel<IAdvancedInsta
     public bool IsActive { get; set; }
     public IFooterViewModel FooterViewModel { get; } = new FooterDesignViewModel();
     public IBodyViewModel BodyViewModel { get; } = new BodyDesignViewModel();
+
+    public bool WasCancelled { get; } = false;
 }

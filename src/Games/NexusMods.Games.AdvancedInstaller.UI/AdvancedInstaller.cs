@@ -37,7 +37,11 @@ public class AdvancedInstaller<TUnsupportedOverlayFactory, TAdvancedInstallerOve
         CancellationToken cancellationToken = default)
     {
         // Note: This code is effectively a stub.
-        var deploymentData = await GetDeploymentDataAsync(gameInstallation, baseModId, archiveFiles, cancellationToken);
+        var (shouldInstall, deploymentData) = await GetDeploymentDataAsync(gameInstallation, baseModId, archiveFiles, cancellationToken);
+
+        if (!shouldInstall)
+            return Array.Empty<ModInstallerResult>();
+
         return new[]
         {
             new ModInstallerResult
@@ -48,14 +52,14 @@ public class AdvancedInstaller<TUnsupportedOverlayFactory, TAdvancedInstallerOve
         };
     }
 
-    private async Task<DeploymentData> GetDeploymentDataAsync(GameInstallation gameInstallation, ModId baseModId,
+    private async Task<(bool shouldInstall, DeploymentData data)> GetDeploymentDataAsync(GameInstallation gameInstallation, ModId baseModId,
         FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles, CancellationToken cancellationToken)
     {
         var showInstaller = await ShowUnsupportedModOverlay();
 
         // TODO: Abort this somehow so if user closes dialog, the installed data does not change in db.
         if (!showInstaller)
-            return new DeploymentData();
+            return (false, new DeploymentData());
 
         // This is a stub, until we implement some UI logic to pull this data
         return await ShowAdvancedInstallerOverlay(archiveFiles, gameInstallation.LocationsRegister,
@@ -74,7 +78,7 @@ public class AdvancedInstaller<TUnsupportedOverlayFactory, TAdvancedInstallerOve
         return vm.ShouldAdvancedInstall;
     }
 
-    private async Task<DeploymentData> ShowAdvancedInstallerOverlay(
+    private async Task<(bool shouldInstall, DeploymentData data)> ShowAdvancedInstallerOverlay(
         FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles, GameLocationsRegister register,
         string gameName = "", object? referenceItem = null)
     {
@@ -85,7 +89,7 @@ public class AdvancedInstaller<TUnsupportedOverlayFactory, TAdvancedInstallerOve
             _overlayController.SetOverlayContent(new SetOverlayItem(vm, referenceItem), tcs);
         });
         await tcs.Task;
-        return vm.BodyViewModel.Data;
+        return (!vm.WasCancelled, vm.BodyViewModel.Data);
     }
 
     private static void OnUi<TState>(TState state, Action<TState> action)
