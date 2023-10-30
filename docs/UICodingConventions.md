@@ -422,6 +422,8 @@ public class MyViewModel : ReactiveObject
 
 When creating a `ReactiveCommand`, you can pass an `IObservable<bool>` along. When the command gets created, it will subscribe to this observable and make the command unavailable if the observable returns `false`. If you bind this command to a `Button`, the framework will disable the button if the command can't execute. This is all done behind the scenes with the `BindCommand` method and one of the reasons why ReactiveUI is so powerful.
 
+Note that `ReactiveCommand<TParam, TResult>` implements `IDisposable` to dispose of the subscription to the `canExecute` observable. If the command doesn't have this observable or the observable only references the current scope, the command doesn't have to be disposed as all references will be removed up once the GC cleans up the scope.
+
 ---
 
 [Avalonia]: https://docs.avaloniaui.net/
