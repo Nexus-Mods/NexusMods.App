@@ -225,6 +225,14 @@
         <Compile Update="Content\Right\Results\SelectLocation\Tree\SelectableDirectoryEntry\TreeEntryStandardDirectoryDesignViewModel.cs">
           <DependentUpon>ITreeEntryViewModel.cs</DependentUpon>
         </Compile>
+
+        <Compile Update="Content\Right\Results\SelectLocation\Tree\SelectableDirectoryEntry\TreeEntryCreatingDirectoryDesignViewModel.cs">
+          <DependentUpon>ITreeEntryViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\Results\SelectLocation\Tree\SelectableDirectoryEntry\TreeEntryViewModel.cs">
+          <DependentUpon>ITreeEntryViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

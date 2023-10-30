@@ -16,14 +16,23 @@ internal class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
         string gameName = "")
     {
         List<ISelectLocationTreeViewModel> treeList = new();
+        ObservableCollection<ISuggestedEntryViewModel> suggestedEntries = new();
 
         // We add the 'game name' if we show the game folder, otherwise we use name of LocationId.
         foreach (var location in register.GetTopLevelLocations())
+        {
             treeList.Add(new SelectLocationTreeViewModel(location.Value, location.Key,
                 location.Key == LocationId.Game ? gameName : null, directorySelectedObserver));
 
+            // Add suggested entries, include nested locations like Game/Data as well.
+            suggestedEntries.Add(new SuggestedEntryViewModel(register, location.Key, null, directorySelectedObserver));
+            foreach (var nestedLocation in register.GetNestedLocations(location.Key))
+            {
+                suggestedEntries.Add(new SuggestedEntryViewModel(register, nestedLocation, null, directorySelectedObserver));
+            }
+        }
 
-        SuggestedEntries = new(new());
+        SuggestedEntries = suggestedEntries.ToReadOnlyObservableCollection();
         AllFoldersTrees = treeList.ToReadOnlyObservableCollection();
     }
 }
