@@ -424,6 +424,125 @@ When creating a `ReactiveCommand`, you can pass an `IObservable<bool>` along. Wh
 
 Note that `ReactiveCommand<TParam, TResult>` implements `IDisposable` to dispose of the subscription to the `canExecute` observable. If the command doesn't have this observable or the observable only references the current scope, the command doesn't have to be disposed as all references will be removed up once the GC cleans up the scope.
 
+### Understanding expression chains
+
+As previously mentioned, ReactiveUI uses expression trees for methods like `OneWayBind` and `WhenAnyValue`. At runtime, these expressions are partially rewritten to be simpler. Another benefit of using expressions is being able to set up "chains" for nested properties:
+
+```csharp
+this.WhenAnyValue(x => x.Foo!.Bar!.Baz)
+    .Subscribe(x => Console.WriteLine(x));
+```
+
+The first thing to note is that there is no null propagation because expressions don't support this feature yet. This means that you won't be able to use the `?` chaining operator: `x => x.Foo?.Bar?.Baz`.
+
+Secondly, `WhenAny` and all it's variants, will only send notifications if evaluating the expression wouldn't throw a `NullReferenceException`. This is why you can use `x => x.Foo!.Bar!.Baz` to tell the compiler to ignore the nullability of the properties. ReactiveUI will prevent any null related exceptions and crashes from occuring in these expression chains.
+
+Thirdly, and this one is **important**: `x => x.Foo.Bar.Baz` will be set up the following subscriptions:
+
+1) Subscribe to `this`, look for `Foo`
+2) Subscribe to `Foo`, look for `Bar`
+3) Subscribe to `Bar`, look for `Baz`
+4) Subscribe to `Baz`, publish to Subject
+
+- If `Foo` changes, `this` will be notified and it will re-subscribe to the new `Foo`.
+- If `Bar` changes, `Foo` will be notified and it will re-subscribe to the new `Bar`.
+
+As such, you don't have to manually manage nested subscriptions, the framework does it for you.
+
+Lastly, `WhenAny` only notifies on changes of the output value. It only tells you when the final value of the expression has changed. If any intermediate values changed, then the subscriptions will be updated again, but you won't get a new notification on the primary observable if the final value hasn't changed:
+
+```
+this.WhenAnyValue(x => x.Foo!.Bar!.Baz)
+    .Subscribe(x => Console.WriteLine(x));
+
+this.Foo.Bar.Baz = "Hi!";
+// >>> "Hi!"
+
+this.Foo.Bar.Baz = "Hi!";
+// nothing happened because the value hasn't changed
+
+this.Foo.Bar = new Bar() { Baz = "Hi!" };
+// althought the intermediate value changed, the final value hasn't
+
+this.Foo.Bar = new Bar() { Baz = "Hello!" };
+// >>> "Hello!"
+```
+
+## Best Practices
+
+### View to View Model Bindings
+
+**Always** use `OneWayBind` if the property can't be changed from the View:
+
+```csharp
+this.WhenActivated(disposables =>
+{
+    this.OneWayBind(ViewModel, vm => vm.Text, view => view.MyTextBlock.Text)
+        .DisposeWith(disposables);
+});
+```
+
+**Always** use `TwoWayBind` if the property can be changed from the View:
+
+```csharp
+this.WhenActivated(disposables =>
+{
+    this.OneWayBind(ViewModel, vm => vm.IsChecked, view => view.MyCheckBox.IsChecked)
+        .DisposeWith(disposables);
+});
+```
+
+### Disposing
+
+**Always** use `DisposeWith` to dispose any reactive bindings:
+
+```csharp
+this.WhenActivated(disposables =>
+{
+    this.OneWayBind(ViewModel, vm => vm.Text, view => view.MyTextBlock.Text)
+        .DisposeWith(disposables);
+});
+```
+
+**Always** dispose subscriptions of observables:
+
+```csharp
+public class FooViewModel : ReactiveObject, IActivatableViewModel
+{
+    [Reactive] public BarViewModel? Other { get; set; }
+
+    public FooViewModel()
+    {
+        this.WhenActivated(disposables =>
+        {
+            // This observable references "Other" which has an unknown lifetime.
+            this.WhenAnyValue(vm => vm.Other!.Text)
+                .Subscribe(text => { })
+                .DisposeWith(disposables);
+        });
+    }
+}
+
+public class BarViewModel : ReactiveObject, IActivatableViewModel
+{
+    [Reactive] public string Text { get; set; } = string.Empty;
+
+    public BarViewModel()
+    {
+        this.WhenActivated(disposables =>
+        {
+            // This observable references the View Model itself, it technically doesn't
+            // have to be disposed to be cleaned up as no references to other
+            // objects are being created. However, to keep our code uniform and easier
+            // to read, you must dispose the subscription, even if it doesn't make a difference.
+            this.WhenAnyValue(vm => vm.Text)
+                .Subscribe(text => { })
+                .DsiposeWith(disposable);
+        });
+    }
+}
+```
+
 ---
 
 [Avalonia]: https://docs.avaloniaui.net/
