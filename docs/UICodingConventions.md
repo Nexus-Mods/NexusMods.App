@@ -293,7 +293,7 @@ public static IReactiveBinding<TView, TVProp> OneWayBind<TViewModel, TView, TVMP
 
 The first actual argument after the current instance of the view is the instance of the View Model that we want to bind to. `ReactiveUserControl<TViewModel>` has a property `TViewModel ViewModel` that we can use for this.
 
-Next is the property on the View Model that we want to select. Notice that this an **expression**. `Expression<T>` is different from `Func<T>` in that they return an [expression tree](https://learn.microsoft.com/en-us/dotnet/csharp/advanced-topics/expression-trees/). This topic is very complex and you can read the docs if you're interested but in summary, expressions are limited and some language features like the null propagating operator `?` can't be used. The reason we use expressions for bindings is because the expression tree allows the framework to **know** which property is being referenced at runtime. Instead of seeing this as a lambda that gets executed, think of it as you telling the framework which property you want to bind to, as such you also don't need to care about the value being null because you only mention the property, you don't inspect it's value. This will be explaind in more detailed in a later section.
+Next is the property on the View Model that we want to select. Notice that this an **expression**. `Expression<T>` is different from `Func<T>` in that they return an [expression tree](https://learn.microsoft.com/en-us/dotnet/csharp/advanced-topics/expression-trees/). This topic is very complex and you can read the docs if you're interested but in summary, expressions are limited and some language features like the null propagating operator `?` can't be used. The reason we use expressions for bindings is because the expression tree allows the framework to **know** which property is being referenced at runtime. Instead of seeing this as a lambda that gets executed, think of it as you telling the framework which property you want to bind to, as such you also don't need to care about the value being null because you only mention the property, you don't inspect it's value. This will be explained in more detailed in a later section.
 
 After you've selected the View Model property, the same thing has to be done but for the View property. In our case, that's `MyTextBlock.Text`.
 
@@ -363,7 +363,7 @@ this.WhenActivated(disposables =>
 
 This behaves and looks very similar to the previous `OneWayBind` method, however the core difference is that we don't select a property on the control but the control itself. The framework will then figure out how to bind the command to the control for us.
 
-Compiling the application, running this example and clicking the button will not change the text. As with XAML bindings, we need to notify the view that a property has changed. However, instead of manually implementing `INotifyPropertyChanged`, we can use the provided `ReactiveObject` class:
+Compiling the application, running this example and clicking the button will not change the text. As with XAML bindings, we need to notify the view that a property has changed. However, instead of manually implementing `INotifyPropertyChanged`, we can use the provided `ReactiveObject` class which already implements the interface for us:
 
 ```csharp
 public class MyViewModel : ReactiveObject
@@ -468,9 +468,200 @@ this.Foo.Bar = new Bar() { Baz = "Hello!" };
 // >>> "Hello!"
 ```
 
+## Understanding Dynamic Data
+
+Besides the `INotifyPropertyChanged` that we've looked at before, which is used to be notified when the value of a property changed, there is also [`INotifyCollectionChanged`](https://learn.microsoft.com/en-us/dotnet/api/system.collections.specialized.inotifycollectionchanged). This interface notifies listeners of dynamic changes, such as when an item is added and removed. The associated [`CollectionChanged`](https://learn.microsoft.com/en-us/dotnet/api/system.collections.specialized.inotifycollectionchanged.collectionchanged) event and it's event args type [`NotifyCollectionChangedEventArgs`](https://learn.microsoft.com/en-us/dotnet/api/system.collections.specialized.notifycollectionchangedeventargs) contains information like which action caused the event (item added/moved/removed/replaced), which items are new, which items are old and more.
+
+The interface is part of the `System.Collections.Specialized` namespace and is supported natively by the various collection based controls in Avalonia. Default implementations like [`ObservableCollection<T>`](https://learn.microsoft.com/en-us/dotnet/api/System.Collections.ObjectModel.ObservableCollection-1) or it's read-only counterpart [`ReadOnlyObservableCollection<T>`](https://learn.microsoft.com/en-us/dotnet/api/system.collections.objectmodel.readonlyobservablecollection-1) can be used without ReactiveUI or Dynamic Data.
+
+Dynamic Data is the glue that allows those collections to be used in a reactive environment. Instead of using events, it provides observers and observables.
+
+Let's look at an example that displays a bunch of GUIDs using a `ListBox`. The user can click on an "Add" button to add a new GUID, they can select an item from the list and they can click a "Remove" button to remove the selected item from the list:
+
+```csharp
+public class MyViewModel : ReactiveObject, IActivatableViewModel
+{
+    public ViewModelActivator Activator { get; } = new();
+
+    private readonly SourceList<Guid> _sourceList = new();
+
+    private readonly ReadOnlyObservableCollection<string> _items;
+    public ReadOnlyObservableCollection<string> Items => _items;
+
+    [Reactive] public int SelectedIndex { get; set; } = -1;
+
+    public ReactiveCommand<Unit, Unit> AddCommand { get; }
+    public ReactiveCommand<Unit, Unit> RemoveCommand { get; }
+
+    public MyViewModel()
+    {
+        AddCommand = ReactiveCommand.Create(() =>
+        {
+            _sourceList.Edit(list => list.Add(Guid.NewGuid()));
+        });
+
+        var canRemove = this
+            .WhenAnyValue(vm => vm.SelectedIndex)
+            .Select(selectedIndex => selectedIndex >= 0 && selectedIndex < _sourceList.Count);
+
+        RemoveCommand = ReactiveCommand.Create(() =>
+        {
+            _sourceList.Edit(list => list.RemoveAt(SelectedIndex));
+        }, canRemove);
+
+        _sourceList
+            .Connect()
+            .Transform(guid => guid.ToString())
+            .Bind(out _items)
+            .Subscribe();
+    }
+}
+```
+
+A few things to note about this View Model. First, you will notice that `WhenActivated` is not called at all and none of the subscriptions are disposed. This is because all observables inside this View Model reference the View Model itself, thus not creating any external references.
+
+Secondly, the only part of this code that comes from Dynamic Data is the `SourceList<T>`. There is also `SourceCache<TObject, TKey>` which you should use when your objects have unique identifiers and you don't care about the position, since you'll likely be sorting them anyways. The `SourceCache` is generally considered to be much more mature and has a wider range of operations, so go for the cache first. This example uses a `ListBox` to display the items and the `ListBox.SelectedIndex` property to remove an item at a specific index, and this works best with a `SourceList<T>`.
+
+Finally, updating a `SourceList` or `SourceCache` is usually done via the `Edit` method. In the case of a `SourceList<T>`, it provides you with an `IExtendedList<T>` argument while a `SourceCache<TObject, TKey>` provides an `ISourceUpdater<TObject, TKey>`. The `Edit` method also does "batching" meaning that removing multiple items from the collection in one edit will result in a change set that mentions the removal of multiple items, instead of `n` single item removals. Only after all edit have been done will the subscriber be notified. You can verify this yourself using the following example:
+
+```csharp
+AddCommand = ReactiveCommand.Create(() =>
+{
+    Console.WriteLine("Before edit");
+    _sourceList.Edit(list =>
+    {
+        Console.WriteLine("Start of edit");
+        list.Add(Guid.NewGuid());
+        Console.WriteLine("End of edit");
+    });
+    Console.WriteLine("After edit");
+});
+
+_sourceList
+    .Connect()
+    .Transform(guid => guid.ToString())
+    .Bind(out _items)
+    .Subscribe(_ => Console.WriteLine("In subscription"));
+```
+
+The output is the following:
+
+```
+Before edit
+Start of edit
+End of edit
+In subscription
+After edit
+```
+
+```xml
+<StackPanel>
+    <Button x:Name="AddButton">Add</Button>
+    <Button x:Name="RemoveButton">Remove</Button>
+    <ListBox x:Name="MyListBox" SelectionMode="Single">
+        <ListBox.DataTemplates>
+            <DataTemplate DataType="{x:Type system:String}">
+                <TextBlock Text="{CompiledBinding}"/>
+            </DataTemplate>
+        </ListBox.DataTemplates>
+    </ListBox>
+</StackPanel>
+```
+
+The View itself has a surprise you might've not expected. While we're using reactive bindings to bind to the `ListBox.ItemsSource` property, the control expects us to provide a `DataTemplate` that is used to actually render the items. In the example, the item type is `string` in which case you can use XAML bindings. If the item type is a View Model, you don't need to use XAML bindings at all. ReactiveUI comes with a built-in feature that allows it to create Views from View Models. If you have a View Model, the framework can look for all registered Views, construct the matching View, and bind the View Model to it.
+
+By default, ReactiveUI uses Splat for dependency injection and using the following code will scan the entire assembly for Views that implement `IViewFor<TViewModel>` and associates them with the corresponding `TViewModel`:
+
+```csharp
+public partial class App
+{
+    public App()
+    {
+        Locator.CurrentMutable.RegisterViewsForViewModels(Assembly.GetCallingAssembly());
+    }
+}
+```
+
+To better understand how this works, let's create a `StringView` and `StringViewModel`:
+
+```csharp
+public class StringViewModel : ReactiveObject, IActivatableViewModel
+{
+    public ViewModelActivator Activator { get; } = new();
+
+    public readonly string Text;
+
+    public StringViewModel(string text)
+    {
+        Text = text;
+    }
+}
+```
+
+```csharp
+public partial class StringView : ReactiveUserControl<StringViewModel>
+{
+    public StringView()
+    {
+        InitializeComponent();
+
+        this.WhenActivated(disposables =>
+        {
+            this.WhenAnyValue(view => view.ViewModel)
+                .WhereNotNull()
+                .Do(PopulateFromViewModel)
+                .Subscribe()
+                .DisposeWith(disposables);
+        });
+    }
+
+    private void PopulateFromViewModel(StringViewModel vm)
+    {
+        MyTextBlock.Text = vm.Text;
+    }
+}
+```
+
+This is overkill to display a single read-only field but it serves to illustrate how View resolution works. Also notice that the code-behind of the View is slightly different from the usual code. If the View Model properties don't change over time, probably because they are read-only, you should set the control properties directly instead of using bindings. This is more efficient than bindings since you only have a subscription on the View Model instead of every property.
+
+The `MyViewModel.Items` collection also has to be updated to use `StringViewModel` instead of `string`:
+
+```csharp
+private readonly ReadOnlyObservableCollection<StringViewModel> _items;
+public ReadOnlyObservableCollection<StringViewModel> Items => _items;
+```
+
+Finally, the View can be simplified and the XAML bindings can be removed:
+
+```xml
+<StackPanel>
+    <Button x:Name="AddButton">Add</Button>
+    <Button x:Name="RemoveButton">Remove</Button>
+    <ListBox x:Name="MyListBox" SelectionMode="Single" />
+</StackPanel>
+```
+
+At runtime, ReactiveUI will find the correct View for the View Model and instantiate it. The `Avalonia.ReactiveUI` package also comes with a `ViewModelViewHost` control:
+
+```xml
+<StackPanel>
+    <Button x:Name="AddButton">Add</Button>
+    <Button x:Name="RemoveButton">Remove</Button>
+    <ListBox x:Name="MyListBox" SelectionMode="Single">
+        <ListBox.DataTemplates>
+            <DataTemplate DataType="{x:Type ui:StringViewModel}">
+                <reactive:ViewModelViewHost ViewModel="{CompiledBinding }"/>
+            </DataTemplate>
+        </ListBox.DataTemplates>
+    </ListBox>
+</StackPanel>
+```
+
+This will behave similar at runtime but we're now using XAML bindings again, which is highly discouraged. The `ViewModelViewHost` control should only be used if you can directly bind to the `ViewModel` property. This is useful if you have a View that can display potentially any View Model, eg if you have container-like Views.
+
 ## Best Practices
 
-## Threading
+### Threading
 
 **Always** set properties in the View Model on the UI thread. The Views should **always** act on the UI thread.
 
@@ -546,6 +737,10 @@ public class BarViewModel : ReactiveObject, IActivatableViewModel
     }
 }
 ```
+
+### Dynamic Data
+
+**Never** expose the `SourceList<T>` or `SourceCache<TObject, TKey>` field to the View. These fields should **always** be marked as `private readonly` and the only public properties should either be an `IObservable<IChangeSet<T>>` that is the result from calling `.Connect` or `ObservableCollection<T>` or `ReadOnlyObservableCollection<T>`.
 
 ---
 
