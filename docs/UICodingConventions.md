@@ -143,7 +143,7 @@ The result of having this property is the ability to use other language construc
 this.WhenAnyValue(x => x.Text)
     .Select(text => text.Length > 10)
     .Subscribe(hasMinLength => { })
-    .DiposeWith(disposables);
+    .DisposeWith(disposables);
 ```
 
 All of your favorite LINQ methods like `Select`, `Where`, `First`, `All` and more can be used together with `IObservable<T>`. This makes the pattern inherently **composable** and is one of the major reasons why ReactiveUI is commonly used in UI development.
@@ -293,7 +293,7 @@ public static IReactiveBinding<TView, TVProp> OneWayBind<TViewModel, TView, TVMP
 
 The first actual argument after the current instance of the view is the instance of the View Model that we want to bind to. `ReactiveUserControl<TViewModel>` has a property `TViewModel ViewModel` that we can use for this.
 
-Next is the property on the View Model that we want to select. Notice that this an **expression**. `Expression<T>` is different from `Func<T>` in that they return an [expression tree](https://learn.microsoft.com/en-us/dotnet/csharp/advanced-topics/expression-trees/). This topic is very complex and you can read the docs if you're interested but in summary, expressions are limited and some language features like the null propagating operator `?` can't be used. The reason we use expressions for bindings is because the expression tree allows the framework to **know** which property is being referenced at runtime. Instead of seeing this as a lambda that gets executed, think of it as you telling the framework which property you want to bind to, as such you also don't need to care about the value being null because you only mention the property, you don't inspect it's value.
+Next is the property on the View Model that we want to select. Notice that this an **expression**. `Expression<T>` is different from `Func<T>` in that they return an [expression tree](https://learn.microsoft.com/en-us/dotnet/csharp/advanced-topics/expression-trees/). This topic is very complex and you can read the docs if you're interested but in summary, expressions are limited and some language features like the null propagating operator `?` can't be used. The reason we use expressions for bindings is because the expression tree allows the framework to **know** which property is being referenced at runtime. Instead of seeing this as a lambda that gets executed, think of it as you telling the framework which property you want to bind to, as such you also don't need to care about the value being null because you only mention the property, you don't inspect it's value. This will be explaind in more detailed in a later section.
 
 After you've selected the View Model property, the same thing has to be done but for the View property. In our case, that's `MyTextBlock.Text`.
 
@@ -451,7 +451,7 @@ As such, you don't have to manually manage nested subscriptions, the framework d
 
 Lastly, `WhenAny` only notifies on changes of the output value. It only tells you when the final value of the expression has changed. If any intermediate values changed, then the subscriptions will be updated again, but you won't get a new notification on the primary observable if the final value hasn't changed:
 
-```
+```csharp
 this.WhenAnyValue(x => x.Foo!.Bar!.Baz)
     .Subscribe(x => Console.WriteLine(x));
 
@@ -537,7 +537,7 @@ public class BarViewModel : ReactiveObject, IActivatableViewModel
             // to read, you must dispose the subscription, even if it doesn't make a difference.
             this.WhenAnyValue(vm => vm.Text)
                 .Subscribe(text => { })
-                .DsiposeWith(disposable);
+                .DisposeWith(disposable);
         });
     }
 }
