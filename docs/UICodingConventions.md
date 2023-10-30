@@ -213,7 +213,7 @@ public interface IDisposable
 }
 ```
 
-The `IObservable<T>` and `IObserver<T>` interfaces are tightly combined with the `IDisposable` interface. The `Subscribe` method on an `IObservable<T>` returns an instance of `IDisposable`. Calling `Dispose` on this returned instance allows the observer to stop receiving notifications before the provider has finished sending them. The important aspect of this is that the observable will remove the reference to the observer, which allows the GC to cleanup the observer object. If you don't dispose the observer or the observable, those references might exist for a longer period of time or even for the entire lifetime of the process which can lead to memory leaks.
+The `IObservable<T>` and `IObserver<T>` interfaces are tightly combined with the `IDisposable` interface. The `Subscribe` method on an `IObservable<T>` returns an instance of `IDisposable`. Calling `Dispose` on this returned instance allows the observer to stop receiving notifications before the provider has finished sending them. The important aspect of this is that the observable will remove the reference to the observer, which allows the GC to cleanup the observer object. If you don't dispose the observer or the observable, those references might exist for a longer period of time or even for the entire lifetime of the process which can lead to memory leaks. The only time when you don't need to dispose a subscription, is when you subscribe to yourself.
 
 In summary, instances of `IObservable<T>` and `IObserver<T>` should always be disposed when they go **out of scope**.
 
@@ -308,6 +308,119 @@ this.WhenActivated(disposables =>
 ```
 
 `OneWayBind` returns an instance of `IReactiveBinding<TView, TValue>` which implements `IDisposable`. As discussed before, this binding has to be disposed when the view gets deactivated. The `DisposeWith` extension method will add the disposable of the binding to the `CompositeDisposable` and guarantees that it will be disposed when the view gets deactivated.
+
+### Commands
+
+As before, the `MyViewModel.Greeting` property is currently just get-only, which means it will never change. Let's change this and add a `Button` that will modify the property:
+
+```csharp
+public class MyViewModel
+{
+    public string Greeting { get; set; } = "Hello World!";
+}
+```
+
+```xml
+<StackPanel>
+    <TextBlock x:Name="MyTextBlock" />
+    <Button x:Name="MyButton">Click Me!</Button>
+</StackPanel>
+```
+
+Instead of using the `Click` event as we did before, we make use of another ReactiveUI feature called **Commands**. These allow the View to trigger logic defined in the View Model:
+
+```csharp
+public class MyViewModel
+{
+    public string Greeting { get; set; } = "Hello World!";
+
+    public ReactiveCommand<Unit, Unit> ChangeGreetingCommand { get; }
+
+    public MyViewModel()
+    {
+        ChangeGreetingCommand = ReactiveCommand.Create(() =>
+        {
+            Greeting = "Hallo Welt!";
+        });
+    }
+}
+```
+
+It's important to note that `ReactiveCommand<TParam, TResult>` takes in a `TParam` and returns a `TResult`. Most commands you'll create won't have any inputs and outputs. As such, you can use the `System.Reactive.Unit` type which essentially represents `void`. You can see this in action when you look at the `ReactiveCommand.Create` method that is specific for a `ReactiveCommand<Unit, Unit>` and requires a method that has no parameters and does not return a value.
+
+Binding this command to the View can be done using the `BindCommand` extension method:
+
+```csharp
+this.WhenActivated(disposables =>
+{
+    this.OneWayBind(ViewModel, vm => vm.Greeting, view => view.MyTextBlock.Text)
+        .DisposeWith(disposables);
+
+    this.BindCommand(ViewModel, vm => vm.ChangeGreetingCommand, view => view.MyButton)
+        .DisposeWith(disposables);
+});
+```
+
+This behaves and looks very similar to the previous `OneWayBind` method, however the core difference is that we don't select a property on the control but the control itself. The framework will then figure out how to bind the command to the control for us.
+
+Compiling the application, running this example and clicking the button will not change the text. As with XAML bindings, we need to notify the view that a property has changed. However, instead of manually implementing `INotifyPropertyChanged`, we can use the provided `ReactiveObject` class:
+
+```csharp
+public class MyViewModel : ReactiveObject
+{
+    private string _greeting = "Hello World!";
+    public string Greeting
+    {
+        get => _greeting;
+        set => this.RaiseAndSetIfChanged(ref _greeting, value);
+    }
+
+    public ReactiveCommand<Unit, Unit> ChangeGreetingCommand { get; }
+
+    public MyViewModel()
+    {
+        ChangeGreetingCommand = ReactiveCommand.Create(() =>
+        {
+            Greeting = "Hallo Welt!";
+        });
+    }
+}
+```
+
+The `ReactiveUI.Fody` package can be used to simplify the property:
+
+```csharp
+[Reactive]
+public string { get; set; } = "Hello World!";
+```
+
+This will result in the same code but it's much easier to write.
+
+Finally, let's look at another really cool feature of a `ReactiveCommand`, which is the `canExecute` observable:
+
+```csharp
+public class MyViewModel : ReactiveObject
+{
+    [Reactive]
+    public string Greeting { get; set; } = "Hello World!";
+
+    public ReactiveCommand<Unit, Unit> ChangeGreetingCommand { get; }
+
+    public MyViewModel()
+    {
+        var canExecute = this
+            .WhenAnyValue(vm => vm.Greeting)
+            .Select(greeting => greeting == "Hello World!");
+
+        ChangeGreetingCommand = ReactiveCommand.Create(() =>
+        {
+            Greeting = "Hallo Welt!";
+        }, canExecute);
+    }
+}
+```
+
+When creating a `ReactiveCommand`, you can pass an `IObservable<bool>` along. When the command gets created, it will subscribe to this observable and make the command unavailable if the observable returns `false`. If you bind this command to a `Button`, the framework will disable the button if the command can't execute. This is all done behind the scenes with the `BindCommand` method and one of the reasons why ReactiveUI is so powerful.
 
 ---
 
