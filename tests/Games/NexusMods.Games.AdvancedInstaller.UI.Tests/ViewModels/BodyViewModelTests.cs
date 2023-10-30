@@ -125,7 +125,7 @@ public class BodyViewModelTests
             { LocationId.Saves, fs.FromUnsanitizedFullPath(savesDir.GetFullPath()) }
         });
 
-        return new BodyViewModel(ModContentVMTestHelpers.CreateTestTreeMSFE(), register);
+        return new BodyViewModel("Test Mod", ModContentVMTestHelpers.CreateTestTreeMSFE(), register);
     }
 
     public static ISelectLocationTreeViewModel GetTreeForLocationId(ISelectLocationViewModel vm, LocationId id) =>

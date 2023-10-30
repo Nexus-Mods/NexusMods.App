@@ -12,6 +12,8 @@ public partial class UnsupportedModOverlayView : ReactiveUserControl<IUnsupporte
     {
         this.WhenActivated(d =>
         {
+            ModNameTextBlock.Text = ViewModel!.ModName.ToUpper();
+
             this.BindCommand(ViewModel, vm => vm.AcceptCommand, view => view.InstallButton)
                 .DisposeWith(d);
 

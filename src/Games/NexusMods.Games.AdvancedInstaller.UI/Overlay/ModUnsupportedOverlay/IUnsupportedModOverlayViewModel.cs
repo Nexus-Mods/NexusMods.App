@@ -6,7 +6,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI;
 
 public interface IUnsupportedModOverlayViewModel : IOverlayViewModel
 {
-    public string ModName { get; set; }
+    public string ModName { get; }
 
     /// <summary>
     ///     Declares whether the mod should be 'advanced installed'.

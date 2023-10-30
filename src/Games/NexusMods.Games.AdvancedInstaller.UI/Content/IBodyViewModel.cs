@@ -7,6 +7,8 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content;
 
 public interface IBodyViewModel : IViewModel
 {
+    public string ModName { get; set; }
+
     public IModContentViewModel ModContentViewModel { get; }
 
     public IPreviewViewModel PreviewViewModel { get; }

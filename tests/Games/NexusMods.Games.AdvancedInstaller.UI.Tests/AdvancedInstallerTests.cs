@@ -94,7 +94,7 @@ public class MockOverlayVMFactory : IUnsupportedModOverlayViewModelFactory
     public static void Reset()
     {
         CreateWasCalled = false;
-        VM = new UnsupportedModOverlayViewModel();
+        VM = new UnsupportedModOverlayViewModel("Test Mod");
     }
 }
 
@@ -107,7 +107,7 @@ public class MockInstallerVMFactory : IAdvancedInstallerOverlayViewModelFactory
         GameLocationsRegister register, string gameName = "", string modName = "")
     {
         CreateWasCalled = true;
-        VM = new AdvancedInstallerOverlayViewModel(archiveFiles, register, gameName);
+        VM = new AdvancedInstallerOverlayViewModel(modName, archiveFiles, register, gameName);
         return VM;
     }
 

@@ -13,10 +13,10 @@ namespace NexusMods.Games.AdvancedInstaller.UI;
 public class AdvancedInstallerOverlayViewModel : AViewModel<IAdvancedInstallerOverlayViewModel>,
     IAdvancedInstallerOverlayViewModel
 {
-    public AdvancedInstallerOverlayViewModel(FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+    public AdvancedInstallerOverlayViewModel(string modName, FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         GameLocationsRegister register, string gameName = "")
     {
-        BodyViewModel = new BodyViewModel(archiveFiles, register, gameName);
+        BodyViewModel = new BodyViewModel(modName, archiveFiles, register, gameName);
         FooterViewModel = new FooterViewModel();
         WasCancelled = false;
 
@@ -42,6 +42,4 @@ public class AdvancedInstallerOverlayViewModel : AViewModel<IAdvancedInstallerOv
     public IBodyViewModel BodyViewModel { get; }
 
     public bool WasCancelled { get; private set; }
-
-    [Reactive] public string ModName { get; set; } = "Manual Mod";
 }

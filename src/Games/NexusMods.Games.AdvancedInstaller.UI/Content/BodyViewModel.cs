@@ -23,9 +23,11 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content;
 internal class BodyViewModel : AViewModel<IBodyViewModel>,
     IBodyViewModel, IAdvancedInstallerCoordinator
 {
-    public BodyViewModel(FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles, GameLocationsRegister register,
-        string gameName = "")
+    public BodyViewModel(string modName, FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+        GameLocationsRegister register, string gameName = "")
     {
+        ModName = modName;
+
         StartSelectObserver = new Subject<IModContentTreeEntryVM>();
         CancelSelectObserver = new Subject<IModContentTreeEntryVM>();
         DirectorySelectedObserver = new Subject<ISelectableTreeEntryVM>();
@@ -39,8 +41,6 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
             StartSelectObserver.SubscribeWithErrorLogging(OnSelect).DisposeWith(disposables);
             CancelSelectObserver.SubscribeWithErrorLogging(OnCancelSelect).DisposeWith(disposables);
             DirectorySelectedObserver.SubscribeWithErrorLogging(OnDirectorySelected).DisposeWith(disposables);
-
-
         });
     }
 
@@ -48,7 +48,7 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
     public ISubject<IModContentTreeEntryVM> CancelSelectObserver { get; }
     public ISubject<ISelectableTreeEntryVM> DirectorySelectedObserver { get; }
     public DeploymentData Data { get; set; } = new();
-
+    public string ModName { get; set; }
     public IModContentViewModel ModContentViewModel { get; }
     public IPreviewViewModel PreviewViewModel { get; } = new PreviewViewModel();
     public IEmptyPreviewViewModel EmptyPreviewViewModel { get; } = new EmptyPreviewViewModel();

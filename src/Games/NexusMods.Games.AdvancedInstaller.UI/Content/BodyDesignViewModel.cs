@@ -12,6 +12,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content;
 internal class BodyDesignViewModel : AViewModel<IBodyViewModel>,
     IBodyViewModel
 {
+    public string ModName { get; set; } = "Design Mod Name";
     public IModContentViewModel ModContentViewModel { get; } = new ModContentDesignViewModel();
     public IPreviewViewModel PreviewViewModel { get; } = new PreviewDesignViewModel();
 

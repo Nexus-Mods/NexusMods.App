@@ -8,7 +8,7 @@ public class UnsupportedModOverlayViewModelTests
     public void After_Accepting_ShouldAdvancedInstall_ShouldBe_True()
     {
         // Arrange
-        var viewModel = new UnsupportedModOverlayViewModel();
+        var viewModel = new UnsupportedModOverlayViewModel("Test Mod Name");
 
         // Act
         ((IUnsupportedModOverlayViewModel)viewModel).Accept();
@@ -21,7 +21,7 @@ public class UnsupportedModOverlayViewModelTests
     public void After_Accepting_IsActive_ShouldBe_False()
     {
         // Arrange
-        var viewModel = new UnsupportedModOverlayViewModel();
+        var viewModel = new UnsupportedModOverlayViewModel("Test Mod Name");
 
         // Act
         ((IUnsupportedModOverlayViewModel)viewModel).Accept();
@@ -34,7 +34,7 @@ public class UnsupportedModOverlayViewModelTests
     public void After_Declining_ShouldAdvancedInstall_ShouldBe_False()
     {
         // Arrange
-        var viewModel = new UnsupportedModOverlayViewModel();
+        var viewModel = new UnsupportedModOverlayViewModel("Test Mod Name");
 
         // Act
         ((IUnsupportedModOverlayViewModel)viewModel).Decline();
@@ -47,7 +47,7 @@ public class UnsupportedModOverlayViewModelTests
     public void After_Declining_IsActive_ShouldBe_False()
     {
         // Arrange
-        var viewModel = new UnsupportedModOverlayViewModel();
+        var viewModel = new UnsupportedModOverlayViewModel("Test Mod Name");
 
         // Act
         ((IUnsupportedModOverlayViewModel)viewModel).Decline();

@@ -86,26 +86,26 @@ public class AdvancedInstaller<TUnsupportedOverlayFactory, TAdvancedInstallerOve
             return (false, new DeploymentData());
 
         // This is a stub, until we implement some UI logic to pull this data
-        return await ShowAdvancedInstallerOverlay(archiveFiles, gameInstallation.LocationsRegister,
+        return await ShowAdvancedInstallerOverlay(modName, archiveFiles, gameInstallation.LocationsRegister,
             gameInstallation.Game.Name);
     }
 
     private async Task<bool> ShowUnsupportedModOverlay(string modName, object? referenceItem = null)
     {
         var tcs = new TaskCompletionSource<bool>();
-        var vm = TUnsupportedOverlayFactory.Create();
+        var vm = TUnsupportedOverlayFactory.Create(modName);
         OnUi(_overlayController,
             controller => { controller.SetOverlayContent(new SetOverlayItem(vm, referenceItem), tcs); });
         await tcs.Task;
         return vm.ShouldAdvancedInstall;
     }
 
-    private async Task<(bool shouldInstall, DeploymentData data)> ShowAdvancedInstallerOverlay(
+    private async Task<(bool shouldInstall, DeploymentData data)> ShowAdvancedInstallerOverlay(string modName,
         FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles, GameLocationsRegister register,
         string gameName = "", object? referenceItem = null)
     {
         var tcs = new TaskCompletionSource<bool>();
-        var vm = TAdvancedInstallerOverlayViewModelFactory.Create(archiveFiles, register, gameName);
+        var vm = TAdvancedInstallerOverlayViewModelFactory.Create(archiveFiles, register, gameName, modName);
         OnUi(_overlayController,
             controller => { _overlayController.SetOverlayContent(new SetOverlayItem(vm, referenceItem), tcs); });
         await tcs.Task;
@@ -139,8 +139,7 @@ public class UnsupportedModOverlayViewModelFactory : IUnsupportedModOverlayViewM
 {
     public static IUnsupportedModOverlayViewModel Create(string modName = "Manual Mod")
     {
-        var overlay = new UnsupportedModOverlayViewModel();
-        overlay.ModName = modName;
+        var overlay = new UnsupportedModOverlayViewModel(modName);
         return overlay;
     }
 }
@@ -153,7 +152,8 @@ public interface IAdvancedInstallerOverlayViewModelFactory
     static abstract IAdvancedInstallerOverlayViewModel Create(
         FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles, GameLocationsRegister register,
         string gameName = "",
-        string modName = "Manual Mod");
+        string modName = "Manual Mod"
+        );
 }
 
 public class AdvancedInstallerOverlayViewModelFactory : IAdvancedInstallerOverlayViewModelFactory
@@ -162,8 +162,7 @@ public class AdvancedInstallerOverlayViewModelFactory : IAdvancedInstallerOverla
         GameLocationsRegister register,
         string gameName = "", string modName = "Manual Mod")
     {
-        var overlay = new AdvancedInstallerOverlayViewModel(archiveFiles, register, gameName);
-        overlay.ModName = modName;
+        var overlay = new AdvancedInstallerOverlayViewModel(modName, archiveFiles, register, gameName);
         return overlay;
     }
 }

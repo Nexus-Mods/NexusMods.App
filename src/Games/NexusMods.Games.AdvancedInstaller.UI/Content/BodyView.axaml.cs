@@ -15,6 +15,8 @@ public partial class BodyView : ReactiveUserControl<IBodyViewModel>
 
         this.WhenActivated(disposables =>
         {
+            ModNameTextBlock.Text = ViewModel!.ModName.ToUpper();
+
             this.OneWayBind(ViewModel, vm => vm.ModContentViewModel, view => view.ModContentSectionViewHost.ViewModel!)
                 .DisposeWith(disposables);
 
