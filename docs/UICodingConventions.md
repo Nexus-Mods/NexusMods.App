@@ -470,6 +470,10 @@ this.Foo.Bar = new Bar() { Baz = "Hello!" };
 
 ## Best Practices
 
+## Threading
+
+**Always** set properties in the View Model on the UI thread. The Views should **always** act on the UI thread.
+
 ### View to View Model Bindings
 
 **Always** use `OneWayBind` if the property can't be changed from the View:
