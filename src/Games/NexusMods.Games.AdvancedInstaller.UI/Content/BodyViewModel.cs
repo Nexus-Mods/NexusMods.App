@@ -41,12 +41,16 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
             StartSelectObserver.SubscribeWithErrorLogging(OnSelect).DisposeWith(disposables);
             CancelSelectObserver.SubscribeWithErrorLogging(OnCancelSelect).DisposeWith(disposables);
             DirectorySelectedObserver.SubscribeWithErrorLogging(OnDirectorySelected).DisposeWith(disposables);
+
+            StartSelectObserver.DisposeWith(disposables);
+            CancelSelectObserver.DisposeWith(disposables);
+            DirectorySelectedObserver.DisposeWith(disposables);
         });
     }
 
-    public ISubject<IModContentTreeEntryVM> StartSelectObserver { get; }
-    public ISubject<IModContentTreeEntryVM> CancelSelectObserver { get; }
-    public ISubject<ISelectableTreeEntryVM> DirectorySelectedObserver { get; }
+    public Subject<IModContentTreeEntryVM> StartSelectObserver { get; }
+    public Subject<IModContentTreeEntryVM> CancelSelectObserver { get; }
+    public Subject<ISelectableTreeEntryVM> DirectorySelectedObserver { get; }
     public DeploymentData Data { get; set; } = new();
     public string ModName { get; set; }
     public IModContentViewModel ModContentViewModel { get; }

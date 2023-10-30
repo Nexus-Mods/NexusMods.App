@@ -14,17 +14,17 @@ public interface IAdvancedInstallerCoordinator
     /// <summary>
     ///     This observable should be notified when an archive entry is selected from the Mod Content section.
     /// </summary>
-    public ISubject<ITreeEntryViewModel> StartSelectObserver { get; }
+    public Subject<ITreeEntryViewModel> StartSelectObserver { get; }
 
     /// <summary>
     ///     This observable should be notified when user cancels the selection of an archive entry from the Mod Content section.
     /// </summary>
-    public ISubject<ITreeEntryViewModel> CancelSelectObserver { get; }
+    public Subject<ITreeEntryViewModel> CancelSelectObserver { get; }
 
     /// <summary>
     ///     This observable should be notified when user unlinks a file binding, either from the Mod Content section or the Preview section.
     /// </summary>
-    public ISubject<ISelectableDirectoryTreeEntryVM> DirectorySelectedObserver { get; }
+    public Subject<ISelectableDirectoryTreeEntryVM> DirectorySelectedObserver { get; }
 
     /// <summary>
     ///     Retrieves the deployment data used.
@@ -34,9 +34,9 @@ public interface IAdvancedInstallerCoordinator
 
 public class DummyCoordinator : IAdvancedInstallerCoordinator
 {
-    public ISubject<ITreeEntryViewModel> StartSelectObserver { get; } = new Subject<ITreeEntryViewModel>();
-    public ISubject<ITreeEntryViewModel> CancelSelectObserver { get; } = new Subject<ITreeEntryViewModel>();
-    public ISubject<ISelectableDirectoryTreeEntryVM> DirectorySelectedObserver { get; } = new Subject<ISelectableDirectoryTreeEntryVM>();
+    public Subject<ITreeEntryViewModel> StartSelectObserver { get; } = new();
+    public Subject<ITreeEntryViewModel> CancelSelectObserver { get; } = new();
+    public Subject<ISelectableDirectoryTreeEntryVM> DirectorySelectedObserver { get; } = new();
     public DeploymentData Data { get; } = new();
 }
 
