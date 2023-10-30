@@ -16,8 +16,12 @@ public class RedModInstaller : IModInstaller
     private static readonly RelativePath InfoJson = "info.json".ToRelativePath();
     private static readonly RelativePath Mods = "mods".ToRelativePath();
 
-    public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(GameInstallation gameInstallation, ModId baseModId,
-        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles, CancellationToken cancellationToken = default)
+    public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
+        GameInstallation gameInstallation,
+        LoadoutId loadoutId,
+        ModId baseModId,
+        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+        CancellationToken cancellationToken = default)
     {
         var infos = (await archiveFiles.GetAllDescendentFiles()
                 .Where(f => f.Path.FileName == InfoJson)

@@ -42,4 +42,6 @@ public class AdvancedInstallerOverlayViewModel : AViewModel<IAdvancedInstallerOv
     public IBodyViewModel BodyViewModel { get; }
 
     public bool WasCancelled { get; private set; }
+
+    [Reactive] public string ModName { get; set; } = "Manual Mod";
 }

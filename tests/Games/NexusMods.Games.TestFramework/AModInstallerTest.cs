@@ -100,6 +100,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
 
         var results = await ModInstaller.GetModsAsync(
             GameInstallation,
+            LoadoutId.Null,
             ModId.New(),
             tree,
             cancellationToken);
@@ -270,6 +271,7 @@ public abstract class AModInstallerTest<TGame, TModInstaller> : AGameTest<TGame>
                     })));
         mods = (await ModInstaller.GetModsAsync(
             GameInstallation,
+            LoadoutId.Null,
             ModId.New(),
             tree)).ToArray();
 

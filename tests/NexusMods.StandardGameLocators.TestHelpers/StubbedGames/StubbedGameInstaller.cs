@@ -19,14 +19,16 @@ public class StubbedGameInstaller : IModInstaller
 
     public ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
         GameInstallation gameInstallation,
+        LoadoutId loadoutId,
         ModId baseModId,
         FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         CancellationToken cancellationToken = default)
     {
-        return ValueTask.FromResult(GetMods(baseModId, archiveFiles));
+        return ValueTask.FromResult(GetMods(loadoutId, baseModId, archiveFiles));
     }
 
     private IEnumerable<ModInstallerResult> GetMods(
+        LoadoutId loadoutId,
         ModId baseModId,
         FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles)
     {

@@ -53,7 +53,7 @@ public class FomodXmlInstallerTests : AModInstallerTest<SkyrimSpecialEdition, Fo
                 }
             }
         )));
-        return await installer.GetModsAsync(GameInstallation, ModId.New(), tree);
+        return await installer.GetModsAsync(GameInstallation, LoadoutId.Null, ModId.New(), tree);
     }
 
     [Fact]

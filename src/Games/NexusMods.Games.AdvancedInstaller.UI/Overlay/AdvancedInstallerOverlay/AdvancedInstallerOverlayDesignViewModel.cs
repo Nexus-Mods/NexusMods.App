@@ -14,4 +14,6 @@ public class AdvancedInstallerOverlayDesignViewModel : AViewModel<IAdvancedInsta
     public IBodyViewModel BodyViewModel { get; } = new BodyDesignViewModel();
 
     public bool WasCancelled { get; } = false;
+
+    public string ModName { get; set; } = "Design Mod Name";
 }

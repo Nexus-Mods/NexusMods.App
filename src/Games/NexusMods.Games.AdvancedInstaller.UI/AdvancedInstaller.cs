@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.Overlays;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
+using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
@@ -23,21 +24,43 @@ public class AdvancedInstaller<TUnsupportedOverlayFactory, TAdvancedInstallerOve
     where TAdvancedInstallerOverlayViewModelFactory : IAdvancedInstallerOverlayViewModelFactory
 {
     private readonly IOverlayController _overlayController;
+    private readonly Lazy<LoadoutRegistry> _loadoutRegistry;
+    private readonly IServiceProvider _provider;
 
-    public static AdvancedInstaller<UnsupportedModOverlayViewModelFactory, AdvancedInstallerOverlayViewModelFactory> Create(IServiceProvider provider) =>
-        new(provider.GetRequiredService<IOverlayController>());
+    public static AdvancedInstaller<UnsupportedModOverlayViewModelFactory, AdvancedInstallerOverlayViewModelFactory>
+        Create(IServiceProvider provider) =>
+        new(provider.GetRequiredService<IOverlayController>(), provider);
 
-    public AdvancedInstaller(IOverlayController overlayController)
+    public AdvancedInstaller(IOverlayController overlayController, IServiceProvider provider)
     {
         _overlayController = overlayController;
+        _provider = provider;
+        // Delay to avoid circular dependency.
+        _loadoutRegistry = new Lazy<LoadoutRegistry>(() => provider.GetRequiredService<LoadoutRegistry>());
     }
 
-    public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(GameInstallation gameInstallation,
-        ModId baseModId, FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+    public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
+        GameInstallation gameInstallation,
+        LoadoutId loadoutId,
+        ModId baseModId,
+        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         CancellationToken cancellationToken = default)
     {
+        // Get default name of the mod for UI purposes.
+        Loadout? loadout = null;
+        Mod? mod = null;
+        if (loadoutId != LoadoutId.Null)
+        {
+            loadout = _loadoutRegistry.Value.Get(loadoutId);
+            loadout?.Mods.TryGetValue(baseModId, out mod);
+        }
+
+        var modName = mod?.Name ?? "Manual Mod";
+
+
         // Note: This code is effectively a stub.
-        var (shouldInstall, deploymentData) = await GetDeploymentDataAsync(gameInstallation, baseModId, archiveFiles, cancellationToken);
+        var (shouldInstall, deploymentData) = await GetDeploymentDataAsync(gameInstallation, loadout, modName,
+            baseModId, archiveFiles, cancellationToken);
 
         if (!shouldInstall)
             return Array.Empty<ModInstallerResult>();
@@ -52,10 +75,11 @@ public class AdvancedInstaller<TUnsupportedOverlayFactory, TAdvancedInstallerOve
         };
     }
 
-    private async Task<(bool shouldInstall, DeploymentData data)> GetDeploymentDataAsync(GameInstallation gameInstallation, ModId baseModId,
+    private async Task<(bool shouldInstall, DeploymentData data)> GetDeploymentDataAsync(
+        GameInstallation gameInstallation, Loadout? loadout, string modName, ModId baseModId,
         FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles, CancellationToken cancellationToken)
     {
-        var showInstaller = await ShowUnsupportedModOverlay();
+        var showInstaller = await ShowUnsupportedModOverlay(modName);
 
         // TODO: Abort this somehow so if user closes dialog, the installed data does not change in db.
         if (!showInstaller)
@@ -66,14 +90,12 @@ public class AdvancedInstaller<TUnsupportedOverlayFactory, TAdvancedInstallerOve
             gameInstallation.Game.Name);
     }
 
-    private async Task<bool> ShowUnsupportedModOverlay(object? referenceItem = null)
+    private async Task<bool> ShowUnsupportedModOverlay(string modName, object? referenceItem = null)
     {
         var tcs = new TaskCompletionSource<bool>();
         var vm = TUnsupportedOverlayFactory.Create();
-        OnUi(_overlayController, controller =>
-        {
-            controller.SetOverlayContent(new SetOverlayItem(vm, referenceItem), tcs);
-        });
+        OnUi(_overlayController,
+            controller => { controller.SetOverlayContent(new SetOverlayItem(vm, referenceItem), tcs); });
         await tcs.Task;
         return vm.ShouldAdvancedInstall;
     }
@@ -84,10 +106,8 @@ public class AdvancedInstaller<TUnsupportedOverlayFactory, TAdvancedInstallerOve
     {
         var tcs = new TaskCompletionSource<bool>();
         var vm = TAdvancedInstallerOverlayViewModelFactory.Create(archiveFiles, register, gameName);
-        OnUi(_overlayController, controller =>
-        {
-            _overlayController.SetOverlayContent(new SetOverlayItem(vm, referenceItem), tcs);
-        });
+        OnUi(_overlayController,
+            controller => { _overlayController.SetOverlayContent(new SetOverlayItem(vm, referenceItem), tcs); });
         await tcs.Task;
         return (!vm.WasCancelled, vm.BodyViewModel.Data);
     }
@@ -112,12 +132,17 @@ public class AdvancedInstaller<TUnsupportedOverlayFactory, TAdvancedInstallerOve
 /// </summary>
 public interface IUnsupportedModOverlayViewModelFactory
 {
-    static abstract IUnsupportedModOverlayViewModel Create();
+    static abstract IUnsupportedModOverlayViewModel Create(string modName = "Manual Mod");
 }
 
 public class UnsupportedModOverlayViewModelFactory : IUnsupportedModOverlayViewModelFactory
 {
-    public static IUnsupportedModOverlayViewModel Create() => new UnsupportedModOverlayViewModel();
+    public static IUnsupportedModOverlayViewModel Create(string modName = "Manual Mod")
+    {
+        var overlay = new UnsupportedModOverlayViewModel();
+        overlay.ModName = modName;
+        return overlay;
+    }
 }
 
 /// <summary>
@@ -127,13 +152,18 @@ public interface IAdvancedInstallerOverlayViewModelFactory
 {
     static abstract IAdvancedInstallerOverlayViewModel Create(
         FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles, GameLocationsRegister register,
-        string gameName = "");
+        string gameName = "",
+        string modName = "Manual Mod");
 }
 
 public class AdvancedInstallerOverlayViewModelFactory : IAdvancedInstallerOverlayViewModelFactory
 {
     public static IAdvancedInstallerOverlayViewModel Create(FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         GameLocationsRegister register,
-        string gameName = "") =>
-        new AdvancedInstallerOverlayViewModel(archiveFiles, register, gameName);
+        string gameName = "", string modName = "Manual Mod")
+    {
+        var overlay = new AdvancedInstallerOverlayViewModel(archiveFiles, register, gameName);
+        overlay.ModName = modName;
+        return overlay;
+    }
 }

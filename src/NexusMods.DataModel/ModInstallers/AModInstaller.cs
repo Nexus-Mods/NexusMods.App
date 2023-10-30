@@ -29,7 +29,10 @@ public abstract class AModInstaller : IModInstaller
     public static readonly IEnumerable<ModInstallerResult> NoResults = Enumerable.Empty<ModInstallerResult>();
 
     /// <inheritdoc />
-    public abstract ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(GameInstallation gameInstallation,
-        ModId baseModId, FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+    public abstract ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
+        GameInstallation gameInstallation,
+        LoadoutId loadoutId,
+        ModId baseModId,
+        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         CancellationToken cancellationToken = default);
 }

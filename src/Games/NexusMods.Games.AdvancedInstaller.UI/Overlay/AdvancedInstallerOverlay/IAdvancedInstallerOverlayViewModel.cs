@@ -11,4 +11,6 @@ public interface IAdvancedInstallerOverlayViewModel : IOverlayViewModel
     public IBodyViewModel BodyViewModel { get; }
 
     public bool WasCancelled { get; }
+
+    public string ModName { get; set; }
 }

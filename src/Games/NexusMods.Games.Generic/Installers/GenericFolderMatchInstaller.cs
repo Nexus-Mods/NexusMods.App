@@ -43,8 +43,11 @@ public class GenericFolderMatchInstaller : AModInstaller
 
     #region IModInstaller
 
-    public override ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(GameInstallation gameInstallation,
-        ModId baseModId, FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+    public override ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
+        GameInstallation gameInstallation,
+        LoadoutId loadoutId,
+        ModId baseModId,
+        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         CancellationToken cancellationToken = default)
     {
 

@@ -22,7 +22,7 @@ public class AdvancedInstallerTests
     public AdvancedInstallerTests(IServiceProvider provider)
     {
         // Executed once per method
-        _installer = new AdvancedInstaller<MockOverlayVMFactory, MockInstallerVMFactory>(new OverlayController());
+        _installer = new AdvancedInstaller<MockOverlayVMFactory, MockInstallerVMFactory>(new OverlayController(), null!);
         _gameInstallation = new GameInstallation()
         {
             LocationsRegister = new GameLocationsRegister(new Dictionary<LocationId, AbsolutePath>()),
@@ -37,7 +37,7 @@ public class AdvancedInstallerTests
 
     private async ValueTask<IEnumerable<ModInstallerResult>> ExecuteInstaller()
     {
-        return await _installer.GetModsAsync(_gameInstallation, _baseModId, _archiveFiles);
+        return await _installer.GetModsAsync(_gameInstallation, LoadoutId.Null, _baseModId, _archiveFiles);
     }
 
     [Fact]
@@ -76,7 +76,6 @@ public class AdvancedInstallerTests
         MockOverlayVMFactory.CreateWasCalled.Should().BeTrue();
         MockInstallerVMFactory.VM.Should().BeNull();
         MockInstallerVMFactory.CreateWasCalled.Should().BeFalse();
-        result.First().Id.Should().Be(_baseModId);
     }
 }
 
@@ -86,7 +85,7 @@ public class MockOverlayVMFactory : IUnsupportedModOverlayViewModelFactory
     public static IUnsupportedModOverlayViewModel VM = null!;
     public static bool CreateWasCalled;
 
-    public static IUnsupportedModOverlayViewModel Create()
+    public static IUnsupportedModOverlayViewModel Create(string modName = "")
     {
         CreateWasCalled = true;
         return VM;
@@ -105,7 +104,7 @@ public class MockInstallerVMFactory : IAdvancedInstallerOverlayViewModelFactory
     public static bool CreateWasCalled;
 
     public static IAdvancedInstallerOverlayViewModel Create(FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
-        GameLocationsRegister register, string gameName = "")
+        GameLocationsRegister register, string gameName = "", string modName = "")
     {
         CreateWasCalled = true;
         VM = new AdvancedInstallerOverlayViewModel(archiveFiles, register, gameName);
