@@ -49,9 +49,19 @@ Inside the AXAML file of the view, you can now add a `TextBlock` and **bind** th
 </StackPanel>
 ```
 
-This kind of binding is called **XAML Binding** because the binding is created inside the UI markup file.
+This kind of binding is called **XAML Binding** because the binding is created inside the UI markup file. The default **binding mode** for most properties is **one way** meaning that binding is from the source, aka the data context, to the target, aka the view.
 
-The default **binding mode** for most properties is **one way** meaning that binding is from the source, aka the data context, to the target, aka the view. Currently, the `MyData.Greeting` property is a get-only property, meaning it doesn't have a setter and the underlying field can't be changed. Let's change the `MyData.Getting` property to have a public setter:
+Another common binding mode is **two way** binding which is required for properties on input controls, like `TextBox.Text` and `Checkbox.IsChecked`.
+
+Note: when using XAML bindings, it's recommended to set the design data context. This provides a hint to the IDE auto-completion service and allows you to use the previewer:
+
+```xml
+<Design.DataContext>
+    <ui:MyData/>
+</Design.DataContext>
+```
+
+Currently, the `MyData.Greeting` property is a get-only property, meaning it doesn't have a setter and the underlying field can't be changed. Let's change the `MyData.Getting` property to have a public setter:
 
 ```csharp
 public class MyData
@@ -68,6 +78,8 @@ To update the text, we can add a simple button to the view that, when triggered,
     <Button Click="OnClick">Change Text</Button>
 </StackPanel>
 ```
+
+The `Button` control has a `Click` event that we can use to register an event handler called `OnClick`. This event handler will be called whenever the button is clicked:
 
 ```csharp
 public partial class MyView : UserControl
@@ -117,7 +129,185 @@ If the view has any bindings and the data context implements this interface, the
 
 ## Understanding ReactiveUI
 
-TODO
+The XAML bindings from the previous example work great for very simple applications. However, once you start adding more and more functionality to it, developing with XAML bindings can have some massive disadvantages.
+
+The main disadvantage comes from using events. By design, events require you to register an event handler that will receive the sender object and some event arguments. Since the event handler is often just a member function, it's tied to the class and it can be hard to reason about what actually happens when a property changes.
+
+An alternative to events are **observables**. The [observable design pattern](https://learn.microsoft.com/en-us/dotnet/standard/events/observer-design-pattern) is suitable for any scenario that requires push-based notification. The pattern defines an **observable** as a provider for push-based notifications and an **observer** as a mechanism for receiving push-based notifications.
+
+.NET provides an [`IObservable<T>`](https://learn.microsoft.com/en-us/dotnet/api/system.iobservable-1) and an [`IObserver<T>`](https://learn.microsoft.com/en-us/dotnet/api/system.iobserver-1) interface to facilitate this pattern. The great thing about this pattern and how it's implemented in C#, is that it doesn't require any special syntax or keywords like the `event` keyword. Conceptually, these are just interfaces that have methods that return values.
+
+The result of having this property is the ability to use other language constructs like LINQ on the pattern:
+
+```csharp
+this.WhenAnyValue(x => x.Text)
+    .Select(text => text.Length > 10)
+    .Subscribe(hasMinLength => { })
+    .DiposeWith(disposables);
+```
+
+All of your favorite LINQ methods like `Select`, `Where`, `First`, `All` and more can be used together with `IObservable<T>`. This makes the pattern inherently **composable** and is one of the major reasons why ReactiveUI is commonly used in UI development.
+
+Sadly, ReactiveUI requires a lot of boilerplate code to get started, as well as a base level understanding of various software development concepts like the observable pattern. Another important pattern is the **Model-View-ViewModel** pattern, or **MVVM**. At it's core, the MVVM pattern allows us to separate our various components. The View is what appears on the screen of the user, in the previous example that's `MyView`. The View Model was `MyData`, it provides public properties and commands that the View can bind to. It also facilitates the communication between the View and the "Model" where the model is often a stateful object or some data store.
+
+The MVVM pattern and it's separation of concerns makes developing the views and view models straightforward: the View should only bind to the View Model, the View Model should only contain the functionality required to drive the View and display the data. ReactiveUI makes this pattern much easier to implement.
+
+Let's re-create the previous example and change it to use ReactiveUI and the observable pattern instead of being event-driven with XAML bindings:
+
+We can start with `MyViewModel` and a simple `Greeting` property:
+
+```csharp
+public class MyViewModel
+{
+    public string Greeting { get; } = "Hello World!";
+}
+```
+
+Instead of creating a normal Avalonia `UserControl`, we can create a `ReactiveUserControl` that is provided the `Avalonia.ReactiveUI` package:
+
+```xml
+<reactive:ReactiveUserControl
+    x:TypeArguments="ui:MyViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="clr-namespace:Example"
+    xmlns:reactive="http://reactiveui.net"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="Example.MyView">
+
+    <Design.DataContext>
+        <ui:MyViewModel />
+    </Design.DataContext>
+
+    <StackPanel>
+        <TextBlock />
+    </StackPanel>
+
+</reactive:ReactiveUserControl>
+```
+
+The code-behind class `MyView.axaml.cs` will also have inherit from `ReactiveUserControl<TViewModel>`:
+
+```csharp
+public partial class MyView : ReactiveUserControl<MyViewModel>
+{
+    public MyView()
+    {
+        InitializeComponent();
+    }
+}
+```
+
+`ReactiveUserControl<TViewModel>` inherits from the Avalonia `UserControl` class but also implements the ReactiveUI interface `IViewFor<TViewModel>`. This interface extends `IActivatableView`, which is a marker interface for telling ReactiveUI that the current view can be activated. The activation method is an implementation detail of the UI framework itself, ReactiveUI supports more than Avalonia, so this needs to be kept vague. In the context of Avalonia, activation occurs when the view gets loaded: https://github.com/AvaloniaUI/Avalonia/blob/2a85f7cafed6c90d4a8cd11dee36a9dd15ebcc1e/src/Avalonia.ReactiveUI/AvaloniaActivationForViewFetcher.cs#L37-L52
+
+The `Loaded` and `Unloaded` events of an Avalonia `Control` determine whether a view is activated or not. The code snippet above also showcases that you can construct observables from events and thus convert from event-driven programming to the observable pattern.
+
+An activatable view has a lifetime associated with it. Resources should be allocated and bindings should be created when the view gets activated and they should be **disposed** when the view gets deactivated. This is done via the built-in `IDisposable` interface of .NET. This simple interface has only one method:
+
+```csharp
+public interface IDisposable
+{
+    void Dispose();
+}
+```
+
+The `IObservable<T>` and `IObserver<T>` interfaces are tightly combined with the `IDisposable` interface. The `Subscribe` method on an `IObservable<T>` returns an instance of `IDisposable`. Calling `Dispose` on this returned instance allows the observer to stop receiving notifications before the provider has finished sending them. The important aspect of this is that the observable will remove the reference to the observer, which allows the GC to cleanup the observer object. If you don't dispose the observer or the observable, those references might exist for a longer period of time or even for the entire lifetime of the process which can lead to memory leaks.
+
+In summary, instances of `IObservable<T>` and `IObserver<T>` should always be disposed when they go **out of scope**.
+
+Going back to the code-behind of our view, we currently have no bindings at all:
+
+```csharp
+public MyView()
+{
+    InitializeComponent();
+}
+```
+
+To create a reactive binding, we need to be able to reference the control in our code. This can be done by simply adding a name of the control. In this example, we want to change the text of the `TextBlock`, so we can attach a name to that control in the view:
+
+```xml
+<StackPanel>
+    <TextBlock x:Name="MyTextBlock" />
+</StackPanel>
+```
+
+Avalonia has a source generator that will automatically generate a field in the code-behind with the same name:
+
+```csharp
+// <auto-generated />
+partial class MyView
+{
+    internal global::Avalonia.Controls.TextBlock MyTextBlock;
+
+    public void InitializeComponent(bool loadXaml = true)
+    {
+        if (loadXaml)
+        {
+            AvaloniaXamlLoader.Load(this);
+        }
+
+        MyTextBlock = this.FindNameScope()?.Find<global::Avalonia.Controls.TextBlock>("MyTextBlock");
+    }
+}
+```
+
+This is also why the code-behind class has to be `partial` and why the constructor always calls the `InitializeComponent` method. With the name in place, we can create a one-way bind from the `Greeting` property in the View Model to the `Text` property of the `TextBlock` control in our View:
+
+```csharp
+public MyView()
+{
+    InitializeComponent();
+
+    this.WhenActivated(disposables =>
+    {
+        this.OneWayBind(ViewModel, vm => vm.Greeting, view => view.MyTextBlock.Text)
+            .DisposeWith(disposables);
+    });
+}
+```
+
+The `WhenActivated` method is an extension method, which is why we need to call `this.WhenActivated`:
+
+```csharp
+public static IDisposable WhenActivated(this IActivatableView item, Action<CompositeDisposable> block, IViewFor? view = null);
+```
+
+Importantly, there are multiple overloads of this method, so your IDE might complain until you've finished writing your code. The `disposables` parameter is an instance of `CompositeDisposable`, which represents a group of disposable resources that are disposed together.
+
+Once again, `OneWayBind` is an extension method, so we need to use `this.OneWayBind`:
+
+```csharp
+public static IReactiveBinding<TView, TVProp> OneWayBind<TViewModel, TView, TVMProp, TVProp>(
+    this TView view,
+    TViewModel? viewModel,
+    Expression<Func<TViewModel, TVMProp?>> vmProperty,
+    Expression<Func<TView, TVProp>> viewProperty,
+    object? conversionHint = null,
+    IBindingTypeConverter? vmToViewConverterOverride = null)
+    where TViewModel : class
+    where TView : class, IViewFor);
+```
+
+The first actual argument after the current instance of the view is the instance of the View Model that we want to bind to. `ReactiveUserControl<TViewModel>` has a property `TViewModel ViewModel` that we can use for this.
+
+Next is the property on the View Model that we want to select. Notice that this an **expression**. `Expression<T>` is different from `Func<T>` in that they return an [expression tree](https://learn.microsoft.com/en-us/dotnet/csharp/advanced-topics/expression-trees/). This topic is very complex and you can read the docs if you're interested but in summary, expressions are limited and some language features like the null propagating operator `?` can't be used. The reason we use expressions for bindings is because the expression tree allows the framework to **know** which property is being referenced at runtime. Instead of seeing this as a lambda that gets executed, think of it as you telling the framework which property you want to bind to, as such you also don't need to care about the value being null because you only mention the property, you don't inspect it's value.
+
+After you've selected the View Model property, the same thing has to be done but for the View property. In our case, that's `MyTextBlock.Text`.
+
+The last two arguments of the `OneWayBind` function are optional, they mostly exist to convert between one type to another but should only rarely be used.
+
+```csharp
+this.WhenActivated(disposables =>
+{
+    this.OneWayBind(ViewModel, vm => vm.Greeting, view => view.MyTextBlock.Text)
+        .DisposeWith(disposables);
+});
+```
+
+`OneWayBind` returns an instance of `IReactiveBinding<TView, TValue>` which implements `IDisposable`. As discussed before, this binding has to be disposed when the view gets deactivated. The `DisposeWith` extension method will add the disposable of the binding to the `CompositeDisposable` and guarantees that it will be disposed when the view gets deactivated.
 
 ---
 
