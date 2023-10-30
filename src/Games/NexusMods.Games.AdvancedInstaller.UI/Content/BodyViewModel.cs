@@ -1,5 +1,6 @@
 ﻿using System.Reactive.Disposables;
 using System.Reactive.Subjects;
+using DynamicData.Binding;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
@@ -58,6 +59,8 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
 
     internal readonly List<IModContentTreeEntryVM> SelectedItems = new();
 
+    internal IObservableCollection<IModContentTreeEntryVM> LinkedItems { get; } =
+        new ObservableCollectionExtended<IModContentTreeEntryVM>();
 
     public void OnSelect(IModContentTreeEntryVM treeEntryViewModel)
     {
@@ -74,13 +77,14 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
 
     private bool HasAnyItemsToPreview()
     {
-        foreach (var location in PreviewViewModel.Locations)
-        {
-            if (location.Root.Children.Count > 0)
-                return true;
-        }
-
-        return false;
+        return LinkedItems.Count > 0;
+        // foreach (var location in PreviewViewModel.Locations)
+        // {
+        //     if (location.Root.Children.Count > 0)
+        //         return true;
+        // }
+        //
+        // return false;
     }
 
     public void OnDirectorySelected(ISelectableTreeEntryVM directory)
@@ -89,6 +93,7 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
         {
             var node = PreviewViewModel.GetOrCreateBindingTarget(directory.Path);
             item.Link(Data, node, directory.Status == SelectableDirectoryNodeStatus.Regular);
+            LinkedItems.Add(item);
         }
 
         SelectedItems.Clear();

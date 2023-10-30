@@ -53,7 +53,6 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
 
     // Note: Items here are reduced to 1 byte, to avoid eating memory. With 3 items we have 5 bytes of padding left.
     [Reactive] public ModContentNodeStatus Status { get; private set; }
-    private ModContentNodeStatus _lastStatus;
 
     /// <summary>
     ///     Whether the node is a child of the root.
@@ -64,7 +63,6 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
     public RelativePath FullPath => Node.Path;
     public bool IsDirectory => Node.IsDirectory;
     public bool IsRoot => Node.IsTreeRoot;
-
 
 
     public TreeEntryViewModel()
@@ -98,6 +96,9 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
         IModContentBindingTarget target,
         bool targetAlreadyExisted)
     {
+        if (@this.Status != ModContentNodeStatus.SelectingViaParent)
+            return;
+
         @this.SetStatus(ModContentNodeStatus.IncludedViaParent);
         if (@this.IsDirectory)
         {
@@ -128,12 +129,7 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
 
         if (IsDirectory)
         {
-            SetStatus(ModContentNodeStatus.Default);
-            foreach (var child in Children)
-            {
-                var node = child as TreeEntryViewModel<TNodeValue>;
-                node!.Unlink(data, isCalledFromDoubleLinkedItem);
-            }
+            UnlinkChildrenRecursive(data, isCalledFromDoubleLinkedItem);
         }
         else
         {
@@ -143,27 +139,74 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
 
             UnlinkableItem = null;
         }
+    }
 
+    private void UnlinkChildrenRecursive(DeploymentData data, bool isCalledFromDoubleLinkedItem)
+    {
+        foreach (var child in Children)
+        {
+            var node = child as TreeEntryViewModel<TNodeValue>;
+            if (node!.Status != ModContentNodeStatus.IncludedViaParent)
+                continue;
+
+            node.SetStatus(ModContentNodeStatus.Default);
+
+            if (node.IsDirectory)
+            {
+                UnlinkChildrenRecursive(data, isCalledFromDoubleLinkedItem);
+            }
+            else
+            {
+                data.RemoveMapping(Node.Path);
+                if (!isCalledFromDoubleLinkedItem)
+                    UnlinkableItem?.Unlink(data, true);
+
+                UnlinkableItem = null;
+            }
+        }
     }
 
     /// <summary>
-    ///     Sets a new status, and stores the previous status in <see cref="_lastStatus" />.
+    ///     Sets a new status, and returns true if status was set successfully.
+    ///     Some status changes are ignored, and will return false.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void SetStatus(ModContentNodeStatus status)
+    public bool SetStatus(ModContentNodeStatus newStatus)
     {
-        var last = Status;
-        Status = status;
-        _lastStatus = last;
-    }
+        switch (newStatus)
+        {
+            case ModContentNodeStatus.Default:
+                Status = newStatus;
+                return true;
 
-    /// <summary>
-    ///     Restores the last status backed up in <see cref="_lastStatus" />
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void RestoreLastStatus()
-    {
-        (Status, _lastStatus) = (_lastStatus, Status);
+            case ModContentNodeStatus.Selecting:
+                Status = newStatus;
+                return true;
+
+            case ModContentNodeStatus.SelectingViaParent:
+                if (Status == ModContentNodeStatus.Default)
+                {
+                    Status = newStatus;
+                    return true;
+                }
+
+                return false;
+
+            case ModContentNodeStatus.IncludedExplicit:
+                Status = newStatus;
+                return true;
+
+            case ModContentNodeStatus.IncludedViaParent:
+                if (Status == ModContentNodeStatus.SelectingViaParent)
+                {
+                    Status = newStatus;
+                    return true;
+                }
+
+                return false;
+        }
+
+        return false;
     }
 
     /// <summary>
@@ -173,8 +216,6 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
     public void BeginSelect()
     {
         SetStatus(ModContentNodeStatus.Selecting);
-        if (!IsDirectory)
-            return;
 
         // Update all of children
         SetStatusRecursive(this, ModContentNodeStatus.SelectingViaParent);
@@ -187,25 +228,41 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
     /// </summary>
     public void CancelSelect()
     {
-        if (Status != ModContentNodeStatus.Selecting)
+        if (Status != ModContentNodeStatus.Selecting && Status != ModContentNodeStatus.SelectingViaParent)
             return;
 
-        RestoreLastStatusRecursive();
+        SetStatus(ModContentNodeStatus.Default);
+        RemoveSelectingWithParentRecursive();
 
         Coordinator.CancelSelectObserver.OnNext(this);
     }
 
     /// <summary>
-    ///     Recursively restores the last status of all of the nodes.
+    /// Sets the Default status to all child nodes that have the SelectingViaParent status.
+    /// This tries to stop recursive iteration on nodes that are not SelectingViaParent.
     /// </summary>
-    public void RestoreLastStatusRecursive()
+    /// <returns></returns>
+    public void RemoveSelectingWithParentRecursive()
     {
-        RestoreLastStatus();
-        if (!IsDirectory)
-            return;
+        foreach (var child in Children)
+        {
+            var node = child as TreeEntryViewModel<TNodeValue>;
 
-        RestoreLastStatusRecursive(this);
+            if (node!.Status != ModContentNodeStatus.SelectingViaParent)
+                continue;
+            node!.SetStatus(ModContentNodeStatus.Default);
+            node!.RemoveSelectingWithParentRecursive();
+        }
     }
+
+
+    /// <summary>
+    /// Removes the selection of the current node, and all of its children.
+    ///
+    /// </summary>
+    /// <param name="status"></param>
+    /// <returns></returns>
+    public void RemoveMappingRecursive() { }
 
     /// <summary>
     ///     Enumerates all children of this node, in a flattened fashion, using a depth first search approach.
@@ -241,20 +298,6 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
             var child = childInterface as TreeEntryViewModel<TNodeValue>;
             child!.SetStatus(status);
             SetStatusRecursive(child, status);
-        }
-    }
-
-    /// <summary>
-    ///     Recursively restores last status of all child nodes.
-    /// </summary>
-    private static void RestoreLastStatusRecursive(TreeEntryViewModel<TNodeValue> item)
-    {
-        foreach (var childInterface in item.Children)
-        {
-            // Covariant cast to remove virtualization and make Status writeable.
-            var child = childInterface as TreeEntryViewModel<TNodeValue>;
-            child!.RestoreLastStatus();
-            RestoreLastStatusRecursive(child);
         }
     }
 

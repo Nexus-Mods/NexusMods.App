@@ -26,6 +26,9 @@ public partial class
             this.BindCommand(ViewModel, vm => vm.CancelSelectCommand, view => view.SelectLocationRoundedButton)
                 .DisposeWith(d);
 
+            this.BindCommand(ViewModel, vm => vm.CancelSelectCommand, view => view.IncludeTransitionButton)
+                .DisposeWith(d);
+
             this.BindCommand(ViewModel, vm => vm.UnlinkCommand, view => view.RemoveFromLocationButton)
                 .DisposeWith(d);
 
