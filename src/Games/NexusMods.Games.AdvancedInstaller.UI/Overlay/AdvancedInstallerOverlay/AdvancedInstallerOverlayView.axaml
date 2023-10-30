@@ -14,7 +14,7 @@
         <ui:AdvancedInstallerOverlayDesignViewModel />
     </Design.DataContext>
 
-    <base:MessageBoxBackground MinHeight="672" MinWidth="1232" MaxHeight="818" MaxWidth="1500">
+    <base:MessageBoxBackground Height="672" Width="1232" MinHeight="672" MinWidth="1232" MaxHeight="818" MaxWidth="1500">
         <base:MessageBoxBackground.Styles>
 
             <Style Selector="Border.TopPart">
