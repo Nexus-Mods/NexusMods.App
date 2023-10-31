@@ -659,6 +659,85 @@ At runtime, ReactiveUI will find the correct View for the View Model and instant
 
 This will behave similar at runtime but we're now using XAML bindings again, which is highly discouraged. The `ViewModelViewHost` control should only be used if you can directly bind to the `ViewModel` property. This is useful if you have a View that can display potentially any View Model, eg if you have container-like Views.
 
+## NexusMods.App.UI
+
+This section will be completely about the specifics of the project and the differences to a "normal" Avalonia UI project.
+
+The project [`NexusMods.App.UI`](../src/NexusMods.App.UI) was built with dependency injection in mind. We have a custom View locator that using the DI system called [`InjectedViewLocator`](../src/NexusMods.App.UI/InjectedViewLocator.cs). As mentioned previously, ReactiveUI can construct a View from a View Model. By default, this is done using an assembly scanner that looks for `IViewFor<TViewModel>` implementations and links them to the `TViewModel` type. When we request a View for `TViewModel`, the framework knows that `IViewFor<TViewModel>` exists and tries to construct it using the default constructor.
+
+In this project, the Views are creating using DI, meaning that you have to register the Views and View Model beforehand in the [`Services`](../src/NexusMods.App.UI/Services.cs) file:
+
+```csharp
+.AddView<MyView, IMyViewModel>()
+.AddViewModel<MyViewModel, IMyViewModel>()
+```
+
+For `AddView`, the View has to implement `IViewFor<TViewModel>`. You will get this interface for free by using `ReactiveUserControl<TViewModel>` or `ReactiveWindow<TViewModel>`. The actual View Model being referenced is an interface. The interface has to extend `IViewModelInterface` which is a marker interface:
+
+```csharp
+public interface IMyViewModel : IViewModelInterface
+{
+    public string Name { get; set; }
+}
+```
+
+The implementation of this interface `MyViewModel` would look like this:
+
+```csharp
+public class MyViewModel : AViewModel<IMyViewModel>, IMyViewModel
+{
+    [Reactive]
+    public string Name { get; set; } = string.Empty;
+}
+```
+
+The abstract class `AViewModel<TViewModel>` and the `IViewModelInterface` are custom made to be used in our DI system. `AViewModel<TViewModel>` inherits from `ReactiveObject` and implements `IActivatableViewModel`, so you can freely use `this.WhenActivated` inside the constructor.
+
+The benefit of using an interface for the `TViewModel` type parameter is being able to have different implementations. You'll usually find two implementations in the project, one for design time and another for runtime:
+
+```csharp
+public class MyViewModel : AViewModel<IMyViewModel>, IMyViewModel
+{
+    [Reactive]
+    public string Name { get; set; } = string.Empty;
+}
+
+public class MyDesignViewModel : AViewModel<IMyViewModel>, IMyViewModel
+{
+    public string Name { get; set; } = "This is some design default value";
+}
+```
+
+We can use the design View Model by setting the design data context in the View:
+
+```xml
+<Design.DataContext>
+    <local:MyDesignViewModel />
+</Design.DataContext>
+```
+
+Using a design View Model is great if the View Model contains only data and next to no logic or commands. You should be mindful of not replicating any logic of the normal View Model inside the design View Model, as it often results in duplicate, messy and/or less maintainable code. The design View Model can also inherit from the normal View Model if that makes it easier.
+
+In summary, you'll need to create four (+1 code-behind) files in most cases:
+
+- `IMyViewModel`: extends `IViewModelInterface`
+- `MyView`: inherits from `ReactiveUserControl<IMyViewModel>`
+- `MyViewModel`: inherits from `AViewModel<IMyViewModel>` and implements `IMyViewModel`
+- `MyDesignViewModel`: inherits from `AViewModel<IMyViewModel>` and implements `IMyViewModel`
+
+These files should be grouped together in a folder that isn't a namespace provider. You should also link the View Model implementations to the interface, similar to how the code-behind file is linked to the View:
+
+```
+|
+|- IMyViewModel.cs
+|--- MyViewModel.cs
+|--- MyDesignViewModel.cs
+|- MyView.axaml
+|--- MyView.axaml.cs
+```
+
+This is, understandably, quite a lot of boilerplate just to create a new View. You can use the `NexusMods MVVM` file templates in Rider to create all files instantly.
+
 ## Best Practices
 
 ### Threading
