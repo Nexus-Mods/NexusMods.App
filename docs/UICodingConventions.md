@@ -1090,6 +1090,10 @@ public class BarViewModel : ReactiveObject, IActivatableViewModel
 
 **Never** expose the `SourceList<T>` or `SourceCache<TObject, TKey>` field to the View. These fields should **always** be marked as `private readonly` and the only public properties should either be an `IObservable<IChangeSet<T>>` that is the result from calling `.Connect` or `ObservableCollection<T>` or `ReadOnlyObservableCollection<T>`.
 
+For a parent reacting to changes in any of the children, use `WhenValueChanged` when you only need the value and `WhenPropertyChanged` when you also need the sender ([example](#parent-reacting-to-changes-in-one-of-the-children)).
+
+Instead of passing a reference of the parent to the child, keep the child simple and stupid and have the parent subscribe to an observable of all children using `MergeMany` ([example](#children-sending-notifications-to-the-parent)).
+
 ---
 
 [Avalonia]: https://docs.avaloniaui.net/
