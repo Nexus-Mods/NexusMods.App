@@ -31,7 +31,7 @@ public static class ReactiveUiExtensions
     /// <returns></returns>
     public static IObservable<T> OffUi<T>(this IObservable<T> observable)
     {
-        return observable.ObserveOn(TaskPoolScheduler.Default);
+        return observable.ObserveOn(RxApp.TaskpoolScheduler);
     }
 
     public static IDisposable BindToUi<TValue, TTarget, TTValue>(
