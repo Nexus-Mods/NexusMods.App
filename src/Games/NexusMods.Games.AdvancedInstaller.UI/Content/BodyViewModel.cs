@@ -94,8 +94,8 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
     {
         foreach (var item in SelectedItems)
         {
-            var node = PreviewViewModel.GetOrCreateBindingTarget(directory.Path);
-            item.Link(Data, node, directory.Status == SelectableDirectoryNodeStatus.Regular);
+            var node = PreviewViewModel.GetOrCreateBindingTarget(item.FullPath, item.IsDirectory, directory.Path);
+            item.Link(Data, node, false); //TODO:Implement IsFolderMerged // directory.Status == SelectableDirectoryNodeStatus.Regular);
             LinkedItems.Add(item);
         }
 

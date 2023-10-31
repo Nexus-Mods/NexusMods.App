@@ -117,7 +117,7 @@ public class TreeEntryViewModel : ITreeEntryViewModel, IUnlinkableItem
             PreviewEntryNodeFlags.IsRoot | PreviewEntryNodeFlags.IsDirectory);
 
         // If there is no subpath, don't add any children.
-        if (fullPath.Path.Path.Length <= 1)
+        if (fullPath.Path.Path.Length == 0)
             return root;
 
         root.AddChildren(fullPath.Path, isDirectory, new AlwaysFalseChecker());
@@ -157,9 +157,10 @@ public class TreeEntryViewModel : ITreeEntryViewModel, IUnlinkableItem
                     ? PreviewEntryNodeFlags.IsNew
                     : PreviewEntryNodeFlags.Default;
 
-                var isDirectoryFlag = isLastComponent && !isDirectory
-                    ? PreviewEntryNodeFlags.Default
-                    : PreviewEntryNodeFlags.IsDirectory;
+                // All intermediate nodes are directories, last one depends on isDirectory.
+                var isDirectoryFlag =  !isLastComponent || isDirectory
+                    ? PreviewEntryNodeFlags.IsDirectory
+                    : PreviewEntryNodeFlags.Default;
 
                 childNode = new TreeEntryViewModel(newGamePath, isNewFlag | isDirectoryFlag, currentNode);
                 currentNode.Children.Add(childNode);

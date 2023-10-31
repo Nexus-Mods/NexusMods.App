@@ -22,14 +22,16 @@ public static class PreviewViewModelExtensions
     /// </summary>
     /// <param name="vm">The ViewModel where the locations are stored.</param>
     /// <param name="directoryPath">The path of the item in question.</param>
-    public static IModContentBindingTarget GetOrCreateBindingTarget(this IPreviewViewModel vm, GamePath directoryPath)
+    public static IModContentBindingTarget GetOrCreateBindingTarget(this IPreviewViewModel vm, RelativePath sourceItemPath, bool isDirectory, GamePath directoryPath)
     {
+        var targetPath = directoryPath.Path.Join(sourceItemPath.FileName);
+
         var location = vm.Locations.FirstOrDefault(l => l.Root.FullPath.LocationId == directoryPath.LocationId);
         if (location is not null)
-            return location.Root.GetOrCreateChild(directoryPath.Path, true);
+            return location.Root.GetOrCreateChild(targetPath, isDirectory);
 
-        location = new LocationPreviewTreeViewModel(directoryPath);
+        location = new LocationPreviewTreeViewModel(new GamePath(directoryPath.LocationId, RelativePath.Empty));
         vm.Locations.Add(location);
-        return location.Root.GetOrCreateChild(directoryPath.Path, true);
+        return location.Root.GetOrCreateChild(targetPath, isDirectory);
     }
 }
