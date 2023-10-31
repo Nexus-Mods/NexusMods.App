@@ -7,7 +7,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocat
 // ReSharper disable once UnusedType.Global
 public class TreeEntryStandardDirectoryDesignViewModel : TreeEntryViewModel
 {
-    public TreeEntryStandardDirectoryDesignViewModel()
+    public TreeEntryStandardDirectoryDesignViewModel() : base(new DummyCoordinator())
     {
         Path = new GamePath(LocationId.Game, "Cool Folder Name");
         Status = SelectableDirectoryNodeStatus.Regular;

@@ -8,7 +8,6 @@ using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.EmptyPreview;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry;
-using NexusMods.Games.FOMOD.UI;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 using ReactiveUI;

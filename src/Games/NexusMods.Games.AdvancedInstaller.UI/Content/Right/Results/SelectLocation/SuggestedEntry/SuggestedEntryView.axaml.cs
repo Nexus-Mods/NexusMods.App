@@ -19,6 +19,9 @@ public partial class SuggestedEntryView : ReactiveUserControl<ISuggestedEntryVie
 
             this.OneWayBind(ViewModel, vm => vm.Subtitle, v => v.LocationSubHeading.Text)
                 .DisposeWith(disposables);
+
+            this.BindCommand(ViewModel, vm => vm.SelectCommand, v => v.SelectRoundedButton)
+                .DisposeWith(disposables);
         });
     }
 }

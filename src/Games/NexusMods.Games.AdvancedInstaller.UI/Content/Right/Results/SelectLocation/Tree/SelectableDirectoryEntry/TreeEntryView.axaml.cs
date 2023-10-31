@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
@@ -17,6 +18,9 @@ public partial class TreeEntryView : ReactiveUserControl<ITreeEntryViewModel>
                 return;
 
             InitView();
+
+            this.BindCommand(ViewModel, vm => vm.LinkCommand, v => v.SelectRoundedButton)
+                .DisposeWith(disposable);
         });
     }
 

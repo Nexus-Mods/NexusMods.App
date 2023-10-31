@@ -7,9 +7,8 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocat
 // ReSharper disable once UnusedType.Global
 public class TreeEntryCreatingDirectoryDesignViewModel : TreeEntryViewModel
 {
-    public TreeEntryCreatingDirectoryDesignViewModel()
+    public TreeEntryCreatingDirectoryDesignViewModel() : base(new DummyCoordinator())
     {
         Status = SelectableDirectoryNodeStatus.Editing;
-        Coordinator = new DummyCoordinator();
     }
 }

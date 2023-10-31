@@ -16,44 +16,38 @@ public class SelectLocationTreeDesignViewModel : SelectLocationTreeBaseViewModel
     {
         var fakeObserver = new DummyCoordinator();
 
-        var rootElement = new TreeEntryViewModel
+        var rootElement = new TreeEntryViewModel(fakeObserver)
         {
             Status = SelectableDirectoryNodeStatus.Regular,
             Path = new GamePath(LocationId.Game, ""),
-            Coordinator = fakeObserver,
         };
 
-        var createFolderElement = new TreeEntryViewModel
+        var createFolderElement = new TreeEntryViewModel(fakeObserver)
         {
             Status = SelectableDirectoryNodeStatus.Create,
-            Coordinator = fakeObserver,
         };
 
-        var dataElement = new TreeEntryViewModel
+        var dataElement = new TreeEntryViewModel(fakeObserver)
         {
             Status = SelectableDirectoryNodeStatus.Regular,
             Path = new GamePath(LocationId.Game, "Data"),
-            Coordinator = fakeObserver,
         };
 
-        var texturesElement = new TreeEntryViewModel
+        var texturesElement = new TreeEntryViewModel(fakeObserver)
         {
             Status = SelectableDirectoryNodeStatus.Regular,
             Path = new GamePath(LocationId.Game, "Data/Textures"),
-            Coordinator = fakeObserver,
         };
 
-        var createdElement = new TreeEntryViewModel
+        var createdElement = new TreeEntryViewModel(fakeObserver)
         {
             Status = SelectableDirectoryNodeStatus.Created,
             Path = new GamePath(LocationId.Game, "Data/Textures/This is a created folder"),
-            Coordinator = fakeObserver,
         };
 
-        var editingElement = new TreeEntryViewModel
+        var editingElement = new TreeEntryViewModel(fakeObserver)
         {
             Status = SelectableDirectoryNodeStatus.Editing,
-            Coordinator = fakeObserver,
         };
 
         AddChildren(rootElement, new[] { createFolderElement, dataElement });

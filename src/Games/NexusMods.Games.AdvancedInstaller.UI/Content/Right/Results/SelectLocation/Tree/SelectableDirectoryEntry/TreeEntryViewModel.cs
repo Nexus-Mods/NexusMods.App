@@ -1,4 +1,6 @@
 using System.Collections.ObjectModel;
+using System.Reactive;
+using System.Reactive.Disposables;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -12,7 +14,8 @@ public class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>, ITreeEntryVie
 
     public ObservableCollection<ITreeEntryViewModel> Children { get; init; } = new();
 
-    public required IAdvancedInstallerCoordinator Coordinator { get; init; }
+    public IAdvancedInstallerCoordinator Coordinator { get; }
+    public ReactiveCommand<Unit, Unit> LinkCommand { get; private set; } = Initializers.EnabledReactiveCommand;
     public GamePath Path { get; init; }
 
     // Used for the "Create new folder" node.
@@ -33,7 +36,23 @@ public class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>, ITreeEntryVie
     }
 
     private string _displayName = string.Empty;
+
+    public TreeEntryViewModel(IAdvancedInstallerCoordinator coordinator)
+    {
+        Coordinator = coordinator;
+
+        this.WhenActivated(disposables =>
+        {
+            LinkCommand = ReactiveCommand.Create(Link).DisposeWith(disposables);
+        });
+    }
+
     public string DisplayName => _displayName != string.Empty ? _displayName : DirectoryName;
+
+    public void Link()
+    {
+        Coordinator.DirectorySelectedObserver.OnNext(this);
+    }
 
 
     /// <summary>
@@ -47,12 +66,11 @@ public class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>, ITreeEntryVie
     {
         var finalLocation = absPath.Combine(gamePath.Path);
         var finalLocationLength = finalLocation.GetFullPathLength() + 1;
-        var root = new TreeEntryViewModel
+        var root = new TreeEntryViewModel(coordinator)
         {
             Status = SelectableDirectoryNodeStatus.Regular,
             Path = gamePath,
             _displayName = rootName,
-            Coordinator = coordinator,
         };
         root.CreateChildrenRecursive(finalLocation, gamePath.LocationId, finalLocationLength, coordinator);
         return root;
@@ -67,12 +85,11 @@ public class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>, ITreeEntryVie
     internal void CreateChildrenRecursive(AbsolutePath currentDirectory, LocationId locationId, int dirSubstringLength, IAdvancedInstallerCoordinator coordinator)
     {
         // Add the Create New Folder node.
-        var createFolderNode = new TreeEntryViewModel
+        var createFolderNode = new TreeEntryViewModel(coordinator)
         {
             Status = SelectableDirectoryNodeStatus.Create,
             Path = EmptyPath,
             Parent = this,
-            Coordinator = coordinator,
         };
         Children.Add(createFolderNode);
 
@@ -80,11 +97,10 @@ public class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>, ITreeEntryVie
         foreach (var directory in currentDirectory.EnumerateDirectories("*", false))
         {
             var name = directory.GetFullPath().Substring(dirSubstringLength);
-            var node = new TreeEntryViewModel
+            var node = new TreeEntryViewModel(coordinator)
             {
                 Path = new GamePath(locationId, name),
                 Parent = this,
-                Coordinator = coordinator,
             };
             node.CreateChildrenRecursive(directory, locationId, dirSubstringLength, coordinator);
             Children.Add(node);
