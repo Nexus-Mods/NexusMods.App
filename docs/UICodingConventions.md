@@ -915,8 +915,7 @@ this.WhenActivated(disposables =>
     _sourceCache
         .Connect()
         // MergeMany is part of Dynamic Data and automatically handles subscriptions for us.
-        // The Select(_ => child.Id) discards the result of the command, which is Unit, and simply returns the ID.
-        .MergeMany(child => child.RemoveCommand.Select(_ => child.Id))
+        .MergeMany(child => child.RemoveCommand)
         .Subscribe(childId =>
         {
             _sourceCache.Edit(updater =>
