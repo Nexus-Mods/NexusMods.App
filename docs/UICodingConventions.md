@@ -932,6 +932,97 @@ this.WhenActivated(disposables =>
 
 The star of this solution is `MergeMany` which is part of Dynamic Data and merges the selected observable on each item. It automatically handles subscriptions for items being added and removed. This code is ideal because it keeps the child stupid and simple.
 
+### Trees
+
+Dynamic Data also supports trees without tree structures. The data internally is flat. As an example, we'll create a `PersonViewModel`:
+
+```csharp
+public class PersonViewModel : ReactiveObject, IActivatableView
+{
+    public ViewModelActivator Activator { get; } = new();
+
+    public Guid Id { get; }
+    public string Name { get; }
+    public Guid ParentId { get; }
+
+    public ReactiveCommand<Unit, Guid> RemoveCommand { get; }
+
+    public PersonViewModel(Guid id, Guid parentId)
+    {
+        Id = id;
+        ParentId = parentId;
+        Name = id.ToString("D");
+
+        RemoveCommand = ReactiveCommand.Create(() => id);
+    }
+}
+```
+
+The important bit is the fact that the object doesn't contain a reference to other objects, it just has an ID that links them together.
+
+```csharp
+public class MyViewModel : ReactiveObject, IActivatableViewModel
+{
+    public ViewModelActivator Activator { get; } = new();
+
+    private readonly SourceCache<PersonViewModel, Guid> _sourceCache = new(x => x.Id);
+    private readonly ReadOnlyObservableCollection<NodeViewModel> _nodes;
+    public ReadOnlyObservableCollection<NodeViewModel> Nodes => _nodes;
+
+    public MyViewModel()
+    {
+        _sourceCache
+            .Connect()
+            .TransformToTree(item => item.ParentId)
+            .Transform(node => new NodeViewModel(node))
+            .Bind(out _nodes)
+            .DisposeMany()
+            .Subscribe();
+
+        this.WhenActivated(disposables =>
+        {
+            _sourceCache
+                .Connect()
+                .MergeMany(child => child.RemoveCommand)
+                .Subscribe(childId =>
+                {
+                    _sourceCache.Edit(updater =>
+                    {
+                        updater.Remove(childId);
+                    });
+                })
+                .DisposeWith(disposables);
+        });
+    }
+}
+```
+
+The magic method is `TransformToTree` from Dynamic Data. This single method transforms our input into a fully recursive tree using a pivot point we specify. This is going to be the `ParentId` for the example. `TransformToTree` transforms the `IObservable<IChangeSet<PersonViewModel, Guid>>` into an `IObservable<IChangeSet<Node<PersonViewModel, Guid>, Guid>>`. This `Node<TObject, TKey>` type also comes from Dynamic Data and needs to be transformed into a custom View Model for Avalonia:
+
+```csharp
+public class NodeViewModel : ReactiveObject, IActivatableViewModel
+{
+    public ViewModelActivator Activator { get; } = new();
+
+    private readonly ReadOnlyObservableCollection<NodeViewModel> _children;
+    public ReadOnlyObservableCollection<NodeViewModel> Children => _children;
+
+    public PersonViewModel Item { get; }
+
+    public NodeViewModel(Node<PersonViewModel, Guid> node)
+    {
+        Item = node.Item;
+
+        node.Children
+            .Connect()
+            .Transform(child => new NodeViewModel(child))
+            .Bind(out _children)
+            .DisposeMany()
+            .Subscribe();
+    }
+}
+```
+
 ## NexusMods.App.UI
 
 This section will be completely about the specifics of the project and the differences to a "normal" Avalonia UI project.
