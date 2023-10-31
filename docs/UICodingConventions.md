@@ -470,6 +470,10 @@ this.Foo.Bar = new Bar() { Baz = "Hello!" };
 // >>> "Hello!"
 ```
 
+### Exceptions with ReactiveUI
+
+TODO
+
 ## Understanding Dynamic Data
 
 Besides the `INotifyPropertyChanged` that we've looked at before, which is used to be notified when the value of a property changed, there is also [`INotifyCollectionChanged`](https://learn.microsoft.com/en-us/dotnet/api/system.collections.specialized.inotifycollectionchanged). This interface notifies listeners of dynamic changes, such as when an item is added and removed. The associated [`CollectionChanged`](https://learn.microsoft.com/en-us/dotnet/api/system.collections.specialized.inotifycollectionchanged.collectionchanged) event and it's event args type [`NotifyCollectionChangedEventArgs`](https://learn.microsoft.com/en-us/dotnet/api/system.collections.specialized.notifycollectionchangedeventargs) contains information like which action caused the event (item added/moved/removed/replaced), which items are new, which items are old and more.
@@ -1012,6 +1016,69 @@ This is, understandably, quite a lot of boilerplate just to create a new View. Y
 ### Threading
 
 **Always** set properties in the View Model on the UI thread. The Views should **always** act on the UI thread.
+
+### View Model Properties
+
+**Always** use `ObservableAsPropertyHelper<T>` to expose the latest values from an `IObservable<T>` that is async or runs on the task pool scheduler:
+
+```csharp
+public class BadExampleViewModel
+{
+    [Reactive]
+    public string Text { get; set; } = string.Empty;
+
+    public BadExampleViewModel()
+    {
+        this.WhenActivated(disposables =>
+        {
+            // don't use subscribe to set the property
+            Observable
+                .Return("Hi!")
+                .Subscribe(text => Text = text)
+                .DiposeWith(disposables);
+        });
+    }
+}
+
+public class GoodExampleViewModel
+{
+    private readonly ObservableAsPropertyHelper<string> _text;
+    public string Text => _text;
+
+    public GoodExampleViewModel()
+    {
+        _text = Observable
+            .Return("Hi!")
+            // set the scheduler to be on the UI thread instead of calling OnUI
+            .ToProperty(this, vm => vm.Text, scheduler: RxApp.MainThreadScheduler);
+
+        this.WhenActivated(disposables =>
+        {
+            Disposable.Create(() => _text.Dispose()).DisposeWith(disposables);
+        });
+    }
+}
+```
+
+**Always** use `BindTo` and a reactive property to expose the latest values from an `IObservable<T>` that returns immediately and isn't doing anything async:
+
+```csharp
+public class GoodExampleViewModel
+{
+    [Reactive] public string Text { get; private set; }
+
+    public GoodExampleViewModel()
+    {
+        this.WhenActivated(disposables =>
+        {
+            _text = Observable
+                .Return("Hi!")
+                .BindTo(this, vm => vm.Text)
+                .DiposeWith(disposables);
+        });
+    }
+}
+```
 
 ### View to View Model Bindings
 
