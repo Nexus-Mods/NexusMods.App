@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ExportableFileTemplateSettings">
+    <j2ee_templates>
+      <template name="c.executable.CMakeLists.txt" reformat="true" live-template-enabled="false" enabled="false" />
+      <template name="c.library.CMakeLists.txt" reformat="true" live-template-enabled="false" enabled="false" />
+      <template name="cpp.executable.CMakeLists.txt" reformat="true" live-template-enabled="false" enabled="false" />
+      <template name="cpp.library.CMakeLists.txt" reformat="true" live-template-enabled="false" enabled="false" />
+      <template name="cuda.executable.CMakeLists.txt" reformat="true" live-template-enabled="false" enabled="false" />
+      <template name="cuda.library.CMakeLists.txt" reformat="true" live-template-enabled="false" enabled="false" />
+      <template name="main.c.txt" reformat="true" live-template-enabled="false" enabled="false" />
+      <template name="main.cpp.txt" reformat="true" live-template-enabled="false" enabled="false" />
+      <template name="qt.CMakeLists.txt" reformat="true" live-template-enabled="false" enabled="false" />
+    </j2ee_templates>
+    <default_templates>
+      <template name="NexusMods MVVM.cs" file-name="I${NAME}ViewModel" reformat="true" live-template-enabled="false">
+        <template name="NexusMods MVVM.cs.child.0.cs" file-name="${NAME}View" reformat="true" live-template-enabled="false" />
+        <template name="NexusMods MVVM.cs.child.1.axaml" file-name="${NAME}View" reformat="true" live-template-enabled="false" />
+        <template name="NexusMods MVVM.cs.child.2.cs" file-name="${NAME}ViewModel" reformat="true" live-template-enabled="false" />
+        <template name="NexusMods MVVM.cs.child.3.cs" file-name="${NAME}DesignViewModel" reformat="true" live-template-enabled="false" />
+      </template>
+      <template name="NexusMods MVVM.cs.child.0.cs" file-name="${NAME}View" reformat="true" live-template-enabled="false" />
+      <template name="NexusMods MVVM.cs.child.1.axaml" file-name="${NAME}View" reformat="true" live-template-enabled="false" />
+      <template name="NexusMods MVVM.cs.child.2.cs" file-name="${NAME}ViewModel" reformat="true" live-template-enabled="false" />
+      <template name="NexusMods MVVM.cs.child.3.cs" file-name="${NAME}DesignViewModel" reformat="true" live-template-enabled="false" />
+    </default_templates>
+  </component>
+</project>
