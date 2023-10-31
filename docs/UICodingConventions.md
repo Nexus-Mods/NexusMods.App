@@ -1015,6 +1015,29 @@ This is, understandably, quite a lot of boilerplate just to create a new View. Y
 
 ### View to View Model Bindings
 
+**Always** populate the View directly with values from the View Model **if** the properties don't change over time:
+
+```csharp
+public MyView()
+{
+    InitializeComponent();
+
+    this.WhenActivated(disposables =>
+    {
+        this.WhenAnyValue(view => view.ViewModel)
+            .WhereNotNull()
+            .Do(PopulateFromViewModel)
+            .Subscribe()
+            .DisposeWith(disposables);
+    });
+}
+
+private void PopulateFromViewModel(MyViewModel vm)
+{
+    MyTextBlock.Text = vm.Text;
+}
+```
+
 **Always** use `OneWayBind` if the property can't be changed from the View:
 
 ```csharp
