@@ -1090,9 +1090,59 @@ public class BarViewModel : ReactiveObject, IActivatableViewModel
 
 **Never** expose the `SourceList<T>` or `SourceCache<TObject, TKey>` field to the View. These fields should **always** be marked as `private readonly` and the only public properties should either be an `IObservable<IChangeSet<T>>` that is the result from calling `.Connect` or `ObservableCollection<T>` or `ReadOnlyObservableCollection<T>`.
 
-For a parent reacting to changes in any of the children, use `WhenValueChanged` when you only need the value and `WhenPropertyChanged` when you also need the sender ([example](#parent-reacting-to-changes-in-one-of-the-children)).
+**Always** try using `SourceCache<TObject, TKey>` first. If the object type doesn't have an Id, you can always just add one using `Guid`. `SourceList<T>` has less APIs and features, like the ones shown in the following examples.
 
-Instead of passing a reference of the parent to the child, keep the child simple and stupid and have the parent subscribe to an observable of all children using `MergeMany` ([example](#children-sending-notifications-to-the-parent)).
+For a parent reacting to changes in any of the children, use `WhenValueChanged` when you only need the value and `WhenPropertyChanged` when you also need the sender ([example](#parent-reacting-to-changes-in-one-of-the-children)):
+
+```csharp
+public class ChildViewModel
+{
+    // child has a reactive property that the parent wants to observe changes on:
+    [Reactive] public bool IsChecked { get; set; }
+}
+
+public ParentViewModel()
+{
+    this.WhenActivated(disposables =>
+    {
+        _sourceCache
+            .Connect()
+            // WhenValueChanged and WhenPropertyChanged return a single IObservable<T> for all items
+            // they automatically handle new and removed items
+            .WhenValueChanged(child => child.IsChecked)
+            .Subscribe(newValue => Console.WriteLine(newValue))
+            .DisposeWith(disposables);
+    });
+}
+```
+
+Instead of passing a reference of the parent to the child, keep the child simple and stupid and have the parent subscribe to an observable of all children using `MergeMany` ([example](#children-sending-notifications-to-the-parent)):
+
+```csharp
+public ChildViewModel()
+{
+    RemoveCommand = ReactiveCommand.Create(() => Id);
+}
+
+public ParentViewModel()
+{
+    this.WhenActivated(disposables =>
+    {
+        _sourceCache
+            .Connect()
+            // ReactiveCommand<TParam, TResult> implements IObservable<TResult>
+            .MergeMany(child => child.RemoveCommand)
+            .Subscribe(childId =>
+            {
+                _sourceCache.Edit(updater =>
+                {
+                    updater.Remove(childId);
+                });
+            })
+            .DisposeWith(disposables);
+    });
+}
+```
 
 ---
 
