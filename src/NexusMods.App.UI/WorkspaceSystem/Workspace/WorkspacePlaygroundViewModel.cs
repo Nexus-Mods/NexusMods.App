@@ -12,7 +12,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
-public interface IWorkspacePlaygroundViewModel{}
+public interface IWorkspacePlaygroundViewModel : IViewModelInterface { }
 
 public class WorkspacePlaygroundViewModel : AViewModel<IWorkspacePlaygroundViewModel>, IWorkspacePlaygroundViewModel
 {

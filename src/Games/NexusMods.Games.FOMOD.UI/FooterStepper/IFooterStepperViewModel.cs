@@ -5,7 +5,7 @@ using ReactiveUI;
 
 namespace NexusMods.Games.FOMOD.UI;
 
-public interface IFooterStepperViewModel : IViewModel
+public interface IFooterStepperViewModel : IViewModelInterface
 {
     public Percent Progress { get; set; }
 
