@@ -903,7 +903,7 @@ public ChildViewModel()
     Id = Guid.NewGuid();
     Name = Id.ToString("D");
 
-    RemoveCommand = ReactiveCommand.Create(() => { });
+    RemoveCommand = ReactiveCommand.Create(() => Id);
 }
 ```
 
@@ -914,7 +914,6 @@ this.WhenActivated(disposables =>
 {
     _sourceCache
         .Connect()
-        // MergeMany is part of Dynamic Data and automatically handles subscriptions for us.
         .MergeMany(child => child.RemoveCommand)
         .Subscribe(childId =>
         {
@@ -926,6 +925,8 @@ this.WhenActivated(disposables =>
         .DisposeWith(disposables);
 });
 ```
+
+The star of this solution is `MergeMany` which is part of Dynamic Data and merges the selected observable on each item. It automatically handles subscriptions for items being added and removed. This code is ideal because it keeps the child stupid and simple.
 
 ## NexusMods.App.UI
 
