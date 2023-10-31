@@ -387,6 +387,8 @@ public class MyViewModel : ReactiveObject
 }
 ```
 
+`ReactiveObject` already implements `INotifyPropertyChanged` and has a `OnPropertyChanged` method. However, ReactiveUI also provides a more powerful `RaiseAndSetIfChanged` extension method that is safer, more efficient and has extra features like notifying subscribers about the property **changing** as well as being **changed**.
+
 The `ReactiveUI.Fody` package can be used to simplify the property:
 
 ```csharp
@@ -650,7 +652,7 @@ At runtime, ReactiveUI will find the correct View for the View Model and instant
     <ListBox x:Name="MyListBox" SelectionMode="Single">
         <ListBox.DataTemplates>
             <DataTemplate DataType="{x:Type ui:StringViewModel}">
-                <reactive:ViewModelViewHost ViewModel="{CompiledBinding }"/>
+                <reactive:ViewModelViewHost ViewModel="{CompiledBinding}"/>
             </DataTemplate>
         </ListBox.DataTemplates>
     </ListBox>
@@ -658,6 +660,273 @@ At runtime, ReactiveUI will find the correct View for the View Model and instant
 ```
 
 This will behave similar at runtime but we're now using XAML bindings again, which is highly discouraged. The `ViewModelViewHost` control should only be used if you can directly bind to the `ViewModel` property. This is useful if you have a View that can display potentially any View Model, eg if you have container-like Views.
+
+### Nesting View Models in View Models
+
+Once you start using observable collections with View Models you might end up in a scenario where you have a "parent" View Model and multiple "child" View Models that get created by the parent:
+
+```csharp
+public class MyViewModel : ReactiveObject, IActivatableViewModel
+{
+    public ViewModelActivator Activator { get; } = new();
+
+    private readonly SourceCache<ChildViewModel, Guid> _sourceCache = new(child => child.Id);
+    private readonly ReadOnlyObservableCollection<ChildViewModel> _children;
+    public ReadOnlyObservableCollection<ChildViewModel> Children => _children;
+
+    public readonly ReactiveCommand<Unit, Unit> AddChildCommand;
+
+    public MyViewModel()
+    {
+        _sourceCache
+            .Connect()
+            .Bind(out _children)
+            .DisposeMany()
+            .Subscribe();
+
+        AddChildCommand = ReactiveCommand.Create(() =>
+        {
+            _sourceCache.Edit(updater =>
+            {
+                updater.AddOrUpdate(new ChildViewModel());
+            });
+        });
+    }
+}
+
+public class ChildViewModel : ReactiveObject, IActivatableViewModel
+{
+    public ViewModelActivator Activator { get; } = new();
+
+    public Guid Id { get; }
+    public string Name { get; }
+
+    public ChildViewModel()
+    {
+        Id = Guid.NewGuid();
+        Name = Id.ToString("D");
+    }
+}
+```
+
+This can be pretty common but requires some design decisions to be made before continuing.
+
+#### Parent reacting to changes in one of the children
+
+We previously learned that ReactiveUI supports expression chaining using `this.WhenAnyValue(x => x.Foo.Bar.Baz)` but this only works if each property in this chain is a single item and not a collection.
+
+For this example, let's assume the View for the `ChildViewModel` contains a `CheckBox` that is bound to the `IsChecked` property:
+
+```csharp
+public class ChildViewModel : ReactiveObject, IActivatableViewModel
+{
+    public ViewModelActivator Activator { get; } = new();
+
+    public Guid Id { get; }
+    public string Name { get; }
+
+    [Reactive] public bool IsChecked { get; set; }
+
+    public ChildViewModel()
+    {
+        Id = Guid.NewGuid();
+        Name = Id.ToString("D");
+    }
+}
+```
+
+The parent wants to be notifies when the `IsChecked` property on any of the children changes. This can be easily using Dynamic Data:
+
+```csharp
+this.WhenActivated(disposables =>
+{
+    _sourceCache
+        .Connect()
+        .WhenValueChanged(child => child.IsChecked)
+        .Subscribe(newValue => Console.WriteLine(newValue))
+        .DisposeWith(disposables);
+});
+```
+
+Adding a new item to the source cache will print `False` because that's the initial value. When clicking the checkbox, the console will print `True` and unchecking the checkbox will print `False` again. This works for any amount of children.
+
+The extension method `WhenValueChanged` is part of Dynamic Data and has an optional parameter to change this behavior:
+
+```csharp
+this.WhenActivated(disposables =>
+{
+    _sourceCache
+        .Connect()
+        .WhenValueChanged(child => child.IsChecked, notifyOnInitialValue: false)
+        .Subscribe(newValue => Console.WriteLine(newValue))
+        .DisposeWith(disposables);
+});
+```
+
+You can also replace `WhenValueChanged` with the more powerful version `WhenPropertyChanged`:
+
+```csharp
+this.WhenActivated(disposables =>
+{
+    _sourceCache
+        .Connect()
+        .WhenPropertyChanged(child => child.IsChecked)
+        .Subscribe(propertyValue => Console.WriteLine($"Sender: {propertyValue.Sender.Id} Value: {propertyValue.Value}"))
+        .DisposeWith(disposables);
+});
+```
+
+Instead of only getting the value, you get a tuple that contains the sender and the value. Note that both `WhenValueChanged` and `WhenPropertyChanged` create observables and subscriptions on each of the children, so these should be properly cleaned up using `DisposeWith`.
+
+#### Children sending notifications to the parent
+
+The previous scenario was about the parent reacting to changes in the child, but what if the child wants to send a notification to the parent?
+
+Let's assume the View of the child has a "Remove" `Button` that, when clicked, will remove the child from the list. This requires the child View Model to have a reactive command `RemoveCommand` that is bound to the "Remove" `Button`. When the `RemoveCommand` is being executed, it has to tell the parent to remove the child.
+
+This problem has multiple solutions and I go through you some of them to illustrate the differences.
+
+The first idea would be to have a `RemoveChild` method on the parent and pass the parent to the child when it gets instantiated:
+
+```csharp
+public MyViewModel()
+{
+    AddChildCommand = ReactiveCommand.Create(() =>
+    {
+        _sourceCache.Edit(updater =>
+        {
+            // pass "this" to the child
+            updater.AddOrUpdate(new ChildViewModel(this));
+        });
+    });
+}
+
+public void RemoveChild(Guid childId)
+{
+    // with a source cache we only need an ID to remove the child
+    _sourceCache.Edit(updater =>
+    {
+        updater.Remove(childId);
+    });
+}
+
+public ChildViewModel(MyViewModel parent)
+{
+    Id = Guid.NewGuid();
+    Name = Id.ToString("D");
+
+    RemoveCommand = ReactiveCommand.Create(() =>
+    {
+        // simply call the method on the parent
+        parent.RemoveChild(Id);
+    });
+}
+```
+
+Instead of calling a method, we could also have a reactive command:
+
+```csharp
+public MyViewModel()
+{
+    RemoveChildCommand = ReactiveCommand.Create<Guid>(childId =>
+    {
+        _sourceCache.Edit(updater =>
+        {
+            updater.Remove(childId);
+        });
+    });
+}
+
+// pass the parent directly
+public ChildViewModel(MyViewModel parent)
+{
+    Id = Guid.NewGuid();
+    Name = Id.ToString("D");
+
+    RemoveCommand = ReactiveCommand.Create(() =>
+    {
+        // the Execute method returns a "cold" observable, that doesn't do anything until
+        // someone subscribes to it
+        using var disposable = parent.RemoveChildCommand.Execute(Id).Subscribe();
+    });
+}
+
+// or just pass the command directly
+public ChildViewModel(ReactiveCommand<Guid, Unit> removeChildCommand)
+{
+    Id = Guid.NewGuid();
+    Name = Id.ToString("D");
+
+    RemoveCommand = ReactiveCommand.Create(() =>
+    {
+        using var disposable = removeChildCommand.Execute(Id).Subscribe();
+    });
+}
+```
+
+You can pass an `IObserver<Guid>` to the child View Model:
+
+```csharp
+private readonly Subject<Guid> _removeChildSubject = new();
+
+public MyViewModel()
+{
+    this.WhenActivated(disposables =>
+    {
+        _removeChildSubject.Subscribe(childId =>
+        {
+            _sourceCache.Edit(updater =>
+            {
+                updater.Remove(childId);
+            });
+        }).DisposeWith(disposables);
+    });
+}
+
+public ChildViewModel(IObserver<Guid> removeChildObserver)
+{
+    Id = Guid.NewGuid();
+    Name = Id.ToString("D");
+
+    RemoveCommand = ReactiveCommand.Create(() =>
+    {
+        removeChildObserver.OnNext(Id);
+    });
+}
+```
+
+Finally, there a solution that doesn't pass **anything** to the child:
+
+```csharp
+public ChildViewModel()
+{
+    Id = Guid.NewGuid();
+    Name = Id.ToString("D");
+
+    RemoveCommand = ReactiveCommand.Create(() => { });
+}
+```
+
+The child View Model will have a remove command that does nothing because removing the child is responsibility of the parent. The parent can make use of the fact that reactive commands also implement `IObservable<TResult>`, meaning the parent can subscribe to the remove command of the child and do something when the command finished executing:
+
+```csharp
+this.WhenActivated(disposables =>
+{
+    _sourceCache
+        .Connect()
+        // MergeMany is part of Dynamic Data and automatically handles subscriptions for us.
+        // The Select(_ => child.Id) discards the result of the command, which is Unit, and simply returns the ID.
+        .MergeMany(child => child.RemoveCommand.Select(_ => child.Id))
+        .Subscribe(childId =>
+        {
+            _sourceCache.Edit(updater =>
+            {
+                updater.Remove(childId);
+            });
+        })
+        .DisposeWith(disposables);
+});
+```
 
 ## NexusMods.App.UI
 
