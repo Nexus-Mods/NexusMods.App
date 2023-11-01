@@ -1,7 +1,9 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Reactive.Disposables;
 using System.Reactive.Subjects;
 using NexusMods.Paths;
+using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
@@ -10,7 +12,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView
 ///     Represents an individual node in the 'Preview' section when selecting a location.
 /// </summary>
 [DebuggerDisplay("FileName = {FileName}, IsRoot = {IsRoot}, Children = {Children.Count}, Flags = {Flags}")]
-public class TreeEntryViewModel : ITreeEntryViewModel, IUnlinkableItem
+public class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>, ITreeEntryViewModel, IUnlinkableItem
 {
     public TreeEntryViewModel? Parent { get; init; } = null!;
 
@@ -48,6 +50,11 @@ public class TreeEntryViewModel : ITreeEntryViewModel, IUnlinkableItem
             FileName = FullPath.LocationId.Value;
         else
             FileName = FullPath.FileName;
+
+        this.WhenActivated(disposables =>
+        {
+            OnUnlinkRoot.DisposeWith(disposables);
+        });
     }
 
     // Note: This is normally called from an 'unlinkable' item, i.e. ModContentNode

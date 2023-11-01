@@ -61,7 +61,7 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
     public ISelectLocationViewModel SelectLocationViewModel { get; }
 
     [Reactive] public bool CanInstall { get; set; } = false;
-    [Reactive] public IViewModel CurrentPreviewViewModel { get; set; }
+    [Reactive] public IViewModel CurrentPreviewViewModel { get; private set; }
 
     internal readonly List<IModContentTreeEntryVM> SelectedItems = new();
 
