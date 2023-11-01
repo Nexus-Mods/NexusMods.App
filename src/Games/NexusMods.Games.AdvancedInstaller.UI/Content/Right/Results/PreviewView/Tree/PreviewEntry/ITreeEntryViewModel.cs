@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Reactive.Subjects;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
@@ -12,7 +13,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView
 ///     This is such that the user can in one go delete all items as needed.
 ///     If it happens that after deletion, no files are deployed, the entire tree should be cleared.
 /// </remarks>
-public interface ITreeEntryViewModel : IModContentBindingTarget
+public interface ITreeEntryViewModel : IViewModelInterface, IModContentBindingTarget
 {
     /// <summary>
     ///     The full path of this node.

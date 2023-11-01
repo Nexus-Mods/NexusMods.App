@@ -17,7 +17,8 @@ using IModContentTreeEntryVM = NexusMods.Games.AdvancedInstaller.UI.Content.Left
 using ISelectableTreeEntryVM =
     NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry.
     ITreeEntryViewModel;
-using IPreviewTreeEntryVM = NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry.ITreeEntryViewModel;
+using IPreviewTreeEntryVM =
+    NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry.ITreeEntryViewModel;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content;
 
@@ -46,6 +47,19 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
             StartSelectObserver.DisposeWith(disposables);
             CancelSelectObserver.DisposeWith(disposables);
             DirectorySelectedObserver.DisposeWith(disposables);
+
+            PreviewViewModel.LocationsCache.Connect()
+                .WhenValueChanged(vm => vm.Root.ShouldRemove)
+                .Where(shouldRemove => shouldRemove)
+                .Subscribe(_ =>
+                {
+                    PreviewViewModel.LocationsCache.RemoveKeys(PreviewViewModel.Locations
+                        .Where(location => location.Root.ShouldRemove)
+                        .Select(location => location.Root.FullPath.LocationId));
+                    if (PreviewViewModel.Locations.Count == 0)
+                        CurrentPreviewViewModel = EmptyPreviewViewModel;
+                })
+                .DisposeWith(disposables);
         });
     }
 
@@ -88,7 +102,8 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
         foreach (var item in SelectedItems)
         {
             var node = PreviewViewModel.GetOrCreateBindingTarget(item.FullPath, item.IsDirectory, directory.Path);
-            item.Link(Data, node, false); //TODO:Implement IsFolderMerged // directory.Status == SelectableDirectoryNodeStatus.Regular);
+            item.Link(Data, node,
+                false); //TODO:Implement IsFolderMerged // directory.Status == SelectableDirectoryNodeStatus.Regular);
         }
 
         SelectedItems.Clear();

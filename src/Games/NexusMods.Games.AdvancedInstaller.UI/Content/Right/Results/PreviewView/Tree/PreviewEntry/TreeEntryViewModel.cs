@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Subjects;
 using NexusMods.Paths;
@@ -19,7 +20,6 @@ public class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>, ITreeEntryVie
     // TODO: This (FullPath) should be optimized because we are creating a new string for every item.
     public GamePath FullPath { get; init; }
 
-    public Subject<ITreeEntryViewModel> OnUnlinkRoot { get; } = new();
     [Reactive] public bool ShouldRemove { get; private set; } = false;
     public ObservableCollection<ITreeEntryViewModel> Children { get; init; } = new();
     public IUnlinkableItem? LinkedItem { get; private set; }
@@ -50,11 +50,6 @@ public class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>, ITreeEntryVie
             FileName = FullPath.LocationId.Value;
         else
             FileName = FullPath.FileName;
-
-        this.WhenActivated(disposables =>
-        {
-            OnUnlinkRoot.DisposeWith(disposables);
-        });
     }
 
     // Note: This is normally called from an 'unlinkable' item, i.e. ModContentNode
@@ -107,7 +102,7 @@ public class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>, ITreeEntryVie
                 // if the ancestor is root, we need to mark it for removal
                 if (currentAncestor.IsRoot)
                 {
-                    Parent.ShouldRemove = true;
+                    currentAncestor.ShouldRemove = true;
                     break;
                 }
 

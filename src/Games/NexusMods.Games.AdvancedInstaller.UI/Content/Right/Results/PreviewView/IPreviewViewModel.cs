@@ -1,15 +1,18 @@
 ﻿using System.Collections.ObjectModel;
+using DynamicData;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView;
 
-public interface IPreviewViewModel : IViewModel
+public interface IPreviewViewModel : IViewModelInterface, IViewModel
 {
     /// <summary>
     ///     The locations to display in the preview.
     ///     Each of the locations corresponds to a different <see cref="LocationId"/>.
     /// </summary>
-    public ObservableCollection<ILocationPreviewTreeViewModel> Locations { get; }
+    public ReadOnlyObservableCollection<ILocationPreviewTreeViewModel> Locations { get; }
+
+    public SourceCache<ILocationPreviewTreeViewModel, LocationId> LocationsCache { get; }
 }
 
 /// <summary>
@@ -32,7 +35,7 @@ public static class PreviewViewModelExtensions
             return location.Root.GetOrCreateChild(targetPath, isDirectory);
 
         location = new LocationPreviewTreeViewModel(new GamePath(directoryPath.LocationId, RelativePath.Empty));
-        vm.Locations.Add(location);
+        vm.LocationsCache.AddOrUpdate(location);
         return location.Root.GetOrCreateChild(targetPath, isDirectory);
     }
 }
