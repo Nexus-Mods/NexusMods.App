@@ -98,8 +98,8 @@ public class NodeLinkingTests
 
         // Root node children should be deleted.
         targetDir.Children.Should().BeEmpty();
-        armorsDir.UnlinkableItem.Should().BeNull();
-        targetDir.UnlinkableItem.Should().BeNull();
+        armorsDir.LinkedItem.Should().BeNull();
+        targetDir.LinkedItem.Should().BeNull();
 
         // Assert empty folder was deleted.
         target.GetChild("Textures/Armors").Should().BeNull();

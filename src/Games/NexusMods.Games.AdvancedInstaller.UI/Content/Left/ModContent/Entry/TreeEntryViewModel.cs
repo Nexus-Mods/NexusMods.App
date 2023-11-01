@@ -38,7 +38,7 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
     public required ITreeEntryViewModel[] Children { get; init; }
 
     /// <inheritdoc />
-    public IUnlinkableItem? UnlinkableItem { get; private set; }
+    public IUnlinkableItem? LinkedItem { get; private set; }
 
     public required IAdvancedInstallerCoordinator Coordinator { get; init; }
 
@@ -75,12 +75,12 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
     public void Link(DeploymentData data, IModContentBindingTarget target, bool targetAlreadyExisted)
     {
         LinkedTarget = target;
+        LinkedItem = target;
         SetStatus(ModContentNodeStatus.IncludedExplicit);
 
         if (!IsDirectory)
         {
             var folder = target.Bind(this, data, targetAlreadyExisted);
-            UnlinkableItem = target;
             data.AddMapping(Node.Path, new GamePath(folder.LocationId, folder.Path.Join(FileName)), true);
             return;
         }
@@ -99,6 +99,8 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
         if (@this.Status != ModContentNodeStatus.SelectingViaParent)
             return;
 
+        @this.LinkedItem = target;
+
         @this.SetStatus(ModContentNodeStatus.IncludedViaParent);
         if (@this.IsDirectory)
         {
@@ -112,7 +114,6 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
         else
         {
             var filePath = target.Bind(@this, data, targetAlreadyExisted);
-            @this.UnlinkableItem = target;
             data.AddMapping(@this.Node.Path, new GamePath(filePath.LocationId, filePath.Path),
                 true);
         }
@@ -137,9 +138,9 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
         }
 
         if (!isCalledFromDoubleLinkedItem)
-            UnlinkableItem?.Unlink(data, true);
+            LinkedItem?.Unlink(data, true);
 
-        UnlinkableItem = null;
+        LinkedItem = null;
     }
 
     private void UnlinkChildrenRecursive(DeploymentData data, bool isCalledFromDoubleLinkedItem)
@@ -150,21 +151,7 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
             if (node!.Status != ModContentNodeStatus.IncludedViaParent)
                 continue;
 
-            node.SetStatus(ModContentNodeStatus.Default);
-
-            if (node.IsDirectory)
-            {
-                UnlinkChildrenRecursive(data, isCalledFromDoubleLinkedItem);
-            }
-            else
-            {
-                data.RemoveMapping(Node.Path);
-            }
-
-            if (!isCalledFromDoubleLinkedItem)
-                UnlinkableItem?.Unlink(data, true);
-
-            UnlinkableItem = null;
+            node.Unlink(data, isCalledFromDoubleLinkedItem);
         }
     }
 

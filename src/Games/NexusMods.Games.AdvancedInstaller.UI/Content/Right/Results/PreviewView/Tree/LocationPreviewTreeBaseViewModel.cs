@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Templates;
 using NexusMods.Paths;
+using ReactiveUI.Fody.Helpers;
 using ITreeEntryViewModel =
     NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry.ITreeEntryViewModel;
 using TreeEntryView = NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry.TreeEntryView;
@@ -15,7 +16,8 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView
 public abstract class LocationPreviewTreeBaseViewModel : AViewModel<ILocationPreviewTreeViewModel>,
     ILocationPreviewTreeViewModel
 {
-    public ITreeEntryViewModel Root => TreeData ??= GetTreeData();
+
+    [Reactive] public ITreeEntryViewModel Root => TreeData ??= GetTreeData();
     protected ITreeEntryViewModel? TreeData;
 
     /// <summary>

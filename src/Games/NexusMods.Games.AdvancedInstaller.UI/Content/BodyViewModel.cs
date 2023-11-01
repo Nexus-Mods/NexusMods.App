@@ -1,5 +1,7 @@
 ﻿using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using DynamicData;
 using DynamicData.Binding;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.ModInstallers;
@@ -7,7 +9,6 @@ using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.EmptyPreview;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 using ReactiveUI;
@@ -16,6 +17,7 @@ using IModContentTreeEntryVM = NexusMods.Games.AdvancedInstaller.UI.Content.Left
 using ISelectableTreeEntryVM =
     NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry.
     ITreeEntryViewModel;
+using IPreviewTreeEntryVM = NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry.ITreeEntryViewModel;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content;
 
@@ -50,6 +52,7 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
     public Subject<IModContentTreeEntryVM> StartSelectObserver { get; }
     public Subject<IModContentTreeEntryVM> CancelSelectObserver { get; }
     public Subject<ISelectableTreeEntryVM> DirectorySelectedObserver { get; }
+
     public DeploymentData Data { get; set; } = new();
     public string ModName { get; set; }
     public IModContentViewModel ModContentViewModel { get; }
@@ -61,9 +64,6 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
     [Reactive] public IViewModel CurrentPreviewViewModel { get; set; }
 
     internal readonly List<IModContentTreeEntryVM> SelectedItems = new();
-
-    internal IObservableCollection<IModContentTreeEntryVM> LinkedItems { get; } =
-        new ObservableCollectionExtended<IModContentTreeEntryVM>();
 
     public void OnSelect(IModContentTreeEntryVM treeEntryViewModel)
     {
@@ -80,14 +80,7 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
 
     private bool HasAnyItemsToPreview()
     {
-        return LinkedItems.Count > 0;
-        // foreach (var location in PreviewViewModel.Locations)
-        // {
-        //     if (location.Root.Children.Count > 0)
-        //         return true;
-        // }
-        //
-        // return false;
+        return PreviewViewModel.Locations.Any(location => location.Root.Children.Count > 0);
     }
 
     public void OnDirectorySelected(ISelectableTreeEntryVM directory)
@@ -96,7 +89,6 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
         {
             var node = PreviewViewModel.GetOrCreateBindingTarget(item.FullPath, item.IsDirectory, directory.Path);
             item.Link(Data, node, false); //TODO:Implement IsFolderMerged // directory.Status == SelectableDirectoryNodeStatus.Regular);
-            LinkedItems.Add(item);
         }
 
         SelectedItems.Clear();

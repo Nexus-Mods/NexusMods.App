@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using NexusMods.Paths;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
 
@@ -14,8 +15,14 @@ public class TreeEntryViewModel : ITreeEntryViewModel, IUnlinkableItem
 
     // TODO: This (FullPath) should be optimized because we are creating a new string for every item.
     public GamePath FullPath { get; init; }
+
+    /// <summary>
+    /// This is set to true when all child items are unliked from the tree, and this Location should be removed from the Preview
+    /// </summary>
+    [Reactive] public bool ShouldRemove { get; private set; } = false;
     public ObservableCollection<ITreeEntryViewModel> Children { get; init; } = new();
-    public IUnlinkableItem? UnlinkableItem { get; private set; }
+    public IUnlinkableItem? LinkedItem { get; private set; }
+
     public string FileName { get; init; }
 
     // Do not rearrange order here, flags are deliberately last to optimize for struct layout.
@@ -47,24 +54,29 @@ public class TreeEntryViewModel : ITreeEntryViewModel, IUnlinkableItem
     // Note: This is normally called from an 'unlinkable' item, i.e. ModContentNode
     public GamePath Bind(IUnlinkableItem unlinkable, DeploymentData data, bool previouslyExisted)
     {
-        // Unlink previously bound item (if any).
-        // set to true so it doesn't unlink itself
-        UnlinkableItem?.Unlink(data, true);
+        if (IsDirectory)
+        {
+            // Note: If two items merged into this item, then folders are considered 'merged'.
+            if (previouslyExisted)
+                Flags |= PreviewEntryNodeFlags.IsFolderMerged;
+        }
+        else
+        {
+            // Unlink previously bound item (if any).
+            // set to true so it doesn't unlink itself
+            LinkedItem?.Unlink(data, true);
 
-        // We apply 'folder merged' flag under either of the circumstances.
-        // 1. TODO: Files from two different subfolders are mapped to the same folder.
-        //    - It's also unclear if 'folder merged' should be displayed when there are files
-        //      from a subfolder where another bound file exists.
-        //      i.e.
-        //          - file
-        //          - subfolder/file
-        //      Should this display 'folder merged'?
-        // 2. Folder already existed in game directory (non-empty), and we are mapping it.
-        UnlinkableItem = unlinkable;
-
-        // Note: If two items merged into this item, then folders are considered 'merged'.
-        if (previouslyExisted)
-            Flags |= PreviewEntryNodeFlags.IsFolderMerged;
+            // We apply 'folder merged' flag under either of the circumstances.
+            // 1. TODO: Files from two different subfolders are mapped to the same folder.
+            //    - It's also unclear if 'folder merged' should be displayed when there are files
+            //      from a subfolder where another bound file exists.
+            //      i.e.
+            //          - file
+            //          - subfolder/file
+            //      Should this display 'folder merged'?
+            // 2. Folder already existed in game directory (non-empty), and we are mapping it.
+            LinkedItem = unlinkable;
+        }
 
         return FullPath;
     }
@@ -77,16 +89,38 @@ public class TreeEntryViewModel : ITreeEntryViewModel, IUnlinkableItem
         // Delete self (if possible).
         if (!IsRoot)
         {
+            // Remove self from parent.
             var thisVm = Parent!.Children.FirstOrDefault(x => x == this)!;
             Parent.Children.Remove(thisVm);
 
-            // If the parent is a directory, and it has no children, remove it from the grandparent.
-            // Note: `Parent.Parent` may be null if we are a child file of the root directory node.
-            if (Parent.Children.Count == 0 && Parent.IsDirectory)
-                Parent.Parent?.Children.Remove(Parent);
+            var currentAncestor = Parent;
+
+            // Remove all empty ancestors.
+            while (currentAncestor?.Children.Count == 0)
+            {
+                // if the ancestor is root, we need to mark it for removal
+                if (currentAncestor.IsRoot)
+                {
+                    Parent.ShouldRemove = true;
+                    break;
+                }
+
+                // remove the ancestor from its parent
+                var child = currentAncestor;
+                currentAncestor = currentAncestor.Parent;
+
+                var item = currentAncestor?.Children.FirstOrDefault(x => x == child);
+                if (item != null)
+                {
+                    currentAncestor?.Children.Remove(item);
+                }
+            }
         }
         else
+        {
             Children.Clear();
+            ShouldRemove = true;
+        }
     }
 
     private void UnlinkRecursive(DeploymentData data, bool isCalledFromDoubleLinkedItem)
@@ -100,9 +134,9 @@ public class TreeEntryViewModel : ITreeEntryViewModel, IUnlinkableItem
 
         // And now unlink self.
         if (!isCalledFromDoubleLinkedItem)
-            UnlinkableItem?.Unlink(data, true);
+            LinkedItem?.Unlink(data, true);
 
-        UnlinkableItem = null;
+        LinkedItem = null;
     }
 
     /// <summary>

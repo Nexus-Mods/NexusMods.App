@@ -68,5 +68,5 @@ public interface ITreeEntryViewModel : IModContentBindingTarget
     ///     The item with which this item is linked to.
     ///     If null, it's not been explicitly linked.
     /// </summary>
-    IUnlinkableItem? UnlinkableItem { get; }
+    IUnlinkableItem? LinkedItem { get; }
 }
