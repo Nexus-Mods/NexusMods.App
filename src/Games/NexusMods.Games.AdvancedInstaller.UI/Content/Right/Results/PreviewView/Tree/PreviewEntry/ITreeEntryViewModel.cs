@@ -25,6 +25,11 @@ public interface ITreeEntryViewModel : IModContentBindingTarget
     ObservableCollection<ITreeEntryViewModel> Children { get; }
 
     /// <summary>
+    /// This is set to true when all child items are unliked from the tree, and this Location should be removed from the Preview
+    /// </summary>
+    bool ShouldRemove { get; }
+
+    /// <summary>
     ///     The file name displayed for this node.
     /// </summary>
     string FileName { get; }

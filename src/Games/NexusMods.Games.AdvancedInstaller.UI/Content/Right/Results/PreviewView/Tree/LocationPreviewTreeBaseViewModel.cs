@@ -17,7 +17,7 @@ public abstract class LocationPreviewTreeBaseViewModel : AViewModel<ILocationPre
     ILocationPreviewTreeViewModel
 {
 
-    [Reactive] public ITreeEntryViewModel Root => TreeData ??= GetTreeData();
+    public ITreeEntryViewModel Root => TreeData ??= GetTreeData();
     protected ITreeEntryViewModel? TreeData;
 
     /// <summary>

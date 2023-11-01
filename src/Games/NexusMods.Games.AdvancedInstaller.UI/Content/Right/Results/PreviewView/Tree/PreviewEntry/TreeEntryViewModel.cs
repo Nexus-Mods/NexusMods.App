@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Reactive.Subjects;
 using NexusMods.Paths;
 using ReactiveUI.Fody.Helpers;
 
@@ -16,9 +17,7 @@ public class TreeEntryViewModel : ITreeEntryViewModel, IUnlinkableItem
     // TODO: This (FullPath) should be optimized because we are creating a new string for every item.
     public GamePath FullPath { get; init; }
 
-    /// <summary>
-    /// This is set to true when all child items are unliked from the tree, and this Location should be removed from the Preview
-    /// </summary>
+    public Subject<ITreeEntryViewModel> OnUnlinkRoot { get; } = new();
     [Reactive] public bool ShouldRemove { get; private set; } = false;
     public ObservableCollection<ITreeEntryViewModel> Children { get; init; } = new();
     public IUnlinkableItem? LinkedItem { get; private set; }
