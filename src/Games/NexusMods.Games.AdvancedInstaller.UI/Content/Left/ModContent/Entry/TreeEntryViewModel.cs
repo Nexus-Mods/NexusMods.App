@@ -77,12 +77,6 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
         LinkedTarget = target;
         SetStatus(ModContentNodeStatus.IncludedExplicit);
 
-        if (IsRoot)
-        {
-            // For Root ("All files"), map children directly to the target, avoid creating an extra folder at the top.
-            //TODO
-        }
-
         if (!IsDirectory)
         {
             var folder = target.Bind(this, data, targetAlreadyExisted);
@@ -140,11 +134,12 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
         else
         {
             data.RemoveMapping(Node.Path);
-            if (!isCalledFromDoubleLinkedItem)
-                UnlinkableItem?.Unlink(data, true);
-
-            UnlinkableItem = null;
         }
+
+        if (!isCalledFromDoubleLinkedItem)
+            UnlinkableItem?.Unlink(data, true);
+
+        UnlinkableItem = null;
     }
 
     private void UnlinkChildrenRecursive(DeploymentData data, bool isCalledFromDoubleLinkedItem)
@@ -164,11 +159,12 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
             else
             {
                 data.RemoveMapping(Node.Path);
-                if (!isCalledFromDoubleLinkedItem)
-                    UnlinkableItem?.Unlink(data, true);
-
-                UnlinkableItem = null;
             }
+
+            if (!isCalledFromDoubleLinkedItem)
+                UnlinkableItem?.Unlink(data, true);
+
+            UnlinkableItem = null;
         }
     }
 

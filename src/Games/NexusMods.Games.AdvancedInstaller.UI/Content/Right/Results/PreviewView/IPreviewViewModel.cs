@@ -24,7 +24,8 @@ public static class PreviewViewModelExtensions
     /// <param name="directoryPath">The path of the item in question.</param>
     public static IModContentBindingTarget GetOrCreateBindingTarget(this IPreviewViewModel vm, RelativePath sourceItemPath, bool isDirectory, GamePath directoryPath)
     {
-        var targetPath = directoryPath.Path.Join(sourceItemPath.FileName);
+        // When binding the archive root (empty path), don't append filename or it will create an additional folder for the root.
+        var targetPath = sourceItemPath == RelativePath.Empty ? directoryPath.Path : directoryPath.Path.Join(sourceItemPath.FileName);
 
         var location = vm.Locations.FirstOrDefault(l => l.Root.FullPath.LocationId == directoryPath.LocationId);
         if (location is not null)

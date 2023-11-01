@@ -178,6 +178,9 @@ public class TreeEntryViewModel : ITreeEntryViewModel, IUnlinkableItem
     /// <returns>The found node or null if not found.</returns>
     public ITreeEntryViewModel? GetChild(string relativePath)
     {
+        if (relativePath == "")
+            return this;
+
         var pathComponents = relativePath.Split('/');
         var currentNode = this;
 
