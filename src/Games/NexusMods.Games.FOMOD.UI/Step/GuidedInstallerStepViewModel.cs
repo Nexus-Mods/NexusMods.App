@@ -101,6 +101,13 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
                         var groups = step.Groups.Select(group => new GuidedInstallerGroupViewModel(group));
                         updater.AddOrUpdate(groups);
                     });
+
+                    // highlight the first option in the first group as a default
+                    if (_groupsSource.Count != 0)
+                    {
+                        var group = _groupsSource.Items.First();
+                        group.HighlightedOption = group.Options.First();
+                    }
                 })
                 .DisposeWith(disposables);
 
