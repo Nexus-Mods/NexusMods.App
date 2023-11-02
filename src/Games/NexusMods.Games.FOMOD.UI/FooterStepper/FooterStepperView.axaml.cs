@@ -25,7 +25,7 @@ public partial class FooterStepperView : ReactiveUserControl<IFooterStepperViewM
             this.BindCommand(ViewModel, vm => vm.GoToNextCommand, view => view.GoToNextButton)
                 .DisposeWith(disposables);
 
-            this.WhenAnyValue(x => x.ViewModel!.IsLastStep)
+            this.WhenAnyValue(view => view.ViewModel!.IsLastStep)
                 .SubscribeWithErrorLogging(isLastStep =>
                 {
                     GoToNextButtonTextBlock.Text = isLastStep ? Language.FooterStepperView_FooterStepperView_Finish : Language.FooterStepperView_FooterStepperView_Next;

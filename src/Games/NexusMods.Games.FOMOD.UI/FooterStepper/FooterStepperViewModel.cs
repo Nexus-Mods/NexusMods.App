@@ -26,9 +26,9 @@ public class FooterStepperViewModel : AViewModel<IFooterStepperViewModel>, IFoot
     {
         this.WhenActivated(disposables =>
         {
-            this.WhenAnyValue(x => x.Progress)
+            this.WhenAnyValue(vm => vm.Progress)
                 .Select(progress => progress == Percent.One)
-                .SubscribeWithErrorLogging(isLastStep => IsLastStep = isLastStep)
+                .BindTo(this, vm => vm.IsLastStep)
                 .DisposeWith(disposables);
         });
     }

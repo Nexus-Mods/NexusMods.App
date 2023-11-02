@@ -18,30 +18,24 @@ public class FooterStepperDesignViewModel : FooterStepperViewModel
 
     public FooterStepperDesignViewModel()
     {
+        var canGoToNext = this
+            .WhenAnyValue(vm => vm.CurrentValue)
+            .Select(currentValue => currentValue < 10);
+
+        GoToNextCommand = ReactiveCommand.Create(() => { CurrentValue += 1; }, canGoToNext);
+
+        var canGoToPrev = this
+            .WhenAnyValue(vm => vm.CurrentValue)
+            .Select(currentValue => currentValue > 0);
+
+        GoToPrevCommand = ReactiveCommand.Create(() => { CurrentValue -= 1; }, canGoToPrev);
+
         this.WhenActivated(disposables =>
         {
-            this.WhenAnyValue(x => x.CurrentValue)
-                .Select(current => Percent.CreateClamped(current, 10))
-                .Subscribe(progress => Progress = progress)
+            this.WhenAnyValue(vm => vm.CurrentValue)
+                .Select(currentValue => Percent.CreateClamped(currentValue, 10))
+                .BindTo(this, vm => vm.Progress)
                 .DisposeWith(disposables);
-
-            var canGoToNext = this
-                .WhenAnyValue(x => x.CurrentValue)
-                .Select(x => x < 10);
-
-            GoToNextCommand = ReactiveCommand.Create(() =>
-            {
-                CurrentValue += 1;
-            }, canGoToNext).DisposeWith(disposables);
-
-            var canGoToPrev = this
-                .WhenAnyValue(x => x.CurrentValue)
-                .Select(x => x > 0);
-
-            GoToPrevCommand = ReactiveCommand.Create(() =>
-            {
-                CurrentValue -= 1;
-            }, canGoToPrev).DisposeWith(disposables);
         });
     }
 }
