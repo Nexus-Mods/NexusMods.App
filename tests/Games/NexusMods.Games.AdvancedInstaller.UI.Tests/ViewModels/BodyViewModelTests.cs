@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NexusMods.DataModel.Games;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.Games.AdvancedInstaller.UI.Content;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView;
@@ -52,10 +53,13 @@ public class BodyViewModelTests
 
         // Add one folder
         var meshes = bodyVm.ModContentViewModel.Root.Children.First(x => x.FileName == "Meshes");
+        (meshes as TreeEntryViewModel<ModSourceFileEntry>)?.BeginSelect();
+        // Since UI isn't actually activated all the connections don't work, so we have to manually call the method
         bodyVm.OnSelect(meshes);
 
-        var gameMeshes = gameRoot.GetChild("Data").GetChild("Meshes");
-        bodyVm.OnDirectorySelected(gameMeshes);
+
+        var gameData = gameRoot.GetChild("Data");
+        bodyVm.OnDirectorySelected(gameData);
 
         // Assert everything went smooth
         var data = bodyVm.Data;
@@ -84,8 +88,11 @@ public class BodyViewModelTests
 
         // Add one folder
         var meshes = bodyVm.ModContentViewModel.Root.Children.First(x => x.FileName == "Meshes");
+        (meshes as TreeEntryViewModel<ModSourceFileEntry>)?.BeginSelect();
         bodyVm.OnSelect(meshes);
+
         var textures = bodyVm.ModContentViewModel.Root.Children.First(x => x.FileName == "Textures");
+        (textures as TreeEntryViewModel<ModSourceFileEntry>)?.BeginSelect();
         bodyVm.OnSelect(textures);
 
         // Bind inside of Meshes and Textures to data (this is invalid for Skyrim, but for test is okay)
@@ -97,9 +104,9 @@ public class BodyViewModelTests
 
         // Link Data
         data.ArchiveToOutputMap["Meshes/greenBlade.nif"].Should()
-            .Be(new GamePath(LocationId.Game, "Data/greenBlade.nif"));
+            .Be(new GamePath(LocationId.Game, "Data/Meshes/greenBlade.nif"));
         data.ArchiveToOutputMap["Textures/greenBlade.dds"].Should()
-            .Be(new GamePath(LocationId.Game, "Data/greenBlade.dds"));
+            .Be(new GamePath(LocationId.Game, "Data/Textures/greenBlade.dds"));
 
         // Source Directory Data
         meshes.Status.Should().Be(ModContentNodeStatus.IncludedExplicit);
@@ -107,8 +114,8 @@ public class BodyViewModelTests
 
         // Preview Data
         var previewData = GetTreeForLocationId(bodyVm.PreviewViewModel, LocationId.Game).Root;
-        previewData.GetNode("Data")!.GetNode("greenBlade.nif").Should().NotBeNull();
-        previewData.GetNode("Data")!.GetNode("greenBlade.dds").Should().NotBeNull();
+        previewData.GetNode("Data")!.GetNode("Meshes")!.GetNode("greenBlade.nif").Should().NotBeNull();
+        previewData.GetNode("Data")!.GetNode("Textures")!.GetNode("greenBlade.dds").Should().NotBeNull();
 
         // Shown in preview
         bodyVm.CurrentPreviewViewModel.Should().Be(bodyVm.PreviewViewModel);

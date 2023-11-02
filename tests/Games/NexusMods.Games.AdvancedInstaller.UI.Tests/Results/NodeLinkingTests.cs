@@ -15,6 +15,7 @@ public class NodeLinkingTests
         // Arrange & Act
         var (node, data, target) = CommonSetup();
         var armorsDir = node.GetNode("Textures").GetNode("Armors");
+        (armorsDir as TreeEntryViewModel<int>)?.BeginSelect();
 
         // Link Armors Directory
         armorsDir.Link(data, target.GetChild("Textures/Armors")!, false);
@@ -35,6 +36,7 @@ public class NodeLinkingTests
         // Arrange & Act
         var (node, data, target) = CommonSetup();
         var armorsDir = node.GetNode("Textures").GetNode("Armors");
+        (armorsDir as TreeEntryViewModel<int>)?.BeginSelect();
         var linkTarget = target.GetChild("Textures/Armors")!;
 
         // Link Armors Directory
@@ -50,6 +52,7 @@ public class NodeLinkingTests
 
         // Re-link now
         var armorsDir2 = node.GetNode("Textures").GetNode("Armors2");
+        (armorsDir2 as TreeEntryViewModel<int>)?.BeginSelect();
         armorsDir2.Link(data, linkTarget, false);
         data.OutputToArchiveMap[new GamePath(LocationId.Game, "Textures/Armors/greenArmor.dds")].Should()
             .Be("Textures/Armors2/greenArmor.dds");
@@ -85,6 +88,7 @@ public class NodeLinkingTests
         // Arrange & Act
         var (node, data, target) = CommonSetup();
         var armorsDir = node.GetNode("Textures").GetNode("Armors");
+        (armorsDir as TreeEntryViewModel<int>)?.BeginSelect();
         var targetDir = target.GetChild("Textures/Armors")!;
 
         // Link Armors Directory, then unlink root.
@@ -130,7 +134,7 @@ public class NodeLinkingTests
         CommonSetup()
     {
         var node = ModContentVMTestHelpers.CreateTestTreeNode();
-        var data = new DeploymentData();
+        var data = node.Coordinator.Data;
 
         var target = TreeEntryViewModel.Create(new GamePath(LocationId.Game, ""), true);
         foreach (var file in GetPaths())

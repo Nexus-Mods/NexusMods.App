@@ -2,6 +2,7 @@ using FluentAssertions;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 using NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers;
 using NexusMods.Paths;
+using ITreeEntryViewModel = NexusMods.Games.AdvancedInstaller.UI.Content.Left.ITreeEntryViewModel;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Tests.ModContent;
 
@@ -16,6 +17,7 @@ public class NodeLinkingTests
         // Arrange & Act
         var (node, data, target) = CommonSetup();
         var armorsDir = node.GetNode("Textures").GetNode("Armors");
+        (armorsDir as TreeEntryViewModel<int>)?.BeginSelect();
         armorsDir.Link(data, target, false);
 
         // Assert
@@ -32,6 +34,7 @@ public class NodeLinkingTests
         // Arrange & Act
         var (node, data, target) = CommonSetup();
         var texturesDir = node.GetNode("Textures");
+        (texturesDir as TreeEntryViewModel<int>)?.BeginSelect();
         texturesDir.Link(data, target, false);
 
         // Assert
@@ -101,7 +104,7 @@ public class NodeLinkingTests
         armorsDir.Link(data, target, false);
 
         // Unlink assert that everything is empty.
-        node.Unlink(false); // unlinkable
+        armorsDir.Unlink(false); // unlinkable
         AssertUnlinkedArmorsFolder(armorsDir, data);
     }
 
@@ -111,6 +114,7 @@ public class NodeLinkingTests
         // Arrange & Act
         var (node, data, target) = CommonSetup();
         var greenArmor = node.GetNode("Textures").GetNode("Armors").GetNode("greenArmor.dds");
+        (greenArmor as TreeEntryViewModel<int>)?.BeginSelect();
         greenArmor.Link(data, target, false);
 
         // Assert
@@ -123,7 +127,7 @@ public class NodeLinkingTests
         CommonSetup()
     {
         var node = ModContentVMTestHelpers.CreateTestTreeNode();
-        var data = new DeploymentData();
+        var data = node.Coordinator.Data;
         var target = new TestBindingTarget();
         return (node, data, target);
     }
