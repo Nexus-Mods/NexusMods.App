@@ -1,6 +1,8 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Text.RegularExpressions;
+using DynamicData;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -12,16 +14,29 @@ public class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>, ITreeEntryVie
     [Reactive]
     public SelectableDirectoryNodeStatus Status { get; internal set; } = SelectableDirectoryNodeStatus.Regular;
 
+    [Reactive]
+    public string InputText { get; set; } = string.Empty;
+
+    [Reactive]
+    public bool CanSave { get; set; } = false;
+
     public ObservableCollection<ITreeEntryViewModel> Children { get; init; } = new();
 
     public IAdvancedInstallerCoordinator Coordinator { get; }
-    public ReactiveCommand<Unit, Unit> LinkCommand { get; private set; } = Initializers.EnabledReactiveCommand;
+    public ReactiveCommand<Unit, Unit> LinkCommand { get; }
+
+    public ReactiveCommand<Unit, Unit> EditCreateFolderCommand { get; }
+    public ReactiveCommand<Unit, Unit> SaveCreatedFolderCommand { get; }
+    public ReactiveCommand<Unit, Unit> CancelCreateFolderCommand { get; }
+    public ReactiveCommand<Unit, Unit> DeleteCreatedFolderCommand { get; }
     public GamePath Path { get; init; }
 
     // Used for the "Create new folder" node.
     public static GamePath EmptyPath = new GamePath(LocationId.Unknown, string.Empty);
 
     public TreeEntryViewModel? Parent { get; init; }
+
+    private static readonly string InvalidFolderCharsRegex = "[" + String.Concat(System.IO.Path.GetInvalidFileNameChars().Concat(new []{ '\\', '/' })) + "]";
 
     public string DirectoryName
     {
@@ -40,11 +55,84 @@ public class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>, ITreeEntryVie
     public TreeEntryViewModel(IAdvancedInstallerCoordinator coordinator)
     {
         Coordinator = coordinator;
+        LinkCommand = ReactiveCommand.Create(Link);
+        EditCreateFolderCommand = ReactiveCommand.Create(OnEditCreateFolder);
+        SaveCreatedFolderCommand = ReactiveCommand.Create(OnSaveCreatedFolder, this.WhenAnyValue(x => x.CanSave));
+        CancelCreateFolderCommand = ReactiveCommand.Create(OnCancelCreatedFolder);
+        DeleteCreatedFolderCommand = ReactiveCommand.Create(OnDeleteCreatedFolder);
 
         this.WhenActivated(disposables =>
         {
-            LinkCommand = ReactiveCommand.Create(Link).DisposeWith(disposables);
+            // Update CanSave, checking if the input text isn't empty after removing invalid characters.
+            this.WhenAnyValue(x => x.InputText)
+                .Subscribe(text =>
+                {
+                    if (text == string.Empty)
+                    {
+                        CanSave = false;
+                    }
+                    else
+                    {
+                        var trimmed = RemoveInvalidFolderCharacter(text);
+                        CanSave = trimmed != string.Empty;
+                    }
+                } )
+                .DisposeWith(disposables);
         });
+    }
+
+    private void OnDeleteCreatedFolder()
+    {
+        Parent!.Children.Remove(this);
+    }
+
+    private void OnCancelCreatedFolder()
+    {
+        Status = SelectableDirectoryNodeStatus.Create;
+        InputText = string.Empty;
+    }
+
+    private void OnSaveCreatedFolder()
+    {
+        var folderName = RelativePath.FromUnsanitizedInput(RemoveInvalidFolderCharacter(InputText));
+        if (folderName == RelativePath.Empty)
+            return;
+
+        // Create a new child node in the parent with the given name.
+        var newNode = new TreeEntryViewModel(Coordinator)
+        {
+            Status = SelectableDirectoryNodeStatus.Created,
+            Path = new GamePath(Parent!.Path.LocationId, Parent!.Path.Path.Join(folderName)),
+            Parent = Parent,
+        };
+        // Add a new CreateFolder node under it.
+        newNode.Children.Add(new TreeEntryViewModel(Coordinator)
+        {
+            Status = SelectableDirectoryNodeStatus.Create,
+            Path = EmptyPath,
+            Parent = newNode,
+        });
+        // Add the new node to the parent.
+        Parent.Children.Add(newNode);
+
+        // Reset this to Create state.
+        Status = SelectableDirectoryNodeStatus.Create;
+        InputText = string.Empty;
+    }
+
+    private string RemoveInvalidFolderCharacter(string name)
+    {
+        var trimmed = name.Trim();
+        if (trimmed == string.Empty)
+            return trimmed;
+        trimmed = Regex.Replace(trimmed, InvalidFolderCharsRegex, "");
+        return trimmed;
+    }
+
+    private void OnEditCreateFolder()
+    {
+        InputText = string.Empty;
+        Status = SelectableDirectoryNodeStatus.Editing;
     }
 
     public string DisplayName => _displayName != string.Empty ? _displayName : DirectoryName;

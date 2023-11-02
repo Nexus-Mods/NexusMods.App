@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
+using ExCSS;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -15,6 +16,11 @@ public interface ITreeEntryViewModel : IViewModelInterface
     ///     Status of the node in question.
     /// </summary>
     public SelectableDirectoryNodeStatus Status { get; }
+
+    /// <summary>
+    /// The text of the create folder name input box.
+    /// </summary>
+    public string InputText { get; set; }
 
     /// <summary>
     ///     The full path associated with this node.
@@ -39,6 +45,14 @@ public interface ITreeEntryViewModel : IViewModelInterface
     public IAdvancedInstallerCoordinator Coordinator { get; }
 
     public ReactiveCommand<Unit,Unit> LinkCommand { get; }
+
+    public ReactiveCommand<Unit,Unit> EditCreateFolderCommand { get; }
+
+    public ReactiveCommand<Unit, Unit> SaveCreatedFolderCommand { get; }
+
+    public ReactiveCommand<Unit, Unit> CancelCreateFolderCommand { get; }
+
+    public ReactiveCommand<Unit, Unit> DeleteCreatedFolderCommand { get; }
 
     public void Link();
 }
