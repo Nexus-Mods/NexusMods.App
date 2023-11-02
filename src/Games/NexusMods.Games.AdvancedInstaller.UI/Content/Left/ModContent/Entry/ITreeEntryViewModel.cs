@@ -37,6 +37,11 @@ public interface ITreeEntryViewModel : IUnlinkableItem
     string FileName { get; }
 
     /// <summary>
+    ///     The name of the directory where the this entry was explicitly added to.
+    /// </summary>
+    string LinkedDirectoryName { get; }
+
+    /// <summary>
     ///     The full relative path of this file in the tree.
     /// </summary>
     RelativePath FullPath { get; }

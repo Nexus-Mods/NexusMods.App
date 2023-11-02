@@ -30,7 +30,12 @@ public interface IModContentBindingTarget : IUnlinkableItem
     GamePath Bind(IUnlinkableItem unlinkable, DeploymentData data, bool previouslyExisted);
 
     /// <summary>
-    ///     The Directory name target of the link.
+    ///     Name of the directory where the file was linked (the parent of the linked file).
     /// </summary>
     string DirectoryName { get; }
+
+    /// <summary>
+    /// The file name of the linked location
+    /// </summary>
+    string FileName { get; }
 }

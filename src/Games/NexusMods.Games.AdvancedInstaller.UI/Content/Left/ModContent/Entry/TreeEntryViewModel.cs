@@ -33,6 +33,8 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
     /// <inheritdoc />
     public IModContentBindingTarget? LinkedTarget { get; private set; }
 
+    public string LinkedDirectoryName => (IsRoot ? LinkedTarget?.FileName : LinkedTarget?.DirectoryName) ?? string.Empty;
+
     /// <inheritdoc />
     public required ITreeEntryViewModel[] Children { get; init; }
 

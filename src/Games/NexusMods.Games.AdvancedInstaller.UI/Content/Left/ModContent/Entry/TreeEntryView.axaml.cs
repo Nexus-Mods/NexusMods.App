@@ -102,7 +102,7 @@ public partial class
                 break;
 
             case ModContentNodeStatus.IncludedExplicit:
-                RemoveFromLocationButtonTextBlock.Text = ViewModel.LinkedTarget?.DirectoryName;
+                RemoveFromLocationButtonTextBlock.Text = ViewModel.LinkedDirectoryName;
                 RemoveFromLocationButton.IsVisible = true;
                 break;
 

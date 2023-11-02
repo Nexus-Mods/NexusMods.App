@@ -163,6 +163,7 @@ public class NodeLinkingTests
 
         public GamePath Bind(IUnlinkableItem unlinkable, DeploymentData data, bool previouslyExisted) => Current;
         public string DirectoryName => Current.FileName;
+        public string FileName { get; } = "";
 
         public void Unlink(DeploymentData data, bool isCalledFromDoubleLinkedItem) { }
     }

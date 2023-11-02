@@ -29,8 +29,9 @@ public class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>, ITreeEntryVie
     // Do not rearrange order here, flags are deliberately last to optimize for struct layout.
     public PreviewEntryNodeFlags Flags { get; private set; }
 
+    // Name displayed on linked item UI.
+    public string DirectoryName => Parent?.FileName ?? FileName;
     // Derived Getters: For convenience.
-    public string DirectoryName => FileName;
     public bool IsRoot => (Flags & PreviewEntryNodeFlags.IsRoot) == PreviewEntryNodeFlags.IsRoot;
     public bool IsDirectory => (Flags & PreviewEntryNodeFlags.IsDirectory) == PreviewEntryNodeFlags.IsDirectory;
     public bool IsNew => (Flags & PreviewEntryNodeFlags.IsNew) == PreviewEntryNodeFlags.IsNew;
