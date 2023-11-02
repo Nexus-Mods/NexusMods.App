@@ -574,6 +574,23 @@ After edit
 </StackPanel>
 ```
 
+```csharp
+public MyView()
+{
+    this.WhenActivated(disposables =>
+    {
+        this.BindCommand(ViewModel, vm => vm.AddCommand, view => view.AddButton)
+            .DisposeWith(disposables);
+
+        this.BindCommand(ViewModel, vm => vm.RemoveCommand, view => view.RemoveButton)
+            .DisposeWith(disposables);
+
+        this.OneWayBind(ViewModel, vm => vm.Items, view => view.MyListBox.ItemsSource)
+            .DisposeWith(disposables);
+    });
+}
+```
+
 The View itself has a surprise you might've not expected. While we're using reactive bindings to bind to the `ListBox.ItemsSource` property, the control expects us to provide a `DataTemplate` that is used to actually render the items. In the example, the item type is `string` in which case you can use XAML bindings. If the item type is a View Model, you don't need to use XAML bindings at all. ReactiveUI comes with a built-in feature that allows it to create Views from View Models. If you have a View Model, the framework can look for all registered Views, construct the matching View, and bind the View Model to it.
 
 By default, ReactiveUI uses Splat for dependency injection and using the following code will scan the entire assembly for Views that implement `IViewFor<TViewModel>` and associates them with the corresponding `TViewModel`:
