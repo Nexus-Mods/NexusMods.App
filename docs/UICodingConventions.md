@@ -472,7 +472,46 @@ this.Foo.Bar = new Bar() { Baz = "Hello!" };
 
 ### Exceptions with ReactiveUI
 
-TODO
+By default, ReactiveUI will crash the application if an exception is thrown inside a command or an subscription:
+
+```csharp
+this.WhenActivated(disposables =>
+{
+    this.WhenAnyValue(vm => vm.IsChecked)
+        .Where(b => b)
+        .Do(_ => ThrowSomething())
+        .Subscribe()
+        .DisposeWith(disposables);
+});
+```
+
+For commands and other objects that have a `ThrownExceptions` property, you can register a different default exception handler. For subscriptions, you need to use `SubscribeSafe` instead of `Subscribe`:
+
+```csharp
+this.WhenActivated(disposables =>
+{
+    this.WhenAnyValue(vm => vm.IsChecked)
+        .Where(b => b)
+        .Do(_ => ThrowSomething())
+        .SubscribeSafe(Observer.Create<bool>(_ => { }, ex => Console.WriteLine(ex), () => { }))
+        .DisposeWith(disposables);
+});
+```
+
+`SubscribeSafe` re-routes synchronous exceptions to the `OnError` channel of the observer. The `NexusMods.UI.ReactiveUiExtensions` provide a `SubscribeWithErrorLogging` method that you can use for more convenience:
+
+```csharp
+this.WhenActivated(disposables =>
+{
+    this.WhenAnyValue(vm => vm.IsChecked)
+        .Where(b => b)
+        .Do(_ => ThrowSomething())
+        .SubscribeWithErrorLogging()
+        .DisposeWith(disposables);
+});
+```
+
+This uses the injected `ILogger<T>` and should be used instead of `SubscribeSafe`.
 
 ## Understanding Dynamic Data
 
