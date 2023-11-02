@@ -44,6 +44,15 @@ public static class ReactiveUiExtensions
         where TTarget : class =>
         @this.OnUI().BindTo(target, property, conversionHint, vmToViewConverterOverride);
 
+    public static IDisposable BindToStrict<TValue, TTarget>(
+        this IObservable<TValue> @this,
+        TTarget target,
+        Expression<Func<TTarget, TValue?>> property)
+        where TTarget : class, IViewModel
+    {
+        return @this.BindTo(target, property, conversionHint: null, vmToViewConverterOverride: null);
+    }
+
     /// <summary>
     /// Subscribes to the specified source, re-routing synchronous exceptions during invocation of the
     /// <see cref="ObservableExtensions.Subscribe{T}(System.IObservable{T})"/> method to
