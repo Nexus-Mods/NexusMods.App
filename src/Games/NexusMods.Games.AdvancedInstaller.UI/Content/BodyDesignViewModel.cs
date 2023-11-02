@@ -22,6 +22,6 @@ internal class BodyDesignViewModel : AViewModel<IBodyViewModel>,
     public ISelectLocationViewModel SelectLocationViewModel { get; } = new SelectLocationDesignViewModel();
     [Reactive] public bool CanInstall { get; set; } = false;
 
-    public IViewModel CurrentPreviewViewModel => PreviewViewModel;
+    public IViewModelInterface CurrentPreviewViewModel => PreviewViewModel;
     public DeploymentData Data { get; } = new();
 }

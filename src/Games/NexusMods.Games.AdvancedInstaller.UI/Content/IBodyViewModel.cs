@@ -22,7 +22,7 @@ public interface IBodyViewModel : IViewModel
     ///     The viewmodel of the item to be shown on the screen.
     ///     Can be either <see cref="PreviewViewModel"/>, <see cref="SelectLocationViewModel"/> or <see cref="EmptyPreviewViewModel"/>.
     /// </summary>
-    public IViewModel CurrentPreviewViewModel { get; }
+    public IViewModelInterface CurrentPreviewViewModel { get; }
 
     /// <summary>
     ///     Stores the data used for deployment.

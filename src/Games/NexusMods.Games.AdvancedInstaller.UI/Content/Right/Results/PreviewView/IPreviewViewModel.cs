@@ -4,7 +4,7 @@ using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView;
 
-public interface IPreviewViewModel : IViewModelInterface, IViewModel
+public interface IPreviewViewModel : IViewModelInterface
 {
     /// <summary>
     ///     The locations to display in the preview.
