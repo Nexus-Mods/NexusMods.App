@@ -426,6 +426,53 @@ When creating a `ReactiveCommand`, you can pass an `IObservable<bool>` along. Wh
 
 Note that `ReactiveCommand<TParam, TResult>` implements `IDisposable` to dispose of the subscription to the `canExecute` observable. If the command doesn't have this observable or the observable only references the current scope, the command doesn't have to be disposed as all references will be removed up once the GC cleans up the scope.
 
+### Selecting multiple properties
+
+When creating commands and the `canExecute` observable, you might want to check multiple properties at once:
+
+```csharp
+public class MyViewModel : ReactiveObject, IActivatableViewModel
+{
+    public ViewModelActivator Activator { get; } = new();
+
+    [Reactive] public string Text { get; private set; } = string.Empty;
+
+    [Reactive] public bool IsChecked { get; set; }
+
+    public ReactiveCommand<Unit, Unit> AddCommand { get; set; }
+
+    public MyViewModel()
+    {
+        // this command should only be available if Text is not empty and IsChecked is true
+        AddCommand = ReactiveCommand.Create(() => { });
+    }
+}
+```
+
+You could use `CombineLatest` for this:
+
+```csharp
+var hasText = this.WhenAnyValue(vm => vm.Text).Select(text => !string.IsNullOrWhiteSpace(text));
+var isChecked = this.WhenAnyValue(vm => vm.IsChecked);
+var canExecute = hasText.CombineLatest(isChecked).Select(tuple => tuple is { First: true, Second: true });
+
+AddCommand = ReactiveCommand.Create(() => { }, canExecute);
+```
+
+But this is pretty unwieldy and hard to look at. Instead, we can use an overload of `WhenAnyValue` that allows us to select multiple properties at once:
+
+```csharp
+var canExecute = this.WhenAnyValue(
+    vm => vm.Text,
+    vm => vm.IsChecked,
+    (text, isChecked) => !string.IsNullOrWhiteSpace(text) && isChecked
+);
+
+AddCommand = ReactiveCommand.Create(() => { }, canExecute);
+```
+
+This is a much cleaner and more efficient solution that before. However, it does require good variable names in the selector, so make sure to use descriptive variable names instead of `x`, `y`, `z` or `a`, `b`, `c`.
+
 ### Understanding expression chains
 
 As previously mentioned, ReactiveUI uses expression trees for methods like `OneWayBind` and `WhenAnyValue`. At runtime, these expressions are partially rewritten to be simpler. Another benefit of using expressions is being able to set up "chains" for nested properties:
@@ -1189,6 +1236,32 @@ This is, understandably, quite a lot of boilerplate just to create a new View. Y
 
 **Always** set properties in the View Model on the UI thread. The Views should **always** act on the UI thread.
 
+### Naming
+
+**Always** use descriptive variables in expressions:
+
+```csharp
+// bad:
+this.WhenAnyValue(x => x.Text)
+    .Where(x => Find(x))
+    .Select(x => !x.Status)
+    .Subscribe(x => { });
+
+// good:
+this.WhenAnyValue(vm => vm.Text)
+    .Where(text => Find(text))
+    .Select(searchResult => !searchResult.Status)
+    .Subscribe(searchResult => { });
+```
+
+Good alternatives to `x`:
+
+- `vm` for View Models
+- `view` for Views
+- `item` for items in a collection
+- `child` for children
+- the name of the property that was previously selected
+
 ### View Model Properties
 
 **Always** use `ObservableAsPropertyHelper<T>` to expose the latest values from an `IObservable<T>` that is async or runs on the task pool scheduler:
@@ -1203,31 +1276,41 @@ public class BadExampleViewModel
     {
         this.WhenActivated(disposables =>
         {
-            // don't use subscribe to set the property
+            // Don't use Subscribe to the set the property
             Observable
-                .Return("Hi!")
+                .FromAsync(SomeAsyncMethod, RxApp.TaskpoolScheduler)
                 .Subscribe(text => Text = text)
-                .DiposeWith(disposables);
+                .DisposeWith(disposables);
         });
+    }
+
+    private static Task<string> SomeAsyncMethod(CancellationToken cancellationToken)
+    {
+        return Task.FromResult("Hi!");
     }
 }
 
 public class GoodExampleViewModel
 {
     private readonly ObservableAsPropertyHelper<string> _text;
-    public string Text => _text;
+    public string Text => _text.Value;
 
     public GoodExampleViewModel()
     {
         _text = Observable
-            .Return("Hi!")
-            // set the scheduler to be on the UI thread instead of calling OnUI
+            .FromAsync(SomeAsyncMethod, RxApp.TaskpoolScheduler)
+            // Always set the scheduler to be the Main Thread Scheduler
             .ToProperty(this, vm => vm.Text, scheduler: RxApp.MainThreadScheduler);
 
         this.WhenActivated(disposables =>
         {
             Disposable.Create(() => _text.Dispose()).DisposeWith(disposables);
         });
+    }
+
+    private static Task<string> SomeAsyncMethod(CancellationToken cancellationToken)
+    {
+        return Task.FromResult("Hi!");
     }
 }
 ```
@@ -1243,10 +1326,10 @@ public class GoodExampleViewModel
     {
         this.WhenActivated(disposables =>
         {
-            _text = Observable
+            Observable
                 .Return("Hi!")
                 .BindTo(this, vm => vm.Text)
-                .DiposeWith(disposables);
+                .DisposeWith(disposables);
         });
     }
 }
@@ -1254,7 +1337,7 @@ public class GoodExampleViewModel
 
 ### View to View Model Bindings
 
-**Always** populate the View directly with values from the View Model **if** the properties don't change over time:
+**Always** populate the View directly with values from the View Model **if** the values don't change over time (eg. if they are read-only):
 
 ```csharp
 public MyView()
@@ -1287,12 +1370,12 @@ this.WhenActivated(disposables =>
 });
 ```
 
-**Always** use `TwoWayBind` if the property can be changed from the View:
+**Always** use `Bind` if the property is intended to be changed from the View:
 
 ```csharp
 this.WhenActivated(disposables =>
 {
-    this.OneWayBind(ViewModel, vm => vm.IsChecked, view => view.MyCheckBox.IsChecked)
+    this.Bind(ViewModel, vm => vm.IsChecked, view => view.MyCheckBox.IsChecked)
         .DisposeWith(disposables);
 });
 ```
