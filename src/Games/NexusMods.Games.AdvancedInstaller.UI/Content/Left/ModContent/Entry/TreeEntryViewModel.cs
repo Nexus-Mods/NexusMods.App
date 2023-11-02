@@ -131,11 +131,58 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
 
     public void Unlink(bool isCalledFromDoubleLinkedItem)
     {
+        var oldStatus = Status;
+
         SetStatus(ModContentNodeStatus.Default);
 
         if (IsDirectory)
         {
-            UnlinkChildrenRecursive(isCalledFromDoubleLinkedItem);
+            foreach (var child in Children)
+            {
+                var node = child as TreeEntryViewModel<TNodeValue>;
+
+                if (node!.Status != ModContentNodeStatus.IncludedViaParent)
+                    continue;
+
+                node.UnlinkChildrenRecursive(isCalledFromDoubleLinkedItem);
+            }
+        }
+        else
+        {
+            Coordinator.Data.RemoveMapping(Node.Path);
+        }
+
+        if (!isCalledFromDoubleLinkedItem)
+            LinkedItem?.Unlink(true);
+
+        LinkedItem = null;
+
+
+        if (oldStatus != ModContentNodeStatus.IncludedViaParent) return;
+
+        // If the node was included via parent, check if parent has no more linked children
+        if (Parent!.Children.All(x => x.Status != ModContentNodeStatus.IncludedViaParent))
+        {
+            // There are no more IncludecViaParent children, unlink the parent
+            Parent.Unlink(isCalledFromDoubleLinkedItem);
+        }
+    }
+
+    private void UnlinkChildrenRecursive(bool isCalledFromDoubleLinkedItem)
+    {
+        SetStatus(ModContentNodeStatus.Default);
+
+        if (IsDirectory)
+        {
+            foreach (var child in Children)
+            {
+                var node = child as TreeEntryViewModel<TNodeValue>;
+
+                if (node!.Status != ModContentNodeStatus.IncludedViaParent)
+                    continue;
+
+                node.UnlinkChildrenRecursive(isCalledFromDoubleLinkedItem);
+            }
         }
         else
         {
@@ -148,17 +195,7 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
         LinkedItem = null;
     }
 
-    private void UnlinkChildrenRecursive(bool isCalledFromDoubleLinkedItem)
-    {
-        foreach (var child in Children)
-        {
-            var node = child as TreeEntryViewModel<TNodeValue>;
-            if (node!.Status != ModContentNodeStatus.IncludedViaParent)
-                continue;
 
-            node.Unlink(isCalledFromDoubleLinkedItem);
-        }
-    }
 
     /// <summary>
     ///     Sets a new status, and returns true if status was set successfully.
@@ -222,11 +259,21 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
     /// </summary>
     public void CancelSelect()
     {
+        var oldStatus = Status;
         if (Status != ModContentNodeStatus.Selecting && Status != ModContentNodeStatus.SelectingViaParent)
             return;
 
         SetStatus(ModContentNodeStatus.Default);
         RemoveSelectingWithParentRecursive();
+
+        if (oldStatus == ModContentNodeStatus.SelectingViaParent)
+        {
+            // remove parent from selection if it has no more children
+            if (Parent!.Children.All(x => x.Status != ModContentNodeStatus.SelectingViaParent))
+            {
+                Parent.CancelSelect();
+            }
+        }
 
         Coordinator.CancelSelectObserver.OnNext(this);
     }
