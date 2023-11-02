@@ -11,7 +11,10 @@ public interface IFooterStepperViewModel : IViewModelInterface
 
     public bool IsLastStep { get; }
 
-    public ReactiveCommand<Unit, Unit> GoToNextCommand { get; set; }
+    public bool CanGoNext { get; set; }
+    public bool CanGoPrev { get; set; }
 
-    public ReactiveCommand<Unit, Unit> GoToPrevCommand { get; set; }
+    public ReactiveCommand<Unit, Unit> GoToNextCommand { get; }
+
+    public ReactiveCommand<Unit, Unit> GoToPrevCommand { get; }
 }

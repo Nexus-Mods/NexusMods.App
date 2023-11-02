@@ -19,6 +19,35 @@ public sealed class GuidedInstallerStepViewModel : AGuidedInstallerStepViewModel
         ILogger<GuidedInstallerStepViewModel> logger,
         IImageCache imageCache) : base(imageCache)
     {
+        var goToNextCommand = ReactiveCommand.Create(() =>
+        {
+            // NOTE(erri120): On the last step, we don't set the result but instead show a "installation complete"-screen.
+            if (InstallationStep!.HasNextStep || ShowInstallationCompleteScreen)
+            {
+                var selectedOptions = GatherSelectedOptions();
+                TaskCompletionSource?.TrySetResult(new UserChoice(new UserChoice.GoToNextStep(selectedOptions)));
+            }
+            else
+            {
+                _previousProgress = Progress;
+                Progress = Percent.One;
+                ShowInstallationCompleteScreen = true;
+            }
+        });
+
+        var goToPrevCommand = ReactiveCommand.Create(() =>
+        {
+            if (ShowInstallationCompleteScreen)
+            {
+                ShowInstallationCompleteScreen = false;
+                Progress = _previousProgress;
+            }
+            else
+            {
+                TaskCompletionSource?.TrySetResult(new UserChoice(new UserChoice.GoToPreviousStep()));
+            }
+        });
+
         this.WhenActivated(disposables =>
         {
             this.WhenAnyValue(x => x.InstallationStep)
@@ -31,55 +60,36 @@ public sealed class GuidedInstallerStepViewModel : AGuidedInstallerStepViewModel
                 })
                 .DisposeWith(disposables);
 
-            var canGoNext = this
-                .WhenAnyValue(
-                    x => x.TaskCompletionSource,
-                    x => x.InstallationStep,
-                    x => x.HasValidSelections,
-                    (tcs, step, hasValidSelections) => tcs is not null && step is not null && hasValidSelections);
+            // CanGoNext
+            this.WhenAnyValue(
+                vm => vm.TaskCompletionSource,
+                vm => vm.InstallationStep,
+                vm => vm.HasValidSelections,
+                (tcs, step, hasValidSelections) => tcs is not null && step is not null && hasValidSelections)
+                .BindTo(this, vm => vm.FooterStepperViewModel.CanGoNext)
+                .DisposeWith(disposables);
 
-            var goToNextStepCommand = ReactiveCommand.Create(() =>
-            {
-                // NOTE(erri120): On the last step, we don't set the result but instead show a "installation complete"-screen.
-                if (InstallationStep!.HasNextStep || ShowInstallationCompleteScreen)
-                {
-                    var selectedOptions = GatherSelectedOptions();
-                    TaskCompletionSource?.TrySetResult(new UserChoice(new UserChoice.GoToNextStep(selectedOptions)));
-                }
-                else
-                {
-                    _previousProgress = Progress;
-                    Progress = Percent.One;
-                    ShowInstallationCompleteScreen = true;
-                }
-            }, canGoNext).DisposeWith(disposables);
+            // CanGoPrev
+            this.WhenAnyValue(
+                vm => vm.TaskCompletionSource,
+                vm => vm.InstallationStep,
+                vm => vm.ShowInstallationCompleteScreen,
+                (tcs, step, showInstallationCompleteScreen) => showInstallationCompleteScreen || (tcs is not null && step is not null && step.HasPreviousStep))
+                .BindTo(this, vm => vm.FooterStepperViewModel.CanGoPrev)
+                .DisposeWith(disposables);
 
-            var canGoPrev = this.WhenAnyValue(
-                x => x.TaskCompletionSource,
-                x => x.InstallationStep,
-                x => x.ShowInstallationCompleteScreen,
-                (tcs, step, showInstallationCompleteScreen) => showInstallationCompleteScreen ||
-                                                               (tcs is not null && step is not null &&
-                                                                step.HasPreviousStep));
+            // GoToNext
+            this.WhenAnyObservable(vm => vm.FooterStepperViewModel.GoToNextCommand)
+                .InvokeCommand(goToNextCommand)
+                .DisposeWith(disposables);
 
-            var goToPrevStepCommand = ReactiveCommand.Create(() =>
-            {
-                if (ShowInstallationCompleteScreen)
-                {
-                    ShowInstallationCompleteScreen = false;
-                    Progress = _previousProgress;
-                }
-                else
-                {
-                    TaskCompletionSource?.TrySetResult(new UserChoice(new UserChoice.GoToPreviousStep()));
-                }
-            }, canGoPrev).DisposeWith(disposables);
+            // GoToPrev
+            this.WhenAnyObservable(vm => vm.FooterStepperViewModel.GoToPrevCommand)
+                .InvokeCommand(goToPrevCommand)
+                .DisposeWith(disposables);
 
-            FooterStepperViewModel.GoToNextCommand = goToNextStepCommand;
-            FooterStepperViewModel.GoToPrevCommand = goToPrevStepCommand;
-
-            this.WhenAnyValue(x => x.Progress)
-                .SubscribeWithErrorLogging(logger: default, progress => { FooterStepperViewModel.Progress = progress; })
+            this.WhenAnyValue(vm => vm.Progress)
+                .BindTo(this, vm => vm.FooterStepperViewModel.Progress)
                 .DisposeWith(disposables);
         });
     }

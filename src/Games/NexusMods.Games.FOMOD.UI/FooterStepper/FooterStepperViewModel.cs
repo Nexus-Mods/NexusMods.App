@@ -16,14 +16,16 @@ public class FooterStepperViewModel : AViewModel<IFooterStepperViewModel>, IFoot
     [Reactive]
     public Percent Progress { get; set; } = Percent.Zero;
 
-    [Reactive]
-    public ReactiveCommand<Unit, Unit> GoToNextCommand { get; set; } = Initializers.DisabledReactiveCommand;
-
-    [Reactive]
-    public ReactiveCommand<Unit, Unit> GoToPrevCommand { get; set; } = Initializers.DisabledReactiveCommand;
+    [Reactive] public bool CanGoNext { get; set; }
+    [Reactive] public bool CanGoPrev { get; set; }
+    public ReactiveCommand<Unit, Unit> GoToNextCommand { get; protected init; }
+    public ReactiveCommand<Unit, Unit> GoToPrevCommand { get; protected init; }
 
     public FooterStepperViewModel()
     {
+        GoToNextCommand = ReactiveCommand.Create(() => {}, this.WhenAnyValue(vm => vm.CanGoNext));
+        GoToPrevCommand = ReactiveCommand.Create(() => {}, this.WhenAnyValue(vm => vm.CanGoPrev));
+
         this.WhenActivated(disposables =>
         {
             this.WhenAnyValue(vm => vm.Progress)
