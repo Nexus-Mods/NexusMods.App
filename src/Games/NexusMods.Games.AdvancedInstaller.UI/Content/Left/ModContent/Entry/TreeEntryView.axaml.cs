@@ -46,7 +46,7 @@ public partial class
     {
         if (ViewModel!.IsRoot)
         {
-            MakeTextblockBold();
+            MakeTextBlockBold();
             FileNameTextBlock.Text = Language.TreeEntryView_FileNameTextBlock_All_mod_files;
             InstallRoundedButtonTextBlock.Text = Language.TreeEntryView_InstallRoundedButtonTextBlock_Install_all;
         }
@@ -57,7 +57,7 @@ public partial class
             if (ViewModel!.IsDirectory)
             {
                 FolderEntryIcon.IsVisible = true;
-                MakeTextblockBold();
+                MakeTextBlockBold();
                 InstallRoundedButtonTextBlock.Text =
                     Language.TreeEntryView_InstallRoundedButtonTextBlock_Install_folder;
             }
@@ -133,7 +133,7 @@ public partial class
         IncludedRemoveButton.IsVisible = false;
     }
 
-    private void MakeTextblockBold()
+    private void MakeTextBlockBold()
     {
         FileNameTextBlock.Classes.Remove("BodyMDNormal");
         FileNameTextBlock.Classes.Add("BodyMDBold");

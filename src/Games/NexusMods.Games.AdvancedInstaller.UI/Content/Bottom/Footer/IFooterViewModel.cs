@@ -1,5 +1,4 @@
 ﻿using System.Reactive;
-using System.Windows.Input;
 using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Bottom;

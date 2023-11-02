@@ -2,7 +2,5 @@
 
 public class UnsupportedModOverlayDesignViewModel : UnsupportedModOverlayViewModel
 {
-    public UnsupportedModOverlayDesignViewModel() : base("Design Mod Name")
-    {
-    }
+    public UnsupportedModOverlayDesignViewModel() : base("Design Mod Name") { }
 }

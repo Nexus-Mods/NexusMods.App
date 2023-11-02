@@ -2,7 +2,6 @@ using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Text.RegularExpressions;
-using DynamicData;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -14,11 +13,9 @@ public class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>, ITreeEntryVie
     [Reactive]
     public SelectableDirectoryNodeStatus Status { get; internal set; } = SelectableDirectoryNodeStatus.Regular;
 
-    [Reactive]
-    public string InputText { get; set; } = string.Empty;
+    [Reactive] public string InputText { get; set; } = string.Empty;
 
-    [Reactive]
-    public bool CanSave { get; set; } = false;
+    [Reactive] private bool CanSave { get; set; }
 
     public ObservableCollection<ITreeEntryViewModel> Children { get; init; } = new();
 
@@ -32,11 +29,12 @@ public class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>, ITreeEntryVie
     public GamePath Path { get; init; }
 
     // Used for the "Create new folder" node.
-    public static GamePath EmptyPath = new GamePath(LocationId.Unknown, string.Empty);
+    private static readonly GamePath EmptyPath = new GamePath(LocationId.Unknown, string.Empty);
 
     public TreeEntryViewModel? Parent { get; init; }
 
-    private static readonly string InvalidFolderCharsRegex = "[" + String.Concat(System.IO.Path.GetInvalidFileNameChars().Concat(new []{ '\\', '/' })) + "]";
+    private static readonly string InvalidFolderCharsRegex =
+        "[" + String.Concat(System.IO.Path.GetInvalidFileNameChars().Concat(new[] { '\\', '/' })) + "]";
 
     public string DirectoryName
     {
@@ -76,7 +74,7 @@ public class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>, ITreeEntryVie
                         var trimmed = RemoveInvalidFolderCharacter(text);
                         CanSave = trimmed != string.Empty;
                     }
-                } )
+                })
                 .DisposeWith(disposables);
         });
     }
@@ -148,9 +146,10 @@ public class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>, ITreeEntryVie
     /// </summary>
     /// <param name="absPath">Path of where <see cref="GamePath"/> points to on FileSystem.</param>
     /// <param name="gamePath">The path of the root node.</param>
+    /// <param name="coordinator">BodyVM containing observables to notify on</param>
     /// <param name="rootName">Name of the root item.</param>
     public static TreeEntryViewModel
-        Create(AbsolutePath absPath, GamePath gamePath, IAdvancedInstallerCoordinator coordinator,  string rootName = "")
+        Create(AbsolutePath absPath, GamePath gamePath, IAdvancedInstallerCoordinator coordinator, string rootName = "")
     {
         var finalLocation = absPath.Combine(gamePath.Path);
         var finalLocationLength = finalLocation.GetFullPathLength() + 1;
@@ -170,7 +169,9 @@ public class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>, ITreeEntryVie
     /// <param name="currentDirectory">The path to the current directory.</param>
     /// <param name="locationId">The named location for the <see cref="GamePath"/>(s) to create.</param>
     /// <param name="dirSubstringLength">Precalculated length of <see cref="currentDirectory"/>.</param>
-    internal void CreateChildrenRecursive(AbsolutePath currentDirectory, LocationId locationId, int dirSubstringLength, IAdvancedInstallerCoordinator coordinator)
+    /// <param name="coordinator">BodyVM containing observables to notify on</param>
+    private void CreateChildrenRecursive(AbsolutePath currentDirectory, LocationId locationId, int dirSubstringLength,
+        IAdvancedInstallerCoordinator coordinator)
     {
         // Add the Create New Folder node.
         var createFolderNode = new TreeEntryViewModel(coordinator)

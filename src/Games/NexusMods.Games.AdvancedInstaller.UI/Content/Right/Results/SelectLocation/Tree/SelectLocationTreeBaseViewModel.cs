@@ -2,7 +2,6 @@
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Templates;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry;
-using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 
@@ -10,7 +9,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocat
 public abstract class SelectLocationTreeBaseViewModel : AViewModel<ISelectLocationTreeViewModel>,
     ISelectLocationTreeViewModel
 {
-    public IAdvancedInstallerCoordinator Coordinator { get; protected set; } = null!;
+    public IAdvancedInstallerCoordinator Coordinator { get; protected init; } = null!;
 
     public ITreeEntryViewModel Root => _treeData ??= GetTreeData();
     private ITreeEntryViewModel? _treeData;
@@ -24,7 +23,7 @@ public abstract class SelectLocationTreeBaseViewModel : AViewModel<ISelectLocati
         {
             new HierarchicalExpanderColumn<ITreeEntryViewModel>(
                 new TemplateColumn<ITreeEntryViewModel>(null,
-                    new FuncDataTemplate<ITreeEntryViewModel>((node, scope) =>
+                    new FuncDataTemplate<ITreeEntryViewModel>((node, _) =>
                         new TreeEntryView
                         {
                             DataContext = node,

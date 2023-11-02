@@ -1,9 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
-using ExCSS;
 using NexusMods.Paths;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry;
 
@@ -40,13 +38,13 @@ public interface ITreeEntryViewModel : IViewModelInterface
     /// <summary>
     /// The Directory name displayed for this node.
     /// </summary>
-    new string DirectoryName { get; }
+    string DirectoryName { get; }
 
     public IAdvancedInstallerCoordinator Coordinator { get; }
 
-    public ReactiveCommand<Unit,Unit> LinkCommand { get; }
+    public ReactiveCommand<Unit, Unit> LinkCommand { get; }
 
-    public ReactiveCommand<Unit,Unit> EditCreateFolderCommand { get; }
+    public ReactiveCommand<Unit, Unit> EditCreateFolderCommand { get; }
 
     public ReactiveCommand<Unit, Unit> SaveCreatedFolderCommand { get; }
 

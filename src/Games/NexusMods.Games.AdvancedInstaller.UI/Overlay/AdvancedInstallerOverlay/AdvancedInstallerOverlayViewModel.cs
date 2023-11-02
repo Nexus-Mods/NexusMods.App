@@ -13,7 +13,8 @@ namespace NexusMods.Games.AdvancedInstaller.UI;
 public class AdvancedInstallerOverlayViewModel : AViewModel<IAdvancedInstallerOverlayViewModel>,
     IAdvancedInstallerOverlayViewModel
 {
-    public AdvancedInstallerOverlayViewModel(string modName, FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
+    public AdvancedInstallerOverlayViewModel(string modName,
+        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         GameLocationsRegister register, string gameName = "")
     {
         BodyViewModel = new BodyViewModel(modName, archiveFiles, register, gameName);
@@ -29,10 +30,10 @@ public class AdvancedInstallerOverlayViewModel : AViewModel<IAdvancedInstallerOv
             }).DisposeWith(disposables);
 
             FooterViewModel.InstallCommand = ReactiveCommand.Create(() =>
-            {
-                WasCancelled = false;
-                IsActive = false;
-            }, this.WhenAnyValue(vm => vm.BodyViewModel.CanInstall))
+                {
+                    WasCancelled = false;
+                    IsActive = false;
+                }, this.WhenAnyValue(vm => vm.BodyViewModel.CanInstall))
                 .DisposeWith(disposables);
         });
     }

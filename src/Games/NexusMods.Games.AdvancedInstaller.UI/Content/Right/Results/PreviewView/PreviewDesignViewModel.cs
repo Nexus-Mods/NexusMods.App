@@ -18,7 +18,7 @@ internal class PreviewDesignViewModel : AViewModel<IPreviewViewModel>, IPreviewV
 
     private static ILocationPreviewTreeViewModel[] GetTestData()
     {
-        return new[]
+        return new ILocationPreviewTreeViewModel[]
         {
             new LocationPreviewTreeDesignViewModel(),
             new LocationPreviewTreeDesignViewModel(),

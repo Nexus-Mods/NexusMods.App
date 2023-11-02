@@ -4,7 +4,6 @@ using NexusMods.DataModel.Games;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry;
 using NexusMods.Paths;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 
@@ -15,7 +14,7 @@ internal class SuggestedEntryViewModel : AViewModel<ISuggestedEntryViewModel>,
         IAdvancedInstallerCoordinator coordinator, ITreeEntryViewModel correspondingNode)
     {
         Title = register[locationId].FileName;
-        Subtitle = subtitle is not null ? subtitle! : locationId.Value;
+        Subtitle = subtitle ?? locationId.Value;
         CorrespondingNode = correspondingNode;
 
         this.WhenActivated(disposables =>
@@ -23,6 +22,7 @@ internal class SuggestedEntryViewModel : AViewModel<ISuggestedEntryViewModel>,
             SelectCommand = ReactiveCommand.Create(CorrespondingNode.Link).DisposeWith(disposables);
         });
     }
+
     public string Title { get; }
     public string Subtitle { get; }
     public ITreeEntryViewModel CorrespondingNode { get; }

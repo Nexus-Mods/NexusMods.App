@@ -33,7 +33,8 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
     /// <inheritdoc />
     public IModContentBindingTarget? LinkedTarget { get; private set; }
 
-    public string LinkedDirectoryName => (IsRoot ? LinkedTarget?.FileName : LinkedTarget?.DirectoryName) ?? string.Empty;
+    public string LinkedDirectoryName =>
+        (IsRoot ? LinkedTarget?.FileName : LinkedTarget?.DirectoryName) ?? string.Empty;
 
     /// <inheritdoc />
     public required ITreeEntryViewModel[] Children { get; init; }
@@ -66,7 +67,7 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
     public bool IsRoot => Node.IsTreeRoot;
 
 
-    public TreeEntryViewModel()
+    protected TreeEntryViewModel()
     {
         BeginSelectCommand = ReactiveCommand.Create(BeginSelect);
         CancelSelectCommand = ReactiveCommand.Create(CancelSelect);
@@ -94,7 +95,8 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
             if (node!.Status != ModContentNodeStatus.SelectingViaParent)
                 continue;
 
-            LinkRecursive(node!, Coordinator.Data, target.GetOrCreateChild(node!.FileName, node.IsDirectory), targetAlreadyExisted);
+            LinkRecursive(node, Coordinator.Data, target.GetOrCreateChild(node.FileName, node.IsDirectory),
+                targetAlreadyExisted);
         }
     }
 
@@ -112,7 +114,7 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
                 var node = child as TreeEntryViewModel<TNodeValue>;
                 if (node!.Status != ModContentNodeStatus.SelectingViaParent)
                     continue;
-                LinkRecursive(node!, data, target.GetOrCreateChild(node!.FileName, node.IsDirectory),
+                LinkRecursive(node, data, target.GetOrCreateChild(node.FileName, node.IsDirectory),
                     targetAlreadyExisted);
             }
         }
@@ -163,7 +165,7 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
         // If the node was included via parent, check if parent has no more linked children
         if (Parent!.Children.All(x => x.Status != ModContentNodeStatus.IncludedViaParent))
         {
-            // There are no more IncludecViaParent children, unlink the parent
+            // There are no more IncludedViaParent children, unlink the parent
             Parent.Unlink(isCalledFromDoubleLinkedItem);
         }
     }
@@ -194,7 +196,6 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
 
         LinkedItem = null;
     }
-
 
 
     /// <summary>
@@ -283,7 +284,7 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
     /// This tries to stop recursive iteration on nodes that are not SelectingViaParent.
     /// </summary>
     /// <returns></returns>
-    public void RemoveSelectingWithParentRecursive()
+    private void RemoveSelectingWithParentRecursive()
     {
         foreach (var child in Children)
         {
@@ -340,6 +341,7 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
     ///     the root.
     /// </summary>
     /// <param name="node">The root node.</param>
+    /// <param name="coordinator">BodyVm containing Observers to notify</param>
     /// <typeparam name="TNodeValue">Type of value associated with this node.</typeparam>
     public static TreeEntryViewModel<TNodeValue> FromFileTree(FileTreeNode<RelativePath, TNodeValue> node,
         IAdvancedInstallerCoordinator coordinator)
@@ -369,7 +371,7 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
     /// <param name="parent">The parent to the current entry.</param>
     /// <typeparam name="TNodeValue">Type of file entry stored in this tree.</typeparam>
     /// <returns>The node.</returns>
-    public static ITreeEntryViewModel FromFileTreeRecursive(FileTreeNode<RelativePath, TNodeValue> node,
+    private static ITreeEntryViewModel FromFileTreeRecursive(FileTreeNode<RelativePath, TNodeValue> node,
         TreeEntryViewModel<TNodeValue> parent)
     {
         var item = new TreeEntryViewModel<TNodeValue>

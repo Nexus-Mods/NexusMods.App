@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Subjects;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 

@@ -1,7 +1,5 @@
 ﻿using System.Reactive;
-using NexusMods.DataModel.Games;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry;
-using NexusMods.Paths;
 using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;

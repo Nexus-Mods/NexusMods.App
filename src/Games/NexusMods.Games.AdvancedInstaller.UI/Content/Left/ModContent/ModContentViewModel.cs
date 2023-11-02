@@ -1,5 +1,4 @@
-﻿using System.Reactive;
-using NexusMods.DataModel.ModInstallers;
+﻿using NexusMods.DataModel.ModInstallers;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 

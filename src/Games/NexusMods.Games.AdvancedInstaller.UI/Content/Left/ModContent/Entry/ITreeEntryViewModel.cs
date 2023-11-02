@@ -89,7 +89,7 @@ public interface ITreeEntryViewModel : IUnlinkableItem
     ///     True if this is a directory, in which case all files from child of this will be mapped to given
     ///     target folder.
     /// </summary>
-    new bool IsDirectory { get; }
+    bool IsDirectory { get; }
 
     /// <summary>
     ///     Binds the current node/source to the given target.

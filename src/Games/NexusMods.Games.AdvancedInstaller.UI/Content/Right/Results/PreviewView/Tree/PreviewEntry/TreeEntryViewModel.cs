@@ -1,8 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Reactive;
-using System.Reactive.Disposables;
-using System.Reactive.Subjects;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -13,16 +11,15 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView
 ///     Represents an individual node in the 'Preview' section when selecting a location.
 /// </summary>
 [DebuggerDisplay("FileName = {FileName}, IsRoot = {IsRoot}, Children = {Children.Count}, Flags = {Flags}")]
-public class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>, ITreeEntryViewModel, IUnlinkableItem
+public class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>, ITreeEntryViewModel
 {
-    public static readonly DeploymentData EmptyDeploymentData = new();
-    public TreeEntryViewModel? Parent { get; init; } = null!;
+    public TreeEntryViewModel? Parent { get; init; }
 
     // TODO: This (FullPath) should be optimized because we are creating a new string for every item.
     public GamePath FullPath { get; init; }
 
     public ReactiveCommand<Unit, Unit> UnlinkCommand { get; }
-    [Reactive] public bool MarkForRemoval { get; private set; } = false;
+    [Reactive] public bool MarkForRemoval { get; private set; }
     public ObservableCollection<ITreeEntryViewModel> Children { get; init; } = new();
     public IUnlinkableItem? LinkedItem { get; private set; }
 
@@ -33,6 +30,7 @@ public class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>, ITreeEntryVie
 
     // Name displayed on linked item UI.
     public string DirectoryName => Parent?.FileName ?? FileName;
+
     // Derived Getters: For convenience.
     public bool IsRoot => (Flags & PreviewEntryNodeFlags.IsRoot) == PreviewEntryNodeFlags.IsRoot;
     public bool IsDirectory => (Flags & PreviewEntryNodeFlags.IsDirectory) == PreviewEntryNodeFlags.IsDirectory;
@@ -86,10 +84,10 @@ public class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>, ITreeEntryVie
         return FullPath;
     }
 
-    public void Unlink()
+    private void Unlink()
     {
         // we don't need the Deployment data actually
-        Unlink( false);
+        Unlink(false);
     }
 
     public void Unlink(bool isCalledFromDoubleLinkedItem)
@@ -203,7 +201,7 @@ public class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>, ITreeEntryVie
                     : PreviewEntryNodeFlags.Default;
 
                 // All intermediate nodes are directories, last one depends on isDirectory.
-                var isDirectoryFlag =  !isLastComponent || isDirectory
+                var isDirectoryFlag = !isLastComponent || isDirectory
                     ? PreviewEntryNodeFlags.IsDirectory
                     : PreviewEntryNodeFlags.Default;
 

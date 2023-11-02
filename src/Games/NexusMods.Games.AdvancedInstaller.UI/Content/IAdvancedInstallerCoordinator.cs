@@ -1,5 +1,4 @@
 using System.Reactive.Subjects;
-using DynamicData.Binding;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 
 using ISelectableDirectoryTreeEntryVM = NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry.ITreeEntryViewModel;

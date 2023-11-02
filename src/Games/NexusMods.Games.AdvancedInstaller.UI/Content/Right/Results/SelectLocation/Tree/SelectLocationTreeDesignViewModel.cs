@@ -1,7 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Subjects;
-using Avalonia.Controls.Models.TreeDataGrid;
-using Avalonia.Controls.Templates;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry;
 using NexusMods.Paths;
 

@@ -36,7 +36,7 @@ public class AdvancedInstaller<TUnsupportedOverlayFactory, TAdvancedInstallerOve
         _overlayController = overlayController;
         _provider = provider;
         // Delay to avoid circular dependency.
-        _loadoutRegistry = new Lazy<LoadoutRegistry>(() => provider.GetRequiredService<LoadoutRegistry>());
+        _loadoutRegistry = new Lazy<LoadoutRegistry>(provider.GetRequiredService<LoadoutRegistry>);
     }
 
     public async ValueTask<IEnumerable<ModInstallerResult>> GetModsAsync(
@@ -153,7 +153,7 @@ public interface IAdvancedInstallerOverlayViewModelFactory
         FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles, GameLocationsRegister register,
         string gameName = "",
         string modName = "Manual Mod"
-        );
+    );
 }
 
 public class AdvancedInstallerOverlayViewModelFactory : IAdvancedInstallerOverlayViewModelFactory

@@ -2,7 +2,6 @@
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using DynamicData;
-using DynamicData.Binding;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
@@ -76,7 +75,7 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
     public IEmptyPreviewViewModel EmptyPreviewViewModel { get; } = new EmptyPreviewViewModel();
     public ISelectLocationViewModel SelectLocationViewModel { get; }
 
-    [Reactive] public bool CanInstall { get; set; } = false;
+    [Reactive] public bool CanInstall { get; private set; }
     [Reactive] public IViewModelInterface CurrentPreviewViewModel { get; private set; }
 
     internal readonly List<IModContentTreeEntryVM> SelectedItems = new();
