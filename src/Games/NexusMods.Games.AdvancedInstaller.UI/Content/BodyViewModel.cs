@@ -49,7 +49,7 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
             DirectorySelectedObserver.DisposeWith(disposables);
 
             PreviewViewModel.LocationsCache.Connect()
-                .WhenPropertyChanged(vm => vm.Root.ShouldRemove)
+                .WhenPropertyChanged(vm => vm.Root.MarkForRemoval)
                 .Where(x => x.Value)
                 .Subscribe(x =>
                 {

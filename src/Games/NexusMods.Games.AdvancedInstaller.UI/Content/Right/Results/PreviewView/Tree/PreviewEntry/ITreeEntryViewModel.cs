@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Reactive.Subjects;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
@@ -28,12 +27,12 @@ public interface ITreeEntryViewModel : IViewModelInterface, IModContentBindingTa
     /// <summary>
     /// This is set to true when all child items are unliked from the tree, and this Location should be removed from the Preview
     /// </summary>
-    bool ShouldRemove { get; }
+    bool MarkForRemoval { get; }
 
     /// <summary>
     ///     The file name displayed for this node.
     /// </summary>
-    string FileName { get; }
+    public new string FileName { get; }
 
     /// <summary>
     ///     True if this is the root node. (Cannot be deleted)

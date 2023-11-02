@@ -20,7 +20,7 @@ public class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>, ITreeEntryVie
     // TODO: This (FullPath) should be optimized because we are creating a new string for every item.
     public GamePath FullPath { get; init; }
 
-    [Reactive] public bool ShouldRemove { get; private set; } = false;
+    [Reactive] public bool MarkForRemoval { get; private set; } = false;
     public ObservableCollection<ITreeEntryViewModel> Children { get; init; } = new();
     public IUnlinkableItem? LinkedItem { get; private set; }
 
@@ -103,7 +103,7 @@ public class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>, ITreeEntryVie
                 // if the ancestor is root, we need to mark it for removal
                 if (currentAncestor.IsRoot)
                 {
-                    currentAncestor.ShouldRemove = true;
+                    currentAncestor.MarkForRemoval = true;
                     break;
                 }
 
@@ -121,7 +121,7 @@ public class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>, ITreeEntryVie
         else
         {
             Children.Clear();
-            ShouldRemove = true;
+            MarkForRemoval = true;
         }
     }
 
