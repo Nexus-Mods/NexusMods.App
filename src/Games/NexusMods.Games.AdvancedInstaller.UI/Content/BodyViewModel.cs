@@ -58,6 +58,10 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
                         CurrentPreviewViewModel = EmptyPreviewViewModel;
                 })
                 .DisposeWith(disposables);
+
+            PreviewViewModel.Locations.WhenAnyValue(x => x.Count)
+                .Subscribe(x => { CanInstall = x > 0; })
+                .DisposeWith(disposables);
         });
     }
 

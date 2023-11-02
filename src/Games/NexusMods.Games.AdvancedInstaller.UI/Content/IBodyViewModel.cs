@@ -16,7 +16,7 @@ public interface IBodyViewModel : IViewModel
     public IEmptyPreviewViewModel EmptyPreviewViewModel { get; }
     public ISelectLocationViewModel SelectLocationViewModel { get; }
 
-    public bool CanInstall { get; set; }
+    public bool CanInstall { get; }
 
     /// <summary>
     ///     The viewmodel of the item to be shown on the screen.
