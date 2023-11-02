@@ -31,7 +31,7 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
     public IImage? HighlightedOptionImage => _highlightedOptionImage.Value;
 
     [Reactive] public Percent Progress { get; set; }
-    public IFooterStepperViewModel FooterStepperViewModel => new FooterStepperViewModel();
+    public IFooterStepperViewModel FooterStepperViewModel { get; } = new FooterStepperViewModel();
 
     [Reactive] public TaskCompletionSource<UserChoice>? TaskCompletionSource { get; set; }
 
