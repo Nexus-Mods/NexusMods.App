@@ -49,13 +49,11 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
             DirectorySelectedObserver.DisposeWith(disposables);
 
             PreviewViewModel.LocationsCache.Connect()
-                .WhenValueChanged(vm => vm.Root.ShouldRemove)
-                .Where(shouldRemove => shouldRemove)
-                .Subscribe(_ =>
+                .WhenPropertyChanged(vm => vm.Root.ShouldRemove)
+                .Where(x => x.Value)
+                .Subscribe(x =>
                 {
-                    PreviewViewModel.LocationsCache.RemoveKeys(PreviewViewModel.Locations
-                        .Where(location => location.Root.ShouldRemove)
-                        .Select(location => location.Root.FullPath.LocationId));
+                    PreviewViewModel.LocationsCache.RemoveKey(x.Sender.Root.FullPath.LocationId);
                     if (PreviewViewModel.Locations.Count == 0)
                         CurrentPreviewViewModel = EmptyPreviewViewModel;
                 })

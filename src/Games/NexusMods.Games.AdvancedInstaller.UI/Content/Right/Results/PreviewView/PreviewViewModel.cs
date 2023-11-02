@@ -21,6 +21,7 @@ internal class PreviewViewModel : AViewModel<IPreviewViewModel>, IPreviewViewMod
     {
         LocationsCache.Connect()
             .Bind(out _locations)
+            .DisposeMany()
             .Subscribe();
     }
 }

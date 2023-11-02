@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Reactive;
-using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using NexusMods.Paths;
@@ -88,6 +87,11 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
         foreach (var child in Children)
         {
             var node = child as TreeEntryViewModel<TNodeValue>;
+
+            // If not included skip GetOrCreateChild call to avoid creating an entry in the preview
+            if (node!.Status != ModContentNodeStatus.SelectingViaParent)
+                continue;
+
             LinkRecursive(node!, data, target.GetOrCreateChild(node!.FileName, node.IsDirectory), targetAlreadyExisted);
         }
     }
@@ -96,9 +100,6 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
         IModContentBindingTarget target,
         bool targetAlreadyExisted)
     {
-        if (@this.Status != ModContentNodeStatus.SelectingViaParent)
-            return;
-
         @this.LinkedItem = target;
 
         @this.SetStatus(ModContentNodeStatus.IncludedViaParent);
@@ -107,6 +108,8 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
             foreach (var child in @this.Children)
             {
                 var node = child as TreeEntryViewModel<TNodeValue>;
+                if (node!.Status != ModContentNodeStatus.SelectingViaParent)
+                    continue;
                 LinkRecursive(node!, data, target.GetOrCreateChild(node!.FileName, node.IsDirectory),
                     targetAlreadyExisted);
             }
@@ -239,19 +242,11 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
 
             if (node!.Status != ModContentNodeStatus.SelectingViaParent)
                 continue;
-            node!.SetStatus(ModContentNodeStatus.Default);
-            node!.RemoveSelectingWithParentRecursive();
+            node.SetStatus(ModContentNodeStatus.Default);
+            node.Coordinator.CancelSelectObserver.OnNext(node);
+            node.RemoveSelectingWithParentRecursive();
         }
     }
-
-
-    /// <summary>
-    /// Removes the selection of the current node, and all of its children.
-    ///
-    /// </summary>
-    /// <param name="status"></param>
-    /// <returns></returns>
-    public void RemoveMappingRecursive() { }
 
     /// <summary>
     ///     Enumerates all children of this node, in a flattened fashion, using a depth first search approach.
