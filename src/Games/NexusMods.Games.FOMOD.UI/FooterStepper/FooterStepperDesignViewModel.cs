@@ -34,7 +34,7 @@ public class FooterStepperDesignViewModel : FooterStepperViewModel
         {
             this.WhenAnyValue(vm => vm.CurrentValue)
                 .Select(currentValue => Percent.CreateClamped(currentValue, 10))
-                .BindTo(this, vm => vm.Progress)
+                .BindToStrict(this, vm => vm.Progress)
                 .DisposeWith(disposables);
         });
     }

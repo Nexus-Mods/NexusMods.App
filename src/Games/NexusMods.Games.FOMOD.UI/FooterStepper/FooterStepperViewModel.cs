@@ -30,7 +30,7 @@ public class FooterStepperViewModel : AViewModel<IFooterStepperViewModel>, IFoot
         {
             this.WhenAnyValue(vm => vm.Progress)
                 .Select(progress => progress == Percent.One)
-                .BindTo(this, vm => vm.IsLastStep)
+                .BindToStrict(this, vm => vm.IsLastStep)
                 .DisposeWith(disposables);
         });
     }
