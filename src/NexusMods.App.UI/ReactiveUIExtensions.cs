@@ -44,7 +44,7 @@ public static class ReactiveUiExtensions
         where TTarget : class =>
         @this.OnUI().BindTo(target, property, conversionHint, vmToViewConverterOverride);
 
-    public static IDisposable BindToStrict<TValue, TTarget>(
+    public static IDisposable BindToVM<TValue, TTarget>(
         this IObservable<TValue> @this,
         TTarget target,
         Expression<Func<TTarget, TValue?>> property)

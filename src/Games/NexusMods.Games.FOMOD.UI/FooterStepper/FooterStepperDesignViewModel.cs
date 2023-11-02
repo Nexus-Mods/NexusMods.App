@@ -11,11 +11,6 @@ public class FooterStepperDesignViewModel : FooterStepperViewModel
 {
     [Reactive] private int CurrentValue { get; set; } = 5;
 
-    public FooterStepperDesignViewModel(Percent progress)
-    {
-        Progress = progress;
-    }
-
     public FooterStepperDesignViewModel()
     {
         var canGoToNext = this
@@ -34,7 +29,7 @@ public class FooterStepperDesignViewModel : FooterStepperViewModel
         {
             this.WhenAnyValue(vm => vm.CurrentValue)
                 .Select(currentValue => Percent.CreateClamped(currentValue, 10))
-                .BindToStrict(this, vm => vm.Progress)
+                .BindToVM(this, vm => vm.Progress)
                 .DisposeWith(disposables);
         });
     }

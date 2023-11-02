@@ -1315,7 +1315,7 @@ public class GoodExampleViewModel
 }
 ```
 
-**Always** use `BindToStrict` and a reactive property to expose the latest values from an `IObservable<T>` that returns immediately and isn't doing anything async:
+**Always** use `BindToVM` and a reactive property to expose the latest values from an `IObservable<T>` that returns immediately and isn't doing anything async:
 
 ```csharp
 public class GoodExampleViewModel
@@ -1328,7 +1328,7 @@ public class GoodExampleViewModel
         {
             Observable
                 .Return("Hi!")
-                .BindToStrict(this, vm => vm.Text)
+                .BindToVM(this, vm => vm.Text)
                 .DisposeWith(disposables);
         });
     }

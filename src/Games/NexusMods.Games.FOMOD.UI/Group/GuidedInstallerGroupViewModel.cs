@@ -1,5 +1,7 @@
+using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using DynamicData;
 using NexusMods.App.UI;
 using NexusMods.Common.GuidedInstaller;
 using NexusMods.Common.GuidedInstaller.ValueObjects;
@@ -11,40 +13,42 @@ namespace NexusMods.Games.FOMOD.UI;
 
 public class GuidedInstallerGroupViewModel : AViewModel<IGuidedInstallerGroupViewModel>, IGuidedInstallerGroupViewModel
 {
-    [Reactive] public bool HasValidSelection { get; set; } = true;
+    public IObservable<bool> HasValidSelectionObservable { get; }
 
     public OptionGroup Group { get; }
 
-    public IGuidedInstallerOptionViewModel[] Options { get; }
+    private readonly SourceCache<IGuidedInstallerOptionViewModel, OptionId> _optionsCache = new(x => x.Option.Id);
+    private readonly ReadOnlyObservableCollection<IGuidedInstallerOptionViewModel> _options;
+    public ReadOnlyObservableCollection<IGuidedInstallerOptionViewModel> Options => _options;
 
     [Reactive] public IGuidedInstallerOptionViewModel? HighlightedOption { get; set; }
 
-    public GuidedInstallerGroupViewModel(OptionGroup group) : this(group,
-        option => new GuidedInstallerOptionViewModel(option, group)) { }
-
-    protected GuidedInstallerGroupViewModel(OptionGroup group, Func<Option, IGuidedInstallerOptionViewModel> factory)
+    public GuidedInstallerGroupViewModel(OptionGroup group)
     {
         Group = group;
 
-        var options = group.Options.Select(factory);
-        if (group.Type == OptionGroupType.AtMostOne)
+        _optionsCache
+            .Connect()
+            .Bind(out _options)
+            .Subscribe();
+
+        _optionsCache.Edit(updater =>
         {
-            Options = options
-                .Prepend(factory(new Option
+            var options = group.Options.Select(option => new GuidedInstallerOptionViewModel(option, group));
+            if (group.Type == OptionGroupType.AtMostOne)
+            {
+                options = options.Prepend(new GuidedInstallerOptionViewModel(new Option
                 {
                     Id = OptionId.None,
                     Name = Language.GuidedInstallerGroupViewModel_GuidedInstallerGroupViewModel_None,
                     Type = OptionType.Available,
                     Description = Language.GuidedInstallerGroupViewModel_GuidedInstallerGroupViewModel_Select_nothing,
-                    HoverText = Language
-                        .GuidedInstallerGroupViewModel_GuidedInstallerGroupViewModel_Use_this_option_to_select_nothing
-                }))
-                .ToArray();
-        }
-        else
-        {
-            Options = options.ToArray();
-        }
+                    HoverText = Language.GuidedInstallerGroupViewModel_GuidedInstallerGroupViewModel_Use_this_option_to_select_nothing
+                }, group));
+            }
+
+            updater.AddOrUpdate(options);
+        });
 
         if (group.Type.UsesRadioButtons())
         {
@@ -70,40 +74,41 @@ public class GuidedInstallerGroupViewModel : AViewModel<IGuidedInstallerGroupVie
             }
         }
 
-        this.WhenActivated(disposables =>
+        // NOTE(erri120): This is the only group type that requires validations as it uses checkboxes in the UI.
+        if (Group.Type is OptionGroupType.AtLeastOne)
         {
-            this.WhenAnyValue(x => x.HasValidSelection)
-                .SubscribeWithErrorLogging(isValid =>
+            HasValidSelectionObservable = _optionsCache
+                .Connect()
+                .WhenValueChanged(optionVM => optionVM.IsChecked)
+                .Select(_ =>
+                {
+                    var selectedOptions = Options
+                        .Where(option => option.IsChecked)
+                        .Select(option => option.Option.Id)
+                        .Where(optionId => optionId != OptionId.None)
+                        .Select(optionId => new SelectedOption(Group.Id, optionId))
+                        .ToArray();
+
+                    return GuidedInstallerValidation.IsValidGroupSelection(Group, selectedOptions);
+                });
+        }
+        else
+        {
+            HasValidSelectionObservable = Observable.Return(true);
+        }
+
+        this.WhenActivated(disposable =>
+        {
+            // propagate validation status to options
+            this.WhenAnyObservable(vm => vm.HasValidSelectionObservable)
+                .Subscribe(isValid =>
                 {
                     foreach (var optionVM in Options)
                     {
                         optionVM.IsValid = isValid;
                     }
                 })
-                .DisposeWith(disposables);
-
-            // NOTE(erri120): This is the only group type that requires validation as
-            // it uses checkboxes in the UI.
-            if (Group.Type is OptionGroupType.AtLeastOne)
-            {
-                Options
-                    .Select(optionVM => optionVM
-                        .WhenAnyValue(x => x.IsChecked)
-                        .Select(isChecked => (optionVM.Option.Id, isChecked)))
-                    .CombineLatest()
-                    .SubscribeWithErrorLogging(values =>
-                    {
-                        var selectedOptions = values
-                            .Where(tuple => tuple.isChecked)
-                            .Select(tuple => tuple.Id)
-                            .Where(optionId => optionId != OptionId.None)
-                            .Select(optionId => new SelectedOption(Group.Id, optionId))
-                            .ToArray();
-
-                        HasValidSelection = GuidedInstallerValidation.IsValidGroupSelection(Group, selectedOptions);
-                    })
-                    .DisposeWith(disposables);
-            }
+                .DisposeWith(disposable);
         });
     }
 }

@@ -5,9 +5,7 @@ namespace NexusMods.Games.FOMOD.UI;
 
 public class GuidedInstallerGroupDesignViewModel : GuidedInstallerGroupViewModel
 {
-    public GuidedInstallerGroupDesignViewModel() : this(SetupGroup()) { }
-
-    public GuidedInstallerGroupDesignViewModel(OptionGroup group) : base(group, option => new GuidedInstallerOptionDesignViewModel(option, group)) { }
+    public GuidedInstallerGroupDesignViewModel() : base(SetupGroup()) { }
 
     private static OptionGroup SetupGroup()
     {
