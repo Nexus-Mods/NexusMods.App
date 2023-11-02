@@ -15,5 +15,5 @@ public interface IUnlinkableItem
     ///
     ///     If this is true, do not call `unlink` on the other item.
     /// </param>
-    public void Unlink(DeploymentData data, bool isCalledFromDoubleLinkedItem);
+    public void Unlink(bool isCalledFromDoubleLinkedItem);
 }

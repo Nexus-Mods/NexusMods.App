@@ -15,11 +15,13 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView
 [DebuggerDisplay("FileName = {FileName}, IsRoot = {IsRoot}, Children = {Children.Count}, Flags = {Flags}")]
 public class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>, ITreeEntryViewModel, IUnlinkableItem
 {
+    public static readonly DeploymentData EmptyDeploymentData = new();
     public TreeEntryViewModel? Parent { get; init; } = null!;
 
     // TODO: This (FullPath) should be optimized because we are creating a new string for every item.
     public GamePath FullPath { get; init; }
 
+    public ReactiveCommand<Unit, Unit> UnlinkCommand { get; }
     [Reactive] public bool MarkForRemoval { get; private set; } = false;
     public ObservableCollection<ITreeEntryViewModel> Children { get; init; } = new();
     public IUnlinkableItem? LinkedItem { get; private set; }
@@ -51,6 +53,7 @@ public class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>, ITreeEntryVie
             FileName = FullPath.LocationId.Value;
         else
             FileName = FullPath.FileName;
+        UnlinkCommand = ReactiveCommand.Create(Unlink);
     }
 
     // Note: This is normally called from an 'unlinkable' item, i.e. ModContentNode
@@ -66,7 +69,7 @@ public class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>, ITreeEntryVie
         {
             // Unlink previously bound item (if any).
             // set to true so it doesn't unlink itself
-            LinkedItem?.Unlink(data, true);
+            LinkedItem?.Unlink(true);
 
             // We apply 'folder merged' flag under either of the circumstances.
             // 1. TODO: Files from two different subfolders are mapped to the same folder.
@@ -83,10 +86,16 @@ public class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>, ITreeEntryVie
         return FullPath;
     }
 
-    public void Unlink(DeploymentData data, bool isCalledFromDoubleLinkedItem)
+    public void Unlink()
+    {
+        // we don't need the Deployment data actually
+        Unlink( false);
+    }
+
+    public void Unlink(bool isCalledFromDoubleLinkedItem)
     {
         // Do the unlink.
-        UnlinkRecursive(data, isCalledFromDoubleLinkedItem);
+        UnlinkRecursive(isCalledFromDoubleLinkedItem);
 
         // Delete self (if possible).
         if (!IsRoot)
@@ -125,18 +134,18 @@ public class TreeEntryViewModel : AViewModel<ITreeEntryViewModel>, ITreeEntryVie
         }
     }
 
-    private void UnlinkRecursive(DeploymentData data, bool isCalledFromDoubleLinkedItem)
+    private void UnlinkRecursive(bool isCalledFromDoubleLinkedItem)
     {
         // Recursively unlink first.
         foreach (var child in Children)
         {
             var node = child as TreeEntryViewModel;
-            node!.UnlinkRecursive(data, isCalledFromDoubleLinkedItem);
+            node!.UnlinkRecursive(isCalledFromDoubleLinkedItem);
         }
 
         // And now unlink self.
         if (!isCalledFromDoubleLinkedItem)
-            LinkedItem?.Unlink(data, true);
+            LinkedItem?.Unlink(true);
 
         LinkedItem = null;
     }

@@ -68,7 +68,7 @@ public class NodeLinkingTests
 
         // Link Armors Directory, then unlink root.
         armorsDir.Link(data, target.GetChild("Textures/Armors")!, false);
-        target.Unlink(data, false);
+        target.Unlink(false);
 
         // Note: There is no direct link in 'target', the children are linked.
         // Assert everything got deleted
@@ -89,7 +89,7 @@ public class NodeLinkingTests
 
         // Link Armors Directory, then unlink root.
         armorsDir.Link(data, targetDir, false);
-        armorsDir.Unlink(data, false);
+        armorsDir.Unlink(false);
 
         // Note: There is no direct link in 'target', the children are linked.
         // Assert everything got deleted
@@ -115,7 +115,7 @@ public class NodeLinkingTests
         // Link Armors Directory, then unlink root.
         var texturesTarget = target.GetChild("Textures")!;
         armorsDir.Link(data, texturesTarget, false);
-        (texturesTarget as TreeEntryViewModel)!.Unlink(data, false);
+        (texturesTarget as TreeEntryViewModel)!.Unlink(false);
 
         // Note: There is no direct link in 'target', the children are linked.
         // Assert everything got deleted

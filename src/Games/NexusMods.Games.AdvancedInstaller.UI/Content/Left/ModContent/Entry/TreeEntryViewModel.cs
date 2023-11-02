@@ -81,8 +81,8 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
 
         if (!IsDirectory)
         {
-            var folder = target.Bind(this, data, targetAlreadyExisted);
-            data.AddMapping(Node.Path, new GamePath(folder.LocationId, folder.Path.Join(FileName)), true);
+            var folder = target.Bind(this, Coordinator.Data, targetAlreadyExisted);
+            Coordinator.Data.AddMapping(Node.Path, new GamePath(folder.LocationId, folder.Path.Join(FileName)), true);
             return;
         }
 
@@ -94,7 +94,7 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
             if (node!.Status != ModContentNodeStatus.SelectingViaParent)
                 continue;
 
-            LinkRecursive(node!, data, target.GetOrCreateChild(node!.FileName, node.IsDirectory), targetAlreadyExisted);
+            LinkRecursive(node!, Coordinator.Data, target.GetOrCreateChild(node!.FileName, node.IsDirectory), targetAlreadyExisted);
         }
     }
 
@@ -126,29 +126,29 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
 
     private void Unlink()
     {
-        Unlink(Coordinator.Data, false);
+        Unlink(false);
     }
 
-    public void Unlink(DeploymentData data, bool isCalledFromDoubleLinkedItem)
+    public void Unlink(bool isCalledFromDoubleLinkedItem)
     {
         SetStatus(ModContentNodeStatus.Default);
 
         if (IsDirectory)
         {
-            UnlinkChildrenRecursive(data, isCalledFromDoubleLinkedItem);
+            UnlinkChildrenRecursive(isCalledFromDoubleLinkedItem);
         }
         else
         {
-            data.RemoveMapping(Node.Path);
+            Coordinator.Data.RemoveMapping(Node.Path);
         }
 
         if (!isCalledFromDoubleLinkedItem)
-            LinkedItem?.Unlink(data, true);
+            LinkedItem?.Unlink(true);
 
         LinkedItem = null;
     }
 
-    private void UnlinkChildrenRecursive(DeploymentData data, bool isCalledFromDoubleLinkedItem)
+    private void UnlinkChildrenRecursive(bool isCalledFromDoubleLinkedItem)
     {
         foreach (var child in Children)
         {
@@ -156,7 +156,7 @@ internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewMo
             if (node!.Status != ModContentNodeStatus.IncludedViaParent)
                 continue;
 
-            node.Unlink(data, isCalledFromDoubleLinkedItem);
+            node.Unlink(isCalledFromDoubleLinkedItem);
         }
     }
 

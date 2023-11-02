@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
+using System.Reactive;
 using NexusMods.Paths;
+using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
 
@@ -23,6 +25,11 @@ public interface ITreeEntryViewModel : IViewModelInterface, IModContentBindingTa
     ///     Contains the children nodes of this node.
     /// </summary>
     ObservableCollection<ITreeEntryViewModel> Children { get; }
+
+    /// <summary>
+    /// Invoked from UI using the X button to remove linked items.
+    /// </summary>
+    ReactiveCommand<Unit, Unit> UnlinkCommand { get; }
 
     /// <summary>
     /// This is set to true when all child items are unliked from the tree, and this Location should be removed from the Preview
