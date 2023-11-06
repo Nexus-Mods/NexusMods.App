@@ -141,4 +141,7 @@
     <data name="TreeEntryView_IncludedRemoveButtonTextBlock_Included" xml:space="preserve">
         <value>Included</value>
     </data>
+    <data name="AdvancedInstaller_Manual_Mod" xml:space="preserve">
+        <value>Manual Mod</value>
+    </data>
 </root>

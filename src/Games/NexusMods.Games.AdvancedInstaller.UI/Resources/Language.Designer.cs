@@ -60,6 +60,15 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Manual Mod.
+        /// </summary>
+        public static string AdvancedInstaller_Manual_Mod {
+            get {
+                return ResourceManager.GetString("AdvancedInstaller_Manual_Mod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ALL FOLDERS.
         /// </summary>
         public static string AllFoldersAreaHeaderText_ALL_FOLDERS {

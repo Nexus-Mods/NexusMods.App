@@ -6,6 +6,7 @@ using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.Mods;
 using NexusMods.DataModel.ModInstallers;
+using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 
@@ -55,7 +56,7 @@ public class AdvancedInstaller<TUnsupportedOverlayFactory, TAdvancedInstallerOve
             loadout?.Mods.TryGetValue(baseModId, out mod);
         }
 
-        var modName = mod?.Name ?? "Manual Mod";
+        var modName = mod?.Name ?? Language.AdvancedInstaller_Manual_Mod;
 
 
         // Note: This code is effectively a stub.
@@ -132,12 +133,12 @@ public class AdvancedInstaller<TUnsupportedOverlayFactory, TAdvancedInstallerOve
 /// </summary>
 public interface IUnsupportedModOverlayViewModelFactory
 {
-    static abstract IUnsupportedModOverlayViewModel Create(string modName = "Manual Mod");
+    static abstract IUnsupportedModOverlayViewModel Create(string modName);
 }
 
 public class UnsupportedModOverlayViewModelFactory : IUnsupportedModOverlayViewModelFactory
 {
-    public static IUnsupportedModOverlayViewModel Create(string modName = "Manual Mod")
+    public static IUnsupportedModOverlayViewModel Create(string modName)
     {
         var overlay = new UnsupportedModOverlayViewModel(modName);
         return overlay;
@@ -152,7 +153,7 @@ public interface IAdvancedInstallerOverlayViewModelFactory
     static abstract IAdvancedInstallerOverlayViewModel Create(
         FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles, GameLocationsRegister register,
         string gameName = "",
-        string modName = "Manual Mod"
+        string modName = ""
     );
 }
 
@@ -160,7 +161,7 @@ public class AdvancedInstallerOverlayViewModelFactory : IAdvancedInstallerOverla
 {
     public static IAdvancedInstallerOverlayViewModel Create(FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         GameLocationsRegister register,
-        string gameName = "", string modName = "Manual Mod")
+        string gameName = "", string modName = "")
     {
         var overlay = new AdvancedInstallerOverlayViewModel(modName, archiveFiles, register, gameName);
         return overlay;

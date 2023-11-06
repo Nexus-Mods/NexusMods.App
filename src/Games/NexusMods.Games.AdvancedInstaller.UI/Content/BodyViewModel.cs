@@ -8,6 +8,7 @@ using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.EmptyPreview;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
+using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 using ReactiveUI;
@@ -27,7 +28,7 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
     public BodyViewModel(string modName, FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
         GameLocationsRegister register, string gameName = "")
     {
-        ModName = modName;
+        ModName = String.IsNullOrWhiteSpace(modName) ? Language.AdvancedInstaller_Manual_Mod : modName;
 
         StartSelectObserver = new Subject<IModContentTreeEntryVM>();
         CancelSelectObserver = new Subject<IModContentTreeEntryVM>();
