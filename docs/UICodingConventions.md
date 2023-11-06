@@ -1264,7 +1264,7 @@ Good alternatives to `x`:
 
 ### View Model Properties
 
-**Always** use `ObservableAsPropertyHelper<T>` (OAPH) to expose the latest values from an `IObservable<T>` that is async or runs on the task pool scheduler. The OAPH is scheduled by default meaning it doesn't set the value immediate. This is why it's suited for setting the result of asynchronous work or work that ran on another scheduler:
+**Always** use `ObservableAsPropertyHelper<T>` (OAPH) to expose the latest values from an `IObservable<T>` that is async or runs on the task pool scheduler. The OAPH is scheduled by default meaning it doesn't set the value immediately. This is why it's suited for setting the result of asynchronous work or work that ran on another scheduler:
 
 ```csharp
 public class BadExampleViewModel
