@@ -14,7 +14,7 @@
         <ui:UnsupportedModOverlayDesignViewModel />
     </Design.DataContext>
 
-    <base:MessageBoxBackground Height="672" Width="1232" MinHeight="672" MinWidth="1232" MaxHeight="818" MaxWidth="1500">
+    <base:MessageBoxBackground Width="1232" Height="672" MaxWidth="1500" MaxHeight="818" >
         <base:MessageBoxBackground.Styles>
 
             <Style Selector="Border.TopPart">
