@@ -7,7 +7,7 @@ public static class ServiceExtensions
 {
     public static IServiceCollection AddView<TView, TViewModel>(this IServiceCollection services)
         where TView : class, IViewFor<TViewModel>
-        where TViewModel : class
+        where TViewModel : class, IViewModelInterface
     {
         services.AddTransient<IViewFor<TViewModel>, TView>();
         return services;

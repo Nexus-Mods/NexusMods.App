@@ -1,7 +1,8 @@
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
-using NexusMods.App.UI;
+using NexusMods.App.UI.Extensions;
 using NexusMods.Common.GuidedInstaller;
 using ReactiveUI;
 
@@ -16,10 +17,14 @@ public partial class GuidedInstallerGroupView : ReactiveUserControl<IGuidedInsta
 
         this.WhenActivated(disposables =>
         {
-            PopulateFromViewModel(ViewModel!);
+            this.WhenAnyValue(view => view.ViewModel)
+                .WhereNotNull()
+                .Do(PopulateFromViewModel)
+                .Subscribe()
+                .DisposeWith(disposables);
 
-            this.WhenAnyValue(x => x.ViewModel!.HasValidSelection)
-                .SubscribeWithErrorLogging(isValid =>
+            this.WhenAnyObservable(view => view.ViewModel!.HasValidSelectionObservable)
+                .Subscribe(isValid =>
                 {
                     if (isValid)
                     {

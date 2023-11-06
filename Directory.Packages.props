@@ -38,13 +38,13 @@
   </ItemGroup>
   <ItemGroup>
     <!-- Microsoft -->
-    <PackageVersion Include="Microsoft.Data.Sqlite" Version="7.0.12" />
+    <PackageVersion Include="Microsoft.Data.Sqlite" Version="7.0.13" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging" Version="7.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
-    <PackageVersion Include="Microsoft.Extensions.ObjectPool" Version="7.0.12" />
+    <PackageVersion Include="Microsoft.Extensions.ObjectPool" Version="7.0.13" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="2.3.2" />
   </ItemGroup>
   <ItemGroup>

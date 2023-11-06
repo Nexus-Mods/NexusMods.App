@@ -39,7 +39,7 @@ and then clicking "Apply" writes this mod list directly to the game folder, but 
 linked in game folders, and no functions are hooked, the [cognitive overhead](https://techcrunch.com/2013/04/20/cognitive-overhead/) of the modding process is greatly reduced,
 and users can focus on creating a perfect modding setup.
 
-TL;DR - The Nexus Mods App aims to merge the mental simplicity of manual modding, with the hygine of existing mod installers, and a promise of: "you can always go back to what last worked"
+TL;DR - The Nexus Mods App aims to merge the mental simplicity of manual modding, with the hygiene of existing mod installers, and a promise of: "you can always go back to what last worked"
 
 Further Reading: [Comparison of File Management Systems](/docs/ComparisonOfFileManagementSystems.md)
 
@@ -47,7 +47,7 @@ Further Reading: [Comparison of File Management Systems](/docs/ComparisonOfFileM
 
 **Q:** What is this? A replacement for Vortex?
 
-**A:** Eventually, yes. But not for quite some time, at the moment this software should be considered "pre-alpha". Do not ask for support for these tools until official annoucements and a product launch is made. Feel free to direct any questions to halgari in the meantime.
+**A:** Eventually, yes. But not for quite some time, at the moment this software should be considered "pre-alpha". Do not ask for support for these tools until official announcements and a product launch is made. Feel free to direct any questions to halgari in the meantime.
 
 
 **Q:** Why is this being done, why a new platform, design, etc.?
