@@ -1335,6 +1335,55 @@ public class GoodExampleViewModel
 }
 ```
 
+### Creating and using Design View Models
+
+**Never** create empty design view models that aren't different from the normal view model.
+
+The design view model should **only** contain design data. If necessary, it can inherit from the normal view model and set properties in the constructor:
+
+```csharp
+// if the view model has a construtor that accepts data:
+public class MyViewModel
+{
+    public MyViewModel(SomeData data)
+    {
+        // ...
+    }
+}
+
+public class MyDesignViewModel : MyViewModel
+{
+    public MyDesignViewModel() : base(SetupData()) { }
+
+    private static SomeData SetupData()
+    {
+        // ...
+    }
+}
+
+// if the view model has a default constructor but properties with data:
+public class MyViewModel
+{
+    [Reactive]
+    public SomeData Data { get; set; }
+}
+
+public class MyDesignViewModel : MyViewModel
+{
+    public MyDesignViewModel()
+    {
+        base.Data = SetupData();
+    }
+
+    private static SomeData SetupData()
+    {
+        // ...
+    }
+}
+```
+
+If a view model creates other view models, those view models **should** not be design view models. Don't try and get fancy with factory methods and other unnecessary abstractions.
+
 ### View to View Model Bindings
 
 **Always** populate the View directly with values from the View Model **if** the values don't change over time (eg. if they are read-only):
