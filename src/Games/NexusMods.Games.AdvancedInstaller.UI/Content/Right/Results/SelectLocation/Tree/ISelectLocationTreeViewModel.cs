@@ -2,7 +2,7 @@
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 
-public interface ISelectLocationTreeViewModel : IViewModel
+public interface ISelectLocationTreeViewModel : IViewModelInterface
 {
     public ITreeEntryViewModel Root { get; }
 

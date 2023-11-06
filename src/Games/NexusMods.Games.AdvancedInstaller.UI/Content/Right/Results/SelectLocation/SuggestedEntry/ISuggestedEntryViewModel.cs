@@ -4,7 +4,7 @@ using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 
-public interface ISuggestedEntryViewModel : IViewModel
+public interface ISuggestedEntryViewModel : IViewModelInterface
 {
     public string Title { get; }
 

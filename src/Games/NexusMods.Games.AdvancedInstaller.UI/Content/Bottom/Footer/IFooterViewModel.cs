@@ -3,7 +3,7 @@ using ReactiveUI;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Bottom;
 
-public interface IFooterViewModel : IViewModel
+public interface IFooterViewModel : IViewModelInterface
 {
     ReactiveCommand<Unit, Unit> CancelCommand { get; set; }
 

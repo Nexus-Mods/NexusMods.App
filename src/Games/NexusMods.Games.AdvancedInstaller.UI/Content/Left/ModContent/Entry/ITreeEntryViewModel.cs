@@ -15,7 +15,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 ///     Using this at runtime isn't exactly ideal given how many items there may be, but given everything is virtualized,
 ///     things should hopefully be a-ok!
 /// </remarks>
-public interface ITreeEntryViewModel : IUnlinkableItem
+public interface ITreeEntryViewModel : IViewModelInterface, IUnlinkableItem
 {
     /// <summary>
     ///     Status of the node in question.

@@ -15,7 +15,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 /// </summary>
 /// <typeparam name="TNodeValue">Type of file entry used in <see cref="FileTreeNode{TPath,TValue}" />.</typeparam>
 [DebuggerDisplay("FileName = {FileName}, IsRoot = {IsRoot}, Children = {Children.Length}, Status = {Status}")]
-internal class TreeEntryViewModel<TNodeValue> : ReactiveObject, ITreeEntryViewModel
+internal class TreeEntryViewModel<TNodeValue> : AViewModel<ITreeEntryViewModel>, ITreeEntryViewModel
 {
     /// <summary>
     ///     The underlying node providing the data for this tree.

@@ -5,7 +5,7 @@ using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content;
 
-public interface IBodyViewModel : IViewModel
+public interface IBodyViewModel : IViewModelInterface
 {
     public string ModName { get; set; }
 
