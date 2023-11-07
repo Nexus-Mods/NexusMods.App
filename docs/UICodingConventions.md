@@ -1337,52 +1337,80 @@ public class GoodExampleViewModel
 
 ### Creating and using Design View Models
 
-**Never** create empty design view models that aren't different from the normal view model.
-
-The design view model should **only** contain design data. If necessary, it can inherit from the normal view model and set properties in the constructor:
+The design view model should only exist to feed dummy data to the base view model. It can inherit from the normal view model and set properties in the constructor:
 
 ```csharp
-// if the view model has a construtor that accepts data:
-public class MyViewModel
+interface IMyViewModel : IViewModelInterface
 {
-    public MyViewModel(SomeData data)
+    public MyData Data { get; }
+}
+
+public class MyViewModel : AViewModel<IMyViewModel>, IMyViewModel
+{
+    public MyData Data { get; }
+
+    // The base View Model doesn't have a default constructor.
+    public MyViewModel(MyData data)
     {
-        // ...
+        Data = data;
     }
 }
 
 public class MyDesignViewModel : MyViewModel
 {
-    public MyDesignViewModel() : base(SetupData()) { }
+    // To be used as a design context, the design View Model has to have a default
+    // constructor.
+    public MyDesignViewModel() : base(GenerateData()) { }
 
-    private static SomeData SetupData()
-    {
-        // ...
-    }
-}
-
-// if the view model has a default constructor but properties with data:
-public class MyViewModel
-{
-    [Reactive]
-    public SomeData Data { get; set; }
-}
-
-public class MyDesignViewModel : MyViewModel
-{
-    public MyDesignViewModel()
-    {
-        base.Data = SetupData();
-    }
-
-    private static SomeData SetupData()
-    {
-        // ...
-    }
+    private static MyData GenerateData() { /* omitted */ }
 }
 ```
 
-If a view model creates other view models, those view models **should** not be design view models. Don't try and get fancy with factory methods and other unnecessary abstractions.
+The design View Model should be as small and compact as possible. It should also behave the same as the base View Model. The only reason it exist is to populate the base View Model with dummy data to be rendered in the previewer.
+
+If the base View Model creates multiple child View Models, then the design View Model should not create child design View Models:
+
+```csharp
+public interface IMyViewModel : IViewModelInterface
+{
+    public ReadOnlyObservableCollection<IChildViewModel> Children { get; }
+}
+
+public interface IChildViewModel : IViewModelInterface { /* omitted */ }
+```
+
+```csharp
+public class MyViewModel : AViewModel<IMyViewModel>, IMyViewModel
+{
+    private readonly SourceCache<MyData, Guid> _sourceCache = new(x => x.Id);
+
+    private readonly ReadOnlyObservableCollection<IChildViewModel> _children;
+    public ReadOnlyObservableCollection<IChildViewModel> Children { get; }
+
+    public MyViewModel(List<MyData> data)
+    {
+        // The base View Model uses the data to create intances of ChildViewModel
+        _sourceCache
+            .Connect()
+            .Transform(item => new ChildViewModel(item))
+            .Bind(out _children);
+
+        _sourceCache.Edit(updater =>
+        {
+            updater.AddOrUpdate(data);
+        });
+    }
+}
+
+public class MyDesignViewModel : MyViewModel
+{
+    // Instead of using the data to create instances of ChildDesignViewModel,
+    // the MyDesignViewModel will only generate dummy data and pass it to MyViewModel.
+    public MyDesignViewModel : base(GenerateData()) { }
+
+    private static List<MyData> GenerateData() { /* omitted */ }
+}
+```
 
 ### View to View Model Bindings
 
