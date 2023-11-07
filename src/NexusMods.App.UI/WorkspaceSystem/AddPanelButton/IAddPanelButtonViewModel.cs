@@ -11,5 +11,5 @@ public interface IAddPanelButtonViewModel : IViewModelInterface
 
     public IImage ButtonImage { get; }
 
-    public ReactiveCommand<Unit, Unit> AddPanelCommand { get; }
+    public ReactiveCommand<Unit, IReadOnlyDictionary<PanelId, Rect>> AddPanelCommand { get; }
 }

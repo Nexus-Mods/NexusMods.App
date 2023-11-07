@@ -2,10 +2,10 @@ using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia;
 using DynamicData;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
@@ -16,25 +16,41 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     private const int MaxPanelCount = Columns * Rows;
 
     private readonly SourceCache<IPanelViewModel, PanelId> _panelSource = new(x => x.Id);
-
-    private ReadOnlyObservableCollection<IPanelViewModel> _panels = Initializers.ReadOnlyObservableCollection<IPanelViewModel>();
+    private readonly ReadOnlyObservableCollection<IPanelViewModel> _panels;
     public ReadOnlyObservableCollection<IPanelViewModel> Panels => _panels;
 
-    [Reactive]
-    public IReadOnlyList<IAddPanelButtonViewModel> AddPanelButtonViewModels { get; private set; } = Array.Empty<IAddPanelButtonViewModel>();
+    private readonly SourceList<IAddPanelButtonViewModel> _addPanelButtonViewModelSource = new();
+    private readonly ReadOnlyObservableCollection<IAddPanelButtonViewModel> _addPanelButtonViewModels;
+    public ReadOnlyObservableCollection<IAddPanelButtonViewModel> AddPanelButtonViewModels => _addPanelButtonViewModels;
 
     private readonly PageFactoryController _factoryController;
     public WorkspaceViewModel(PageFactoryController factoryController)
     {
         _factoryController = factoryController;
+
+        var addPanelButtonViewModelsDisposable = _addPanelButtonViewModelSource
+            .Connect()
+            .DisposeMany()
+            .Bind(out _addPanelButtonViewModels)
+            .Subscribe();
+
+        var panelDisposable = _panelSource
+            .Connect()
+            .DisposeMany()
+            .Sort(PanelComparer.Instance)
+            .Bind(out _panels)
+            .Do(_ => UpdateStates())
+            .Subscribe();
+
         this.WhenActivated(disposables =>
         {
-            _panelSource
+            addPanelButtonViewModelsDisposable.DisposeWith(disposables);
+            panelDisposable.DisposeWith(disposables);
+
+            _addPanelButtonViewModelSource
                 .Connect()
-                .DisposeMany()
-                .Sort(PanelComparer.Instance)
-                .Bind(out _panels)
-                .SubscribeWithErrorLogging(_ => UpdateStates())
+                .MergeMany(item => item.AddPanelCommand)
+                .Subscribe(nextState => AddPanel(nextState))
                 .DisposeWith(disposables);
         });
     }
@@ -62,18 +78,21 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
     private void UpdateStates()
     {
-        if (_panels.Count == MaxPanelCount)
+        _addPanelButtonViewModelSource.Edit(updater =>
         {
-            AddPanelButtonViewModels = Array.Empty<IAddPanelButtonViewModel>();
-            return;
-        }
+            updater.Clear();
+        });
 
-        var states = GridUtils.GetPossibleStates(_panels, Columns, Rows);
-        AddPanelButtonViewModels = states.Select(state =>
+        if (_panels.Count == MaxPanelCount) return;
+        _addPanelButtonViewModelSource.Edit(updater =>
         {
-            var image = IconUtils.StateToBitmap(state);
-            return new AddPanelButtonViewModel(this, state, image);
-        }).ToArray();
+            var states = GridUtils.GetPossibleStates(_panels, Columns, Rows);
+            foreach (var state in states)
+            {
+                var image = IconUtils.StateToBitmap(state);
+                updater.Add(new AddPanelButtonViewModel(state, image));
+            }
+        });
     }
 
     /// <inheritdoc/>

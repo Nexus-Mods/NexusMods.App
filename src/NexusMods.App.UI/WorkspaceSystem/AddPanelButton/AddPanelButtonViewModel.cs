@@ -9,19 +9,15 @@ public class AddPanelButtonViewModel : AViewModel<IAddPanelButtonViewModel>, IAd
 {
     public IReadOnlyDictionary<PanelId, Rect> NewLayoutState { get; }
     public IImage ButtonImage { get; }
-    public ReactiveCommand<Unit, Unit> AddPanelCommand { get; }
+    public ReactiveCommand<Unit, IReadOnlyDictionary<PanelId, Rect>> AddPanelCommand { get; }
 
     public AddPanelButtonViewModel(
-        IWorkspaceViewModel workspaceViewModel,
         IReadOnlyDictionary<PanelId, Rect> newLayoutState,
         IImage buttonImage)
     {
         NewLayoutState = newLayoutState;
         ButtonImage = buttonImage;
 
-        AddPanelCommand = ReactiveCommand.Create(() =>
-        {
-            workspaceViewModel.AddPanel(NewLayoutState);
-        });
+        AddPanelCommand = ReactiveCommand.Create(() => NewLayoutState);
     }
 }

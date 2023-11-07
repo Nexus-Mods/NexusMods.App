@@ -7,7 +7,7 @@ public interface IWorkspaceViewModel : IViewModelInterface
 {
     public ReadOnlyObservableCollection<IPanelViewModel> Panels { get; }
 
-    public IReadOnlyList<IAddPanelButtonViewModel> AddPanelButtonViewModels { get; }
+    public ReadOnlyObservableCollection<IAddPanelButtonViewModel> AddPanelButtonViewModels { get; }
 
     /// <summary>
     /// Called by the View to notify the VM about the new size of the control.
