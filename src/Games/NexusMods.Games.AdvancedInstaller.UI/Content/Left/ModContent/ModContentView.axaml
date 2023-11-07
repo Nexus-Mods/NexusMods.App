@@ -5,12 +5,11 @@
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
-                                xmlns:left="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Content.Left"
                                 xmlns:modContent="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.ModContent"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-                                x:Class="NexusMods.Games.AdvancedInstaller.UI.Content.Left.ModContentView">
+                                x:Class="NexusMods.Games.AdvancedInstaller.UI.ModContent.ModContentView">
     <Design.DataContext>
-        <left:ModContentDesignViewModel />
+        <modContent:ModContentDesignViewModel />
     </Design.DataContext>
 
     <Grid RowDefinitions="Auto, *">

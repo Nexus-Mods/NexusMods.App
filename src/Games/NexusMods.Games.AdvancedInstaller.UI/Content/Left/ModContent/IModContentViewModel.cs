@@ -1,6 +1,4 @@
-﻿using NexusMods.Games.AdvancedInstaller.UI.ModContent;
-
-namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
+﻿namespace NexusMods.Games.AdvancedInstaller.UI.ModContent;
 
 public interface IModContentViewModel : IViewModelInterface
 {

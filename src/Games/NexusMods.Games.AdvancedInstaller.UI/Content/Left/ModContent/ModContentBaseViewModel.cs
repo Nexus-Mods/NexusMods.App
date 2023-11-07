@@ -1,9 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Templates;
-using NexusMods.Games.AdvancedInstaller.UI.ModContent;
 
-namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
+namespace NexusMods.Games.AdvancedInstaller.UI.ModContent;
 
 [ExcludeFromCodeCoverage]
 // ReSharper disable once UnusedType.Global

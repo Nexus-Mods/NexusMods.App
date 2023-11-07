@@ -3,7 +3,7 @@ using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
 using ReactiveUI;
 
-namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
+namespace NexusMods.Games.AdvancedInstaller.UI.ModContent;
 
 [ExcludeFromCodeCoverage]
 public partial class ModContentView : ReactiveUserControl<IModContentViewModel>

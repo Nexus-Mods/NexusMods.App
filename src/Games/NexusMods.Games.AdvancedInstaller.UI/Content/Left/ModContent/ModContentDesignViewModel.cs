@@ -1,9 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using NexusMods.Games.AdvancedInstaller.UI.ModContent;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 
-namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
+namespace NexusMods.Games.AdvancedInstaller.UI.ModContent;
 
 [ExcludeFromCodeCoverage]
 // ReSharper disable once UnusedType.Global

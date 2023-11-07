@@ -1,11 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Games.AdvancedInstaller.UI.Content;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Bottom;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 using NexusMods.Games.AdvancedInstaller.UI.EmptyPreview;
 using NexusMods.Games.AdvancedInstaller.UI.ModContent;
 using NexusMods.Games.AdvancedInstaller.UI.Preview;
 using NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
+using ModContentView = NexusMods.Games.AdvancedInstaller.UI.ModContent.ModContentView;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
 

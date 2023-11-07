@@ -4,7 +4,6 @@ using System.Reactive.Subjects;
 using DynamicData;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.ModInstallers;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 using NexusMods.Games.AdvancedInstaller.UI.EmptyPreview;
 using NexusMods.Games.AdvancedInstaller.UI.ModContent;
 using NexusMods.Games.AdvancedInstaller.UI.Preview;

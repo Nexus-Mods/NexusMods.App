@@ -1,9 +1,8 @@
 ﻿using NexusMods.DataModel.ModInstallers;
-using NexusMods.Games.AdvancedInstaller.UI.ModContent;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 
-namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
+namespace NexusMods.Games.AdvancedInstaller.UI.ModContent;
 
 internal sealed class ModContentViewModel : ModContentBaseViewModel
 {

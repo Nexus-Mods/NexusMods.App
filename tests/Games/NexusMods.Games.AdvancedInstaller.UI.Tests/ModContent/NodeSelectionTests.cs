@@ -1,5 +1,4 @@
 using FluentAssertions;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 using NexusMods.Games.AdvancedInstaller.UI.ModContent;
 using static NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers.ModContentVMTestHelpers;
 

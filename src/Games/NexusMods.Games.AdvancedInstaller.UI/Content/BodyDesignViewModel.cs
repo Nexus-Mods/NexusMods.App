@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 using NexusMods.Games.AdvancedInstaller.UI.EmptyPreview;
+using NexusMods.Games.AdvancedInstaller.UI.ModContent;
 using NexusMods.Games.AdvancedInstaller.UI.Preview;
 using NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
 using ReactiveUI.Fody.Helpers;

@@ -1,7 +1,5 @@
 using FluentAssertions;
 using NexusMods.DataModel.ModInstallers;
-using NexusMods.Games.AdvancedInstaller.UI.Content;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 using NexusMods.Games.AdvancedInstaller.UI.ModContent;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
