@@ -1315,7 +1315,7 @@ public class GoodExampleViewModel
 }
 ```
 
-**Always** use `BindToVM` and a reactive property to expose the latest values from an `IObservable<T>` that returns immediately and isn't doing anything async:
+In a View Model, **always** use `BindToVM` and a reactive property to expose the latest values from an `IObservable<T>` that returns immediately and isn't doing anything async:
 
 ```csharp
 public class GoodExampleViewModel
@@ -1425,6 +1425,18 @@ this.WhenActivated(disposables =>
 this.WhenActivated(disposables =>
 {
     this.Bind(ViewModel, vm => vm.IsChecked, view => view.MyCheckBox.IsChecked)
+        .DisposeWith(disposables);
+});
+```
+
+**Always** use `BindToView` to expose the latest value of an observable stream to the View:
+
+```csharp
+this.WhenActivated(disposables =>
+{
+    this.WhenAnyValue(this, view => view.ViewModel!.SomeFloat)
+        .Select(f => f.ToString("###0.00"))
+        .BindToView(this, view => view.MyTextBlock.Text)
         .DisposeWith(disposables);
 });
 ```

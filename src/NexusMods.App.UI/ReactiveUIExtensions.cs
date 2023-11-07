@@ -44,11 +44,26 @@ public static class ReactiveUiExtensions
         where TTarget : class =>
         @this.OnUI().BindTo(target, property, conversionHint, vmToViewConverterOverride);
 
+    /// <summary>
+    /// Binds the observable stream to a property on the View Model.
+    /// </summary>
     public static IDisposable BindToVM<TValue, TTarget>(
         this IObservable<TValue> @this,
         TTarget target,
         Expression<Func<TTarget, TValue?>> property)
         where TTarget : class, IViewModel
+    {
+        return @this.BindTo(target, property, conversionHint: null, vmToViewConverterOverride: null);
+    }
+
+    /// <summary>
+    /// Binds the observable stream to a property on the View.
+    /// </summary>
+    public static IDisposable BindToView<TValue, TTarget>(
+        this IObservable<TValue> @this,
+        TTarget target,
+        Expression<Func<TTarget, TValue?>> property)
+        where TTarget : class, IViewFor
     {
         return @this.BindTo(target, property, conversionHint: null, vmToViewConverterOverride: null);
     }
