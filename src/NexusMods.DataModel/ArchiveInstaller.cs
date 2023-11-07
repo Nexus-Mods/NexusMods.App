@@ -102,6 +102,7 @@ public class ArchiveInstaller : IArchiveInstaller
                     {
                         var modResults = (await modInstaller.GetModsAsync(
                             loadout.Value.Installation,
+                            loadoutId,
                             baseMod.Id,
                             tree,
                             token)).ToArray();

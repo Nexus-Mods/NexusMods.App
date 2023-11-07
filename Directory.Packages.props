@@ -4,8 +4,9 @@
     <PackageVersion Include="NexusMods.Hashing.xxHash64" Version="1.0.1" />
     <PackageVersion Include="NexusMods.Paths" Version="0.1.8" />
     <PackageVersion Include="NexusMods.Archives.Nx" Version="0.3.7" />
+    <PackageVersion Include="NexusMods.Paths.TestingHelpers" Version="0.1.8" />
     <PackageVersion Include="NexusMods.Telemetry.OpenTelemetry" Version="1.0.0" />
-        <PackageVersion Include="FomodInstaller.Interface" Version="1.2.0" />
+    <PackageVersion Include="FomodInstaller.Interface" Version="1.2.0" />
     <PackageVersion Include="FomodInstaller.Scripting.XmlScript" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup>
@@ -17,6 +18,7 @@
     <!-- Avalonia -->
     <PackageVersion Include="Avalonia" Version="11.0.5" />
     <PackageVersion Include="Avalonia.Controls.DataGrid" Version="11.0.5" />
+    <PackageVersion Include="Avalonia.Controls.TreeDataGrid" Version="11.0.1" />
     <PackageVersion Include="Avalonia.Desktop" Version="11.0.5" />
     <PackageVersion Include="Avalonia.Diagnostics" Version="11.0.5" />
     <PackageVersion Include="Avalonia.Headless" Version="11.0.5" />

@@ -2,6 +2,7 @@ using System.ComponentModel;
 using NexusMods.DataModel.Loadouts;
 using NexusMods.DataModel.Loadouts.ModFiles;
 using NexusMods.DataModel.ModInstallers;
+using NexusMods.Games.AdvancedInstaller.Exceptions;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 
@@ -11,7 +12,11 @@ namespace NexusMods.Games.AdvancedInstaller;
 /// DeploymentData encapsulates all the data needed for a manual or advanced mod installation.
 /// It contains a mapping between the source files in the archive to the target paths in the game directory.
 /// </summary>
-public struct DeploymentData
+/// <remarks>
+///     Note that this class only contains reference types, so it is safe to pass around by value.
+///     If you are adding any value types here, you might want to re-evaluate how this struct is used in the codebase.
+/// </remarks>
+public readonly struct DeploymentData
 {
     /// <summary>
     /// This Dictionary maps relative paths of files in the mod archive to relative paths in the game directories.<br/>
@@ -44,8 +49,13 @@ public struct DeploymentData
     /// </summary>
     /// <param name="archivePath">The relative path of the source file within the mod archive.</param>
     /// <param name="outputPath">The relative path where the file should be placed in one of the game directories.</param>
+    /// <param name="force">
+    ///     If this is set to true, re-mapping the item is permitted, and will simply unmap existing item.
+    ///     Otherwise <see cref="MappingAlreadyExistsException"/> will be thrown.
+    /// </param>
     /// <returns>True if the mapping was added successfully, false if the key already exists.</returns>
-    public void AddMapping(RelativePath archivePath, GamePath outputPath)
+    /// <exception cref="MappingAlreadyExistsException">If the mapping already exists, unless <see cref="force"/> is specified.</exception>
+    public void AddMapping(RelativePath archivePath, GamePath outputPath, bool force = false)
     {
         // Check if said location is already mapped.
         if (OutputToArchiveMap.TryGetValue(outputPath, out var existing))
@@ -55,7 +65,10 @@ public struct DeploymentData
                 return;
 
             // Otherwise we throw telling which path we're mapped to.
-            ThrowHelpers.MappingAlreadyExists(outputPath, existing, archivePath);
+            if (!force)
+                ThrowHelpers.MappingAlreadyExists(outputPath, existing, archivePath);
+            else
+                RemoveMapping(existing);
         }
 
         ArchiveToOutputMap[archivePath] = outputPath;
@@ -70,7 +83,9 @@ public struct DeploymentData
     public bool RemoveMapping(RelativePath archivePath)
     {
         var result = ArchiveToOutputMap.Remove(archivePath, out var existing);
-        OutputToArchiveMap.Remove(existing);
+        if (result)
+            OutputToArchiveMap.Remove(existing);
+
         return result;
     }
 
