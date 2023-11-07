@@ -79,38 +79,6 @@
             <DependentUpon>IModContentViewModel.cs</DependentUpon>
         </Compile>
 
-        <Compile Update="Content\Bottom\Footer\FooterDesignViewModel.cs">
-            <DependentUpon>IFooterViewModel.cs</DependentUpon>
-        </Compile>
-
-        <Compile Update="Content\Bottom\Footer\FooterViewModel.cs">
-            <DependentUpon>IFooterViewModel.cs</DependentUpon>
-        </Compile>
-
-        <Compile Update="Content\Right\Results\PreviewView\PreviewDesignViewModel.cs">
-            <DependentUpon>IPreviewViewModel.cs</DependentUpon>
-        </Compile>
-
-        <Compile Update="Content\Right\Results\PreviewView\PreviewViewModel.cs">
-            <DependentUpon>IPreviewViewModel.cs</DependentUpon>
-        </Compile>
-
-        <Compile Update="Content\Right\Results\EmptyPreview\EmptyPreviewViewModel.cs">
-            <DependentUpon>IEmptyPreviewViewModel.cs</DependentUpon>
-        </Compile>
-
-        <Compile Update="Content\Right\Results\EmptyPreview\EmptyPreviewDesignViewModel.cs">
-            <DependentUpon>IEmptyPreviewViewModel.cs</DependentUpon>
-        </Compile>
-
-        <Compile Update="Content\Right\Results\SelectLocation\SelectLocationViewModel.cs">
-            <DependentUpon>ISelectLocationViewModel.cs</DependentUpon>
-        </Compile>
-
-        <Compile Update="Content\Right\Results\SelectLocation\SelectLocationDesignViewModel.cs">
-            <DependentUpon>ISelectLocationViewModel.cs</DependentUpon>
-        </Compile>
-
         <Compile Update="Content\BodyView.axaml.cs">
             <DependentUpon>AdvancedInstallerBodyView.axaml</DependentUpon>
             <SubType>Code</SubType>
@@ -122,14 +90,6 @@
 
         <Compile Update="Content\BodyDesignViewModel.cs">
             <DependentUpon>IBodyViewModel.cs</DependentUpon>
-        </Compile>
-
-        <Compile Update="Content\Right\Results\SelectLocation\SuggestedEntry\SuggestedEntryDesignViewModel.cs">
-            <DependentUpon>ISuggestedEntryViewModel.cs</DependentUpon>
-        </Compile>
-
-        <Compile Update="Content\Right\Results\SelectLocation\SuggestedEntry\SuggestedEntryViewModel.cs">
-            <DependentUpon>ISuggestedEntryViewModel.cs</DependentUpon>
         </Compile>
 
         <Compile Update="Content\Left\ModContent\Entry\TreeEntryView.axaml.cs">
@@ -184,65 +144,134 @@
           <DependentUpon>IModContentViewModel.cs</DependentUpon>
         </Compile>
 
-        <Compile Update="Content\Right\Results\PreviewView\Tree\LocationPreviewTreeView.axaml.cs">
-          <DependentUpon>LocationPreviewTreeView.axaml</DependentUpon>
+        <Compile Update="Content\Bottom\FooterView.axaml.cs">
+          <DependentUpon>FooterView.axaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
 
-        <Compile Update="Content\Right\Results\PreviewView\Tree\PreviewEntry\TreeEntryViewModel.cs">
-          <DependentUpon>ITreeEntryViewModel.cs</DependentUpon>
+        <Compile Update="Content\Bottom\FooterDesignViewModel.cs">
+          <DependentUpon>IFooterViewModel.cs</DependentUpon>
         </Compile>
 
-        <Compile Update="Content\Right\Results\PreviewView\Tree\LocationPreviewTreeBaseViewModel.cs">
+        <Compile Update="Content\Bottom\FooterViewModel.cs">
+          <DependentUpon>IFooterViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Left\ModContent\TreeEntry\ModContentTreeEntryDesignViewModelRoot.cs">
+          <DependentUpon>IModContentTreeEntryViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Left\ModContent\TreeEntry\ModContentTreeEntryViewModel.cs">
+          <DependentUpon>IModContentTreeEntryViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\PreviewView\Tree\PreviewTreeEntry\PreviewTreeEntryViewModel.cs">
+          <DependentUpon>IPreviewTreeEntryViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\PreviewView\PreviewDesignViewModel.cs">
+          <DependentUpon>IPreviewViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\PreviewView\PreviewViewModel.cs">
+          <DependentUpon>IPreviewViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\PreviewView\Tree\LocationPreviewTreeBaseViewModel.cs">
           <DependentUpon>ILocationPreviewTreeViewModel.cs</DependentUpon>
         </Compile>
 
-        <Compile Update="Content\Right\Results\PreviewView\Tree\LocationPreviewTreeDesignViewModel.cs">
+        <Compile Update="Content\Right\PreviewView\Tree\LocationPreviewTreeDesignViewModel.cs">
           <DependentUpon>ILocationPreviewTreeViewModel.cs</DependentUpon>
         </Compile>
 
-        <Compile Update="Content\Right\Results\PreviewView\Tree\LocationPreviewTreeViewModel.cs">
+        <Compile Update="Content\Right\PreviewView\Tree\LocationPreviewTreeViewModel.cs">
           <DependentUpon>ILocationPreviewTreeViewModel.cs</DependentUpon>
         </Compile>
 
-        <Compile Update="Content\Right\Results\SelectLocation\Tree\SelectLocationTreeView.axaml.cs">
-          <DependentUpon>SelectLocationTreeView.axaml</DependentUpon>
-          <SubType>Code</SubType>
+        <Compile Update="Content\Right\Preview\PreviewDesignViewModel.cs">
+          <DependentUpon>IPreviewViewModel.cs</DependentUpon>
         </Compile>
 
-        <Compile Update="Content\Right\Results\SelectLocation\Tree\SelectLocationTreeBaseViewModel.cs">
+        <Compile Update="Content\Right\Preview\PreviewViewModel.cs">
+          <DependentUpon>IPreviewViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\Preview\Tree\LocationPreviewTreeBaseViewModel.cs">
+          <DependentUpon>ILocationPreviewTreeViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\Preview\Tree\LocationPreviewTreeDesignViewModel.cs">
+          <DependentUpon>ILocationPreviewTreeViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\Preview\Tree\LocationPreviewTreeViewModel.cs">
+          <DependentUpon>ILocationPreviewTreeViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\Preview\Tree\PreviewTreeEntry\PreviewTreeEntryViewModel.cs">
+          <DependentUpon>IPreviewTreeEntryViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\EmptyPreview\EmptyPreviewViewModel.cs">
+          <DependentUpon>IEmptyPreviewViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\EmptyPreview\EmptyPreviewDesignViewModel.cs">
+          <DependentUpon>IEmptyPreviewViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\SelectLocation\SuggestedEntry\SuggestedEntryDesignViewModel.cs">
+          <DependentUpon>ISuggestedEntryViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\SelectLocation\SuggestedEntry\SuggestedEntryViewModel.cs">
+          <DependentUpon>ISuggestedEntryViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\SelectLocation\Tree\SelectLocationTreeBaseViewModel.cs">
           <DependentUpon>ISelectLocationTreeViewModel.cs</DependentUpon>
         </Compile>
 
-        <Compile Update="Content\Right\Results\SelectLocation\Tree\SelectLocationTreeDesignViewModel.cs">
+        <Compile Update="Content\Right\SelectLocation\Tree\SelectLocationTreeDesignViewModel.cs">
           <DependentUpon>ISelectLocationTreeViewModel.cs</DependentUpon>
         </Compile>
 
-        <Compile Update="Content\Right\Results\SelectLocation\Tree\SelectLocationTreeViewModel.cs">
+        <Compile Update="Content\Right\SelectLocation\Tree\SelectLocationTreeViewModel.cs">
           <DependentUpon>ISelectLocationTreeViewModel.cs</DependentUpon>
         </Compile>
 
-        <Compile Update="Content\Right\Results\SelectLocation\Tree\SelectableDirectoryEntry\TreeEntryStandardDirectoryDesignViewModel.cs">
-          <DependentUpon>ITreeEntryViewModel.cs</DependentUpon>
+        <Compile Update="Content\Right\SelectLocation\SelectLocationDesignViewModel.cs">
+          <DependentUpon>ISelectLocationViewModel.cs</DependentUpon>
         </Compile>
 
-        <Compile Update="Content\Right\Results\SelectLocation\Tree\SelectableDirectoryEntry\TreeEntryCreatingDirectoryDesignViewModel.cs">
-          <DependentUpon>ITreeEntryViewModel.cs</DependentUpon>
+        <Compile Update="Content\Right\SelectLocation\SelectLocationViewModel.cs">
+          <DependentUpon>ISelectLocationViewModel.cs</DependentUpon>
         </Compile>
 
-        <Compile Update="Content\Right\Results\SelectLocation\Tree\SelectableDirectoryEntry\TreeEntryViewModel.cs">
-          <DependentUpon>ITreeEntryViewModel.cs</DependentUpon>
+        <Compile Update="Content\Right\SelectLocation\Tree\SelectableDirectoryEntry\SelectableTreeEntryCreatingDirectoryDesignViewModel.cs">
+          <DependentUpon>ISelectableTreeEntryViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\SelectLocation\Tree\SelectableDirectoryEntry\SelectableTreeEntryStandardDirectoryDesignViewModel.cs">
+          <DependentUpon>ISelectableTreeEntryViewModel.cs</DependentUpon>
+        </Compile>
+
+        <Compile Update="Content\Right\SelectLocation\Tree\SelectableDirectoryEntry\SelectableTreeEntryViewModel.cs">
+          <DependentUpon>ISelectableTreeEntryViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Content\Bottom\"/>
-        <Folder Include="Content\Left\"/>
-        <Folder Include="Content\Right\Results\"/>
+        <Folder Include="Content\Left\" />
     </ItemGroup>
 
     <ItemGroup>
-      <AdditionalFiles Include="Content\Right\Results\PreviewView\Tree\PreviewEntry\TreeEntryView.axaml" />
-      <AdditionalFiles Include="Content\Right\Results\SelectLocation\Tree\SelectableDirectoryEntry\TreeEntryView.axaml" />
+      <AdditionalFiles Include="Content\Right\EmptyPreview\EmptyPreviewView.axaml" />
+      <AdditionalFiles Include="Content\Right\Preview\PreviewView.axaml" />
+      <AdditionalFiles Include="Content\Right\Preview\Tree\LocationPreviewTreeView.axaml" />
+      <AdditionalFiles Include="Content\Right\SelectLocation\SelectLocationView.axaml" />
+      <AdditionalFiles Include="Content\Right\SelectLocation\SuggestedEntry\SuggestedEntryView.axaml" />
+      <AdditionalFiles Include="Content\Right\SelectLocation\Tree\SelectLocationTreeView.axaml" />
     </ItemGroup>
 </Project>

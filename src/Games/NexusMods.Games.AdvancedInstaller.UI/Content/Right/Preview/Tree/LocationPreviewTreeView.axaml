@@ -1,0 +1,17 @@
+﻿<reactiveUi:ReactiveUserControl x:TypeArguments="preview:ILocationPreviewTreeViewModel" xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:preview="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Preview"
+                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                                x:Class="NexusMods.Games.AdvancedInstaller.UI.Preview.LocationPreviewTreeView">
+    <Design.DataContext>
+        <preview:LocationPreviewTreeDesignViewModel />
+    </Design.DataContext>
+
+    <TreeDataGrid Classes="TreeNoSelection TreeNoHeader" x:Name="LocationPreviewTreeDataGrid"
+                  ShowColumnHeaders="True"
+                  Foreground="{DynamicResource FontDarkSecondaryColor}" />
+</reactiveUi:ReactiveUserControl>
+

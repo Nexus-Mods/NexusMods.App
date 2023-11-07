@@ -1,9 +1,9 @@
 ﻿using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.EmptyPreview;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
+using NexusMods.Games.AdvancedInstaller.UI.EmptyPreview;
+using NexusMods.Games.AdvancedInstaller.UI.Preview;
+using NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
 
-namespace NexusMods.Games.AdvancedInstaller.UI.Content;
+namespace NexusMods.Games.AdvancedInstaller.UI;
 
 public interface IBodyViewModel : IViewModelInterface
 {

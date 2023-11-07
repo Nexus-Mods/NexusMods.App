@@ -2,10 +2,10 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Games.AdvancedInstaller.UI.Content;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Bottom;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.EmptyPreview;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
-using TreeEntryView = NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry.TreeEntryView;
+using NexusMods.Games.AdvancedInstaller.UI.EmptyPreview;
+using NexusMods.Games.AdvancedInstaller.UI.ModContent;
+using NexusMods.Games.AdvancedInstaller.UI.Preview;
+using NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
 
 namespace NexusMods.Games.AdvancedInstaller.UI;
 
@@ -26,10 +26,9 @@ public static class Services
             .AddView<SelectLocationTreeView, ISelectLocationTreeViewModel>()
             .AddView<SuggestedEntryView, ISuggestedEntryViewModel>()
             .AddView<AdvancedInstallerOverlayView, IAdvancedInstallerOverlayViewModel>()
-            .AddView<Content.Left.TreeEntryView, Content.Left.ITreeEntryViewModel>()
-            .AddView<TreeEntryView, Content.Right.Results.PreviewView.PreviewEntry.ITreeEntryViewModel>()
-            .AddView<Content.Right.Results.SelectLocation.SelectableDirectoryEntry.TreeEntryView,
-                Content.Right.Results.SelectLocation.SelectableDirectoryEntry.ITreeEntryViewModel>()
+            .AddView<ModContentTreeEntryView, IModContentTreeEntryViewModel>()
+            .AddView<PreviewTreeEntryView, IPreviewTreeEntryViewModel>()
+            .AddView<SelectableTreeEntryView, ISelectableTreeEntryViewModel>()
             .AddView<UnsupportedModOverlayView, IUnsupportedModOverlayViewModel>();
     }
 }

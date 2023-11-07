@@ -1,0 +1,97 @@
+﻿<reactiveUi:ReactiveUserControl x:TypeArguments="modContent:IModContentTreeEntryViewModel"
+                                xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+                                xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
+                                xmlns:modContent="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.ModContent"
+                                mc:Ignorable="d" d:DesignWidth="710" d:DesignHeight="44"
+                                x:Class="NexusMods.Games.AdvancedInstaller.UI.ModContent.ModContentTreeEntryView">
+    <Design.DataContext>
+        <modContent:ModContentTreeEntryDesignViewModelRoot />
+    </Design.DataContext>
+
+    <Grid ColumnDefinitions="*, Auto" Margin="0,5,0,5">
+        <Grid.Styles>
+            <Style Selector="icons|Icon.FileTypeIcon">
+                <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+                <Setter Property="FontSize" Value="18" />
+                <Setter Property="Margin" Value="8, 0, 8, 0" />
+            </Style>
+
+            <Style Selector="Button.RightElements">
+                <Setter Property="Margin" Value="0,0,8,0" />
+            </Style>
+
+            <Style Selector="TextBlock#FileNameTextBlock">
+                <Setter Property="Margin" Value="0,4,8,0" />
+            </Style>
+        </Grid.Styles>
+
+        <!-- Left Elements -->
+        <Grid Grid.Column="0" ClipToBounds="True" ColumnDefinitions="Auto,Auto" Name="FileElementGrid">
+
+            <!-- File / Directory Icon -->
+            <icons:Icon Grid.Column="0" Classes="File FileTypeIcon" IsVisible="False" x:Name="FileEntryIcon" />
+            <icons:Icon Grid.Column="0" Classes="FolderOutline FileTypeIcon" IsVisible="False"
+                        x:Name="FolderEntryIcon" />
+
+            <!-- File Name -->
+            <TextBlock Grid.Column="1" Classes="BodyMDNormal" VerticalAlignment="Center"
+                       TextTrimming="CharacterEllipsis"
+                       Text="Example-file.bsa"
+                       x:Name="FileNameTextBlock" />
+        </Grid>
+
+        <!-- Right Elements -->
+        <StackPanel Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal"
+                    x:Name="EntryRightElementsStackPanel">
+
+            <!-- Install Button (Install / Install all / Install folder) -->
+            <Button Classes="Rounded RightElements" HorizontalAlignment="Right" IsVisible="False"
+                    x:Name="InstallRoundedButton">
+                <TextBlock Text="Install temp text" x:Name="InstallRoundedButtonTextBlock" />
+            </Button>
+
+            <!-- X Select location ['Selecting' State] -->
+            <Button Classes="Rounded Active RightElements" HorizontalAlignment="Right" IsVisible="False"
+                    x:Name="SelectLocationRoundedButton">
+                <StackPanel Orientation="Horizontal">
+                    <icons:Icon Classes="Close" x:Name="SelectLocationCloseIcon" />
+                    <TextBlock Text="{x:Static resources:Language.SelectLocationButton_Select_location}"
+                               x:Name="SelectLocationRoundedButtonTextBlock" />
+                </StackPanel>
+            </Button>
+
+            <!-- Remove from Location Button ['IncludedExplicit' State] -->
+            <Button Classes="Rounded Accent RightElements" HorizontalAlignment="Right" IsVisible="False"
+                    x:Name="RemoveFromLocationButton">
+                <StackPanel Orientation="Horizontal">
+                    <icons:Icon Classes="Close" x:Name="RemoveFromLocationCloseIcon" />
+                    <TextBlock Text="temp Loc" x:Name="RemoveFromLocationButtonTextBlock" />
+                </StackPanel>
+            </Button>
+
+            <!-- Include Transition Button (Include / Include folder / Include with folder) [`Selecting`,`SelectingViaParent`]-->
+            <Button Classes="Rounded SemiActive RightElements" HorizontalAlignment="Right" IsVisible="False"
+                    x:Name="IncludeTransitionButton">
+                <StackPanel Orientation="Horizontal">
+                    <icons:Icon Classes="Close" x:Name="IncludeTransitionCloseIcon" />
+                    <TextBlock Text="Include temp text" x:Name="IncludeTransitionButtonTextBlock" />
+                </StackPanel>
+            </Button>
+
+            <!-- Included Remove Button (Included / Included folder / Included with folder) -->
+            <Button Classes="Rounded SemiActiveAccent RightElements" HorizontalAlignment="Right" IsVisible="False"
+                    x:Name="IncludedRemoveButton">
+                <StackPanel Orientation="Horizontal">
+                    <icons:Icon Classes="Close" x:Name="IncludedRemoveButtonCloseIcon" />
+                    <TextBlock Text="Included temp text" x:Name="IncludedRemoveButtonTextBlock" />
+                </StackPanel>
+            </Button>
+        </StackPanel>
+    </Grid>
+
+</reactiveUi:ReactiveUserControl>

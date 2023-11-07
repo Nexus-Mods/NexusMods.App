@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using NexusMods.Games.AdvancedInstaller.UI.ModContent;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 
@@ -8,9 +9,9 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 // ReSharper disable once UnusedType.Global
 internal class ModContentDesignViewModel : ModContentBaseViewModel
 {
-    protected override ITreeEntryViewModel InitTreeData() => CreateTestTree();
+    protected override IModContentTreeEntryViewModel InitTreeData() => CreateTestTree();
 
-    private static ITreeEntryViewModel CreateTestTree()
+    private static IModContentTreeEntryViewModel CreateTestTree()
     {
         var fileEntries = new Dictionary<RelativePath, int>
         {
@@ -27,6 +28,6 @@ internal class ModContentDesignViewModel : ModContentBaseViewModel
         };
 
         var tree = FileTreeNode<RelativePath, int>.CreateTree(fileEntries);
-        return TreeEntryViewModel<int>.FromFileTree(tree, new DummyCoordinator());
+        return ModContentTreeEntryViewModel<int>.FromFileTree(tree, new DummyCoordinator());
     }
 }

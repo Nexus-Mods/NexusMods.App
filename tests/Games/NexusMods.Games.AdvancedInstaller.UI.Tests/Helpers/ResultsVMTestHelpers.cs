@@ -1,5 +1,5 @@
 using FluentAssertions;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry;
+using NexusMods.Games.AdvancedInstaller.UI.Preview;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers;
@@ -23,7 +23,7 @@ internal static class ResultsVMTestHelpers
         };
     }
 
-    internal static ITreeEntryViewModel AssertChildNode(ITreeEntryViewModel parentViewModel, string nodeName)
+    internal static IPreviewTreeEntryViewModel AssertChildNode(IPreviewTreeEntryViewModel parentViewModel, string nodeName)
     {
         var node = parentViewModel.GetNode(nodeName);
         node.Should().NotBeNull($"because {nodeName} should exist");
@@ -35,6 +35,6 @@ internal static class ResultsVMTestHelpers
 
 internal static class ResultsNodeExtensions
 {
-    public static ITreeEntryViewModel? GetNode(this ITreeEntryViewModel root, string expectedName) =>
+    public static IPreviewTreeEntryViewModel? GetNode(this IPreviewTreeEntryViewModel root, string expectedName) =>
         root.Children.FirstOrDefault(x => x.FileName == expectedName);
 }

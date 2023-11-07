@@ -1,0 +1,58 @@
+﻿<reactiveUi:ReactiveUserControl x:TypeArguments="preview:IPreviewViewModel"
+                                xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
+                                xmlns:preview="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Preview"
+                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                                x:Class="NexusMods.Games.AdvancedInstaller.UI.Preview.PreviewView">
+    <Design.DataContext>
+        <preview:PreviewDesignViewModel />
+    </Design.DataContext>
+
+    <Border Classes="Rounded StructuralBorderColor Padding16" x:Name="TopLevelBorder">
+        <Border.Styles>
+            <Style Selector="Border#HeaderAreaBorder">
+                <Setter Property="BorderThickness" Value="0, 0, 0, 1" />
+                <Setter Property="BorderBrush" Value="{DynamicResource BorderContainerBrush}" />
+                <Setter Property="Margin" Value="0, 0, 0, 16" />
+            </Style>
+
+            <Style Selector="TextBlock#InstallLocationPreviewSubHeading">
+                <Setter Property="Margin" Value="0, 4, 0, 16" />
+            </Style>
+
+            <Style Selector="TextBlock.SubHeading">
+                <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryColor}" />
+            </Style>
+        </Border.Styles>
+
+        <Grid RowDefinitions="Auto, *" x:Name="TopLevelGrid">
+
+            <Border Grid.Row="0" x:Name="HeaderAreaBorder">
+                <StackPanel Orientation="Vertical">
+
+                    <TextBlock Classes="TitleSMSemi"
+                               Text="{x:Static resources:Language.PreviewHeader_INSTALL_LOCATOIN_PREVIEW}"
+                               x:Name="InstallLocationPreviewHeader" />
+
+                    <TextBlock Classes="BodySMNormal SubHeading"
+                               Text="{x:Static resources:Language.PreviewSubHeading_Files_labelled_as_new}"
+                               x:Name="InstallLocationPreviewSubHeading" />
+                </StackPanel>
+            </Border>
+
+            <ItemsControl Grid.Row="1" x:Name="LocationsPreviewsItemsControl">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+
+
+        </Grid>
+    </Border>
+</reactiveUi:ReactiveUserControl>

@@ -1,0 +1,84 @@
+﻿<reactiveUi:ReactiveUserControl x:TypeArguments="preview:IPreviewTreeEntryViewModel"
+                                xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:icons="clr-namespace:Projektanker.Icons.Avalonia;assembly=Projektanker.Icons.Avalonia"
+                                xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
+                                xmlns:preview="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Preview"
+                                mc:Ignorable="d" d:DesignWidth="710" d:DesignHeight="44"
+                                x:Class="NexusMods.Games.AdvancedInstaller.UI.Preview.PreviewTreeEntryView">
+
+    <Grid ColumnDefinitions="*, Auto" Margin="0,5,0,5">
+        <Grid.Styles>
+            <Style Selector="icons|Icon.FileTypeIcon">
+                <Setter Property="Foreground" Value="{DynamicResource BrandWhite}" />
+                <Setter Property="FontSize" Value="18" />
+                <Setter Property="Margin" Value="8, 0, 8, 0" />
+            </Style>
+
+            <Style Selector="Button.RightElements">
+                <Setter Property="Margin" Value="0,0,8,0" />
+            </Style>
+
+            <Style Selector="Button.PillElement">
+                <Setter Property="HorizontalAlignment" Value="Left" />
+            </Style>
+
+            <Style Selector="TextBlock#FileNameTextBlock">
+                <Setter Property="Margin" Value="0,4,8,0" />
+            </Style>
+        </Grid.Styles>
+
+        <!-- Left Elements -->
+        <Grid Grid.Column="0" ClipToBounds="True" ColumnDefinitions="Auto,Auto,Auto" x:Name="FileElementGrid">
+
+            <!-- File / Directory Icon -->
+            <icons:Icon Grid.Column="0" Classes="File FileTypeIcon" IsVisible="False" x:Name="FileEntryIcon" />
+            <icons:Icon Grid.Column="0" Classes="FolderOutline FileTypeIcon" IsVisible="False"
+                        x:Name="FolderEntryIcon" />
+
+            <!-- File Name -->
+            <TextBlock Grid.Column="1" Classes="BodyMDNormal" VerticalAlignment="Center"
+                       TextTrimming="CharacterEllipsis"
+                       Text="Example-file.bsa"
+                       x:Name="FileNameTextBlock" />
+
+            <!-- Pills -->
+            <!-- NEW Pill Label -->
+            <Button Grid.Column="2" Classes="Pill Accent Label PillElement" IsVisible="False" x:Name="NewPill">
+                <StackPanel>
+                    <TextBlock Text="{x:Static resources:Language.NewFilePill_NEW}" />
+                </StackPanel>
+            </Button>
+
+            <!-- Dupe Folder Pill Label -->
+            <Button Grid.Column="2" Classes="Pill Light Label PillElement" IsVisible="False"
+                    x:Name="DupeFolderPill">
+                <StackPanel>
+                    <icons:Icon Classes="Alert" />
+                    <TextBlock Text="{x:Static resources:Language.Pill_DUPE_FOLDER}" />
+                </StackPanel>
+            </Button>
+
+            <!-- Folder Merged Pill Label -->
+            <Button Grid.Column="2" Classes="Pill Light Label PillElement" IsVisible="False"
+                    x:Name="FolderMergedPill">
+                <StackPanel>
+                    <icons:Icon Classes="Check" />
+                    <TextBlock Text="{x:Static resources:Language.Pill_FOLDER_MERGED}" />
+                </StackPanel>
+            </Button>
+        </Grid>
+
+        <!-- Right Elements // Add StackPanel here if adding additional ones -->
+        <!-- X Button -->
+        <Button Grid.Column="1" Classes="Rounded RightElements" HorizontalAlignment="Right" x:Name="XRoundedButton">
+            <StackPanel Orientation="Horizontal">
+                <icons:Icon Classes="Close" x:Name="StandaloneCloseIcon" />
+            </StackPanel>
+        </Button>
+    </Grid>
+
+</reactiveUi:ReactiveUserControl>

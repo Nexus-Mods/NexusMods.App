@@ -1,10 +1,9 @@
 using FluentAssertions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.ModInstallers;
-using NexusMods.Games.AdvancedInstaller.UI.Content;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
+using NexusMods.Games.AdvancedInstaller.UI.ModContent;
+using NexusMods.Games.AdvancedInstaller.UI.Preview;
+using NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
 using NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers;
 using NexusMods.Paths;
 using NexusMods.Paths.TestingHelpers;
@@ -53,7 +52,7 @@ public class BodyViewModelTests
 
         // Add one folder
         var meshes = bodyVm.ModContentViewModel.Root.Children.First(x => x.FileName == "Meshes");
-        (meshes as TreeEntryViewModel<ModSourceFileEntry>)?.BeginSelect();
+        (meshes as ModContentTreeEntryViewModel<ModSourceFileEntry>)?.BeginSelect();
         // Since UI isn't actually activated all the connections don't work, so we have to manually call the method
         bodyVm.OnSelect(meshes);
 
@@ -88,11 +87,11 @@ public class BodyViewModelTests
 
         // Add one folder
         var meshes = bodyVm.ModContentViewModel.Root.Children.First(x => x.FileName == "Meshes");
-        (meshes as TreeEntryViewModel<ModSourceFileEntry>)?.BeginSelect();
+        (meshes as ModContentTreeEntryViewModel<ModSourceFileEntry>)?.BeginSelect();
         bodyVm.OnSelect(meshes);
 
         var textures = bodyVm.ModContentViewModel.Root.Children.First(x => x.FileName == "Textures");
-        (textures as TreeEntryViewModel<ModSourceFileEntry>)?.BeginSelect();
+        (textures as ModContentTreeEntryViewModel<ModSourceFileEntry>)?.BeginSelect();
         bodyVm.OnSelect(textures);
 
         // Bind inside of Meshes and Textures to data (this is invalid for Skyrim, but for test is okay)

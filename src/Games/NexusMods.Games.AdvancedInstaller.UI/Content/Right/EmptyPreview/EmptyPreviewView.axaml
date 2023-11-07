@@ -1,0 +1,32 @@
+﻿<reactiveUi:ReactiveUserControl x:TypeArguments="emptyPreview:IEmptyPreviewViewModel"
+                                xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
+                                xmlns:emptyPreview="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.EmptyPreview"
+                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                                x:Class="NexusMods.Games.AdvancedInstaller.UI.EmptyPreview.EmptyPreviewView">
+    <Design.DataContext>
+        <emptyPreview:EmptyPreviewDesignViewModel />
+    </Design.DataContext>
+
+    <Border Classes="Rounded ContainerBorderColor OutlineTertiaryDarker">
+        <Border.Styles>
+            <Style Selector="TextBlock#EmptyPreviewTextBlock">
+                <Setter Property="Foreground" Value="{DynamicResource FontDarkSecondaryColor}" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="HorizontalAlignment" Value="Center" />
+                <!-- BodyMDNormal - Can't set the class or it would override the foreground color -->
+                <Setter Property="FontFamily" Value="{DynamicResource FontSecondary}" />
+                <Setter Property="FontWeight" Value="400" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="LineHeight" Value="21" />
+            </Style>
+        </Border.Styles>
+
+        <TextBlock Text="{x:Static resources:Language.EmptyPreviewText_Select_files_to_install}"
+                   x:Name="EmptyPreviewTextBlock" />
+    </Border>
+</reactiveUi:ReactiveUserControl>

@@ -1,11 +1,11 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.EmptyPreview;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
+using NexusMods.Games.AdvancedInstaller.UI.EmptyPreview;
+using NexusMods.Games.AdvancedInstaller.UI.Preview;
+using NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
 using ReactiveUI.Fody.Helpers;
 
-namespace NexusMods.Games.AdvancedInstaller.UI.Content;
+namespace NexusMods.Games.AdvancedInstaller.UI;
 
 [ExcludeFromCodeCoverage]
 // ReSharper disable once UnusedType.Global

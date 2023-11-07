@@ -1,4 +1,4 @@
-﻿<reactiveUi:ReactiveUserControl x:TypeArguments="left:ITreeEntryViewModel"
+﻿<reactiveUi:ReactiveUserControl x:TypeArguments="modContent:IModContentTreeEntryViewModel"
                                 xmlns="https://github.com/avaloniaui"
                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,6 +6,7 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
                                 xmlns:left="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Content.Left"
+                                xmlns:modContent="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.ModContent"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.Content.Left.ModContentView">
     <Design.DataContext>

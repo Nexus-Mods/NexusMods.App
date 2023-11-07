@@ -1,7 +1,6 @@
 using FluentAssertions;
 using NexusMods.DataModel.Games;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry;
+using NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
 using NexusMods.Paths;
 using NexusMods.Paths.TestingHelpers;
 using static NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers.SelectableDirectoryVMTestHelpers;
@@ -36,9 +35,9 @@ public class SelectLocationViewModelTests
         save.Should().NotBeNull();
     }
 
-    private static ITreeEntryViewModel? GetTreeWithLocationId(SelectLocationViewModel vm, LocationId id)
+    private static ISelectableTreeEntryViewModel? GetTreeWithLocationId(SelectLocationViewModel vm, LocationId id)
     {
-        ITreeEntryViewModel? tevm = null;
+        ISelectableTreeEntryViewModel? tevm = null;
         _ = vm.AllFoldersTrees.First(x =>
         {
             var success = x.Tree.TryGetModelAt(0, out tevm);

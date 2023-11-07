@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Controls.Templates;
+using NexusMods.Games.AdvancedInstaller.UI.ModContent;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 
@@ -9,23 +10,23 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Content.Left;
 internal abstract class ModContentBaseViewModel : AViewModel<IModContentViewModel>,
     IModContentViewModel
 {
-    public IObserver<ITreeEntryViewModel> StartSelectObserver { get; protected set; } = null!;
-    public IObserver<ITreeEntryViewModel> CancelSelectObserver { get; protected set; } = null!;
+    public IObserver<IModContentTreeEntryViewModel> StartSelectObserver { get; protected set; } = null!;
+    public IObserver<IModContentTreeEntryViewModel> CancelSelectObserver { get; protected set; } = null!;
 
-    public ITreeEntryViewModel Root => _treeData ??= InitTreeData();
-    private ITreeEntryViewModel? _treeData;
+    public IModContentTreeEntryViewModel Root => _treeData ??= InitTreeData();
+    private IModContentTreeEntryViewModel? _treeData;
 
     /// <summary>
     /// The visual representation of the tree.
     /// </summary>
-    public HierarchicalTreeDataGridSource<ITreeEntryViewModel> Tree => new(Root)
+    public HierarchicalTreeDataGridSource<IModContentTreeEntryViewModel> Tree => new(Root)
     {
         Columns =
         {
-            new HierarchicalExpanderColumn<ITreeEntryViewModel>(
-                new TemplateColumn<ITreeEntryViewModel>(null,
-                    new FuncDataTemplate<ITreeEntryViewModel>((node, _) =>
-                        new TreeEntryView
+            new HierarchicalExpanderColumn<IModContentTreeEntryViewModel>(
+                new TemplateColumn<IModContentTreeEntryViewModel>(null,
+                    new FuncDataTemplate<IModContentTreeEntryViewModel>((node, _) =>
+                        new ModContentTreeEntryView
                         {
                             DataContext = node,
                         }),
@@ -35,5 +36,5 @@ internal abstract class ModContentBaseViewModel : AViewModel<IModContentViewMode
         }
     };
 
-    protected abstract ITreeEntryViewModel InitTreeData();
+    protected abstract IModContentTreeEntryViewModel InitTreeData();
 }

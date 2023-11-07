@@ -1,8 +1,8 @@
 using FluentAssertions;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
+using NexusMods.Games.AdvancedInstaller.UI.ModContent;
 using NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers;
 using NexusMods.Paths;
-using ITreeEntryViewModel = NexusMods.Games.AdvancedInstaller.UI.Content.Left.ITreeEntryViewModel;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Tests.ModContent;
 
@@ -17,7 +17,7 @@ public class NodeLinkingTests
         // Arrange & Act
         var (node, data, target) = CommonSetup();
         var armorsDir = node.GetNode("Textures").GetNode("Armors");
-        (armorsDir as TreeEntryViewModel<int>)?.BeginSelect();
+        (armorsDir as ModContentTreeEntryViewModel<int>)?.BeginSelect();
         armorsDir.Link(data, target, false);
 
         // Assert
@@ -34,7 +34,7 @@ public class NodeLinkingTests
         // Arrange & Act
         var (node, data, target) = CommonSetup();
         var texturesDir = node.GetNode("Textures");
-        (texturesDir as TreeEntryViewModel<int>)?.BeginSelect();
+        (texturesDir as ModContentTreeEntryViewModel<int>)?.BeginSelect();
         texturesDir.Link(data, target, false);
 
         // Assert
@@ -114,7 +114,7 @@ public class NodeLinkingTests
         // Arrange & Act
         var (node, data, target) = CommonSetup();
         var greenArmor = node.GetNode("Textures").GetNode("Armors").GetNode("greenArmor.dds");
-        (greenArmor as TreeEntryViewModel<int>)?.BeginSelect();
+        (greenArmor as ModContentTreeEntryViewModel<int>)?.BeginSelect();
         greenArmor.Link(data, target, false);
 
         // Assert
@@ -123,7 +123,7 @@ public class NodeLinkingTests
         greenArmor.Status.Should().Be(ModContentNodeStatus.Default);
     }
 
-    private (TreeEntryViewModel<int> node, DeploymentData data, IModContentBindingTarget target)
+    private (ModContentTreeEntryViewModel<int> node, DeploymentData data, IModContentBindingTarget target)
         CommonSetup()
     {
         var node = ModContentVMTestHelpers.CreateTestTreeNode();
@@ -142,7 +142,7 @@ public class NodeLinkingTests
             .Be(new GamePath(LocationId.Game, $"{baseDir}/greenHilt.dds"));
     }
 
-    private static void AssertUnlinkedArmorsFolder(ITreeEntryViewModel armorsDir, DeploymentData data)
+    private static void AssertUnlinkedArmorsFolder(IModContentTreeEntryViewModel armorsDir, DeploymentData data)
     {
         data.ArchiveToOutputMap.Should().BeEmpty();
         data.OutputToArchiveMap.Should().BeEmpty();

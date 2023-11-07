@@ -1,12 +1,12 @@
 using FluentAssertions;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry;
+using NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Tests.Helpers;
 
 internal static class SelectableDirectoryVMTestHelpers
 {
-    internal static ITreeEntryViewModel GetChild(this ITreeEntryViewModel vm, string childName)
+    internal static ISelectableTreeEntryViewModel GetChild(this ISelectableTreeEntryViewModel vm, string childName)
     {
         return vm.Children.First(x => x.DisplayName == childName);
     }
@@ -48,11 +48,11 @@ internal static class SelectableDirectoryVMTestHelpers
     /// <summary>
     /// Asserts that a child node exists with the given name, and returns said node.
     /// </summary>
-    internal static TreeEntryViewModel AssertChildNode(TreeEntryViewModel parentNode, string nodeName)
+    internal static SelectableTreeEntryViewModel AssertChildNode(SelectableTreeEntryViewModel parentNode, string nodeName)
     {
         var node = parentNode.Children.First(x => x.DisplayName == nodeName);
         node.Should().NotBeNull($"because {nodeName} should exist");
-        return (node as TreeEntryViewModel)!;
+        return (node as SelectableTreeEntryViewModel)!;
     }
 
     internal static void AddSavePaths(this InMemoryFileSystem fs, AbsolutePath basePath) =>

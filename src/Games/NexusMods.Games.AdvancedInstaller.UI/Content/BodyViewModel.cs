@@ -5,22 +5,17 @@ using DynamicData;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.ModInstallers;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.EmptyPreview;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView;
-using NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation;
+using NexusMods.Games.AdvancedInstaller.UI.EmptyPreview;
+using NexusMods.Games.AdvancedInstaller.UI.ModContent;
+using NexusMods.Games.AdvancedInstaller.UI.Preview;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
+using NexusMods.Games.AdvancedInstaller.UI.SelectLocation;
 using NexusMods.Paths;
 using NexusMods.Paths.FileTree;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using IModContentTreeEntryVM = NexusMods.Games.AdvancedInstaller.UI.Content.Left.ITreeEntryViewModel;
-using ISelectableTreeEntryVM =
-    NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.SelectLocation.SelectableDirectoryEntry.
-    ITreeEntryViewModel;
-using IPreviewTreeEntryVM =
-    NexusMods.Games.AdvancedInstaller.UI.Content.Right.Results.PreviewView.PreviewEntry.ITreeEntryViewModel;
 
-namespace NexusMods.Games.AdvancedInstaller.UI.Content;
+namespace NexusMods.Games.AdvancedInstaller.UI;
 
 internal class BodyViewModel : AViewModel<IBodyViewModel>,
     IBodyViewModel, IAdvancedInstallerCoordinator
@@ -30,9 +25,9 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
     {
         ModName = String.IsNullOrWhiteSpace(modName) ? Language.AdvancedInstaller_Manual_Mod : modName;
 
-        StartSelectObserver = new Subject<IModContentTreeEntryVM>();
-        CancelSelectObserver = new Subject<IModContentTreeEntryVM>();
-        DirectorySelectedObserver = new Subject<ISelectableTreeEntryVM>();
+        StartSelectObserver = new Subject<IModContentTreeEntryViewModel>();
+        CancelSelectObserver = new Subject<IModContentTreeEntryViewModel>();
+        DirectorySelectedObserver = new Subject<ISelectableTreeEntryViewModel>();
 
         ModContentViewModel = new ModContentViewModel(archiveFiles, this);
         SelectLocationViewModel = new SelectLocationViewModel(register, this, gameName);
@@ -65,9 +60,9 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
         });
     }
 
-    public Subject<IModContentTreeEntryVM> StartSelectObserver { get; }
-    public Subject<IModContentTreeEntryVM> CancelSelectObserver { get; }
-    public Subject<ISelectableTreeEntryVM> DirectorySelectedObserver { get; }
+    public Subject<IModContentTreeEntryViewModel> StartSelectObserver { get; }
+    public Subject<IModContentTreeEntryViewModel> CancelSelectObserver { get; }
+    public Subject<ISelectableTreeEntryViewModel> DirectorySelectedObserver { get; }
 
     public DeploymentData Data { get; set; } = new();
     public string ModName { get; set; }
@@ -79,17 +74,17 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
     [Reactive] public bool CanInstall { get; private set; }
     [Reactive] public IViewModelInterface CurrentPreviewViewModel { get; private set; }
 
-    internal readonly List<IModContentTreeEntryVM> SelectedItems = new();
+    internal readonly List<IModContentTreeEntryViewModel> SelectedItems = new();
 
-    public void OnSelect(IModContentTreeEntryVM treeEntryViewModel)
+    public void OnSelect(IModContentTreeEntryViewModel modContentTreeEntryViewModel)
     {
-        SelectedItems.Add(treeEntryViewModel);
+        SelectedItems.Add(modContentTreeEntryViewModel);
         CurrentPreviewViewModel = SelectLocationViewModel;
     }
 
-    public void OnCancelSelect(IModContentTreeEntryVM treeEntryViewModel)
+    public void OnCancelSelect(IModContentTreeEntryViewModel modContentTreeEntryViewModel)
     {
-        SelectedItems.Remove(treeEntryViewModel);
+        SelectedItems.Remove(modContentTreeEntryViewModel);
         if (SelectedItems.Count == 0)
             CurrentPreviewViewModel = HasAnyItemsToPreview() ? PreviewViewModel : EmptyPreviewViewModel;
     }
@@ -99,7 +94,7 @@ internal class BodyViewModel : AViewModel<IBodyViewModel>,
         return PreviewViewModel.Locations.Any(location => location.Root.Children.Count > 0);
     }
 
-    public void OnDirectorySelected(ISelectableTreeEntryVM directory)
+    public void OnDirectorySelected(ISelectableTreeEntryViewModel directory)
     {
         foreach (var item in SelectedItems)
         {
