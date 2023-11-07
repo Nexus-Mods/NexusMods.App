@@ -10,16 +10,8 @@
     x:Class="NexusMods.App.UI.WorkspaceSystem.PanelView"
     Width="0" Height="0">
 
-    <Design.DataContext>
-        <workspace:PanelDesignViewModel />
-    </Design.DataContext>
-
     <Grid RowDefinitions="Auto, *" Background="{StaticResource BrandSecondaryDarker}">
         <Grid.Styles>
-            <StyleInclude Source="avares://NexusMods.App.UI/Palatte/Nexus.xaml" />
-            <StyleInclude Source="avares://NexusMods.App.UI/Theme/TextBlockStyles.xaml" />
-            <StyleInclude Source="avares://NexusMods.App.UI/Theme/IconStyles.xaml" />
-
             <Style Selector="Button icons|Icon">
                 <Setter Property="Foreground" Value="{StaticResource FontDarkSecondaryColor}" />
             </Style>
@@ -56,8 +48,8 @@
                             </ItemsControl.ItemsPanel>
 
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate DataType="{x:Type workspace:IPanelTabHeaderViewModel}">
-                                    <reactive:ViewModelViewHost ViewModel="{Binding Mode=OneWay}" />
+                                <DataTemplate DataType="{x:Type workspace:IPanelTabViewModel}">
+                                    <reactive:ViewModelViewHost ViewModel="{CompiledBinding Header}"/>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
@@ -96,7 +88,6 @@
                 </Button>
             </Grid>
 
-
             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" Margin="12, 12, 12, 12">
                 <Button x:Name="PopOutPanelButton">
                     <Button.Template>
@@ -129,8 +120,8 @@
 
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type workspace:IPanelTabViewModel}">
-                    <reactive:ViewModelViewHost x:Name="ViewModelViewHost" IsVisible="{Binding IsVisible, Mode=OneWay}"
-                                                ViewModel="{Binding Contents.ViewModel, Mode=OneWay}" />
+                    <reactive:ViewModelViewHost x:Name="ViewModelViewHost" IsVisible="{CompiledBinding IsVisible, Mode=OneWay}"
+                                                ViewModel="{CompiledBinding Contents.ViewModel, Mode=OneWay}" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>

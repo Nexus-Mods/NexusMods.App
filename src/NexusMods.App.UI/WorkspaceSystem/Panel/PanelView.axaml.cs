@@ -66,7 +66,7 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
             this.OneWayBind(ViewModel, vm => vm.Tabs, view => view.TabContents.ItemsSource)
                 .DisposeWith(disposables);
 
-            this.OneWayBind(ViewModel, vm => vm.TabHeaders, view => view.TabHeaders.ItemsSource)
+            this.OneWayBind(ViewModel, vm => vm.Tabs, view => view.TabHeaders.ItemsSource)
                 .DisposeWith(disposables);
         });
     }

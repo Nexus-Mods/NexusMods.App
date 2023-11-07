@@ -50,7 +50,13 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
             _addPanelButtonViewModelSource
                 .Connect()
                 .MergeMany(item => item.AddPanelCommand)
-                .Subscribe(nextState => AddPanel(nextState))
+                .SubscribeWithErrorLogging(nextState => AddPanel(nextState))
+                .DisposeWith(disposables);
+
+            _panelSource
+                .Connect()
+                .MergeMany(item => item.CloseCommand)
+                .SubscribeWithErrorLogging(ClosePanel)
                 .DisposeWith(disposables);
         });
     }
@@ -62,7 +68,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     public void ArrangePanels(Size workspaceSize)
     {
         _lastWorkspaceSize = workspaceSize;
-        foreach (var panelViewModel in _panelSource.Items)
+        foreach (var panelViewModel in Panels)
         {
             panelViewModel.Arrange(workspaceSize);
         }
@@ -81,11 +87,8 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         _addPanelButtonViewModelSource.Edit(updater =>
         {
             updater.Clear();
-        });
+            if (_panels.Count == MaxPanelCount) return;
 
-        if (_panels.Count == MaxPanelCount) return;
-        _addPanelButtonViewModelSource.Edit(updater =>
-        {
             var states = GridUtils.GetPossibleStates(_panels, Columns, Rows);
             foreach (var state in states)
             {
@@ -106,7 +109,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 var (panelId, logicalBounds) = kv;
                 if (panelId == PanelId.Empty)
                 {
-                    panelViewModel = new PanelViewModel(this, _factoryController)
+                    panelViewModel = new PanelViewModel(_factoryController)
                     {
                         LogicalBounds = logicalBounds,
                     };
@@ -132,14 +135,14 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     }
 
     /// <inheritdoc/>
-    public void ClosePanel(IPanelViewModel currentPanel)
+    public void ClosePanel(PanelId panelToClose)
     {
         var currentState = _panels.ToImmutableDictionary(panel => panel.Id, panel => panel.LogicalBounds);
-        var newState = GridUtils.GetStateWithoutPanel(currentState, currentPanel.Id, isHorizontal: IsHorizontal);
+        var newState = GridUtils.GetStateWithoutPanel(currentState, panelToClose, isHorizontal: IsHorizontal);
 
         _panelSource.Edit(updater =>
         {
-            updater.Remove(currentPanel.Id);
+            updater.Remove(panelToClose);
 
             foreach (var kv in newState)
             {
@@ -174,7 +177,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         {
             foreach (var panel in data.Panels)
             {
-                var vm = new PanelViewModel(this, _factoryController);
+                var vm = new PanelViewModel(_factoryController);
                 vm.FromData(panel);
 
                 updater.AddOrUpdate(vm);

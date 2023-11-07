@@ -28,7 +28,7 @@ public interface IWorkspaceViewModel : IViewModelInterface
     /// <summary>
     /// Closes a panel from the workspace.
     /// </summary>
-    public void ClosePanel(IPanelViewModel currentPanel);
+    public void ClosePanel(PanelId panelId);
 
     /// <summary>
     /// Transforms the current state of the workspace into a serializable data format.

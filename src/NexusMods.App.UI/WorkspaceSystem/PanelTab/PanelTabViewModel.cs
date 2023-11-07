@@ -21,10 +21,10 @@ public class PanelTabViewModel : AViewModel<IPanelTabViewModel>, IPanelTabViewMo
     /// <inheritdoc/>
     [Reactive] public bool IsVisible { get; set; } = true;
 
-    public PanelTabViewModel(IPanelViewModel panelViewModel, PanelTabIndex index)
+    public PanelTabViewModel(PanelTabIndex index)
     {
         Index = index;
-        Header = new PanelTabHeaderViewModel(panelViewModel, Id);
+        Header = new PanelTabHeaderViewModel(Id);
 
         this.WhenActivated(disposables =>
         {
