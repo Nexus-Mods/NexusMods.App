@@ -1,14 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using NexusMods.DataModel.Extensions;
 using NexusMods.DataModel.Games;
 using NexusMods.DataModel.Games.GameCapabilities.FolderMatchInstallerCapability;
 using NexusMods.DataModel.LoadoutSynchronizer;
 using NexusMods.DataModel.ModInstallers;
-using NexusMods.Games.AdvancedInstaller.UI;
+using NexusMods.Paths;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.Generic.Installers;
-using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
+using NexusMods.Games.AdvancedInstaller;
 
 namespace NexusMods.Games.BethesdaGameStudios;
 
@@ -28,13 +27,13 @@ public abstract class ABethesdaGame : AGame
     {
         _installers = new IModInstaller[]
         {
-            // Default installer for FOMODs
-            FomodXmlInstaller.Create(provider, new GamePath(LocationId.Game, "Data".ToRelativePath())),
-            // Handles common installs to the game folder and other common directories like `Data`
-            GenericFolderMatchInstaller.Create(provider, BethesdaInstallFolderTargets.InstallFolderTargets()),
+            // // Default installer for FOMODs
+            // FomodXmlInstaller.Create(provider, new GamePath(LocationId.Game, "Data".ToRelativePath())),
+            // // Handles common installs to the game folder and other common directories like `Data`
+            // GenericFolderMatchInstaller.Create(provider, BethesdaInstallFolderTargets.InstallFolderTargets()),
 
             // Handles everything else
-            // AdvancedInstaller<UnsupportedModOverlayViewModelFactory, AdvancedInstallerOverlayViewModelFactory>.Create(provider),
+            AdvancedManualInstaller.Create(provider),
         };
 
         _pluginSorter = new Lazy<PluginSorter>(provider.GetRequiredService<PluginSorter>);

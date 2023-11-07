@@ -18,25 +18,18 @@ namespace NexusMods.Games.AdvancedInstaller.UI;
 /// <summary>
 ///     Provides the implementation of the 'Advanced Installer' functionality.
 /// </summary>
-/// <typeparam name="TUnsupportedOverlayFactory">Use <see cref="UnsupportedModOverlayViewModelFactory"/>, or alternative for testing.</typeparam>
-/// <typeparam name="TAdvancedInstallerOverlayViewModelFactory">Use <see cref="AdvancedInstallerOverlayViewModelFactory"/>, or alternative for testing.</typeparam>
-public class AdvancedInstaller<TUnsupportedOverlayFactory, TAdvancedInstallerOverlayViewModelFactory> : IModInstaller
-    where TUnsupportedOverlayFactory : IUnsupportedModOverlayViewModelFactory
-    where TAdvancedInstallerOverlayViewModelFactory : IAdvancedInstallerOverlayViewModelFactory
+public class AdvancedInstallerHandlerUI: IAdvancedInstallerHandler
 {
-    private readonly IOverlayController _overlayController;
+    private readonly Lazy<IOverlayController> _overlayController;
     private readonly Lazy<LoadoutRegistry> _loadoutRegistry;
     private readonly IServiceProvider _provider;
 
-    public static AdvancedInstaller<UnsupportedModOverlayViewModelFactory, AdvancedInstallerOverlayViewModelFactory>
-        Create(IServiceProvider provider) =>
-        new(provider.GetRequiredService<IOverlayController>(), provider);
-
-    public AdvancedInstaller(IOverlayController overlayController, IServiceProvider provider)
+    public AdvancedInstallerHandlerUI(IServiceProvider provider)
     {
-        _overlayController = overlayController;
         _provider = provider;
+
         // Delay to avoid circular dependency.
+        _overlayController = new Lazy<IOverlayController>(provider.GetRequiredService<IOverlayController>);
         _loadoutRegistry = new Lazy<LoadoutRegistry>(provider.GetRequiredService<LoadoutRegistry>);
     }
 
@@ -94,8 +87,8 @@ public class AdvancedInstaller<TUnsupportedOverlayFactory, TAdvancedInstallerOve
     private async Task<bool> ShowUnsupportedModOverlay(string modName, object? referenceItem = null)
     {
         var tcs = new TaskCompletionSource<bool>();
-        var vm = TUnsupportedOverlayFactory.Create(modName);
-        OnUi(_overlayController,
+        var vm = new UnsupportedModOverlayViewModel(modName);
+        OnUi(_overlayController.Value,
             controller => { controller.SetOverlayContent(new SetOverlayItem(vm, referenceItem), tcs); });
         await tcs.Task;
         return vm.ShouldAdvancedInstall;
@@ -106,9 +99,9 @@ public class AdvancedInstaller<TUnsupportedOverlayFactory, TAdvancedInstallerOve
         string gameName = "", object? referenceItem = null)
     {
         var tcs = new TaskCompletionSource<bool>();
-        var vm = TAdvancedInstallerOverlayViewModelFactory.Create(archiveFiles, register, gameName, modName);
-        OnUi(_overlayController,
-            controller => { _overlayController.SetOverlayContent(new SetOverlayItem(vm, referenceItem), tcs); });
+        var vm = new AdvancedInstallerOverlayViewModel(modName, archiveFiles, register, gameName);
+        OnUi(_overlayController.Value,
+            controller => { controller.SetOverlayContent(new SetOverlayItem(vm, referenceItem), tcs); });
         await tcs.Task;
         return (!vm.WasCancelled, vm.BodyViewModel.Data);
     }
@@ -125,45 +118,5 @@ public class AdvancedInstaller<TUnsupportedOverlayFactory, TAdvancedInstallerOve
                 innerAction(innerState);
                 return Disposable.Empty;
             });
-    }
-}
-
-/// <summary>
-///     Factory for creating instances of <see cref="IUnsupportedModOverlayViewModel" />.
-/// </summary>
-public interface IUnsupportedModOverlayViewModelFactory
-{
-    static abstract IUnsupportedModOverlayViewModel Create(string modName);
-}
-
-public class UnsupportedModOverlayViewModelFactory : IUnsupportedModOverlayViewModelFactory
-{
-    public static IUnsupportedModOverlayViewModel Create(string modName)
-    {
-        var overlay = new UnsupportedModOverlayViewModel(modName);
-        return overlay;
-    }
-}
-
-/// <summary>
-///     Factory for creating instances of <see cref="IAdvancedInstallerOverlayViewModel" />.
-/// </summary>
-public interface IAdvancedInstallerOverlayViewModelFactory
-{
-    static abstract IAdvancedInstallerOverlayViewModel Create(
-        FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles, GameLocationsRegister register,
-        string gameName = "",
-        string modName = ""
-    );
-}
-
-public class AdvancedInstallerOverlayViewModelFactory : IAdvancedInstallerOverlayViewModelFactory
-{
-    public static IAdvancedInstallerOverlayViewModel Create(FileTreeNode<RelativePath, ModSourceFileEntry> archiveFiles,
-        GameLocationsRegister register,
-        string gameName = "", string modName = "")
-    {
-        var overlay = new AdvancedInstallerOverlayViewModel(modName, archiveFiles, register, gameName);
-        return overlay;
     }
 }

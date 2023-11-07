@@ -14,6 +14,7 @@ public static class Services
     public static IServiceCollection AddAdvancedInstallerUi(this IServiceCollection serviceCollection)
     {
         return serviceCollection
+            .AddSingleton<IAdvancedInstallerHandler, AdvancedInstallerHandlerUI>()
             .AddViewModel<AdvancedInstallerOverlayViewModel, IAdvancedInstallerOverlayViewModel>()
             .AddView<FooterView, IFooterViewModel>()
             .AddView<BodyView, IBodyViewModel>()

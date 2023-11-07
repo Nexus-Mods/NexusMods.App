@@ -14,7 +14,7 @@ namespace NexusMods.Games.AdvancedInstaller.UI.Tests;
 [Collection("NonParallel")]
 public class AdvancedInstallerTests
 {
-    private readonly AdvancedInstaller<MockOverlayVMFactory, MockInstallerVMFactory> _installer;
+    private readonly AdvancedInstallerHandlerUI _installerHandlerUi;
     private readonly GameInstallation _gameInstallation;
     private readonly ModId _baseModId;
     private readonly FileTreeNode<RelativePath, ModSourceFileEntry> _archiveFiles;
@@ -22,7 +22,7 @@ public class AdvancedInstallerTests
     public AdvancedInstallerTests(IServiceProvider provider)
     {
         // Executed once per method
-        _installer = new AdvancedInstaller<MockOverlayVMFactory, MockInstallerVMFactory>(new OverlayController(), null!);
+        _installerHandlerUi = new AdvancedInstallerHandlerUI( null!);
         _gameInstallation = new GameInstallation()
         {
             LocationsRegister = new GameLocationsRegister(new Dictionary<LocationId, AbsolutePath>()),
@@ -37,7 +37,7 @@ public class AdvancedInstallerTests
 
     private async ValueTask<IEnumerable<ModInstallerResult>> ExecuteInstaller()
     {
-        return await _installer.GetModsAsync(_gameInstallation, LoadoutId.Null, _baseModId, _archiveFiles);
+        return await _installerHandlerUi.GetModsAsync(_gameInstallation, LoadoutId.Null, _baseModId, _archiveFiles);
     }
 
     [Fact]
@@ -80,7 +80,7 @@ public class AdvancedInstallerTests
 }
 
 // Mock Factories
-public class MockOverlayVMFactory : IUnsupportedModOverlayViewModelFactory
+public class MockOverlayVMFactory
 {
     public static IUnsupportedModOverlayViewModel VM = null!;
     public static bool CreateWasCalled;
@@ -98,7 +98,7 @@ public class MockOverlayVMFactory : IUnsupportedModOverlayViewModelFactory
     }
 }
 
-public class MockInstallerVMFactory : IAdvancedInstallerOverlayViewModelFactory
+public class MockInstallerVMFactory
 {
     public static IAdvancedInstallerOverlayViewModel? VM;
     public static bool CreateWasCalled;
