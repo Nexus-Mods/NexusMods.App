@@ -28,10 +28,11 @@ public class TreeNodeVM<TItem, TKey> : ReactiveObject, IActivatableViewModel
     public TItem Item { get; }
 
     /// <summary>
-    /// The key used in the <see cref="SourceCache{TObject,TKey}"/> for the original item.
+    /// The Id used in the <see cref="SourceCache{TObject,TKey}"/> for the original item.
     /// This is convenience property to avoid having to access the <see cref="TItem"/> object.
     /// </summary>
-    public TKey Key { get; }
+    public TKey Id { get; }
+
 
     /// <summary>
     /// Creates a new <see cref="TreeNodeVM{TItem,TKey}"/> from a <see cref="Node{TItem,TKey}"/>.
@@ -41,7 +42,7 @@ public class TreeNodeVM<TItem, TKey> : ReactiveObject, IActivatableViewModel
     public TreeNodeVM(Node<TItem, TKey> node)
     {
         Item = node.Item;
-        Key = node.Key;
+        Id = node.Key;
 
         node.Children
             .Connect()
@@ -50,6 +51,73 @@ public class TreeNodeVM<TItem, TKey> : ReactiveObject, IActivatableViewModel
             .DisposeMany()
             .Subscribe();
     }
+
+    /// <summary>
+    /// Recursively search the tree for a node with the given Id.
+    /// </summary>
+    /// <param name="id">The Id of the node to find</param>
+    /// <returns>Null if not found</returns>
+    public TreeNodeVM<TItem, TKey>? FindNode(TKey id)
+    {
+        if (Id.Equals(id))
+        {
+            return this;
+        }
+
+        return Children.Select(child => child.FindNode(id))
+            .FirstOrDefault(found => found != null);
+    }
+
+    /// <summary>
+    /// Returns a collection of all the descendent Id of this node (excluding this node).
+    /// </summary>
+    /// <returns></returns>
+    public List<TKey> GetAllDescendentIds()
+    {
+        var results = new List<TKey>();
+        if (Children.Count == 0) return results;
+
+        GetAllDescendentIdsRecursive(this, results);
+        return results;
+    }
+
+
+    /// <summary>
+    /// Returns a collection of all the descendent nodes of this node (excluding this node).
+    /// </summary>
+    /// <returns></returns>
+    public List<TreeNodeVM<TItem, TKey>> GetAllDescendentNodes()
+    {
+        var results = new List<TreeNodeVM<TItem, TKey>>();
+        if (Children.Count == 0) return results;
+
+        GetAllDescendentNodesRecursive(this, results);
+        return results;
+    }
+
+    #region private
+    
+    private void GetAllDescendentIdsRecursive(TreeNodeVM<TItem, TKey> node, List<TKey> results)
+    {
+        foreach (var child in node.Children)
+        {
+            results.Add(child.Id);
+
+            GetAllDescendentIdsRecursive(child, results);
+        }
+    }
+
+    private void GetAllDescendentNodesRecursive(TreeNodeVM<TItem, TKey> node, List<TreeNodeVM<TItem, TKey>> results)
+    {
+        foreach (var child in node.Children)
+        {
+            results.Add(child);
+
+            GetAllDescendentNodesRecursive(child, results);
+        }
+    }
+
+    #endregion private
 
     public ViewModelActivator Activator { get; } = new();
 }
