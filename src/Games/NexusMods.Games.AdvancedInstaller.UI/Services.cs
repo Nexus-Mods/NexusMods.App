@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.DataModel.ModInstallers;
 using NexusMods.Games.AdvancedInstaller.UI.Content;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Bottom;
 using NexusMods.Games.AdvancedInstaller.UI.Content.Left;
@@ -29,6 +30,7 @@ public static class Services
             .AddView<TreeEntryView, Content.Right.Results.PreviewView.PreviewEntry.ITreeEntryViewModel>()
             .AddView<Content.Right.Results.SelectLocation.SelectableDirectoryEntry.TreeEntryView,
                 Content.Right.Results.SelectLocation.SelectableDirectoryEntry.ITreeEntryViewModel>()
-            .AddView<UnsupportedModOverlayView, IUnsupportedModOverlayViewModel>();
+            .AddView<UnsupportedModOverlayView, IUnsupportedModOverlayViewModel>()
+            .AddTransient<IModInstaller>(AdvancedInstaller<UnsupportedModOverlayViewModelFactory, AdvancedInstallerOverlayViewModelFactory>.Create);
     }
 }

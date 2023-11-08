@@ -61,7 +61,7 @@ public class SkyrimSpecialEdition : ABethesdaGame, ISteamGame, IGogGame, IXboxGa
 
     public override IStreamFactory Icon =>
         new EmbededResourceStreamFactory<SkyrimSpecialEdition>(
-            "NexusMods.Games.BethesdaGameStudios.Resources.SkyrimSpecialEdition.icon.jpg");
+            "NexusMods.Games.BethesdaGameStudios.Resources.SkyrimSpecialEdition.icon.png");
 
     public override IStreamFactory GameImage =>
         new EmbededResourceStreamFactory<SkyrimSpecialEdition>(

@@ -50,7 +50,7 @@ public class ArchiveInstaller : IArchiveInstaller
     }
 
     /// <inheritdoc />
-    public async Task<ModId[]> AddMods(LoadoutId loadoutId, DownloadId downloadId, string? defaultModName = null, CancellationToken token = default)
+    public async Task<ModId[]> AddMods(LoadoutId loadoutId, DownloadId downloadId, string? defaultModName = null, IModInstaller? installer = null, CancellationToken token = default)
     {
         // Get the loadout and create the mod so we can use it in the job.
         var loadout = _registry.GetMarker(loadoutId);
@@ -95,7 +95,13 @@ public class ArchiveInstaller : IArchiveInstaller
                     })));
 
             // Step 3: Run the archive through the installers.
-            var (results, modInstaller) = (await loadout.Value.Installation.Game.Installers
+            var installers = loadout.Value.Installation.Game.Installers;
+            if (installer != null)
+            {
+                installers = new[] { installer };
+            }
+
+            var (results, modInstaller) = await installers
                 .SelectAsync(async modInstaller =>
                 {
                     try
@@ -114,7 +120,7 @@ public class ArchiveInstaller : IArchiveInstaller
                         return (Array.Empty<ModInstallerResult>(), modInstaller);
                     }
                 })
-                .FirstOrDefault(result => result.Item1.Any()));
+                .FirstOrDefault(result => result.Item1.Any());
 
 
             if (results == null || !results.Any())

@@ -210,6 +210,9 @@
     <data name="LoadoutGridView__Add_Mod" xml:space="preserve">
         <value>Add Mod</value>
     </data>
+    <data name="LoadoutGridView__Add_Mod_Advanced" xml:space="preserve">
+        <value>Add Mod (Advanced)</value>
+    </data>
     <data name="MyGamesView__Ready_to_mod" xml:space="preserve">
         <value>Ready to mod</value>
     </data>

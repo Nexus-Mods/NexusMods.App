@@ -1,7 +1,9 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -27,7 +29,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     public IIconButtonViewModel Home { get; }
 
     public IIconButtonViewModel Add { get; }
-    
+
     public IDownloadButtonViewModel Downloads { get; }
 
     private ReadOnlyObservableCollection<IImageButtonViewModel> _games =
@@ -64,7 +66,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         Home = homeButtonViewModel;
         Add = addButtonViewModel;
         Downloads = downloadsButtonViewModel;
-        
+
         _homeLeftMenuViewModel = homeLeftMenuViewModel;
         _downloadsViewModel = downloadsViewModel;
         _gameLeftMenuViewModel = gameLeftMenuViewModel;
@@ -82,7 +84,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                     using var iconStream = game.Icon.GetStreamAsync().Result;
                     var vm = provider.GetRequiredService<IImageButtonViewModel>();
                     vm.Name = game.Name;
-                    vm.Image = Bitmap.DecodeToWidth(iconStream, 48);
+                    vm.Image = LoadImageFromStream(iconStream);
                     vm.IsActive = false;
                     vm.Tag = game;
                     vm.Click = ReactiveCommand.Create(() => NavigateToGame(game));
@@ -102,10 +104,24 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
             Activations
                 .SubscribeWithErrorLogging(logger, HandleActivation)
                 .DisposeWith(disposables);
-            
+
             // For now just select home on startup
             NavigateToHome();
         });
+    }
+
+    private Bitmap LoadImageFromStream(Stream iconStream)
+    {
+        try
+        {
+            return Bitmap.DecodeToWidth(iconStream, 48);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Skia image load error, while loading image from stream");
+            // Null images are fine, they will be ignored
+            return null!;
+        }
     }
 
     private void NavigateToHome()
@@ -114,7 +130,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         _actions.OnNext(new SpineButtonAction(Type.Home));
         LeftMenu = _homeLeftMenuViewModel;
     }
-    
+
     private void NavigateToAdd()
     {
         _logger.LogTrace("Add selected");
