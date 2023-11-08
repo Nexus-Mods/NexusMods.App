@@ -120,7 +120,6 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
                     var value = existingPanel.Value;
                     value.LogicalBounds = logicalBounds;
-                    updater.AddOrUpdate(value);
                 }
             }
         });
@@ -148,7 +147,6 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
                     var value = existingPanel.Value;
                     value.LogicalBounds = logicalBounds;
-                    updater.AddOrUpdate(value);
                 }
             }
         });
