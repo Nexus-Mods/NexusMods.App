@@ -4,8 +4,7 @@ namespace NexusMods.App.UI.WorkspaceSystem;
 
 public class AddPanelButtonDesignViewModel : AddPanelButtonViewModel
 {
-    public AddPanelButtonDesignViewModel()
-        : base(DummyState, IconUtils.StateToBitmap(DummyState)) { }
+    public AddPanelButtonDesignViewModel() : base(DummyState, IconUtils.StateToBitmap(DummyState)) { }
 
     private static readonly IReadOnlyDictionary<PanelId, Rect> DummyState = new Dictionary<PanelId, Rect>
     {

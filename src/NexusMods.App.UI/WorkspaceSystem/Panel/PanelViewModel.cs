@@ -4,7 +4,9 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia;
 using DynamicData;
+using DynamicData.Aggregation;
 using NexusMods.App.UI.Controls;
+using NexusMods.Common;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -14,7 +16,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 {
     public PanelId Id { get; } = PanelId.New();
 
-    private readonly SourceCache<IPanelTabViewModel, PanelTabId> _tabsSource = new(x => x.Id);
+    private readonly SourceList<IPanelTabViewModel> _tabsList = new();
     private readonly ReadOnlyObservableCollection<IPanelTabViewModel> _tabs;
     public ReadOnlyObservableCollection<IPanelTabViewModel> Tabs => _tabs;
 
@@ -28,6 +30,8 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
     public ReactiveCommand<Unit, PanelId> CloseCommand { get; }
     public ReactiveCommand<Unit, Unit> PopoutCommand { get; }
 
+    [Reactive] private PanelTabId SelectedTabId { get; set; }
+
     private readonly PageFactoryController _factoryController;
     public PanelViewModel(PageFactoryController factoryController)
     {
@@ -40,36 +44,10 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
         {
             AddTab();
         });
-        _tabsSource
+
+        _tabsList
             .Connect()
-            .DisposeMany()
-            .Sort(PanelTabComparer.Instance)
             .Bind(out _tabs)
-            .OnItemRemoved(removed =>
-            {
-                var removedIndex = removed.Index.Value;
-
-                // set new selected tab
-                if (removed.IsVisible)
-                {
-                    if (_tabs.Count != 0)
-                    {
-                        // if (removedIndex >= _tabs.Count - 1)
-                        //     SelectedTabId = _tabs[^1].Id;
-                        // else if (removedIndex == 0)
-                        //     SelectedTabId = _tabs[0].Id;
-                        // else
-                        //     SelectedTabId = _tabs[(int)removedIndex].Id;
-                    }
-                }
-
-                // update indices
-                for (var i = removedIndex; i < _tabs.Count; i++)
-                {
-                    var next = _tabs[(int)i];
-                    next.Index = PanelTabIndex.From(i);
-                }
-            })
             .Subscribe();
 
         this.WhenActivated(disposables =>
@@ -78,84 +56,67 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                 .SubscribeWithErrorLogging(_ => UpdateActualBounds())
                 .DisposeWith(disposables);
 
+            // close the panel when all tabs are closed
+            _tabsList
+                .Connect()
+                .Count()
+                .Where(count => count == 0)
+                .Select(_ => Unit.Default)
+                .InvokeCommand(CloseCommand)
+                .DisposeWith(disposables);
+
+            // handle when a tab gets removed
+            _tabsList
+                .Connect()
+                .ForEachItemChange(itemChange =>
+                {
+                    if (itemChange.Reason != ListChangeReason.Remove) return;
+                    if (!itemChange.Current.IsVisible) return;
+                    if (Tabs.Count == 0) return;
+
+                    // select a new tab
+                    var removedIndex = itemChange.CurrentIndex;
+                    if (removedIndex >= Tabs.Count - 1)
+                        SelectedTabId = Tabs[^1].Id;
+                    else if (removedIndex == 0)
+                        SelectedTabId = Tabs[0].Id;
+                    else
+                        SelectedTabId = Tabs[removedIndex].Id;
+                })
+                .Subscribe()
+                .DisposeWith(disposables);
+
             // handle the close command on tabs
-            _tabsSource
+            _tabsList
                 .Connect()
                 .MergeMany(item => item.Header.CloseTabCommand)
                 .Subscribe(CloseTab)
                 .DisposeWith(disposables);
 
             // handle when a tab gets selected
-            _tabsSource
+            // 1) set SelectedTabId
+            _tabsList
                 .Connect()
                 .WhenPropertyChanged(item => item.Header.IsSelected)
                 .Where(propertyValue => propertyValue.Value)
-                .Select(propertyValue => propertyValue.Sender)
-                .Subscribe(selectedTab =>
-                {
-                    selectedTab.IsVisible = true;
-
-                    foreach (var otherTab in Tabs)
-                    {
-                        if (otherTab.Id == selectedTab.Id) continue;
-                        otherTab.IsVisible = false;
-                        otherTab.Header.IsSelected = false;
-                    }
-                })
+                .Select(propertyValue => propertyValue.Sender.Id)
+                // NOTE(erri120): this throws an exception, see #751
+                // .BindToVM(this, vm => vm.SelectedTabId)
+                .Subscribe(selectedTabId => SelectedTabId = selectedTabId)
                 .DisposeWith(disposables);
 
-            // _tabsSource
-            //     .Connect()
-            //     .DisposeMany()
-            //     .Sort(PanelTabComparer.Instance)
-            //     .Bind(out _tabs)
-            //     .Do(changeSet =>
-            //     {
-            //         if (changeSet.TryGetFirst(change => change.Reason == ChangeReason.Add, out var added))
-            //         {
-            //             SelectedTabId = added.Key;
-            //         }
-            //
-            //         if (changeSet.TryGetFirst(change => change.Reason == ChangeReason.Remove, out var removed))
-            //         {
-            //             if (_tabs.Count == 0)
-            //             {
-            //                 CloseCommand.Execute().Subscribe();
-            //                 return;
-            //             }
-            //
-            //             var removedIndex = removed.Current.Index.Value;
-            //
-            //             // set new selected tab
-            //             if (SelectedTabId == removed.Key)
-            //             {
-            //                 if (_tabs.Count != 0)
-            //                 {
-            //                     if (removedIndex >= _tabs.Count - 1)
-            //                         SelectedTabId = _tabs[^1].Id;
-            //                     else if (removedIndex == 0)
-            //                         SelectedTabId = _tabs[0].Id;
-            //                     else
-            //                         SelectedTabId = _tabs[(int)removedIndex].Id;
-            //                 }
-            //                 else
-            //                 {
-            //                     SelectedTabId = PanelTabId.Empty;
-            //                 }
-            //             }
-            //
-            //             // update indices
-            //             for (var i = removedIndex; i < _tabs.Count; i++)
-            //             {
-            //                 var next = _tabs[(int)i];
-            //                 next.Index = PanelTabIndex.From(i);
-            //             }
-            //         }
-            //     })
-            //     .Transform(tab => tab.Header)
-            //     .Bind(out _tabHeaders)
-            //     .SubscribeWithErrorLogging()
-            //     .DisposeWith(disposables);
+            // 2) update the visibility of the tabs
+            this.WhenAnyValue(vm => vm.SelectedTabId)
+                .Do(selectedTabId =>
+                {
+                    foreach (var tab in Tabs)
+                    {
+                        tab.IsVisible = tab.Id == selectedTabId;
+                        tab.Header.IsSelected = tab.Id == selectedTabId;
+                    }
+                })
+                .Subscribe()
+                .DisposeWith(disposables);
         });
     }
 
@@ -174,11 +135,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 
     public IPanelTabViewModel AddTab()
     {
-        var nextIndex = _tabs.Count == 0
-            ? PanelTabIndex.From(0)
-            : PanelTabIndex.From(_tabs.Last().Index.Value + 1);
-
-        var tab = new PanelTabViewModel(nextIndex)
+        var tab = new PanelTabViewModel
         {
             // TODO: show "new page tab"
             Contents = _factoryController.Create(new PageData
@@ -188,26 +145,27 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
             })
         };
 
-        _tabsSource.AddOrUpdate(tab);
+        _tabsList.Edit(updater => updater.Add(tab));
+        SelectedTabId = tab.Id;
         return tab;
     }
 
     public void CloseTab(PanelTabId id)
     {
-        _tabsSource.Remove(id);
+        _tabsList.Edit(updater =>
+        {
+            var index = updater.LinearSearch(item => item.Id == id);
+            updater.RemoveAt(index);
+        });
     }
 
     public PanelData ToData()
     {
-        // TODO:
-        // var selectedTab = _tabsSource.Lookup(SelectedTabId);
-        // var selectedTabIndex = selectedTab.HasValue ? selectedTab.Value.Index : PanelTabIndex.Max;
-
         return new PanelData
         {
             LogicalBounds = LogicalBounds,
             Tabs = _tabs.Select(tab => tab.ToData()).ToArray(),
-            SelectedTabIndex = PanelTabIndex.Max
+            SelectedTabId = SelectedTabId
         };
     }
 
@@ -215,20 +173,21 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
     {
         LogicalBounds = data.LogicalBounds;
 
-        _tabsSource.Clear();
-        _tabsSource.Edit(updater =>
+        _tabsList.Edit(updater =>
         {
+            updater.Clear();
             for (uint i = 0; i < data.Tabs.Length; i++)
             {
                 var tab = data.Tabs[i];
-                var index = PanelTabIndex.From(i);
-                var vm = new PanelTabViewModel(index)
+                var vm = new PanelTabViewModel
                 {
                     Contents = _factoryController.Create(tab.PageData)
                 };
 
-                updater.AddOrUpdate(vm);
+                updater.Add(vm);
             }
         });
+
+        SelectedTabId = data.SelectedTabId;
     }
 }

@@ -10,5 +10,5 @@ public sealed record PanelData
 
     public required TabData[] Tabs { get; init; }
 
-    public required PanelTabIndex SelectedTabIndex { get; init; }
+    public required PanelTabId SelectedTabId { get; init; }
 }

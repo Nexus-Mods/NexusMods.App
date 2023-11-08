@@ -28,15 +28,13 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     {
         _factoryController = factoryController;
 
-        var addPanelButtonViewModelsDisposable = _addPanelButtonViewModelSource
+        _addPanelButtonViewModelSource
             .Connect()
-            .DisposeMany()
             .Bind(out _addPanelButtonViewModels)
             .Subscribe();
 
-        var panelDisposable = _panelSource
+        _panelSource
             .Connect()
-            .DisposeMany()
             .Sort(PanelComparer.Instance)
             .Bind(out _panels)
             .Do(_ => UpdateStates())
@@ -44,9 +42,6 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
         this.WhenActivated(disposables =>
         {
-            addPanelButtonViewModelsDisposable.DisposeWith(disposables);
-            panelDisposable.DisposeWith(disposables);
-
             _addPanelButtonViewModelSource
                 .Connect()
                 .MergeMany(item => item.AddPanelCommand)

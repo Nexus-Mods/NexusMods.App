@@ -1,5 +1,3 @@
-using System.Reactive.Disposables;
-using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
@@ -10,10 +8,7 @@ public class PanelTabViewModel : AViewModel<IPanelTabViewModel>, IPanelTabViewMo
     public PanelTabId Id { get; } = PanelTabId.From(Guid.NewGuid());
 
     /// <inheritdoc/>
-    public PanelTabIndex Index { get; set; }
-
-    /// <inheritdoc/>
-    public IPanelTabHeaderViewModel Header { get; private set; }
+    public IPanelTabHeaderViewModel Header { get; }
 
     /// <inheritdoc/>
     [Reactive] public required Page Contents { get; set; }
@@ -21,19 +16,9 @@ public class PanelTabViewModel : AViewModel<IPanelTabViewModel>, IPanelTabViewMo
     /// <inheritdoc/>
     [Reactive] public bool IsVisible { get; set; } = true;
 
-    public PanelTabViewModel(PanelTabIndex index)
+    public PanelTabViewModel()
     {
-        Index = index;
         Header = new PanelTabHeaderViewModel(Id);
-
-        this.WhenActivated(disposables =>
-        {
-            Disposable.Create(this, state =>
-            {
-                state.Contents = null!;
-                state.Header = null!;
-            }).DisposeWith(disposables);
-        });
     }
 
     public TabData ToData()
