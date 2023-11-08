@@ -431,6 +431,8 @@ public class LoadoutRegistry : IDisposable
         {
             Name = name
         });
+        var withExtraFiles = await installation.Game.Synchronizer.Ingest(result);
+        Alter(result.LoadoutId, $"Adding extra files found in game folder", _ => withExtraFiles);
         return GetMarker(result.LoadoutId);
     }
 

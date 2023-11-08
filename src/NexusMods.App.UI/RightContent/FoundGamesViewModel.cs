@@ -50,7 +50,13 @@ public class FoundGamesViewModel : AViewModel<IFoundGamesViewModel>, IFoundGames
             {
                 var vm = _provider.GetRequiredService<IGameWidgetViewModel>();
                 vm.Installation = install;
-                vm.PrimaryButton = ReactiveCommand.CreateFromTask(() => ManageGame(install));
+                vm.PrimaryButton = ReactiveCommand.CreateFromTask(async () =>
+                {
+                    await Task.Run(async () =>
+                    {
+                        await ManageGame(install);
+                    });
+                });
                 return vm;
             });
         Games = new ReadOnlyObservableCollection<IGameWidgetViewModel>(new ObservableCollection<IGameWidgetViewModel>(installed));
